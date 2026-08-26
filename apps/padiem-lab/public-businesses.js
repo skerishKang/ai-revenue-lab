@@ -11,6 +11,17 @@
 
   return Object.freeze([
     Object.freeze({
+      number: 2,
+      slug: "living-travel",
+      title: "Living Travel",
+      koreanTitle: "리빙 트래블",
+      summary: "취향과 여행 속도에 따라 부산의 장소·동선·여행판이 달라지는 흐름을 합성 데이터로 탐색하는 정적 여행 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b02/",
+      sourcePath: "apps/living-travel/pages-preview/site/"
+    }),
+    Object.freeze({
       number: 4,
       slug: "living-learning",
       title: "Living Learning",

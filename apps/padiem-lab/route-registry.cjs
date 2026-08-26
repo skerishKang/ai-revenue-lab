@@ -2,6 +2,24 @@
 
 const routes = [
   {
+    number: 2,
+    route: "b02",
+    sourcePath: "apps/living-travel/pages-preview/site",
+    mode: "STATIC_APP_PREVIEW_ALLOWLIST",
+    marker: "Living Travel",
+    includeFiles: ["index.html", "guide.html", "robots.txt"],
+    includeDirs: ["assets", "demo", "traveler"],
+    privateLinkSegments: ["operator", "staging"],
+    rewriteRootRelative: true,
+    aggregateHeaders: [
+      "X-Robots-Tag: noindex, nofollow",
+      "Referrer-Policy: no-referrer",
+      "X-Content-Type-Options: nosniff",
+      "X-Frame-Options: DENY",
+      "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'; object-src 'none'"
+    ]
+  },
+  {
     number: 4,
     route: "b04",
     sourcePath: "apps/living-learning/pages-preview",
@@ -185,5 +203,6 @@ module.exports = Object.freeze(routes.map(route => Object.freeze({
   includeDirs: route.includeDirs ? Object.freeze(route.includeDirs.slice()) : undefined,
   excludePaths: route.excludePaths ? Object.freeze(route.excludePaths.slice()) : undefined,
   excludeRootFiles: route.excludeRootFiles ? Object.freeze(route.excludeRootFiles.slice()) : undefined,
+  privateLinkSegments: route.privateLinkSegments ? Object.freeze(route.privateLinkSegments.slice()) : undefined,
   aggregateHeaders: route.aggregateHeaders ? Object.freeze(route.aggregateHeaders.slice()) : undefined
 })));

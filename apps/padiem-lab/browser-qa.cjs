@@ -49,6 +49,46 @@ async function inspect(page, url, label, marker, options = {}) {
   if (!state.title || !state.marker) throw new Error(`${label} content mismatch ${JSON.stringify(state)}`);
   if (state.overflow) throw new Error(`${label} horizontal overflow ${JSON.stringify(state)}`);
 
+  if (options.b02) {
+    const runtime = await page.evaluate(() => ({
+      robots: document.querySelector('meta[name="robots"]')?.getAttribute('content') || '',
+      privateLinks: Array.from(document.querySelectorAll('[href],[src],[action]'))
+        .map(element => element.getAttribute('href') || element.getAttribute('src') || element.getAttribute('action') || '')
+        .filter(value => /(?:^|\/)(?:operator|staging)(?:\/|$)/i.test(value)),
+      externalRuntimeRefs: Array.from(document.querySelectorAll('[href],[src]'))
+        .map(element => element.getAttribute('href') || element.getAttribute('src') || '')
+        .filter(value => {
+          try {
+            const parsed = new URL(value, window.location.href);
+            return /^https?:$/.test(parsed.protocol) && parsed.origin !== window.location.origin;
+          } catch (_) {
+            return true;
+          }
+        }),
+      backendForms: Array.from(document.forms).map(form => ({
+        action: form.getAttribute('action') || '',
+        method: (form.getAttribute('method') || 'get').toLowerCase()
+      })).filter(form => form.method === 'post' || /^\/(?!b02(?:\/|$)|$)/.test(form.action))
+    }));
+    if (!/noindex/i.test(runtime.robots) || !/nofollow/i.test(runtime.robots)) {
+      throw new Error(`B02 robots boundary incomplete ${JSON.stringify(runtime)}`);
+    }
+    if (runtime.privateLinks.length || runtime.externalRuntimeRefs.length || runtime.backendForms.length) {
+      throw new Error(`B02 public boundary incomplete ${JSON.stringify(runtime)}`);
+    }
+    if (live) {
+      const headers = await response.allHeaders();
+      const csp = headers['content-security-policy'] || '';
+      const robots = headers['x-robots-tag'] || '';
+      if (!/connect-src 'none'/.test(csp) || !/form-action 'none'/.test(csp) || !/object-src 'none'/.test(csp)) {
+        throw new Error(`B02 live CSP boundary incomplete ${JSON.stringify({ csp })}`);
+      }
+      if (!/noindex/i.test(robots) || !/nofollow/i.test(robots)) {
+        throw new Error(`B02 live X-Robots boundary incomplete ${JSON.stringify({ robots })}`);
+      }
+    }
+  }
+
   if (options.b06) {
     const runtime = await page.evaluate(() => ({
       artwork: document.documentElement.dataset.worldFeedArt || '',
@@ -155,6 +195,7 @@ async function screenshot(page, label, viewportName) {
     for (const route of routes) {
       const page = await browser.newPage({ viewport });
       await inspect(page, `${base}/${route.route}/`, route.route, route.marker, {
+        b02: route.number === 2,
         b06: route.number === 6,
         b13: route.number === 13,
         b60: route.number === 60
@@ -162,6 +203,17 @@ async function screenshot(page, label, viewportName) {
       await screenshot(page, route.route, viewport.name);
       await page.close();
       console.log(`${route.route}/${viewport.name} PASS`);
+
+      if (route.number === 2) {
+        for (const relative of ['demo/preferences.html', 'demo/traveler-home.html', 'demo/pending.html']) {
+          const detail = await browser.newPage({ viewport });
+          const key = relative.replace(/\.html$/, '').replace(/\//g, '-');
+          await inspect(detail, `${base}/b02/${relative}`, `b02-${key}`, route.marker, { b02: true });
+          await screenshot(detail, `b02-${key}`, viewport.name);
+          await detail.close();
+          console.log(`b02/${relative}/${viewport.name} PASS`);
+        }
+      }
     }
   }
 
