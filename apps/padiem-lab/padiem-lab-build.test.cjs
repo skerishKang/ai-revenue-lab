@@ -45,7 +45,7 @@ test('route registry has unique exact /bNN/ identities for routed static Busines
   const names = routes.map(route => route.route);
   assert.equal(new Set(numbers).size, numbers.length);
   assert.equal(new Set(names).size, names.length);
-  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 35, 36, 37, 60]);
+  assert.deepEqual(numbers, [1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 32, 35, 36, 37, 39, 60]);
   for (const route of routes) {
     assert.equal(route.route, `b${String(route.number).padStart(2, '0')}`);
     if (route.mode === 'STATIC_APP_PREVIEW') {
@@ -351,6 +351,27 @@ test('B37 publishes only the merged current-main safer-route visual reference', 
   assert.match(index, /NO LIVE LOCATION, TRACKING, OR NAVIGATION/);
   assert.match(index, /NOT A GUARANTEE OF SAFETY/);
   assert.match(index, /DO NOT INFER CRIME OR PERSON RISK/);
+  assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
+});
+
+test('B39 publishes only the merged current-main synthetic interpretation visual reference', () => {
+  build();
+  const b39 = path.join(out, 'b39');
+  for (const relative of ['index.html', 'assets', 'scripts', 'styles']) {
+    assert.equal(fs.existsSync(path.join(b39, relative)), true, `b39 missing ${relative}`);
+  }
+  for (const forbidden of ['README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md', 'evidence', 'tests', 'ux.html']) {
+    assert.equal(fs.existsSync(path.join(b39, forbidden)), false, `b39 leaked non-runtime or unmerged path ${forbidden}`);
+  }
+  const index = fs.readFileSync(path.join(b39, 'index.html'), 'utf8');
+  const review = fs.readFileSync(path.join(b39, 'scripts', 'review.js'), 'utf8');
+  assert.match(index, /112 실시간 AI 통역/);
+  assert.match(index, /SYNTHETIC EMERGENCY CALL/);
+  assert.match(index, /NO LIVE CALL, RECORDING, OR EMERGENCY CONNECTION/);
+  assert.match(index, /NO AUTONOMOUS DISPATCH/);
+  assert.match(index, /NO URGENCY OR THREAT DECISION/);
+  assert.match(index, /MACHINE TRANSCRIPT — UNVERIFIED/);
+  assert.match(index, /INTERPRETATION DRAFT — UNVERIFIED/);
   assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
 });
 

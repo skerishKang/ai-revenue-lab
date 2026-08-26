@@ -297,6 +297,17 @@
       sourcePath: "reference/business-37-ai-safe-route-v1/"
     }),
     Object.freeze({
+      number: 39,
+      slug: "112-real-time-interpretation",
+      title: "112 Real-Time Interpretation",
+      koreanTitle: "112 실시간 AI 통역",
+      summary: "합성 긴급신고 발화·미확인 전사·통역 초안·중요 용어와 사람 교정 이력을 분리해 이중언어 기록으로 검토하는 정적 시각 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b39/",
+      sourcePath: "reference/business-39-112-real-time-interpretation-v1/"
+    }),
+    Object.freeze({
       number: 60,
       slug: "ai-free-radar",
       title: "AI Free Radar",

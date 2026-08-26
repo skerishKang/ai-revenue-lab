@@ -262,6 +262,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 39,
+    route: "b39",
+    sourcePath: "reference/business-39-112-real-time-interpretation-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "112 실시간 AI 통역",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
