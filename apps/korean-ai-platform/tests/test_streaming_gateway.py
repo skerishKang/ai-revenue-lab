@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 
 import httpx
@@ -7,7 +8,10 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
+from app.pilot import router_core as rcore
 from app.pilot.openrouter_config import openrouter_config as orcfg
+from app.pilot.streaming_router import RouterStreamEvent
+from app.pilot.stream_gateway import _stream_body
 
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
@@ -61,6 +65,18 @@ def _payload(**overrides):
     return payload
 
 
+def _auto_payload(*, allow_external_fallback: bool = True, max_attempts: int | None = None):
+    business14 = {
+        "allow_external_fallback": allow_external_fallback,
+        "required_capabilities": ["chat"],
+        "optimize_for": "balanced",
+        "task_type": "general",
+    }
+    if max_attempts is not None:
+        business14["max_attempts"] = max_attempts
+    return _payload(model="b14/auto", business14=business14)
+
+
 def _client(transport: httpx.AsyncBaseTransport | None = None) -> TestClient:
     app = create_app()
     if transport is not None:
@@ -80,10 +96,14 @@ def _json_data_frames(text: str) -> list[dict]:
     return frames
 
 
-def _valid_sse_chunks(content: str = "실제처럼 보이는 테스트") -> list[bytes]:
+def _valid_sse_chunks(
+    content: str = "실제처럼 보이는 테스트",
+    *,
+    model: str = MODEL,
+) -> list[bytes]:
     first = {
         "id": "upstream_stream_1",
-        "model": MODEL,
+        "model": model,
         "choices": [
             {
                 "index": 0,
@@ -94,7 +114,7 @@ def _valid_sse_chunks(content: str = "실제처럼 보이는 테스트") -> list
     }
     finish = {
         "id": "upstream_stream_1",
-        "model": MODEL,
+        "model": model,
         "choices": [
             {
                 "index": 0,
@@ -113,6 +133,12 @@ def _valid_sse_chunks(content: str = "실제처럼 보이는 테스트") -> list
         f"data: {json.dumps(finish)}\n\n".encode(),
         b"data: [DONE]\n\n",
     ]
+
+
+def _request_model(request: httpx.Request) -> str:
+    body = json.loads(request.content)
+    assert body["stream"] is True
+    return body["model"]
 
 
 def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
@@ -139,6 +165,30 @@ def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
     assert metadata["route_evidence_status"] == "mock_no_upstream_call"
 
 
+def test_mock_auto_preview_uses_router_without_network():
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(500)
+
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(STREAM_URL, json=_auto_payload(max_attempts=2))
+
+    assert response.status_code == 200
+    assert "data: [DONE]" in response.text
+    frames = _json_data_frames(response.text)
+    assert frames
+    metadata = frames[0]["business14"]
+    assert metadata["route_mode"] == "auto"
+    assert metadata["fallback_allowed"] is True
+    assert metadata["fallback_used"] is False
+    assert metadata["attempt_count"] == 1
+    assert metadata["route_evidence_status"] == "mock_no_upstream_call"
+    assert calls == 0
+
+
 def test_existing_chat_endpoint_still_rejects_stream_true():
     client = _client()
     response = client.post(CHAT_URL, json=_payload())
@@ -155,32 +205,6 @@ def test_preview_requires_stream_true():
 
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "invalid_request"
-
-
-@pytest.mark.parametrize(
-    "payload_update",
-    [
-        {"model": "b14/auto"},
-        {"business14": {"allow_external_fallback": True}},
-        {"business14": {"max_attempts": 2}},
-    ],
-)
-def test_auto_or_fallback_streaming_is_rejected_before_network(payload_update):
-    calls = 0
-
-    async def handler(request: httpx.Request) -> httpx.Response:
-        nonlocal calls
-        calls += 1
-        return httpx.Response(200, content=b"data: [DONE]\n\n")
-
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
-    client = _client(httpx.MockTransport(handler))
-    response = client.post(STREAM_URL, json=_payload(**payload_update))
-
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
-    assert calls == 0
 
 
 def test_legacy_non_catalog_route_is_rejected_before_network():
@@ -201,6 +225,110 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
     assert calls == 0
 
 
+def test_auto_primary_429_falls_back_and_reports_actual_successful_attempt():
+    requested_models: list[str] = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        model = _request_model(request)
+        requested_models.append(model)
+        if len(requested_models) == 1:
+            return httpx.Response(429, content=b"bounded")
+        return httpx.Response(200, content=b"".join(_valid_sse_chunks("두 번째 후보 성공", model=model)))
+
+    orcfg.provider_mode = "live"
+    orcfg.api_key = LIVE_DUMMY_KEY
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(STREAM_URL, json=_auto_payload(max_attempts=2))
+
+    assert response.status_code == 200
+    assert len(requested_models) == 2
+    assert requested_models[0] != requested_models[1]
+    assert "두 번째 후보 성공" in response.text
+    assert "data: [DONE]" in response.text
+
+    frames = _json_data_frames(response.text)
+    first_content = next(frame for frame in frames if frame["choices"])
+    metadata = first_content["business14"]
+    assert metadata["route_mode"] == "auto"
+    assert metadata["fallback_allowed"] is True
+    assert metadata["fallback_used"] is True
+    assert metadata["attempt_count"] == 2
+    assert metadata["selected_upstream_model"] == requested_models[1]
+    assert metadata["selected_model"] == requested_models[1]
+    assert metadata["selected_route_id"].endswith(requested_models[1])
+
+
+def test_auto_fallback_false_attempts_only_primary():
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(429, content=b"bounded")
+
+    orcfg.provider_mode = "live"
+    orcfg.api_key = LIVE_DUMMY_KEY
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(
+        STREAM_URL,
+        json=_auto_payload(allow_external_fallback=False, max_attempts=1),
+    )
+
+    assert response.status_code == 429
+    assert response.json()["error"]["code"] == "upstream_rate_limited"
+    assert calls == 1
+
+
+def test_auto_max_attempts_bounds_precontent_fallbacks():
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(429, content=b"bounded")
+
+    orcfg.provider_mode = "live"
+    orcfg.api_key = LIVE_DUMMY_KEY
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(STREAM_URL, json=_auto_payload(max_attempts=2))
+
+    assert response.status_code == 429
+    assert response.json()["error"]["code"] == "upstream_rate_limited"
+    assert calls == 2
+
+
+@pytest.mark.parametrize(
+    ("upstream_status", "expected_status", "expected_code"),
+    [
+        (401, 401, "upstream_auth_failed"),
+        (403, 401, "upstream_auth_failed"),
+        (400, 502, "malformed_upstream_response"),
+        (422, 502, "upstream_client_error"),
+    ],
+)
+def test_nonfallback_prestart_errors_do_not_advance_auto_route(
+    upstream_status: int,
+    expected_status: int,
+    expected_code: str,
+):
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(upstream_status, content=b"bounded error")
+
+    orcfg.provider_mode = "live"
+    orcfg.api_key = LIVE_DUMMY_KEY
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(STREAM_URL, json=_auto_payload(max_attempts=3))
+
+    assert response.status_code == expected_status
+    assert response.headers["content-type"].startswith("application/json")
+    assert response.json()["error"]["code"] == expected_code
+    assert calls == 1
+
+
 @pytest.mark.parametrize(
     ("upstream_status", "expected_status", "expected_code"),
     [
@@ -212,7 +340,7 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
         (422, 502, "upstream_client_error"),
     ],
 )
-def test_pre_start_upstream_errors_keep_json_http_status(
+def test_manual_pre_start_upstream_errors_keep_json_http_status(
     upstream_status: int,
     expected_status: int,
     expected_code: str,
@@ -230,31 +358,45 @@ def test_pre_start_upstream_errors_keep_json_http_status(
     assert response.json()["error"]["code"] == expected_code
 
 
-def test_malformed_first_event_fails_before_sse_200():
+def test_malformed_first_event_fails_before_sse_200_without_fallback():
+    calls = 0
+
     async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
         return httpx.Response(200, content=b"data: not-json\n\n")
 
     orcfg.provider_mode = "live"
     orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
-    response = client.post(STREAM_URL, json=_payload())
+    response = client.post(STREAM_URL, json=_auto_payload(max_attempts=3))
 
     assert response.status_code == 502
     assert response.headers["content-type"].startswith("application/json")
     assert response.json()["error"]["code"] == "malformed_upstream_response"
+    assert calls == 1
 
 
-def test_post_start_pilot_error_emits_bounded_error_event_without_done():
-    first = _valid_sse_chunks("첫 토큰")[0]
-    stream = _ChunkStream([first, b"data: not-json\n\n"])
+def test_first_content_commits_route_and_later_error_never_falls_back():
+    calls = 0
+    first_stream: _ChunkStream | None = None
 
     async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, stream=stream)
+        nonlocal calls, first_stream
+        calls += 1
+        model = _request_model(request)
+        if calls > 1:
+            raise AssertionError("committed stream must not call a fallback candidate")
+        first_stream = _ChunkStream([
+            _valid_sse_chunks("첫 토큰", model=model)[0],
+            b"data: not-json\n\n",
+        ])
+        return httpx.Response(200, stream=first_stream)
 
     orcfg.provider_mode = "live"
     orcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
-    response = client.post(STREAM_URL, json=_payload())
+    response = client.post(STREAM_URL, json=_auto_payload(max_attempts=3))
 
     assert response.status_code == 200
     assert "첫 토큰" in response.text
@@ -262,13 +404,16 @@ def test_post_start_pilot_error_emits_bounded_error_event_without_done():
     assert '"code":"malformed_upstream_response"' in response.text
     assert '"after_stream_start":true' in response.text
     assert "data: [DONE]" not in response.text
-    assert stream.closed is True
+    assert calls == 1
+    assert first_stream is not None and first_stream.closed is True
 
 
 def test_post_start_unexpected_error_is_generic_and_secret_free():
     secret_marker = "DO-NOT-EXPOSE-SECRET-MARKER"
-    first = _valid_sse_chunks("첫 토큰")[0]
-    stream = _ChunkStream([first], error_after=RuntimeError(secret_marker))
+    stream = _ChunkStream(
+        [_valid_sse_chunks("첫 토큰")[0]],
+        error_after=RuntimeError(secret_marker),
+    )
 
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, stream=stream)
@@ -280,7 +425,7 @@ def test_post_start_unexpected_error_is_generic_and_secret_free():
 
     assert response.status_code == 200
     assert "event: error" in response.text
-    assert '"code":"internal_error"' in response.text
+    assert '"code":"stream_execution_error"' in response.text
     assert secret_marker not in response.text
     assert "data: [DONE]" not in response.text
     assert stream.closed is True
@@ -327,3 +472,43 @@ def test_live_preview_missing_key_fails_before_network():
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "pilot_not_configured"
     assert calls == 0
+
+
+def test_gateway_outer_close_closes_router_iterator():
+    class ClosableRouterIterator:
+        def __init__(self):
+            self.closed = False
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            await asyncio.sleep(3600)
+            raise StopAsyncIteration
+
+        async def aclose(self):
+            self.closed = True
+
+    async def scenario():
+        decision = rcore.resolve_route(MODEL, {"allow_external_fallback": False})
+        first = RouterStreamEvent(
+            request_id=decision.request_id,
+            route_mode=decision.route_mode,
+            selected_provider=decision.selected_provider,
+            selected_model=decision.selected_model,
+            selected_upstream_model=decision.selected_upstream_model,
+            selected_route_id=decision.selected_route_id,
+            attempt=1,
+            fallback_used=False,
+            reason_codes=tuple(decision.reason_codes),
+            delta_content="첫 토큰",
+            committed=True,
+        )
+        inner = ClosableRouterIterator()
+        outer = _stream_body(inner, first, decision=decision)
+        chunk = await anext(outer)
+        assert b"first" not in chunk
+        await outer.aclose()
+        assert inner.closed is True
+
+    asyncio.run(scenario())
