@@ -103,13 +103,26 @@ class DispatchAwareUsageCounterStore:
 
 
 class DispatchAwareB14Client(B14Client):
-    """Refund only the one failure B62 can prove happened before B14 dispatch.
+    """Refund only failures B62 can prove happened before B14 dispatch.
 
     A missing required Service Binding is detected locally before any transport call.
     Every path that can attempt Core/Service-Binding execution clears refundability
-    first, so timeouts, transport ambiguity, B14 429/5xx, malformed responses and
-    Provider failures remain conservatively counted.
+    first, so timeouts, transport ambiguity, B14 429/5xx, malformed responses,
+    Provider failures and post-start stream failures remain conservatively counted.
     """
+
+    async def stream_text_preview(self, *args, **kwargs):
+        if (
+            self.settings.runtime_mode != "mock"
+            and self.require_service_binding
+            and self.stream_transport is None
+        ):
+            await _refund_active_reservation()
+        elif self.settings.runtime_mode != "mock":
+            _clear_reservation()
+
+        async for event in super().stream_text_preview(*args, **kwargs):
+            yield event
 
     async def complete(self, *args, **kwargs):
         if (
