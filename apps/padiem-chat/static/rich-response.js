@@ -305,6 +305,7 @@
 
   function enhanceAssistantMessage(article) {
     if (!(article instanceof Element) || article.dataset.richResponse === "true") return;
+    if (article.dataset.streamState === "active" || article.dataset.streamState === "error") return;
     const content = article.querySelector(".assistant-content");
     if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return;
     const rawParagraph = Array.from(content.children).find((node) => node.tagName === "P");
@@ -327,6 +328,11 @@
   }
 
   const observer = new MutationObserver(enhanceAllAnswers);
-  observer.observe(messageList, { childList: true, subtree: true });
+  observer.observe(messageList, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["data-stream-state"],
+  });
   enhanceAllAnswers();
 })();
