@@ -2,7 +2,8 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
-  if (!messageList) return;
+  const messageInput = document.getElementById("messageInput");
+  if (!messageList || !messageInput) return;
 
   const HEADING_PATTERN = /^(#{1,4})\s+(.+)$/;
   const UNORDERED_PATTERN = /^\s*[-+*]\s+(.+)$/;
@@ -303,7 +304,12 @@
     return container;
   }
 
+  function canEnhanceAnswers() {
+    return messageInput.disabled !== true;
+  }
+
   function enhanceAssistantMessage(article) {
+    if (!canEnhanceAnswers()) return;
     if (!(article instanceof Element) || article.dataset.richResponse === "true") return;
     const content = article.querySelector(".assistant-content");
     if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return;
@@ -323,10 +329,17 @@
   }
 
   function enhanceAllAnswers() {
+    if (!canEnhanceAnswers()) return;
     messageList.querySelectorAll(".assistant-message").forEach(enhanceAssistantMessage);
   }
 
-  const observer = new MutationObserver(enhanceAllAnswers);
-  observer.observe(messageList, { childList: true, subtree: true });
+  const messageObserver = new MutationObserver(enhanceAllAnswers);
+  messageObserver.observe(messageList, { childList: true, subtree: true });
+
+  const lifecycleObserver = new MutationObserver(() => {
+    if (canEnhanceAnswers()) enhanceAllAnswers();
+  });
+  lifecycleObserver.observe(messageInput, { attributes: true, attributeFilter: ["disabled"] });
+
   enhanceAllAnswers();
 })();
