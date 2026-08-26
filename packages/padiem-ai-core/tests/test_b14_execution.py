@@ -482,7 +482,7 @@ def test_missing_or_invalid_optional_metadata_remains_unknown_not_fabricated() -
             "reason_codes": "not-a-list",
             "fallback_used": "no",
             "attempt_count": -1,
-            "estimated_krw": float("nan"),
+            "estimated_krw": "not-a-number",
         },
         "usage": {
             "prompt_tokens": -1,
