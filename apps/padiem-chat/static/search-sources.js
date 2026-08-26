@@ -98,17 +98,32 @@
     return true;
   }
 
-  function chatRequest(inputValue) {
-    if (typeof inputValue === "string") return inputValue === "/api/chat" || inputValue.endsWith("/api/chat");
-    if (inputValue instanceof Request) {
+  function chatPath(inputValue) {
+    if (typeof inputValue === "string") {
       try {
-        return new URL(inputValue.url, window.location.href).pathname === "/api/chat";
+        return new URL(inputValue, window.location.href).pathname;
       } catch (_) {
-        return false;
+        return null;
       }
     }
-    if (inputValue instanceof URL) return inputValue.pathname === "/api/chat";
-    return false;
+    if (inputValue instanceof Request) {
+      try {
+        return new URL(inputValue.url, window.location.href).pathname;
+      } catch (_) {
+        return null;
+      }
+    }
+    if (inputValue instanceof URL) return inputValue.pathname;
+    return null;
+  }
+
+  function chatRequest(inputValue) {
+    const path = chatPath(inputValue);
+    return path === "/api/chat" || path === "/api/chat/stream";
+  }
+
+  function streamingChatRequest(inputValue) {
+    return chatPath(inputValue) === "/api/chat/stream";
   }
 
   function addTool(init, toolId) {
@@ -128,6 +143,109 @@
   function currentAssistantArticle() {
     const articles = messageList.querySelectorAll(".assistant-message");
     return articles.length ? articles[articles.length - 1] : null;
+  }
+
+  function setStreamState(article, state) {
+    if (!(article instanceof Element) || !article.isConnected) return;
+    article.dataset.streamState = state;
+  }
+
+  function streamEventName(frame) {
+    const normalized = frame.replace(/\r\n/g, "\n");
+    for (const line of normalized.split("\n")) {
+      if (!line.startsWith("event:")) continue;
+      return line.slice("event:".length).trim();
+    }
+    return null;
+  }
+
+  function instrumentStreamingResponse(response, article) {
+    const contentType = (response.headers.get("content-type") || "").toLowerCase();
+    if (!response.ok || !contentType.includes("text/event-stream") || !response.body || typeof ReadableStream !== "function") {
+      return response;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    let terminal = false;
+    setStreamState(article, "active");
+
+    function inspect(chunkText, final = false) {
+      buffer += chunkText;
+      buffer = buffer.replace(/\r\n/g, "\n");
+      let boundary = buffer.indexOf("\n\n");
+      while (boundary >= 0) {
+        const frame = buffer.slice(0, boundary);
+        buffer = buffer.slice(boundary + 2);
+        const eventName = streamEventName(frame);
+        if (eventName === "done") {
+          terminal = true;
+          setStreamState(article, "done");
+        } else if (eventName === "error") {
+          terminal = true;
+          setStreamState(article, "error");
+        }
+        boundary = buffer.indexOf("\n\n");
+      }
+      if (final && !terminal) setStreamState(article, "error");
+    }
+
+    const monitoredBody = new ReadableStream({
+      async pull(controller) {
+        try {
+          const item = await reader.read();
+          if (item.done) {
+            inspect(decoder.decode(), true);
+            controller.close();
+            reader.releaseLock();
+            return;
+          }
+          inspect(decoder.decode(item.value, { stream: true }));
+          controller.enqueue(item.value);
+        } catch (error) {
+          if (!terminal) setStreamState(article, "error");
+          controller.error(error);
+          try { reader.releaseLock(); } catch (_) { /* no-op */ }
+        }
+      },
+      async cancel(reason) {
+        if (!terminal) setStreamState(article, "error");
+        try {
+          await reader.cancel(reason);
+        } finally {
+          try { reader.releaseLock(); } catch (_) { /* no-op */ }
+        }
+      },
+    });
+
+    return new Response(monitoredBody, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  }
+
+  function toolCompletedAsStream(data, article) {
+    if (!data || typeof data.answer !== "string" || !data.answer) return null;
+    const done = { done: true };
+    if (typeof data.conversation_id === "string") done.conversation_id = data.conversation_id;
+    if (typeof data.project_id === "string") done.project_id = data.project_id;
+    if (data.project && typeof data.project === "object") done.project = data.project;
+    if (Number.isInteger(data.project_files_used)) done.project_files_used = data.project_files_used;
+
+    const body = [
+      `event: delta\ndata: ${JSON.stringify({ delta: data.answer })}\n\n`,
+      `event: done\ndata: ${JSON.stringify(done)}\n\n`,
+    ].join("");
+    const response = new Response(body, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-store",
+      },
+    });
+    return instrumentStreamingResponse(response, article);
   }
 
   function publicSourceUrl(value) {
@@ -218,7 +336,7 @@
       if (!(article instanceof Element) || !article.isConnected) return;
       const content = article.querySelector(".assistant-content");
       if (!content) return;
-      if (content.querySelector(".typing") && attempt < 20) {
+      if ((content.querySelector(".typing") || article.dataset.streamState === "active") && attempt < 40) {
         scheduleSources(article, evidence, research, attempt + 1);
         return;
       }
@@ -226,12 +344,29 @@
     }, attempt === 0 ? 0 : 25);
   }
 
+  function inspectToolResult(article, data) {
+    const groundedSearch = data
+      && data.answer_status === "answered_with_evidence"
+      && data.tool
+      && data.tool.id === "web_search"
+      && Array.isArray(data.evidence);
+    const deepResearch = data
+      && data.answer_status === "deep_research_answered"
+      && data.tool
+      && data.tool.id === "deep_research"
+      && Array.isArray(data.evidence);
+    if (groundedSearch) scheduleSources(article, data.evidence);
+    if (deepResearch) scheduleSources(article, data.evidence, data.research || null);
+  }
+
   window.fetch = async (inputValue, init) => {
     const isChat = chatRequest(inputValue);
+    const isStreamingChat = streamingChatRequest(inputValue);
     const requestedTool = isChat ? activeTool : null;
     let toolRequest = null;
     let nextInit = init;
-    let article = null;
+    let article = isStreamingChat ? currentAssistantArticle() : null;
+    let requestTarget = inputValue;
 
     if (requestedTool) {
       const blockedByImage = imageSelected() && !retryOverride;
@@ -249,34 +384,43 @@
           activeTool = null;
           toolInFlight = requestedTool;
           retryOverride = false;
+          if (isStreamingChat) requestTarget = "/api/chat";
           syncControls();
         }
       }
     }
 
     try {
-      const response = await nativeFetch(inputValue, nextInit);
+      const response = await nativeFetch(requestTarget, nextInit);
       if (toolRequest) {
         if (!response.ok) {
           retryTool = toolRequest;
-        } else {
-          retryTool = null;
-          response.clone().json().then((data) => {
-            const groundedSearch = data
-              && data.answer_status === "answered_with_evidence"
-              && data.tool
-              && data.tool.id === "web_search"
-              && Array.isArray(data.evidence);
-            const deepResearch = data
-              && data.answer_status === "deep_research_answered"
-              && data.tool
-              && data.tool.id === "deep_research"
-              && Array.isArray(data.evidence);
-            if (groundedSearch) scheduleSources(article, data.evidence);
-            if (deepResearch) scheduleSources(article, data.evidence, data.research || null);
-          }).catch(() => {});
+          return response;
         }
+
+        retryTool = null;
+        if (isStreamingChat) {
+          const data = await response.json().catch(() => null);
+          if (!data || typeof data.answer !== "string") {
+            return new Response(JSON.stringify(data || { error: { code: "invalid_tool_response", message: "도구 응답을 확인할 수 없습니다." } }), {
+              status: 502,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+          inspectToolResult(article, data);
+          const synthetic = toolCompletedAsStream(data, article);
+          if (synthetic) return synthetic;
+          return new Response(JSON.stringify({ error: { code: "invalid_tool_response", message: "도구 응답을 확인할 수 없습니다." } }), {
+            status: 502,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        response.clone().json().then((data) => inspectToolResult(article, data)).catch(() => {});
+        return response;
       }
+
+      if (isStreamingChat) return instrumentStreamingResponse(response, article);
       return response;
     } catch (error) {
       if (toolRequest) retryTool = toolRequest;
