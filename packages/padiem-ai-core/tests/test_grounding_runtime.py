@@ -87,7 +87,8 @@ def test_only_sources_that_fit_context_are_returned() -> None:
     items = [evidence(i, snippet="z" * 4000) for i in range(1, 6)]
     prepared = prepare_grounding_context(items, max_context_chars=2200)
     assert 1 <= len(prepared.evidence) < len(items)
-    assert f"[{len(prepared.evidence) + 1}]" not in prepared.context
+    next_source = len(prepared.evidence) + 1
+    assert f'"source":{next_source}' not in prepared.context
 
 
 def test_no_evidence_fails_closed() -> None:
