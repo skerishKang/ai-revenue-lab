@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padiem-ai-core"
+version = "0.1.0"
+description = "Shared product-neutral AI runtime contracts for Padiem products"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<10",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["padiem_ai_core*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
