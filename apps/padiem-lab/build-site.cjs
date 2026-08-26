@@ -51,7 +51,7 @@ function isSafeRouteSource(route) {
       && Boolean(generatedSourceTreePins[route.sourcePath]);
     if (!common) return false;
     if (route.mode === 'GENERATED_APP_PREVIEW_ALLOWLIST') {
-      return /^[a-z0-9_]+(?:\.[a-z0-9_]+)*$/.test(route.generatorOutputOverride || '')
+      return /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(route.generatorOutputOverride || '')
         && Boolean(route.includeFiles?.length)
         && Boolean(route.includeDirs?.length);
     }
