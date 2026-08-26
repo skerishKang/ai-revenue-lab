@@ -253,6 +253,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 37,
+    route: "b37",
+    sourcePath: "reference/business-37-ai-safe-route-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 안전경로",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 60,
     route: "b60",
     sourcePath: "reference/business-60-ai-api-v1",
