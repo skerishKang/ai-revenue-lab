@@ -52,11 +52,14 @@ test('external public URLs are HTTPS and private StoryMemory preview is not expo
   }
 });
 
-test('static Portal routes use repository-public sources and no independent public URL', () => {
+test('static Portal routes use curated repository-public sources and no independent public URL', () => {
   const staticItems = manifest.filter(item => item.routeKind === 'LOCAL_STATIC');
   assert.ok(staticItems.length >= 1);
   for (const item of staticItems) {
-    assert.match(item.sourcePath, /^reference\/business-\d{2}-[^/]+\/$/);
+    assert.match(
+      item.sourcePath,
+      /^(?:reference\/business-\d{2}-[^/]+|apps\/[a-z0-9-]+\/pages-preview(?:\/site)?)\/$/
+    );
     assert.equal(item.targetPath, `/b${String(item.number).padStart(2, '0')}/`);
     assert.equal(item.currentPublicUrl, undefined);
   }
