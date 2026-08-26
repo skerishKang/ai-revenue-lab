@@ -114,10 +114,15 @@ def create_app() -> Starlette:
     install_gateway_multimodal_contract(pilot_gateway)
     pilot_api_router = pilot_gateway.router
 
+    # Slice 12: preview-only manual-route streaming surface. Import after the
+    # multimodal contract installation so its reuse of the canonical validator
+    # observes the same installed validation authority as the main gateway.
+    from app.pilot.stream_gateway import router as pilot_stream_router
+
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
 
-    for route in pilot_api_router.routes:
+    for route in [*pilot_api_router.routes, *pilot_stream_router.routes]:
         new_route = StarletteRoute(
             path="/api/pilot" + route.path,
             endpoint=route.endpoint,
