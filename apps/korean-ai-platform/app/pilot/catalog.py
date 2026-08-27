@@ -80,6 +80,8 @@ class CatalogModel:
     region: str = "외부"
     sort_order: int = 0
     enabled: bool = True
+    credential_source: str = "openrouter"
+    platform_provider_id: str = ""
     source: str = CATALOG_SOURCE
     source_checked_at: str = CATALOG_SOURCE_CHECKED_AT
     snapshot_state: str = SNAPSHOT_STATE_CONFIGURED
@@ -213,6 +215,24 @@ CATALOG_MODELS: list[CatalogModel] = [
         capabilities=frozenset({"chat", "coding", "long_context"}),
         region="외부",
         sort_order=5,
+    ),
+    CatalogModel(
+        model_id="agnes-ai/agnes-2.5-flash",
+        upstream_model="agnes-2.5-flash",
+        display_name="Agnes AI: Agnes 2.5 Flash",
+        provider="Agnes AI",
+        provider_type="platform",
+        input_price_usd_per_1m=None,
+        output_price_usd_per_1m=None,
+        currency="usd",
+        context_window=200000,
+        korean_score=4,
+        latency_ms=900,
+        capabilities=frozenset({"chat"}),
+        region="외부",
+        sort_order=70,
+        credential_source="platform_secret",
+        platform_provider_id="agnes-ai",
     ),
 ]
 

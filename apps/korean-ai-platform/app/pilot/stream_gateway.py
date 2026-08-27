@@ -34,6 +34,7 @@ from app.pilot.openrouter_stream import (
     OpenRouterStreamUsage,
     stream_openrouter_chat_completions,
 )
+from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
 
 logger = logging.getLogger("korean-ai-platform.pilot.stream-preview")
@@ -106,6 +107,10 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
         raise StreamNotSupported()
 
     decision = rcore.resolve_route(model_id, b14_opts)
+    # platform_secret providers (e.g. Agnes) are now supported by this
+    # streaming gateway via stream_platform_chat_completions. The route
+    # must still stay manual single-attempt (no fallback) to keep the
+    # security/cancellation contract bounded.
     if (
         decision.route_mode != "manual"
         or decision.fallback_allowed
@@ -292,15 +297,29 @@ async def pilot_stream_preview(request: Request):
         if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
             raise InvalidRequest("Invalid streaming transport configuration.")
 
-        iterator = stream_openrouter_chat_completions(
-            messages=body["messages"],
-            temperature=body.get("temperature"),
-            max_tokens=body.get("max_tokens"),
-            model_id=decision.selected_model,
-            upstream_model=decision.selected_upstream_model,
-            provider=decision.selected_provider,
-            transport=transport,
-        )
+        if decision.credential_source == "platform_secret":
+            if not decision.platform_provider_id:
+                raise InvalidRequest("platform_secret route missing provider binding.")
+            iterator = stream_platform_chat_completions(
+                model_id=decision.selected_model,
+                upstream_model=decision.selected_upstream_model,
+                provider=decision.selected_provider,
+                platform_provider_id=decision.platform_provider_id,
+                messages=body["messages"],
+                temperature=body.get("temperature"),
+                max_tokens=body.get("max_tokens"),
+                transport=transport,
+            )
+        else:
+            iterator = stream_openrouter_chat_completions(
+                messages=body["messages"],
+                temperature=body.get("temperature"),
+                max_tokens=body.get("max_tokens"),
+                model_id=decision.selected_model,
+                upstream_model=decision.selected_upstream_model,
+                provider=decision.selected_provider,
+                transport=transport,
+            )
 
         # Prime before StreamingResponse commits HTTP 200. Any provider error
         # before the first visible event is therefore returned as normal JSON
