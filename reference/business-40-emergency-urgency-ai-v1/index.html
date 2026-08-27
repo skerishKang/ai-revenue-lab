@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="asset-version" content="business-40-v1-20260729">
+  <title>긴급도 근거 검토 데스크 · Business 40</title>
+  <link rel="stylesheet" href="styles/main.css?v=business-40-v1-20260729">
+</head>
+<body>
+  <a class="skip-link" href="#review-surface">검토 화면으로 건너뛰기</a>
+  <div class="shell">
+    <header class="masthead">
+      <div class="brand-block">
+        <span class="eyebrow">BUSINESS 40 · VISUAL REFERENCE ONLY</span>
+        <h1>긴급도 근거 검토 데스크</h1>
+        <p>Urgency Evidence Review Desk</p>
+      </div>
+      <div class="header-actions">
+        <div class="training-badge">SYNTHETIC TRAINING INCIDENT</div>
+        <button class="replay-button" id="replay-motion" type="button" aria-describedby="motion-status">
+          <span>Report-to-Record</span>
+          <strong>Replay motion</strong>
+        </button>
+      </div>
+    </header>
+
+    <div class="boundary-bar" aria-label="제품 권한 경계">
+      <span>NO AUTONOMOUS TRIAGE</span>
+      <span>NO MEDICAL DIAGNOSIS</span>
+      <span>NO THREAT PREDICTION</span>
+      <span>NO DISPATCH OR RESOURCE ALLOCATION</span>
+    </div>
+
+    <nav class="state-nav" aria-label="Visual states">
+      <div role="tablist" aria-label="Business 40 visual states" id="state-tabs">
+        <button role="tab" id="tab-cover" aria-controls="panel-cover" aria-selected="true" tabindex="0" data-state-target="cover">cover</button>
+        <button role="tab" id="tab-report" aria-controls="panel-report" aria-selected="false" tabindex="-1" data-state-target="report">report</button>
+        <button role="tab" id="tab-indicators" aria-controls="panel-indicators" aria-selected="false" tabindex="-1" data-state-target="indicators">indicators</button>
+        <button role="tab" id="tab-conflicts" aria-controls="panel-conflicts" aria-selected="false" tabindex="-1" data-state-target="conflicts">conflicts</button>
+        <button role="tab" id="tab-review" aria-controls="panel-review" aria-selected="false" tabindex="-1" data-state-target="review">review</button>
+        <button role="tab" id="tab-handoff" aria-controls="panel-handoff" aria-selected="false" tabindex="-1" data-state-target="handoff">handoff</button>
+        <button role="tab" id="tab-mobile" aria-controls="panel-mobile" aria-selected="false" tabindex="-1" data-state-target="mobile">mobile</button>
+      </div>
+      <p class="state-hint">← → 키로 이동 · Enter/Space로 선택</p>
+    </nav>
+
+    <main id="review-surface" class="review-surface">
+      <section role="tabpanel" id="panel-cover" aria-labelledby="tab-cover" data-state="cover" class="state-panel cover-panel">
+        <div class="cover-art card-ink">
+          <img src="assets/urgency-review-cover.svg?v=business-40-v1-20260729" alt="합성 사고 검토 폴리오 표지">
+          <div class="cover-copy">
+            <span class="folio-index">40 / PHASE 1</span>
+            <h2>신고 기록에서<br>사람 검토 긴급도 지원 기록으로</h2>
+            <p>한 건의 합성 incident report를 출처·관찰·충돌·미확인·수정 이력으로 분해해 전문 담당자의 검토를 지원합니다.</p>
+            <div class="status-cluster">
+              <span>아직 최종 판단이 아님</span>
+              <span>HUMAN-ONLY FINAL AUTHORITY</span>
+            </div>
+          </div>
+        </div>
+        <aside class="cover-brief">
+          <div class="brief-head"><span>CASE</span><strong>SRL–40–A</strong></div>
+          <dl>
+            <div><dt>Training center</dt><dd>Seorin Emergency Review Lab — fictional</dd></div>
+            <div><dt>Report source</dt><dd>synthetic text relay</dd></div>
+            <div><dt>Scenario</dt><dd>폐쇄된 보관동 인근 연기 냄새와 간헐적 경보</dd></div>
+            <div><dt>People status</dt><dd>한 사람 존재 여부 미확인 · 확인된 부상 없음</dd></div>
+            <div><dt>Time span</dt><dd>00:00–00:52 — synthetic</dd></div>
+          </dl>
+          <div class="boundary-note">
+            <strong>NO AUTONOMOUS TRIAGE</strong>
+            <span>NO DISPATCH OR RESOURCE ALLOCATION</span>
+          </div>
+        </aside>
+      </section>
+
+      <section role="tabpanel" id="panel-report" aria-labelledby="tab-report" data-state="report" class="state-panel" hidden>
+        <header class="panel-heading">
+          <div><span class="section-kicker">01 · INTAKE FOLIO</span><h2>SOURCE REPORT — UNVERIFIED</h2></div>
+          <span class="status-tag">SOURCE STATEMENT ≠ VERIFIED FACT</span>
+        </header>
+        <div class="report-grid">
+          <article class="source-folio paper-card">
+            <img src="assets/source-report-folio.svg?v=business-40-v1-20260729" alt="합성 출처 보고서 폴리오">
+            <div class="folio-body">
+              <div class="source-line"><span>00:00</span><p>“닫힌 보관동 뒤쪽에서 연기 냄새가 납니다.”</p></div>
+              <div class="source-line"><span>00:18</span><p>“경보음은 계속이 아니라 간헐적으로 들립니다.”</p></div>
+              <div class="source-line"><span>00:36</span><p>“사람이 안에 있는지는 모르겠습니다.”</p></div>
+              <div class="source-line"><span>00:52</span><p>“불꽃은 보지 못했습니다.”</p></div>
+            </div>
+          </article>
+          <aside class="provenance-stack">
+            <article class="provenance-card">
+              <h3>SOURCE PROVENANCE</h3>
+              <img src="assets/provenance-strip.svg?v=business-40-v1-20260729" alt="합성 출처와 변환 이력을 나타낸 띠">
+              <dl>
+                <div><dt>Channel</dt><dd>synthetic text relay</dd></div>
+                <div><dt>Origin</dt><dd>fictional witness statement</dd></div>
+                <div><dt>Transformation</dt><dd>line breaks normalized only</dd></div>
+                <div><dt>Verification</dt><dd>not performed</dd></div>
+              </dl>
+            </article>
+            <div class="known-unknown">
+              <article><h3>KNOWN FROM SOURCE</h3><p>연기 냄새 보고 · 간헐적 경보음 · 불꽃 미관찰 진술</p></article>
+              <article><h3>UNKNOWN / UNVERIFIED</h3><p>정확한 위치 · 원인 · 내부 인원 · 실제 연기 발생 · 부상 여부</p></article>
+            </div>
+            <div class="uncertainty-ribbon"><span>TIME UNCERTAINTY ± 12 SEC</span><span>LOCATION INCOMPLETE</span></div>
+          </aside>
+        </div>
+      </section>
+
+      <section role="tabpanel" id="panel-indicators" aria-labelledby="tab-indicators" data-state="indicators" class="state-panel" hidden>
+        <header class="panel-heading">
+          <div><span class="section-kicker">02 · EVIDENCE WALL</span><h2>OBSERVABLE INDICATOR — SYNTHETIC</h2></div>
+          <span class="status-tag">CONFIDENCE — NOT CERTAINTY</span>
+        </header>
+        <div class="indicator-layout">
+          <div class="indicator-board">
+            <img src="assets/observable-indicators-board.svg?v=business-40-v1-20260729" alt="관찰 가능한 합성 지표 보드">
+            <article class="indicator-card"><span class="index">A</span><div><h3>연기 냄새 보고</h3><p>출처 진술에서 직접 관찰된 표현</p></div><em>source-bound</em></article>
+            <article class="indicator-card"><span class="index">B</span><div><h3>간헐적 경보음</h3><p>지속성·발생 원인 미확인</p></div><em>low-context</em></article>
+            <article class="indicator-card"><span class="index">C</span><div><h3>불꽃 미관찰 진술</h3><p>“없음”이 아니라 “보지 못함”</p></div><em>limited-view</em></article>
+            <article class="indicator-card"><span class="index">D</span><div><h3>인원 존재 여부 미확인</h3><p>결측정보이며 안전 신호가 아님</p></div><em>unknown</em></article>
+          </div>
+          <aside class="interpretation-desk">
+            <div class="confidence-marker"><img src="assets/confidence-unknown-marker.svg?v=business-40-v1-20260729" alt="확신과 미확인을 분리한 표식"><strong>CONFIDENCE — NOT CERTAINTY</strong></div>
+            <article>
+              <h3>INTERPRETATION — NOT VERIFIED FACT</h3>
+              <p>연기 냄새와 경보음의 동시 보고는 추가 확인이 필요한 잠정 단서입니다. 화재, 고장, 잔류 냄새 등 복수 해석이 유지됩니다.</p>
+            </article>
+            <article class="no-score">
+              <span>NO SINGLE URGENCY SCORE</span>
+              <p>indicator는 final priority가 아니며 점수로 합산되지 않습니다.</p>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section role="tabpanel" id="panel-conflicts" aria-labelledby="tab-conflicts" data-state="conflicts" class="state-panel" hidden>
+        <header class="panel-heading">
+          <div><span class="section-kicker">03 · UNCERTAINTY LEDGER</span><h2>CONFLICTING EVIDENCE</h2></div>
+          <span class="status-tag">DO NOT COLLAPSE CONFLICTS</span>
+        </header>
+        <div class="conflict-grid">
+          <article class="conflict-split">
+            <img src="assets/conflicting-evidence-split.svg?v=business-40-v1-20260729" alt="상충하는 합성 근거를 양쪽에 나눈 도식">
+            <div class="split-columns">
+              <div><h3>SUPPORTS FURTHER REVIEW</h3><ul><li>연기 냄새가 반복 보고됨</li><li>경보음이 간헐적으로 들림</li><li>폐쇄된 공간 주변이라는 진술</li></ul></div>
+              <div><h3>LIMITS THE INTERPRETATION</h3><ul><li>불꽃은 관찰되지 않음</li><li>정확한 건물·출입구 미확인</li><li>다른 출처나 센서 확인 없음</li></ul></div>
+            </div>
+          </article>
+          <aside class="uncertainty-cards">
+            <article class="missing-card"><img class="ledger-texture" src="assets/uncertainty-ledger-grid.svg?v=business-40-v1-20260729" alt="미확인 정보 장부 격자"><h3>MISSING INFORMATION</h3><p>내부 인원, 연기 방향, 경보 유형, 현장 접근 가능 여부</p><strong>결측은 negative evidence가 아닙니다.</strong></article>
+            <article class="alternative-card"><h3>ALTERNATIVE INTERPRETATION</h3><p>잔류 냄새, 설비 시험음, 배터리 경보, 인접 시설의 소리 가능성</p></article>
+            <article class="clarification-card"><img src="assets/clarification-question-slip.svg?v=business-40-v1-20260729" alt="합성 확인 질문 메모"><div><h3>CLARIFICATION REQUIRED</h3><p>“경보음이 들린 방향과 가장 가까운 표시물은 무엇입니까?”</p><small>Clarification must not be framed as a reason to delay emergency action.</small></div></article>
+          </aside>
+        </div>
+      </section>
+
+      <section role="tabpanel" id="panel-review" aria-labelledby="tab-review" data-state="review" class="state-panel" hidden>
+        <header class="panel-heading">
+          <div><span class="section-kicker">04 · SUPERVISOR DESK</span><h2>PROVISIONAL URGENCY RATIONALE</h2></div>
+          <span class="status-tag">FINAL PRIORITY AUTHORITY — HUMAN ONLY</span>
+        </header>
+        <div class="review-grid">
+          <article class="rationale-card paper-card">
+            <div class="rationale-head"><span>PROVISIONAL</span><strong>Review required without automated priority assignment</strong></div>
+            <p>복수의 source-bound indicator가 존재하지만 위치·인원·원인에 대한 핵심 정보가 비어 있습니다. 따라서 시스템은 우선순위를 결정하지 않고, 담당자가 상충근거와 결측을 함께 검토하도록 지원합니다.</p>
+            <div class="rationale-bounds">
+              <div><h3>ESCALATION REVIEW BOUNDARY</h3><p>추가 출처에서 실제 연기·인원·급속한 변화가 확인되는 경우 담당자가 검토합니다.</p></div>
+              <div><h3>DOWNGRADE REVIEW BOUNDARY</h3><p>설비 시험·오경보·외부 잔류 냄새가 확인되어도 담당자가 전체 근거를 검토합니다.</p></div>
+            </div>
+          </article>
+          <aside class="correction-stack">
+            <article class="ledger-card"><img src="assets/priority-boundary-ledger.svg?v=business-40-v1-20260729" alt="상향 및 하향 검토 경계를 나타낸 장부"><h3>AUTHORITY LEDGER</h3><p>AI: evidence organization only</p><p>Human: priority and action authority</p></article>
+            <article class="correction-card"><img src="assets/human-correction-tape.svg?v=business-40-v1-20260729" alt="사람 수정 이력을 나타낸 테이프"><div><h3>HUMAN CORRECTION</h3><p>“불꽃 없음” → “불꽃을 관찰하지 못했다는 단일 출처 진술”</p></div></article>
+            <div class="authority-seal">FINAL PRIORITY AUTHORITY — HUMAN ONLY</div>
+          </aside>
+        </div>
+      </section>
+
+      <section role="tabpanel" id="panel-handoff" aria-labelledby="tab-handoff" data-state="handoff" class="state-panel" hidden>
+        <header class="panel-heading">
+          <div><span class="section-kicker">05 · REVIEW RECORD</span><h2>HUMAN-REVIEWED URGENCY SUPPORT RECORD</h2></div>
+          <span class="status-tag">DISPATCH AUTHORITY WITHHELD</span>
+        </header>
+        <div class="handoff-grid">
+          <article class="record-card paper-card">
+            <div class="record-title"><span>SRL–40–A</span><h3>Urgency support record</h3></div>
+            <div class="record-rows">
+              <div><strong>Source</strong><p>synthetic text relay · unverified</p></div>
+              <div><strong>Indicators</strong><p>연기 냄새 보고 · 간헐적 경보음 · 불꽃 미관찰 진술</p></div>
+              <div><strong>Conflicts</strong><p>위험 가능 단서와 관찰 한계가 동시에 존재</p></div>
+              <div><strong>Clarification</strong><p>경보 방향·표시물·내부 인원 확인 필요</p></div>
+              <div><strong>Human correction</strong><p>부재 주장 제거, 관찰 한계로 재표현</p></div>
+              <div><strong>Authority</strong><p>최종 priority와 response action은 사람에게만 있음</p></div>
+            </div>
+            <div class="record-footer"><span>UNRESOLVED UNCERTAINTY</span><strong>RETAINED</strong></div>
+          </article>
+          <aside class="handoff-side">
+            <img class="record-seal" src="assets/urgency-support-record-seal.svg?v=business-40-v1-20260729" alt="사람 검토 긴급도 지원 기록 합성 봉인">
+            <article class="dispatch-hold"><img src="assets/dispatch-authority-hold.svg?v=business-40-v1-20260729" alt="배차 권한 보류 카드"><div><h3>NO DISPATCH OR RESOURCE ALLOCATION</h3><p>이 기록은 권한 있는 시스템으로 전송되지 않으며 실제 행동을 실행하지 않습니다.</p></div></article>
+            <div class="final-boundaries"><span>NO AUTONOMOUS TRIAGE</span><span>FINAL PRIORITY AUTHORITY — HUMAN ONLY</span></div>
+          </aside>
+        </div>
+      </section>
+
+      <section role="tabpanel" id="panel-mobile" aria-labelledby="tab-mobile" data-state="mobile" class="state-panel mobile-state" hidden>
+        <header class="panel-heading">
+          <div><span class="section-kicker">06 · 390PX BRIEF</span><h2>Professional mobile brief</h2></div>
+          <span class="status-tag">390 × 844</span>
+        </header>
+        <div class="phone-frame" aria-label="390픽셀 전용 전문 검토 브리프">
+          <div class="phone-top"><span>SRL–40–A</span><strong>SYNTHETIC</strong></div>
+          <h3>Urgency evidence brief</h3>
+          <div class="mobile-facts">
+            <article><span>SOURCE</span><p>text relay · unverified</p></article>
+            <article><span>UNCERTAINTY</span><p>location + person status incomplete</p></article>
+            <article><span>CONFLICTING INDICATORS</span><p>smoke odor + intermittent alarm / no flame observed</p></article>
+            <article><span>MISSING INFORMATION</span><p>inside person · alarm type · exact annex</p></article>
+            <article><span>CLARIFICATION REQUIRED</span><p>nearest marker and alarm direction</p></article>
+            <article><span>PROVISIONAL STATUS</span><p>human review required · no priority output</p></article>
+          </div>
+          <div class="phone-authority"><strong>FINAL PRIORITY AUTHORITY — HUMAN ONLY</strong><span>NO DISPATCH OR RESOURCE ALLOCATION</span></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="motion-console" aria-labelledby="motion-title">
+      <div class="motion-meta">
+        <span>Signature motion</span>
+        <h2 id="motion-title">Report-to-Urgency-Support-Record</h2>
+        <p id="motion-status" role="status" aria-live="polite">Ready · completion authority: final element animationend</p>
+      </div>
+      <ol class="motion-track" id="motion-track">
+        <li class="motion-step"><span>01</span>source report</li>
+        <li class="motion-step"><span>02</span>provenance</li>
+        <li class="motion-step"><span>03</span>observable indicators</li>
+        <li class="motion-step"><span>04</span>conflicting evidence</li>
+        <li class="motion-step"><span>05</span>missing information</li>
+        <li class="motion-step"><span>06</span>clarification need</li>
+        <li class="motion-step"><span>07</span>provisional rationale</li>
+        <li class="motion-step"><span>08</span>human correction</li>
+        <li class="motion-step"><span>09</span>unresolved uncertainty</li>
+        <li class="motion-step motion-final" data-motion-final><span>10</span>HUMAN-REVIEWED URGENCY SUPPORT RECORD</li>
+      </ol>
+      <div class="persistent-boundaries" aria-label="완료 후에도 유지되는 경계">
+        <span>CONFLICTING EVIDENCE</span>
+        <span>MISSING INFORMATION</span>
+        <span>UNRESOLVED UNCERTAINTY</span>
+        <span>FINAL PRIORITY AUTHORITY — HUMAN ONLY</span>
+        <span>NO AUTONOMOUS TRIAGE</span>
+        <span>NO DISPATCH OR RESOURCE ALLOCATION</span>
+      </div>
+    </section>
+
+    <footer class="footer-boundary">
+      <span>VISUAL REFERENCE ONLY</span>
+      <span>NO LIVE CALL, LOCATION, SENSOR, OR HEALTH-DATA CONNECTION</span>
+    </footer>
+  </div>
+  <script src="scripts/review.js?v=business-40-v1-20260729"></script>
+</body>
+</html>
