@@ -106,6 +106,8 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
         raise StreamNotSupported()
 
     decision = rcore.resolve_route(model_id, b14_opts)
+    if decision.credential_source == "platform_secret":
+        raise StreamNotSupported()
     if (
         decision.route_mode != "manual"
         or decision.fallback_allowed

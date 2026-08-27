@@ -43,6 +43,7 @@ from app.pilot.catalog import get_catalog_by_id, list_catalog_summaries
 from app.pilot import provider as prv
 from app.pilot import openrouter as orv
 from app.pilot import router_core as rcore
+from app.pilot import platform as plat
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
@@ -563,7 +564,17 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             )
 
         try:
-            if cfg.is_mock:
+            if decision.credential_source == "platform_secret":
+                response_data = await plat.call_platform_chat_completions(
+                    model_id=current["model_id"],
+                    upstream_model=current["upstream_model"],
+                    provider=current["provider"],
+                    platform_provider_id=decision.platform_provider_id,
+                    messages=body["messages"],
+                    temperature=body.get("temperature"),
+                    max_tokens=body.get("max_tokens"),
+                )
+            elif cfg.is_mock:
                 response_data = await orv.call_openrouter_chat_completions(
                     messages=body["messages"],
                     temperature=body.get("temperature"),

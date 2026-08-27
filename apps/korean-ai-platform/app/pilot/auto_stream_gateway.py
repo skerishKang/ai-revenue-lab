@@ -103,6 +103,8 @@ def _validate_auto_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDe
     decision = rcore.resolve_route("b14/auto", body.get("business14", {}))
     if decision.route_mode != "auto":
         raise InvalidRequest("Auto streaming preview could not resolve an automatic route.")
+    if decision.credential_source == "platform_secret":
+        raise StreamNotSupported()
     return body, decision
 
 

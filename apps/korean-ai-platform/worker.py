@@ -46,6 +46,7 @@ _ENV_KEYS = frozenset({
     "BUSINESS14_PILOT_UPSTREAM_MODEL",
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
     "OPENROUTER_API_KEY",
+    "AGNES_API_KEY",
     "B14_PROVIDER_MODE",
     "B14_OPENROUTER_BASE_URL",
     "B14_SITE_URL",
@@ -156,3 +157,16 @@ def _apply_env_once(overrides: dict[str, str]) -> None:
 
     from app.pilot.registry import reset_registry
     reset_registry()
+
+    # Surface each registered platform-owned Provider's secret binding into the
+    # process environment so the generic platform credential plane can read it.
+    # The binding name is non-secret; the value is never logged or exposed.
+    import os as _os
+
+    from app.pilot import platform_secrets as _ps
+
+    for _spec in _ps.list_platform_providers():
+        if _spec.credential_source == _ps.CredentialSource.PLATFORM_SECRET:
+            _value = overrides.get(_spec.credential_binding_name)
+            if _value is not None:
+                _os.environ[_spec.credential_binding_name] = str(_value)
