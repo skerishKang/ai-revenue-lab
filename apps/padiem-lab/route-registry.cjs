@@ -325,6 +325,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 42,
+    route: "b42",
+    sourcePath: "reference/business-42-ai-development-control-tower-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 개발 관제실",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 48,
     route: "b48",
     sourcePath: "reference/business-48-ai-verification-engine-v1",
