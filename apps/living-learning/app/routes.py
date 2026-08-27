@@ -51,10 +51,19 @@ def get_connection_from_state(request: Request):
     return request.app.state.get_connection()
 
 
-def get_pipeline(
+async def get_pipeline(
     request: Request,
     provider: Annotated[AIProvider, Depends(get_provider_from_state)],
 ):
+    """Own one SQLite connection for the complete request dependency lifetime.
+
+    The endpoints remain synchronous and may execute in FastAPI's worker pool.
+    Keeping acquisition/finalization in the async dependency lifecycle prevents
+    a sync-generator teardown worker from closing the connection concurrently
+    with an endpoint that is still using it. ``check_same_thread=False`` remains
+    an app-level compatibility setting; this dependency does not authorize
+    concurrent access to one connection.
+    """
     settings = request.app.state.settings
     conn = get_connection_from_state(request)
     try:
