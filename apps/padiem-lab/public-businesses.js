@@ -341,6 +341,17 @@
       sourcePath: "reference/business-37-ai-safe-route-v1/"
     }),
     Object.freeze({
+      number: 38,
+      slug: "ai-exercise-coach",
+      title: "AI Exercise Coach",
+      koreanTitle: "AI 운동 코치",
+      summary: "합성 운동 프로필·비진단 움직임 관찰·선택 가능한 회귀·진행안과 사람 검토 계획을 살펴보는 정적 시각 프리뷰입니다. 의료·재활 처방, 자동 자세 인증, 실시간 카메라·생체정보·건강데이터 연결 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b38/",
+      sourcePath: "reference/business-38-ai-exercise-coach-v1/"
+    }),
+    Object.freeze({
       number: 39,
       slug: "112-real-time-interpretation",
       title: "112 Real-Time Interpretation",
