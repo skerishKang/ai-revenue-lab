@@ -11,6 +11,7 @@ import pytest
 
 from app.b14_client import B14Client, ChatRuntimeError
 from app.config import Settings
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.worker_config import B14_SERVICE_BINDING_NAME
 
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -23,9 +24,9 @@ def _success_payload() -> dict:
         ],
         "business14": {
             "request_id": "b14req_service_binding",
-            "route_mode": "auto",
-            "selected_model": "stealth/ox-alpha",
-            "selected_provider": "OpenRouter",
+            "route_mode": "manual",
+            "selected_model": DEFAULT_B14_MODEL_ID,
+            "selected_provider": "Agnes AI",
         },
     }
 
@@ -40,7 +41,7 @@ class FakeServiceTransport:
 
 
 @pytest.mark.asyncio
-async def test_service_binding_transport_wins_and_preserves_free_only_payload():
+async def test_service_binding_transport_wins_and_preserves_explicit_agnes_payload():
     public_http_calls = 0
 
     async def public_handler(request):
@@ -62,13 +63,18 @@ async def test_service_binding_transport_wins_and_preserves_free_only_payload():
     assert len(service.calls) == 1
     url, payload = service.calls[0]
     assert url == "https://b14.internal/api/pilot/v1/chat/completions"
-    assert payload["model"] == "b14/auto"
-    assert payload["business14"]["required_capabilities"] == ["free"]
-    assert payload["business14"]["max_attempts"] == 3
+    assert payload["model"] == DEFAULT_B14_MODEL_ID
+    assert payload["business14"]["required_capabilities"] == ["chat"]
+    assert payload["business14"]["allow_external_fallback"] is False
+    assert payload["business14"]["max_attempts"] == 1
     assert "provider" not in payload
     assert "authorization" not in {key.lower() for key in payload}
     assert result["runtime"] == "b14"
-    assert result["route"]["model"] == "stealth/ox-alpha"
+    assert result["route"] == {
+        "mode": "manual",
+        "model": DEFAULT_B14_MODEL_ID,
+        "provider": "Agnes AI",
+    }
 
 
 @pytest.mark.asyncio
@@ -105,6 +111,7 @@ async def test_mock_runtime_never_calls_service_binding():
 
     assert service.calls == []
     assert result["runtime"] == "mock"
+    assert result["route"]["model"] == DEFAULT_B14_MODEL_ID
 
 
 def test_service_binding_target_is_fixed_in_repository_config():
