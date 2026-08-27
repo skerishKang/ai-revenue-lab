@@ -289,6 +289,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 53,
+    route: "b53",
+    sourcePath: "reference/business-53-embedded-ai-sdk-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "임베드 AI SDK",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 59,
     route: "b59",
     sourcePath: "reference/business-59-living-archive-v1",
