@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Callable
+import sqlite3
+from typing import Annotated, Callable, TypeVar
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
@@ -30,6 +31,7 @@ from app.repositories import (
 
 
 router = APIRouter(prefix="/api/v1", tags=["living-learning"])
+_ResultT = TypeVar("_ResultT")
 
 
 def get_provider_from_state(request: Request) -> AIProvider:
@@ -42,28 +44,56 @@ def get_provider_from_state(request: Request) -> AIProvider:
     return provider
 
 
-def get_connection_from_state(request: Request):
-    if not hasattr(request.app.state, "get_connection"):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "database_not_configured"},
-        )
-    return request.app.state.get_connection()
+class RequestPipelineRunner:
+    """Run one pipeline operation with thread-owned SQLite connection lifetime.
+
+    FastAPI may evaluate sync dependencies and sync endpoints on different
+    worker threads. The dependency therefore carries only a connection factory;
+    it never creates a SQLite object. ``run`` is called from the endpoint worker
+    and owns create -> use -> close in that single thread.
+    """
+
+    def __init__(
+        self,
+        *,
+        connection_factory: Callable[[], sqlite3.Connection],
+        provider: AIProvider,
+        settings: object,
+    ) -> None:
+        if not callable(connection_factory):
+            raise ValueError("connection_factory must be callable")
+        self._connection_factory = connection_factory
+        self._provider = provider
+        self._settings = settings
+
+    def run(self, operation: Callable[[LessonPipeline], _ResultT]) -> _ResultT:
+        if not callable(operation):
+            raise ValueError("operation must be callable")
+        conn = self._connection_factory()
+        try:
+            return operation(LessonPipeline(conn, self._provider, self._settings))
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 
 def get_pipeline(
     request: Request,
     provider: Annotated[AIProvider, Depends(get_provider_from_state)],
-):
-    settings = request.app.state.settings
-    conn = get_connection_from_state(request)
-    try:
-        yield LessonPipeline(conn, provider, settings)
-    finally:
-        try:
-            conn.close()
-        except Exception:
-            pass
+) -> RequestPipelineRunner:
+    connection_factory = getattr(request.app.state, "get_connection", None)
+    if not callable(connection_factory):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"error": "database_not_configured"},
+        )
+    return RequestPipelineRunner(
+        connection_factory=connection_factory,
+        provider=provider,
+        settings=request.app.state.settings,
+    )
 
 
 class CreateLearnerRequest(BaseModel):
@@ -85,16 +115,18 @@ class CreateLearnerResponse(BaseModel):
 @router.post("/learners", response_model=CreateLearnerResponse)
 def create_learner(
     request: CreateLearnerRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> CreateLearnerResponse:
-    result = pipeline.create_learner_and_session(
-        topic=request.topic,
-        display_name=request.display_name,
-        target_duration_minutes=request.target_duration_minutes,
-        example_preference=request.example_preference,
-        theory_density=request.theory_density,
-        jargon_level=request.jargon_level,
-        review_question_count=request.review_question_count,
+    result = pipeline.run(
+        lambda runtime: runtime.create_learner_and_session(
+            topic=request.topic,
+            display_name=request.display_name,
+            target_duration_minutes=request.target_duration_minutes,
+            example_preference=request.example_preference,
+            theory_density=request.theory_density,
+            jargon_level=request.jargon_level,
+            review_question_count=request.review_question_count,
+        )
     )
     return CreateLearnerResponse(
         learner_id=result["learner_id"],
@@ -116,13 +148,15 @@ class StartLessonResponse(BaseModel):
 @router.post("/lessons", response_model=StartLessonResponse)
 def start_lesson(
     request: StartLessonRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> StartLessonResponse:
     try:
-        lesson_id = pipeline.start_first_lesson(
-            learner_id=request.learner_id,
-            concept_id=request.concept_id,
-            idempotency_key=request.idempotency_key,
+        lesson_id = pipeline.run(
+            lambda runtime: runtime.start_first_lesson(
+                learner_id=request.learner_id,
+                concept_id=request.concept_id,
+                idempotency_key=request.idempotency_key,
+            )
         )
         return StartLessonResponse(lesson_id=lesson_id)
     except PrerequisiteNotMetError as exc:
@@ -183,15 +217,17 @@ class RecordComprehensionResponse(BaseModel):
 @router.post("/comprehension", response_model=RecordComprehensionResponse)
 def record_comprehension(
     request: RecordComprehensionRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> RecordComprehensionResponse:
     try:
-        result = pipeline.record_comprehension(
-            lesson_id=request.lesson_id,
-            learner_id=request.learner_id,
-            understood=request.understood,
-            difficulty_rating=request.difficulty_rating,
-            free_text=request.free_text,
+        result = pipeline.run(
+            lambda runtime: runtime.record_comprehension(
+                lesson_id=request.lesson_id,
+                learner_id=request.learner_id,
+                understood=request.understood,
+                difficulty_rating=request.difficulty_rating,
+                free_text=request.free_text,
+            )
         )
         return RecordComprehensionResponse(
             response_id=result["response_id"],
@@ -230,15 +266,17 @@ class SubmitFeedbackResponse(BaseModel):
 @router.post("/feedback", response_model=SubmitFeedbackResponse)
 def submit_feedback(
     request: SubmitFeedbackRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> SubmitFeedbackResponse:
     try:
-        result = pipeline.record_feedback(
-            lesson_id=request.lesson_id,
-            learner_id=request.learner_id,
-            direction_choices=request.direction_choices,
-            free_text=request.free_text,
-            idempotency_key=request.idempotency_key,
+        result = pipeline.run(
+            lambda runtime: runtime.record_feedback(
+                lesson_id=request.lesson_id,
+                learner_id=request.learner_id,
+                direction_choices=request.direction_choices,
+                free_text=request.free_text,
+                idempotency_key=request.idempotency_key,
+            )
         )
         return SubmitFeedbackResponse(
             feedback_id=result["feedback_id"],
@@ -277,15 +315,17 @@ class SecondLessonResponse(BaseModel):
 @router.post("/lessons/second", response_model=SecondLessonResponse)
 def start_second_lesson(
     request: SecondLessonRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> SecondLessonResponse:
     try:
-        result = pipeline.process_feedback_and_generate_second_lesson(
-            lesson_id=request.lesson_id,
-            learner_id=request.learner_id,
-            comprehension_response_id=request.comprehension_response_id,
-            feedback_id=request.feedback_id,
-            idempotency_key=request.idempotency_key,
+        result = pipeline.run(
+            lambda runtime: runtime.process_feedback_and_generate_second_lesson(
+                lesson_id=request.lesson_id,
+                learner_id=request.learner_id,
+                comprehension_response_id=request.comprehension_response_id,
+                feedback_id=request.feedback_id,
+                idempotency_key=request.idempotency_key,
+            )
         )
         return SecondLessonResponse(
             lesson_id=result["lesson_id"],
@@ -343,12 +383,14 @@ class FinalizeLessonResponse(BaseModel):
 @router.post("/lessons/finalize", response_model=FinalizeLessonResponse)
 def finalize_lesson(
     request: FinalizeLessonRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> FinalizeLessonResponse:
     try:
-        result = pipeline.finalize_and_close(
-            lesson_id=request.lesson_id,
-            learner_id=request.learner_id,
+        result = pipeline.run(
+            lambda runtime: runtime.finalize_and_close(
+                lesson_id=request.lesson_id,
+                learner_id=request.learner_id,
+            )
         )
         return FinalizeLessonResponse(
             lesson_id=result["lesson_id"],
@@ -379,10 +421,12 @@ class LearnerProgressResponse(BaseModel):
 @router.get("/learners/{learner_id}/progress", response_model=LearnerProgressResponse)
 def get_learner_progress(
     learner_id: str,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> LearnerProgressResponse:
     try:
-        result = pipeline.get_learner_progress(learner_id=learner_id)
+        result = pipeline.run(
+            lambda runtime: runtime.get_learner_progress(learner_id=learner_id)
+        )
         return LearnerProgressResponse(**result)
     except GenerationError as exc:
         raise HTTPException(
@@ -395,28 +439,33 @@ def get_learner_progress(
             detail={"error": "learner_inactive", "learner_id": exc.learner_id, "status": exc.status},
         )
 
+
 class AnswerExerciseRequest(BaseModel):
     exercise_id: str = Field(min_length=1)
     learner_id: str = Field(min_length=1)
     answer: str = Field(min_length=1)
     idempotency_key: str = ""
 
+
 class AnswerExerciseResponse(BaseModel):
     response_id: str
     is_correct: bool
     is_duplicate: bool
 
+
 @router.post("/exercises/answer", response_model=AnswerExerciseResponse)
 def answer_exercise(
     request: AnswerExerciseRequest,
-    pipeline: Annotated[LessonPipeline, Depends(get_pipeline)],
+    pipeline: Annotated[RequestPipelineRunner, Depends(get_pipeline)],
 ) -> AnswerExerciseResponse:
     try:
-        result = pipeline.answer_exercise(
-            exercise_id=request.exercise_id,
-            learner_id=request.learner_id,
-            answer=request.answer,
-            idempotency_key=request.idempotency_key,
+        result = pipeline.run(
+            lambda runtime: runtime.answer_exercise(
+                exercise_id=request.exercise_id,
+                learner_id=request.learner_id,
+                answer=request.answer,
+                idempotency_key=request.idempotency_key,
+            )
         )
         return AnswerExerciseResponse(**result)
     except GenerationError as exc:
