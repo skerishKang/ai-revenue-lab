@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "checks": {
+    "states_exact": true,
+    "controls_exact": true,
+    "selected_initial_exactly_one": true,
+    "assets_exactly_11": true,
+    "authority_labels": true,
+    "local_runtime": true,
+    "no_external_api": true,
+    "no_fixed_timeout": true,
+    "reduced_motion": true,
+    "animationend_authority": true,
+    "nominal_770ms": true,
+    "version_token": true,
+    "semantic_tabs": true,
+    "multilingual_markup": true,
+    "documented_assets": true,
+    "required_docs": true,
+    "no_functional_call_button": true,
+    "no_map_or_live_media_elements": true
+  },
+  "states": [
+    "cover",
+    "language",
+    "situation",
+    "location",
+    "critical",
+    "handoff",
+    "mobile"
+  ],
+  "assets": 11,
+  "asset_names": [
+    "accessibility-support-note.svg",
+    "communication-support-badge.svg",
+    "critical-fact-tabs.svg",
+    "emergency-reporting-brief-seal.svg",
+    "fact-unknown-split.svg",
+    "language-preference-card.svg",
+    "location-landmark-sheet.svg",
+    "location-uncertainty-marker.svg",
+    "official-handoff-card.svg",
+    "reporting-desk-cover.svg",
+    "user-statement-folio.svg"
+  ]
+}
