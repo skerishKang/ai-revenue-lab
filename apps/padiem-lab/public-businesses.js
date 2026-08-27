@@ -374,6 +374,17 @@
       sourcePath: "reference/business-57-classic-literature-translation-studio-v1/"
     }),
     Object.freeze({
+      number: 58,
+      slug: "personal-writing-voice-studio",
+      title: "Personal Writing Voice Studio",
+      koreanTitle: "개인 문체 스튜디오",
+      summary: "합성·권리확인 코퍼스에서 근거 기반 문체 프로필을 검토하고 번역·생성 적용, 교정·철회·삭제·사람 승인 경계를 확인하는 정적 개인 문체 스튜디오 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b58/",
+      sourcePath: "reference/business-58-personal-writing-voice-studio-v1/"
+    }),
+    Object.freeze({
       number: 59,
       slug: "living-archive",
       title: "Living Archive",
