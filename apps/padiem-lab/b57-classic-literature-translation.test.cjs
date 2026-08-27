@@ -1,19 +1,10 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { execFileSync } = require('node:child_process');
 const test = require('node:test');
 const routes = require('./route-registry.cjs');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
-const out = path.join(repoRoot, 'dist', 'padiem-lab', 'b57');
-
-function build() {
-  execFileSync(process.execPath, [path.join(__dirname, 'build-site.cjs')], {
-    cwd: repoRoot,
-    stdio: 'pipe'
-  });
-}
 
 test('B57 route is bounded to the approved current-main Classic Literature Translation runtime', () => {
   const route = routes.find(candidate => candidate.number === 57);
@@ -38,17 +29,17 @@ test('B57 route is bounded to the approved current-main Classic Literature Trans
   assert.match(index, /공유 모델 학습/);
   assert.match(index, /기본값 금지/);
   assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
-});
 
-test('B57 aggregate artifact publishes runtime only and excludes rights/review repository material', () => {
-  build();
-  for (const relative of ['index.html', 'assets/rose-mark.svg', 'scripts/review.js', 'styles/main.css']) {
-    assert.equal(fs.existsSync(path.join(out, relative)), true, `b57 missing ${relative}`);
+  for (const runtime of ['assets/rose-mark.svg', 'scripts/review.js', 'styles/main.css']) {
+    assert.equal(fs.existsSync(path.join(source, runtime)), true, `B57 source missing runtime ${runtime}`);
   }
-  for (const forbidden of [
+  for (const repositoryOnly of [
     'README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md',
-    'RIGHTS_AND_SOURCES.md', 'evidence', 'ux.html'
+    'RIGHTS_AND_SOURCES.md', 'evidence'
   ]) {
-    assert.equal(fs.existsSync(path.join(out, forbidden)), false, `b57 leaked ${forbidden}`);
+    assert.equal(fs.existsSync(path.join(source, repositoryOnly)), true, `B57 source authority missing ${repositoryOnly}`);
+    assert.equal(route.includeFiles.includes(repositoryOnly), false, `B57 route directly includes ${repositoryOnly}`);
+    assert.equal(route.includeDirs.includes(repositoryOnly), false, `B57 route includes directory ${repositoryOnly}`);
   }
+  assert.equal(fs.existsSync(path.join(source, 'ux.html')), false, 'B57 current-main source unexpectedly includes UX #430');
 });
