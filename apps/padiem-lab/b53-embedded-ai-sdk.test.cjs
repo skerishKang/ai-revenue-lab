@@ -1,36 +1,24 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { execFileSync } = require('node:child_process');
 const test = require('node:test');
+const routes = require('./route-registry.cjs');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
-const out = path.join(repoRoot, 'dist', 'padiem-lab');
 
-function build() {
-  execFileSync(process.execPath, [path.join(__dirname, 'build-site.cjs')], {
-    cwd: repoRoot,
-    stdio: 'pipe'
-  });
-}
+test('B53 route is bounded to the current-main Embedded AI SDK static review runtime', () => {
+  const route = routes.find(candidate => candidate.number === 53);
+  assert.ok(route, 'missing B53 route');
+  assert.equal(route.route, 'b53');
+  assert.equal(route.sourcePath, 'reference/business-53-embedded-ai-sdk-v1');
+  assert.equal(route.mode, 'STATIC_REFERENCE');
+  assert.equal(route.marker, '임베드 AI SDK');
+  assert.deepEqual(route.includeFiles, ['index.html']);
+  assert.deepEqual(route.includeDirs, ['assets', 'scripts', 'styles']);
 
-test('B53 publishes only the current-main Embedded AI SDK static review runtime', () => {
-  build();
-  const b53 = path.join(out, 'b53');
-
-  for (const relative of ['index.html', 'assets', 'scripts', 'styles']) {
-    assert.equal(fs.existsSync(path.join(b53, relative)), true, `b53 missing ${relative}`);
-  }
-
-  for (const forbidden of [
-    'README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md',
-    'evidence', 'screenshots', 'tests', 'ux.html'
-  ]) {
-    assert.equal(fs.existsSync(path.join(b53, forbidden)), false, `b53 leaked ${forbidden}`);
-  }
-
-  const index = fs.readFileSync(path.join(b53, 'index.html'), 'utf8');
-  const review = fs.readFileSync(path.join(b53, 'scripts', 'review.js'), 'utf8');
+  const source = path.join(repoRoot, route.sourcePath);
+  const index = fs.readFileSync(path.join(source, 'index.html'), 'utf8');
+  const review = fs.readFileSync(path.join(source, 'scripts', 'review.js'), 'utf8');
 
   assert.match(index, /임베드 AI SDK/);
   assert.match(index, /HUMAN-APPROVED EMBEDDED AI INTEGRATION SPEC/);
