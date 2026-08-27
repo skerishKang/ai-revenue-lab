@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Business 38 AI 운동 코치 Phase 1 정적 시각 UI reference">
+  <title>AI 운동 코치 — Movement Coaching Atelier</title>
+  <link rel="stylesheet" href="styles/main.css?v=b38-atelier-20260729">
+</head>
+<body>
+  <a class="skip-link" href="#state-stage">상태 콘텐츠로 건너뛰기</a>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">BUSINESS 38 · VISUAL REFERENCE ONLY</p>
+      <h1>AI 운동 코치 <span>AI Exercise Coach</span></h1>
+    </div>
+    <div class="boundary-stack" aria-label="제품 경계">
+      <span>NOT MEDICAL ADVICE</span>
+      <span>NOT A REHABILITATION PLAN</span>
+      <span>NO LIVE CAMERA, BIOMETRIC, OR HEALTH-DATA CONNECTION</span>
+    </div>
+  </header>
+
+  <nav class="state-nav" aria-label="Visual state selector">
+    <div role="tablist" aria-label="Exact seven visual states">
+      <button role="tab" id="tab-cover" aria-controls="state-cover" aria-selected="true" tabindex="0" data-state-tab="cover">01 Cover</button>
+      <button role="tab" id="tab-profile" aria-controls="state-profile" aria-selected="false" tabindex="-1" data-state-tab="profile">02 Profile</button>
+      <button role="tab" id="tab-assessment" aria-controls="state-assessment" aria-selected="false" tabindex="-1" data-state-tab="assessment">03 Assessment</button>
+      <button role="tab" id="tab-session" aria-controls="state-session" aria-selected="false" tabindex="-1" data-state-tab="session">04 Session</button>
+      <button role="tab" id="tab-form" aria-controls="state-form" aria-selected="false" tabindex="-1" data-state-tab="form">05 Form</button>
+      <button role="tab" id="tab-adaptation" aria-controls="state-adaptation" aria-selected="false" tabindex="-1" data-state-tab="adaptation">06 Adaptation</button>
+      <button role="tab" id="tab-mobile" aria-controls="state-mobile" aria-selected="false" tabindex="-1" data-state-tab="mobile">07 Mobile</button>
+    </div>
+  </nav>
+
+  <main id="state-stage" class="state-stage">
+    <section id="state-cover" class="visual-state" role="tabpanel" aria-labelledby="tab-cover" data-state-panel="cover">
+      <div class="cover-grid">
+        <div class="folio hero-folio">
+          <p class="folio-kicker">Movement Coaching Atelier · 움직임 코칭 아틀리에</p>
+          <h2>조용히 관찰하고,<br>사람의 검토로<br>25분 계획을 다듬다</h2>
+          <p class="lede">Jiyu의 목표와 제약을 진단이 아닌 관찰로 정리하고, 선택 가능한 회귀·진행안과 중단 경계를 남깁니다.</p>
+          <div class="seal-row">
+            <strong>HUMAN-REVIEWED ADAPTIVE MOVEMENT PLAN</strong>
+            <span>PLAN STATUS · REVIEWED PRACTICE</span>
+          </div>
+        </div>
+        <figure class="asset-frame hero-asset">
+          <img src="assets/movement-atelier-cover.svg?v=b38-atelier-20260729" alt="의자, 밴드, 기록 카드로 구성된 추상적 움직임 코칭 작업대">
+          <figcaption>SYNTHETIC USER PROFILE · Jiyu — fictional adult</figcaption>
+        </figure>
+      </div>
+      <div class="boundary-grid">
+        <article><small>CONNECTION</small><b>Camera / biometric</b><p>연결 없음. 실제 신체·건강 데이터 사용 없음.</p></article>
+        <article><small>PLAN STATUS</small><b>Reviewed practice</b><p>완료 인증이 아니라 다음 검토를 위한 합성 기록입니다.</p></article>
+        <article><small>BOUNDARY</small><b>NOT MEDICAL ADVICE</b><p>진단·치료·재활 처방을 제공하지 않습니다.</p></article>
+      </div>
+    </section>
+
+    <section id="state-profile" class="visual-state" role="tabpanel" aria-labelledby="tab-profile" data-state-panel="profile" hidden>
+      <header class="state-heading"><div><p class="eyebrow">SYNTHETIC USER PROFILE</p><h2>움직임 프로필 폴리오</h2></div><p>Self-report is not verified health data.</p></header>
+      <div class="profile-layout">
+        <figure class="asset-frame tall"><img src="assets/user-profile-folio.svg?v=b38-atelier-20260729" alt="합성 사용자 프로필을 표현한 폴리오 카드"><figcaption>Jiyu · fictional adult · beginner — synthetic</figcaption></figure>
+        <div class="profile-cards">
+          <article class="paper-card goal"><span>SELF-REPORTED GOAL</span><h3>25-minute low-impact strength and mobility session</h3><p>목표는 사용자가 직접 보고한 합성 정보이며 건강상태 검증이 아닙니다.</p></article>
+          <article class="paper-card constraint"><span>SELF-REPORTED CONSTRAINT</span><h3>No jumping · no floor transitions</h3><p>Quiet apartment setting. 선택 가능한 움직임 범위를 위한 선호 기록입니다.</p></article>
+          <div class="mini-grid">
+            <article><small>EXPERIENCE</small><b>Beginner — synthetic</b></article>
+            <article><small>PREFERENCES</small><b>Quiet · standing / chair-supported</b></article>
+            <article><small>AVAILABLE EQUIPMENT</small><b>Chair · light resistance band</b></article>
+            <article><small>VERIFICATION</small><b>UNKNOWN / NOT ASSESSED</b></article>
+          </div>
+        </div>
+      </div>
+      <figure class="strip-asset"><img src="assets/goal-constraint-card.svg?v=b38-atelier-20260729" alt="목표와 제약의 관계를 보여주는 추상 카드"></figure>
+    </section>
+
+    <section id="state-assessment" class="visual-state" role="tabpanel" aria-labelledby="tab-assessment" data-state-panel="assessment" hidden>
+      <header class="state-heading"><div><p class="eyebrow">MOVEMENT OBSERVATION — NOT DIAGNOSIS</p><h2>관찰 스케치 시트</h2></div><p>관찰 가능한 움직임만 기록합니다.</p></header>
+      <div class="assessment-layout">
+        <figure class="asset-frame"><img src="assets/movement-observation-sheet.svg?v=b38-atelier-20260729" alt="의자 보조 움직임의 추상 관찰 스케치"><figcaption>VISUAL REFERENCE ONLY · static illustration cannot certify form</figcaption></figure>
+        <div class="observation-notes">
+          <article><span>OBSERVATION 01</span><h3>Chair-supported hinge</h3><p>상체가 내려갈 때 의자 쪽으로 손이 가까워지고, 되돌아올 때 속도가 일정하지 않음.</p><b>OBSERVATION CONFIDENCE · MODERATE</b></article>
+          <article><span>OBSERVATION 02</span><h3>Band pull-apart range</h3><p>밴드가 가슴 앞에서 짧게 벌어짐. 원인이나 관절 상태는 추정하지 않음.</p><b>OBSERVATION CONFIDENCE · LOW</b></article>
+          <article class="unknown"><span>UNKNOWN / NOT ASSESSED</span><p>통증 원인, 질병, 부상, 관절 가동성, 심폐능력, 운동 적합성.</p></article>
+        </div>
+      </div>
+      <div class="confidence-scale" aria-label="관찰 신뢰도 범례"><span>LOW · 짧은 단일 관찰</span><span>MODERATE · 반복 가능한 시각 단서</span><span>HIGH · Phase 1에서 사용하지 않음</span></div>
+    </section>
+
+    <section id="state-session" class="visual-state" role="tabpanel" aria-labelledby="tab-session" data-state-panel="session" hidden>
+      <header class="state-heading"><div><p class="eyebrow">SESSION PLAN — SYNTHETIC</p><h2>25-minute sequence</h2></div><p>Low-impact · quiet apartment · USER CHOICE</p></header>
+      <figure class="sequence-figure"><img src="assets/session-sequence-strip.svg?v=b38-atelier-20260729" alt="25분 운동 세션의 시간 순서 스트립"></figure>
+      <ol class="session-list">
+        <li><time>00–04</time><div><b>Standing arrival + breath check</b><p>의자 옆에서 발 위치와 편안함을 확인합니다.</p></div><span>LOW IMPACT</span></li>
+        <li><time>04–10</time><div><b>Chair-supported hinge</b><p>40초 움직임 · 20초 쉬기 × 6. 완료는 능력 인증이 아닙니다.</p></div><span>USER CHOICE</span></li>
+        <li><time>10–16</time><div><b>Band pull-apart</b><p>30초 움직임 · 30초 쉬기 × 6. 밴드 장력은 선택합니다.</p></div><span>CHECKPOINT</span></li>
+        <li><time>16–22</time><div><b>Chair-supported march</b><p>45초 움직임 · 30초 쉬기 × 4. 점프 없이 조용하게.</p></div><span>LOW IMPACT</span></li>
+        <li><time>22–25</time><div><b>Ease-down + exertion note</b><p>말하기 편안함, 불확실성, 멈춤 필요 여부를 기록합니다.</p></div><span>REVIEW INPUT</span></li>
+      </ol>
+      <aside class="session-note"><b>USER CHOICE</b><p>순서 건너뛰기, 쉬는 시간 늘리기, 회귀안 선택, 세션 종료 모두 허용됩니다.</p></aside>
+    </section>
+
+    <section id="state-form" class="visual-state" role="tabpanel" aria-labelledby="tab-form" data-state-panel="form" hidden>
+      <header class="state-heading"><div><p class="eyebrow">FORM CUE — GENERAL GUIDANCE</p><h2>Chair-supported hinge</h2></div><p>NO AUTOMATED FORM CERTIFICATION</p></header>
+      <div class="form-layout">
+        <figure class="asset-frame"><img src="assets/form-cue-card.svg?v=b38-atelier-20260729" alt="의자와 힌지 방향을 표시한 추상적 일반 안내 카드"><figcaption>Static illustration · not proof of correct form</figcaption></figure>
+        <div class="cue-stack">
+          <article><span>GENERAL CUE</span><h3>“의자를 뒤에 둔 채 엉덩이를 천천히 뒤로 보냅니다.”</h3><p>범용적 언어이며 개인의 상태를 판정하거나 교정하는 의료 지시가 아닙니다.</p></article>
+          <article><span>OBSERVABLE CHECKPOINT</span><h3>발이 바닥에 남고, 의자가 손 닿는 거리 안에 있는가?</h3><p>보이는 체크포인트만 제시하며 ‘올바른 자세’를 확정하지 않습니다.</p></article>
+          <article class="uncertain"><span>UNCERTAINTY VISIBLE</span><h3>UNKNOWN / NOT ASSESSED</h3><p>불편감의 원인, 안전성, 관절 상태, 개인에게 적합한 범위.</p></article>
+        </div>
+      </div>
+      <div class="certification-ban"><b>NO AUTOMATED FORM CERTIFICATION</b><span>카메라·스켈레톤 오버레이·자세 점수 없음</span></div>
+    </section>
+
+    <section id="state-adaptation" class="visual-state" role="tabpanel" aria-labelledby="tab-adaptation" data-state-panel="adaptation" hidden>
+      <header class="state-heading"><div><p class="eyebrow">HUMAN-REVIEWED ADAPTIVE MOVEMENT PLAN</p><h2>선택과 검토로 조정하기</h2></div><button id="replay-motion" class="replay-button" type="button">Replay plan motion</button></header>
+      <div class="adaptation-grid">
+        <article class="option-card regression"><span>REGRESSION OPTION</span><h3>의자 등받이에 두 손</h3><p>움직임 범위를 줄이고 쉬는 시간을 40초로 늘립니다. 회귀안은 실패가 아닙니다.</p><img src="assets/regression-option-card.svg?v=b38-atelier-20260729" alt="회귀 선택을 나타내는 낮은 단계 카드"></article>
+        <article class="option-card progression"><span>PROGRESSION OPTION</span><h3>한 손만 의자에 가볍게</h3><p>사용자가 원하고 다음 사람 검토에서 확인된 경우에만 선택합니다. 자동 적용하지 않습니다.</p><img src="assets/progression-option-card.svg?v=b38-atelier-20260729" alt="진행 선택을 나타내는 높은 단계 카드"></article>
+        <article class="dial-card"><span>EXERTION CHECK</span><img src="assets/exertion-check-dial.svg?v=b38-atelier-20260729" alt="쉬움에서 멈춤까지의 합성 자각강도 다이얼"><p><b>Current synthetic note: 4 / 10</b><br>짧은 문장으로 대화 가능. 숫자는 실제 생체정보가 아닙니다.</p></article>
+        <article class="stop-card"><span>STOP OR PAUSE CONDITION</span><h3>통증, 어지러움, 갑작스러운 숨참, 불확실성이 있으면 멈추거나 쉽니다.</h3><p>계속하라고 지시하지 않습니다. 필요한 경우 자격 있는 전문가에게 확인합니다.</p></article>
+      </div>
+      <div class="review-row">
+        <figure><img src="assets/review-correction-slip.svg?v=b38-atelier-20260729" alt="사람 검토 수정 메모"><figcaption>REVIEW CORRECTION</figcaption></figure>
+        <article><span>REVIEW CORRECTION</span><h3>“Band pull-apart를 6세트에서 4세트로 줄이고, 세트 사이 선택 질문을 추가.”</h3><p>Next human review · after one synthetic practice session</p></article>
+        <figure><img src="assets/adaptive-movement-plan-seal.svg?v=b38-atelier-20260729" alt="사람 검토 적응형 움직임 계획 인장"><figcaption>PLAN SEAL</figcaption></figure>
+      </div>
+      <div id="motion-track" class="motion-track" aria-label="Profile-to-Adaptive-Movement-Plan motion preview" data-completion-authority="idle">
+        <span data-motion-step>Goal + constraints</span><i>→</i><span data-motion-step>Observation</span><i>→</i><span data-motion-step>Sequence</span><i>→</i><span data-motion-step>Form cue</span><i>→</i><span data-motion-step>Exertion</span><i>→</i><span data-motion-step>Choice</span><i>→</i><span data-motion-step>Review</span><i>→</i><span data-motion-step>Unknowns + stop boundary</span><i>→</i><strong class="motion-final" data-motion-step>HUMAN-REVIEWED ADAPTIVE MOVEMENT PLAN</strong>
+      </div>
+      <div class="persistent-boundaries"><span>UNKNOWN / NOT ASSESSED</span><span>STOP OR PAUSE CONDITION</span><span>NOT MEDICAL ADVICE</span><span>REGRESSION OPTION</span></div>
+    </section>
+
+    <section id="state-mobile" class="visual-state" role="tabpanel" aria-labelledby="tab-mobile" data-state-panel="mobile" hidden>
+      <header class="state-heading"><div><p class="eyebrow">DEDICATED MOBILE SESSION BRIEF</p><h2>390px first-screen priority</h2></div><p>Desktop 축소판이 아닌 전용 세션 브리프</p></header>
+      <div class="phone-shell" aria-label="390픽셀 모바일 세션 브리프">
+        <div class="phone-top"><span>12:08 · reviewed practice</span><b>AI 운동 코치</b></div>
+        <section class="phone-current"><small>CURRENT MOVEMENT · 04:20</small><h3>Chair-supported hinge</h3><p>40초 움직임 · 20초 쉬기</p></section>
+        <section class="phone-cue"><small>FORM CUE — GENERAL GUIDANCE</small><p>의자를 뒤에 둔 채 엉덩이를 천천히 뒤로 보냅니다.</p></section>
+        <div class="phone-grid">
+          <section><small>REGRESSION OPTION</small><p>두 손을 등받이에 두고 범위를 줄입니다.</p></section>
+          <section><small>EXERTION CHECK</small><p>현재 느낌 4 / 10 · 말하기 가능</p></section>
+        </div>
+        <section class="phone-stop"><small>STOP OR PAUSE CONDITION</small><p>통증·어지러움·갑작스러운 숨참·불확실성이 있으면 멈추거나 쉽니다.</p></section>
+        <footer><div><small>NEXT HUMAN REVIEW</small><b>합성 세션 1회 후</b></div><p>NOT MEDICAL ADVICE · NOT A REHABILITATION PLAN</p></footer>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>SYNTHETIC FIXTURE ONLY</span>
+    <span>NO LIVE CAMERA, BIOMETRIC, OR HEALTH-DATA CONNECTION</span>
+    <span>Business 38 · Phase 1 UI_ONLY</span>
+  </footer>
+  <script src="scripts/review.js?v=b38-atelier-20260729"></script>
+</body>
+</html>
