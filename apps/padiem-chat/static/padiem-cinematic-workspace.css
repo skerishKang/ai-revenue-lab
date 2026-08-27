@@ -1,0 +1,436 @@
+/* PADIEM cinematic workspace — history / projects / outputs / documents ---- */
+
+.account-name {
+  color: rgba(255, 255, 255, .48);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: .025em;
+}
+
+.history-empty,
+.project-files-empty {
+  color: rgba(255, 255, 255, .31);
+}
+
+.history-item,
+.project-item,
+.output-item {
+  color: rgba(244, 247, 251, .66);
+}
+
+.project-item[aria-current="true"],
+.output-item[aria-current="true"] {
+  position: relative;
+  color: #fff;
+  font-weight: 560;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .075), rgba(255, 255, 255, .025));
+}
+
+.project-item[aria-current="true"]::before,
+.output-item[aria-current="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 9px rgba(136, 201, 255, .32);
+}
+
+.section-add-button {
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, .48);
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+.section-add-button:hover,
+.section-add-button:focus-visible {
+  border-color: rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+}
+
+/* Project context banner -------------------------------------------------- */
+.project-banner {
+  width: min(840px, calc(100% - 18px));
+  margin-bottom: 9px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, .12) !important;
+  border-left: 2px solid rgba(255, 255, 255, .42) !important;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02)),
+    rgba(8, 9, 11, .82) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .04) !important,
+    0 14px 38px rgba(0, 0, 0, .12);
+  backdrop-filter: blur(20px);
+}
+
+.project-banner-copy span {
+  color: rgba(255, 255, 255, .62);
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.project-banner-copy strong {
+  color: rgba(255, 255, 255, .86);
+  font-size: 12px;
+  font-weight: 580;
+}
+
+.project-banner-copy small {
+  color: rgba(255, 255, 255, .35);
+  font-size: 10px;
+}
+
+.project-banner-actions button {
+  min-height: 30px;
+  border-color: rgba(255, 255, 255, .09) !important;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .035) !important;
+  color: rgba(255, 255, 255, .52) !important;
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: .035em;
+}
+
+.project-banner-actions button:hover {
+  border-color: rgba(255, 255, 255, .20) !important;
+  background: rgba(255, 255, 255, .07) !important;
+  color: #fff !important;
+}
+
+/* Shared modal geometry --------------------------------------------------- */
+.project-dialog,
+.saved-output-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.project-form,
+.saved-output-view {
+  padding: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .018)),
+    rgba(8, 9, 11, .97) !important;
+}
+
+.project-dialog-header,
+.saved-output-header {
+  padding-bottom: 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.project-dialog-header p,
+.saved-output-header p {
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, .62) !important;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .17em;
+}
+
+.project-dialog-header h2,
+.saved-output-header h2 {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 540;
+  line-height: 1.18;
+  letter-spacing: -.045em;
+}
+
+.project-dialog-close,
+.saved-output-close {
+  border: 1px solid rgba(255, 255, 255, .08) !important;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .035) !important;
+  color: rgba(255, 255, 255, .52) !important;
+}
+
+.project-dialog-close:hover,
+.saved-output-close:hover {
+  background: rgba(255, 255, 255, .075) !important;
+  color: #fff !important;
+}
+
+.project-form label,
+.saved-output-view label {
+  color: rgba(255, 255, 255, .67);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.project-form label span {
+  color: rgba(255, 255, 255, .32);
+  font-size: 9px;
+}
+
+.project-form input,
+.project-form textarea,
+.saved-output-title-input {
+  border-color: rgba(255, 255, 255, .11) !important;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .045) !important;
+  color: rgba(255, 255, 255, .9) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+}
+
+.project-form input:focus,
+.project-form textarea:focus,
+.saved-output-title-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, .28) !important;
+  box-shadow: 0 0 0 3px rgba(136, 201, 255, .045);
+}
+
+.project-form-note,
+.project-files-note,
+.saved-output-status {
+  color: rgba(255, 255, 255, .34) !important;
+}
+
+.project-form-error,
+.saved-output-status[data-state="error"],
+.composer-note[data-state="error"] {
+  color: #ffabab !important;
+}
+
+.project-secondary,
+.project-primary,
+.saved-output-actions button {
+  min-height: 38px;
+  border-radius: 7px !important;
+  font-size: 12px;
+}
+
+.project-secondary,
+.saved-output-actions button {
+  border-color: rgba(255, 255, 255, .11) !important;
+  background: rgba(255, 255, 255, .045) !important;
+  color: rgba(255, 255, 255, .64) !important;
+}
+
+.project-primary,
+.saved-output-actions .saved-output-primary {
+  border-color: rgba(255, 255, 255, .20) !important;
+  background: rgba(255, 255, 255, .09) !important;
+  color: rgba(255, 255, 255, .92) !important;
+}
+
+.project-primary:hover,
+.saved-output-actions .saved-output-primary:hover {
+  border-color: rgba(255, 255, 255, .34) !important;
+  background: rgba(255, 255, 255, .14) !important;
+}
+
+.saved-output-actions .saved-output-danger {
+  color: #ffabab !important;
+}
+
+/* Project documents ------------------------------------------------------- */
+.project-files-panel {
+  padding: 14px;
+  border-color: rgba(255, 255, 255, .09);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.project-files-heading strong {
+  color: rgba(255, 255, 255, .74);
+  font-size: 12px;
+  font-weight: 580;
+}
+
+.project-files-heading small,
+.project-files-note,
+.project-files-empty,
+.project-file-row small {
+  color: rgba(255, 255, 255, .32);
+}
+
+.project-file-add {
+  border-color: rgba(255, 255, 255, .09) !important;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .035) !important;
+  color: rgba(255, 255, 255, .58) !important;
+  font-size: 10px;
+  font-weight: 560;
+}
+
+.project-file-add:hover {
+  border-color: rgba(255, 255, 255, .20) !important;
+  background: rgba(255, 255, 255, .07) !important;
+  color: #fff !important;
+}
+
+.project-file-row {
+  border: 1px solid rgba(255, 255, 255, .065);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .03);
+}
+
+.project-file-row strong {
+  color: rgba(255, 255, 255, .72);
+  font-weight: 540;
+}
+
+.project-file-row button {
+  color: rgba(255, 255, 255, .4);
+}
+
+.project-file-row button:hover {
+  color: #ffb5b5;
+}
+
+.document-attachment-icon {
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .055) !important;
+  color: rgba(255, 255, 255, .74) !important;
+  font-family: var(--font-label);
+  font-size: 9px;
+  letter-spacing: .07em;
+}
+
+/* Composer attachment ----------------------------------------------------- */
+.attachment-preview {
+  border-color: rgba(255, 255, 255, .10) !important;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .035) !important;
+}
+
+.attachment-preview img {
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .04);
+}
+
+.attachment-copy strong {
+  color: rgba(255, 255, 255, .76);
+  font-weight: 560;
+}
+
+.attachment-copy small {
+  color: rgba(255, 255, 255, .34);
+}
+
+.attachment-remove {
+  color: rgba(255, 255, 255, .42);
+}
+
+.attachment-remove:hover,
+.attachment-remove:focus-visible {
+  background: rgba(255, 255, 255, .07);
+  color: #fff;
+}
+
+/* Keep long AI answers as an editorial reading surface, not one giant card. */
+.assistant-content .rich-response {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Answer actions ---------------------------------------------------------- */
+.answer-actions {
+  margin-top: 16px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.answer-action {
+  min-height: 30px;
+  padding-inline: 9px;
+  border-color: rgba(255, 255, 255, .09);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .03);
+  color: rgba(255, 255, 255, .42);
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 550;
+  letter-spacing: .035em;
+}
+
+.answer-action:hover,
+.answer-action:focus-visible {
+  border-color: rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+}
+
+/* Saved output ------------------------------------------------------------ */
+.saved-output-content {
+  border-color: rgba(255, 255, 255, .09);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .025);
+  color: rgba(247, 249, 252, .84);
+  font-size: 14px;
+  line-height: 1.74;
+}
+
+/* Small-text accessibility contrast floor -------------------------------- */
+.history-empty,
+.project-files-empty,
+.project-banner-copy small,
+.project-form label span,
+.project-form-note,
+.project-files-note,
+.saved-output-status,
+.project-files-heading small,
+.project-file-row small,
+.attachment-copy small,
+.answer-action,
+.reference-note,
+.route-details p,
+.answer-source-copy small,
+.composer-note,
+.sidebar-footer {
+  color: rgba(255, 255, 255, .52) !important;
+}
+
+.demo-label,
+.attachment-remove,
+.project-file-row button {
+  color: rgba(255, 255, 255, .50) !important;
+}
+
+@media (max-width: 640px) {
+  .project-form,
+  .saved-output-view {
+    padding: 19px;
+  }
+
+  .project-dialog-header h2,
+  .saved-output-header h2 {
+    font-size: 24px;
+  }
+
+  .project-banner {
+    width: 100%;
+    border-radius: 9px;
+  }
+
+  .project-banner-actions {
+    flex-direction: column;
+  }
+
+  .project-banner-actions button {
+    min-height: 28px;
+  }
+
+  .saved-output-actions button {
+    min-height: 40px;
+  }
+}
