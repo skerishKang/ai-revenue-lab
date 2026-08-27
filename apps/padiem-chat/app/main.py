@@ -31,6 +31,7 @@ from .history import (
     validate_conversation_id,
     validate_project_id,
 )
+from .model_policy import ModelPolicyError, model_supports, resolve_model_policy
 from .project_file_routes import project_file_detail, project_files_collection
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
@@ -149,6 +150,14 @@ def _validate_payload(
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
     return out, skill, tool_request, attachments, conversation_id, project_id
+
+
+def _apply_b62_model_policy(messages: list[dict[str, str]]) -> tuple[str, list[dict[str, str]]]:
+    try:
+        policy = resolve_model_policy(messages)
+    except ModelPolicyError as exc:
+        raise BrowserRequestError(exc.message) from exc
+    return policy.model_id, policy.messages
 
 
 async def health(request: Request) -> JSONResponse:
@@ -286,6 +295,7 @@ async def api_chat_stream(request: Request):
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
+        _, messages = _apply_b62_model_policy(messages)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
@@ -478,11 +488,24 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
+        selected_model, messages = _apply_b62_model_policy(messages)
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
+    if settings.runtime_mode == "b14" and any(isinstance(item, ImageAttachment) for item in attachments):
+        if not model_supports(selected_model, "image"):
+            return JSONResponse(
+                {
+                    "error": {
+                        "code": "image_model_unavailable",
+                        "message": "현재 선택된 AI 모델은 사진 입력을 지원하지 않습니다. 사진 지원 모델이 준비되면 다시 이용해 주세요.",
+                    }
+                },
+                status_code=503,
+            )
+
     if tool_request is not None and tool_request.tool.id == "deep_research":
         if settings.runtime_mode != "b14" or settings.web_provider not in {"mock", "firecrawl"}:
             return JSONResponse(

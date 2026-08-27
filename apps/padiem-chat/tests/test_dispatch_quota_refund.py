@@ -8,6 +8,7 @@ import pytest
 from app.config import Settings
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.main import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.usage_gate import InMemoryUsageCounterStore
 
 
@@ -37,9 +38,9 @@ def _success_body():
             "choices": [{"message": {"role": "assistant", "content": "안녕하세요."}}],
             "business14": {
                 "request_id": "b14req_dispatch_refund",
-                "route_mode": "auto",
-                "selected_model": "openrouter/free",
-                "selected_provider": "OpenRouter",
+                "route_mode": "manual",
+                "selected_model": DEFAULT_B14_MODEL_ID,
+                "selected_provider": "Agnes AI",
             },
         }
     ).encode("utf-8")
@@ -75,8 +76,10 @@ class FakeServiceTransport:
     async def post_json(self, url, payload):
         self.calls += 1
         assert url.endswith("/api/pilot/v1/chat/completions")
-        assert payload["model"] == "b14/auto"
-        assert payload["business14"]["required_capabilities"] == ["free"]
+        assert payload["model"] == DEFAULT_B14_MODEL_ID
+        assert payload["business14"]["required_capabilities"] == ["chat"]
+        assert payload["business14"]["allow_external_fallback"] is False
+        assert payload["business14"]["max_attempts"] == 1
         if self.error is not None:
             raise self.error
         return self.status, self.body

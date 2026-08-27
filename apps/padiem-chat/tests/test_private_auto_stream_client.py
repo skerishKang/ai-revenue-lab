@@ -13,14 +13,15 @@ from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
     _refund_active_reservation,
 )
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.skills import get_skill
 from app.usage_gate import UsageDecision
 
 
-AUTO_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
+MANUAL_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
-WINNING_MODEL = "openrouter/free"
-WINNING_PROVIDER = "OpenRouter (free router)"
+WINNING_MODEL = DEFAULT_B14_MODEL_ID
+WINNING_PROVIDER = "Agnes AI"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -42,7 +43,7 @@ def _settings() -> Settings:
 
 def _frame(content: str) -> bytes:
     payload = {
-        "id": "b62_auto_stream_1",
+        "id": "b62_explicit_stream_1",
         "object": "chat.completion.chunk",
         "model": WINNING_MODEL,
         "choices": [
@@ -53,15 +54,15 @@ def _frame(content: str) -> bytes:
             }
         ],
         "business14": {
-            "request_id": "b14_auto_stream_1",
-            "route_mode": "auto",
+            "request_id": "b14_explicit_stream_1",
+            "route_mode": "manual",
             "selected_provider": WINNING_PROVIDER,
             "selected_model": WINNING_MODEL,
-            "selected_upstream_model": WINNING_MODEL,
-            "selected_route_id": f"openrouter:{WINNING_MODEL}",
-            "reason_codes": ["capabilities:free", f"selected:{WINNING_MODEL}"],
-            "fallback_used": True,
-            "attempt_count": 2,
+            "selected_upstream_model": "agnes-2.5-flash",
+            "selected_route_id": f"platform:{WINNING_MODEL}",
+            "reason_codes": ["manual_selection", "external_fallback_disabled"],
+            "fallback_used": False,
+            "attempt_count": 1,
             "route_evidence_status": "live_streaming_router_preview",
         },
     }
@@ -73,7 +74,7 @@ def _error_frame(code: str = "upstream_rate_limited") -> bytes:
         "error": {
             "code": code,
             "message": "bounded B14 stream error",
-            "request_id": "b14_auto_stream_1",
+            "request_id": "b14_explicit_stream_1",
             "after_stream_start": True,
         }
     }
@@ -84,11 +85,11 @@ def _error_frame(code: str = "upstream_rate_limited") -> bytes:
     )
 
 
-def test_private_auto_stream_uses_core_auto_endpoint_and_product_policy():
+def test_private_compat_stream_uses_manual_endpoint_and_b62_explicit_policy():
     async def scenario():
         seen_url = None
         seen = None
-        upstream = ChunkStream([_frame("자동 토큰"), b"data: [DONE]\n\n"])
+        upstream = ChunkStream([_frame("Agnes 토큰"), b"data: [DONE]\n\n"])
 
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal seen_url, seen
@@ -114,23 +115,23 @@ def test_private_auto_stream_uses_core_auto_endpoint_and_product_policy():
         ]
 
         skill = get_skill()
-        assert seen_url == "https://b14.internal" + AUTO_PATH
+        assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
-        assert seen["model"] == "b14/auto"
-        assert seen["business14"]["required_capabilities"] == ["free"]
-        assert seen["business14"]["allow_external_fallback"] is True
-        assert seen["business14"]["max_attempts"] == 3
+        assert seen["model"] == WINNING_MODEL
+        assert seen["business14"]["required_capabilities"] == ["chat"]
+        assert seen["business14"]["allow_external_fallback"] is False
+        assert seen["business14"]["max_attempts"] == 1
         assert seen["business14"]["task_type"] == skill.task_type
         assert seen["business14"]["optimize_for"] == skill.optimize_for
         assert seen["messages"][0]["role"] == "system"
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
 
-        assert events[0].delta_content == "자동 토큰"
-        assert events[0].route.route_mode == "auto"
+        assert events[0].delta_content == "Agnes 토큰"
+        assert events[0].route.route_mode == "manual"
         assert events[0].route.selected_model == WINNING_MODEL
         assert events[0].route.selected_provider == WINNING_PROVIDER
-        assert events[0].route.fallback_used is True
-        assert events[0].route.attempt_count == 2
+        assert events[0].route.fallback_used is False
+        assert events[0].route.attempt_count == 1
         assert events[-1].done is True
         assert events[-1].route.selected_model == WINNING_MODEL
         assert upstream.closed is True
@@ -138,7 +139,35 @@ def test_private_auto_stream_uses_core_auto_endpoint_and_product_policy():
     asyncio.run(scenario())
 
 
-def test_private_auto_stream_post_start_error_is_bounded_no_fake_done():
+def test_private_compat_stream_agnes_alias_is_stripped_before_b14():
+    async def scenario():
+        seen = None
+        upstream = ChunkStream([_frame("답변"), b"data: [DONE]\n\n"])
+
+        async def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal seen
+            seen = json.loads(request.content)
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/event-stream"},
+                stream=upstream,
+            )
+
+        client = B14Client(_settings(), stream_transport=httpx.MockTransport(handler))
+        events = [
+            event
+            async for event in client.stream_text_auto(
+                [{"role": "user", "content": "/agnes 한국어로 답해줘"}]
+            )
+        ]
+        assert seen["model"] == WINNING_MODEL
+        assert seen["messages"][-1] == {"role": "user", "content": "한국어로 답해줘"}
+        assert events[-1].done is True
+
+    asyncio.run(scenario())
+
+
+def test_private_compat_stream_post_start_error_is_bounded_no_fake_done():
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200,
@@ -162,7 +191,7 @@ def test_private_auto_stream_post_start_error_is_bounded_no_fake_done():
     asyncio.run(scenario())
 
 
-def test_private_auto_stream_missing_binding_fails_closed_without_public_http():
+def test_private_compat_stream_missing_binding_fails_closed_without_public_http():
     public_calls = 0
 
     async def public_handler(request: httpx.Request) -> httpx.Response:
@@ -187,7 +216,7 @@ def test_private_auto_stream_missing_binding_fails_closed_without_public_http():
     assert public_calls == 0
 
 
-def test_private_auto_stream_consumer_close_closes_core_transport():
+def test_private_compat_stream_consumer_close_closes_core_transport():
     async def scenario():
         upstream = ChunkStream([_frame("부분"), b"data: [DONE]\n\n"])
 
@@ -208,7 +237,7 @@ def test_private_auto_stream_consumer_close_closes_core_transport():
     asyncio.run(scenario())
 
 
-def test_mock_private_auto_stream_is_deterministic_and_zero_network():
+def test_mock_private_compat_stream_is_deterministic_explicit_and_zero_network():
     calls = 0
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -224,15 +253,15 @@ def test_mock_private_auto_stream_is_deterministic_and_zero_network():
 
     async def scenario():
         events = [event async for event in client.stream_text_auto(MESSAGES)]
-        assert events[0].delta_content.startswith("모의 자동 스트리밍 상태입니다")
-        assert events[0].model == "b14/auto"
+        assert events[0].delta_content.startswith("모의 스트리밍 상태입니다")
+        assert events[0].model == WINNING_MODEL
         assert events[-1].done is True
 
     asyncio.run(scenario())
     assert calls == 0
 
 
-def test_private_auto_stream_does_not_claim_attachment_tool_or_model_arguments():
+def test_private_compat_stream_does_not_claim_attachment_tool_or_model_arguments():
     client = B14Client(Settings(runtime_mode="mock"))
     with pytest.raises(TypeError):
         client.stream_text_auto(MESSAGES, attachments=())  # type: ignore[call-arg]
@@ -266,7 +295,7 @@ async def _reserve(store: ReservationStore) -> None:
     )
 
 
-def test_dispatch_aware_auto_stream_refunds_missing_binding_pre_dispatch():
+def test_dispatch_aware_compat_stream_refunds_missing_binding_pre_dispatch():
     async def scenario():
         store = ReservationStore()
         await _reserve(store)
@@ -283,7 +312,7 @@ def test_dispatch_aware_auto_stream_refunds_missing_binding_pre_dispatch():
     asyncio.run(scenario())
 
 
-def test_dispatch_aware_auto_stream_clears_refund_before_transport_attempt():
+def test_dispatch_aware_compat_stream_clears_refund_before_transport_attempt():
     async def scenario():
         store = ReservationStore()
         await _reserve(store)

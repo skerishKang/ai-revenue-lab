@@ -22,6 +22,7 @@ from padiem_ai_core import (
 
 from .attachments import ImageAttachment
 from .config import Settings
+from .model_policy import ModelPolicyError, model_supports, resolve_model_policy
 from .skills import Skill, get_skill, skill_public_metadata
 
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
@@ -115,6 +116,13 @@ def _translate_core_error(exc: B14ExecutionError) -> ChatRuntimeError:
         "upstream_error",
         "답변을 불러오지 못했습니다. 다시 시도해 주세요.",
     )
+
+
+def _resolve_b62_policy(messages: list[dict[str, str]]):
+    try:
+        return resolve_model_policy(messages)
+    except ModelPolicyError as exc:
+        raise ChatRuntimeError(422, exc.code, exc.message) from exc
 
 
 class B14Client:
@@ -237,7 +245,13 @@ class B14Client:
         skill: Skill | None = None,
         additional_system_context: str | None = None,
     ) -> AsyncIterator[B14StreamEvent]:
-        """Yield private B62 auto-route stream events through B14 Router authority."""
+        """Compatibility entrypoint for B62's simple default UX.
+
+        Despite the historical method name, B62 must never invoke B14's
+        `b14/auto` router. Resolve B62's own bounded policy to an exact B14 model
+        and execute one manual route with no provider/model fallback.
+        """
+        policy = _resolve_b62_policy(messages)
         resolved_skill = skill or get_skill()
         system_content = resolved_skill.system_instruction
         if additional_system_context is not None:
@@ -251,20 +265,20 @@ class B14Client:
 
         if self.settings.runtime_mode == "mock":
             prompt = next(
-                (m["content"] for m in reversed(messages) if m.get("role") == "user"),
+                (m["content"] for m in reversed(policy.messages) if m.get("role") == "user"),
                 "",
             )
             yield B14StreamEvent(
-                response_id="mock_b62_auto_stream",
-                model="b14/auto",
+                response_id="mock_b62_stream",
+                model=policy.model_id,
                 delta_content=(
-                    "모의 자동 스트리밍 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    "모의 스트리밍 상태입니다. 실제 모델을 호출하지 않았습니다. "
                     f"입력하신 질문은 ‘{prompt[:120]}’입니다."
                 ),
             )
             yield B14StreamEvent(
-                response_id="mock_b62_auto_stream",
-                model="b14/auto",
+                response_id="mock_b62_stream",
+                model=policy.model_id,
                 done=True,
             )
             return
@@ -279,19 +293,19 @@ class B14Client:
         assert self.settings.b14_base_url is not None
         upstream_messages = [
             {"role": "system", "content": system_content},
-            *[dict(message) for message in messages],
+            *[dict(message) for message in policy.messages],
         ]
         stream_request = B14ChatRequest(
             messages=tuple(upstream_messages),
-            model="b14/auto",
+            model=policy.model_id,
             temperature=0.2,
             max_tokens=resolved_skill.max_tokens,
             routing=B14RoutingOptions(
                 task_type=resolved_skill.task_type,
                 optimize_for=resolved_skill.optimize_for,
-                allow_external_fallback=True,
-                max_attempts=3,
-                required_capabilities=("free",),
+                allow_external_fallback=False,
+                max_attempts=1,
+                required_capabilities=("chat",),
             ),
         )
         execution_transport = self.stream_transport or self.transport
@@ -303,7 +317,7 @@ class B14Client:
             ),
             transport=execution_transport,
         )
-        core_stream = core_client.stream_auto(stream_request)
+        core_stream = core_client.stream(stream_request)
         try:
             async for event in core_stream:
                 yield event
@@ -327,6 +341,7 @@ class B14Client:
         if len(attachments) > 1:
             raise ValueError("only one image attachment is supported")
 
+        policy = _resolve_b62_policy(messages)
         resolved_skill = skill or get_skill()
         system_content = resolved_skill.system_instruction
         if additional_system_context is not None:
@@ -341,24 +356,23 @@ class B14Client:
         attachment = attachments[0] if attachments else None
 
         if self.settings.runtime_mode == "mock":
-            prompt = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+            prompt = next((m["content"] for m in reversed(policy.messages) if m["role"] == "user"), "")
             if attachment is None:
                 answer = (
                     "모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
                     f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 입력하신 질문은 ‘{prompt[:120]}’입니다. "
-                    "B14 연결 모드에서는 같은 작업 방식으로 자동 추천 경로의 실제 답변을 받습니다."
+                    "B14 연결 모드에서는 승인된 기본 모델 경로의 실제 답변을 받습니다."
                 )
             else:
                 answer = (
                     "모의 실행 상태입니다. 사진 1장을 첨부받았지만 실제 모델 호출이나 이미지 분석은 하지 않았습니다. "
-                    f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 질문은 ‘{prompt[:120]}’입니다. "
-                    "B14 연결 모드에서는 이미지 입력을 지원하는 모델 경로로 분석합니다."
+                    f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 질문은 ‘{prompt[:120]}’입니다."
                 )
             result: dict[str, Any] = {
                 "answer": answer,
                 "request_id": "mock_b62",
                 "runtime": "mock",
-                "route": {"mode": "auto", "model": None, "provider": None},
+                "route": {"mode": "manual", "model": policy.model_id, "provider": None},
                 "skill": skill_public_metadata(resolved_skill),
             }
             if attachment is not None:
@@ -372,10 +386,17 @@ class B14Client:
                 "AI 내부 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
             )
 
+        if attachment is not None and not model_supports(policy.model_id, "image"):
+            raise ChatRuntimeError(
+                503,
+                "image_model_unavailable",
+                "현재 선택된 AI 모델은 사진 입력을 지원하지 않습니다. 사진 지원 모델이 준비되면 다시 이용해 주세요.",
+            )
+
         if attachment is None:
-            user_messages: list[dict[str, Any]] = [dict(message) for message in messages]
+            user_messages: list[dict[str, Any]] = [dict(message) for message in policy.messages]
         else:
-            user_messages = _messages_with_attachment(messages, attachment)
+            user_messages = _messages_with_attachment(policy.messages, attachment)
 
         upstream_messages: list[dict[str, Any]] = [
             {"role": "system", "content": system_content},
@@ -383,20 +404,20 @@ class B14Client:
         ]
 
         assert self.settings.b14_base_url is not None
-        required_capabilities = ["free"]
+        required_capabilities = ["chat"]
         if attachment is not None:
             required_capabilities.append("image")
 
         request = B14MultimodalChatRequest(
             messages=tuple(upstream_messages),
-            model="b14/auto",
+            model=policy.model_id,
             temperature=0.2,
             max_tokens=resolved_skill.max_tokens,
             routing=B14RoutingOptions(
                 task_type=resolved_skill.task_type,
                 optimize_for=resolved_skill.optimize_for,
-                allow_external_fallback=True,
-                max_attempts=3,
+                allow_external_fallback=False,
+                max_attempts=1,
                 required_capabilities=tuple(required_capabilities),
             ),
         )
@@ -419,7 +440,7 @@ class B14Client:
         except B14ExecutionError as exc:
             raise _translate_core_error(exc) from exc
 
-        route_mode = execution.route.route_mode or "auto"
+        route_mode = execution.route.route_mode or "manual"
         result = {
             "answer": execution.answer,
             "request_id": execution.route.request_id,
