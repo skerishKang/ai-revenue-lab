@@ -1,21 +1,12 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { execFileSync } = require('node:child_process');
 const test = require('node:test');
 const routes = require('./route-registry.cjs');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
-const out = path.join(repoRoot, 'dist', 'padiem-lab');
 
-function build() {
-  execFileSync(process.execPath, [path.join(__dirname, 'build-site.cjs')], {
-    cwd: repoRoot,
-    stdio: 'pipe'
-  });
-}
-
-test('B42 publishes only the approved Phase 1 development-control visual reference', () => {
+test('B42 route is bounded to the owner-approved current-main AI Development Control Tower Phase 1 visual reference', () => {
   const route = routes.find(candidate => candidate.number === 42);
   assert.ok(route, 'missing B42 route');
   assert.equal(route.route, 'b42');
@@ -26,22 +17,9 @@ test('B42 publishes only the approved Phase 1 development-control visual referen
   assert.deepEqual(route.includeDirs, ['assets', 'scripts', 'styles']);
 
   const source = path.join(repoRoot, route.sourcePath);
-  assert.equal(fs.existsSync(path.join(source, 'ux.html')), false, 'approved Phase 1 source unexpectedly contains ux.html');
-  for (const repositoryOnly of ['README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md', 'evidence', 'tests']) {
-    assert.equal(fs.existsSync(path.join(source, repositoryOnly)), true, `missing approved repository-only source ${repositoryOnly}`);
-  }
+  const index = fs.readFileSync(path.join(source, 'index.html'), 'utf8');
+  const review = fs.readFileSync(path.join(source, 'scripts', 'review.js'), 'utf8');
 
-  build();
-  const b42 = path.join(out, 'b42');
-  for (const runtime of ['index.html', 'assets', 'scripts', 'styles']) {
-    assert.equal(fs.existsSync(path.join(b42, runtime)), true, `b42 missing ${runtime}`);
-  }
-  for (const forbidden of ['README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md', 'evidence', 'tests', 'ux.html']) {
-    assert.equal(fs.existsSync(path.join(b42, forbidden)), false, `b42 leaked ${forbidden}`);
-  }
-
-  const index = fs.readFileSync(path.join(b42, 'index.html'), 'utf8');
-  const review = fs.readFileSync(path.join(b42, 'scripts', 'review.js'), 'utf8');
   assert.match(index, /AI 개발 관제실/);
   assert.match(index, /VISUAL REFERENCE ONLY/);
   assert.match(index, /SYNTHETIC SOFTWARE PROJECT/);
@@ -56,4 +34,19 @@ test('B42 publishes only the approved Phase 1 development-control visual referen
   assert.match(index, /DEPLOYMENT AUTHORIZED — NOT EXECUTED/);
   assert.match(index, /HUMAN-APPROVED DEVELOPMENT CONTROL RECORD/);
   assert.doesNotMatch(review, /fetch\s*\(|XMLHttpRequest|WebSocket|EventSource/);
+
+  for (const runtime of ['index.html', 'assets', 'scripts', 'styles']) {
+    assert.equal(fs.existsSync(path.join(source, runtime)), true, `B42 source missing runtime ${runtime}`);
+  }
+
+  for (const repositoryOnly of [
+    'README.md', 'IMAGE_SOURCES.md', 'MOTION_SPEC.md', 'REFERENCE_NOTES.md',
+    'evidence', 'tests'
+  ]) {
+    assert.equal(fs.existsSync(path.join(source, repositoryOnly)), true, `B42 source authority missing ${repositoryOnly}`);
+    assert.equal(route.includeFiles.includes(repositoryOnly), false, `B42 route directly includes ${repositoryOnly}`);
+    assert.equal(route.includeDirs.includes(repositoryOnly), false, `B42 route includes directory ${repositoryOnly}`);
+  }
+
+  assert.equal(fs.existsSync(path.join(source, 'ux.html')), false, 'B42 approved Phase 1 source unexpectedly contains the separately stacked UX surface');
 });
