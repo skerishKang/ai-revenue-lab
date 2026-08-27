@@ -298,6 +298,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 55,
+    route: "b55",
+    sourcePath: "reference/business-55-local-ai-fleet-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "로컬 AI 플릿",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 59,
     route: "b59",
     sourcePath: "reference/business-59-living-archive-v1",
