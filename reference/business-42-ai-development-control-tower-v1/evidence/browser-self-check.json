@@ -1,0 +1,206 @@
+{
+  "result": "BROWSER_SELF_CHECK_PASS",
+  "mode": "inline-exact-bytes-fallback",
+  "matrix": {
+    "1440x1100": {
+      "cover": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "work-order": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "roles": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "evidence": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "gates": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "decision": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "mobile": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "motion": {
+        "equal": true,
+        "stable": true,
+        "computed_end_ms": 790
+      }
+    },
+    "768x1024": {
+      "cover": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "work-order": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "roles": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "evidence": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "gates": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "decision": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "mobile": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "motion": {
+        "equal": true,
+        "stable": true,
+        "computed_end_ms": 790
+      }
+    },
+    "390x844": {
+      "cover": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "work-order": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "roles": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "evidence": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "gates": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "decision": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "mobile": {
+        "selected": true,
+        "visible": true,
+        "others_hidden": true,
+        "roving": true,
+        "overflow": 0,
+        "assets_rendered": true
+      },
+      "motion": {
+        "equal": true,
+        "stable": true,
+        "computed_end_ms": 790
+      }
+    }
+  },
+  "errors": {
+    "console_page": [],
+    "failed_requests": [],
+    "external_requests": []
+  },
+  "failed": [],
+  "localhost_navigation_error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:34813/index.html\nCall log:\n  - navigating to \"http://127.0.0.1:34813/index.html\", waiting until \"networkidle\"\n",
+  "reduced_motion": {
+    "complete": true,
+    "boundaries": true
+  }
+}

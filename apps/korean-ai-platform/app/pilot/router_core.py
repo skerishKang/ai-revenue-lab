@@ -120,6 +120,8 @@ class RouteDecision:
     request_id: str
     provider_mode: str
     max_attempts: int
+    credential_source: str = ""  # platform_secret | openrouter | request_byok | none
+    platform_provider_id: str = ""
 
 
 def _new_request_id() -> str:
@@ -134,6 +136,38 @@ def _check_credentials() -> tuple[bool, str]:
         return False, NoKeyReason.LIVE_MODE_REQUIRES_KEY.value
     # mock mode
     return False, NoKeyReason.NO_KEY_SET.value
+
+
+def _credential_status_for(cm) -> tuple[bool, str, str, str]:
+    """Resolve credential availability/status for a catalog model.
+
+    Returns ``(available, status, source, platform_provider_id)``.
+    ``platform_secret`` models read their own Provider binding; missing secret
+    fails closed. Everything else defers to the OpenRouter adapter config.
+    """
+    if cm.credential_source == "platform_secret":
+        from app.pilot import platform_secrets as ps
+
+        spec = ps.get_platform_provider(cm.platform_provider_id)
+        present = ps.is_secret_present(spec) if spec else False
+        return (
+            present,
+            "key_available" if present else "no_key_set",
+            "platform_secret",
+            cm.platform_provider_id or "",
+        )
+    ok, status = _check_credentials()
+    return ok, status, "openrouter", ""
+
+
+def _platform_secret_present(cm) -> bool:
+    """True if a platform_secret model's secret is present; non-secret models always True."""
+    from app.pilot import platform_secrets as ps
+
+    if cm.credential_source != "platform_secret":
+        return True
+    spec = ps.get_platform_provider(cm.platform_provider_id)
+    return ps.is_secret_present(spec) if spec else False
 
 
 def resolve_manual_route(
@@ -167,8 +201,20 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
-    cred_ok, cred_status = _check_credentials()
-    route_id = f"openrouter:{cm.model_id}"
+    cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(cm)
+
+    # Platform-owned secret missing -> fail closed with zero upstream calls.
+    if cred_source == "platform_secret" and not cred_ok:
+        raise NoSafeRoute(
+            reason_code="provider_secret_missing",
+            message=f"모델 '{model_id}'의 Provider 비밀키가 설정되지 않았습니다.",
+            upstream_called=False,
+        )
+
+    route_id = (
+        f"platform:{cm.model_id}" if cred_source == "platform_secret"
+        else f"openrouter:{cm.model_id}"
+    )
 
     fallback_candidates: list[dict[str, str]] = []
     if allow_external_fallback:
@@ -178,7 +224,11 @@ def resolve_manual_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
-                "route_id": f"openrouter:{m.model_id}",
+                "route_id": (
+                    f"platform:{m.model_id}"
+                    if m.credential_source == "platform_secret"
+                    else f"openrouter:{m.model_id}"
+                ),
                 "reason": "catalog_alternative",
             }
             for m in all_models
@@ -205,6 +255,8 @@ def resolve_manual_route(
         request_id=request_id,
         provider_mode=openrouter_config.provider_mode,
         max_attempts=1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3),
+        credential_source=cred_source,
+        platform_provider_id=plat_pid,
     )
 
 
@@ -237,23 +289,37 @@ def resolve_auto_route(
     Returns RouteDecision. Raises NoSafeRoute if no candidate is found.
     """
     request_id = _new_request_id()
-    cred_ok, cred_status = _check_credentials()
 
-    candidates = _filter_catalog(
+    raw_candidates = _filter_catalog(
         required_capabilities=required_capabilities,
         task_type=task_type,
     )
 
     excluded: list[dict[str, str]] = []
+    secret_missing_ids: set[str] = set()
 
     all_models = get_catalog_models()
+    candidates = []
     for m in all_models:
-        if m not in candidates:
+        if m in raw_candidates:
+            if m.credential_source == "platform_secret" and not _platform_secret_present(m):
+                secret_missing_ids.add(m.model_id)
+                continue
+            candidates.append(m)
+        else:
             excluded.append({
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
                 "reason": "capability_mismatch",
+            })
+    for m in all_models:
+        if m.model_id in secret_missing_ids:
+            excluded.append({
+                "model_id": m.model_id,
+                "upstream_model": m.upstream_model,
+                "provider": m.provider,
+                "reason": "provider_secret_missing",
             })
 
     if not candidates:
@@ -271,7 +337,11 @@ def resolve_auto_route(
         task_type=task_type,
     )
     selected = sorted_candidates[0]
-    route_id = f"openrouter:{selected.model_id}"
+    cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(selected)
+    route_id = (
+        f"platform:{selected.model_id}" if cred_source == "platform_secret"
+        else f"openrouter:{selected.model_id}"
+    )
 
     if allow_external_fallback:
         fallback_candidates = [
@@ -279,7 +349,11 @@ def resolve_auto_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
-                "route_id": f"openrouter:{m.model_id}",
+                "route_id": (
+                    f"platform:{m.model_id}"
+                    if m.credential_source == "platform_secret"
+                    else f"openrouter:{m.model_id}"
+                ),
                 "reason": "auto_fallback_candidate",
             }
             for m in sorted_candidates[1:]
@@ -314,6 +388,8 @@ def resolve_auto_route(
         request_id=request_id,
         provider_mode=openrouter_config.provider_mode,
         max_attempts=effective_max_attempts,
+        credential_source=cred_source,
+        platform_provider_id=plat_pid,
     )
 
 
