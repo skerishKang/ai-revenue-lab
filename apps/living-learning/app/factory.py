@@ -17,6 +17,7 @@ from app.ai.base import AIProvider
 from app.api import portal_router
 from app.config import get_settings
 from app.db import apply_migrations
+from app.pipeline import ConcurrentOperationError
 from app.routes import router
 
 PORTAL_CONTRACT_VERSION = "v1"
@@ -27,7 +28,11 @@ _PRIVATE_PREFIXES = ("/api/v1/",)
 
 def get_connection_factory(database_url: str):
     def get_connection() -> sqlite3.Connection:
-        conn = sqlite3.connect(database_url, check_same_thread=False)
+        # Request connections are created, used, and closed inside one sync
+        # endpoint worker by RequestPipelineRunner. Keep sqlite3's default
+        # thread-ownership guard enabled so an accidental cross-thread use
+        # fails safely instead of entering native undefined behavior.
+        conn = sqlite3.connect(database_url)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys=ON")
         return conn
@@ -103,6 +108,20 @@ def create_app(settings=None) -> FastAPI:
     app.state.provider = create_provider(settings)
 
     apply_migrations(settings.database_url)
+
+    # A duplicate request that reaches an already-held atomic claim is an
+    # expected bounded product state, not an application crash. The Phase 1
+    # idempotency contract explicitly allows one concurrent caller to receive
+    # 422 while the owner continues; a completed retry then replays the result.
+    @app.exception_handler(ConcurrentOperationError)
+    async def concurrent_operation_error_handler(
+        _request: Request,
+        _exc: ConcurrentOperationError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=422,
+            content={"detail": {"error": "concurrent_operation"}},
+        )
 
     # Restrictive CORS: exact-origin allowlist only, never wildcard with
     # credentials. Bearer tokens (no cookies) => allow_credentials=False.
