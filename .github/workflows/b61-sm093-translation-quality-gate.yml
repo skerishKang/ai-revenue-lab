@@ -2,8 +2,7 @@ name: B61 SM-093 Translation Quality Gate
 
 on:
   push:
-    branches:
-      - feat/b61-sm093-translation-quality-gate
+    branches: [feat/b61-sm093-translation-quality-gate]
   workflow_dispatch:
 
 permissions:
@@ -15,8 +14,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Install fixed translation runtime
-        run: |
-          python -m pip install --disable-pip-version-check --quiet 'transformers<5' torch sentencepiece sacremoses
+        run: python -m pip install --disable-pip-version-check --quiet 'transformers<5' torch sentencepiece sacremoses
 
       - name: Download authoritative sources and translate bounded sample
         env:
@@ -27,140 +25,91 @@ jobs:
           import json, hashlib, os, re, urllib.request, zipfile, tempfile, pathlib, datetime
           from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-          OUT = pathlib.Path(os.environ['RUNNER_TEMP']) / 'sm093-translation-quality'
-          OUT.mkdir(parents=True, exist_ok=True)
-          MODEL_ID = os.environ['MODEL_ID']
-          MODEL_REVISION = os.environ['MODEL_REVISION']
+          OUT=pathlib.Path(os.environ['RUNNER_TEMP'])/'sm093-translation-quality'; OUT.mkdir(parents=True,exist_ok=True)
+          MODEL_ID=os.environ['MODEL_ID']; MODEL_REVISION=os.environ['MODEL_REVISION']
+          urls={
+            'bible-web':'https://ebible.org/Scriptures/engwebp_usfm.zip',
+            'crime-and-punishment':'https://www.gutenberg.org/cache/epub/2554/pg2554.txt',
+            'pride-and-prejudice':'https://www.gutenberg.org/cache/epub/1342/pg1342.txt',
+            'alice-in-wonderland':'https://www.gutenberg.org/cache/epub/11/pg11.txt'}
+          expected={
+            'bible-web':'2d2dc7b443a4cf398dfe05d1001195887c74a80b388003358ccc8a6bfc1c5c07',
+            'crime-and-punishment':'d139120965c81f10e3f747d891a49babdb49d986b25f7ab25299b1bbf4731146',
+            'pride-and-prejudice':'74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806',
+            'alice-in-wonderland':'01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e'}
+          raw={}; source_meta={}
+          for key,url in urls.items():
+            req=urllib.request.Request(url,headers={'User-Agent':'StoryMemory-SM093-QA/1.0'})
+            with urllib.request.urlopen(req,timeout=90) as r:
+              data=r.read(); final_url=r.geturl(); content_type=r.headers.get('Content-Type')
+            sha=hashlib.sha256(data).hexdigest()
+            if sha!=expected[key]: raise SystemExit(f'AUTHORITY_DRIFT {key}: {sha} != {expected[key]}')
+            raw[key]=data; source_meta[key]={'url':url,'final_url':final_url,'bytes':len(data),'sha256':sha,'content_type':content_type}
 
-          urls = {
-              'bible-web': 'https://ebible.org/Scriptures/engwebp_usfm.zip',
-              'crime-and-punishment': 'https://www.gutenberg.org/cache/epub/2554/pg2554.txt',
-              'pride-and-prejudice': 'https://www.gutenberg.org/cache/epub/1342/pg1342.txt',
-              'alice-in-wonderland': 'https://www.gutenberg.org/cache/epub/11/pg11.txt',
-          }
-          raw = {}
-          source_meta = {}
-          for key, url in urls.items():
-              req = urllib.request.Request(url, headers={'User-Agent':'StoryMemory-SM093-QA/1.0'})
-              with urllib.request.urlopen(req, timeout=90) as r:
-                  data = r.read()
-                  final_url = r.geturl()
-                  content_type = r.headers.get('Content-Type')
-              raw[key] = data
-              source_meta[key] = {
-                  'url': url, 'final_url': final_url, 'bytes': len(data),
-                  'sha256': hashlib.sha256(data).hexdigest(), 'content_type': content_type
-              }
-
-          # Fixed authority hashes from the SM-038/039 freeze. Fail closed on drift.
-          expected = {
-              'bible-web':'2d2dc7b443a4cf398dfe05d1001195887c74a80b388003358ccc8a6bfc1c5c07',
-              'crime-and-punishment':'d139120965c81f10e3f747d891a49babdb49d986b25f7ab25299b1bbf4731146',
-              'pride-and-prejudice':'74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806',
-              'alice-in-wonderland':'01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e',
-          }
-          for key, sha in expected.items():
-              if source_meta[key]['sha256'] != sha:
-                  raise SystemExit(f'AUTHORITY_DRIFT {key}: {source_meta[key]["sha256"]} != {sha}')
-
-          note_re = re.compile(r'\\(?:f|x)\b.*?\\(?:f|x)\*')
-          w_re = re.compile(r'\\\+?w\s+([^|\\]+?)(?:\|[^\\]*?)?\\\+?w\*')
-          marker_re = re.compile(r'\\[A-Za-z][A-Za-z0-9+\-]*\*?(?:\s+)?')
+          note_re=re.compile(r'\\(?:f|x)\b.*?\\(?:f|x)\*')
+          w_re=re.compile(r'\\\+?w\s+([^|\\]+?)(?:\|[^\\]*?)?\\\+?w\*')
+          marker_re=re.compile(r'\\[A-Za-z][A-Za-z0-9+\-]*\*?(?:\s+)?')
           def surface(s):
-              s = note_re.sub('', s)
-              s = w_re.sub(lambda m: m.group(1), s)
-              s = marker_re.sub('', s)
-              s = re.sub(r'\s+', ' ', s).strip()
-              return s
+            s=note_re.sub('',s); s=w_re.sub(lambda m:m.group(1),s); s=marker_re.sub('',s)
+            return re.sub(r'\s+',' ',s).strip()
 
-          bible_targets = {
-              ('GEN',1,'1'), ('GEN',3,'13'), ('PSA',23,'1'), ('ISA',53,'5'),
-              ('MAT',5,'3'), ('JHN',3,'16'), ('1CO',13,'4'), ('REV',21,'4')
-          }
-          bible = {}
+          targets={('GEN',1,'1'),('GEN',3,'13'),('PSA',23,'1'),('ISA',53,'5'),('MAT',5,'3'),('JHN',3,'16'),('1CO',13,'4'),('REV',21,'4')}
+          bible={}
+          def parse_usfm(text):
+            book=None; chapter=None; current=None; buf=[]
+            def flush():
+              nonlocal current,buf
+              if current and current in targets: bible[current]=surface(' '.join(buf))
+              current=None; buf=[]
+            for line in text.splitlines():
+              if line.startswith('\\id '): book=line.split(None,2)[1].strip()
+              elif line.startswith('\\c '):
+                flush()
+                try: chapter=int(line.split()[1])
+                except: chapter=None
+              elif line.startswith('\\v '):
+                flush(); m=re.match(r'\\v\s+(\S+)\s*(.*)',line)
+                if m and book and chapter: current=(book,chapter,m.group(1)); buf=[m.group(2)]
+              elif current is not None and line.strip(): buf.append(line)
+            flush()
           with tempfile.TemporaryDirectory() as td:
-              zp = pathlib.Path(td)/'web.zip'; zp.write_bytes(raw['bible-web'])
-              with zipfile.ZipFile(zp) as z:
-                  for name in z.namelist():
-                      if not name.lower().endswith('.usfm'): continue
-                      text = z.read(name).decode('utf-8-sig', errors='replace')
-                      book = None; chapter = None; current = None; buf = []
-                      def flush():
-                          nonlocal current, buf
-                          if current and current in bible_targets:
-                              bible[current] = surface(' '.join(buf))
-                          current = None; buf = []
-                      for line in text.splitlines():
-                          if line.startswith('\\id '):
-                              book = line.split(None,2)[1].strip()
-                          elif line.startswith('\\c '):
-                              flush();
-                              try: chapter = int(line.split()[1])
-                              except: chapter = None
-                          elif line.startswith('\\v '):
-                              flush()
-                              m = re.match(r'\\v\s+(\S+)\s*(.*)', line)
-                              if m and book and chapter:
-                                  verse = m.group(1)
-                                  current = (book, chapter, verse)
-                                  buf = [m.group(2)]
-                          elif current is not None:
-                              # Preserve visible continuation text after paragraph/poetry/list markers.
-                              if line.startswith('\\'):
-                                  buf.append(line)
-                              elif line.strip():
-                                  buf.append(line)
-                      flush()
-          missing = sorted(bible_targets - set(bible))
+            zp=pathlib.Path(td)/'web.zip'; zp.write_bytes(raw['bible-web'])
+            with zipfile.ZipFile(zp) as z:
+              for name in z.namelist():
+                if name.lower().endswith('.usfm'): parse_usfm(z.read(name).decode('utf-8-sig',errors='replace'))
+          missing=sorted(targets-set(bible))
           if missing: raise SystemExit(f'MISSING_BIBLE_SAMPLES {missing}')
 
           def gutenberg_body(data):
-              t=data.decode('utf-8-sig', errors='replace').replace('\r\n','\n').replace('\r','\n')
-              sm=re.search(r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
-              em=re.search(r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
-              if not sm or not em: raise SystemExit('GUTENBERG_MARKER_MISSING')
-              return t[sm.end():em.start()]
-          def find_paragraph(data, phrase):
-              body=gutenberg_body(data)
-              for chunk in re.split(r'\n\s*\n', body):
-                  p=re.sub(r'\s+',' ',chunk).strip()
-                  if phrase.lower() in p.lower(): return p
-              raise SystemExit(f'PARAGRAPH_NOT_FOUND {phrase}')
+            t=data.decode('utf-8-sig',errors='replace').replace('\r\n','\n').replace('\r','\n')
+            sm=re.search(r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I); em=re.search(r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
+            if not sm or not em: raise SystemExit('GUTENBERG_MARKER_MISSING')
+            return t[sm.end():em.start()]
+          def find_paragraph(data,phrase):
+            for chunk in re.split(r'\n\s*\n',gutenberg_body(data)):
+              p=re.sub(r'\s+',' ',chunk).strip()
+              if phrase.lower() in p.lower(): return p
+            raise SystemExit(f'PARAGRAPH_NOT_FOUND {phrase}')
 
-          samples=[]
-          for b,c,v in sorted(bible_targets):
-              samples.append({'source':'bible-web','locator':f'bible:web:{b}:{c}:{v}','english':bible[(b,c,v)]})
+          samples=[{'source':'bible-web','locator':f'bible:web:{b}:{c}:{v}','english':bible[(b,c,v)]} for b,c,v in sorted(targets)]
           samples += [
-              {'source':'crime-and-punishment','locator':'qa:crime:opening','english':find_paragraph(raw['crime-and-punishment'],'On an exceptionally hot evening early in July')},
-              {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
-              {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')},
-          ]
+            {'source':'crime-and-punishment','locator':'qa:crime:opening','english':find_paragraph(raw['crime-and-punishment'],'On an exceptionally hot evening early in July')},
+            {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
+            {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
 
-          tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision=MODEL_REVISION)
-          model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_ID, revision=MODEL_REVISION, use_safetensors=True)
+          tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION)
+          model=AutoModelForSeq2SeqLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,use_safetensors=True)
           for item in samples:
-              encoded = tokenizer(item['english'], return_tensors='pt', truncation=True, max_length=512)
-              output = model.generate(**encoded, num_beams=4, max_new_tokens=512, renormalize_logits=True)
-              item['korean'] = tokenizer.decode(output[0], skip_special_tokens=True).strip()
-              item['source_text_sha256'] = hashlib.sha256(item['english'].encode()).hexdigest()
-              item['translation_text_sha256'] = hashlib.sha256(item['korean'].encode()).hexdigest()
-              item['hangul_chars'] = len(re.findall(r'[가-힣]', item['korean']))
-              if not item['korean'] or item['hangul_chars'] == 0:
-                  raise SystemExit(f'NO_KOREAN_OUTPUT {item["locator"]}')
+            enc=tokenizer(item['english'],return_tensors='pt',truncation=True,max_length=512)
+            out=model.generate(**enc,num_beams=4,max_new_tokens=512,renormalize_logits=True)
+            item['korean']=tokenizer.decode(out[0],skip_special_tokens=True).strip()
+            item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest(); item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest()
+            item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
+            if not item['korean'] or item['hangul_chars']==0: raise SystemExit(f'NO_KOREAN_OUTPUT {item["locator"]}')
 
-          result = {
-              'schema':'storymemory-sm093-translation-quality-gate-1.0',
-              'generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key',
-              'model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'CC-BY-4.0','provider_mode':'local-open-source-weights'},
-              'sources':source_meta,
-              'sample_count':len(samples),
-              'samples':samples,
-              'automatic_gate':'PASS'
-          }
+          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'CC-BY-4.0','provider_mode':'local-open-source-weights'},'sources':source_meta,'sample_count':len(samples),'samples':samples,'automatic_gate':'PASS'}
           (OUT/'translation_quality_samples.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
-          (OUT/'MODEL_ATTRIBUTION.txt').write_text(
-              f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: CC-BY-4.0\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
+          (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: CC-BY-4.0\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
           print(json.dumps({'sample_count':len(samples),'automatic_gate':'PASS'},indent=2))
           PY
           python "$RUNNER_TEMP/sm093_quality_gate.py"
