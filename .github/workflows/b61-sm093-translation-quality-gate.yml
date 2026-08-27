@@ -13,19 +13,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Install stable translation runtime
+      - name: Install fixed CPU runtime
         run: |
           python -m pip install --disable-pip-version-check --quiet 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install --disable-pip-version-check --quiet 'transformers==4.44.2' sentencepiece
+          python -m pip install --disable-pip-version-check --quiet 'transformers==4.57.1' sentencepiece
 
       - name: Download authoritative sources and translate bounded sample
         env:
-          MODEL_ID: facebook/m2m100_418M
-          MODEL_REVISION: ae6407352f7f86e328c0f0678d466fc4246e78b3
+          MODEL_ID: Qwen/Qwen3-0.6B
+          MODEL_REVISION: a819064c8d306516bf18ef0d2ff3746f5458e81e
         run: |
           cat > "$RUNNER_TEMP/sm093_quality_gate.py" <<'PY'
           import json, hashlib, os, re, urllib.request, zipfile, tempfile, pathlib, datetime, traceback
-          from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+          import torch, transformers
+          from transformers import AutoTokenizer, AutoModelForCausalLM
+
           OUT=pathlib.Path(os.environ['RUNNER_TEMP'])/'sm093-translation-quality'; OUT.mkdir(parents=True,exist_ok=True)
           MODEL_ID=os.environ['MODEL_ID']; MODEL_REVISION=os.environ['MODEL_REVISION']
           urls={
@@ -99,18 +101,22 @@ jobs:
             {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
             {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
 
-          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'MIT','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko','transformers':'4.44.2','torch':'2.5.1+cpu'},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':[],'samples':samples,'automatic_gate':'PENDING'}
+          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'Apache-2.0','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko','transformers':transformers.__version__,'torch':torch.__version__},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':[],'samples':samples,'automatic_gate':'PENDING'}
           exit_code=0
           try:
-            tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION,src_lang='en')
-            model=AutoModelForSeq2SeqLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,use_safetensors=False,low_cpu_mem_usage=False)
+            tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION)
+            model=AutoModelForCausalLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,torch_dtype=torch.float32,low_cpu_mem_usage=False)
             model.eval()
-            forced_bos_token_id=tokenizer.get_lang_id('ko')
             failed=[]
+            system='You are a professional English-to-Korean literary translator. Translate faithfully and naturally. Preserve all meaning, names, relationships, tone, negation, numbers, and sentence logic. Do not omit, summarize, explain, or add facts. For Bible text, translate only the supplied English wording rather than copying a memorized Korean Bible edition. Return only the Korean translation.'
             for item in samples:
-              enc=tokenizer(item['english'],return_tensors='pt',truncation=True,max_length=512)
-              out=model.generate(**enc,forced_bos_token_id=forced_bos_token_id,num_beams=4,max_new_tokens=384)
-              item['korean']=tokenizer.decode(out[0],skip_special_tokens=True).strip()
+              messages=[{'role':'system','content':system},{'role':'user','content':'Translate this English text into Korean:\n\n'+item['english']}]
+              prompt=tokenizer.apply_chat_template(messages,tokenize=False,add_generation_prompt=True,enable_thinking=False)
+              enc=tokenizer(prompt,return_tensors='pt',truncation=True,max_length=1400)
+              with torch.inference_mode():
+                out=model.generate(**enc,max_new_tokens=512,do_sample=False,pad_token_id=tokenizer.eos_token_id)
+              gen=out[0][enc['input_ids'].shape[-1]:]
+              item['korean']=tokenizer.decode(gen,skip_special_tokens=True).strip()
               item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest()
               item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest()
               item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
@@ -124,7 +130,7 @@ jobs:
             result['traceback']=traceback.format_exc()
             exit_code=3
           (OUT/'translation_quality_samples.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
-          (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: MIT\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
+          (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: Apache-2.0\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
           print(json.dumps({'sample_count':len(samples),'failed':result.get('failed_output_locators'),'automatic_gate':result['automatic_gate'],'runtime_error':result.get('runtime_error')},ensure_ascii=False,indent=2))
           raise SystemExit(exit_code)
           PY
