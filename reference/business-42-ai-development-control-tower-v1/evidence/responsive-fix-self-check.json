@@ -1,0 +1,271 @@
+{
+  "result": "RESPONSIVE_FIX_SELF_CHECK_PASS",
+  "mode": "inline-exact-bytes-fallback",
+  "previous_exact_head": "b5e78827dd87ff78aca4ac4a65565c6c2b2aff76",
+  "before_overflow_px": {
+    "cover@768x1024": 175,
+    "work-order@768x1024": 15,
+    "cover@390x844": 538,
+    "work-order@390x844": 378
+  },
+  "matrix": {
+    "1440x1100": {
+      "cover": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "work-order": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "roles": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "evidence": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "gates": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "decision": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "mobile": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "focus": [
+        "tab-work-order",
+        "true",
+        "solid",
+        "3px"
+      ],
+      "motion": {
+        "equal": true,
+        "stable": true,
+        "animationend": true,
+        "ms": 790
+      }
+    },
+    "768x1024": {
+      "cover": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "work-order": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "roles": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "evidence": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "gates": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "decision": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "mobile": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "focus": [
+        "tab-work-order",
+        "true",
+        "solid",
+        "3px"
+      ],
+      "motion": {
+        "equal": true,
+        "stable": true,
+        "animationend": true,
+        "ms": 790
+      }
+    },
+    "390x844": {
+      "cover": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "work-order": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "roles": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "evidence": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "gates": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "decision": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "mobile": {
+        "selected": true,
+        "one": true,
+        "roving": true,
+        "overflow": 0,
+        "clipping": 0,
+        "overlap": 0,
+        "assets": true
+      },
+      "focus": [
+        "tab-work-order",
+        "true",
+        "solid",
+        "3px"
+      ],
+      "motion": {
+        "equal": true,
+        "stable": true,
+        "animationend": true,
+        "ms": 790
+      }
+    }
+  },
+  "targeted": {
+    "cover@768x1024": {
+      "overflow": 0,
+      "clipping": 0,
+      "overlap": 0
+    },
+    "work-order@768x1024": {
+      "overflow": 0,
+      "clipping": 0,
+      "overlap": 0
+    },
+    "cover@390x844": {
+      "overflow": 0,
+      "clipping": 0,
+      "overlap": 0
+    },
+    "work-order@390x844": {
+      "overflow": 0,
+      "clipping": 0,
+      "overlap": 0
+    }
+  },
+  "failed": [],
+  "reduced": {
+    "complete": true,
+    "boundaries": true
+  }
+}
