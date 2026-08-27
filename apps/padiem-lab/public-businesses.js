@@ -352,6 +352,17 @@
       sourcePath: "reference/business-53-embedded-ai-sdk-v1/"
     }),
     Object.freeze({
+      number: 55,
+      slug: "local-ai-fleet",
+      title: "Local AI Fleet",
+      koreanTitle: "로컬 AI 플릿",
+      summary: "합성 로컬 AI 플릿의 모델 격리·워커 상태·작업 큐·용량·사고·재시도·사람 release authority를 명시적으로 검토하는 정적 운영 계획 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b55/",
+      sourcePath: "reference/business-55-local-ai-fleet-v1/"
+    }),
+    Object.freeze({
       number: 59,
       slug: "living-archive",
       title: "Living Archive",
