@@ -20,44 +20,28 @@ jobs:
 
       - name: Download authoritative sources and translate bounded sample
         env:
-          MODEL_ID: Qwen/Qwen3-0.6B
-          MODEL_REVISION: a819064c8d306516bf18ef0d2ff3746f5458e81e
+          MODEL_ID: Qwen/Qwen3-1.7B
+          MODEL_REVISION: 0fa42c2d7d84b04fafae145d7c0263b77225bbc8
         run: |
           cat > "$RUNNER_TEMP/sm093_quality_gate.py" <<'PY'
           import json, hashlib, os, re, urllib.request, zipfile, tempfile, pathlib, datetime, traceback
           import torch, transformers
           from transformers import AutoTokenizer, AutoModelForCausalLM
-
           OUT=pathlib.Path(os.environ['RUNNER_TEMP'])/'sm093-translation-quality'; OUT.mkdir(parents=True,exist_ok=True)
           MODEL_ID=os.environ['MODEL_ID']; MODEL_REVISION=os.environ['MODEL_REVISION']
-          urls={
-            'bible-web':'https://ebible.org/Scriptures/engwebp_usfm.zip',
-            'crime-and-punishment':'https://www.gutenberg.org/cache/epub/2554/pg2554.txt',
-            'pride-and-prejudice':'https://www.gutenberg.org/cache/epub/1342/pg1342.txt',
-            'alice-in-wonderland':'https://www.gutenberg.org/cache/epub/11/pg11.txt'}
-          expected={
-            'bible-web':'2d2dc7b443a4cf398dfe05d1001195887c74a80b388003358ccc8a6bfc1c5c07',
-            'crime-and-punishment':'d139120965c81f10e3f747d891a49babdb49d986b25f7ab25299b1bbf4731146',
-            'pride-and-prejudice':'74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806',
-            'alice-in-wonderland':'01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e'}
+          urls={'bible-web':'https://ebible.org/Scriptures/engwebp_usfm.zip','crime-and-punishment':'https://www.gutenberg.org/cache/epub/2554/pg2554.txt','pride-and-prejudice':'https://www.gutenberg.org/cache/epub/1342/pg1342.txt','alice-in-wonderland':'https://www.gutenberg.org/cache/epub/11/pg11.txt'}
+          expected={'bible-web':'2d2dc7b443a4cf398dfe05d1001195887c74a80b388003358ccc8a6bfc1c5c07','crime-and-punishment':'d139120965c81f10e3f747d891a49babdb49d986b25f7ab25299b1bbf4731146','pride-and-prejudice':'74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806','alice-in-wonderland':'01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e'}
           raw={}; source_meta={}
           for key,url in urls.items():
             req=urllib.request.Request(url,headers={'User-Agent':'StoryMemory-SM093-QA/1.0'})
-            with urllib.request.urlopen(req,timeout=90) as r:
-              data=r.read(); final_url=r.geturl(); ctype=r.headers.get('Content-Type')
+            with urllib.request.urlopen(req,timeout=90) as r: data=r.read(); final_url=r.geturl(); ctype=r.headers.get('Content-Type')
             sha=hashlib.sha256(data).hexdigest()
             if sha!=expected[key]: raise SystemExit(f'AUTHORITY_DRIFT {key}: {sha} != {expected[key]}')
             raw[key]=data; source_meta[key]={'url':url,'final_url':final_url,'bytes':len(data),'sha256':sha,'content_type':ctype}
-
-          note_re=re.compile(r'\\(?:f|x)\b.*?\\(?:f|x)\*')
-          w_re=re.compile(r'\\\+?w\s+([^|\\]+?)(?:\|[^\\]*?)?\\\+?w\*')
-          marker_re=re.compile(r'\\[A-Za-z][A-Za-z0-9+\-]*\*?(?:\s+)?')
+          note_re=re.compile(r'\\(?:f|x)\b.*?\\(?:f|x)\*'); w_re=re.compile(r'\\\+?w\s+([^|\\]+?)(?:\|[^\\]*?)?\\\+?w\*'); marker_re=re.compile(r'\\[A-Za-z][A-Za-z0-9+\-]*\*?(?:\s+)?')
           def surface(s):
-            s=note_re.sub('',s); s=w_re.sub(lambda m:m.group(1),s); s=marker_re.sub('',s)
-            return re.sub(r'\s+',' ',s).strip()
-
-          targets={('GEN',1,'1'),('GEN',3,'13'),('PSA',23,'1'),('ISA',53,'5'),('MAT',5,'3'),('JHN',3,'16'),('1CO',13,'4'),('REV',21,'4')}
-          bible={}
+            s=note_re.sub('',s); s=w_re.sub(lambda m:m.group(1),s); s=marker_re.sub('',s); return re.sub(r'\s+',' ',s).strip()
+          targets={('GEN',1,'1'),('GEN',3,'13'),('PSA',23,'1'),('ISA',53,'5'),('MAT',5,'3'),('JHN',3,'16'),('1CO',13,'4'),('REV',21,'4')}; bible={}
           def parse_usfm(text):
             book=None; chapter=None; current=None; buf=[]
             def flush():
@@ -82,11 +66,8 @@ jobs:
                 if name.lower().endswith('.usfm'): parse_usfm(z.read(name).decode('utf-8-sig',errors='replace'))
           missing=sorted(targets-set(bible))
           if missing: raise SystemExit(f'MISSING_BIBLE_SAMPLES {missing}')
-
           def gutenberg_body(data):
-            t=data.decode('utf-8-sig',errors='replace').replace('\r\n','\n').replace('\r','\n')
-            sm=re.search(r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
-            em=re.search(r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
+            t=data.decode('utf-8-sig',errors='replace').replace('\r\n','\n').replace('\r','\n'); sm=re.search(r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I); em=re.search(r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
             if not sm or not em: raise SystemExit('GUTENBERG_MARKER_MISSING')
             return t[sm.end():em.start()]
           def find_paragraph(data,phrase):
@@ -94,45 +75,24 @@ jobs:
               p=re.sub(r'\s+',' ',chunk).strip()
               if phrase.lower() in p.lower(): return p
             raise SystemExit(f'PARAGRAPH_NOT_FOUND {phrase}')
-
           samples=[{'source':'bible-web','locator':f'bible:web:{b}:{c}:{v}','english':bible[(b,c,v)]} for b,c,v in sorted(targets)]
-          samples += [
-            {'source':'crime-and-punishment','locator':'qa:crime:opening','english':find_paragraph(raw['crime-and-punishment'],'On an exceptionally hot evening early in July')},
-            {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
-            {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
-
+          samples += [{'source':'crime-and-punishment','locator':'qa:crime:opening','english':find_paragraph(raw['crime-and-punishment'],'On an exceptionally hot evening early in July')},{'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},{'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
           result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'Apache-2.0','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko','transformers':transformers.__version__,'torch':torch.__version__},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':[],'samples':samples,'automatic_gate':'PENDING'}
           exit_code=0
           try:
             tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION)
-            model=AutoModelForCausalLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,torch_dtype=torch.float32,low_cpu_mem_usage=False)
-            model.eval()
-            failed=[]
+            model=AutoModelForCausalLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,torch_dtype=torch.float32,low_cpu_mem_usage=False); model.eval(); failed=[]
             system='You are a professional English-to-Korean literary translator. Translate faithfully and naturally. Preserve all meaning, names, relationships, tone, negation, numbers, and sentence logic. Do not omit, summarize, explain, or add facts. For Bible text, translate only the supplied English wording rather than copying a memorized Korean Bible edition. Return only the Korean translation.'
             for item in samples:
               messages=[{'role':'system','content':system},{'role':'user','content':'Translate this English text into Korean:\n\n'+item['english']}]
-              prompt=tokenizer.apply_chat_template(messages,tokenize=False,add_generation_prompt=True,enable_thinking=False)
-              enc=tokenizer(prompt,return_tensors='pt',truncation=True,max_length=1400)
-              with torch.inference_mode():
-                out=model.generate(**enc,max_new_tokens=512,do_sample=False,pad_token_id=tokenizer.eos_token_id)
-              gen=out[0][enc['input_ids'].shape[-1]:]
-              item['korean']=tokenizer.decode(gen,skip_special_tokens=True).strip()
-              item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest()
-              item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest()
-              item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
+              prompt=tokenizer.apply_chat_template(messages,tokenize=False,add_generation_prompt=True,enable_thinking=False); enc=tokenizer(prompt,return_tensors='pt',truncation=True,max_length=1400)
+              with torch.inference_mode(): out=model.generate(**enc,max_new_tokens=512,do_sample=False,pad_token_id=tokenizer.eos_token_id)
+              gen=out[0][enc['input_ids'].shape[-1]:]; item['korean']=tokenizer.decode(gen,skip_special_tokens=True).strip(); item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest(); item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest(); item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
               if not item['korean'] or item['hangul_chars']==0: failed.append(item['locator'])
-            result['failed_output_locators']=failed
-            result['automatic_gate']='PASS' if not failed else 'FAIL'
-            exit_code=0 if not failed else 2
+            result['failed_output_locators']=failed; result['automatic_gate']='PASS' if not failed else 'FAIL'; exit_code=0 if not failed else 2
           except Exception as e:
-            result['automatic_gate']='RUNTIME_ERROR'
-            result['runtime_error']=type(e).__name__+': '+str(e)
-            result['traceback']=traceback.format_exc()
-            exit_code=3
-          (OUT/'translation_quality_samples.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
-          (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: Apache-2.0\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
-          print(json.dumps({'sample_count':len(samples),'failed':result.get('failed_output_locators'),'automatic_gate':result['automatic_gate'],'runtime_error':result.get('runtime_error')},ensure_ascii=False,indent=2))
-          raise SystemExit(exit_code)
+            result['automatic_gate']='RUNTIME_ERROR'; result['runtime_error']=type(e).__name__+': '+str(e); result['traceback']=traceback.format_exc(); exit_code=3
+          (OUT/'translation_quality_samples.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8'); (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: Apache-2.0\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8'); print(json.dumps({'sample_count':len(samples),'failed':result.get('failed_output_locators'),'automatic_gate':result['automatic_gate'],'runtime_error':result.get('runtime_error')},ensure_ascii=False,indent=2)); raise SystemExit(exit_code)
           PY
           python "$RUNNER_TEMP/sm093_quality_gate.py"
 
