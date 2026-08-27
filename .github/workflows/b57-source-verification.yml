@@ -1,0 +1,123 @@
+name: B57 Source Verification
+
+on:
+  pull_request:
+    paths:
+      - 'reference/business-57-classic-literature-translation-studio-v1/**'
+      - '.github/workflows/b57-source-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-b57-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Detect B57 source
+        id: source
+        shell: bash
+        run: |
+          if [ -d reference/business-57-classic-literature-translation-studio-v1 ]; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'B57 source is absent; this is a workflow-only validation run.'
+          fi
+
+      - name: Static source contracts
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          cd reference/business-57-classic-literature-translation-studio-v1
+          python evidence/validate_static.py
+          node --check scripts/review.js
+
+      - name: Install browser harness
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+          BROWSER_PATH="$(python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          p = sync_playwright().start()
+          print(p.chromium.executable_path)
+          p.stop()
+          PY
+          )"
+          sudo ln -sf "$BROWSER_PATH" /usr/bin/chromium
+          /usr/bin/chromium --version
+
+      - name: Browser exact-head validation
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          cd reference/business-57-classic-literature-translation-studio-v1
+          python evidence/validate_browser.py
+
+      - name: Evidence summary
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('reference/business-57-classic-literature-translation-studio-v1/evidence')
+          static = json.loads((root / 'validation.json').read_text(encoding='utf-8'))
+          browser = json.loads((root / 'browser-validation.json').read_text(encoding='utf-8'))
+
+          assert static['business'] == 57, static
+          assert static['phase'] == 'UI_ONLY', static
+          assert static['status'] == 'STATIC_CONTRACT_PASS', static
+          assert all(check['passed'] for check in static['checks']), static
+
+          assert browser['business'] == 57, browser
+          assert browser['status'] == 'BROWSER_VALIDATION_PASS', browser
+          assert all(check['passed'] for check in browser['checks']), browser
+          assert set(browser['viewports']) == {'1440x1100', '768x1024', '390x844'}, browser
+
+          expected_states = {'library', 'source-fidelity', 'comparison', 'ledger', 'poetry', 'mobile', 'weave'}
+          for viewport in browser['viewports'].values():
+            assert set(viewport['states']) == expected_states, viewport
+            assert viewport['consoleErrors'] == [], viewport
+            assert viewport['pageErrors'] == [], viewport
+            assert viewport['unhandledRejections'] == [], viewport
+            assert viewport['failedRequests'] == [], viewport
+            assert viewport['externalRuntimeRequests'] == [], viewport
+            assert viewport['keyboard']['passed'] is True, viewport
+            assert viewport['visibleFocus']['passed'] is True, viewport
+            assert viewport['mobileSourceReveal'] == {'open': True, 'closed': True}, viewport
+            for state in viewport['states'].values():
+              assert state['horizontalOverflow'] == 0, state
+              assert state['panelVisible'] is True, state
+              assert state['imagesLoaded'] is True, state
+
+          assert browser['motion']['computedMaximumEndMs'] == 680.0, browser['motion']
+          assert browser['motion']['geometryStable'] is True, browser['motion']
+          assert browser['motion']['firstSecondFinalEquivalent'] is True, browser['motion']
+          assert browser['motion']['focusStable'] is True, browser['motion']
+          assert browser['motion']['scrollStable'] is True, browser['motion']
+          assert browser['motion']['completionState'] is True, browser['motion']
+          assert browser['reducedMotion']['normalFinalInformationEquivalent'] is True, browser['reducedMotion']
+          assert browser['reducedMotion']['geometryStable'] is True, browser['reducedMotion']
+          assert browser['reducedMotion']['focusStable'] is True, browser['reducedMotion']
+          assert browser['reducedMotion']['scrollStable'] is True, browser['reducedMotion']
+          assert browser['reducedMotion']['completeImmediately'] is True, browser['reducedMotion']
+
+          print('B57_EXACT_HEAD_SOURCE_VERIFICATION_PASS')
+          print('static=', static['status'])
+          print('browser=', browser['status'])
+          print('states=', len(expected_states))
+          print('viewports=', len(browser['viewports']))
+          PY
