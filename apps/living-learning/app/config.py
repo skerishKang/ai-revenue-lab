@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     environment: str = "development"
     provider_model: str = "mock/mock-fixture"
     provider_type: str = "mock"
+    # Opt-in Padiem AI Core execution. These values are ignored in mock mode.
+    padiem_core_b14_base_url: str = ""
+    padiem_core_model: str = "b14/auto"
+    padiem_core_timeout_seconds: float = 20.0
     # Portal-ready boundary configuration.
     identity_provider: str = "fake"
     # Comma-separated exact origins. Empty => no CORS middleware (fail-closed).
