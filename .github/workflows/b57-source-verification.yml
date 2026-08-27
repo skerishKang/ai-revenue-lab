@@ -46,7 +46,7 @@ jobs:
         if: steps.source.outputs.present == 'true'
         shell: bash
         run: |
-          python -m pip install --disable-pip-version-check playwright
+          python -m pip install --disable-pip-version-check playwright pillow
           python -m playwright install --with-deps chromium
           BROWSER_PATH="$(python - <<'PY'
           from playwright.sync_api import sync_playwright
