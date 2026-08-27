@@ -123,6 +123,10 @@ def create_app() -> Starlette:
     # separate from both the manual preview and canonical endpoint promotion.
     from app.pilot.auto_stream_gateway import router as pilot_auto_stream_router
 
+    # Provider-neutral readiness truth for deployment gates. This endpoint is
+    # read-only and never performs an upstream Provider call.
+    from app.pilot.provider_readiness import router as provider_readiness_router
+
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
 
@@ -130,6 +134,7 @@ def create_app() -> Starlette:
         *pilot_api_router.routes,
         *pilot_stream_router.routes,
         *pilot_auto_stream_router.routes,
+        *provider_readiness_router.routes,
     ]:
         new_route = StarletteRoute(
             path="/api/pilot" + route.path,
