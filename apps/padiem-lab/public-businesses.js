@@ -363,6 +363,17 @@
       sourcePath: "reference/business-55-local-ai-fleet-v1/"
     }),
     Object.freeze({
+      number: 57,
+      slug: "classic-literature-translation-studio",
+      title: "Classic Literature Translation Studio",
+      koreanTitle: "고전문학 번역실",
+      summary: "퍼블릭도메인·합성 고전 텍스트를 원전 보존 번역과 현대 독해 번역으로 나란히 비교하고, 번역 판단·손실·출처를 검토하는 정적 번역 스튜디오 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b57/",
+      sourcePath: "reference/business-57-classic-literature-translation-studio-v1/"
+    }),
+    Object.freeze({
       number: 59,
       slug: "living-archive",
       title: "Living Archive",
