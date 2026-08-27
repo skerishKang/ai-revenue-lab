@@ -244,6 +244,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 33,
+    route: "b33",
+    sourcePath: "reference/business-33-research-memory-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "연구 기억실",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 35,
     route: "b35",
     sourcePath: "reference/business-35-ai-media-education-dx-v3",
