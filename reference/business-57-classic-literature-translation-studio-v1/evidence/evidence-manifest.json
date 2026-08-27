@@ -1,0 +1,165 @@
+{
+  "business": 57,
+  "slug": "classic-literature-translation-studio",
+  "generated_at": "2026-07-28",
+  "starting_remote_head": "c5ee696a6dcef346f28e487777b0f7068b22094c",
+  "evidence_source_head": "6737985f7a6488c1efd9a27aec91fda959ba83aa",
+  "final_head_record": "The final PR head is recorded in the PR body after the manifest commit; runtime byte hashes below remain authoritative.",
+  "runtime": [
+    {
+      "path": "index.html",
+      "bytes": 22317,
+      "sha256": "1b8bcd522801b1dd719e66b538e28f6f4adb19f1ce27b9095ac55c6bbda1f2aa"
+    },
+    {
+      "path": "styles/main.css",
+      "bytes": 20448,
+      "sha256": "1de13bafcc1ec10a9694980c7c8850ba64359fc0ad3f524891db22bea6df9fac"
+    },
+    {
+      "path": "scripts/review.js",
+      "bytes": 4068,
+      "sha256": "3903afc4b27f0ed1fbbcc6d67b49d7dccf437dfb9e7316b2ac25549077315db3"
+    },
+    {
+      "path": "assets/rose-mark.svg",
+      "bytes": 793,
+      "sha256": "27d03696aada182cc63fd2628e80057d38bbd430b2487ef4d8ff7cbce1f1b412"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/validation.json",
+      "bytes": 2209,
+      "sha256": "423a592b093b38bb4e0168b1bc2ae2627a826c76581f0d3e7929dd7b62e4d54d"
+    },
+    {
+      "path": "evidence/browser-validation.json",
+      "bytes": 12489,
+      "sha256": "478f2bfb358f004dd5f7954d33a13e3a7aece44f413101e085f3cf6aae2a7062"
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-comparison.png",
+      "bytes": 165859,
+      "sha256": "9f114829680e02256b6f83a0a7605b769f50e292073481aca508d785fdfdfc49",
+      "width": 1440,
+      "height": 1123,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-ledger.png",
+      "bytes": 123132,
+      "sha256": "1e2f1e4d3b2f1777e09d188e5751fc015bfea54ad5f12dbaeacf52e7073e1d0f",
+      "width": 1440,
+      "height": 1124,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-library.png",
+      "bytes": 141581,
+      "sha256": "7f5678b422a48d11596877c4f15eb2702ea48c7bbd84e9e2ede1ac8bbd6e3cee",
+      "width": 1440,
+      "height": 1100,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-mobile.png",
+      "bytes": 125841,
+      "sha256": "d5c8b9666cfaf0ca962ef8cadce715d492e8071e1415694bf6aadbe724d1485f",
+      "width": 1440,
+      "height": 1172,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-poetry.png",
+      "bytes": 137356,
+      "sha256": "e4c015c8055887156fb64e631798793703dfb4fb6554e140abdbc49d253a2d9f",
+      "width": 1440,
+      "height": 1124,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-source-fidelity.png",
+      "bytes": 231445,
+      "sha256": "c4b011a5fe59d2e4bd28bf2ccea21ef2b063f072b666b5f5307981a6973ea613",
+      "width": 1440,
+      "height": 1530,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/desktop-1440-weave.png",
+      "bytes": 108784,
+      "sha256": "31d6a6ae179fb02c1921cf9b5a9fae698e3683d605174a0c90d6151e68408d79",
+      "width": 1440,
+      "height": 1100,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/mobile-390-reading.png",
+      "bytes": 55910,
+      "sha256": "e02bdfc628c97eeaa90afb071d26ed014aa19d3e36930e299c8f6bf6b5ed1deb",
+      "width": 390,
+      "height": 844,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/reduced-motion-weave-final.png",
+      "bytes": 109952,
+      "sha256": "63ae6d639e053c1ac86db99e5624dcd5486733d0bbff0c5700cbb941ad5a80c4",
+      "width": 1440,
+      "height": 1100,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/tablet-768-source-fidelity.png",
+      "bytes": 184637,
+      "sha256": "894eeb7ec08712fb4e549a30402c7c4474ab90365c7c3914cc2ffc1678d72fb9",
+      "width": 768,
+      "height": 1882,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/translation-weave-680ms.gif",
+      "bytes": 254432,
+      "sha256": "91c0270d10767dddeea55903362b45d97eea84b0a5645ad4d9eb0469cb7cbb08",
+      "width": 1440,
+      "height": 1100,
+      "frames": 4
+    },
+    {
+      "path": "evidence/screenshots/weave-before.png",
+      "bytes": 108784,
+      "sha256": "31d6a6ae179fb02c1921cf9b5a9fae698e3683d605174a0c90d6151e68408d79",
+      "width": 1440,
+      "height": 1100,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/weave-complete.png",
+      "bytes": 108784,
+      "sha256": "31d6a6ae179fb02c1921cf9b5a9fae698e3683d605174a0c90d6151e68408d79",
+      "width": 1440,
+      "height": 1100,
+      "frames": 1
+    },
+    {
+      "path": "evidence/screenshots/weave-midpoint.png",
+      "bytes": 111080,
+      "sha256": "bfbc4c441f5ca7311ac006d4bee94f1b2273341d3dbc49aea1e08304a9f4381c",
+      "width": 1440,
+      "height": 1100,
+      "frames": 1
+    }
+  ],
+  "drive": {
+    "folder_url": "DRIVE_UPLOAD_BLOCKED",
+    "evidence_archive_url": "DRIVE_UPLOAD_BLOCKED",
+    "evidence_archive_bytes": 1917270,
+    "evidence_archive_sha256": "c05891376bfad1fab384a78d15018513eb6cafe958b4e90906bb3d04cf89ad8a",
+    "source_archive_url": "DRIVE_UPLOAD_BLOCKED",
+    "source_archive_bytes": 37274,
+    "source_archive_sha256": "ae9cb2a348f4441927134612c08d1112b98fffa3d68513d2535e8d6453b18594",
+    "download_readback": "DRIVE_UPLOAD_BLOCKED_UNREGISTERED_FILE_REFERENCE",
+    "zip_integrity": "PASS_LOCAL_BOTH_ARCHIVES"
+  }
+}

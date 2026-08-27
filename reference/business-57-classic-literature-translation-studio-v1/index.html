@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Business 57 고전문학 번역실 Phase 1 계약 설명용 시각 데모">
+  <title>고전문학 번역실 — Parallel Literary Edition</title>
+  <link rel="stylesheet" href="./styles/main.css?v=classic-literature-translation-20260728-2">
+  <script src="./scripts/review.js?v=classic-literature-translation-20260728-2" defer></script>
+</head>
+<body data-asset-version="classic-literature-translation-20260728-2">
+  <header class="review-rail">
+    <div class="brand-block">
+      <p>BUSINESS 57 · UI ONLY</p>
+      <strong>고전문학 번역실</strong>
+      <span>Classic Literature Translation Studio</span>
+    </div>
+    <nav class="state-tabs" aria-label="시각 상태 선택" role="tablist">
+      <button class="state-tab is-active" type="button" data-state-target="library" id="tab-library" role="tab" aria-controls="library-panel" aria-selected="true" tabindex="0" aria-current="page">01 번역 서가</button>
+      <button class="state-tab" type="button" data-state-target="source-fidelity" id="tab-source-fidelity" role="tab" aria-controls="source-fidelity-panel" aria-selected="false" tabindex="-1">02 원문·보존본</button>
+      <button class="state-tab" type="button" data-state-target="comparison" id="tab-comparison" role="tab" aria-controls="comparison-panel" aria-selected="false" tabindex="-1">03 두 판본 비교</button>
+      <button class="state-tab" type="button" data-state-target="ledger" id="tab-ledger" role="tab" aria-controls="ledger-panel" aria-selected="false" tabindex="-1">04 판단 기록</button>
+      <button class="state-tab" type="button" data-state-target="poetry" id="tab-poetry" role="tab" aria-controls="poetry-panel" aria-selected="false" tabindex="-1">05 고전시</button>
+      <button class="state-tab" type="button" data-state-target="mobile" id="tab-mobile" role="tab" aria-controls="mobile-panel" aria-selected="false" tabindex="-1">06 모바일</button>
+      <button class="state-tab" type="button" data-state-target="weave" id="tab-weave" role="tab" aria-controls="weave-panel" aria-selected="false" tabindex="-1">07 번역 결</button>
+    </nav>
+    <div class="rail-status">
+      <span id="state-count">1 / 7</span>
+      <small>← → 키로 이동</small>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <section class="visual-state is-active" data-state="library" id="library-panel" role="tabpanel" aria-labelledby="tab-library library-title">
+      <div class="paper-frame library-frame">
+        <header class="edition-header">
+          <div>
+            <p class="kicker">PRIVATE CONTRACT DEMO · PUBLIC-DOMAIN FIXTURES ONLY</p>
+            <h1 id="library-title">낯선 문장을 지우지 않고,<br>읽을 수 있는 한국어로 옮긴다.</h1>
+          </div>
+          <div class="seal" aria-label="권리 확인 완료 예시">RIGHTS<br>CHECKED</div>
+        </header>
+
+        <div class="library-grid">
+          <article class="work-card featured-work">
+            <div class="work-index">NOVEL · 1818</div>
+            <div class="cover-mark">F</div>
+            <div class="work-copy">
+              <p class="source-label">MARY SHELLEY</p>
+              <h2>Frankenstein</h2>
+              <p>원전의 긴 호흡과 서술 거리를 보존한 한국어 판본을 중심으로, 현대 독해판과 번역 판단 기록을 나란히 검토합니다.</p>
+              <div class="status-row">
+                <span>원문: 퍼블릭도메인 확인</span>
+                <span>한국어: 신규 작성 데모</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="work-card poem-work">
+            <div class="work-index">POEM · 1794</div>
+            <div class="cover-mark small">R</div>
+            <div class="work-copy">
+              <p class="source-label">WILLIAM BLAKE</p>
+              <h2>The Sick Rose</h2>
+              <p>직역과 시적 번역을 분리하고, 행갈이·반복·소리와 이미지의 손실을 기록합니다.</p>
+              <div class="status-row">
+                <span>시적 효과 별도 검토</span>
+              </div>
+            </div>
+          </article>
+
+          <aside class="contract-note">
+            <p class="kicker">CONTRACT BRIDGE</p>
+            <h3>작가 문체 연결은 계약 이후</h3>
+            <p>생존 작가의 원고, 계약 문체 프로필, 어댑터와 계약 조건은 이 공개 저장소에 들어오지 않습니다.</p>
+            <dl>
+              <div><dt>공개 데모</dt><dd>퍼블릭도메인·합성 자료</dd></div>
+              <div><dt>계약 데모</dt><dd>격리된 비공개 환경</dd></div>
+              <div><dt>공유 모델 학습</dt><dd>기본값 금지</dd></div>
+            </dl>
+          </aside>
+        </div>
+
+        <footer class="folio-footer">
+          <span>Parallel Literary Edition</span>
+          <span>01</span>
+        </footer>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="source-fidelity" id="source-fidelity-panel" role="tabpanel" aria-labelledby="tab-source-fidelity fidelity-title" hidden>
+      <div class="paper-frame spread-frame">
+        <header class="spread-title-row">
+          <div>
+            <p class="kicker">FRANKENSTEIN · 1818 EDITION · CHAPTER IV · DEMO EXCERPT</p>
+            <h2 id="fidelity-title">원문과 원전 보존 번역</h2>
+          </div>
+          <div class="edition-chip">DEFAULT · 원전 보존</div>
+        </header>
+
+        <div class="parallel-spread">
+          <article class="source-page" lang="en">
+            <div class="page-label">ORIGINAL TEXT</div>
+            <p class="source-passage"><mark data-link="link-1">It was on a dreary night of November,</mark> that I beheld the accomplishment of my toils. With an anxiety that almost amounted to agony, <mark data-link="link-2">I collected the instruments of life around me</mark>, that I might infuse a spark of being into the lifeless thing that lay at my feet.</p>
+            <aside class="margin-note">
+              <strong>dreary</strong>
+              <span>단순한 ‘우울한’보다 음산하고 지친 날씨·정조를 함께 가짐.</span>
+            </aside>
+            <aside class="margin-note second">
+              <strong>instruments of life</strong>
+              <span>구체 장비이면서 생명을 만드는 수단이라는 불길한 추상성을 유지.</span>
+            </aside>
+          </article>
+
+          <div class="gutter" aria-hidden="true"><span></span></div>
+
+          <article class="translation-page">
+            <div class="page-label">ORIGINAL-FIDELITY KOREAN</div>
+            <p class="translation-passage"><mark data-link="link-1">그것은 음산한 11월의 어느 밤이었다.</mark> 나는 마침내 내 노고가 완성된 모습을 바라보았다. 고통에 거의 맞닿은 불안 속에서, <mark data-link="link-2">나는 생명의 기구들을 내 둘레에 모아 놓았다.</mark> 발치에 누운 생기 없는 것에 존재의 불꽃을 불어넣기 위해서였다.</p>
+            <aside class="translator-note">
+              <span>TRANSLATOR NOTE 01</span>
+              <p>‘accomplishment’를 성취감이 강한 ‘성과’로 바꾸지 않고 ‘완성된 모습’으로 두어, 화자의 불안과 결과물 사이의 거리를 남겼습니다.</p>
+            </aside>
+            <aside class="translator-note compact">
+              <span>UNRESOLVED</span>
+              <p>‘thing’을 ‘존재’로 올릴지 ‘것’으로 낮출지 최종 검토가 필요합니다.</p>
+            </aside>
+          </article>
+        </div>
+
+        <div class="fidelity-apparatus" aria-label="원문 출처와 번역 검토 정보">
+          <aside class="motif-tracker">
+            <p class="page-label">REPEATED SOURCE ROOT</p>
+            <strong>life → lifeless → being</strong>
+            <span>‘생명’의 반복을 모두 같은 단어로 평탄화하지 않고, 생명·생기 없음·존재의 층위를 나누어 추적합니다.</span>
+          </aside>
+          <aside class="historical-note">
+            <p class="page-label">HISTORICAL TERM NOTE</p>
+            <strong>instruments of life</strong>
+            <span>1818년 자연철학과 갈바니즘의 실험 언어를 떠올리게 하는 표현입니다. ‘장비’로 단정하면 시대적 추상성이 약해집니다.</span>
+          </aside>
+          <dl class="provenance-strip">
+            <div><dt>원문 판본</dt><dd>Project Gutenberg #41445 · 1818 photo-reprint</dd></div>
+            <div><dt>한국어</dt><dd>이 UI를 위해 신규 작성 · 출판 번역 아님</dd></div>
+            <div><dt>모델·코퍼스</dt><dd>연결 없음 · 외부 학습 자료 사용 주장 없음</dd></div>
+            <div><dt>편집 검토</dt><dd>Human review pending · 3 / 5</dd></div>
+          </dl>
+        </div>
+
+        <footer class="folio-footer">
+          <span>Source edition and rights recorded in RIGHTS_AND_SOURCES.md</span>
+          <span>08—09</span>
+        </footer>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="comparison" id="comparison-panel" role="tabpanel" aria-labelledby="tab-comparison comparison-title" hidden>
+      <div class="paper-frame comparison-frame">
+        <header class="spread-title-row">
+          <div>
+            <p class="kicker">SAME SOURCE · TWO EDITIONS</p>
+            <h2 id="comparison-title">어렵게 남길 것과, 쉽게 바꿀 것을 분리한다.</h2>
+          </div>
+          <p class="header-deck">현대 독해판은 원전 보존판을 대체하지 않습니다. 무엇을 바꾸었고 무엇을 잃었는지 옆에 남깁니다.</p>
+        </header>
+
+        <div class="comparison-columns">
+          <article class="edition-column fidelity-column">
+            <div class="edition-number">A</div>
+            <p class="page-label">원전 보존 번역</p>
+            <h3>불안을 그대로 끌고 가는 긴 호흡</h3>
+            <p>고통에 거의 맞닿은 불안 속에서, 나는 생명의 기구들을 내 둘레에 모아 놓았다. 발치에 누운 생기 없는 것에 존재의 불꽃을 불어넣기 위해서였다.</p>
+            <ul>
+              <li>문장 관계와 목적절을 유지</li>
+              <li>‘생명의 기구들’의 낯섦 보존</li>
+              <li>화자의 자기정당화 거리 유지</li>
+            </ul>
+          </article>
+
+          <article class="edition-column modern-column">
+            <div class="edition-number">B</div>
+            <p class="page-label">현대 독해 번역</p>
+            <h3>현재 독자가 장면을 바로 잡는 짧은 호흡</h3>
+            <p>나는 거의 고통스러울 만큼 불안했다. 생명을 만들어 낼 장비를 주위에 늘어놓고, 발밑의 죽은 몸에 존재의 불씨를 넣으려 했다.</p>
+            <ul>
+              <li>긴 문장을 두 문장으로 분리</li>
+              <li>‘기구들’을 ‘장비’로 구체화</li>
+              <li>‘thing’을 ‘죽은 몸’으로 해석</li>
+            </ul>
+          </article>
+
+          <aside class="change-ledger">
+            <p class="page-label">MATERIAL CHANGES</p>
+            <div><strong>호흡</strong><span>긴 목적 구조 → 장면 중심 단문</span></div>
+            <div><strong>모호성</strong><span>thing의 비인간성 → ‘죽은 몸’으로 확정</span></div>
+            <div><strong>거리</strong><span>고전적 서술 → 현재적 직접성</span></div>
+            <div><strong>손실</strong><span>화자의 의식적 우회와 불길한 추상성이 약해짐</span></div>
+          </aside>
+        </div>
+
+        <footer class="folio-footer"><span>Modern edition is secondary and disclosed.</span><span>14—15</span></footer>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="ledger" id="ledger-panel" role="tabpanel" aria-labelledby="tab-ledger ledger-title" hidden>
+      <div class="paper-frame ledger-frame">
+        <header class="spread-title-row">
+          <div>
+            <p class="kicker">TRANSLATION DECISION LEDGER</p>
+            <h2 id="ledger-title">번역은 결과가 아니라 판단 기록이다.</h2>
+          </div>
+          <div class="review-state">HUMAN REVIEW · 3 / 5</div>
+        </header>
+
+        <div class="ledger-table" role="table" aria-label="번역 판단 기록">
+          <div class="ledger-row ledger-head" role="row">
+            <span role="columnheader">원문</span><span role="columnheader">선택</span><span role="columnheader">대안</span><span role="columnheader">판단</span><span role="columnheader">상태</span>
+          </div>
+          <div class="ledger-row" role="row">
+            <span>dreary night</span><span>음산한 밤</span><span>쓸쓸한 밤</span><span>날씨와 심리의 불길함을 함께 유지</span><strong class="approved">승인</strong>
+          </div>
+          <div class="ledger-row" role="row">
+            <span>accomplishment</span><span>완성된 모습</span><span>성과 / 결실</span><span>성취감을 과장하지 않고 결과와 거리 유지</span><strong class="approved">승인</strong>
+          </div>
+          <div class="ledger-row" role="row">
+            <span>instruments of life</span><span>생명의 기구들</span><span>생명 장비</span><span>고전적 추상성과 물성의 충돌을 보존</span><strong class="review">검토</strong>
+          </div>
+          <div class="ledger-row" role="row">
+            <span>lifeless thing</span><span>생기 없는 것</span><span>죽은 몸</span><span>괴물의 인간성 판단을 번역자가 선취하지 않음</span><strong class="review">검토</strong>
+          </div>
+          <div class="ledger-row" role="row">
+            <span>spark of being</span><span>존재의 불꽃</span><span>생명의 불씨</span><span>‘life’ 반복을 피하고 존재론적 어감을 남김</span><strong class="approved">승인</strong>
+          </div>
+        </div>
+
+        <aside class="voice-bridge">
+          <div>
+            <p class="page-label">BUSINESS 58 BRIDGE · DISABLED DEMO</p>
+            <h3>계약된 개인 문체가 연결될 때</h3>
+            <p>문체 프로필은 원문 충실도를 덮어쓰지 않고, 별도 판본으로 생성됩니다. 공개 저장소에는 합성 프로필 설명만 남습니다.</p>
+          </div>
+          <div class="bridge-controls" aria-label="비활성 계약 문체 예시">
+            <span>문체 프로필: 윤해진 · 합성 데모</span>
+            <span>공유 모델 학습: OFF</span>
+            <span>공개 귀속: 금지</span>
+          </div>
+        </aside>
+
+        <footer class="folio-footer"><span>Evidence · alternatives · human approval</span><span>20—21</span></footer>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="poetry" id="poetry-panel" role="tabpanel" aria-labelledby="tab-poetry poetry-title" hidden>
+      <div class="paper-frame poetry-frame">
+        <header class="spread-title-row">
+          <div>
+            <p class="kicker">WILLIAM BLAKE · THE SICK ROSE · 1794</p>
+            <h2 id="poetry-title">뜻과 소리가 갈라질 때, 둘 다 기록한다.</h2>
+          </div>
+          <img class="rose-mark" src="./assets/rose-mark.svg" alt="시든 장미를 추상화한 저장소 로컬 선화">
+        </header>
+
+        <div class="poetry-grid">
+          <article class="poem-source" lang="en">
+            <p class="page-label">ORIGINAL</p>
+            <blockquote>O rose thou art sick.<br>The invisible worm,<br>That flies in the night<br>In the howling storm:</blockquote>
+          </article>
+          <article class="poem-literal">
+            <p class="page-label">LITERAL RENDERING</p>
+            <blockquote>오 장미여, 너는 병들었다.<br>보이지 않는 벌레가,<br>울부짖는 폭풍 속<br>밤을 날아와서—</blockquote>
+          </article>
+          <article class="poem-poetic">
+            <p class="page-label">POETIC KOREAN</p>
+            <blockquote>장미여, 너는 앓고 있구나.<br>보이지 않는 벌레 하나<br>울음 우는 폭풍의 밤을<br>가르고 날아와—</blockquote>
+          </article>
+        </div>
+
+        <div class="poetry-notes">
+          <div><strong>thou</strong><span>고어의 거리감을 ‘너’로 완전히 지우지 않고 호명 구조로 보완.</span></div>
+          <div><strong>howling</strong><span>직역의 ‘울부짖는’과 시적 번역의 ‘울음 우는’ 사이에서 소리 반복을 선택.</span></div>
+          <div><strong>line break</strong><span>원문의 4행 구조 유지. 한국어 어순 때문에 행말 긴장도는 달라짐.</span></div>
+          <div><strong>loss</strong><span>영어의 짧은 단음절 압박감은 한국어에서 완전히 재현되지 않음.</span></div>
+        </div>
+
+        <footer class="folio-footer"><span>Literal meaning and poetic effect are reviewed separately.</span><span>26—27</span></footer>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="mobile" id="mobile-panel" role="tabpanel" aria-labelledby="tab-mobile mobile-title" hidden>
+      <div class="mobile-review-shell">
+        <div class="phone-frame">
+          <header class="phone-head">
+            <span>고전문학 번역실</span><span>원전 보존</span>
+          </header>
+          <div class="phone-progress"><span></span></div>
+          <article class="phone-reading">
+            <p class="kicker">FRANKENSTEIN · 1818 · CH. IV</p>
+            <h2 id="mobile-title">그것은 음산한<br>11월의 어느 밤이었다.</h2>
+            <p>나는 마침내 내 노고가 완성된 모습을 바라보았다. 고통에 거의 맞닿은 불안 속에서, 나는 생명의 기구들을 내 둘레에 모아 놓았다.</p>
+            <button type="button" class="source-reveal" aria-expanded="false">원문 한 문장 보기</button>
+            <blockquote class="phone-source" lang="en" hidden>It was on a dreary night of November…</blockquote>
+            <aside>
+              <strong>번역 주석 01</strong>
+              <p>‘dreary’는 날씨와 화자의 피로·불길함을 함께 남기기 위해 ‘음산한’으로 옮겼습니다.</p>
+            </aside>
+            <dl class="phone-disclosure" aria-label="출처 권리 및 AI 보조 고지">
+              <div><dt>원문</dt><dd>1818 판본 · 권리 기록 확인</dd></div>
+              <div><dt>한국어</dt><dd>신규 작성 데모</dd></div>
+              <div><dt>AI 보조</dt><dd>실제 모델·외부 코퍼스 미연결</dd></div>
+              <div><dt>검토</dt><dd>사람 편집 검토 대기</dd></div>
+            </dl>
+          </article>
+          <footer class="phone-footer">
+            <span>퍼블릭도메인 원문</span>
+            <span>신규 작성 한국어 데모</span>
+          </footer>
+        </div>
+        <div class="mobile-notes">
+          <p class="kicker">ACTUAL MOBILE COMPOSITION</p>
+          <h3>원문은 숨겨도, 근거는 사라지지 않는다.</h3>
+          <p>390px 화면에서는 번역문을 중심에 두고 원문과 주석을 단계적으로 펼칩니다. 긴 문장도 가로 스크롤 없이 읽도록 설계했습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="weave" id="weave-panel" role="tabpanel" aria-labelledby="tab-weave weave-title" hidden>
+      <div class="paper-frame weave-frame">
+        <header class="spread-title-row">
+          <div>
+            <p class="kicker">SIGNATURE MOTION · 680MS</p>
+            <h2 id="weave-title">Translation Weave · 번역 결 엮기</h2>
+          </div>
+          <button type="button" id="replay-weave" class="replay-button" aria-controls="weave-board">다시 엮기</button>
+        </header>
+
+        <div class="weave-board" id="weave-board" data-motion-state="complete" aria-describedby="weave-status">
+          <article class="weave-source" lang="en">
+            <p class="page-label">SOURCE FRAGMENTS</p>
+            <span class="fragment fragment-1">dreary night</span>
+            <span class="fragment fragment-2">instruments of life</span>
+            <span class="fragment fragment-3">spark of being</span>
+          </article>
+
+          <svg class="weave-lines" viewBox="0 0 600 300" role="img" aria-label="세 원문 표현이 세 한국어 번역 표현으로 연결되는 애니메이션">
+            <path class="thread thread-1" d="M70 55 C220 45, 380 45, 530 65"></path>
+            <path class="thread thread-2" d="M70 150 C230 145, 370 145, 530 150"></path>
+            <path class="thread thread-3" d="M70 245 C220 255, 380 255, 530 235"></path>
+          </svg>
+
+          <article class="weave-target">
+            <p class="page-label">CHOSEN RENDERINGS</p>
+            <span class="rendering rendering-1">음산한 밤</span>
+            <span class="rendering rendering-2">생명의 기구들</span>
+            <span class="rendering rendering-3">존재의 불꽃</span>
+          </article>
+        </div>
+
+        <div class="settled-paragraph">
+          <p>그것은 <mark>음산한 11월의 어느 밤</mark>이었다. 나는 <mark>생명의 기구들을</mark> 내 둘레에 모아 놓고, 생기 없는 것에 <mark>존재의 불꽃</mark>을 불어넣으려 했다.</p>
+          <span id="weave-status" aria-live="polite">원문 표현 3개와 번역 판단 3개가 연결되었습니다.</span>
+        </div>
+
+        <footer class="folio-footer"><span>Only evidence threads animate; text geometry remains fixed.</span><span>32—33</span></footer>
+      </div>
+    </section>
+  </main>
+
+  <footer class="global-disclosure">
+    <strong>REFERENCE-ONLY</strong>
+    <span>실제 번역 서비스·학습 모델·작가 계약이 아닙니다.</span>
+    <span>퍼블릭도메인 원문 · 한국어 신규 작성 · 모델·외부 코퍼스 미연결 · 사람 편집 검토 대기</span>
+  </footer>
+</body>
+</html>
