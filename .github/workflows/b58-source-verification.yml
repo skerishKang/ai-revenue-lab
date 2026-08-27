@@ -1,0 +1,103 @@
+name: B58 Source Verification
+
+on:
+  pull_request:
+    paths:
+      - 'reference/business-58-personal-writing-voice-studio-v1/**'
+      - '.github/workflows/b58-source-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-b58-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Detect B58 source
+        id: source
+        shell: bash
+        run: |
+          if [ -d reference/business-58-personal-writing-voice-studio-v1 ]; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'B58 source is absent; this is a workflow-only validation run.'
+          fi
+
+      - name: Static source contracts
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          cd reference/business-58-personal-writing-voice-studio-v1
+          python tests/validate_reference.py
+          node --check app.js
+
+      - name: Install browser harness
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+          BROWSER_PATH="$(python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          p = sync_playwright().start()
+          print(p.chromium.executable_path)
+          p.stop()
+          PY
+          )"
+          sudo ln -sf "$BROWSER_PATH" /usr/bin/chromium
+          /usr/bin/chromium --version
+
+      - name: Browser exact-head validation
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          cd reference/business-58-personal-writing-voice-studio-v1
+          python tests/browser_validate.py
+
+      - name: Evidence summary
+        if: steps.source.outputs.present == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('reference/business-58-personal-writing-voice-studio-v1/evidence')
+          static = json.loads((root / 'static-validation.json').read_text(encoding='utf-8'))
+          browser = json.loads((root / 'browser-validation.json').read_text(encoding='utf-8'))
+
+          assert static['status'] == 'pass', static
+          assert static['version'] == 'personal-writing-voice-20260728-1', static
+          assert static['errors'] == [], static
+
+          assert browser['status'] == 'pass', browser
+          assert browser['failures'] == [], browser
+          assert browser['console'] == [], browser
+          assert browser['page_errors'] == [], browser
+          assert browser['requests'] == [], browser
+          assert browser['reduced'] == 'complete', browser
+          assert browser['motion']['running'] == 'running', browser['motion']
+          assert browser['motion']['final_end_ms'] == 680, browser['motion']
+          assert browser['motion']['after']['state'] == 'complete', browser['motion']
+          assert browser['motion']['after']['focus'] is True, browser['motion']
+          assert browser['motion']['before']['scroll'] == browser['motion']['after']['scroll'], browser['motion']
+          assert browser['motion']['before']['rect'] == browser['motion']['after']['rect'], browser['motion']
+          assert len(browser['captures']) == 21, browser['captures']
+          assert all(capture['overflow'] == 0 for capture in browser['captures']), browser['captures']
+
+          print('B58_EXACT_HEAD_SOURCE_VERIFICATION_PASS')
+          print('static=', static['status'])
+          print('browser=', browser['status'])
+          print('captures=', len(browser['captures']))
+          PY
