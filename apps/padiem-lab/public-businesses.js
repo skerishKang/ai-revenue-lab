@@ -297,6 +297,17 @@
       sourcePath: "reference/business-33-research-memory-v1/"
     }),
     Object.freeze({
+      number: 34,
+      slug: "ai-dubbing-studio",
+      title: "AI Dubbing Studio",
+      koreanTitle: "AI 더빙 스튜디오",
+      summary: "합성 원본·권리확인·전사·번역·합성음성 방향·싱크 검토를 사람 승인 기록으로 연결하는 정적 시각 프리뷰입니다. 실제 업로드·더빙·음성 생성·실인물 음성복제·파일 출력 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b34/",
+      sourcePath: "reference/business-34-ai-dubbing-studio-v1/"
+    }),
+    Object.freeze({
       number: 35,
       slug: "ai-media-education-dx",
       title: "AI Media Education & DX",
