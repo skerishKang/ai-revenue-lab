@@ -19,6 +19,6 @@ test('B42 public card points only to the proven local static AI Development Cont
   assert.match(b42.summary, /merge/);
   assert.match(b42.summary, /배포/);
   assert.match(b42.summary, /worker/);
-  assert.match(b42.summary, /백엔드/);
+  assert.match(b42.summary, /서버/);
   assert.equal(Object.hasOwn(b42, 'currentPublicUrl'), false);
 });
