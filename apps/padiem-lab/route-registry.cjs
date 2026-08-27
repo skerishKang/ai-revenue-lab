@@ -316,6 +316,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 58,
+    route: "b58",
+    sourcePath: "reference/business-58-personal-writing-voice-studio-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "나의 문체 스튜디오",
+    includeFiles: ["index.html", "styles.css", "app.js"],
+    includeDirs: []
+  },
+  {
     number: 59,
     route: "b59",
     sourcePath: "reference/business-59-living-archive-v1",
