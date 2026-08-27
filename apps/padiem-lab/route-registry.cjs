@@ -307,6 +307,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 57,
+    route: "b57",
+    sourcePath: "reference/business-57-classic-literature-translation-studio-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "고전문학 번역실",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 59,
     route: "b59",
     sourcePath: "reference/business-59-living-archive-v1",
