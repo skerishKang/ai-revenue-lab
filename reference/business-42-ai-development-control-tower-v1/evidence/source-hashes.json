@@ -1,0 +1,135 @@
+{
+  "algorithm": "SHA-256",
+  "files": [
+    {
+      "path": "IMAGE_SOURCES.md",
+      "bytes": 2017,
+      "sha256": "0b71052578d6db33efe32d9ea5f0e8d102ddd2e0a89cc66c0b1bedd2dde4c87c"
+    },
+    {
+      "path": "MOTION_SPEC.md",
+      "bytes": 1354,
+      "sha256": "1bbfb6ae46d6e4ff38b503ebb46cb7fbd7f170673efc851c7fa3646287c44f66"
+    },
+    {
+      "path": "README.md",
+      "bytes": 859,
+      "sha256": "5462f9b096272a16ccc043f35e79c14dade039b1ffba330ac417890488be53ef"
+    },
+    {
+      "path": "REFERENCE_NOTES.md",
+      "bytes": 4403,
+      "sha256": "16759182688b4e96cf58a6e49c3c78b28c261cd21a171f2a3ffd7af04a56b463"
+    },
+    {
+      "path": "assets/images/blocker-slip.svg",
+      "bytes": 871,
+      "sha256": "d515f139a2e673bd7da85c992a76e8a67fb73082728e2e01e6e86691a9c244c7"
+    },
+    {
+      "path": "assets/images/control-tower-cover.svg",
+      "bytes": 1152,
+      "sha256": "4c101dccffab77b09c58b29e6c728dcae42d94467fc333354eca5eb2b1e5a498"
+    },
+    {
+      "path": "assets/images/development-control-record-seal.svg",
+      "bytes": 1010,
+      "sha256": "d3a12898a27c046c453733f4bd2b9b35a59d6693188beef57af1d995748c1dd0"
+    },
+    {
+      "path": "assets/images/exact-head-ledger.svg",
+      "bytes": 1401,
+      "sha256": "4e3e28f630e32965172764bbddaa39adf033c3e22b4657a2d445b263533797e7"
+    },
+    {
+      "path": "assets/images/implementation-report-card.svg",
+      "bytes": 998,
+      "sha256": "df0d5eeb97744806a95a6e3fcb6ed93337fa4490065d74d4b306537aa10e01a4"
+    },
+    {
+      "path": "assets/images/independent-evidence-sheet.svg",
+      "bytes": 1008,
+      "sha256": "fda03eb9488293682b7a031541458e84e6e6868465870314a0bc232fcecc76ea"
+    },
+    {
+      "path": "assets/images/next-action-memo.svg",
+      "bytes": 970,
+      "sha256": "b0aa315799187641dbae33764a6158c7c2886857410be5c43af48b22af5d654e"
+    },
+    {
+      "path": "assets/images/phase-gate-board.svg",
+      "bytes": 975,
+      "sha256": "476b2d98802ca9043d1ca5ec3daed44f8833887c45c346be5a344af472088dc2"
+    },
+    {
+      "path": "assets/images/role-authority-lanes.svg",
+      "bytes": 1545,
+      "sha256": "7713ada5ef171c9b56d3605c223089897a21c5455907a2bc0c11715c6de72a44"
+    },
+    {
+      "path": "assets/images/stale-evidence-warning.svg",
+      "bytes": 920,
+      "sha256": "a2875e807e3372a0636ea99a85bddf849b8dc5e220bd6d201a49c4a476606c1d"
+    },
+    {
+      "path": "assets/images/work-order-folio.svg",
+      "bytes": 1106,
+      "sha256": "cf42630eef5e528f26d6cc209130f99f53d462a787f1af8d4e053b225ce8979b"
+    },
+    {
+      "path": "evidence/README.md",
+      "bytes": 697,
+      "sha256": "464cc8a03698b504eed5e234a1357f09ca85452a09c5f2b77d2b871704c68f25"
+    },
+    {
+      "path": "evidence/browser-self-check.json",
+      "bytes": 4854,
+      "sha256": "d6fcb3a61abdf7a8eea3ce43af04054cb6348461c0147986012f9f31b7ce3d45"
+    },
+    {
+      "path": "evidence/http-readback.json",
+      "bytes": 1543,
+      "sha256": "333d204542e93ee01023814bf5f9ebd8ea1dd7b8a0f30f6a3218fb0b080caddf"
+    },
+    {
+      "path": "evidence/static-self-check.json",
+      "bytes": 88,
+      "sha256": "9f0751f5a86d847191793357af1e4bf8806765cbc2d378028797ca0dca2f3789"
+    },
+    {
+      "path": "index.html",
+      "bytes": 14295,
+      "sha256": "c4db240be78eb3daf317717f65bc3dc1d471fa3c6582334c9b1b7d1d1c8a4524"
+    },
+    {
+      "path": "scripts/review.js",
+      "bytes": 2408,
+      "sha256": "97755105ac75327c23c6a4ea587bc943f9b49d262326aa51b7170929a09c39bf"
+    },
+    {
+      "path": "styles/layout.css",
+      "bytes": 6608,
+      "sha256": "e8b2bc47d632e5234125348d9db53eae1e174f9f12fcdd78f1007d5a005b59b1"
+    },
+    {
+      "path": "styles/main.css",
+      "bytes": 4934,
+      "sha256": "ba909ccf6f8ee3b6e3645edbfe949b04ee2a13c112fedf5387145c2a8a595767"
+    },
+    {
+      "path": "styles/responsive.css",
+      "bytes": 2210,
+      "sha256": "b2d357b1b16d24ae875c8778fd4bea85ee80269f8e803bc7fd9b6422d247ceba"
+    },
+    {
+      "path": "tests/validate_browser.py",
+      "bytes": 5603,
+      "sha256": "1efeadde5d23b5aa0fa47c8428e080baea80fc697c040fec94fedf5a3030116c"
+    },
+    {
+      "path": "tests/validate_static.py",
+      "bytes": 4290,
+      "sha256": "606b150755ceb9ac2148904a7b6a5ce1a105a76ccdb3bdc2f8319c478c48cce9"
+    }
+  ]
+}
