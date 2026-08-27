@@ -1,0 +1,61 @@
+{
+  "result": "HTTP_READBACK_PASS",
+  "files": {
+    "index.html": {
+      "status": 200,
+      "bytes": 9265
+    },
+    "styles/main.css": {
+      "status": 200,
+      "bytes": 7763
+    },
+    "scripts/review.js": {
+      "status": 200,
+      "bytes": 1971
+    },
+    "assets/images/localization-desk-cover.svg": {
+      "status": 200,
+      "bytes": 865
+    },
+    "assets/images/localized-master-seal.svg": {
+      "status": 200,
+      "bytes": 833
+    },
+    "assets/images/pronunciation-slip.svg": {
+      "status": 200,
+      "bytes": 846
+    },
+    "assets/images/release-exception-card.svg": {
+      "status": 200,
+      "bytes": 830
+    },
+    "assets/images/source-frame-sheet.svg": {
+      "status": 200,
+      "bytes": 854
+    },
+    "assets/images/speaker-turn-map.svg": {
+      "status": 200,
+      "bytes": 831
+    },
+    "assets/images/sync-drift-flag.svg": {
+      "status": 200,
+      "bytes": 819
+    },
+    "assets/images/synthetic-voice-profile.svg": {
+      "status": 200,
+      "bytes": 845
+    },
+    "assets/images/transcript-folio.svg": {
+      "status": 200,
+      "bytes": 842
+    },
+    "assets/images/translation-timing-card.svg": {
+      "status": 200,
+      "bytes": 836
+    },
+    "assets/images/waveform-timecode-rail.svg": {
+      "status": 200,
+      "bytes": 836
+    }
+  }
+}
