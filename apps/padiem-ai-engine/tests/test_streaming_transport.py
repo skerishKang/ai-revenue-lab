@@ -103,7 +103,10 @@ async def test_transport_allows_exact_core_owned_paths_only(path: str) -> None:
         B14_INTERNAL_ORIGIN + B14_STREAM_PREVIEW_PATH + "?target=x",
         "http://b14.internal" + B14_STREAM_PREVIEW_PATH,
         "https://example.com" + B14_STREAM_PREVIEW_PATH,
-        "https://b14.internal:443" + B14_STREAM_PREVIEW_PATH,
+        # httpx canonicalizes an explicit default :443 to the same authority as
+        # no port before AsyncBaseTransport receives the request. A non-default
+        # port is the observable authority override and must fail closed.
+        "https://b14.internal:444" + B14_STREAM_PREVIEW_PATH,
         B14_INTERNAL_ORIGIN + B14_STREAM_PREVIEW_PATH + "#fragment",
     ],
 )
