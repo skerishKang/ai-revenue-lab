@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "combinations": 21,
+  "failures": [],
+  "console_page_errors": [],
+  "failed_requests": [],
+  "external_runtime_requests": 0,
+  "keyboard_navigation": true,
+  "visible_focus": true,
+  "motion": {
+    "computed_end_ms": 770,
+    "animation_name": "briefComplete",
+    "completion_authorities": [
+      "animationend",
+      "animationend"
+    ],
+    "replay_equal": true,
+    "focus_stable": true,
+    "scroll_stable": true,
+    "geometry_stable": true,
+    "finals": [
+      {
+        "opacity": "1",
+        "transform": "none",
+        "shadow": "none",
+        "w": 498,
+        "h": 136,
+        "x": 852,
+        "y": 592
+      },
+      {
+        "opacity": "1",
+        "transform": "none",
+        "shadow": "none",
+        "w": 498,
+        "h": 136,
+        "x": 852,
+        "y": 592
+      }
+    ]
+  },
+  "reduced_motion": {
+    "complete": true,
+    "authority": "reduced-motion",
+    "visible": true
+  },
+  "viewports": [
+    [
+      1440,
+      1100
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "localhost_attempt": "blocked by ERR_BLOCKED_BY_ADMINISTRATOR",
+  "localhost_blocked": true,
+  "harness": "inline exact local bytes fallback; independent Local Validator localhost verification still required"
+}

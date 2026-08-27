@@ -289,11 +289,38 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 38,
+    route: "b38",
+    sourcePath: "reference/business-38-ai-exercise-coach-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 운동 코치",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 39,
     route: "b39",
     sourcePath: "reference/business-39-112-real-time-interpretation-v1",
     mode: "STATIC_REFERENCE",
     marker: "112 실시간 AI 통역",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 40,
+    route: "b40",
+    sourcePath: "reference/business-40-emergency-urgency-ai-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "긴급도 근거 검토 데스크",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 41,
+    route: "b41",
+    sourcePath: "reference/business-41-foreign-emergency-assistant-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "외국인 긴급신고 도우미",
     includeFiles: ["index.html"],
     includeDirs: ["assets", "scripts", "styles"]
   },
