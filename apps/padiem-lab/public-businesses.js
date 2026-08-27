@@ -286,6 +286,17 @@
       sourcePath: "reference/business-32-ai-skill-studio-ux/"
     }),
     Object.freeze({
+      number: 33,
+      slug: "research-memory",
+      title: "Research Memory",
+      koreanTitle: "연구 기억실",
+      summary: "합성 연구질문·출처 조각·수식·주석·리뷰를 연결해 결론 형성 경로와 남은 질문을 검토하는 정적 시각 프리뷰입니다. 실제 문헌 검색·PDF 수집·인용 권위·출판 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b33/",
+      sourcePath: "reference/business-33-research-memory-v1/"
+    }),
+    Object.freeze({
       number: 35,
       slug: "ai-media-education-dx",
       title: "AI Media Education & DX",
