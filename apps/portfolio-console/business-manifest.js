@@ -1,4 +1,4 @@
-/*  business-manifest.js  —  SOLE static identity source for B1-60 (Phase 2A+)
+/*  business-manifest.js  —  SOLE static identity source for registered portfolio entries (Phase 2A+)
  *
  * This is the ONLY file defining Business display identity (slug, title,
  * koreanTitle, authority, lifecycle, state, workspace, surfaceUrl, priority).
@@ -11,6 +11,8 @@
  *
  * Contains NO volatile state: no Issue state, PR state, CI, SHA, updated-at.
  * B56 is an intentional numbering gap and is not represented as a Business.
+ * B61-B63 are not yet represented in this manifest; B64 is registered here as
+ * the proposed AI Reward Router identity under owner-approved Issue #987.
  */
 
 (function () {
@@ -109,6 +111,8 @@
     identity({ n:59, s:"living-archive", t:"Living Archive", k:"나의 기록서재", a:NA.CANDIDATE, l:"mvp_vertical_slice", st:"review", p:5, w:"reference/business-59-living-archive-v1/" }),
     // ═══ 60 ═══
     identity({ n:60, s:"ai-api", t:"AI API", k:"AI API 탐색 허브", a:NA.PROPOSED, l:"private_preview", st:"review", p:90, su:"https://ai-api-a9x.pages.dev/", w:"reference/business-60-ai-api-v1/" }),
+    // ═══ 64 ═══
+    identity({ n:64, s:"ai-reward-router", t:"AI Reward Router", k:"AI 수익 기회 라우터", a:NA.PROPOSED, l:"incubation", st:"review", p:90 }),
   ];
 
   (function () {
