@@ -14,6 +14,7 @@ from app.grounding import (
     prepare_grounding_context,
 )
 from app.main import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.skills import get_skill
 
 USER_MESSAGES = [{"role": "user", "content": "오늘 공개된 AI 정책을 찾아서 알려줘"}]
@@ -24,9 +25,9 @@ def success_payload(answer: str = "근거 [1]에 따르면 확인된 내용입�
         "choices": [{"message": {"role": "assistant", "content": answer}}],
         "business14": {
             "request_id": "b14req_grounded",
-            "route_mode": "auto",
-            "selected_model": "openrouter/free",
-            "selected_provider": "OpenRouter",
+            "route_mode": "manual",
+            "selected_model": DEFAULT_B14_MODEL_ID,
+            "selected_provider": "Agnes AI",
         },
     }
 
@@ -172,7 +173,10 @@ async def test_mock_web_search_plus_b14_produces_grounded_envelope_and_one_syste
     assert "웹 근거 사용 규칙" not in json.dumps(body, ensure_ascii=False)
 
     upstream = seen["body"]
-    assert upstream["model"] == "b14/auto"
+    assert upstream["model"] == DEFAULT_B14_MODEL_ID
+    assert upstream["business14"]["allow_external_fallback"] is False
+    assert upstream["business14"]["max_attempts"] == 1
+    assert upstream["business14"]["required_capabilities"] == ["chat"]
     system_messages = [item for item in upstream["messages"] if item["role"] == "system"]
     assert len(system_messages) == 1
     system = system_messages[0]["content"]
