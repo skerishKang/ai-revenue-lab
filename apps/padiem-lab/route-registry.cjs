@@ -226,6 +226,15 @@ const routes = [
     excludePaths: ["app.js", "docs"]
   },
   {
+    number: 29,
+    route: "b29",
+    sourcePath: "reference/business-29-apartment-governance-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "방림명지로드힐 우리단지 운영실",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 32,
     route: "b32",
     sourcePath: "reference/business-32-ai-skill-studio-ux",
