@@ -1,0 +1,94 @@
+{
+  "business": 57,
+  "slug": "classic-literature-translation-studio",
+  "phase": "UI_ONLY",
+  "version": "classic-literature-translation-20260728-2",
+  "status": "STATIC_CONTRACT_PASS",
+  "checks": [
+    {
+      "name": "required_files",
+      "passed": true,
+      "detail": "all present"
+    },
+    {
+      "name": "seven_states",
+      "passed": true,
+      "detail": "['comparison', 'ledger', 'library', 'mobile', 'poetry', 'source-fidelity', 'weave']"
+    },
+    {
+      "name": "seven_controls",
+      "passed": true,
+      "detail": "['comparison', 'ledger', 'library', 'mobile', 'poetry', 'source-fidelity', 'weave']"
+    },
+    {
+      "name": "deterministic_asset_version",
+      "passed": true,
+      "detail": "classic-literature-translation-20260728-2"
+    },
+    {
+      "name": "no_external_runtime_assets",
+      "passed": true,
+      "detail": "none"
+    },
+    {
+      "name": "local_assets_exist",
+      "passed": true,
+      "detail": "all resolve"
+    },
+    {
+      "name": "no_gradients",
+      "passed": true,
+      "detail": "none"
+    },
+    {
+      "name": "accessible_review_controls",
+      "passed": true,
+      "detail": "7 tabs + 7 tabpanels + selected state"
+    },
+    {
+      "name": "source_language_attributes",
+      "passed": true,
+      "detail": "count=4"
+    },
+    {
+      "name": "literary_decision_content",
+      "passed": true,
+      "detail": "all present"
+    },
+    {
+      "name": "exact_source_fixture",
+      "passed": true,
+      "detail": "edition and punctuation aligned"
+    },
+    {
+      "name": "rights_and_source_manifest",
+      "passed": true,
+      "detail": "record complete"
+    },
+    {
+      "name": "image_source_manifest",
+      "passed": true,
+      "detail": "local original recorded"
+    },
+    {
+      "name": "reference_urls",
+      "passed": true,
+      "detail": "urls=6"
+    },
+    {
+      "name": "motion_completion_contract",
+      "passed": true,
+      "detail": "computed 680ms + animationend + no fixed timeout"
+    },
+    {
+      "name": "reduced_motion_contract",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "name": "forbidden_claims_absent",
+      "passed": true,
+      "detail": "none"
+    }
+  ]
+}
