@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Install fixed translation runtime
-        run: python -m pip install --disable-pip-version-check --quiet 'transformers<5' torch sentencepiece
+      - name: Install stable translation runtime
+        run: python -m pip install --disable-pip-version-check --quiet 'transformers==4.44.2' sentencepiece
 
       - name: Download authoritative sources and translate bounded sample
         env:
@@ -22,9 +22,8 @@ jobs:
           MODEL_REVISION: ae6407352f7f86e328c0f0678d466fc4246e78b3
         run: |
           cat > "$RUNNER_TEMP/sm093_quality_gate.py" <<'PY'
-          import json, hashlib, os, re, urllib.request, zipfile, tempfile, pathlib, datetime
+          import json, hashlib, os, re, urllib.request, zipfile, tempfile, pathlib, datetime, traceback
           from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
           OUT=pathlib.Path(os.environ['RUNNER_TEMP'])/'sm093-translation-quality'; OUT.mkdir(parents=True,exist_ok=True)
           MODEL_ID=os.environ['MODEL_ID']; MODEL_REVISION=os.environ['MODEL_REVISION']
           urls={
@@ -82,7 +81,8 @@ jobs:
 
           def gutenberg_body(data):
             t=data.decode('utf-8-sig',errors='replace').replace('\r\n','\n').replace('\r','\n')
-            sm=re.search(r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I); em=re.search(r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
+            sm=re.search(r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
+            em=re.search(r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK.*?\*\*\*',t,re.I)
             if not sm or not em: raise SystemExit('GUTENBERG_MARKER_MISSING')
             return t[sm.end():em.start()]
           def find_paragraph(data,phrase):
@@ -97,23 +97,34 @@ jobs:
             {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
             {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
 
-          tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION,src_lang='en')
-          model=AutoModelForSeq2SeqLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,use_safetensors=True)
-          forced_bos_token_id=tokenizer.get_lang_id('ko')
-          failed=[]
-          for item in samples:
-            enc=tokenizer(item['english'],return_tensors='pt',truncation=True,max_length=768)
-            out=model.generate(**enc,forced_bos_token_id=forced_bos_token_id,num_beams=4,max_new_tokens=512,renormalize_logits=True)
-            item['korean']=tokenizer.decode(out[0],skip_special_tokens=True).strip()
-            item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest(); item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest()
-            item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
-            if not item['korean'] or item['hangul_chars']==0: failed.append(item['locator'])
-
-          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'MIT','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko'},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':failed,'samples':samples,'automatic_gate':'PASS' if not failed else 'FAIL'}
+          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'MIT','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko','transformers':'4.44.2'},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':[],'samples':samples,'automatic_gate':'PENDING'}
+          exit_code=0
+          try:
+            tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION,src_lang='en')
+            model=AutoModelForSeq2SeqLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,use_safetensors=False,low_cpu_mem_usage=False)
+            model.eval()
+            forced_bos_token_id=tokenizer.get_lang_id('ko')
+            failed=[]
+            for item in samples:
+              enc=tokenizer(item['english'],return_tensors='pt',truncation=True,max_length=512)
+              out=model.generate(**enc,forced_bos_token_id=forced_bos_token_id,num_beams=4,max_new_tokens=384)
+              item['korean']=tokenizer.decode(out[0],skip_special_tokens=True).strip()
+              item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest()
+              item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest()
+              item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
+              if not item['korean'] or item['hangul_chars']==0: failed.append(item['locator'])
+            result['failed_output_locators']=failed
+            result['automatic_gate']='PASS' if not failed else 'FAIL'
+            exit_code=0 if not failed else 2
+          except Exception as e:
+            result['automatic_gate']='RUNTIME_ERROR'
+            result['runtime_error']=type(e).__name__+': '+str(e)
+            result['traceback']=traceback.format_exc()
+            exit_code=3
           (OUT/'translation_quality_samples.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
           (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: MIT\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
-          print(json.dumps({'sample_count':len(samples),'failed':failed,'automatic_gate':result['automatic_gate']},indent=2))
-          if failed: raise SystemExit('AUTOMATIC_OUTPUT_GATE_FAILED')
+          print(json.dumps({'sample_count':len(samples),'failed':result.get('failed_output_locators'),'automatic_gate':result['automatic_gate'],'runtime_error':result.get('runtime_error')},ensure_ascii=False,indent=2))
+          raise SystemExit(exit_code)
           PY
           python "$RUNNER_TEMP/sm093_quality_gate.py"
 
