@@ -1,0 +1,231 @@
+name: B61 Public-Domain Source Freeze
+
+on:
+  push:
+    branches:
+      - feat/b61-sm038-source-freeze-971
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b61-public-domain-source-freeze
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Download and validate authoritative source bytes
+        shell: bash
+        env:
+          OUT_DIR: ${{ runner.temp }}/b61-public-domain-source-freeze
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import sys
+          import urllib.request
+          import zipfile
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          out = Path(os.environ['OUT_DIR'])
+          expected_web_books = [
+              'GEN','EXO','LEV','NUM','DEU','JOS','JDG','RUT','1SA','2SA','1KI','2KI',
+              '1CH','2CH','EZR','NEH','EST','JOB','PSA','PRO','ECC','SNG','ISA','JER',
+              'LAM','EZK','DAN','HOS','JOL','AMO','OBA','JON','MIC','NAM','HAB','ZEP',
+              'HAG','ZEC','MAL','MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL',
+              'EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE',
+              '2PE','1JN','2JN','3JN','JUD','REV'
+          ]
+          sources = {
+              'bible-web': {
+                  'filename': 'engwebp_usfm.zip',
+                  'url': 'https://ebible.org/Scriptures/engwebp_usfm.zip',
+                  'source_ref': 'ebible:engwebp',
+                  'edition': 'World English Bible ENGWEBP 66-book protocanon',
+                  'rights': 'public-domain',
+                  'kind': 'usfm_zip',
+              },
+              'crime-and-punishment': {
+                  'filename': 'pg2554.txt',
+                  'url': 'https://www.gutenberg.org/cache/epub/2554/pg2554.txt',
+                  'source_ref': 'gutenberg:2554',
+                  'rights': 'public-domain-usa',
+                  'kind': 'gutenberg_text',
+                  'required': ['Title: Crime and Punishment','Author: Fyodor Dostoyevsky','Translator: Constance Garnett'],
+                  'start': r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK CRIME AND PUNISHMENT \*\*\*',
+                  'end': r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK CRIME AND PUNISHMENT \*\*\*',
+              },
+              'pride-and-prejudice': {
+                  'filename': 'pg1342.txt',
+                  'url': 'https://www.gutenberg.org/cache/epub/1342/pg1342.txt',
+                  'source_ref': 'gutenberg:1342',
+                  'rights': 'public-domain-usa',
+                  'kind': 'gutenberg_text',
+                  'required': ['Title: Pride and Prejudice','Author: Jane Austen'],
+                  'start': r'\*\*\* START OF THE PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE \*\*\*',
+                  'end': r'\*\*\* END OF THE PROJECT GUTENBERG EBOOK PRIDE AND PREJUDICE \*\*\*',
+              },
+              'alice-in-wonderland': {
+                  'filename': 'pg11.txt',
+                  'url': 'https://www.gutenberg.org/cache/epub/11/pg11.txt',
+                  'source_ref': 'gutenberg:11',
+                  'rights': 'public-domain-usa',
+                  'kind': 'gutenberg_text',
+                  'required': ["Title: Alice's Adventures in Wonderland",'Author: Lewis Carroll'],
+                  'start': r"\*\*\* START OF THE PROJECT GUTENBERG EBOOK ALICE'S ADVENTURES IN WONDERLAND \*\*\*",
+                  'end': r"\*\*\* END OF THE PROJECT GUTENBERG EBOOK ALICE'S ADVENTURES IN WONDERLAND \*\*\*",
+              },
+          }
+
+          def sha256(path):
+              h = hashlib.sha256()
+              with path.open('rb') as f:
+                  for chunk in iter(lambda: f.read(1024 * 1024), b''):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          def read_text(path):
+              return path.read_text('utf-8-sig', errors='replace').replace('\r\n','\n').replace('\r','\n')
+
+          def validate_gutenberg(path, spec):
+              text = read_text(path)
+              errors = [f'missing required metadata: {token}' for token in spec['required'] if token not in text]
+              if not re.search(spec['start'], text, flags=re.I):
+                  errors.append('missing Gutenberg START marker')
+              if not re.search(spec['end'], text, flags=re.I):
+                  errors.append('missing Gutenberg END marker')
+              if len(text) < 10000:
+                  errors.append(f'implausibly small plaintext: {len(text)} chars')
+              return {'valid': not errors, 'errors': errors, 'chars': len(text), 'lines': text.count('\n') + 1}
+
+          def validate_web(path):
+              errors = []
+              detected = set()
+              source_files = 0
+              if not zipfile.is_zipfile(path):
+                  return {'valid': False, 'errors': ['not a valid ZIP'], 'detected_book_count': 0, 'detected_books': []}
+              id_re = re.compile(r'^\s*\\id\s+([A-Z0-9]{3})\b', re.M)
+              with zipfile.ZipFile(path) as zf:
+                  bad = zf.testzip()
+                  if bad:
+                      errors.append(f'ZIP CRC failure: {bad}')
+                  for info in zf.infolist():
+                      parts = Path(info.filename).parts
+                      if info.filename.startswith('/') or '..' in parts:
+                          errors.append(f'unsafe ZIP path: {info.filename}')
+                          continue
+                      if info.is_dir() or Path(info.filename).suffix.lower() not in {'.usfm','.sfm','.txt'}:
+                          continue
+                      source_files += 1
+                      try:
+                          text = zf.read(info).decode('utf-8-sig', errors='replace')
+                      except Exception as exc:
+                          errors.append(f'unreadable source entry {info.filename}: {exc!r}')
+                          continue
+                      m = id_re.search(text)
+                      if m:
+                          detected.add(m.group(1).upper())
+              expected = set(expected_web_books)
+              missing = sorted(expected - detected)
+              extra = sorted(detected - expected)
+              if missing:
+                  errors.append(f'missing expected 66-book IDs: {missing}')
+              if extra:
+                  errors.append(f'unexpected book IDs: {extra}')
+              if len(detected) != 66:
+                  errors.append(f'expected 66 distinct book IDs, detected {len(detected)}')
+              return {
+                  'valid': not errors,
+                  'errors': errors,
+                  'zip_crc_pass': not any(e.startswith('ZIP CRC failure') for e in errors),
+                  'source_files': source_files,
+                  'detected_book_count': len(detected),
+                  'detected_books': sorted(detected),
+                  'missing_books': missing,
+                  'extra_books': extra,
+              }
+
+          freeze = {
+              'schema': 'storymemory-public-domain-source-freeze-ci-1.0',
+              'status': 'PASS',
+              'canonical_substitution_used': False,
+              'sources': {},
+          }
+          evidence = {
+              'schema': 'storymemory-public-domain-source-freeze-run-evidence-1.0',
+              'run_id': os.environ.get('RUN_ID'),
+              'run_attempt': os.environ.get('RUN_ATTEMPT'),
+              'head_sha': os.environ.get('HEAD_SHA'),
+              'started_at_utc': datetime.now(timezone.utc).isoformat(),
+              'downloads': {},
+          }
+
+          headers = {'User-Agent': 'StoryMemory-SourceFreeze-CI/1.0 (+public-domain acquisition)', 'Accept': '*/*'}
+          for key, spec in sources.items():
+              dst = out / spec['filename']
+              try:
+                  req = urllib.request.Request(spec['url'], headers=headers)
+                  with urllib.request.urlopen(req, timeout=90) as resp, dst.open('wb') as fh:
+                      while True:
+                          chunk = resp.read(1024 * 1024)
+                          if not chunk:
+                              break
+                          fh.write(chunk)
+                      evidence['downloads'][key] = {
+                          'requested_url': spec['url'],
+                          'final_url': resp.geturl(),
+                          'http_status': getattr(resp, 'status', None),
+                          'content_type': resp.headers.get('Content-Type'),
+                          'downloaded_at_utc': datetime.now(timezone.utc).isoformat(),
+                      }
+                  if dst.stat().st_size <= 0:
+                      raise RuntimeError('downloaded file is empty')
+                  validation = validate_web(dst) if spec['kind'] == 'usfm_zip' else validate_gutenberg(dst, spec)
+                  freeze['sources'][key] = {
+                      'filename': spec['filename'],
+                      'url': spec['url'],
+                      'source_ref': spec['source_ref'],
+                      'rights': spec['rights'],
+                      'bytes': dst.stat().st_size,
+                      'sha256': sha256(dst),
+                      'validation': validation,
+                  }
+                  if 'edition' in spec:
+                      freeze['sources'][key]['edition'] = spec['edition']
+                  if not validation['valid']:
+                      freeze['status'] = 'FAILED_VALIDATION'
+              except Exception as exc:
+                  freeze['status'] = 'FAILED_ACQUISITION'
+                  freeze['sources'][key] = {
+                      'filename': spec['filename'], 'url': spec['url'], 'source_ref': spec['source_ref'],
+                      'rights': spec['rights'], 'error': repr(exc), 'validation': {'valid': False, 'errors': [repr(exc)]}
+                  }
+
+          evidence['completed_at_utc'] = datetime.now(timezone.utc).isoformat()
+          (out / 'source_freeze_manifest.json').write_text(json.dumps(freeze, ensure_ascii=False, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+          (out / 'acquisition_evidence.json').write_text(json.dumps(evidence, ensure_ascii=False, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(freeze, ensure_ascii=False, indent=2))
+          if freeze['status'] != 'PASS' or any(not s.get('validation', {}).get('valid') for s in freeze['sources'].values()):
+              sys.exit(2)
+          PY
+
+      - name: Upload authoritative raw-source freeze artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b61-public-domain-source-freeze-${{ github.run_id }}
+          path: ${{ runner.temp }}/b61-public-domain-source-freeze/
+          if-no-files-found: error
+          retention-days: 14
