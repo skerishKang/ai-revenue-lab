@@ -9,6 +9,7 @@ import pytest
 from app.b14_client import B14Client
 from app.config import Settings
 from app.main import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.skills import SKILL_REGISTRY, get_skill, skill_public_metadata
 
 USER_MESSAGES = [{"role": "user", "content": "테스트 질문"}]
@@ -19,9 +20,9 @@ def _success_payload():
         "choices": [{"message": {"role": "assistant", "content": "테스트 답변"}}],
         "business14": {
             "request_id": "b14req_skill",
-            "route_mode": "auto",
-            "selected_model": "model-x",
-            "selected_provider": "Provider X",
+            "route_mode": "manual",
+            "selected_model": DEFAULT_B14_MODEL_ID,
+            "selected_provider": "Agnes AI",
         },
     }
 
@@ -82,14 +83,18 @@ async def test_skill_maps_to_server_owned_b14_hints(skill_id, task_type, optimiz
     ).complete(USER_MESSAGES, skill=skill)
 
     body = seen["body"]
-    assert body["model"] == "b14/auto"
+    assert body["model"] == DEFAULT_B14_MODEL_ID
     assert body["max_tokens"] == max_tokens
     assert body["business14"]["task_type"] == task_type
     assert body["business14"]["optimize_for"] == optimize_for
+    assert body["business14"]["allow_external_fallback"] is False
+    assert body["business14"]["max_attempts"] == 1
+    assert body["business14"]["required_capabilities"] == ["chat"]
     assert body["messages"][0] == {"role": "system", "content": skill.system_instruction}
     assert body["messages"][1:] == USER_MESSAGES
     assert sum(1 for item in body["messages"] if item["role"] == "system") == 1
     assert result["skill"] == {"id": skill.id, "title": skill.title}
+    assert result["route"]["model"] == DEFAULT_B14_MODEL_ID
     assert skill.system_instruction not in json.dumps(result, ensure_ascii=False)
 
 
