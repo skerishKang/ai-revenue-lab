@@ -14,7 +14,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Install stable translation runtime
-        run: python -m pip install --disable-pip-version-check --quiet 'transformers==4.44.2' sentencepiece
+        run: |
+          python -m pip install --disable-pip-version-check --quiet 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --quiet 'transformers==4.44.2' sentencepiece
 
       - name: Download authoritative sources and translate bounded sample
         env:
@@ -97,7 +99,7 @@ jobs:
             {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
             {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
 
-          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'MIT','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko','transformers':'4.44.2'},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':[],'samples':samples,'automatic_gate':'PENDING'}
+          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'MIT','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko','transformers':'4.44.2','torch':'2.5.1+cpu'},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':[],'samples':samples,'automatic_gate':'PENDING'}
           exit_code=0
           try:
             tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION,src_lang='en')
