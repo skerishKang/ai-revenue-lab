@@ -14,12 +14,12 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Install fixed translation runtime
-        run: python -m pip install --disable-pip-version-check --quiet 'transformers<5' torch sentencepiece sacremoses
+        run: python -m pip install --disable-pip-version-check --quiet 'transformers<5' torch sentencepiece
 
       - name: Download authoritative sources and translate bounded sample
         env:
-          MODEL_ID: Helsinki-NLP/opus-mt-tc-big-en-ko
-          MODEL_REVISION: ae8606b7b29a495f31ce679cee2007f536a3a5ce
+          MODEL_ID: facebook/m2m100_418M
+          MODEL_REVISION: ae6407352f7f86e328c0f0678d466fc4246e78b3
         run: |
           cat > "$RUNNER_TEMP/sm093_quality_gate.py" <<'PY'
           import json, hashlib, os, re, urllib.request, zipfile, tempfile, pathlib, datetime
@@ -41,10 +41,10 @@ jobs:
           for key,url in urls.items():
             req=urllib.request.Request(url,headers={'User-Agent':'StoryMemory-SM093-QA/1.0'})
             with urllib.request.urlopen(req,timeout=90) as r:
-              data=r.read(); final_url=r.geturl(); content_type=r.headers.get('Content-Type')
+              data=r.read(); final_url=r.geturl(); ctype=r.headers.get('Content-Type')
             sha=hashlib.sha256(data).hexdigest()
             if sha!=expected[key]: raise SystemExit(f'AUTHORITY_DRIFT {key}: {sha} != {expected[key]}')
-            raw[key]=data; source_meta[key]={'url':url,'final_url':final_url,'bytes':len(data),'sha256':sha,'content_type':content_type}
+            raw[key]=data; source_meta[key]={'url':url,'final_url':final_url,'bytes':len(data),'sha256':sha,'content_type':ctype}
 
           note_re=re.compile(r'\\(?:f|x)\b.*?\\(?:f|x)\*')
           w_re=re.compile(r'\\\+?w\s+([^|\\]+?)(?:\|[^\\]*?)?\\\+?w\*')
@@ -97,20 +97,23 @@ jobs:
             {'source':'pride-and-prejudice','locator':'qa:pride:opening','english':find_paragraph(raw['pride-and-prejudice'],'It is a truth universally acknowledged')},
             {'source':'alice-in-wonderland','locator':'qa:alice:opening','english':find_paragraph(raw['alice-in-wonderland'],'Alice was beginning to get very tired of sitting by her sister on the bank')}]
 
-          tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION)
+          tokenizer=AutoTokenizer.from_pretrained(MODEL_ID,revision=MODEL_REVISION,src_lang='en')
           model=AutoModelForSeq2SeqLM.from_pretrained(MODEL_ID,revision=MODEL_REVISION,use_safetensors=True)
+          forced_bos_token_id=tokenizer.get_lang_id('ko')
+          failed=[]
           for item in samples:
-            enc=tokenizer(item['english'],return_tensors='pt',truncation=True,max_length=512)
-            out=model.generate(**enc,num_beams=4,max_new_tokens=512,renormalize_logits=True)
+            enc=tokenizer(item['english'],return_tensors='pt',truncation=True,max_length=768)
+            out=model.generate(**enc,forced_bos_token_id=forced_bos_token_id,num_beams=4,max_new_tokens=512,renormalize_logits=True)
             item['korean']=tokenizer.decode(out[0],skip_special_tokens=True).strip()
             item['source_text_sha256']=hashlib.sha256(item['english'].encode()).hexdigest(); item['translation_text_sha256']=hashlib.sha256(item['korean'].encode()).hexdigest()
             item['hangul_chars']=len(re.findall(r'[가-힣]',item['korean']))
-            if not item['korean'] or item['hangul_chars']==0: raise SystemExit(f'NO_KOREAN_OUTPUT {item["locator"]}')
+            if not item['korean'] or item['hangul_chars']==0: failed.append(item['locator'])
 
-          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'CC-BY-4.0','provider_mode':'local-open-source-weights'},'sources':source_meta,'sample_count':len(samples),'samples':samples,'automatic_gate':'PASS'}
+          result={'schema':'storymemory-sm093-translation-quality-gate-1.0','generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cost_boundary':'standard-public-github-hosted-runner; no paid model API; no secret/API key','model':{'id':MODEL_ID,'revision':MODEL_REVISION,'license':'MIT','provider_mode':'local-open-source-weights','src_lang':'en','tgt_lang':'ko'},'sources':source_meta,'sample_count':len(samples),'failed_output_locators':failed,'samples':samples,'automatic_gate':'PASS' if not failed else 'FAIL'}
           (OUT/'translation_quality_samples.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
-          (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: CC-BY-4.0\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
-          print(json.dumps({'sample_count':len(samples),'automatic_gate':'PASS'},indent=2))
+          (OUT/'MODEL_ATTRIBUTION.txt').write_text(f'Model: {MODEL_ID}\nRevision: {MODEL_REVISION}\nLicense: MIT\nSource: https://huggingface.co/{MODEL_ID}\n',encoding='utf-8')
+          print(json.dumps({'sample_count':len(samples),'failed':failed,'automatic_gate':result['automatic_gate']},indent=2))
+          if failed: raise SystemExit('AUTOMATIC_OUTPUT_GATE_FAILED')
           PY
           python "$RUNNER_TEMP/sm093_quality_gate.py"
 
