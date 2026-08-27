@@ -9,11 +9,14 @@ import pytest
 from app.b14_client import B14Client, ChatRuntimeError
 from app.config import ConfigError, Settings
 from app.main import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.skills import get_skill
 from app.usage_gate import InMemoryUsageCounterStore
 
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 QUOTA_SALT = "b62-runtime-test-quota-salt-not-a-real-secret-0001"
+AGNES_MODEL = DEFAULT_B14_MODEL_ID
+AGNES_PROVIDER = "Agnes AI"
 
 
 def success_payload():
@@ -21,9 +24,9 @@ def success_payload():
         "choices": [{"message": {"role": "assistant", "content": "안녕하세요. 무엇을 도와드릴까요?"}}],
         "business14": {
             "request_id": "b14req_test123",
-            "route_mode": "auto",
-            "selected_model": "openrouter/free",
-            "selected_provider": "OpenRouter",
+            "route_mode": "manual",
+            "selected_model": AGNES_MODEL,
+            "selected_provider": AGNES_PROVIDER,
         },
     }
 
@@ -64,11 +67,12 @@ async def test_mock_mode_makes_zero_network_calls():
     assert calls == 0
     assert result["runtime"] == "mock"
     assert result["skill"] == {"id": "auto", "title": "자동 추천"}
+    assert result["route"] == {"mode": "manual", "model": AGNES_MODEL, "provider": None}
     assert "실제 모델을 호출하지 않았습니다" in result["answer"]
 
 
 @pytest.mark.asyncio
-async def test_b14_request_is_fixed_auto_route_and_has_no_provider_key():
+async def test_b14_request_is_fixed_explicit_agnes_route_and_has_no_provider_key():
     seen = {}
 
     async def handler(request):
@@ -83,7 +87,7 @@ async def test_b14_request_is_fixed_auto_route_and_has_no_provider_key():
     ).complete(USER_MESSAGES)
 
     assert seen["url"] == "https://b14.example/api/pilot/v1/chat/completions"
-    assert seen["body"]["model"] == "b14/auto"
+    assert seen["body"]["model"] == AGNES_MODEL
     assert seen["body"]["messages"][0] == {
         "role": "system",
         "content": get_skill("auto").system_instruction,
@@ -94,9 +98,9 @@ async def test_b14_request_is_fixed_auto_route_and_has_no_provider_key():
     assert seen["body"]["business14"] == {
         "task_type": "general",
         "optimize_for": "korean",
-        "allow_external_fallback": True,
-        "max_attempts": 3,
-        "required_capabilities": ["free"],
+        "allow_external_fallback": False,
+        "max_attempts": 1,
+        "required_capabilities": ["chat"],
     }
     assert "x-business14-provider-key" not in seen["headers"]
     assert "authorization" not in seen["headers"]
@@ -104,9 +108,49 @@ async def test_b14_request_is_fixed_auto_route_and_has_no_provider_key():
         "answer": "안녕하세요. 무엇을 도와드릴까요?",
         "request_id": "b14req_test123",
         "runtime": "b14",
-        "route": {"mode": "auto", "model": "openrouter/free", "provider": "OpenRouter"},
+        "route": {"mode": "manual", "model": AGNES_MODEL, "provider": AGNES_PROVIDER},
         "skill": {"id": "auto", "title": "자동 추천"},
     }
+
+
+@pytest.mark.asyncio
+async def test_agnes_alias_strips_command_and_keeps_exact_manual_route():
+    seen = {}
+
+    async def handler(request):
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(200, json=success_payload())
+
+    result = await B14Client(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    ).complete([{"role": "user", "content": "/agnes 오늘 날씨를 설명해줘"}])
+
+    assert seen["body"]["model"] == AGNES_MODEL
+    assert seen["body"]["messages"][-1] == {"role": "user", "content": "오늘 날씨를 설명해줘"}
+    assert seen["body"]["business14"]["allow_external_fallback"] is False
+    assert seen["body"]["business14"]["max_attempts"] == 1
+    assert result["route"]["model"] == AGNES_MODEL
+
+
+@pytest.mark.asyncio
+async def test_unknown_model_alias_fails_before_any_b14_call():
+    calls = 0
+
+    async def handler(request):
+        nonlocal calls
+        calls += 1
+        return httpx.Response(500)
+
+    client = B14Client(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(ChatRuntimeError) as info:
+        await client.complete([{"role": "user", "content": "/unknown 질문"}])
+    assert info.value.status_code == 422
+    assert info.value.code == "unknown_model_alias"
+    assert calls == 0
 
 
 @pytest.mark.asyncio
@@ -166,6 +210,7 @@ async def test_api_chat_mock_round_trip_and_validation():
         ok = await client.post("/api/chat", json={"messages": USER_MESSAGES, "mode": "auto"})
         assert ok.status_code == 200
         assert ok.json()["runtime"] == "mock"
+        assert ok.json()["route"]["model"] == AGNES_MODEL
         assert ok.json()["skill"] == {"id": "auto", "title": "자동 추천"}
 
         explain = await client.post(
@@ -212,6 +257,31 @@ async def test_api_chat_mock_round_trip_and_validation():
 
 
 @pytest.mark.asyncio
+async def test_api_rejects_unknown_model_alias_before_transport():
+    calls = 0
+
+    async def handler(request):
+        nonlocal calls
+        calls += 1
+        return httpx.Response(500)
+
+    app = create_app(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        transport=httpx.MockTransport(handler),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
+        response = await client.post(
+            "/api/chat",
+            json={"messages": [{"role": "user", "content": "/unknown 질문"}], "mode": "auto"},
+        )
+    assert response.status_code == 422
+    assert calls == 0
+
+
+@pytest.mark.asyncio
 async def test_api_chat_b14_adapter_with_mocked_transport():
     async def handler(request):
         return httpx.Response(200, json=success_payload())
@@ -235,7 +305,8 @@ async def test_api_chat_b14_adapter_with_mocked_transport():
             headers={"cf-connecting-ip": "203.0.113.40"},
         )
     assert response.status_code == 200
-    assert response.json()["route"]["model"] == "openrouter/free"
+    assert response.json()["route"]["model"] == AGNES_MODEL
+    assert response.json()["route"]["mode"] == "manual"
     assert response.json()["skill"] == {"id": "plan", "title": "계획 세우기"}
 
 
