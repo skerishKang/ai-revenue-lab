@@ -253,6 +253,17 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
+      number: 29,
+      slug: "apartment-governance",
+      title: "Apartment Governance",
+      koreanTitle: "우리단지 운영실",
+      summary: "단지 운영의 의사결정·공개 기록 흐름을 검토하는 정적 시각 프리뷰입니다. 실제 법률 자문·전자투표·계약·결제 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b29/",
+      sourcePath: "reference/business-29-apartment-governance-v1/"
+    }),
+    Object.freeze({
       number: 30,
       slug: "civic-ai-navigator",
       title: "Civic AI Navigator",
