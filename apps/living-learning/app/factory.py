@@ -27,7 +27,11 @@ _PRIVATE_PREFIXES = ("/api/v1/",)
 
 def get_connection_factory(database_url: str):
     def get_connection() -> sqlite3.Connection:
-        conn = sqlite3.connect(database_url, check_same_thread=False)
+        # Request connections are created, used, and closed inside one sync
+        # endpoint worker by RequestPipelineRunner. Keep sqlite3's default
+        # thread-ownership guard enabled so an accidental cross-thread use
+        # fails safely instead of entering native undefined behavior.
+        conn = sqlite3.connect(database_url)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys=ON")
         return conn
