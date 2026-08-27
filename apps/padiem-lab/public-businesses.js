@@ -253,6 +253,17 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
+      number: 29,
+      slug: "apartment-governance",
+      title: "Apartment Governance",
+      koreanTitle: "우리단지 운영실",
+      summary: "단지 운영의 의사결정·공개 기록 흐름을 검토하는 정적 시각 프리뷰입니다. 실제 법률 자문·전자투표·계약·결제 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b29/",
+      sourcePath: "reference/business-29-apartment-governance-v1/"
+    }),
+    Object.freeze({
       number: 30,
       slug: "civic-ai-navigator",
       title: "Civic AI Navigator",
@@ -273,6 +284,28 @@
       routeKind: "LOCAL_STATIC",
       targetPath: "/b32/",
       sourcePath: "reference/business-32-ai-skill-studio-ux/"
+    }),
+    Object.freeze({
+      number: 33,
+      slug: "research-memory",
+      title: "Research Memory",
+      koreanTitle: "연구 기억실",
+      summary: "합성 연구질문·출처 조각·수식·주석·리뷰를 연결해 결론 형성 경로와 남은 질문을 검토하는 정적 시각 프리뷰입니다. 실제 문헌 검색·PDF 수집·인용 권위·출판 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b33/",
+      sourcePath: "reference/business-33-research-memory-v1/"
+    }),
+    Object.freeze({
+      number: 34,
+      slug: "ai-dubbing-studio",
+      title: "AI Dubbing Studio",
+      koreanTitle: "AI 더빙 스튜디오",
+      summary: "합성 원본·권리확인·전사·번역·합성음성 방향·싱크 검토를 사람 승인 기록으로 연결하는 정적 시각 프리뷰입니다. 실제 업로드·더빙·음성 생성·실인물 음성복제·파일 출력 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b34/",
+      sourcePath: "reference/business-34-ai-dubbing-studio-v1/"
     }),
     Object.freeze({
       number: 35,
@@ -306,6 +339,17 @@
       routeKind: "LOCAL_STATIC",
       targetPath: "/b37/",
       sourcePath: "reference/business-37-ai-safe-route-v1/"
+    }),
+    Object.freeze({
+      number: 38,
+      slug: "ai-exercise-coach",
+      title: "AI Exercise Coach",
+      koreanTitle: "AI 운동 코치",
+      summary: "합성 운동 프로필·비진단 움직임 관찰·선택 가능한 회귀·진행안과 사람 검토 계획을 살펴보는 정적 시각 프리뷰입니다. 의료·재활 처방, 자동 자세 인증, 실시간 카메라·생체정보·건강데이터 연결 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b38/",
+      sourcePath: "reference/business-38-ai-exercise-coach-v1/"
     }),
     Object.freeze({
       number: 39,

@@ -226,12 +226,39 @@ const routes = [
     excludePaths: ["app.js", "docs"]
   },
   {
+    number: 29,
+    route: "b29",
+    sourcePath: "reference/business-29-apartment-governance-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "방림명지로드힐 우리단지 운영실",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 32,
     route: "b32",
     sourcePath: "reference/business-32-ai-skill-studio-ux",
     mode: "STATIC_REFERENCE",
     marker: "AI 업무 실습실",
     includeFiles: ["index.html", "guide.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 33,
+    route: "b33",
+    sourcePath: "reference/business-33-research-memory-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "연구 기억실",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 34,
+    route: "b34",
+    sourcePath: "reference/business-34-ai-dubbing-studio-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 더빙 스튜디오",
+    includeFiles: ["index.html"],
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
@@ -258,6 +285,15 @@ const routes = [
     sourcePath: "reference/business-37-ai-safe-route-v1",
     mode: "STATIC_REFERENCE",
     marker: "AI 안전경로",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
+    number: 38,
+    route: "b38",
+    sourcePath: "reference/business-38-ai-exercise-coach-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 운동 코치",
     includeFiles: ["index.html"],
     includeDirs: ["assets", "scripts", "styles"]
   },
