@@ -289,6 +289,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 38,
+    route: "b38",
+    sourcePath: "reference/business-38-ai-exercise-coach-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 운동 코치",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 39,
     route: "b39",
     sourcePath: "reference/business-39-112-real-time-interpretation-v1",
