@@ -385,6 +385,17 @@
       sourcePath: "reference/business-41-foreign-emergency-assistant-v1/"
     }),
     Object.freeze({
+      number: 42,
+      slug: "ai-development-control-tower",
+      title: "AI Development Control Tower",
+      koreanTitle: "AI 개발 관제탑",
+      summary: "합성 소프트웨어 작업의 작업자 보고·독립 검증·stale evidence·phase gate·사람 승인·다음 허용 행동을 분리해 검토하는 정적 개발 관제 프리뷰입니다. 실제 Git·저장소 쓰기·CI·merge·배포 실행·worker 제어·백엔드 연결 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b42/",
+      sourcePath: "reference/business-42-ai-development-control-tower-v1/"
+    }),
+    Object.freeze({
       number: 48,
       slug: "ai-verification-engine",
       title: "AI Verification Engine",
