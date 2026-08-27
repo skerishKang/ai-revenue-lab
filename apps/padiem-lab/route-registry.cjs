@@ -307,6 +307,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 40,
+    route: "b40",
+    sourcePath: "reference/business-40-emergency-urgency-ai-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "긴급도 근거 검토 데스크",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 48,
     route: "b48",
     sourcePath: "reference/business-48-ai-verification-engine-v1",
