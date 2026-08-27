@@ -1,6 +1,6 @@
 """Cloudflare Service Binding transport for the internal Engine Worker.
 
-Cloudflare-specific routing remains app-owned.  Padiem AI Core receives only an
+Cloudflare-specific routing remains app-owned. Padiem AI Core receives only an
 ordinary httpx transport and therefore stays platform-neutral.
 """
 
@@ -11,10 +11,18 @@ from urllib.parse import urlsplit
 
 import httpx
 
-from padiem_ai_core import B14_CHAT_COMPLETIONS_PATH
+from padiem_ai_core import B14_CHAT_COMPLETIONS_PATH, B14_STREAM_PREVIEW_PATH
+from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
 
 B14_INTERNAL_ORIGIN = "https://b14.internal"
 MAX_OUTBOUND_B14_REQUEST_BYTES = 256 * 1024
+_ALLOWED_B14_PATHS = frozenset(
+    {
+        B14_CHAT_COMPLETIONS_PATH,
+        B14_STREAM_PREVIEW_PATH,
+        B14_AUTO_STREAM_PREVIEW_PATH,
+    }
+)
 
 
 class CloudflareReadableByteStream(httpx.AsyncByteStream):
@@ -103,7 +111,7 @@ class CloudflareReadableByteStream(httpx.AsyncByteStream):
 
 
 class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
-    """Fixed Service Binding bridge used by B14ExecutionClient."""
+    """Fixed Service Binding bridge used by Core B14 clients."""
 
     def __init__(
         self,
@@ -125,7 +133,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             parsed.scheme != "https"
             or parsed.hostname != "b14.internal"
             or parsed.port is not None
-            or parsed.path != B14_CHAT_COMPLETIONS_PATH
+            or parsed.path not in _ALLOWED_B14_PATHS
             or parsed.query
             or parsed.fragment
         ):
