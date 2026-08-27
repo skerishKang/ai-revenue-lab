@@ -468,3 +468,74 @@ def test_gateway_agnes_fails_closed_when_secret_missing_live(monkeypatch):
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "no_safe_route"
     assert "AGNES_API_KEY" not in json.dumps(response.json())
+
+
+# ---------------------------------------------------------------------------
+# Gateway-level: Agnes platform_secret STREAMING closure
+# (stream-preview endpoint path for platform_secret providers)
+# ---------------------------------------------------------------------------
+_STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
+
+
+def test_stream_preview_agnes_platform_secret_streams_when_secret_present(monkeypatch):
+    """platform_secret Agnes route now streams via stream-preview (mock mode)."""
+    monkeypatch.setenv("AGNES_API_KEY", _SYNTH_AGNES_KEY)
+    monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
+    client = TestClient(create_app())
+    response = client.post(
+        _STREAM_URL,
+        json={
+            "model": "agnes-ai/agnes-2.5-flash",
+            "stream": True,
+            "messages": [{"role": "user", "content": "hi"}],
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    text = response.text
+    # Mock platform stream emits at least one visible content delta.
+    assert "Mock" in text or "delta" in text or "이것은" in text
+    # Never leak the secret anywhere in the SSE body.
+    assert _SYNTH_AGNES_KEY not in text
+    assert "AGNES_API_KEY" not in text
+
+
+def test_stream_preview_agnes_platform_secret_fails_closed_when_secret_missing(monkeypatch):
+    """platform_secret Agnes streaming fails closed (zero upstream) without secret."""
+    monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
+    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+    client = TestClient(create_app())
+    response = client.post(
+        _STREAM_URL,
+        json={
+            "model": "agnes-ai/agnes-2.5-flash",
+            "stream": True,
+            "messages": [{"role": "user", "content": "hi"}],
+        },
+    )
+    assert response.status_code == 503
+    body = response.json()
+    assert "AGNES_API_KEY" not in json.dumps(body)
+
+
+def test_stream_preview_openrouter_route_still_streams(monkeypatch):
+    """OpenRouter manual route (credential_source=openrouter) still streams via
+    stream-preview; the openrouter/free catalog model resolves and does not
+    raise StreamNotSupported for a non-platform route."""
+    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+    client = TestClient(create_app())
+    response = client.post(
+        _STREAM_URL,
+        json={
+            "model": "openrouter/free",
+            "stream": True,
+            "messages": [{"role": "user", "content": "hi"}],
+        },
+    )
+    # Valid catalog OpenRouter model streams successfully (mock mode): the
+    # gateway must route it to the OpenRouter streamer and return SSE, not
+    # raise StreamNotSupported now that platform_secret is supported.
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "AGNES_API_KEY" not in response.text
+    assert _SYNTH_AGNES_KEY not in response.text
