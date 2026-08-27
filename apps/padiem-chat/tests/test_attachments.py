@@ -10,6 +10,7 @@ import pytest
 from app.attachments import MAX_IMAGE_BYTES, parse_attachments
 from app.config import Settings
 from app.main import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -30,20 +31,20 @@ def attachment(media_type="image/png", data=PNG, name="photo.png"):
     }
 
 
-def b14_success(answer="이미지를 분석한 답변입니다."):
+def b14_success(answer="Agnes 텍스트 답변입니다."):
     return {
         "choices": [{"message": {"role": "assistant", "content": answer}}],
         "business14": {
-            "request_id": "b14req_image",
-            "route_mode": "auto",
-            "selected_model": "google/gemini-2.5-flash",
-            "selected_provider": "Google",
+            "request_id": "b14req_text",
+            "route_mode": "manual",
+            "selected_model": DEFAULT_B14_MODEL_ID,
+            "selected_provider": "Agnes AI",
         },
     }
 
 
 @pytest.mark.asyncio
-async def test_no_attachment_keeps_text_chat_contract():
+async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
     seen = {}
 
     async def handler(request):
@@ -60,8 +61,11 @@ async def test_no_attachment_keeps_text_chat_contract():
             json={"messages": [{"role": "user", "content": "안녕"}], "mode": "auto"},
         )
     assert response.status_code == 200
+    assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
     assert seen["body"]["messages"][1] == {"role": "user", "content": "안녕"}
-    assert seen["body"]["business14"]["required_capabilities"] == ["free"]
+    assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
+    assert seen["body"]["business14"]["allow_external_fallback"] is False
+    assert seen["body"]["business14"]["max_attempts"] == 1
     assert "attachments" not in response.json()
 
 
@@ -74,11 +78,14 @@ async def test_no_attachment_keeps_text_chat_contract():
         ("image/webp", WEBP, "photo.webp"),
     ],
 )
-async def test_valid_image_attachment_reaches_b14_as_latest_user_multimodal(media_type, data, name):
-    seen = {}
+async def test_valid_live_image_attachment_fails_closed_before_b14_until_model_capability_is_proven(
+    media_type, data, name
+):
+    calls = 0
 
     async def handler(request):
-        seen["body"] = json.loads(request.content)
+        nonlocal calls
+        calls += 1
         return httpx.Response(200, json=b14_success())
 
     app = create_app(
@@ -100,26 +107,10 @@ async def test_valid_image_attachment_reaches_b14_as_latest_user_multimodal(medi
             },
         )
 
-    assert response.status_code == 200
-    outbound = seen["body"]
-    assert outbound["model"] == "b14/auto"
-    assert outbound["business14"]["required_capabilities"] == ["free", "image"]
-    assert outbound["messages"][1] == history[0]
-    assert outbound["messages"][2] == history[1]
-    latest = outbound["messages"][3]
-    assert latest["role"] == "user"
-    assert latest["content"][0] == {"type": "text", "text": "이 사진을 설명해줘"}
-    assert latest["content"][1]["type"] == "image_url"
-    assert latest["content"][1]["image_url"]["url"].startswith(f"data:{media_type};base64,")
-
-    public = response.json()
-    assert public["attachments"] == [{
-        "type": "image",
-        "name": name,
-        "media_type": media_type,
-        "byte_size": len(data),
-    }]
-    assert encoded(data) not in json.dumps(public)
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "image_model_unavailable"
+    assert calls == 0
+    assert encoded(data) not in response.text
 
 
 @pytest.mark.asyncio
@@ -190,6 +181,7 @@ async def test_mock_runtime_acknowledges_image_but_never_claims_image_analysis()
     assert response.status_code == 200
     body = response.json()
     assert body["runtime"] == "mock"
+    assert body["route"]["model"] == DEFAULT_B14_MODEL_ID
     assert "실제 모델 호출이나 이미지 분석은 하지 않았습니다" in body["answer"]
     assert encoded(PNG) not in json.dumps(body)
 
