@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "business-manifest.js"
 IDENTITY_CORE = ROOT / "business-identity-core.js"
 
-EXPECTED_NUMBERS = [*range(1, 56), 57, 58, 59]
+EXPECTED_NUMBERS = [*range(1, 56), 57, 58, 59, 60, 64]
 
 
 class BusinessRegistryTests(unittest.TestCase):
@@ -30,12 +30,14 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIsNotNone(match, f"Business {number} entry not found in identity core")
         return match.group(0)
 
-    def test_registry_has_exact_ordered_unique_numbers_through_fiftynine_with_gap_56(self) -> None:
+    def test_registry_has_exact_ordered_unique_registered_numbers_with_sparse_post60_entries(self) -> None:
         numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.script)]
         self.assertEqual(numbers, EXPECTED_NUMBERS)
-        self.assertEqual(len(numbers), 58)
+        self.assertEqual(len(numbers), 60)
         self.assertEqual(len(numbers), len(set(numbers)))
         self.assertNotIn(56, numbers)
+        for number in (61, 62, 63):
+            self.assertNotIn(number, numbers)
 
     def test_reserved_slots_seven_through_twelve_exist_as_canonical(self) -> None:
         # B7-B12 were promoted from PROPOSED to CANONICAL in the 2026-08-15
@@ -70,6 +72,8 @@ class BusinessRegistryTests(unittest.TestCase):
         numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.core_script)]
         self.assertEqual(numbers, EXPECTED_NUMBERS)
         self.assertNotIn(56, numbers)
+        for number in (61, 62, 63):
+            self.assertNotIn(number, numbers)
 
     def test_manifest_defines_no_phase_status_literals_single_source(self) -> None:
         for literal in ('ui:"', 'ux:"', 'be:"'):
@@ -107,6 +111,13 @@ class BusinessRegistryTests(unittest.TestCase):
         }
         for number, slug in expected.items():
             self.assertIn(f's:"{slug}"', self.business_block(number))
+
+    def test_business_60_and_64_proposed_entries_exist(self) -> None:
+        self.assertIn('s:"ai-api"', self.business_block(60))
+        b64 = self.business_block(64)
+        self.assertIn('s:"ai-reward-router"', b64)
+        self.assertIn('a:NA.PROPOSED', b64)
+        self.assertIn('l:"incubation"', b64)
 
 
 if __name__ == "__main__":
