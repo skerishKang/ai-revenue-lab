@@ -253,6 +253,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 34,
+    route: "b34",
+    sourcePath: "reference/business-34-ai-dubbing-studio-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 더빙 스튜디오",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 35,
     route: "b35",
     sourcePath: "reference/business-35-ai-media-education-dx-v3",
