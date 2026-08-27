@@ -363,6 +363,28 @@
       sourcePath: "reference/business-39-112-real-time-interpretation-v1/"
     }),
     Object.freeze({
+      number: 40,
+      slug: "emergency-urgency-ai",
+      title: "Emergency Urgency AI",
+      koreanTitle: "긴급도 판단 AI",
+      summary: "합성 긴급상황 보고를 출처·관찰 지표·상충근거·결측·불확실성으로 분해해 사람이 검토하는 긴급도 지원 기록의 정적 시각 프리뷰입니다. 자동 긴급도 판단·배차·자원배분·의료진단·위협예측·실시간 신고·위치·센서·건강데이터 연결 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b40/",
+      sourcePath: "reference/business-40-emergency-urgency-ai-v1/"
+    }),
+    Object.freeze({
+      number: 41,
+      slug: "foreign-emergency-assistant",
+      title: "Foreign Emergency Assistant",
+      koreanTitle: "외국인 긴급신고 도우미",
+      summary: "합성 외국어 긴급상황에서 언어 선호·사용자 진술·관찰 사실·미확인 정보·부분 위치를 분리해 사람이 공식 긴급서비스에 전달할 신고 브리프를 준비하는 정적 시각 프리뷰입니다. 실제 긴급통화·채팅·배차·위치전송·공인 통역·의료·경찰·소방·법률 판단 시스템이 아닙니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b41/",
+      sourcePath: "reference/business-41-foreign-emergency-assistant-v1/"
+    }),
+    Object.freeze({
       number: 48,
       slug: "ai-verification-engine",
       title: "AI Verification Engine",
