@@ -316,6 +316,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 41,
+    route: "b41",
+    sourcePath: "reference/business-41-foreign-emergency-assistant-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "외국인 긴급신고 도우미",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 48,
     route: "b48",
     sourcePath: "reference/business-48-ai-verification-engine-v1",
