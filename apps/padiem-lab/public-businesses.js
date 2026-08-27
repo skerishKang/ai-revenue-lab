@@ -341,6 +341,17 @@
       sourcePath: "reference/business-52-scheduled-agent-operations-v1/"
     }),
     Object.freeze({
+      number: 53,
+      slug: "embedded-ai-sdk",
+      title: "Embedded AI SDK",
+      koreanTitle: "임베드 AI SDK",
+      summary: "합성 호스트 제품의 삽입 지점·입출력 계약·최소권한·호환성·fail-closed fallback·사람 release authority를 검토하는 정적 임베드 통합 명세 프리뷰입니다.",
+      publicStatus: "PREVIEW",
+      routeKind: "LOCAL_STATIC",
+      targetPath: "/b53/",
+      sourcePath: "reference/business-53-embedded-ai-sdk-v1/"
+    }),
+    Object.freeze({
       number: 59,
       slug: "living-archive",
       title: "Living Archive",
