@@ -127,3 +127,19 @@ def test_no_hardcoded_secrets_or_provider_calls():
         assert forbidden not in THEME_JS, f"forbidden {forbidden} in theme.js"
         assert forbidden not in (ROOT / "static/theme-init.js").read_text(encoding="utf-8"), f"forbidden {forbidden} in theme-init.js"
 
+def test_bright_theme_chat_state_regression():
+    # This class of defect: bright themes showing dark composer/bubble/avatar in chat state
+    # Ensure explicit bright-theme + chat-state overrides exist with higher specificity
+    for theme in ["light", "padiem-home"]:
+        prefix = f'html[data-theme="{theme}"] .app-shell[data-state="chat"]'
+        for sel in [".message-bubble", ".assistant-avatar", ".assistant-meta", ".assistant-content", ".composer", ".composer-wrap", ".composer-note"]:
+            needle = f"{prefix} {sel}"
+            assert needle in THEMES_CSS, f"missing bright chat override {needle}"
+    # Ensure no forbidden storage remains (already checked) but also ensure chat-state uses bright tokens
+    assert 'html[data-theme="light"] .app-shell[data-state="chat"] .message-bubble' in THEMES_CSS
+    assert 'html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble' in THEMES_CSS
+    # Check that light chat uses bright composer, not dark cinematic
+    assert 'html[data-theme="light"] .app-shell[data-state="chat"] .composer' in THEMES_CSS
+    # Verify DARK and CINEMATIC are preserved (dark overrides still exist)
+    assert 'html[data-theme="dark"] .composer-note' in THEMES_CSS
+    assert 'html[data-theme="cinematic"] .composer-note' in THEMES_CSS

@@ -108,6 +108,18 @@ html[data-theme="light"] .starter-icon {
 html[data-theme="light"] .composer { background: var(--composer-bg); border: 1px solid var(--composer-border); box-shadow: var(--composer-shadow); }
 html[data-theme="light"] .composer-wrap { background: linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg)) !important; }
 html[data-theme="light"] .composer-note { color: var(--muted) !important; }
+/* LIGHT chat-state — override dark cinematic chat selectors (padiem-editorial/rich) */
+html[data-theme="light"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg) !important; color: var(--user-bubble-text) !important; border-color: var(--user-bubble-border) !important; box-shadow: 0 2px 10px rgba(101,87,232,.06) !important; backdrop-filter: none !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-avatar { background: linear-gradient(135deg, #7768ee, #4f40ce) !important; border: none !important; color: #fff !important; box-shadow: 0 6px 18px rgba(85,70,214,.12) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .demo-label { background: var(--accent-soft) !important; border-color: var(--line) !important; color: var(--muted) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content { color: #1e1e22 !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(101,87,232,.18), rgba(0,0,0,.04), transparent) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .composer { background: var(--composer-bg) !important; border-color: var(--composer-border) !important; box-shadow: var(--composer-shadow) !important; backdrop-filter: none !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .composer-wrap { background: linear-gradient(to bottom, transparent, var(--bg) 28%, var(--bg)) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .composer textarea { color: var(--input-text) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .composer textarea::placeholder { color: var(--placeholder) !important; }
+html[data-theme="light"] .app-shell[data-state="chat"] .composer-note { color: var(--muted) !important; }
 /* LIGHT refinement — subtle hierarchy, pearl cues */
 html[data-theme="light"] .sidebar { background: linear-gradient(180deg, #f1f1f5 0%, #ececf1 100%); border-right-color: #e0e0e6; }
 html[data-theme="light"] .starter { background: linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%); border-color: #e6e6eb; box-shadow: 0 2px 10px rgba(101,87,232,.05), 0 1px 3px rgba(30,28,54,.04); }
@@ -406,6 +418,18 @@ html[data-theme="padiem-home"] .assistant-meta { color: #5a6578; }
 html[data-theme="padiem-home"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)); border-color: rgba(26,34,48,.10); border-top: 1px solid rgba(255,255,255,.9); box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85); backdrop-filter: blur(18px); }
 html[data-theme="padiem-home"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important; }
 html[data-theme="padiem-home"] .composer-note { color: var(--muted) !important; }
+/* PADIEM_HOME chat-state — override dark cinematic chat selectors */
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .message-bubble { background: var(--user-bubble-bg) !important; color: var(--user-bubble-text) !important; border-color: transparent !important; box-shadow: 0 4px 16px rgba(26,34,48,.10) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-avatar { background: rgba(255,255,255,.72) !important; border: 1px solid rgba(26,34,48,.12) !important; color: #1a2230 !important; box-shadow: 0 6px 18px rgba(26,34,48,.08) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-meta { color: var(--muted) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .demo-label { background: rgba(255,255,255,.62) !important; border-color: rgba(26,34,48,.10) !important; color: var(--muted) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content { color: #1e2a3a !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-message::before { background: linear-gradient(to bottom, rgba(26,34,48,.12), rgba(26,34,48,.04), transparent) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)) !important; border-color: rgba(26,34,48,.10) !important; box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85) !important; backdrop-filter: blur(18px) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-wrap { background: linear-gradient(to bottom, transparent, rgba(230,233,238,.84) 32%, var(--bg) 78%) !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea { color: #1a2230 !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea::placeholder { color: #7a869a !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-note { color: var(--muted) !important; }
 html[data-theme="padiem-home"] .composer textarea { color: #1a2230; }
 html[data-theme="padiem-home"] .composer textarea::placeholder { color: #7a869a; }
 html[data-theme="padiem-home"] .source-card,
