@@ -28,6 +28,38 @@
   text-align: left;
 }
 
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-row .history-item {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.history-delete {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #8a8f98;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.history-delete:hover,
+.history-delete:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f0c0c0;
+}
+
 @media (max-width: 720px) {
   .account-name {
     max-width: 88px;
