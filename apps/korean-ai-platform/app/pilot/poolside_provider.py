@@ -1,15 +1,20 @@
 """Poolside Provider onboarding for Business 14.
 
-This module uses the existing generic platform-owned Provider plane.  It adds
-only non-secret Poolside metadata and the exact Laguna S 2.1 catalog entry.
+This module uses the existing generic platform-owned Provider plane. It adds
+only non-secret Poolside metadata and the exact Laguna S 2.1 model entry.
 No Provider call is made during registration.
+
+Poolside is intentionally registered as an explicit-only model for the initial
+rollout: it is addressable by exact model ID but is not inserted into the
+legacy OpenRouter summary/auto-routing list. That keeps B14's historical
+OpenRouter catalog contract intact while preventing Poolside from being chosen
+by ``b14/auto`` before the owner explicitly approves that behavior.
 """
 
 from __future__ import annotations
 
 from app.pilot.catalog import (
     CATALOG_BY_ID,
-    CATALOG_MODELS,
     CatalogModel,
     ensure_free_tag_requires_known_zero_price,
 )
@@ -28,10 +33,10 @@ POOLSIDE_CREDENTIAL_BINDING = "POOLSIDE_API_KEY"
 
 
 def register_poolside_provider() -> None:
-    """Idempotently register Poolside and Laguna S 2.1.
+    """Idempotently register Poolside and explicit-only Laguna S 2.1.
 
-    Pricing remains unknown in the durable catalog even though Poolside's
-    official models page currently advertises limited-time free access.  This
+    Pricing remains unknown in the durable model metadata even though Poolside's
+    official models page currently advertises limited-time free access. This
     deliberately avoids turning a time-limited promotion into a permanent
     ``free`` capability claim.
     """
@@ -73,7 +78,9 @@ def register_poolside_provider() -> None:
         snapshot_state="configured_snapshot",
     )
     ensure_free_tag_requires_known_zero_price(model)
-    CATALOG_MODELS.append(model)
+
+    # Exact manual lookup only. Do not append to CATALOG_MODELS: that list is
+    # still the legacy OpenRouter public/auto-routing surface.
     CATALOG_BY_ID[model.model_id] = model
 
 
