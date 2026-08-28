@@ -256,7 +256,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await page.locator("#projectDialog").wait_for(state="visible")
     if await page.locator("#projectFilesPanel").is_hidden():
         raise AssertionError("Project Files panel must be visible when project_files_ready=true")
-    await _wait_text(page, "#projectFilesEmpty", "아직 프로젝트 파일이 없습니다.")
+    await _wait_text(page, "#projectFilesEmpty", "저장된 프로젝트 파일이 없습니다.")
 
     await page.locator("#projectFileInput").set_input_files({
         "name": FILE_NAME,
