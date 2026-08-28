@@ -15,7 +15,7 @@ from starlette.routing import Router
 
 # Importing platform registers the approved platform-owned Provider specs.
 from app.pilot import platform as _platform_registration  # noqa: F401
-from app.pilot.catalog import get_catalog_models
+from app.pilot.catalog import CATALOG_BY_ID
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
@@ -43,10 +43,19 @@ def _credential_ready(spec: PlatformProviderSpec) -> bool:
 
 
 def _enabled_models_for_provider(provider_id: str) -> list[str]:
+    """Return all exact manual-route platform models for a Provider.
+
+    Use the exact-ID registry rather than only the legacy OpenRouter public/auto
+    list. This lets explicit-only Provider models (such as initial Poolside
+    rollout models) appear in readiness without making them eligible for
+    ``b14/auto`` or the legacy public catalog surface.
+    """
+
     return sorted(
         model.model_id
-        for model in get_catalog_models()
-        if model.provider_type == "platform"
+        for model in CATALOG_BY_ID.values()
+        if model.enabled
+        and model.provider_type == "platform"
         and model.platform_provider_id == provider_id
     )
 
