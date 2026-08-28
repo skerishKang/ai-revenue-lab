@@ -7,7 +7,9 @@ import pytest
 from app.config import ConfigError, Settings
 from app.worker_config import (
     BASE_SECURITY_HEADERS,
+    CONTENT_SECURITY_POLICY,
     D1_BINDING_NAME,
+    PERMISSIONS_POLICY,
     WORKER_BINDING_NAMES,
     response_headers_for_path,
     settings_from_worker_bindings,
@@ -164,6 +166,8 @@ def test_security_headers_and_api_auth_no_store():
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "no-referrer",
+        "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+        "Permissions-Policy": PERMISSIONS_POLICY,
     }
     assert response_headers_for_path("/") == BASE_SECURITY_HEADERS
     assert response_headers_for_path("/api/chat")["Cache-Control"] == "no-store"
