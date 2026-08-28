@@ -1,0 +1,31 @@
+name: B62 Security Headers
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat/app/worker_config.py'
+      - 'apps/padiem-chat/tests/test_worker_config.py'
+      - 'apps/padiem-chat/tests/test_security_headers_contract.py'
+      - '.github/workflows/b62-security-headers.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
+      - name: Resolve Padiem Chat with shared Core
+        working-directory: apps/padiem-chat
+        run: uv sync --extra dev
+      - name: Verify Worker security header contracts
+        working-directory: apps/padiem-chat
+        run: uv run pytest -q tests/test_worker_config.py tests/test_security_headers_contract.py
