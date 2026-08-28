@@ -62,6 +62,7 @@ class HistoryStore(Protocol):
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
     async def create_project(self, user_id: str, name: str, instructions: str) -> ProjectProfile: ...
     async def update_project(self, user_id: str, project_id: str, name: str, instructions: str) -> ProjectProfile | None: ...
+    async def delete_project(self, user_id: str, project_id: str) -> bool: ...
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
 
 
@@ -325,6 +326,16 @@ class D1HistoryStore:
             clean_name, clean_instructions, now, project_id, user_id,
         )
         return ProjectProfile(project_id, clean_name, clean_instructions, current.created_at, now)
+
+    async def delete_project(self, user_id: str, project_id: str) -> bool:
+        current = await self.get_project(user_id, project_id)
+        if current is None:
+            return False
+        await self._run(
+            "DELETE FROM projects WHERE id=? AND user_id=?",
+            project_id, user_id,
+        )
+        return True
 
     async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None) -> str:
         user_content = _bounded_text(user_text, "user_text")

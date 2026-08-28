@@ -89,6 +89,27 @@ async def project_detail(request: Request) -> JSONResponse:
         return _not_found()
     store: HistoryStore = request.app.state.history_store
 
+    if request.method == "DELETE":
+        try:
+            project = await store.get_project(uid, project_id)
+            if project is None:
+                return _not_found()
+            file_store = request.app.state.project_file_store
+            if file_store is None:
+                return _unavailable()
+            files = await file_store.list_files(uid, project_id)
+            if files:
+                return JSONResponse(
+                    {"error": {"code": "project_has_files", "message": "프로젝트 파일을 먼저 삭제해 주세요."}},
+                    status_code=409,
+                )
+            deleted = await store.delete_project(uid, project_id)
+        except Exception:
+            return _unavailable()
+        if not deleted:
+            return _not_found()
+        return JSONResponse({"deleted": True, "project_id": project_id})
+
     if request.method == "GET":
         try:
             project = await store.get_project(uid, project_id)

@@ -102,6 +102,16 @@ class MemoryProjectStore:
         row["profile"] = updated
         return updated
 
+    async def delete_project(self, user_id, project_id):
+        row = self.projects.get(project_id)
+        if not row or row["user_id"] != user_id:
+            return False
+        del self.projects[project_id]
+        for conversation in self.conversations.values():
+            if conversation["user_id"] == user_id and conversation["project_id"] == project_id:
+                conversation["project_id"] = None
+        return True
+
     async def list_conversations(self, user_id, limit=30):
         rows = [row for row in self.conversations.values() if row["user_id"] == user_id]
         rows.sort(key=lambda row: row["updated_at"], reverse=True)
@@ -156,6 +166,14 @@ class MemoryProjectStore:
         ])
         row["updated_at"] = self._now()
         return conversation_id
+
+
+class MemoryProjectFileStore:
+    def __init__(self):
+        self.files = {}
+
+    async def list_files(self, user_id, project_id):
+        return list(self.files.get((user_id, project_id), []))
 
 
 async def client_with_session(app, app_settings, user: UserProfile):
@@ -215,6 +233,39 @@ async def test_project_crud_is_strict_and_owner_scoped():
     finally:
         await owner_client.aclose()
         await other_client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_project_delete_is_owner_scoped_file_safe_and_preserves_conversations():
+    store = MemoryProjectStore()
+    file_store = MemoryProjectFileStore()
+    owner = await store.add_user("owner-delete")
+    other = await store.add_user("other-delete")
+    blocked = await store.create_project(owner.id, "자료 있음", "")
+    removable = await store.create_project(owner.id, "삭제 가능", "")
+    foreign = await store.create_project(other.id, "다른 사용자", "")
+    cid = await store.append_exchange(owner.id, None, "남겨 둘 질문", "남겨 둘 답", project_id=removable.id)
+    file_store.files[(owner.id, blocked.id)] = [object()]
+    cfg = settings()
+    app = create_app(cfg, history_store=store, project_file_store=file_store)
+    owner_client = await client_with_session(app, cfg, owner)
+    try:
+        malformed = await owner_client.delete("/api/projects/not-a-project")
+        foreign_result = await owner_client.delete(f"/api/projects/{foreign.id}")
+        blocked_result = await owner_client.delete(f"/api/projects/{blocked.id}")
+        deleted = await owner_client.delete(f"/api/projects/{removable.id}")
+    finally:
+        await owner_client.aclose()
+
+    assert malformed.status_code == 404
+    assert foreign_result.status_code == 404
+    assert blocked_result.status_code == 409
+    assert blocked_result.json()["error"]["code"] == "project_has_files"
+    assert await store.get_project(owner.id, blocked.id) is not None
+    assert deleted.status_code == 200
+    assert deleted.json() == {"deleted": True, "project_id": removable.id}
+    assert await store.get_project(owner.id, removable.id) is None
+    assert store.conversations[cid]["project_id"] is None
 
 
 @pytest.mark.asyncio
@@ -405,6 +456,9 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'payload.project_id = contextSnapshot.project.id' in js
     assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in js
     assert 'exitProjectButton.addEventListener("click", exitProject)' in js
+    assert 'projectDeleteButton.addEventListener("click", deleteProject)' in js
+    assert 'manage.addEventListener("click", () => openProjectDialog(project))' in js
+    assert 'method: "DELETE"' in js
     assert 'data.conversation.project_id' in js
     assert 'fetch("/api/projects"' in js
     assert "innerHTML" not in js

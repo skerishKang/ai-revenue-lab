@@ -26,6 +26,35 @@
   outline: none;
 }
 
+.project-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.project-row .project-item {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.project-manage {
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #5f6368;
+  cursor: pointer;
+}
+
+.project-manage:hover,
+.project-manage:focus-visible {
+  background: rgba(24, 24, 27, 0.06);
+  outline: none;
+}
+
 .project-item[aria-current="true"] {
   font-weight: 650;
   background: rgba(24, 24, 27, 0.06);
@@ -197,6 +226,14 @@
   border: 1px solid #18181b;
   background: #18181b;
   color: #fff;
+}
+
+.project-form-actions .project-danger {
+  margin-right: auto;
+  min-height: 44px;
+  border: 1px solid rgba(179, 38, 30, 0.25);
+  background: #fff;
+  color: #b3261e;
 }
 
 @media (max-width: 640px) {

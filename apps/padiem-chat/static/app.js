@@ -45,6 +45,15 @@
   const projectInstructionsInput = document.getElementById("projectInstructionsInput");
   const projectFormError = document.getElementById("projectFormError");
   const projectSaveButton = document.getElementById("projectSaveButton");
+  const projectFormActions = projectForm.querySelector(".project-form-actions");
+  const projectDeleteButton = document.createElement("button");
+  projectDeleteButton.id = "projectDeleteButton";
+  projectDeleteButton.type = "button";
+  projectDeleteButton.className = "project-danger";
+  projectDeleteButton.textContent = "프로젝트 삭제";
+  projectDeleteButton.hidden = true;
+  projectDeleteButton.setAttribute("aria-label", "현재 프로젝트 삭제");
+  projectFormActions.prepend(projectDeleteButton);
   const projectFilesPanel = document.getElementById("projectFilesPanel");
   const projectFileInput = document.getElementById("projectFileInput");
   const projectFilesList = document.getElementById("projectFilesList");
@@ -399,6 +408,8 @@
     projectsSection.hidden = !projectsReady;
     projectsEmpty.hidden = !projectsReady || projects.length !== 0;
     projects.forEach((project) => {
+      const row = document.createElement("div");
+      row.className = "project-row";
       const button = document.createElement("button");
       button.type = "button";
       button.className = "recent-item project-item";
@@ -406,7 +417,14 @@
       button.textContent = project.name;
       button.setAttribute("aria-current", activeProject && activeProject.id === project.id ? "true" : "false");
       button.addEventListener("click", () => selectProject(project));
-      projectsList.appendChild(button);
+      const manage = document.createElement("button");
+      manage.type = "button";
+      manage.className = "project-manage";
+      manage.textContent = "관리";
+      manage.setAttribute("aria-label", `‘${project.name}’ 프로젝트 관리`);
+      manage.addEventListener("click", () => openProjectDialog(project));
+      row.append(button, manage);
+      projectsList.appendChild(row);
     });
     projectsBadge.textContent = projects.length ? String(projects.length) : "새로 만들기";
   }
@@ -595,6 +613,8 @@
     projectFormError.textContent = "";
     projectFormError.hidden = true;
     projectSaveButton.disabled = false;
+    projectDeleteButton.hidden = !project;
+    projectDeleteButton.disabled = false;
     projectFilesPanel.hidden = !(project && authState.project_files_ready);
     dialogProjectFiles = [];
     renderProjectFiles();
@@ -646,6 +666,54 @@
     } catch (error) {
       projectFormError.textContent = error instanceof Error ? error.message : "프로젝트를 저장하지 못했습니다.";
       projectFormError.hidden = false;
+      projectSaveButton.disabled = false;
+    }
+  }
+
+  async function deleteProject() {
+    if (!editingProjectId || !projectsReady || !authState.authenticated || inFlight) return;
+    const project = projectById(editingProjectId);
+    if (!project) return;
+    const confirmed = window.confirm(
+      `‘${project.name}’ 프로젝트를 삭제할까요?\n프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 되돌릴 수 없습니다.`
+    );
+    if (!confirmed) return;
+    const deletingId = editingProjectId;
+    const deletingActiveProject = Boolean(activeProject && activeProject.id === deletingId);
+    projectDeleteButton.disabled = true;
+    projectSaveButton.disabled = true;
+    projectFormError.hidden = true;
+    try {
+      const response = await fetch(`/api/projects/${encodeURIComponent(deletingId)}`, {
+        method: "DELETE",
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
+        const message = data && data.error && typeof data.error.message === "string"
+          ? data.error.message
+          : "프로젝트를 삭제하지 못했습니다.";
+        throw new Error(message);
+      }
+      projects = projects.filter((item) => item.id !== deletingId);
+      if (deletingActiveProject) {
+        activeProject = null;
+        activeProjectFileCount = 0;
+      }
+      renderProjects();
+      renderProjectState();
+      closeProjectDialog();
+      await loadProjects();
+      if (deletingActiveProject) {
+        renderProjectState();
+        setNote(DEFAULT_NOTE);
+      }
+      input.focus();
+    } catch (error) {
+      projectFormError.textContent = error instanceof Error ? error.message : "프로젝트를 삭제하지 못했습니다.";
+      projectFormError.hidden = false;
+      projectDeleteButton.disabled = false;
       projectSaveButton.disabled = false;
     }
   }
@@ -998,6 +1066,7 @@
   projectDialogClose.addEventListener("click", closeProjectDialog);
   projectDialogCancel.addEventListener("click", closeProjectDialog);
   projectForm.addEventListener("submit", saveProject);
+  projectDeleteButton.addEventListener("click", deleteProject);
   projectFileInput.addEventListener("change", () => {
     const [file] = projectFileInput.files || [];
     addProjectFile(file);

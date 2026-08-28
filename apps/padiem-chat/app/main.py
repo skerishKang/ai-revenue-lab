@@ -645,7 +645,7 @@ def create_app(
         Route("/auth/google/callback", google_callback, methods=["GET"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
-        Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH"]),
+        Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
