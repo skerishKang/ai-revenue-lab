@@ -229,9 +229,11 @@ async def test_api_chat_mock_round_trip_and_validation():
     ) as client:
         ok = await client.post("/api/chat", json={"messages": USER_MESSAGES, "mode": "auto"})
         assert ok.status_code == 200
-        assert ok.json()["runtime"] == "mock"
-        assert ok.json()["route"]["model"] == ACTIVE_MODEL
-        assert ok.json()["skill"] == {"id": "auto", "title": "자동 추천"}
+        body = ok.json()
+        assert body["runtime"] == "mock"
+        assert "route" not in body
+        assert "request_id" not in body
+        assert body["skill"] == {"id": "auto", "title": "자동 추천"}
 
         explain = await client.post(
             "/api/chat",
@@ -325,9 +327,14 @@ async def test_api_chat_b14_adapter_with_mocked_transport():
             headers={"cf-connecting-ip": "203.0.113.40"},
         )
     assert response.status_code == 200
-    assert response.json()["route"]["model"] == ACTIVE_MODEL
-    assert response.json()["route"]["mode"] == "manual"
-    assert response.json()["skill"] == {"id": "plan", "title": "계획 세우기"}
+    body = response.json()
+    raw = response.content.decode("utf-8")
+    assert "route" not in body
+    assert "request_id" not in body
+    assert ACTIVE_MODEL not in raw
+    assert ACTIVE_PROVIDER not in raw
+    assert "b14req_test123" not in raw
+    assert body["skill"] == {"id": "plan", "title": "계획 세우기"}
 
 
 def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
