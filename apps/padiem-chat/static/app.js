@@ -188,11 +188,15 @@
     box.append(strong, p, retry);
     return box;
   }
+  function revealErrorState(article) {
+    article.scrollIntoView({ block: "center", behavior: "auto" });
+  }
   function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = "연결 오류";
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+    revealErrorState(article);
   }
   function renderStreamError(article, message, retryMessages, retrySkill, retryContext) {
     const content = article.querySelector(".assistant-content");
@@ -200,6 +204,7 @@
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = "연결 오류";
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+    revealErrorState(article);
   }
 
   function parseSseFrame(frame) {
