@@ -25,6 +25,7 @@ FOLLOWUP = "그중 꼭 필요한 세 가지만 골라줘"
 FOLLOWUP_ANSWER = "신분증, 충전기, 날씨에 맞는 옷 세 가지를 먼저 챙겨보세요."
 NEW_QUESTION = "오늘 할 일을 세 가지로 정리해줘"
 NEW_ANSWER = "가장 중요한 일 하나, 짧은 정리 하나, 휴식 하나로 나눠보세요."
+STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
 
 
 @dataclass
@@ -79,6 +80,27 @@ def _parse_post_data(route: Route) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise AssertionError(f"expected object request payload, got {value!r}")
     return value
+
+
+async def _install_static_font_stubs(page: Page, stubbed_hosts: set[str]) -> None:
+    async def stub_stylesheet(route: Route) -> None:
+        host = (urlparse(route.request.url).hostname or "").lower()
+        stubbed_hosts.add(host)
+        await route.fulfill(
+            status=200,
+            content_type="text/css; charset=utf-8",
+            body="/* deterministic browser QA: external decorative font fetch suppressed */\n",
+            headers={"Cache-Control": "no-store"},
+        )
+
+    async def stub_font_binary(route: Route) -> None:
+        host = (urlparse(route.request.url).hostname or "").lower()
+        stubbed_hosts.add(host)
+        await route.fulfill(status=204, body="")
+
+    await page.route("https://cdn.jsdelivr.net/**", stub_stylesheet)
+    await page.route("https://fonts.googleapis.com/**", stub_stylesheet)
+    await page.route("https://fonts.gstatic.com/**", stub_font_binary)
 
 
 async def _install_fixtures(page: Page, state: FixtureState) -> None:
@@ -217,15 +239,17 @@ async def _wait_history_title(page: Page, title: str) -> None:
 
 async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     state = FixtureState()
-    external_hosts: set[str] = set()
+    unexpected_external_hosts: set[str] = set()
+    stubbed_static_hosts: set[str] = set()
 
     def observe_request(request) -> None:
         parsed = urlparse(request.url)
         host = (parsed.hostname or "").lower()
-        if host not in {"127.0.0.1", "localhost"}:
-            external_hosts.add(host)
+        if host not in {"127.0.0.1", "localhost"} and host not in STATIC_FONT_HOSTS:
+            unexpected_external_hosts.add(host)
 
     page.on("request", observe_request)
+    await _install_static_font_stubs(page, stubbed_static_hosts)
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
@@ -325,8 +349,10 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     leaked = [value for value in forbidden_identity if value in body_text]
     if leaked:
         raise AssertionError(f"concrete model/provider identity leaked into product UI: {leaked}")
-    if external_hosts:
-        raise AssertionError(f"browser QA made unexpected external requests: {sorted(external_hosts)}")
+    if unexpected_external_hosts:
+        raise AssertionError(
+            f"browser QA attempted unexpected external requests: {sorted(unexpected_external_hosts)}"
+        )
 
     return {
         "viewport": {"width": width, "height": height},
@@ -340,7 +366,8 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "logout_clears_history_ui": "PASS",
         "stream_post_count": len(state.stream_posts),
         "explicit_routing_selector": False,
-        "external_requests": [],
+        "stubbed_decorative_font_hosts": sorted(stubbed_static_hosts),
+        "unexpected_external_requests": [],
         "horizontal_overflow": False,
     }
 
@@ -349,6 +376,7 @@ async def main() -> None:
     report: dict[str, Any] = {
         "base_url": BASE_URL,
         "fixture_boundary": "browser-route-fixtures-only",
+        "decorative_font_network": "stubbed-before-network",
         "real_google_oauth": 0,
         "real_d1": 0,
         "real_model_provider_calls": 0,
