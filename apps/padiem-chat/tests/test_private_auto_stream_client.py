@@ -21,7 +21,7 @@ from app.usage_gate import UsageDecision
 MANUAL_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 WINNING_MODEL = DEFAULT_B14_MODEL_ID
-WINNING_PROVIDER = "Agnes AI"
+WINNING_PROVIDER = "Poolside"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -58,7 +58,7 @@ def _frame(content: str) -> bytes:
             "route_mode": "manual",
             "selected_provider": WINNING_PROVIDER,
             "selected_model": WINNING_MODEL,
-            "selected_upstream_model": "agnes-2.5-flash",
+            "selected_upstream_model": "poolside/laguna-s-2.1",
             "selected_route_id": f"platform:{WINNING_MODEL}",
             "reason_codes": ["manual_selection", "external_fallback_disabled"],
             "fallback_used": False,
@@ -89,7 +89,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_b62_explicit_policy():
     async def scenario():
         seen_url = None
         seen = None
-        upstream = ChunkStream([_frame("Agnes 토큰"), b"data: [DONE]\n\n"])
+        upstream = ChunkStream([_frame("Poolside 토큰"), b"data: [DONE]\n\n"])
 
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal seen_url, seen
@@ -126,7 +126,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_b62_explicit_policy():
         assert seen["messages"][0]["role"] == "system"
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
 
-        assert events[0].delta_content == "Agnes 토큰"
+        assert events[0].delta_content == "Poolside 토큰"
         assert events[0].route.route_mode == "manual"
         assert events[0].route.selected_model == WINNING_MODEL
         assert events[0].route.selected_provider == WINNING_PROVIDER
@@ -139,7 +139,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_b62_explicit_policy():
     asyncio.run(scenario())
 
 
-def test_private_compat_stream_agnes_alias_is_stripped_before_b14():
+def test_private_compat_stream_poolside_alias_is_stripped_before_b14():
     async def scenario():
         seen = None
         upstream = ChunkStream([_frame("답변"), b"data: [DONE]\n\n"])
@@ -157,7 +157,7 @@ def test_private_compat_stream_agnes_alias_is_stripped_before_b14():
         events = [
             event
             async for event in client.stream_text_auto(
-                [{"role": "user", "content": "/agnes 한국어로 답해줘"}]
+                [{"role": "user", "content": "/poolside 한국어로 답해줘"}]
             )
         ]
         assert seen["model"] == WINNING_MODEL
