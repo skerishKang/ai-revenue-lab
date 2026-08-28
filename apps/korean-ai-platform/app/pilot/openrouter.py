@@ -55,6 +55,32 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 
 MAX_RESPONSE_BYTES = 1024 * 1024  # 1 MB
 MAX_ERROR_BODY_CHARS = 500
+PRIVACY_GUARDED_OPENROUTER_MODELS = frozenset({"google/gemini-2.5-flash"})
+
+
+def build_openrouter_provider_policy(model_id: str) -> dict[str, Any] | None:
+    """Return B14-owned OpenRouter provider constraints for one exact model.
+
+    Caller request bodies cannot supply or weaken this policy. Known-free routes
+    preserve the existing max-price hard cap. The P5-approved Gemini MEDIUM route
+    requires both no-data-collection routing and zero-data-retention routing.
+    Other catalog routes retain their existing behavior.
+    """
+
+    catalog_model = get_catalog_by_id(model_id)
+    if catalog_model is not None and "free" in catalog_model.capabilities:
+        return {
+            "max_price": {
+                "prompt": 0,
+                "completion": 0,
+            }
+        }
+    if model_id in PRIVACY_GUARDED_OPENROUTER_MODELS:
+        return {
+            "data_collection": "deny",
+            "zdr": True,
+        }
+    return None
 
 
 def _truncate_error_body(text: str) -> str:
@@ -197,14 +223,9 @@ async def _live_call(
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 
-    catalog_model = get_catalog_by_id(model_id)
-    if catalog_model is not None and "free" in catalog_model.capabilities:
-        body["provider"] = {
-            "max_price": {
-                "prompt": 0,
-                "completion": 0,
-            }
-        }
+    provider_policy = build_openrouter_provider_policy(model_id)
+    if provider_policy is not None:
+        body["provider"] = provider_policy
 
     client_kwargs: dict[str, Any] = {
         "timeout": openrouter_config.build_http_timeout(),

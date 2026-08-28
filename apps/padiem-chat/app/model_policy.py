@@ -5,23 +5,26 @@ from dataclasses import dataclass
 
 DEFAULT_CHAT_PROFILE = "medium"
 UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
+MEDIUM_B14_MODEL_ID = "google/gemini-2.5-flash"
 
-# Compatibility name retained for existing B62/Core call sites. This value is a
-# Padiem product-profile sentinel, not a B14 catalog model and not a Provider
-# selection. Until the TF explicitly assigns a real model, B14 must not treat it
-# as an executable catalog route.
-DEFAULT_B14_MODEL_ID = UNASSIGNED_B14_MODEL_ID
+# B62 owns the public MEDIUM product profile. P5 selected one exact executable
+# B14 model for that profile; provider/model identity remains a server-side
+# implementation detail and is not part of the browser contract.
+DEFAULT_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
 
 # Historical slash syntax remains parseable only as a compatibility no-op. It
-# resolves to the same unassigned MEDIUM profile and therefore does not select
-# Poolside, Agnes, or any other Provider/model.
+# resolves to the same MEDIUM product profile and therefore never restores
+# Poolside, Agnes, or any other historical Provider selection.
 MODEL_ALIASES: dict[str, str] = {
-    "/poolside": UNASSIGNED_B14_MODEL_ID,
+    "/poolside": MEDIUM_B14_MODEL_ID,
 }
 
-# An unassigned product profile claims no concrete model capabilities.
+# B62 intentionally claims only the product capability enabled in this slice.
+# The B14 catalog may know that the exact model supports more capabilities, but
+# those capabilities do not become B62 product features implicitly.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     UNASSIGNED_B14_MODEL_ID: frozenset(),
+    MEDIUM_B14_MODEL_ID: frozenset({"chat"}),
 }
 
 
@@ -48,22 +51,23 @@ def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
 
 
 def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
-    """Resolve B62's product profile without selecting a Provider/model.
+    """Resolve B62's public MEDIUM profile to its approved exact B14 model.
 
-    The TF has deliberately deferred Provider/model assignment. Ordinary chat
-    therefore resolves to the neutral MEDIUM profile sentinel. A legacy
-    ``/poolside`` prefix is accepted only as a compatibility no-op and never
-    restores Poolside routing. Unknown slash commands continue to fail closed.
+    The browser still selects only a Padiem product profile. B62 resolves that
+    profile server-side to the exact B14 model approved in P5. A legacy
+    ``/poolside`` prefix is accepted only as a compatibility no-op and maps to
+    the same MEDIUM model; it never restores Poolside routing. Unknown slash
+    commands continue to fail closed.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
     if user_index is None:
-        return ResolvedModelPolicy(UNASSIGNED_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     content = out[user_index].get("content", "")
     stripped = content.lstrip()
     if not stripped.startswith("/"):
-        return ResolvedModelPolicy(UNASSIGNED_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     token, separator, remainder = stripped.partition(" ")
     alias = token.lower()

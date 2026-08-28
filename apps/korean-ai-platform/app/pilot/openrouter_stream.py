@@ -16,7 +16,6 @@ from typing import Any
 
 import httpx
 
-from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotNotConfigured,
@@ -27,7 +26,7 @@ from app.pilot.errors import (
     UpstreamServerError,
     UpstreamTimeout,
 )
-from app.pilot.openrouter import MAX_RESPONSE_BYTES
+from app.pilot.openrouter import MAX_RESPONSE_BYTES, build_openrouter_provider_policy
 from app.pilot.openrouter_config import openrouter_config
 
 
@@ -256,14 +255,9 @@ async def stream_openrouter_chat_completions(
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 
-    catalog_model = get_catalog_by_id(model_id)
-    if catalog_model is not None and "free" in catalog_model.capabilities:
-        body["provider"] = {
-            "max_price": {
-                "prompt": 0,
-                "completion": 0,
-            }
-        }
+    provider_policy = build_openrouter_provider_policy(model_id)
+    if provider_policy is not None:
+        body["provider"] = provider_policy
 
     client_kwargs: dict[str, Any] = {
         "timeout": openrouter_config.build_http_timeout(),
