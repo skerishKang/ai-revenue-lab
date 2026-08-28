@@ -268,6 +268,8 @@ class B14Client:
             try:
                 await core_stream.aclose()
             except Exception:
+                # Cleanup is best-effort and must not replace the bounded stream
+                # result/error with raw transport details.
                 pass
 
     async def stream_text_preview(
