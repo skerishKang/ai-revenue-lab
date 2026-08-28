@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import json
 
 import httpx
@@ -96,7 +95,8 @@ def test_caller_schema_cannot_override_openrouter_provider_privacy_policy():
         )
 
 
-def test_completed_gemini_request_always_sends_hard_privacy_policy(monkeypatch):
+@pytest.mark.asyncio
+async def test_completed_gemini_request_always_sends_hard_privacy_policy(monkeypatch):
     _enable_fixture_live_mode(monkeypatch)
     seen: list[dict] = []
 
@@ -104,16 +104,14 @@ def test_completed_gemini_request_always_sends_hard_privacy_policy(monkeypatch):
         seen.append(json.loads(request.content))
         return httpx.Response(200, json=_completion_response(GEMINI))
 
-    result = asyncio.run(
-        call_openrouter_chat_completions(
-            messages=MESSAGES,
-            temperature=0.2,
-            max_tokens=256,
-            model_id=GEMINI,
-            upstream_model=GEMINI,
-            provider="Google",
-            transport=httpx.MockTransport(handler),
-        )
+    result = await call_openrouter_chat_completions(
+        messages=MESSAGES,
+        temperature=0.2,
+        max_tokens=256,
+        model_id=GEMINI,
+        upstream_model=GEMINI,
+        provider="Google",
+        transport=httpx.MockTransport(handler),
     )
 
     assert result["model"] == GEMINI
@@ -122,7 +120,8 @@ def test_completed_gemini_request_always_sends_hard_privacy_policy(monkeypatch):
     assert seen[0]["provider"] == PRIVACY_POLICY
 
 
-def test_streaming_gemini_request_always_sends_same_hard_privacy_policy(monkeypatch):
+@pytest.mark.asyncio
+async def test_streaming_gemini_request_always_sends_same_hard_privacy_policy(monkeypatch):
     _enable_fixture_live_mode(monkeypatch)
     seen: list[dict] = []
 
@@ -134,21 +133,18 @@ def test_streaming_gemini_request_always_sends_same_hard_privacy_policy(monkeypa
             content=_stream_bytes(GEMINI),
         )
 
-    async def scenario():
-        return [
-            event
-            async for event in stream_openrouter_chat_completions(
-                messages=MESSAGES,
-                temperature=0.2,
-                max_tokens=256,
-                model_id=GEMINI,
-                upstream_model=GEMINI,
-                provider="Google",
-                transport=httpx.MockTransport(handler),
-            )
-        ]
-
-    events = asyncio.run(scenario())
+    events = [
+        event
+        async for event in stream_openrouter_chat_completions(
+            messages=MESSAGES,
+            temperature=0.2,
+            max_tokens=256,
+            model_id=GEMINI,
+            upstream_model=GEMINI,
+            provider="Google",
+            transport=httpx.MockTransport(handler),
+        )
+    ]
 
     assert len(seen) == 1
     assert seen[0]["model"] == GEMINI
