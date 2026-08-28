@@ -1,0 +1,34 @@
+name: B62 Neutral Mock Copy
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat/app/b14_client.py'
+      - 'apps/padiem-chat/static/app.js'
+      - 'apps/padiem-chat/tests/test_neutral_mock_copy.py'
+      - '.github/scripts/b62_neutral_mock_copy_audit.py'
+      - '.github/workflows/b62-neutral-mock-copy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  neutral-mock-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
+      - name: Audit user-facing model-selection copy
+        run: python .github/scripts/b62_neutral_mock_copy_audit.py
+      - name: Resolve Padiem Chat with shared Core
+        working-directory: apps/padiem-chat
+        run: uv sync --extra dev
+      - name: Verify deferred-model mock copy remains neutral
+        working-directory: apps/padiem-chat
+        run: uv run pytest -q tests/test_model_policy.py tests/test_unassigned_profile_gate.py tests/test_neutral_mock_copy.py
