@@ -696,15 +696,49 @@
       historyEmpty.hidden = data.conversations.length !== 0;
       data.conversations.forEach((conversation) => {
         if (!conversation || typeof conversation.id !== "string" || typeof conversation.title !== "string") return;
+        const row = document.createElement("div");
+        row.className = "history-row";
         const button = document.createElement("button");
         button.type = "button";
         button.className = "recent-item history-item";
         button.textContent = conversation.title;
         button.addEventListener("click", () => openSavedConversation(conversation.id));
-        historyList.appendChild(button);
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "history-delete";
+        remove.textContent = "삭제";
+        remove.setAttribute("aria-label", `‘${conversation.title}’ 대화 삭제`);
+        remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
+        row.append(button, remove);
+        historyList.appendChild(row);
       });
     } catch (_) {
       clearHistoryUI();
+    }
+  }
+  async function deleteConversation(id, title) {
+    if (!authState.authenticated || inFlight) return;
+    const confirmed = window.confirm(`‘${title}’ 대화를 삭제할까요?\n삭제한 대화는 되돌릴 수 없습니다.`);
+    if (!confirmed) return;
+    try {
+      const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.deleted !== true || data.conversation_id !== id) {
+        const message = data && data.error && typeof data.error.message === "string"
+          ? data.error.message
+          : "대화를 삭제하지 못했습니다.";
+        throw new Error(message);
+      }
+      const deletedActiveConversation = conversationId === id;
+      if (deletedActiveConversation) resetConversation(true);
+      await loadRecentConversations();
+      if (!deletedActiveConversation) setNote(idleNote());
+    } catch (error) {
+      setNote(error instanceof Error ? error.message : "대화를 삭제하지 못했습니다.", "error");
     }
   }
   async function loadAuthStatus() {

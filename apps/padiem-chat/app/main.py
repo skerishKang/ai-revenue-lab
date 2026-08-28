@@ -272,6 +272,14 @@ async def api_conversation_detail(request: Request) -> JSONResponse:
     if cid is None:
         return JSONResponse({"error": {"code": "not_found", "message": "대화를 찾을 수 없습니다."}}, status_code=404)
     store: HistoryStore = request.app.state.history_store
+    if request.method == "DELETE":
+        try:
+            deleted = await store.delete_conversation(uid, cid)
+        except Exception:
+            return _history_unavailable()
+        if not deleted:
+            return JSONResponse({"error": {"code": "not_found", "message": "대화를 찾을 수 없습니다."}}, status_code=404)
+        return JSONResponse({"deleted": True, "conversation_id": cid})
     try:
         conversation = await store.get_conversation(uid, cid)
     except Exception:
@@ -643,7 +651,7 @@ def create_app(
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
-        Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET"]),
+        Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),

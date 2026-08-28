@@ -69,6 +69,13 @@ class MemoryHistoryStore:
             "messages": [{"role": m["role"], "content": m["content"]} for m in row["messages"]],
         }
 
+    async def delete_conversation(self, user_id, conversation_id):
+        row = self.conversations.get(conversation_id)
+        if not row or row["user_id"] != user_id:
+            return False
+        del self.conversations[conversation_id]
+        return True
+
     async def append_exchange(self, user_id, conversation_id, user_text, assistant_text):
         if conversation_id is None:
             self.counter += 1
@@ -269,6 +276,33 @@ async def test_cross_user_conversation_is_rejected_before_answer_and_anonymous_i
 
 
 @pytest.mark.asyncio
+async def test_conversation_delete_is_owner_scoped_and_bounded():
+    store = MemoryHistoryStore()
+    owner = await add_test_user(store, "3333333333", "owner-delete@example.test", "owner")
+    other = await add_test_user(store, "4444444444", "other-delete@example.test", "other")
+    cid = await store.append_exchange(owner.id, None, "삭제할 대화", "보존된 답변")
+    settings = google_settings()
+    app = create_app(settings, history_store=store)
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain="chat.example.test", path="/")
+        foreign = await client.delete(f"/api/conversations/{cid}")
+        malformed = await client.delete("/api/conversations/not-a-conversation")
+    assert foreign.status_code == 404
+    assert malformed.status_code == 404
+    assert cid in store.conversations
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner.id), domain="chat.example.test", path="/")
+        deleted = await client.delete(f"/api/conversations/{cid}")
+        missing = await client.delete(f"/api/conversations/{cid}")
+    assert deleted.status_code == 200
+    assert deleted.json() == {"deleted": True, "conversation_id": cid}
+    assert missing.status_code == 404
+    assert cid not in store.conversations
+
+
+@pytest.mark.asyncio
 async def test_failed_model_call_does_not_persist_and_image_base64_never_persists():
     store = MemoryHistoryStore()
     profile = await add_test_user(store)
@@ -309,6 +343,8 @@ class FakeStatement:
             return {"results": []}
         return {"results": []}
     async def first(self):
+        if self.sql.startswith("SELECT id FROM conversations WHERE id=? AND user_id=?"):
+            return {"id": self.values[0]}
         return None
 
 
@@ -328,6 +364,12 @@ async def test_d1_adapter_uses_prepared_bound_values_not_interpolation():
     marker = "USER_VALUE_SHOULD_ONLY_BE_BOUND"
     await store.upsert_google_user("subject-1", "user@example.test", marker, "")
     await store.list_conversations("usr_fake")
+    cid = "chat_" + "a" * 32
+    assert await store.delete_conversation("usr_fake", cid) is True
+    assert any(
+        sql.startswith("DELETE FROM conversations WHERE id=? AND user_id=?") and values == (cid, "usr_fake")
+        for sql, values in db.bound
+    )
     assert db.prepared
     assert db.bound
     assert all(marker not in sql for sql in db.prepared)
@@ -343,6 +385,9 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     assert 'href="./history.css"' in html
     assert 'fetch("/api/auth/status"' in js
     assert 'fetch("/api/conversations"' in js
+    assert 'method: "DELETE"' in js
+    assert "삭제한 대화는 되돌릴 수 없습니다." in js
+    assert "history-delete" in js
     assert "conversationId" in js and "payload.conversation_id" in js
     assert 'window.location.assign("/auth/google/start")' in js
     assert "access_token" not in js

@@ -56,6 +56,7 @@ class HistoryStore(Protocol):
     async def get_user(self, user_id: str) -> UserProfile | None: ...
     async def list_conversations(self, user_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None: ...
+    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool: ...
     async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
@@ -275,6 +276,19 @@ class D1HistoryStore:
             "created_at": str(conv.get("created_at", "")), "updated_at": str(conv.get("updated_at", "")),
             "messages": [{"role": str(row.get("role", "")), "content": str(row.get("content", ""))} for row in messages if row.get("role") in {"user", "assistant"}],
         }
+
+    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool:
+        owned = await self._first(
+            "SELECT id FROM conversations WHERE id=? AND user_id=?",
+            conversation_id, user_id,
+        )
+        if not owned:
+            return False
+        await self._run(
+            "DELETE FROM conversations WHERE id=? AND user_id=?",
+            conversation_id, user_id,
+        )
+        return True
 
     async def list_projects(self, user_id: str) -> list[ProjectProfile]:
         rows = await self._all(
