@@ -106,15 +106,15 @@ class DispatchAwareUsageCounterStore:
 class DispatchAwareB14Client(B14Client):
     """Refund failures B62 can prove happened before B14 dispatch.
 
-    Missing Service Bindings and an unassigned Padiem model profile are local,
-    deterministic pre-dispatch failures. They refund the exact active reservation.
-    Once Core/Service-Binding execution can begin, refundability is cleared so
-    transport ambiguity, B14 429/5xx, Provider failures and post-start stream
-    failures remain conservatively counted.
+    Missing Service Bindings and, when the public live deadman switch is armed,
+    an unassigned Padiem model profile are local deterministic pre-dispatch
+    failures. They refund the exact active reservation. Non-live B14 test/preflight
+    paths remain available for infrastructure regression without representing a
+    public product route.
     """
 
     async def _reject_unassigned_profile(self, messages: list[dict[str, str]]) -> None:
-        if self.settings.runtime_mode == "mock":
+        if self.settings.runtime_mode == "mock" or not self.settings.live_enabled:
             return
         policy = _resolve_b62_policy(messages)
         if model_profile_is_assigned(policy.model_id):
