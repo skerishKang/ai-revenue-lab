@@ -3,16 +3,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-DEFAULT_B14_MODEL_ID = "agnes-ai/agnes-2.5-flash"
+DEFAULT_B14_MODEL_ID = "poolside/laguna-s-2.1"
 
 # B62 owns a deliberately tiny consumer allowlist. Do not derive this from the
 # broader B14 catalog: adding another model is an explicit product-owner action.
+# Agnes is intentionally absent while its active rollout is suspended.
 MODEL_ALIASES: dict[str, str] = {
-    "/agnes": DEFAULT_B14_MODEL_ID,
+    "/poolside": DEFAULT_B14_MODEL_ID,
 }
 
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    DEFAULT_B14_MODEL_ID: frozenset({"chat"}),
+    DEFAULT_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
 }
 
 
@@ -60,7 +61,7 @@ def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
     if model_id is None:
         raise ModelPolicyError(
             "unknown_model_alias",
-            "지원하지 않는 모델 선택입니다. 현재는 기본 모델 또는 /agnes를 사용해 주세요.",
+            "지원하지 않는 모델 선택입니다. 현재는 기본 모델 또는 /poolside를 사용해 주세요.",
         )
     if not separator or not remainder.strip():
         raise ModelPolicyError(
