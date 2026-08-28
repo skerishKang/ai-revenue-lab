@@ -30,10 +30,27 @@ WORKER_BINDING_NAMES = frozenset({
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
 
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self'; "
+    "base-uri 'none'; "
+    "object-src 'none'; "
+    "frame-src 'none'; "
+    "frame-ancestors 'none'; "
+    "script-src 'self'; "
+    "connect-src 'self'; "
+    "img-src 'self' data: blob:; "
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+    "font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; "
+    "form-action 'self'"
+)
+PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=()"
+
 BASE_SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "no-referrer",
+    "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+    "Permissions-Policy": PERMISSIONS_POLICY,
 }
 
 
