@@ -20,14 +20,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-          cache: 'pip'
-          cache-dependency-path: apps/padiem-chat/pyproject.toml
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.5'
       - name: Audit user-facing model-selection copy
         run: python .github/scripts/b62_neutral_mock_copy_audit.py
-      - name: Install Padiem Chat test dependencies
+      - name: Resolve Padiem Chat with shared Core
         working-directory: apps/padiem-chat
-        run: pip install -e '.[test]'
+        run: uv sync --extra dev
       - name: Verify deferred-model mock copy remains neutral
         working-directory: apps/padiem-chat
-        run: pytest -q tests/test_model_policy.py tests/test_unassigned_profile_gate.py tests/test_neutral_mock_copy.py
+        run: uv run pytest -q tests/test_model_policy.py tests/test_unassigned_profile_gate.py tests/test_neutral_mock_copy.py
