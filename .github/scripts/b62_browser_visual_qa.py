@@ -20,6 +20,13 @@ async def _visible_count(page: Page, selector: str) -> int:
     )
 
 
+async def _assert_no_horizontal_overflow(page: Page, name: str) -> None:
+    scroll_width = await page.evaluate("document.documentElement.scrollWidth")
+    inner_width = await page.evaluate("window.innerWidth")
+    if scroll_width > inner_width + 1:
+        raise AssertionError(f"horizontal overflow at {name}: scrollWidth={scroll_width}, innerWidth={inner_width}")
+
+
 async def _assert_in_viewport(page: Page, selector: str) -> dict[str, float]:
     box = await page.locator(selector).bounding_box()
     if not box:
@@ -41,11 +48,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.locator("#messageInput").wait_for(state="visible")
     await page.wait_for_timeout(700)
 
-    scroll_width = await page.evaluate("document.documentElement.scrollWidth")
-    inner_width = await page.evaluate("window.innerWidth")
-    if scroll_width > inner_width + 1:
-        raise AssertionError(f"horizontal overflow at {name}: scrollWidth={scroll_width}, innerWidth={inner_width}")
-
+    await _assert_no_horizontal_overflow(page, f"{name}-home")
     composer_box = await _assert_in_viewport(page, "#composerForm")
     input_box = await _assert_in_viewport(page, "#messageInput")
     mobile_menu_visible = await page.locator("#mobileMenu").is_visible()
@@ -59,6 +62,35 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
 
     await page.screenshot(path=str(OUT_DIR / f"{name}-home.png"), full_page=True)
 
+    # Test-only transport control. The product still talks only to the local mock
+    # server. We delay the first stream long enough to capture the real typing UI,
+    # and later fail exactly one stream request to exercise the existing retry UI.
+    stream_control = {"delay_next": True, "fail_next": False}
+
+    async def handle_stream(route) -> None:
+        if stream_control["fail_next"]:
+            stream_control["fail_next"] = False
+            await route.fulfill(
+                status=502,
+                content_type="application/json",
+                body=json.dumps(
+                    {
+                        "error": {
+                            "code": "qa_forced_stream_failure",
+                            "message": "QA에서 재시도 화면을 확인하기 위한 일시적 연결 오류입니다.",
+                        }
+                    },
+                    ensure_ascii=False,
+                ),
+            )
+            return
+        if stream_control["delay_next"]:
+            stream_control["delay_next"] = False
+            await asyncio.sleep(1.0)
+        await route.continue_()
+
+    await page.route("**/api/chat/stream", handle_stream)
+
     first_prompt = "오늘 저녁 메뉴를 세 가지 추천해줘"
     input_box_locator = page.locator("#messageInput")
     await input_box_locator.fill(first_prompt)
@@ -68,6 +100,13 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.locator("#sendButton").click()
 
     await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
+    typing = page.locator("#messageList .assistant-message .typing").last
+    await typing.wait_for(state="visible", timeout=3_000)
+    if await typing.get_attribute("aria-label") != "답변 준비 중":
+        raise AssertionError("typing state must expose the visible '답변 준비 중' label")
+    await _assert_no_horizontal_overflow(page, f"{name}-loading")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-loading.png"), full_page=True)
+
     first_assistant = page.locator("#messageList .assistant-message").first
     await first_assistant.wait_for(state="visible", timeout=15_000)
     await page.wait_for_function(
@@ -89,6 +128,32 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         timeout=15_000,
     )
 
+    stream_control["fail_next"] = True
+    await page.locator("#messageInput").fill("연결 오류가 나면 다시 시도할 수 있는지 확인해줘")
+    if await page.locator("#sendButton").is_disabled():
+        raise AssertionError("error-path send button stayed disabled")
+    await page.locator("#sendButton").click()
+
+    error_box = page.locator("#messageList .assistant-message .error-box").last
+    await error_box.wait_for(state="visible", timeout=5_000)
+    retry_button = error_box.locator(".retry-button")
+    await retry_button.wait_for(state="visible")
+    if await retry_button.is_disabled():
+        raise AssertionError("retry button must be usable after a stream error")
+    error_text = (await error_box.inner_text()).strip()
+    if "답변을 불러오지 못했습니다" not in error_text or "다시 시도" not in error_text:
+        raise AssertionError(f"error state is not understandable: {error_text!r}")
+    await _assert_no_horizontal_overflow(page, f"{name}-error")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-error.png"), full_page=True)
+
+    await retry_button.click()
+    await page.wait_for_function(
+        "() => { const els = [...document.querySelectorAll('#messageList .assistant-content')]; return Boolean(els.at(-1)?.textContent?.includes('모의 스트리밍 상태입니다')); }",
+        timeout=15_000,
+    )
+    await _assert_no_horizontal_overflow(page, f"{name}-recovered")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-recovered.png"), full_page=True)
+
     return {
         "viewport": {"width": width, "height": height},
         "horizontal_overflow": False,
@@ -99,9 +164,13 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "model_pill_visible": model_pill_visible,
         "route_detail_visible": route_detail_visible,
         "mobile_menu_visible": mobile_menu_visible,
+        "loading_state": "PASS",
         "first_question": "PASS",
+        "progressive_stream_path": "PASS",
         "follow_up": "PASS",
         "mock_answer_marker": "PASS",
+        "error_retry": "PASS",
+        "retry_recovery": "PASS",
     }
 
 
