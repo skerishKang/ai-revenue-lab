@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import asyncio
-
 import httpx
+import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
@@ -51,7 +50,8 @@ def test_poolside_readiness_live_with_poolside_secret(monkeypatch):
     monkeypatch.setenv("POOLSIDE_API_KEY", secret)
     monkeypatch.delenv("AGNES_API_KEY", raising=False)
 
-    response = TestClient(create_app()).get("/api/pilot/provider-readiness")
+    with TestClient(create_app()) as client:
+        response = client.get("/api/pilot/provider-readiness")
 
     assert response.status_code == 200
     data = response.json()
@@ -71,7 +71,8 @@ def test_poolside_secret_is_isolated_from_agnes(monkeypatch):
     monkeypatch.delenv("POOLSIDE_API_KEY", raising=False)
     monkeypatch.setenv("AGNES_API_KEY", "agnes-only-proof-1234567890abcdef")
 
-    response = TestClient(create_app()).get("/api/pilot/provider-readiness")
+    with TestClient(create_app()) as client:
+        response = client.get("/api/pilot/provider-readiness")
 
     assert response.status_code == 200
     poolside = _poolside_provider(response.json())
@@ -79,7 +80,8 @@ def test_poolside_secret_is_isolated_from_agnes(monkeypatch):
     assert poolside["route_ready"] is False
 
 
-def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
+@pytest.mark.asyncio
+async def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
     secret = "poolside-direct-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("POOLSIDE_API_KEY", secret)
@@ -105,15 +107,13 @@ def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
             },
         )
 
-    result = asyncio.run(
-        call_platform_chat_completions(
-            model_id=POOLSIDE_MODEL_ID,
-            upstream_model="poolside/laguna-s-2.1",
-            provider="Poolside",
-            platform_provider_id=POOLSIDE_PROVIDER_ID,
-            messages=[{"role": "user", "content": "hello"}],
-            transport=httpx.MockTransport(handler),
-        )
+    result = await call_platform_chat_completions(
+        model_id=POOLSIDE_MODEL_ID,
+        upstream_model="poolside/laguna-s-2.1",
+        provider="Poolside",
+        platform_provider_id=POOLSIDE_PROVIDER_ID,
+        messages=[{"role": "user", "content": "hello"}],
+        transport=httpx.MockTransport(handler),
     )
 
     assert result["_live"] is True
