@@ -184,7 +184,10 @@ async def test_mock_runtime_acknowledges_image_but_never_claims_image_analysis()
     assert "route" not in body
     assert "request_id" not in body
     assert DEFAULT_B14_MODEL_ID not in json.dumps(body)
-    assert "실제 모델 호출이나 이미지 분석은 하지 않았습니다" in body["answer"]
+    assert body["answer"].startswith("지금은 미리보기 환경입니다.")
+    assert "사진 내용은 아직 분석하지 않습니다." in body["answer"]
+    assert "모의" not in body["answer"]
+    assert "모델" not in body["answer"]
     assert encoded(PNG) not in json.dumps(body)
 
 
