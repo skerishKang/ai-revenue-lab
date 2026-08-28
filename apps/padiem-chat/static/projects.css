@@ -199,6 +199,14 @@
   color: #fff;
 }
 
+.project-danger {
+  margin-right: auto;
+  min-height: 44px;
+  border: 1px solid rgba(179, 38, 30, 0.25);
+  background: #fff;
+  color: #b3261e;
+}
+
 @media (max-width: 640px) {
   .project-banner {
     align-items: flex-start;
