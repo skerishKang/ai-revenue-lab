@@ -268,8 +268,6 @@ class B14Client:
             try:
                 await core_stream.aclose()
             except Exception:
-                # Cleanup is best-effort and must not replace the bounded stream
-                # result/error with raw transport details.
                 pass
 
     async def stream_text_preview(
@@ -510,9 +508,9 @@ class B14Client:
             )
             if attachment is None:
                 answer = (
-                    "모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    "현재는 모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
                     f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 입력하신 질문은 ‘{prompt[:120]}’입니다. "
-                    "B14 연결 모드에서는 승인된 기본 모델 경로의 실제 답변을 받습니다."
+                    "실제 AI 연결은 사용할 실행 모델이 결정되고 준비된 뒤 이용할 수 있습니다."
                 )
             else:
                 answer = (
