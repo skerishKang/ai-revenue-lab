@@ -181,7 +181,9 @@ async def test_mock_runtime_acknowledges_image_but_never_claims_image_analysis()
     assert response.status_code == 200
     body = response.json()
     assert body["runtime"] == "mock"
-    assert body["route"]["model"] == DEFAULT_B14_MODEL_ID
+    assert "route" not in body
+    assert "request_id" not in body
+    assert DEFAULT_B14_MODEL_ID not in json.dumps(body)
     assert "실제 모델 호출이나 이미지 분석은 하지 않았습니다" in body["answer"]
     assert encoded(PNG) not in json.dumps(body)
 
