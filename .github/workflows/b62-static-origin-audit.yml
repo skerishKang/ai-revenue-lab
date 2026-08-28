@@ -1,0 +1,23 @@
+name: B62 Static Origin Audit
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat/static/**'
+      - '.github/scripts/b62_static_origin_audit.py'
+      - '.github/workflows/b62-static-origin-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-origin-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify B62 static third-party origin budget
+        run: python .github/scripts/b62_static_origin_audit.py
