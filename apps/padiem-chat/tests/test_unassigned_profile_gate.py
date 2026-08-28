@@ -44,7 +44,11 @@ async def reserve(store: ReservationStore) -> None:
 
 
 def live_settings() -> Settings:
-    return Settings(runtime_mode="b14", b14_base_url="https://b14.internal")
+    return Settings(
+        runtime_mode="b14",
+        b14_base_url="https://b14.internal",
+        live_enabled=True,
+    )
 
 
 def test_live_completed_chat_rejects_unassigned_profile_before_service_binding():
@@ -105,6 +109,28 @@ def test_live_stream_rejects_unassigned_profile_before_stream_transport():
         assert calls == 0
         assert len(store.refunds) == 3
         assert await _refund_active_reservation() is False
+
+    asyncio.run(scenario())
+
+
+def test_non_live_b14_preflight_remains_available_for_infrastructure_regression():
+    async def scenario():
+        calls = 0
+
+        class ServiceTransport:
+            async def post_json(self, url, payload):
+                nonlocal calls
+                calls += 1
+                return 503, b'{"error":{"code":"upstream_error"}}'
+
+        client = DispatchAwareB14Client(
+            Settings(runtime_mode="b14", b14_base_url="https://b14.internal", live_enabled=False),
+            service_transport=ServiceTransport(),
+            require_service_binding=True,
+        )
+        with pytest.raises(ChatRuntimeError):
+            await client.complete(MESSAGES)
+        assert calls == 1
 
     asyncio.run(scenario())
 
