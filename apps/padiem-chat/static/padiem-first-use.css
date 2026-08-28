@@ -1,0 +1,57 @@
+/* TF-P1 — Padiem Chat first-use simplification.
+ *
+ * Product rule: the first visit is a chat product, not a model/router console.
+ * Existing capabilities and DOM hooks remain intact; unavailable/secondary
+ * controls are progressively disclosed when their runtime state becomes ready.
+ */
+
+/* Do not make model/routing concepts part of the ordinary first-use chrome. */
+.model-pill,
+.sidebar-footer,
+.route-details {
+  display: none !important;
+}
+
+/* The headline and composer already communicate the product promise. */
+.empty-copy {
+  display: none;
+}
+
+/* Hide unavailable features instead of advertising multiple "coming soon" paths. */
+.side-nav .side-item:disabled,
+.starter:disabled,
+.composer-tools .tool-button:disabled {
+  display: none;
+}
+
+/* Three useful starters are enough; the composer remains the primary action. */
+.starter-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 780px;
+}
+
+/* Give the composer slightly stronger first-use hierarchy without changing hooks. */
+.app-shell[data-state="home"] .composer {
+  border-color: rgba(255, 255, 255, .22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .07),
+    0 22px 64px rgba(0, 0, 0, .22),
+    0 0 0 1px rgba(136, 201, 255, .035);
+}
+
+.app-shell[data-state="home"] .composer textarea {
+  font-size: 17px;
+}
+
+@media (max-width: 900px) {
+  .starter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .starter-grid {
+    grid-template-columns: 1fr;
+  }
+}
