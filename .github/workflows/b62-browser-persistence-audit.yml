@@ -1,0 +1,28 @@
+name: B62 Browser Persistence Audit
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-chat/static/**"
+      - ".github/scripts/b62_browser_persistence_audit.py"
+      - ".github/workflows/b62-browser-persistence-audit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/padiem-chat/static/**"
+      - ".github/scripts/b62_browser_persistence_audit.py"
+      - ".github/workflows/b62-browser-persistence-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  browser-persistence-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify B62 browser persistence privacy boundary
+        run: python .github/scripts/b62_browser_persistence_audit.py
