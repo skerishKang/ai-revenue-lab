@@ -42,6 +42,25 @@ async def _assert_in_viewport(page: Page, selector: str) -> dict[str, float]:
     return {key: round(float(value), 2) for key, value in box.items()}
 
 
+async def _assert_error_clear_of_composer(page: Page, error_box) -> float:
+    error_geometry = await error_box.bounding_box()
+    composer_geometry = await page.locator("#composerForm").bounding_box()
+    viewport = page.viewport_size
+    if not error_geometry or not composer_geometry or viewport is None:
+        raise AssertionError("error/composer geometry is unavailable")
+    error_bottom = error_geometry["y"] + error_geometry["height"]
+    if error_geometry["y"] < -1 or error_bottom > viewport["height"] + 1:
+        raise AssertionError(
+            f"error card is not fully visible in viewport: error={error_geometry}, viewport={viewport}"
+        )
+    clearance = composer_geometry["y"] - error_bottom
+    if clearance < 8:
+        raise AssertionError(
+            f"error card is occluded by fixed composer: error={error_geometry}, composer={composer_geometry}, clearance={clearance}"
+        )
+    return round(float(clearance), 2)
+
+
 async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
@@ -143,6 +162,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     error_text = (await error_box.inner_text()).strip()
     if "답변을 불러오지 못했습니다" not in error_text or "다시 시도" not in error_text:
         raise AssertionError(f"error state is not understandable: {error_text!r}")
+    error_clearance_px = await _assert_error_clear_of_composer(page, error_box)
     await _assert_no_horizontal_overflow(page, f"{name}-error")
     await page.screenshot(path=str(OUT_DIR / f"{name}-error.png"), full_page=True)
 
@@ -170,6 +190,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "follow_up": "PASS",
         "mock_answer_marker": "PASS",
         "error_retry": "PASS",
+        "error_composer_clearance_px": error_clearance_px,
         "retry_recovery": "PASS",
     }
 
