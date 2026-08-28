@@ -167,9 +167,9 @@ async def test_mock_web_search_plus_b14_produces_grounded_envelope_and_one_syste
         "url",
         "snippet",
         "retrieved_at",
-        "provider",
         "source_type",
     }
+    assert "provider" not in body["evidence"][0]
     assert "웹 근거 사용 규칙" not in json.dumps(body, ensure_ascii=False)
 
     upstream = seen["body"]
