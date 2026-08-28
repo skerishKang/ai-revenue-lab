@@ -736,7 +736,11 @@
       const deletedActiveConversation = conversationId === id;
       if (deletedActiveConversation) resetConversation(true);
       await loadRecentConversations();
-      if (!deletedActiveConversation) setNote(idleNote());
+      if (deletedActiveConversation) {
+        input.focus();
+      } else {
+        setNote(idleNote());
+      }
     } catch (error) {
       setNote(error instanceof Error ? error.message : "대화를 삭제하지 못했습니다.", "error");
     }
