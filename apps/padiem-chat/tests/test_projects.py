@@ -457,6 +457,7 @@ def test_project_frontend_and_migration_contract_keep_phase1_css_unchanged():
     assert 'newChatButton.addEventListener("click", () => resetConversation(true))' in js
     assert 'exitProjectButton.addEventListener("click", exitProject)' in js
     assert 'projectDeleteButton.addEventListener("click", deleteProject)' in js
+    assert 'manage.addEventListener("click", () => openProjectDialog(project))' in js
     assert 'method: "DELETE"' in js
     assert 'data.conversation.project_id' in js
     assert 'fetch("/api/projects"' in js

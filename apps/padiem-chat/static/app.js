@@ -408,6 +408,8 @@
     projectsSection.hidden = !projectsReady;
     projectsEmpty.hidden = !projectsReady || projects.length !== 0;
     projects.forEach((project) => {
+      const row = document.createElement("div");
+      row.className = "project-row";
       const button = document.createElement("button");
       button.type = "button";
       button.className = "recent-item project-item";
@@ -415,7 +417,14 @@
       button.textContent = project.name;
       button.setAttribute("aria-current", activeProject && activeProject.id === project.id ? "true" : "false");
       button.addEventListener("click", () => selectProject(project));
-      projectsList.appendChild(button);
+      const manage = document.createElement("button");
+      manage.type = "button";
+      manage.className = "project-manage";
+      manage.textContent = "관리";
+      manage.setAttribute("aria-label", `‘${project.name}’ 프로젝트 관리`);
+      manage.addEventListener("click", () => openProjectDialog(project));
+      row.append(button, manage);
+      projectsList.appendChild(row);
     });
     projectsBadge.textContent = projects.length ? String(projects.length) : "새로 만들기";
   }
