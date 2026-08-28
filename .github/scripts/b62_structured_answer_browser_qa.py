@@ -185,7 +185,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     csv_download = await csv_info.value
     csv_path = OUT_DIR / f"{name}-table.csv"
     await csv_download.save_as(str(csv_path))
-    csv_text = csv_path.read_text(encoding="utf-8-sig")
+    csv_text = csv_path.read_bytes().decode("utf-8-sig")
     expected_without_bom = EXPECTED_CSV.lstrip("\ufeff")
     if csv_text != expected_without_bom:
         raise AssertionError(f"CSV content mismatch: {csv_text!r}")
@@ -198,7 +198,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     txt_download = await txt_info.value
     txt_path = OUT_DIR / f"{name}-answer.txt"
     await txt_download.save_as(str(txt_path))
-    txt_text = txt_path.read_text(encoding="utf-8")
+    txt_text = txt_path.read_bytes().decode("utf-8")
     if txt_text != RAW_ANSWER:
         raise AssertionError("whole-answer TXT download did not preserve exact canonical raw answer")
 
