@@ -54,6 +54,8 @@
     queueMicrotask(restoreMenuFocus);
   });
 
+  const drawerObserver = new MutationObserver(syncDrawerAccessibility);
+  drawerObserver.observe(shell, { attributes: true, attributeFilter: ["class"] });
   mobileViewport.addEventListener("change", syncDrawerAccessibility);
   syncDrawerAccessibility();
 })();
