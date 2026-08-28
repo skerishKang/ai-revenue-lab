@@ -228,7 +228,7 @@
   color: #fff;
 }
 
-.project-danger {
+.project-form-actions .project-danger {
   margin-right: auto;
   min-height: 44px;
   border: 1px solid rgba(179, 38, 30, 0.25);
