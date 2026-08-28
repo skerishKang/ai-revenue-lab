@@ -3,17 +3,25 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-DEFAULT_B14_MODEL_ID = "poolside/laguna-s-2.1"
+DEFAULT_CHAT_PROFILE = "medium"
+UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
 
-# B62 owns a deliberately tiny consumer allowlist. Do not derive this from the
-# broader B14 catalog: adding another model is an explicit product-owner action.
-# Agnes is intentionally absent while its active rollout is suspended.
+# Compatibility name retained for existing B62/Core call sites. This value is a
+# Padiem product-profile sentinel, not a B14 catalog model and not a Provider
+# selection. Until the TF explicitly assigns a real model, B14 must not treat it
+# as an executable catalog route.
+DEFAULT_B14_MODEL_ID = UNASSIGNED_B14_MODEL_ID
+
+# Historical slash syntax remains parseable only as a compatibility no-op. It
+# resolves to the same unassigned MEDIUM profile and therefore does not select
+# Poolside, Agnes, or any other Provider/model.
 MODEL_ALIASES: dict[str, str] = {
-    "/poolside": DEFAULT_B14_MODEL_ID,
+    "/poolside": UNASSIGNED_B14_MODEL_ID,
 }
 
+# An unassigned product profile claims no concrete model capabilities.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    DEFAULT_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
+    UNASSIGNED_B14_MODEL_ID: frozenset(),
 }
 
 
@@ -22,6 +30,7 @@ class ResolvedModelPolicy:
     model_id: str
     messages: list[dict[str, str]]
     alias: str | None = None
+    profile: str = DEFAULT_CHAT_PROFILE
 
 
 class ModelPolicyError(ValueError):
@@ -39,21 +48,22 @@ def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
 
 
 def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
-    """Resolve B62's exact B14 model without consulting B14 auto/catalog APIs.
+    """Resolve B62's product profile without selecting a Provider/model.
 
-    Ordinary chat uses the configured B62 default. A leading slash token is
-    treated as an explicit B62 model alias. Unknown aliases fail closed before
-    any B14/provider call rather than falling through to the broader B14 catalog.
+    The TF has deliberately deferred Provider/model assignment. Ordinary chat
+    therefore resolves to the neutral MEDIUM profile sentinel. A legacy
+    ``/poolside`` prefix is accepted only as a compatibility no-op and never
+    restores Poolside routing. Unknown slash commands continue to fail closed.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
     if user_index is None:
-        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(UNASSIGNED_B14_MODEL_ID, out)
 
     content = out[user_index].get("content", "")
     stripped = content.lstrip()
     if not stripped.startswith("/"):
-        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(UNASSIGNED_B14_MODEL_ID, out)
 
     token, separator, remainder = stripped.partition(" ")
     alias = token.lower()
@@ -61,7 +71,7 @@ def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
     if model_id is None:
         raise ModelPolicyError(
             "unknown_model_alias",
-            "지원하지 않는 모델 선택입니다. 현재는 기본 모델 또는 /poolside를 사용해 주세요.",
+            "현재 별도 모델 선택은 지원하지 않습니다. 질문만 입력해 주세요.",
         )
     if not separator or not remainder.strip():
         raise ModelPolicyError(
@@ -75,3 +85,8 @@ def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
 
 def model_supports(model_id: str, capability: str) -> bool:
     return capability in MODEL_CAPABILITIES.get(model_id, frozenset())
+
+
+def model_profile_is_assigned(model_id: str) -> bool:
+    """Return whether B62 has an executable model mapped to its profile."""
+    return model_id != UNASSIGNED_B14_MODEL_ID
