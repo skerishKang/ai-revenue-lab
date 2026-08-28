@@ -15,8 +15,8 @@ from app.usage_gate import InMemoryUsageCounterStore
 
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 QUOTA_SALT = "b62-runtime-test-quota-salt-not-a-real-secret-0001"
-AGNES_MODEL = DEFAULT_B14_MODEL_ID
-AGNES_PROVIDER = "Agnes AI"
+ACTIVE_MODEL = DEFAULT_B14_MODEL_ID
+ACTIVE_PROVIDER = "Poolside"
 
 
 def success_payload():
@@ -25,8 +25,8 @@ def success_payload():
         "business14": {
             "request_id": "b14req_test123",
             "route_mode": "manual",
-            "selected_model": AGNES_MODEL,
-            "selected_provider": AGNES_PROVIDER,
+            "selected_model": ACTIVE_MODEL,
+            "selected_provider": ACTIVE_PROVIDER,
         },
     }
 
@@ -67,12 +67,12 @@ async def test_mock_mode_makes_zero_network_calls():
     assert calls == 0
     assert result["runtime"] == "mock"
     assert result["skill"] == {"id": "auto", "title": "자동 추천"}
-    assert result["route"] == {"mode": "manual", "model": AGNES_MODEL, "provider": None}
+    assert result["route"] == {"mode": "manual", "model": ACTIVE_MODEL, "provider": None}
     assert "실제 모델을 호출하지 않았습니다" in result["answer"]
 
 
 @pytest.mark.asyncio
-async def test_b14_request_is_fixed_explicit_agnes_route_and_has_no_provider_key():
+async def test_b14_request_is_fixed_explicit_poolside_route_and_has_no_provider_key():
     seen = {}
 
     async def handler(request):
@@ -87,7 +87,7 @@ async def test_b14_request_is_fixed_explicit_agnes_route_and_has_no_provider_key
     ).complete(USER_MESSAGES)
 
     assert seen["url"] == "https://b14.example/api/pilot/v1/chat/completions"
-    assert seen["body"]["model"] == AGNES_MODEL
+    assert seen["body"]["model"] == ACTIVE_MODEL
     assert seen["body"]["messages"][0] == {
         "role": "system",
         "content": get_skill("auto").system_instruction,
@@ -108,13 +108,13 @@ async def test_b14_request_is_fixed_explicit_agnes_route_and_has_no_provider_key
         "answer": "안녕하세요. 무엇을 도와드릴까요?",
         "request_id": "b14req_test123",
         "runtime": "b14",
-        "route": {"mode": "manual", "model": AGNES_MODEL, "provider": AGNES_PROVIDER},
+        "route": {"mode": "manual", "model": ACTIVE_MODEL, "provider": ACTIVE_PROVIDER},
         "skill": {"id": "auto", "title": "자동 추천"},
     }
 
 
 @pytest.mark.asyncio
-async def test_agnes_alias_strips_command_and_keeps_exact_manual_route():
+async def test_poolside_alias_strips_command_and_keeps_exact_manual_route():
     seen = {}
 
     async def handler(request):
@@ -124,13 +124,33 @@ async def test_agnes_alias_strips_command_and_keeps_exact_manual_route():
     result = await B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
-    ).complete([{"role": "user", "content": "/agnes 오늘 날씨를 설명해줘"}])
+    ).complete([{"role": "user", "content": "/poolside 오늘 날씨를 설명해줘"}])
 
-    assert seen["body"]["model"] == AGNES_MODEL
+    assert seen["body"]["model"] == ACTIVE_MODEL
     assert seen["body"]["messages"][-1] == {"role": "user", "content": "오늘 날씨를 설명해줘"}
     assert seen["body"]["business14"]["allow_external_fallback"] is False
     assert seen["body"]["business14"]["max_attempts"] == 1
-    assert result["route"]["model"] == AGNES_MODEL
+    assert result["route"]["model"] == ACTIVE_MODEL
+
+
+@pytest.mark.asyncio
+async def test_dormant_agnes_alias_fails_before_any_b14_call():
+    calls = 0
+
+    async def handler(request):
+        nonlocal calls
+        calls += 1
+        return httpx.Response(500)
+
+    client = B14Client(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(ChatRuntimeError) as info:
+        await client.complete([{"role": "user", "content": "/agnes 질문"}])
+    assert info.value.status_code == 422
+    assert info.value.code == "unknown_model_alias"
+    assert calls == 0
 
 
 @pytest.mark.asyncio
@@ -210,7 +230,7 @@ async def test_api_chat_mock_round_trip_and_validation():
         ok = await client.post("/api/chat", json={"messages": USER_MESSAGES, "mode": "auto"})
         assert ok.status_code == 200
         assert ok.json()["runtime"] == "mock"
-        assert ok.json()["route"]["model"] == AGNES_MODEL
+        assert ok.json()["route"]["model"] == ACTIVE_MODEL
         assert ok.json()["skill"] == {"id": "auto", "title": "자동 추천"}
 
         explain = await client.post(
@@ -305,7 +325,7 @@ async def test_api_chat_b14_adapter_with_mocked_transport():
             headers={"cf-connecting-ip": "203.0.113.40"},
         )
     assert response.status_code == 200
-    assert response.json()["route"]["model"] == AGNES_MODEL
+    assert response.json()["route"]["model"] == ACTIVE_MODEL
     assert response.json()["route"]["mode"] == "manual"
     assert response.json()["skill"] == {"id": "plan", "title": "계획 세우기"}
 
