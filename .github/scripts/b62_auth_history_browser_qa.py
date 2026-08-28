@@ -229,6 +229,18 @@ async def _open_sidebar_if_mobile(page: Page, mobile: bool) -> None:
     await page.locator("#sidebar").wait_for(state="visible")
 
 
+async def _close_sidebar_if_mobile(page: Page, mobile: bool) -> None:
+    if not mobile:
+        return
+    menu = page.locator("#mobileMenu")
+    if await menu.get_attribute("aria-expanded") == "true":
+        await page.locator("#mobileClose").click()
+        await page.wait_for_function(
+            "() => document.getElementById('mobileMenu')?.getAttribute('aria-expanded') === 'false'",
+            timeout=5_000,
+        )
+
+
 async def _wait_history_title(page: Page, title: str) -> None:
     await page.wait_for_function(
         "expected => Array.from(document.querySelectorAll('#historyList .history-item')).some(node => node.textContent.trim() === expected)",
@@ -298,6 +310,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _wait_history_title(page, SEED_TITLE)
     await page.screenshot(path=str(OUT_DIR / f"{name}-history-followup.png"), full_page=True)
 
+    await _open_sidebar_if_mobile(page, mobile)
     await page.locator("#newChatButton").click()
     await page.wait_for_function(
         "() => document.querySelector('.app-shell')?.dataset.state === 'home' && document.getElementById('messageList')?.hidden === true",
@@ -321,6 +334,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _open_sidebar_if_mobile(page, mobile)
     await page.screenshot(path=str(OUT_DIR / f"{name}-history-new-chat.png"), full_page=True)
 
+    await _close_sidebar_if_mobile(page, mobile)
     await page.locator("#loginButton").click()
     await page.wait_for_function(
         "() => document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('historySection')?.hidden === true",
