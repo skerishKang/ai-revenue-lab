@@ -214,7 +214,8 @@ async def test_paid_catalog_route_does_not_receive_free_price_ceiling_or_ox_reas
     )
 
     assert seen["body"]["model"] == "google/gemini-2.5-flash"
-    assert "provider" not in seen["body"]
+    assert seen["body"]["provider"] == {"data_collection": "deny", "zdr": True}
+    assert "max_price" not in seen["body"]["provider"]
     assert "reasoning" not in seen["body"]
 
 
