@@ -64,6 +64,7 @@ The following entries are intentionally **not canonical**. They are recorded so 
 | Proposed No. | Stable slug | Product | Proposed workspace | Current lifecycle | Boundary | Evidence |
 |---:|---|---|---|---|---|---|
 | 60 | `ai-api` | AI API / AI API 탐색 허브 | `apps/ai-api/` — not created by registration alone | `concept`; UI exploration in progress; backend frozen | Discovery/deal intelligence owns current API/provider/model offers, source verification, expiry/eligibility and cinematic discovery. Business 14 remains the execution/routing platform. | Issue #650; `BUSINESS_60_AI_API_PROPOSAL.md` |
+| 64 | `ai-reward-router` | AI Reward Router / AI 수익 기회 라우터 | No canonical repository product workspace yet; current working source and Drive documents were renumbered from provisional B21 under #987 | `incubation`; UI/UX/backend work in progress; deployment deferred | Normalizes domestic/global earning opportunities and routes by time, eligibility, effort and payout constraints. `TODAY ROUTE` stays separate from application/qualification-dependent `INCOME PIPELINE`. Existing B21 Founder Strategy Letter is preserved unchanged. | Issue #987; Draft PR #988; `B64_AI_REWARD_ROUTER_REGISTRATION.md` |
 
 ## 4. Reconciled numbering history for B6–B12
 
@@ -193,6 +194,6 @@ Business 13 Personal Video Archive
 Business 14 Korean AI Platform
 ```
 
-Proposed-number entries are reviewed separately and do not join the canonical list merely by appearing in Portfolio Console metadata. B60 `ai-api` is currently proposed under Issue #650.
+Proposed-number entries are reviewed separately and do not join the canonical list merely by appearing in Portfolio Console metadata. B60 `ai-api` is currently proposed under Issue #650. B64 `ai-reward-router` is proposed under Issue #987 as the collision-free replacement for the later provisional B21 Reward Router label; B21 Founder Strategy Letter remains unchanged.
 
 B6–B12 were reconciled under Issue #617 after their earlier proposed/operational use had outpaced the older reserved registry. This assignment preserves the historical evidence and existing workspaces; it does not retroactively convert old proposed-number records into claims that the numbers were canonical at the time.

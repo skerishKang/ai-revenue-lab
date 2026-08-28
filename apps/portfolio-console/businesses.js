@@ -1,4 +1,4 @@
-/*  businesses.js  —  B1–59 derived from ARL_MANIFEST (Phase 2A+)
+/*  businesses.js  —  registered portfolio entries derived from ARL_MANIFEST (Phase 2A+)
  *
  *  This is a thin compatibility layer that exposes ARL_MANIFEST
  *  as ARL_BUSINESSES for the existing app.js consumer.
