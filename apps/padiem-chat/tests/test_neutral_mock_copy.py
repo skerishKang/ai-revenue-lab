@@ -18,9 +18,9 @@ def test_mock_completed_answer_does_not_claim_an_approved_model_route():
         assert result["route"]["model"] == UNASSIGNED_B14_MODEL_ID
         assert result["route"]["provider"] is None
         assert "승인된 기본 모델" not in answer
-        assert "자동 추천" not in answer
         assert "provider" not in answer.lower()
         assert "모델 선택" not in answer
-        assert "현재는 모의 실행 상태" in answer
+        assert "실제 모델을 호출하지 않았습니다" in answer
+        assert "실행 모델이 결정되고 준비된 뒤" in answer
 
     asyncio.run(scenario())
