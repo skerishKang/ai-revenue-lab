@@ -4,7 +4,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Any
 
-from .b14_client import B14Client
+from .b14_client import B14Client, ChatRuntimeError, _resolve_b62_policy
+from .model_policy import model_profile_is_assigned
 from .usage_gate import UsageDecision
 
 
@@ -103,13 +104,27 @@ class DispatchAwareUsageCounterStore:
 
 
 class DispatchAwareB14Client(B14Client):
-    """Refund only failures B62 can prove happened before B14 dispatch.
+    """Refund failures B62 can prove happened before B14 dispatch.
 
-    A missing required Service Binding is detected locally before any transport call.
-    Every path that can attempt Core/Service-Binding execution clears refundability
-    first, so timeouts, transport ambiguity, B14 429/5xx, malformed responses,
-    Provider failures and post-start stream failures remain conservatively counted.
+    Missing Service Bindings and, when the public live deadman switch is armed,
+    an unassigned Padiem model profile are local deterministic pre-dispatch
+    failures. They refund the exact active reservation. Non-live B14 test/preflight
+    paths remain available for infrastructure regression without representing a
+    public product route.
     """
+
+    async def _reject_unassigned_profile(self, messages: list[dict[str, str]]) -> None:
+        if self.settings.runtime_mode == "mock" or not self.settings.live_enabled:
+            return
+        policy = _resolve_b62_policy(messages)
+        if model_profile_is_assigned(policy.model_id):
+            return
+        await _refund_active_reservation()
+        raise ChatRuntimeError(
+            503,
+            "model_profile_unassigned",
+            "현재 대화 모델을 준비 중입니다. 잠시 후 다시 이용해 주세요.",
+        )
 
     async def _prepare_stream_dispatch(self) -> None:
         if (
@@ -126,20 +141,22 @@ class DispatchAwareB14Client(B14Client):
         async for event in super().stream_text_preview(*args, **kwargs):
             yield event
 
-    async def stream_text_auto(self, *args, **kwargs):
+    async def stream_text_auto(self, messages, *args, **kwargs):
+        await self._reject_unassigned_profile(messages)
         await self._prepare_stream_dispatch()
-        async for event in super().stream_text_auto(*args, **kwargs):
+        async for event in super().stream_text_auto(messages, *args, **kwargs):
             yield event
 
-    async def complete(self, *args, **kwargs):
+    async def complete(self, messages, *args, **kwargs):
+        await self._reject_unassigned_profile(messages)
         if (
             self.settings.runtime_mode != "mock"
             and self.require_service_binding
             and self.service_transport is None
         ):
             await _refund_active_reservation()
-            return await super().complete(*args, **kwargs)
+            return await super().complete(messages, *args, **kwargs)
 
         if self.settings.runtime_mode != "mock":
             _clear_reservation()
-        return await super().complete(*args, **kwargs)
+        return await super().complete(messages, *args, **kwargs)
