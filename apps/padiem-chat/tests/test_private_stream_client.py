@@ -210,7 +210,9 @@ def test_mock_private_stream_is_deterministic_and_never_calls_service_transport(
 
     async def scenario():
         events = [event async for event in client.stream_text_preview(MESSAGES, model=MODEL)]
-        assert events[0].delta_content.startswith("모의 스트리밍 상태입니다")
+        assert events[0].delta_content == "지금은 미리보기 환경입니다. 입력하신 질문은 ‘안녕하세요’입니다."
+        assert "모의" not in events[0].delta_content
+        assert "모델" not in events[0].delta_content
         assert not hasattr(events[0], "route")
         assert not hasattr(events[0], "model")
         assert events[-1].done is True
