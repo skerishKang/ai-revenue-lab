@@ -1,0 +1,73 @@
+name: B62 Deep Research Browser QA
+
+on:
+  pull_request:
+    paths:
+      - "apps/padiem-chat/**"
+      - "packages/padiem-ai-core/**"
+      - ".github/scripts/b62_deep_research_browser_qa.py"
+      - ".github/workflows/b62-deep-research-browser-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deep-research-browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    env:
+      PADIEM_CHAT_RUNTIME_MODE: mock
+      PADIEM_CHAT_LIVE_ENABLED: "false"
+      PADIEM_CHAT_WEB_PROVIDER: off
+      B62_DEEP_RESEARCH_QA_BASE_URL: http://127.0.0.1:8773
+      B62_DEEP_RESEARCH_QA_OUT_DIR: ../../.tmp/b62-deep-research-browser-qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+      - name: Resolve B62
+        run: uv sync --extra dev
+      - name: Deep Research and source contract regression
+        run: uv run pytest -q tests/test_deep_research.py tests/test_search_sources_ui.py
+      - name: Install pinned Playwright
+        run: uv pip install 'playwright==1.55.0'
+      - name: Install Chromium runtime
+        run: uv run playwright install --with-deps chromium
+      - name: Start fail-closed mock Padiem Chat
+        run: |
+          set -euo pipefail
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8773 > /tmp/b62-deep-research-browser-server.log 2>&1 &
+          echo $! > /tmp/b62-deep-research-browser-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8773/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b62-deep-research-browser-server.log
+          exit 1
+      - name: Desktop and mobile deterministic Deep Research QA
+        run: uv run python ../../.github/scripts/b62_deep_research_browser_qa.py
+      - name: Print QA report
+        if: always()
+        run: |
+          if [ -f ../../.tmp/b62-deep-research-browser-qa/report.json ]; then
+            cat ../../.tmp/b62-deep-research-browser-qa/report.json
+          fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-deep-research-browser-qa
+          path: .tmp/b62-deep-research-browser-qa
+          if-no-files-found: error
+          retention-days: 14
