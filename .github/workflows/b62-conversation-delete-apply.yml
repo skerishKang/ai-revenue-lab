@@ -1,0 +1,121 @@
+name: B62 Conversation Delete Apply
+
+on:
+  push:
+    branches:
+      - "feat/b62-conversation-delete-1042"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/b62-conversation-delete-1042
+          fetch-depth: 0
+      - name: Apply bounded source patch
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement target, found {count}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          history = "apps/padiem-chat/app/history.py"
+          replace_once(
+              history,
+              "    async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None: ...\n    async def append_exchange",
+              "    async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None: ...\n    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool: ...\n    async def append_exchange",
+          )
+          replace_once(
+              history,
+              "        return {\n            \"id\": str(conv.get(\"id\", \"\")), \"title\": str(conv.get(\"title\", \"\")),\n            \"project_id\": str(conv.get(\"project_id\")) if conv.get(\"project_id\") is not None else None,\n            \"created_at\": str(conv.get(\"created_at\", \"\")), \"updated_at\": str(conv.get(\"updated_at\", \"\")),\n            \"messages\": [{\"role\": str(row.get(\"role\", \"\")), \"content\": str(row.get(\"content\", \"\"))} for row in messages if row.get(\"role\") in {\"user\", \"assistant\"}],\n        }\n\n    async def list_projects",
+              "        return {\n            \"id\": str(conv.get(\"id\", \"\")), \"title\": str(conv.get(\"title\", \"\")),\n            \"project_id\": str(conv.get(\"project_id\")) if conv.get(\"project_id\") is not None else None,\n            \"created_at\": str(conv.get(\"created_at\", \"\")), \"updated_at\": str(conv.get(\"updated_at\", \"\")),\n            \"messages\": [{\"role\": str(row.get(\"role\", \"\")), \"content\": str(row.get(\"content\", \"\"))} for row in messages if row.get(\"role\") in {\"user\", \"assistant\"}],\n        }\n\n    async def delete_conversation(self, user_id: str, conversation_id: str) -> bool:\n        owned = await self._first(\n            \"SELECT id FROM conversations WHERE id=? AND user_id=?\",\n            conversation_id, user_id,\n        )\n        if not owned:\n            return False\n        await self._run(\n            \"DELETE FROM conversations WHERE id=? AND user_id=?\",\n            conversation_id, user_id,\n        )\n        return True\n\n    async def list_projects",
+          )
+
+          main = "apps/padiem-chat/app/main.py"
+          replace_once(
+              main,
+              "    store: HistoryStore = request.app.state.history_store\n    try:\n        conversation = await store.get_conversation(uid, cid)\n    except Exception:\n        return _history_unavailable()\n    if conversation is None:\n        return JSONResponse({\"error\": {\"code\": \"not_found\", \"message\": \"대화를 찾을 수 없습니다.\"}}, status_code=404)\n    return JSONResponse({\"conversation\": conversation})",
+              "    store: HistoryStore = request.app.state.history_store\n    if request.method == \"DELETE\":\n        try:\n            deleted = await store.delete_conversation(uid, cid)\n        except Exception:\n            return _history_unavailable()\n        if not deleted:\n            return JSONResponse({\"error\": {\"code\": \"not_found\", \"message\": \"대화를 찾을 수 없습니다.\"}}, status_code=404)\n        return JSONResponse({\"deleted\": True, \"conversation_id\": cid})\n    try:\n        conversation = await store.get_conversation(uid, cid)\n    except Exception:\n        return _history_unavailable()\n    if conversation is None:\n        return JSONResponse({\"error\": {\"code\": \"not_found\", \"message\": \"대화를 찾을 수 없습니다.\"}}, status_code=404)\n    return JSONResponse({\"conversation\": conversation})",
+          )
+          replace_once(
+              main,
+              "Route(\"/api/conversations/{conversation_id}\", api_conversation_detail, methods=[\"GET\"])",
+              "Route(\"/api/conversations/{conversation_id}\", api_conversation_detail, methods=[\"GET\", \"DELETE\"])",
+          )
+
+          app = "apps/padiem-chat/static/app.js"
+          replace_once(
+              app,
+              "      data.conversations.forEach((conversation) => {\n        if (!conversation || typeof conversation.id !== \"string\" || typeof conversation.title !== \"string\") return;\n        const button = document.createElement(\"button\");\n        button.type = \"button\";\n        button.className = \"recent-item history-item\";\n        button.textContent = conversation.title;\n        button.addEventListener(\"click\", () => openSavedConversation(conversation.id));\n        historyList.appendChild(button);\n      });",
+              "      data.conversations.forEach((conversation) => {\n        if (!conversation || typeof conversation.id !== \"string\" || typeof conversation.title !== \"string\") return;\n        const row = document.createElement(\"div\");\n        row.className = \"history-row\";\n        const button = document.createElement(\"button\");\n        button.type = \"button\";\n        button.className = \"recent-item history-item\";\n        button.textContent = conversation.title;\n        button.addEventListener(\"click\", () => openSavedConversation(conversation.id));\n        const remove = document.createElement(\"button\");\n        remove.type = \"button\";\n        remove.className = \"history-delete\";\n        remove.textContent = \"삭제\";\n        remove.setAttribute(\"aria-label\", `‘${conversation.title}’ 대화 삭제`);\n        remove.addEventListener(\"click\", () => deleteConversation(conversation.id, conversation.title));\n        row.append(button, remove);\n        historyList.appendChild(row);\n      });",
+          )
+          replace_once(
+              app,
+              "  async function loadAuthStatus() {",
+              "  async function deleteConversation(id, title) {\n    if (!authState.authenticated || inFlight) return;\n    const confirmed = window.confirm(`‘${title}’ 대화를 삭제할까요?\\n삭제한 대화는 되돌릴 수 없습니다.`);\n    if (!confirmed) return;\n    try {\n      const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {\n        method: \"DELETE\",\n        headers: { \"Accept\": \"application/json\" },\n        cache: \"no-store\",\n      });\n      const data = await response.json().catch(() => null);\n      if (!response.ok || !data || data.deleted !== true || data.conversation_id !== id) {\n        const message = data && data.error && typeof data.error.message === \"string\"\n          ? data.error.message\n          : \"대화를 삭제하지 못했습니다.\";\n        throw new Error(message);\n      }\n      const deletedActiveConversation = conversationId === id;\n      if (deletedActiveConversation) resetConversation(true);\n      await loadRecentConversations();\n      if (!deletedActiveConversation) setNote(idleNote());\n    } catch (error) {\n      setNote(error instanceof Error ? error.message : \"대화를 삭제하지 못했습니다.\", \"error\");\n    }\n  }\n  async function loadAuthStatus() {",
+          )
+
+          css = "apps/padiem-chat/static/history.css"
+          css_path = Path(css)
+          css_text = css_path.read_text(encoding="utf-8")
+          marker = ".history-item {\n  width: 100%;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  text-align: left;\n}\n"
+          if css_text.count(marker) != 1:
+              raise SystemExit("history.css: expected one history-item marker")
+          addition = marker + "\n.history-row {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.history-row .history-item {\n  flex: 1 1 auto;\n  min-width: 0;\n  width: auto;\n}\n\n.history-delete {\n  flex: 0 0 44px;\n  width: 44px;\n  min-width: 44px;\n  height: 44px;\n  border: 0;\n  border-radius: 10px;\n  background: transparent;\n  color: #8a8f98;\n  cursor: pointer;\n  font: inherit;\n  font-size: 12px;\n}\n\n.history-delete:hover,\n.history-delete:focus-visible {\n  background: rgba(255, 255, 255, 0.08);\n  color: #f0c0c0;\n}\n"
+          css_path.write_text(css_text.replace(marker, addition, 1), encoding="utf-8")
+
+          tests = "apps/padiem-chat/tests/test_auth_history.py"
+          replace_once(
+              tests,
+              "    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text):",
+              "    async def delete_conversation(self, user_id, conversation_id):\n        row = self.conversations.get(conversation_id)\n        if not row or row[\"user_id\"] != user_id:\n            return False\n        del self.conversations[conversation_id]\n        return True\n\n    async def append_exchange(self, user_id, conversation_id, user_text, assistant_text):",
+          )
+          replace_once(
+              tests,
+              "@pytest.mark.asyncio\nasync def test_failed_model_call_does_not_persist_and_image_base64_never_persists():",
+              "@pytest.mark.asyncio\nasync def test_conversation_delete_is_owner_scoped_and_bounded():\n    store = MemoryHistoryStore()\n    owner = await add_test_user(store, \"3333333333\", \"owner-delete@example.test\", \"owner\")\n    other = await add_test_user(store, \"4444444444\", \"other-delete@example.test\", \"other\")\n    cid = await store.append_exchange(owner.id, None, \"삭제할 대화\", \"보존된 답변\")\n    settings = google_settings()\n    app = create_app(settings, history_store=store)\n\n    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=\"https://chat.example.test\") as client:\n        client.cookies.set(SESSION_COOKIE, create_session_token(settings, other.id), domain=\"chat.example.test\", path=\"/\")\n        foreign = await client.delete(f\"/api/conversations/{cid}\")\n        malformed = await client.delete(\"/api/conversations/not-a-conversation\")\n    assert foreign.status_code == 404\n    assert malformed.status_code == 404\n    assert cid in store.conversations\n\n    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url=\"https://chat.example.test\") as client:\n        client.cookies.set(SESSION_COOKIE, create_session_token(settings, owner.id), domain=\"chat.example.test\", path=\"/\")\n        deleted = await client.delete(f\"/api/conversations/{cid}\")\n        missing = await client.delete(f\"/api/conversations/{cid}\")\n    assert deleted.status_code == 200\n    assert deleted.json() == {\"deleted\": True, \"conversation_id\": cid}\n    assert missing.status_code == 404\n    assert cid not in store.conversations\n\n\n@pytest.mark.asyncio\nasync def test_failed_model_call_does_not_persist_and_image_base64_never_persists():",
+          )
+          replace_once(
+              tests,
+              "    async def first(self):\n        return None",
+              "    async def first(self):\n        if self.sql.startswith(\"SELECT id FROM conversations WHERE id=? AND user_id=?\"):\n            return {\"id\": self.values[0]}\n        return None",
+          )
+          replace_once(
+              tests,
+              "    await store.list_conversations(\"usr_fake\")\n    assert db.prepared",
+              "    await store.list_conversations(\"usr_fake\")\n    cid = \"chat_\" + \"a\" * 32\n    assert await store.delete_conversation(\"usr_fake\", cid) is True\n    assert any(\n        sql.startswith(\"DELETE FROM conversations WHERE id=? AND user_id=?\") and values == (cid, \"usr_fake\")\n        for sql, values in db.bound\n    )\n    assert db.prepared",
+          )
+          replace_once(
+              tests,
+              "    assert 'fetch(\"/api/conversations\"' in js\n    assert \"conversationId\" in js and \"payload.conversation_id\" in js",
+              "    assert 'fetch(\"/api/conversations\"' in js\n    assert 'method: \"DELETE\"' in js\n    assert \"삭제한 대화는 되돌릴 수 없습니다.\" in js\n    assert \"history-delete\" in js\n    assert \"conversationId\" in js and \"payload.conversation_id\" in js",
+          )
+
+          Path(".github/workflows/b62-conversation-delete-apply.yml").unlink()
+      - name: Validate patch shape
+        run: |
+          set -euo pipefail
+          python -m py_compile apps/padiem-chat/app/history.py apps/padiem-chat/app/main.py apps/padiem-chat/tests/test_auth_history.py
+          git diff --check
+          test ! -e .github/workflows/b62-conversation-delete-apply.yml
+          git diff -- apps/padiem-chat/app/history.py apps/padiem-chat/app/main.py apps/padiem-chat/static/app.js apps/padiem-chat/static/history.css apps/padiem-chat/tests/test_auth_history.py
+      - name: Commit bounded patch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/padiem-chat/app/history.py apps/padiem-chat/app/main.py apps/padiem-chat/static/app.js apps/padiem-chat/static/history.css apps/padiem-chat/tests/test_auth_history.py .github/workflows/b62-conversation-delete-apply.yml
+          git commit -m "feat(b62): add owner-scoped conversation deletion (#1042)"
+          git push origin HEAD:feat/b62-conversation-delete-1042
