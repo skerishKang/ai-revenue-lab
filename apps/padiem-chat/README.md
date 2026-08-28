@@ -5,10 +5,16 @@ Padiem Chat is Padiem's Korean-first, general-user AI front door.
 ## Boundary
 
 ```text
-Browser → Padiem Chat /api/chat → Business 14 b14/auto → provider/model
+Browser / API
+→ Padiem Chat product boundary
+→ Padiem AI Core ExecutionRuntime / StreamingExecutionRuntime
+→ Business 14
+→ selected provider / model
 ```
 
-Padiem Chat owns the consumer-facing chat, continuity, Projects and bounded user-reference context. It does not own provider adapters, provider keys, model catalogs, routing or fallback policy. Those remain Business 14 authority.
+Padiem Chat owns the consumer-facing chat, continuity, Projects, bounded user-reference context, Skill semantics and product-profile state. Padiem AI Core owns the product-neutral execution request/result, streaming, normalized error and reusable evidence/runtime contracts. Business 14 owns provider adapters, provider keys, model catalogs, exact routing and upstream transport.
+
+The B62 `LOW` / `MEDIUM` / `HIGH` product profiles are currently **UNASSIGNED** and Provider/model selection remains deferred. An unassigned product profile must not be documented or treated as a pretend executable Provider/model route.
 
 ## Runtime modes
 
@@ -19,7 +25,7 @@ PADIEM_CHAT_RUNTIME_MODE=mock \
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
-Mock mode makes zero upstream model calls and labels the result as a mock response.
+Mock mode makes zero upstream model calls and returns bounded preview copy.
 
 ### Business 14
 
@@ -29,7 +35,13 @@ PADIEM_CHAT_B14_BASE_URL=https://<approved-b14-host> \
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
-The browser never supplies a provider key or an upstream URL. B62 calls the fixed Business 14 endpoint using `model=b14/auto` and lets Business 14 choose the actual route.
+The browser never supplies a provider key or an upstream URL. For ordinary text completion and streaming, B62 converts its product-owned Skill/profile state into a product-neutral Core `AgentProfile` + `ExecutionRequest`, then executes through Core `ExecutionRuntime` / `StreamingExecutionRuntime`. Core owns the reusable execution boundary and invokes Business 14 beneath that boundary.
+
+B62 ordinary text does **not** currently use Business 14 `b14/auto` as an active routing decision. The historical `stream_text_auto` method name is a compatibility entrypoint: B62 resolves its own product policy first, and Provider/model assignment remains deferred until the relevant authority explicitly assigns it.
+
+### Bounded multimodal exception
+
+Image attachment completion remains a documented narrow exception while the higher-level Core execution request is text-only. A single bounded image may use Core's low-level B14 multimodal transport primitive behind the B62 adapter. This exception does not authorize direct B14 request assembly for ordinary text chat, does not select a Provider/model, and must not widen without a separately reviewed reusable multimodal contract.
 
 ## Attachments and document boundary
 
