@@ -70,3 +70,5 @@ jobs:
           path: .tmp/b62-conversation-delete-browser-qa
           if-no-files-found: error
           retention-days: 14
+
+# Exact-head acceptance gate for #1042. Product/runtime selection remains unchanged.
