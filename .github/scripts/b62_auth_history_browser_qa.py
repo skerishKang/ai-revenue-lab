@@ -210,7 +210,7 @@ async def _open_sidebar_if_mobile(page: Page, mobile: bool) -> None:
 async def _wait_history_title(page: Page, title: str) -> None:
     await page.wait_for_function(
         "expected => Array.from(document.querySelectorAll('#historyList .history-item')).some(node => node.textContent.trim() === expected)",
-        title,
+        arg=title,
         timeout=5_000,
     )
 
@@ -232,7 +232,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
 
     await page.wait_for_function(
         "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected",
-        USER_NAME,
+        arg=USER_NAME,
         timeout=5_000,
     )
     if await page.locator("#accountName").is_hidden():
@@ -250,7 +250,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await seed_button.click()
     await page.wait_for_function(
         "([userText, assistantText]) => document.getElementById('messageList')?.innerText.includes(userText) && document.getElementById('messageList')?.innerText.includes(assistantText)",
-        [SEED_USER, SEED_ASSISTANT],
+        arg=[SEED_USER, SEED_ASSISTANT],
         timeout=5_000,
     )
     if await page.locator("#messageList").is_hidden():
@@ -261,7 +261,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.locator("#sendButton").click()
     await page.wait_for_function(
         "expected => document.getElementById('messageList')?.innerText.includes(expected)",
-        FOLLOWUP_ANSWER,
+        arg=FOLLOWUP_ANSWER,
         timeout=5_000,
     )
     if not state.stream_posts:
@@ -283,7 +283,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.locator("#sendButton").click()
     await page.wait_for_function(
         "expected => document.getElementById('messageList')?.innerText.includes(expected)",
-        NEW_ANSWER,
+        arg=NEW_ANSWER,
         timeout=5_000,
     )
     if len(state.stream_posts) != 2:
