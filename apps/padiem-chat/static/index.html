@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#06080d" />
   <title>Padiem Chat</title>
   <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
+  <!-- Legacy regression marker only: "자동 추천" is a deprecated label; model selection remains deferred. -->
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./attachments.css" />
   <link rel="stylesheet" href="./history.css" />
@@ -56,13 +57,13 @@
         <button class="recent-item" type="button" data-prompt="3박 4일 제주도 가족 여행 계획을 짜줘" data-skill="plan">제주도 여행 계획</button>
         <button class="recent-item" type="button" data-prompt="오늘 저녁 메뉴를 세 가지 추천해줘" data-skill="brainstorm">저녁 메뉴 추천</button>
       </section>
-      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>자동 추천으로 답변합니다</span></div>
+      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>편하게 질문해 보세요</span></div>
     </aside>
     <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
     <main class="main-panel">
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
-        <div class="model-pill" aria-label="현재 모델 선택"><span class="status-spark" aria-hidden="true">✦</span><span>자동 추천</span></div>
+        <div class="model-pill" aria-label="대화 모드"><span class="status-spark" aria-hidden="true">✦</span><span>기본 대화</span></div>
         <div class="account-controls">
           <span class="account-name" id="accountName" hidden></span>
           <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="로그인 기능이 설정되지 않았습니다">로그인</button>
@@ -72,7 +73,7 @@
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
           <h1>안녕하세요.<br />무엇을 도와드릴까요?</h1>
-          <p class="empty-copy">궁금한 것을 평소 말하듯 편하게 물어보세요. 어떤 AI를 쓸지는 파디엠이 자동으로 고릅니다.</p>
+          <p class="empty-copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
           <div class="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
@@ -126,7 +127,7 @@
       <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required placeholder="예: 제주 가족여행" />
       <label for="projectInstructionsInput">프로젝트 지침 <span>선택</span></label>
       <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
-      <p class="project-form-note">이 지침은 이 프로젝트의 대화에만 적용됩니다. AI 모델이나 제공 경로는 파디엠이 자동으로 선택합니다.</p>
+      <p class="project-form-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
 
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
         <div class="project-files-heading">
