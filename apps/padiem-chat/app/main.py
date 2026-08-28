@@ -35,6 +35,7 @@ from .model_policy import ModelPolicyError, model_supports, resolve_model_policy
 from .project_file_routes import project_file_detail, project_files_collection
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
+from .public_chat import public_chat_result
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
 from .skills import Skill, get_skill
@@ -615,7 +616,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 if effective_project_id is not None:
                     result["project_id"] = effective_project_id
                     result["project"] = {"id": project.id, "name": project.name} if project is not None else None
-    return JSONResponse(result)
+    return JSONResponse(public_chat_result(result))
 
 
 def create_app(
