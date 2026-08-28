@@ -129,7 +129,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     first_assistant = page.locator("#messageList .assistant-message").first
     await first_assistant.wait_for(state="visible", timeout=15_000)
     await page.wait_for_function(
-        "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('모의 스트리밍 상태입니다')",
+        "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('지금은 미리보기 환경입니다')",
         timeout=15_000,
     )
     await page.screenshot(path=str(OUT_DIR / f"{name}-chat.png"), full_page=True)
@@ -143,7 +143,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         timeout=15_000,
     )
     await page.wait_for_function(
-        "() => [...document.querySelectorAll('#messageList .assistant-content')].filter(el => el.textContent?.includes('모의 스트리밍 상태입니다')).length >= 2",
+        "() => [...document.querySelectorAll('#messageList .assistant-content')].filter(el => el.textContent?.includes('지금은 미리보기 환경입니다')).length >= 2",
         timeout=15_000,
     )
 
@@ -168,7 +168,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
 
     await retry_button.click()
     await page.wait_for_function(
-        "() => { const els = [...document.querySelectorAll('#messageList .assistant-content')]; return Boolean(els.at(-1)?.textContent?.includes('모의 스트리밍 상태입니다')); }",
+        "() => { const els = [...document.querySelectorAll('#messageList .assistant-content')]; return Boolean(els.at(-1)?.textContent?.includes('지금은 미리보기 환경입니다')); }",
         timeout=15_000,
     )
     await _assert_no_horizontal_overflow(page, f"{name}-recovered")
