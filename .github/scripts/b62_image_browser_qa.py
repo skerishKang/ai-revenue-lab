@@ -118,8 +118,10 @@ async def _run_view(
 
     answer_text = (await assistant.locator(".assistant-content").inner_text()).strip()
     runtime_label = (await assistant.locator("[data-runtime-label]").inner_text()).strip()
-    if "실제 모델 호출이나 이미지 분석은 하지 않았습니다" not in answer_text:
-        raise AssertionError(f"mock image-analysis truth boundary missing: {answer_text!r}")
+    if "지금은 미리보기 환경입니다" not in answer_text or "사진 내용은 아직 분석하지 않습니다" not in answer_text:
+        raise AssertionError(f"plain preview image-analysis truth boundary missing: {answer_text!r}")
+    if "모의" in answer_text or "모델" in answer_text:
+        raise AssertionError(f"technical mock/runtime jargon leaked into visible image answer: {answer_text!r}")
     if "모의 응답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
         raise AssertionError(f"mock truth label missing: {runtime_label!r}")
 

@@ -295,7 +295,7 @@ class B14Client:
             )
             yield ChatStreamEvent(
                 delta_content=(
-                    "모의 스트리밍 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    "지금은 미리보기 환경입니다. "
                     f"입력하신 질문은 ‘{prompt[:120]}’입니다."
                 )
             )
@@ -351,7 +351,7 @@ class B14Client:
             )
             yield ChatStreamEvent(
                 delta_content=(
-                    "모의 스트리밍 상태입니다. 실제 모델을 호출하지 않았습니다. "
+                    "지금은 미리보기 환경입니다. "
                     f"입력하신 질문은 ‘{prompt[:120]}’입니다."
                 )
             )
@@ -510,14 +510,14 @@ class B14Client:
             )
             if attachment is None:
                 answer = (
-                    "현재는 모의 실행 상태입니다. 실제 모델을 호출하지 않았습니다. "
-                    f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 입력하신 질문은 ‘{prompt[:120]}’입니다. "
-                    "실제 AI 연결은 사용할 실행 모델이 결정되고 준비된 뒤 이용할 수 있습니다."
+                    "지금은 미리보기 환경입니다. "
+                    f"입력하신 질문은 ‘{prompt[:120]}’입니다. "
+                    "정식 답변 기능은 준비가 끝난 뒤 이용할 수 있습니다."
                 )
             else:
                 answer = (
-                    "모의 실행 상태입니다. 사진 1장을 첨부받았지만 실제 모델 호출이나 이미지 분석은 하지 않았습니다. "
-                    f"현재 작업 모드는 ‘{resolved_skill.title}’이고, 질문은 ‘{prompt[:120]}’입니다."
+                    "지금은 미리보기 환경입니다. 사진 1장을 첨부받았지만 사진 내용은 아직 분석하지 않습니다. "
+                    f"질문은 ‘{prompt[:120]}’입니다."
                 )
             result: dict[str, Any] = {
                 "answer": answer,

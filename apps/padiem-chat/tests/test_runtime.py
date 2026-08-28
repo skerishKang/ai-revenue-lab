@@ -68,7 +68,10 @@ async def test_mock_mode_makes_zero_network_calls():
     assert result["runtime"] == "mock"
     assert result["skill"] == {"id": "auto", "title": "자동 추천"}
     assert result["route"] == {"mode": "manual", "model": ACTIVE_MODEL, "provider": None}
-    assert "실제 모델을 호출하지 않았습니다" in result["answer"]
+    assert result["answer"].startswith("지금은 미리보기 환경입니다.")
+    assert "정식 답변 기능은 준비가 끝난 뒤 이용할 수 있습니다." in result["answer"]
+    assert "모의" not in result["answer"]
+    assert "모델" not in result["answer"]
 
 
 @pytest.mark.asyncio
