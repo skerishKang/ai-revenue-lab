@@ -96,7 +96,9 @@ def test_private_stream_uses_core_contract_and_manual_free_only_payload():
         ]
 
         assert events[0].delta_content == "첫 토큰"
-        assert events[0].route.selected_model == MODEL
+        assert events[0].done is False
+        assert not hasattr(events[0], "route")
+        assert not hasattr(events[0], "model")
         assert events[-1].done is True
         assert seen["stream"] is True
         assert seen["model"] == MODEL
@@ -209,6 +211,8 @@ def test_mock_private_stream_is_deterministic_and_never_calls_service_transport(
     async def scenario():
         events = [event async for event in client.stream_text_preview(MESSAGES, model=MODEL)]
         assert events[0].delta_content.startswith("모의 스트리밍 상태입니다")
+        assert not hasattr(events[0], "route")
+        assert not hasattr(events[0], "model")
         assert events[-1].done is True
 
     asyncio.run(scenario())

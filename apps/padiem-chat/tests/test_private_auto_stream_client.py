@@ -127,13 +127,12 @@ def test_private_compat_stream_uses_manual_endpoint_and_b62_explicit_policy():
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
 
         assert events[0].delta_content == "Poolside 토큰"
-        assert events[0].route.route_mode == "manual"
-        assert events[0].route.selected_model == WINNING_MODEL
-        assert events[0].route.selected_provider == WINNING_PROVIDER
-        assert events[0].route.fallback_used is False
-        assert events[0].route.attempt_count == 1
+        assert events[0].done is False
+        assert not hasattr(events[0], "route")
+        assert not hasattr(events[0], "model")
         assert events[-1].done is True
-        assert events[-1].route.selected_model == WINNING_MODEL
+        assert events[-1].delta_content is None
+        assert not hasattr(events[-1], "route")
         assert upstream.closed is True
 
     asyncio.run(scenario())
@@ -254,7 +253,8 @@ def test_mock_private_compat_stream_is_deterministic_explicit_and_zero_network()
     async def scenario():
         events = [event async for event in client.stream_text_auto(MESSAGES)]
         assert events[0].delta_content.startswith("모의 스트리밍 상태입니다")
-        assert events[0].model == WINNING_MODEL
+        assert not hasattr(events[0], "model")
+        assert not hasattr(events[0], "route")
         assert events[-1].done is True
 
     asyncio.run(scenario())
