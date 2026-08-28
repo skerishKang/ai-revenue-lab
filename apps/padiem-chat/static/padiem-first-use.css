@@ -54,4 +54,21 @@
   .starter-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Parent-generation mobile usability floor: all currently visible primary
+   * navigation/composer targets should remain at least 44 CSS px high/wide. */
+  .mobile-menu,
+  .mobile-close {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .login-button,
+  .brand,
+  .recent-item,
+  .composer-tools .tool-button:not(:disabled) {
+    min-height: 44px;
+  }
 }
