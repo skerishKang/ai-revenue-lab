@@ -106,6 +106,14 @@ html[data-theme="light"] .starter-icon {
   background: #f3f2f8; border: none; color: #6b6b7a;
 }
 html[data-theme="light"] .composer { background: var(--composer-bg); border: 1px solid var(--composer-border); box-shadow: var(--composer-shadow); }
+/* LIGHT refinement — subtle hierarchy, pearl cues */
+html[data-theme="light"] .sidebar { background: linear-gradient(180deg, #f1f1f5 0%, #ececf1 100%); border-right-color: #e0e0e6; }
+html[data-theme="light"] .starter { background: linear-gradient(180deg, #ffffff 0%, #fcfcfe 100%); border-color: #e6e6eb; box-shadow: 0 2px 10px rgba(101,87,232,.05), 0 1px 3px rgba(30,28,54,.04); }
+html[data-theme="light"] .starter:hover { border-color: rgba(101,87,232,.16); box-shadow: 0 4px 16px rgba(101,87,232,.09); }
+html[data-theme="light"] .starter-icon { background: linear-gradient(180deg, #f3f2f8, #eceaf6); border: 1px solid rgba(101,87,232,.10); }
+html[data-theme="light"] .empty-state h1 { letter-spacing: -.03em; }
+html[data-theme="light"] .eyebrow { letter-spacing: .14em; }
+html[data-theme="light"] .sidebar-footer { border-top: 1px solid rgba(101,87,232,.06); }
 html[data-theme="light"] .composer textarea { color: var(--input-text); }
 html[data-theme="light"] .composer textarea::placeholder { color: var(--placeholder); }
 html[data-theme="light"] .message-bubble {
@@ -233,9 +241,11 @@ html[data-theme="cinematic"] {
 
 html[data-theme="cinematic"] body {
   background:
+    radial-gradient(circle at 72% 28%, rgba(136,201,255,.16), transparent 22%),
+    radial-gradient(circle at 18% 72%, rgba(239,201,132,.12), transparent 24%),
     radial-gradient(circle at 68% 43%, rgba(255,255,255,.045), transparent 30%),
     radial-gradient(circle at 32% 58%, rgba(255,255,255,.025), transparent 34%),
-    linear-gradient(135deg, #08090b 0%, #0b0c0e 50%, #030405 100%);
+    linear-gradient(135deg, #08090b 0%, #0b0c0e 45%, #05070a 100%);
 }
 html[data-theme="cinematic"] body::before {
   box-shadow: inset 0 0 220px 80px rgba(0,0,0,.60);
@@ -266,7 +276,13 @@ html[data-theme="cinematic"] .starter:not(:disabled):hover {
 html[data-theme="cinematic"] .message-bubble {
   background: rgba(255,255,255,.085); border-color: rgba(255,255,255,.14); backdrop-filter: blur(14px);
 }
-html[data-theme="cinematic"] .composer { background: var(--composer-bg); border-color: var(--composer-border); backdrop-filter: blur(16px); }
+html[data-theme="cinematic"] .composer { background: var(--composer-bg); border-color: rgba(136,201,255,.14); backdrop-filter: blur(16px); box-shadow: 0 0 24px rgba(136,201,255,.06), 0 14px 36px rgba(0,0,0,.18); }
+html[data-theme="cinematic"] .starter { border-color: rgba(136,201,255,.14); box-shadow: 0 0 18px rgba(136,201,255,.06), inset 0 1px 0 rgba(255,255,255,.06); }
+html[data-theme="cinematic"] .topbar { border-bottom-color: rgba(136,201,255,.10); box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 24px rgba(0,0,0,.12); }
+html[data-theme="cinematic"] .empty-state h1 { text-shadow: 0 16px 36px rgba(0,0,0,.42), 0 0 24px rgba(136,201,255,.12); letter-spacing: -.04em; }
+html[data-theme="cinematic"] .eyebrow { color: rgba(214,235,250,.92); }
+html[data-theme="cinematic"] .eyebrow::before { box-shadow: 0 0 12px rgba(136,201,255,.52); }
+html[data-theme="cinematic"] .sidebar { box-shadow: 22px 0 70px rgba(0,0,0,.18), inset -1px 0 0 rgba(136,201,255,.06); }
 
 /* ---- PADIEM HOME — homepage continuity (padiem.net: cool gray/blue-gray atmospheric) ---- */
 html[data-theme="padiem-home"] {
@@ -299,9 +315,11 @@ html[data-theme="padiem-home"] {
 
 html[data-theme="padiem-home"] body {
   background:
-    radial-gradient(circle at 72% 38%, rgba(90,160,230,.10), transparent 30%),
-    radial-gradient(circle at 28% 62%, rgba(201,168,92,.07), transparent 34%),
-    linear-gradient(135deg, #d8dde6 0%, #e6e9ee 28%, #eef1f4 55%, #d9dfe8 100%);
+    radial-gradient(circle at 64% 46%, rgba(90,160,230,.14), transparent 24%),
+    radial-gradient(circle at 40% 52%, rgba(201,168,92,.09), transparent 26%),
+    radial-gradient(circle at 72% 38%, rgba(90,160,230,.08), transparent 30%),
+    radial-gradient(circle at 28% 62%, rgba(201,168,92,.05), transparent 34%),
+    linear-gradient(135deg, #d2d8e4 0%, #e0e5ec 26%, #eef1f4 52%, #d5dbe6 100%);
   color: var(--text);
 }
 html[data-theme="padiem-home"] body::before {
@@ -322,10 +340,11 @@ html[data-theme="padiem-home"] .app-shell::before {
   opacity: .32;
 }
 html[data-theme="padiem-home"] .sidebar {
-  background: rgba(255,255,255,.62);
-  border-right: 1px solid rgba(26,34,48,.10);
-  box-shadow: 12px 0 40px rgba(26,34,48,.07);
-  backdrop-filter: blur(18px) saturate(108%);
+  background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(250,252,255,.58));
+  border-right: 1px solid rgba(26,34,48,.08);
+  border-top: 1px solid rgba(255,255,255,.6);
+  box-shadow: 14px 0 44px rgba(26,34,48,.08), inset 0 1px 0 rgba(255,255,255,.7);
+  backdrop-filter: blur(20px) saturate(110%);
 }
 html[data-theme="padiem-home"] .brand { color: #1a2230; letter-spacing: .10em; text-transform: uppercase; font-weight: 600; }
 html[data-theme="padiem-home"] .brand-mark,
@@ -345,9 +364,10 @@ html[data-theme="padiem-home"] .new-chat {
   backdrop-filter: blur(12px);
 }
 html[data-theme="padiem-home"] .topbar {
-  background: rgba(255,255,255,.55);
-  border-bottom: 1px solid rgba(26,34,48,.10);
-  backdrop-filter: blur(18px) saturate(110%);
+  background: linear-gradient(180deg, rgba(255,255,255,.68), rgba(250,252,255,.45));
+  border-bottom: 1px solid rgba(26,34,48,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 4px 18px rgba(26,34,48,.06);
+  backdrop-filter: blur(20px) saturate(115%);
 }
 html[data-theme="padiem-home"] .model-pill,
 html[data-theme="padiem-home"] .login-button {
@@ -358,11 +378,12 @@ html[data-theme="padiem-home"] .eyebrow::before { background: #3a7bd5; box-shado
 html[data-theme="padiem-home"] .empty-state h1 { color: #1a2230; text-shadow: 0 6px 18px rgba(26,34,48,.08); }
 html[data-theme="padiem-home"] .empty-copy { color: #5a6578; }
 html[data-theme="padiem-home"] .starter {
-  background: rgba(255,255,255,.68);
-  border: 1px solid rgba(26,34,48,.10);
+  background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(250,252,255,.68));
+  border: 1px solid rgba(26,34,48,.08);
+  border-top: 1px solid rgba(255,255,255,.85);
   color: #1a2230;
-  box-shadow: 0 8px 24px rgba(26,34,48,.06);
-  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 28px rgba(26,34,48,.07), inset 0 1px 0 rgba(255,255,255,.8);
+  backdrop-filter: blur(16px);
 }
 html[data-theme="padiem-home"] .starter strong { color: #1a2230; }
 html[data-theme="padiem-home"] .starter small { color: #5a6578; }
@@ -376,7 +397,7 @@ html[data-theme="padiem-home"] .message-bubble {
 }
 html[data-theme="padiem-home"] .assistant-content { color: #1e2a3a; }
 html[data-theme="padiem-home"] .assistant-meta { color: #5a6578; }
-html[data-theme="padiem-home"] .composer { background: var(--composer-bg); border-color: var(--composer-border); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+html[data-theme="padiem-home"] .composer { background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(250,252,255,.78)); border-color: rgba(26,34,48,.10); border-top: 1px solid rgba(255,255,255,.9); box-shadow: 0 14px 40px rgba(26,34,48,.09), inset 0 1px 0 rgba(255,255,255,.85); backdrop-filter: blur(18px); }
 html[data-theme="padiem-home"] .composer textarea { color: #1a2230; }
 html[data-theme="padiem-home"] .composer textarea::placeholder { color: #7a869a; }
 html[data-theme="padiem-home"] .source-card,
