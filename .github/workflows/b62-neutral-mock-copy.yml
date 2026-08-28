@@ -1,0 +1,30 @@
+name: B62 Neutral Mock Copy
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-chat/app/b14_client.py'
+      - 'apps/padiem-chat/tests/test_neutral_mock_copy.py'
+      - '.github/workflows/b62-neutral-mock-copy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  neutral-mock-copy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: apps/padiem-chat/pyproject.toml
+      - name: Install Padiem Chat test dependencies
+        run: pip install -e '.[test]'
+      - name: Verify deferred-model mock copy remains neutral
+        run: pytest -q tests/test_model_policy.py tests/test_unassigned_profile_gate.py tests/test_neutral_mock_copy.py
