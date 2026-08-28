@@ -316,8 +316,15 @@ class B14Client:
             required_capabilities=("free",),
             additional_system_context=bounded_context,
         )
-        async for event in self._stream_core(request):
-            yield event
+        inner_stream = self._stream_core(request)
+        try:
+            async for event in inner_stream:
+                yield event
+        finally:
+            try:
+                await inner_stream.aclose()
+            except Exception:
+                pass
 
     async def stream_text_auto(
         self,
@@ -365,8 +372,15 @@ class B14Client:
             required_capabilities=("chat",),
             additional_system_context=bounded_context,
         )
-        async for event in self._stream_core(request):
-            yield event
+        inner_stream = self._stream_core(request)
+        try:
+            async for event in inner_stream:
+                yield event
+        finally:
+            try:
+                await inner_stream.aclose()
+            except Exception:
+                pass
 
     async def _complete_text(
         self,
