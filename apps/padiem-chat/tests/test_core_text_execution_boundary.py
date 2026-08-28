@@ -21,7 +21,13 @@ def _class_methods(tree: ast.Module, class_name: str) -> dict[str, ast.FunctionD
 
 
 def _names(node: ast.AST) -> set[str]:
-    return {item.id for item in ast.walk(node) if isinstance(item, ast.Name)}
+    names: set[str] = set()
+    for item in ast.walk(node):
+        if isinstance(item, ast.Name):
+            names.add(item.id)
+        elif isinstance(item, ast.Attribute):
+            names.add(item.attr)
+    return names
 
 
 def test_b62_text_execution_is_locked_to_high_level_core_runtime():
