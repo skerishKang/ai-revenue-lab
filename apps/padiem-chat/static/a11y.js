@@ -19,7 +19,7 @@
     if (!mobile) {
       sidebar.inert = false;
       mainPanel.inert = false;
-      shell.classList.remove("sidebar-open");
+      if (shell.classList.contains("sidebar-open")) shell.classList.remove("sidebar-open");
       mobileMenu.setAttribute("aria-expanded", "false");
       sidebarScrim.hidden = true;
       return;
