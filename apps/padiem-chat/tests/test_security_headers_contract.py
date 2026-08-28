@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import re
+from pathlib import Path
+
 from app.worker_config import CONTENT_SECURITY_POLICY, PERMISSIONS_POLICY, response_headers_for_path
 
 
@@ -54,6 +57,17 @@ def test_csp_allows_only_current_static_font_dependencies_and_attachment_preview
     # Existing inline style/runtime style assignments require style-only unsafe-inline.
     assert "'unsafe-inline'" not in csp["script-src"]
     assert "'unsafe-inline'" not in csp["connect-src"]
+
+
+def test_static_markup_is_compatible_with_self_only_script_policy():
+    root = Path(__file__).resolve().parents[1]
+    html = (root / "static/index.html").read_text(encoding="utf-8")
+
+    script_tags = re.findall(r"<script\b([^>]*)>", html, flags=re.IGNORECASE)
+    assert script_tags
+    assert all(re.search(r"\bsrc\s*=", attrs, flags=re.IGNORECASE) for attrs in script_tags)
+    assert re.search(r"<style\b", html, flags=re.IGNORECASE)
+    assert not re.search(r"\son[a-z]+\s*=", html, flags=re.IGNORECASE)
 
 
 def test_permissions_policy_denies_unshipped_sensitive_capabilities():
