@@ -24,10 +24,13 @@ def test_html_contains_inline_theme_init_and_no_flash():
     assert HTML.index("padiem-themes.css") > HTML.index("padiem-cinematic-workspace.css")
     # no inline script violating CSP
     assert "<script>" not in HTML.replace('<script src=', '<SRCS')
-    # theme-init contains padiem_theme and prefers-color-scheme
+    # theme-init must use URL param (policy-compliant, no localStorage) and prefers-color-scheme
     init = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
-    assert "padiem_theme" in init
+    assert "URLSearchParams" in init
+    assert 'get("theme")' in init or "get('theme')" in init
     assert "prefers-color-scheme" in init
+    assert "localStorage" not in init
+    assert "sessionStorage" not in init
     # theme.js before app.js to ensure theme set before app boot
     assert HTML.index("theme.js") < HTML.index("app.js")
 
@@ -47,21 +50,22 @@ def test_html_theme_picker_enumeration_and_accessibility():
 def test_theme_js_enumeration_and_persistence():
     for t in VALID_THEMES:
         assert f'"{t}"' in THEME_JS, f"theme {t} not in JS"
-    assert "padiem_theme" in THEME_JS
-    assert "localStorage.getItem" in THEME_JS
-    assert "localStorage.setItem" in THEME_JS
+    # policy-compliant URL persistence (no forbidden storage)
+    assert "URLSearchParams" in THEME_JS
+    assert "history.replaceState" in THEME_JS
+    assert "localStorage" not in THEME_JS
+    assert "sessionStorage" not in THEME_JS
+    assert "indexedDB" not in THEME_JS
+    assert "document.cookie" not in THEME_JS
     assert "prefers-color-scheme" in THEME_JS
     assert "matchMedia" in THEME_JS
-    # system fallback maps light->light, dark->dark (not cinematic/home unless explicit)
     assert "getSystemFallback" in THEME_JS
+    assert "getUrlTheme" in THEME_JS
     # theme switch must not reload
     assert "location.reload" not in THEME_JS
     assert "innerHTML" not in THEME_JS
-    # must update data-theme attribute
     assert 'setAttribute("data-theme"' in THEME_JS
-    # must sync aria-pressed
     assert 'aria-pressed' in THEME_JS
-    # must update meta color-scheme and theme-color
     assert 'meta[name="color-scheme"]' in THEME_JS
     assert 'meta[name="theme-color"]' in THEME_JS
 
@@ -80,6 +84,9 @@ def test_themes_css_extensibility_and_tokens():
     assert ".theme-option" in THEMES_CSS
     # ensure 4 distinct background definitions
     assert THEMES_CSS.count("html[data-theme=") >= 4
+    # mobile overflow fix: topbar must wrap and picker must not force document overflow at 390
+    assert "flex-wrap: wrap" in THEMES_CSS
+    assert "@media (max-width: 640px)" in THEMES_CSS or "@media (max-width: 620px)" in THEMES_CSS
 
 def test_theme_switch_does_not_reset_conversation_state():
     # app.js must not listen to theme change and reset state
@@ -113,6 +120,10 @@ def test_light_preserves_violet_and_cinematic_preserves_blue_gold():
 
 def test_no_hardcoded_secrets_or_provider_calls():
     assert "B14" not in THEME_JS
-    assert "provider" not in THEME_JS.lower() or "provider" in THEME_JS.lower() and False  # allow but not secret
     assert "innerHTML" not in THEME_JS
     assert "eval(" not in THEME_JS
+    # forbidden browser persistence must be absent from static JS
+    for forbidden in ["localStorage", "sessionStorage", "indexedDB", "document.cookie", "cookieStore", "serviceWorker", "CacheStorage"]:
+        assert forbidden not in THEME_JS, f"forbidden {forbidden} in theme.js"
+        assert forbidden not in (ROOT / "static/theme-init.js").read_text(encoding="utf-8"), f"forbidden {forbidden} in theme-init.js"
+
