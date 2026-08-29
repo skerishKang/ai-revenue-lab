@@ -38,6 +38,7 @@
   const nativeFetch = window.fetch.bind(window);
   let pending = null;
   let pendingTruthLabel = null;
+  let pendingUserMeta = null;
 
   function extensionOf(name) {
     const lower = String(name || "").toLowerCase();
@@ -171,17 +172,31 @@
   }
 
   if (messageList) {
-    const truthObserver = new MutationObserver(() => {
-      if (!pendingTruthLabel) return;
-      const assistants = messageList.querySelectorAll(".assistant-message");
-      const assistant = assistants[assistants.length - 1];
-      if (!assistant || assistant.querySelector(".typing") || !assistant.querySelector(".assistant-content p")) return;
-      const label = assistant.querySelector("[data-runtime-label]");
-      if (!label) return;
-      label.textContent = pendingTruthLabel;
-      pendingTruthLabel = null;
+    const renderObserver = new MutationObserver(() => {
+      if (pendingUserMeta) {
+        const users = messageList.querySelectorAll(".user-message .message-bubble");
+        const bubble = users[users.length - 1];
+        if (bubble && !bubble.querySelector(".message-attachment-meta")) {
+          const meta = document.createElement("span");
+          meta.className = "message-attachment-meta";
+          meta.textContent = `문서 · ${pendingUserMeta.name} · ${formatBytes(pendingUserMeta.byteSize)}`;
+          bubble.appendChild(meta);
+          pendingUserMeta = null;
+        }
+      }
+      if (pendingTruthLabel) {
+        const assistants = messageList.querySelectorAll(".assistant-message");
+        const assistant = assistants[assistants.length - 1];
+        if (assistant && !assistant.querySelector(".typing") && assistant.querySelector(".assistant-content p")) {
+          const label = assistant.querySelector("[data-runtime-label]");
+          if (label) {
+            label.textContent = pendingTruthLabel;
+            pendingTruthLabel = null;
+          }
+        }
+      }
     });
-    truthObserver.observe(messageList, { childList: true, subtree: true });
+    renderObserver.observe(messageList, { childList: true, subtree: true });
   }
 
   window.fetch = async function padiemDocumentAwareFetch(input, init) {
@@ -256,21 +271,21 @@
   }, true);
 
   form.addEventListener("submit", () => {
-    if (!pending || !messageList) return;
-    const snapshot = { name: pending.name, byteSize: pending.byteSize };
-    queueMicrotask(() => {
-      const bubbles = messageList.querySelectorAll(".user-message .message-bubble");
-      const bubble = bubbles[bubbles.length - 1];
-      if (!bubble || bubble.querySelector(".message-attachment-meta")) return;
-      const meta = document.createElement("span");
-      meta.className = "message-attachment-meta";
-      meta.textContent = `문서 · ${snapshot.name} · ${formatBytes(snapshot.byteSize)}`;
-      bubble.appendChild(meta);
-    });
+    if (!pending) return;
+    pendingUserMeta = { name: pending.name, byteSize: pending.byteSize };
   }, true);
 
-  removeButton.addEventListener("click", clearPending, true);
-  if (newChatButton) newChatButton.addEventListener("click", clearPending, true);
+  removeButton.addEventListener("click", () => {
+    clearPending();
+    pendingUserMeta = null;
+  }, true);
+  if (newChatButton) {
+    newChatButton.addEventListener("click", () => {
+      clearPending();
+      pendingUserMeta = null;
+      pendingTruthLabel = null;
+    }, true);
+  }
   window.addEventListener("DOMContentLoaded", applySupportedCopy, { once: true });
 
   window.__padiemBinaryDocuments = Object.freeze({
