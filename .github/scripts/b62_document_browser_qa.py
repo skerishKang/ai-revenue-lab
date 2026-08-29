@@ -27,6 +27,12 @@ BINARY_NAME = "browser-notes.docx"
 BINARY_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 BINARY_MARKER = "B62_BINARY_DOCX_PRIVATE_MARKER_1077"
 BINARY_QUESTION = "첨부한 DOCX를 참고해서 한 문장으로 답해줘"
+BINARY_PICKER_CASES = (
+    ("picker.pdf", "application/pdf", "PDF"),
+    ("picker.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "DOCX"),
+    ("picker.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "PPTX"),
+    ("picker.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "XLSX"),
+)
 
 
 def _docx_bytes(text: str) -> bytes:
@@ -68,6 +74,38 @@ async def _assert_mock_answer(assistant) -> str:
     if "모의 응답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
         raise AssertionError(f"mock truth label missing: {runtime_label!r}")
     return answer_text
+
+
+async def _verify_binary_picker_states(page: Page, file_input, tray) -> list[str]:
+    verified: list[str] = []
+    for filename, media_type, expected_kind in BINARY_PICKER_CASES:
+        marker = f"picker-only:{expected_kind}".encode("ascii")
+        await file_input.set_input_files(
+            {"name": filename, "mimeType": media_type, "buffer": marker}
+        )
+        await tray.wait_for(state="visible", timeout=5_000)
+        shown_name = (await page.locator("#attachmentName").inner_text()).strip()
+        shown_kind = (await page.locator("#attachmentKind").inner_text()).strip()
+        if shown_name != filename or shown_kind != expected_kind:
+            raise AssertionError(
+                f"binary picker display mismatch for {expected_kind}: name={shown_name!r}, kind={shown_kind!r}"
+            )
+        pending_meta = await page.evaluate("window.__padiemBinaryDocuments?.pendingMeta()")
+        if not isinstance(pending_meta, dict):
+            raise AssertionError(f"binary picker metadata missing for {expected_kind}")
+        if pending_meta.get("name") != filename or pending_meta.get("mediaType") != media_type:
+            raise AssertionError(f"binary picker metadata mismatch for {expected_kind}: {pending_meta!r}")
+        if pending_meta.get("byteSize") != len(marker):
+            raise AssertionError(f"binary picker size mismatch for {expected_kind}: {pending_meta!r}")
+        if "base64" in pending_meta or "text" in pending_meta:
+            raise AssertionError(f"binary picker QA hook exposed content for {expected_kind}: {pending_meta!r}")
+        verified.append(expected_kind)
+        await page.locator("#removeAttachment").evaluate("(el) => el.click()")
+        await page.wait_for_function(
+            "() => document.getElementById('attachmentTray')?.hidden === true && window.__padiemBinaryDocuments?.pendingMeta() === null",
+            timeout=5_000,
+        )
+    return verified
 
 
 async def _run_view(
@@ -112,17 +150,19 @@ async def _run_view(
         raise AssertionError("mobile menu must remain visible on mobile viewport")
 
     file_input = page.locator("#attachmentFileInput")
+    tray = page.locator("#attachmentTray")
     accept = await file_input.get_attribute("accept") or ""
     for extension in (".pdf", ".docx", ".pptx", ".xlsx"):
         if extension not in accept:
             raise AssertionError(f"binary document picker extension missing: {extension} from {accept!r}")
+
+    binary_picker_verified = await _verify_binary_picker_states(page, file_input, tray)
 
     # Existing text-document path must remain byte-for-byte payload compatible.
     await file_input.set_input_files(
         {"name": DOC_NAME, "mimeType": DOC_MIME, "buffer": DOC_TEXT.encode("utf-8")}
     )
 
-    tray = page.locator("#attachmentTray")
     await tray.wait_for(state="visible", timeout=5_000)
     attachment_name = (await page.locator("#attachmentName").inner_text()).strip()
     attachment_kind = (await page.locator("#attachmentKind").inner_text()).strip()
@@ -265,6 +305,7 @@ async def _run_view(
             "web_tools_ready": health.get("web_tools_ready"),
             "live_enabled": health.get("live_enabled"),
         },
+        "binary_picker_formats": binary_picker_verified,
         "text_document": "PASS",
         "binary_docx": "PASS",
         "binary_pending_metadata_only": "PASS",
