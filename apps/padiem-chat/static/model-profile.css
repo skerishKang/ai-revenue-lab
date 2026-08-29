@@ -1,0 +1,128 @@
+.model-pill {
+  gap: 8px;
+}
+
+.model-profile-label {
+  white-space: nowrap;
+}
+
+.model-profile-select {
+  min-height: 36px;
+  max-width: 152px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 30px 0 10px;
+  color: var(--text);
+  background: var(--panel);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.model-profile-select:focus-visible {
+  outline: 3px solid rgba(101, 87, 232, .24);
+  outline-offset: 2px;
+}
+
+.high-contributor-dialog {
+  width: min(520px, calc(100vw - 32px));
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 0;
+  color: var(--text);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.high-contributor-dialog::backdrop {
+  background: rgba(0, 0, 0, .58);
+  backdrop-filter: blur(4px);
+}
+
+.high-contributor-card {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.high-contributor-card h2,
+.high-contributor-card p {
+  margin: 0;
+}
+
+.high-contributor-card h2 {
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.high-contributor-card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.high-contributor-warning {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--accent-soft);
+}
+
+.high-contributor-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.high-contributor-check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+}
+
+.high-contributor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.high-contributor-actions button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.high-contributor-actions .high-confirm {
+  color: #fff;
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+}
+
+@media (max-width: 720px) {
+  .model-pill {
+    padding: 0 8px;
+  }
+
+  .model-profile-label {
+    display: none;
+  }
+
+  .model-profile-select {
+    width: 112px;
+    max-width: 112px;
+    padding-left: 8px;
+    font-size: 12px;
+  }
+
+  .high-contributor-card {
+    padding: 20px;
+  }
+}
