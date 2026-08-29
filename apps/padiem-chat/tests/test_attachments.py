@@ -198,11 +198,12 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     assert 'id="attachmentFileInput"' in html
     assert "image/jpeg,image/png,image/webp" in html
     assert "text/plain,text/markdown,text/csv,application/json" in html
+    assert ".pdf,.docx,.pptx,.xlsx" in html
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
     assert "문서와 대화" in html
-    assert "TXT·Markdown·CSV·JSON" in html
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
+    assert "PDF·Office·텍스트 파일" in html
+    assert "사진 또는 문서 파일 한 개를 첨부할 수 있습니다." in html
     assert "MAX_IMAGE_BYTES = 4 * 1024 * 1024" in js
     assert "MAX_DOCUMENT_BYTES = 96 * 1024" in js
     assert "ALLOWED_IMAGE_TYPES" in js
