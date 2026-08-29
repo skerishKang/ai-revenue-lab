@@ -3,6 +3,7 @@ from __future__ import annotations
 import httpx
 import pytest
 
+from app.b14_client import B14Client
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import (
@@ -10,6 +11,9 @@ from app.model_policy import (
     HIGH_CONTRIBUTOR_ACK_VERSION,
     LOW_B14_MODEL_ID,
     MEDIUM_B14_MODEL_ID,
+    current_request_profile,
+    reset_request_profile,
+    set_request_profile,
 )
 from app.profile_guard import guard_app
 
@@ -42,23 +46,41 @@ async def _post(client: httpx.AsyncClient, payload=None, *, profile=None, ack=No
 
 
 @pytest.mark.asyncio
-async def test_default_and_low_profiles_are_explicit_manual_routes_and_context_resets():
+async def test_default_and_low_profiles_are_accepted_and_request_context_resets():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=_app()), base_url="http://test") as client:
         default = await _post(client)
         assert default.status_code == 200
-        assert default.json()["route"]["model"] == MEDIUM_B14_MODEL_ID
+        assert default.json()["runtime"] == "mock"
 
         low = await _post(client, profile="low")
         assert low.status_code == 200
-        assert low.json()["route"]["model"] == LOW_B14_MODEL_ID
+        assert low.json()["runtime"] == "mock"
 
+        assert current_request_profile() == "medium"
         after = await _post(client)
         assert after.status_code == 200
-        assert after.json()["route"]["model"] == MEDIUM_B14_MODEL_ID
+        assert current_request_profile() == "medium"
 
 
 @pytest.mark.asyncio
-async def test_high_requires_exact_versioned_ack_and_routes_only_after_ack():
+async def test_request_profile_drives_exact_b14_client_model_without_network():
+    client = B14Client(Settings(runtime_mode="mock"))
+    for profile, expected_model in (
+        ("low", LOW_B14_MODEL_ID),
+        ("medium", MEDIUM_B14_MODEL_ID),
+        ("high", HIGH_B14_MODEL_ID),
+    ):
+        token = set_request_profile(profile)
+        try:
+            result = await client.complete(BASE_PAYLOAD["messages"])
+        finally:
+            reset_request_profile(token)
+        assert result["route"]["model"] == expected_model
+    assert current_request_profile() == "medium"
+
+
+@pytest.mark.asyncio
+async def test_high_requires_exact_versioned_ack_before_public_request():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=_app()), base_url="http://test") as client:
         missing = await _post(client, profile="high")
         assert missing.status_code == 422
@@ -70,7 +92,8 @@ async def test_high_requires_exact_versioned_ack_and_routes_only_after_ack():
 
         accepted = await _post(client, profile="high", ack=HIGH_CONTRIBUTOR_ACK_VERSION)
         assert accepted.status_code == 200
-        assert accepted.json()["route"]["model"] == HIGH_B14_MODEL_ID
+        assert accepted.json()["runtime"] == "mock"
+        assert current_request_profile() == "medium"
 
 
 @pytest.mark.asyncio
