@@ -1,0 +1,16 @@
+{
+  "name": "@ai-revenue-lab/ai-reward-router",
+  "version": "0.1.0",
+  "private": true,
+  "description": "B64 AI Reward Router product foundation",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/foundation.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.29",
+    "typescript": "5.9.2"
+  }
+}
