@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+from io import BytesIO
 import json
 import os
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from playwright.async_api import Page, async_playwright
 
@@ -20,6 +23,23 @@ DOC_MARKER = "B62_DOCUMENT_PRIVATE_MARKER_1021"
 DOC_TEXT = f"# 브라우저 QA 메모\n{DOC_MARKER}\n핵심 일정은 금요일입니다."
 QUESTION = "첨부한 메모의 핵심만 짧게 정리해줘"
 
+BINARY_NAME = "browser-notes.docx"
+BINARY_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+BINARY_MARKER = "B62_BINARY_DOCX_PRIVATE_MARKER_1077"
+BINARY_QUESTION = "첨부한 DOCX를 참고해서 한 문장으로 답해줘"
+
+
+def _docx_bytes(text: str) -> bytes:
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        '<w:body><w:p><w:r><w:t>' + text + '</w:t></w:r></w:p></w:body></w:document>'
+    ).encode()
+    output = BytesIO()
+    with ZipFile(output, "w", compression=ZIP_DEFLATED) as archive:
+        archive.writestr("word/document.xml", xml)
+    return output.getvalue()
+
 
 async def _assert_no_horizontal_overflow(page: Page, name: str) -> None:
     scroll_width = await page.evaluate("document.documentElement.scrollWidth")
@@ -28,6 +48,26 @@ async def _assert_no_horizontal_overflow(page: Page, name: str) -> None:
         raise AssertionError(
             f"horizontal overflow at {name}: scrollWidth={scroll_width}, innerWidth={inner_width}"
         )
+
+
+async def _wait_for_answer(page: Page):
+    assistant = page.locator("#messageList .assistant-message").last
+    await assistant.wait_for(state="visible", timeout=10_000)
+    await page.wait_for_function(
+        "() => { const items = document.querySelectorAll('#messageList .assistant-message'); if (!items.length) return false; const last = items[items.length - 1]; return !last.querySelector('.typing') && Boolean(last.querySelector('.assistant-content p')); }",
+        timeout=10_000,
+    )
+    return assistant
+
+
+async def _assert_mock_answer(assistant) -> str:
+    answer_text = (await assistant.locator(".assistant-content").inner_text()).strip()
+    runtime_label = (await assistant.locator("[data-runtime-label]").inner_text()).strip()
+    if not answer_text:
+        raise AssertionError("mock document answer must be visible")
+    if "모의 응답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
+        raise AssertionError(f"mock truth label missing: {runtime_label!r}")
+    return answer_text
 
 
 async def _run_view(
@@ -72,12 +112,14 @@ async def _run_view(
         raise AssertionError("mobile menu must remain visible on mobile viewport")
 
     file_input = page.locator("#attachmentFileInput")
+    accept = await file_input.get_attribute("accept") or ""
+    for extension in (".pdf", ".docx", ".pptx", ".xlsx"):
+        if extension not in accept:
+            raise AssertionError(f"binary document picker extension missing: {extension} from {accept!r}")
+
+    # Existing text-document path must remain byte-for-byte payload compatible.
     await file_input.set_input_files(
-        {
-            "name": DOC_NAME,
-            "mimeType": DOC_MIME,
-            "buffer": DOC_TEXT.encode("utf-8"),
-        }
+        {"name": DOC_NAME, "mimeType": DOC_MIME, "buffer": DOC_TEXT.encode("utf-8")}
     )
 
     tray = page.locator("#attachmentTray")
@@ -104,19 +146,8 @@ async def _run_view(
         raise AssertionError("send button stayed disabled after document question input")
     await page.locator("#sendButton").click()
 
-    assistant = page.locator("#messageList .assistant-message").last
-    await assistant.wait_for(state="visible", timeout=10_000)
-    await page.wait_for_function(
-        "() => { const items = document.querySelectorAll('#messageList .assistant-message'); if (!items.length) return false; const last = items[items.length - 1]; return !last.querySelector('.typing') && Boolean(last.querySelector('.assistant-content p')); }",
-        timeout=10_000,
-    )
-
-    answer_text = (await assistant.locator(".assistant-content").inner_text()).strip()
-    runtime_label = (await assistant.locator("[data-runtime-label]").inner_text()).strip()
-    if not answer_text:
-        raise AssertionError("mock document answer must be visible")
-    if "모의 응답" not in runtime_label or "실제 모델 호출 없음" not in runtime_label:
-        raise AssertionError(f"mock truth label missing: {runtime_label!r}")
+    assistant = await _wait_for_answer(page)
+    answer_text = await _assert_mock_answer(assistant)
 
     user_message = page.locator("#messageList .user-message").last
     user_text = (await user_message.inner_text()).strip()
@@ -133,32 +164,81 @@ async def _run_view(
     )
 
     if len(chat_posts) != 1:
-        raise AssertionError(f"expected exactly one chat POST, saw {chat_posts!r}")
-    post = chat_posts[0]
-    if post["path"] != "/api/chat":
-        raise AssertionError(f"document attachment must use completed /api/chat once: {post!r}")
-    payload = post["payload"]
-    if not isinstance(payload, dict):
-        raise AssertionError(f"chat payload must be an object: {payload!r}")
-    attachments = payload.get("attachments")
+        raise AssertionError(f"expected exactly one chat POST after text document, saw {chat_posts!r}")
+    text_post = chat_posts[0]
+    if text_post["path"] != "/api/chat":
+        raise AssertionError(f"text document attachment must use completed /api/chat once: {text_post!r}")
+    text_payload = text_post["payload"]
+    text_document = text_payload.get("attachments", [None])[0] if isinstance(text_payload, dict) else None
+    expected = {"type": "document", "name": DOC_NAME, "media_type": DOC_MIME, "text": DOC_TEXT}
+    if not isinstance(text_document, dict) or any(text_document.get(k) != v for k, v in expected.items()):
+        raise AssertionError(f"text document payload mismatch: {text_document!r}")
+
+    # New binary DOCX path: browser keeps bytes ephemeral and server performs extraction.
+    await page.locator("#newChatButton").click()
+    binary_payload = _docx_bytes(BINARY_MARKER)
+    await file_input.set_input_files(
+        {"name": BINARY_NAME, "mimeType": BINARY_MIME, "buffer": binary_payload}
+    )
+    await tray.wait_for(state="visible", timeout=5_000)
+    if (await page.locator("#attachmentName").inner_text()).strip() != BINARY_NAME:
+        raise AssertionError("binary attachment filename not shown")
+    if (await page.locator("#attachmentKind").inner_text()).strip() != "DOCX":
+        raise AssertionError("binary attachment kind must show DOCX")
+    binary_note = (await page.locator("#runtimeNote").inner_text()).strip()
+    if "참고 자료" not in binary_note or "저장되지 않습니다" not in binary_note:
+        raise AssertionError(f"binary document privacy note missing: {binary_note!r}")
+
+    pending_meta = await page.evaluate("window.__padiemBinaryDocuments?.pendingMeta()")
+    if not isinstance(pending_meta, dict):
+        raise AssertionError("binary bridge must expose bounded metadata-only QA hook")
+    if pending_meta.get("name") != BINARY_NAME or pending_meta.get("byteSize") != len(binary_payload):
+        raise AssertionError(f"binary pending metadata mismatch: {pending_meta!r}")
+    if "base64" in pending_meta or "text" in pending_meta:
+        raise AssertionError(f"binary QA hook must not expose content: {pending_meta!r}")
+
+    await page.locator("#messageInput").fill(BINARY_QUESTION)
+    await page.locator("#sendButton").click()
+    binary_assistant = await _wait_for_answer(page)
+    binary_answer = await _assert_mock_answer(binary_assistant)
+
+    binary_user = (await page.locator("#messageList .user-message").last.inner_text()).strip()
+    if BINARY_QUESTION not in binary_user or f"문서 · {BINARY_NAME}" not in binary_user:
+        raise AssertionError(f"binary visible attachment metadata missing: {binary_user!r}")
+    if BINARY_MARKER in binary_user or BINARY_MARKER in binary_answer:
+        raise AssertionError("extracted binary document marker leaked into visible chat text")
+
+    await page.wait_for_function(
+        "() => document.getElementById('attachmentTray')?.hidden === true && window.__padiemBinaryDocuments?.pendingMeta() === null",
+        timeout=5_000,
+    )
+
+    if len(chat_posts) != 2:
+        raise AssertionError(f"expected two total chat POSTs, saw {chat_posts!r}")
+    binary_post = chat_posts[1]
+    if binary_post["path"] != "/api/chat":
+        raise AssertionError(f"binary bridge must dispatch one completed /api/chat: {binary_post!r}")
+    binary_request = binary_post["payload"]
+    if not isinstance(binary_request, dict):
+        raise AssertionError(f"binary request payload missing: {binary_request!r}")
+    attachments = binary_request.get("attachments")
     if not isinstance(attachments, list) or len(attachments) != 1:
-        raise AssertionError(f"expected exactly one document attachment: {attachments!r}")
-    document = attachments[0]
-    expected = {
-        "type": "document",
-        "name": DOC_NAME,
-        "media_type": DOC_MIME,
-        "text": DOC_TEXT,
-    }
-    for key, value in expected.items():
-        if document.get(key) != value:
-            raise AssertionError(f"document payload mismatch for {key}: {document!r}")
-    if any(key in payload for key in ("model", "provider", "route", "business14")):
-        raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")
+        raise AssertionError(f"binary request must carry one attachment: {attachments!r}")
+    binary_document = attachments[0]
+    if binary_document.get("type") != "document" or binary_document.get("name") != BINARY_NAME:
+        raise AssertionError(f"binary document metadata mismatch: {binary_document!r}")
+    if binary_document.get("media_type") != BINARY_MIME or "text" in binary_document:
+        raise AssertionError(f"binary document variant must carry base64, not text: {binary_document!r}")
+    encoded = binary_document.get("base64")
+    if not isinstance(encoded, str) or base64.b64decode(encoded, validate=True) != binary_payload:
+        raise AssertionError("binary document payload did not round-trip exactly")
+    for payload in (text_payload, binary_request):
+        if any(key in payload for key in ("model", "provider", "route", "business14")):
+            raise AssertionError(f"browser payload must not select model/provider routing: {payload!r}")
 
     body_text = await page.locator("body").inner_text()
-    if DOC_MARKER in body_text:
-        raise AssertionError("raw document body marker leaked into visible page text")
+    if DOC_MARKER in body_text or BINARY_MARKER in body_text:
+        raise AssertionError("raw/extracted document body marker leaked into visible page text")
     forbidden_identity = (
         "google/gemini",
         "Gemini",
@@ -183,16 +263,11 @@ async def _run_view(
             "web_tools_ready": health.get("web_tools_ready"),
             "live_enabled": health.get("live_enabled"),
         },
-        "attachment_tray": "PASS",
-        "attachment_name": attachment_name,
-        "attachment_kind": attachment_kind,
-        "attachment_size_visible": True,
-        "privacy_reference_note": "PASS",
+        "text_document": "PASS",
+        "binary_docx": "PASS",
+        "binary_pending_metadata_only": "PASS",
         "chat_post_count": len(chat_posts),
-        "chat_post_path": post["path"],
-        "document_payload": "PASS",
-        "visible_user_document_metadata": "PASS",
-        "visible_answer": "PASS",
+        "chat_post_paths": [item["path"] for item in chat_posts],
         "mock_truth_label": "PASS",
         "document_body_visible_leak": False,
         "attachment_cleared_after_success": True,
@@ -208,7 +283,8 @@ async def main() -> None:
         "web_provider_expectation": "off",
         "real_web_provider_calls_expected": 0,
         "real_model_provider_calls_expected": 0,
-        "document_name": DOC_NAME,
+        "text_document_name": DOC_NAME,
+        "binary_document_name": BINARY_NAME,
         "views": {},
     }
 
@@ -217,21 +293,13 @@ async def main() -> None:
         try:
             desktop = await browser.new_page()
             report["views"]["desktop"] = await _run_view(
-                desktop,
-                name="desktop",
-                width=1440,
-                height=1000,
-                mobile=False,
+                desktop, name="desktop", width=1440, height=1000, mobile=False
             )
             await desktop.close()
 
             mobile = await browser.new_page()
             report["views"]["mobile"] = await _run_view(
-                mobile,
-                name="mobile",
-                width=390,
-                height=844,
-                mobile=True,
+                mobile, name="mobile", width=390, height=844, mobile=True
             )
             await mobile.close()
         finally:
@@ -239,8 +307,7 @@ async def main() -> None:
 
     report["status"] = "PASS"
     (OUT_DIR / "report.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
