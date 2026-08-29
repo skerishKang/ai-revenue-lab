@@ -1,0 +1,22 @@
+# B62 Issue #1091 — VERSION PREVIEW ONLY.
+#
+# This file intentionally targets the existing `padiem-chat` Worker name so a
+# `wrangler versions upload` creates a non-production versioned preview using
+# the same static product surface. NEVER run `wrangler deploy` with this file.
+# `worker_ux_test.py` also rejects the canonical production hostname at runtime.
+
+name = "padiem-chat"
+main = "worker_ux_test.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+workers_dev = true
+preview_urls = true
+
+[assets]
+directory = "static"
+binding = "ASSETS"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_POOLSIDE_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_POOLSIDE_API_KEY"
