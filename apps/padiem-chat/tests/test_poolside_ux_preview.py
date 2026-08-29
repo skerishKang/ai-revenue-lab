@@ -13,9 +13,15 @@ from app.poolside_ux_test import (
     POOL_SIDE_CHAT_URL,
     POOL_SIDE_MODEL,
     PoolsideUXTestClient,
-    is_version_preview_host,
+    TEST_TASK_BINDING_NAME,
+    TEST_TASK_ID,
+    is_canonical_test_host,
 )
 from app.public_chat import public_chat_result
+
+
+def _test_guard_enabled(env: dict[str, object]) -> bool:
+    return env.get(TEST_TASK_BINDING_NAME) == TEST_TASK_ID
 
 
 class FakeSecretBinding:
@@ -57,7 +63,7 @@ async def test_completion_uses_fixed_poolside_origin_model_and_server_authorizat
     assert body["stream"] is False
     assert body["messages"][-1] == {"role": "user", "content": "짧게 답해 주세요."}
     assert result["answer"] == "실제 형태의 테스트 답변입니다."
-    assert result["runtime"] == "test_poolside"
+    assert result["runtime"] == "test_direct"
     assert secret.calls == 1
     assert "unit-test-credential" not in repr(client)
 
@@ -96,7 +102,7 @@ async def test_public_chat_document_path_keeps_reference_context_but_strips_rout
     assert response.status_code == 200
     payload = response.json()
     assert payload["answer"] == "문서의 핵심은 테스트 계획입니다."
-    assert payload["runtime"] == "test_poolside"
+    assert payload["runtime"] == "test_direct"
     assert "route" not in payload
     assert "request_id" not in payload
     assert "model" not in json.dumps(payload, ensure_ascii=False).lower()
@@ -250,19 +256,27 @@ async def test_malformed_or_empty_completion_fails_closed() -> None:
     assert caught.value.code == "malformed_upstream"
 
 
-def test_version_preview_host_guard_rejects_canonical_production() -> None:
-    assert is_version_preview_host("9abc1234-padiem-chat.charliekant.workers.dev") is True
-    assert is_version_preview_host("ux1091-padiem-chat.charliekant.workers.dev") is True
-    assert is_version_preview_host("padiem-chat.charliekant.workers.dev") is False
-    assert is_version_preview_host("evil.example") is False
-    assert is_version_preview_host(None) is False
+def test_canonical_host_guard_is_exact_and_preview_hosts_are_rejected() -> None:
+    assert is_canonical_test_host("padiem-chat.charliekant.workers.dev") is True
+    assert is_canonical_test_host("padiem-chat.charliekant.workers.dev.") is True
+    assert is_canonical_test_host("9abc1234-padiem-chat.charliekant.workers.dev") is False
+    assert is_canonical_test_host("evil.example") is False
+    assert is_canonical_test_host(None) is False
+
+
+def test_server_side_task_guard_requires_exact_task_binding() -> None:
+    assert TEST_TASK_BINDING_NAME == "PADIEM_CHAT_TEST_TASK_ID"
+    assert TEST_TASK_ID == "B62-1090-PADIEM-CHAT-DIRECT-POOLSIDE-CONTROLLED-PRODUCTION-010"
+    assert _test_guard_enabled({TEST_TASK_BINDING_NAME: TEST_TASK_ID}) is True
+    assert _test_guard_enabled({TEST_TASK_BINDING_NAME: "wrong-task"}) is False
+    assert _test_guard_enabled({}) is False
 
 
 def test_public_projection_drops_internal_provider_and_model_metadata() -> None:
     result = public_chat_result(
         {
             "answer": "안녕하세요.",
-            "runtime": "test_poolside",
+            "runtime": "test_direct",
             "request_id": "internal",
             "route": {"provider": "Poolside", "model": POOL_SIDE_MODEL, "mode": "test-direct"},
             "skill": {"id": "auto", "title": "자동 추천"},
@@ -271,22 +285,21 @@ def test_public_projection_drops_internal_provider_and_model_metadata() -> None:
 
     assert result == {
         "answer": "안녕하세요.",
-        "runtime": "test_poolside",
+        "runtime": "test_direct",
         "skill": {"id": "auto", "title": "자동 추천"},
     }
 
 
-def test_ux_test_wrangler_config_is_version_preview_only_and_uses_secrets_store() -> None:
+def test_ux_test_wrangler_config_uses_strict_inheritance_without_preview() -> None:
     root = Path(__file__).resolve().parents[1]
     test_config = (root / "wrangler.ux-test.toml").read_text(encoding="utf-8")
     production_config = (root / "wrangler.toml").read_text(encoding="utf-8")
 
     assert 'name = "padiem-chat"' in test_config
     assert 'main = "worker_ux_test.py"' in test_config
-    assert "preview_urls = true" in test_config
-    assert "[[secrets_store_secrets]]" in test_config
-    assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in test_config
-    assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in test_config
-    assert "f0b09ca04a7b43248154c773704a5616" in test_config
+    assert "keep_vars = true" in test_config
+    assert 'PADIEM_CHAT_TEST_TASK_ID = "B62-1090-PADIEM-CHAT-DIRECT-POOLSIDE-CONTROLLED-PRODUCTION-010"' in test_config
+    assert "preview_urls" not in test_config
+    assert "secrets_store_secrets" not in test_config
     assert "worker_ux_test.py" not in production_config
     assert "secrets_store_secrets" not in production_config

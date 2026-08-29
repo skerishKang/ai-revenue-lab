@@ -1,22 +1,30 @@
-# B62 Issue #1091 — VERSION PREVIEW ONLY.
+# B62-1090-010 TEST-ONLY candidate.
 #
-# This file intentionally targets the existing `padiem-chat` Worker name so a
-# `wrangler versions upload` creates a non-production versioned preview using
-# the same static product surface. NEVER run `wrangler deploy` with this file.
-# `worker_ux_test.py` also rejects the canonical production hostname at runtime.
+# Upload with `wrangler versions upload` only. This config must never be used
+# with `wrangler deploy`. The candidate is placed beside the current Production
+# version at 0% and reached only through a Cloudflare version override.
+# Existing vars/secrets are inherited; the Poolside Secrets Store binding is
+# intentionally not redeclared here.
 
 name = "padiem-chat"
 main = "worker_ux_test.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
-preview_urls = true
+keep_vars = true
 
 [assets]
 directory = "static"
 binding = "ASSETS"
 
-[[secrets_store_secrets]]
-binding = "PADIEM_POOLSIDE_API_KEY"
-store_id = "f0b09ca04a7b43248154c773704a5616"
-secret_name = "PADIEM_POOLSIDE_API_KEY"
+[vars]
+PADIEM_CHAT_TEST_TASK_ID = "B62-1090-PADIEM-CHAT-DIRECT-POOLSIDE-CONTROLLED-PRODUCTION-010"
+
+[[services]]
+binding = "B14_SERVICE"
+service = "ai-revenue-korean-ai-platform"
+environment = "production"
+
+[[d1_databases]]
+binding = "PADIEM_CHAT_DB"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"

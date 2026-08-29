@@ -1,18 +1,19 @@
-"""Cloudflare VERSION-PREVIEW-ONLY entrypoint for B62 Issue #1091.
+"""TEST-ONLY direct Poolside entrypoint for B62-1090-010.
 
 Safety contract:
-- never promote this entrypoint to the canonical production Worker;
-- only version/alias preview hosts under the known padiem-chat workers.dev name run;
+- canonical traffic is allowed only for the exact server-side test guard;
+- ordinary Production traffic remains on the original Worker at 100%;
 - the real Provider credential remains a Secrets Store binding and is resolved
   only inside the test client;
 - the ordinary production ``worker.py`` and B14/Core execution path are untouched.
 
-Upload this config with ``wrangler versions upload`` only. ``wrangler deploy``
-with the UX-test config is explicitly forbidden by Issue #1091.
+Upload this config with ``wrangler versions upload`` only. Never run
+``wrangler deploy`` with the TEST-only config.
 """
 
 from __future__ import annotations
 
+import json
 from typing import Any
 from urllib.parse import urlparse
 
@@ -20,26 +21,54 @@ from workers import Response, WorkerEntrypoint
 
 from app.config import Settings
 from app.main import create_app
-from app.poolside_ux_test import PoolsideUXTestClient, is_version_preview_host
+from app.poolside_ux_test import (
+    PoolsideUXTestClient,
+    TEST_TASK_BINDING_NAME,
+    TEST_TASK_ID,
+    is_canonical_test_host,
+)
 from app.worker_config import binding_value, response_headers_for_path
 
 SECRET_BINDING_NAME = "PADIEM_POOLSIDE_API_KEY"
+TEST_RUNTIME_LABEL = "test_direct"
 _worker_app = None
+
+
+def _test_guard_enabled(env: Any) -> bool:
+    return binding_value(env, TEST_TASK_BINDING_NAME) == TEST_TASK_ID
+
+
+def _candidate_health_response(path: str) -> Any:
+    response = Response(
+        json.dumps(
+            {
+                "status": "ok",
+                "app": "padiem-chat",
+                "runtime": TEST_RUNTIME_LABEL,
+                "test_candidate": True,
+                "test_task_id": TEST_TASK_ID,
+            },
+            separators=(",", ":"),
+        ),
+        status=200,
+        headers={"Content-Type": "application/json", "Cache-Control": "no-store"},
+    )
+    return _apply_headers(response, path)
+
+
+def _blocked_test_response(path: str) -> Any:
+    response = Response(
+        "This bounded test Worker is not enabled for ordinary traffic.",
+        status=403,
+        headers={"Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"},
+    )
+    return _apply_headers(response, path)
 
 
 def _apply_headers(response: Any, path: str) -> Any:
     for name, value in response_headers_for_path(path).items():
         response.headers[name] = value
     return response
-
-
-def _blocked_preview_response(path: str) -> Any:
-    response = Response(
-        "This B62 real-answer harness is available only on a Cloudflare Worker preview URL.",
-        status=403,
-        headers={"Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"},
-    )
-    return _apply_headers(response, path)
 
 
 class Default(WorkerEntrypoint):
@@ -50,11 +79,13 @@ class Default(WorkerEntrypoint):
         parsed = urlparse(request.url)
         path = parsed.path
 
-        # This is the final fail-closed guard if the test config is accidentally
-        # promoted. The canonical padiem-chat production hostname can never use
-        # this direct Provider path.
-        if not is_version_preview_host(parsed.hostname):
-            return _blocked_preview_response(path)
+        # The version override is the only routing mechanism. This server-side
+        # task binding prevents an accidentally promoted candidate from serving
+        # ordinary canonical traffic without the exact authorized task guard.
+        if not is_canonical_test_host(parsed.hostname) or not _test_guard_enabled(self.env):
+            return _blocked_test_response(path)
+        if path == "/health":
+            return _candidate_health_response(path)
 
         if _worker_app is None:
             secret_binding = binding_value(self.env, SECRET_BINDING_NAME)

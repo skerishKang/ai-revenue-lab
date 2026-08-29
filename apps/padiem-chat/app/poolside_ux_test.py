@@ -31,22 +31,19 @@ POOL_SIDE_TEST_MAX_TOKENS = 2_400
 
 PRODUCTION_WORKER_HOST = "padiem-chat.charliekant.workers.dev"
 PREVIEW_HOST_SUFFIX = "-padiem-chat.charliekant.workers.dev"
+TEST_TASK_BINDING_NAME = "PADIEM_CHAT_TEST_TASK_ID"
+TEST_TASK_ID = "B62-1090-PADIEM-CHAT-DIRECT-POOLSIDE-CONTROLLED-PRODUCTION-010"
 
 
 class SecretStoreBinding(Protocol):
     async def get(self) -> Any: ...
 
 
-def is_version_preview_host(hostname: str | None) -> bool:
-    """Permit only version/alias preview hosts, never the canonical production host."""
+def is_canonical_test_host(hostname: str | None) -> bool:
+    """Permit only the canonical host for the explicitly bounded test candidate."""
 
     host = str(hostname or "").strip().lower().rstrip(".")
-    return bool(
-        host
-        and host != PRODUCTION_WORKER_HOST
-        and host.endswith(PREVIEW_HOST_SUFFIX)
-        and len(host) > len(PREVIEW_HOST_SUFFIX)
-    )
+    return host == PRODUCTION_WORKER_HOST
 
 
 def _bounded_context(value: str | None) -> str | None:
@@ -241,7 +238,9 @@ class PoolsideUXTestClient:
         return {
             "answer": answer,
             "request_id": "b62_poolside_ux_test",
-            "runtime": "test_poolside",
+            # Provider-neutral public runtime label; routing details remain
+            # server-side and are removed by the product projection.
+            "runtime": "test_direct",
             "route": {
                 "mode": "test-direct",
                 "model": POOL_SIDE_MODEL,
