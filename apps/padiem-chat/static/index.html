@@ -8,6 +8,7 @@
   <title>Padiem Chat</title>
   <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <!-- Legacy regression marker only: "자동 추천" is a deprecated label; model selection remains deferred. -->
+  <script src="./theme-init.js"></script>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./attachments.css" />
   <link rel="stylesheet" href="./history.css" />
@@ -18,6 +19,7 @@
   <link rel="stylesheet" href="./search-sources.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
+  <link rel="stylesheet" href="./padiem-themes.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -64,6 +66,13 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
         <div class="model-pill" aria-label="대화 모드"><span class="status-spark" aria-hidden="true">✦</span><span>기본 대화</span></div>
+        <div class="theme-picker" role="group" aria-label="테마 선택" id="themePicker">
+          <span class="theme-picker-label" aria-hidden="true">테마</span>
+          <button type="button" class="theme-option" data-theme-value="light" aria-pressed="false" aria-label="Light 테마">Light</button>
+          <button type="button" class="theme-option" data-theme-value="dark" aria-pressed="false" aria-label="Dark 테마">Dark</button>
+          <button type="button" class="theme-option" data-theme-value="cinematic" aria-pressed="false" aria-label="Cinematic 테마">Cinematic</button>
+          <button type="button" class="theme-option" data-theme-value="padiem-home" aria-pressed="false" aria-label="Padiem Home 테마">Padiem Home</button>
+        </div>
         <div class="account-controls">
           <span class="account-name" id="accountName" hidden></span>
           <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="로그인 기능이 설정되지 않았습니다">로그인</button>
@@ -169,6 +178,7 @@
 
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label>답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
+  <script src="./theme.js"></script>
   <script src="./app.js"></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>

@@ -6,6 +6,7 @@ on:
       - "apps/padiem-chat/static/**"
       - "apps/padiem-chat/app/**"
       - ".github/scripts/b62_browser_visual_qa.py"
+      - ".github/scripts/b62_theme_visual_qa.py"
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
@@ -54,11 +55,16 @@ jobs:
           exit 1
       - name: Desktop and mobile browser QA
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
-      - name: Print QA report
+      - name: Four-theme desktop/mobile visual evidence
+        run: uv run python ../../.github/scripts/b62_theme_visual_qa.py
+      - name: Print QA reports
         if: always()
         run: |
           if [ -f ../../.tmp/b62-browser-qa/report.json ]; then
             cat ../../.tmp/b62-browser-qa/report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/theme-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/theme-report.json
           fi
       - name: Upload browser evidence
         if: always()
