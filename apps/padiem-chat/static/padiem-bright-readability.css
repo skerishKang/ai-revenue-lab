@@ -42,6 +42,29 @@ html[data-theme="padiem-home"] .sidebar .recent-item:hover {
   color: var(--text) !important;
 }
 
+/* padiem-surfaces.css supplies near-white tool foregrounds for the dark
+ * composer. The active File control remains on the bright composer, so give
+ * only LIGHT/PADIEM_HOME an explicit readable foreground and hover/selected
+ * treatment. Disabled first-use tools stay hidden by padiem-first-use.css.
+ */
+html[data-theme="light"] .composer .tool-button:not(:disabled),
+html[data-theme="padiem-home"] .composer .tool-button:not(:disabled) {
+  color: var(--muted) !important;
+}
+
+html[data-theme="light"] .composer .tool-button:hover:not(:disabled),
+html[data-theme="padiem-home"] .composer .tool-button:hover:not(:disabled) {
+  background: var(--accent-soft) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .composer .tool-button[aria-pressed="true"]:not(:disabled),
+html[data-theme="padiem-home"] .composer .tool-button[aria-pressed="true"]:not(:disabled) {
+  border-color: var(--line) !important;
+  background: var(--accent-soft) !important;
+  color: var(--text) !important;
+}
+
 /* The composer note is useful first-use/help copy, not decorative microcopy.
  * Keep it legible for the parent-generation usability target on both bright
  * themes without changing the dark/cinematic typography contract.
