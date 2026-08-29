@@ -94,12 +94,13 @@ async def _capture_surface(
                 f"active File tool retained dark-theme foreground for {theme}/{surface}: {active_tool}"
             )
 
+    # First-use IA intentionally avoids repeating starter prompts in the sidebar.
     sidebar_heading = await _style(page, "#recentTitle")
-    composer_note = await _style(page, ".composer-note")
-    if sidebar_heading is None or sidebar_heading["fontSize"] != "12px":
+    if sidebar_heading is not None:
         raise AssertionError(
-            f"sidebar heading readability floor failed for {theme}/{surface}: {sidebar_heading}"
+            f"home should hide duplicate sidebar recommendations for {theme}/{surface}: {sidebar_heading}"
         )
+    composer_note = await _style(page, ".composer-note")
     if composer_note is None or composer_note["fontSize"] != "12px":
         raise AssertionError(
             f"composer-note readability floor failed for {theme}/{surface}: {composer_note}"
@@ -112,6 +113,7 @@ async def _capture_surface(
         )
 
     home_metrics = {
+        "sidebar_recommendations_hidden": sidebar_heading is None,
         "sidebar_heading": sidebar_heading,
         "sidebar_item": await _style(page, ".recent-item"),
         "active_file_tool": active_tool,
@@ -133,6 +135,9 @@ async def _capture_surface(
         if not sidebar_box or sidebar_box["x"] < -1:
             raise AssertionError(f"mobile drawer is off-screen for {theme}: {sidebar_box}")
         await _assert_no_horizontal_overflow(page, f"{prefix}-drawer")
+        # Home drawer must also avoid the duplicated recommendation rail.
+        if await _style(page, "#recentTitle") is not None:
+            raise AssertionError(f"mobile home drawer repeats recommendation rail for {theme}")
         drawer = {key: round(float(value), 2) for key, value in sidebar_box.items()}
         await page.screenshot(path=str(OUT_DIR / f"{prefix}-drawer.png"), full_page=True)
         await page.locator("#mobileClose").click()
@@ -154,6 +159,13 @@ async def _capture_surface(
     # Let message-entry animation and layout settle before visual evidence.
     await page.wait_for_timeout(700)
     await _assert_no_horizontal_overflow(page, f"{prefix}-chat")
+
+    # Recommendation rail remains useful once a conversation is active.
+    chat_sidebar_heading = await _style(page, "#recentTitle")
+    if not mobile and (chat_sidebar_heading is None or chat_sidebar_heading["fontSize"] != "12px"):
+        raise AssertionError(
+            f"chat sidebar heading readability floor failed for {theme}/{surface}: {chat_sidebar_heading}"
+        )
 
     compact_theme_options = None
     expanded_theme_options = None
@@ -190,9 +202,28 @@ async def _capture_surface(
             f"chat composer-note readability floor failed for {theme}/{surface}: {chat_composer_note}"
         )
 
+    assistant_text = await _style(page, ".assistant-content")
+    assistant_meta = await _style(page, ".assistant-meta")
+    runtime_label = await _style(page, ".demo-label")
+    expected_answer_size = "16px" if mobile else "17px"
+    if assistant_text is None or assistant_text["fontSize"] != expected_answer_size:
+        raise AssertionError(
+            f"assistant answer readability floor failed for {theme}/{surface}: {assistant_text}"
+        )
+    if assistant_meta is None or assistant_meta["fontSize"] != "12px":
+        raise AssertionError(
+            f"assistant metadata readability floor failed for {theme}/{surface}: {assistant_meta}"
+        )
+    if runtime_label is None or runtime_label["fontSize"] != "11px":
+        raise AssertionError(
+            f"runtime label readability floor failed for {theme}/{surface}: {runtime_label}"
+        )
+
     chat_metrics = {
-        "assistant_text": await _style(page, ".assistant-content"),
-        "assistant_meta": await _style(page, ".assistant-meta"),
+        "assistant_text": assistant_text,
+        "assistant_meta": assistant_meta,
+        "runtime_label": runtime_label,
+        "sidebar_heading": chat_sidebar_heading,
         "active_file_tool": await _style(page, "#attachmentButton"),
         "composer_note": chat_composer_note,
         "user_bubble": await _style(page, ".message-bubble"),
