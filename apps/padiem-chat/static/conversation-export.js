@@ -2,10 +2,11 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
+  const messageInput = document.getElementById("messageInput");
   const accountControls = document.querySelector(".account-controls");
   const loginButton = document.getElementById("loginButton");
 
-  if (!messageList || !accountControls) return;
+  if (!messageList || !messageInput || !accountControls) return;
 
   const exportButton = document.createElement("button");
   exportButton.type = "button";
@@ -34,6 +35,10 @@
     "HEADER", "HR", "LI", "MAIN", "NAV", "OL", "P", "PRE", "SECTION", "TABLE",
     "TBODY", "TD", "TFOOT", "TH", "THEAD", "TR", "UL",
   ]);
+
+  function requestInFlight() {
+    return messageInput.disabled === true;
+  }
 
   function appendBreak(parts) {
     if (!parts.length || parts[parts.length - 1] === "\n") return;
@@ -71,6 +76,13 @@
       .trim();
   }
 
+  function exportableAssistantText(article) {
+    if (!(article instanceof Element)) return "";
+    const content = article.querySelector(".assistant-content");
+    if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return "";
+    return visiblePlainText(content);
+  }
+
   function collectConversation() {
     const entries = [];
     messageList.querySelectorAll(".message").forEach((article) => {
@@ -82,12 +94,17 @@
         return;
       }
       if (article.classList.contains("assistant-message")) {
-        const content = article.querySelector(".assistant-content");
-        const text = content ? visiblePlainText(content) : "";
+        const text = exportableAssistantText(article);
         if (text) entries.push({ label: "Padiem Chat", text });
       }
     });
     return entries;
+  }
+
+  function hasSettledAssistant() {
+    const articles = Array.from(messageList.querySelectorAll(".assistant-message"));
+    if (requestInFlight() && articles.length) articles.pop();
+    return articles.some((article) => Boolean(exportableAssistantText(article)));
   }
 
   function exportFilename() {
@@ -104,15 +121,17 @@
   }
 
   function updateExportState() {
-    const hasConversation = collectConversation().length > 0;
-    exportButton.hidden = !hasConversation;
-    exportButton.disabled = !hasConversation;
-    exportButton.setAttribute("aria-disabled", hasConversation ? "false" : "true");
+    const settled = hasSettledAssistant();
+    const usable = settled && !requestInFlight();
+    exportButton.hidden = !settled;
+    exportButton.disabled = !usable;
+    exportButton.setAttribute("aria-disabled", usable ? "false" : "true");
   }
 
   function downloadConversation() {
+    if (requestInFlight() || exportButton.disabled) return;
     const entries = collectConversation();
-    if (!entries.length) return;
+    if (!entries.some((entry) => entry.label === "Padiem Chat")) return;
     const blob = new Blob([formatConversation(entries)], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -129,5 +148,9 @@
 
   const observer = new MutationObserver(updateExportState);
   observer.observe(messageList, { childList: true, subtree: true, characterData: true });
+
+  const lifecycleObserver = new MutationObserver(updateExportState);
+  lifecycleObserver.observe(messageInput, { attributes: true, attributeFilter: ["disabled"] });
+
   updateExportState();
 })();
