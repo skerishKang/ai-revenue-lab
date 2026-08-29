@@ -1,0 +1,53 @@
+/* B62 bright-theme readability layer.
+ *
+ * padiem-foundation.css intentionally carries dark/cinematic foreground
+ * colours for sidebar navigation. LIGHT and PADIEM_HOME replace the sidebar
+ * surface with bright backgrounds, so those inherited white foregrounds need
+ * a bounded bright-theme correction. Keep DARK/CINEMATIC untouched.
+ */
+
+html[data-theme="light"] .sidebar .side-item,
+html[data-theme="light"] .sidebar .recent-item,
+html[data-theme="padiem-home"] .sidebar .side-item,
+html[data-theme="padiem-home"] .sidebar .recent-item {
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .sidebar .side-icon,
+html[data-theme="padiem-home"] .sidebar .side-icon {
+  color: var(--muted) !important;
+}
+
+html[data-theme="light"] .sidebar .mini-badge,
+html[data-theme="padiem-home"] .sidebar .mini-badge {
+  border-color: var(--line) !important;
+  background: var(--panel) !important;
+  color: var(--muted) !important;
+}
+
+html[data-theme="light"] .sidebar .recent-section h2,
+html[data-theme="light"] .sidebar .section-heading-row h2,
+html[data-theme="padiem-home"] .sidebar .recent-section h2,
+html[data-theme="padiem-home"] .sidebar .section-heading-row h2 {
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  letter-spacing: .10em;
+}
+
+html[data-theme="light"] .sidebar .side-item:not(:disabled):hover,
+html[data-theme="light"] .sidebar .recent-item:hover,
+html[data-theme="padiem-home"] .sidebar .side-item:not(:disabled):hover,
+html[data-theme="padiem-home"] .sidebar .recent-item:hover {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+}
+
+/* The composer note is useful first-use/help copy, not decorative microcopy.
+ * Keep it legible for the parent-generation usability target on both bright
+ * themes without changing the dark/cinematic typography contract.
+ */
+html[data-theme="light"] .composer-note,
+html[data-theme="padiem-home"] .composer-note {
+  font-size: 12px !important;
+  line-height: 1.5;
+}
