@@ -139,6 +139,73 @@ async def test_progressive_stream_yields_multiple_visible_deltas_then_done() -> 
 
 
 @pytest.mark.asyncio
+async def test_stream_finishes_on_finish_reason_without_done_marker() -> None:
+    secret = FakeSecretBinding()
+    sse = (
+        'data: {"choices":[{"delta":{"content":"완료"}}]}\n\n'
+        'data: {"choices":[{"delta":{},"finish_reason":"stop"}]}\n\n'
+    )
+
+    client = PoolsideUXTestClient(
+        secret,
+        transport=httpx.MockTransport(
+            lambda _request: httpx.Response(200, headers={"content-type": "text/event-stream"}, content=sse.encode("utf-8"))
+        ),
+    )
+    events = [event async for event in client.stream_text_auto([{"role": "user", "content": "finish reason 테스트"}])]
+
+    assert [event.delta_content for event in events if event.delta_content] == ["완료"]
+    assert events[-1].done is True
+
+
+@pytest.mark.asyncio
+async def test_incomplete_stream_fails_closed_without_done_event() -> None:
+    secret = FakeSecretBinding()
+    sse = 'data: {"choices":[{"delta":{"content":"중간 답변"}}]}\n\n'
+    client = PoolsideUXTestClient(
+        secret,
+        transport=httpx.MockTransport(
+            lambda _request: httpx.Response(200, headers={"content-type": "text/event-stream"}, content=sse.encode("utf-8"))
+        ),
+    )
+
+    events = []
+    with pytest.raises(ChatRuntimeError) as caught:
+        async for event in client.stream_text_auto([{"role": "user", "content": "EOF 테스트"}]):
+            events.append(event)
+
+    assert caught.value.code == "incomplete_upstream_stream"
+    assert all(not event.done for event in events)
+    assert caught.value.__cause__ is None
+
+
+@pytest.mark.asyncio
+async def test_browser_stream_exposes_incomplete_upstream_as_sse_error() -> None:
+    sse = 'data: {"choices":[{"delta":{"content":"브라우저에 보일 일부 답변"}}]}\n\n'
+    direct = PoolsideUXTestClient(
+        FakeSecretBinding(),
+        transport=httpx.MockTransport(
+            lambda _request: httpx.Response(200, headers={"content-type": "text/event-stream"}, content=sse.encode("utf-8"))
+        ),
+    )
+    app = create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false"))
+    app.state.b14_client = direct
+    app.state.usage_gate_enforced = False
+
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://preview.test") as browser:
+        response = await browser.post(
+            "/api/chat/stream",
+            json={"messages": [{"role": "user", "content": "브라우저 스트림 테스트"}]},
+        )
+
+    assert response.status_code == 200
+    assert response.text.count("event: delta") == 1
+    assert response.text.count("event: error") == 1
+    assert '"code":"incomplete_upstream_stream"' in response.text
+    assert "event: done" not in response.text
+
+
+@pytest.mark.asyncio
 async def test_provider_http_error_is_bounded_and_does_not_echo_credential() -> None:
     secret_value = "unit-test-credential-never-echo"
     secret = FakeSecretBinding(secret_value)

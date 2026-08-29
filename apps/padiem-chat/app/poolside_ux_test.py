@@ -270,6 +270,7 @@ class PoolsideUXTestClient:
             stream=True,
         )
         visible = False
+        terminal_success = False
 
         try:
             async with httpx.AsyncClient(
@@ -286,15 +287,19 @@ class PoolsideUXTestClient:
                             continue
                         data = text[5:].strip()
                         if data == "[DONE]":
+                            terminal_success = True
                             break
                         try:
                             event = json.loads(data)
                             choices = event.get("choices") if isinstance(event, dict) else None
                             first = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
+                            finish_reason = first.get("finish_reason") if isinstance(first, dict) else None
                             delta = first.get("delta") if isinstance(first, dict) else None
                             content = delta.get("content") if isinstance(delta, dict) else None
                         except ValueError:
                             continue
+                        if finish_reason is not None:
+                            terminal_success = True
                         if isinstance(content, str) and content:
                             visible = True
                             yield ChatStreamEvent(delta_content=content)
@@ -315,4 +320,10 @@ class PoolsideUXTestClient:
 
         if not visible:
             raise ChatRuntimeError(502, "empty_upstream_answer", "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요.")
+        if not terminal_success:
+            raise ChatRuntimeError(
+                502,
+                "incomplete_upstream_stream",
+                "AI 연결이 끝까지 완료되지 않았습니다. 다시 시도해 주세요.",
+            )
         yield ChatStreamEvent(done=True)
