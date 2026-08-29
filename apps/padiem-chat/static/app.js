@@ -71,7 +71,7 @@
     [".csv", "text/csv"],
     [".json", "application/json"],
   ]);
-  const DEFAULT_NOTE = "사진과 TXT·Markdown·CSV·JSON 문서 한 개를 첨부할 수 있습니다. PDF·Office 문서는 아직 지원하지 않습니다.";
+  const DEFAULT_NOTE = "사진 또는 문서 파일 한 개를 첨부할 수 있습니다.";
 
   let messages = [];
   let inFlight = false;
