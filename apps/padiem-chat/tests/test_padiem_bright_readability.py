@@ -31,6 +31,17 @@ def test_bright_sidebar_foregrounds_override_dark_foundation_contract():
     assert "font-size: 12px !important;" in READABILITY_CSS
 
 
+def test_bright_composer_active_tools_override_dark_foreground_contract():
+    for theme in ("light", "padiem-home"):
+        prefix = f'html[data-theme="{theme}"]'
+        assert f"{prefix} .composer .tool-button:not(:disabled)" in READABILITY_CSS
+        assert f"{prefix} .composer .tool-button:hover:not(:disabled)" in READABILITY_CSS
+        assert f'{prefix} .composer .tool-button[aria-pressed="true"]:not(:disabled)' in READABILITY_CSS
+
+    assert "background: var(--accent-soft) !important;" in READABILITY_CSS
+    assert "border-color: var(--line) !important;" in READABILITY_CSS
+
+
 def test_bright_composer_help_copy_has_readability_floor():
     for theme in ("light", "padiem-home"):
         assert f'html[data-theme="{theme}"] .composer-note' in READABILITY_CSS
