@@ -5,8 +5,8 @@ test('B1 owner review routes to canonical Production and remains unapproved', as
   await page.waitForTimeout(180);
 
   const row = page.locator('.biz-item[data-biz-number="1"]');
-  await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REJECTED');
-  await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 재설계');
+  await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REVIEW_REQUIRED');
+  await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 검토 필요');
 
   const link = row.locator('.biz-launch-open');
   await expect(link).toHaveCount(1);
@@ -24,6 +24,6 @@ test('B1 owner review routes to canonical Production and remains unapproved', as
 
   expect(identity).toEqual({
     surfaceUrl: 'https://ai-revenue-final-review-b01.pages.dev/',
-    ownerUiStatus: 'OWNER_REJECTED',
+    ownerUiStatus: 'OWNER_REVIEW_REQUIRED',
   });
 });
