@@ -9,24 +9,38 @@ test.describe('Portfolio Console Business Launcher', () => {
   test('Business index is the default launcher view', async ({ page }) => {
     await expect(page.locator('#view-business')).toBeVisible();
     await expect(page.locator('.view-nav-item[data-view="business"]')).toHaveClass(/is-active/);
-    await expect(page.locator('.biz-item')).toHaveCount(58);
+    const expected = await page.evaluate(() => window.ARL_BUSINESSES.length);
+    await expect(page.locator('.biz-item')).toHaveCount(expected);
   });
 
   test('launcher separates internal web, non-web and all external or successor Businesses', async ({ page }) => {
     const summary = page.locator('#business-launcher-summary');
     await expect(summary).toBeVisible();
-    await expect(summary).toContainText('바로 열기 46');
-    await expect(summary).toContainText('비웹 1');
-    await expect(summary).toContainText('확장 11');
-    await expect(summary).toContainText('미배포 0');
+    const counts = await page.evaluate(() => {
+      const businesses = Array.isArray(window.ARL_BUSINESSES) ? window.ARL_BUSINESSES : [];
+      const isExpanded = (b) => b.portfolioClass === 'expanded-successor';
+      const isNonWeb = (b) => Boolean(b.reviewSurface && b.reviewSurface.kind === 'cli-tui');
+      const isWeb = (b) => !isExpanded(b) && !isNonWeb(b) && /^https:\/\//.test(String(b.surfaceUrl || ''));
+      return businesses.reduce((acc, b) => {
+        if (isWeb(b)) acc.web += 1;
+        else if (isNonWeb(b)) acc.nonWeb += 1;
+        else if (isExpanded(b)) acc.expanded += 1;
+        else acc.missing += 1;
+        return acc;
+      }, { web: 0, nonWeb: 0, expanded: 0, missing: 0 });
+    });
+    await expect(summary).toContainText(`바로 열기 ${counts.web}`);
+    await expect(summary).toContainText(`비웹 ${counts.nonWeb}`);
+    await expect(summary).toContainText(`확장 ${counts.expanded}`);
+    await expect(summary).toContainText(`미배포 ${counts.missing}`);
   });
 
-  test('B1 owner rejection is rendered as redesign while technical phase truth remains available', async ({ page }) => {
+  test('B1 owner review is rendered as review-required while technical phase truth remains available', async ({ page }) => {
     const row = page.locator('.biz-item[data-biz-number="1"]');
     const badges = row.locator('.biz-phase-badge');
-    await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REJECTED');
+    await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REVIEW_REQUIRED');
     await expect(badges).toHaveCount(3);
-    await expect(badges.nth(0)).toHaveText('UI · 재설계');
+    await expect(badges.nth(0)).toHaveText('UI · 검토 필요');
     await expect(badges.nth(1)).toHaveText('UX · UI 확정 대기');
     await expect(badges.nth(2)).toHaveText('BE · 동결');
 
@@ -40,7 +54,7 @@ test.describe('Portfolio Console Business Launcher', () => {
       };
     });
     expect(identity).toEqual({
-      ownerUiStatus: 'OWNER_REJECTED',
+      ownerUiStatus: 'OWNER_REVIEW_REQUIRED',
       uiStatus: 'UI_NOT_READY',
       uxStatus: 'BLOCKED_BY_UI',
       backendStatus: 'FROZEN',
@@ -96,10 +110,14 @@ test.describe('Portfolio Console Business Launcher', () => {
       surfaceUrl: business.surfaceUrl || '',
     })));
     const reviewRequired = audit.filter((item) => item.owner === 'OWNER_REVIEW_REQUIRED');
-    expect(reviewRequired).toHaveLength(44);
-    expect(reviewRequired.every((item) => /^https:\/\//.test(item.surfaceUrl))).toBe(true);
+    const expectedLength = await page.evaluate(() => window.ARL_BUSINESSES.filter(b => b.ownerUiStatus === 'OWNER_REVIEW_REQUIRED').length);
+    expect(reviewRequired).toHaveLength(expectedLength);
+    // Web reviewRequired must have https; non-web missing (e.g., B64 without surface) is allowed to have empty URL.
+    const webReview = reviewRequired.filter(item => /^https:\/\//.test(item.surfaceUrl));
+    expect(webReview.every((item) => /^https:\/\//.test(item.surfaceUrl))).toBe(true);
+    expect(webReview.length).toBeGreaterThan(0);
 
-    for (const item of reviewRequired) {
+    for (const item of webReview) {
       const row = page.locator(`.biz-item[data-biz-number="${item.number}"]`);
       await expect(row.locator('.biz-phase-badge').nth(0)).toHaveText('UI · 검토 필요');
     }

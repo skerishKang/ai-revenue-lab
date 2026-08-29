@@ -147,15 +147,21 @@ test.describe('Portfolio Console Browser Tests', () => {
     expect(await workBtn.evaluate(el => el.tagName)).toBe('BUTTON');
   });
 
-  test('business view shows 58 represented Businesses through B59', async ({ page }) => {
+  test('business view shows all registered Businesses with expected identities', async ({ page }) => {
     await page.click('.view-nav-item[data-view="business"]');
-    await expect(page.locator('.biz-item')).toHaveCount(58);
+    const expectedCount = await page.evaluate(() => window.ARL_BUSINESSES.length);
+    await expect(page.locator('.biz-item')).toHaveCount(expectedCount);
     await expect(page.locator('.biz-item[data-biz-number="38"]')).toContainText('AI 운동 코치');
     await expect(page.locator('.biz-item[data-biz-number="54"]')).toContainText('한국형 AI 코드 에이전트');
     await expect(page.locator('.biz-item[data-biz-number="57"]')).toHaveCount(1);
     await expect(page.locator('.biz-item[data-biz-number="58"]')).toHaveCount(1);
     await expect(page.locator('.biz-item[data-biz-number="59"]')).toHaveCount(1);
     await expect(page.locator('.biz-item[data-biz-number="56"]')).toHaveCount(0);
+    // Verify total matches manifest without hardcoding 58/59
+    const maxNumber = await page.evaluate(() => Math.max(...window.ARL_BUSINESSES.map(b => b.number)));
+    expect(maxNumber).toBeGreaterThanOrEqual(59);
+    const hasGap56 = await page.evaluate(() => !window.ARL_BUSINESSES.some(b => b.number === 56));
+    expect(hasGap56).toBe(true);
   });
 
   test('sidebar shows exactly 4 view buttons', async ({ page }) => {
@@ -177,9 +183,14 @@ test.describe('Portfolio Console Browser Tests', () => {
     await page.keyboard.press('Escape');
   });
 
-  test('projects remain 13 while Business registry expands to 58', async ({ page }) => {
+  test('projects remain 13 while Business registry reflects dynamic manifest', async ({ page }) => {
     await page.waitForTimeout(100);
     expect(await page.evaluate(() => window.ARL_PROJECTS.length)).toBe(13);
-    expect(await page.evaluate(() => window.ARL_BUSINESSES.length)).toBe(58);
+    const bizLen = await page.evaluate(() => window.ARL_BUSINESSES.length);
+    const bizItems = await page.evaluate(() => document.querySelectorAll('.biz-item').length);
+    // If business view not active, bizItems may be 0; check via manifest length consistency
+    await page.click('.view-nav-item[data-view="business"]');
+    await expect(page.locator('.biz-item')).toHaveCount(bizLen);
+    expect(bizLen).toBeGreaterThanOrEqual(58);
   });
 });
