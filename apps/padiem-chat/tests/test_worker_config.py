@@ -176,27 +176,31 @@ def test_security_headers_and_api_auth_no_store():
     assert response_headers_for_path("/health")["Cache-Control"] == "no-store"
 
 
-def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
+def test_worker_package_is_mock_first_static_bound_guarded_and_no_fake_d1_id():
     root = Path(__file__).resolve().parents[1]
     wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
     worker = (root / "worker.py").read_text(encoding="utf-8")
+    guarded = (root / "worker_guarded.py").read_text(encoding="utf-8")
     assert 'name = "padiem-chat"' in wrangler
-    assert 'main = "worker.py"' in wrangler
+    assert 'main = "worker_guarded.py"' in wrangler
     assert 'compatibility_flags = ["python_workers"]' in wrangler
     assert 'directory = "static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
     assert "database_id" not in wrangler
-    assert "settings_from_worker_bindings(self.env)" in worker
-    assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
-    assert "D1UsageCounterStore" in worker
-    assert "UsageGate(settings, usage_store)" in worker
-    assert "usage_gate_enforced = True" in worker
-    assert "create_app(settings=settings, history_store=history_store)" in worker
-    assert "OPENROUTER_API_KEY" not in worker
-    assert "PADIEM_CHAT_B14_BASE_URL" not in worker
-    assert "FIRECRAWL_API_KEY" not in worker
-    assert "GOOGLE_CLIENT_SECRET" not in worker
+    assert "CloudflareB14ServiceTransport" in worker
+    assert "CloudflareB14StreamingServiceTransport" in worker
+    assert "settings_from_worker_bindings(self.env)" in guarded
+    assert "D1HistoryStore" in guarded and "PADIEM_CHAT_DB" not in guarded
+    assert "D1UsageCounterStore" in guarded
+    assert "UsageGate(settings, usage_store)" in guarded
+    assert "usage_gate_enforced = True" in guarded
+    assert "create_app(settings=settings, history_store=history_store)" in guarded
+    assert "guard_app(starlette_app)" in guarded
+    assert "OPENROUTER_API_KEY" not in guarded
+    assert "PADIEM_CHAT_B14_BASE_URL" not in guarded
+    assert "FIRECRAWL_API_KEY" not in guarded
+    assert "GOOGLE_CLIENT_SECRET" not in guarded
 
 
 def test_phase1_css_blob_content_remains_byte_equal():
