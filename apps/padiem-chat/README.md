@@ -7,12 +7,12 @@ Padiem Chat is Padiem's Korean-first, general-user AI front door.
 ```text
 Browser / API
 → Padiem Chat product boundary
-→ Padiem AI Core ExecutionRuntime / StreamingExecutionRuntime
+→ Padiem AI Core execution runtimes
 → Business 14
 → selected provider / model
 ```
 
-Padiem Chat owns the consumer-facing chat, continuity, Projects, bounded user-reference context, Skill semantics and product-profile state. Padiem AI Core owns the product-neutral execution request/result, streaming, normalized error and reusable evidence/runtime contracts. Business 14 owns provider adapters, provider keys, model catalogs, exact routing and upstream transport.
+Padiem Chat owns the consumer-facing chat, continuity, Projects, bounded user-reference context, Skill semantics and product-profile state. Padiem AI Core owns product-neutral execution requests/results, completed/streaming/multimodal execution assembly, normalized errors and reusable evidence/runtime contracts. Business 14 owns provider adapters, provider keys, model catalogs, exact routing and upstream transport.
 
 The B62 `LOW` / `MEDIUM` / `HIGH` product profiles are currently **UNASSIGNED** and Provider/model selection remains deferred. An unassigned product profile must not be documented or treated as a pretend executable Provider/model route.
 
@@ -39,9 +39,21 @@ The browser never supplies a provider key or an upstream URL. For ordinary text 
 
 B62 ordinary text does **not** currently use Business 14 `b14/auto` as an active routing decision. The historical `stream_text_auto` method name is a compatibility entrypoint: B62 resolves its own product policy first, and Provider/model assignment remains deferred until the relevant authority explicitly assigns it.
 
-### Bounded multimodal exception
+### Bounded image execution through Core
 
-Image attachment completion remains a documented narrow exception while the higher-level Core execution request is text-only. A single bounded image may use Core's low-level B14 multimodal transport primitive behind the B62 adapter. This exception does not authorize direct B14 request assembly for ordinary text chat, does not select a Provider/model, and must not widen without a separately reviewed reusable multimodal contract.
+The former B62 low-level multimodal exception is closed by #1068. A single validated image-bearing request is converted by B62 into product-neutral Core inputs and executed through:
+
+```text
+B62 ImageAttachment + product Skill/profile
+→ MultimodalExecutionRequest
+→ MultimodalExecutionRuntime
+→ B14MultimodalChatRequest
+→ Business 14
+```
+
+B62 still owns attachment UX, the `ImageAttachment` product type, the image-capability fail-closed decision, and Korean user-facing errors. Core owns system-instruction composition, normalized model/routing policy, high-level multimodal execution metadata and safe execution errors. The existing low-level Core/B14 multimodal validator remains the single image payload validator.
+
+This boundary does **not** assign an image-capable Provider/model. While the current product profile is unassigned or does not prove image capability, live image completion still fails closed before Business 14/provider dispatch.
 
 ## Attachments and document boundary
 
@@ -78,7 +90,7 @@ Saved Outputs persist only user-selected assistant answer text. Current limits a
 
 Every completed assistant answer may be copied or downloaded locally as UTF-8 `.txt`. The `저장` action and Saved Outputs sidebar are exposed only when authenticated D1 persistence is actually available. Saved Outputs are **not automatically injected into future chats, Projects or model context**. Saving an answer is therefore a library action, not hidden memory.
 
-Project/file/output access is owner-scoped server-side. Browser-supplied project, conversation, file or output identifiers never bypass ownership checks. Project instructions and file content are subordinate to core security/tool rules and do not change Business 14 routing authority.
+Project/file/output access is owner-scoped server-side. Browser-supplied project, conversation, file or output identifiers never bypass ownership checks. Project instructions and file content are subordinate to Core security/tool rules and do not change Business 14 routing authority.
 
 Voice/STT/TTS, image generation and PDF/DOCX/PPTX export are not claimed by this runtime. They remain deferred until a real, separately reviewed execution contract exists.
 
@@ -116,4 +128,4 @@ Production auth/history/Projects/project files/Saved Outputs also require the re
 python -m pytest -q
 ```
 
-The test suite is deterministic and uses `httpx.MockTransport`; no provider network call is required.
+The test suite is deterministic and uses mock/in-process transports; no provider network call is required.
