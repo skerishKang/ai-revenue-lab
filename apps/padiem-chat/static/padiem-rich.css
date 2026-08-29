@@ -332,8 +332,8 @@
   }
 
   .app-shell[data-state="chat"] .assistant-content {
-    font-size: 15px;
-    line-height: 1.73;
+    font-size: 16px;
+    line-height: 1.72;
   }
 
   .rich-response-heading {
