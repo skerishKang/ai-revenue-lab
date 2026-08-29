@@ -31,7 +31,27 @@ async def _style(page: Page, selector: str) -> dict[str, str] | None:
     if await locator.count() == 0 or not await locator.is_visible():
         return None
     return await locator.evaluate(
-        "el => { const s = getComputedStyle(el); return { color: s.color, backgroundColor: s.backgroundColor, fontSize: s.fontSize, opacity: s.opacity }; }"
+        "el => { const s = getComputedStyle(el); return { color: s.color, backgroundColor: s.backgroundColor, backgroundImage: s.backgroundImage, boxShadow: s.boxShadow, fontSize: s.fontSize, opacity: s.opacity }; }"
+    )
+
+
+async def _visible_theme_option_count(page: Page) -> int:
+    return await page.locator(".theme-picker .theme-option:visible").count()
+
+
+async def _headline_line_boxes(page: Page) -> int:
+    locator = page.locator("#emptyState h1")
+    return await locator.evaluate(
+        """el => {
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const rects = Array.from(range.getClientRects()).filter(r => r.width > 1 && r.height > 1);
+          const tops = [];
+          for (const rect of rects) {
+            if (!tops.some(top => Math.abs(top - rect.top) < 2)) tops.push(rect.top);
+          }
+          return tops.length;
+        }"""
     )
 
 
@@ -74,11 +94,31 @@ async def _capture_surface(
                 f"active File tool retained dark-theme foreground for {theme}/{surface}: {active_tool}"
             )
 
+    sidebar_heading = await _style(page, "#recentTitle")
+    composer_note = await _style(page, ".composer-note")
+    if sidebar_heading is None or sidebar_heading["fontSize"] != "12px":
+        raise AssertionError(
+            f"sidebar heading readability floor failed for {theme}/{surface}: {sidebar_heading}"
+        )
+    if composer_note is None or composer_note["fontSize"] != "12px":
+        raise AssertionError(
+            f"composer-note readability floor failed for {theme}/{surface}: {composer_note}"
+        )
+
+    headline_lines = await _headline_line_boxes(page)
+    if mobile and theme == "light" and headline_lines != 2:
+        raise AssertionError(
+            f"Light mobile home headline should render as 2 lines, got {headline_lines}"
+        )
+
     home_metrics = {
-        "sidebar_heading": await _style(page, "#recentTitle"),
+        "sidebar_heading": sidebar_heading,
         "sidebar_item": await _style(page, ".recent-item"),
         "active_file_tool": active_tool,
-        "composer_note": await _style(page, ".composer-note"),
+        "composer_note": composer_note,
+        "headline_line_boxes": headline_lines,
+        "body": await _style(page, "body"),
+        "composer": await _style(page, ".composer"),
     }
     await page.screenshot(path=str(OUT_DIR / f"{prefix}-home.png"), full_page=True)
 
@@ -114,12 +154,52 @@ async def _capture_surface(
     # Let message-entry animation and layout settle before visual evidence.
     await page.wait_for_timeout(700)
     await _assert_no_horizontal_overflow(page, f"{prefix}-chat")
+
+    compact_theme_options = None
+    expanded_theme_options = None
+    if mobile:
+        # Chat chrome should collapse to the current theme only.
+        await page.locator("#messageInput").focus()
+        await page.wait_for_timeout(50)
+        compact_theme_options = await _visible_theme_option_count(page)
+        if compact_theme_options != 1:
+            raise AssertionError(
+                f"mobile chat theme picker should show 1 compact option for {theme}, got {compact_theme_options}"
+            )
+
+        # Focusing/tapping the current option must expand the existing four-way picker.
+        selected_option = page.locator(f'[data-theme-value="{theme}"]')
+        await selected_option.focus()
+        await page.wait_for_timeout(50)
+        expanded_theme_options = await _visible_theme_option_count(page)
+        if expanded_theme_options != len(THEMES):
+            raise AssertionError(
+                f"mobile chat theme picker should expand to {len(THEMES)} options for {theme}, got {expanded_theme_options}"
+            )
+        await _assert_no_horizontal_overflow(page, f"{prefix}-chat-theme-expanded")
+
+        # Restore compact state before the canonical chat screenshot.
+        await page.locator("#messageInput").focus()
+        await page.wait_for_timeout(50)
+        if await _visible_theme_option_count(page) != 1:
+            raise AssertionError(f"mobile chat theme picker did not collapse again for {theme}")
+
+    chat_composer_note = await _style(page, ".composer-note")
+    if chat_composer_note is None or chat_composer_note["fontSize"] != "12px":
+        raise AssertionError(
+            f"chat composer-note readability floor failed for {theme}/{surface}: {chat_composer_note}"
+        )
+
     chat_metrics = {
         "assistant_text": await _style(page, ".assistant-content"),
         "assistant_meta": await _style(page, ".assistant-meta"),
         "active_file_tool": await _style(page, "#attachmentButton"),
-        "composer_note": await _style(page, ".composer-note"),
+        "composer_note": chat_composer_note,
         "user_bubble": await _style(page, ".message-bubble"),
+        "body": await _style(page, "body"),
+        "composer": await _style(page, ".composer"),
+        "compact_theme_options": compact_theme_options,
+        "expanded_theme_options": expanded_theme_options,
     }
     await page.screenshot(path=str(OUT_DIR / f"{prefix}-chat.png"), full_page=True)
 
@@ -175,6 +255,14 @@ async def main() -> None:
         finally:
             await browser.close()
 
+    dark_home = report["themes"]["dark"]["desktop"]["home_metrics"]
+    cinematic_home = report["themes"]["cinematic"]["desktop"]["home_metrics"]
+    if dark_home["body"]["backgroundImage"] == cinematic_home["body"]["backgroundImage"]:
+        raise AssertionError("Cinematic body atmosphere is not distinct from neutral Dark")
+    if dark_home["composer"]["backgroundImage"] == cinematic_home["composer"]["backgroundImage"]:
+        raise AssertionError("Cinematic composer surface is not distinct from neutral Dark")
+
+    report["cinematic_distinct_from_dark"] = True
     report["status"] = "PASS"
     (OUT_DIR / "theme-report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
