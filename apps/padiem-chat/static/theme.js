@@ -281,12 +281,16 @@
     };
   }
 
+  // Install synchronously while theme.js is evaluated. search-sources.js and
+  // other feature layers load later and intentionally wrap this guarded fetch.
+  // Installing again on DOMContentLoaded would clobber those feature wrappers.
+  installFetchGuard();
+
   function init(){
     ensureStyles();
     dialogParts=buildDialog();
     installPicker();
     installContextObserver();
-    installFetchGuard();
     const newChat=document.getElementById("newChatButton");
     if(newChat) newChat.addEventListener("click",resetForNewConversation);
     window.__padiemModelProfile={
