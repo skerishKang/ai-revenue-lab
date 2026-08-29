@@ -26,6 +26,19 @@ def test_high_profile_ui_is_explicit_versioned_and_never_persisted():
     assert ".high-contributor-dialog" in css
 
 
+def test_profile_fetch_guard_installs_before_later_feature_wrappers():
+    root = Path(__file__).resolve().parents[1]
+    theme = (root / "static/theme.js").read_text(encoding="utf-8")
+    marker = "// Install synchronously while theme.js is evaluated."
+    assert marker in theme
+    marker_index = theme.index(marker)
+    immediate_install = theme.index("installFetchGuard();", marker_index)
+    init_index = theme.index("function init(){", immediate_install)
+    assert immediate_install < init_index
+    init_block = theme[init_index:]
+    assert "installContextObserver();\n    installFetchGuard();" not in init_block
+
+
 def test_profile_ui_uses_dom_construction_not_html_injection():
     root = Path(__file__).resolve().parents[1]
     theme = (root / "static/theme.js").read_text(encoding="utf-8")
