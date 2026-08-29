@@ -113,7 +113,7 @@
           <textarea id="messageInput" rows="1" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
-              <input id="attachmentFileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp,text/plain,text/markdown,text/csv,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.txt,.md,.markdown,.csv,.json,.pdf,.docx,.pptx,.xlsx" hidden />
+              <input id="attachmentFileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp,text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,.pdf,.docx,.pptx,.xlsx" hidden />
               <button type="button" class="tool-button" id="attachmentButton" title="사진 또는 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서 한 개를 첨부합니다"><span aria-hidden="true">＋</span><span>파일</span></button>
               <button type="button" class="tool-button" disabled aria-disabled="true" title="웹 검색은 준비 중입니다"><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
               <button type="button" class="tool-button" id="deepResearchButton" disabled aria-disabled="true" aria-pressed="false" title="심층 리서치는 현재 사용할 수 없습니다"><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
@@ -146,7 +146,7 @@
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
         <p class="project-files-empty" id="projectFilesEmpty" hidden>저장된 프로젝트 파일이 없습니다.</p>
-        <p class="project-files-note">저장한 파일은 이 프로젝트의 AI 답변에 참고 자료로 사용됩니다. PDF·DOCX·PPTX·XLSX는 프로젝트 저장 파일로는 아직 지원하지 않습니다.</p>
+        <p class="project-files-note">프로젝트 파일 저장 기능에서는 PDF·DOCX는 아직 지원하지 않습니다. PPTX·XLSX를 포함한 PDF·Office 문서는 아직 지원하지 않습니다.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
