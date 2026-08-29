@@ -6,6 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import pytest
 
 from app.ooxml_stdlib_probe import (
+    MAX_ARCHIVE_BYTES,
     MAX_ENTRIES,
     MAX_ENTRY_UNCOMPRESSED_BYTES,
     MAX_TOTAL_UNCOMPRESSED_BYTES,
@@ -26,6 +27,17 @@ def _zip_bytes(entries: dict[str, bytes]) -> bytes:
         for name, payload in entries.items():
             archive.writestr(name, payload)
     return output.getvalue()
+
+
+def _mark_first_entry_encrypted(payload: bytes) -> bytes:
+    data = bytearray(payload)
+    for signature, flag_offset in ((b"PK\x03\x04", 6), (b"PK\x01\x02", 8)):
+        index = data.find(signature)
+        assert index >= 0
+        start = index + flag_offset
+        flags = int.from_bytes(data[start : start + 2], "little") | 0x1
+        data[start : start + 2] = flags.to_bytes(2, "little")
+    return bytes(data)
 
 
 def _docx_xml(text: str) -> bytes:
@@ -72,6 +84,12 @@ def test_malformed_zip_fails_closed(extractor) -> None:
         extractor(b"not-a-zip")
 
 
+def test_archive_byte_limit_fails_closed_before_zip_parsing() -> None:
+    payload = b"x" * (MAX_ARCHIVE_BYTES + 1)
+    with pytest.raises(OOXMLCompatibilityError, match="archive size out of bounds"):
+        extract_docx_text_stdlib(payload)
+
+
 def test_missing_docx_main_part_fails_closed() -> None:
     with pytest.raises(OOXMLCompatibilityError, match="missing OOXML part"):
         extract_docx_text_stdlib(_zip_bytes({"[Content_Types].xml": b"<Types/>"}))
@@ -93,6 +111,14 @@ def test_doctype_is_rejected() -> None:
         "word/document.xml": b'<!DOCTYPE x [<!ENTITY e "x">]><x>&e;</x>',
     })
     with pytest.raises(OOXMLCompatibilityError, match="DTDs are not supported"):
+        extract_docx_text_stdlib(payload)
+
+
+def test_encrypted_entry_is_rejected_before_read() -> None:
+    payload = _mark_first_entry_encrypted(
+        _zip_bytes({"word/document.xml": _docx_xml(DOCX_TEXT)})
+    )
+    with pytest.raises(OOXMLCompatibilityError, match="encrypted OOXML entries"):
         extract_docx_text_stdlib(payload)
 
 
