@@ -30,7 +30,7 @@ POOL_SIDE_MAX_CONTEXT_CHARS = 14_000
 POOL_SIDE_TEST_MAX_TOKENS = 2_400
 
 PRODUCTION_WORKER_HOST = "padiem-chat.charliekant.workers.dev"
-PREVIEW_HOST_SUFFIX = f"-padiem-chat.charliekant.workers.dev"
+PREVIEW_HOST_SUFFIX = "-padiem-chat.charliekant.workers.dev"
 
 
 class SecretStoreBinding(Protocol):
@@ -139,12 +139,14 @@ class PoolsideUXTestClient:
     async def _credential(self) -> str:
         try:
             raw = await self._secret_binding.get()
-        except Exception as exc:
+        except Exception:
+            # Do not chain a binding/provider exception: a connector or runtime
+            # exception may retain sensitive object state even when its message is safe.
             raise ChatRuntimeError(
                 503,
                 "test_provider_credential_unavailable",
                 "테스트 AI 연결 정보를 불러오지 못했습니다.",
-            ) from exc
+            ) from None
         value = str(raw or "").strip()
         if not value:
             raise ChatRuntimeError(
@@ -208,10 +210,19 @@ class PoolsideUXTestClient:
                 follow_redirects=False,
             ) as client:
                 response = await client.post(POOL_SIDE_CHAT_URL, headers=headers, json=payload)
-        except httpx.TimeoutException as exc:
-            raise ChatRuntimeError(504, "upstream_timeout", "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.") from exc
-        except httpx.HTTPError as exc:
-            raise ChatRuntimeError(502, "upstream_unavailable", "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.") from exc
+        except httpx.TimeoutException:
+            raise ChatRuntimeError(
+                504,
+                "upstream_timeout",
+                "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
+            ) from None
+        except httpx.HTTPError:
+            # Never chain an httpx request object carrying Authorization.
+            raise ChatRuntimeError(
+                502,
+                "upstream_unavailable",
+                "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+            ) from None
 
         if response.status_code != 200:
             raise _safe_http_error(response.status_code)
@@ -220,8 +231,12 @@ class PoolsideUXTestClient:
 
         try:
             answer = _extract_answer(response.json())
-        except (ValueError, json.JSONDecodeError) as exc:
-            raise ChatRuntimeError(502, "malformed_upstream", "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.") from exc
+        except ValueError:
+            raise ChatRuntimeError(
+                502,
+                "malformed_upstream",
+                "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
+            ) from None
 
         return {
             "answer": answer,
@@ -278,17 +293,25 @@ class PoolsideUXTestClient:
                             first = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else None
                             delta = first.get("delta") if isinstance(first, dict) else None
                             content = delta.get("content") if isinstance(delta, dict) else None
-                        except (ValueError, json.JSONDecodeError):
+                        except ValueError:
                             continue
                         if isinstance(content, str) and content:
                             visible = True
                             yield ChatStreamEvent(delta_content=content)
         except ChatRuntimeError:
             raise
-        except httpx.TimeoutException as exc:
-            raise ChatRuntimeError(504, "upstream_timeout", "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.") from exc
-        except httpx.HTTPError as exc:
-            raise ChatRuntimeError(502, "upstream_unavailable", "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.") from exc
+        except httpx.TimeoutException:
+            raise ChatRuntimeError(
+                504,
+                "upstream_timeout",
+                "답변 준비가 오래 걸리고 있습니다. 잠시 후 다시 시도해 주세요.",
+            ) from None
+        except httpx.HTTPError:
+            raise ChatRuntimeError(
+                502,
+                "upstream_unavailable",
+                "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.",
+            ) from None
 
         if not visible:
             raise ChatRuntimeError(502, "empty_upstream_answer", "AI가 표시할 답변을 만들지 못했습니다. 다시 시도해 주세요.")
