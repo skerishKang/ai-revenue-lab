@@ -7,7 +7,11 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "business-manifest.js"
 IDENTITY_CORE = ROOT / "business-identity-core.js"
 
-EXPECTED_NUMBERS = [*range(1, 56), 57, 58, 59]
+# Numbers that must always remain registered through the B59 era, with B56 as
+# the single intentional historical gap. Later valid sparse registrations
+# (B60+) may extend the registry above this floor, but must never duplicate,
+# reorder, or insert a new number at or below B59.
+REQUIRED_NUMBERS_THROUGH_59 = [*range(1, 56), 57, 58, 59]
 
 
 class BusinessRegistryTests(unittest.TestCase):
@@ -32,10 +36,18 @@ class BusinessRegistryTests(unittest.TestCase):
 
     def test_registry_has_exact_ordered_unique_numbers_through_fiftynine_with_gap_56(self) -> None:
         numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.script)]
-        self.assertEqual(numbers, EXPECTED_NUMBERS)
-        self.assertEqual(len(numbers), 58)
+        # Ordered and unique: strictly increasing, no duplicates.
+        self.assertEqual(numbers, sorted(numbers))
         self.assertEqual(len(numbers), len(set(numbers)))
+        # B56 remains the single intentional gap.
         self.assertNotIn(56, numbers)
+        # Every historical/canonical number through B59 is still registered.
+        self.assertTrue(set(REQUIRED_NUMBERS_THROUGH_59).issubset(set(numbers)))
+        # Only later sparse registrations (B60+) may extend the set beyond the
+        # required baseline; nothing new may appear at or below B59.
+        for number in numbers:
+            if number not in REQUIRED_NUMBERS_THROUGH_59:
+                self.assertGreater(number, 59, f"unexpected non-sparse Business number {number}")
 
     def test_reserved_slots_seven_through_twelve_exist_as_canonical(self) -> None:
         # B7-B12 were promoted from PROPOSED to CANONICAL in the 2026-08-15
@@ -67,8 +79,12 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIn('st:"review"', block)
 
     def test_identity_core_matches_manifest_number_contract(self) -> None:
+        manifest_numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.script)]
         numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.core_script)]
-        self.assertEqual(numbers, EXPECTED_NUMBERS)
+        # Identity core and manifest must agree on the exact same ordered
+        # number sequence, so a future sparse registration cannot land in one
+        # source but not the other.
+        self.assertEqual(numbers, manifest_numbers)
         self.assertNotIn(56, numbers)
 
     def test_manifest_defines_no_phase_status_literals_single_source(self) -> None:
