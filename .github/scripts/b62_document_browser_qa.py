@@ -174,8 +174,10 @@ async def _run_view(
     if not isinstance(text_document, dict) or any(text_document.get(k) != v for k, v in expected.items()):
         raise AssertionError(f"text document payload mismatch: {text_document!r}")
 
+    # Reset conversation state without coupling document QA to the mobile sidebar viewport.
+    await page.locator("#newChatButton").evaluate("(el) => el.click()")
+
     # New binary DOCX path: browser keeps bytes ephemeral and server performs extraction.
-    await page.locator("#newChatButton").click()
     binary_payload = _docx_bytes(BINARY_MARKER)
     await file_input.set_input_files(
         {"name": BINARY_NAME, "mimeType": BINARY_MIME, "buffer": binary_payload}
