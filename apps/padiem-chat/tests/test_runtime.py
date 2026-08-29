@@ -352,8 +352,9 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert 'data-skill="brainstorm"' in html
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
-    assert "TXT·Markdown·CSV·JSON" in html
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
+    assert "PDF·Office·텍스트 파일" in html
+    assert "사진 또는 문서 파일 한 개를 첨부할 수 있습니다." in html
+    assert "프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다" in html
     assert "웹 검색 · 준비 중" in html
     assert "모의 응답 · 실제 모델 호출 없음" in js
     assert 'fetch("/api/chat"' in js
