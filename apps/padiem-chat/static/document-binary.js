@@ -37,6 +37,7 @@
 
   const nativeFetch = window.fetch.bind(window);
   let pending = null;
+  let pendingTruthLabel = null;
 
   function extensionOf(name) {
     const lower = String(name || "").toLowerCase();
@@ -145,6 +146,12 @@
     });
   }
 
+  function truthLabel(data) {
+    const runtimeLabel = data.runtime === "mock" ? "모의 응답 · 실제 모델 호출 없음" : "AI 응답";
+    const skillTitle = data.skill && data.skill.id !== "auto" && typeof data.skill.title === "string" ? data.skill.title : "";
+    return skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
+  }
+
   function toSseResponse(data) {
     const done = { done: true };
     ["conversation_id", "project_id", "project", "project_files_used"].forEach((key) => {
@@ -161,6 +168,20 @@
         "Cache-Control": "no-cache, no-store",
       },
     });
+  }
+
+  if (messageList) {
+    const truthObserver = new MutationObserver(() => {
+      if (!pendingTruthLabel) return;
+      const assistants = messageList.querySelectorAll(".assistant-message");
+      const assistant = assistants[assistants.length - 1];
+      if (!assistant || assistant.querySelector(".typing") || !assistant.querySelector(".assistant-content p")) return;
+      const label = assistant.querySelector("[data-runtime-label]");
+      if (!label) return;
+      label.textContent = pendingTruthLabel;
+      pendingTruthLabel = null;
+    });
+    truthObserver.observe(messageList, { childList: true, subtree: true });
   }
 
   window.fetch = async function padiemDocumentAwareFetch(input, init) {
@@ -189,18 +210,14 @@
     headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
 
-    let response;
-    try {
-      response = await nativeFetch(completedChatUrl(input), { ...init, headers, body: JSON.stringify(payload) });
-    } catch (error) {
-      throw error;
-    }
+    const response = await nativeFetch(completedChatUrl(input), { ...init, headers, body: JSON.stringify(payload) });
     if (!response.ok) return response;
 
     const data = await response.json().catch(() => null);
     if (!data || typeof data.answer !== "string" || !data.answer) {
       return jsonError("AI 응답 형식을 확인하지 못했습니다.");
     }
+    pendingTruthLabel = truthLabel(data);
     if (pending === snapshot) clearPending();
     return toSseResponse(data);
   };
