@@ -39,11 +39,13 @@ def multimodal_content(text: str = "이 사진을 설명해줘"):
 
 def agent(**overrides) -> AgentProfile:
     values = {
-        "id": "vision-agent",
-        "title": "Vision",
+        "id": "image-agent",
+        "title": "Image",
         "description": "Product-neutral image analysis",
         "system_instruction": "Describe the image carefully.",
-        "task_type": "vision",
+        # Preserve the locked B14 task taxonomy. Image capability is expressed
+        # through required_capabilities rather than inventing a new task_type.
+        "task_type": "general",
         "optimize_for": "korean",
         "max_tokens": 700,
         "required_capabilities": ("chat", "image"),
@@ -162,7 +164,7 @@ def test_runtime_composes_one_server_system_message_and_preserves_image_payload(
     assert last["content"][1]["image_url"]["url"] == data_url()
     assert payload["model"] == "padiem-profile/medium-unassigned"
     assert payload["business14"] == {
-        "task_type": "vision",
+        "task_type": "general",
         "required_capabilities": ["chat", "image"],
         "optimize_for": "korean",
         "allow_external_fallback": False,
@@ -195,7 +197,7 @@ def test_runtime_preserves_observed_route_usage_and_metadata() -> None:
     assert output.route.request_id == "req-mm"
     assert output.metadata.trace_id == "trace-mm-1"
     assert output.metadata.session_id == "session-mm-1"
-    assert output.metadata.agent_id == "vision-agent"
+    assert output.metadata.agent_id == "image-agent"
     assert output.metadata.status is RunStatus.COMPLETED
     assert output.metadata.provider == "provider-x"
     assert output.metadata.model == "actual-x"
