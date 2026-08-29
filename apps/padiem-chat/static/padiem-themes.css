@@ -430,6 +430,38 @@ html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-wrap { ba
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea { color: #1a2230 !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer textarea::placeholder { color: #7a869a !important; }
 html[data-theme="padiem-home"] .app-shell[data-state="chat"] .composer-note { color: var(--muted) !important; }
+/* Bright chat — assistant answer subtree.
+   .rich-response (and answer-action / reference-note / route-details) hold an
+   !important near-white color from padiem-surfaces.css, loaded via @import
+   in padiem-cinematic-chat.css, so the parent .assistant-content alone was
+   insufficient — the actual paragraph and button text stayed near-white on
+   bright pages. Override the descendant that owns the visible glyphs with
+   bright-theme tokens, scoped to active chat so DARK / CINEMATIC remain
+   untouched. */
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response,
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-paragraph,
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-heading,
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-list,
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-quote,
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-source,
+html[data-theme="light"] .app-shell[data-state="chat"] .assistant-content .rich-response a,
+html[data-theme="light"] .app-shell[data-state="chat"] .answer-action,
+html[data-theme="light"] .app-shell[data-state="chat"] .reference-note,
+html[data-theme="light"] .app-shell[data-state="chat"] .route-details,
+html[data-theme="light"] .app-shell[data-state="chat"] .route-details summary,
+html[data-theme="light"] .app-shell[data-state="chat"] .route-details p { color: #1e1e22 !important; }
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-paragraph,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-heading,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-list,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-quote,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response .rich-response-source,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .assistant-content .rich-response a,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .answer-action,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .reference-note,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .route-details,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .route-details summary,
+html[data-theme="padiem-home"] .app-shell[data-state="chat"] .route-details p { color: #1e2a3a !important; }
 html[data-theme="padiem-home"] .composer textarea { color: #1a2230; }
 html[data-theme="padiem-home"] .composer textarea::placeholder { color: #7a869a; }
 html[data-theme="padiem-home"] .source-card,

@@ -143,3 +143,48 @@ def test_bright_theme_chat_state_regression():
     # Verify DARK and CINEMATIC are preserved (dark overrides still exist)
     assert 'html[data-theme="dark"] .composer-note' in THEMES_CSS
     assert 'html[data-theme="cinematic"] .composer-note' in THEMES_CSS
+
+
+def test_bright_theme_assistant_answer_subtree_contrast():
+    # Regression for the SECOND-CENTRAL-VERDICT defect class: parent
+    # .assistant-content computed dark on bright pages, but the descendant
+    # .rich-response (and answer-action / reference-note / route-details)
+    # inherited/won the !important near-white colour from
+    # padiem-surfaces.css (loaded via @import in padiem-cinematic-chat.css),
+    # so the actual paragraph and button text stayed near-white on LIGHT and
+    # PADIEM_HOME. The fix lives in the bright chat-state block and uses
+    # descendant selectors with !important so the surface !important rule
+    # loses on specificity.
+    bright_tokens = {"light": "#1e1e22", "padiem-home": "#1e2a3a"}
+    subtree = [
+        ".assistant-content .rich-response",
+        ".assistant-content .rich-response .rich-response-paragraph",
+        ".assistant-content .rich-response .rich-response-heading",
+        ".assistant-content .rich-response .rich-response-list",
+        ".assistant-content .rich-response .rich-response-quote",
+        ".answer-action",
+        ".reference-note",
+        ".route-details",
+    ]
+    for theme, token in bright_tokens.items():
+        prefix = f'html[data-theme="{theme}"] .app-shell[data-state="chat"]'
+        for sel in subtree:
+            needle = f"{prefix} {sel}"
+            assert needle in THEMES_CSS, f"missing bright answer-subtree override {needle}"
+        # Token colour must be the bright-theme readable one, with !important,
+        # and the colour must appear as a value inside that rule block.
+        # The simplest contract: a rule selector for the subtree exists AND the
+        # bright token hex appears after a { following that selector in the
+        # CSS string.
+        rule_needle = f"{prefix} {subtree[0]}"
+        idx = THEMES_CSS.find(rule_needle)
+        assert idx >= 0
+        block_end = THEMES_CSS.find("}", idx)
+        block = THEMES_CSS[idx:block_end]
+        assert token in block, f"expected {token} in bright override block for {theme}"
+        assert "!important" in block, f"bright override for {theme} must be !important"
+    # DARK and CINEMATIC must NOT have these descendant overrides — their
+    # dark rules must remain untouched so they stay visually unchanged.
+    for theme in ["dark", "cinematic"]:
+        forbidden = f'html[data-theme="{theme}"] .app-shell[data-state="chat"] .assistant-content .rich-response'
+        assert forbidden not in THEMES_CSS, f"unexpected dark answer-subtree override for {theme}"
