@@ -5,6 +5,7 @@ on:
     paths:
       - "apps/padiem-chat/**"
       - ".github/scripts/b62_conversation_export_browser_qa.py"
+      - ".github/scripts/b62_conversation_export_stream_browser_qa.py"
       - ".github/workflows/b62-conversation-export-browser-qa.yml"
   workflow_dispatch:
 
@@ -36,9 +37,9 @@ jobs:
       - name: Resolve B62
         run: uv sync --extra dev
       - name: Compile conversation export QA
-        run: uv run python -m py_compile ../../.github/scripts/b62_conversation_export_browser_qa.py
+        run: uv run python -m py_compile ../../.github/scripts/b62_conversation_export_browser_qa.py ../../.github/scripts/b62_conversation_export_stream_browser_qa.py
       - name: Run existing Saved Outputs contracts
-        run: uv run pytest -q tests/test_saved_outputs.py
+        run: uv run pytest -q tests/test_saved_outputs.py tests/test_conversation_export_stream_lifecycle.py
       - name: Install pinned Playwright
         run: uv pip install 'playwright==1.55.0'
       - name: Install Chromium runtime
@@ -58,11 +59,16 @@ jobs:
           exit 1
       - name: Desktop and mobile conversation export QA
         run: uv run python ../../.github/scripts/b62_conversation_export_browser_qa.py
-      - name: Print QA report
+      - name: Progressive stream lifecycle conversation export QA
+        run: uv run python ../../.github/scripts/b62_conversation_export_stream_browser_qa.py
+      - name: Print QA reports
         if: always()
         run: |
           if [ -f ../../.tmp/b62-conversation-export-browser-qa/report.json ]; then
             cat ../../.tmp/b62-conversation-export-browser-qa/report.json
+          fi
+          if [ -f ../../.tmp/b62-conversation-export-browser-qa/stream-lifecycle-report.json ]; then
+            cat ../../.tmp/b62-conversation-export-browser-qa/stream-lifecycle-report.json
           fi
       - name: Upload browser evidence
         if: always()
@@ -73,4 +79,4 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-# Branch-only acceptance gate for #1062 while the parallel P2 audit remains read-only.
+# Branch-only acceptance gate for #1062/#1096. No Production/provider calls.
