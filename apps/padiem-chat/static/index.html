@@ -86,7 +86,7 @@
           <div class="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>TXT·Markdown·CSV·JSON·PDF·DOCX·PPTX·XLSX</small></span></button>
+            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>PDF·Office·텍스트 파일</small></span></button>
             <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
@@ -121,7 +121,7 @@
             <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">사진과 TXT·Markdown·CSV·JSON·PDF·DOCX·PPTX·XLSX 문서 한 개를 첨부할 수 있습니다.</p>
+        <p class="composer-note" id="runtimeNote">사진 또는 문서 파일 한 개를 첨부할 수 있습니다.</p>
       </section>
     </main>
   </div>
@@ -146,7 +146,7 @@
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
         <p class="project-files-empty" id="projectFilesEmpty" hidden>저장된 프로젝트 파일이 없습니다.</p>
-        <p class="project-files-note">프로젝트 파일 저장 기능에서는 PDF·DOCX는 아직 지원하지 않습니다. PPTX·XLSX를 포함한 PDF·Office 문서는 아직 지원하지 않습니다.</p>
+        <p class="project-files-note">프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다. PDF·Office 문서는 채팅에 한 번 첨부해 사용할 수 있습니다.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
