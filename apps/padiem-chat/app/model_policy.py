@@ -4,24 +4,33 @@ from dataclasses import dataclass
 
 
 DEFAULT_CHAT_PROFILE = "medium"
-UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
+LOW_B14_MODEL_ID = "poolside/laguna-xs-2.1"
+MEDIUM_B14_MODEL_ID = "poolside/laguna-s-2.1"
+HIGH_B14_MODEL_ID = "opencode-zen/muse-spark-1.2-contributor-free"
 
-# Compatibility name retained for existing B62/Core call sites. This value is a
-# Padiem product-profile sentinel, not a B14 catalog model and not a Provider
-# selection. Until the TF explicitly assigns a real model, B14 must not treat it
-# as an executable catalog route.
-DEFAULT_B14_MODEL_ID = UNASSIGNED_B14_MODEL_ID
-
-# Historical slash syntax remains parseable only as a compatibility no-op. It
-# resolves to the same unassigned MEDIUM profile and therefore does not select
-# Poolside, Agnes, or any other Provider/model.
-MODEL_ALIASES: dict[str, str] = {
-    "/poolside": UNASSIGNED_B14_MODEL_ID,
+PROFILE_MODEL_IDS: dict[str, str] = {
+    "low": LOW_B14_MODEL_ID,
+    "medium": MEDIUM_B14_MODEL_ID,
+    "high": HIGH_B14_MODEL_ID,
 }
 
-# An unassigned product profile claims no concrete model capabilities.
+# Compatibility name retained for existing B62/Core call sites. The default
+# product profile is MEDIUM, which the owner explicitly assigned to Poolside
+# Laguna S 2.1 in P5 (#1083). B62 still never delegates profile choice to
+# b14/auto.
+DEFAULT_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
+
+# Historical slash syntax remains as a compatibility alias for MEDIUM. LOW/HIGH
+# are intentionally not exposed as slash commands yet: HIGH requires a visible
+# Contributor-data warning/acknowledgement before public selection is enabled.
+MODEL_ALIASES: dict[str, str] = {
+    "/poolside": MEDIUM_B14_MODEL_ID,
+}
+
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    UNASSIGNED_B14_MODEL_ID: frozenset(),
+    LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
+    MEDIUM_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
+    HIGH_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
 }
 
 
@@ -40,6 +49,22 @@ class ModelPolicyError(ValueError):
         super().__init__(message)
 
 
+def model_id_for_profile(profile: str) -> str:
+    """Return the exact B14 model assigned to a Padiem product profile."""
+    if not isinstance(profile, str):
+        raise ModelPolicyError("invalid_profile", "AI 품질 설정 형식이 올바르지 않습니다.")
+    normalized = profile.strip().lower()
+    model_id = PROFILE_MODEL_IDS.get(normalized)
+    if model_id is None:
+        raise ModelPolicyError("unknown_profile", "지원하지 않는 AI 품질 설정입니다.")
+    return model_id
+
+
+def profile_requires_contributor_warning(profile: str) -> bool:
+    """HIGH currently uses a Contributor route whose data policy needs warning."""
+    return isinstance(profile, str) and profile.strip().lower() == "high"
+
+
 def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
     for index in range(len(messages) - 1, -1, -1):
         if messages[index].get("role") == "user":
@@ -48,22 +73,22 @@ def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
 
 
 def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
-    """Resolve B62's product profile without selecting a Provider/model.
+    """Resolve B62's current default MEDIUM product profile.
 
-    The TF has deliberately deferred Provider/model assignment. Ordinary chat
-    therefore resolves to the neutral MEDIUM profile sentinel. A legacy
-    ``/poolside`` prefix is accepted only as a compatibility no-op and never
-    restores Poolside routing. Unknown slash commands continue to fail closed.
+    P5 assigns concrete LOW/MEDIUM/HIGH models, but public LOW/HIGH selection is
+    intentionally deferred until the accepted UI lane can present the HIGH
+    Contributor warning. Ordinary chat therefore uses MEDIUM. The historical
+    ``/poolside`` prefix remains a MEDIUM compatibility alias.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
     if user_index is None:
-        return ResolvedModelPolicy(UNASSIGNED_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(MEDIUM_B14_MODEL_ID, out)
 
     content = out[user_index].get("content", "")
     stripped = content.lstrip()
     if not stripped.startswith("/"):
-        return ResolvedModelPolicy(UNASSIGNED_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(MEDIUM_B14_MODEL_ID, out)
 
     token, separator, remainder = stripped.partition(" ")
     alias = token.lower()
@@ -80,7 +105,12 @@ def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
         )
 
     out[user_index]["content"] = remainder.strip()
-    return ResolvedModelPolicy(model_id, out, alias=alias)
+    return ResolvedModelPolicy(
+        model_id,
+        out,
+        alias=alias,
+        profile="medium",
+    )
 
 
 def model_supports(model_id: str, capability: str) -> bool:
@@ -88,5 +118,5 @@ def model_supports(model_id: str, capability: str) -> bool:
 
 
 def model_profile_is_assigned(model_id: str) -> bool:
-    """Return whether B62 has an executable model mapped to its profile."""
-    return model_id != UNASSIGNED_B14_MODEL_ID
+    """Return whether an exact model belongs to the owner-approved P5 profiles."""
+    return model_id in PROFILE_MODEL_IDS.values()
