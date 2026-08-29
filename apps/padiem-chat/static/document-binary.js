@@ -118,8 +118,8 @@
     fileInput.setAttribute("accept", Array.from(new Set(existing.concat(additions))).join(","));
     if (attachmentButton) attachmentButton.title = "사진 또는 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서 한 개를 첨부합니다";
     const small = documentStarter && documentStarter.querySelector("small");
-    if (small) small.textContent = "TXT·Markdown·CSV·JSON·PDF·DOCX·PPTX·XLSX";
-    runtimeNote.textContent = "사진과 TXT·Markdown·CSV·JSON·PDF·DOCX·PPTX·XLSX 문서 한 개를 첨부할 수 있습니다.";
+    if (small) small.textContent = "PDF·Office·텍스트 파일";
+    runtimeNote.textContent = "사진 또는 문서 파일 한 개를 첨부할 수 있습니다.";
     runtimeNote.dataset.state = "normal";
   }
 
