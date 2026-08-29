@@ -16,9 +16,10 @@
   const outputRenameButton = document.getElementById("savedOutputRename");
   const outputDeleteButton = document.getElementById("savedOutputDelete");
   const messageList = document.getElementById("messageList");
+  const messageInput = document.getElementById("messageInput");
   const loginButton = document.getElementById("loginButton");
 
-  if (!outputsNavButton || !outputsSection || !outputsList || !outputDialog || !messageList) return;
+  if (!outputsNavButton || !outputsSection || !outputsList || !outputDialog || !messageList || !messageInput) return;
 
   let outputsReady = false;
   let outputs = [];
@@ -163,7 +164,12 @@
     }, 1200);
   }
 
+  function canEnhanceAnswers() {
+    return messageInput.disabled !== true;
+  }
+
   function enhanceAssistantMessage(article) {
+    if (!canEnhanceAnswers()) return;
     if (!(article instanceof Element) || article.dataset.outputActions === "true") return;
     const text = answerText(article);
     if (!text) return;
@@ -225,6 +231,7 @@
   }
 
   function enhanceAllAnswers() {
+    if (!canEnhanceAnswers()) return;
     messageList.querySelectorAll(".assistant-message").forEach(enhanceAssistantMessage);
   }
 
@@ -326,6 +333,11 @@
 
   const messageObserver = new MutationObserver(enhanceAllAnswers);
   messageObserver.observe(messageList, { childList: true, subtree: true });
+
+  const lifecycleObserver = new MutationObserver(() => {
+    if (canEnhanceAnswers()) enhanceAllAnswers();
+  });
+  lifecycleObserver.observe(messageInput, { attributes: true, attributeFilter: ["disabled"] });
 
   if (loginButton) {
     const authObserver = new MutationObserver(() => {
