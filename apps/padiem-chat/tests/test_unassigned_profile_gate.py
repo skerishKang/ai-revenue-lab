@@ -12,7 +12,11 @@ from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
     _refund_active_reservation,
 )
-from app.model_policy import DEFAULT_CHAT_PROFILE, UNASSIGNED_B14_MODEL_ID
+from app.model_policy import (
+    DEFAULT_CHAT_PROFILE,
+    MEDIUM_B14_MODEL_ID,
+    model_profile_is_assigned,
+)
 from app.usage_gate import UsageDecision
 
 
@@ -33,7 +37,7 @@ class ReservationStore:
 async def reserve(store: ReservationStore) -> None:
     await DispatchAwareUsageCounterStore(store).consume(
         subject_type="user",
-        subject_key="user-unassigned",
+        subject_key="user-assigned-medium",
         minute_bucket="2026-08-28T09:00",
         day_bucket="2026-08-28",
         burst_limit=8,
@@ -51,7 +55,14 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_chat_rejects_unassigned_profile_before_service_binding():
+def test_owner_assigned_default_profile_is_recognized():
+    assert DEFAULT_CHAT_PROFILE == "medium"
+    assert MEDIUM_B14_MODEL_ID == "poolside/laguna-s-2.1"
+    assert model_profile_is_assigned(MEDIUM_B14_MODEL_ID) is True
+    assert model_profile_is_assigned("padiem-profile/medium-unassigned") is False
+
+
+def test_live_completed_chat_reaches_service_binding_for_assigned_medium_profile():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -61,7 +72,8 @@ def test_live_completed_chat_rejects_unassigned_profile_before_service_binding()
             async def post_json(self, url, payload):
                 nonlocal calls
                 calls += 1
-                raise AssertionError("B14 Service Binding must not be called")
+                assert payload["model"] == MEDIUM_B14_MODEL_ID
+                return 503, b'{"error":{"code":"upstream_error"}}'
 
         client = DispatchAwareB14Client(
             live_settings(),
@@ -69,21 +81,17 @@ def test_live_completed_chat_rejects_unassigned_profile_before_service_binding()
             require_service_binding=True,
         )
 
-        with pytest.raises(ChatRuntimeError) as info:
+        with pytest.raises(ChatRuntimeError):
             await client.complete(MESSAGES)
 
-        assert DEFAULT_CHAT_PROFILE == "medium"
-        assert UNASSIGNED_B14_MODEL_ID == "padiem-profile/medium-unassigned"
-        assert info.value.status_code == 503
-        assert info.value.code == "model_profile_unassigned"
-        assert calls == 0
-        assert len(store.refunds) == 3
+        assert calls == 1
+        assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
 
     asyncio.run(scenario())
 
 
-def test_live_stream_rejects_unassigned_profile_before_stream_transport():
+def test_live_stream_reaches_transport_for_assigned_medium_profile():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -92,7 +100,8 @@ def test_live_stream_rejects_unassigned_profile_before_stream_transport():
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal calls
             calls += 1
-            raise AssertionError("B14 stream transport must not be called")
+            assert MEDIUM_B14_MODEL_ID.encode() in request.content
+            return httpx.Response(503, json={"error": {"code": "upstream_error"}})
 
         client = DispatchAwareB14Client(
             live_settings(),
@@ -100,14 +109,12 @@ def test_live_stream_rejects_unassigned_profile_before_stream_transport():
             require_service_binding=True,
         )
 
-        with pytest.raises(ChatRuntimeError) as info:
+        with pytest.raises(ChatRuntimeError):
             async for _ in client.stream_text_auto(MESSAGES):
                 pass
 
-        assert info.value.status_code == 503
-        assert info.value.code == "model_profile_unassigned"
-        assert calls == 0
-        assert len(store.refunds) == 3
+        assert calls == 1
+        assert len(store.refunds) == 0
         assert await _refund_active_reservation() is False
 
     asyncio.run(scenario())
@@ -150,7 +157,7 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == UNASSIGNED_B14_MODEL_ID
+        assert result["route"]["model"] == MEDIUM_B14_MODEL_ID
         assert calls == 0
 
     asyncio.run(scenario())

@@ -14,6 +14,7 @@ from app.pilot.poolside_provider import (
     POOLSIDE_BASE_ORIGIN,
     POOLSIDE_MODEL_ID,
     POOLSIDE_PROVIDER_ID,
+    POOLSIDE_XS_MODEL_ID,
 )
 
 
@@ -34,14 +35,23 @@ def test_poolside_registration_is_exact_and_not_permanently_free():
     assert spec.allowed_hosts == ("inference.poolside.ai",)
     assert spec.credential_binding_name == "POOLSIDE_API_KEY"
 
-    model = get_catalog_by_id(POOLSIDE_MODEL_ID)
-    assert model is not None
-    assert model.upstream_model == "poolside/laguna-s-2.1"
-    assert model.platform_provider_id == POOLSIDE_PROVIDER_ID
-    assert model.provider_type == "platform"
-    assert model.input_price_usd_per_1m is None
-    assert model.output_price_usd_per_1m is None
-    assert "free" not in model.capabilities
+    medium = get_catalog_by_id(POOLSIDE_MODEL_ID)
+    assert medium is not None
+    assert medium.upstream_model == "poolside/laguna-s-2.1"
+    assert medium.platform_provider_id == POOLSIDE_PROVIDER_ID
+    assert medium.provider_type == "platform"
+    assert medium.input_price_usd_per_1m is None
+    assert medium.output_price_usd_per_1m is None
+    assert "free" not in medium.capabilities
+
+    low = get_catalog_by_id(POOLSIDE_XS_MODEL_ID)
+    assert low is not None
+    assert low.upstream_model == "poolside/laguna-xs-2.1"
+    assert low.platform_provider_id == POOLSIDE_PROVIDER_ID
+    assert low.provider_type == "platform"
+    assert low.input_price_usd_per_1m is None
+    assert low.output_price_usd_per_1m is None
+    assert "free" not in low.capabilities
 
 
 def test_poolside_readiness_live_with_poolside_secret(monkeypatch):
@@ -60,7 +70,7 @@ def test_poolside_readiness_live_with_poolside_secret(monkeypatch):
     assert poolside["credential_source"] == "platform_secret"
     assert poolside["credential_ready"] is True
     assert poolside["route_ready"] is True
-    assert poolside["models"] == [POOLSIDE_MODEL_ID]
+    assert poolside["models"] == [POOLSIDE_MODEL_ID, POOLSIDE_XS_MODEL_ID]
     assert secret not in response.text
     assert "POOLSIDE_API_KEY" not in response.text
     assert "credential_binding_name" not in response.text
@@ -81,7 +91,18 @@ def test_poolside_secret_is_isolated_from_agnes(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
+@pytest.mark.parametrize(
+    ("model_id", "upstream_model"),
+    [
+        (POOLSIDE_MODEL_ID, "poolside/laguna-s-2.1"),
+        (POOLSIDE_XS_MODEL_ID, "poolside/laguna-xs-2.1"),
+    ],
+)
+async def test_poolside_uses_fixed_direct_origin_and_exact_model(
+    monkeypatch,
+    model_id: str,
+    upstream_model: str,
+):
     secret = "poolside-direct-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("POOLSIDE_API_KEY", secret)
@@ -90,12 +111,12 @@ async def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
         assert str(request.url) == f"{POOLSIDE_BASE_ORIGIN}/chat/completions"
         assert request.headers["Authorization"] == f"Bearer {secret}"
         body = __import__("json").loads(request.content)
-        assert body["model"] == "poolside/laguna-s-2.1"
+        assert body["model"] == upstream_model
         return httpx.Response(
             200,
             json={
                 "id": "poolside_test",
-                "model": "poolside/laguna-s-2.1",
+                "model": upstream_model,
                 "choices": [
                     {
                         "index": 0,
@@ -108,8 +129,8 @@ async def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
         )
 
     result = await call_platform_chat_completions(
-        model_id=POOLSIDE_MODEL_ID,
-        upstream_model="poolside/laguna-s-2.1",
+        model_id=model_id,
+        upstream_model=upstream_model,
         provider="Poolside",
         platform_provider_id=POOLSIDE_PROVIDER_ID,
         messages=[{"role": "user", "content": "hello"}],
@@ -117,5 +138,5 @@ async def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
     )
 
     assert result["_live"] is True
-    assert result["model"] == "poolside/laguna-s-2.1"
+    assert result["model"] == upstream_model
     assert secret not in repr(result)

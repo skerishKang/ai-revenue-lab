@@ -4,5 +4,9 @@
 # imports their runtime view. Registration is idempotent and performs no network
 # calls or secret reads beyond later readiness checks.
 from app.pilot.poolside_provider import register_poolside_provider
+from app.pilot.opencode_zen_provider import register_opencode_zen_provider
+from app.pilot.platform_protocols import install_platform_protocol_dispatch
 
 register_poolside_provider()
+register_opencode_zen_provider()
+install_platform_protocol_dispatch()
