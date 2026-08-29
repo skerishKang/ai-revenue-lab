@@ -14,6 +14,7 @@ OUT_DIR = Path(os.environ.get("B62_QA_OUT_DIR", ".tmp/b62-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 THEMES = ("light", "dark", "cinematic", "padiem-home")
+BRIGHT_THEMES = {"light", "padiem-home"}
 
 
 async def _assert_no_horizontal_overflow(page: Page, label: str) -> None:
@@ -60,9 +61,23 @@ async def _capture_surface(
     prefix = f"theme-{theme}-{surface}"
 
     await _assert_no_horizontal_overflow(page, f"{prefix}-home")
+    active_tool = await _style(page, "#attachmentButton")
+    if theme in BRIGHT_THEMES:
+        if active_tool is None:
+            raise AssertionError(f"active File tool is not visible for bright theme {theme}/{surface}")
+        inherited_dark_foregrounds = {
+            "rgb(255, 255, 255)",
+            "rgba(255, 255, 255, 0.58)",
+        }
+        if active_tool["color"] in inherited_dark_foregrounds:
+            raise AssertionError(
+                f"active File tool retained dark-theme foreground for {theme}/{surface}: {active_tool}"
+            )
+
     home_metrics = {
-        "sidebar_heading": await _style(page, ".recent-section h2"),
+        "sidebar_heading": await _style(page, "#recentTitle"),
         "sidebar_item": await _style(page, ".recent-item"),
+        "active_file_tool": active_tool,
         "composer_note": await _style(page, ".composer-note"),
     }
     await page.screenshot(path=str(OUT_DIR / f"{prefix}-home.png"), full_page=True)
@@ -100,8 +115,9 @@ async def _capture_surface(
     await page.wait_for_timeout(700)
     await _assert_no_horizontal_overflow(page, f"{prefix}-chat")
     chat_metrics = {
-        "assistant_text": await _style(page, ".assistant-content p"),
+        "assistant_text": await _style(page, ".assistant-content"),
         "assistant_meta": await _style(page, ".assistant-meta"),
+        "active_file_tool": await _style(page, "#attachmentButton"),
         "composer_note": await _style(page, ".composer-note"),
         "user_bubble": await _style(page, ".message-bubble"),
     }
