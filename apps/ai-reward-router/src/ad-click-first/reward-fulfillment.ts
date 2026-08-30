@@ -1,4 +1,4 @@
-import type { RewardTransaction } from './reward-events.js';
+import type { RewardStateRecord } from './reward-events.js';
 
 export const REWARD_FULFILLMENT_PROVIDER_STRATEGY = Object.freeze([
   Object.freeze({
@@ -32,7 +32,7 @@ export type RewardFulfillmentReadinessState =
   | 'READY_FOR_EXTERNAL_FULFILLMENT';
 
 export interface RewardFulfillmentAssessmentInput {
-  readonly transaction: RewardTransaction;
+  readonly transaction: RewardStateRecord;
   readonly rewardFaceValue: number;
   readonly rewardCurrency: string;
   readonly externalFulfillmentProviderApproved: boolean;
@@ -72,7 +72,7 @@ export function assessRewardFulfillment(
 }
 
 export interface TremendousRewardOrderInput {
-  readonly transaction: RewardTransaction;
+  readonly transaction: RewardStateRecord;
   readonly recipientEmail: string;
   readonly amount: number;
   readonly currency: string;
