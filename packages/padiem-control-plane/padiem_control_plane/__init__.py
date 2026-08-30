@@ -24,9 +24,16 @@ from .credit_ledger import (
     validate_credit_ledger_batch,
 )
 from .entitlements import EntitlementGrant, EntitlementSnapshot
+from .payment_events import (
+    CanonicalPaymentEvent,
+    PaymentEventKind,
+    PaymentEvidenceSource,
+    validate_payment_event_batch,
+)
 
 __all__ = [
     "BillingDisposition",
+    "CanonicalPaymentEvent",
     "CanonicalSubjectRef",
     "ControlPlaneContractError",
     "CostEvidenceSource",
@@ -39,6 +46,8 @@ __all__ = [
     "EntitlementSnapshot",
     "IdentityLinkState",
     "MonetaryCostEvidence",
+    "PaymentEventKind",
+    "PaymentEvidenceSource",
     "ProductIdentityLink",
     "RouteEvidence",
     "RouteEvidenceStatus",
@@ -48,5 +57,6 @@ __all__ = [
     "UsageOutcome",
     "apply_credit_ledger_batch",
     "validate_credit_ledger_batch",
+    "validate_payment_event_batch",
     "validate_usage_event_batch",
 ]
