@@ -99,3 +99,4 @@ export * from './ayet-s2s-postback.js';
 export * from './reward-events.js';
 export * from './source-priority.js';
 export * from './gate-readiness.js';
+export * from './direct-reward-policy.js';
