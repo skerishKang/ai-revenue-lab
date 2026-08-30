@@ -16,8 +16,8 @@ export type CertaintyType = (typeof CERTAINTY_TYPES)[number];
 
 export type SupplyClaimMode = 'PROVIDER_PROGRAM_ONLY' | 'PUBLIC_CURRENT_INVENTORY';
 
-export interface Verified20Record {
-  readonly slot: number;
+/** Shared trust contract used by W8 and later verified expansion gates. */
+export interface VerifiedOpportunityTrustRecord {
   readonly realEvidence: true;
   readonly syntheticFixture: false;
   readonly sourcePolicy: SourcePolicyReview;
@@ -37,14 +37,19 @@ export interface Verified20Record {
   readonly supplyClaimMode: SupplyClaimMode;
 }
 
-export interface Verified20Validation {
+export interface Verified20Record extends VerifiedOpportunityTrustRecord {
+  readonly slot: number;
+}
+
+export interface VerifiedOpportunityValidation {
   readonly countable: boolean;
   readonly errors: readonly string[];
 }
 
-export function validateVerified20Record(record: Verified20Record): Verified20Validation {
+export type Verified20Validation = VerifiedOpportunityValidation;
+
+export function validateVerifiedOpportunityTrustRecord(record: VerifiedOpportunityTrustRecord): VerifiedOpportunityValidation {
   const errors: string[] = [];
-  if (!Number.isInteger(record.slot) || record.slot < 1 || record.slot > 20) errors.push('slot must be an integer from 1 to 20');
   if (record.sourcePolicy.decision !== 'PASS' && record.sourcePolicy.decision !== 'PASS_WITH_LIMITS') errors.push('source policy must be explicitly cleared');
   if (record.sourcePolicy.sourceId !== record.snapshot.sourceId) errors.push('source policy must belong to the snapshot source');
   if (record.sourceGates.some((gate) => gate.sourceId !== record.snapshot.sourceId)) errors.push('all source gates must belong to the snapshot source');
@@ -66,9 +71,16 @@ export function validateVerified20Record(record: Verified20Record): Verified20Va
     errors.push('provider-level evidence must not fabricate current inventory');
   }
   if (record.version.supplyAvailabilityState === 'PUBLIC_JOB_POSTING_AVAILABLE') {
-    errors.push('general job postings belong to external job-search assist, not VERIFIED 20 core supply');
+    errors.push('general job postings belong to external job-search assist, not verified core supply');
   }
-  if (record.realEvidence !== true || record.syntheticFixture !== false) errors.push('synthetic fixtures never count toward VERIFIED 20');
+  if (record.realEvidence !== true || record.syntheticFixture !== false) errors.push('synthetic fixtures never count toward verified opportunity gates');
+  return Object.freeze({ countable: errors.length === 0, errors: Object.freeze(errors) });
+}
+
+export function validateVerified20Record(record: Verified20Record): Verified20Validation {
+  const core = validateVerifiedOpportunityTrustRecord(record);
+  const errors = [...core.errors];
+  if (!Number.isInteger(record.slot) || record.slot < 1 || record.slot > 20) errors.unshift('slot must be an integer from 1 to 20');
   return Object.freeze({ countable: errors.length === 0, errors: Object.freeze(errors) });
 }
 
