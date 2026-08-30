@@ -1,0 +1,22 @@
+name = "padiem-chat"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers"]
+workers_dev = true
+keep_vars = true
+
+[assets]
+directory = "../static"
+binding = "ASSETS"
+
+[vars]
+PADIEM_CHAT_TEST_GUARD_DIGEST = "INJECTED_AT_CONTROLLED_UPLOAD"
+
+[[services]]
+binding = "B14_SERVICE"
+service = "ai-revenue-korean-ai-platform"
+environment = "production"
+
+[[d1_databases]]
+binding = "PADIEM_CHAT_DB"
+database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"
