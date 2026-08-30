@@ -10,7 +10,7 @@ import {
   PROLIFIC_W8_SNAPSHOT,
   PROLIFIC_W8_VERSION,
 } from '../src/verified20/prolific.js';
-import { validateVerified20Record } from '../src/verified20/domain.js';
+import { validateVerified20Record, verified20Progress } from '../src/verified20/domain.js';
 import { VERIFIED20_PROGRESS, W8_GATE_STATUS } from '../src/verified20/ledger.js';
 import { W8_NEGATIVE_DEMONSTRATIONS } from '../src/verified20/negative-demonstrations.js';
 
@@ -84,6 +84,15 @@ test('manual Prolific snapshot records zero transport calls and no private accou
   assert.equal(metadata?.loggedInInventoryObserved, false);
   assert.equal(PROLIFIC_W8_SNAPSHOT.httpStatus, null);
   assert.equal(PROLIFIC_W8_SNAPSHOT.actorProvenance !== null, true);
+});
+
+test('duplicate copies of one real opportunity can never fake a 20/20 gate', () => {
+  const duplicates = Array.from({ length: 20 }, () => PROLIFIC_VERIFIED20_RECORD);
+  const progress = verified20Progress(duplicates);
+  assert.equal(progress.verifiedCount, 1);
+  assert.equal(progress.duplicateSlotDetected, true);
+  assert.equal(progress.duplicateOpportunityDetected, true);
+  assert.equal(progress.gatePassed, false);
 });
 
 test('W8 remains fail-closed at 1/20 with all required negative demonstrations still pending', () => {
