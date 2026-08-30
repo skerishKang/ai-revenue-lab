@@ -25,4 +25,5 @@ export const PRODUCT_IDENTITY = Object.freeze({
 });
 
 export * from './ad-click-first/index.js';
+export * from './p1-survey/index.js';
 export * from './job-search-assist/index.js';
