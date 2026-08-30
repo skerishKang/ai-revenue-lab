@@ -213,7 +213,6 @@ dependencies = [
     { name = "jinja2" },
     { name = "python-multipart" },
     { name = "starlette" },
-    { name = "workers-py" },
 ]
 
 [package.dev-dependencies]
@@ -232,7 +231,6 @@ requires-dist = [
     { name = "jinja2", specifier = ">=3.1,<4" },
     { name = "python-multipart", specifier = ">=0.0.9,<1" },
     { name = "starlette", specifier = ">=0.45,<1" },
-    { name = "workers-py", specifier = "==1.17.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -241,7 +239,7 @@ dev = [
     { name = "pytest", specifier = ">=8.3,<9" },
     { name = "pytest-asyncio", specifier = ">=0.24,<1" },
     { name = "uvicorn", specifier = ">=0.32,<1" },
-    { name = "workers-py", specifier = ">=1.15.0" },
+    { name = "workers-py", specifier = "==1.16.2" },
     { name = "workers-runtime-sdk", specifier = ">=1.6.3" },
 ]
 
@@ -719,7 +717,7 @@ wheels = [
 
 [[package]]
 name = "workers-py"
-version = "1.17.0"
+version = "1.16.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -733,9 +731,9 @@ dependencies = [
     { name = "rich" },
     { name = "workers-runtime-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/fd/2e1e798cd4e5e0da13111ee9ffe657b827446920781bb4657ba3c68522b3/workers_py-1.17.0.tar.gz", hash = "sha256:54299bdfaba5eafb570d876f9f0a1ada6ed0207171ab0ee91c54f13c87bf6764", size = 70991, upload-time = "2026-08-28T18:26:38.537Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7a/68/b7a0c147a1d41aa7c1b1dfcc23f9509b64c68e68016959bf68e67808f4a1/workers_py-1.16.2.tar.gz", hash = "sha256:82c78a890e94e5079903dbc20a6e3c049a974cecd44143f0ea9219479e2f4a21", size = 139164, upload-time = "2026-08-04T03:12:48.117Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/17/8b10355808998c88d77c5c605f3b0b061934fb9683d07e43ecdefb7382b1/workers_py-1.17.0-py3-none-any.whl", hash = "sha256:8067aceddba01c2ba09a477d25bd252b9286f0b025fd99b67172e40ba46cc242", size = 17155, upload-time = "2026-08-28T18:26:37.325Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/84/bad529c5a07702d59d49fa0483d77de53f0329703671b8414aba84aeccfc/workers_py-1.16.2-py3-none-any.whl", hash = "sha256:c35cfd01b37988f22dda1811a968700315ca37d4a0b79086d553778e0231d994", size = 16534, upload-time = "2026-08-04T03:12:46.578Z" },
 ]
 
 [[package]]
