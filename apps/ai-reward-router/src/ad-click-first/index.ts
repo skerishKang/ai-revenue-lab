@@ -20,8 +20,11 @@ export type AdClickP0ActionKind = (typeof AD_CLICK_P0_ACTION_KINDS)[number];
 
 export const AD_CLICK_FIRST_GATE = Object.freeze({
   issueNumber: 1112,
-  status: 'IN_PROGRESS' as const,
-  centralAcceptanceRequired: true,
+  status: 'TECHNICAL_COMPLETE_OWNER_ACTIVATION_PENDING' as const,
+  centralTechnicalComplete: true,
+  ownerLiveActivationPending: true,
+  centralAcceptanceRequired: false,
+  ownerActivationRequiredForRealSupply: true,
   currentLaunchFocus: 'AD_VIEW_CLICK_VISIT_LOW_FRICTION_REWARD' as const,
 });
 
