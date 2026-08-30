@@ -4,8 +4,9 @@ import asyncio
 from dataclasses import dataclass
 from typing import Any, Mapping
 
+from .contracts import ErrorClass, RunMetadata, RunStatus, UsageMetadata
 from .execution_context import ExecutionContext, IdempotencyAdapter, request_fingerprint
-from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntime
+from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntime, ExecutionRuntimeError
 
 
 class IdempotencyConflictError(RuntimeError):
@@ -108,10 +109,22 @@ class ContextualExecutionRunner:
                 self._runtime.run(request),
                 timeout=context.timeout_seconds,
             )
-        except asyncio.TimeoutError:
-            # Timeout remains a distinct standard exception so the outer
-            # transport can map it to its existing safe timeout contract.
-            raise
+        except asyncio.TimeoutError as exc:
+            metadata = RunMetadata(
+                trace_id=context.trace_id,
+                app_id=self._app_id,
+                agent_id=request.agent.id,
+                session_id=request.session_id,
+                status=RunStatus.TIMEOUT,
+                usage=UsageMetadata(),
+                error_class=ErrorClass.CONTEXT_ERROR,
+            )
+            raise ExecutionRuntimeError(
+                "execution_timeout",
+                "Model execution exceeded the bounded timeout.",
+                metadata=metadata,
+                retryable=False,
+            ) from exc
 
         if context.idempotency_key is not None and self._idempotency is not None:
             await self._idempotency.complete(
