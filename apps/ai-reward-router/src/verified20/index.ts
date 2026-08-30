@@ -9,6 +9,7 @@ export * from './crowdgen-vistula.js';
 export * from './crowdgen-morava.js';
 export * from './oneforma.js';
 export * from './oneforma-extra.js';
+export * from './korean-pocket-money.js';
 export * from './real-negative-evidence.js';
 export * from './negative-demonstrations.js';
 export * from './ledger.js';
