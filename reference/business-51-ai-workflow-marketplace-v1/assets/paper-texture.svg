@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="procedural paper texture">
+  <defs>
+    <pattern id="grain" width="36" height="36" patternUnits="userSpaceOnUse">
+      <rect width="36" height="36" fill="#f3ecd9"/>
+      <path d="M2 9h14M23 4h8M8 25h22M1 34h9" stroke="#19170f" stroke-opacity=".045" stroke-width="1"/>
+      <circle cx="28" cy="18" r="1" fill="#ad5d3d" fill-opacity=".08"/>
+      <circle cx="12" cy="15" r=".8" fill="#19170f" fill-opacity=".08"/>
+    </pattern>
+  </defs>
+  <rect width="900" height="600" fill="url(#grain)"/>
+  <path d="M0 128h900M0 414h900" stroke="#8c7d62" stroke-opacity=".04"/>
+</svg>
