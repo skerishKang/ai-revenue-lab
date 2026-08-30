@@ -60,8 +60,18 @@ export const AD_CLICK_P0_SOURCE_STRATEGY = Object.freeze([
     activation: 'BLOCKED_UNTIL_ACCOUNT_ADSLOT_TERMS_AND_CREDENTIALS' as const,
   }),
   Object.freeze({
-    sourceId: 'SRC-ADPOPCORN',
+    sourceId: 'ADSCEND_MEDIA',
     rank: 2,
+    readiness: 'WEB_VIDEO_AND_CASH_INCENTIVE_TECHNICALLY_SUPPORTED_ON_ALLOWED_OFFERS' as const,
+    supportedRewardProducts: Object.freeze(['WEB_VIDEO_ONLY_WALL', 'WEB_OFFERWALL', 'CASH_OR_GIFT_CARD_GPT_MODEL'] as const),
+    incentiveMechanism: 'OFFER_LEVEL_ALLOWED_TRAFFIC_3_REQUIRED_FOR_CASH' as const,
+    conversionCallbacks: 'SERVER_POSTBACK_SUPPORTED_SECURE_HASH_AVAILABLE' as const,
+    liveB64Permission: 'NOT_YET_GRANTED' as const,
+    activation: 'BLOCKED_UNTIL_PUBLISHER_APPROVAL_KR_FILL_AND_EXTERNAL_REWARD_FULFILLMENT' as const,
+  }),
+  Object.freeze({
+    sourceId: 'SRC-ADPOPCORN',
+    rank: 3,
     readiness: 'MOBILE_REWARD_PRODUCTS_CONFIRMED_WEB_PATH_UNCONFIRMED' as const,
     supportedRewardProducts: Object.freeze(['REWARDED_VIDEO', 'CLICK_REWARD', 'NAVER_PAY_POINT_REWARD'] as const),
     liveB64Permission: 'NOT_YET_GRANTED' as const,
@@ -69,7 +79,7 @@ export const AD_CLICK_P0_SOURCE_STRATEGY = Object.freeze([
   }),
   Object.freeze({
     sourceId: 'SRC-TNK',
-    rank: 3,
+    rank: 4,
     readiness: 'MOBILE_SDK_PRODUCTS_CONFIRMED_WEB_PATH_UNCONFIRMED' as const,
     supportedRewardProducts: Object.freeze(['OFFERWALL', 'REWARDED_VIDEO', 'KAKAO_PAY_POINT_REWARD'] as const),
     liveB64Permission: 'NOT_YET_GRANTED' as const,
@@ -77,7 +87,7 @@ export const AD_CLICK_P0_SOURCE_STRATEGY = Object.freeze([
   }),
   Object.freeze({
     sourceId: 'SRC-ADISON',
-    rank: 4,
+    rank: 5,
     readiness: 'CAMPAIGN_CALLBACK_AND_MOBILE_SDK_CONFIRMED_WEB_USER_SURFACE_UNCONFIRMED' as const,
     supportedRewardProducts: Object.freeze(['OFFERWALL_CALLBACK'] as const),
     callbackSecurity: 'OFFICIAL_HMAC_SUPPORTED' as const,
@@ -100,3 +110,4 @@ export * from './reward-events.js';
 export * from './source-priority.js';
 export * from './gate-readiness.js';
 export * from './direct-reward-policy.js';
+export * from './adscend-web-integration.js';
