@@ -61,25 +61,24 @@ function requireCredential(value) {
 function normalizeExecutionContext(value) {
   if (value === undefined || value === null) return undefined;
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_request",
-      "execution_context must be an object",
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_request", "execution_context must be an object");
   }
 
   const allowed = new Set(["trace_id", "idempotency_key", "timeout_seconds"]);
   const unknown = Object.keys(value).filter((key) => !allowed.has(key));
   if (unknown.length > 0) {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_request",
-      "execution_context contains unsupported fields",
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_request", "execution_context contains unsupported fields");
   }
 
   const context = {};
-  if (value.trace_id !== undefined) {
-    context.trace_id = requireSafeIdentifier("execution_context.trace_id", value.trace_id);
+  if (value.trace_id === undefined) {
+    throw new PadiemAiEngineClientError(
+      "invalid_engine_request",
+      "execution_context.trace_id is required",
+    );
   }
+  context.trace_id = requireSafeIdentifier("execution_context.trace_id", value.trace_id);
+
   if (value.idempotency_key !== undefined) {
     if (
       typeof value.idempotency_key !== "string" ||
@@ -106,48 +105,28 @@ function normalizeExecutionContext(value) {
     }
     context.timeout_seconds = value.timeout_seconds;
   }
-
-  if (Object.keys(context).length === 0) {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_request",
-      "execution_context must contain at least one supported field",
-    );
-  }
   return context;
 }
 
 function exactRunPayload(appId, run) {
   if (!run || typeof run !== "object" || Array.isArray(run)) {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_request",
-      "Engine run request must be an object",
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_request", "Engine run request must be an object");
   }
   const unknown = Object.keys(run).filter((key) => !REQUEST_ALLOWED.has(key));
   if (unknown.length > 0) {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_request",
-      "Engine run request contains unsupported fields",
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_request", "Engine run request contains unsupported fields");
   }
   if (!("agent" in run) || !("messages" in run)) {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_request",
-      "Engine run request requires agent and messages",
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_request", "Engine run request requires agent and messages");
   }
   return {
     app_id: appId,
     agent: run.agent,
     messages: run.messages,
     ...(run.session_id === undefined ? {} : { session_id: run.session_id }),
-    ...(run.additional_system_context === undefined
-      ? {}
-      : { additional_system_context: run.additional_system_context }),
+    ...(run.additional_system_context === undefined ? {} : { additional_system_context: run.additional_system_context }),
     ...(run.trace_id === undefined ? {} : { trace_id: run.trace_id }),
-    ...(run.execution_context === undefined
-      ? {}
-      : { execution_context: normalizeExecutionContext(run.execution_context) }),
+    ...(run.execution_context === undefined ? {} : { execution_context: normalizeExecutionContext(run.execution_context) }),
   };
 }
 
@@ -161,40 +140,22 @@ function authenticatedHeaders(callerId, credential) {
 
 async function parseJsonResponse(response) {
   let body;
-  try {
-    body = await response.json();
-  } catch {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_response",
-      "Engine returned an invalid JSON response",
-      { status: response.status },
-    );
+  try { body = await response.json(); } catch {
+    throw new PadiemAiEngineClientError("invalid_engine_response", "Engine returned an invalid JSON response", { status: response.status });
   }
   if (!body || typeof body !== "object") {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_response",
-      "Engine returned an invalid response object",
-      { status: response.status },
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_response", "Engine returned an invalid response object", { status: response.status });
   }
   if (body.ok === false) {
     const error = body.error && typeof body.error === "object" ? body.error : {};
     throw new PadiemAiEngineClientError(
       typeof error.code === "string" ? error.code : "engine_request_failed",
       typeof error.message === "string" ? error.message : "Padiem AI Engine request failed",
-      {
-        status: response.status,
-        retryable: error.retryable === true,
-        metadata: error.metadata ?? null,
-      },
+      { status: response.status, retryable: error.retryable === true, metadata: error.metadata ?? null },
     );
   }
   if (!response.ok) {
-    throw new PadiemAiEngineClientError(
-      "engine_http_error",
-      "Padiem AI Engine request failed",
-      { status: response.status },
-    );
+    throw new PadiemAiEngineClientError("engine_http_error", "Padiem AI Engine request failed", { status: response.status });
   }
   return body;
 }
@@ -207,59 +168,33 @@ export class PadiemAiEngineClient {
     this.credential = requireCredential(credential);
   }
 
-  _headers() {
-    return authenticatedHeaders(this.callerId, this.credential);
-  }
+  _headers() { return authenticatedHeaders(this.callerId, this.credential); }
 
   async execute(run) {
     const payload = exactRunPayload(this.appId, run);
-    const response = await this.binding.fetch(
-      `${ENGINE_INTERNAL_ORIGIN}${ENGINE_EXECUTE_PATH}`,
-      {
-        method: "POST",
-        headers: this._headers(),
-        body: JSON.stringify(payload),
-      },
-    );
+    const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_EXECUTE_PATH}`, {
+      method: "POST", headers: this._headers(), body: JSON.stringify(payload),
+    });
     const body = await parseJsonResponse(response);
     if (body.ok !== true || typeof body.answer !== "string") {
-      throw new PadiemAiEngineClientError(
-        "invalid_engine_response",
-        "Engine completed-run response is invalid",
-        { status: response.status },
-      );
+      throw new PadiemAiEngineClientError("invalid_engine_response", "Engine completed-run response is invalid", { status: response.status });
     }
     return body;
   }
 
   async *stream(run) {
     const payload = exactRunPayload(this.appId, run);
-    const response = await this.binding.fetch(
-      `${ENGINE_INTERNAL_ORIGIN}${ENGINE_STREAM_PATH}`,
-      {
-        method: "POST",
-        headers: this._headers(),
-        body: JSON.stringify(payload),
-      },
-    );
-
+    const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_STREAM_PATH}`, {
+      method: "POST", headers: this._headers(), body: JSON.stringify(payload),
+    });
     const contentType = response.headers.get("content-type") || "";
     if (!response.ok || !contentType.toLowerCase().startsWith("application/x-ndjson")) {
       await parseJsonResponse(response);
-      throw new PadiemAiEngineClientError(
-        "invalid_engine_stream",
-        "Engine did not return the internal NDJSON stream contract",
-        { status: response.status },
-      );
+      throw new PadiemAiEngineClientError("invalid_engine_stream", "Engine did not return the internal NDJSON stream contract", { status: response.status });
     }
     if (!response.body || typeof response.body.getReader !== "function") {
-      throw new PadiemAiEngineClientError(
-        "invalid_engine_stream",
-        "Engine response body is not streamable",
-        { status: response.status },
-      );
+      throw new PadiemAiEngineClientError("invalid_engine_stream", "Engine response body is not streamable", { status: response.status });
     }
-
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -280,57 +215,32 @@ export class PadiemAiEngineClient {
       const tail = buffer.trim();
       if (tail) yield parseStreamLine(tail, response.status);
     } finally {
-      try {
-        await reader.cancel();
-      } catch {
-        // Best-effort downstream cancellation cleanup.
-      }
-      try {
-        reader.releaseLock();
-      } catch {
-        // Ignore already-released readers.
-      }
+      try { await reader.cancel(); } catch {}
+      try { reader.releaseLock(); } catch {}
     }
   }
 
   async health() {
-    const response = await this.binding.fetch(
-      `${ENGINE_INTERNAL_ORIGIN}${ENGINE_HEALTH_PATH}`,
-      { method: "GET" },
-    );
+    const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_HEALTH_PATH}`, { method: "GET" });
     return parseJsonResponse(response);
   }
 }
 
 function parseStreamLine(line, status) {
   let body;
-  try {
-    body = JSON.parse(line);
-  } catch {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_stream_event",
-      "Engine emitted invalid NDJSON",
-      { status },
-    );
+  try { body = JSON.parse(line); } catch {
+    throw new PadiemAiEngineClientError("invalid_engine_stream_event", "Engine emitted invalid NDJSON", { status });
   }
   if (body && body.ok === false) {
     const error = body.error && typeof body.error === "object" ? body.error : {};
     throw new PadiemAiEngineClientError(
       typeof error.code === "string" ? error.code : "engine_stream_failed",
       typeof error.message === "string" ? error.message : "Padiem AI Engine stream failed",
-      {
-        status,
-        retryable: error.retryable === true,
-        metadata: error.metadata ?? null,
-      },
+      { status, retryable: error.retryable === true, metadata: error.metadata ?? null },
     );
   }
   if (!body || body.ok !== true || !body.event || typeof body.event !== "object") {
-    throw new PadiemAiEngineClientError(
-      "invalid_engine_stream_event",
-      "Engine emitted an invalid stream event",
-      { status },
-    );
+    throw new PadiemAiEngineClientError("invalid_engine_stream_event", "Engine emitted an invalid stream event", { status });
   }
   return body.event;
 }
