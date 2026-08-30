@@ -3,6 +3,7 @@ import { AD_CLICK_P0_ACTION_KINDS, type AdClickP0ActionKind } from './index.js';
 export type AdClickSupplyLifecycle = 'LIVE' | 'EXPIRING' | 'STALE' | 'ENDED' | 'BROKEN';
 export type AdClickProviderActivation = 'LIVE_AUTHORIZED' | 'BLOCKED' | 'PENDING_ONBOARDING';
 export type AdClickCertainty = 'GUARANTEED' | 'CONDITIONAL';
+export type IncentivizedActionPermission = 'EXPLICITLY_ALLOWED' | 'NOT_ESTABLISHED' | 'PROHIBITED';
 
 export interface AdClickConsumerCandidate {
   readonly id: string;
@@ -19,6 +20,12 @@ export interface AdClickConsumerCandidate {
   readonly lifecycle: AdClickSupplyLifecycle;
   readonly sourcePolicyCleared: boolean;
   readonly providerActivation: AdClickProviderActivation;
+  /**
+   * For CLICK, this must prove that the click itself is an advertiser/provider-approved
+   * incentivized conversion action. CPC billing or a clickable ad is not sufficient.
+   * Other P0 actions are governed by their own source-policy/reward evidence.
+   */
+  readonly incentivizedActionPermission?: IncentivizedActionPermission;
 }
 
 export type AdClickSurfaceSuppressionReason =
@@ -26,6 +33,7 @@ export type AdClickSurfaceSuppressionReason =
   | 'PROVIDER_NOT_LIVE_AUTHORIZED'
   | 'NOT_CURRENTLY_LIVE'
   | 'REWARD_NOT_CONFIRMED'
+  | 'CLICK_INCENTIVE_NOT_EXPLICITLY_ALLOWED'
   | 'ACTION_NOT_LOW_FRICTION'
   | 'DESTINATION_NOT_SAFE_HTTPS'
   | 'FRESHNESS_INVALID';
@@ -65,6 +73,9 @@ export function assessAdClickConsumerCandidate(candidate: AdClickConsumerCandida
   if (candidate.providerActivation !== 'LIVE_AUTHORIZED') reasons.push('PROVIDER_NOT_LIVE_AUTHORIZED');
   if (candidate.lifecycle !== 'LIVE' && candidate.lifecycle !== 'EXPIRING') reasons.push('NOT_CURRENTLY_LIVE');
   if (!Number.isFinite(candidate.rewardAmount) || (candidate.rewardAmount ?? 0) <= 0 || !candidate.rewardUnit?.trim()) reasons.push('REWARD_NOT_CONFIRMED');
+  if (candidate.actionKind === 'CLICK' && candidate.incentivizedActionPermission !== 'EXPLICITLY_ALLOWED') {
+    reasons.push('CLICK_INCENTIVE_NOT_EXPLICITLY_ALLOWED');
+  }
   if (!AD_CLICK_P0_ACTION_KINDS.includes(candidate.actionKind) || !Number.isFinite(candidate.estimatedActiveSeconds) || (candidate.estimatedActiveSeconds ?? 0) <= 0 || (candidate.estimatedActiveSeconds ?? 0) > 300) {
     reasons.push('ACTION_NOT_LOW_FRICTION');
   }
