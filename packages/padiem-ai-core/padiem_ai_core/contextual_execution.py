@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from typing import Any, Mapping, Protocol
+from typing import Any, Mapping
 
 from .execution_context import ExecutionContext, IdempotencyAdapter, request_fingerprint
-from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntime, ExecutionRuntimeError
+from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntime
 
 
-class IdempotencyReplay(Protocol):
-    """Product-owned adapter may return a previously completed canonical result."""
+class IdempotencyConflictError(RuntimeError):
+    """Raised when the adapter cannot safely honor the requested replay."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,11 +32,10 @@ def prepare_execution(
     app_id: str,
     payload: Mapping[str, Any],
 ) -> PreparedExecution:
-    """Bind an execution context to an exact request fingerprint.
+    """Bind execution metadata to an exact request fingerprint.
 
-    Authorization never participates in the fingerprint and context fields do
-    not grant permission. The product/server decides whether idempotency may
-    be used by injecting an adapter.
+    Authorization material is deliberately excluded from the fingerprint.
+    Context fields do not grant authorization.
     """
     if not isinstance(context, ExecutionContext):
         raise ValueError("context must be ExecutionContext")
@@ -46,8 +45,8 @@ def prepare_execution(
         raise ValueError("payload must be a mapping")
 
     fingerprint_payload = dict(payload)
-    fingerprint_payload.pop("authorization", None)
-    fingerprint_payload.pop("credential", None)
+    for sensitive_key in ("authorization", "credential", "service_credential"):
+        fingerprint_payload.pop(sensitive_key, None)
     fingerprint_payload.pop("execution_context", None)
     fingerprint_payload["app_id"] = app_id
     return PreparedExecution(
@@ -57,7 +56,7 @@ def prepare_execution(
 
 
 class ContextualExecutionRunner:
-    """Apply bounded execution context around the existing Core runtime."""
+    """Apply bounded context around the existing Core execution runtime."""
 
     def __init__(
         self,
@@ -87,7 +86,6 @@ class ContextualExecutionRunner:
             payload=request_payload,
         )
 
-        replay = None
         if context.idempotency_key is not None:
             if self._idempotency is None:
                 raise ValueError("idempotency_key requires an injected IdempotencyAdapter")
@@ -98,23 +96,22 @@ class ContextualExecutionRunner:
             )
             if replay is not None:
                 if not isinstance(replay, ExecutionResult):
-                    raise IdempotencyConflictError("idempotency adapter returned an invalid replay")
+                    raise IdempotencyConflictError(
+                        "idempotency adapter returned an invalid replay"
+                    )
                 return replay
 
         try:
-            # asyncio cancellation is intentionally not caught. Callers must
-            # observe CancelledError rather than receiving a generic failure.
+            # Cancellation is deliberately not caught or converted. A caller
+            # cancelling this coroutine must observe asyncio.CancelledError.
             result = await asyncio.wait_for(
                 self._runtime.run(request),
                 timeout=context.timeout_seconds,
             )
-        except asyncio.TimeoutError as exc:
-            raise ExecutionRuntimeError(
-                "execution_timeout",
-                "Model execution exceeded the bounded timeout.",
-                metadata=getattr(exc, "metadata", None),
-                retryable=False,
-            ) from None
+        except asyncio.TimeoutError:
+            # Timeout remains a distinct standard exception so the outer
+            # transport can map it to its existing safe timeout contract.
+            raise
 
         if context.idempotency_key is not None and self._idempotency is not None:
             await self._idempotency.complete(
@@ -124,7 +121,3 @@ class ContextualExecutionRunner:
                 result=result.to_public_dict(),
             )
         return result
-
-
-class IdempotencyConflictError(RuntimeError):
-    """Raised when the adapter cannot safely honor the requested replay."""
