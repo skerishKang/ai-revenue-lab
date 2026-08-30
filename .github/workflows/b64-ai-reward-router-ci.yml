@@ -1,0 +1,64 @@
+name: B64 AI Reward Router CI
+
+on:
+  push:
+    branches:
+      - b64-product-w9-public-source-expansion
+    paths:
+      - 'apps/ai-reward-router/**'
+      - '.github/workflows/b64-ai-reward-router-ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/ai-reward-router/**'
+      - '.github/workflows/b64-ai-reward-router-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/ai-reward-router
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/ai-reward-router/package-lock.json
+
+      - name: Assert exact head
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
