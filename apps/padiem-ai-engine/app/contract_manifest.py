@@ -132,7 +132,7 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("service_identity_contract", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("service_identity_wire_enforcement", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("execution_context", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
