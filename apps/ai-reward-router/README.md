@@ -17,7 +17,11 @@ npm run typecheck
 npm test
 ```
 
-`npm test` performs a clean TypeScript build into ignored `dist/` and runs the compiled foundation test. No network, provider, credential, database, or deployment call is performed by these commands.
+`npm test` performs a clean TypeScript build into ignored `dist/` and runs the compiled W0/W1 tests. No network, provider, credential, database, or deployment call is performed by these commands.
+
+## W1 source-policy domain
+
+`src/source-policy/` contains typed `Source`, `SourceEndpoint`, `SourcePolicyReview`, and `SourceCollectionGate` records, deterministic fixtures for the 22-source registry, and a pure effective-acquisition decision function. Registry inclusion, lane, acquisition mode, policy state, endpoint metadata, and collection gates remain separate. All seeded policy reviews are `PENDING`; no live collector is enabled by this W1 slice.
 
 ## Scope boundary
 

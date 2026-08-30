@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/tests/foundation.test.js"
+    "test": "npm run build && node --test dist/tests/*.test.js"
   },
   "devDependencies": {
     "@types/node": "22.15.29",
