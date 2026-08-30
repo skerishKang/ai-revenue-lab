@@ -4,12 +4,12 @@ import { CROWDGEN_VISTULA_RECORD } from './crowdgen-vistula.js';
 import { w8NegativeGatePassed, W8_NEGATIVE_DEMONSTRATIONS } from './negative-demonstrations.js';
 import { ONEFORMA_EXTRA_VERIFIED20_RECORDS } from './oneforma-extra.js';
 import { ONEFORMA_VERIFIED20_RECORDS } from './oneforma.js';
-import { OUTLIER_VERIFIED20_RECORD } from './outlier.js';
+import { OUTLIER_CURRENT_VERIFIED20_RECORD } from './outlier-current.js';
 import { PROLIFIC_VERIFIED20_RECORD } from './prolific.js';
 
 export const VERIFIED20_RECORDS = Object.freeze([
   PROLIFIC_VERIFIED20_RECORD,
-  OUTLIER_VERIFIED20_RECORD,
+  OUTLIER_CURRENT_VERIFIED20_RECORD,
   CROWDGEN_MOOGERAH_RECORD,
   CROWDGEN_PLUMERIA_RECORD,
   ...ONEFORMA_VERIFIED20_RECORDS,
