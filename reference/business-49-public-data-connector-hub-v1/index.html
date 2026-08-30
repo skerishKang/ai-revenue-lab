@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Business 49 Public Data Connector Hub Phase 1 synthetic visual reference">
+  <title>공공데이터 커넥터 허브 · Public Data Connector Workshop</title>
+  <link rel="stylesheet" href="styles/main.css?v=pdc-v1-20260729">
+</head>
+<body>
+  <a class="skip-link" href="#review-stage">본문으로 이동</a>
+  <header class="site-header">
+    <div class="identity">
+      <p class="eyebrow">BUSINESS 49 · UI_ONLY · PUBLIC DATA CONNECTOR WORKSHOP</p>
+      <h1>공공데이터<br>커넥터 허브</h1>
+      <p class="subtitle">공공 원천을 연결하기 전에, 권위·스키마·품질·한계를 먼저 조립합니다.</p>
+    </div>
+    <div class="trust-rack" aria-label="신뢰 경계">
+      <span>SYNTHETIC PUBLIC DATASET</span>
+      <span>VISUAL REFERENCE ONLY</span>
+      <span>NO LIVE API, SCRAPING, CREDENTIAL, OR DATA INGESTION</span>
+    </div>
+  </header>
+
+  <nav class="state-nav" role="tablist" aria-label="시각 상태 검토">
+    <button role="tab" data-state-control="cover" aria-selected="true" tabindex="0"><b>01</b> 표지</button>
+    <button role="tab" data-state-control="catalog" aria-selected="false" tabindex="-1"><b>02</b> 원천 목록</button>
+    <button role="tab" data-state-control="source" aria-selected="false" tabindex="-1"><b>03</b> 원천 기록</button>
+    <button role="tab" data-state-control="schema" aria-selected="false" tabindex="-1"><b>04</b> 스키마</button>
+    <button role="tab" data-state-control="quality" aria-selected="false" tabindex="-1"><b>05</b> 품질</button>
+    <button role="tab" data-state-control="package" aria-selected="false" tabindex="-1"><b>06</b> 명세 패키지</button>
+    <button role="tab" data-state-control="mobile" aria-selected="false" tabindex="-1"><b>07</b> 모바일</button>
+  </nav>
+
+  <main id="review-stage" class="review-stage" tabindex="-1">
+    <section class="visual-state is-active" data-state="cover" role="tabpanel">
+      <div class="cover-grid">
+        <figure class="cover-art"><img src="assets/images/connector-workshop-cover.svg?v=pdc-v1" alt="합성 공공데이터 연결 작업장 표지"></figure>
+        <article class="cover-copy">
+          <span class="authority">SYNTHETIC PUBLIC DATASET</span>
+          <p class="station">STATION 00 · SOURCE INTAKE</p>
+          <h2>HUMAN-REVIEWED<br>PUBLIC DATA<br>CONNECTOR SPEC</h2>
+          <p class="lead">연결 성공을 연출하지 않습니다. 공식성, 접근 방식, 필드 변환, 신선도와 누락 범위를 검토 가능한 명세로 남깁니다.</p>
+          <dl class="fact-list">
+            <div><dt>원천 세트</dt><dd>3 fictional Morae datasets</dd></div>
+            <div><dt>연결 상태</dt><dd>CONNECTOR READINESS — NOT CONNECTED</dd></div>
+            <div><dt>권위 경계</dt><dd>NO OFFICIAL ENDORSEMENT</dd></div>
+          </dl>
+        </article>
+      </div>
+      <div class="source-tape" aria-label="합성 데이터셋">
+        <span>MORAE CITY ORDINANCE INDEX</span><span>MORAE OPEN STATISTICS TABLE</span><span>MORAE PROCUREMENT NOTICES FEED</span>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="catalog" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>CATALOG STATION · 01</p><h2>공식 원천과 mirror를 한 줄에 섞지 않는다</h2></div><span class="station-tag">SOURCE CATALOG</span></header>
+      <div class="catalog-layout">
+        <figure class="focal"><img src="assets/images/source-authority-dossier.svg?v=pdc-v1" alt="공식 합성 원천과 사용하지 않는 비공식 mirror를 분리한 authority dossier"></figure>
+        <div class="catalog-cards">
+          <article class="dataset-card ordinance">
+            <span class="authority">OFFICIAL SOURCE — FICTIONAL</span><h3>Morae City Ordinance Index</h3><p>조례 제목·공포일·시행상태를 제공하는 합성 공식 목록.</p><dl><div><dt>Purpose</dt><dd>ordinance discovery</dd></div><div><dt>Availability</dt><dd>catalogued, not connected</dd></div></dl>
+          </article>
+          <article class="dataset-card stats">
+            <span class="authority">OFFICIAL SOURCE — FICTIONAL</span><h3>Morae Open Statistics Table</h3><p>월별 지역 통계와 결측 표식을 포함하는 합성 CSV 배포본.</p><dl><div><dt>Purpose</dt><dd>normalized indicator table</dd></div><div><dt>Availability</dt><dd>stale sample only</dd></div></dl>
+          </article>
+          <article class="dataset-card procurement">
+            <span class="authority">OFFICIAL SOURCE — FICTIONAL</span><h3>Morae Procurement Notices Feed</h3><p>공고번호·게시일·마감일을 담은 합성 JSON feed.</p><dl><div><dt>Purpose</dt><dd>notice monitoring</dd></div><div><dt>Availability</dt><dd>schema known, endpoint inactive</dd></div></dl>
+          </article>
+          <aside class="mirror-note"><span class="authority danger">UNOFFICIAL MIRROR — NOT USED</span><p><code>mirror.morae-archive.example</code>은 출처 불명·갱신시점 불명으로 connector 후보에서 제외합니다.</p></aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="source" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>SOURCE DOSSIER · 02</p><h2>접근 방법을 적는 것과 실제로 연결하는 것은 다르다</h2></div><span class="station-tag">AUTHORITY + ACCESS</span></header>
+      <div class="source-layout">
+        <div class="document-stack">
+          <figure><img src="assets/images/ordinance-source-document.svg?v=pdc-v1" alt="합성 조례 원천 문서 composite"></figure>
+          <figure><img src="assets/images/statistics-table-sheet.svg?v=pdc-v1" alt="합성 통계 원천 표"></figure>
+          <figure><img src="assets/images/procurement-feed-strip.svg?v=pdc-v1" alt="합성 조달 공고 feed strip"></figure>
+        </div>
+        <article class="source-ledger">
+          <div class="ledger-row"><span>SOURCE AUTHORITY</span><strong>Morae City Records Office — fictional</strong></div>
+          <div class="ledger-row"><span>OFFICIAL SOURCE — FICTIONAL</span><strong>Publisher-declared origin</strong></div>
+          <div class="ledger-row"><span>ACCESS METHOD — SYNTHETIC</span><strong>HTTPS JSON catalog + CSV distribution</strong><small>method documented; no request made</small></div>
+          <div class="ledger-row licence"><span>LICENCE STATEMENT — NOT LEGAL ADVICE</span><strong>Morae Public Data Licence 1.0 — fictional</strong><small>reuse terms require separate legal review</small></div>
+          <div class="date-pair"><div><span>PUBLICATION DATE</span><strong>2026-06-30</strong></div><div><span>RETRIEVAL DATE</span><strong>2026-07-22</strong></div></div>
+          <div class="freshness current"><span>FRESHNESS — CURRENT</span><p>조례 색인은 월간 cadence 내에 있음.</p></div>
+          <p class="no-endorsement">NO OFFICIAL ENDORSEMENT — fictional publisher identity is not a government affiliation claim.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="schema" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>SCHEMA BENCH · 03</p><h2>원천 필드와 정규화 필드를 lineage로 연결한다</h2></div><span class="station-tag">MAPPING BLUEPRINT</span></header>
+      <div class="schema-layout">
+        <figure class="focal blueprint"><img src="assets/images/schema-mapping-blueprint.svg?v=pdc-v1" alt="source field에서 normalized field로 변환되는 합성 schema mapping blueprint"></figure>
+        <div class="mapping-ledger">
+          <div class="mapping-head"><span>SOURCE FIELD</span><span>TRANSFORMATION</span><span>NORMALIZED FIELD</span></div>
+          <div class="mapping-row"><code>ord_no</code><span>trim + prefix preserve</span><code>ordinance_id</code></div>
+          <div class="mapping-row"><code>pub_dt</code><span>YYYY.MM.DD → ISO 8601</span><code>published_at</code></div>
+          <div class="mapping-row"><code>amt_won</code><span>numeric parse; blank stays null</span><code>amount_krw</code></div>
+          <div class="value-split"><article><span>RAW VALUE</span><strong>" 1,250 "</strong></article><i>→</i><article><span>TRANSFORMED VALUE</span><strong>1250</strong></article></div>
+          <div class="missing-rule"><span>MISSING ≠ ZERO</span><p>빈 문자열은 <code>null</code>로 유지합니다. 실제 값 <code>0</code>과 합치지 않습니다.</p></div>
+          <figure class="lineage-mini"><img src="assets/images/field-lineage-rail.svg?v=pdc-v1" alt="합성 field lineage rail"></figure>
+          <span class="lineage-label">FIELD LINEAGE</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="quality" role="tabpanel" hidden>
+      <header class="state-heading"><div><p>QUALITY BAY · 04</p><h2>신선도와 coverage 한계를 성공률로 덮지 않는다</h2></div><span class="station-tag">INSPECTION</span></header>
+      <div class="quality-layout">
+        <figure class="focal"><img src="assets/images/freshness-limitation-board.svg?v=pdc-v1" alt="current stale unknown freshness와 known limitation을 보여주는 합성 품질 보드"></figure>
+        <div class="quality-ledger">
+          <article><span class="authority">VALIDATION CHECK</span><h3>Schema conformance</h3><p>필수 7개 필드 중 7개 구조 확인 — synthetic.</p></article>
+          <article class="stale"><span>FRESHNESS — STALE</span><h3>Statistics table</h3><p>Expected monthly update보다 46일 지연. current로 표시하지 않음.</p></article>
+          <article class="unknown"><span>FRESHNESS — UNKNOWN</span><h3>Procurement mirror</h3><p>retrieval date와 publisher update date가 모두 불명.</p></article>
+          <article class="limitation"><span>KNOWN LIMITATION</span><h3>Ordinance amendments</h3><p>별표·부칙의 구조화 coverage가 검증되지 않았습니다.</p></article>
+          <article class="coverage"><span>COVERAGE INCOMPLETE</span><h3>Procurement notices</h3><p>취소·정정 공고 linkage가 표본에서 누락될 수 있습니다.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="package" role="tabpanel" hidden>
+      <header class="state-heading split"><div><p>SOURCE-TO-PUBLIC-DATA-CONNECTOR-SPEC</p><h2>공공 원천에서 사람 검토 커넥터 명세로</h2></div><button class="replay" type="button" data-motion-replay>Trace 다시 보기</button></header>
+      <div class="connector-line is-complete" data-connector-line data-motion-state="complete">
+        <div class="line-rail" aria-hidden="true"></div>
+        <article class="line-node n1"><span>SOURCE CATALOG</span><p>3 synthetic datasets</p></article>
+        <article class="line-node n2"><span>AUTHORITY + LICENCE</span><p>official fictional / no legal conclusion</p></article>
+        <article class="line-node n3"><span>ACCESS METHOD</span><p>documented, not executed</p></article>
+        <article class="line-node n4"><span>RAW SCHEMA</span><p>source fields retained</p></article>
+        <article class="line-node n5"><span>FIELD LINEAGE</span><p>normalized mapping traced</p></article>
+        <article class="line-node n6"><span>FRESHNESS + VALIDATION</span><p>current / stale / unknown</p></article>
+        <article class="line-node n7 risk"><span>KNOWN LIMITATION</span><p>coverage incomplete</p></article>
+        <article class="line-node n8"><span>CONNECTOR READINESS</span><p>NOT CONNECTED</p></article>
+        <div class="connector-spec-seal"><img src="assets/images/connector-spec-crate.svg?v=pdc-v1" alt="사람 검토 완료 공공데이터 커넥터 명세 패키지"><strong>HUMAN-REVIEWED PUBLIC DATA CONNECTOR SPEC</strong></div>
+        <p class="motion-status" data-motion-status aria-live="polite">HUMAN-REVIEWED PUBLIC DATA CONNECTOR SPEC · complete</p>
+      </div>
+      <div class="persistent-boundaries">
+        <span>LICENCE STATEMENT — NOT LEGAL ADVICE</span><span>FRESHNESS — STALE / UNKNOWN</span><span>MISSING ≠ ZERO</span><span>COVERAGE INCOMPLETE</span><span>NO OFFICIAL ENDORSEMENT</span><span>CONNECTOR READINESS — NOT CONNECTED</span>
+      </div>
+    </section>
+
+    <section class="visual-state" data-state="mobile" role="tabpanel" hidden>
+      <div class="phone-brief">
+        <header><p>390PX CONNECTOR BRIEF</p><h2>Morae Ordinance</h2><span>SYNTHETIC PUBLIC DATASET</span></header>
+        <section><small>SOURCE AUTHORITY</small><strong>OFFICIAL SOURCE — FICTIONAL</strong></section>
+        <section><small>LICENCE</small><p>Fictional terms · NOT LEGAL ADVICE</p></section>
+        <section class="row"><div><small>PUBLICATION</small><b>06.30</b></div><div><small>RETRIEVAL</small><b>07.22</b></div></section>
+        <section><small>FRESHNESS — CURRENT</small><p>monthly cadence within window</p></section>
+        <section><small>FIELD MAPPING</small><p><code>pub_dt</code> → <code>published_at</code></p></section>
+        <section><small>KNOWN LIMITATION</small><p>별표·부칙 coverage 미검증</p></section>
+        <footer>CONNECTOR READINESS — NOT CONNECTED<br>NO LIVE API OR INGESTION</footer>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">ALL SOURCES, URLS, SCHEMAS, LICENCES, DATES AND QUALITY RESULTS ARE SYNTHETIC · NO OFFICIAL ENDORSEMENT</footer>
+  <script src="scripts/review.js?v=pdc-v1-20260729"></script>
+</body>
+</html>
