@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import asyncio
 import json
 
 import pytest
 
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
-from padiem_ai_core import ExecutionContext, ExecutionResult, RunMetadata
+from padiem_ai_core import B14RouteMetadata, ExecutionResult, RunMetadata, RunStatus
 
 
 class FakeRuntime:
@@ -28,7 +27,11 @@ class FakeStreamRuntime:
         self.requests.append(request)
 
         async def iterator():
-            yield type("Event", (), {"done": True, "to_public_dict": lambda self: {"done": True}})()
+            yield type(
+                "Event",
+                (),
+                {"done": True, "to_public_dict": lambda self: {"done": True}},
+            )()
 
         return iterator()
 
@@ -37,8 +40,13 @@ class FakeStreamRuntime:
 def result():
     return ExecutionResult(
         answer="ok",
-        route=type("Route", (), {"to_public_dict": lambda self: {}})(),
-        metadata=RunMetadata(trace_id="run_test", app_id="b62", agent_id="agent", status="completed"),
+        route=B14RouteMetadata(),
+        metadata=RunMetadata(
+            trace_id="run_test",
+            app_id="b62",
+            agent_id="agent",
+            status=RunStatus.COMPLETED,
+        ),
     )
 
 
@@ -88,8 +96,7 @@ async def test_idempotency_key_fails_closed_without_adapter(result):
 async def test_trace_conflict_fails_closed(result):
     runtime = FakeRuntime(result)
     service = EngineService(runtime_factory=lambda _: runtime, b14_service_bound=True)
-    body = payload(trace_id="top_trace", extra_unused="ignored")
-    body.pop("extra_unused", None)
+    body = payload(trace_id="top_trace")
     body["execution_context"] = {"trace_id": "inner_trace"}
     response = await service.execute_payload(body)
     assert response.status_code == 400
@@ -108,7 +115,9 @@ async def test_streaming_idempotency_is_explicitly_unavailable():
         method="POST",
         path="/internal/v1/stream",
         content_type="application/json",
-        body=json.dumps(payload(trace_id="trace_123", idempotency_key="idem_123")).encode(),
+        body=json.dumps(
+            payload(trace_id="trace_123", idempotency_key="idem_123")
+        ).encode(),
     )
     assert response.status_code == 422
     assert response.body["error"]["code"] == "stream_idempotency_unavailable"
