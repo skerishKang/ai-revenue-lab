@@ -1,5 +1,6 @@
 import { verified20Progress } from './domain.js';
 import { CROWDGEN_MOOGERAH_RECORD, CROWDGEN_PLUMERIA_RECORD } from './crowdgen.js';
+import { CROWDGEN_MORAVA_RECORD } from './crowdgen-morava.js';
 import { CROWDGEN_VISTULA_RECORD } from './crowdgen-vistula.js';
 import { w8NegativeGatePassed, W8_NEGATIVE_DEMONSTRATIONS } from './negative-demonstrations.js';
 import { ONEFORMA_EXTRA_VERIFIED20_RECORDS } from './oneforma-extra.js';
@@ -15,6 +16,7 @@ export const VERIFIED20_RECORDS = Object.freeze([
   ...ONEFORMA_VERIFIED20_RECORDS,
   ...ONEFORMA_EXTRA_VERIFIED20_RECORDS,
   CROWDGEN_VISTULA_RECORD,
+  CROWDGEN_MORAVA_RECORD,
 ]);
 
 export const VERIFIED20_PROGRESS = verified20Progress(VERIFIED20_RECORDS);
