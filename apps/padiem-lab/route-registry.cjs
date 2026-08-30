@@ -334,6 +334,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 47,
+    route: "b47",
+    sourcePath: "reference/business-47-real-time-feedback-engine-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "Feedback Reaction Room",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 48,
     route: "b48",
     sourcePath: "reference/business-48-ai-verification-engine-v1",
