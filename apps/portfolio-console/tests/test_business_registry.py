@@ -7,14 +7,18 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "business-manifest.js"
 IDENTITY_CORE = ROOT / "business-identity-core.js"
 
-EXPECTED_NUMBERS = [*range(1, 56), 57, 58, 59]
-
 
 class BusinessRegistryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.script = MANIFEST.read_text(encoding="utf-8")
         cls.core_script = IDENTITY_CORE.read_text(encoding="utf-8")
+
+    def manifest_numbers(self) -> list[int]:
+        return [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.script)]
+
+    def core_numbers(self) -> list[int]:
+        return [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.core_script)]
 
     def business_block(self, number: int) -> str:
         match = re.search(
@@ -30,10 +34,11 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIsNotNone(match, f"Business {number} entry not found in identity core")
         return match.group(0)
 
-    def test_registry_has_exact_ordered_unique_numbers_through_fiftynine_with_gap_56(self) -> None:
-        numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.script)]
-        self.assertEqual(numbers, EXPECTED_NUMBERS)
-        self.assertEqual(len(numbers), 58)
+    def test_registry_has_ordered_unique_numbers_with_only_intentional_gap_56(self) -> None:
+        numbers = self.manifest_numbers()
+        self.assertGreaterEqual(max(numbers), 60)
+        expected = [number for number in range(1, max(numbers) + 1) if number != 56]
+        self.assertEqual(numbers, expected)
         self.assertEqual(len(numbers), len(set(numbers)))
         self.assertNotIn(56, numbers)
 
@@ -67,9 +72,10 @@ class BusinessRegistryTests(unittest.TestCase):
         self.assertIn('st:"review"', block)
 
     def test_identity_core_matches_manifest_number_contract(self) -> None:
-        numbers = [int(v) for v in re.findall(r"\bn:\s*(\d+),", self.core_script)]
-        self.assertEqual(numbers, EXPECTED_NUMBERS)
-        self.assertNotIn(56, numbers)
+        manifest_numbers = self.manifest_numbers()
+        core_numbers = self.core_numbers()
+        self.assertEqual(core_numbers, manifest_numbers)
+        self.assertNotIn(56, core_numbers)
 
     def test_manifest_defines_no_phase_status_literals_single_source(self) -> None:
         for literal in ('ui:"', 'ux:"', 'be:"'):
