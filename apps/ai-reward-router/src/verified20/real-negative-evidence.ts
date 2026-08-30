@@ -69,3 +69,27 @@ export const CROWDGEN_EXPERTS_LOW_CONFIDENCE_REVIEW: W8RealNegativeEvidenceCase 
   ]),
   evidenceSummary: 'CrowdGen Experts currently renders placeholder lorem-ipsum descriptions and repeats PROJECT ARISTOTLE with materially inconsistent task descriptions. B64 therefore routes this source observation to LOW_CONFIDENCE review and does not normalize any of those cards into VERIFIED 20.',
 });
+
+/**
+ * Real official PanelPower detail route observed 2026-08-30. The provider
+ * renders an application-level terminal page stating that the focus group is
+ * closed or cannot be found. A search-discovered detail route with that state
+ * must be suppressed rather than surfaced as a live earning opportunity.
+ */
+export const PANELPOWER_ENDED_DETAIL_BROKEN_LINK: W8RealNegativeEvidenceCase = Object.freeze({
+  evidenceId: 'w8-real-negative-panelpower-ended-detail-7381-20260830',
+  demonstrationId: 'BROKEN_LINK_SUPPRESSION',
+  sourceId: 'SRC-PANELPOWER',
+  canonicalUrl: 'https://www.panel.co.kr/survey/panel/detail/7381',
+  observedAt: '2026-08-30T10:24:00.000Z',
+  realEvidence: true,
+  disposition: 'SUPPRESSED',
+  countableVerified20: false,
+  reasonCodes: Object.freeze([
+    'OFFICIAL_DETAIL_ROUTE_TERMINAL_STATE',
+    'PROVIDER_SAYS_RECRUITMENT_CLOSED_OR_NOT_FOUND',
+    'NOT_LIVE_CURRENT_SUPPLY',
+    'SUPPRESS_FROM_RECOMMENDATION_AND_VERIFIED_LEDGER',
+  ]),
+  evidenceSummary: 'An official PanelPower survey detail route currently resolves to the provider message that the focus group recruitment is closed or the item cannot be found. B64 treats this terminal/missing detail as broken-for-live-supply and suppresses it instead of presenting it as current earning inventory.',
+});
