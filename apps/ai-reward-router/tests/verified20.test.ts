@@ -13,12 +13,24 @@ import {
 import { OUTLIER_CURRENT_VERIFIED20_RECORD } from '../src/verified20/outlier-current.js';
 import {
   GOOGLE_OPINION_REWARDS_KR_RECORD,
-  KOREAN_POCKET_MONEY_VERIFIED20_RECORDS,
+  IPSOS_ISAY_KR_RECORD,
   PANELPOWER_AIRDRESSER_RECORD,
+  PANELPOWER_PROGRAM_RECORD,
+  RAKUTEN_INSIGHT_KR_RECORD,
 } from '../src/verified20/korean-pocket-money.js';
+import { PANELPOWER_REALTOR_FOCUS_GROUP_RECORD } from '../src/verified20/panelpower-realtor.js';
 import { validateVerified20Record, verified20Progress } from '../src/verified20/domain.js';
 import { VERIFIED20_PROGRESS, VERIFIED20_RECORDS, W8_GATE_STATUS } from '../src/verified20/ledger.js';
 import { W8_NEGATIVE_DEMONSTRATIONS } from '../src/verified20/negative-demonstrations.js';
+
+const CORE_TAIL = Object.freeze([
+  RAKUTEN_INSIGHT_KR_RECORD,
+  PANELPOWER_PROGRAM_RECORD,
+  IPSOS_ISAY_KR_RECORD,
+  PANELPOWER_REALTOR_FOCUS_GROUP_RECORD,
+  GOOGLE_OPINION_REWARDS_KR_RECORD,
+  PANELPOWER_AIRDRESSER_RECORD,
+]);
 
 test('Prolific real source is manual/deep-link only after explicit bounded clearance', () => {
   const source = sourceById('SRC-PROLIFIC');
@@ -80,18 +92,19 @@ test('duplicate copies of one real opportunity can never fake a 20/20 gate', () 
   assert.equal(progress.gatePassed, false);
 });
 
-test('slots 15-20 are pocket-money or short paid research, never general job-board inventory', () => {
-  assert.deepEqual(KOREAN_POCKET_MONEY_VERIFIED20_RECORDS.map((item) => item.slot), [15, 16, 17, 18, 19, 20]);
-  for (const record of KOREAN_POCKET_MONEY_VERIFIED20_RECORDS) {
+test('slots 15-20 are policy-cleared pocket-money or short paid research, never general jobs', () => {
+  assert.deepEqual(CORE_TAIL.map((item) => item.slot), [15, 16, 17, 18, 19, 20]);
+  for (const record of CORE_TAIL) {
     const validation = validateVerified20Record(record);
     assert.equal(validation.countable, true, `${record.slot}: ${validation.errors.join('; ')}`);
     assert.notEqual(record.version.supplyAvailabilityState, 'PUBLIC_JOB_POSTING_AVAILABLE');
     assert.equal(record.version.opportunityCategory === 'SURVEY' || record.version.opportunityCategory === 'MARKET_RESEARCH', true);
   }
+  assert.equal(VERIFIED20_RECORDS.some((record) => record.snapshot.sourceId === 'SRC-LIFEPOINTS-KR'), false);
 });
 
 test('provider-level Korean survey programs never fabricate individual survey supply or expected payout', () => {
-  for (const record of KOREAN_POCKET_MONEY_VERIFIED20_RECORDS.filter((item) => item.supplyClaimMode === 'PROVIDER_PROGRAM_ONLY')) {
+  for (const record of CORE_TAIL.filter((item) => item.supplyClaimMode === 'PROVIDER_PROGRAM_ONLY')) {
     assert.equal(record.version.supplyAvailabilityState, 'PUBLIC_PROVIDER_PROGRAM_AVAILABLE');
     assert.equal(record.version.expectedPayoutValue, null);
     assert.equal(record.version.acceptanceProbability, null);
@@ -110,7 +123,11 @@ test('Google Opinion Rewards Korea is Android-specific and does not claim guaran
   assert.deepEqual(GOOGLE_OPINION_REWARDS_KR_RECORD.version.payoutMethod, { method: 'GOOGLE_PLAY_CREDIT' });
 });
 
-test('PanelPower AirDresser record is a bounded paid research study, not a job listing', () => {
+test('PanelPower current paid research records are bounded studies, not job listings', () => {
+  assert.equal(PANELPOWER_REALTOR_FOCUS_GROUP_RECORD.slot, 18);
+  assert.equal(PANELPOWER_REALTOR_FOCUS_GROUP_RECORD.version.advertisedCompensationValue, 100000);
+  assert.equal(PANELPOWER_REALTOR_FOCUS_GROUP_RECORD.version.compensationCurrency, 'KRW');
+  assert.equal(PANELPOWER_REALTOR_FOCUS_GROUP_RECORD.version.opportunityCategory, 'MARKET_RESEARCH');
   assert.equal(PANELPOWER_AIRDRESSER_RECORD.slot, 20);
   assert.equal(PANELPOWER_AIRDRESSER_RECORD.supplyClaimMode, 'PUBLIC_CURRENT_INVENTORY');
   assert.equal(PANELPOWER_AIRDRESSER_RECORD.version.opportunityCategory, 'MARKET_RESEARCH');
