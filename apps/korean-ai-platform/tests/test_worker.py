@@ -111,6 +111,8 @@ class TestEnvBridge:
         src = WORKER_SRC.read_text()
         assert "from app.pilot.worker_env import collect_env_overrides" in src
         assert "await collect_env_overrides(self.env, _ENV_KEYS)" in src
+        assert "for _env_key, _value in overrides.items()" in src
+        assert "_os.environ[_env_key] = str(_value)" in src
 
     def test_env_keys_defined(self):
         src = WORKER_SRC.read_text()
