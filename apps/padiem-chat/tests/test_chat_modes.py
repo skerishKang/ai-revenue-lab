@@ -7,6 +7,7 @@ from app.chat_modes import (
     DEFAULT_CHAT_MODE,
     ChatMode,
     ChatModeError,
+    chat_modes_api_payload,
     get_chat_mode_descriptor,
     list_chat_modes,
     resolve_chat_mode,
@@ -35,6 +36,30 @@ def test_browser_catalog_contains_no_provider_or_model_authority():
     assert [item["id"] for item in catalog] == ["auto", "fast", "balanced", "deep"]
     assert all(set(item) == {"id", "label", "description"} for item in catalog)
     serialized = repr(catalog).lower()
+    for forbidden in (
+        "provider",
+        "model_id",
+        "upstream_model",
+        "route_id",
+        "credential",
+        "poolside",
+        "laguna",
+        "agnes",
+    ):
+        assert forbidden not in serialized
+
+
+def test_api_payload_does_not_claim_unimplemented_mode_execution():
+    payload = chat_modes_api_payload()
+    assert payload["default_mode"] == "auto"
+    assert payload["accepted_request_mode_ids"] == ["auto"]
+    assert [item["id"] for item in payload["modes"]] == [
+        "auto",
+        "fast",
+        "balanced",
+        "deep",
+    ]
+    serialized = repr(payload).lower()
     for forbidden in (
         "provider",
         "model_id",
