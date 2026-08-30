@@ -1,3 +1,12 @@
+from .auth_sessions import (
+    AppliedAuthSessionTransition,
+    AuthSessionSnapshot,
+    AuthSessionState,
+    AuthSessionTransition,
+    AuthSessionTransitionKind,
+    apply_auth_session_transition,
+    validate_auth_session_transition_batch,
+)
 from .contracts import (
     BillingDisposition,
     CanonicalSubjectRef,
@@ -32,6 +41,11 @@ from .payment_events import (
 )
 
 __all__ = [
+    "AppliedAuthSessionTransition",
+    "AuthSessionSnapshot",
+    "AuthSessionState",
+    "AuthSessionTransition",
+    "AuthSessionTransitionKind",
     "BillingDisposition",
     "CanonicalPaymentEvent",
     "CanonicalSubjectRef",
@@ -55,7 +69,9 @@ __all__ = [
     "TokenUsage",
     "UsageEvent",
     "UsageOutcome",
+    "apply_auth_session_transition",
     "apply_credit_ledger_batch",
+    "validate_auth_session_transition_batch",
     "validate_credit_ledger_batch",
     "validate_payment_event_batch",
     "validate_usage_event_batch",
