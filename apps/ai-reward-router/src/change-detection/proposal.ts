@@ -22,6 +22,27 @@ function assertProposalInput(input: NextVersionProposalInput): void {
   if (input.candidate.sourceSnapshotId.trim().length === 0) {
     throw new Error('candidate sourceSnapshotId is required');
   }
+  if (input.candidate.sourceSnapshotId === input.previousVersion.sourceSnapshotId) {
+    throw new Error('W6 requires a later immutable SourceSnapshot distinct from the previous version snapshot');
+  }
+  if (input.provenance.inputSnapshotSha256.trim().length === 0) {
+    throw new Error('W5 provenance inputSnapshotSha256 is required');
+  }
+}
+
+function assertMaterialProposalIdentities(input: NextVersionProposalInput): void {
+  if (input.nextVersionId.trim().length === 0) {
+    throw new Error('nextVersionId is required for a material change proposal');
+  }
+  if (input.nextVersionId === input.previousVersion.id) {
+    throw new Error('nextVersionId must differ from the previous immutable version id');
+  }
+  if (input.changeId.trim().length === 0) {
+    throw new Error('changeId is required for a material change proposal');
+  }
+  if (input.reviewQueueId.trim().length === 0) {
+    throw new Error('reviewQueueId is required for a material change proposal');
+  }
 }
 
 function buildOpportunityVersion(input: NextVersionProposalInput): OpportunityVersion {
@@ -131,6 +152,7 @@ export function proposeNextOpportunityVersion(input: NextVersionProposalInput): 
     });
   }
 
+  assertMaterialProposalIdentities(input);
   const proposedVersion = buildOpportunityVersion(input);
   const materialFields = detection.materialChanges.map((change) => change.field);
   const groups = [...new Set(detection.materialChanges.map((change) => change.group))];
