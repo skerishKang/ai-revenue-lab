@@ -53,6 +53,19 @@ test('current Outlier slot is the reviewed v2 record, not the historical v1 base
   assert.equal(OUTLIER_CURRENT_VERIFIED20_RECORD.version.title.includes('Voice AI Evaluator'), true);
 });
 
+test('general public job postings are rejected from VERIFIED 20 even if otherwise fully reviewed', () => {
+  const jobPostingRecord = {
+    ...OUTLIER_CURRENT_VERIFIED20_RECORD,
+    version: {
+      ...OUTLIER_CURRENT_VERIFIED20_RECORD.version,
+      supplyAvailabilityState: 'PUBLIC_JOB_POSTING_AVAILABLE',
+    },
+  };
+  const validation = validateVerified20Record(jobPostingRecord);
+  assert.equal(validation.countable, false);
+  assert.equal(validation.errors.includes('general job postings belong to external job-search assist, not VERIFIED 20 core supply'), true);
+});
+
 test('duplicate copies of one real opportunity can never fake a 20/20 gate', () => {
   const duplicates = Array.from({ length: 20 }, () => OUTLIER_CURRENT_VERIFIED20_RECORD);
   const progress = verified20Progress(duplicates);
@@ -62,10 +75,10 @@ test('duplicate copies of one real opportunity can never fake a 20/20 gate', () 
   assert.equal(progress.gatePassed, false);
 });
 
-test('W8 remains fail-closed at 13/20 with four real negative demonstrations passed', () => {
-  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 13);
+test('W8 remains fail-closed at 14/20 with four real negative demonstrations passed', () => {
+  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 14);
   assert.equal(VERIFIED20_PROGRESS.targetCount, 20);
-  assert.equal(VERIFIED20_PROGRESS.remainingCount, 7);
+  assert.equal(VERIFIED20_PROGRESS.remainingCount, 6);
   assert.equal(VERIFIED20_PROGRESS.gatePassed, false);
   assert.equal(W8_NEGATIVE_DEMONSTRATIONS.filter((item) => item.status === 'PASS').length, 4);
   assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'STALE_SOURCE_SUPPRESSION')?.status, 'PASS');
