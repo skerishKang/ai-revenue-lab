@@ -47,6 +47,7 @@ _ENV_KEYS = frozenset({
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
     "OPENROUTER_API_KEY",
     "AGNES_API_KEY",
+    "PADIEM_POOLSIDE_API_KEY",
     "B14_PROVIDER_MODE",
     "B14_OPENROUTER_BASE_URL",
     "B14_SITE_URL",
@@ -88,12 +89,9 @@ class Default(WorkerEntrypoint):
                 },
             )
 
-        # Collect env bindings
-        env_overrides: dict[str, str] = {}
-        for key in _ENV_KEYS:
-            value = getattr(self.env, key, None)
-            if value is not None:
-                env_overrides[key] = str(value)
+        from app.pilot.worker_env import collect_env_overrides
+
+        env_overrides = await collect_env_overrides(self.env, _ENV_KEYS)
 
         # Apply Worker env bindings BEFORE app processes the request.
         if env_overrides:
