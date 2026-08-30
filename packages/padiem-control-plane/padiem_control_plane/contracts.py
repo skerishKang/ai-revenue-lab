@@ -296,21 +296,37 @@ class RouteEvidence:
                 "fallback_used must be bool or None",
             )
 
-        has_observed_value = any(
-            value is not None
-            for value in (
-                self.selected_provider,
-                self.selected_model,
-                self.selected_upstream_model,
-                self.selected_route_id,
-                self.attempt_count,
-                self.fallback_used,
-            )
+        route_values = (
+            self.selected_provider,
+            self.selected_model,
+            self.selected_upstream_model,
+            self.selected_route_id,
+            self.attempt_count,
+            self.fallback_used,
         )
+        has_observed_value = any(value is not None for value in route_values)
         if self.status is RouteEvidenceStatus.UNKNOWN and has_observed_value:
             raise ControlPlaneContractError(
                 "invalid_route_evidence",
                 "UNKNOWN route evidence cannot carry observed route values",
+            )
+        if self.status is RouteEvidenceStatus.PARTIAL and not has_observed_value:
+            raise ControlPlaneContractError(
+                "invalid_route_evidence",
+                "PARTIAL route evidence requires at least one observed route value",
+            )
+        if self.status is RouteEvidenceStatus.OBSERVED and any(
+            value is None
+            for value in (
+                self.selected_provider,
+                self.selected_model,
+                self.attempt_count,
+                self.fallback_used,
+            )
+        ):
+            raise ControlPlaneContractError(
+                "invalid_route_evidence",
+                "OBSERVED route evidence requires provider, model, attempt_count, and fallback_used",
             )
 
     def to_public_dict(self) -> dict[str, str | int | bool | None]:
