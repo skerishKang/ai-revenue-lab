@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from padiem_ai_core import (
+from padiem_ai_core.context_policy import (
     ContextFragment,
     ContextPolicy,
     ContextPolicyError,
