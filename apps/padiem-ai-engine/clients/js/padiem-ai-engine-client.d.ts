@@ -66,8 +66,15 @@ export class PadiemAiEngineClientError extends Error {
   readonly metadata: unknown;
 }
 
+export interface PadiemAiEngineClientOptions {
+  binding: EngineBinding;
+  appId: string;
+  callerId: string;
+  credential: string;
+}
+
 export class PadiemAiEngineClient {
-  constructor(options: { binding: EngineBinding; appId: string });
+  constructor(options: PadiemAiEngineClientOptions);
   execute(run: EngineRunRequest): Promise<EngineCompletedResult>;
   stream(run: EngineRunRequest): AsyncGenerator<EngineStreamEvent, void, unknown>;
   health(): Promise<EngineHealthResult>;
