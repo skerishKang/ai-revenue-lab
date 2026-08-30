@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .b14_client import B14Client, ChatRuntimeError, _resolve_b62_policy
-from .model_policy import model_profile_is_assigned
+from .model_policy import model_policy_is_executable
 from .usage_gate import UsageDecision
 
 
@@ -107,17 +107,18 @@ class DispatchAwareB14Client(B14Client):
     """Refund failures B62 can prove happened before B14 dispatch.
 
     Missing Service Bindings and, when the public live deadman switch is armed,
-    an unassigned Padiem model profile are local deterministic pre-dispatch
-    failures. They refund the exact active reservation. Non-live B14 test/preflight
+    a non-executable Padiem model policy are local deterministic pre-dispatch
+    failures. Router-owned ``b14/auto`` is executable without a concrete B62
+    model assignment, so it is allowed to reach B14. Non-live B14 test/preflight
     paths remain available for infrastructure regression without representing a
     public product route.
     """
 
-    async def _reject_unassigned_profile(self, messages: list[dict[str, str]]) -> None:
+    async def _reject_non_executable_policy(self, messages: list[dict[str, str]]) -> None:
         if self.settings.runtime_mode == "mock" or not self.settings.live_enabled:
             return
         policy = _resolve_b62_policy(messages)
-        if model_profile_is_assigned(policy.model_id):
+        if model_policy_is_executable(policy.model_id):
             return
         await _refund_active_reservation()
         raise ChatRuntimeError(
@@ -142,13 +143,13 @@ class DispatchAwareB14Client(B14Client):
             yield event
 
     async def stream_text_auto(self, messages, *args, **kwargs):
-        await self._reject_unassigned_profile(messages)
+        await self._reject_non_executable_policy(messages)
         await self._prepare_stream_dispatch()
         async for event in super().stream_text_auto(messages, *args, **kwargs):
             yield event
 
     async def complete(self, messages, *args, **kwargs):
-        await self._reject_unassigned_profile(messages)
+        await self._reject_non_executable_policy(messages)
         if (
             self.settings.runtime_mode != "mock"
             and self.require_service_binding
