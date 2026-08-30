@@ -2,7 +2,14 @@ import { verified20Progress } from './domain.js';
 import { CROWDGEN_MOOGERAH_RECORD, CROWDGEN_PLUMERIA_RECORD } from './crowdgen.js';
 import { CROWDGEN_MORAVA_RECORD } from './crowdgen-morava.js';
 import { CROWDGEN_VISTULA_RECORD } from './crowdgen-vistula.js';
-import { KOREAN_POCKET_MONEY_VERIFIED20_RECORDS } from './korean-pocket-money.js';
+import {
+  GOOGLE_OPINION_REWARDS_KR_RECORD,
+  IPSOS_ISAY_KR_RECORD,
+  PANELPOWER_AIRDRESSER_RECORD,
+  PANELPOWER_PROGRAM_RECORD,
+  RAKUTEN_INSIGHT_KR_RECORD,
+} from './korean-pocket-money.js';
+import { PANELPOWER_REALTOR_FOCUS_GROUP_RECORD } from './panelpower-realtor.js';
 import { w8NegativeGatePassed, W8_NEGATIVE_DEMONSTRATIONS } from './negative-demonstrations.js';
 import { ONEFORMA_EXTRA_VERIFIED20_RECORDS } from './oneforma-extra.js';
 import { ONEFORMA_VERIFIED20_RECORDS } from './oneforma.js';
@@ -18,7 +25,12 @@ export const VERIFIED20_RECORDS = Object.freeze([
   ...ONEFORMA_EXTRA_VERIFIED20_RECORDS,
   CROWDGEN_VISTULA_RECORD,
   CROWDGEN_MORAVA_RECORD,
-  ...KOREAN_POCKET_MONEY_VERIFIED20_RECORDS,
+  RAKUTEN_INSIGHT_KR_RECORD,
+  PANELPOWER_PROGRAM_RECORD,
+  IPSOS_ISAY_KR_RECORD,
+  PANELPOWER_REALTOR_FOCUS_GROUP_RECORD,
+  GOOGLE_OPINION_REWARDS_KR_RECORD,
+  PANELPOWER_AIRDRESSER_RECORD,
 ]);
 
 export const VERIFIED20_PROGRESS = verified20Progress(VERIFIED20_RECORDS);
