@@ -1,9 +1,11 @@
 import { verified20Progress } from './domain.js';
 import { w8NegativeGatePassed, W8_NEGATIVE_DEMONSTRATIONS } from './negative-demonstrations.js';
+import { OUTLIER_VERIFIED20_RECORD } from './outlier.js';
 import { PROLIFIC_VERIFIED20_RECORD } from './prolific.js';
 
 export const VERIFIED20_RECORDS = Object.freeze([
   PROLIFIC_VERIFIED20_RECORD,
+  OUTLIER_VERIFIED20_RECORD,
 ]);
 
 export const VERIFIED20_PROGRESS = verified20Progress(VERIFIED20_RECORDS);
