@@ -87,15 +87,15 @@
     identity({ n:39, s:"112-real-time-interpretation", t:"112 Real-Time Interpretation", k:"112 실시간 AI 통역", a:NA.PROPOSED, l:"visual_reference", st:"review", p:44, w:"reference/business-39-112-real-time-interpretation-v1/" }),
     identity({ n:40, s:"emergency-urgency-ai", t:"Emergency Urgency AI", k:"긴급도 판단 AI", a:NA.PROPOSED, l:"visual_reference", st:"review", p:24, w:"reference/business-40-emergency-urgency-ai-v1/" }),
     identity({ n:41, s:"foreign-emergency-assistant", t:"Foreign Emergency Assistant", k:"외국인 긴급신고 도우미", a:NA.PROPOSED, l:"visual_reference", st:"review", p:22, w:"reference/business-41-foreign-emergency-assistant-v1/" }),
-    identity({ n:42, s:"ai-development-control-tower", t:"AI Development Control Tower", k:"AI 개발 관제탑", a:NA.PROPOSED, l:"visual_reference", st:"review", p:20, w:"reference/business-42-ai-development-control-tower-v1/" }),
-    identity({ n:43, s:"ai-software-factory", t:"AI Software Factory", k:"AI 소프트웨어 공장", a:NA.PROPOSED, l:"visual_reference", st:"review", p:18, w:"reference/business-43-ai-software-factory-v1/" }),
+    identity({ n:42, s:"ai-development-control-tower", t:"AI Development Command Center", k:"AI 개발 지휘실", a:NA.PROPOSED, l:"visual_reference", st:"review", p:20, w:"reference/business-42-ai-development-control-tower-v1/" }),
+    identity({ n:43, s:"ai-software-factory", t:"AI Software Delivery Lab", k:"AI 소프트웨어 전달실", a:NA.PROPOSED, l:"visual_reference", st:"review", p:18, w:"reference/business-43-ai-software-factory-v1/" }),
     // ═══ 44 ═══
     identity({ n:44, s:"portfolio-console", t:"Portfolio Console", k:"포트폴리오 콘솔", a:NA.EXISTING_PROJECT, l:"active", st:"running", p:10, su:"https://ai-revenue-portfolio-console.pages.dev/", w:"apps/portfolio-console/" }),
     // ═══ 45–55 ═══
     identity({ n:45, s:"ai-content-engine", t:"AI Content Engine", k:"AI 콘텐츠 엔진", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-45-ai-content-engine-v1/" }),
     identity({ n:46, s:"ai-personalization-engine", t:"AI Personalization Engine", k:"AI 개인화 엔진", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-46-ai-personalization-engine-v1/" }),
     identity({ n:47, s:"real-time-feedback-engine", t:"Real-Time Feedback Engine", k:"실시간 반응 엔진", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-47-real-time-feedback-engine-v1/" }),
-    identity({ n:48, s:"ai-verification-engine", t:"AI Verification Engine", k:"AI 검증·승인 엔진", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-48-ai-verification-engine-v1/" }),
+    identity({ n:48, s:"ai-verification-engine", t:"AI Evidence Review Studio", k:"AI 증거 검토실", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-48-ai-verification-engine-v1/" }),
     identity({ n:49, s:"public-data-connector-hub", t:"Public Data Connector Hub", k:"공공데이터 커넥터 허브", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-49-public-data-connector-hub-v1/" }),
     identity({ n:50, s:"private-data-connector-hub", t:"Private Data Connector Hub", k:"사내자료 커넥터 허브", a:NA.CANDIDATE, l:"integrated_successor", st:"external", p:5, pc:"expanded-successor", bk:"integrated-successor", sn:"Ieeon", sk:"이어온" }),
     identity({ n:51, s:"ai-workflow-marketplace", t:"AI Workflow Marketplace", k:"AI 워크플로우 마켓", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-51-ai-workflow-marketplace-v1/" }),
