@@ -97,7 +97,6 @@ from .execution_runtime import (
 )
 from .contextual_execution import (
     ContextualExecutionRunner,
-    IdempotencyConflictError as ContextualIdempotencyConflictError,
     PreparedExecution,
     prepare_execution,
 )
@@ -215,7 +214,6 @@ __all__ = [
     "ExecutionRuntime",
     "ExecutionRuntimeError",
     "ContextualExecutionRunner",
-    "ContextualIdempotencyConflictError",
     "PreparedExecution",
     "prepare_execution",
     "B14StreamExecutor",
