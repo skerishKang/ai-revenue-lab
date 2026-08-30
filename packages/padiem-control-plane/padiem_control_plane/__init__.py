@@ -14,12 +14,15 @@ from .contracts import (
     UsageOutcome,
     validate_usage_event_batch,
 )
+from .entitlements import EntitlementGrant, EntitlementSnapshot
 
 __all__ = [
     "BillingDisposition",
     "CanonicalSubjectRef",
     "ControlPlaneContractError",
     "CostEvidenceSource",
+    "EntitlementGrant",
+    "EntitlementSnapshot",
     "IdentityLinkState",
     "MonetaryCostEvidence",
     "ProductIdentityLink",
