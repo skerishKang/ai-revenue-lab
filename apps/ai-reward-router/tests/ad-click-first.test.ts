@@ -10,9 +10,12 @@ import {
   isConsumerSupplyVisible,
 } from '../src/ad-click-first/index.js';
 
-test('issue 1112 keeps only ad/click supply visible on the default consumer surface', () => {
+test('issue 1112 keeps only ad/click supply visible after CENTRAL technical completion while owner activation remains pending', () => {
   assert.equal(AD_CLICK_FIRST_GATE.issueNumber, 1112);
-  assert.equal(AD_CLICK_FIRST_GATE.status, 'IN_PROGRESS');
+  assert.equal(AD_CLICK_FIRST_GATE.status, 'TECHNICAL_COMPLETE_OWNER_ACTIVATION_PENDING');
+  assert.equal(AD_CLICK_FIRST_GATE.centralTechnicalComplete, true);
+  assert.equal(AD_CLICK_FIRST_GATE.ownerLiveActivationPending, true);
+  assert.equal(AD_CLICK_FIRST_GATE.ownerActivationRequiredForRealSupply, true);
   assert.equal(isConsumerSupplyVisible('AD_CLICK'), true);
   assert.equal(isConsumerSupplyVisible('SURVEY'), false);
   assert.equal(isConsumerSupplyVisible('MICROTASK'), false);
