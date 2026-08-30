@@ -71,9 +71,9 @@ export function validateVerifiedOpportunityTrustRecord(record: VerifiedOpportuni
     errors.push('provider-level evidence must not fabricate current inventory');
   }
   if (record.version.supplyAvailabilityState === 'PUBLIC_JOB_POSTING_AVAILABLE') {
-    errors.push('general job postings belong to external job-search assist, not verified core supply');
+    errors.push('general job postings belong to external job-search assist, not VERIFIED 20 core supply');
   }
-  if (record.realEvidence !== true || record.syntheticFixture !== false) errors.push('synthetic fixtures never count toward verified opportunity gates');
+  if (record.realEvidence !== true || record.syntheticFixture !== false) errors.push('synthetic fixtures never count toward VERIFIED 20');
   return Object.freeze({ countable: errors.length === 0, errors: Object.freeze(errors) });
 }
 
