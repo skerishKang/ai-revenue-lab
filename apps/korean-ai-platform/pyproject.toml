@@ -25,6 +25,9 @@ dev = [
     "playwright>=1.50,<2",
 ]
 
+[tool.pywrangler]
+allow-build = true
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["app*"]
