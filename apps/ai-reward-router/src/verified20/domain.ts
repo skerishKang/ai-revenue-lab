@@ -46,13 +46,14 @@ export function validateVerified20Record(record: Verified20Record): Verified20Va
   const errors: string[] = [];
   if (!Number.isInteger(record.slot) || record.slot < 1 || record.slot > 20) errors.push('slot must be an integer from 1 to 20');
   if (record.sourcePolicy.decision !== 'PASS' && record.sourcePolicy.decision !== 'PASS_WITH_LIMITS') errors.push('source policy must be explicitly cleared');
+  if (record.sourceGates.some((gate) => gate.required && gate.status !== 'PASS' && gate.status !== 'WAIVED')) errors.push('all required source gates must be PASS or WAIVED');
   if (record.snapshot.sourceId !== record.opportunity.sourceId) errors.push('snapshot/opportunity source mismatch');
   if (record.version.offerId !== record.opportunity.id) errors.push('version must belong to opportunity');
   if (record.version.sourceSnapshotId !== record.snapshot.id) errors.push('version must bind the real source snapshot');
   if (record.version.verificationState !== 'VERIFIED') errors.push('version must be human-reviewed VERIFIED');
   if (record.opportunity.currentVersionId !== record.version.id) errors.push('opportunity current version must be the verified version');
   if (record.reviewQueue.offerVersionId !== record.version.id || record.reviewQueue.state !== 'RESOLVED') errors.push('review queue must be resolved for the verified version');
-  if (record.reviewDecision.offerVersionId !== record.version.id || record.reviewDecision.decision === 'REJECT') errors.push('accepted review decision is required');
+  if (record.reviewDecision.reviewQueueId !== record.reviewQueue.id || record.reviewDecision.offerVersionId !== record.version.id || record.reviewDecision.decision === 'REJECT') errors.push('accepted review decision must bind the resolved queue and verified version');
   if (record.evidence.length === 0) errors.push('field-level evidence is required');
   if (record.criticalEvidenceIds.length === 0) errors.push('critical evidence list is required');
   for (const id of record.criticalEvidenceIds) {
@@ -68,12 +69,27 @@ export function validateVerified20Record(record: Verified20Record): Verified20Va
 
 export function verified20Progress(records: readonly Verified20Record[]) {
   const validations = records.map((record) => validateVerified20Record(record));
-  const count = validations.filter((item) => item.countable).length;
+  const seenSlots = new Set<number>();
+  const seenOpportunityIds = new Set<string>();
+  let count = 0;
+
+  records.forEach((record, index) => {
+    const validation = validations[index];
+    if (!validation?.countable) return;
+    if (seenSlots.has(record.slot) || seenOpportunityIds.has(record.opportunity.id)) return;
+    seenSlots.add(record.slot);
+    seenOpportunityIds.add(record.opportunity.id);
+    count += 1;
+  });
+
+  const expectedSlotsPresent = count === 20 && Array.from({ length: 20 }, (_, index) => index + 1).every((slot) => seenSlots.has(slot));
   return Object.freeze({
     verifiedCount: count,
     targetCount: 20,
     remainingCount: 20 - count,
-    gatePassed: count === 20,
+    gatePassed: count === 20 && expectedSlotsPresent,
+    duplicateSlotDetected: new Set(records.map((record) => record.slot)).size !== records.length,
+    duplicateOpportunityDetected: new Set(records.map((record) => record.opportunity.id)).size !== records.length,
     validations: Object.freeze(validations),
   });
 }
