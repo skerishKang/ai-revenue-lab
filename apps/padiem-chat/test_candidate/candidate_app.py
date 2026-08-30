@@ -4,7 +4,6 @@ import hashlib
 import hmac
 import json
 from collections.abc import AsyncIterator
-from pathlib import Path
 from typing import Any, Protocol
 
 import httpx
@@ -12,8 +11,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
+from starlette.routing import Route
 
 POOL_SIDE_CHAT_URL = "https://inference.poolside.ai/v1/chat/completions"
 POOL_SIDE_MODEL = "poolside/laguna-s-2.1"
@@ -299,13 +297,11 @@ def create_app(
     configured_digest: str,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Starlette:
-    static_dir = Path(__file__).resolve().parents[1] / "static"
     app = Starlette(
         routes=[
             Route("/health", health, methods=["GET"]),
             Route("/api/chat", chat, methods=["POST"]),
             Route("/api/chat/stream", stream_chat, methods=["POST"]),
-            Mount("/", app=StaticFiles(directory=str(static_dir), html=True), name="static"),
         ]
     )
     app.add_middleware(GuardMiddleware)
