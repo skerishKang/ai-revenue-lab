@@ -211,6 +211,37 @@ def test_invalid_usage_values_cost_and_unknown_route_fail_closed() -> None:
     assert exc_info.value.code == "invalid_route_evidence"
 
 
+def test_route_evidence_status_requires_matching_minimum_evidence() -> None:
+    partial = RouteEvidence(
+        status=RouteEvidenceStatus.PARTIAL,
+        selected_provider="poolside",
+    )
+    assert partial.status is RouteEvidenceStatus.PARTIAL
+    assert partial.selected_provider == "poolside"
+
+    with pytest.raises(ControlPlaneContractError) as exc_info:
+        RouteEvidence(status=RouteEvidenceStatus.PARTIAL)
+    assert exc_info.value.code == "invalid_route_evidence"
+
+    with pytest.raises(ControlPlaneContractError) as exc_info:
+        RouteEvidence(
+            status=RouteEvidenceStatus.OBSERVED,
+            selected_provider="poolside",
+            selected_model="poolside/laguna-s-2.1",
+            attempt_count=1,
+        )
+    assert exc_info.value.code == "invalid_route_evidence"
+
+    observed = RouteEvidence(
+        status=RouteEvidenceStatus.OBSERVED,
+        selected_provider="poolside",
+        selected_model="poolside/laguna-s-2.1",
+        attempt_count=1,
+        fallback_used=False,
+    )
+    assert observed.status is RouteEvidenceStatus.OBSERVED
+
+
 def test_usage_event_requires_timezone_aware_server_timestamp() -> None:
     with pytest.raises(ControlPlaneContractError) as exc_info:
         UsageEvent(
