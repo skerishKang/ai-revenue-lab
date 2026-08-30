@@ -85,20 +85,28 @@
 
   function collectConversation() {
     const entries = [];
+    let pendingUser = null;
     messageList.querySelectorAll(".message").forEach((article) => {
       if (!(article instanceof Element)) return;
       if (article.classList.contains("user-message")) {
         const bubble = article.querySelector(".message-bubble");
         const text = bubble ? visiblePlainText(bubble) : "";
-        if (text) entries.push({ label: "나", text });
+        pendingUser = text ? { label: "나", text } : null;
         return;
       }
       if (article.classList.contains("assistant-message")) {
         const text = exportableAssistantText(article);
-        if (text) entries.push({ label: "Padiem Chat", text });
+        if (!text) {
+          pendingUser = null;
+          return;
+        }
+        if (pendingUser) {
+          entries.push(pendingUser);
+          pendingUser = null;
+        }
+        entries.push({ label: "Padiem Chat", text });
       }
     });
-    while (entries.length && entries[entries.length - 1].label === "나") entries.pop();
     return entries;
   }
 
