@@ -97,3 +97,4 @@ export * from './ayet-rewarded-video.js';
 export * from './ayet-web-integration.js';
 export * from './ayet-s2s-postback.js';
 export * from './reward-events.js';
+export * from './source-priority.js';
