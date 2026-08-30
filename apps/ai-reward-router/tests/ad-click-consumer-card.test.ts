@@ -41,6 +41,34 @@ test('unknown reward never leaks into the click-first default surface', () => {
   assert.equal(assessment.reasons.includes('REWARD_NOT_CONFIRMED'), true);
 });
 
+test('a generic clickable ad is not a rewarded CLICK action', () => {
+  const assessment = assessAdClickConsumerCandidate({ ...liveCandidate, actionKind: 'CLICK', estimatedActiveSeconds: 5 });
+  assert.equal(assessment.visible, false);
+  assert.equal(assessment.reasons.includes('CLICK_INCENTIVE_NOT_EXPLICITLY_ALLOWED'), true);
+});
+
+test('CLICK becomes eligible only with explicit campaign/provider incentive authority', () => {
+  const assessment = assessAdClickConsumerCandidate({
+    ...liveCandidate,
+    actionKind: 'CLICK',
+    estimatedActiveSeconds: 5,
+    incentivizedActionPermission: 'EXPLICITLY_ALLOWED',
+  });
+  assert.equal(assessment.visible, true);
+  assert.deepEqual(assessment.reasons, []);
+});
+
+test('an explicitly prohibited CLICK remains suppressed', () => {
+  const assessment = assessAdClickConsumerCandidate({
+    ...liveCandidate,
+    actionKind: 'CLICK',
+    estimatedActiveSeconds: 5,
+    incentivizedActionPermission: 'PROHIBITED',
+  });
+  assert.equal(assessment.visible, false);
+  assert.equal(assessment.reasons.includes('CLICK_INCENTIVE_NOT_EXPLICITLY_ALLOWED'), true);
+});
+
 test('tasks longer than five minutes are not treated as click-first even when they come from an offerwall', () => {
   const assessment = assessAdClickConsumerCandidate({ ...liveCandidate, actionKind: 'VERY_SHORT_FREE_ACTION', estimatedActiveSeconds: 301 });
   assert.equal(assessment.visible, false);
