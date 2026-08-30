@@ -5,12 +5,13 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from .contracts import ErrorClass, RunMetadata, RunStatus, UsageMetadata
-from .execution_context import ExecutionContext, IdempotencyAdapter, request_fingerprint
+from .execution_context import (
+    ExecutionContext,
+    IdempotencyAdapter,
+    IdempotencyConflictError,
+    request_fingerprint,
+)
 from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntime, ExecutionRuntimeError
-
-
-class IdempotencyConflictError(RuntimeError):
-    """Raised when the adapter cannot safely honor the requested replay."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,8 +104,6 @@ class ContextualExecutionRunner:
                 return replay
 
         try:
-            # Cancellation is deliberately not caught or converted. A caller
-            # cancelling this coroutine must observe asyncio.CancelledError.
             result = await asyncio.wait_for(
                 self._runtime.run(request),
                 timeout=context.timeout_seconds,
