@@ -343,6 +343,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 51,
+    route: "b51",
+    sourcePath: "reference/business-51-ai-workflow-marketplace-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "검증 워크플로우 장터",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 52,
     route: "b52",
     sourcePath: "reference/business-52-scheduled-agent-operations-v1",
