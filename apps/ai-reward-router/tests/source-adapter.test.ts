@@ -78,8 +78,11 @@ test('MANUAL_ONLY accepts explicit curated input with zero automated transport c
   const adapter = new FakeSourceAdapter(sourceId);
   const policyInput: EffectiveAcquisitionInput = {
     source: sourceById(sourceId),
-    policy: policyBySourceId(sourceId),
-    gates: gatesBySourceId(sourceId),
+    policy: {
+      ...policyBySourceId(sourceId),
+      decision: 'PASS',
+    },
+    gates: gatesBySourceId(sourceId).map((gate) => ({ ...gate, status: 'PASS' as const })),
     attempt: 'MANUAL_CURATED',
   };
   const repository = new InMemorySnapshotRepository();
