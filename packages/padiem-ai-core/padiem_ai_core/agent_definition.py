@@ -2,8 +2,8 @@
 
 An Agent definition composes already-authorized Core capabilities. It cannot
 mint permissions, connector scopes, entitlements, approvals, or child agents.
-This v1 contract intentionally forbids sub-agent delegation; bounded runtime
-orchestration can be implemented later against trusted server state.
+This v1 contract intentionally forbids sub-agent delegation; runtime execution
+continues to use the existing ``AgentProfile``/Tool Runtime authority.
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ _CONNECTOR_ID_RE = re.compile(r"^connector:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-
 _CAPABILITY_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,255}$")
 
+MAX_TITLE_CHARS = 160
 MAX_DESCRIPTION_CHARS = 1_000
 MAX_INSTRUCTION_CHARS = 12_000
 MAX_SKILL_IDS = 32
@@ -113,8 +114,10 @@ def _validate_unique_ids(
 class BoundedAgentDefinition:
     agent_id: str
     publisher_id: str
+    title: str
     description: str
     instruction: str
+    output_contract_ref: str
     skill_package_ids: tuple[str, ...] = ()
     allowed_tool_ids: tuple[str, ...] = ()
     connector_requirement_ids: tuple[str, ...] = ()
@@ -132,6 +135,11 @@ class BoundedAgentDefinition:
         object.__setattr__(self, "publisher_id", _safe_ref("publisher_id", self.publisher_id))
         object.__setattr__(
             self,
+            "title",
+            _bounded_text("title", self.title, maximum=MAX_TITLE_CHARS),
+        )
+        object.__setattr__(
+            self,
             "description",
             _bounded_text("description", self.description, maximum=MAX_DESCRIPTION_CHARS),
         )
@@ -139,6 +147,11 @@ class BoundedAgentDefinition:
             self,
             "instruction",
             _bounded_text("instruction", self.instruction, maximum=MAX_INSTRUCTION_CHARS),
+        )
+        object.__setattr__(
+            self,
+            "output_contract_ref",
+            _safe_ref("output_contract_ref", self.output_contract_ref),
         )
 
         _validate_unique_ids(
