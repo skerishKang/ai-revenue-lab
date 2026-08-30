@@ -25,6 +25,9 @@ const review = (sourceId: string, overrides: Partial<SourcePolicyReview> = {}): 
   ...overrides,
 });
 
+const clearedGates = (sourceId: string): SourceCollectionGate[] =>
+  gatesBySourceId(sourceId).map((gate) => ({ ...gate, status: 'PASS' }));
+
 test('fresh registry represents exactly the 22 current source identities once', () => {
   assert.deepEqual(CURRENT_SOURCE_IDS, expectedSourceIds);
   assert.equal(CURRENT_SOURCE_REGISTRY.length, 22);
@@ -55,12 +58,16 @@ test('fresh policy state has zero PASS decisions and unknown permission facts', 
   }
 });
 
-test('Toss manual curation is allowed only as MANUAL_ONLY; automation is blocked', () => {
+test('pending Toss manual curation fails closed until explicit policy and gate clearance', () => {
   const source = sourceById('SRC-TOSS');
-  const policy = policyBySourceId('SRC-TOSS');
-  const gates = gatesBySourceId('SRC-TOSS');
-  assert.equal(effectiveAcquisitionDecision({ source, policy, gates, attempt: 'AUTOMATED' }), 'BLOCK');
-  assert.equal(effectiveAcquisitionDecision({ source, policy, gates, attempt: 'MANUAL_CURATED' }), 'MANUAL_ONLY');
+  const pending = policyBySourceId('SRC-TOSS');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: pending, gates: gatesBySourceId('SRC-TOSS'), attempt: 'MANUAL_CURATED' }), 'BLOCK');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: pending, gates: gatesBySourceId('SRC-TOSS'), attempt: 'AUTOMATED' }), 'BLOCK');
+
+  const approved = review('SRC-TOSS', { decision: 'PASS_WITH_LIMITS' });
+  assert.equal(effectiveAcquisitionDecision({ source, policy: approved, gates: clearedGates('SRC-TOSS'), attempt: 'MANUAL_CURATED' }), 'BLOCK');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: approved, gates: clearedGates('SRC-TOSS'), attempt: 'MANUAL_CURATED', limitsSatisfied: true }), 'MANUAL_ONLY');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: approved, gates: clearedGates('SRC-TOSS'), attempt: 'AUTOMATED', limitsSatisfied: true }), 'BLOCK');
 });
 
 test('CPX pending partner onboarding blocks live API behavior', () => {
@@ -68,12 +75,27 @@ test('CPX pending partner onboarding blocks live API behavior', () => {
   assert.equal(effectiveAcquisitionDecision({ source, policy: policyBySourceId('SRC-CPX'), gates: gatesBySourceId('SRC-CPX'), attempt: 'AUTOMATED', credentialsAvailable: false }), 'BLOCK');
 });
 
-test('Prolific deep link is manual-only and never an automated feed', () => {
+test('Prolific deep-link curation is blocked while pending and manual-only after explicit clearance', () => {
   const source = sourceById('SRC-PROLIFIC');
-  const policy = policyBySourceId('SRC-PROLIFIC');
-  const gates = gatesBySourceId('SRC-PROLIFIC');
+  const pending = policyBySourceId('SRC-PROLIFIC');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: pending, gates: gatesBySourceId('SRC-PROLIFIC'), attempt: 'DIRECTORY' }), 'BLOCK');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: pending, gates: gatesBySourceId('SRC-PROLIFIC'), attempt: 'AUTOMATED' }), 'BLOCK');
+
+  const approved = review('SRC-PROLIFIC', { decision: 'PASS_WITH_LIMITS' });
+  assert.equal(effectiveAcquisitionDecision({ source, policy: approved, gates: clearedGates('SRC-PROLIFIC'), attempt: 'DIRECTORY', limitsSatisfied: true }), 'MANUAL_ONLY');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: approved, gates: clearedGates('SRC-PROLIFIC'), attempt: 'AUTOMATED', limitsSatisfied: true }), 'BLOCK');
+});
+
+test('manual/deep-link behavior requires every required collection gate to be PASS or WAIVED', () => {
+  const source = sourceById('SRC-PROLIFIC');
+  const policy = review('SRC-PROLIFIC', { decision: 'PASS' });
+  const gates = clearedGates('SRC-PROLIFIC');
+  const first = gates[0];
+  if (!first) throw new Error('Expected Prolific collection gate');
+  gates[0] = { ...first, status: 'NOT_STARTED' };
+  assert.equal(effectiveAcquisitionDecision({ source, policy, gates, attempt: 'DIRECTORY' }), 'BLOCK');
+  gates[0] = { ...first, status: 'WAIVED' };
   assert.equal(effectiveAcquisitionDecision({ source, policy, gates, attempt: 'DIRECTORY' }), 'MANUAL_ONLY');
-  assert.equal(effectiveAcquisitionDecision({ source, policy, gates, attempt: 'AUTOMATED' }), 'BLOCK');
 });
 
 test('KB shadow source never becomes ordinary user-visible supply', () => {
@@ -92,7 +114,7 @@ test('unknown permission, BUILD lane, missing gates, and shadow failures fail cl
   const base = { source, attempt: 'AUTOMATED' as const, credentialsAvailable: true };
   const allowed = review('SRC-CPX', { decision: 'PASS', automationPermission: 'ALLOWED' });
   assert.equal(effectiveAcquisitionDecision({ ...base, policy: allowed, gates: gatesBySourceId('SRC-CPX') }), 'BLOCK');
-  const passedGates: SourceCollectionGate[] = gatesBySourceId('SRC-CPX').map((gate) => ({ ...gate, status: 'PASS' }));
+  const passedGates: SourceCollectionGate[] = clearedGates('SRC-CPX');
   assert.equal(effectiveAcquisitionDecision({ ...base, policy: allowed, gates: passedGates }), 'AUTOMATED_ALLOWED');
   assert.equal(effectiveAcquisitionDecision({ ...base, policy: review('SRC-CPX', { decision: 'PASS' }), gates: passedGates }), 'BLOCK');
   const shadowFailure: SourceCollectionGate[] = passedGates.map((gate, index) => index === 4 ? { ...gate, status: 'FAIL' } : gate);
@@ -102,7 +124,7 @@ test('unknown permission, BUILD lane, missing gates, and shadow failures fail cl
 test('a required BLOCK gate prevents collection even with policy and credentials', () => {
   const source = sourceById('SRC-CPX');
   const policy = review('SRC-CPX', { decision: 'PASS', automationPermission: 'ALLOWED' });
-  const gates: SourceCollectionGate[] = gatesBySourceId('SRC-CPX').map((gate) => ({ ...gate, status: 'PASS' }));
+  const gates: SourceCollectionGate[] = clearedGates('SRC-CPX');
   const firstGate = gates[0];
   if (!firstGate) throw new Error('Expected CPX collection gate');
   gates[0] = { ...firstGate, status: 'FAIL' };
