@@ -3,6 +3,7 @@ name: B64 AI Reward Router CI
 on:
   push:
     branches:
+      - main
       - b64-product-w9-public-source-expansion
     paths:
       - 'apps/ai-reward-router/**'
