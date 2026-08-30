@@ -66,3 +66,5 @@ export function jobSearchAssistPrompt(input: JobSearchAssistQuery): string {
   ].filter((value): value is string => value !== null);
   return `Search established job boards and official employer pages for ${details.join(', ')}. Compare only fresh public postings, summarize briefly, and deep-link the user to the source. Do not ingest or operate the job listing as B64-owned inventory.`;
 }
+
+export * from './domain.js';
