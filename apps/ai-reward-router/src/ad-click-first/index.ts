@@ -94,3 +94,4 @@ export const EXCLUDED_DIRECT_CASH_REWARDED_AD_PATHS = Object.freeze([
 ]);
 
 export * from './ayet-rewarded-video.js';
+export * from './ayet-web-integration.js';
