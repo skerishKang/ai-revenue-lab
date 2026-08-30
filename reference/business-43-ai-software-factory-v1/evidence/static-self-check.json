@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "states": [
+    "cover",
+    "requirement",
+    "patch",
+    "tests",
+    "validation",
+    "package",
+    "mobile"
+  ],
+  "controls": [
+    "cover",
+    "requirement",
+    "patch",
+    "tests",
+    "validation",
+    "package",
+    "mobile"
+  ],
+  "svg_count": 11,
+  "required_labels": 23,
+  "external_runtime_refs": 0,
+  "failures": []
+}
