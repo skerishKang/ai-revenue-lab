@@ -38,10 +38,15 @@ runFile(context, 'review-surfaces-396.js');
 const businesses = windowObject.ARL_BUSINESSES;
 const review = windowObject.ARL_REVIEW_SURFACES;
 
-assert.equal(businesses.length, 58, 'B1-55 plus B57-59 should produce 58 Business rows');
-assert.equal(new Set(businesses.map((b) => b.number)).size, 58, 'Business numbers must be unique');
+const businessNumbers = businesses.map((b) => b.number);
+const maxBusinessNumber = Math.max(...businessNumbers);
+const expectedBusinessNumbers = Array.from({ length: maxBusinessNumber }, (_, index) => index + 1)
+  .filter((number) => number !== 56);
+
+assert.ok(maxBusinessNumber >= 60, 'B60 or a later registered Business must be represented');
+assert.deepEqual(businessNumbers, expectedBusinessNumbers, 'Business numbers must stay ordered with only B56 intentionally unused');
+assert.equal(new Set(businessNumbers).size, businesses.length, 'Business numbers must be unique');
 assert.equal(businesses.some((b) => b.number === 56), false, 'B56 is an intentional gap');
-assert.equal(Math.max(...businesses.map((b) => b.number)), 59, 'B59 must be represented');
 
 const b38 = businesses.find((b) => b.number === 38);
 assert.equal(b38.title, 'AI Exercise Coach');
