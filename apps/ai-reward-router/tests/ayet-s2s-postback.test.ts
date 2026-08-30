@@ -9,6 +9,16 @@ import {
 import { applyProviderRewardEvent } from '../src/ad-click-first/reward-events.js';
 
 const publisherApiKey = 'test-publisher-key';
+const expectedConversionSecurityHash = [
+  '26cf747b',
+  '937934ad',
+  '041d0638',
+  'a7794f56',
+  '0ecfd98b',
+  '0eaaf4e9',
+  '1d1c9d4e',
+  '6b9eb207',
+].join('');
 
 const conversionParams = Object.freeze({
   callback_type: 'conversion',
@@ -26,7 +36,7 @@ test('S2S canonicalization mirrors documented alphabetical PHP query-string beha
   );
   assert.equal(
     expectedAyetS2SSecurityHash(conversionParams, publisherApiKey),
-    '26cf747b937934ad041d0638a7794f560ecfd98b0eaaf4e91d1c9d4e6b9eb207',
+    expectedConversionSecurityHash,
   );
 });
 
