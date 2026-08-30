@@ -121,10 +121,10 @@ test('duplicate copies of one real opportunity can never fake a 20/20 gate', () 
   assert.equal(progress.gatePassed, false);
 });
 
-test('W8 remains fail-closed at 2/20 with all required negative demonstrations still pending', () => {
-  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 2);
+test('W8 remains fail-closed at 4/20 with all required negative demonstrations still pending', () => {
+  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 4);
   assert.equal(VERIFIED20_PROGRESS.targetCount, 20);
-  assert.equal(VERIFIED20_PROGRESS.remainingCount, 18);
+  assert.equal(VERIFIED20_PROGRESS.remainingCount, 16);
   assert.equal(VERIFIED20_PROGRESS.gatePassed, false);
   assert.equal(W8_NEGATIVE_DEMONSTRATIONS.every((item) => item.status === 'PENDING'), true);
   assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, false);
