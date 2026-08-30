@@ -18,8 +18,8 @@ test('W7 dashboard and source read models preserve generalized opportunity and a
   const dashboard = buildDashboard(state);
   assert.ok(dashboard.reviewQueueCount >= 5);
   assert.equal(dashboard.materialChangesAwaitingApproval, 1);
-  assert.ok(dashboard.categoryCounts.MARKET_RESEARCH >= 1);
-  assert.ok(dashboard.ladderCounts.TASK_WORK >= 1);
+  assert.ok((dashboard.categoryCounts.MARKET_RESEARCH ?? 0) >= 1);
+  assert.ok((dashboard.ladderCounts.TASK_WORK ?? 0) >= 1);
 
   const sourceRows = buildSourceRows(state);
   const toss = sourceRows.find((row) => row.sourceId === 'SRC-TOSS');
@@ -44,6 +44,8 @@ test('review screen exposes evidence context, explicit NULL unknowns, and distin
   const promoReview = buildOpportunityReview(state, 'offer-fixture-promo-v1');
   assert.equal(promoReview.evidence.length, 1);
   assert.equal(promoReview.evidence[0]?.fieldPath, 'advertisedCompensationValue');
+  const changeReview = buildOpportunityReview(state, 'offer-fixture-change-v2');
+  assert.equal(changeReview.evidence[0]?.sourceSnapshotId, 'snap-fixture-change-2');
 
   const html = renderAdminRoute(state, 'OPPORTUNITY_REVIEW', 'offer-fixture-unknown-v1');
   assert.match(html, /NULL \/ UNKNOWN/);
