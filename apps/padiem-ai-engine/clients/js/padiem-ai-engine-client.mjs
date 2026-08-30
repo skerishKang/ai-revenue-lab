@@ -14,6 +14,7 @@ const REQUEST_ALLOWED = new Set([
   "session_id",
   "additional_system_context",
   "trace_id",
+  "execution_context",
 ]);
 
 export class PadiemAiEngineClientError extends Error {
@@ -57,6 +58,64 @@ function requireCredential(value) {
   return value;
 }
 
+function normalizeExecutionContext(value) {
+  if (value === undefined || value === null) return undefined;
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new PadiemAiEngineClientError(
+      "invalid_engine_request",
+      "execution_context must be an object",
+    );
+  }
+
+  const allowed = new Set(["trace_id", "idempotency_key", "timeout_seconds"]);
+  const unknown = Object.keys(value).filter((key) => !allowed.has(key));
+  if (unknown.length > 0) {
+    throw new PadiemAiEngineClientError(
+      "invalid_engine_request",
+      "execution_context contains unsupported fields",
+    );
+  }
+
+  const context = {};
+  if (value.trace_id !== undefined) {
+    context.trace_id = requireSafeIdentifier("execution_context.trace_id", value.trace_id);
+  }
+  if (value.idempotency_key !== undefined) {
+    if (
+      typeof value.idempotency_key !== "string" ||
+      !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/.test(value.idempotency_key)
+    ) {
+      throw new PadiemAiEngineClientError(
+        "invalid_engine_request",
+        "execution_context.idempotency_key must be a bounded safe identifier",
+      );
+    }
+    context.idempotency_key = value.idempotency_key;
+  }
+  if (value.timeout_seconds !== undefined) {
+    if (
+      typeof value.timeout_seconds !== "number" ||
+      !Number.isFinite(value.timeout_seconds) ||
+      value.timeout_seconds < 1 ||
+      value.timeout_seconds > 60
+    ) {
+      throw new PadiemAiEngineClientError(
+        "invalid_engine_request",
+        "execution_context.timeout_seconds must be between 1 and 60",
+      );
+    }
+    context.timeout_seconds = value.timeout_seconds;
+  }
+
+  if (Object.keys(context).length === 0) {
+    throw new PadiemAiEngineClientError(
+      "invalid_engine_request",
+      "execution_context must contain at least one supported field",
+    );
+  }
+  return context;
+}
+
 function exactRunPayload(appId, run) {
   if (!run || typeof run !== "object" || Array.isArray(run)) {
     throw new PadiemAiEngineClientError(
@@ -86,6 +145,9 @@ function exactRunPayload(appId, run) {
       ? {}
       : { additional_system_context: run.additional_system_context }),
     ...(run.trace_id === undefined ? {} : { trace_id: run.trace_id }),
+    ...(run.execution_context === undefined
+      ? {}
+      : { execution_context: normalizeExecutionContext(run.execution_context) }),
   };
 }
 
