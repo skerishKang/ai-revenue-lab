@@ -88,6 +88,21 @@ def list_chat_modes() -> list[dict[str, str]]:
     return [item.to_public_dict() for item in CHAT_MODE_CATALOG]
 
 
+def chat_modes_api_payload() -> dict[str, object]:
+    """Build the read-only browser payload without claiming runtime mappings.
+
+    The catalog can describe future B62 product modes before they are executable.
+    `accepted_request_mode_ids` is intentionally authoritative for the current
+    browser request contract, which still accepts only `auto`.
+    """
+
+    return {
+        "default_mode": DEFAULT_CHAT_MODE.value,
+        "accepted_request_mode_ids": [DEFAULT_CHAT_MODE.value],
+        "modes": list_chat_modes(),
+    }
+
+
 def get_chat_mode_descriptor(mode: ChatMode | str) -> ChatModeDescriptor:
     resolved = mode if isinstance(mode, ChatMode) else resolve_chat_mode(mode)
     return _CHAT_MODE_BY_ID[resolved.value]
