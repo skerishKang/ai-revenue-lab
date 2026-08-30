@@ -46,6 +46,8 @@ export function validateVerified20Record(record: Verified20Record): Verified20Va
   const errors: string[] = [];
   if (!Number.isInteger(record.slot) || record.slot < 1 || record.slot > 20) errors.push('slot must be an integer from 1 to 20');
   if (record.sourcePolicy.decision !== 'PASS' && record.sourcePolicy.decision !== 'PASS_WITH_LIMITS') errors.push('source policy must be explicitly cleared');
+  if (record.sourcePolicy.sourceId !== record.snapshot.sourceId) errors.push('source policy must bind the snapshot source');
+  if (record.sourceGates.some((gate) => gate.sourceId !== record.snapshot.sourceId)) errors.push('all source gates must bind the snapshot source');
   if (record.sourceGates.some((gate) => gate.required && gate.status !== 'PASS' && gate.status !== 'WAIVED')) errors.push('all required source gates must be PASS or WAIVED');
   if (record.snapshot.sourceId !== record.opportunity.sourceId) errors.push('snapshot/opportunity source mismatch');
   if (record.version.offerId !== record.opportunity.id) errors.push('version must belong to opportunity');
