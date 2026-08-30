@@ -496,3 +496,10 @@ register_platform_provider(
         enabled=True,
     )
 )
+
+# Poolside is registered through the same generic platform-owned Provider
+# plane. The module contains only non-secret route metadata; the existing
+# Secrets Store resource is bound by wrangler.toml below.
+from app.pilot.poolside_provider import register_poolside_provider
+
+register_poolside_provider()
