@@ -47,6 +47,16 @@ function requireBinding(binding) {
   return binding;
 }
 
+function requireCredential(value) {
+  if (typeof value !== "string" || value.length < 32 || value.length > 512) {
+    throw new PadiemAiEngineClientError(
+      "invalid_client_configuration",
+      "credential must contain 32 to 512 characters",
+    );
+  }
+  return value;
+}
+
 function exactRunPayload(appId, run) {
   if (!run || typeof run !== "object" || Array.isArray(run)) {
     throw new PadiemAiEngineClientError(
@@ -80,24 +90,11 @@ function exactRunPayload(appId, run) {
 }
 
 function authenticatedHeaders(callerId, credential) {
-  const headers = { "Content-Type": "application/json" };
-  if (callerId !== undefined || credential !== undefined) {
-    if (typeof callerId !== "string" || callerId.length === 0) {
-      throw new PadiemAiEngineClientError(
-        "invalid_client_configuration",
-        "callerId is required when caller credentials are configured",
-      );
-    }
-    if (typeof credential !== "string" || credential.length === 0) {
-      throw new PadiemAiEngineClientError(
-        "invalid_client_configuration",
-        "credential is required when caller credentials are configured",
-      );
-    }
-    headers[ENGINE_CALLER_HEADER] = callerId;
-    headers[ENGINE_CREDENTIAL_HEADER] = credential;
-  }
-  return headers;
+  return {
+    "Content-Type": "application/json",
+    [ENGINE_CALLER_HEADER]: callerId,
+    [ENGINE_CREDENTIAL_HEADER]: credential,
+  };
 }
 
 async function parseJsonResponse(response) {
@@ -144,8 +141,8 @@ export class PadiemAiEngineClient {
   constructor({ binding, appId, callerId, credential }) {
     this.binding = requireBinding(binding);
     this.appId = requireSafeIdentifier("appId", appId);
-    this.callerId = callerId === undefined ? undefined : requireSafeIdentifier("callerId", callerId);
-    this.credential = credential;
+    this.callerId = requireSafeIdentifier("callerId", callerId);
+    this.credential = requireCredential(credential);
   }
 
   _headers() {
