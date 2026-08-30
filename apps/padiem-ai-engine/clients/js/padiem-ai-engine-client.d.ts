@@ -9,7 +9,7 @@ export interface EngineBinding {
 }
 
 export interface EngineExecutionContext {
-  trace_id?: string;
+  trace_id: string;
   idempotency_key?: string;
   timeout_seconds?: number;
 }
