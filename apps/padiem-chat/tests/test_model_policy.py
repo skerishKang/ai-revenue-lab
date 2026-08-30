@@ -3,31 +3,34 @@ from __future__ import annotations
 import pytest
 
 from app.model_policy import (
+    AUTO_B14_MODEL_ID,
     DEFAULT_B14_MODEL_ID,
     DEFAULT_CHAT_PROFILE,
     MODEL_ALIASES,
     MODEL_CAPABILITIES,
     UNASSIGNED_B14_MODEL_ID,
     ModelPolicyError,
+    model_policy_is_executable,
     model_profile_is_assigned,
     model_supports,
     resolve_model_policy,
 )
 
 
-def test_default_policy_is_medium_and_provider_unassigned():
+def test_default_policy_delegates_to_b14_auto_without_concrete_assignment():
     policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
     assert DEFAULT_CHAT_PROFILE == "medium"
-    assert DEFAULT_B14_MODEL_ID == UNASSIGNED_B14_MODEL_ID
+    assert DEFAULT_B14_MODEL_ID == AUTO_B14_MODEL_ID == "b14/auto"
     assert policy.profile == "medium"
-    assert policy.model_id == UNASSIGNED_B14_MODEL_ID
+    assert policy.model_id == AUTO_B14_MODEL_ID
     assert model_profile_is_assigned(policy.model_id) is False
+    assert model_policy_is_executable(policy.model_id) is True
     assert policy.messages == [{"role": "user", "content": "안녕하세요"}]
     assert policy.alias is None
 
 
 def test_legacy_poolside_alias_is_compatibility_noop_not_provider_selection():
-    assert MODEL_ALIASES == {"/poolside": UNASSIGNED_B14_MODEL_ID}
+    assert MODEL_ALIASES == {"/poolside": AUTO_B14_MODEL_ID}
     policy = resolve_model_policy(
         [
             {"role": "assistant", "content": "무엇을 도와드릴까요?"},
@@ -35,8 +38,9 @@ def test_legacy_poolside_alias_is_compatibility_noop_not_provider_selection():
         ]
     )
     assert policy.profile == "medium"
-    assert policy.model_id == UNASSIGNED_B14_MODEL_ID
+    assert policy.model_id == AUTO_B14_MODEL_ID
     assert model_profile_is_assigned(policy.model_id) is False
+    assert model_policy_is_executable(policy.model_id) is True
     assert policy.alias == "/poolside"
     assert policy.messages[-1] == {"role": "user", "content": "한국어로 답해 주세요"}
 
@@ -61,11 +65,19 @@ def test_legacy_alias_without_prompt_fails_closed():
     assert info.value.code == "model_alias_requires_prompt"
 
 
-def test_unassigned_profile_claims_no_model_capabilities():
-    assert MODEL_CAPABILITIES == {UNASSIGNED_B14_MODEL_ID: frozenset()}
-    assert model_supports(UNASSIGNED_B14_MODEL_ID, "chat") is False
-    assert model_supports(UNASSIGNED_B14_MODEL_ID, "coding") is False
-    assert model_supports(UNASSIGNED_B14_MODEL_ID, "long_context") is False
-    assert model_supports(UNASSIGNED_B14_MODEL_ID, "free") is False
-    assert model_supports(UNASSIGNED_B14_MODEL_ID, "image") is False
-    assert model_supports("b14/auto", "chat") is False
+def test_auto_and_unassigned_profiles_claim_no_concrete_model_capabilities():
+    assert MODEL_CAPABILITIES == {
+        AUTO_B14_MODEL_ID: frozenset(),
+        UNASSIGNED_B14_MODEL_ID: frozenset(),
+    }
+    for model_id in (AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
+        assert model_supports(model_id, "chat") is False
+        assert model_supports(model_id, "coding") is False
+        assert model_supports(model_id, "long_context") is False
+        assert model_supports(model_id, "free") is False
+        assert model_supports(model_id, "image") is False
+
+
+def test_unassigned_profile_remains_non_executable():
+    assert model_profile_is_assigned(UNASSIGNED_B14_MODEL_ID) is False
+    assert model_policy_is_executable(UNASSIGNED_B14_MODEL_ID) is False
