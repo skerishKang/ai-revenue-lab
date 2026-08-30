@@ -5,6 +5,9 @@ export const ENGINE_EXECUTE_PATH = "/internal/v1/execute";
 export const ENGINE_STREAM_PATH = "/internal/v1/stream";
 export const ENGINE_HEALTH_PATH = "/internal/v1/health";
 
+const ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller";
+const ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential";
+
 const REQUEST_ALLOWED = new Set([
   "agent",
   "messages",
@@ -76,6 +79,27 @@ function exactRunPayload(appId, run) {
   };
 }
 
+function authenticatedHeaders(callerId, credential) {
+  const headers = { "Content-Type": "application/json" };
+  if (callerId !== undefined || credential !== undefined) {
+    if (typeof callerId !== "string" || callerId.length === 0) {
+      throw new PadiemAiEngineClientError(
+        "invalid_client_configuration",
+        "callerId is required when caller credentials are configured",
+      );
+    }
+    if (typeof credential !== "string" || credential.length === 0) {
+      throw new PadiemAiEngineClientError(
+        "invalid_client_configuration",
+        "credential is required when caller credentials are configured",
+      );
+    }
+    headers[ENGINE_CALLER_HEADER] = callerId;
+    headers[ENGINE_CREDENTIAL_HEADER] = credential;
+  }
+  return headers;
+}
+
 async function parseJsonResponse(response) {
   let body;
   try {
@@ -117,9 +141,15 @@ async function parseJsonResponse(response) {
 }
 
 export class PadiemAiEngineClient {
-  constructor({ binding, appId }) {
+  constructor({ binding, appId, callerId, credential }) {
     this.binding = requireBinding(binding);
     this.appId = requireSafeIdentifier("appId", appId);
+    this.callerId = callerId === undefined ? undefined : requireSafeIdentifier("callerId", callerId);
+    this.credential = credential;
+  }
+
+  _headers() {
+    return authenticatedHeaders(this.callerId, this.credential);
   }
 
   async execute(run) {
@@ -128,7 +158,7 @@ export class PadiemAiEngineClient {
       `${ENGINE_INTERNAL_ORIGIN}${ENGINE_EXECUTE_PATH}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: this._headers(),
         body: JSON.stringify(payload),
       },
     );
@@ -149,7 +179,7 @@ export class PadiemAiEngineClient {
       `${ENGINE_INTERNAL_ORIGIN}${ENGINE_STREAM_PATH}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: this._headers(),
         body: JSON.stringify(payload),
       },
     );
