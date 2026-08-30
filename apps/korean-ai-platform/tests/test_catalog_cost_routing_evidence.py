@@ -1,3 +1,5 @@
+import pytest
+
 from app.pilot.catalog import CatalogModel, select_by_optimize
 
 
@@ -24,6 +26,18 @@ def model(
         capabilities=frozenset({"chat"}),
         sort_order=sort_order,
     )
+
+
+def test_configured_combined_per_1k_cost_is_truthful_and_unknown_stays_none() -> None:
+    known = model("known", input_price=0.30, output_price=2.50)
+    known_zero = model("known-zero", input_price=0.0, output_price=0.0)
+    partial = model("partial", input_price=0.30, output_price=None)
+    unknown = model("unknown", input_price=None, output_price=None)
+
+    assert known.cost_usd_per_1k() == pytest.approx(0.0028)
+    assert known_zero.cost_usd_per_1k() == 0.0
+    assert partial.cost_usd_per_1k() is None
+    assert unknown.cost_usd_per_1k() is None
 
 
 def test_cost_ranking_keeps_unknown_after_known_zero_and_known_paid() -> None:
