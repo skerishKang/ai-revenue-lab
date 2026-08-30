@@ -1,3 +1,5 @@
+import { CROWDGEN_FIREWEED_STALE_SUPPRESSION } from './real-negative-evidence.js';
+
 export const W8_NEGATIVE_DEMONSTRATION_IDS = [
   'BROKEN_LINK_SUPPRESSION',
   'STALE_SOURCE_SUPPRESSION',
@@ -16,17 +18,27 @@ export interface W8NegativeDemonstration {
   readonly notes: string;
 }
 
+const evidenceById: Readonly<Partial<Record<W8NegativeDemonstrationId, { readonly evidenceRef: string; readonly notes: string }>>> = Object.freeze({
+  STALE_SOURCE_SUPPRESSION: Object.freeze({
+    evidenceRef: CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceId,
+    notes: CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceSummary,
+  }),
+});
+
 /**
- * None of these are allowed to become PASS merely because equivalent synthetic
- * unit tests exist. W8 requires explicit evidence in the real VERIFIED-20 gate.
+ * A negative demonstration becomes PASS only when it is backed by an explicit
+ * real-evidence case. Synthetic unit tests alone never promote these statuses.
  */
 export const W8_NEGATIVE_DEMONSTRATIONS: readonly W8NegativeDemonstration[] = Object.freeze(
-  W8_NEGATIVE_DEMONSTRATION_IDS.map((id) => Object.freeze({
-    id,
-    status: 'PENDING' as const,
-    evidenceRef: null,
-    notes: 'Pending explicit W8 real-evidence demonstration.',
-  })),
+  W8_NEGATIVE_DEMONSTRATION_IDS.map((id) => {
+    const evidence = evidenceById[id];
+    return Object.freeze({
+      id,
+      status: evidence ? 'PASS' as const : 'PENDING' as const,
+      evidenceRef: evidence?.evidenceRef ?? null,
+      notes: evidence?.notes ?? 'Pending explicit W8 real-evidence demonstration.',
+    });
+  }),
 );
 
 export function w8NegativeGatePassed(items: readonly W8NegativeDemonstration[] = W8_NEGATIVE_DEMONSTRATIONS): boolean {
