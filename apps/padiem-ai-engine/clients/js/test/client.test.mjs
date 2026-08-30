@@ -11,6 +11,9 @@ import {
   PadiemAiEngineClientError,
 } from "../padiem-ai-engine-client.mjs";
 
+const CALLER_ID = "b62-service";
+const CREDENTIAL = "C".repeat(48);
+
 function agent() {
   return {
     id: "agent-runtime:test",
@@ -42,6 +45,15 @@ function binding(handler) {
   };
 }
 
+function client(fake, appId = "lovetree") {
+  return new PadiemAiEngineClient({
+    binding: fake,
+    appId,
+    callerId: CALLER_ID,
+    credential: CREDENTIAL,
+  });
+}
+
 test("client locks existing v1 contract constants", () => {
   assert.equal(ENGINE_CONTRACT_MAJOR, 1);
   assert.equal(ENGINE_CONTRACT_VERSION, "1.0");
@@ -50,16 +62,16 @@ test("client locks existing v1 contract constants", () => {
   assert.equal(ENGINE_HEALTH_PATH, "/internal/v1/health");
 });
 
-test("execute uses fixed internal origin and injects server-owned app id", async () => {
+test("execute uses fixed internal origin, server-owned app id and caller identity headers", async () => {
   const fake = binding(async () =>
     new Response(
       JSON.stringify({ ok: true, answer: "done", route: {}, metadata: {} }),
       { status: 200, headers: { "content-type": "application/json" } },
     ),
   );
-  const client = new PadiemAiEngineClient({ binding: fake, appId: "lovetree" });
+  const engine = client(fake);
 
-  const result = await client.execute(run());
+  const result = await engine.execute(run());
 
   assert.equal(result.answer, "done");
   assert.equal(fake.calls.length, 1);
@@ -67,6 +79,8 @@ test("execute uses fixed internal origin and injects server-owned app id", async
     fake.calls[0].input,
     "https://padiem-ai-engine.internal/internal/v1/execute",
   );
+  assert.equal(fake.calls[0].init.headers["X-Padiem-Engine-Caller"], CALLER_ID);
+  assert.equal(fake.calls[0].init.headers["X-Padiem-Engine-Credential"], CREDENTIAL);
   const body = JSON.parse(fake.calls[0].init.body);
   assert.equal(body.app_id, "lovetree");
   assert.equal(body.trace_id, "trace_1");
@@ -74,16 +88,16 @@ test("execute uses fixed internal origin and injects server-owned app id", async
 
 test("caller cannot override app id or choose arbitrary target URL", async () => {
   const fake = binding(async () => new Response("{}", { status: 500 }));
-  const client = new PadiemAiEngineClient({ binding: fake, appId: "lovetree" });
+  const engine = client(fake);
 
   await assert.rejects(
-    client.execute({ ...run(), app_id: "b62" }),
+    engine.execute({ ...run(), app_id: "b62" }),
     (error) =>
       error instanceof PadiemAiEngineClientError &&
       error.code === "invalid_engine_request",
   );
   assert.equal(fake.calls.length, 0);
-  assert.equal("baseUrl" in client, false);
+  assert.equal("baseUrl" in engine, false);
 });
 
 test("safe Engine errors are normalized without exposing response internals", async () => {
@@ -101,10 +115,10 @@ test("safe Engine errors are normalized without exposing response internals", as
       { status: 422, headers: { "content-type": "application/json" } },
     ),
   );
-  const client = new PadiemAiEngineClient({ binding: fake, appId: "lovetree" });
+  const engine = client(fake);
 
   await assert.rejects(
-    client.execute(run()),
+    engine.execute(run()),
     (error) => {
       assert(error instanceof PadiemAiEngineClientError);
       assert.equal(error.code, "policy_blocked");
@@ -115,7 +129,7 @@ test("safe Engine errors are normalized without exposing response internals", as
   );
 });
 
-test("stream parses incremental NDJSON and preserves event objects", async () => {
+test("stream parses incremental NDJSON, preserves auth headers and event objects", async () => {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     start(controller) {
@@ -138,10 +152,10 @@ test("stream parses incremental NDJSON and preserves event objects", async () =>
       headers: { "content-type": "application/x-ndjson; charset=utf-8" },
     }),
   );
-  const client = new PadiemAiEngineClient({ binding: fake, appId: "lovebud" });
+  const engine = client(fake, "lovebud");
 
   const events = [];
-  for await (const event of client.stream(run())) events.push(event);
+  for await (const event of engine.stream(run())) events.push(event);
 
   assert.deepEqual(events, [
     { delta_content: "Hel", done: false },
@@ -151,6 +165,8 @@ test("stream parses incremental NDJSON and preserves event objects", async () =>
     fake.calls[0].input,
     "https://padiem-ai-engine.internal/internal/v1/stream",
   );
+  assert.equal(fake.calls[0].init.headers["X-Padiem-Engine-Caller"], CALLER_ID);
+  assert.equal(fake.calls[0].init.headers["X-Padiem-Engine-Credential"], CREDENTIAL);
 });
 
 test("stream terminal error line becomes client error", async () => {
@@ -163,11 +179,11 @@ test("stream terminal error line becomes client error", async () => {
       },
     ),
   );
-  const client = new PadiemAiEngineClient({ binding: fake, appId: "lovetree" });
+  const engine = client(fake);
 
   await assert.rejects(
     async () => {
-      for await (const _event of client.stream(run())) {
+      for await (const _event of engine.stream(run())) {
         // consume
       }
     },
@@ -178,7 +194,7 @@ test("stream terminal error line becomes client error", async () => {
   );
 });
 
-test("health uses fixed health path through injected binding", async () => {
+test("health uses fixed health path without caller credential headers", async () => {
   const fake = binding(async () =>
     new Response(
       JSON.stringify({
@@ -192,23 +208,55 @@ test("health uses fixed health path through injected binding", async () => {
       { status: 200, headers: { "content-type": "application/json" } },
     ),
   );
-  const client = new PadiemAiEngineClient({ binding: fake, appId: "lovetree" });
+  const engine = client(fake);
 
-  const health = await client.health();
+  const health = await engine.health();
   assert.equal(health.service, "padiem-ai-engine");
   assert.equal(
     fake.calls[0].input,
     "https://padiem-ai-engine.internal/internal/v1/health",
   );
+  assert.equal(fake.calls[0].init.headers, undefined);
 });
 
-test("invalid binding and app id fail before network", () => {
+test("invalid binding, app id, caller id and credential fail before network", () => {
   assert.throws(
-    () => new PadiemAiEngineClient({ binding: {}, appId: "lovetree" }),
+    () => new PadiemAiEngineClient({
+      binding: {},
+      appId: "lovetree",
+      callerId: CALLER_ID,
+      credential: CREDENTIAL,
+    }),
     PadiemAiEngineClientError,
   );
   assert.throws(
-    () => new PadiemAiEngineClient({ binding: { fetch() {} }, appId: "bad app" }),
+    () =>
+      new PadiemAiEngineClient({
+        binding: { fetch() {} },
+        appId: "bad app",
+        callerId: CALLER_ID,
+        credential: CREDENTIAL,
+      }),
+    PadiemAiEngineClientError,
+  );
+  assert.throws(
+    () =>
+      new PadiemAiEngineClient({
+        binding: { fetch() {} },
+        appId: "lovetree",
+        callerId: "bad caller",
+        credential: CREDENTIAL,
+      }),
+    PadiemAiEngineClientError,
+  );
+  assert.throws(
+    () =>
+      new PadiemAiEngineClient({
+        binding: { fetch() {} },
+        appId: "lovetree",
+        callerId: CALLER_ID,
+        credential: "short",
+      }),
     PadiemAiEngineClientError,
   );
 });
