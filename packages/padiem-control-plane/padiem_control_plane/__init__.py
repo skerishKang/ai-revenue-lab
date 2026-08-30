@@ -14,6 +14,15 @@ from .contracts import (
     UsageOutcome,
     validate_usage_event_batch,
 )
+from .credit_ledger import (
+    CreditAccountRef,
+    CreditBalanceSnapshot,
+    CreditEntryDirection,
+    CreditEntryKind,
+    CreditLedgerEntry,
+    apply_credit_ledger_batch,
+    validate_credit_ledger_batch,
+)
 from .entitlements import EntitlementGrant, EntitlementSnapshot
 
 __all__ = [
@@ -21,6 +30,11 @@ __all__ = [
     "CanonicalSubjectRef",
     "ControlPlaneContractError",
     "CostEvidenceSource",
+    "CreditAccountRef",
+    "CreditBalanceSnapshot",
+    "CreditEntryDirection",
+    "CreditEntryKind",
+    "CreditLedgerEntry",
     "EntitlementGrant",
     "EntitlementSnapshot",
     "IdentityLinkState",
@@ -32,5 +46,7 @@ __all__ = [
     "TokenUsage",
     "UsageEvent",
     "UsageOutcome",
+    "apply_credit_ledger_batch",
+    "validate_credit_ledger_batch",
     "validate_usage_event_batch",
 ]
