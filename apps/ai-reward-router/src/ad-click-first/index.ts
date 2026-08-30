@@ -112,3 +112,4 @@ export * from './gate-readiness.js';
 export * from './direct-reward-policy.js';
 export * from './adscend-web-integration.js';
 export * from './reward-fulfillment.js';
+export * from './payout-policy.js';
