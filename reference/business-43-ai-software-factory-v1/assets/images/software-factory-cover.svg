@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" role="img" aria-labelledby="t"><title id="t">합성 소프트웨어 생산라인 표지</title><defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#d6d0c4" stroke-width="1"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-opacity=".18"/></filter></defs><rect width="960" height="560" fill="#eae4d8"/><rect width="960" height="560" fill="url(#grid)" opacity=".7"/>
+<rect x="48" y="42" width="864" height="476" rx="8" fill="#161b1c" filter="url(#shadow)"/>
+<text x="78" y="92" fill="#eae4d8" font-family="Arial,sans-serif" font-size="18" letter-spacing="4">CEDAR DESK / LINE 43</text>
+<text x="78" y="143" fill="#fff8e8" font-family="Arial,sans-serif" font-size="38" font-weight="700">SOFTWARE PRODUCTION LINE</text>
+<path d="M94 350H850" stroke="#6f7e83" stroke-width="8"/><g fill="#d7b66c"><circle cx="170" cy="350" r="32"/><circle cx="340" cy="350" r="32"/><circle cx="510" cy="350" r="32"/><circle cx="680" cy="350" r="32"/><circle cx="820" cy="350" r="32"/></g>
+<g fill="#e8e1d3" stroke="#161b1c" stroke-width="4"><rect x="116" y="220" width="112" height="86"/><rect x="286" y="204" width="112" height="102"/><rect x="456" y="236" width="112" height="70"/><rect x="626" y="190" width="112" height="116"/><rect x="776" y="230" width="88" height="76"/></g>
+<g font-family="Arial,sans-serif" font-size="13" fill="#161b1c" font-weight="700"><text x="135" y="260">SPEC</text><text x="305" y="255">PATCH</text><text x="476" y="273">TEST</text><text x="643" y="246">INSPECT</text><text x="790" y="269">PACK</text></g>
+<rect x="78" y="420" width="430" height="54" fill="#c6533b"/><text x="98" y="454" fill="#fff" font-family="Arial,sans-serif" font-size="18" font-weight="700">DRAFT / UNMERGED / NOT DEPLOYED</text>
+</svg>

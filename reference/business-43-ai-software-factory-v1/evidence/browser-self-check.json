@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "combinations": 21,
+  "failures": [],
+  "errors": [],
+  "external_runtime_requests": 0,
+  "request_count": 0,
+  "keyboard_navigation": true,
+  "motion": {
+    "computed_end_ms": 780.0,
+    "animation_name": "deliveryPackageComplete",
+    "replay_equal": true,
+    "focus_stable": true,
+    "scroll_stable": true,
+    "geometry_stable": true,
+    "finals": [
+      {
+        "opacity": "1",
+        "transform": "matrix(1, 0, 0, 1, -320, 0)",
+        "w": 640,
+        "h": 104
+      },
+      {
+        "opacity": "1",
+        "transform": "matrix(1, 0, 0, 1, -320, 0)",
+        "w": 640,
+        "h": 104
+      }
+    ]
+  },
+  "reduced_motion": true,
+  "harness": "inline exact local HTML/CSS/JS/SVG bytes; no network"
+}
