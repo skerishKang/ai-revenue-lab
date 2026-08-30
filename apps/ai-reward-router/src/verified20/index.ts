@@ -2,6 +2,8 @@ export * from './domain.js';
 export * from './hash.js';
 export * from './prolific.js';
 export * from './outlier.js';
+export * from './outlier-material-change.js';
+export * from './outlier-current.js';
 export * from './crowdgen.js';
 export * from './crowdgen-vistula.js';
 export * from './oneforma.js';
