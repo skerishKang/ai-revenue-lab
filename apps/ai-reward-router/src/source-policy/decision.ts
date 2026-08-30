@@ -37,7 +37,10 @@ export function effectiveAcquisitionDecision(
 
   if (attempt === 'MANUAL_CURATED' || attempt === 'DIRECTORY') {
     if (!supportsManualBehavior(source.acquisitionMode)) return 'BLOCK';
-    if (policy.decision === 'BLOCK') return 'BLOCK';
+    // W1/W4A contract: PENDING/UNKNOWN is not permission. Manual/deep-link
+    // curation may proceed only after an explicit PASS or PASS_WITH_LIMITS.
+    if (policy.decision !== 'PASS' && policy.decision !== 'PASS_WITH_LIMITS') return 'BLOCK';
+    if (policy.decision === 'PASS_WITH_LIMITS' && input.limitsSatisfied !== true) return 'BLOCK';
     return 'MANUAL_ONLY';
   }
 
