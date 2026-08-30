@@ -343,6 +343,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 49,
+    route: "b49",
+    sourcePath: "reference/business-49-public-data-connector-hub-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "공공데이터 커넥터 허브",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 51,
     route: "b51",
     sourcePath: "reference/business-51-ai-workflow-marketplace-v1",
