@@ -3,6 +3,7 @@ import {
   CROWDGEN_EXPERTS_LOW_CONFIDENCE_REVIEW,
   CROWDGEN_FIREWEED_STALE_SUPPRESSION,
   ONEFORMA_PODCAST_REJECTED_DUPLICATE,
+  PANELPOWER_ENDED_DETAIL_BROKEN_LINK,
 } from './real-negative-evidence.js';
 
 export const W8_NEGATIVE_DEMONSTRATION_IDS = [
@@ -24,6 +25,10 @@ export interface W8NegativeDemonstration {
 }
 
 const evidenceById: Readonly<Partial<Record<W8NegativeDemonstrationId, { readonly evidenceRef: string; readonly notes: string }>>> = Object.freeze({
+  BROKEN_LINK_SUPPRESSION: Object.freeze({
+    evidenceRef: PANELPOWER_ENDED_DETAIL_BROKEN_LINK.evidenceId,
+    notes: PANELPOWER_ENDED_DETAIL_BROKEN_LINK.evidenceSummary,
+  }),
   STALE_SOURCE_SUPPRESSION: Object.freeze({
     evidenceRef: CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceId,
     notes: CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceSummary,
