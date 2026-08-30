@@ -87,3 +87,5 @@ export const EXCLUDED_DIRECT_CASH_REWARDED_AD_PATHS = Object.freeze([
     reason: 'DIRECT_MONETARY_REWARDS_PROHIBITED_BY_PROVIDER_POLICY' as const,
   }),
 ]);
+
+export * from './ayet-rewarded-video.js';
