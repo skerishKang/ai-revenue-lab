@@ -24,6 +24,9 @@ MAX_AGENT_PLAN_OBJECTIVE_CHARS = 1_000
 MAX_AGENT_PLAN_INPUT_CHARS = 32_000
 MAX_AGENT_PLAN_DEPENDENCIES = 16
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_AGENT_ID_RE = re.compile(
+    r"^agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
+)
 
 
 class AgentPlannerError(ValueError):
@@ -80,7 +83,9 @@ class AgentPlanStep:
                 "invalid_agent_plan",
                 "depends_on must be a tuple of step ids",
             )
-        dependencies = tuple(_identifier("dependency step id", item) for item in self.depends_on)
+        dependencies = tuple(
+            _identifier("dependency step id", item) for item in self.depends_on
+        )
         if len(dependencies) > MAX_AGENT_PLAN_DEPENDENCIES:
             raise AgentPlannerError(
                 "agent_plan_budget_exceeded",
@@ -115,7 +120,11 @@ class AgentPlan:
     steps: tuple[AgentPlanStep, ...]
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "agent_id", _identifier("agent_id", self.agent_id))
+        if not isinstance(self.agent_id, str) or not _AGENT_ID_RE.fullmatch(self.agent_id):
+            raise AgentPlannerError(
+                "invalid_agent_plan",
+                "agent_id must match the canonical versioned Agent id grammar",
+            )
         if not isinstance(self.steps, tuple):
             raise AgentPlannerError(
                 "invalid_agent_plan",
