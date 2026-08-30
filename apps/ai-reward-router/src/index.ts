@@ -17,4 +17,9 @@ export const PRODUCT_IDENTITY = Object.freeze({
   routingModes: Object.freeze(Object.values(ROUTING_MODES)),
   userValueScoreSeparateFromMonetizationScore: true,
   walletRequiredForW0: false,
+  coreUserPromise: 'POCKET_MONEY_TO_SHORT_GIG_DISCOVERY',
+  generalJobSearchMode: 'AI_SEARCH_COMPARE_AND_DEEP_LINK_EXTERNAL_SITES',
+  ownsGeneralJobListings: false,
 });
+
+export * from './job-search-assist/index.js';
