@@ -18,8 +18,11 @@ export const PRODUCT_IDENTITY = Object.freeze({
   userValueScoreSeparateFromMonetizationScore: true,
   walletRequiredForW0: false,
   coreUserPromise: 'POCKET_MONEY_TO_SHORT_GIG_DISCOVERY',
+  currentLaunchFocus: 'AD_VIEW_CLICK_VISIT_LOW_FRICTION_REWARD_FIRST',
+  progressiveConsumerUnlock: true,
   generalJobSearchMode: 'AI_SEARCH_COMPARE_AND_DEEP_LINK_EXTERNAL_SITES',
   ownsGeneralJobListings: false,
 });
 
+export * from './ad-click-first/index.js';
 export * from './job-search-assist/index.js';
