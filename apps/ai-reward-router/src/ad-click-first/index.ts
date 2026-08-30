@@ -111,3 +111,4 @@ export * from './source-priority.js';
 export * from './gate-readiness.js';
 export * from './direct-reward-policy.js';
 export * from './adscend-web-integration.js';
+export * from './reward-fulfillment.js';
