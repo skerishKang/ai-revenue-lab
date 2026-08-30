@@ -62,15 +62,18 @@ test('duplicate copies of one real opportunity can never fake a 20/20 gate', () 
   assert.equal(progress.gatePassed, false);
 });
 
-test('W8 remains fail-closed at 13/20 with two real negative demonstrations passed', () => {
+test('W8 remains fail-closed at 13/20 with four real negative demonstrations passed', () => {
   assert.equal(VERIFIED20_PROGRESS.verifiedCount, 13);
   assert.equal(VERIFIED20_PROGRESS.targetCount, 20);
   assert.equal(VERIFIED20_PROGRESS.remainingCount, 7);
   assert.equal(VERIFIED20_PROGRESS.gatePassed, false);
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.filter((item) => item.status === 'PASS').length, 2);
+  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.filter((item) => item.status === 'PASS').length, 4);
   assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'STALE_SOURCE_SUPPRESSION')?.status, 'PASS');
+  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'REJECTED_DUPLICATE')?.status, 'PASS');
+  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'LOW_CONFIDENCE_REVIEW')?.status, 'PASS');
   assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'MATERIAL_VERSION_CHANGE')?.status, 'PASS');
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 2);
+  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'BROKEN_LINK_SUPPRESSION')?.status, 'PENDING');
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 4);
   assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, false);
   assert.equal(W8_GATE_STATUS.gatePassed, false);
 });
