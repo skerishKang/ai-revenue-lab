@@ -1,0 +1,316 @@
+{
+  "status": "PASS",
+  "matrix": [
+    {
+      "viewport": "desktop",
+      "state": "cover",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-cover.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "package",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-package.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "workflow",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-workflow.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "compatibility",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-compatibility.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "evidence",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-evidence.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "listing",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-listing.png"
+    },
+    {
+      "viewport": "desktop",
+      "state": "mobile",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/desktop-mobile.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "cover",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-cover.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "package",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-package.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "workflow",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-workflow.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "compatibility",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-compatibility.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "evidence",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-evidence.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "listing",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-listing.png"
+    },
+    {
+      "viewport": "tablet",
+      "state": "mobile",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/tablet-mobile.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "cover",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-cover.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "package",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-package.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "workflow",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-workflow.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "compatibility",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-compatibility.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "evidence",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-evidence.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "listing",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-listing.png"
+    },
+    {
+      "viewport": "mobile",
+      "state": "mobile",
+      "visiblePanels": 1,
+      "selectedTabs": 1,
+      "rovingTabIndex": 1,
+      "overflow": false,
+      "clipping": [],
+      "overlap": [],
+      "screenshot": "screenshots/mobile-mobile.png"
+    }
+  ],
+  "failures": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "externalRequests": [],
+  "assetFailures": [],
+  "motion": {
+    "replay1Ms": 758.1000000000931,
+    "replay2Ms": 764.7999999999302,
+    "finalEvent": {
+      "id": "motion-final",
+      "name": "final-listing"
+    },
+    "animationEvents": [
+      {
+        "id": "motion-step motion-step--1",
+        "name": "route-rise",
+        "t": 108
+      },
+      {
+        "id": "motion-step motion-step--2",
+        "name": "route-rise",
+        "t": 191.20000000006985
+      },
+      {
+        "id": "motion-step motion-step--3",
+        "name": "route-rise",
+        "t": 291.20000000006985
+      },
+      {
+        "id": "motion-step motion-step--4",
+        "name": "route-rise",
+        "t": 374.60000000009313
+      },
+      {
+        "id": "motion-step motion-step--5",
+        "name": "route-rise",
+        "t": 474.5
+      },
+      {
+        "id": "motion-step motion-step--6",
+        "name": "route-rise",
+        "t": 557.9000000000233
+      },
+      {
+        "id": "motion-step motion-step--7",
+        "name": "route-rise",
+        "t": 641.2000000000698
+      },
+      {
+        "id": "motion-final",
+        "name": "final-listing",
+        "t": 758.1000000000931
+      }
+    ],
+    "runningChildrenAfterCompletion": 0,
+    "focusStable": true,
+    "scrollStable": true,
+    "geometryEqual": true,
+    "styleEqual": true,
+    "screenshotEqual": true
+  },
+  "keyboard": {
+    "ArrowRight": "tab-package",
+    "End": "tab-mobile",
+    "Home": "tab-cover",
+    "visibleFocus": true
+  },
+  "reducedMotion": {
+    "complete": "true",
+    "animations": 0,
+    "finalOpacity": "1"
+  },
+  "summary": {
+    "combinationsPassed": 21,
+    "combinationsTotal": 21,
+    "overflowClippingOverlap": "0/0/0",
+    "tabPanel": "7/7",
+    "consolePageFailedExternal": "0/0/0/0"
+  }
+}
