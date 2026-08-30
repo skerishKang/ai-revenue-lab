@@ -1,0 +1,3 @@
+# Browser validation procedure
+
+Validate 7 states × 3 viewports: 1440×1100, 768×1024 and 390×844. Assert exactly one selected tab/panel, ARIA and roving tabindex, keyboard navigation, visible focus, overflow/clipping/overlap 0, eight local assets, required boundaries, zero console/page/failed/external requests, Replay 1/2 style/screenshot/geometry equality, focus/scroll stability and reduced-motion immediate completion. Implementation self-check is not `LOCAL_VALIDATION_PASS`.
