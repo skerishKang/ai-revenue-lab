@@ -114,3 +114,4 @@ export * from './adscend-web-integration.js';
 export * from './reward-fulfillment.js';
 export * from './payout-policy.js';
 export * from './consumer-home.js';
+export * from './provider-runtime-config.js';
