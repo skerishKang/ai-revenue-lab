@@ -30,7 +30,7 @@ def test_export_uses_composer_request_lifecycle() -> None:
     assert "input.disabled = inFlight;" in app
 
 
-def test_export_skips_typing_and_error_assistant_fragments() -> None:
+def test_export_skips_typing_error_and_dangling_user_fragments() -> None:
     export = _source(EXPORT_PATH)
 
     start = export.index("  function exportableAssistantText(")
@@ -39,6 +39,11 @@ def test_export_skips_typing_and_error_assistant_fragments() -> None:
     assert 'content.querySelector(".typing")' in helper
     assert 'content.querySelector(".error-box")' in helper
     assert "return visiblePlainText(content);" in helper
+
+    collect_start = export.index("  function collectConversation(")
+    collect_end = export.index("  function hasSettledAssistant(", collect_start)
+    collect = export[collect_start:collect_end]
+    assert 'while (entries.length && entries[entries.length - 1].label === "나") entries.pop();' in collect
 
     state_start = export.index("  function updateExportState(")
     state_end = export.index("  function downloadConversation(", state_start)
