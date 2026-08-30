@@ -11,12 +11,6 @@ export interface W8RealNegativeEvidenceCase {
   readonly evidenceSummary: string;
 }
 
-/**
- * Real public CrowdGen page observed 2026-08-30. The page still contains an
- * expired “double pay until 15 October 2024” promotion while also presenting a
- * normal hourly rate. That time-conflicted source must not silently enter the
- * VERIFIED-20 ledger as current truth.
- */
 export const CROWDGEN_FIREWEED_STALE_SUPPRESSION: W8RealNegativeEvidenceCase = Object.freeze({
   evidenceId: 'w8-real-negative-crowdgen-fireweed-stale-20260830',
   demonstrationId: 'STALE_SOURCE_SUPPRESSION',
@@ -34,12 +28,6 @@ export const CROWDGEN_FIREWEED_STALE_SUPPRESSION: W8RealNegativeEvidenceCase = O
   evidenceSummary: 'Observed public page contains an expired double-pay promotion ending 2024-10-15 while the page is still reachable in 2026. B64 suppresses the candidate from VERIFIED 20 rather than treating the stale promotion context as current.',
 });
 
-/**
- * Real duplicate discovery observed on OneForma: the current public projects
- * directory and the direct project detail both expose the same Multilingual
- * Podcast Transcription And Speech Annotator project. These are two discovery
- * paths to one canonical opportunity, not two earning opportunities.
- */
 export const ONEFORMA_PODCAST_REJECTED_DUPLICATE: W8RealNegativeEvidenceCase = Object.freeze({
   evidenceId: 'w8-real-negative-oneforma-podcast-duplicate-20260830',
   demonstrationId: 'REJECTED_DUPLICATE',
@@ -56,4 +44,28 @@ export const ONEFORMA_PODCAST_REJECTED_DUPLICATE: W8RealNegativeEvidenceCase = O
     'SECOND_DISCOVERY_DOES_NOT_CREATE_NEW_SLOT',
   ]),
   evidenceSummary: 'The live OneForma projects directory lists Multilingual Podcast Transcription And Speech Annotator and links to the same direct project detail already represented by slot 10. B64 canonicalizes both observations to one opportunity identity and rejects the second discovery as a duplicate instead of inflating VERIFIED 20.',
+});
+
+/**
+ * Real public CrowdGen Experts page observed 2026-08-30 contains unresolved
+ * template/semantic conflicts: lorem-ipsum placeholder copy, duplicate
+ * PROJECT ARISTOTLE cards with incompatible descriptions, and project labels
+ * that cannot be treated as reliable current inventory without human review.
+ */
+export const CROWDGEN_EXPERTS_LOW_CONFIDENCE_REVIEW: W8RealNegativeEvidenceCase = Object.freeze({
+  evidenceId: 'w8-real-negative-crowdgen-experts-low-confidence-20260830',
+  demonstrationId: 'LOW_CONFIDENCE_REVIEW',
+  sourceId: 'SRC-CROWDGEN',
+  canonicalUrl: 'https://crowdgen.com/experts/',
+  observedAt: '2026-08-30T09:27:00.000Z',
+  realEvidence: true,
+  disposition: 'REVIEW_REQUIRED',
+  countableVerified20: false,
+  reasonCodes: Object.freeze([
+    'PLACEHOLDER_LOREM_IPSUM_PRESENT',
+    'DUPLICATE_PROJECT_NAME_WITH_CONFLICTING_DESCRIPTION',
+    'PROJECT_CARD_SEMANTICS_NOT_RELIABLE_CURRENT_INVENTORY',
+    'HUMAN_REVIEW_REQUIRED_BEFORE_NORMALIZATION',
+  ]),
+  evidenceSummary: 'CrowdGen Experts currently renders placeholder lorem-ipsum descriptions and repeats PROJECT ARISTOTLE with materially inconsistent task descriptions. B64 therefore routes this source observation to LOW_CONFIDENCE review and does not normalize any of those cards into VERIFIED 20.',
 });
