@@ -15,8 +15,10 @@ def make_agent(**overrides):
     values = {
         "agent_id": "agent:padiem:research_assistant@1",
         "publisher_id": "publisher:padiem",
+        "title": "Research Assistant",
         "description": "A bounded research assistant.",
         "instruction": "Use approved skills and tools to produce a bounded research answer.",
+        "output_contract_ref": "io:research_answer@1",
         "skill_package_ids": ("skill:padiem:research_digest@1",),
         "allowed_tool_ids": (
             "tool:padiem:web_search@1",
@@ -43,6 +45,12 @@ def test_agent_id_uses_frozen_grammar() -> None:
     assert make_agent().agent_id == "agent:padiem:research_assistant@1"
     with pytest.raises(AgentDefinitionError):
         make_agent(agent_id="research_assistant")
+
+
+def test_runtime_facing_metadata_is_explicit() -> None:
+    agent = make_agent()
+    assert agent.title == "Research Assistant"
+    assert agent.output_contract_ref == "io:research_answer@1"
 
 
 def test_agent_tool_declarations_cannot_widen_trusted_grants() -> None:
