@@ -11,8 +11,13 @@ import {
   PROLIFIC_W8_VERSION,
 } from '../src/verified20/prolific.js';
 import { OUTLIER_CURRENT_VERIFIED20_RECORD } from '../src/verified20/outlier-current.js';
+import {
+  GOOGLE_OPINION_REWARDS_KR_RECORD,
+  KOREAN_POCKET_MONEY_VERIFIED20_RECORDS,
+  PANELPOWER_AIRDRESSER_RECORD,
+} from '../src/verified20/korean-pocket-money.js';
 import { validateVerified20Record, verified20Progress } from '../src/verified20/domain.js';
-import { VERIFIED20_PROGRESS, W8_GATE_STATUS } from '../src/verified20/ledger.js';
+import { VERIFIED20_PROGRESS, VERIFIED20_RECORDS, W8_GATE_STATUS } from '../src/verified20/ledger.js';
 import { W8_NEGATIVE_DEMONSTRATIONS } from '../src/verified20/negative-demonstrations.js';
 
 test('Prolific real source is manual/deep-link only after explicit bounded clearance', () => {
@@ -75,18 +80,57 @@ test('duplicate copies of one real opportunity can never fake a 20/20 gate', () 
   assert.equal(progress.gatePassed, false);
 });
 
-test('W8 remains fail-closed at 14/20 with four real negative demonstrations passed', () => {
-  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 14);
+test('slots 15-20 are pocket-money or short paid research, never general job-board inventory', () => {
+  assert.deepEqual(KOREAN_POCKET_MONEY_VERIFIED20_RECORDS.map((item) => item.slot), [15, 16, 17, 18, 19, 20]);
+  for (const record of KOREAN_POCKET_MONEY_VERIFIED20_RECORDS) {
+    const validation = validateVerified20Record(record);
+    assert.equal(validation.countable, true, `${record.slot}: ${validation.errors.join('; ')}`);
+    assert.notEqual(record.version.supplyAvailabilityState, 'PUBLIC_JOB_POSTING_AVAILABLE');
+    assert.equal(record.version.opportunityCategory === 'SURVEY' || record.version.opportunityCategory === 'MARKET_RESEARCH', true);
+  }
+});
+
+test('provider-level Korean survey programs never fabricate individual survey supply or expected payout', () => {
+  for (const record of KOREAN_POCKET_MONEY_VERIFIED20_RECORDS.filter((item) => item.supplyClaimMode === 'PROVIDER_PROGRAM_ONLY')) {
+    assert.equal(record.version.supplyAvailabilityState, 'PUBLIC_PROVIDER_PROGRAM_AVAILABLE');
+    assert.equal(record.version.expectedPayoutValue, null);
+    assert.equal(record.version.acceptanceProbability, null);
+    assert.equal(record.version.qualificationProbability, null);
+    const metadata = record.snapshot.fetchMetadata as { privateAccountAccess?: unknown; individualSurveyInventoryObserved?: unknown } | null;
+    assert.equal(metadata?.privateAccountAccess, false);
+    assert.equal(metadata?.individualSurveyInventoryObserved, false);
+  }
+});
+
+test('Google Opinion Rewards Korea is Android-specific and does not claim guaranteed surveys or cash payout', () => {
+  assert.deepEqual(GOOGLE_OPINION_REWARDS_KR_RECORD.version.deviceOsRequirements, ['ANDROID']);
+  assert.deepEqual(GOOGLE_OPINION_REWARDS_KR_RECORD.version.eligibleCountriesOrRegions, ['KOREA']);
+  assert.equal(GOOGLE_OPINION_REWARDS_KR_RECORD.version.advertisedCompensationValue, null);
+  assert.equal(GOOGLE_OPINION_REWARDS_KR_RECORD.version.expectedPayoutValue, null);
+  assert.deepEqual(GOOGLE_OPINION_REWARDS_KR_RECORD.version.payoutMethod, { method: 'GOOGLE_PLAY_CREDIT' });
+});
+
+test('PanelPower AirDresser record is a bounded paid research study, not a job listing', () => {
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.slot, 20);
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.supplyClaimMode, 'PUBLIC_CURRENT_INVENTORY');
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.version.opportunityCategory, 'MARKET_RESEARCH');
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.version.advertisedCompensationValue, 300000);
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.version.compensationCurrency, 'KRW');
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.version.supplyAvailabilityState, 'PUBLIC_RESEARCH_STUDY_AVAILABLE');
+  assert.equal(PANELPOWER_AIRDRESSER_RECORD.version.acceptanceProbability, null);
+});
+
+test('W8 data contract reaches exactly 20 unique core records and all five real negative demonstrations', () => {
+  assert.equal(VERIFIED20_RECORDS.length, 20);
+  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 20);
   assert.equal(VERIFIED20_PROGRESS.targetCount, 20);
-  assert.equal(VERIFIED20_PROGRESS.remainingCount, 6);
-  assert.equal(VERIFIED20_PROGRESS.gatePassed, false);
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.filter((item) => item.status === 'PASS').length, 4);
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'STALE_SOURCE_SUPPRESSION')?.status, 'PASS');
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'REJECTED_DUPLICATE')?.status, 'PASS');
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'LOW_CONFIDENCE_REVIEW')?.status, 'PASS');
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'MATERIAL_VERSION_CHANGE')?.status, 'PASS');
-  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'BROKEN_LINK_SUPPRESSION')?.status, 'PENDING');
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 4);
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, false);
-  assert.equal(W8_GATE_STATUS.gatePassed, false);
+  assert.equal(VERIFIED20_PROGRESS.remainingCount, 0);
+  assert.equal(VERIFIED20_PROGRESS.duplicateSlotDetected, false);
+  assert.equal(VERIFIED20_PROGRESS.duplicateOpportunityDetected, false);
+  assert.equal(VERIFIED20_PROGRESS.gatePassed, true);
+  assert.equal(W8_NEGATIVE_DEMONSTRATIONS.filter((item) => item.status === 'PASS').length, 5);
+  for (const item of W8_NEGATIVE_DEMONSTRATIONS) assert.equal(item.status, 'PASS', item.id);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 5);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, true);
+  assert.equal(W8_GATE_STATUS.gatePassed, true);
 });
