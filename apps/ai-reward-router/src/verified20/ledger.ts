@@ -1,0 +1,18 @@
+import { verified20Progress } from './domain.js';
+import { w8NegativeGatePassed, W8_NEGATIVE_DEMONSTRATIONS } from './negative-demonstrations.js';
+import { PROLIFIC_VERIFIED20_RECORD } from './prolific.js';
+
+export const VERIFIED20_RECORDS = Object.freeze([
+  PROLIFIC_VERIFIED20_RECORD,
+]);
+
+export const VERIFIED20_PROGRESS = verified20Progress(VERIFIED20_RECORDS);
+
+export const W8_GATE_STATUS = Object.freeze({
+  realVerifiedCount: VERIFIED20_PROGRESS.verifiedCount,
+  targetCount: VERIFIED20_PROGRESS.targetCount,
+  remainingCount: VERIFIED20_PROGRESS.remainingCount,
+  verified20Complete: VERIFIED20_PROGRESS.gatePassed,
+  negativeDemonstrationsComplete: w8NegativeGatePassed(W8_NEGATIVE_DEMONSTRATIONS),
+  gatePassed: VERIFIED20_PROGRESS.gatePassed && w8NegativeGatePassed(W8_NEGATIVE_DEMONSTRATIONS),
+});
