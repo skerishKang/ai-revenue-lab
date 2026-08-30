@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "combinations": 21,
+  "failures": [],
+  "http_assets": {
+    "connector-spec-crate.svg": 200,
+    "connector-workshop-cover.svg": 200,
+    "field-lineage-rail.svg": 200,
+    "freshness-limitation-board.svg": 200,
+    "ordinance-source-document.svg": 200,
+    "procurement-feed-strip.svg": 200,
+    "schema-mapping-blueprint.svg": 200,
+    "source-authority-dossier.svg": 200,
+    "statistics-table-sheet.svg": 200
+  },
+  "http_assets_all_200": true,
+  "console_errors": [],
+  "page_errors": [],
+  "external_runtime_requests": [],
+  "keyboard_navigation": true,
+  "motion": {
+    "computed_end_ms": 780,
+    "animation_name": "connectorSpecComplete",
+    "replay_equal": true,
+    "screenshot_equal": true,
+    "focus_stable": true,
+    "scroll_stable": true,
+    "geometry_stable": true,
+    "finals": [
+      {
+        "opacity": "1",
+        "transform": "none",
+        "w": 629.40625,
+        "h": 70.25,
+        "focus": true,
+        "scrollY": 120,
+        "rect": [
+          405.296875,
+          762.90625,
+          629.40625,
+          70.25
+        ]
+      },
+      {
+        "opacity": "1",
+        "transform": "none",
+        "w": 629.40625,
+        "h": 70.25,
+        "focus": true,
+        "scrollY": 120,
+        "rect": [
+          405.296875,
+          762.90625,
+          629.40625,
+          70.25
+        ]
+      }
+    ]
+  },
+  "reduced_motion": {
+    "state": "complete",
+    "visible": true
+  },
+  "mobile": {
+    "right": 378,
+    "bottom": 1032.59375,
+    "text": "390PX CONNECTOR BRIEF\n\nMorae Ordinance\nSYNTHETIC PUBLIC DATASET\nSOURCE AUTHORITY\nOFFICIAL SOURCE — FICTIONAL\nLICENCE\n\nFictional terms · NOT LEGAL ADVICE\n\nPUBLICATION\n06.30\nRETRIEVAL\n07.22\nFRESHNESS — CURRENT\n\nmonthly cadence within window\n\nFIELD MAPPING\n\npub_dt → published_at\n\nKNOWN LIMITATION\n\n별표·부칙 coverage 미검증\n\nCONNECTOR READINESS — NOT CONNECTED\nNO LIVE API OR INGESTION",
+    "required": true
+  },
+  "harness": "exact local bytes inline for Chromium; separate localhost HTTP asset 200 check"
+}
