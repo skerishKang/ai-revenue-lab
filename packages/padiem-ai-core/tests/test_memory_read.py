@@ -6,6 +6,7 @@ from padiem_ai_core.memory_read import (
     MemoryReadPolicy,
     authorize_memory_retrieval,
 )
+from padiem_ai_core.retrieval import RetrievalContractError
 
 
 APP_ID = "b62"
@@ -151,11 +152,11 @@ def test_underlying_retrieval_contract_still_validates_query() -> None:
     project = ns(MemoryScope.PROJECT, "project_1")
     auth = MemoryReadAuthorization(app_id=APP_ID, readable_namespaces=(project,))
 
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(RetrievalContractError) as exc_info:
         authorize_memory_retrieval(
             query="",
             namespaces=(project,),
             authorization=auth,
         )
 
-    assert getattr(exc_info.value, "code", None) == "invalid_retrieval_contract"
+    assert exc_info.value.code == "invalid_retrieval_contract"
