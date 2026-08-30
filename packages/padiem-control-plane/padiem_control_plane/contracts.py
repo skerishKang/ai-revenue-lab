@@ -12,6 +12,7 @@ _CURRENCY_RE = re.compile(r"^[A-Z]{3}$")
 MAX_PRODUCT_USER_ID_CHARS = 256
 MAX_CANONICAL_SUBJECT_ID_CHARS = 256
 MAX_IDEMPOTENCY_KEY_CHARS = 256
+MAX_ROUTE_LABEL_CHARS = 256
 
 
 class ControlPlaneContractError(ValueError):
@@ -274,7 +275,11 @@ class RouteEvidence:
         ):
             value = getattr(self, name)
             if value is not None:
-                object.__setattr__(self, name, _safe_identifier(name, value))
+                object.__setattr__(
+                    self,
+                    name,
+                    _opaque_id(name, value, limit=MAX_ROUTE_LABEL_CHARS),
+                )
 
         if self.attempt_count is not None and (
             isinstance(self.attempt_count, bool)
