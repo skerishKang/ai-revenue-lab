@@ -1,19 +1,7 @@
 "use strict";
 
 const routes = [
-  {
-    number: 1,
-    route: "b01",
-    sourcePath: "apps/personal-edition",
-    mode: "GENERATED_APP_PREVIEW_ALLOWLIST",
-    marker: "Personal Edition",
-    generatorModule: "scripts.build_static_production",
-    generatorOutputOverride: "preview._OUTPUT_DIR",
-    includeFiles: ["index.html", "robots.txt", "preview/participant/index.html"],
-    includeDirs: ["static", "guide", "preview/participant/empty", "preview/participant/input-received", "preview/participant/editing", "preview/participant/published", "preview/participant/feedback", "preview/participant/input", "preview/participant/editions", "preview/participant/history", "preview/participant/not-found", "preview/participant/transformation"],
-    privateLinkSegments: ["admin", "preview-states"], rewriteRootRelative: true, neutralizeForms: true,
-    aggregateHeaders: ["X-Robots-Tag: noindex, nofollow", "Referrer-Policy: no-referrer", "X-Content-Type-Options: nosniff", "X-Frame-Options: DENY", "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'; object-src 'none'"]
-  },
+  { number: 1, route: "b01", sourcePath: "apps/personal-edition", mode: "GENERATED_APP_PREVIEW_ALLOWLIST", marker: "Personal Edition", generatorModule: "scripts.build_static_production", generatorOutputOverride: "preview._OUTPUT_DIR", includeFiles: ["index.html", "robots.txt", "preview/participant/index.html"], includeDirs: ["static", "guide", "preview/participant/empty", "preview/participant/input-received", "preview/participant/editing", "preview/participant/published", "preview/participant/feedback", "preview/participant/input", "preview/participant/editions", "preview/participant/history", "preview/participant/not-found", "preview/participant/transformation"], privateLinkSegments: ["admin", "preview-states"], rewriteRootRelative: true, neutralizeForms: true, aggregateHeaders: ["X-Robots-Tag: noindex, nofollow", "Referrer-Policy: no-referrer", "X-Content-Type-Options: nosniff", "X-Frame-Options: DENY", "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'; object-src 'none'"] },
   { number: 2, route: "b02", sourcePath: "apps/living-travel/pages-preview/site", mode: "STATIC_APP_PREVIEW_ALLOWLIST", marker: "Living Travel", includeFiles: ["index.html", "guide.html", "robots.txt"], includeDirs: ["assets", "demo", "traveler"], privateLinkSegments: ["operator", "staging"], rewriteRootRelative: true, aggregateHeaders: ["X-Robots-Tag: noindex, nofollow", "Referrer-Policy: no-referrer", "X-Content-Type-Options: nosniff", "X-Frame-Options: DENY", "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'self'; object-src 'none'"] },
   { number: 4, route: "b04", sourcePath: "apps/living-learning/pages-preview", mode: "STATIC_APP_PREVIEW", marker: "Living Learning", includeFiles: [], includeDirs: [], excludeRootFiles: ["_headers", "_redirects"], rewriteRootRelative: true },
   { number: 6, route: "b06", sourcePath: "reference/business-06-world-feed-v1", mode: "STATIC_REFERENCE", marker: "World Feed", includeFiles: ["index.html", "guide.html"], includeDirs: ["assets", "scripts", "styles"] },
@@ -43,12 +31,11 @@ const routes = [
   { number: 39, route: "b39", sourcePath: "reference/business-39-112-real-time-interpretation-v1", mode: "STATIC_REFERENCE", marker: "112 실시간 AI 통역", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 40, route: "b40", sourcePath: "reference/business-40-emergency-urgency-ai-v1", mode: "STATIC_REFERENCE", marker: "긴급도 근거 검토 데스크", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 41, route: "b41", sourcePath: "reference/business-41-foreign-emergency-assistant-v1", mode: "STATIC_REFERENCE", marker: "외국인 긴급신고 도우미", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
-  { number: 42, route: "b42", sourcePath: "reference/business-42-ai-development-control-tower-v1", mode: "STATIC_REFERENCE", marker: "AI 개발 지휘실", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
-  { number: 43, route: "b43", sourcePath: "reference/business-43-ai-software-factory-v1", mode: "STATIC_REFERENCE", marker: "AI 소프트웨어 전달실", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
+  { number: 42, route: "b42", sourcePath: "reference/business-42-ai-development-control-tower-v1", mode: "STATIC_REFERENCE", marker: "AI 개발 관제실", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 45, route: "b45", sourcePath: "reference/business-45-ai-content-engine-v1", mode: "STATIC_REFERENCE", marker: "AI 콘텐츠 엔진", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 46, route: "b46", sourcePath: "reference/business-46-ai-personalization-engine-v1", mode: "STATIC_REFERENCE", marker: "AI 개인화 엔진", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 47, route: "b47", sourcePath: "reference/business-47-real-time-feedback-engine-v1", mode: "STATIC_REFERENCE", marker: "Feedback Reaction Room", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
-  { number: 48, route: "b48", sourcePath: "reference/business-48-ai-verification-engine-v1", mode: "STATIC_REFERENCE", marker: "AI 증거 검토실", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
+  { number: 48, route: "b48", sourcePath: "reference/business-48-ai-verification-engine-v1", mode: "STATIC_REFERENCE", marker: "AI 검증·승인 엔진", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 49, route: "b49", sourcePath: "reference/business-49-public-data-connector-hub-v1", mode: "STATIC_REFERENCE", marker: "공공데이터 커넥터 허브", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 51, route: "b51", sourcePath: "reference/business-51-ai-workflow-marketplace-v1", mode: "STATIC_REFERENCE", marker: "검증 워크플로우 장터", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
   { number: 52, route: "b52", sourcePath: "reference/business-52-scheduled-agent-operations-v1", mode: "STATIC_REFERENCE", marker: "예약형 AI 운영", includeFiles: ["index.html"], includeDirs: ["assets", "scripts", "styles"] },
