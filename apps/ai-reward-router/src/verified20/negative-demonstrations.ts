@@ -1,3 +1,4 @@
+import { OUTLIER_REAL_MATERIAL_CHANGE_CASE } from './outlier-material-change.js';
 import { CROWDGEN_FIREWEED_STALE_SUPPRESSION } from './real-negative-evidence.js';
 
 export const W8_NEGATIVE_DEMONSTRATION_IDS = [
@@ -23,12 +24,13 @@ const evidenceById: Readonly<Partial<Record<W8NegativeDemonstrationId, { readonl
     evidenceRef: CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceId,
     notes: CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceSummary,
   }),
+  MATERIAL_VERSION_CHANGE: Object.freeze({
+    evidenceRef: OUTLIER_REAL_MATERIAL_CHANGE_CASE.evidenceId,
+    notes: OUTLIER_REAL_MATERIAL_CHANGE_CASE.evidenceSummary,
+  }),
 });
 
-/**
- * A negative demonstration becomes PASS only when it is backed by an explicit
- * real-evidence case. Synthetic unit tests alone never promote these statuses.
- */
+/** A negative demonstration becomes PASS only through explicit real evidence. */
 export const W8_NEGATIVE_DEMONSTRATIONS: readonly W8NegativeDemonstration[] = Object.freeze(
   W8_NEGATIVE_DEMONSTRATION_IDS.map((id) => {
     const evidence = evidenceById[id];
