@@ -1,0 +1,51 @@
+name: Padiem Control Plane CI
+
+on:
+  pull_request:
+    paths:
+      - 'packages/padiem-control-plane/**'
+      - '.github/workflows/padiem-control-plane-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  control-plane-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Control Plane package
+        run: |
+          python -m pip install --disable-pip-version-check -e 'packages/padiem-control-plane[dev]'
+          python -m pip check
+
+      - name: Compile Control Plane contracts
+        run: |
+          python -m compileall -q packages/padiem-control-plane/padiem_control_plane
+          python -m py_compile packages/padiem-control-plane/tests/test_contracts.py
+
+      - name: Control Plane contract tests
+        working-directory: packages/padiem-control-plane
+        run: pytest -q
+
+      - name: Assert no runtime or billing side effects in gate
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          workflow = Path('.github/workflows/padiem-control-plane-ci.yml').read_text(encoding='utf-8')
+          forbidden = ('wrangler deploy', 'd1 migrations apply', 'stripe', 'payment webhook')
+          lowered = workflow.lower()
+          assert all(term not in lowered for term in forbidden)
+          print('PRODUCTION_MUTATION=NO')
+          print('DB_MUTATION=NO')
+          print('LIVE_BILLING=NO')
+          PY
