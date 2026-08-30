@@ -3,6 +3,13 @@ import assert from 'node:assert/strict';
 import { effectiveAcquisitionDecision } from '../src/source-policy/decision.js';
 import { sourceById } from '../src/source-policy/registry.js';
 import {
+  OUTLIER_PRE_CURATION_GATES,
+  OUTLIER_VERIFIED20_RECORD,
+  OUTLIER_W8_POLICY,
+  OUTLIER_W8_SNAPSHOT,
+  OUTLIER_W8_VERSION,
+} from '../src/verified20/outlier.js';
+import {
   PROLIFIC_PRE_CURATION_GATES,
   PROLIFIC_VERIFIED20_RECORD,
   PROLIFIC_W8_POLICY,
@@ -16,20 +23,8 @@ import { W8_NEGATIVE_DEMONSTRATIONS } from '../src/verified20/negative-demonstra
 
 test('Prolific first real source is manual/deep-link only after explicit bounded clearance', () => {
   const source = sourceById('SRC-PROLIFIC');
-  assert.equal(effectiveAcquisitionDecision({
-    source,
-    policy: PROLIFIC_W8_POLICY,
-    gates: PROLIFIC_PRE_CURATION_GATES,
-    attempt: 'DIRECTORY',
-    limitsSatisfied: true,
-  }), 'MANUAL_ONLY');
-  assert.equal(effectiveAcquisitionDecision({
-    source,
-    policy: PROLIFIC_W8_POLICY,
-    gates: PROLIFIC_PRE_CURATION_GATES,
-    attempt: 'AUTOMATED',
-    limitsSatisfied: true,
-  }), 'BLOCK');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: PROLIFIC_W8_POLICY, gates: PROLIFIC_PRE_CURATION_GATES, attempt: 'DIRECTORY', limitsSatisfied: true }), 'MANUAL_ONLY');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: PROLIFIC_W8_POLICY, gates: PROLIFIC_PRE_CURATION_GATES, attempt: 'AUTOMATED', limitsSatisfied: true }), 'BLOCK');
   assert.equal(PROLIFIC_W8_POLICY.automationPermission, 'BLOCKED');
 });
 
@@ -59,14 +54,12 @@ test('provider-level Prolific record does not fabricate private current study in
 test('Prolific evidence proves program, Korea eligibility, age threshold, verification, and PayPal without third-party evidence', () => {
   const ids = new Set(PROLIFIC_VERIFIED20_RECORD.evidence.map((item) => item.id));
   for (const critical of PROLIFIC_VERIFIED20_RECORD.criticalEvidenceIds) assert.equal(ids.has(critical), true);
-
   for (const item of PROLIFIC_VERIFIED20_RECORD.evidence) {
     const locator = item.evidenceLocator as { url?: unknown } | null;
     assert.equal(typeof locator?.url, 'string');
     const hostname = new URL(String(locator?.url)).hostname;
     assert.equal(hostname === 'www.prolific.com' || hostname === 'participant-help.prolific.com', true);
   }
-
   assert.deepEqual(PROLIFIC_W8_VERSION.eligibleCountriesOrRegions, ['KOREA']);
   assert.equal(PROLIFIC_W8_REQUIREMENTS.find((item) => item.id === 'req-w8-prolific-age')?.operator, 'GT');
   assert.deepEqual(PROLIFIC_W8_VERSION.ageRequirements, { minimumExclusiveAge: 18 });
@@ -74,11 +67,7 @@ test('Prolific evidence proves program, Korea eligibility, age threshold, verifi
 });
 
 test('manual Prolific snapshot records zero transport calls and no private account access', () => {
-  const metadata = PROLIFIC_W8_SNAPSHOT.fetchMetadata as {
-    transportCallCount?: unknown;
-    privateAccountAccess?: unknown;
-    loggedInInventoryObserved?: unknown;
-  } | null;
+  const metadata = PROLIFIC_W8_SNAPSHOT.fetchMetadata as { transportCallCount?: unknown; privateAccountAccess?: unknown; loggedInInventoryObserved?: unknown } | null;
   assert.equal(metadata?.transportCallCount, 0);
   assert.equal(metadata?.privateAccountAccess, false);
   assert.equal(metadata?.loggedInInventoryObserved, false);
@@ -86,8 +75,45 @@ test('manual Prolific snapshot records zero transport calls and no private accou
   assert.equal(PROLIFIC_W8_SNAPSHOT.actorProvenance !== null, true);
 });
 
+test('Outlier Korean role is manual/deep-link only and automation remains blocked', () => {
+  const source = sourceById('SRC-OUTLIER');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: OUTLIER_W8_POLICY, gates: OUTLIER_PRE_CURATION_GATES, attempt: 'DIRECTORY', limitsSatisfied: true }), 'MANUAL_ONLY');
+  assert.equal(effectiveAcquisitionDecision({ source, policy: OUTLIER_W8_POLICY, gates: OUTLIER_PRE_CURATION_GATES, attempt: 'AUTOMATED', limitsSatisfied: true }), 'BLOCK');
+  assert.equal(OUTLIER_W8_POLICY.automationPermission, 'BLOCKED');
+});
+
+test('slot 2 is the exact public Outlier Korean role with up-to compensation semantics', () => {
+  const validation = validateVerified20Record(OUTLIER_VERIFIED20_RECORD);
+  assert.equal(validation.countable, true, validation.errors.join('; '));
+  assert.equal(OUTLIER_VERIFIED20_RECORD.slot, 2);
+  assert.equal(OUTLIER_VERIFIED20_RECORD.supplyClaimMode, 'PUBLIC_CURRENT_INVENTORY');
+  assert.equal(OUTLIER_W8_VERSION.opportunityCategory, 'AI_EVALUATION');
+  assert.equal(OUTLIER_W8_VERSION.compensationType, 'HOURLY');
+  assert.equal(OUTLIER_W8_VERSION.advertisedCompensationValue, 31);
+  assert.equal(OUTLIER_W8_VERSION.compensationCurrency, 'USD');
+  assert.equal(OUTLIER_W8_VERSION.expectedPayoutValue, null);
+  assert.equal(OUTLIER_W8_VERSION.acceptanceProbability, null);
+  assert.equal(OUTLIER_W8_VERSION.qualificationProbability, null);
+  assert.equal(OUTLIER_W8_VERSION.supplyAvailabilityState, 'PUBLIC_ROLE_PAGE_AVAILABLE');
+  assert.deepEqual(OUTLIER_W8_VERSION.eligibleCountriesOrRegions, ['KOREA']);
+  assert.deepEqual(OUTLIER_W8_VERSION.languageRequirements, ['KOREAN']);
+});
+
+test('Outlier evidence is official-only and private task inventory is not observed', () => {
+  for (const item of OUTLIER_VERIFIED20_RECORD.evidence) {
+    const locator = item.evidenceLocator as { url?: unknown } | null;
+    assert.equal(typeof locator?.url, 'string');
+    assert.equal(new URL(String(locator?.url)).hostname, 'outlier.ai');
+  }
+  const metadata = OUTLIER_W8_SNAPSHOT.fetchMetadata as { productTransportCallCount?: unknown; centralResearchNetworkUsed?: unknown; privateAccountAccess?: unknown; loggedInTaskInventoryObserved?: unknown } | null;
+  assert.equal(metadata?.productTransportCallCount, 0);
+  assert.equal(metadata?.centralResearchNetworkUsed, true);
+  assert.equal(metadata?.privateAccountAccess, false);
+  assert.equal(metadata?.loggedInTaskInventoryObserved, false);
+});
+
 test('duplicate copies of one real opportunity can never fake a 20/20 gate', () => {
-  const duplicates = Array.from({ length: 20 }, () => PROLIFIC_VERIFIED20_RECORD);
+  const duplicates = Array.from({ length: 20 }, () => OUTLIER_VERIFIED20_RECORD);
   const progress = verified20Progress(duplicates);
   assert.equal(progress.verifiedCount, 1);
   assert.equal(progress.duplicateSlotDetected, true);
@@ -95,10 +121,10 @@ test('duplicate copies of one real opportunity can never fake a 20/20 gate', () 
   assert.equal(progress.gatePassed, false);
 });
 
-test('W8 remains fail-closed at 1/20 with all required negative demonstrations still pending', () => {
-  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 1);
+test('W8 remains fail-closed at 2/20 with all required negative demonstrations still pending', () => {
+  assert.equal(VERIFIED20_PROGRESS.verifiedCount, 2);
   assert.equal(VERIFIED20_PROGRESS.targetCount, 20);
-  assert.equal(VERIFIED20_PROGRESS.remainingCount, 19);
+  assert.equal(VERIFIED20_PROGRESS.remainingCount, 18);
   assert.equal(VERIFIED20_PROGRESS.gatePassed, false);
   assert.equal(W8_NEGATIVE_DEMONSTRATIONS.every((item) => item.status === 'PENDING'), true);
   assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, false);
