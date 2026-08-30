@@ -1,10 +1,4 @@
-"""Language-neutral completed-run contract for the internal Padiem AI Engine.
-
-This module is deliberately Cloudflare-neutral.  It accepts only trusted
-first-party server input, translates it into the existing Padiem AI Core
-contracts, and returns bounded public Core evidence.  Provider selection,
-provider credentials, retry and fallback remain Business 14 authority.
-"""
+"""Language-neutral completed-run contract for the internal Padiem AI Engine."""
 
 from __future__ import annotations
 
@@ -19,6 +13,8 @@ from padiem_ai_core import (
     ExecutionRuntimeError,
 )
 from padiem_ai_core.contextual_execution import ContextualExecutionRunner
+
+from app.execution_context_wire import parse_execution_context
 
 EXECUTE_PATH = "/internal/v1/execute"
 HEALTH_PATH = "/internal/v1/health"
@@ -60,7 +56,6 @@ _AGENT_ALLOWED = frozenset(
         "model_policy",
     }
 )
-_CONTEXT_ALLOWED = frozenset({"trace_id", "idempotency_key", "timeout_seconds"})
 
 
 class ExecutionRunner(Protocol):
@@ -154,26 +149,13 @@ def _model_policy(value: Any) -> dict[str, Any]:
 
 
 def _execution_context(value: Any) -> ExecutionContext | None:
-    if value is None:
-        return None
-    data = _require_exact_object(
-        value,
-        name="execution_context",
-        allowed=_CONTEXT_ALLOWED,
-        required=frozenset(),
-    )
     try:
-        context = ExecutionContext(
-            trace_id=data.get("trace_id") or "engine_context_trace",
-            idempotency_key=data.get("idempotency_key"),
-            timeout_seconds=data.get("timeout_seconds", 20.0),
-        )
+        return parse_execution_context(value)
     except (TypeError, ValueError, OverflowError):
         raise ServiceContractError(
             "invalid_execution_context",
             "Execution context fields are invalid.",
         ) from None
-    return context
 
 
 def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest, ExecutionContext | None]:
