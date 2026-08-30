@@ -46,8 +46,8 @@ export function validateVerified20Record(record: Verified20Record): Verified20Va
   const errors: string[] = [];
   if (!Number.isInteger(record.slot) || record.slot < 1 || record.slot > 20) errors.push('slot must be an integer from 1 to 20');
   if (record.sourcePolicy.decision !== 'PASS' && record.sourcePolicy.decision !== 'PASS_WITH_LIMITS') errors.push('source policy must be explicitly cleared');
-  if (record.sourcePolicy.sourceId !== record.snapshot.sourceId) errors.push('source policy must bind the snapshot source');
-  if (record.sourceGates.some((gate) => gate.sourceId !== record.snapshot.sourceId)) errors.push('all source gates must bind the snapshot source');
+  if (record.sourcePolicy.sourceId !== record.snapshot.sourceId) errors.push('source policy must belong to the snapshot source');
+  if (record.sourceGates.some((gate) => gate.sourceId !== record.snapshot.sourceId)) errors.push('all source gates must belong to the snapshot source');
   if (record.sourceGates.some((gate) => gate.required && gate.status !== 'PASS' && gate.status !== 'WAIVED')) errors.push('all required source gates must be PASS or WAIVED');
   if (record.snapshot.sourceId !== record.opportunity.sourceId) errors.push('snapshot/opportunity source mismatch');
   if (record.version.offerId !== record.opportunity.id) errors.push('version must belong to opportunity');
@@ -64,6 +64,9 @@ export function validateVerified20Record(record: Verified20Record): Verified20Va
   if (Number.isNaN(Date.parse(record.lastCheckedAt))) errors.push('lastCheckedAt must be an ISO-like timestamp');
   if (record.supplyClaimMode === 'PROVIDER_PROGRAM_ONLY' && record.version.supplyAvailabilityState === 'AVAILABLE') {
     errors.push('provider-level evidence must not fabricate current inventory');
+  }
+  if (record.version.supplyAvailabilityState === 'PUBLIC_JOB_POSTING_AVAILABLE') {
+    errors.push('general job postings belong to external job-search assist, not VERIFIED 20 core supply');
   }
   if (record.realEvidence !== true || record.syntheticFixture !== false) errors.push('synthetic fixtures never count toward VERIFIED 20');
   return Object.freeze({ countable: errors.length === 0, errors: Object.freeze(errors) });
