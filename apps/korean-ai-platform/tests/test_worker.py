@@ -60,6 +60,10 @@ class TestWranglerConfig:
     def test_python_workers_flag(self):
         assert "python_workers" in WRANGLER_TOML.read_text()
 
+    def test_workers_runtime_dependency_is_declared(self):
+        content = (WRANGLER_TOML.parent / "pyproject.toml").read_text()
+        assert '"workers-py==1.17.0"' in content
+
     def test_assets_binding(self):
         content = WRANGLER_TOML.read_text()
         assert "binding = \"ASSETS\"" in content
