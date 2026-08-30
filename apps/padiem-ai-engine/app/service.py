@@ -14,10 +14,11 @@ from typing import Any, Callable, Mapping, Protocol
 
 from padiem_ai_core import (
     AgentProfile,
-    ExecutionRequest,
+    ExecutionContext,
     ExecutionResult,
     ExecutionRuntimeError,
 )
+from padiem_ai_core.contextual_execution import ContextualExecutionRunner
 
 EXECUTE_PATH = "/internal/v1/execute"
 HEALTH_PATH = "/internal/v1/health"
@@ -32,6 +33,7 @@ _TOP_LEVEL_ALLOWED = frozenset(
         "session_id",
         "additional_system_context",
         "trace_id",
+        "execution_context",
     }
 )
 _AGENT_REQUIRED = frozenset(
@@ -58,10 +60,11 @@ _AGENT_ALLOWED = frozenset(
         "model_policy",
     }
 )
+_CONTEXT_ALLOWED = frozenset({"trace_id", "idempotency_key", "timeout_seconds"})
 
 
 class ExecutionRunner(Protocol):
-    async def run(self, request: ExecutionRequest) -> ExecutionResult: ...
+    async def run(self, request: Any) -> ExecutionResult: ...
 
 
 RuntimeFactory = Callable[[str], ExecutionRunner]
@@ -150,7 +153,30 @@ def _model_policy(value: Any) -> dict[str, Any]:
     return dict(value)
 
 
-def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest]:
+def _execution_context(value: Any) -> ExecutionContext | None:
+    if value is None:
+        return None
+    data = _require_exact_object(
+        value,
+        name="execution_context",
+        allowed=_CONTEXT_ALLOWED,
+        required=frozenset(),
+    )
+    try:
+        context = ExecutionContext(
+            trace_id=data.get("trace_id") or "engine_context_trace",
+            idempotency_key=data.get("idempotency_key"),
+            timeout_seconds=data.get("timeout_seconds", 20.0),
+        )
+    except (TypeError, ValueError, OverflowError):
+        raise ServiceContractError(
+            "invalid_execution_context",
+            "Execution context fields are invalid.",
+        ) from None
+    return context
+
+
+def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest, ExecutionContext | None]:
     """Validate the service JSON shape and construct immutable Core contracts."""
 
     data = _require_exact_object(
@@ -167,6 +193,15 @@ def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest]:
     )
 
     app_id = data["app_id"]
+    context = _execution_context(data.get("execution_context"))
+    explicit_trace = data.get("trace_id")
+    if context is not None and explicit_trace is not None and explicit_trace != context.trace_id:
+        raise ServiceContractError(
+            "trace_id_conflict",
+            "trace_id conflicts with execution_context.trace_id.",
+        )
+    trace_id = context.trace_id if context is not None else explicit_trace
+
     try:
         agent = AgentProfile(
             id=agent_data["id"],
@@ -188,12 +223,8 @@ def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest]:
             messages=data["messages"],
             session_id=data.get("session_id"),
             additional_system_context=data.get("additional_system_context"),
-            trace_id=data.get("trace_id"),
+            trace_id=trace_id,
         )
-        # ExecutionRuntime validates app_id, but the service must reject a bad
-        # identifier before constructing a runtime instance.  AgentProfile uses
-        # the same safe-identifier grammar, so validate without inventing a
-        # second regex by constructing a harmless shadow agent id.
         AgentProfile(
             id=app_id,
             title="Application",
@@ -209,14 +240,16 @@ def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest]:
             "Request fields are invalid for the Padiem AI Core contract.",
         ) from None
 
-    return app_id, request
+    return app_id, request, context
 
 
 def _status_for_runtime_error(exc: ExecutionRuntimeError) -> int:
-    if exc.code == "invalid_execution_request":
+    if exc.code in {"invalid_execution_request", "invalid_execution_context"}:
         return 400
     if exc.code in {"native_tools_unsupported", "policy_blocked"}:
         return 422
+    if exc.code == "execution_timeout":
+        return 504
     if exc.code == "upstream_timeout":
         return 504
     if exc.code == "upstream_rate_limited":
@@ -232,11 +265,13 @@ class EngineService:
         *,
         runtime_factory: RuntimeFactory,
         b14_service_bound: bool,
+        idempotency_adapter: Any | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
         self._runtime_factory = runtime_factory
         self._b14_service_bound = bool(b14_service_bound)
+        self._idempotency_adapter = idempotency_adapter
 
     def health(self) -> ServiceResponse:
         return ServiceResponse(
@@ -261,7 +296,7 @@ class EngineService:
             )
 
         try:
-            app_id, request = build_execution_request(payload)
+            app_id, request, context = build_execution_request(payload)
         except ServiceContractError as exc:
             return _service_error(
                 exc.code,
@@ -271,7 +306,25 @@ class EngineService:
 
         try:
             runtime = self._runtime_factory(app_id)
-            result = await runtime.run(request)
+            if context is None:
+                result = await runtime.run(request)
+            else:
+                contextual = ContextualExecutionRunner(
+                    runtime=runtime,
+                    app_id=app_id,
+                    idempotency=self._idempotency_adapter,
+                )
+                result = await contextual.run(
+                    request,
+                    context=context,
+                    request_payload=payload,
+                )
+        except ValueError as exc:
+            return _service_error(
+                "execution_context_unavailable",
+                str(exc),
+                status_code=422,
+            )
         except ExecutionRuntimeError as exc:
             return _service_error(
                 exc.code,
