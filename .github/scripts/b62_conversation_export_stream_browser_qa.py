@@ -22,6 +22,8 @@ SUCCESS_ANSWER = "".join(SUCCESS_PARTS)
 ERROR_PROMPT = "부분 답변 뒤 오류를 재현해줘"
 ERROR_PARTIAL = "오류 전에 잠깐 보이는 부분 답변입니다."
 ERROR_MESSAGE = "의도된 대화 내보내기 스트림 오류"
+RECOVERY_PROMPT = "오류 다음에는 정상 답변을 다시 줘"
+RECOVERY_ANSWER = "오류 뒤 정상 응답이 완료되었습니다."
 
 
 def _json(value: object) -> str:
@@ -36,6 +38,8 @@ def _stream_init_script() -> str:
   const errorPrompt = __ERROR_PROMPT__;
   const errorPartial = __ERROR_PARTIAL__;
   const errorMessage = __ERROR_MESSAGE__;
+  const recoveryPrompt = __RECOVERY_PROMPT__;
+  const recoveryAnswer = __RECOVERY_ANSWER__;
   const originalFetch = window.fetch.bind(window);
   const streamPosts = [];
   Object.defineProperty(window, "__qaConversationExportStreamPosts", { value: streamPosts });
@@ -102,6 +106,16 @@ def _stream_init_script() -> str:
       );
     }
 
+    if (prompt === recoveryPrompt) {
+      return delayedResponse(
+        [
+          frame("delta", { delta: recoveryAnswer }),
+          frame("done", { done: true, conversation_id: "chat_export_stream_recovery" }),
+        ],
+        ["recovery-delta", "recovery-done"],
+      );
+    }
+
     throw new Error(`unexpected stream prompt: ${String(prompt)}`);
   };
 })();
@@ -112,6 +126,8 @@ def _stream_init_script() -> str:
         "__ERROR_PROMPT__": _json(ERROR_PROMPT),
         "__ERROR_PARTIAL__": _json(ERROR_PARTIAL),
         "__ERROR_MESSAGE__": _json(ERROR_MESSAGE),
+        "__RECOVERY_PROMPT__": _json(RECOVERY_PROMPT),
+        "__RECOVERY_ANSWER__": _json(RECOVERY_ANSWER),
     }.items():
         script = script.replace(marker, value)
     return script
@@ -205,10 +221,9 @@ async def main() -> None:
                     if part.strip() not in exported:
                         raise AssertionError(f"export lost a final answer segment: {part!r}")
 
-                # Keep the successful exchange in the same conversation, then force the
-                # next request to terminate with an SSE error. Export must stay locked
-                # during the failed request and, once settled, must export only completed
-                # exchanges -- never the dangling failed user prompt or partial answer.
+                # Fail the next request in the same conversation. Export must stay locked
+                # while that request is in flight and, once settled, must keep only the
+                # earlier completed exchange.
                 await page.locator("#messageInput").fill(ERROR_PROMPT)
                 await page.locator("#sendButton").click()
                 await page.wait_for_function(
@@ -238,9 +253,41 @@ async def main() -> None:
                     if forbidden in exported_after_error:
                         raise AssertionError(f"failed trailing exchange leaked into export: {forbidden!r}")
 
+                # Recover with another successful response in the same conversation. This
+                # catches a failed user prompt left in the middle of a later export.
+                await page.locator("#messageInput").fill(RECOVERY_PROMPT)
+                await page.locator("#sendButton").click()
+                await page.wait_for_function(
+                    "() => window.__qaConversationExportStreamPhase === 'recovery-delta'",
+                    timeout=5_000,
+                )
+                await _assert_export_unusable(page, "recovery response in flight")
+                await page.wait_for_function(
+                    "() => window.__qaConversationExportStreamPhase === 'recovery-done'",
+                    timeout=5_000,
+                )
+                await page.wait_for_function(
+                    "expected => document.querySelector('#messageList .assistant-message:last-of-type .assistant-content p')?.textContent.trim() === expected && document.getElementById('messageInput')?.disabled === false",
+                    arg=RECOVERY_ANSWER,
+                    timeout=5_000,
+                )
+                await _assert_export_usable(page, "recovered successful response")
+                await page.screenshot(path=str(OUT_DIR / "stream-export-recovery.png"), full_page=True)
+
+                exported_after_recovery = await _download_export(page)
+                if f"나:\n{SUCCESS_PROMPT}" not in exported_after_recovery or expected_assistant not in exported_after_recovery:
+                    raise AssertionError("original completed exchange missing after recovery")
+                if f"나:\n{RECOVERY_PROMPT}" not in exported_after_recovery:
+                    raise AssertionError("recovery prompt missing from final export")
+                if f"Padiem Chat:\n{RECOVERY_ANSWER}" not in exported_after_recovery:
+                    raise AssertionError("recovery answer missing from final export")
+                for forbidden in (ERROR_PROMPT, ERROR_PARTIAL, ERROR_MESSAGE):
+                    if forbidden in exported_after_recovery:
+                        raise AssertionError(f"failed middle exchange leaked into final export: {forbidden!r}")
+
                 stream_posts = await page.evaluate("window.__qaConversationExportStreamPosts || []")
-                if len(stream_posts) != 2:
-                    raise AssertionError(f"expected exactly two synthetic stream posts, got {len(stream_posts)}")
+                if len(stream_posts) != 3:
+                    raise AssertionError(f"expected exactly three synthetic stream posts, got {len(stream_posts)}")
 
                 report.update(
                     {
@@ -253,6 +300,7 @@ async def main() -> None:
                         "partial_error_export_usable_during_request": False,
                         "prior_success_export_usable_after_later_error": True,
                         "failed_trailing_exchange_excluded": True,
+                        "failed_middle_exchange_excluded_after_recovery": True,
                     }
                 )
                 await context.close()
