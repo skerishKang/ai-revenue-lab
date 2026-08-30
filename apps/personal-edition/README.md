@@ -2,24 +2,31 @@
 
 Status: **Active Business 1 product**
 
-Personal Edition transforms user-supplied conversations, notes, journal entries, or voice transcripts into a polished recurring letter or compact magazine. Explicit feedback must materially change the next edition, and publication remains human-reviewed.
+Personal Edition transforms a user-supplied conversation, note, journal entry, or voice transcript into a polished recurring letter or compact magazine. Explicit feedback must materially change the next edition.
 
 ## Current governance
 
-Personal Edition owns its product-specific quality and review contracts. In particular, B1 must continue to verify:
+Personal Edition owns its product-specific grounding, prohibited-inference, editorial, adaptation, privacy, and human-review quality contracts.
 
-- source grounding and provenance;
-- prohibited-inference / invented-fact rejection;
-- editorial-plan and structured-edition validity;
-- visible feedback adaptation;
-- human review before publication;
-- private participant and operator boundaries.
+General provider/model selection is no longer governed by the historical Personal Edition benchmark program. Portfolio-wide provider/model eligibility, availability, cost/latency/quality policy, fallback, and route evidence belong to **Business 14 · Korean AI Platform / Router Core (#371)**.
 
-General provider/model selection is **not** owned by the historical Personal Edition benchmark program anymore. Portfolio-wide provider/model eligibility, availability, cost/latency/quality policy, fallback, and route evidence belong to **Business 14 · Korean AI Platform / Router Core (#371)**.
+Historical benchmark/pilot Issues **#2, #12, #40, and #49** were closed `not_planned` on 2026-08-30. The old `scripts/benchmark.py` utility remains in the tree for historical/product-local diagnostic use, but it is not authoritative for new cross-provider/model role decisions in its current legacy form. Historical PR #50 remains closed and unmerged.
 
-Historical benchmark/pilot Issues **#2, #12, #40, and #49** were closed `not_planned` on 2026-08-30. They remain historical evidence only and are not current execution gates.
+## Current scope
 
-The old `scripts/benchmark.py` utility remains in the tree for historical/product-local diagnostic use. It must **not** be treated as authoritative for new cross-provider/model role decisions in its current legacy form. Historical PR #50 remains closed and unmerged.
+The historical first paid-pilot experiment tested:
+
+```text
+user material
+→ editorial plan
+→ structured personal edition
+→ human review
+→ private delivery
+→ reader feedback
+→ visibly adapted next edition
+```
+
+This flow remains useful product history, but the July HY3 benchmark and KRW 4,900 pilot plan are not current execution or pricing authority. Any new paid pilot must be opened against the current B1 product/runtime contract.
 
 ## Canonical documents
 
@@ -28,13 +35,15 @@ The old `scripts/benchmark.py` utility remains in the tree for historical/produc
 - `../../docs/product/PERSONAL_EDITION_MVP_CONTRACT.md`
 - `../../docs/architecture/PERSONAL_EDITION_MVP_ARCHITECTURE.md`
 
-Historical experiment documents such as `../../docs/experiments/HY3_PERSONAL_EDITION_BENCHMARK.md` are preserved for provenance but are not current model-selection authority.
+Historical experiment reference (provenance only, not current model-selection authority):
+
+- `../../docs/experiments/HY3_PERSONAL_EDITION_BENCHMARK.md`
 
 ## Implementation rule
 
 All product code, tests, configuration examples, scripts, migrations, and product-local fixtures belong in this directory.
 
-No real credentials or private participant material may be committed.
+No real credentials or private pilot material may be committed.
 
 ## Local setup
 
@@ -62,7 +71,7 @@ Copy `.env.example` to `.env` and adjust as needed. Defaults use the `mock` prov
 
 ### Production requirements
 
-When `APP_ENV=production`, the following settings are mandatory and must differ from development defaults:
+When `APP_ENV=production`, the following settings are **mandatory** and must differ from their development defaults:
 
 | Variable | Description |
 |---|---|
@@ -72,84 +81,286 @@ When `APP_ENV=production`, the following settings are mandatory and must differ 
 | `SESSION_MAX_AGE_SECONDS` | Session lifetime in seconds (default 28800 = 8 hours) |
 | `COOKIE_SAMESITE` | Cookie SameSite attribute (default `lax`) |
 
-The application refuses to start in production if `SECRET_KEY`, `ADMIN_SECRET`, or `COOKIE_SECURE` are not properly configured.
+The application **refuses to start** in production if `SECRET_KEY`, `ADMIN_SECRET`, or `COOKIE_SECURE` are not properly configured.
 
-## Browser workflow
+## Phase 4 browser workflow
 
-The application provides a server-rendered interface for participants and administrators.
+The application provides a server-rendered web interface for both participants and administrators.
 
 ### Participant access
 
-1. A participant receives a one-time access token after provisioning.
-2. Navigate to `/p/access` and enter the token.
-3. The participant dashboard shows published editions and input history.
-4. Participants can submit new input at `/p/p1/input`.
-5. Participants can read published editions and submit feedback.
+1. A participant receives a one-time access token after provisioning
+2. Navigate to `/p/access` and enter the token
+3. The participant dashboard shows published editions and input history
+4. Participants can submit new input at `/p/p1/input`
+5. Participants can read published editions and submit feedback
 
 ### Admin access
 
-1. Navigate to `/admin/access` and enter the admin secret.
-2. The admin dashboard shows participants and editions.
-3. Admins can trigger generation for a participant input.
-4. Admins can review, edit, publish, or reject editions.
-5. Structured content JSON is validated against the EditionContent schema.
+1. Navigate to `/admin/access` and enter the admin secret
+2. The admin dashboard shows all participants and editions
+3. Admins can trigger generation for a participant's input
+4. Admins can review, edit, publish, or reject editions
+5. Admin can edit structured content JSON (validated against EditionContent schema)
 
 ### Security features
 
-- signed session cookies with purpose-separated salts;
-- CSRF protection on state-changing POST requests;
-- restrictive private/no-index response headers;
-- input-size and short-sample controls;
-- recursive unsafe-markup rejection;
-- generic user-facing error handling.
+- **Session cookies**: Signed with purpose-separated salts; httponly, SameSite=Lax
+- **CSRF protection**: Dual-cookie pattern on all state-changing POST requests
+- **Privacy headers**: All `/p` and `/admin` responses include no-store, no-cache, noindex headers
+- **Input size**: 500–5000 words; short-sample override requires explicit admin approval
+- **Markup rejection**: Recursive check prevents script tags, event handlers, and javascript: URLs in edition content
+- **Error handling**: Internal exceptions never exposed to users; generic category messages shown instead
 
 ## Database initialization
 
-The database is initialized through the product migration path. Migrations must remain idempotent and preserve the currently selected backend contract.
+The database is automatically initialized when you first run the application.
+Migrations are applied idempotently from the `migrations/` directory.
 
 ## Provisioning a participant
 
-Create a participant and receive a one-time access token:
+Create a new participant and receive a one-time access token:
 
 ```bash
 python -m scripts.provision_participant <participant_id> "<display_name>" \
     [--language ko|en] [--database <path>]
 ```
 
-The command returns the raw token once. Store it securely; the product stores only its digest.
+Example:
+
+```bash
+python -m scripts.provision_participant alice "Alice" --language ko
+```
+
+The command prints a one-time token. **Store it securely** — it will not be
+shown again. The database stores only the SHA-256 hash of this token.
 
 ## Deleting a participant
 
+Soft-delete a participant and revoke their token access:
+
 ```bash
-python -m scripts.delete_participant <participant_id> [--database PATH]
+python -m scripts.delete_participant <participant_id> [--database <path>]
 ```
 
-Deletion/revocation behavior must preserve the current product contract and invalidate private access as specified by the repository tests.
+After deletion:
+- The participant's status is set to `deleted`
+- Any existing browser session is immediately invalidated (session checks active status)
+- The `deleted_at` timestamp is recorded
+- Dependent records (inputs, editions, feedback) remain in the database
 
 ## Repository APIs
 
-Product-local repository modules include participant, input, edition, feedback, and generation-run persistence. Transaction ownership, parameterized SQL, state transitions, structured JSON validation, and UTC timestamps are enforced by the current implementation and tests.
+All repository modules follow the same transaction policy:
 
-## Provider configuration boundary
+- Each write function begins with `BEGIN IMMEDIATE` and ends with `COMMIT`
+- If the caller already has an open transaction, `RepositoryTransactionError` is raised
+- All SQL is parameterized
+- All timestamps are UTC ISO-8601
 
-The existing application can be configured with mock or external-provider paths through environment-only configuration. Credentials must never be committed, printed, or persisted in product evidence.
+### Available repositories
 
-This direct provider configuration is an implementation compatibility path, **not** a declaration that Personal Edition owns portfolio-wide provider/model strategy. New general routing and model-selection decisions should follow Business 14 / Router Core authority (#371).
+| Module | Purpose |
+|---|---|
+| `app.participant_repository` | Participant CRUD, token provisioning, deletion |
+| `app.input_repository` | Input record CRUD, sequence numbering |
+| `app.edition_repository` | Edition CRUD, publication state machine, content updates |
+| `app.feedback_repository` | Feedback CRUD, structured direction validation |
+| `app.generation_run_repository` | Generation run accounting, provider metrics |
 
-## Legacy benchmark and pilot utilities
+### Privacy helpers
 
-The repository still contains historical utilities such as `scripts/benchmark.py` and `scripts/pilot_ops`. They may be useful for reproducibility, regression investigation, or narrowly scoped B1 diagnostics, but they are not current commercial or cross-model governance.
+`app.privacy` provides Starlette response factories with restrictive cache
+and no-index headers for private participant data:
 
-Important historical boundaries:
+- `restrictive_cache_response()` — full no-store, no-cache, private, noindex
+- `no_index_response()` — noindex without full cache restrictions
+- `private_json_response()` — JSON with all restrictive headers
 
-- the old HY3 benchmark plan is not a current gate;
-- the old Gemini 15-case report is diagnostic evidence only and must not be presented as an accepted cross-model ranking;
-- the old KRW 4,900 / seven-edition pilot was a pricing hypothesis, not current pricing or revenue evidence;
-- no new live benchmark, paid pilot, or participant study is authorized merely because these scripts remain in the repository;
-- if B1 needs a new benchmark or paid pilot, create a fresh issue against the current B1 product/runtime contract.
+## Phase 5A — Safe provider activation
+
+The application defaults to `MockProvider`, which requires no external dependencies or credentials.
+
+### External provider configuration
+
+Set the following environment variables (or in `.env`):
+
+| Variable | Required | Description |
+|---|---|---|
+| `AI_PROVIDER` | yes | Set to `external` |
+| `AI_BASE_URL` | yes | Chat completions endpoint |
+| `AI_API_KEY` | yes | Bearer token for the endpoint |
+| `AI_MODEL` | yes | Advertised model name |
+| `AI_TIMEOUT_SECONDS` | optional | Per-request timeout (default: 120) |
+| `AI_COST_CLASS` | optional | `free`, `paid`, `local`, or `unknown` (default: `free`) |
+
+Fail-closed behavior:
+
+- Unknown `AI_PROVIDER` values are rejected at startup.
+- Missing `AI_BASE_URL`, `AI_API_KEY`, or `AI_MODEL` when `AI_PROVIDER=external` fails closed.
+- In production (`APP_ENV=production`), `AI_BASE_URL` must use HTTPS.
+- Credentials are never printed, logged, or stored in database rows.
+
+This direct configuration remains an application compatibility path. It does not make Personal Edition the portfolio authority for provider/model strategy; new general routing/model-selection decisions belong to Business 14 / Router Core (#371).
+
+## Legacy Phase 5A benchmark tasks — non-authoritative
+
+The benchmark runner executes five distinct production-path tasks, but this runner is now a **legacy/product-local diagnostic utility**. It must not be used as the authoritative basis for new cross-provider/model ranking or role assignment without a fresh scoped issue and repair/validation against the current architecture.
+
+```bash
+python3 -m scripts.benchmark run <task> [options]
+```
+
+| Task | Description |
+|---|---|
+| `editorial_plan` | Editorial-plan-only stage |
+| `first_edition` | Full pipeline: plan + draft + validate + persist |
+| `feedback_second_edition` | Follow-up edition with persisted feedback |
+| `adversarial_grounding` | Full pipeline with prohibited-inference grounding test |
+| `validator_feedback_repair` | Candidate corruption + deterministic validation + same-provider repair |
+
+### Options
+
+| Option | Description |
+|---|---|
+| `--fixture NAME` | Fixture to use (repeatable; default: all fixtures) |
+| `--repeat N` | Repeat count per fixture (default: 1) |
+| `--output PATH` | Path to write JSON benchmark report |
+| `--db PATH` | SQLite database path (default: `var/benchmark.db`) |
+| `--correct MINUTES` | Set `human_correction_minutes` for all runs after completion |
+
+### Example
+
+```bash
+python3 -m scripts.benchmark run first_edition --fixture korean_founder --repeat 3 --db var/benchmark.db
+```
+
+## Legacy Phase 5A — Repeated benchmark runs
+
+Each repetition uses isolated synthetic participant and input identities derived from the benchmark name, fixture name, and run index. No repetition inherits editions, feedback, or idempotency records from another.
+
+Durable evidence is stored in a file-backed SQLite database (default: `var/benchmark.db`). The `--db` flag specifies an alternative path.
+
+No real participant data is used in any benchmark run.
+
+## Legacy Phase 5A — Human correction time
+
+### During benchmark execution
+
+```bash
+python3 -m scripts.benchmark run first_edition --correct 5.0
+```
+
+This sets `human_correction_minutes` to `5.0` for all runs completed in that benchmark session.
+
+### After benchmark execution
+
+```bash
+python3 -m scripts.benchmark update-correction --run-id <RUN_ID> --minutes 12.5
+```
+
+Or via pilot ops:
+
+```bash
+python3 -m scripts.pilot_ops update-correction --run-id <RECORD_ID> --minutes 12.5
+```
+
+Validation: minutes must be ≥ 0.0. The value is persisted in the `benchmark_runs` and `pilot_ops_records` tables.
+
+## Legacy Phase 5A — Benchmark and pilot evidence
+
+### Database location
+
+Default: `var/benchmark.db` (benchmark) and `var/personal-edition.db` (pilot ops).
+
+### Listing records
+
+```bash
+python3 -m scripts.pilot_ops list-records [--type TYPE] [--participant-id ID] [--db PATH]
+```
+
+### Exporting evidence
+
+```bash
+python3 -m scripts.pilot_ops export-evidence [--participant-id ID] [--export-safe] [--output PATH] [--db PATH]
+```
+
+The `--export-safe` flag:
+
+- Pseudonymizes participant identifiers (SHA-256 truncated hash).
+- Redacts private text fields (`notes`, `feedback_text`, `evidence_description`, etc.).
+
+No credentials, API keys, or full generated private output appear in exported evidence.
+
+## Historical Phase 5A — Manual pilot workflow
+
+The following records the old pilot workflow for provenance. **It does not authorize a current paid pilot, participant study, pricing offer, or revenue claim.**
+
+### Invitation and consent
+
+1. Provision a participant: `python3 -m scripts.provision_participant <id> "<name>"`
+2. The participant receives a one-time token.
+3. Participant enters the token at `/p/access`.
+4. Participant submits input at `/p/p1/input` with consent confirmed.
+
+### Historical free-sample and paid-edition hypothesis
+
+- One sample edition could be free under the old experiment.
+- Seven subsequent editions for KRW 4,900 was a historical hypothesis, not current pricing and not proof of payment or revenue.
+- No payment gateway, email automation, or public signup is implemented by this historical workflow.
+
+### Review before publication
+
+Every edition passes through `pending_review` state. An administrator must explicitly publish or reject each edition. Automatic publication is prohibited.
+
+## Historical Phase 5A — Payment evidence restrictions
+
+Payment evidence records must never contain:
+
+- Payer identity (name, email, phone, ID)
+- Account or card data (card numbers, account numbers)
+- Transaction or payment reference numbers
+- Credentials (API keys, tokens, passwords)
+- Screenshots or receipt images
+- Private artifact paths
+
+The `PaymentEvidenceRecord` model enforces these restrictions at construction time.
+
+## Historical Phase 5A — Deletion and revocation
+
+### Operator deletion command
+
+```bash
+python3 -m scripts.pilot_ops delete --participant-id <ID> [--reason REASON] [--notes NOTES] [--db PATH]
+```
+
+Or the legacy command:
+
+```bash
+python3 -m scripts.delete_participant <participant_id> [--database PATH]
+```
+
+### Lifecycle
+
+1. A `deletion_request` record is created.
+2. The participant is soft-deleted (status set to `deleted`, `deleted_at` timestamp recorded).
+3. A `deletion_completion` record is created with the result.
+4. Existing browser sessions are immediately invalidated (session checks active status).
+5. Token access is revoked.
+
+### Idempotent execution
+
+Repeated deletion of the same participant is idempotent. The second execution returns `not_found` and records a completion record with `deletion_result: "not_found"`.
+
+### Export-safe identity handling
+
+The `export-evidence --export-safe` command pseudonymizes participant identifiers and redacts private text.
 
 ## Known limitations
 
-- automated tests do not imply live-provider quality or commercial acceptance;
-- no historical benchmark result should be upgraded into current evidence without fresh validation;
-- current product, UI, runtime, deployment, and commercialization authority must be read from the latest active B1 issues/PRs and portfolio governance, not from retired July benchmark issues.
+- The legacy benchmark runner is not authoritative for new cross-provider/model decisions; closed Issue #49 records known historical classification/accounting defects that were not merged as a repair.
+- The old Gemini 15-case report is diagnostic evidence only and must not be presented as an accepted cross-model ranking.
+- No live provider call was performed in automated tests. All tests use `MockProvider` or monkeypatched adapters.
+- No current participant, payment, or revenue claim is authorized by this README.
+- The KRW 4,900 for seven editions is historical pricing hypothesis, not current pricing or proven revenue.
+- External provider configuration requires manual environment setup.
