@@ -30,3 +30,4 @@ export * from './p2-microtask/index.js';
 export * from './p3-short-gig/index.js';
 export * from './job-search-assist/index.js';
 export * from './release-gate/index.js';
+export * from './http/consumer-http.js';
