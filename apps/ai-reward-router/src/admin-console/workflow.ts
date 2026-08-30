@@ -207,6 +207,7 @@ export function applyHealthCommand(state: AdminConsoleState, command: HealthComm
 
   let staleBroken = state.staleBroken;
   let opportunities = state.opportunities;
+  let versions = state.versions;
   let reviewQueue = state.reviewQueue;
   let nextIncident = incident;
 
@@ -235,6 +236,9 @@ export function applyHealthCommand(state: AdminConsoleState, command: HealthComm
       if (state.reviewQueue.some((item) => item.offerVersionId === targetVersionId && item.state !== 'RESOLVED')) {
         throw new Error(`An active review queue item already exists for version: ${targetVersionId}`);
       }
+      const targetVersion = state.versions.find((item) => item.id === targetVersionId);
+      if (!targetVersion) throw new Error(`Missing version to return to review: ${targetVersionId}`);
+      versions = replaceById(versions, Object.freeze({ ...targetVersion, verificationState: 'REVIEW_REQUIRED' as const }));
       opportunities = replaceById(opportunities, Object.freeze({ ...opportunity, lifecycleState: 'REVIEW_REQUIRED' as const }));
       reviewQueue = Object.freeze([...reviewQueue, Object.freeze({
         id: queueId, offerVersionId: targetVersionId, reasonCodes: Object.freeze(['STALE_BROKEN_RETURN']), priority: 'HIGH' as const,
@@ -250,6 +254,7 @@ export function applyHealthCommand(state: AdminConsoleState, command: HealthComm
     ...state,
     staleBroken,
     opportunities,
+    versions,
     reviewQueue,
     auditLog: Object.freeze([...state.auditLog, audit]),
   });
