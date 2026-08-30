@@ -17,8 +17,8 @@ import { stableEvidenceHash } from './hash.js';
 export const PROLIFIC_W8_OBSERVED_AT = '2026-08-30T08:00:00.000Z';
 
 const participantUrl = 'https://www.prolific.com/participants';
-const eligibilityUrl = 'https://participant-help.prolific.com/en/article/628d72';
-const howItWorksUrl = 'https://participant-help.prolific.com/en/article/36141a';
+const eligibilityUrl = 'https://participant-help.prolific.com/en/articles/445007-who-can-participate-in-studies-on-prolific';
+const howItWorksUrl = 'https://www.prolific.com/participants-how-it-works';
 const legalUrl = 'https://www.prolific.com/privacy-and-legal';
 
 export const PROLIFIC_W8_POLICY: SourcePolicyReview = Object.freeze({
@@ -83,7 +83,7 @@ export const PROLIFIC_FINAL_GATES: readonly SourceCollectionGate[] = Object.free
 const rawPayload = Object.freeze({
   provider: 'Prolific',
   program: 'paid online studies',
-  minimumAge: 18,
+  minimumExclusiveAge: 18,
   supportedCountryObserved: 'KOREA',
   accountVerificationRequired: true,
   waitlistPossible: true,
@@ -172,7 +172,7 @@ export const PROLIFIC_W8_VERSION: OpportunityVersion = Object.freeze({
   skillRequirements: null,
   deviceOsRequirements: null,
   identityKycRequirements: Object.freeze(['ACCOUNT_VERIFICATION']),
-  ageRequirements: Object.freeze({ minimumAge: 18 }),
+  ageRequirements: Object.freeze({ minimumExclusiveAge: 18 }),
   taxContractorRequirements: null,
   schedulingRequirements: null,
   canonicalDestinationUrl: participantUrl,
@@ -202,7 +202,7 @@ function evidence(
 
 export const PROLIFIC_W8_EVIDENCE: readonly OpportunityEvidence[] = Object.freeze([
   evidence('ev-w8-prolific-program', 'opportunityCategory', 'Get paid to take studies', participantUrl),
-  evidence('ev-w8-prolific-age', 'ageRequirements.minimumAge', 'over 18', eligibilityUrl),
+  evidence('ev-w8-prolific-age', 'ageRequirements.minimumExclusiveAge', 'over 18', eligibilityUrl),
   evidence('ev-w8-prolific-country', 'eligibleCountriesOrRegions', 'KOREA', eligibilityUrl),
   evidence('ev-w8-prolific-verify', 'identityKycRequirements', 'Verify your account', howItWorksUrl),
   evidence('ev-w8-prolific-payout', 'payoutMethod', 'transferred to your PayPal', participantUrl),
@@ -212,8 +212,8 @@ const ev = (id: string) => PROLIFIC_W8_EVIDENCE.find((item) => item.id === id)?.
 
 export const PROLIFIC_W8_REQUIREMENTS: readonly OpportunityRequirement[] = Object.freeze([
   Object.freeze({
-    id: 'req-w8-prolific-age', offerVersionId: PROLIFIC_W8_VERSION.id, requirementType: 'AGE', operator: 'GTE',
-    normalizedValue: 18, displayText: 'Participant must be at least 18.', required: true, confidence: 1,
+    id: 'req-w8-prolific-age', offerVersionId: PROLIFIC_W8_VERSION.id, requirementType: 'AGE', operator: 'GT',
+    normalizedValue: 18, displayText: 'Participant must be over 18.', required: true, confidence: 1,
     evidenceId: ev('ev-w8-prolific-age'),
   }),
   Object.freeze({
@@ -263,7 +263,7 @@ export const PROLIFIC_W8_REVIEW_DECISION: ReviewDecisionRecord = Object.freeze({
   offerVersionId: PROLIFIC_W8_VERSION.id,
   decision: 'APPROVE',
   reviewerId: 'CENTRAL',
-  approvalReason: 'Official public provider evidence supports a provider-level paid-study opportunity, Korea support, minimum age, account verification, and PayPal payout. Individual study inventory, amounts, and selection probability remain NULL/UNKNOWN because no private account inventory was accessed.',
+  approvalReason: 'Official public provider evidence supports a provider-level paid-study opportunity, Korea support, the stated age threshold, account verification, and PayPal payout. Individual study inventory, amounts, and selection probability remain NULL/UNKNOWN because no private account inventory was accessed.',
   rejectionReason: null,
   patch: null,
   createdAt: PROLIFIC_W8_OBSERVED_AT,
