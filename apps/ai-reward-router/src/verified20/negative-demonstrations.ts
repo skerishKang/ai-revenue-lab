@@ -1,5 +1,6 @@
 import { OUTLIER_REAL_MATERIAL_CHANGE_CASE } from './outlier-material-change.js';
 import {
+  CROWDGEN_EXPERTS_LOW_CONFIDENCE_REVIEW,
   CROWDGEN_FIREWEED_STALE_SUPPRESSION,
   ONEFORMA_PODCAST_REJECTED_DUPLICATE,
 } from './real-negative-evidence.js';
@@ -30,6 +31,10 @@ const evidenceById: Readonly<Partial<Record<W8NegativeDemonstrationId, { readonl
   REJECTED_DUPLICATE: Object.freeze({
     evidenceRef: ONEFORMA_PODCAST_REJECTED_DUPLICATE.evidenceId,
     notes: ONEFORMA_PODCAST_REJECTED_DUPLICATE.evidenceSummary,
+  }),
+  LOW_CONFIDENCE_REVIEW: Object.freeze({
+    evidenceRef: CROWDGEN_EXPERTS_LOW_CONFIDENCE_REVIEW.evidenceId,
+    notes: CROWDGEN_EXPERTS_LOW_CONFIDENCE_REVIEW.evidenceSummary,
   }),
   MATERIAL_VERSION_CHANGE: Object.freeze({
     evidenceRef: OUTLIER_REAL_MATERIAL_CHANGE_CASE.evidenceId,
