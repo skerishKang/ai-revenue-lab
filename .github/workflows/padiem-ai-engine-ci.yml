@@ -73,6 +73,17 @@ jobs:
         working-directory: apps/padiem-ai-engine
         run: uv run python -m pytest -q
 
+      - name: Set up Node for cross-runtime reference client
+        if: steps.engine-source.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript Service Binding client tests
+        if: steps.engine-source.outputs.present == 'true'
+        working-directory: apps/padiem-ai-engine
+        run: node --test clients/js/test/client.test.mjs
+
       - name: Padiem AI Core full tests
         if: steps.engine-source.outputs.present == 'true'
         working-directory: packages/padiem-ai-core
