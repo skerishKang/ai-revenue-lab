@@ -12,12 +12,12 @@ test('real stale CrowdGen Fireweed evidence is suppressed rather than counted', 
   assert.equal(VERIFIED20_RECORDS.some((record) => record.snapshot.canonicalUrl === CROWDGEN_FIREWEED_STALE_SUPPRESSION.canonicalUrl), false);
 });
 
-test('STALE_SOURCE_SUPPRESSION is PASS only through the real evidence case', () => {
+test('STALE_SOURCE_SUPPRESSION remains PASS inside the accepted five-case W8 negative gate', () => {
   const stale = W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'STALE_SOURCE_SUPPRESSION');
   assert.equal(stale?.status, 'PASS');
   assert.equal(stale?.evidenceRef, CROWDGEN_FIREWEED_STALE_SUPPRESSION.evidenceId);
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 1);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 5);
   assert.equal(W8_GATE_STATUS.negativeDemonstrationsTarget, 5);
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, false);
-  assert.equal(W8_GATE_STATUS.gatePassed, false);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, true);
+  assert.equal(W8_GATE_STATUS.gatePassed, true);
 });
