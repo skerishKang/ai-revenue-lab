@@ -161,16 +161,14 @@ class RetrievedItem:
                 ),
             )
 
-    def to_public_dict(self) -> dict[str, str | int | None]:
-        """Return provenance only; retrieved content is intentionally omitted."""
+    def to_public_dict(self) -> dict[str, str | int]:
+        """Return minimal provenance only; private reference data is omitted."""
 
         return {
             "id": self.id,
             "namespace": self.namespace,
             "source_type": self.source_type,
             "provider": self.provider,
-            "source_ref": self.source_ref,
-            "title": self.title,
             "content_chars": len(self.content),
         }
 
@@ -263,7 +261,7 @@ def _retrieval_fragment(item: RetrievedItem) -> ContextFragment:
         separators=(",", ":"),
     )
     return ContextFragment(
-        id=f"retrieval:{item.id}",
+        id=item.id,
         source_type=item.source_type,
         content=payload,
         trust=ContextTrust.UNTRUSTED_REFERENCE,
