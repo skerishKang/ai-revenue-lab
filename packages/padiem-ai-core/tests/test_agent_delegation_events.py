@@ -55,7 +55,7 @@ def compiled(defn):
     )
 
 
-def request(parent, child):
+def request(parent, child, *, depth=1):
     return AgentDelegationRequest(
         delegation_id="delegation:test:1",
         parent_agent_id=parent.agent_id,
@@ -66,7 +66,7 @@ def request(parent, child):
         max_steps=3,
         max_tool_calls=2,
         max_wall_seconds=60,
-        depth=1,
+        depth=depth,
     )
 
 
@@ -159,22 +159,26 @@ def test_delegation_rejects_budget_widening() -> None:
     assert exc_info.value.code == "delegation_budget_widening"
 
 
-def test_delegation_rejects_depth_and_child_budget_overflow() -> None:
+def test_delegation_rejects_depth_overflow() -> None:
     parent = definition("agent:padiem:parent@1")
     child = definition("agent:padiem:child@1")
-    delegated = request(parent, child)
-    with pytest.raises(AgentDelegationError):
+    with pytest.raises(AgentDelegationError) as exc_info:
         authorize_agent_delegation(
-            AgentDelegationRequest(**{**delegated.__dict__, "depth": 5}),
+            request(parent, child, depth=5),
             parent_definition=parent,
             parent_profile=compiled(parent),
             child_definition=child,
             child_profile=compiled(child),
         )
+    assert exc_info.value.code == "delegation_budget_exceeded"
 
+
+def test_delegation_rejects_child_count_overflow() -> None:
+    parent = definition("agent:padiem:parent@1")
+    child = definition("agent:padiem:child@1")
     with pytest.raises(AgentDelegationError) as exc_info:
         authorize_agent_delegation(
-            delegated,
+            request(parent, child),
             parent_definition=parent,
             parent_profile=compiled(parent),
             child_definition=child,
