@@ -334,6 +334,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 46,
+    route: "b46",
+    sourcePath: "reference/business-46-ai-personalization-engine-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 개인화 엔진",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 47,
     route: "b47",
     sourcePath: "reference/business-47-real-time-feedback-engine-v1",
