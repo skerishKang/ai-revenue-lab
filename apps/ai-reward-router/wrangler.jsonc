@@ -1,0 +1,7 @@
+{
+  "name": "b64-ai-reward-router",
+  "main": "dist/src/worker.js",
+  "compatibility_date": "2026-08-30",
+  "workers_dev": true,
+  "preview_urls": true
+}
