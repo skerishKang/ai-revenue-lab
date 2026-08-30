@@ -126,6 +126,13 @@ async def _assert_export_unusable(page: Page, stage: str) -> None:
         raise AssertionError(f"conversation export was usable during {stage}")
 
 
+async def _assert_export_usable(page: Page, stage: str) -> None:
+    button = page.locator("#conversationExportButton")
+    await button.wait_for(state="attached", timeout=5_000)
+    if not await button.is_visible() or await button.is_disabled():
+        raise AssertionError(f"conversation export was not usable during {stage}")
+
+
 async def _download_export(page: Page) -> str:
     async with page.expect_download(timeout=5_000) as pending:
         await page.locator("#conversationExportButton").click()
@@ -185,10 +192,7 @@ async def main() -> None:
                     arg=SUCCESS_ANSWER,
                     timeout=5_000,
                 )
-                await page.wait_for_function(
-                    "() => { const b = document.getElementById('conversationExportButton'); return !!b && !b.hidden && !b.disabled; }",
-                    timeout=5_000,
-                )
+                await _assert_export_usable(page, "settled successful response")
                 await page.screenshot(path=str(OUT_DIR / "stream-export-final.png"), full_page=True)
 
                 exported = await _download_export(page)
@@ -201,13 +205,10 @@ async def main() -> None:
                     if part.strip() not in exported:
                         raise AssertionError(f"export lost a final answer segment: {part!r}")
 
-                await page.locator("#newChatButton").click()
-                await page.wait_for_function(
-                    "() => document.querySelectorAll('#messageList .message').length === 0",
-                    timeout=5_000,
-                )
-                await _assert_export_unusable(page, "new empty conversation")
-
+                # Keep the successful exchange in the same conversation, then force the
+                # next request to terminate with an SSE error. Export must stay locked
+                # during the failed request and, once settled, must export only completed
+                # exchanges -- never the dangling failed user prompt or partial answer.
                 await page.locator("#messageInput").fill(ERROR_PROMPT)
                 await page.locator("#sendButton").click()
                 await page.wait_for_function(
@@ -227,8 +228,15 @@ async def main() -> None:
                     "() => document.getElementById('messageInput')?.disabled === false",
                     timeout=5_000,
                 )
-                await _assert_export_unusable(page, "settled partial-then-error conversation")
+                await _assert_export_usable(page, "settled error after prior successful exchange")
                 await page.screenshot(path=str(OUT_DIR / "stream-export-error.png"), full_page=True)
+
+                exported_after_error = await _download_export(page)
+                if f"나:\n{SUCCESS_PROMPT}" not in exported_after_error or expected_assistant not in exported_after_error:
+                    raise AssertionError("prior completed exchange disappeared after later stream error")
+                for forbidden in (ERROR_PROMPT, ERROR_PARTIAL, ERROR_MESSAGE):
+                    if forbidden in exported_after_error:
+                        raise AssertionError(f"failed trailing exchange leaked into export: {forbidden!r}")
 
                 stream_posts = await page.evaluate("window.__qaConversationExportStreamPosts || []")
                 if len(stream_posts) != 2:
@@ -242,7 +250,9 @@ async def main() -> None:
                         "export_usable_during_first_delta": False,
                         "export_usable_during_second_delta": False,
                         "terminal_export_exact_final": True,
-                        "partial_error_export_usable": False,
+                        "partial_error_export_usable_during_request": False,
+                        "prior_success_export_usable_after_later_error": True,
+                        "failed_trailing_exchange_excluded": True,
                     }
                 )
                 await context.close()
