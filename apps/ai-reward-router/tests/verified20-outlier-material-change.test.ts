@@ -61,10 +61,12 @@ test('ledger uses v2 as slot 2 and no longer uses the historical v1 record as cu
   assert.notEqual(slot2?.version.id, OUTLIER_W8_VERSION.id);
 });
 
-test('real MATERIAL_VERSION_CHANGE demonstration is now PASS', () => {
+test('real MATERIAL_VERSION_CHANGE demonstration remains PASS inside the accepted five-case W8 negative gate', () => {
   const material = W8_NEGATIVE_DEMONSTRATIONS.find((item) => item.id === 'MATERIAL_VERSION_CHANGE');
   assert.equal(material?.status, 'PASS');
   assert.equal(material?.evidenceRef, OUTLIER_REAL_MATERIAL_CHANGE_CASE.evidenceId);
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 2);
-  assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, false);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsPassed, 5);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsTarget, 5);
+  assert.equal(W8_GATE_STATUS.negativeDemonstrationsComplete, true);
+  assert.equal(W8_GATE_STATUS.gatePassed, true);
 });
