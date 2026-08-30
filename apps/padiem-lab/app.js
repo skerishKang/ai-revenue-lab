@@ -4,6 +4,16 @@
   var businesses = Array.isArray(window.PADIEM_LAB_BUSINESSES)
     ? window.PADIEM_LAB_BUSINESSES.slice()
     : [];
+  var displayNameOverrides = {
+    42: { title: "AI Development Command Center", koreanTitle: "AI 개발 지휘실" },
+    43: { title: "AI Software Delivery Lab", koreanTitle: "AI 소프트웨어 전달실" },
+    48: { title: "AI Evidence Review Studio", koreanTitle: "AI 증거 검토실" }
+  };
+  businesses = businesses.map(function (item) {
+    var override = displayNameOverrides[item.number];
+    return override ? Object.assign({}, item, override) : item;
+  });
+
   var list = document.getElementById("business-list");
   var footerCount = document.getElementById("footer-count");
   var filters = Array.from(document.querySelectorAll("[data-filter]"));
