@@ -6,6 +6,7 @@ export * from './outlier-material-change.js';
 export * from './outlier-current.js';
 export * from './crowdgen.js';
 export * from './crowdgen-vistula.js';
+export * from './crowdgen-morava.js';
 export * from './oneforma.js';
 export * from './oneforma-extra.js';
 export * from './real-negative-evidence.js';
