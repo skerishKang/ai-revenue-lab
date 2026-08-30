@@ -63,6 +63,8 @@ class TestWranglerConfig:
     def test_workers_runtime_dependency_is_declared(self):
         content = (WRANGLER_TOML.parent / "pyproject.toml").read_text()
         assert '"workers-py==1.17.0"' in content
+        assert "[tool.pywrangler]" in content
+        assert "allow-build = true" in content
 
     def test_assets_binding(self):
         content = WRANGLER_TOML.read_text()
