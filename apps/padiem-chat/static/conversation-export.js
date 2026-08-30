@@ -98,6 +98,7 @@
         if (text) entries.push({ label: "Padiem Chat", text });
       }
     });
+    while (entries.length && entries[entries.length - 1].label === "나") entries.pop();
     return entries;
   }
 
