@@ -60,6 +60,16 @@ test('ayeT is the first integration candidate but remains blocked until real pub
   assert.equal(ayet?.activation, 'BLOCKED_UNTIL_ACCOUNT_ADSLOT_TERMS_AND_CREDENTIALS');
 });
 
+test('Adscend is the second web P0 candidate but cash permission remains offer-specific and live-blocked', () => {
+  const adscend = AD_CLICK_P0_SOURCE_STRATEGY[1];
+  assert.equal(adscend?.sourceId, 'ADSCEND_MEDIA');
+  assert.equal(adscend?.rank, 2);
+  assert.equal(adscend?.incentiveMechanism, 'OFFER_LEVEL_ALLOWED_TRAFFIC_3_REQUIRED_FOR_CASH');
+  assert.equal(adscend?.conversionCallbacks, 'SERVER_POSTBACK_SUPPORTED_SECURE_HASH_AVAILABLE');
+  assert.equal(adscend?.liveB64Permission, 'NOT_YET_GRANTED');
+  assert.equal(adscend?.activation, 'BLOCKED_UNTIL_PUBLISHER_APPROVAL_KR_FILL_AND_EXTERNAL_REWARD_FULFILLMENT');
+});
+
 test('Google rewarded ads are excluded from B64 direct-cash P0 due to provider reward policy', () => {
   assert.deepEqual(EXCLUDED_DIRECT_CASH_REWARDED_AD_PATHS, [{
     provider: 'GOOGLE_REWARDED_ADS',
