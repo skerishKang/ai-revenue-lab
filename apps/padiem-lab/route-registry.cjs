@@ -334,6 +334,15 @@ const routes = [
     includeDirs: ["assets", "scripts", "styles"]
   },
   {
+    number: 43,
+    route: "b43",
+    sourcePath: "reference/business-43-ai-software-factory-v1",
+    mode: "STATIC_REFERENCE",
+    marker: "AI 소프트웨어 공장",
+    includeFiles: ["index.html"],
+    includeDirs: ["assets", "scripts", "styles"]
+  },
+  {
     number: 45,
     route: "b45",
     sourcePath: "reference/business-45-ai-content-engine-v1",
