@@ -54,20 +54,30 @@ function canonicalize(value: unknown): unknown {
 function canonicalStringList(value: unknown): unknown {
   if (value === null) return null;
   if (!Array.isArray(value)) return canonicalize(value);
-  return [...value]
-    .map((item) => String(item).trim())
-    .filter(Boolean)
-    .sort();
+  return [...new Set(
+    value
+      .map((item) => String(item).trim())
+      .filter(Boolean),
+  )].sort();
+}
+
+function canonicalTitle(value: unknown): unknown {
+  if (typeof value !== 'string') return canonicalize(value);
+  return value
+    .normalize('NFKC')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
 }
 
 function equivalent(field: ComparableTermField, previousValue: unknown, nextValue: unknown): boolean {
-  const previousCanonical = LIST_SET_FIELDS.has(field)
-    ? canonicalStringList(previousValue)
-    : canonicalize(previousValue);
-  const nextCanonical = LIST_SET_FIELDS.has(field)
-    ? canonicalStringList(nextValue)
-    : canonicalize(nextValue);
-  return JSON.stringify(previousCanonical) === JSON.stringify(nextCanonical);
+  const canonicalForField = (value: unknown): unknown => {
+    if (field === 'title') return canonicalTitle(value);
+    if (LIST_SET_FIELDS.has(field)) return canonicalStringList(value);
+    return canonicalize(value);
+  };
+
+  return JSON.stringify(canonicalForField(previousValue)) === JSON.stringify(canonicalForField(nextValue));
 }
 
 function readField(
