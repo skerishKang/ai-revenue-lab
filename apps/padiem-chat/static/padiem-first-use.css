@@ -24,6 +24,12 @@
   display: none;
 }
 
+/* The home surface already has starter cards. Do not repeat the same prompt
+ * choices in the sidebar until a conversation is active. */
+.app-shell[data-state="home"] .recent-section[aria-labelledby="recentTitle"] {
+  display: none;
+}
+
 /* Three useful starters are enough; the composer remains the primary action. */
 .starter-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));

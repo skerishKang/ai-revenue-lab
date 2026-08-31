@@ -208,11 +208,11 @@
   margin-top: 8px;
   padding-top: 7px;
   border-top: 1px solid rgba(255, 255, 255, .08);
-  color: rgba(255, 255, 255, .42);
+  color: rgba(255, 255, 255, .50);
   font-family: var(--font-label);
-  font-size: 10px;
-  line-height: 1.45;
-  letter-spacing: .035em;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: .02em;
 }
 
 .app-shell[data-state="chat"] .assistant-message {
@@ -249,47 +249,47 @@
 }
 
 .app-shell[data-state="chat"] .assistant-meta {
-  min-height: 28px;
-  margin-bottom: 7px;
-  color: rgba(255, 255, 255, .76);
+  min-height: 30px;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, .78);
   font-family: var(--font-label);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: .075em;
+  letter-spacing: .045em;
   text-transform: uppercase;
 }
 
 .app-shell[data-state="chat"] .demo-label {
-  padding: 3px 7px 2px;
-  border: 1px solid rgba(255, 255, 255, .08);
+  padding: 3px 8px 2px;
+  border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 6px;
-  background: rgba(255, 255, 255, .045);
-  color: rgba(255, 255, 255, .42);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: .04em;
+  background: rgba(255, 255, 255, .05);
+  color: rgba(255, 255, 255, .54);
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: .025em;
 }
 
 .app-shell[data-state="chat"] .assistant-content {
   max-width: 770px;
-  color: rgba(247, 249, 252, .91);
-  font-size: 16px;
-  line-height: 1.78;
+  color: rgba(247, 249, 252, .93);
+  font-size: 17px;
+  line-height: 1.76;
   letter-spacing: -.014em;
 }
 
 .app-shell[data-state="chat"] .assistant-content > p {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .reference-note {
   display: block;
   margin: 13px 0 0;
-  color: rgba(255, 255, 255, .43);
+  color: rgba(255, 255, 255, .52);
   font-family: var(--font-label);
-  font-size: 10px;
-  line-height: 1.5;
-  letter-spacing: .035em;
+  font-size: 12px;
+  line-height: 1.55;
+  letter-spacing: .02em;
 }
 
 .route-details {
@@ -305,15 +305,15 @@
   color: rgba(255, 255, 255, .72);
   cursor: pointer;
   font-family: var(--font-label);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: .055em;
+  letter-spacing: .04em;
   text-transform: uppercase;
 }
 
 .route-details p {
   margin: 8px 0 0 !important;
-  color: rgba(255, 255, 255, .42);
+  color: rgba(255, 255, 255, .46);
   line-height: 1.55;
 }
 
@@ -342,4 +342,11 @@
 .app-shell[data-state="chat"] .typing i:nth-child(3) {
   background: var(--gold);
   box-shadow: 0 0 8px rgba(239, 201, 132, .28);
+}
+
+@media (max-width: 640px) {
+  .app-shell[data-state="chat"] .assistant-content {
+    font-size: 16px;
+    line-height: 1.72;
+  }
 }
