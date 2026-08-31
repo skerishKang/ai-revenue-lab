@@ -8,7 +8,7 @@ unbounded payloads.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 import re
@@ -146,7 +146,7 @@ class OrchestrationEvent:
     sequence: int
     timestamp_iso: str
     message: str | None = None
-    metadata: Mapping[str, str | int | float | bool | None] = MappingProxyType({})
+    metadata: Mapping[str, str | int | float | bool | None] = field(default_factory=lambda: MappingProxyType({}))
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "event_id", _safe_identifier("event_id", self.event_id))
