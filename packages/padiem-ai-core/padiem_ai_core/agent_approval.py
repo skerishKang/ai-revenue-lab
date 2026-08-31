@@ -20,7 +20,7 @@ from .contracts import RunStatus
 from .tool_runtime import ToolInvocation, ToolRuntimeError
 
 
-_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 MAX_APPROVAL_WINDOW = timedelta(hours=24)
 
@@ -87,6 +87,9 @@ class ApprovalPause:
     step_index: int
     created_at: datetime
     expires_at: datetime
+    trace_id: str | None = None
+    plan_id: str | None = None
+    approval_scope: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "pause_id", _identifier("pause_id", self.pause_id))
@@ -113,6 +116,37 @@ class ApprovalPause:
             raise AgentApprovalError("expires_at must be after created_at")
         if expires_at - created_at > MAX_APPROVAL_WINDOW:
             raise AgentApprovalError("approval window exceeds 24 hours")
+        if self.trace_id is not None:
+            object.__setattr__(self, "trace_id", _identifier("trace_id", self.trace_id))
+        if self.plan_id is not None:
+            object.__setattr__(self, "plan_id", _identifier("plan_id", self.plan_id))
+        if not isinstance(self.approval_scope, tuple) or any(
+            not isinstance(s, str) or not s for s in self.approval_scope
+        ):
+            raise AgentApprovalError("approval_scope must be a tuple of non-empty strings")
+
+    @property
+    def continuation_id(self) -> str:
+        return self.pause_id
+
+    @property
+    def agent_id(self) -> str:
+        return self.agent_runtime_id
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            "status": "paused",
+            "continuation_id": self.pause_id,
+            "run_id": self.run_id,
+            "trace_id": self.trace_id,
+            "step_index": self.step_index,
+            "agent_id": self.agent_runtime_id,
+            "tool_id": self.tool_id,
+            "requirement": self.requirement.value,
+            "approval_scope": list(self.approval_scope),
+            "created_at": self.created_at.isoformat(),
+            "expires_at": self.expires_at.isoformat(),
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -175,6 +209,9 @@ def approval_pause_from_tool_error(
     step_index: int,
     created_at: datetime,
     expires_at: datetime,
+    trace_id: str | None = None,
+    plan_id: str | None = None,
+    approval_scope: tuple[str, ...] = (),
 ) -> ApprovalPause | None:
     """Translate only explicit ToolRuntime approval blocks into Agent pauses.
 
@@ -209,6 +246,9 @@ def approval_pause_from_tool_error(
         step_index=step_index,
         created_at=created_at,
         expires_at=expires_at,
+        trace_id=trace_id,
+        plan_id=plan_id,
+        approval_scope=approval_scope,
     )
 
 

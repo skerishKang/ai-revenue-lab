@@ -114,6 +114,11 @@ class AgentPlanExecutor:
         run_id: str | None = None,
         step_driver: AgentStepDriver | None = None,
         tool_arguments: Mapping[str, Mapping[str, Any]] | None = None,
+        initial_step_index: int = 1,
+        initial_tool_results: tuple[ToolExecutionResult, ...] = (),
+        initial_tool_events: tuple[ToolEvent, ...] = (),
+        trace_id: str | None = None,
+        plan_id: str | None = None,
     ) -> AgentRunResult:
         # 1. Authoritative plan validation against compiled profile
         validated_plan = validate_agent_plan(
@@ -143,6 +148,11 @@ class AgentPlanExecutor:
             authorization=authorization,
             input_text=input_text,
             run_id=run_id,
+            initial_step_index=initial_step_index,
+            initial_tool_results=initial_tool_results,
+            initial_tool_events=initial_tool_events,
+            trace_id=trace_id,
+            plan_id=plan_id,
         )
 
         return await runtime.run(request)

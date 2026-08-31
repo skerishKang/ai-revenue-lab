@@ -42,7 +42,7 @@ from .tool_runtime import (
 MAX_AGENT_INPUT_CHARS = 32_000
 MAX_AGENT_ANSWER_CHARS = 65_536
 MAX_APPROVAL_PAUSE_SECONDS = 86_400
-_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
 
 class AgentRuntimeError(RuntimeError):
@@ -186,6 +186,11 @@ class AgentRunRequest:
     authorization: ToolAuthorizationContext
     input_text: str
     run_id: str | None = None
+    initial_step_index: int = 1
+    initial_tool_results: tuple[ToolExecutionResult, ...] = ()
+    initial_tool_events: tuple[ToolEvent, ...] = ()
+    trace_id: str | None = None
+    plan_id: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.definition, BoundedAgentDefinition):
@@ -232,6 +237,25 @@ class AgentRunRequest:
             raise AgentRuntimeError(
                 "invalid_agent_run",
                 "run_id must be a bounded safe identifier.",
+            )
+        if isinstance(self.initial_step_index, bool) or not isinstance(self.initial_step_index, int) or self.initial_step_index < 1:
+            raise AgentRuntimeError(
+                "invalid_agent_run",
+                "initial_step_index must be an integer >= 1.",
+            )
+        if self.trace_id is not None and (
+            not isinstance(self.trace_id, str) or not _IDENTIFIER_RE.fullmatch(self.trace_id)
+        ):
+            raise AgentRuntimeError(
+                "invalid_agent_run",
+                "trace_id must be a bounded safe identifier.",
+            )
+        if self.plan_id is not None and (
+            not isinstance(self.plan_id, str) or not _IDENTIFIER_RE.fullmatch(self.plan_id)
+        ):
+            raise AgentRuntimeError(
+                "invalid_agent_run",
+                "plan_id must be a bounded safe identifier.",
             )
 
 
@@ -426,11 +450,11 @@ class BoundedAgentRuntime:
             budget.max_steps,
             request.compiled_profile.runtime_profile.max_steps,
         )
-        tool_results: list[ToolExecutionResult] = []
-        tool_events: list[ToolEvent] = []
-        tool_calls = 0
+        tool_results: list[ToolExecutionResult] = list(request.initial_tool_results)
+        tool_events: list[ToolEvent] = list(request.initial_tool_events)
+        tool_calls = len(tool_results)
 
-        for step_index in range(1, max_steps + 1):
+        for step_index in range(request.initial_step_index, max_steps + 1):
             remaining = self._remaining_wall_seconds(
                 started=started,
                 budget_seconds=budget.max_wall_seconds,
@@ -578,6 +602,8 @@ class BoundedAgentRuntime:
                         created_at=created_at,
                         expires_at=created_at
                         + timedelta(seconds=self._approval_pause_seconds),
+                        trace_id=request.trace_id,
+                        plan_id=request.plan_id,
                     )
                 if pause is not None:
                     return AgentRunResult(

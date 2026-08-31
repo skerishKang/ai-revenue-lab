@@ -330,6 +330,7 @@ from .orchestration import (
     OrchestrationError,
     OrchestrationRequest,
     OrchestrationResult,
+    OrchestrationResumeRequest,
     OrchestrationRunner,
 )
 
@@ -342,6 +343,7 @@ _TOOL_RUNTIME_EXPORTS = frozenset(
     "OrchestrationError",
     "OrchestrationRequest",
     "OrchestrationResult",
+    "OrchestrationResumeRequest",
     "OrchestrationRunner",
     "MAX_TOOL_ARGUMENT_BYTES",
         "MAX_TOOL_OUTPUT_BYTES",
@@ -650,6 +652,7 @@ __all__ = [
     "OrchestrationError",
     "OrchestrationRequest",
     "OrchestrationResult",
+    "OrchestrationResumeRequest",
     "OrchestrationRunner",
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",

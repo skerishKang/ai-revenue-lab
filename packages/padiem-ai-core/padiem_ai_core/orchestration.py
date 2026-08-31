@@ -15,15 +15,22 @@ import re
 import uuid
 from typing import Any, Callable
 
-from .agent_definition import BoundedAgentDefinition
-from .b14_execution import B14RouteMetadata
-from .agent_runtime import AgentRuntimeError
+from .agent_approval import (
+    AgentApprovalError,
+    AgentContinuationState,
+    ApprovalOutcome,
+    ApprovalPause,
+    ContinuationStatus,
+    VerifiedApprovalDecision,
+    resolve_approval_pause,
+)
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
 from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
 from .agent_profile_adapter import CompiledAgentProfile
-from .tool_runtime import ToolAuthorizationContext, ToolRuntime
-from .agent_profile_adapter import CompiledAgentProfile
+from .agent_runtime import AgentRuntimeError
+from .b14_execution import B14RouteMetadata
+from .tool_runtime import ToolAuthorizationContext, ToolExecutionResult, ToolRuntime
 from .connector_registry import ConnectorDescriptor, ConnectorRegistrySnapshot
 from .contracts import AgentProfile, ErrorClass, Evidence, RunMetadata, RunStatus, ToolEvent, ToolSpec, UsageMetadata
 from .evidence_assessment import ClaimAssessment, ClaimAssessmentState, assess_claim, is_verification_satisfied
@@ -153,6 +160,8 @@ class OrchestrationResult:
     claim_assessments: tuple[ClaimAssessment, ...]
     grounded_citations: tuple[GroundedCitation, ...]
     events: tuple[OrchestrationEvent, ...]
+    approval_pause: ApprovalPause | None = None
+    continuation_state: AgentContinuationState | None = None
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -174,7 +183,56 @@ class OrchestrationResult:
                 "citations": [c.to_public_dict() for c in self.grounded_citations],
             },
             "events": [e.to_public_dict() for e in self.events],
+            "approval_pause": self.approval_pause.to_public_dict() if self.approval_pause is not None else None,
+            "continuation_state": {
+                "status": self.continuation_state.status.value,
+                "decision_id": self.continuation_state.decision_id,
+            } if self.continuation_state is not None else None,
         }
+
+
+@dataclass(frozen=True, slots=True)
+class OrchestrationResumeRequest:
+    """Request to resume a paused orchestration run with an authenticated decision."""
+
+    pause: ApprovalPause
+    decision: VerifiedApprovalDecision
+    execution_request: ExecutionRequest
+    context: ExecutionContext
+    app_id: str
+    subject_id: str | None = None
+    agent_definition: BoundedAgentDefinition | None = None
+    compiled_agent_profile: CompiledAgentProfile | None = None
+    agent_plan: AgentPlan | None = None
+    tool_authorization: ToolAuthorizationContext | None = None
+    tool_runtime: ToolRuntime | None = None
+    tool_arguments: Mapping[str, Mapping[str, Any]] | None = None
+    now: datetime | None = None
+    consumed_decision_ids: frozenset[str] = frozenset()
+    initial_tool_results: tuple[ToolExecutionResult, ...] = ()
+    initial_tool_events: tuple[ToolEvent, ...] = ()
+
+    # Evidence & Verification (Optional)
+    evidence_sources: tuple[Evidence, ...] = ()
+    evidence_claims: tuple[EvidenceClaim, ...] = ()
+    evidence_links: tuple[ClaimEvidenceLink, ...] = ()
+    evidence_validator: EvidenceValidator | None = None
+    verification_policy: TrustedVerificationPolicy | None = None
+    require_evidence: bool = False
+    require_verification: bool = False
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.pause, ApprovalPause):
+            raise OrchestrationError("invalid_resume_request", "pause must be ApprovalPause")
+        if not isinstance(self.decision, VerifiedApprovalDecision):
+            raise OrchestrationError("invalid_resume_request", "decision must be VerifiedApprovalDecision")
+        if not isinstance(self.execution_request, ExecutionRequest):
+            raise OrchestrationError("invalid_resume_request", "execution_request must be ExecutionRequest")
+        if not isinstance(self.context, ExecutionContext):
+            raise OrchestrationError("invalid_resume_request", "context must be ExecutionContext")
+        object.__setattr__(self, "app_id", _safe_id("app_id", self.app_id))
+        if self.subject_id is not None:
+            object.__setattr__(self, "subject_id", _safe_id("subject_id", self.subject_id))
 
 
 class OrchestrationRunner:
@@ -391,9 +449,63 @@ class OrchestrationRunner:
                 if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
                     for te in bridge_res.tool_events:
                         emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
-                    await _abort_idempotency("approval_required")
-                    emit(OrchestrationEventKind.RUN_FAILED, "Tool execution requires approval pause", {"error": "approval_required"})
-                    raise OrchestrationError("approval_required", "Agent execution paused for approval")
+                    pause = bridge_res.approval_pause
+                    assert pause is not None
+                    if pause.trace_id is None:
+                        pause = ApprovalPause(
+                            pause_id=pause.pause_id,
+                            run_id=pause.run_id,
+                            agent_runtime_id=pause.agent_runtime_id,
+                            tool_id=pause.tool_id,
+                            invocation_sha256=pause.invocation_sha256,
+                            requirement=pause.requirement,
+                            step_index=pause.step_index,
+                            created_at=pause.created_at,
+                            expires_at=pause.expires_at,
+                            trace_id=trace_id,
+                            plan_id=plan.agent_id if plan else None,
+                            approval_scope=pause.approval_scope,
+                        )
+                    emit(
+                        OrchestrationEventKind.APPROVAL_PAUSED,
+                        f"Execution paused for approval of tool '{pause.tool_id}'",
+                        {
+                            "continuation_id": pause.pause_id,
+                            "step_index": pause.step_index,
+                            "tool_id": pause.tool_id,
+                            "requirement": pause.requirement.value,
+                            "expires_at": pause.expires_at.isoformat(),
+                        },
+                    )
+                    pause_exec_res = ExecutionResult(
+                        answer="Agent execution paused for approval.",
+                        route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
+                        metadata=RunMetadata(
+                            trace_id=trace_id,
+                            app_id=app_id,
+                            agent_id=request.execution_request.agent.id,
+                            status=RunStatus.PAUSED,
+                            tool_events=bridge_res.tool_events,
+                        ),
+                    )
+                    return OrchestrationResult(
+                        execution_result=pause_exec_res,
+                        context=request.context,
+                        app_id=app_id,
+                        subject_id=request.subject_id,
+                        plan=plan,
+                        activated_skill=activated_skill,
+                        resolved_tool_ids=resolved_tools,
+                        evidence_graph=None,
+                        claim_assessments=(),
+                        grounded_citations=(),
+                        events=tuple(events),
+                        approval_pause=pause,
+                        continuation_state=AgentContinuationState(
+                            pause=pause,
+                            status=ContinuationStatus.WAITING_APPROVAL,
+                        ),
+                    )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
                     await _abort_idempotency("timeout")
@@ -520,9 +632,9 @@ class OrchestrationRunner:
                         graph=eg,
                     )
                     verdict = accept_verification_verdict(
-                        verdict_cand,
-                        request=VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
                         graph=eg,
+                        request=VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        verdict=verdict_cand,
                         policy=request.verification_policy,
                     )
 
@@ -585,3 +697,292 @@ class OrchestrationRunner:
             grounded_citations=tuple(citations),
             events=tuple(events),
         )
+
+    async def resume(
+        self,
+        request: OrchestrationResumeRequest,
+    ) -> OrchestrationResult:
+        """Resume a paused orchestration run with an authenticated approval decision."""
+
+        events: list[OrchestrationEvent] = []
+        app_id = request.app_id
+        trace_id = request.context.trace_id
+        pause = request.pause
+        decision = request.decision
+
+        seq = 1
+        terminated = False
+
+        def emit(kind: OrchestrationEventKind, message: str, meta: dict[str, Any] | None = None) -> None:
+            nonlocal seq, terminated
+            if terminated:
+                return
+            evt = public_orchestration_event(
+                event_id=f"evt_{uuid.uuid4().hex[:12]}",
+                run_id=pause.run_id,
+                trace_id=trace_id,
+                app_id=app_id,
+                kind=kind,
+                sequence=seq,
+                message=message,
+                metadata=meta or {},
+            )
+            events.append(evt)
+            seq += 1
+            if kind in (OrchestrationEventKind.RUN_COMPLETED, OrchestrationEventKind.RUN_FAILED, OrchestrationEventKind.RUN_CANCELLED):
+                terminated = True
+
+        emit(OrchestrationEventKind.RUN_STARTED, "Orchestration run resumed", {"run_id": pause.run_id})
+
+        # 1. Continuation Identity Validation (Fail closed on mismatch)
+        if decision.pause_id != pause.pause_id:
+            emit(OrchestrationEventKind.RUN_FAILED, "Decision does not match continuation", {"error": "continuation_identity_mismatch"})
+            raise OrchestrationError("continuation_identity_mismatch", "decision does not belong to this pause")
+
+        if pause.trace_id is not None and pause.trace_id != trace_id:
+            emit(OrchestrationEventKind.RUN_FAILED, "Trace ID mismatch on resume", {"error": "continuation_identity_mismatch"})
+            raise OrchestrationError("continuation_identity_mismatch", "trace_id does not match approval pause")
+
+        expected_agent_id = pause.agent_id
+        actual_agent_id = request.execution_request.agent.id
+        if request.compiled_agent_profile is not None:
+            actual_agent_id = request.compiled_agent_profile.runtime_profile.id
+
+        if expected_agent_id != actual_agent_id:
+            emit(OrchestrationEventKind.RUN_FAILED, "Agent ID mismatch on resume", {"error": "continuation_identity_mismatch"})
+            raise OrchestrationError("continuation_identity_mismatch", "agent_id does not match approval pause")
+
+        # 2. Decision Resolution & Expiration Check
+        now = request.now or datetime.now(timezone.utc)
+        try:
+            continuation_state = resolve_approval_pause(
+                pause,
+                decision,
+                now=now,
+                consumed_decision_ids=request.consumed_decision_ids,
+            )
+        except AgentApprovalError as exc:
+            emit(OrchestrationEventKind.RUN_FAILED, f"Approval resolution error: {exc}", {"error": "invalid_decision"})
+            raise OrchestrationError("invalid_decision", str(exc)) from exc
+
+        if continuation_state.status is ContinuationStatus.EXPIRED:
+            emit(OrchestrationEventKind.RUN_FAILED, "Approval continuation expired", {"error": "continuation_expired"})
+            raise OrchestrationError("continuation_expired", "Approval pause has expired")
+
+        if continuation_state.status is ContinuationStatus.DENIED:
+            emit(OrchestrationEventKind.RUN_FAILED, "Approval decision denied", {"error": "approval_denied"})
+            raise OrchestrationError("approval_denied", "Approval decision was denied")
+
+        if continuation_state.status is not ContinuationStatus.RESUMABLE:
+            emit(OrchestrationEventKind.RUN_FAILED, "Approval state is not resumable", {"error": "invalid_continuation_status"})
+            raise OrchestrationError("invalid_continuation_status", "Continuation is not in resumable status")
+
+        # 3. Authority Non-Widening Enforcement
+        if request.compiled_agent_profile is not None:
+            if pause.tool_id not in request.compiled_agent_profile.runtime_profile.allowed_tools:
+                emit(OrchestrationEventKind.RUN_FAILED, "Approved tool not in allowed profile", {"error": "authority_widening_rejected"})
+                raise OrchestrationError("authority_widening_rejected", f"tool '{pause.tool_id}' is not in compiled agent profile")
+        elif request.agent_definition is not None:
+            if pause.tool_id not in request.agent_definition.allowed_tool_ids:
+                emit(OrchestrationEventKind.RUN_FAILED, "Approved tool not in agent definition", {"error": "authority_widening_rejected"})
+                raise OrchestrationError("authority_widening_rejected", f"tool '{pause.tool_id}' is not in agent definition allowed tools")
+
+        if request.tool_authorization is not None:
+            # Verify tool has been explicitly confirmed/authorized in the context
+            is_confirmed = pause.tool_id in request.tool_authorization.user_confirmed_tools
+            is_ext_auth = pause.tool_id in request.tool_authorization.externally_authorized_tools
+            if not is_confirmed and not is_ext_auth:
+                emit(OrchestrationEventKind.RUN_FAILED, "Tool authorization context missing approval confirmation", {"error": "missing_approval_authorization"})
+                raise OrchestrationError("missing_approval_authorization", f"Tool '{pause.tool_id}' requires explicit confirmation in tool_authorization")
+
+        # 4. Emit RUN_RESUMED
+        emit(
+            OrchestrationEventKind.RUN_RESUMED,
+            f"Resumed execution from step {pause.step_index}",
+            {
+                "continuation_id": pause.pause_id,
+                "step_index": pause.step_index,
+                "tool_id": pause.tool_id,
+            },
+        )
+
+        # 5. Execute Remaining Plan from paused step
+        if (
+            request.agent_plan is not None
+            and request.tool_runtime is not None
+            and request.agent_definition is not None
+            and request.compiled_agent_profile is not None
+            and request.tool_authorization is not None
+        ):
+            executor = AgentPlanExecutor()
+            prompt_input = (
+                request.execution_request.messages[-1].get("content", "")
+                if request.execution_request.messages
+                else "Resume agent plan"
+            )
+            try:
+                bridge_res = await asyncio.wait_for(
+                    executor.execute(
+                        plan=request.agent_plan,
+                        definition=request.agent_definition,
+                        compiled_profile=request.compiled_agent_profile,
+                        authorization=request.tool_authorization,
+                        tool_runtime=request.tool_runtime,
+                        input_text=prompt_input or "Resume agent plan",
+                        run_id=pause.run_id,
+                        tool_arguments=request.tool_arguments,
+                        initial_step_index=pause.step_index,
+                        initial_tool_results=request.initial_tool_results,
+                        initial_tool_events=request.initial_tool_events,
+                        trace_id=trace_id,
+                        plan_id=request.agent_plan.agent_id,
+                    ),
+                    timeout=request.context.timeout_seconds,
+                )
+
+                if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time on resume", {"reason": "timeout"})
+                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time on resume")
+
+                if bridge_res.terminal_reason in (
+                    AgentTerminalReason.AUTHORIZATION_DENIED,
+                    AgentTerminalReason.CAPABILITY_MISSING,
+                    AgentTerminalReason.ERROR,
+                ):
+                    for te in bridge_res.tool_events:
+                        emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                        if te.status is RunStatus.FAILED:
+                            emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                                "tool_id": te.tool_id,
+                                "status": "failed",
+                                "error_class": te.error_class.value if te.error_class else None,
+                            })
+                    emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure on resume: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})
+                    raise OrchestrationError(bridge_res.terminal_reason.value, f"Agent execution terminated on resume with reason: {bridge_res.terminal_reason.value}")
+
+                result = ExecutionResult(
+                    answer=bridge_res.answer or "Plan resumed and completed successfully.",
+                    route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
+                    metadata=RunMetadata(
+                        trace_id=trace_id,
+                        app_id=app_id,
+                        agent_id=request.execution_request.agent.id,
+                        status=RunStatus.COMPLETED,
+                        tool_events=bridge_res.tool_events,
+                    ),
+                )
+            except asyncio.TimeoutError:
+                emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out on resume", {"reason": "timeout"})
+                raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
+            except asyncio.CancelledError:
+                emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled on resume", {"reason": "downstream_cancellation"})
+                raise
+        else:
+            # Fallback simple runtime execution
+            result = await asyncio.wait_for(
+                self._runtime.run(request.execution_request),
+                timeout=request.context.timeout_seconds,
+            )
+
+        # Emit Tool lifecycle events ONLY for actual tool events from the execution result
+        for te in getattr(result.metadata, "tool_events", ()):
+            emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+            if te.status is RunStatus.COMPLETED:
+                emit(OrchestrationEventKind.TOOL_COMPLETED, f"Tool '{te.tool_id}' completed", {
+                    "tool_id": te.tool_id,
+                    "status": "completed",
+                    "duration_ms": te.duration_ms,
+                })
+            elif te.status is RunStatus.FAILED:
+                emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                    "tool_id": te.tool_id,
+                    "status": "failed",
+                    "error_class": te.error_class.value if te.error_class else None,
+                    "duration_ms": te.duration_ms,
+                })
+
+        # Evidence & Verification
+        eg: EvidenceGraph | None = None
+        assessments: list[ClaimAssessment] = []
+        citations: list[GroundedCitation] = []
+
+        if request.evidence_sources or request.evidence_claims:
+            eg = evidence_graph(
+                sources=list(request.evidence_sources),
+                claims=list(request.evidence_claims),
+                links=list(request.evidence_links),
+            )
+            emit(OrchestrationEventKind.EVIDENCE_ATTACHED, f"Evidence graph constructed with {len(eg.sources)} sources", {
+                "sources_count": len(eg.sources),
+                "claims_count": len(eg.claims),
+            })
+
+            # Verification & Assessment
+            effective_agent = request.execution_request.agent
+            for claim in eg.claims:
+                verdict: VerificationVerdict | None = None
+                if request.evidence_validator is not None and request.verification_policy is not None:
+                    verdict_cand = await request.evidence_validator.verify(
+                        VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        graph=eg,
+                    )
+                    verdict = accept_verification_verdict(
+                        graph=eg,
+                        request=VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        verdict=verdict_cand,
+                        policy=request.verification_policy,
+                    )
+
+                ass = assess_claim(eg, claim.id, verification=verdict)
+                assessments.append(ass)
+
+                bundle = project_grounded_citations(eg, claim.id, verification=verdict)
+                citations.extend(bundle.citations)
+
+            emit(OrchestrationEventKind.VERIFICATION_COMPLETED, f"Assessed {len(assessments)} claims", {
+                "assessments_count": len(assessments),
+                "citations_count": len(citations),
+            })
+
+        emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration run completed successfully")
+
+        return OrchestrationResult(
+            execution_result=result,
+            context=request.context,
+            app_id=app_id,
+            subject_id=request.subject_id,
+            plan=request.agent_plan,
+            activated_skill=None,
+            resolved_tool_ids=request.execution_request.agent.allowed_tools,
+            evidence_graph=eg,
+            claim_assessments=tuple(assessments),
+            grounded_citations=tuple(citations),
+            events=tuple(events),
+            approval_pause=None,
+            continuation_state=continuation_state,
+        )
+
+    def cancel_pause(
+        self,
+        pause: ApprovalPause,
+        *,
+        trace_id: str | None = None,
+        reason: str = "user_cancelled",
+    ) -> tuple[OrchestrationEvent, ...]:
+        """Explicitly cancel an existing approval pause state."""
+        if not isinstance(pause, ApprovalPause):
+            raise OrchestrationError("invalid_pause", "pause must be ApprovalPause")
+        event = public_orchestration_event(
+            event_id=f"evt_{uuid.uuid4().hex[:12]}",
+            run_id=pause.run_id,
+            trace_id=trace_id or pause.trace_id or "tr_cancelled",
+            app_id=pause.agent_id,
+            kind=OrchestrationEventKind.RUN_CANCELLED,
+            sequence=1,
+            message=f"Approval pause '{pause.pause_id}' cancelled",
+            metadata={
+                "continuation_id": pause.pause_id,
+                "reason": reason,
+            },
+        )
+        return (event,)

@@ -49,6 +49,7 @@ class OrchestrationEventKind(str, Enum):
     EVIDENCE_ATTACHED = "evidence_attached"
     VERIFICATION_COMPLETED = "verification_completed"
     APPROVAL_PAUSED = "approval_paused"
+    RUN_RESUMED = "run_resumed"
     RUN_CANCELLED = "run_cancelled"
     RUN_FAILED = "run_failed"
     RUN_COMPLETED = "run_completed"

@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 import pytest
 
 from padiem_ai_core import (
+    ContinuationStatus,
     AgentExecutionBudget,
     AgentPlan,
     AgentPlanExecutor,
@@ -292,9 +293,12 @@ async def test_bridge_plan_approval_required_pauses() -> None:
     req = make_orch_req(agent_def, compiled, plan, runtime, auth_ctx, trace_id="tr_plan_d")
     runner = OrchestrationRunner(runtime=MockCoreRuntime())
 
-    with pytest.raises(OrchestrationError) as exc_info:
-        await runner.run(req)
-    assert exc_info.value.code == "approval_required"
+    result = await runner.run(req)
+    assert result.execution_result.metadata.status == RunStatus.PAUSED
+    assert result.approval_pause is not None
+    assert result.approval_pause.tool_id == "calc"
+    assert result.continuation_state is not None
+    assert result.continuation_state.status == ContinuationStatus.WAITING_APPROVAL
 
 
 # ==============================================================================
