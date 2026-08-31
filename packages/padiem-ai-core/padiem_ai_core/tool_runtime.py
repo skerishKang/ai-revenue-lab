@@ -10,8 +10,13 @@ import time
 from types import MappingProxyType
 from typing import Any, Awaitable, Callable, Mapping, Protocol
 
-from jsonschema import Draft202012Validator
-from jsonschema.exceptions import SchemaError, ValidationError
+try:
+    from jsonschema import Draft202012Validator
+    from jsonschema.exceptions import SchemaError, ValidationError
+except ModuleNotFoundError:
+    Draft202012Validator = None  # type: ignore[assignment]
+    SchemaError = Exception  # type: ignore[assignment,misc]
+    ValidationError = Exception  # type: ignore[assignment,misc]
 
 from .contracts import (
     AgentProfile,
@@ -234,6 +239,11 @@ class ToolRuntime:
             raise ValueError("handler must be an async callable")
 
         schema = _thaw_json(spec.input_schema)
+        if Draft202012Validator is None:
+            raise ImportError(
+                "Tool Runtime requires the optional 'tools' dependency: "
+                "install padiem-ai-core[tools]."
+            )
         try:
             Draft202012Validator.check_schema(schema)
             validator = Draft202012Validator(schema)

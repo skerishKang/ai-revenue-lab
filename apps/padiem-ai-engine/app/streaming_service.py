@@ -1,8 +1,8 @@
 """Language-neutral streaming contract for the internal Padiem AI Engine.
 
-The module stays Cloudflare-neutral. It reuses the exact Slice 25 request
-builder, delegates execution semantics to Padiem AI Core's
-StreamingExecutionRuntime, and serializes only Core public events as NDJSON.
+The module stays Cloudflare-neutral. It reuses the exact request builder,
+delegates execution semantics to Padiem AI Core's StreamingExecutionRuntime,
+and serializes only Core public events as NDJSON.
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ import json
 from typing import Any, Protocol
 
 from padiem_ai_core import (
+    ExecutionContext,
     ExecutionRequest,
     ExecutionRuntimeError,
     StreamingExecutionEvent,
@@ -46,6 +47,7 @@ class PreparedStream:
 
     first_event: StreamingExecutionEvent
     iterator: AsyncIterator[StreamingExecutionEvent]
+    context: ExecutionContext | None = None
 
 
 def _runtime_error_response(exc: ExecutionRuntimeError) -> ServiceResponse:
@@ -91,7 +93,6 @@ async def _close_iterator(iterator: Any | None) -> None:
     try:
         await close()
     except Exception:
-        # Cleanup must never replace the bounded public error contract.
         pass
 
 
@@ -122,15 +123,11 @@ class StreamingEngineService:
         normalized_method = method.upper() if isinstance(method, str) else ""
         if path != STREAM_PATH:
             return _service_error(
-                "not_found",
-                "Internal Engine route not found.",
-                status_code=404,
+                "not_found", "Internal Engine route not found.", status_code=404
             )
         if normalized_method != "POST":
             return _service_error(
-                "method_not_allowed",
-                "Method not allowed.",
-                status_code=405,
+                "method_not_allowed", "Method not allowed.", status_code=405
             )
         if (
             not isinstance(content_type, str)
@@ -143,9 +140,7 @@ class StreamingEngineService:
             )
         if not isinstance(body, (bytes, bytearray, memoryview)):
             return _service_error(
-                "invalid_request",
-                "Request body is invalid.",
-                status_code=400,
+                "invalid_request", "Request body is invalid.", status_code=400
             )
         raw = bytes(body)
         if len(raw) > MAX_REQUEST_BODY_BYTES:
@@ -172,13 +167,22 @@ class StreamingEngineService:
             )
 
         try:
-            # This is intentionally the exact completed-run Slice 25 builder.
-            app_id, request = build_execution_request(payload)
+            app_id, request, context = build_execution_request(payload)
         except ServiceContractError as exc:
             return _service_error(
                 exc.code,
                 exc.safe_message,
                 status_code=exc.status_code,
+            )
+
+        # Stream replay cannot yet be proven safe by the product-owned
+        # idempotency adapter contract. Never silently execute a keyed stream
+        # twice; require a completed-run adapter in a future slice instead.
+        if context is not None and context.idempotency_key is not None:
+            return _service_error(
+                "stream_idempotency_unavailable",
+                "Streaming idempotency requires a product-owned replay adapter.",
+                status_code=422,
             )
 
         iterator: AsyncIterator[StreamingExecutionEvent] | None = None
@@ -193,7 +197,11 @@ class StreamingEngineService:
                     "Padiem AI Engine returned an invalid streaming event.",
                     status_code=502,
                 )
-            return PreparedStream(first_event=first_event, iterator=iterator)
+            return PreparedStream(
+                first_event=first_event,
+                iterator=iterator,
+                context=context,
+            )
         except StopAsyncIteration:
             await _close_iterator(iterator)
             return _service_error(
