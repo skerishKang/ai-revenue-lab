@@ -36,6 +36,7 @@ class RunStatus(str, Enum):
     REJECTED = "rejected"
     POLICY_BLOCKED = "policy_blocked"
     TIMEOUT = "timeout"
+    PAUSED = "paused"
 
 
 class ErrorClass(str, Enum):

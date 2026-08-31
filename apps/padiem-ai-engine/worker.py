@@ -25,7 +25,15 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.identity_enforcement import authenticate_request
+from app.orchestration_service import (
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    OrchestrationEngineService,
+)
 from app.service import EngineService, HEALTH_PATH, ServiceResponse
+from app.service_identity import ServiceIdentityError
 from app.streaming_service import (
     NDJSON_CONTENT_TYPE,
     STREAM_PATH,
@@ -58,9 +66,69 @@ def _json_response(result: ServiceResponse) -> Response:
     )
 
 
+def _error_response(code: str, message: str, status_code: int) -> Response:
+    return _json_response(
+        ServiceResponse(
+            status_code=status_code,
+            body={
+                "ok": False,
+                "error": {
+                    "code": code,
+                    "message": message,
+                    "retryable": False,
+                    "metadata": None,
+                },
+            },
+        )
+    )
+
+
+def _read_requested_app_id(body: bytes) -> str | None:
+    """Read only the app_id needed for caller binding, without executing Core."""
+    try:
+        payload = json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    app_id = payload.get("app_id")
+    return app_id if isinstance(app_id, str) else None
+
+
+def _authenticate_non_health_request(env: Any, headers: Any, body: bytes) -> Response | None:
+    app_id = _read_requested_app_id(body)
+    if app_id is None:
+        return _error_response(
+            "service_authentication_failed",
+            "Engine caller authentication failed.",
+            401,
+        )
+    try:
+        authenticate_request(env=env, headers=headers, requested_app_id=app_id)
+    except ServiceIdentityError as exc:
+        if exc.code in {"service_identity_unavailable", "service_identity_misconfigured"}:
+            return _error_response(
+                "service_identity_unavailable",
+                "Padiem AI Engine service identity is unavailable.",
+                503,
+            )
+        if exc.code == "service_app_not_authorized":
+            return _error_response(
+                "service_app_not_authorized",
+                "Engine caller is not authorized for the requested application.",
+                403,
+            )
+        return _error_response(
+            "service_authentication_failed",
+            "Engine caller authentication failed.",
+            401,
+        )
+    return None
+
+
 def _engine_services_for_env(
     env: Any,
-) -> tuple[EngineService, StreamingEngineService]:
+) -> tuple[EngineService, StreamingEngineService, OrchestrationEngineService]:
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
         completed = EngineService(
@@ -75,7 +143,13 @@ def _engine_services_for_env(
             ),
             b14_service_bound=False,
         )
-        return completed, streaming
+        orchestration = OrchestrationEngineService(
+            runtime_factory=lambda app_id: (_ for _ in ()).throw(
+                RuntimeError("unreachable without B14 service binding")
+            ),
+            b14_service_bound=False,
+        )
+        return completed, streaming, orchestration
 
     transport = CloudflareB14ServiceBindingTransport(
         binding=binding,
@@ -103,6 +177,10 @@ def _engine_services_for_env(
             runtime_factory=streaming_runtime_factory,
             b14_service_bound=True,
         ),
+        OrchestrationEngineService(
+            runtime_factory=runtime_factory,
+            b14_service_bound=True,
+        ),
     )
 
 
@@ -112,8 +190,6 @@ def _ndjson_response(
 ) -> Response:
     """Expose one Core event per pull through a Worker ReadableStream."""
 
-    # Streams are a request-context JavaScript API in Python Workers, so keep
-    # the FFI imports and construction inside the active fetch invocation.
     from js import ReadableStream, TextEncoder
     from pyodide.ffi import create_proxy, to_js
 
@@ -145,8 +221,6 @@ def _ndjson_response(
             controller.close()
             return
         except Exception:
-            # iter_ndjson already converts execution failures to a bounded
-            # terminal line. This is only an adapter-level last resort.
             await _close_lines()
             controller.error("Padiem AI Engine stream adapter failed.")
             return
@@ -202,7 +276,37 @@ class Default(WorkerEntrypoint):
                     )
                 )
 
-        completed_service, streaming_service = _engine_services_for_env(self.env)
+        orchestration_paths = {ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH, ORCHESTRATE_CANCEL_PATH}
+        if path not in {HEALTH_PATH, STREAM_PATH, "/internal/v1/execute"} | orchestration_paths:
+            result = ServiceResponse(
+                status_code=404,
+                body={
+                    "ok": False,
+                    "error": {
+                        "code": "not_found",
+                        "message": "Internal Engine route not found.",
+                        "retryable": False,
+                        "metadata": None,
+                    },
+                },
+            )
+            return _json_response(result)
+
+        if path != HEALTH_PATH:
+            auth_error = _authenticate_non_health_request(self.env, headers, body)
+            if auth_error is not None:
+                return auth_error
+
+        completed_service, streaming_service, orchestration_service = _engine_services_for_env(self.env)
+
+        if path in orchestration_paths:
+            result = await orchestration_service.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
 
         if path == STREAM_PATH:
             prepared = await streaming_service.prepare(
@@ -224,5 +328,7 @@ class Default(WorkerEntrypoint):
         if path == HEALTH_PATH and result.status_code == 200:
             health = dict(result.body)
             health["streaming_run"] = True
+            health["orchestration_run"] = True
+            health["service_identity"] = "required_for_execute_and_stream"
             result = ServiceResponse(status_code=200, body=health)
         return _json_response(result)

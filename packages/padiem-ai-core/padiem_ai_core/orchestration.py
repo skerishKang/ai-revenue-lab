@@ -1,0 +1,1163 @@
+"""Product-neutral bounded orchestration pipeline for Padiem AI Core.
+
+This module coordinates existing P01 primitives (Execution, Memory/RAG, Agent,
+Skill, Tool/Connector, Evidence, and Verification) into a unified, bounded
+execution pipeline without elevating untrusted references or widening authority.
+"""
+
+from __future__ import annotations
+
+import asyncio
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+import re
+import uuid
+from typing import Any, Callable
+
+from .agent_approval import (
+    AgentApprovalError,
+    AgentContinuationState,
+    ApprovalOutcome,
+    ApprovalPause,
+    ContinuationStatus,
+    VerifiedApprovalDecision,
+    resolve_approval_pause,
+)
+from .agent_recovery import (
+    AgentFailure,
+    AgentFailureSource,
+    AgentRecoveryAction,
+    AgentRecoveryContext,
+    AgentRecoveryDecision,
+    AgentRecoveryPolicy,
+    decide_agent_recovery,
+)
+from .execution_state_machine import (
+    ExecutionState,
+    ExecutionStateMachine,
+    ExecutionStateMachineError,
+    ExecutionTransition,
+    InvalidTransitionError,
+    is_terminal_state,
+)
+from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
+from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
+from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
+from .agent_profile_adapter import CompiledAgentProfile
+from .agent_runtime import AgentRuntimeError
+from .b14_execution import B14RouteMetadata
+from .tool_runtime import ToolAuthorizationContext, ToolExecutionResult, ToolRuntime
+from .connector_registry import ConnectorDescriptor, ConnectorRegistrySnapshot
+from .contracts import AgentProfile, ErrorClass, Evidence, RunMetadata, RunStatus, ToolEvent, ToolSpec, UsageMetadata
+from .evidence_assessment import ClaimAssessment, ClaimAssessmentState, assess_claim, is_verification_satisfied
+from .evidence_citation import GroundedCitation, GroundedCitationBundle, project_grounded_citations
+from .evidence_graph import ClaimDerivation, ClaimEvidenceLink, ClaimEvidenceRelation, EvidenceClaim, EvidenceGraph, evidence_graph
+from .evidence_verification import (
+    AcceptedVerification,
+    EvidenceValidator,
+    TrustedVerificationPolicy,
+    VerificationDisposition,
+    VerificationRequest,
+    VerificationVerdict,
+    accept_verification_verdict,
+)
+from .execution_context import (
+    ExecutionContext,
+    IdempotencyAdapter,
+    IdempotencyConflictError,
+    request_fingerprint,
+)
+from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntimeError
+from .memory import MemoryNamespace, MemoryScope
+from .memory_read import MemoryReadAuthorization, MemoryReadPolicy
+from .memory_context import RankedMemoryItem, assemble_long_context, rank_retrieval_results
+from .orchestration_events import (
+    OrchestrationEvent,
+    OrchestrationEventError,
+    OrchestrationEventKind,
+    public_orchestration_event,
+)
+from .retrieval import RetrievedItem
+from .skill_activation import ActivatedSkillProfile, compile_enabled_skill
+from .skill_registry import SkillInstallationSnapshot, SkillRegistrySnapshot
+from .skill_runtime_adapter import TrustedSkillRuntimePolicy
+from .tool_registry import ToolRegistrySnapshot
+from .tool_resource_policy import EffectiveToolResources, ToolResourcePolicy, resolve_tool_resources
+
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+
+class OrchestrationError(ValueError):
+    """Raised when an orchestration boundary or contract invariant is violated."""
+
+    def __init__(self, code: str, safe_message: str) -> None:
+        super().__init__(safe_message)
+        if not isinstance(code, str) or not _SAFE_ID_RE.fullmatch(code):
+            raise ValueError("orchestration error code must be a safe identifier")
+        self.code = code
+        self.safe_message = safe_message
+
+
+def _safe_id(name: str, value: str) -> str:
+    if not isinstance(value, str) or not _SAFE_ID_RE.fullmatch(value):
+        raise OrchestrationError("invalid_orchestration_identifier", f"{name} must be a bounded safe identifier")
+    return value
+
+
+@dataclass(frozen=True, slots=True)
+class OrchestrationRequest:
+    """Composition root for a bounded orchestration run."""
+
+    execution_request: ExecutionRequest
+    context: ExecutionContext
+    app_id: str
+    subject_id: str | None = None
+
+    # Memory / RAG (Optional)
+    memory_authorization: MemoryReadAuthorization | None = None
+    memory_items: tuple[RetrievedItem, ...] = ()
+    memory_read_policy: MemoryReadPolicy | None = None
+
+    # Agent Planning (Optional)
+    agent_definition: BoundedAgentDefinition | None = None
+    agent_planner: AgentPlanner | None = None
+    agent_plan: AgentPlan | None = None
+    compiled_agent_profile: CompiledAgentProfile | None = None
+
+    # Skill (Optional)
+    skill_id: str | None = None
+    skill_registry: SkillRegistrySnapshot | None = None
+    skill_installations: SkillInstallationSnapshot | None = None
+    skill_runtime_policy: TrustedSkillRuntimePolicy | None = None
+
+    # Tool & Connector (Optional)
+    tool_registry: ToolRegistrySnapshot | None = None
+    connector_registry: ConnectorRegistrySnapshot | None = None
+    tool_resource_policy: ToolResourcePolicy | None = None
+    tool_authorization: ToolAuthorizationContext | None = None
+    tool_runtime: ToolRuntime | None = None
+    tool_arguments: Mapping[str, Mapping[str, Any]] | None = None
+
+    # Evidence & Verification (Optional)
+    evidence_sources: tuple[Evidence, ...] = ()
+    evidence_claims: tuple[EvidenceClaim, ...] = ()
+    evidence_links: tuple[ClaimEvidenceLink, ...] = ()
+    evidence_validator: EvidenceValidator | None = None
+    verification_policy: TrustedVerificationPolicy | None = None
+    require_evidence: bool = False
+    require_verification: bool = False
+    recovery_policy: AgentRecoveryPolicy | None = None
+    max_retries: int = 3
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.execution_request, ExecutionRequest):
+            raise OrchestrationError("invalid_orchestration_request", "execution_request must be ExecutionRequest")
+        if not isinstance(self.context, ExecutionContext):
+            raise OrchestrationError("invalid_orchestration_request", "context must be ExecutionContext")
+        object.__setattr__(self, "app_id", _safe_id("app_id", self.app_id))
+        if self.subject_id is not None:
+            object.__setattr__(self, "subject_id", _safe_id("subject_id", self.subject_id))
+
+        # Trace ID alignment invariant
+        if self.execution_request.trace_id != self.context.trace_id:
+            raise OrchestrationError("trace_id_conflict", "execution_request trace_id must match execution_context trace_id")
+
+
+@dataclass(frozen=True, slots=True)
+class OrchestrationResult:
+    """Structured, immutable outcome of an orchestration pipeline run."""
+
+    execution_result: ExecutionResult
+    context: ExecutionContext
+    app_id: str
+    subject_id: str | None
+    plan: AgentPlan | None
+    activated_skill: ActivatedSkillProfile | None
+    resolved_tool_ids: tuple[str, ...]
+    evidence_graph: EvidenceGraph | None
+    claim_assessments: tuple[ClaimAssessment, ...]
+    grounded_citations: tuple[GroundedCitation, ...]
+    events: tuple[OrchestrationEvent, ...]
+    approval_pause: ApprovalPause | None = None
+    continuation_state: AgentContinuationState | None = None
+    state_transitions: tuple[ExecutionTransition, ...] = ()
+    execution_state: ExecutionState | None = None
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            "execution": {
+                "answer": self.execution_result.answer,
+                "route": self.execution_result.route.to_public_dict(),
+                "metadata": self.execution_result.metadata.to_public_dict(),
+            },
+            "context": self.context.to_public_dict(),
+            "app_id": self.app_id,
+            "subject_id": self.subject_id,
+            "plan": self.plan.to_public_dict() if self.plan is not None else None,
+            "activated_skill": self.activated_skill.to_public_dict() if self.activated_skill is not None else None,
+            "resolved_tool_ids": list(self.resolved_tool_ids),
+            "evidence": {
+                "claim_count": len(self.evidence_graph.claims) if self.evidence_graph is not None else 0,
+                "source_count": len(self.evidence_graph.sources) if self.evidence_graph is not None else 0,
+                "assessments": [a.to_public_dict() for a in self.claim_assessments],
+                "citations": [c.to_public_dict() for c in self.grounded_citations],
+            },
+            "events": [e.to_public_dict() for e in self.events],
+            "approval_pause": self.approval_pause.to_public_dict() if self.approval_pause is not None else None,
+            "continuation_state": {
+                "status": self.continuation_state.status.value,
+                "decision_id": self.continuation_state.decision_id,
+            } if self.continuation_state is not None else None,
+            "state_machine": {
+                "current_state": self.execution_state.value if self.execution_state is not None else None,
+                "transitions": [t.to_public_dict() for t in self.state_transitions],
+            },
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class OrchestrationResumeRequest:
+    """Request to resume a paused orchestration run with an authenticated decision."""
+
+    pause: ApprovalPause
+    decision: VerifiedApprovalDecision
+    execution_request: ExecutionRequest
+    context: ExecutionContext
+    app_id: str
+    subject_id: str | None = None
+    agent_definition: BoundedAgentDefinition | None = None
+    compiled_agent_profile: CompiledAgentProfile | None = None
+    agent_plan: AgentPlan | None = None
+    tool_authorization: ToolAuthorizationContext | None = None
+    tool_runtime: ToolRuntime | None = None
+    tool_arguments: Mapping[str, Mapping[str, Any]] | None = None
+    now: datetime | None = None
+    consumed_decision_ids: frozenset[str] = frozenset()
+    initial_tool_results: tuple[ToolExecutionResult, ...] = ()
+    initial_tool_events: tuple[ToolEvent, ...] = ()
+
+    # Evidence & Verification (Optional)
+    evidence_sources: tuple[Evidence, ...] = ()
+    evidence_claims: tuple[EvidenceClaim, ...] = ()
+    evidence_links: tuple[ClaimEvidenceLink, ...] = ()
+    evidence_validator: EvidenceValidator | None = None
+    verification_policy: TrustedVerificationPolicy | None = None
+    require_evidence: bool = False
+    require_verification: bool = False
+    recovery_policy: AgentRecoveryPolicy | None = None
+    max_retries: int = 3
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.pause, ApprovalPause):
+            raise OrchestrationError("invalid_resume_request", "pause must be ApprovalPause")
+        if not isinstance(self.decision, VerifiedApprovalDecision):
+            raise OrchestrationError("invalid_resume_request", "decision must be VerifiedApprovalDecision")
+        if not isinstance(self.execution_request, ExecutionRequest):
+            raise OrchestrationError("invalid_resume_request", "execution_request must be ExecutionRequest")
+        if not isinstance(self.context, ExecutionContext):
+            raise OrchestrationError("invalid_resume_request", "context must be ExecutionContext")
+        object.__setattr__(self, "app_id", _safe_id("app_id", self.app_id))
+        if self.subject_id is not None:
+            object.__setattr__(self, "subject_id", _safe_id("subject_id", self.subject_id))
+
+
+class OrchestrationRunner:
+    """Bounded, provider-neutral execution pipeline runner."""
+
+    def __init__(
+        self,
+        *,
+        runtime: Any,
+        idempotency: IdempotencyAdapter | None = None,
+    ) -> None:
+        if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
+            raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
+        self._runtime = runtime
+        self._idempotency = idempotency
+
+    async def run(self, request: OrchestrationRequest) -> OrchestrationResult:
+        if not isinstance(request, OrchestrationRequest):
+            raise OrchestrationError("invalid_orchestration_request", "request must be OrchestrationRequest")
+
+        state_machine = ExecutionStateMachine(
+            initial_state=ExecutionState.CREATED,
+            max_retries=request.max_retries,
+        )
+        run_id = f"orch_run_{uuid.uuid4().hex[:16]}"
+        trace_id = request.context.trace_id
+        app_id = request.app_id
+        events: list[OrchestrationEvent] = []
+        seq = 1
+        terminated = False
+
+        def emit(kind: OrchestrationEventKind, message: str | None = None, metadata: Mapping[str, Any] | None = None) -> None:
+            nonlocal seq, terminated
+            if terminated:
+                return
+            evt = public_orchestration_event(
+                event_id=f"evt_{uuid.uuid4().hex[:12]}",
+                run_id=run_id,
+                trace_id=trace_id,
+                app_id=app_id,
+                kind=kind,
+                sequence=seq,
+                message=message,
+                metadata=metadata or {},
+            )
+            events.append(evt)
+            seq += 1
+            if kind in (OrchestrationEventKind.RUN_COMPLETED, OrchestrationEventKind.RUN_FAILED, OrchestrationEventKind.RUN_CANCELLED):
+                terminated = True
+
+        async def _abort_idempotency(reason: str) -> None:
+            if request.context.idempotency_key is not None and self._idempotency is not None:
+                if hasattr(self._idempotency, "abort") and callable(getattr(self._idempotency, "abort", None)):
+                    try:
+                        await self._idempotency.abort(app_id=app_id, idempotency_key=request.context.idempotency_key, reason=reason)
+                    except Exception:
+                        pass
+                elif hasattr(self._idempotency, "release") and callable(getattr(self._idempotency, "release", None)):
+                    try:
+                        await self._idempotency.release(app_id=app_id, idempotency_key=request.context.idempotency_key)
+                    except Exception:
+                        pass
+
+        # 1. RUN_STARTED
+        state_machine.start("run_started")
+        emit(OrchestrationEventKind.RUN_STARTED, f"Orchestration started for app '{app_id}'", {"app_id": app_id})
+
+        # 2. CONTEXT_PREPARED & Idempotency Check
+        fingerprint_payload = {
+            "app_id": app_id,
+            "agent_id": request.execution_request.agent.id,
+            "messages": [m for m in request.execution_request.messages],
+        }
+        fp = request_fingerprint(fingerprint_payload)
+        emit(OrchestrationEventKind.CONTEXT_PREPARED, "Execution context validated and bound", {
+            "timeout_seconds": request.context.timeout_seconds,
+            "idempotency_present": request.context.idempotency_key is not None,
+            "request_fingerprint": fp,
+        })
+
+        if request.context.idempotency_key is not None:
+            if self._idempotency is None:
+                raise OrchestrationError("idempotency_unavailable", "idempotency_key supplied but no IdempotencyAdapter injected")
+            replay = await self._idempotency.begin(
+                app_id=app_id,
+                idempotency_key=request.context.idempotency_key,
+                request_fingerprint=fp,
+            )
+            if replay is not None:
+                if not isinstance(replay, ExecutionResult):
+                    raise IdempotencyConflictError("idempotency adapter returned invalid replay")
+                state_machine.complete("idempotency_replay")
+                emit(OrchestrationEventKind.RUN_COMPLETED, "Execution completed via idempotency replay", {"replay": True})
+                return OrchestrationResult(
+                    execution_result=replay,
+                    context=request.context,
+                    app_id=app_id,
+                    subject_id=request.subject_id,
+                    plan=request.agent_plan,
+                    activated_skill=None,
+                    resolved_tool_ids=request.execution_request.agent.allowed_tools,
+                    evidence_graph=None,
+                    claim_assessments=(),
+                    grounded_citations=(),
+                    events=tuple(events),
+                    state_transitions=state_machine.transitions,
+                    execution_state=state_machine.state,
+                )
+
+        # 3. Optional Memory Read & Bounded Context Assembly
+        composed_system_context = request.execution_request.additional_system_context
+        if request.memory_items:
+            if request.memory_authorization is not None:
+                if request.memory_authorization.app_id != app_id:
+                    await _abort_idempotency("memory_authorization_mismatch")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Memory authorization mismatch", {"error": "memory_authorization_mismatch"})
+                    raise OrchestrationError("memory_authorization_mismatch", "memory_authorization app_id does not match caller app_id")
+            
+            ranked = rank_retrieval_results(request.memory_items)
+            ref_context = assemble_long_context(ranked)
+            if ref_context:
+                fenced_memory = (
+                    "\n\n[UNTRUSTED_REFERENCE: Memory & Retrieved Context]\n"
+                    f"{ref_context}\n"
+                    "[END_UNTRUSTED_REFERENCE]"
+                )
+                if composed_system_context:
+                    composed_system_context = f"{composed_system_context}{fenced_memory}"
+                else:
+                    composed_system_context = fenced_memory
+            
+            emit(OrchestrationEventKind.MEMORY_READ, "Retrieved memory items assembled as untrusted reference", {
+                "items_count": len(request.memory_items),
+                "ranked_count": len(ranked),
+            })
+
+        # 4. Optional Agent Planning
+        plan = request.agent_plan
+        if plan is None and request.agent_planner is not None and request.agent_definition is not None and request.compiled_agent_profile is not None:
+            user_text = " ".join(m.get("content", "") for m in request.execution_request.messages if m.get("role") == "user")
+            plan = await request.agent_planner.plan(
+                input_text=user_text or "Execute plan",
+                definition=request.agent_definition,
+                compiled_profile=request.compiled_agent_profile,
+            )
+
+        if plan is not None:
+            if request.agent_definition is not None and request.compiled_agent_profile is not None:
+                validate_agent_plan(plan, definition=request.agent_definition, compiled_profile=request.compiled_agent_profile)
+            emit(OrchestrationEventKind.PLAN_CREATED, f"Validated agent plan with {len(plan.steps)} steps", {
+                "agent_id": plan.agent_id,
+                "step_count": len(plan.steps),
+            })
+
+        # 5. Optional Skill Resolution & Trusted Compilation
+        activated_skill: ActivatedSkillProfile | None = None
+        if request.skill_id is not None:
+            if request.skill_registry is None or request.skill_installations is None or request.skill_runtime_policy is None:
+                await _abort_idempotency("skill_context_missing")
+                emit(OrchestrationEventKind.RUN_FAILED, "Skill context missing", {"error": "skill_context_missing"})
+                raise OrchestrationError("skill_context_missing", "skill_id requested but registry, installations, or runtime_policy missing")
+            
+            activated_skill = compile_enabled_skill(
+                registry=request.skill_registry,
+                installations=request.skill_installations,
+                app_id=app_id,
+                subject_id=request.subject_id or "default_subject",
+                skill_id=request.skill_id,
+                runtime_policy=request.skill_runtime_policy,
+            )
+            for sk_tool in activated_skill.compiled.runtime_profile.allowed_tools:
+                if sk_tool not in request.execution_request.agent.allowed_tools:
+                    await _abort_idempotency("authority_widening_rejected")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Authority widening rejected", {"error": "authority_widening_rejected"})
+                    raise OrchestrationError("authority_widening_rejected", f"skill requests tool '{sk_tool}' outside agent profile allowlist")
+
+            emit(OrchestrationEventKind.SKILL_RESOLVED, f"Skill '{request.skill_id}' resolved and compiled", {
+                "skill_id": request.skill_id,
+                "canonical_skill_id": activated_skill.compiled.canonical_skill_id,
+            })
+
+        # 6. Tool & Connector Resolution
+        resolved_tools: tuple[str, ...] = request.execution_request.agent.allowed_tools
+        if request.tool_resource_policy is not None:
+            emit(OrchestrationEventKind.TOOL_RESOLUTION, "Resolved effective tool resources", {
+                "max_argument_bytes": request.tool_resource_policy.max_argument_bytes,
+                "max_output_bytes": request.tool_resource_policy.max_output_bytes,
+                "max_timeout_seconds": request.tool_resource_policy.max_timeout_seconds,
+            })
+
+        # 7. Bounded Agent Execution
+        effective_agent = request.execution_request.agent
+        use_plan_bridge = (
+            request.agent_plan is not None
+            and request.tool_runtime is not None
+            and request.agent_definition is not None
+            and request.compiled_agent_profile is not None
+            and request.tool_authorization is not None
+        )
+
+        try:
+            if use_plan_bridge:
+                executor = AgentPlanExecutor()
+                prompt_input = (
+                    request.execution_request.messages[-1].get("content", "")
+                    if request.execution_request.messages
+                    else "Run agent plan"
+                )
+                bridge_res = await asyncio.wait_for(
+                    executor.execute(
+                        plan=request.agent_plan,
+                        definition=request.agent_definition,
+                        compiled_profile=request.compiled_agent_profile,
+                        authorization=request.tool_authorization,
+                        tool_runtime=request.tool_runtime,
+                        input_text=prompt_input or "Run agent plan",
+                        run_id=f"bridge_run_{uuid.uuid4().hex[:12]}",
+                        tool_arguments=request.tool_arguments,
+                    ),
+                    timeout=request.context.timeout_seconds,
+                )
+
+                if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
+                    for te in bridge_res.tool_events:
+                        emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                    pause = bridge_res.approval_pause
+                    assert pause is not None
+                    if pause.trace_id is None:
+                        pause = ApprovalPause(
+                            pause_id=pause.pause_id,
+                            run_id=pause.run_id,
+                            agent_runtime_id=pause.agent_runtime_id,
+                            tool_id=pause.tool_id,
+                            invocation_sha256=pause.invocation_sha256,
+                            requirement=pause.requirement,
+                            step_index=pause.step_index,
+                            created_at=pause.created_at,
+                            expires_at=pause.expires_at,
+                            trace_id=trace_id,
+                            plan_id=plan.agent_id if plan else None,
+                            approval_scope=pause.approval_scope,
+                        )
+                    emit(
+                        OrchestrationEventKind.APPROVAL_PAUSED,
+                        f"Execution paused for approval of tool '{pause.tool_id}'",
+                        {
+                            "continuation_id": pause.pause_id,
+                            "step_index": pause.step_index,
+                            "tool_id": pause.tool_id,
+                            "requirement": pause.requirement.value,
+                            "expires_at": pause.expires_at.isoformat(),
+                        },
+                    )
+                    state_machine.pause_for_approval("approval_required")
+                    pause_exec_res = ExecutionResult(
+                        answer="Agent execution paused for approval.",
+                        route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
+                        metadata=RunMetadata(
+                            trace_id=trace_id,
+                            app_id=app_id,
+                            agent_id=request.execution_request.agent.id,
+                            status=RunStatus.PAUSED,
+                            tool_events=bridge_res.tool_events,
+                        ),
+                    )
+                    return OrchestrationResult(
+                        execution_result=pause_exec_res,
+                        context=request.context,
+                        app_id=app_id,
+                        subject_id=request.subject_id,
+                        plan=plan,
+                        activated_skill=activated_skill,
+                        resolved_tool_ids=resolved_tools,
+                        evidence_graph=None,
+                        claim_assessments=(),
+                        grounded_citations=(),
+                        events=tuple(events),
+                        approval_pause=pause,
+                        continuation_state=AgentContinuationState(
+                            pause=pause,
+                            status=ContinuationStatus.WAITING_APPROVAL,
+                        ),
+                        state_transitions=state_machine.transitions,
+                        execution_state=state_machine.state,
+                    )
+
+                if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
+                    await _abort_idempotency("timeout")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time", {"reason": "timeout"})
+                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time")
+
+                if bridge_res.terminal_reason in (
+                    AgentTerminalReason.AUTHORIZATION_DENIED,
+                    AgentTerminalReason.CAPABILITY_MISSING,
+                    AgentTerminalReason.ERROR,
+                ):
+                    for te in bridge_res.tool_events:
+                        emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                        if te.status is RunStatus.FAILED:
+                            emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                                "tool_id": te.tool_id,
+                                "status": "failed",
+                                "error_class": te.error_class.value if te.error_class else None,
+                            })
+                    await _abort_idempotency(bridge_res.terminal_reason.value)
+                    emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})
+                    raise OrchestrationError(bridge_res.terminal_reason.value, f"Agent execution terminated with reason: {bridge_res.terminal_reason.value}")
+
+                result = ExecutionResult(
+                    answer=bridge_res.answer or "Plan executed successfully.",
+                    route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
+                    metadata=RunMetadata(
+                        trace_id=trace_id,
+                        app_id=app_id,
+                        agent_id=request.execution_request.agent.id,
+                        status=RunStatus.COMPLETED,
+                        tool_events=bridge_res.tool_events,
+                    ),
+                )
+            else:
+                effective_agent = request.execution_request.agent
+                if activated_skill is not None:
+                    effective_agent = AgentProfile(
+                        id=effective_agent.id,
+                        title=effective_agent.title,
+                        description=effective_agent.description,
+                        system_instruction=effective_agent.system_instruction,
+                        task_type=activated_skill.compiled.runtime_profile.task_type,
+                        optimize_for=activated_skill.compiled.runtime_profile.optimize_for,
+                        max_tokens=min(effective_agent.max_tokens, activated_skill.compiled.runtime_profile.max_tokens),
+                        allowed_tools=resolved_tools,
+                        required_capabilities=effective_agent.required_capabilities,
+                        model_policy=effective_agent.model_policy,
+                        max_steps=min(effective_agent.max_steps, activated_skill.compiled.runtime_profile.max_steps),
+                    )
+
+                exec_req = ExecutionRequest(
+                    agent=effective_agent,
+                    messages=request.execution_request.messages,
+                    session_id=request.execution_request.session_id,
+                    additional_system_context=composed_system_context,
+                    trace_id=trace_id,
+                )
+
+                result = await asyncio.wait_for(
+                    self._runtime.run(exec_req),
+                    timeout=request.context.timeout_seconds,
+                )
+
+            # Emit Tool lifecycle events ONLY for actual tool events from the execution result
+            for te in getattr(result.metadata, "tool_events", ()):
+                emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                if te.status is RunStatus.COMPLETED:
+                    emit(OrchestrationEventKind.TOOL_COMPLETED, f"Tool '{te.tool_id}' completed", {
+                        "tool_id": te.tool_id,
+                        "status": "completed",
+                        "duration_ms": te.duration_ms,
+                    })
+                elif te.status is RunStatus.FAILED:
+                    emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                        "tool_id": te.tool_id,
+                        "status": "failed",
+                        "error_class": te.error_class.value if te.error_class else None,
+                        "duration_ms": te.duration_ms,
+                    })
+        except asyncio.TimeoutError:
+            await _abort_idempotency("timeout")
+            state_machine.timeout("execution_timeout")
+            emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out", {"reason": "timeout"})
+            raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout") from None
+        except asyncio.CancelledError:
+            await _abort_idempotency("cancelled")
+            state_machine.cancel("execution_cancelled")
+            emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled", {"reason": "downstream_cancellation"})
+            raise
+        except AgentRuntimeError as exc:
+            await _abort_idempotency(exc.code)
+            state_machine.fail(exc.code)
+            emit(OrchestrationEventKind.RUN_FAILED, f"Agent runtime failed: {exc.safe_message}", {"error_code": exc.code})
+            raise OrchestrationError(exc.code, exc.safe_message) from exc
+        except ExecutionRuntimeError as exc:
+            await _abort_idempotency(exc.code)
+            state_machine.fail(exc.code)
+            emit(OrchestrationEventKind.RUN_FAILED, f"Execution failed: {exc.safe_message}", {"error_code": exc.code})
+            raise
+        except Exception as exc:
+            await _abort_idempotency("internal_error")
+            state_machine.fail("internal_error")
+            emit(OrchestrationEventKind.RUN_FAILED, "Unexpected execution failure", {"error": "internal_error"})
+            raise
+
+        # 8. Evidence & Provenance Integration
+        eg: EvidenceGraph | None = None
+        assessments: list[ClaimAssessment] = []
+        citations: list[GroundedCitation] = []
+
+        if request.evidence_sources or request.evidence_claims:
+            eg = evidence_graph(
+                sources=list(request.evidence_sources),
+                claims=list(request.evidence_claims),
+                links=list(request.evidence_links),
+            )
+            emit(OrchestrationEventKind.EVIDENCE_ATTACHED, f"Evidence graph constructed with {len(eg.sources)} sources", {
+                "sources_count": len(eg.sources),
+                "claims_count": len(eg.claims),
+            })
+
+            # Verification & Assessment
+            for claim in eg.claims:
+                verdict: VerificationVerdict | None = None
+                if request.evidence_validator is not None and request.verification_policy is not None:
+                    verdict_cand = await request.evidence_validator.verify(
+                        VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        graph=eg,
+                    )
+                    verdict = accept_verification_verdict(
+                        graph=eg,
+                        request=VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        verdict=verdict_cand,
+                        policy=request.verification_policy,
+                    )
+
+                ass = assess_claim(eg, claim.id, verification=verdict)
+                assessments.append(ass)
+
+                bundle = project_grounded_citations(eg, claim.id, verification=verdict)
+                citations.extend(bundle.citations)
+
+            emit(OrchestrationEventKind.VERIFICATION_COMPLETED, f"Assessed {len(assessments)} claims", {
+                "assessments_count": len(assessments),
+                "citations_count": len(citations),
+            })
+
+        # Required evidence check
+        if request.require_evidence:
+            if eg is None or len(eg.sources) == 0:
+                await _abort_idempotency("required_evidence_missing")
+                emit(OrchestrationEventKind.RUN_FAILED, "Required evidence was missing", {"error": "required_evidence_missing"})
+                raise OrchestrationError("required_evidence_missing", "Orchestration request required evidence but none was attached")
+
+        # Required verification check - enforces SUPPORTED only; rejects UNVERIFIED, CONTRADICTED, and CONFLICTED
+        if request.require_verification:
+            if not assessments or any(not is_verification_satisfied(a) for a in assessments):
+                await _abort_idempotency("verification_failed")
+                emit(OrchestrationEventKind.RUN_FAILED, "Required verification failed or was unverified/conflicted", {"error": "verification_failed"})
+                raise OrchestrationError("verification_failed", "Claim verification did not achieve a verified SUPPORTED status")
+
+        # 9. Idempotency Commit & Completion
+        if request.context.idempotency_key is not None and self._idempotency is not None:
+            if hasattr(self._idempotency, "commit"):
+                await self._idempotency.commit(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result,
+                )
+            elif hasattr(self._idempotency, "complete"):
+                await self._idempotency.complete(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result.to_public_dict() if hasattr(result, "to_public_dict") else {"answer": result.answer},
+                )
+
+        state_machine.complete("run_completed")
+        emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration completed successfully", {
+            "status": "completed",
+        })
+
+        return OrchestrationResult(
+            execution_result=result,
+            context=request.context,
+            app_id=app_id,
+            subject_id=request.subject_id,
+            plan=plan,
+            activated_skill=activated_skill,
+            resolved_tool_ids=resolved_tools,
+            evidence_graph=eg,
+            claim_assessments=tuple(assessments),
+            grounded_citations=tuple(citations),
+            events=tuple(events),
+            state_transitions=state_machine.transitions,
+            execution_state=state_machine.state,
+        )
+
+    async def resume(
+        self,
+        request: OrchestrationResumeRequest,
+    ) -> OrchestrationResult:
+        """Resume a paused orchestration run with an authenticated approval decision."""
+
+        state_machine = ExecutionStateMachine(
+            initial_state=ExecutionState.WAITING_APPROVAL,
+            max_retries=request.max_retries,
+        )
+        events: list[OrchestrationEvent] = []
+        app_id = request.app_id
+        trace_id = request.context.trace_id
+        pause = request.pause
+        decision = request.decision
+
+        seq = 1
+        terminated = False
+
+        def emit(kind: OrchestrationEventKind, message: str, meta: dict[str, Any] | None = None) -> None:
+            nonlocal seq, terminated
+            if terminated:
+                return
+            evt = public_orchestration_event(
+                event_id=f"evt_{uuid.uuid4().hex[:12]}",
+                run_id=pause.run_id,
+                trace_id=trace_id,
+                app_id=app_id,
+                kind=kind,
+                sequence=seq,
+                message=message,
+                metadata=meta or {},
+            )
+            events.append(evt)
+            seq += 1
+            if kind in (OrchestrationEventKind.RUN_COMPLETED, OrchestrationEventKind.RUN_FAILED, OrchestrationEventKind.RUN_CANCELLED):
+                terminated = True
+
+        emit(OrchestrationEventKind.RUN_STARTED, "Orchestration run resumed", {"run_id": pause.run_id})
+
+        # 1. Continuation Identity Validation (Fail closed on mismatch)
+        if decision.pause_id != pause.pause_id:
+            state_machine.fail("continuation_identity_mismatch")
+            emit(OrchestrationEventKind.RUN_FAILED, "Decision does not match continuation", {"error": "continuation_identity_mismatch"})
+            raise OrchestrationError("continuation_identity_mismatch", "decision does not belong to this pause")
+
+        if pause.trace_id is not None and pause.trace_id != trace_id:
+            state_machine.fail("continuation_identity_mismatch")
+            emit(OrchestrationEventKind.RUN_FAILED, "Trace ID mismatch on resume", {"error": "continuation_identity_mismatch"})
+            raise OrchestrationError("continuation_identity_mismatch", "trace_id does not match approval pause")
+
+        expected_agent_id = pause.agent_id
+        actual_agent_id = request.execution_request.agent.id
+        if request.compiled_agent_profile is not None:
+            actual_agent_id = request.compiled_agent_profile.runtime_profile.id
+
+        if expected_agent_id != actual_agent_id:
+            state_machine.fail("continuation_identity_mismatch")
+            emit(OrchestrationEventKind.RUN_FAILED, "Agent ID mismatch on resume", {"error": "continuation_identity_mismatch"})
+            raise OrchestrationError("continuation_identity_mismatch", "agent_id does not match approval pause")
+
+        async def _abort_idempotency(reason: str) -> None:
+            if request.context.idempotency_key is not None and self._idempotency is not None:
+                if hasattr(self._idempotency, "abort") and callable(getattr(self._idempotency, "abort", None)):
+                    try:
+                        await self._idempotency.abort(
+                            app_id=app_id,
+                            idempotency_key=request.context.idempotency_key,
+                            reason=reason,
+                        )
+                    except Exception:
+                        pass
+                elif hasattr(self._idempotency, "release") and callable(getattr(self._idempotency, "release", None)):
+                    try:
+                        await self._idempotency.release(
+                            app_id=app_id,
+                            idempotency_key=request.context.idempotency_key,
+                        )
+                    except Exception:
+                        pass
+
+        # 2. Decision Resolution & Expiration Check
+        now = request.now or datetime.now(timezone.utc)
+        try:
+            continuation_state = resolve_approval_pause(
+                pause,
+                decision,
+                now=now,
+                consumed_decision_ids=request.consumed_decision_ids,
+            )
+        except AgentApprovalError as exc:
+            emit(OrchestrationEventKind.RUN_FAILED, f"Approval resolution error: {exc}", {"error": "invalid_decision"})
+            raise OrchestrationError("invalid_decision", str(exc)) from exc
+
+        if continuation_state.status is ContinuationStatus.EXPIRED:
+            await _abort_idempotency("continuation_expired")
+            state_machine.expire("continuation_expired")
+            emit(OrchestrationEventKind.RUN_FAILED, "Approval continuation expired", {"error": "continuation_expired"})
+            raise OrchestrationError("continuation_expired", "Approval pause has expired")
+
+        if continuation_state.status is ContinuationStatus.DENIED:
+            await _abort_idempotency("approval_denied")
+            state_machine.fail("approval_denied")
+            emit(OrchestrationEventKind.RUN_FAILED, "Approval decision denied", {"error": "approval_denied"})
+            raise OrchestrationError("approval_denied", "Approval decision was denied")
+
+        if continuation_state.status is not ContinuationStatus.RESUMABLE:
+            await _abort_idempotency("invalid_continuation_status")
+            state_machine.fail("invalid_continuation_status")
+            emit(OrchestrationEventKind.RUN_FAILED, "Approval state is not resumable", {"error": "invalid_continuation_status"})
+            raise OrchestrationError("invalid_continuation_status", "Continuation is not in resumable status")
+
+        # 3. Authority Non-Widening Enforcement
+        if request.compiled_agent_profile is not None:
+            if pause.tool_id not in request.compiled_agent_profile.runtime_profile.allowed_tools:
+                emit(OrchestrationEventKind.RUN_FAILED, "Approved tool not in allowed profile", {"error": "authority_widening_rejected"})
+                raise OrchestrationError("authority_widening_rejected", f"tool '{pause.tool_id}' is not in compiled agent profile")
+        elif request.agent_definition is not None:
+            if pause.tool_id not in request.agent_definition.allowed_tool_ids:
+                emit(OrchestrationEventKind.RUN_FAILED, "Approved tool not in agent definition", {"error": "authority_widening_rejected"})
+                raise OrchestrationError("authority_widening_rejected", f"tool '{pause.tool_id}' is not in agent definition allowed tools")
+
+        if request.tool_authorization is not None:
+            # Verify tool has been explicitly confirmed/authorized in the context
+            is_confirmed = pause.tool_id in request.tool_authorization.user_confirmed_tools
+            is_ext_auth = pause.tool_id in request.tool_authorization.externally_authorized_tools
+            if not is_confirmed and not is_ext_auth:
+                emit(OrchestrationEventKind.RUN_FAILED, "Tool authorization context missing approval confirmation", {"error": "missing_approval_authorization"})
+                raise OrchestrationError("missing_approval_authorization", f"Tool '{pause.tool_id}' requires explicit confirmation in tool_authorization")
+
+        fingerprint_payload = {
+            "app_id": app_id,
+            "agent_id": request.execution_request.agent.id,
+            "messages": [message for message in request.execution_request.messages],
+        }
+        fp = request_fingerprint(fingerprint_payload)
+
+        async def _commit_idempotency(result: ExecutionResult) -> None:
+            if request.context.idempotency_key is None or self._idempotency is None:
+                return
+            if hasattr(self._idempotency, "commit") and callable(getattr(self._idempotency, "commit", None)):
+                await self._idempotency.commit(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result,
+                )
+            elif hasattr(self._idempotency, "complete") and callable(getattr(self._idempotency, "complete", None)):
+                await self._idempotency.complete(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result.to_public_dict(),
+                )
+
+        replay: ExecutionResult | None = None
+        if request.context.idempotency_key is not None:
+            if self._idempotency is None:
+                raise OrchestrationError(
+                    "idempotency_unavailable",
+                    "idempotency_key supplied but no IdempotencyAdapter injected",
+                )
+            replay_value = await self._idempotency.begin(
+                app_id=app_id,
+                idempotency_key=request.context.idempotency_key,
+                request_fingerprint=fp,
+            )
+            if replay_value is not None:
+                if not isinstance(replay_value, ExecutionResult):
+                    raise IdempotencyConflictError("idempotency adapter returned invalid replay")
+                replay = replay_value
+
+        # 4. Emit RUN_RESUMED
+        state_machine.resume("explicit_resume")
+        emit(
+            OrchestrationEventKind.RUN_RESUMED,
+            f"Resumed execution from step {pause.step_index}",
+            {
+                "continuation_id": pause.pause_id,
+                "step_index": pause.step_index,
+                "tool_id": pause.tool_id,
+            },
+        )
+
+        if replay is not None:
+            state_machine.complete("idempotency_replay")
+            emit(
+                OrchestrationEventKind.RUN_COMPLETED,
+                "Execution completed via idempotency replay",
+                {"replay": True},
+            )
+            return OrchestrationResult(
+                execution_result=replay,
+                context=request.context,
+                app_id=app_id,
+                subject_id=request.subject_id,
+                plan=request.agent_plan,
+                activated_skill=None,
+                resolved_tool_ids=request.execution_request.agent.allowed_tools,
+                evidence_graph=None,
+                claim_assessments=(),
+                grounded_citations=(),
+                events=tuple(events),
+                approval_pause=None,
+                continuation_state=continuation_state,
+                state_transitions=state_machine.transitions,
+                execution_state=state_machine.state,
+            )
+
+        # 5. Execute Remaining Plan from paused step
+        if (
+            request.agent_plan is not None
+            and request.tool_runtime is not None
+            and request.agent_definition is not None
+            and request.compiled_agent_profile is not None
+            and request.tool_authorization is not None
+        ):
+            executor = AgentPlanExecutor()
+            prompt_input = (
+                request.execution_request.messages[-1].get("content", "")
+                if request.execution_request.messages
+                else "Resume agent plan"
+            )
+            try:
+                bridge_res = await asyncio.wait_for(
+                    executor.execute(
+                        plan=request.agent_plan,
+                        definition=request.agent_definition,
+                        compiled_profile=request.compiled_agent_profile,
+                        authorization=request.tool_authorization,
+                        tool_runtime=request.tool_runtime,
+                        input_text=prompt_input or "Resume agent plan",
+                        run_id=pause.run_id,
+                        tool_arguments=request.tool_arguments,
+                        initial_step_index=pause.step_index,
+                        initial_tool_results=request.initial_tool_results,
+                        initial_tool_events=request.initial_tool_events,
+                        trace_id=trace_id,
+                        plan_id=request.agent_plan.agent_id,
+                    ),
+                    timeout=request.context.timeout_seconds,
+                )
+
+                if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time on resume", {"reason": "timeout"})
+                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time on resume")
+
+                if bridge_res.terminal_reason in (
+                    AgentTerminalReason.AUTHORIZATION_DENIED,
+                    AgentTerminalReason.CAPABILITY_MISSING,
+                    AgentTerminalReason.ERROR,
+                ):
+                    for te in bridge_res.tool_events:
+                        emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                        if te.status is RunStatus.FAILED:
+                            emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                                "tool_id": te.tool_id,
+                                "status": "failed",
+                                "error_class": te.error_class.value if te.error_class else None,
+                            })
+                    emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure on resume: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})
+                    raise OrchestrationError(bridge_res.terminal_reason.value, f"Agent execution terminated on resume with reason: {bridge_res.terminal_reason.value}")
+
+                result = ExecutionResult(
+                    answer=bridge_res.answer or "Plan resumed and completed successfully.",
+                    route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
+                    metadata=RunMetadata(
+                        trace_id=trace_id,
+                        app_id=app_id,
+                        agent_id=request.execution_request.agent.id,
+                        status=RunStatus.COMPLETED,
+                        tool_events=bridge_res.tool_events,
+                    ),
+                )
+            except asyncio.TimeoutError:
+                emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out on resume", {"reason": "timeout"})
+                raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
+            except asyncio.CancelledError:
+                await _abort_idempotency("cancelled")
+                emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled on resume", {"reason": "downstream_cancellation"})
+                raise
+            except OrchestrationError as exc:
+                await _abort_idempotency(exc.code)
+                raise
+            except Exception:
+                await _abort_idempotency("internal_error")
+                raise
+        else:
+            # Fallback simple runtime execution
+            try:
+                result = await asyncio.wait_for(
+                    self._runtime.run(request.execution_request),
+                    timeout=request.context.timeout_seconds,
+                )
+            except asyncio.TimeoutError:
+                await _abort_idempotency("timeout")
+                raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
+            except asyncio.CancelledError:
+                await _abort_idempotency("cancelled")
+                raise
+            except Exception:
+                await _abort_idempotency("internal_error")
+                raise
+
+        # Emit Tool lifecycle events ONLY for actual tool events from the execution result
+        for te in getattr(result.metadata, "tool_events", ()):
+            emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+            if te.status is RunStatus.COMPLETED:
+                emit(OrchestrationEventKind.TOOL_COMPLETED, f"Tool '{te.tool_id}' completed", {
+                    "tool_id": te.tool_id,
+                    "status": "completed",
+                    "duration_ms": te.duration_ms,
+                })
+            elif te.status is RunStatus.FAILED:
+                emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                    "tool_id": te.tool_id,
+                    "status": "failed",
+                    "error_class": te.error_class.value if te.error_class else None,
+                    "duration_ms": te.duration_ms,
+                })
+
+        # Evidence & Verification
+        eg: EvidenceGraph | None = None
+        assessments: list[ClaimAssessment] = []
+        citations: list[GroundedCitation] = []
+
+        if request.evidence_sources or request.evidence_claims:
+            eg = evidence_graph(
+                sources=list(request.evidence_sources),
+                claims=list(request.evidence_claims),
+                links=list(request.evidence_links),
+            )
+            emit(OrchestrationEventKind.EVIDENCE_ATTACHED, f"Evidence graph constructed with {len(eg.sources)} sources", {
+                "sources_count": len(eg.sources),
+                "claims_count": len(eg.claims),
+            })
+
+            # Verification & Assessment
+            effective_agent = request.execution_request.agent
+            for claim in eg.claims:
+                verdict: VerificationVerdict | None = None
+                if request.evidence_validator is not None and request.verification_policy is not None:
+                    verdict_cand = await request.evidence_validator.verify(
+                        VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        graph=eg,
+                    )
+                    verdict = accept_verification_verdict(
+                        graph=eg,
+                        request=VerificationRequest(claim_id=claim.id, producer_id=effective_agent.id),
+                        verdict=verdict_cand,
+                        policy=request.verification_policy,
+                    )
+
+                ass = assess_claim(eg, claim.id, verification=verdict)
+                assessments.append(ass)
+
+                bundle = project_grounded_citations(eg, claim.id, verification=verdict)
+                citations.extend(bundle.citations)
+
+            emit(OrchestrationEventKind.VERIFICATION_COMPLETED, f"Assessed {len(assessments)} claims", {
+                "assessments_count": len(assessments),
+                "citations_count": len(citations),
+            })
+
+        # 9. Idempotency Commit & Completion
+        try:
+            await _commit_idempotency(result)
+        except Exception:
+            await _abort_idempotency("idempotency_commit_failed")
+            raise
+
+        state_machine.complete("run_completed")
+        emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration run completed successfully")
+
+        return OrchestrationResult(
+            execution_result=result,
+            context=request.context,
+            app_id=app_id,
+            subject_id=request.subject_id,
+            plan=request.agent_plan,
+            activated_skill=None,
+            resolved_tool_ids=request.execution_request.agent.allowed_tools,
+            evidence_graph=eg,
+            claim_assessments=tuple(assessments),
+            grounded_citations=tuple(citations),
+            events=tuple(events),
+            approval_pause=None,
+            continuation_state=continuation_state,
+            state_transitions=state_machine.transitions,
+            execution_state=state_machine.state,
+        )
+
+    def cancel_pause(
+        self,
+        pause: ApprovalPause,
+        *,
+        trace_id: str | None = None,
+        reason: str = "user_cancelled",
+    ) -> tuple[OrchestrationEvent, ...]:
+        """Explicitly cancel an existing approval pause state."""
+        if not isinstance(pause, ApprovalPause):
+            raise OrchestrationError("invalid_pause", "pause must be ApprovalPause")
+        event = public_orchestration_event(
+            event_id=f"evt_{uuid.uuid4().hex[:12]}",
+            run_id=pause.run_id,
+            trace_id=trace_id or pause.trace_id or "tr_cancelled",
+            app_id=pause.agent_id,
+            kind=OrchestrationEventKind.RUN_CANCELLED,
+            sequence=1,
+            message=f"Approval pause '{pause.pause_id}' cancelled",
+            metadata={
+                "continuation_id": pause.pause_id,
+                "reason": reason,
+            },
+        )
+        return (event,)
