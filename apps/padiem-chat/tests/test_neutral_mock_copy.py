@@ -5,7 +5,7 @@ import asyncio
 from app.attachments import ImageAttachment
 from app.b14_client import B14Client
 from app.config import Settings
-from app.model_policy import UNASSIGNED_B14_MODEL_ID
+from app.model_policy import AUTO_B14_MODEL_ID
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -37,7 +37,7 @@ def test_mock_completed_answer_uses_plain_truthful_preview_copy():
 
         assert result["request_id"] == "mock_b62"
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == UNASSIGNED_B14_MODEL_ID
+        assert result["route"]["model"] == AUTO_B14_MODEL_ID
         assert result["route"]["provider"] is None
         _assert_plain_preview_copy(answer)
         assert "입력하신 질문은 ‘안녕하세요’입니다." in answer
@@ -82,7 +82,7 @@ def test_mock_image_copy_discloses_no_analysis_without_runtime_jargon():
 
         assert result["request_id"] == "mock_b62"
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == UNASSIGNED_B14_MODEL_ID
+        assert result["route"]["model"] == AUTO_B14_MODEL_ID
         assert result["route"]["provider"] is None
         _assert_plain_preview_copy(answer)
         assert "사진 내용은 아직 분석하지 않습니다." in answer
