@@ -83,10 +83,23 @@
     URL.revokeObjectURL(url);
   }
 
+  function lifecycleApi() {
+    return window.PadiemChatLifecycle || {
+      isCompleted() { return false; },
+    };
+  }
+
+  function removeAnswerActions(article) {
+    article.querySelectorAll(".answer-actions").forEach((actions) => actions.remove());
+    delete article.dataset.outputActions;
+  }
+
   function updateSaveButtons() {
     document.querySelectorAll(".answer-save").forEach((button) => {
-      button.hidden = !outputsReady;
-      button.disabled = !outputsReady || button.dataset.saved === "true";
+      const article = button.closest(".assistant-message");
+      const eligible = lifecycleApi().isCompleted(article);
+      button.hidden = !outputsReady || !eligible;
+      button.disabled = !outputsReady || !eligible || button.dataset.saved === "true";
     });
   }
 
@@ -164,7 +177,12 @@
   }
 
   function enhanceAssistantMessage(article) {
-    if (!(article instanceof Element) || article.dataset.outputActions === "true") return;
+    if (!(article instanceof Element)) return;
+    if (!lifecycleApi().isCompleted(article)) {
+      removeAnswerActions(article);
+      return;
+    }
+    if (article.dataset.outputActions === "true") return;
     const text = answerText(article);
     if (!text) return;
     const body = article.querySelector(".assistant-body");
@@ -179,6 +197,7 @@
     copy.className = "answer-action answer-copy";
     copy.textContent = "복사";
     copy.addEventListener("click", async () => {
+      if (!lifecycleApi().isCompleted(article)) return;
       const copied = await copyText(text);
       feedbackButton(copy, copied ? "복사됨" : "복사 실패", "복사");
     });
@@ -187,7 +206,9 @@
     download.type = "button";
     download.className = "answer-action answer-download";
     download.textContent = "다운로드";
-    download.addEventListener("click", () => downloadText(text, titleFromText(text)));
+    download.addEventListener("click", () => {
+      if (lifecycleApi().isCompleted(article)) downloadText(text, titleFromText(text));
+    });
 
     const save = document.createElement("button");
     save.type = "button";
@@ -196,7 +217,7 @@
     save.hidden = !outputsReady;
     save.disabled = !outputsReady;
     save.addEventListener("click", async () => {
-      if (!outputsReady || save.dataset.saved === "true") return;
+      if (!lifecycleApi().isCompleted(article) || !outputsReady || save.dataset.saved === "true") return;
       save.disabled = true;
       try {
         const response = await fetch("/api/outputs", {
@@ -326,6 +347,7 @@
 
   const messageObserver = new MutationObserver(enhanceAllAnswers);
   messageObserver.observe(messageList, { childList: true, subtree: true });
+  messageList.addEventListener("padiem:message-lifecycle", enhanceAllAnswers);
 
   if (loginButton) {
     const authObserver = new MutationObserver(() => {

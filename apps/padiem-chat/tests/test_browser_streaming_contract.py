@@ -198,3 +198,58 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
     assert "route-details" not in stream_source
     assert "provider" not in stream_source
     assert 'textContent = "AI 응답"' in stream_source
+
+
+def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
+    source = _source()
+    lifecycle_start = source.index("  const MESSAGE_LIFECYCLE")
+    lifecycle_end = source.index("  let messages = []", lifecycle_start)
+    lifecycle = source[lifecycle_start:lifecycle_end]
+
+    assert 'STREAMING: "streaming"' in lifecycle
+    assert 'COMPLETED: "completed"' in lifecycle
+    assert 'FAILED: "failed"' in lifecycle
+    assert 'CANCELLED: "cancelled"' in lifecycle
+    assert 'TIMED_OUT: "timed_out"' in lifecycle
+    assert 'isCompleted(article)' in lifecycle
+    assert '"padiem:message-lifecycle"' in lifecycle
+
+    outputs = (APP_PATH.parent / "outputs.js").read_text(encoding="utf-8")
+    export = (APP_PATH.parent / "conversation-export.js").read_text(encoding="utf-8")
+    assert 'if (!lifecycleApi().isCompleted(article))' in outputs
+    assert 'button.hidden = !outputsReady || !eligible' in outputs
+    assert 'if (hasIncompleteAssistant()) return [];' in export
+    assert 'messageList.addEventListener("padiem:message-lifecycle"' in outputs
+    assert 'messageList.addEventListener("padiem:message-lifecycle"' in export
+
+
+def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary() -> None:
+    source = _source()
+    assert 'id="cancelStreamButton"' in (APP_PATH.parent / "index.html").read_text(encoding="utf-8")
+    assert "cancelActiveStream" in source
+    assert 'activeRequestCancelReason = "user_cancel"' in source
+    assert "renderCancelled(article" in source
+    assert 'textContent = "생성 취소됨"' in source
+    assert '"다시 생성"' in source
+    assert 'retry.textContent = actionLabel' in source
+    assert "requestStreamingAnswer(article" in source
+    assert 'fetch("/api/chat/stream"' in source
+
+
+def test_timeout_error_keeps_incomplete_answer_in_fail_closed_states() -> None:
+    source = _source()
+    assert 'error && error.code === "upstream_timeout"' in source
+    assert 'MESSAGE_LIFECYCLE.TIMED_OUT' in source
+    assert 'lifecycleForError(error)' in source
+    assert 'PadiemChatLifecycle.set(article, lifecycle)' in source
+    assert 'PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED)' in source
+
+
+def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> None:
+    source = _source()
+    html = (APP_PATH.parent / "index.html").read_text(encoding="utf-8")
+    css = (APP_PATH.parent / "padiem-cinematic-chat.css").read_text(encoding="utf-8")
+    assert 'aria-label="답변 생성 취소"' in html
+    assert 'cancelStreamButton.hidden = !inFlight' in source
+    assert 'min-width: 64px' in css
+    assert 'min-height: 42px' in css
