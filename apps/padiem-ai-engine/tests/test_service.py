@@ -256,6 +256,21 @@ async def test_unexpected_private_exception_is_redacted() -> None:
 
 
 @pytest.mark.asyncio
+async def test_unexpected_value_error_text_is_redacted() -> None:
+    runtime = FakeRuntime(error=ValueError("PRIVATE_PROVIDER_SECRET trace=abc123"))
+    service = EngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    response = await service.execute_payload(valid_payload())
+
+    encoded = json.dumps(response.body)
+    assert response.status_code == 422
+    assert response.body["error"]["code"] == "execution_context_unavailable"
+    assert response.body["error"]["message"] == "Execution context is unavailable."
+    assert "PRIVATE_PROVIDER_SECRET" not in encoded
+    assert "abc123" not in encoded
+
+
+@pytest.mark.asyncio
 async def test_http_contract_bounds_body_and_content_type() -> None:
     runtime = FakeRuntime(value=result())
     service = EngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
