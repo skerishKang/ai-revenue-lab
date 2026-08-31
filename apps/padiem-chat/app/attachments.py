@@ -5,6 +5,7 @@ import binascii
 from dataclasses import dataclass, field
 from typing import Any
 
+from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
 from .documents import DocumentAttachment, DocumentValidationError, parse_document_item
 
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
@@ -82,6 +83,22 @@ def _parse_image(item: dict[str, Any]) -> ImageAttachment:
     return ImageAttachment(name=name, media_type=media_type, base64_data=payload, byte_size=len(decoded))
 
 
+def _parse_document(item: dict[str, Any]) -> DocumentAttachment:
+    has_text = "text" in item
+    has_base64 = "base64" in item
+    if has_text == has_base64:
+        raise AttachmentValidationError("문서는 텍스트 또는 바이너리 데이터 중 하나만 보낼 수 있습니다.")
+    if has_text:
+        try:
+            return parse_document_item(item)
+        except DocumentValidationError as exc:
+            raise AttachmentValidationError(str(exc)) from exc
+    try:
+        return parse_binary_document_item(item)
+    except BinaryDocumentValidationError as exc:
+        raise AttachmentValidationError(str(exc)) from exc
+
+
 def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, ...]:
     if raw is None:
         return ()
@@ -99,8 +116,5 @@ def parse_attachments(raw: Any) -> tuple[ImageAttachment | DocumentAttachment, .
     if item_type == "image":
         return (_parse_image(item),)
     if item_type == "document":
-        try:
-            return (parse_document_item(item),)
-        except DocumentValidationError as exc:
-            raise AttachmentValidationError(str(exc)) from exc
-    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON 문서만 첨부할 수 있습니다.")
+        return (_parse_document(item),)
+    raise AttachmentValidationError("현재는 사진과 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서만 첨부할 수 있습니다.")
