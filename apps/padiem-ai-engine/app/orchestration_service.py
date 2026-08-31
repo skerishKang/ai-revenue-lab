@@ -1,13 +1,13 @@
 """Language-neutral unified orchestration service contract for Padiem AI Engine.
 
 Exposes bounded, product-neutral orchestration execution, approval continuation
-resumption, cancellation, and streaming over the internal Engine transport.
+resumption, and cancellation over the internal Engine transport.
 """
 
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncIterator, Callable, Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import inspect
@@ -53,7 +53,6 @@ from app.service import (
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
-ORCHESTRATE_STREAM_PATH = "/internal/v1/orchestrate/stream"
 
 
 class ApprovalDecisionVerifier(Protocol):
