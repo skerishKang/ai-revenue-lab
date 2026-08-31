@@ -1,4 +1,11 @@
-from padiem_ai_core.evidence_assessment import ClaimAssessmentState, assess_claim
+import pytest
+
+from padiem_ai_core.contracts import Evidence
+from padiem_ai_core.evidence_assessment import (
+    ClaimAssessmentState,
+    EvidenceAssessmentError,
+    assess_claim,
+)
 from padiem_ai_core.evidence_graph import (
     ClaimDerivation,
     ClaimEvidenceLink,
@@ -7,160 +14,232 @@ from padiem_ai_core.evidence_graph import (
     evidence_graph,
 )
 from padiem_ai_core.evidence_verification import (
-    AcceptedVerification,
+    TrustedVerificationPolicy,
     VerificationDisposition,
     VerificationRequest,
     VerificationVerdict,
+    accept_verification_verdict,
 )
-from padiem_ai_core.contracts import Evidence
 
 
-def source(source_id: str, title: str = "Source") -> Evidence:
+def source(evidence_id: str) -> Evidence:
     return Evidence(
-        id=source_id,
-        title=title,
-        snippet="bounded snippet",
-        retrieved_at="2026-08-30T12:00:00+00:00",
-        provider="test-provider",
-        source_type="web",
-        url="https://example.com/source",
+        id=evidence_id,
+        title=f"Title {evidence_id}",
+        snippet=f"private body {evidence_id}",
+        retrieved_at="2026-08-31T00:00:00Z",
+        provider="web",
+        source_type="web_page",
+        url=f"https://example.com/{evidence_id}",
     )
 
 
-def claim(claim_id: str = "claim:1") -> EvidenceClaim:
-    return EvidenceClaim(id=claim_id, text="The sky is blue.", derivation=ClaimDerivation.OBSERVED)
-
-
-def graph_for(*relations: ClaimEvidenceRelation) -> object:
-    sources = tuple(source(f"ev:{index}") for index, _ in enumerate(relations, start=1))
-    claims = (claim(),)
-    links = tuple(
-        ClaimEvidenceLink(
-            claim_id="claim:1",
-            evidence_id=f"ev:{index}",
-            relation=relation,
-        )
-        for index, relation in enumerate(relations, start=1)
+def make_graph(*relations: tuple[str, ClaimEvidenceRelation]):
+    return evidence_graph(
+        sources=[source(evidence_id) for evidence_id, _ in relations],
+        claims=[
+            EvidenceClaim(
+                id="claim_1",
+                text="A bounded claim.",
+                derivation=ClaimDerivation.GENERATED,
+            )
+        ],
+        links=[
+            ClaimEvidenceLink(
+                claim_id="claim_1",
+                evidence_id=evidence_id,
+                relation=relation,
+            )
+            for evidence_id, relation in relations
+        ],
     )
-    return evidence_graph(sources=sources, claims=claims, links=links)
 
 
-def accepted(disposition: VerificationDisposition, *evidence_ids: str, confidence=None) -> AcceptedVerification:
-    request = VerificationRequest(claim_id="claim:1", producer_id="producer:1")
+def accepted_verification(
+    graph,
+    disposition: VerificationDisposition,
+    checked_ids: tuple[str, ...],
+    confidence=None,
+    *,
+    claim_id: str = "claim_1",
+):
+    request = VerificationRequest(claim_id=claim_id, producer_id="agent:producer")
     verdict = VerificationVerdict(
-        verdict_id="verdict:1" if disposition is VerificationDisposition.VERIFIED else "verdict:2",
-        claim_id="claim:1",
-        validator_id="validator:1",
+        verdict_id="verdict_1",
+        claim_id=claim_id,
+        validator_id="validator:independent",
         disposition=disposition,
-        checked_evidence_ids=tuple(evidence_ids),
+        checked_evidence_ids=checked_ids,
         confidence=confidence,
     )
-    return AcceptedVerification(request=request, verdict=verdict)
+    return accept_verification_verdict(
+        graph,
+        request,
+        verdict,
+        policy=TrustedVerificationPolicy(
+            allowed_validator_ids=("validator:independent",)
+        ),
+    )
 
 
-def test_supporting_graph_link_yields_supported() -> None:
-    assessment = assess_claim(graph_for(ClaimEvidenceRelation.SUPPORTS), "claim:1")
+def test_verified_support_becomes_supported():
+    graph = make_graph(("src_support", ClaimEvidenceRelation.SUPPORTS))
+    verification = accepted_verification(
+        graph, VerificationDisposition.VERIFIED, ("src_support",), confidence=0.75
+    )
+
+    assessment = assess_claim(graph, "claim_1", verification=verification)
+
     assert assessment.state is ClaimAssessmentState.SUPPORTED
-    assert assessment.supporting_evidence_ids == ("ev:1",)
-    assert assessment.missing_evidence is False
+    assert assessment.supporting_evidence_ids == ("src_support",)
+    assert assessment.missing_supporting_evidence is False
+    assert assessment.verification_confidence == 0.75
 
 
-def test_contradicting_graph_link_yields_contradicted() -> None:
-    assessment = assess_claim(graph_for(ClaimEvidenceRelation.CONTRADICTS), "claim:1")
-    assert assessment.state is ClaimAssessmentState.CONTRADICTED
-    assert assessment.contradicting_evidence_ids == ("ev:1",)
+def test_evidence_without_accepted_verification_remains_unverified():
+    graph = make_graph(("src_support", ClaimEvidenceRelation.SUPPORTS))
 
+    assessment = assess_claim(graph, "claim_1")
 
-def test_no_evidence_link_is_unverified_and_missing() -> None:
-    # Observed claims must carry a support link in the graph contract, so use an
-    # inferred claim for the unverified/missing-evidence assessment case.
-    inferred = EvidenceClaim(id="claim:2", text="Possible inference.", derivation=ClaimDerivation.INFERRED)
-    graph = evidence_graph(sources=(), claims=(inferred,), links=())
-    assessment = assess_claim(graph, "claim:2")
     assert assessment.state is ClaimAssessmentState.UNVERIFIED
-    assert assessment.missing_evidence is True
+    assert assessment.verification_disposition is None
+    assert assessment.verification_confidence is None
 
 
-def test_accepted_verified_verdict_yields_supported() -> None:
-    assessment = assess_claim(
-        graph_for(ClaimEvidenceRelation.SUPPORTS),
-        "claim:1",
-        accepted_verifications=(accepted(VerificationDisposition.VERIFIED, "ev:1", confidence=0.8),),
+def test_verified_contradiction_becomes_contradicted():
+    graph = make_graph(("src_contra", ClaimEvidenceRelation.CONTRADICTS))
+    verification = accepted_verification(
+        graph, VerificationDisposition.CONTRADICTED, ("src_contra",)
     )
-    assert assessment.state is ClaimAssessmentState.SUPPORTED
-    assert assessment.checked_evidence_ids == ("ev:1",)
-    assert assessment.confidence == 0.8
 
+    assessment = assess_claim(graph, "claim_1", verification=verification)
 
-def test_accepted_contradicted_verdict_yields_contradicted() -> None:
-    assessment = assess_claim(
-        graph_for(ClaimEvidenceRelation.CONTRADICTS),
-        "claim:1",
-        accepted_verifications=(accepted(VerificationDisposition.CONTRADICTED, "ev:1", confidence=0.9),),
-    )
     assert assessment.state is ClaimAssessmentState.CONTRADICTED
-    assert assessment.confidence == 0.9
+    assert assessment.contradicting_evidence_ids == ("src_contra",)
 
 
-def test_support_and_contradiction_yield_conflicted() -> None:
-    assessment = assess_claim(
-        graph_for(ClaimEvidenceRelation.SUPPORTS, ClaimEvidenceRelation.CONTRADICTS),
-        "claim:1",
+def test_support_and_contradiction_always_remain_conflicted():
+    graph = make_graph(
+        ("src_support", ClaimEvidenceRelation.SUPPORTS),
+        ("src_contra", ClaimEvidenceRelation.CONTRADICTS),
     )
+    verification = accepted_verification(
+        graph, VerificationDisposition.VERIFIED, ("src_support",)
+    )
+
+    assessment = assess_claim(graph, "claim_1", verification=verification)
+
     assert assessment.state is ClaimAssessmentState.CONFLICTED
-    assert assessment.confidence is None
+    assert assessment.supporting_evidence_ids == ("src_support",)
+    assert assessment.contradicting_evidence_ids == ("src_contra",)
 
 
-def test_conflicting_verdicts_keep_confidence_unknown() -> None:
-    graph = graph_for(ClaimEvidenceRelation.SUPPORTS, ClaimEvidenceRelation.CONTRADICTS)
-    assessment = assess_claim(
-        graph,
-        "claim:1",
-        accepted_verifications=(
-            accepted(VerificationDisposition.VERIFIED, "ev:1", confidence=0.8),
-            AcceptedVerification(
-                request=VerificationRequest(claim_id="claim:1", producer_id="producer:2"),
-                verdict=VerificationVerdict(
-                    verdict_id="verdict:3",
-                    claim_id="claim:1",
-                    validator_id="validator:2",
-                    disposition=VerificationDisposition.CONTRADICTED,
-                    checked_evidence_ids=("ev:2",),
-                    confidence=0.6,
-                ),
-            ),
-        ),
+def test_missing_support_is_explicit_but_contextual_evidence_is_preserved():
+    graph = make_graph(("src_context", ClaimEvidenceRelation.CONTEXTUALIZES))
+
+    assessment = assess_claim(graph, "claim_1")
+
+    assert assessment.state is ClaimAssessmentState.UNVERIFIED
+    assert assessment.missing_supporting_evidence is True
+    assert assessment.contextualizing_evidence_ids == ("src_context",)
+
+
+def test_no_evidence_is_unverified_with_missing_support():
+    graph = make_graph()
+
+    assessment = assess_claim(graph, "claim_1")
+
+    assert assessment.state is ClaimAssessmentState.UNVERIFIED
+    assert assessment.supporting_evidence_ids == ()
+    assert assessment.missing_supporting_evidence is True
+
+
+def test_inconclusive_verification_remains_unverified():
+    graph = make_graph(("src_context", ClaimEvidenceRelation.CONTEXTUALIZES))
+    verification = accepted_verification(
+        graph, VerificationDisposition.INCONCLUSIVE, ()
     )
-    assert assessment.state is ClaimAssessmentState.CONFLICTED
-    assert assessment.confidence is None
+
+    assessment = assess_claim(graph, "claim_1", verification=verification)
+
+    assert assessment.state is ClaimAssessmentState.UNVERIFIED
+    assert assessment.verification_disposition == "inconclusive"
+    assert assessment.verification_confidence is None
 
 
-def test_identical_explicit_confidence_is_preserved() -> None:
-    graph = graph_for(ClaimEvidenceRelation.SUPPORTS)
-    assessment = assess_claim(
-        graph,
-        "claim:1",
-        accepted_verifications=(
-            accepted(VerificationDisposition.VERIFIED, "ev:1", confidence=0.75),
-            AcceptedVerification(
-                request=VerificationRequest(claim_id="claim:1", producer_id="producer:2"),
-                verdict=VerificationVerdict(
-                    verdict_id="verdict:3",
-                    claim_id="claim:1",
-                    validator_id="validator:2",
-                    disposition=VerificationDisposition.VERIFIED,
-                    checked_evidence_ids=("ev:1",),
-                    confidence=0.75,
-                ),
-            ),
-        ),
+def test_confidence_is_preserved_not_averaged_or_synthesized():
+    graph = make_graph(("src_support", ClaimEvidenceRelation.SUPPORTS))
+    verification = accepted_verification(
+        graph, VerificationDisposition.VERIFIED, ("src_support",), confidence=0.333
     )
-    assert assessment.confidence == 0.75
+
+    assessment = assess_claim(graph, "claim_1", verification=verification)
+
+    assert assessment.verification_confidence == 0.333
 
 
-def test_public_assessment_contains_no_authorization_or_approval_fields() -> None:
-    assessment = assess_claim(graph_for(ClaimEvidenceRelation.SUPPORTS), "claim:1")
-    public = assessment.to_public_dict()
-    assert "authorization" not in public
-    assert "approval" not in public
-    assert "credentials" not in public
+def test_mismatched_verification_fails_closed():
+    graph = make_graph(("src_support", ClaimEvidenceRelation.SUPPORTS))
+    other_graph = evidence_graph(
+        sources=[source("src_other")],
+        claims=[
+            EvidenceClaim(
+                id="claim_other",
+                text="Other claim.",
+                derivation=ClaimDerivation.OBSERVED,
+            )
+        ],
+        links=[
+            ClaimEvidenceLink(
+                claim_id="claim_other",
+                evidence_id="src_other",
+                relation=ClaimEvidenceRelation.SUPPORTS,
+            )
+        ],
+    )
+    verification = accepted_verification(
+        other_graph,
+        VerificationDisposition.VERIFIED,
+        ("src_other",),
+        claim_id="claim_other",
+    )
+
+    with pytest.raises(EvidenceAssessmentError) as exc_info:
+        assess_claim(graph, "claim_1", verification=verification)
+
+    assert exc_info.value.code == "assessment_verification_mismatch"
+
+
+def test_public_projection_contains_no_snippets_or_authority_fields():
+    graph = make_graph(("src_support", ClaimEvidenceRelation.SUPPORTS))
+    public = assess_claim(graph, "claim_1").to_public_dict()
+    rendered = repr(public)
+
+    assert "private body" not in rendered
+    assert "snippet" not in public
+    assert "human_approval" not in rendered
+    assert "authorization" not in rendered
+    assert "entitlement" not in rendered
+    assert "trust" not in rendered
+
+
+def test_evidence_id_order_is_deterministic_for_graph_order():
+    graph = make_graph(
+        ("src_b", ClaimEvidenceRelation.SUPPORTS),
+        ("src_a", ClaimEvidenceRelation.SUPPORTS),
+    )
+
+    first = assess_claim(graph, "claim_1")
+    second = assess_claim(graph, "claim_1")
+
+    assert first.to_public_dict() == second.to_public_dict()
+    assert first.supporting_evidence_ids == ("src_b", "src_a")
+
+
+def test_unknown_claim_fails_closed():
+    graph = make_graph(("src_support", ClaimEvidenceRelation.SUPPORTS))
+
+    with pytest.raises(EvidenceAssessmentError) as exc_info:
+        assess_claim(graph, "missing_claim")
+
+    assert exc_info.value.code == "unknown_assessment_claim"
