@@ -141,6 +141,29 @@ from .streaming_runtime import (
     StreamingExecutionEvent,
     StreamingExecutionRuntime,
 )
+from .agent_recovery import (
+    AgentFailure,
+    AgentFailureSource,
+    AgentRecoveryAction,
+    AgentRecoveryContext,
+    AgentRecoveryDecision,
+    AgentRecoveryError,
+    AgentRecoveryPolicy,
+    decide_agent_recovery,
+)
+from .agent_delegation import (
+    AgentDelegationError,
+    AgentDelegationRequest,
+    DelegatedAgentAuthority,
+    authorize_agent_delegation,
+    delegation_fingerprint,
+)
+from .agent_events import (
+    AgentEvent,
+    AgentEventError,
+    AgentEventKind,
+    public_agent_event,
+)
 
 _TOOL_RUNTIME_EXPORTS = frozenset(
     {
@@ -281,6 +304,23 @@ __all__ = [
     "B14StreamExecutor",
     "StreamingExecutionEvent",
     "StreamingExecutionRuntime",
+    "AgentFailure",
+    "AgentFailureSource",
+    "AgentRecoveryAction",
+    "AgentRecoveryContext",
+    "AgentRecoveryDecision",
+    "AgentRecoveryError",
+    "AgentRecoveryPolicy",
+    "decide_agent_recovery",
+    "AgentDelegationError",
+    "AgentDelegationRequest",
+    "DelegatedAgentAuthority",
+    "authorize_agent_delegation",
+    "delegation_fingerprint",
+    "AgentEvent",
+    "AgentEventError",
+    "AgentEventKind",
+    "public_agent_event",
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",
     "ToolAuthorizationContext",
