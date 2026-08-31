@@ -55,6 +55,22 @@ ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 
 
+def _server_generated_trace_id() -> str:
+    """Return a bounded opaque trace ID for a new logical orchestration run."""
+    return f"tr_{secrets.token_urlsafe(24)}"
+
+
+def _execution_request_with_trace(request: ExecutionRequest, trace_id: str) -> ExecutionRequest:
+    """Copy an ExecutionRequest while binding a server-selected trace_id."""
+    return ExecutionRequest(
+        agent=request.agent,
+        messages=request.messages,
+        session_id=request.session_id,
+        additional_system_context=request.additional_system_context,
+        trace_id=trace_id,
+    )
+
+
 class ApprovalDecisionVerifier(Protocol):
     """Trusted adapter that authenticates a product/control-plane decision."""
 
@@ -511,7 +527,9 @@ class OrchestrationEngineService:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
         if ctx is None:
-            ctx = ExecutionContext(trace_id=exec_req.trace_id or "orch_trace")
+            trace_id = exec_req.trace_id or _server_generated_trace_id()
+            exec_req = _execution_request_with_trace(exec_req, trace_id)
+            ctx = ExecutionContext(trace_id=trace_id)
 
         plan = _parse_agent_plan(payload.get("agent_plan"))
         rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
@@ -615,7 +633,15 @@ class OrchestrationEngineService:
             if exec_req.agent.id != record.pause.agent_runtime_id:
                 raise ServiceContractError("continuation_identity_mismatch", "agent runtime does not match the server-issued continuation.", status_code=409)
             if ctx is None:
-                ctx = ExecutionContext(trace_id=exec_req.trace_id or record.pause.trace_id or "orch_resume_trace")
+                if record.pause.trace_id is None:
+                    raise ServiceContractError(
+                        "continuation_identity_mismatch",
+                        "server-issued continuation is missing trace identity.",
+                        status_code=409,
+                    )
+                trace_id = exec_req.trace_id or record.pause.trace_id
+                exec_req = _execution_request_with_trace(exec_req, trace_id)
+                ctx = ExecutionContext(trace_id=trace_id)
             if ctx.trace_id != record.pause.trace_id:
                 raise ServiceContractError("continuation_identity_mismatch", "trace_id does not match the server-issued continuation.", status_code=409)
             request_fp = _execution_request_fingerprint(app_id=app_id, request=exec_req)
@@ -791,7 +817,13 @@ class OrchestrationEngineService:
                     "Continuation cancellation did not commit.",
                     status_code=503,
                 )
-            trace_id = record.pause.trace_id or "cancel_trace"
+            if record.pause.trace_id is None:
+                raise ServiceContractError(
+                    "continuation_identity_mismatch",
+                    "server-issued continuation is missing trace identity.",
+                    status_code=409,
+                )
+            trace_id = record.pause.trace_id
             reason = payload.get("reason", "user_cancelled")
             runtime = self._runtime_factory(app_id)
             runner = OrchestrationRunner(runtime=runtime)
