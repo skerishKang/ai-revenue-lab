@@ -372,6 +372,11 @@ def __getattr__(name: str):
     return value
 
 
+from .agent_execution_bridge import (
+    AgentPlanExecutor,
+    PlanBackedStepDriver,
+)
+
 from .adapter_conformance import (
     AdapterCategory,
     AdapterConformanceCase,
@@ -384,6 +389,8 @@ from .adapter_conformance import (
 )
 
 __all__ = [
+    "AgentPlanExecutor",
+    "PlanBackedStepDriver",
     "AdapterCategory",
     "AdapterConformanceCase",
     "AdapterConformanceReport",

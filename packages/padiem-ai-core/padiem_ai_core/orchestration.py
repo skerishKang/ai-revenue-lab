@@ -16,7 +16,13 @@ import uuid
 from typing import Any, Callable
 
 from .agent_definition import BoundedAgentDefinition
+from .b14_execution import B14RouteMetadata
+from .agent_runtime import AgentRuntimeError
+from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
+from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
 from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
+from .agent_profile_adapter import CompiledAgentProfile
+from .tool_runtime import ToolAuthorizationContext, ToolRuntime
 from .agent_profile_adapter import CompiledAgentProfile
 from .connector_registry import ConnectorDescriptor, ConnectorRegistrySnapshot
 from .contracts import AgentProfile, ErrorClass, Evidence, RunMetadata, RunStatus, ToolEvent, ToolSpec, UsageMetadata
@@ -105,6 +111,9 @@ class OrchestrationRequest:
     tool_registry: ToolRegistrySnapshot | None = None
     connector_registry: ConnectorRegistrySnapshot | None = None
     tool_resource_policy: ToolResourcePolicy | None = None
+    tool_authorization: ToolAuthorizationContext | None = None
+    tool_runtime: ToolRuntime | None = None
+    tool_arguments: Mapping[str, Mapping[str, Any]] | None = None
 
     # Evidence & Verification (Optional)
     evidence_sources: tuple[Evidence, ...] = ()
@@ -349,35 +358,106 @@ class OrchestrationRunner:
             })
 
         # 7. Bounded Agent Execution
-        effective_agent = request.execution_request.agent
-        if activated_skill is not None:
-            effective_agent = AgentProfile(
-                id=effective_agent.id,
-                title=effective_agent.title,
-                description=effective_agent.description,
-                system_instruction=effective_agent.system_instruction,
-                task_type=activated_skill.compiled.runtime_profile.task_type,
-                optimize_for=activated_skill.compiled.runtime_profile.optimize_for,
-                max_tokens=min(effective_agent.max_tokens, activated_skill.compiled.runtime_profile.max_tokens),
-                allowed_tools=resolved_tools,
-                required_capabilities=effective_agent.required_capabilities,
-                model_policy=effective_agent.model_policy,
-                max_steps=min(effective_agent.max_steps, activated_skill.compiled.runtime_profile.max_steps),
-            )
-
-        exec_req = ExecutionRequest(
-            agent=effective_agent,
-            messages=request.execution_request.messages,
-            session_id=request.execution_request.session_id,
-            additional_system_context=composed_system_context,
-            trace_id=trace_id,
+        use_plan_bridge = (
+            request.agent_plan is not None
+            and request.tool_runtime is not None
+            and request.agent_definition is not None
+            and request.compiled_agent_profile is not None
+            and request.tool_authorization is not None
         )
 
         try:
-            result = await asyncio.wait_for(
-                self._runtime.run(exec_req),
-                timeout=request.context.timeout_seconds,
-            )
+            if use_plan_bridge:
+                executor = AgentPlanExecutor()
+                prompt_input = (
+                    request.execution_request.messages[-1].get("content", "")
+                    if request.execution_request.messages
+                    else "Run agent plan"
+                )
+                bridge_res = await asyncio.wait_for(
+                    executor.execute(
+                        plan=request.agent_plan,
+                        definition=request.agent_definition,
+                        compiled_profile=request.compiled_agent_profile,
+                        authorization=request.tool_authorization,
+                        tool_runtime=request.tool_runtime,
+                        input_text=prompt_input or "Run agent plan",
+                        run_id=f"bridge_run_{uuid.uuid4().hex[:12]}",
+                        tool_arguments=request.tool_arguments,
+                    ),
+                    timeout=request.context.timeout_seconds,
+                )
+
+                if bridge_res.terminal_reason is AgentTerminalReason.APPROVAL_REQUIRED:
+                    for te in bridge_res.tool_events:
+                        emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                    await _abort_idempotency("approval_required")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Tool execution requires approval pause", {"error": "approval_required"})
+                    raise OrchestrationError("approval_required", "Agent execution paused for approval")
+
+                if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
+                    await _abort_idempotency("timeout")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Agent execution reached max wall time", {"reason": "timeout"})
+                    raise OrchestrationError("orchestration_timeout", "Agent execution reached max wall time")
+
+                if bridge_res.terminal_reason in (
+                    AgentTerminalReason.AUTHORIZATION_DENIED,
+                    AgentTerminalReason.CAPABILITY_MISSING,
+                    AgentTerminalReason.ERROR,
+                ):
+                    for te in bridge_res.tool_events:
+                        emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                        if te.status is RunStatus.FAILED:
+                            emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                                "tool_id": te.tool_id,
+                                "status": "failed",
+                                "error_class": te.error_class.value if te.error_class else None,
+                            })
+                    await _abort_idempotency(bridge_res.terminal_reason.value)
+                    emit(OrchestrationEventKind.RUN_FAILED, f"Agent terminal failure: {bridge_res.terminal_reason.value}", {"error": bridge_res.terminal_reason.value})
+                    raise OrchestrationError(bridge_res.terminal_reason.value, f"Agent execution terminated with reason: {bridge_res.terminal_reason.value}")
+
+                result = ExecutionResult(
+                    answer=bridge_res.answer or "Plan executed successfully.",
+                    route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
+                    metadata=RunMetadata(
+                        trace_id=trace_id,
+                        app_id=app_id,
+                        agent_id=request.execution_request.agent.id,
+                        status=RunStatus.COMPLETED,
+                        tool_events=bridge_res.tool_events,
+                    ),
+                )
+            else:
+                effective_agent = request.execution_request.agent
+                if activated_skill is not None:
+                    effective_agent = AgentProfile(
+                        id=effective_agent.id,
+                        title=effective_agent.title,
+                        description=effective_agent.description,
+                        system_instruction=effective_agent.system_instruction,
+                        task_type=activated_skill.compiled.runtime_profile.task_type,
+                        optimize_for=activated_skill.compiled.runtime_profile.optimize_for,
+                        max_tokens=min(effective_agent.max_tokens, activated_skill.compiled.runtime_profile.max_tokens),
+                        allowed_tools=resolved_tools,
+                        required_capabilities=effective_agent.required_capabilities,
+                        model_policy=effective_agent.model_policy,
+                        max_steps=min(effective_agent.max_steps, activated_skill.compiled.runtime_profile.max_steps),
+                    )
+
+                exec_req = ExecutionRequest(
+                    agent=effective_agent,
+                    messages=request.execution_request.messages,
+                    session_id=request.execution_request.session_id,
+                    additional_system_context=composed_system_context,
+                    trace_id=trace_id,
+                )
+
+                result = await asyncio.wait_for(
+                    self._runtime.run(exec_req),
+                    timeout=request.context.timeout_seconds,
+                )
+
             # Emit Tool lifecycle events ONLY for actual tool events from the execution result
             for te in getattr(result.metadata, "tool_events", ()):
                 emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
@@ -402,6 +482,10 @@ class OrchestrationRunner:
             await _abort_idempotency("cancelled")
             emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled", {"reason": "downstream_cancellation"})
             raise
+        except AgentRuntimeError as exc:
+            await _abort_idempotency(exc.code)
+            emit(OrchestrationEventKind.RUN_FAILED, f"Agent runtime failed: {exc.safe_message}", {"error_code": exc.code})
+            raise OrchestrationError(exc.code, exc.safe_message) from exc
         except ExecutionRuntimeError as exc:
             await _abort_idempotency(exc.code)
             emit(OrchestrationEventKind.RUN_FAILED, f"Execution failed: {exc.safe_message}", {"error_code": exc.code})
