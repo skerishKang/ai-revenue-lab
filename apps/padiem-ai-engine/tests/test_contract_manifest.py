@@ -9,6 +9,7 @@ from app.contract_manifest import (
     current_engine_contract_manifest,
     require_compatible_engine_contract,
 )
+from app.orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
 
@@ -23,10 +24,22 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", EXECUTE_PATH),
         ("POST", STREAM_PATH),
         ("GET", HEALTH_PATH),
+        ("POST", ORCHESTRATE_PATH),
+        ("POST", ORCHESTRATE_RESUME_PATH),
+        ("POST", ORCHESTRATE_CANCEL_PATH),
     ]
 
 
-def test_current_completed_and_streaming_features_are_available() -> None:
+def test_orchestration_routes_declared_by_manifest() -> None:
+    public = current_engine_contract_manifest().to_public_dict()
+    endpoints = {(item["method"], item["path"]) for item in public["endpoints"]}
+
+    assert ("POST", ORCHESTRATE_PATH) in endpoints
+    assert ("POST", ORCHESTRATE_RESUME_PATH) in endpoints
+    assert ("POST", ORCHESTRATE_CANCEL_PATH) in endpoints
+
+
+def test_current_completed_streaming_and_orchestration_features_are_available() -> None:
     manifest = current_engine_contract_manifest()
 
     for feature_id in (
@@ -35,14 +48,24 @@ def test_current_completed_and_streaming_features_are_available() -> None:
         "service_identity_contract",
         "service_identity_wire_enforcement",
         "execution_context",
+        "orchestration_run",
+        "orchestration_resume",
+        "orchestration_cancel",
     ):
         assert manifest.feature_state(feature_id) is EngineFeatureState.AVAILABLE
+
+
+def test_approval_continuation_state_is_explicitly_deferred_until_trusted_store_binding() -> None:
+    manifest = current_engine_contract_manifest()
+
+    assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
 
 
 def test_future_core_projection_features_are_truthfully_deferred() -> None:
     manifest = current_engine_contract_manifest()
 
     for feature_id in (
+        "approval_continuation",
         "execution_idempotency_replay_completed",
         "execution_idempotency_replay_streaming",
         "tool_runtime_projection",
@@ -63,7 +86,7 @@ def test_public_browser_api_and_provider_selection_are_unavailable() -> None:
 def test_compatible_client_can_require_available_features() -> None:
     manifest = require_compatible_engine_contract(
         requested_major=1,
-        required_features=("completed_run", "streaming_run"),
+        required_features=("completed_run", "streaming_run", "orchestration_run"),
     )
     assert manifest.major == 1
 
@@ -76,6 +99,7 @@ def test_wrong_major_fails_closed() -> None:
 
 def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
     for feature_id in (
+        "approval_continuation",
         "memory_rag_projection",
         "public_browser_api",
         "provider_selection",
