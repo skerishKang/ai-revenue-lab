@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 
+from .orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
 
@@ -125,6 +126,9 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(EXECUTE_PATH, "POST", "application/json"),
             EngineEndpointContract(STREAM_PATH, "POST", "application/x-ndjson"),
             EngineEndpointContract(HEALTH_PATH, "GET", "application/json"),
+            EngineEndpointContract(ORCHESTRATE_PATH, "POST", "application/json"),
+            EngineEndpointContract(ORCHESTRATE_RESUME_PATH, "POST", "application/json"),
+            EngineEndpointContract(ORCHESTRATE_CANCEL_PATH, "POST", "application/json"),
         ),
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),
@@ -132,6 +136,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("service_identity_contract", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("service_identity_wire_enforcement", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("execution_context", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("orchestration_run", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("orchestration_resume", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("orchestration_cancel", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
