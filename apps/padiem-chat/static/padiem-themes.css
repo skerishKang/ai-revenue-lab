@@ -65,7 +65,7 @@ html[data-theme="light"] .sidebar {
   box-shadow: none;
   backdrop-filter: none;
 }
-html[data-theme="light"] .brand { color: var(--text); letter-spacing: -.02em; text-transform: none; font-weight: 750; }
+html[data-theme="light"] .brand { color: var(--text); letter-spacing: -.02em; font-weight: 750; }
 html[data-theme="light"] .brand-mark,
 html[data-theme="light"] .assistant-avatar {
   background: linear-gradient(135deg, #7768ee, #4f40ce);
@@ -364,7 +364,7 @@ html[data-theme="padiem-home"] .sidebar {
   box-shadow: 14px 0 44px rgba(26,34,48,.08), inset 0 1px 0 rgba(255,255,255,.7);
   backdrop-filter: blur(20px) saturate(110%);
 }
-html[data-theme="padiem-home"] .brand { color: #1a2230; letter-spacing: .10em; text-transform: uppercase; font-weight: 600; }
+html[data-theme="padiem-home"] .brand { color: #1a2230; letter-spacing: .02em; font-weight: 600; }
 html[data-theme="padiem-home"] .brand-mark,
 html[data-theme="padiem-home"] .assistant-avatar {
   background: rgba(255,255,255,.72);
