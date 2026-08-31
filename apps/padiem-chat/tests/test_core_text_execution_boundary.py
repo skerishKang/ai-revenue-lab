@@ -60,14 +60,28 @@ def test_b62_text_execution_is_locked_to_high_level_core_runtime():
     assert complete_text_names.isdisjoint(forbidden)
 
 
-def test_multimodal_low_level_contract_is_confined_to_image_exception():
+def test_multimodal_execution_is_locked_to_high_level_core_runtime():
     source = SOURCE_PATH.read_text(encoding="utf-8")
     tree = ast.parse(source)
     methods = _class_methods(tree, "B14Client")
 
+    imports = {
+        alias.name
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom) and node.module == "padiem_ai_core"
+        for alias in node.names
+    }
+    assert {"MultimodalExecutionRequest", "MultimodalExecutionRuntime"} <= imports
+    assert "B14MultimodalChatRequest" not in imports
+    assert "B14RoutingOptions" not in imports
+    assert "B14ExecutionError" not in imports
+
     image_names = _names(methods["_complete_image"])
-    assert "B14MultimodalChatRequest" in image_names
-    assert "B14RoutingOptions" in image_names
+    assert "_multimodal_execution_request" in image_names
+    assert "MultimodalExecutionRuntime" in image_names
+    assert "ExecutionRuntimeError" in image_names
+    assert "B14MultimodalChatRequest" not in image_names
+    assert "B14RoutingOptions" not in image_names
 
     for method_name in ("stream_text_auto", "stream_text_preview", "_complete_text"):
         names = _names(methods[method_name])
