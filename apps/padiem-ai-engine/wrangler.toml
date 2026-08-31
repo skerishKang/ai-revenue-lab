@@ -1,5 +1,5 @@
 name = "padiem-ai-engine"
-main = "worker.py"
+main = "worker_identity.py"
 compatibility_date = "2026-08-27"
 compatibility_flags = ["python_workers"]
 workers_dev = false
