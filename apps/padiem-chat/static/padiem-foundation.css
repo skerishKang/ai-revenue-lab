@@ -124,8 +124,7 @@ a:focus-visible {
   font-family: var(--font-label);
   font-size: 15px;
   font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  letter-spacing: .02em;
 }
 
 .brand-mark,
