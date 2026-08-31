@@ -11,6 +11,9 @@
   const mobileMenu = document.getElementById("mobileMenu");
   const mobileClose = document.getElementById("mobileClose");
   const sidebarScrim = document.getElementById("sidebarScrim");
+  const settingsButton = document.getElementById("settingsButton");
+  const settingsDialog = document.getElementById("settingsDialog");
+  const settingsCloseButton = document.getElementById("settingsCloseButton");
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
   const attachmentTray = document.getElementById("attachmentTray");
@@ -1114,6 +1117,16 @@
     sidebarScrim.hidden = false;
     mobileClose.focus();
   }
+  function openSettings() {
+    if (typeof settingsDialog.showModal === "function") settingsDialog.showModal();
+    else settingsDialog.setAttribute("open", "");
+    settingsButton.setAttribute("aria-expanded", "true");
+  }
+  function closeSettings() {
+    if (settingsDialog.open && typeof settingsDialog.close === "function") settingsDialog.close();
+    else settingsDialog.removeAttribute("open");
+    settingsButton.setAttribute("aria-expanded", "false");
+  }
 
   input.addEventListener("input", updateComposer);
   input.addEventListener("keydown", (event) => {
@@ -1170,6 +1183,13 @@
     closeSidebar();
   }));
   newChatButton.addEventListener("click", () => resetConversation(true));
+  settingsButton.addEventListener("click", openSettings);
+  settingsDialog.addEventListener("close", () => settingsButton.setAttribute("aria-expanded", "false"));
+  settingsDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeSettings();
+  });
+  settingsCloseButton.addEventListener("click", closeSettings);
   mobileMenu.addEventListener("click", openSidebar);
   mobileClose.addEventListener("click", closeSidebar);
   sidebarScrim.addEventListener("click", closeSidebar);

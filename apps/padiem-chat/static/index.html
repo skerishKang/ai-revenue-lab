@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#06080d" />
   <title>Padiem Chat</title>
+  <script src="./theme-init.js"></script>
   <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <!-- Legacy regression marker only: "자동 추천" is a deprecated label; model selection remains deferred. -->
   <link rel="stylesheet" href="./styles.css" />
@@ -18,6 +19,7 @@
   <link rel="stylesheet" href="./search-sources.css" />
   <link rel="stylesheet" href="./padiem-cinematic-chat.css" />
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
+  <link rel="stylesheet" href="./padiem-themes.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -27,6 +29,7 @@
         <button class="mobile-close" id="mobileClose" aria-label="메뉴 닫기">×</button>
         <a class="brand" href="./" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
       </div>
+      <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
       <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>새 채팅</span></button>
       <nav class="side-nav" aria-label="채팅 메뉴">
         <button class="side-item" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span><span class="mini-badge">준비 중</span></button>
@@ -65,10 +68,38 @@
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="메뉴 열기">☰</button>
         <div class="model-pill" aria-label="대화 모드"><span class="status-spark" aria-hidden="true">✦</span><span>기본 대화</span></div>
         <div class="account-controls">
+          <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
           <span class="account-name" id="accountName" hidden></span>
           <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="로그인 기능이 설정되지 않았습니다">로그인</button>
         </div>
       </header>
+      <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
+        <form class="settings-panel" method="dialog">
+          <div class="settings-header">
+            <div><p data-locale-key="settings-kicker">PADIEM CHAT</p><h2 id="settingsTitle" data-locale-key="settings">설정</h2></div>
+            <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" aria-label="설정 닫기">×</button>
+          </div>
+          <section class="settings-section" aria-labelledby="appearanceTitle">
+            <p class="settings-label" data-locale-key="appearance">APPEARANCE</p>
+            <h3 id="appearanceTitle" data-locale-key="theme">테마</h3>
+            <div class="theme-picker" role="group" aria-label="테마 선택" id="themePicker">
+              <button type="button" class="theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
+              <button type="button" class="theme-option" data-theme-value="light" data-locale-key="light" aria-pressed="false">Light</button>
+              <button type="button" class="theme-option" data-theme-value="dark" data-locale-key="dark" aria-pressed="false">Dark</button>
+              <button type="button" class="theme-option" data-theme-value="cinematic" data-locale-key="cinematic" aria-pressed="false">Cinematic</button>
+            </div>
+          </section>
+          <section class="settings-section" aria-labelledby="languageTitle">
+            <p class="settings-label" data-locale-key="language">LANGUAGE</p>
+            <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
+            <div class="language-picker" role="group" aria-label="언어 선택" id="languagePicker">
+              <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
+              <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
+            </div>
+          </section>
+          <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
+        </form>
+      </dialog>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
@@ -170,6 +201,8 @@
 
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label>답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
+  <script src="./theme.js"></script>
+  <script src="./locale.js"></script>
   <script src="./app.js"></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>
