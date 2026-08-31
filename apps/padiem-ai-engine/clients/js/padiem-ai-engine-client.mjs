@@ -27,7 +27,7 @@ const REQUEST_ALLOWED = new Set([
   "max_retries",
   "require_evidence",
   "require_verification",
-  "pause",
+  "continuation_ref",
   "decision",
   "reason",
 ]);
@@ -151,7 +151,7 @@ function exactRunPayload(appId, run) {
     ...(run.max_retries === undefined ? {} : { max_retries: run.max_retries }),
     ...(run.require_evidence === undefined ? {} : { require_evidence: run.require_evidence }),
     ...(run.require_verification === undefined ? {} : { require_verification: run.require_verification }),
-    ...(run.pause === undefined ? {} : { pause: run.pause }),
+    ...(run.continuation_ref === undefined ? {} : { continuation_ref: run.continuation_ref }),
     ...(run.decision === undefined ? {} : { decision: run.decision }),
     ...(run.reason === undefined ? {} : { reason: run.reason }),
   };
@@ -162,6 +162,26 @@ function authenticatedHeaders(callerId, credential) {
     "Content-Type": "application/json",
     [ENGINE_CALLER_HEADER]: callerId,
     [ENGINE_CREDENTIAL_HEADER]: credential,
+  };
+}
+
+const CANCEL_ALLOWED = new Set(["continuation_ref", "reason"]);
+
+function exactCancelPayload(appId, request) {
+  if (!request || typeof request !== "object" || Array.isArray(request)) {
+    throw new PadiemAiEngineClientError("invalid_engine_request", "Engine cancel request must be an object");
+  }
+  const unknown = Object.keys(request).filter((key) => !CANCEL_ALLOWED.has(key));
+  if (unknown.length > 0) {
+    throw new PadiemAiEngineClientError("invalid_engine_request", "Engine cancel request contains unsupported fields");
+  }
+  if (typeof request.continuation_ref !== "string" || !request.continuation_ref.startsWith("cont_")) {
+    throw new PadiemAiEngineClientError("invalid_engine_request", "continuation_ref is required");
+  }
+  return {
+    app_id: appId,
+    continuation_ref: request.continuation_ref,
+    ...(request.reason === undefined ? {} : { reason: request.reason }),
   };
 }
 
@@ -234,10 +254,7 @@ export class PadiemAiEngineClient {
   }
 
   async cancelOrchestrationPause(request) {
-    const payload = {
-      app_id: this.appId,
-      ...(request || {}),
-    };
+    const payload = exactCancelPayload(this.appId, request);
     const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_ORCHESTRATE_CANCEL_PATH}`, {
       method: "POST", headers: this._headers(), body: JSON.stringify(payload),
     });

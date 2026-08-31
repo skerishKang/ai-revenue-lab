@@ -25,6 +25,7 @@ from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
+    InMemoryContinuationStore,
     OrchestrationEngineService,
 )
 from app.service import ServiceResponse
@@ -98,6 +99,37 @@ def make_decision_payload(outcome: str = "approved") -> dict:
     }
 
 
+class TestApprovalDecisionVerifier:
+    def verify(self, submission, *, pause, app_id):
+        return VerifiedApprovalDecision(
+            decision_id=submission.decision_id,
+            pause_id=submission.pause_id,
+            outcome=submission.outcome,
+            authority_ref=submission.authority_ref,
+            evidence_ref=submission.evidence_ref,
+            decided_at=submission.decided_at,
+        )
+
+
+def make_server_continuation(service: OrchestrationEngineService) -> dict:
+    pause_data = make_pause_payload()
+    pause = ApprovalPause(
+        pause_id=pause_data["pause_id"],
+        run_id=pause_data["run_id"],
+        agent_runtime_id=pause_data["agent_runtime_id"],
+        tool_id=pause_data["tool_id"],
+        invocation_sha256=pause_data["invocation_sha256"],
+        requirement=ApprovalRequirement(pause_data["requirement"]),
+        step_index=pause_data["step_index"],
+        created_at=datetime.fromisoformat(pause_data["created_at"]),
+        expires_at=datetime.fromisoformat(pause_data["expires_at"]),
+        trace_id=pause_data["trace_id"],
+    )
+    store = service._continuation_store
+    ref = store.issue(app_id="b62", pause=pause, plan_id=None)
+    return ref
+
+
 # ==============================================================================
 # Unit Tests for OrchestrationEngineService
 # ==============================================================================
@@ -134,9 +166,11 @@ async def test_orchestrate_resume_success() -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(answer="resumed answer"),
         b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
     )
     payload = make_valid_payload()
-    payload["pause"] = make_pause_payload()
+    payload["continuation_ref"] = make_server_continuation(service)
     payload["decision"] = make_decision_payload("approved")
 
     response = await service.resume_payload(payload)
@@ -151,9 +185,11 @@ async def test_orchestrate_resume_denied_fails_409() -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
         b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
     )
     payload = make_valid_payload()
-    payload["pause"] = make_pause_payload()
+    payload["continuation_ref"] = make_server_continuation(service)
     payload["decision"] = make_decision_payload("denied")
 
     response = await service.resume_payload(payload)
@@ -162,14 +198,81 @@ async def test_orchestrate_resume_denied_fails_409() -> None:
     assert response.body["error"]["code"] == "approval_denied"
 
 
+async def test_resume_without_trusted_verifier_fails_closed() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_valid_payload()
+    payload["continuation_ref"] = make_server_continuation(service)
+    payload["decision"] = make_decision_payload("approved")
+
+    response = await service.resume_payload(payload)
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "approval_verification_unavailable"
+
+
+async def test_resume_rejects_cross_app_continuation_ref() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    continuation_ref = make_server_continuation(service)
+    payload = make_valid_payload(app_id="other-app")
+    payload["continuation_ref"] = continuation_ref
+    payload["decision"] = make_decision_payload("approved")
+
+    response = await service.resume_payload(payload)
+    assert response.status_code == 409
+    assert response.body["error"]["code"] == "invalid_continuation"
+
+
+async def test_resume_rejects_unknown_or_tampered_continuation_ref() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_valid_payload()
+    payload["continuation_ref"] = "cont_not_server_issued"
+    payload["decision"] = make_decision_payload("approved")
+
+    response = await service.resume_payload(payload)
+    assert response.status_code == 409
+    assert response.body["error"]["code"] == "invalid_continuation"
+
+
+async def test_resume_continuation_is_one_time() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="resumed answer"),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_valid_payload()
+    payload["continuation_ref"] = make_server_continuation(service)
+    payload["decision"] = make_decision_payload("approved")
+
+    first = await service.resume_payload(payload)
+    second = await service.resume_payload(payload)
+    assert first.status_code == 200
+    assert second.status_code == 409
+    assert second.body["error"]["code"] == "continuation_consumed"
+
+
 async def test_orchestrate_cancel_pause() -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
         b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
     )
     payload = {
         "app_id": "b62",
-        "pause": make_pause_payload(),
+        "continuation_ref": make_server_continuation(service),
         "reason": "user_cancelled",
     }
     response = await service.cancel_payload(payload)
@@ -177,6 +280,17 @@ async def test_orchestrate_cancel_pause() -> None:
     assert response.body["ok"] is True
     assert response.body["status"] == "cancelled"
     assert len(response.body["events"]) == 1
+
+
+async def test_resume_without_explicit_store_fails_closed() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+    )
+    response = await service.resume_payload({"app_id": "b62", "continuation_ref": "cont_unknown"})
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "continuation_store_unavailable"
 
 
 async def test_orchestrate_http_routing() -> None:

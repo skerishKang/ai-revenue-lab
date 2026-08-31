@@ -114,15 +114,45 @@ test("resumeOrchestration sends authenticated resume request", async () => {
 
   const req = {
     ...makeValidRequest(),
-    pause: { pause_id: "p1", requirement: "user_confirmation", step_index: 1 },
-    decision: { decision_id: "d1", pause_id: "p1", outcome: "approved" },
+    continuation_ref: "cont_server_opaque_ref",
+    decision: {
+      decision_id: "d1",
+      pause_id: "p1",
+      outcome: "approved",
+      authority_ref: "user:admin",
+      evidence_ref: "session:auth",
+      decided_at: "2026-01-01T00:00:00+00:00",
+    },
   };
 
   const res = await client.resumeOrchestration(req);
   assert.equal(capturedUrl, "https://padiem-ai-engine.internal/internal/v1/orchestrate/resume");
-  assert.equal(capturedBody.pause.pause_id, "p1");
+  assert.equal(capturedBody.continuation_ref, "cont_server_opaque_ref");
   assert.equal(capturedBody.decision.outcome, "approved");
   assert.equal(res.execution.answer, "resumed answer");
+});
+
+test("resumeOrchestration rejects serialized pause state", async () => {
+  const fake = {
+    async fetch() {
+      return new Response("{}", { status: 500 });
+    },
+  };
+  const client = new PadiemAiEngineClient({
+    binding: fake,
+    appId: VALID_APP_ID,
+    callerId: VALID_CALLER_ID,
+    credential: VALID_CREDENTIAL,
+  });
+
+  await assert.rejects(
+    client.resumeOrchestration({
+      ...makeValidRequest(),
+      pause: { pause_id: "p1" },
+      decision: { decision_id: "d1", pause_id: "p1", outcome: "approved" },
+    }),
+    (error) => error instanceof PadiemAiEngineClientError && error.code === "invalid_engine_request",
+  );
 });
 
 test("cancelOrchestrationPause sends cancel request", async () => {
@@ -152,10 +182,39 @@ test("cancelOrchestrationPause sends cancel request", async () => {
   });
 
   const res = await client.cancelOrchestrationPause({
-    pause: { pause_id: "p1", requirement: "user_confirmation", step_index: 1 },
+    continuation_ref: "cont_server_opaque_ref",
     reason: "user_cancel",
   });
   assert.equal(capturedUrl, "https://padiem-ai-engine.internal/internal/v1/orchestrate/cancel");
+  assert.equal(capturedBody.app_id, VALID_APP_ID);
+  assert.equal(capturedBody.continuation_ref, "cont_server_opaque_ref");
   assert.equal(res.ok, true);
   assert.equal(res.status, "cancelled");
+});
+
+test("cancelOrchestrationPause keeps app identity client-owned and rejects extra fields", async () => {
+  const fake = {
+    calls: [],
+    async fetch() {
+      return new Response(
+        JSON.stringify({ ok: true, status: "cancelled", events: [] }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    },
+  };
+  const client = new PadiemAiEngineClient({
+    binding: fake,
+    appId: VALID_APP_ID,
+    callerId: VALID_CALLER_ID,
+    credential: VALID_CREDENTIAL,
+  });
+
+  await assert.rejects(
+    client.cancelOrchestrationPause({
+      continuation_ref: "cont_server_opaque_ref",
+      app_id: "other-app",
+    }),
+    (error) => error instanceof PadiemAiEngineClientError && error.code === "invalid_engine_request",
+  );
+  assert.equal(fake.calls.length, 0);
 });

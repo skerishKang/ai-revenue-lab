@@ -62,7 +62,7 @@ export interface EngineRunRequest {
   max_retries?: number;
   require_evidence?: boolean;
   require_verification?: boolean;
-  pause?: Record<string, unknown>;
+  continuation_ref?: string;
   decision?: Record<string, unknown>;
   reason?: string;
 }
@@ -85,6 +85,7 @@ export interface EngineOrchestrationResult {
   evidence: Record<string, unknown>;
   events: Record<string, unknown>[];
   approval_pause?: Record<string, unknown> | null;
+  continuation_ref?: string | null;
   continuation_state?: Record<string, unknown> | null;
   state_machine?: Record<string, unknown> | null;
 }
