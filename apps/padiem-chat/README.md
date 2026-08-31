@@ -12,7 +12,7 @@ Browser / API
 → selected provider / model
 ```
 
-Padiem Chat owns the consumer-facing chat, continuity, Projects, bounded user-reference context, Skill semantics and product-profile state. Padiem AI Core owns the product-neutral execution request/result, streaming, normalized error and reusable evidence/runtime contracts. Business 14 owns provider adapters, provider keys, model catalogs, exact routing and upstream transport.
+Padiem Chat owns the consumer-facing chat, continuity, Projects, bounded user-reference context, TaskMode semantics and product-profile state. B62 TaskModes are lightweight product presets, not reusable/installable Core Skills. Padiem AI Core owns the product-neutral execution request/result, streaming, normalized error and reusable evidence/runtime contracts. Business 14 owns provider adapters, provider keys, model catalogs, exact routing and upstream transport.
 
 The B62 `LOW` / `MEDIUM` / `HIGH` product profiles are currently **UNASSIGNED** and Provider/model selection remains deferred. An unassigned product profile must not be documented or treated as a pretend executable Provider/model route.
 
@@ -35,7 +35,7 @@ PADIEM_CHAT_B14_BASE_URL=https://<approved-b14-host> \
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8080
 ```
 
-The browser never supplies a provider key or an upstream URL. For ordinary text completion and streaming, B62 converts its product-owned Skill/profile state into a product-neutral Core `AgentProfile` + `ExecutionRequest`, then executes through Core `ExecutionRuntime` / `StreamingExecutionRuntime`. Core owns the reusable execution boundary and invokes Business 14 beneath that boundary.
+The browser never supplies a provider key or an upstream URL. For ordinary text completion and streaming, B62 converts its product-owned TaskMode state into a product-neutral Core `AgentProfile` + `ExecutionRequest`, then executes through Core `ExecutionRuntime` / `StreamingExecutionRuntime`. Core owns the reusable execution boundary and invokes Business 14 beneath that boundary.
 
 B62 ordinary text does **not** currently use Business 14 `b14/auto` as an active routing decision. The historical `stream_text_auto` method name is a compatibility entrypoint: B62 resolves its own product policy first, and Provider/model assignment remains deferred until the relevant authority explicitly assigns it.
 
@@ -109,6 +109,22 @@ All responses receive `nosniff`, `DENY` frame policy and `no-referrer`; API, aut
 A deployed Worker is not automatically a public live-AI release. Anonymous live-provider access requires a separate abuse/cost gate with Cloudflare-side rate limiting or equivalent globally reliable controls, quota/spend limits and an emergency disable path. A per-isolate Python counter must not be treated as the public security boundary.
 
 Production auth/history/Projects/project files/Saved Outputs also require the real D1 migrations and Google OAuth configuration. Repository code readiness is not a claim that those production resources are active.
+
+## B62 boundary declaration (#1224)
+
+```text
+CURRENT_B62_SKILL_CLASSIFIED_AS_TASK_MODE = YES
+REUSABLE_SKILL_AUTHORITY = P01_CORE
+B62_TOOL_EXECUTION_AUTHORITY = NO
+B62_TOOL_PRESENTATION_ONLY = TARGET
+EVIDENCE_AUTHORITY_DUPLICATION = REDUCED_OR_EXPLICIT_COMPATIBILITY_ONLY
+GROUNDING_NEW_SHARED_SEMANTICS = P01_ONLY
+B14_ROUTING_REIMPLEMENTED = NO
+CONTROL_PLANE_TRUTH_REIMPLEMENTED = NO
+PRODUCTION_MUTATION = NO
+```
+
+B62 `TaskMode` values are product presets only. Tool execution, approval, auth, resource limits, handler registration, side-effect authorization and reusable Skill authority remain outside this product boundary. `grounding.py` is a compatibility adapter over Core grounding/evidence contracts; it must not introduce new shared orchestration semantics.
 
 ## Tests
 

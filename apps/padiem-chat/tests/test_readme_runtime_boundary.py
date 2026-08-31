@@ -12,10 +12,21 @@ def test_readme_documents_locked_b62_core_b14_boundary():
     readme = README_PATH.read_text(encoding="utf-8")
 
     assert "Padiem AI Core ExecutionRuntime / StreamingExecutionRuntime" in readme
-    assert "B62 converts its product-owned Skill/profile state" in readme
+    assert "B62 converts its product-owned TaskMode state" in readme
     assert "Business 14 owns provider adapters, provider keys, model catalogs" in readme
     assert "LOW` / `MEDIUM` / `HIGH` product profiles are currently **UNASSIGNED**" in readme
-    assert "Provider/model selection remains deferred" in readme
+    acceptance = (
+        "CURRENT_B62_SKILL_CLASSIFIED_AS_TASK_MODE = YES",
+        "REUSABLE_SKILL_AUTHORITY = P01_CORE",
+        "B62_TOOL_EXECUTION_AUTHORITY = NO",
+        "B62_TOOL_PRESENTATION_ONLY = TARGET",
+        "EVIDENCE_AUTHORITY_DUPLICATION = REDUCED_OR_EXPLICIT_COMPATIBILITY_ONLY",
+        "GROUNDING_NEW_SHARED_SEMANTICS = P01_ONLY",
+        "B14_ROUTING_REIMPLEMENTED = NO",
+        "CONTROL_PLANE_TRUTH_REIMPLEMENTED = NO",
+        "PRODUCTION_MUTATION = NO",
+    )
+    assert all(item in readme for item in acceptance)
 
     stale_claims = (
         "Browser → Padiem Chat /api/chat → Business 14 b14/auto → provider/model",

@@ -17,13 +17,12 @@ from padiem_ai_core.grounding_runtime import (
 from padiem_ai_core.web_runtime import WebRuntimeError
 
 from .b14_client import B14Client, ChatRuntimeError, MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
-from .evidence import Evidence
-from .skills import Skill
-from .tools import ToolSpec
+from .task_modes import TaskMode
+from .tool_presentations import ToolPresentationDescriptor
 from .web_tools import MAX_QUERY_CHARS, WebProvider, WebToolError
 
 
-_RESEARCH_PLANNER_SKILL = Skill(
+_RESEARCH_PLANNER_SKILL = TaskMode(
     id="research_planner",
     title="리서치 계획",
     short_description="질문을 제한된 검색어로 나눕니다.",
@@ -37,7 +36,7 @@ _RESEARCH_PLANNER_SKILL = Skill(
     max_tokens=300,
 )
 
-_DEEP_RESEARCH_SKILL = Skill(
+_DEEP_RESEARCH_SKILL = TaskMode(
     id="deep_research",
     title="심층 리서치",
     short_description="여러 웹 근거를 비교해 종합합니다.",
@@ -71,16 +70,11 @@ def _latest_user_message(messages: list[dict[str, str]]) -> str:
     raise GroundingError(422, "tool_input_required", "검색에 사용할 사용자 질문이 필요합니다.")
 
 
-def _to_core_evidence(item: Evidence) -> CoreEvidence:
-    return CoreEvidence(
-        id=item.id,
-        title=item.title,
-        url=item.url,
-        snippet=item.snippet,
-        retrieved_at=item.retrieved_at,
-        provider=item.provider,
-        source_type=item.source_type,
-    )
+def _to_core_evidence(item: CoreEvidence) -> CoreEvidence:
+    """Keep Core evidence authority; B62 Evidence subclasses pass through."""
+    if not isinstance(item, CoreEvidence):
+        raise TypeError("grounding requires Core Evidence")
+    return item
 
 
 class _CoreWebProviderAdapter:
@@ -94,14 +88,14 @@ class _CoreWebProviderAdapter:
             found = await self._provider.search(query, limit=limit)
         except WebToolError as exc:
             raise WebRuntimeError(exc.code, exc.user_message, exc.status_code) from exc
-        return [_to_core_evidence(item) for item in found if isinstance(item, Evidence)]
+        return [_to_core_evidence(item) for item in found if isinstance(item, CoreEvidence)]
 
     async def fetch(self, url: str) -> CoreEvidence:
         try:
             item = await self._provider.fetch(url)
         except WebToolError as exc:
             raise WebRuntimeError(exc.code, exc.user_message, exc.status_code) from exc
-        if not isinstance(item, Evidence):
+        if not isinstance(item, CoreEvidence):
             raise WebRuntimeError("web_invalid_response", "웹 근거 응답 형식이 올바르지 않습니다.", 502)
         return _to_core_evidence(item)
 
@@ -121,14 +115,14 @@ def _translate_core_error(exc: GroundingRuntimeError) -> GroundingError:
 
 
 def prepare_grounding_context(
-    evidence_items: list[Evidence],
+    evidence_items: list[CoreEvidence],
     *,
     max_context_chars: int = MAX_GROUNDED_EVIDENCE_CONTEXT_CHARS,
     max_sources: int = MAX_GROUNDED_SOURCES,
 ) -> PreparedGrounding:
     try:
         return core_prepare_grounding_context(
-            [_to_core_evidence(item) for item in evidence_items if isinstance(item, Evidence)],
+            [_to_core_evidence(item) for item in evidence_items if isinstance(item, CoreEvidence)],
             max_context_chars=max_context_chars,
             max_sources=max_sources,
         )
@@ -136,7 +130,7 @@ def prepare_grounding_context(
         raise _translate_core_error(exc) from exc
 
 
-def build_grounding_context(evidence_items: list[Evidence]) -> str:
+def build_grounding_context(evidence_items: list[CoreEvidence]) -> str:
     return prepare_grounding_context(evidence_items).context
 
 
@@ -161,7 +155,7 @@ class GroundedChatService:
         self,
         messages: list[dict[str, str]],
         *,
-        tool: ToolSpec,
+        tool: ToolPresentationDescriptor,
         tool_input: str | None,
         additional_system_context: str | None,
     ) -> dict:
@@ -216,8 +210,8 @@ class GroundedChatService:
         self,
         messages: list[dict[str, str]],
         *,
-        skill: Skill,
-        tool: ToolSpec,
+        skill: TaskMode,
+        tool: ToolPresentationDescriptor,
         tool_input: str | None,
         additional_system_context: str | None = None,
     ) -> dict:

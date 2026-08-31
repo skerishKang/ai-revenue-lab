@@ -4,40 +4,40 @@ from types import MappingProxyType
 
 import pytest
 
-from padiem_ai_core import ApprovalPolicy, ToolSideEffect, ToolSpec as CoreToolSpec
-
+from app.tool_presentations import ToolPresentationDescriptor, get_tool_presentation
 from app.tools import TOOL_REGISTRY, ToolSpec, get_tool
 
 
-def test_b62_tool_registry_keeps_exact_ids_and_core_read_only_policy():
+def test_b62_registry_is_product_only_immutable_tool_presentation():
     assert isinstance(TOOL_REGISTRY, MappingProxyType)
     assert tuple(TOOL_REGISTRY) == ("web_search", "web_fetch", "deep_research")
 
     for tool in TOOL_REGISTRY.values():
-        assert isinstance(tool, ToolSpec)
-        assert isinstance(tool, CoreToolSpec)
-        assert tool.owner == "padiem-chat"
-        assert tool.side_effect is ToolSideEffect.READ
-        assert tool.approval_policy is ApprovalPolicy.NOT_REQUIRED
-        assert dict(tool.input_schema) == {}
-        assert dict(tool.output_contract) == {}
-        assert tool.auth_scope == ()
-        assert tool.timeout_seconds == 30.0
+        assert isinstance(tool, ToolPresentationDescriptor)
+        assert not hasattr(tool, "owner")
+        assert not hasattr(tool, "side_effect")
+        assert not hasattr(tool, "approval_policy")
+        assert not hasattr(tool, "auth_scope")
+        assert not hasattr(tool, "timeout_seconds")
+        assert tool.canonical_tool_id == tool.id
+        assert tool.label == tool.title
         assert tool.user_visible is False
 
+    with pytest.raises(TypeError):
+        TOOL_REGISTRY["evil"] = get_tool("web_search")  # type: ignore[index]
 
-def test_b62_toolspec_historical_constructor_and_lookup_behavior_are_preserved():
+
+def test_historical_toolspec_constructor_and_lookup_remain_compatible_without_execution_authority():
     tool = ToolSpec("compat_tool", "호환 도구", "호환 설명", True)
 
-    assert isinstance(tool, CoreToolSpec)
+    assert ToolSpec is ToolPresentationDescriptor
+    assert isinstance(tool, ToolPresentationDescriptor)
+    assert tool.canonical_tool_id == "compat_tool"
     assert tool.id == "compat_tool"
+    assert tool.label == "호환 도구"
     assert tool.title == "호환 도구"
     assert tool.description == "호환 설명"
     assert tool.user_visible is True
-    assert tool.owner == "padiem-chat"
-    assert tool.side_effect is ToolSideEffect.READ
-    assert tool.approval_policy is ApprovalPolicy.NOT_REQUIRED
-
-    assert get_tool("web_search").title == "웹 검색"
+    assert get_tool_presentation("web_search") is get_tool("web_search")
     with pytest.raises(ValueError, match="지원하지 않는 도구"):
         get_tool("unknown")
