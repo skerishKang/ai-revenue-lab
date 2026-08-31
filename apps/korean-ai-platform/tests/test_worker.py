@@ -60,19 +60,64 @@ class TestWranglerConfig:
     def test_python_workers_flag(self):
         assert "python_workers" in WRANGLER_TOML.read_text()
 
+    def test_workers_runtime_dependency_is_declared(self):
+        content = (WRANGLER_TOML.parent / "pyproject.toml").read_text()
+        assert '"workers-py==1.17.0"' not in content
+        assert '"workers-py==1.16.2"' in content
+        assert "[tool.pywrangler]" in content
+        assert "allow-build = true" in content
+
     def test_assets_binding(self):
         content = WRANGLER_TOML.read_text()
         assert "binding = \"ASSETS\"" in content
         assert "[assets]" in content
 
-    def test_no_secrets(self):
+    def test_canonical_live_mode_is_declared(self):
         content = WRANGLER_TOML.read_text()
-        for word in ("api_token", "api_key", "CLOUDFLARE", "account_id"):
+        assert "[vars]" in content
+        assert 'B14_PROVIDER_MODE = "live"' in content
+
+    def test_no_secret_values_or_account_credentials(self):
+        content = WRANGLER_TOML.read_text()
+        for word in ("api_token", "CLOUDFLARE", "account_id"):
             assert word.lower() not in content.lower()
+        # The binding name/resource identity is intentionally present; no
+        # secret value or API credential is embedded in this config.
+        assert 'type = "secrets_store_secret"' in content
+        assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
+        assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in content
 
 
 class TestEnvBridge:
     """Test _apply_env_once logic (deployment-level immutable config)."""
+
+    @pytest.mark.asyncio
+    async def test_secret_store_binding_is_resolved_with_async_get(self):
+        from app.pilot.worker_env import collect_env_overrides
+
+        class SecretBinding:
+            async def get(self):
+                return "resolved-poolside-secret"
+
+        env = SimpleNamespace(
+            PADIEM_POOLSIDE_API_KEY=SecretBinding(),
+            B14_PROVIDER_MODE="live",
+        )
+
+        overrides = await collect_env_overrides(
+            env, ("PADIEM_POOLSIDE_API_KEY", "B14_PROVIDER_MODE")
+        )
+
+        assert overrides["PADIEM_POOLSIDE_API_KEY"] == "resolved-poolside-secret"
+        assert "SecretBinding" not in overrides["PADIEM_POOLSIDE_API_KEY"]
+        assert overrides["B14_PROVIDER_MODE"] == "live"
+
+    def test_secret_binding_helper_is_used(self):
+        src = WORKER_SRC.read_text()
+        assert "from app.pilot.worker_env import collect_env_overrides" in src
+        assert "await collect_env_overrides(self.env, _ENV_KEYS)" in src
+        assert "for _env_key, _value in overrides.items()" in src
+        assert "_os.environ[_env_key] = str(_value)" in src
 
     def test_env_keys_defined(self):
         src = WORKER_SRC.read_text()

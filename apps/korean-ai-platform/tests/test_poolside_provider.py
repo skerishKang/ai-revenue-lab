@@ -32,7 +32,7 @@ def test_poolside_registration_is_exact_and_not_permanently_free():
     assert spec is not None
     assert spec.base_origin == POOLSIDE_BASE_ORIGIN
     assert spec.allowed_hosts == ("inference.poolside.ai",)
-    assert spec.credential_binding_name == "POOLSIDE_API_KEY"
+    assert spec.credential_binding_name == "PADIEM_POOLSIDE_API_KEY"
 
     model = get_catalog_by_id(POOLSIDE_MODEL_ID)
     assert model is not None
@@ -47,7 +47,7 @@ def test_poolside_registration_is_exact_and_not_permanently_free():
 def test_poolside_readiness_live_with_poolside_secret(monkeypatch):
     secret = "poolside-health-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv("POOLSIDE_API_KEY", secret)
+    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", secret)
     monkeypatch.delenv("AGNES_API_KEY", raising=False)
 
     with TestClient(create_app()) as client:
@@ -62,13 +62,13 @@ def test_poolside_readiness_live_with_poolside_secret(monkeypatch):
     assert poolside["route_ready"] is True
     assert poolside["models"] == [POOLSIDE_MODEL_ID]
     assert secret not in response.text
-    assert "POOLSIDE_API_KEY" not in response.text
+    assert "PADIEM_POOLSIDE_API_KEY" not in response.text
     assert "credential_binding_name" not in response.text
 
 
 def test_poolside_secret_is_isolated_from_agnes(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.delenv("POOLSIDE_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     monkeypatch.setenv("AGNES_API_KEY", "agnes-only-proof-1234567890abcdef")
 
     with TestClient(create_app()) as client:
@@ -84,7 +84,7 @@ def test_poolside_secret_is_isolated_from_agnes(monkeypatch):
 async def test_poolside_uses_fixed_direct_origin_and_exact_model(monkeypatch):
     secret = "poolside-direct-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv("POOLSIDE_API_KEY", secret)
+    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", secret)
 
     async def handler(request: httpx.Request) -> httpx.Response:
         assert str(request.url) == f"{POOLSIDE_BASE_ORIGIN}/chat/completions"

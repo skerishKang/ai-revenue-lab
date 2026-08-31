@@ -19,10 +19,13 @@ dev = [
     "uvicorn>=0.32,<1",
     "pytest>=8.3,<9",
     "pytest-asyncio>=0.24,<1",
-    "workers-py>=1.15.0",
+    "workers-py==1.16.2",
     "workers-runtime-sdk>=1.6.3",
     "playwright>=1.50,<2",
 ]
+
+[tool.pywrangler]
+allow-build = true
 
 [tool.setuptools.packages.find]
 where = ["."]
