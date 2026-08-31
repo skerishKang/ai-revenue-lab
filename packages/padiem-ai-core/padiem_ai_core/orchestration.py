@@ -24,6 +24,23 @@ from .agent_approval import (
     VerifiedApprovalDecision,
     resolve_approval_pause,
 )
+from .agent_recovery import (
+    AgentFailure,
+    AgentFailureSource,
+    AgentRecoveryAction,
+    AgentRecoveryContext,
+    AgentRecoveryDecision,
+    AgentRecoveryPolicy,
+    decide_agent_recovery,
+)
+from .execution_state_machine import (
+    ExecutionState,
+    ExecutionStateMachine,
+    ExecutionStateMachineError,
+    ExecutionTransition,
+    InvalidTransitionError,
+    is_terminal_state,
+)
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_execution_bridge import AgentPlanExecutor, PlanBackedStepDriver
 from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
@@ -130,6 +147,8 @@ class OrchestrationRequest:
     verification_policy: TrustedVerificationPolicy | None = None
     require_evidence: bool = False
     require_verification: bool = False
+    recovery_policy: AgentRecoveryPolicy | None = None
+    max_retries: int = 3
 
     def __post_init__(self) -> None:
         if not isinstance(self.execution_request, ExecutionRequest):
@@ -162,6 +181,8 @@ class OrchestrationResult:
     events: tuple[OrchestrationEvent, ...]
     approval_pause: ApprovalPause | None = None
     continuation_state: AgentContinuationState | None = None
+    state_transitions: tuple[ExecutionTransition, ...] = ()
+    execution_state: ExecutionState | None = None
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -188,6 +209,10 @@ class OrchestrationResult:
                 "status": self.continuation_state.status.value,
                 "decision_id": self.continuation_state.decision_id,
             } if self.continuation_state is not None else None,
+            "state_machine": {
+                "current_state": self.execution_state.value if self.execution_state is not None else None,
+                "transitions": [t.to_public_dict() for t in self.state_transitions],
+            },
         }
 
 
@@ -220,6 +245,8 @@ class OrchestrationResumeRequest:
     verification_policy: TrustedVerificationPolicy | None = None
     require_evidence: bool = False
     require_verification: bool = False
+    recovery_policy: AgentRecoveryPolicy | None = None
+    max_retries: int = 3
 
     def __post_init__(self) -> None:
         if not isinstance(self.pause, ApprovalPause):
@@ -253,6 +280,10 @@ class OrchestrationRunner:
         if not isinstance(request, OrchestrationRequest):
             raise OrchestrationError("invalid_orchestration_request", "request must be OrchestrationRequest")
 
+        state_machine = ExecutionStateMachine(
+            initial_state=ExecutionState.CREATED,
+            max_retries=request.max_retries,
+        )
         run_id = f"orch_run_{uuid.uuid4().hex[:16]}"
         trace_id = request.context.trace_id
         app_id = request.app_id
@@ -293,6 +324,7 @@ class OrchestrationRunner:
                         pass
 
         # 1. RUN_STARTED
+        state_machine.start("run_started")
         emit(OrchestrationEventKind.RUN_STARTED, f"Orchestration started for app '{app_id}'", {"app_id": app_id})
 
         # 2. CONTEXT_PREPARED & Idempotency Check
@@ -319,6 +351,7 @@ class OrchestrationRunner:
             if replay is not None:
                 if not isinstance(replay, ExecutionResult):
                     raise IdempotencyConflictError("idempotency adapter returned invalid replay")
+                state_machine.complete("idempotency_replay")
                 emit(OrchestrationEventKind.RUN_COMPLETED, "Execution completed via idempotency replay", {"replay": True})
                 return OrchestrationResult(
                     execution_result=replay,
@@ -332,6 +365,8 @@ class OrchestrationRunner:
                     claim_assessments=(),
                     grounded_citations=(),
                     events=tuple(events),
+                    state_transitions=state_machine.transitions,
+                    execution_state=state_machine.state,
                 )
 
         # 3. Optional Memory Read & Bounded Context Assembly
@@ -416,6 +451,7 @@ class OrchestrationRunner:
             })
 
         # 7. Bounded Agent Execution
+        effective_agent = request.execution_request.agent
         use_plan_bridge = (
             request.agent_plan is not None
             and request.tool_runtime is not None
@@ -477,6 +513,7 @@ class OrchestrationRunner:
                             "expires_at": pause.expires_at.isoformat(),
                         },
                     )
+                    state_machine.pause_for_approval("approval_required")
                     pause_exec_res = ExecutionResult(
                         answer="Agent execution paused for approval.",
                         route=B14RouteMetadata(selected_provider="p01_agent_bridge", selected_model="bounded_agent_plan"),
@@ -505,6 +542,8 @@ class OrchestrationRunner:
                             pause=pause,
                             status=ContinuationStatus.WAITING_APPROVAL,
                         ),
+                        state_transitions=state_machine.transitions,
+                        execution_state=state_machine.state,
                     )
 
                 if bridge_res.terminal_reason is AgentTerminalReason.MAX_WALL_TIME:
@@ -588,22 +627,27 @@ class OrchestrationRunner:
                     })
         except asyncio.TimeoutError:
             await _abort_idempotency("timeout")
+            state_machine.timeout("execution_timeout")
             emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out", {"reason": "timeout"})
             raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout") from None
         except asyncio.CancelledError:
             await _abort_idempotency("cancelled")
+            state_machine.cancel("execution_cancelled")
             emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled", {"reason": "downstream_cancellation"})
             raise
         except AgentRuntimeError as exc:
             await _abort_idempotency(exc.code)
+            state_machine.fail(exc.code)
             emit(OrchestrationEventKind.RUN_FAILED, f"Agent runtime failed: {exc.safe_message}", {"error_code": exc.code})
             raise OrchestrationError(exc.code, exc.safe_message) from exc
         except ExecutionRuntimeError as exc:
             await _abort_idempotency(exc.code)
+            state_machine.fail(exc.code)
             emit(OrchestrationEventKind.RUN_FAILED, f"Execution failed: {exc.safe_message}", {"error_code": exc.code})
             raise
         except Exception as exc:
             await _abort_idempotency("internal_error")
+            state_machine.fail("internal_error")
             emit(OrchestrationEventKind.RUN_FAILED, "Unexpected execution failure", {"error": "internal_error"})
             raise
 
@@ -680,6 +724,7 @@ class OrchestrationRunner:
                     result=result.to_public_dict() if hasattr(result, "to_public_dict") else {"answer": result.answer},
                 )
 
+        state_machine.complete("run_completed")
         emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration completed successfully", {
             "status": "completed",
         })
@@ -696,6 +741,8 @@ class OrchestrationRunner:
             claim_assessments=tuple(assessments),
             grounded_citations=tuple(citations),
             events=tuple(events),
+            state_transitions=state_machine.transitions,
+            execution_state=state_machine.state,
         )
 
     async def resume(
@@ -704,6 +751,10 @@ class OrchestrationRunner:
     ) -> OrchestrationResult:
         """Resume a paused orchestration run with an authenticated approval decision."""
 
+        state_machine = ExecutionStateMachine(
+            initial_state=ExecutionState.WAITING_APPROVAL,
+            max_retries=request.max_retries,
+        )
         events: list[OrchestrationEvent] = []
         app_id = request.app_id
         trace_id = request.context.trace_id
@@ -736,10 +787,12 @@ class OrchestrationRunner:
 
         # 1. Continuation Identity Validation (Fail closed on mismatch)
         if decision.pause_id != pause.pause_id:
+            state_machine.fail("continuation_identity_mismatch")
             emit(OrchestrationEventKind.RUN_FAILED, "Decision does not match continuation", {"error": "continuation_identity_mismatch"})
             raise OrchestrationError("continuation_identity_mismatch", "decision does not belong to this pause")
 
         if pause.trace_id is not None and pause.trace_id != trace_id:
+            state_machine.fail("continuation_identity_mismatch")
             emit(OrchestrationEventKind.RUN_FAILED, "Trace ID mismatch on resume", {"error": "continuation_identity_mismatch"})
             raise OrchestrationError("continuation_identity_mismatch", "trace_id does not match approval pause")
 
@@ -749,6 +802,7 @@ class OrchestrationRunner:
             actual_agent_id = request.compiled_agent_profile.runtime_profile.id
 
         if expected_agent_id != actual_agent_id:
+            state_machine.fail("continuation_identity_mismatch")
             emit(OrchestrationEventKind.RUN_FAILED, "Agent ID mismatch on resume", {"error": "continuation_identity_mismatch"})
             raise OrchestrationError("continuation_identity_mismatch", "agent_id does not match approval pause")
 
@@ -766,14 +820,17 @@ class OrchestrationRunner:
             raise OrchestrationError("invalid_decision", str(exc)) from exc
 
         if continuation_state.status is ContinuationStatus.EXPIRED:
+            state_machine.expire("continuation_expired")
             emit(OrchestrationEventKind.RUN_FAILED, "Approval continuation expired", {"error": "continuation_expired"})
             raise OrchestrationError("continuation_expired", "Approval pause has expired")
 
         if continuation_state.status is ContinuationStatus.DENIED:
+            state_machine.fail("approval_denied")
             emit(OrchestrationEventKind.RUN_FAILED, "Approval decision denied", {"error": "approval_denied"})
             raise OrchestrationError("approval_denied", "Approval decision was denied")
 
         if continuation_state.status is not ContinuationStatus.RESUMABLE:
+            state_machine.fail("invalid_continuation_status")
             emit(OrchestrationEventKind.RUN_FAILED, "Approval state is not resumable", {"error": "invalid_continuation_status"})
             raise OrchestrationError("invalid_continuation_status", "Continuation is not in resumable status")
 
@@ -796,6 +853,7 @@ class OrchestrationRunner:
                 raise OrchestrationError("missing_approval_authorization", f"Tool '{pause.tool_id}' requires explicit confirmation in tool_authorization")
 
         # 4. Emit RUN_RESUMED
+        state_machine.resume("explicit_resume")
         emit(
             OrchestrationEventKind.RUN_RESUMED,
             f"Resumed execution from step {pause.step_index}",
@@ -944,6 +1002,7 @@ class OrchestrationRunner:
                 "citations_count": len(citations),
             })
 
+        state_machine.complete("run_completed")
         emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration run completed successfully")
 
         return OrchestrationResult(
@@ -960,6 +1019,8 @@ class OrchestrationRunner:
             events=tuple(events),
             approval_pause=None,
             continuation_state=continuation_state,
+            state_transitions=state_machine.transitions,
+            execution_state=state_machine.state,
         )
 
     def cancel_pause(

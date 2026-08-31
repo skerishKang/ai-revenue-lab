@@ -94,6 +94,15 @@ from .streaming_runtime import (
     StreamingExecutionEvent,
     StreamingExecutionRuntime,
 )
+from .execution_state_machine import (
+    ExecutionState,
+    ExecutionStateMachine,
+    ExecutionStateMachineError,
+    ExecutionTransition,
+    InvalidTransitionError,
+    is_terminal_state,
+    is_valid_transition,
+)
 from .execution_context import (
     ExecutionContext,
     IdempotencyAdapter,
@@ -471,6 +480,13 @@ __all__ = [
     "ExecutionResult",
     "ExecutionRuntime",
     "ExecutionRuntimeError",
+    "ExecutionState",
+    "ExecutionStateMachine",
+    "ExecutionStateMachineError",
+    "ExecutionTransition",
+    "InvalidTransitionError",
+    "is_terminal_state",
+    "is_valid_transition",
     "ExecutionContext",
     "IdempotencyAdapter",
     "IdempotencyConflictError",
