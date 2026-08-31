@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta, timezone
 import json
+import re
 import pytest
 
 from padiem_ai_core import (
@@ -69,6 +70,13 @@ def make_valid_payload(app_id: str = "b62") -> dict:
             "timeout_seconds": 15.0,
         },
     }
+
+
+def make_payload_without_trace(app_id: str = "b62") -> dict:
+    payload = make_valid_payload(app_id=app_id)
+    payload.pop("trace_id", None)
+    payload.pop("execution_context", None)
+    return payload
 
 
 def make_pause_payload() -> dict:
@@ -147,6 +155,48 @@ async def test_orchestrate_successful_run() -> None:
     orch = response.body["orchestration"]
     assert orch["execution"]["answer"] == "orchestrated answer"
     assert orch["state_machine"]["current_state"] == ExecutionState.COMPLETED.value
+
+
+async def test_orchestrate_without_trace_generates_distinct_opaque_trace_ids() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="generated trace answer"),
+        b14_service_bound=True,
+    )
+
+    first = await service.orchestrate_payload(make_payload_without_trace())
+    second = await service.orchestrate_payload(make_payload_without_trace())
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    trace_one = first.body["orchestration"]["context"]["trace_id"]
+    trace_two = second.body["orchestration"]["context"]["trace_id"]
+
+    assert trace_one != trace_two
+    for trace_id in (trace_one, trace_two):
+        assert trace_id != "orch_trace"
+        assert trace_id.startswith("tr_")
+        assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", trace_id)
+        assert "b62" not in trace_id
+        assert "Hello" not in trace_id
+        assert "mock_provider" not in trace_id
+
+
+async def test_resume_without_caller_trace_preserves_server_continuation_trace() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="resumed answer"),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_payload_without_trace()
+    payload["continuation_ref"] = make_server_continuation(service)
+    payload["decision"] = make_decision_payload("approved")
+
+    response = await service.resume_payload(payload)
+
+    assert response.status_code == 200
+    assert response.body["orchestration"]["context"]["trace_id"] == "tr_orch_test"
+    assert response.body["orchestration"]["context"]["trace_id"] != "orch_resume_trace"
 
 
 async def test_orchestrate_with_b14_unbound_fails_503() -> None:
