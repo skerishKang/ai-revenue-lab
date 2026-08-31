@@ -106,7 +106,6 @@ def make_agent_profile(agent_id: str = "general_assistant", allowed_tools: tuple
     )
 
 
-@pytest.mark.asyncio
 async def test_context_only_run() -> None:
     runtime = FakeRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -127,7 +126,6 @@ async def test_context_only_run() -> None:
     assert result.events[-1].kind == OrchestrationEventKind.RUN_COMPLETED
 
 
-@pytest.mark.asyncio
 async def test_memory_assisted_run_isolates_untrusted_reference() -> None:
     runtime = FakeRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -171,7 +169,6 @@ async def test_memory_assisted_run_isolates_untrusted_reference() -> None:
     assert mem_events[0].metadata["items_count"] == 1
 
 
-@pytest.mark.asyncio
 async def test_memory_namespace_mismatch_fails_closed() -> None:
     runtime = FakeRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -195,7 +192,6 @@ async def test_memory_namespace_mismatch_fails_closed() -> None:
     assert exc.value.code == "memory_authorization_mismatch"
 
 
-@pytest.mark.asyncio
 async def test_agent_with_skill_resolution_and_widening_prevention() -> None:
     runtime = FakeRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -302,7 +298,6 @@ async def test_agent_with_skill_resolution_and_widening_prevention() -> None:
     assert exc.value.code == "authority_widening_rejected"
 
 
-@pytest.mark.asyncio
 async def test_agent_with_evidence_and_grounded_citation() -> None:
     runtime = FakeRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -339,7 +334,6 @@ async def test_agent_with_evidence_and_grounded_citation() -> None:
     assert result.grounded_citations[0].evidence_id == "ev_src_1"
 
 
-@pytest.mark.asyncio
 async def test_required_evidence_missing_fails_closed() -> None:
     runtime = FakeRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -360,7 +354,6 @@ async def test_required_evidence_missing_fails_closed() -> None:
     assert exc.value.code == "required_evidence_missing"
 
 
-@pytest.mark.asyncio
 async def test_timeout_fails_closed() -> None:
     runtime = SlowRuntime()
     runner = OrchestrationRunner(runtime=runtime)
@@ -375,7 +368,6 @@ async def test_timeout_fails_closed() -> None:
     assert exc.value.code == "orchestration_timeout"
 
 
-@pytest.mark.asyncio
 async def test_idempotency_replay_and_conflict() -> None:
     runtime = FakeRuntime()
     adapter = InMemoryIdempotencyAdapter()
@@ -402,7 +394,6 @@ async def test_idempotency_replay_and_conflict() -> None:
         await runner.run(diff_req)
 
 
-@pytest.mark.asyncio
 async def test_trace_id_conflict_fails_closed() -> None:
     agent = make_agent_profile()
     ctx = ExecutionContext(trace_id="trace_outer", timeout_seconds=5.0)
@@ -413,7 +404,6 @@ async def test_trace_id_conflict_fails_closed() -> None:
     assert exc.value.code == "trace_id_conflict"
 
 
-@pytest.mark.asyncio
 async def test_full_composition_pipeline() -> None:
     runtime = FakeRuntime("Full orchestration success.")
     adapter = InMemoryIdempotencyAdapter()
