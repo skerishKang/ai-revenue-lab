@@ -193,7 +193,6 @@ class OrchestrationResult:
             },
             "context": self.context.to_public_dict(),
             "app_id": self.app_id,
-            "subject_id": self.subject_id,
             "plan": self.plan.to_public_dict() if self.plan is not None else None,
             "activated_skill": self.activated_skill.to_public_dict() if self.activated_skill is not None else None,
             "resolved_tool_ids": list(self.resolved_tool_ids),
