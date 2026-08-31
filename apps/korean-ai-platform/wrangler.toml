@@ -7,3 +7,11 @@ workers_dev = true
 [assets]
 directory = "static"
 binding = "ASSETS"
+
+# Existing non-secret Secrets Store resource identity. The secret value is
+# resolved by the Worker at request time and is never stored in source.
+[[unsafe.bindings]]
+name = "PADIEM_POOLSIDE_API_KEY"
+type = "secrets_store_secret"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_POOLSIDE_API_KEY"

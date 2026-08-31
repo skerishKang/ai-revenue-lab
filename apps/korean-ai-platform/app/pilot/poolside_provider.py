@@ -29,7 +29,7 @@ POOLSIDE_PROVIDER_ID = "poolside"
 POOLSIDE_MODEL_ID = "poolside/laguna-s-2.1"
 POOLSIDE_UPSTREAM_MODEL = "poolside/laguna-s-2.1"
 POOLSIDE_BASE_ORIGIN = "https://inference.poolside.ai/v1"
-POOLSIDE_CREDENTIAL_BINDING = "POOLSIDE_API_KEY"
+POOLSIDE_CREDENTIAL_BINDING = "PADIEM_POOLSIDE_API_KEY"
 
 
 def register_poolside_provider() -> None:

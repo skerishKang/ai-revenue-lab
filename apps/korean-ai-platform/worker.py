@@ -47,6 +47,7 @@ _ENV_KEYS = frozenset({
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
     "OPENROUTER_API_KEY",
     "AGNES_API_KEY",
+    "PADIEM_POOLSIDE_API_KEY",
     "B14_PROVIDER_MODE",
     "B14_OPENROUTER_BASE_URL",
     "B14_SITE_URL",
@@ -88,12 +89,9 @@ class Default(WorkerEntrypoint):
                 },
             )
 
-        # Collect env bindings
-        env_overrides: dict[str, str] = {}
-        for key in _ENV_KEYS:
-            value = getattr(self.env, key, None)
-            if value is not None:
-                env_overrides[key] = str(value)
+        from app.pilot.worker_env import collect_env_overrides
+
+        env_overrides = await collect_env_overrides(self.env, _ENV_KEYS)
 
         # Apply Worker env bindings BEFORE app processes the request.
         if env_overrides:
@@ -158,15 +156,11 @@ def _apply_env_once(overrides: dict[str, str]) -> None:
     from app.pilot.registry import reset_registry
     reset_registry()
 
-    # Surface each registered platform-owned Provider's secret binding into the
-    # process environment so the generic platform credential plane can read it.
-    # The binding name is non-secret; the value is never logged or exposed.
+    # Mirror the allow-listed Worker bindings into process environment so both
+    # legacy settings and generic platform-provider code observe the same
+    # deployment configuration. Secret values remain internal and are never
+    # logged or exposed in responses.
     import os as _os
 
-    from app.pilot import platform_secrets as _ps
-
-    for _spec in _ps.list_platform_providers():
-        if _spec.credential_source == _ps.CredentialSource.PLATFORM_SECRET:
-            _value = overrides.get(_spec.credential_binding_name)
-            if _value is not None:
-                _os.environ[_spec.credential_binding_name] = str(_value)
+    for _env_key, _value in overrides.items():
+        _os.environ[_env_key] = str(_value)
