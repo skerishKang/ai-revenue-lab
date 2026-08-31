@@ -11,6 +11,7 @@ SCAN_SUFFIXES = {".html", ".css", ".js"}
 ALLOWED_LITERAL_HTTP_HOSTS = frozenset({
     "cdn.jsdelivr.net",
     "fonts.googleapis.com",
+    "padiem.net",
 })
 # XML namespace text inside the existing inline data:image SVG. It is an
 # identifier, not a network dependency and must not widen the host allowlist.
@@ -63,7 +64,7 @@ def main() -> None:
             "B62 static origin/privacy audit FAILED:\n- " + "\n- ".join(violations)
         )
 
-    expected_hosts = {"cdn.jsdelivr.net", "fonts.googleapis.com"}
+    expected_hosts = {"cdn.jsdelivr.net", "fonts.googleapis.com", "padiem.net"}
     missing_expected = expected_hosts - seen_hosts
     if missing_expected:
         raise SystemExit(
