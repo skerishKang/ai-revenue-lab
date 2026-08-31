@@ -8,6 +8,12 @@ export interface EngineBinding {
   fetch(input: string | URL | Request, init?: RequestInit): Promise<Response>;
 }
 
+export interface EngineExecutionContext {
+  trace_id: string;
+  idempotency_key?: string;
+  timeout_seconds?: number;
+}
+
 export interface EngineAgentRequest {
   id: string;
   title: string;
@@ -31,6 +37,7 @@ export interface EngineRunRequest {
   session_id?: string | null;
   additional_system_context?: string | null;
   trace_id?: string | null;
+  execution_context?: EngineExecutionContext;
 }
 
 export interface EngineCompletedResult {
