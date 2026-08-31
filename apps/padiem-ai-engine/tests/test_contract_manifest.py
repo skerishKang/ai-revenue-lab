@@ -29,16 +29,22 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
 def test_current_completed_and_streaming_features_are_available() -> None:
     manifest = current_engine_contract_manifest()
 
-    assert manifest.feature_state("completed_run") is EngineFeatureState.AVAILABLE
-    assert manifest.feature_state("streaming_run") is EngineFeatureState.AVAILABLE
-    assert manifest.feature_state("service_identity_contract") is EngineFeatureState.AVAILABLE
+    for feature_id in (
+        "completed_run",
+        "streaming_run",
+        "service_identity_contract",
+        "service_identity_wire_enforcement",
+        "execution_context",
+    ):
+        assert manifest.feature_state(feature_id) is EngineFeatureState.AVAILABLE
 
 
 def test_future_core_projection_features_are_truthfully_deferred() -> None:
     manifest = current_engine_contract_manifest()
 
     for feature_id in (
-        "service_identity_wire_enforcement",
+        "execution_idempotency_replay_completed",
+        "execution_idempotency_replay_streaming",
         "tool_runtime_projection",
         "skill_runtime_projection",
         "agent_runtime_projection",

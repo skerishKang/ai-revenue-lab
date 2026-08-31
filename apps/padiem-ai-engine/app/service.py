@@ -9,6 +9,7 @@ from typing import Any, Callable, Mapping, Protocol
 from padiem_ai_core import (
     AgentProfile,
     ExecutionContext,
+    ExecutionRequest,
     ExecutionResult,
     ExecutionRuntimeError,
     IdempotencyConflictError,
