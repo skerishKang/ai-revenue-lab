@@ -20,20 +20,33 @@ from .agent_profile_adapter import CompiledAgentProfile
 MAX_DELEGATION_DEPTH = 4
 MAX_CHILDREN_PER_PARENT = 8
 MAX_DELEGATION_REASON_CHARS = 1_000
-_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_SAFE_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_AGENT_ID_RE = re.compile(r"^agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$")
+_TOOL_ID_RE = re.compile(r"^tool:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$")
+_SAFE_TAG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
 
 class AgentDelegationError(ValueError):
     def __init__(self, code: str, safe_message: str) -> None:
         super().__init__(safe_message)
-        if not isinstance(code, str) or not _IDENTIFIER_RE.fullmatch(code):
+        if not isinstance(code, str) or not _SAFE_IDENTIFIER_RE.fullmatch(code):
             raise ValueError("delegation error code must be a safe identifier")
         self.code = code
         self.safe_message = safe_message
 
 
 def _identifier(name: str, value: str) -> str:
-    if not isinstance(value, str) or not _IDENTIFIER_RE.fullmatch(value):
+    if not isinstance(value, str):
+        raise AgentDelegationError("invalid_agent_delegation", f"{name} must be a string")
+    if value.startswith("agent:") or (("agent" in name) and "@" in value):
+        if not _AGENT_ID_RE.fullmatch(value):
+            raise AgentDelegationError("invalid_agent_delegation", f"{name} must match canonical Agent id grammar")
+        return value
+    if value.startswith("tool:"):
+        if not _TOOL_ID_RE.fullmatch(value):
+            raise AgentDelegationError("invalid_agent_delegation", f"{name} must match canonical Tool id grammar")
+        return value
+    if not _SAFE_TAG_RE.fullmatch(value):
         raise AgentDelegationError("invalid_agent_delegation", f"{name} must be a bounded safe identifier")
     return value
 

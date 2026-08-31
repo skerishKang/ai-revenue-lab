@@ -215,3 +215,47 @@ def test_event_rejects_raw_nested_payload() -> None:
             sequence=1,
             metadata={"arguments": {"secret": "x"}},
         )
+
+
+@pytest.mark.parametrize(
+    "valid_agent_id",
+    [
+        "agent:padiem:parent@1",
+        "agent:owner:id@1",
+        "agent:test-org:assistant-v2@42",
+    ],
+)
+def test_delegation_accepts_canonical_agent_id(valid_agent_id: str) -> None:
+    req = AgentDelegationRequest(
+        delegation_id="delegation:test:valid",
+        parent_agent_id=valid_agent_id,
+        child_agent_id="agent:padiem:child@1",
+        reason="Valid canonical identity test.",
+        allowed_tools=("search",),
+        capabilities=("search",),
+    )
+    assert req.parent_agent_id == valid_agent_id
+
+
+@pytest.mark.parametrize(
+    "invalid_agent_id",
+    [
+        "agent:owner:id",
+        "agent:owner:id@",
+        "agent:owner:id@x",
+        "agent:owner:id@0",
+        "agent::id@1",
+        "agent:owner:@1",
+    ],
+)
+def test_delegation_rejects_malformed_canonical_agent_id(invalid_agent_id: str) -> None:
+    with pytest.raises(AgentDelegationError) as exc_info:
+        AgentDelegationRequest(
+            delegation_id="delegation:test:invalid",
+            parent_agent_id=invalid_agent_id,
+            child_agent_id="agent:padiem:child@1",
+            reason="Invalid canonical identity test.",
+            allowed_tools=("search",),
+            capabilities=("search",),
+        )
+    assert exc_info.value.code == "invalid_agent_delegation"
