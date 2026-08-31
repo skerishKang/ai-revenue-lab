@@ -96,7 +96,8 @@ async def test_idempotency_key_fails_closed_without_adapter(result):
 async def test_trace_conflict_fails_closed(result):
     runtime = FakeRuntime(result)
     service = EngineService(runtime_factory=lambda _: runtime, b14_service_bound=True)
-    body = payload(trace_id="top_trace")
+    body = payload()
+    body["trace_id"] = "top_trace"
     body["execution_context"] = {"trace_id": "inner_trace"}
     response = await service.execute_payload(body)
     assert response.status_code == 400

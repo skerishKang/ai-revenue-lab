@@ -67,7 +67,7 @@ class ContextualExecutionRunner:
         app_id: str,
         idempotency: IdempotencyAdapter | None = None,
     ) -> None:
-        if not isinstance(runtime, ExecutionRuntime):
+        if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise ValueError("runtime must be ExecutionRuntime")
         if runtime.app_id != app_id:
             raise ValueError("runtime app_id must match contextual app_id")
