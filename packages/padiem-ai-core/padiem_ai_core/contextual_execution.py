@@ -69,7 +69,8 @@ class ContextualExecutionRunner:
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise ValueError("runtime must be ExecutionRuntime")
-        if runtime.app_id != app_id:
+        runtime_app_id = getattr(runtime, "app_id", None)
+        if runtime_app_id is not None and runtime_app_id != app_id:
             raise ValueError("runtime app_id must match contextual app_id")
         self._runtime = runtime
         self._app_id = app_id

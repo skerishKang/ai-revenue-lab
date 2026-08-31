@@ -319,9 +319,30 @@ from .evidence_assessment import (
     assess_claim,
 )
 
+from .orchestration_events import (
+    OrchestrationEvent,
+    OrchestrationEventError,
+    OrchestrationEventKind,
+    public_orchestration_event,
+)
+from .orchestration import (
+    OrchestrationError,
+    OrchestrationRequest,
+    OrchestrationResult,
+    OrchestrationRunner,
+)
+
 _TOOL_RUNTIME_EXPORTS = frozenset(
     {
-        "MAX_TOOL_ARGUMENT_BYTES",
+        "OrchestrationEvent",
+    "OrchestrationEventError",
+    "OrchestrationEventKind",
+    "public_orchestration_event",
+    "OrchestrationError",
+    "OrchestrationRequest",
+    "OrchestrationResult",
+    "OrchestrationRunner",
+    "MAX_TOOL_ARGUMENT_BYTES",
         "MAX_TOOL_OUTPUT_BYTES",
         "ToolAuthorizationContext",
         "ToolExecutionResult",
@@ -593,6 +614,14 @@ __all__ = [
     "EvidenceAssessmentError",
     "MAX_ASSESSMENT_EVIDENCE_IDS",
     "assess_claim",
+    "OrchestrationEvent",
+    "OrchestrationEventError",
+    "OrchestrationEventKind",
+    "public_orchestration_event",
+    "OrchestrationError",
+    "OrchestrationRequest",
+    "OrchestrationResult",
+    "OrchestrationRunner",
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",
     "ToolAuthorizationContext",
