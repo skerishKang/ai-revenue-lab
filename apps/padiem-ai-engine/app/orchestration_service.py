@@ -6,6 +6,7 @@ resumption, cancellation, and streaming over the internal Engine transport.
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -36,6 +37,7 @@ from padiem_ai_core import (
     OrchestrationRunner,
     ToolAuthorizationContext,
     VerifiedApprovalDecision,
+    request_fingerprint,
 )
 
 from app.execution_context_wire import parse_execution_context
@@ -84,33 +86,77 @@ class ContinuationRecord:
     pause: ApprovalPause
     continuation_ref: str
     plan_id: str | None
+    idempotency_key: str | None = None
+    request_fingerprint: str | None = None
     state: str = "active"
+    claim_token: str | None = None
 
 
 class ContinuationStore(Protocol):
-    def issue(self, *, app_id: str, pause: ApprovalPause, plan_id: str | None) -> str: ...
+    """Atomic continuation lifecycle adapter.
+
+    Durable implementations must make claim/commit/release/cancel CAS or
+    transactionally atomic across Worker/process boundaries.
+    """
+
+    def issue(
+        self,
+        *,
+        app_id: str,
+        pause: ApprovalPause,
+        plan_id: str | None,
+        idempotency_key: str | None = None,
+        request_fingerprint: str | None = None,
+    ) -> str: ...
     def resolve(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
-    def consume(self, *, app_id: str, continuation_ref: str) -> None: ...
+    def claim(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
+    def commit(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None: ...
+    def release(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None: ...
     def cancel(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
 
 
 class InMemoryContinuationStore:
-    """Opaque server-side continuation adapter for the Engine process.
+    """Process-local reference implementation of the durable CAS contract.
 
-    Deployments that need durable continuation state inject their own adapter.
-    The wire never accepts an ApprovalPause as a substitute for this lookup.
+    Production adapters must provide the same atomic transitions in durable
+    storage; this implementation is intentionally not a production authority.
     """
 
     def __init__(self) -> None:
         self._records: dict[str, ContinuationRecord] = {}
 
-    def issue(self, *, app_id: str, pause: ApprovalPause, plan_id: str | None) -> str:
+    @staticmethod
+    def _copy(record: ContinuationRecord, **changes: Any) -> ContinuationRecord:
+        values = {
+            "app_id": record.app_id,
+            "pause": record.pause,
+            "continuation_ref": record.continuation_ref,
+            "plan_id": record.plan_id,
+            "idempotency_key": record.idempotency_key,
+            "request_fingerprint": record.request_fingerprint,
+            "state": record.state,
+            "claim_token": record.claim_token,
+        }
+        values.update(changes)
+        return ContinuationRecord(**values)
+
+    def issue(
+        self,
+        *,
+        app_id: str,
+        pause: ApprovalPause,
+        plan_id: str | None,
+        idempotency_key: str | None = None,
+        request_fingerprint: str | None = None,
+    ) -> str:
         ref = f"cont_{secrets.token_urlsafe(32)}"
         self._records[ref] = ContinuationRecord(
             app_id=app_id,
             pause=pause,
             continuation_ref=ref,
             plan_id=plan_id,
+            idempotency_key=idempotency_key,
+            request_fingerprint=request_fingerprint,
         )
         return ref
 
@@ -122,7 +168,12 @@ class InMemoryContinuationStore:
             raise ServiceContractError("continuation_cancelled", "Continuation has been cancelled.", status_code=409)
         if record.state == "consumed":
             raise ServiceContractError("continuation_consumed", "Continuation has already been consumed.", status_code=409)
+        if record.state == "expired":
+            raise ServiceContractError("continuation_expired", "Continuation has expired.", status_code=409)
+        if record.state == "claimed":
+            raise ServiceContractError("continuation_claimed", "Continuation is already being resumed.", status_code=409)
         if record.pause.expires_at <= datetime.now(timezone.utc):
+            self._records[continuation_ref] = self._copy(record, state="expired", claim_token=None)
             raise ServiceContractError("continuation_expired", "Continuation has expired.", status_code=409)
         return record
 
@@ -131,25 +182,34 @@ class InMemoryContinuationStore:
             raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
         return self._get(app_id=app_id, continuation_ref=continuation_ref)
 
-    def consume(self, *, app_id: str, continuation_ref: str) -> None:
+    def claim(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
         record = self._get(app_id=app_id, continuation_ref=continuation_ref)
-        self._records[continuation_ref] = ContinuationRecord(
-            app_id=record.app_id,
-            pause=record.pause,
-            continuation_ref=record.continuation_ref,
-            plan_id=record.plan_id,
-            state="consumed",
-        )
+        claimed = self._copy(record, state="claimed", claim_token=f"claim_{secrets.token_urlsafe(24)}")
+        self._records[continuation_ref] = claimed
+        return claimed
+
+    def _claimed(self, *, app_id: str, continuation_ref: str, claim_token: str) -> ContinuationRecord:
+        record = self._records.get(continuation_ref)
+        if record is None or record.app_id != app_id:
+            raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
+        if record.state == "consumed":
+            raise ServiceContractError("continuation_consumed", "Continuation has already been consumed.", status_code=409)
+        if record.state != "claimed" or record.claim_token != claim_token:
+            raise ServiceContractError("continuation_claim_failed", "Continuation claim is no longer valid.", status_code=409)
+        return record
+
+    def commit(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None:
+        record = self._claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
+        self._records[continuation_ref] = self._copy(record, state="consumed", claim_token=None)
+
+    def release(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None:
+        record = self._claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
+        state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
+        self._records[continuation_ref] = self._copy(record, state=state, claim_token=None)
 
     def cancel(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
         record = self._get(app_id=app_id, continuation_ref=continuation_ref)
-        cancelled = ContinuationRecord(
-            app_id=record.app_id,
-            pause=record.pause,
-            continuation_ref=record.continuation_ref,
-            plan_id=record.plan_id,
-            state="cancelled",
-        )
+        cancelled = self._copy(record, state="cancelled", claim_token=None)
         self._records[continuation_ref] = cancelled
         return cancelled
 
@@ -246,6 +306,16 @@ def _parse_continuation_ref(value: Any) -> str:
     return value
 
 
+def _execution_request_fingerprint(*, app_id: str, request: ExecutionRequest) -> str:
+    return request_fingerprint(
+        {
+            "app_id": app_id,
+            "agent_id": request.agent.id,
+            "messages": [message for message in request.messages],
+        }
+    )
+
+
 class OrchestrationEngineService:
     """Pure-Python internal request handler for Unified Orchestration Pipeline."""
 
@@ -263,7 +333,7 @@ class OrchestrationEngineService:
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
         if continuation_store is not None:
-            for method in ("issue", "resolve", "consume", "cancel"):
+            for method in ("issue", "resolve", "claim", "commit", "release", "cancel"):
                 if not callable(getattr(continuation_store, method, None)):
                     raise ValueError(f"continuation_store must provide {method}()")
         self._runtime_factory = runtime_factory
@@ -272,6 +342,71 @@ class OrchestrationEngineService:
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store or _DEFAULT_CONTINUATION_STORE
         self._continuation_store_is_explicit = continuation_store is not None
+
+    async def _continuation_call(self, method: str, **kwargs: Any) -> Any:
+        try:
+            result = getattr(self._continuation_store, method)(**kwargs)
+            if inspect.isawaitable(result):
+                result = await result
+            return result
+        except ServiceContractError:
+            raise
+        except Exception as exc:
+            raise ServiceContractError(
+                "continuation_store_unavailable",
+                "Approval continuation storage is unavailable.",
+                status_code=503,
+            ) from exc
+
+    async def _release_claim(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+    ) -> None:
+        await self._continuation_call(
+            "release",
+            app_id=app_id,
+            continuation_ref=continuation_ref,
+            claim_token=claim_token,
+        )
+
+    async def _commit_claim(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+    ) -> None:
+        await self._continuation_call(
+            "commit",
+            app_id=app_id,
+            continuation_ref=continuation_ref,
+            claim_token=claim_token,
+        )
+
+    async def _abort_idempotency(self, *, app_id: str, context: ExecutionContext, reason: str) -> None:
+        if context.idempotency_key is None or self._idempotency_adapter is None:
+            return
+        try:
+            if callable(getattr(self._idempotency_adapter, "abort", None)):
+                result = self._idempotency_adapter.abort(
+                    app_id=app_id,
+                    idempotency_key=context.idempotency_key,
+                    reason=reason,
+                )
+            elif callable(getattr(self._idempotency_adapter, "release", None)):
+                result = self._idempotency_adapter.release(
+                    app_id=app_id,
+                    idempotency_key=context.idempotency_key,
+                )
+            else:
+                return
+            if inspect.isawaitable(result):
+                await result
+        except Exception:
+            pass
 
     async def _verify_decision(
         self,
@@ -298,16 +433,22 @@ class OrchestrationEngineService:
             )
         return verified
 
-    def _orchestration_body(
+    async def _orchestration_body(
         self,
         result: OrchestrationResult,
         *,
         app_id: str,
+        request_fingerprint_value: str | None = None,
     ) -> dict[str, Any]:
         body = result.to_public_dict()
         pause = result.approval_pause
         if pause is not None:
             if self._approval_decision_verifier is None or not self._continuation_store_is_explicit:
+                await self._abort_idempotency(
+                    app_id=app_id,
+                    context=result.context,
+                    reason="approval_continuation_unavailable",
+                )
                 raise ServiceContractError(
                     "approval_verification_unavailable",
                     "Approval continuation requires trusted verification and an explicit continuation store.",
@@ -315,16 +456,32 @@ class OrchestrationEngineService:
                 )
             plan_id = result.plan.agent_id if result.plan is not None else pause.plan_id
             if pause.trace_id is None:
+                await self._abort_idempotency(
+                    app_id=app_id,
+                    context=result.context,
+                    reason="invalid_continuation",
+                )
                 raise ServiceContractError(
                     "invalid_continuation",
                     "Approval pause is missing trusted continuation identity.",
                     status_code=500,
                 )
-            body["continuation_ref"] = self._continuation_store.issue(
-                app_id=app_id,
-                pause=pause,
-                plan_id=plan_id,
-            )
+            try:
+                body["continuation_ref"] = await self._continuation_call(
+                    "issue",
+                    app_id=app_id,
+                    pause=pause,
+                    plan_id=plan_id,
+                    idempotency_key=result.context.idempotency_key,
+                    request_fingerprint=request_fingerprint_value,
+                )
+            except ServiceContractError:
+                await self._abort_idempotency(
+                    app_id=app_id,
+                    context=result.context,
+                    reason="continuation_issue_failed",
+                )
+                raise
         return body
 
     async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
@@ -388,9 +545,12 @@ class OrchestrationEngineService:
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
         except Exception:
             return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
-
         try:
-            orchestration_body = self._orchestration_body(result, app_id=app_id)
+            orchestration_body = await self._orchestration_body(
+                result,
+                app_id=app_id,
+                request_fingerprint_value=_execution_request_fingerprint(app_id=app_id, request=exec_req),
+            )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         return ServiceResponse(
@@ -424,10 +584,17 @@ class OrchestrationEngineService:
             )
         try:
             continuation_ref = _parse_continuation_ref(payload.get("continuation_ref"))
-            record = self._continuation_store.resolve(
+            record = await self._continuation_call(
+                "resolve",
                 app_id=app_id,
                 continuation_ref=continuation_ref,
             )
+            if not isinstance(record, ContinuationRecord):
+                raise ServiceContractError(
+                    "continuation_store_unavailable",
+                    "Approval continuation storage returned an invalid record.",
+                    status_code=503,
+                )
             submission = _parse_approval_decision_submission(payload.get("decision"))
             if submission.pause_id != record.pause.pause_id:
                 raise ServiceContractError(
@@ -452,6 +619,32 @@ class OrchestrationEngineService:
                 ctx = ExecutionContext(trace_id=exec_req.trace_id or record.pause.trace_id or "orch_resume_trace")
             if ctx.trace_id != record.pause.trace_id:
                 raise ServiceContractError("continuation_identity_mismatch", "trace_id does not match the server-issued continuation.", status_code=409)
+            request_fp = _execution_request_fingerprint(app_id=app_id, request=exec_req)
+            if record.idempotency_key is not None:
+                if self._idempotency_adapter is None:
+                    raise ServiceContractError(
+                        "idempotency_unavailable",
+                        "The trusted idempotency adapter is unavailable for continuation resume.",
+                        status_code=503,
+                    )
+                if ctx.idempotency_key != record.idempotency_key:
+                    raise ServiceContractError(
+                        "idempotency_conflict",
+                        "Idempotency key does not match the server-issued continuation.",
+                        status_code=409,
+                    )
+                if record.request_fingerprint is None or request_fp != record.request_fingerprint:
+                    raise ServiceContractError(
+                        "idempotency_conflict",
+                        "Execution request does not match the server-issued continuation.",
+                        status_code=409,
+                    )
+            elif ctx.idempotency_key is not None:
+                raise ServiceContractError(
+                    "continuation_identity_mismatch",
+                    "Unexpected idempotency key does not match the server-issued continuation.",
+                    status_code=409,
+                )
             decision = await self._verify_decision(submission, pause=record.pause, app_id=app_id)
             if (
                 decision.decision_id != submission.decision_id
@@ -460,9 +653,23 @@ class OrchestrationEngineService:
                 or decision.decided_at != submission.decided_at
             ):
                 raise ServiceContractError("invalid_verified_decision", "Verified decision does not match the submitted decision.", status_code=422)
-            self._continuation_store.consume(app_id=app_id, continuation_ref=record.continuation_ref)
+            claimed_record = await self._continuation_call(
+                "claim",
+                app_id=app_id,
+                continuation_ref=record.continuation_ref,
+            )
+            if not isinstance(claimed_record, ContinuationRecord) or claimed_record.claim_token is None:
+                raise ServiceContractError(
+                    "continuation_claim_failed",
+                    "Continuation claim did not return a valid claim token.",
+                    status_code=503,
+                )
+            record = claimed_record
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+
+        claim_token = record.claim_token
+        assert claim_token is not None
 
         rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
         try:
@@ -482,13 +689,62 @@ class OrchestrationEngineService:
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.resume(resume_req)
         except OrchestrationError as exc:
+            if exc.code == "approval_denied":
+                try:
+                    await self._commit_claim(
+                        app_id=app_id,
+                        continuation_ref=record.continuation_ref,
+                        claim_token=claim_token,
+                    )
+                except ServiceContractError as commit_exc:
+                    return _service_error(commit_exc.code, commit_exc.safe_message, status_code=commit_exc.status_code)
+            else:
+                try:
+                    await self._release_claim(
+                        app_id=app_id,
+                        continuation_ref=record.continuation_ref,
+                        claim_token=claim_token,
+                    )
+                except ServiceContractError as release_exc:
+                    return _service_error(release_exc.code, release_exc.safe_message, status_code=release_exc.status_code)
             status_code = 409 if exc.code in {"continuation_expired", "approval_denied", "continuation_identity_mismatch"} else 422
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        except asyncio.CancelledError:
+            try:
+                await self._release_claim(
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError:
+                pass
+            raise
         except Exception:
+            try:
+                await self._release_claim(
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError as release_exc:
+                return _service_error(release_exc.code, release_exc.safe_message, status_code=release_exc.status_code)
             return _service_error("engine_internal_error", "Orchestration resumption failed.", status_code=500)
 
         try:
-            orchestration_body = self._orchestration_body(result, app_id=app_id)
+            await self._commit_claim(
+                app_id=app_id,
+                continuation_ref=record.continuation_ref,
+                claim_token=claim_token,
+            )
+        except ServiceContractError as commit_exc:
+            return _service_error(commit_exc.code, commit_exc.safe_message, status_code=commit_exc.status_code)
+
+        try:
+            orchestration_body = await self._orchestration_body(
+                result,
+                app_id=app_id,
+                request_fingerprint_value=request_fp,
+            )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         return ServiceResponse(
@@ -514,8 +770,28 @@ class OrchestrationEngineService:
             )
         try:
             continuation_ref = _parse_continuation_ref(payload.get("continuation_ref"))
-            record = self._continuation_store.resolve(app_id=app_id, continuation_ref=continuation_ref)
-            self._continuation_store.cancel(app_id=app_id, continuation_ref=record.continuation_ref)
+            record = await self._continuation_call(
+                "resolve",
+                app_id=app_id,
+                continuation_ref=continuation_ref,
+            )
+            if not isinstance(record, ContinuationRecord):
+                raise ServiceContractError(
+                    "continuation_store_unavailable",
+                    "Approval continuation storage returned an invalid record.",
+                    status_code=503,
+                )
+            cancelled_record = await self._continuation_call(
+                "cancel",
+                app_id=app_id,
+                continuation_ref=record.continuation_ref,
+            )
+            if not isinstance(cancelled_record, ContinuationRecord) or cancelled_record.state != "cancelled":
+                raise ServiceContractError(
+                    "continuation_cancel_failed",
+                    "Continuation cancellation did not commit.",
+                    status_code=503,
+                )
             trace_id = record.pause.trace_id or "cancel_trace"
             reason = payload.get("reason", "user_cancelled")
             runtime = self._runtime_factory(app_id)

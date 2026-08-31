@@ -806,6 +806,26 @@ class OrchestrationRunner:
             emit(OrchestrationEventKind.RUN_FAILED, "Agent ID mismatch on resume", {"error": "continuation_identity_mismatch"})
             raise OrchestrationError("continuation_identity_mismatch", "agent_id does not match approval pause")
 
+        async def _abort_idempotency(reason: str) -> None:
+            if request.context.idempotency_key is not None and self._idempotency is not None:
+                if hasattr(self._idempotency, "abort") and callable(getattr(self._idempotency, "abort", None)):
+                    try:
+                        await self._idempotency.abort(
+                            app_id=app_id,
+                            idempotency_key=request.context.idempotency_key,
+                            reason=reason,
+                        )
+                    except Exception:
+                        pass
+                elif hasattr(self._idempotency, "release") and callable(getattr(self._idempotency, "release", None)):
+                    try:
+                        await self._idempotency.release(
+                            app_id=app_id,
+                            idempotency_key=request.context.idempotency_key,
+                        )
+                    except Exception:
+                        pass
+
         # 2. Decision Resolution & Expiration Check
         now = request.now or datetime.now(timezone.utc)
         try:
@@ -820,16 +840,19 @@ class OrchestrationRunner:
             raise OrchestrationError("invalid_decision", str(exc)) from exc
 
         if continuation_state.status is ContinuationStatus.EXPIRED:
+            await _abort_idempotency("continuation_expired")
             state_machine.expire("continuation_expired")
             emit(OrchestrationEventKind.RUN_FAILED, "Approval continuation expired", {"error": "continuation_expired"})
             raise OrchestrationError("continuation_expired", "Approval pause has expired")
 
         if continuation_state.status is ContinuationStatus.DENIED:
+            await _abort_idempotency("approval_denied")
             state_machine.fail("approval_denied")
             emit(OrchestrationEventKind.RUN_FAILED, "Approval decision denied", {"error": "approval_denied"})
             raise OrchestrationError("approval_denied", "Approval decision was denied")
 
         if continuation_state.status is not ContinuationStatus.RESUMABLE:
+            await _abort_idempotency("invalid_continuation_status")
             state_machine.fail("invalid_continuation_status")
             emit(OrchestrationEventKind.RUN_FAILED, "Approval state is not resumable", {"error": "invalid_continuation_status"})
             raise OrchestrationError("invalid_continuation_status", "Continuation is not in resumable status")
@@ -852,6 +875,48 @@ class OrchestrationRunner:
                 emit(OrchestrationEventKind.RUN_FAILED, "Tool authorization context missing approval confirmation", {"error": "missing_approval_authorization"})
                 raise OrchestrationError("missing_approval_authorization", f"Tool '{pause.tool_id}' requires explicit confirmation in tool_authorization")
 
+        fingerprint_payload = {
+            "app_id": app_id,
+            "agent_id": request.execution_request.agent.id,
+            "messages": [message for message in request.execution_request.messages],
+        }
+        fp = request_fingerprint(fingerprint_payload)
+
+        async def _commit_idempotency(result: ExecutionResult) -> None:
+            if request.context.idempotency_key is None or self._idempotency is None:
+                return
+            if hasattr(self._idempotency, "commit") and callable(getattr(self._idempotency, "commit", None)):
+                await self._idempotency.commit(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result,
+                )
+            elif hasattr(self._idempotency, "complete") and callable(getattr(self._idempotency, "complete", None)):
+                await self._idempotency.complete(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result.to_public_dict(),
+                )
+
+        replay: ExecutionResult | None = None
+        if request.context.idempotency_key is not None:
+            if self._idempotency is None:
+                raise OrchestrationError(
+                    "idempotency_unavailable",
+                    "idempotency_key supplied but no IdempotencyAdapter injected",
+                )
+            replay_value = await self._idempotency.begin(
+                app_id=app_id,
+                idempotency_key=request.context.idempotency_key,
+                request_fingerprint=fp,
+            )
+            if replay_value is not None:
+                if not isinstance(replay_value, ExecutionResult):
+                    raise IdempotencyConflictError("idempotency adapter returned invalid replay")
+                replay = replay_value
+
         # 4. Emit RUN_RESUMED
         state_machine.resume("explicit_resume")
         emit(
@@ -863,6 +928,31 @@ class OrchestrationRunner:
                 "tool_id": pause.tool_id,
             },
         )
+
+        if replay is not None:
+            state_machine.complete("idempotency_replay")
+            emit(
+                OrchestrationEventKind.RUN_COMPLETED,
+                "Execution completed via idempotency replay",
+                {"replay": True},
+            )
+            return OrchestrationResult(
+                execution_result=replay,
+                context=request.context,
+                app_id=app_id,
+                subject_id=request.subject_id,
+                plan=request.agent_plan,
+                activated_skill=None,
+                resolved_tool_ids=request.execution_request.agent.allowed_tools,
+                evidence_graph=None,
+                claim_assessments=(),
+                grounded_citations=(),
+                events=tuple(events),
+                approval_pause=None,
+                continuation_state=continuation_state,
+                state_transitions=state_machine.transitions,
+                execution_state=state_machine.state,
+            )
 
         # 5. Execute Remaining Plan from paused step
         if (
@@ -933,14 +1023,31 @@ class OrchestrationRunner:
                 emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out on resume", {"reason": "timeout"})
                 raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
             except asyncio.CancelledError:
+                await _abort_idempotency("cancelled")
                 emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled on resume", {"reason": "downstream_cancellation"})
+                raise
+            except OrchestrationError as exc:
+                await _abort_idempotency(exc.code)
+                raise
+            except Exception:
+                await _abort_idempotency("internal_error")
                 raise
         else:
             # Fallback simple runtime execution
-            result = await asyncio.wait_for(
-                self._runtime.run(request.execution_request),
-                timeout=request.context.timeout_seconds,
-            )
+            try:
+                result = await asyncio.wait_for(
+                    self._runtime.run(request.execution_request),
+                    timeout=request.context.timeout_seconds,
+                )
+            except asyncio.TimeoutError:
+                await _abort_idempotency("timeout")
+                raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout on resume") from None
+            except asyncio.CancelledError:
+                await _abort_idempotency("cancelled")
+                raise
+            except Exception:
+                await _abort_idempotency("internal_error")
+                raise
 
         # Emit Tool lifecycle events ONLY for actual tool events from the execution result
         for te in getattr(result.metadata, "tool_events", ()):
@@ -1001,6 +1108,13 @@ class OrchestrationRunner:
                 "assessments_count": len(assessments),
                 "citations_count": len(citations),
             })
+
+        # 9. Idempotency Commit & Completion
+        try:
+            await _commit_idempotency(result)
+        except Exception:
+            await _abort_idempotency("idempotency_commit_failed")
+            raise
 
         state_machine.complete("run_completed")
         emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration run completed successfully")
