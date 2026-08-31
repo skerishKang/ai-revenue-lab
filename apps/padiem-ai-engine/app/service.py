@@ -208,8 +208,12 @@ class EngineService:
                 "Idempotency key is already bound to a different execution request.",
                 status_code=409,
             )
-        except ValueError as exc:
-            return _service_error("execution_context_unavailable", str(exc), status_code=422)
+        except ValueError:
+            return _service_error(
+                "execution_context_unavailable",
+                "Execution context is unavailable.",
+                status_code=422,
+            )
         except ExecutionRuntimeError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=_status_for_runtime_error(exc), retryable=exc.retryable, metadata=exc.metadata.to_public_dict())
         except Exception:
