@@ -77,7 +77,11 @@ def test_continuation_family_uses_stable_409_semantics(code: str) -> None:
 
     assert contract.status_code == 409
     assert contract.retryable is False
-    assert "continuation" in contract.surfaces[0]
+    assert contract.retry_protocol in {
+        RetryProtocol.NONE,
+        RetryProtocol.SAME_CONTINUATION_REF,
+    }
+    assert any(surface.startswith("orchestration_") for surface in contract.surfaces)
 
 
 def test_transient_unavailable_codes_define_explicit_recovery_protocols() -> None:
