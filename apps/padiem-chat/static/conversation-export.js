@@ -73,27 +73,49 @@
 
   const lifecycleApi = () => window.PadiemChatLifecycle || { isCompleted: () => false };
 
+  function exportableAssistantText(article) {
+    if (!(article instanceof Element)) return "";
+    if (!lifecycleApi().isCompleted(article)) return "";
+    const content = article.querySelector(".assistant-content");
+    if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return "";
+    return visiblePlainText(content);
+  }
+
   function hasIncompleteAssistant() {
     return Array.from(messageList.querySelectorAll(".assistant-message")).some(
       (article) => !lifecycleApi().isCompleted(article)
     );
   }
 
+  function hasSettledAssistant() {
+    return Array.from(messageList.querySelectorAll(".assistant-message")).some(
+      (article) => Boolean(exportableAssistantText(article))
+    );
+  }
+
   function collectConversation() {
     if (hasIncompleteAssistant()) return [];
     const entries = [];
+    let pendingUser = null;
     messageList.querySelectorAll(".message").forEach((article) => {
       if (!(article instanceof Element)) return;
       if (article.classList.contains("user-message")) {
         const bubble = article.querySelector(".message-bubble");
         const text = bubble ? visiblePlainText(bubble) : "";
-        if (text) entries.push({ label: "나", text });
+        pendingUser = text ? { label: "나", text } : null;
         return;
       }
       if (article.classList.contains("assistant-message")) {
-        const content = article.querySelector(".assistant-content");
-        const text = content ? visiblePlainText(content) : "";
-        if (text) entries.push({ label: "Padiem Chat", text });
+        const text = exportableAssistantText(article);
+        if (!text) {
+          pendingUser = null;
+          return;
+        }
+        if (pendingUser) {
+          entries.push(pendingUser);
+          pendingUser = null;
+        }
+        entries.push({ label: "Padiem Chat", text });
       }
     });
     return entries;
@@ -113,15 +135,17 @@
   }
 
   function updateExportState() {
-    const hasConversation = collectConversation().length > 0;
-    exportButton.hidden = !hasConversation;
-    exportButton.disabled = !hasConversation;
-    exportButton.setAttribute("aria-disabled", hasConversation ? "false" : "true");
+    const settled = hasSettledAssistant();
+    const usable = settled && !hasIncompleteAssistant();
+    exportButton.hidden = !settled;
+    exportButton.disabled = !usable;
+    exportButton.setAttribute("aria-disabled", usable ? "false" : "true");
   }
 
   function downloadConversation() {
+    if (hasIncompleteAssistant() || exportButton.disabled) return;
     const entries = collectConversation();
-    if (!entries.length) return;
+    if (!entries.some((entry) => entry.label === "Padiem Chat")) return;
     const blob = new Blob([formatConversation(entries)], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
