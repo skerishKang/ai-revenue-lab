@@ -57,6 +57,18 @@ def _open_bounded_archive(payload: bytes) -> ZipFile:
             total_uncompressed += info.file_size
             if total_uncompressed > MAX_TOTAL_UNCOMPRESSED_BYTES:
                 raise OOXMLExtractionError("OOXML archive exceeds total uncompressed limit")
+
+        # Common archive-level DTD guard: scan bounded XML parts for <!DOCTYPE case-insensitively.
+        # This covers XLSX via validate_ooxml_archive before openpyxl and hardens DOCX/PPTX beyond per-part checks.
+        for info in infos:
+            if info.is_dir():
+                continue
+            name_lower = info.filename.lower()
+            if not (name_lower.endswith(".xml") or name_lower.endswith(".rels")):
+                continue
+            raw = archive.read(info.filename)
+            if b"<!DOCTYPE" in raw.upper():
+                raise OOXMLExtractionError("OOXML DTDs are not supported")
     except Exception:
         archive.close()
         raise
