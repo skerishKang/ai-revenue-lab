@@ -342,10 +342,10 @@ class OrchestrationRunner:
         # 6. Tool & Connector Resolution
         resolved_tools: tuple[str, ...] = request.execution_request.agent.allowed_tools
         if request.tool_resource_policy is not None:
-            effective_resources = resolve_tool_resources(request.tool_resource_policy)
             emit(OrchestrationEventKind.TOOL_RESOLUTION, "Resolved effective tool resources", {
-                "max_memory_bytes": effective_resources.max_memory_bytes,
-                "max_wall_time_seconds": effective_resources.max_wall_time_seconds,
+                "max_argument_bytes": request.tool_resource_policy.max_argument_bytes,
+                "max_output_bytes": request.tool_resource_policy.max_output_bytes,
+                "max_timeout_seconds": request.tool_resource_policy.max_timeout_seconds,
             })
 
         # 7. Bounded Agent Execution

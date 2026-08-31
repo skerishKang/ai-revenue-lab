@@ -372,7 +372,27 @@ def __getattr__(name: str):
     return value
 
 
+from .adapter_conformance import (
+    AdapterCategory,
+    AdapterConformanceCase,
+    AdapterConformanceReport,
+    AdapterConformanceResult,
+    AdapterConformanceSuite,
+    AdapterContractViolation,
+    ConformanceDimension,
+    ConformanceVerdict,
+)
+
 __all__ = [
+    "AdapterCategory",
+    "AdapterConformanceCase",
+    "AdapterConformanceReport",
+    "AdapterConformanceResult",
+    "AdapterConformanceSuite",
+    "AdapterContractViolation",
+    "ConformanceDimension",
+    "ConformanceVerdict",
+
     "AgentProfile",
     "ApprovalPolicy",
     "ErrorClass",
