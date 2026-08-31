@@ -124,17 +124,18 @@ class ClaimAssessment:
                 "validator_id",
                 _identifier("validator_id", self.validator_id),
             )
-            if self.verification_confidence is not None and (
-                isinstance(self.verification_confidence, bool)
-                or not isinstance(self.verification_confidence, (int, float))
-                or not math.isfinite(float(self.verification_confidence))
-                or not 0.0 <= float(self.verification_confidence) <= 1.0
-            ):
-                raise EvidenceAssessmentError(
-                    "invalid_assessment_confidence",
-                    "verification confidence must be between 0 and 1 or None",
-                )
-            object.__setattr__(self, "verification_confidence", float(self.verification_confidence))
+            if self.verification_confidence is not None:
+                if (
+                    isinstance(self.verification_confidence, bool)
+                    or not isinstance(self.verification_confidence, (int, float))
+                    or not math.isfinite(float(self.verification_confidence))
+                    or not 0.0 <= float(self.verification_confidence) <= 1.0
+                ):
+                    raise EvidenceAssessmentError(
+                        "invalid_assessment_confidence",
+                        "verification confidence must be between 0 and 1 or None",
+                    )
+                object.__setattr__(self, "verification_confidence", float(self.verification_confidence))
 
     def to_public_dict(self) -> dict[str, object]:
         """Return only bounded semantic evidence; never approval/trust authority."""
