@@ -8,6 +8,11 @@ workers_dev = true
 directory = "static"
 binding = "ASSETS"
 
+[vars]
+# The canonical B14 deployment is explicitly live; provider credentials remain
+# server-side bindings and are never stored in this file.
+B14_PROVIDER_MODE = "live"
+
 # Existing non-secret Secrets Store resource identity. The secret value is
 # resolved by the Worker at request time and is never stored in source.
 [[unsafe.bindings]]

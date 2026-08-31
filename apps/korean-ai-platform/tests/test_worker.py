@@ -72,6 +72,11 @@ class TestWranglerConfig:
         assert "binding = \"ASSETS\"" in content
         assert "[assets]" in content
 
+    def test_canonical_live_mode_is_declared(self):
+        content = WRANGLER_TOML.read_text()
+        assert "[vars]" in content
+        assert 'B14_PROVIDER_MODE = "live"' in content
+
     def test_no_secret_values_or_account_credentials(self):
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
