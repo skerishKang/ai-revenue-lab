@@ -3,3 +3,17 @@
 @import url('./padiem-editorial.css');
 @import url('./padiem-rich.css');
 @import url('./padiem-first-use.css');
+
+.cancel-stream-button {
+  min-width: 64px;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  color: #ffd0d0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+.cancel-stream-button:hover:not(:disabled) { background: rgba(255,92,92,.16); }

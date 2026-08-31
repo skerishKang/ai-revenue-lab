@@ -71,7 +71,16 @@
       .trim();
   }
 
+  const lifecycleApi = () => window.PadiemChatLifecycle || { isCompleted: () => false };
+
+  function hasIncompleteAssistant() {
+    return Array.from(messageList.querySelectorAll(".assistant-message")).some(
+      (article) => !lifecycleApi().isCompleted(article)
+    );
+  }
+
   function collectConversation() {
+    if (hasIncompleteAssistant()) return [];
     const entries = [];
     messageList.querySelectorAll(".message").forEach((article) => {
       if (!(article instanceof Element)) return;
@@ -129,5 +138,6 @@
 
   const observer = new MutationObserver(updateExportState);
   observer.observe(messageList, { childList: true, subtree: true, characterData: true });
+  messageList.addEventListener("padiem:message-lifecycle", updateExportState);
   updateExportState();
 })();
