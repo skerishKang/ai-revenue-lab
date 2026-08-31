@@ -21,9 +21,7 @@ from padiem_ai_core import (
     OrchestrationRunner,
 )
 
-from app.continuation_binding import (
-    IdentityBoundContinuationRecord,
-)
+from app.continuation_binding import IdentityBoundContinuationRecord
 from app.continuation_identity import (
     build_continuation_execution_identity,
     continuation_identity_matches,
@@ -36,6 +34,36 @@ from app.orchestration_service import (
     _parse_recovery_policy,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
+
+
+_ORCHESTRATE_ALLOWED_FIELDS = frozenset(
+    {
+        "app_id",
+        "agent",
+        "messages",
+        "session_id",
+        "additional_system_context",
+        "trace_id",
+        "execution_context",
+        "subject_id",
+        "agent_plan",
+        "recovery_policy",
+        "max_retries",
+        "require_evidence",
+        "require_verification",
+    }
+)
+_RESUME_ALLOWED_FIELDS = _ORCHESTRATE_ALLOWED_FIELDS | {"continuation_ref", "decision"}
+
+
+def _reject_unknown_fields(payload: Mapping[str, Any], *, allowed: frozenset[str]) -> None:
+    unknown = set(payload) - allowed
+    if unknown:
+        raise ServiceContractError(
+            "unsupported_orchestration_field",
+            "Request contains unsupported orchestration fields.",
+            status_code=400,
+        )
 
 
 class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
@@ -110,6 +138,10 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             )
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
+        try:
+            _reject_unknown_fields(payload, allowed=_ORCHESTRATE_ALLOWED_FIELDS)
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return _service_error("invalid_request", "app_id must be a non-empty string.", status_code=400)
@@ -162,10 +194,7 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             orchestration_body = await self._identity_orchestration_body(result, request=orch_req)
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
-        return ServiceResponse(
-            status_code=200,
-            body={"ok": True, "orchestration": orchestration_body},
-        )
+        return ServiceResponse(status_code=200, body={"ok": True, "orchestration": orchestration_body})
 
     async def resume_payload(self, payload: Any) -> ServiceResponse:
         if not self._b14_service_bound:
@@ -177,6 +206,10 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             )
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
+        try:
+            _reject_unknown_fields(payload, allowed=_RESUME_ALLOWED_FIELDS)
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return _service_error("invalid_request", "app_id must be a non-empty string.", status_code=400)
@@ -352,7 +385,4 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
-        return ServiceResponse(
-            status_code=200,
-            body={"ok": True, "orchestration": orchestration_body},
-        )
+        return ServiceResponse(status_code=200, body={"ok": True, "orchestration": orchestration_body})
