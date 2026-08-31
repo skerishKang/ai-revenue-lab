@@ -60,11 +60,13 @@ def accepted_verification(
     disposition: VerificationDisposition,
     checked_ids: tuple[str, ...],
     confidence=None,
+    *,
+    claim_id: str = "claim_1",
 ):
-    request = VerificationRequest(claim_id="claim_1", producer_id="agent:producer")
+    request = VerificationRequest(claim_id=claim_id, producer_id="agent:producer")
     verdict = VerificationVerdict(
         verdict_id="verdict_1",
-        claim_id="claim_1",
+        claim_id=claim_id,
         validator_id="validator:independent",
         disposition=disposition,
         checked_evidence_ids=checked_ids,
@@ -132,7 +134,7 @@ def test_support_and_contradiction_always_remain_conflicted():
     assert assessment.contradicting_evidence_ids == ("src_contra",)
 
 
-def test_missing_support_is_explicit_but_contradiction_is_not_suppressed():
+def test_missing_support_is_explicit_but_contextual_evidence_is_preserved():
     graph = make_graph(("src_context", ClaimEvidenceRelation.CONTEXTUALIZES))
 
     assessment = assess_claim(graph, "claim_1")
@@ -196,7 +198,10 @@ def test_mismatched_verification_fails_closed():
         ],
     )
     verification = accepted_verification(
-        other_graph, VerificationDisposition.VERIFIED, ("src_other",)
+        other_graph,
+        VerificationDisposition.VERIFIED,
+        ("src_other",),
+        claim_id="claim_other",
     )
 
     with pytest.raises(EvidenceAssessmentError) as exc_info:
