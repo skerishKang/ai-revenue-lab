@@ -26,7 +26,7 @@ from padiem_ai_core import (
 from .attachments import ImageAttachment
 from .config import Settings
 from .model_policy import ModelPolicyError, model_supports, resolve_model_policy
-from .skills import Skill, get_skill, skill_public_metadata
+from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
 
@@ -167,11 +167,11 @@ def _bounded_context(value: str | None) -> str | None:
 
 def _agent_profile(
     *,
-    skill: Skill,
+    skill: TaskMode,
     model: str,
     required_capabilities: tuple[str, ...],
 ) -> AgentProfile:
-    """Convert B62-owned Skill/model policy into the locked Core contract."""
+    """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
     return AgentProfile(
         id=f"b62-{skill.id}",
@@ -194,7 +194,7 @@ def _agent_profile(
 def _execution_request(
     messages: list[dict[str, str]],
     *,
-    skill: Skill,
+    skill: TaskMode,
     model: str,
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
@@ -277,7 +277,7 @@ class B14Client:
         messages: list[dict[str, str]],
         *,
         model: str,
-        skill: Skill | None = None,
+        skill: TaskMode | None = None,
         additional_system_context: str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         """Yield a private text stream through the product-neutral Core runtime."""
@@ -285,7 +285,7 @@ class B14Client:
         if not isinstance(model, str) or not model.strip() or model.strip() == "b14/auto":
             raise ValueError("private streaming requires an explicit manual model")
         resolved_model = model.strip()
-        resolved_skill = skill or get_skill()
+        resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
 
         if self.settings.runtime_mode == "mock":
@@ -330,7 +330,7 @@ class B14Client:
         self,
         messages: list[dict[str, str]],
         *,
-        skill: Skill | None = None,
+        skill: TaskMode | None = None,
         additional_system_context: str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         """Compatibility entrypoint for B62's simple default UX.
@@ -341,7 +341,7 @@ class B14Client:
         """
 
         policy = _resolve_b62_policy(messages)
-        resolved_skill = skill or get_skill()
+        resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
 
         if self.settings.runtime_mode == "mock":
@@ -386,7 +386,7 @@ class B14Client:
         self,
         messages: list[dict[str, str]],
         *,
-        skill: Skill,
+        skill: TaskMode,
         model: str,
         additional_system_context: str | None,
     ) -> dict[str, Any]:
@@ -420,14 +420,14 @@ class B14Client:
                 "model": execution.route.selected_model,
                 "provider": execution.route.selected_provider,
             },
-            "skill": skill_public_metadata(skill),
+            "skill": task_mode_public_metadata(skill),
         }
 
     async def _complete_image(
         self,
         messages: list[dict[str, str]],
         *,
-        skill: Skill,
+        skill: TaskMode,
         model: str,
         attachment: ImageAttachment,
         additional_system_context: str | None,
@@ -484,14 +484,14 @@ class B14Client:
                 "model": execution.route.selected_model,
                 "provider": execution.route.selected_provider,
             },
-            "skill": skill_public_metadata(skill),
+            "skill": task_mode_public_metadata(skill),
             "attachments": [attachment.public_dict()],
         }
 
     async def complete(
         self,
         messages: list[dict[str, str]],
-        skill: Skill | None = None,
+        skill: TaskMode | None = None,
         additional_system_context: str | None = None,
         attachments: tuple[ImageAttachment, ...] = (),
     ) -> dict[str, Any]:
@@ -499,7 +499,7 @@ class B14Client:
             raise ValueError("only one image attachment is supported")
 
         policy = _resolve_b62_policy(messages)
-        resolved_skill = skill or get_skill()
+        resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
         attachment = attachments[0] if attachments else None
 
@@ -524,7 +524,7 @@ class B14Client:
                 "request_id": "mock_b62",
                 "runtime": "mock",
                 "route": {"mode": "manual", "model": policy.model_id, "provider": None},
-                "skill": skill_public_metadata(resolved_skill),
+                "skill": task_mode_public_metadata(resolved_skill),
             }
             if attachment is not None:
                 result["attachments"] = [attachment.public_dict()]

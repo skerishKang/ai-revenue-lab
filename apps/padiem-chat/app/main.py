@@ -38,8 +38,8 @@ from .project_routes import project_detail, projects_collection
 from .public_chat import public_chat_result
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
-from .skills import Skill, get_skill
-from .tools import ToolSpec, get_tool
+from .task_modes import TaskMode, get_task_mode
+from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
 from .usage_gate import UsageCounterStore, UsageGate
 from .web_tools import MAX_QUERY_CHARS, WebToolError, create_web_provider, normalize_public_url
 
@@ -57,7 +57,7 @@ class BrowserRequestError(ValueError):
 
 @dataclass(frozen=True, slots=True)
 class BrowserToolRequest:
-    tool: ToolSpec
+    tool: ToolPresentationDescriptor
     tool_input: str | None
 
 
@@ -71,7 +71,7 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
     if not isinstance(tool_value, str) or not tool_value.strip():
         raise BrowserRequestError("도구 형식이 올바르지 않습니다.")
     try:
-        tool = get_tool(tool_value.strip())
+        tool = get_tool_presentation(tool_value.strip())
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
 
@@ -98,7 +98,7 @@ def _validate_tool_request(raw: dict[str, Any]) -> BrowserToolRequest | None:
 
 def _validate_payload(
     raw: Any,
-) -> tuple[list[dict[str, str]], Skill, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None]:
+) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
     if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id"}:
@@ -110,7 +110,7 @@ def _validate_payload(
     if not isinstance(skill_id, str) or not skill_id.strip():
         raise BrowserRequestError("작업 모드 형식이 올바르지 않습니다.")
     try:
-        skill = get_skill(skill_id.strip())
+        skill = get_task_mode(skill_id.strip())
     except ValueError as exc:
         raise BrowserRequestError(str(exc)) from exc
 
