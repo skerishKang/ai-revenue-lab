@@ -45,6 +45,7 @@ class OrchestrationEventKind(str, Enum):
     TOOL_RESOLUTION = "tool_resolution"
     TOOL_STARTED = "tool_started"
     TOOL_COMPLETED = "tool_completed"
+    TOOL_FAILED = "tool_failed"
     EVIDENCE_ATTACHED = "evidence_attached"
     VERIFICATION_COMPLETED = "verification_completed"
     APPROVAL_PAUSED = "approval_paused"

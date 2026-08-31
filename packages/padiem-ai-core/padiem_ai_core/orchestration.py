@@ -20,7 +20,7 @@ from .agent_planner import AgentPlan, AgentPlanner, validate_agent_plan
 from .agent_profile_adapter import CompiledAgentProfile
 from .connector_registry import ConnectorDescriptor, ConnectorRegistrySnapshot
 from .contracts import AgentProfile, ErrorClass, Evidence, RunMetadata, RunStatus, ToolEvent, ToolSpec, UsageMetadata
-from .evidence_assessment import ClaimAssessment, ClaimAssessmentState, assess_claim
+from .evidence_assessment import ClaimAssessment, ClaimAssessmentState, assess_claim, is_verification_satisfied
 from .evidence_citation import GroundedCitation, GroundedCitationBundle, project_grounded_citations
 from .evidence_graph import ClaimDerivation, ClaimEvidenceLink, ClaimEvidenceRelation, EvidenceClaim, EvidenceGraph, evidence_graph
 from .evidence_verification import (
@@ -191,9 +191,12 @@ class OrchestrationRunner:
         app_id = request.app_id
         events: list[OrchestrationEvent] = []
         seq = 1
+        terminated = False
 
         def emit(kind: OrchestrationEventKind, message: str | None = None, metadata: Mapping[str, Any] | None = None) -> None:
-            nonlocal seq
+            nonlocal seq, terminated
+            if terminated:
+                return
             evt = public_orchestration_event(
                 event_id=f"evt_{uuid.uuid4().hex[:12]}",
                 run_id=run_id,
@@ -206,6 +209,21 @@ class OrchestrationRunner:
             )
             events.append(evt)
             seq += 1
+            if kind in (OrchestrationEventKind.RUN_COMPLETED, OrchestrationEventKind.RUN_FAILED, OrchestrationEventKind.RUN_CANCELLED):
+                terminated = True
+
+        async def _abort_idempotency(reason: str) -> None:
+            if request.context.idempotency_key is not None and self._idempotency is not None:
+                if hasattr(self._idempotency, "abort") and callable(getattr(self._idempotency, "abort", None)):
+                    try:
+                        await self._idempotency.abort(app_id=app_id, idempotency_key=request.context.idempotency_key, reason=reason)
+                    except Exception:
+                        pass
+                elif hasattr(self._idempotency, "release") and callable(getattr(self._idempotency, "release", None)):
+                    try:
+                        await self._idempotency.release(app_id=app_id, idempotency_key=request.context.idempotency_key)
+                    except Exception:
+                        pass
 
         # 1. RUN_STARTED
         emit(OrchestrationEventKind.RUN_STARTED, f"Orchestration started for app '{app_id}'", {"app_id": app_id})
@@ -254,13 +272,13 @@ class OrchestrationRunner:
         if request.memory_items:
             if request.memory_authorization is not None:
                 if request.memory_authorization.app_id != app_id:
+                    await _abort_idempotency("memory_authorization_mismatch")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Memory authorization mismatch", {"error": "memory_authorization_mismatch"})
                     raise OrchestrationError("memory_authorization_mismatch", "memory_authorization app_id does not match caller app_id")
             
-            # Rank memory items
             ranked = rank_retrieval_results(request.memory_items)
             ref_context = assemble_long_context(ranked)
             if ref_context:
-                # Wrap with UNTRUSTED_REFERENCE fence to prevent elevation to system instruction
                 fenced_memory = (
                     "\n\n[UNTRUSTED_REFERENCE: Memory & Retrieved Context]\n"
                     f"{ref_context}\n"
@@ -298,6 +316,8 @@ class OrchestrationRunner:
         activated_skill: ActivatedSkillProfile | None = None
         if request.skill_id is not None:
             if request.skill_registry is None or request.skill_installations is None or request.skill_runtime_policy is None:
+                await _abort_idempotency("skill_context_missing")
+                emit(OrchestrationEventKind.RUN_FAILED, "Skill context missing", {"error": "skill_context_missing"})
                 raise OrchestrationError("skill_context_missing", "skill_id requested but registry, installations, or runtime_policy missing")
             
             activated_skill = compile_enabled_skill(
@@ -308,9 +328,10 @@ class OrchestrationRunner:
                 skill_id=request.skill_id,
                 runtime_policy=request.skill_runtime_policy,
             )
-            # Authority Invariant: Skill cannot grant tools outside trusted runtime profile
             for sk_tool in activated_skill.compiled.runtime_profile.allowed_tools:
-                if request.execution_request.agent.allowed_tools and sk_tool not in request.execution_request.agent.allowed_tools:
+                if sk_tool not in request.execution_request.agent.allowed_tools:
+                    await _abort_idempotency("authority_widening_rejected")
+                    emit(OrchestrationEventKind.RUN_FAILED, "Authority widening rejected", {"error": "authority_widening_rejected"})
                     raise OrchestrationError("authority_widening_rejected", f"skill requests tool '{sk_tool}' outside agent profile allowlist")
 
             emit(OrchestrationEventKind.SKILL_RESOLVED, f"Skill '{request.skill_id}' resolved and compiled", {
@@ -330,7 +351,6 @@ class OrchestrationRunner:
         # 7. Bounded Agent Execution
         effective_agent = request.execution_request.agent
         if activated_skill is not None:
-            # Narrow agent profile with compiled skill parameters without widening authority
             effective_agent = AgentProfile(
                 id=effective_agent.id,
                 title=effective_agent.title,
@@ -354,24 +374,40 @@ class OrchestrationRunner:
         )
 
         try:
-            emit(OrchestrationEventKind.TOOL_STARTED, "Execution started", {"agent_id": effective_agent.id})
             result = await asyncio.wait_for(
                 self._runtime.run(exec_req),
                 timeout=request.context.timeout_seconds,
             )
-            emit(OrchestrationEventKind.TOOL_COMPLETED, "Execution returned result", {
-                "status": result.metadata.status.value,
-            })
+            # Emit Tool lifecycle events ONLY for actual tool events from the execution result
+            for te in getattr(result.metadata, "tool_events", ()):
+                emit(OrchestrationEventKind.TOOL_STARTED, f"Tool '{te.tool_id}' started", {"tool_id": te.tool_id})
+                if te.status is RunStatus.COMPLETED:
+                    emit(OrchestrationEventKind.TOOL_COMPLETED, f"Tool '{te.tool_id}' completed", {
+                        "tool_id": te.tool_id,
+                        "status": "completed",
+                        "duration_ms": te.duration_ms,
+                    })
+                elif te.status is RunStatus.FAILED:
+                    emit(OrchestrationEventKind.TOOL_FAILED, f"Tool '{te.tool_id}' failed", {
+                        "tool_id": te.tool_id,
+                        "status": "failed",
+                        "error_class": te.error_class.value if te.error_class else None,
+                        "duration_ms": te.duration_ms,
+                    })
         except asyncio.TimeoutError:
+            await _abort_idempotency("timeout")
             emit(OrchestrationEventKind.RUN_FAILED, "Execution timed out", {"reason": "timeout"})
             raise OrchestrationError("orchestration_timeout", f"Execution exceeded {request.context.timeout_seconds}s timeout") from None
         except asyncio.CancelledError:
+            await _abort_idempotency("cancelled")
             emit(OrchestrationEventKind.RUN_CANCELLED, "Execution was cancelled", {"reason": "downstream_cancellation"})
             raise
         except ExecutionRuntimeError as exc:
+            await _abort_idempotency(exc.code)
             emit(OrchestrationEventKind.RUN_FAILED, f"Execution failed: {exc.safe_message}", {"error_code": exc.code})
             raise
         except Exception as exc:
+            await _abort_idempotency("internal_error")
             emit(OrchestrationEventKind.RUN_FAILED, "Unexpected execution failure", {"error": "internal_error"})
             raise
 
@@ -420,23 +456,33 @@ class OrchestrationRunner:
         # Required evidence check
         if request.require_evidence:
             if eg is None or len(eg.sources) == 0:
+                await _abort_idempotency("required_evidence_missing")
                 emit(OrchestrationEventKind.RUN_FAILED, "Required evidence was missing", {"error": "required_evidence_missing"})
                 raise OrchestrationError("required_evidence_missing", "Orchestration request required evidence but none was attached")
 
-        # Required verification check
+        # Required verification check - enforces SUPPORTED only; rejects UNVERIFIED, CONTRADICTED, and CONFLICTED
         if request.require_verification:
-            if not assessments or any(a.state in (ClaimAssessmentState.UNVERIFIED, ClaimAssessmentState.CONTRADICTED) for a in assessments):
-                emit(OrchestrationEventKind.RUN_FAILED, "Required verification failed or was unverified", {"error": "verification_failed"})
-                raise OrchestrationError("verification_failed", "Claim verification did not achieve a verified status")
+            if not assessments or any(not is_verification_satisfied(a) for a in assessments):
+                await _abort_idempotency("verification_failed")
+                emit(OrchestrationEventKind.RUN_FAILED, "Required verification failed or was unverified/conflicted", {"error": "verification_failed"})
+                raise OrchestrationError("verification_failed", "Claim verification did not achieve a verified SUPPORTED status")
 
         # 9. Idempotency Commit & Completion
         if request.context.idempotency_key is not None and self._idempotency is not None:
-            await self._idempotency.commit(
-                app_id=app_id,
-                idempotency_key=request.context.idempotency_key,
-                request_fingerprint=fp,
-                result=result,
-            )
+            if hasattr(self._idempotency, "commit"):
+                await self._idempotency.commit(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result,
+                )
+            elif hasattr(self._idempotency, "complete"):
+                await self._idempotency.complete(
+                    app_id=app_id,
+                    idempotency_key=request.context.idempotency_key,
+                    request_fingerprint=fp,
+                    result=result.to_public_dict() if hasattr(result, "to_public_dict") else {"answer": result.answer},
+                )
 
         emit(OrchestrationEventKind.RUN_COMPLETED, "Orchestration completed successfully", {
             "status": "completed",

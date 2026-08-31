@@ -185,6 +185,16 @@ def _validate_verification(
     )
 
 
+def is_verification_satisfied(assessment: ClaimAssessment) -> bool:
+    """Return True only if claim assessment state is definitively SUPPORTED."""
+    if not isinstance(assessment, ClaimAssessment):
+        raise EvidenceAssessmentError(
+            "invalid_assessment_contract",
+            "assessment must be a ClaimAssessment instance",
+        )
+    return assessment.state == ClaimAssessmentState.SUPPORTED
+
+
 def assess_claim(
     graph: EvidenceGraph,
     claim_id: str,

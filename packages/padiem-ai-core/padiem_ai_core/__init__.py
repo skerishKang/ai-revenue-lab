@@ -317,6 +317,7 @@ from .evidence_assessment import (
     EvidenceAssessmentError,
     MAX_ASSESSMENT_EVIDENCE_IDS,
     assess_claim,
+    is_verification_satisfied,
 )
 
 from .orchestration_events import (
@@ -614,6 +615,7 @@ __all__ = [
     "EvidenceAssessmentError",
     "MAX_ASSESSMENT_EVIDENCE_IDS",
     "assess_claim",
+    "is_verification_satisfied",
     "OrchestrationEvent",
     "OrchestrationEventError",
     "OrchestrationEventKind",
