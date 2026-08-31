@@ -26,6 +26,12 @@ from app.cloudflare_transport import (
     CloudflareB14ServiceBindingTransport,
 )
 from app.identity_enforcement import authenticate_request
+from app.orchestration_service import (
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    OrchestrationEngineService,
+)
 from app.service import EngineService, HEALTH_PATH, ServiceResponse
 from app.service_identity import ServiceIdentityError
 from app.streaming_service import (
@@ -122,7 +128,7 @@ def _authenticate_non_health_request(env: Any, headers: Any, body: bytes) -> Res
 
 def _engine_services_for_env(
     env: Any,
-) -> tuple[EngineService, StreamingEngineService]:
+) -> tuple[EngineService, StreamingEngineService, OrchestrationEngineService]:
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
         completed = EngineService(
@@ -137,7 +143,13 @@ def _engine_services_for_env(
             ),
             b14_service_bound=False,
         )
-        return completed, streaming
+        orchestration = OrchestrationEngineService(
+            runtime_factory=lambda app_id: (_ for _ in ()).throw(
+                RuntimeError("unreachable without B14 service binding")
+            ),
+            b14_service_bound=False,
+        )
+        return completed, streaming, orchestration
 
     transport = CloudflareB14ServiceBindingTransport(
         binding=binding,
@@ -163,6 +175,10 @@ def _engine_services_for_env(
         ),
         StreamingEngineService(
             runtime_factory=streaming_runtime_factory,
+            b14_service_bound=True,
+        ),
+        OrchestrationEngineService(
+            runtime_factory=runtime_factory,
             b14_service_bound=True,
         ),
     )
@@ -260,7 +276,8 @@ class Default(WorkerEntrypoint):
                     )
                 )
 
-        if path not in {HEALTH_PATH, STREAM_PATH, "/internal/v1/execute"}:
+        orchestration_paths = {ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH, ORCHESTRATE_CANCEL_PATH}
+        if path not in {HEALTH_PATH, STREAM_PATH, "/internal/v1/execute"} | orchestration_paths:
             result = ServiceResponse(
                 status_code=404,
                 body={
@@ -280,7 +297,16 @@ class Default(WorkerEntrypoint):
             if auth_error is not None:
                 return auth_error
 
-        completed_service, streaming_service = _engine_services_for_env(self.env)
+        completed_service, streaming_service, orchestration_service = _engine_services_for_env(self.env)
+
+        if path in orchestration_paths:
+            result = await orchestration_service.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
 
         if path == STREAM_PATH:
             prepared = await streaming_service.prepare(
@@ -302,6 +328,7 @@ class Default(WorkerEntrypoint):
         if path == HEALTH_PATH and result.status_code == 200:
             health = dict(result.body)
             health["streaming_run"] = True
+            health["orchestration_run"] = True
             health["service_identity"] = "required_for_execute_and_stream"
             result = ServiceResponse(status_code=200, body=health)
         return _json_response(result)

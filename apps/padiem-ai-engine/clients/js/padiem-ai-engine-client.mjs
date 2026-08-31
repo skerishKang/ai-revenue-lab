@@ -4,6 +4,9 @@ export const ENGINE_CONTRACT_VERSION = "1.0";
 export const ENGINE_EXECUTE_PATH = "/internal/v1/execute";
 export const ENGINE_STREAM_PATH = "/internal/v1/stream";
 export const ENGINE_HEALTH_PATH = "/internal/v1/health";
+export const ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate";
+export const ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume";
+export const ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel";
 
 const ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller";
 const ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential";
@@ -15,6 +18,18 @@ const REQUEST_ALLOWED = new Set([
   "additional_system_context",
   "trace_id",
   "execution_context",
+  "subject_id",
+  "agent_plan",
+  "agent_definition",
+  "compiled_agent_profile",
+  "tool_authorization",
+  "recovery_policy",
+  "max_retries",
+  "require_evidence",
+  "require_verification",
+  "pause",
+  "decision",
+  "reason",
 ]);
 
 export class PadiemAiEngineClientError extends Error {
@@ -127,6 +142,18 @@ function exactRunPayload(appId, run) {
     ...(run.additional_system_context === undefined ? {} : { additional_system_context: run.additional_system_context }),
     ...(run.trace_id === undefined ? {} : { trace_id: run.trace_id }),
     ...(run.execution_context === undefined ? {} : { execution_context: normalizeExecutionContext(run.execution_context) }),
+    ...(run.subject_id === undefined ? {} : { subject_id: run.subject_id }),
+    ...(run.agent_plan === undefined ? {} : { agent_plan: run.agent_plan }),
+    ...(run.agent_definition === undefined ? {} : { agent_definition: run.agent_definition }),
+    ...(run.compiled_agent_profile === undefined ? {} : { compiled_agent_profile: run.compiled_agent_profile }),
+    ...(run.tool_authorization === undefined ? {} : { tool_authorization: run.tool_authorization }),
+    ...(run.recovery_policy === undefined ? {} : { recovery_policy: run.recovery_policy }),
+    ...(run.max_retries === undefined ? {} : { max_retries: run.max_retries }),
+    ...(run.require_evidence === undefined ? {} : { require_evidence: run.require_evidence }),
+    ...(run.require_verification === undefined ? {} : { require_verification: run.require_verification }),
+    ...(run.pause === undefined ? {} : { pause: run.pause }),
+    ...(run.decision === undefined ? {} : { decision: run.decision }),
+    ...(run.reason === undefined ? {} : { reason: run.reason }),
   };
 }
 
@@ -180,6 +207,41 @@ export class PadiemAiEngineClient {
       throw new PadiemAiEngineClientError("invalid_engine_response", "Engine completed-run response is invalid", { status: response.status });
     }
     return body;
+  }
+
+  async orchestrate(request) {
+    const payload = exactRunPayload(this.appId, request);
+    const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_ORCHESTRATE_PATH}`, {
+      method: "POST", headers: this._headers(), body: JSON.stringify(payload),
+    });
+    const body = await parseJsonResponse(response);
+    if (body.ok !== true || !body.orchestration) {
+      throw new PadiemAiEngineClientError("invalid_engine_response", "Engine orchestration response is invalid", { status: response.status });
+    }
+    return body.orchestration;
+  }
+
+  async resumeOrchestration(request) {
+    const payload = exactRunPayload(this.appId, request);
+    const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_ORCHESTRATE_RESUME_PATH}`, {
+      method: "POST", headers: this._headers(), body: JSON.stringify(payload),
+    });
+    const body = await parseJsonResponse(response);
+    if (body.ok !== true || !body.orchestration) {
+      throw new PadiemAiEngineClientError("invalid_engine_response", "Engine orchestration resume response is invalid", { status: response.status });
+    }
+    return body.orchestration;
+  }
+
+  async cancelOrchestrationPause(request) {
+    const payload = {
+      app_id: this.appId,
+      ...(request || {}),
+    };
+    const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_ORCHESTRATE_CANCEL_PATH}`, {
+      method: "POST", headers: this._headers(), body: JSON.stringify(payload),
+    });
+    return parseJsonResponse(response);
   }
 
   async *stream(run) {
