@@ -13,6 +13,7 @@ from app.ooxml_stdlib import (
     OOXMLExtractionError,
     extract_docx_text,
     extract_pptx_text,
+    validate_ooxml_archive,
 )
 
 
@@ -128,3 +129,37 @@ def test_entry_count_and_zip_bomb_bounds_fail_closed() -> None:
     entries["word/document.xml"] = _docx_xml(DOCX_TEXT)
     with pytest.raises(OOXMLExtractionError, match="total uncompressed limit"):
         extract_docx_text(_zip_bytes(entries))
+
+
+def test_xlsx_archive_level_dtd_is_rejected_before_openpyxl():
+    malicious_xml = b'<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE x [<!ENTITY e "x">]><workbook/>'
+    payload = _zip_bytes(
+        {
+            "xl/workbook.xml": malicious_xml,
+            "[Content_Types].xml": b'<?xml version="1.0" encoding="UTF-8"?><Types/>',
+            "_rels/.rels": b'<?xml version="1.0" encoding="UTF-8"?><Relationships/>',
+        }
+    )
+    with pytest.raises(OOXMLExtractionError, match="DTDs are not supported"):
+        validate_ooxml_archive(payload)
+
+    # Case-insensitive variant and different XML part
+    malicious_lower = b'<?xml?><!doctype x SYSTEM "http://example.com/x.dtd"><x/>'
+    payload2 = _zip_bytes(
+        {
+            "xl/worksheets/sheet1.xml": malicious_lower,
+            "[Content_Types].xml": b'<?xml?><Types/>',
+        }
+    )
+    with pytest.raises(OOXMLExtractionError, match="DTDs are not supported"):
+        validate_ooxml_archive(payload2)
+
+    # Ensure DOCX/PPTX per-part guard still works but archive-level also catches DTD in secondary part
+    payload3 = _zip_bytes(
+        {
+            "word/document.xml": _docx_xml(DOCX_TEXT),
+            "word/comments.xml": b'<!DOCTYPE foo>',
+        }
+    )
+    with pytest.raises(OOXMLExtractionError, match="DTDs are not supported"):
+        validate_ooxml_archive(payload3)

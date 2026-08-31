@@ -202,3 +202,39 @@ def test_binary_document_still_obeys_single_attachment_limit() -> None:
     docx = _binary_item("b.docx", DOCX_MIME, _zip_bytes({"word/document.xml": _docx_xml("b")}))
     with pytest.raises(AttachmentValidationError, match="한 번에 하나"):
         parse_attachments([pdf, docx])
+
+
+def _inject_dtd_into_xlsx(valid_xlsx: bytes, target: str, dtd_payload: bytes) -> bytes:
+    # Read valid XLSX and re-create with malicious XML part containing DTD.
+    # The DTD payload is the raw XML content for the target entry.
+    input_zip = ZipFile(BytesIO(valid_xlsx))
+    entries: dict[str, bytes] = {name: input_zip.read(name) for name in input_zip.namelist()}
+    input_zip.close()
+    entries[target] = dtd_payload
+    output = BytesIO()
+    with ZipFile(output, "w", compression=ZIP_DEFLATED) as archive:
+        for name, data in entries.items():
+            archive.writestr(name, data)
+    return output.getvalue()
+
+
+def test_xlsx_with_dtd_is_rejected_archive_level_without_echo() -> None:
+    valid = _xlsx_bytes()
+    # Inject DTD into xl/workbook.xml (common XLSX XML part)
+    malicious_xml = b'<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE x [<!ENTITY e "evil">]><workbook/>'
+    malicious = _inject_dtd_into_xlsx(valid, "xl/workbook.xml", malicious_xml)
+    item = _binary_item("evil.xlsx", XLSX_MIME, malicious)
+    with pytest.raises(AttachmentValidationError, match="안전하게 읽지 못했습니다") as exc:
+        parse_attachments([item])
+    # Do not echo payload content or base64 in error
+    assert "evil" not in str(exc.value).lower() or "evil.xlsx" in str(exc.value)  # allow filename, but not payload
+    assert _b64(malicious)[:80] not in str(exc.value)
+    assert malicious[:80].decode(errors="ignore") not in str(exc.value)
+
+    # Case-insensitive variant in different sheet part
+    lower_malicious = b'<?xml?><!doctype x SYSTEM "http://example.com/x.dtd"><x/>'
+    malicious2 = _inject_dtd_into_xlsx(valid, "xl/worksheets/sheet1.xml", lower_malicious)
+    item2 = _binary_item("evil2.xlsx", XLSX_MIME, malicious2)
+    with pytest.raises(AttachmentValidationError, match="안전하게 읽지 못했습니다") as exc2:
+        parse_attachments([item2])
+    assert _b64(malicious2)[:80] not in str(exc2.value)
