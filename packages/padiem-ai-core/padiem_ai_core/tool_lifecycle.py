@@ -13,7 +13,10 @@ from enum import Enum
 import re
 from typing import Any, Mapping
 
-_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_SAFE_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_TOOL_ID_RE = re.compile(r"^tool:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$")
+_CONNECTOR_ID_RE = re.compile(r"^connector:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$")
+_SAFE_TAG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 MAX_EVENT_METADATA_KEYS = 16
 MAX_EVENT_STRING_CHARS = 1_000
 
@@ -21,7 +24,7 @@ MAX_EVENT_STRING_CHARS = 1_000
 class ToolLifecycleError(ValueError):
     def __init__(self, code: str, safe_message: str) -> None:
         super().__init__(safe_message)
-        if not isinstance(code, str) or not _IDENTIFIER_RE.fullmatch(code):
+        if not isinstance(code, str) or not _SAFE_IDENTIFIER_RE.fullmatch(code):
             raise ValueError("tool lifecycle error code must be a safe identifier")
         self.code = code
         self.safe_message = safe_message
@@ -49,7 +52,17 @@ class ConnectorLifecycleKind(str, Enum):
 
 
 def _identifier(name: str, value: str) -> str:
-    if not isinstance(value, str) or not _IDENTIFIER_RE.fullmatch(value):
+    if not isinstance(value, str):
+        raise ToolLifecycleError("invalid_tool_lifecycle_event", f"{name} must be a string")
+    if value.startswith("connector:") or ("connector" in name and "@" in value):
+        if not _CONNECTOR_ID_RE.fullmatch(value):
+            raise ToolLifecycleError("invalid_tool_lifecycle_event", f"{name} must match canonical Connector id grammar")
+        return value
+    if value.startswith("tool:") or ("tool" in name and "@" in value):
+        if not _TOOL_ID_RE.fullmatch(value):
+            raise ToolLifecycleError("invalid_tool_lifecycle_event", f"{name} must match canonical Tool id grammar")
+        return value
+    if not _SAFE_TAG_RE.fullmatch(value):
         raise ToolLifecycleError("invalid_tool_lifecycle_event", f"{name} must be a bounded safe identifier")
     return value
 

@@ -136,3 +136,48 @@ def test_connector_event_rejects_sensitive_nested_data() -> None:
             sequence=1,
             metadata={"oauth": {"access_token": "secret"}},
         )
+
+
+@pytest.mark.parametrize(
+    ("connector_id", "tool_id"),
+    [
+        ("connector:padiem:web@1", "tool:padiem:web_search@1"),
+        ("connector:owner:custom-connector@2", "web.search"),
+    ],
+)
+def test_tool_lifecycle_accepts_canonical_ids(connector_id: str, tool_id: str) -> None:
+    event = ToolLifecycleEvent(
+        event_id="event:tool:canonical",
+        run_id="run:1",
+        kind=ToolLifecycleKind.COMPLETED,
+        tool_id=tool_id,
+        sequence=1,
+        connector_id=connector_id,
+        duration_ms=10,
+        metadata={"status": "ok"},
+    )
+    assert event.connector_id == connector_id
+    assert event.tool_id == tool_id
+
+
+@pytest.mark.parametrize(
+    "invalid_connector_id",
+    [
+        "connector:padiem:web",
+        "connector:padiem:web@",
+        "connector:padiem:web@x",
+        "connector:padiem:web@0",
+        "connector::web@1",
+    ],
+)
+def test_tool_lifecycle_rejects_malformed_canonical_connector_id(invalid_connector_id: str) -> None:
+    with pytest.raises(ToolLifecycleError) as exc_info:
+        ToolLifecycleEvent(
+            event_id="event:tool:invalid",
+            run_id="run:1",
+            kind=ToolLifecycleKind.COMPLETED,
+            tool_id="web.search",
+            sequence=1,
+            connector_id=invalid_connector_id,
+        )
+    assert exc_info.value.code == "invalid_tool_lifecycle_event"
