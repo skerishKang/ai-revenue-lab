@@ -2,7 +2,10 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
-  const accountControls = document.querySelector(".account-controls");
+  const accountControls =
+    document.querySelector(".account-controls") ||
+    document.querySelector(".sidebar-account") ||
+    document.querySelector(".sidebar-bottom");
   const loginButton = document.getElementById("loginButton");
 
   if (!messageList || !accountControls) return;
@@ -16,8 +19,19 @@
   exportButton.hidden = true;
   exportButton.disabled = true;
 
-  if (loginButton) accountControls.insertBefore(exportButton, loginButton);
-  else accountControls.appendChild(exportButton);
+  if (loginButton && accountControls.contains(loginButton)) {
+    let ref = loginButton;
+    while (ref.parentElement && ref.parentElement !== accountControls) {
+      ref = ref.parentElement;
+    }
+    if (ref.parentElement === accountControls) {
+      accountControls.insertBefore(exportButton, ref);
+    } else {
+      accountControls.appendChild(exportButton);
+    }
+  } else {
+    accountControls.appendChild(exportButton);
+  }
 
   const SKIP_SELECTOR = [
     ".typing",
