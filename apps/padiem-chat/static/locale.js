@@ -1,6 +1,5 @@
 (() => {
   "use strict";
-  const STORAGE_KEY = "padiem_locale";
   const labels = {
     ko: {
       "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
@@ -27,10 +26,9 @@
   };
   const text = (key, lang) => labels[lang][key] || labels.ko[key] || key;
   const setText = (selector, key, lang) => { const element = document.querySelector(selector); if (element) element.textContent = text(key, lang); };
-  function apply(lang, persist = true) {
+  function apply(lang) {
     lang = lang === "en" ? "en" : "ko";
     document.documentElement.lang = lang;
-    if (persist) { try { localStorage.setItem(STORAGE_KEY, lang); } catch (error) {} }
     const map = [
       ["#newChatButton span:last-child", "new-chat"], [".side-item:nth-child(1) span:nth-child(2)", "search"], ["#projectsNavButton span:nth-child(2)", "projects"],
       ["#outputsNavButton span:nth-child(2)", "saved"], ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"],
@@ -50,8 +48,7 @@
     window.dispatchEvent(new CustomEvent("padiem:localechange", { detail: { lang } }));
   }
   function init() {
-    let lang = "ko"; try { lang = localStorage.getItem(STORAGE_KEY) || "ko"; } catch (error) {}
-    apply(lang, false);
+    apply("ko");
     document.getElementById("languagePicker")?.addEventListener("click", (event) => { const button = event.target.closest("[data-locale-value]"); if (button) apply(button.dataset.localeValue); });
   }
   window.__padiemLocale = { apply, getCurrent: () => document.documentElement.lang === "en" ? "en" : "ko" };
