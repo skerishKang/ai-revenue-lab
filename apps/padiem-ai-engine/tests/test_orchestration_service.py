@@ -326,3 +326,22 @@ async def test_orchestrate_http_routing() -> None:
         body=raw_body,
     )
     assert resp_404.status_code == 404
+
+
+async def test_orchestrate_stream_route_is_explicitly_deferred_not_routed() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    raw_body = json.dumps(make_valid_payload()).encode("utf-8")
+
+    response = await service.handle(
+        method="POST",
+        path="/internal/v1/orchestrate/stream",
+        content_type="application/json",
+        body=raw_body,
+    )
+
+    assert response.status_code == 404
+    assert response.body["ok"] is False
+    assert response.body["error"]["code"] == "not_found"
