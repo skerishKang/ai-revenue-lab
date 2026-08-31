@@ -6,6 +6,7 @@
   const form = document.getElementById("composerForm");
   const input = document.getElementById("messageInput");
   const sendButton = document.getElementById("sendButton");
+  const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
   const mobileMenu = document.getElementById("mobileMenu");
   const mobileClose = document.getElementById("mobileClose");
@@ -73,9 +74,33 @@
   ]);
   const DEFAULT_NOTE = "사진과 TXT·Markdown·CSV·JSON 문서 한 개를 첨부할 수 있습니다. PDF·Office 문서는 아직 지원하지 않습니다.";
 
+  const MESSAGE_LIFECYCLE = Object.freeze({
+    STREAMING: "streaming",
+    COMPLETED: "completed",
+    FAILED: "failed",
+    CANCELLED: "cancelled",
+    TIMED_OUT: "timed_out",
+  });
+  window.PadiemChatLifecycle = Object.freeze({
+    states: MESSAGE_LIFECYCLE,
+    isCompleted(article) {
+      return Boolean(article && article.dataset.lifecycle === MESSAGE_LIFECYCLE.COMPLETED);
+    },
+    set(article, state) {
+      if (!article || !Object.values(MESSAGE_LIFECYCLE).includes(state)) return;
+      article.dataset.lifecycle = state;
+      article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
+        bubbles: true,
+        detail: { state },
+      }));
+    },
+  });
+
   let messages = [];
   let inFlight = false;
   let activeRequestController = null;
+  let activeRequestArticle = null;
+  let activeRequestCancelReason = null;
   let conversationEpoch = 0;
   let conversationSkill = "auto";
   let selectedAttachment = null;
@@ -102,8 +127,20 @@
     removeAttachment.disabled = inFlight;
     editProjectButton.disabled = inFlight;
     exitProjectButton.disabled = inFlight;
+    cancelStreamButton.hidden = !inFlight;
+    cancelStreamButton.disabled = !inFlight;
+    cancelStreamButton.setAttribute("aria-disabled", inFlight ? "false" : "true");
     input.style.height = "auto";
     input.style.height = `${Math.min(input.scrollHeight, 180)}px`;
+  }
+  function errorFor(data, fallback) {
+    const message = data && data.error && typeof data.error.message === "string" ? data.error.message : fallback;
+    const error = new Error(message);
+    if (data && data.error && typeof data.error.code === "string") error.code = data.error.code;
+    return error;
+  }
+  function lifecycleForError(error) {
+    return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
   function showConversation() {
     emptyState.hidden = true;
@@ -128,6 +165,7 @@
     const article = fragment.querySelector(".assistant-message");
     article.querySelector("[data-runtime-label]").textContent = label;
     messageList.appendChild(fragment);
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
     return article;
   }
   function renderTyping(article) {
@@ -145,6 +183,7 @@
     const paragraph = document.createElement("p");
     paragraph.textContent = text;
     content.appendChild(paragraph);
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   function renderAnswer(article, result) {
     const content = article.querySelector(".assistant-content");
@@ -174,8 +213,9 @@
       details.append(summary, meta);
       content.appendChild(details);
     }
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext) {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = "다시 시도") {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -185,7 +225,7 @@
     const retry = document.createElement("button");
     retry.type = "button";
     retry.className = "retry-button";
-    retry.textContent = "다시 시도";
+    retry.textContent = actionLabel;
     retry.addEventListener("click", async () => {
       article.remove();
       conversationId = retryContext.conversationId;
@@ -200,19 +240,30 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
-    article.querySelector("[data-runtime-label]").textContent = "연결 오류";
+    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? "응답 시간 초과" : "연결 오류";
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+    PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = "연결 오류";
+    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? "응답 시간 초과" : "연결 오류";
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+    PadiemChatLifecycle.set(article, lifecycle);
+    revealErrorState(article);
+  }
+  function renderCancelled(article, retryMessages, retrySkill, retryContext) {
+    const content = article.querySelector(".assistant-content");
+    const typing = content.querySelector(".typing");
+    if (typing) typing.remove();
+    article.querySelector("[data-runtime-label]").textContent = "생성 취소됨";
+    content.appendChild(buildRetryBox("생성 중인 답변을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", article, retryMessages, retrySkill, null, retryContext, "다시 생성"));
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
 
@@ -569,8 +620,10 @@
   function resetConversation(preserveProject = true) {
     conversationEpoch += 1;
     if (activeRequestController) {
+      activeRequestCancelReason = "conversation_reset";
       activeRequestController.abort();
       activeRequestController = null;
+      activeRequestArticle = null;
     }
     inFlight = false;
     messages = [];
@@ -869,8 +922,7 @@
     });
     const data = await response.json().catch(() => null);
     if (!response.ok || !data || typeof data.answer !== "string") {
-      const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.";
-      throw new Error(message);
+      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.");
     }
     renderAnswer(article, data);
     messages = outboundMessages.concat([{ role: "assistant", content: data.answer }]).slice(-20);
@@ -908,6 +960,7 @@
       loadRecentConversations();
       if (projectsReady) loadProjects();
     }
+    PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
@@ -921,10 +974,7 @@
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (!response.ok || !contentType.startsWith("text/event-stream")) {
       const data = await response.json().catch(() => null);
-      const message = data && data.error && typeof data.error.message === "string"
-        ? data.error.message
-        : "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.";
-      throw new Error(message);
+      throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.");
     }
 
     let answer = "";
@@ -958,9 +1008,9 @@
           const message = data && data.error && typeof data.error.message === "string"
             ? data.error.message
             : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.";
-          if (!paragraph) throw new Error(message);
+          if (!paragraph) throw errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot);
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(errorFor(data, message)));
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error("AI 스트리밍 응답이 정상적으로 완료되지 않았습니다.");
@@ -982,14 +1032,23 @@
     }
   }
 
+  function cancelActiveStream() {
+    if (!inFlight || !activeRequestController || !activeRequestArticle) return;
+    activeRequestCancelReason = "user_cancel";
+    activeRequestController.abort();
+    setNote("답변 생성을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "error");
+  }
+
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
     if (inFlight) return false;
     inFlight = true;
+    activeRequestCancelReason = null;
     const requestEpoch = conversationEpoch;
     const controller = new AbortController();
     activeRequestController = controller;
     updateComposer();
     const article = addAssistantShell("답변 준비 중");
+    activeRequestArticle = article;
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", skill };
@@ -1002,12 +1061,28 @@
       }
       return await requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, controller.signal);
     } catch (error) {
-      if ((error && error.name === "AbortError") || requestEpoch !== conversationEpoch) return false;
-      renderError(article, error instanceof Error ? error.message : "다시 시도해 주세요.", outboundMessages, skill, attachment, contextSnapshot);
+      if (error && error.name === "AbortError") {
+        if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
+          renderCancelled(article, outboundMessages, skill, contextSnapshot);
+        }
+        return false;
+      }
+      if (requestEpoch !== conversationEpoch) return false;
+      renderError(
+        article,
+        error instanceof Error ? error.message : "다시 시도해 주세요.",
+        outboundMessages,
+        skill,
+        attachment,
+        contextSnapshot,
+        lifecycleForError(error),
+      );
       return false;
     } finally {
       if (activeRequestController === controller) {
         activeRequestController = null;
+        activeRequestArticle = null;
+        activeRequestCancelReason = null;
         inFlight = false;
         updateComposer();
         input.focus();
@@ -1048,6 +1123,7 @@
     }
   });
   form.addEventListener("submit", (event) => { event.preventDefault(); submitPrompt(input.value); });
+  cancelStreamButton.addEventListener("click", cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   attachmentFileInput.addEventListener("change", () => {
