@@ -39,9 +39,21 @@ The browser never supplies a provider key or an upstream URL. For ordinary text 
 
 B62 ordinary text does **not** currently use Business 14 `b14/auto` as an active routing decision. The historical `stream_text_auto` method name is a compatibility entrypoint: B62 resolves its own product policy first, and Provider/model assignment remains deferred until the relevant authority explicitly assigns it.
 
-### Bounded multimodal exception
+### Bounded image execution through Core
 
-Image attachment completion remains a documented narrow exception while the higher-level Core execution request is text-only. A single bounded image may use Core's low-level B14 multimodal transport primitive behind the B62 adapter. This exception does not authorize direct B14 request assembly for ordinary text chat, does not select a Provider/model, and must not widen without a separately reviewed reusable multimodal contract.
+The former B62 low-level multimodal exception is closed by #1068. A single validated image-bearing request is converted by B62 into product-neutral Core inputs and executed through:
+
+```text
+B62 ImageAttachment + product TaskMode state
+→ MultimodalExecutionRequest
+→ MultimodalExecutionRuntime
+→ B14MultimodalChatRequest
+→ Business 14
+```
+
+B62 still owns attachment UX, the `ImageAttachment` product type, the image-capability fail-closed decision, and Korean user-facing errors. Core owns system-instruction composition, normalized model/routing policy, high-level multimodal execution metadata and safe execution errors. The existing low-level Core/B14 multimodal validator remains the single image payload validator.
+
+This boundary does **not** assign an image-capable Provider/model. While the current product profile is unassigned or does not prove image capability, live image completion still fails closed before Business 14/provider dispatch.
 
 ## Attachments and document boundary
 

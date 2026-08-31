@@ -27,6 +27,7 @@ def test_readme_documents_locked_b62_core_b14_boundary():
         "PRODUCTION_MUTATION = NO",
     )
     assert all(item in readme for item in acceptance)
+    assert "Provider/model selection remains deferred" in readme
 
     stale_claims = (
         "Browser → Padiem Chat /api/chat → Business 14 b14/auto → provider/model",
@@ -36,17 +37,21 @@ def test_readme_documents_locked_b62_core_b14_boundary():
         assert stale not in readme
 
 
-def test_readme_preserves_bounded_multimodal_exception_and_auto_name_truth():
+def test_readme_records_core_multimodal_boundary_and_auto_name_truth():
     readme = README_PATH.read_text(encoding="utf-8")
     source = B14_CLIENT_PATH.read_text(encoding="utf-8")
 
-    assert "### Bounded multimodal exception" in readme
-    assert "single bounded image" in readme
+    assert "### Bounded image execution through Core" in readme
+    assert "MultimodalExecutionRequest" in readme
+    assert "MultimodalExecutionRuntime" in readme
+    assert "live image completion still fails closed before Business 14/provider dispatch" in readme
     assert "does **not** currently use Business 14 `b14/auto` as an active routing decision" in readme
     assert "historical `stream_text_auto` method name is a compatibility entrypoint" in readme
 
-    # Keep the documentation tied to the already-locked #1008/#1009 runtime shape.
+    # Keep documentation tied to the current #1008/#1009/#1068 runtime shape.
     assert "ExecutionRuntime" in source
     assert "StreamingExecutionRuntime" in source
+    assert "MultimodalExecutionRuntime" in source
+    assert "B14MultimodalChatRequest" not in source
     assert "Despite the historical method name" in source
     assert "does not invoke B14's `b14/auto`" in source

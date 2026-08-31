@@ -8,17 +8,16 @@ import httpx
 
 from padiem_ai_core import (
     AgentProfile,
-    B14MultimodalChatRequest,
     B14PostJSONTransport,
     B14ExecutionClient,
     B14ExecutionConfig,
-    B14ExecutionError,
-    B14RoutingOptions,
     B14StreamingClient,
     B14TransportResponse,
     ExecutionRequest,
     ExecutionRuntime,
     ExecutionRuntimeError,
+    MultimodalExecutionRequest,
+    MultimodalExecutionRuntime,
     StreamingExecutionRuntime,
     MAX_B14_RESPONSE_BYTES,
 )
@@ -135,12 +134,6 @@ def _chat_error(code: str) -> ChatRuntimeError:
     )
 
 
-def _translate_core_error(exc: B14ExecutionError) -> ChatRuntimeError:
-    """Translate the preserved image-path B14 transport error into product copy."""
-
-    return _chat_error(exc.code)
-
-
 def _translate_execution_error(exc: ExecutionRuntimeError) -> ChatRuntimeError:
     """Translate the product-neutral Core runtime error into B62 Korean UX copy."""
 
@@ -206,6 +199,24 @@ def _execution_request(
             required_capabilities=required_capabilities,
         ),
         messages=tuple(dict(message) for message in messages),
+        additional_system_context=_bounded_context(additional_system_context),
+    )
+
+
+def _multimodal_execution_request(
+    messages: list[dict[str, Any]],
+    *,
+    skill: TaskMode,
+    model: str,
+    additional_system_context: str | None,
+) -> MultimodalExecutionRequest:
+    return MultimodalExecutionRequest(
+        agent=_agent_profile(
+            skill=skill,
+            model=model,
+            required_capabilities=("chat", "image"),
+        ),
+        messages=tuple(messages),
         additional_system_context=_bounded_context(additional_system_context),
     )
 
@@ -432,7 +443,7 @@ class B14Client:
         attachment: ImageAttachment,
         additional_system_context: str | None,
     ) -> dict[str, Any]:
-        """Preserved bounded multimodal exception until a shared Core facade exists."""
+        """Run the existing single-image product path through the shared Core facade."""
 
         if not model_supports(model, "image"):
             raise ChatRuntimeError(
@@ -441,38 +452,24 @@ class B14Client:
                 "현재 선택된 AI 모델은 사진 입력을 지원하지 않습니다. 사진 지원 모델이 준비되면 다시 이용해 주세요.",
             )
 
-        user_messages = _messages_with_attachment(messages, attachment)
-        system_content = skill.system_instruction
-        extra = _bounded_context(additional_system_context)
-        if extra:
-            system_content = f"{system_content}\n\n{extra}"
-
-        upstream_messages: list[dict[str, Any]] = [
-            {"role": "system", "content": system_content},
-            *user_messages,
-        ]
-
-        request = B14MultimodalChatRequest(
-            messages=tuple(upstream_messages),
+        request = _multimodal_execution_request(
+            _messages_with_attachment(messages, attachment),
+            skill=skill,
             model=model,
-            temperature=0.2,
-            max_tokens=skill.max_tokens,
-            routing=B14RoutingOptions(
-                task_type=skill.task_type,
-                optimize_for=skill.optimize_for,
-                allow_external_fallback=False,
-                max_attempts=1,
-                required_capabilities=("chat", "image"),
-            ),
+            additional_system_context=additional_system_context,
         )
         core_client = B14ExecutionClient(
             self._config(),
             transport=self._completion_transport(),
         )
+        runtime = MultimodalExecutionRuntime(
+            app_id="padiem-chat",
+            b14_client=core_client,
+        )
         try:
-            execution = await core_client.execute(request)
-        except B14ExecutionError as exc:
-            raise _translate_core_error(exc) from exc
+            execution = await runtime.run(request)
+        except ExecutionRuntimeError as exc:
+            raise _translate_execution_error(exc) from exc
 
         route_mode = execution.route.route_mode or "manual"
         return {

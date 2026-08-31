@@ -87,6 +87,10 @@ from .execution_runtime import (
     ExecutionRuntime,
     ExecutionRuntimeError,
 )
+from .multimodal_execution_runtime import (
+    MultimodalExecutionRequest,
+    MultimodalExecutionRuntime,
+)
 from .streaming_runtime import (
     B14StreamExecutor,
     StreamingExecutionEvent,
@@ -194,6 +198,8 @@ __all__ = [
     "ExecutionResult",
     "ExecutionRuntime",
     "ExecutionRuntimeError",
+    "MultimodalExecutionRequest",
+    "MultimodalExecutionRuntime",
     "B14StreamExecutor",
     "StreamingExecutionEvent",
     "StreamingExecutionRuntime",
