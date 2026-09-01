@@ -191,3 +191,41 @@ console.log(JSON.stringify({
         "codeText": "**literal** [x](https://example.com)",
         "childTags": ["CODE"],
     }
+
+
+def test_html_like_payload_and_intraword_underscores_remain_exact_literal_text() -> None:
+    runtime = _rich_runtime()
+    script = r'''
+class TextNode {
+  constructor(value) { this.tagName = "#TEXT"; this.children = []; this._text = String(value ?? ""); }
+  get textContent() { return this._text; }
+  set textContent(value) { this._text = String(value ?? ""); }
+}
+class Element {
+  constructor(tagName) { this.tagName = String(tagName).toUpperCase(); this.children = []; this.className = ""; this.dataset = {}; this._text = ""; }
+  get textContent() { return this.children.length ? this.children.map((child) => child.textContent).join("") : this._text; }
+  set textContent(value) { this._text = String(value ?? ""); this.children = []; }
+  get childElementCount() { return this.children.filter((child) => child.tagName !== "#TEXT").length; }
+  appendChild(child) { this.children.push(child); return child; }
+  append(...nodes) { nodes.forEach((node) => this.appendChild(node)); }
+  addEventListener() {}
+}
+const document = {
+  createElement(tagName) { return new Element(tagName); },
+  createTextNode(value) { return new TextNode(value); },
+};
+'''+ runtime + r'''
+const payload = '<img src=x onerror="window.__PADIEM_HTML_EXECUTED = true">';
+const rich = buildRichResponse(payload);
+const paragraph = rich.children[0];
+console.log(JSON.stringify({
+  text: paragraph.textContent,
+  childTags: paragraph.children.filter((node) => node.tagName !== "#TEXT").map((node) => node.tagName),
+}));
+'''
+
+    result = _run_node(script)
+    assert result == {
+        "text": '<img src=x onerror="window.__PADIEM_HTML_EXECUTED = true">',
+        "childTags": [],
+    }
