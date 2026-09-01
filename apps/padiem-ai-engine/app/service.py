@@ -177,14 +177,46 @@ class EngineService:
         self._idempotency_adapter = idempotency_adapter
 
     def health(self) -> ServiceResponse:
-        return ServiceResponse(status_code=200, body={
+        # Use the single authoritative posture source for health/manifest parity.
+        # Local import avoids circular dependency (contract_manifest imports EXECUTE_PATH etc. from this module).
+        try:
+            from app.contract_manifest import current_engine_contract_manifest, engine_capability_posture  # type: ignore
+
+            posture = engine_capability_posture()
+            manifest = current_engine_contract_manifest()
+            endpoints = [e.to_public_dict() for e in manifest.endpoints]
+        except Exception:
+            # Fallback to static truthful posture if manifest unavailable
+            posture = {
+                "completed_run": "available",
+                "provider_streaming_run": "available",
+                "orchestration_run": "available",
+                "orchestration_resume": "available",
+                "orchestration_cancel": "available",
+                "orchestration_stream": "deferred",
+                "idempotency_replay": "deferred",
+                "service_identity_wire_enforcement": "available",
+            }
+            endpoints = []
+
+        # Backward-compatible booleans derived from bounded posture (do not hide deferred)
+        completed_run_bool = posture.get("completed_run") == "available"
+        streaming_run_bool = posture.get("provider_streaming_run") == "available"
+
+        body: dict[str, object] = {
             "status": "ok",
             "service": "padiem-ai-engine",
             "core_available": True,
             "b14_service_bound": self._b14_service_bound,
-            "completed_run": True,
-            "streaming_run": False,
-        })
+            # backward compat
+            "completed_run": completed_run_bool,
+            "streaming_run": streaming_run_bool,
+            # explicit bounded posture (#1237) — truthful, not boolean-hidden
+            "capabilities": posture,
+            "service_identity": "required_for_all_non_health_routes",
+            "endpoints": endpoints,
+        }
+        return ServiceResponse(status_code=200, body=body)
 
     async def execute_payload(self, payload: Any) -> ServiceResponse:
         if not self._b14_service_bound:

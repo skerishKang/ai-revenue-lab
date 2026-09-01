@@ -16,7 +16,10 @@ def test_worker_uses_incremental_ndjson_readable_stream_adapter() -> None:
     assert '"pull"' in source
     assert '"cancel"' in source
     assert "NDJSON_CONTENT_TYPE" in source
-    assert 'health["streaming_run"] = True' in source
+    # Health must be truthful: capabilities-driven, not hardcoded booleans hiding deferred state
+    assert "capabilities" in source
+    assert "provider_streaming_run" in source
+    assert 'required_for_all_non_health_routes' in source
     assert "Access-Control-Allow-Origin" not in source
     assert "workers.dev" not in source
 
