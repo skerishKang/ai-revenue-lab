@@ -5,23 +5,40 @@ from dataclasses import dataclass
 
 DEFAULT_CHAT_PROFILE = "medium"
 AUTO_B14_MODEL_ID = "b14/auto"
+LOW_B14_MODEL_ID = "padiem-profile/low-unassigned"
+MEDIUM_B14_MODEL_ID = "poolside/laguna-s-2.1"
+HIGH_B14_MODEL_ID = "padiem-profile/high-paid-unassigned"
+
+# Compatibility sentinel retained for older tests/adapters that still import it.
+# MEDIUM itself is now explicitly assigned to Poolside Laguna S 2.1.
 UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
 
-# B62 Auto is executable because it delegates route choice to the B14 router.
-# It is not a concrete Provider/model assignment and must never be interpreted
-# as one. Fast/Balanced/Deep remain separately unassigned until accepted mapping.
-DEFAULT_B14_MODEL_ID = AUTO_B14_MODEL_ID
-
-# Historical slash syntax remains parseable only as a compatibility no-op. It
-# resolves to B14 Auto and therefore does not select Poolside, Agnes, or any
-# other concrete Provider/model.
-MODEL_ALIASES: dict[str, str] = {
-    "/poolside": AUTO_B14_MODEL_ID,
+PROFILE_MODEL_IDS: dict[str, str] = {
+    "low": LOW_B14_MODEL_ID,
+    "medium": MEDIUM_B14_MODEL_ID,
+    "high": HIGH_B14_MODEL_ID,
 }
 
-# B62 does not claim concrete model capabilities for router-owned Auto or for an
-# unassigned product profile. Capability truth remains B14-owned at dispatch.
+# Owner policy for the current rollout:
+#   LOW    -> unassigned
+#   MEDIUM -> Poolside Laguna S 2.1 (the only executable B62 profile today)
+#   HIGH   -> paid tier, concrete model not assigned yet
+# Auto is a product presentation concept; it must not delegate ordinary B62 chat
+# to unconstrained B14 Auto while only MEDIUM has an approved model mapping.
+DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
+
+# Historical slash syntax remains supported only for the currently approved
+# Poolside route. Other provider/model aliases fail closed before B14 dispatch.
+MODEL_ALIASES: dict[str, str] = {
+    "/poolside": MEDIUM_B14_MODEL_ID,
+}
+
+# B62 claims only the capabilities already accepted for the exact Laguna model.
+# Pricing/free status is intentionally not encoded as a durable capability.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
+    LOW_B14_MODEL_ID: frozenset(),
+    MEDIUM_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
+    HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
 }
@@ -50,23 +67,23 @@ def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
 
 
 def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
-    """Resolve B62's default Auto policy without selecting a Provider/model.
+    """Resolve the current B62 profile to its exact approved B14 model.
 
-    Ordinary text chat delegates route choice to B14 by using ``b14/auto``.
-    This does not assign a concrete model to B62 and does not expose Provider
-    identity in the product contract. A legacy ``/poolside`` prefix remains a
-    compatibility no-op: it strips the prefix but still delegates to B14 Auto.
-    Unknown slash commands continue to fail closed.
+    Ordinary text chat currently runs the MEDIUM profile, mapped exactly to
+    ``poolside/laguna-s-2.1``. LOW remains unassigned and HIGH remains a paid
+    tier without a concrete model. ``b14/auto`` is deliberately not used by the
+    current B62 rollout. A legacy ``/poolside`` prefix strips the command and
+    resolves to the same exact MEDIUM model. Unknown aliases fail closed.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
     if user_index is None:
-        return ResolvedModelPolicy(AUTO_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     content = out[user_index].get("content", "")
     stripped = content.lstrip()
     if not stripped.startswith("/"):
-        return ResolvedModelPolicy(AUTO_B14_MODEL_ID, out)
+        return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     token, separator, remainder = stripped.partition(" ")
     alias = token.lower()
@@ -91,14 +108,19 @@ def model_supports(model_id: str, capability: str) -> bool:
 
 
 def model_profile_is_assigned(model_id: str) -> bool:
-    """Return whether B62 has a concrete executable model mapped to its profile."""
-    return model_id not in {AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID}
+    """Return whether the model ID is an approved concrete B62 profile mapping."""
+    return model_id not in {
+        AUTO_B14_MODEL_ID,
+        LOW_B14_MODEL_ID,
+        HIGH_B14_MODEL_ID,
+        UNASSIGNED_B14_MODEL_ID,
+    }
 
 
 def model_policy_is_executable(model_id: str) -> bool:
-    """Return whether the policy has a safe execution path without B62 routing.
+    """Return whether B62 may dispatch this policy to B14 today.
 
-    ``b14/auto`` is executable because B14 remains the route authority. An
-    unassigned product-profile sentinel is not executable.
+    The current rollout permits only concrete profile mappings. In particular,
+    unconstrained ``b14/auto`` is not an executable B62 policy.
     """
-    return model_id == AUTO_B14_MODEL_ID or model_profile_is_assigned(model_id)
+    return model_profile_is_assigned(model_id)
