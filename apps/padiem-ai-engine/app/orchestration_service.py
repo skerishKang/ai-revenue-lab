@@ -553,6 +553,17 @@ class OrchestrationEngineService:
             for method in ("issue", "resolve", "claim", "commit", "release", "cancel"):
                 if not callable(getattr(continuation_store, method, None)):
                     raise ValueError(f"continuation_store must provide {method}()")
+            # Atomic cancel capability is optional for backward compatibility;
+            # remember whether the store supports the claim/commit/release_cancel lifecycle
+            # so cancel_payload can fail fast with a deterministic 503 instead of
+            # AttributeError -> continuation_store_unavailable at call time.
+            self._continuation_store_supports_atomic_cancel = all(
+                callable(getattr(continuation_store, m, None))
+                for m in ("claim_cancel", "commit_cancel", "release_cancel")
+            )
+        else:
+            # Default in-memory store always supports atomic cancel
+            self._continuation_store_supports_atomic_cancel = True
         self._runtime_factory = runtime_factory
         self._b14_service_bound = bool(b14_service_bound)
         self._idempotency_adapter = idempotency_adapter
@@ -1021,6 +1032,12 @@ class OrchestrationEngineService:
             return _service_error(
                 "continuation_store_unavailable",
                 "Approval continuation storage is unavailable.",
+                status_code=503,
+            )
+        if not getattr(self, "_continuation_store_supports_atomic_cancel", True):
+            return _service_error(
+                "continuation_store_unavailable",
+                "Approval continuation storage does not support atomic cancellation.",
                 status_code=503,
             )
         try:

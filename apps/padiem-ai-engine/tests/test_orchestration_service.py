@@ -825,3 +825,65 @@ async def test_cancel_expired_continuation_returns_409_and_no_core_event() -> No
     response = await service.cancel_payload(payload)
     assert response.status_code == 409
     assert response.body["error"]["code"] == "continuation_expired"
+
+
+async def test_cancel_legacy_store_without_atomic_capability_returns_503() -> None:
+    class LegacyStore:
+        def __init__(self) -> None:
+            self._inner = InMemoryContinuationStore()
+
+        def issue(self, *, app_id, pause, plan_id, idempotency_key=None, request_fingerprint=None):  # type: ignore[no-untyped-def]
+            return self._inner.issue(
+                app_id=app_id, pause=pause, plan_id=plan_id,
+                idempotency_key=idempotency_key, request_fingerprint=request_fingerprint,
+            )
+
+        def resolve(self, *, app_id, continuation_ref):  # type: ignore[no-untyped-def]
+            return self._inner.resolve(app_id=app_id, continuation_ref=continuation_ref)
+
+        def claim(self, *, app_id, continuation_ref):  # type: ignore[no-untyped-def]
+            return self._inner.claim(app_id=app_id, continuation_ref=continuation_ref)
+
+        def commit(self, *, app_id, continuation_ref, claim_token):  # type: ignore[no-untyped-def]
+            return self._inner.commit(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
+
+        def release(self, *, app_id, continuation_ref, claim_token):  # type: ignore[no-untyped-def]
+            return self._inner.release(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
+
+        def cancel(self, *, app_id, continuation_ref):  # type: ignore[no-untyped-def]
+            return self._inner.cancel(app_id=app_id, continuation_ref=continuation_ref)
+
+    legacy = LegacyStore()
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=legacy,  # type: ignore[arg-type]
+    )
+    # issue a continuation via the legacy inner store so resolve will find it
+    # use the service's store (legacy) to issue
+    from app.orchestration_service import ContinuationRecord
+
+    # create a real continuation through the service's legacy store
+    pause = legacy._inner._records  # access inner for setup
+    # create via make_server_continuation helper but patch store
+    # Instead directly issue
+    now = datetime.now(timezone.utc)
+    pause_obj = ApprovalPause(
+        pause_id="pause_legacy_1",
+        run_id="run_legacy_1",
+        agent_runtime_id="agent:padiem:orchestrator_1",
+        tool_id="calc",
+        invocation_sha256="0" * 64,
+        requirement=ApprovalRequirement.USER_CONFIRMATION,
+        step_index=1,
+        created_at=now,
+        expires_at=now + timedelta(minutes=10),
+        trace_id="tr_orch_test",
+    )
+    ref = legacy.issue(app_id="b62", pause=pause_obj, plan_id=None)
+    # service should have detected missing atomic capability and fail fast
+    assert service._continuation_store_supports_atomic_cancel is False
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "continuation_store_unavailable"
