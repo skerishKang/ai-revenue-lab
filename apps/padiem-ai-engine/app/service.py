@@ -16,6 +16,12 @@ from padiem_ai_core import (
 )
 from padiem_ai_core.contextual_execution import ContextualExecutionRunner
 
+from app.context_permission_wire import (
+    EngineContextPermissionWireError,
+    parse_context_permission_required,
+    parse_engine_context_permission,
+    request_with_allowed_context_refs,
+)
 from app.execution_context_wire import parse_execution_context
 
 EXECUTE_PATH = "/internal/v1/execute"
@@ -24,7 +30,10 @@ MAX_REQUEST_BODY_BYTES = 128 * 1024
 
 _TOP_LEVEL_REQUIRED = frozenset({"app_id", "agent", "messages"})
 _TOP_LEVEL_ALLOWED = frozenset(
-    {"app_id", "agent", "messages", "session_id", "additional_system_context", "trace_id", "execution_context"}
+    {
+        "app_id", "agent", "messages", "session_id", "additional_system_context",
+        "trace_id", "execution_context", "context_permission", "context_permission_required",
+    }
 )
 _AGENT_REQUIRED = frozenset({"id", "title", "description", "system_instruction", "task_type", "optimize_for", "max_tokens"})
 _AGENT_ALLOWED = frozenset({
@@ -229,6 +238,26 @@ class EngineService:
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
+        permission_projection = None
+        try:
+            permission_required = parse_context_permission_required(payload.get("context_permission_required"))
+            request_id = request.trace_id or (context.trace_id if context is not None else "execute")
+            permission_projection = parse_engine_context_permission(
+                payload.get("context_permission"),
+                app_id=app_id,
+                request_id=request_id,
+            )
+            if permission_required and permission_projection is None:
+                return _service_error(
+                    "boundary_unavailable",
+                    "Trusted context permission boundary is unavailable.",
+                    status_code=422,
+                )
+            if permission_projection is not None:
+                request = request_with_allowed_context_refs(request, permission_projection)
+        except EngineContextPermissionWireError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+
         try:
             runtime = self._runtime_factory(app_id)
             if context is None:
@@ -255,12 +284,15 @@ class EngineService:
 
         if not isinstance(result, ExecutionResult):
             return _service_error("invalid_execution_result", "Padiem AI Engine returned an invalid execution result.", status_code=500)
-        return ServiceResponse(status_code=200, body={
+        body: dict[str, Any] = {
             "ok": True,
             "answer": result.answer,
             "route": result.route.to_public_dict(),
             "metadata": result.metadata.to_public_dict(),
-        })
+        }
+        if permission_projection is not None:
+            body["context_permission"] = permission_projection.diagnostics()
+        return ServiceResponse(status_code=200, body=body)
 
     async def handle(self, *, method: str, path: str, content_type: str | None = None, body: bytes = b"") -> ServiceResponse:
         normalized_method = method.upper() if isinstance(method, str) else ""
