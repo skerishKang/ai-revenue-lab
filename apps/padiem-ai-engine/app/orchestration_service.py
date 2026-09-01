@@ -137,6 +137,8 @@ class ContinuationRecord:
     request_fingerprint: str | None = None
     state: str = "active"
     claim_token: str | None = None
+    cancel_reason: str | None = None
+    cancel_event_fingerprint: str | None = None
 
 
 class ContinuationStore(Protocol):
@@ -161,6 +163,16 @@ class ContinuationStore(Protocol):
     def release(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None: ...
     def cancel(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
 
+    def claim_cancel(
+        self, *, app_id: str, continuation_ref: str, reason: str
+    ) -> ContinuationRecord: ...
+    def commit_cancel(
+        self, *, app_id: str, continuation_ref: str, claim_token: str
+    ) -> ContinuationRecord: ...
+    def release_cancel(
+        self, *, app_id: str, continuation_ref: str, claim_token: str
+    ) -> ContinuationRecord: ...
+
 
 class InMemoryContinuationStore:
     """Process-local reference implementation of the durable CAS contract.
@@ -183,6 +195,8 @@ class InMemoryContinuationStore:
             "request_fingerprint": record.request_fingerprint,
             "state": record.state,
             "claim_token": record.claim_token,
+            "cancel_reason": record.cancel_reason,
+            "cancel_event_fingerprint": record.cancel_event_fingerprint,
         }
         values.update(changes)
         return ContinuationRecord(**values)
@@ -219,6 +233,10 @@ class InMemoryContinuationStore:
             raise ServiceContractError("continuation_expired", "Continuation has expired.", status_code=409)
         if record.state == "claimed":
             raise ServiceContractError("continuation_claimed", "Continuation is already being resumed.", status_code=409)
+        if record.state == "cancelling":
+            raise ServiceContractError(
+                "continuation_cancel_in_progress", "Continuation is already being cancelled.", status_code=409
+            )
         if record.pause.expires_at <= datetime.now(timezone.utc):
             self._records[continuation_ref] = self._copy(record, state="expired", claim_token=None)
             raise ServiceContractError("continuation_expired", "Continuation has expired.", status_code=409)
@@ -253,6 +271,52 @@ class InMemoryContinuationStore:
         record = self._claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
         state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
         self._records[continuation_ref] = self._copy(record, state=state, claim_token=None)
+
+    def _cancel_claimed(
+        self, *, app_id: str, continuation_ref: str, claim_token: str
+    ) -> ContinuationRecord:
+        record = self._records.get(continuation_ref)
+        if record is None or record.app_id != app_id:
+            raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
+        if record.state == "consumed":
+            raise ServiceContractError("continuation_consumed", "Continuation has already been consumed.", status_code=409)
+        if record.state != "cancelling" or record.claim_token != claim_token:
+            raise ServiceContractError(
+                "continuation_cancel_claim_failed", "Continuation cancel claim is no longer valid.", status_code=409
+            )
+        return record
+
+    def claim_cancel(self, *, app_id: str, continuation_ref: str, reason: str) -> ContinuationRecord:
+        record = self._get(app_id=app_id, continuation_ref=continuation_ref)
+        claimed = self._copy(
+            record,
+            state="cancelling",
+            claim_token=f"cancel_{secrets.token_urlsafe(24)}",
+            cancel_reason=reason,
+            cancel_event_fingerprint=None,
+        )
+        self._records[continuation_ref] = claimed
+        return claimed
+
+    def commit_cancel(self, *, app_id: str, continuation_ref: str, claim_token: str) -> ContinuationRecord:
+        record = self._cancel_claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
+        committed = self._copy(
+            record,
+            state="cancelled",
+            claim_token=None,
+            cancel_event_fingerprint=f"evt_{secrets.token_hex(8)}",
+        )
+        self._records[continuation_ref] = committed
+        return committed
+
+    def release_cancel(self, *, app_id: str, continuation_ref: str, claim_token: str) -> ContinuationRecord:
+        record = self._cancel_claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
+        state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
+        released = self._copy(
+            record, state=state, claim_token=None, cancel_reason=None, cancel_event_fingerprint=None
+        )
+        self._records[continuation_ref] = released
+        return released
 
     def cancel(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
         record = self._get(app_id=app_id, continuation_ref=continuation_ref)
@@ -489,6 +553,17 @@ class OrchestrationEngineService:
             for method in ("issue", "resolve", "claim", "commit", "release", "cancel"):
                 if not callable(getattr(continuation_store, method, None)):
                     raise ValueError(f"continuation_store must provide {method}()")
+            # Atomic cancel capability is optional for backward compatibility;
+            # remember whether the store supports the claim/commit/release_cancel lifecycle
+            # so cancel_payload can fail fast with a deterministic 503 instead of
+            # AttributeError -> continuation_store_unavailable at call time.
+            self._continuation_store_supports_atomic_cancel = all(
+                callable(getattr(continuation_store, m, None))
+                for m in ("claim_cancel", "commit_cancel", "release_cancel")
+            )
+        else:
+            # Default in-memory store always supports atomic cancel
+            self._continuation_store_supports_atomic_cancel = True
         self._runtime_factory = runtime_factory
         self._b14_service_bound = bool(b14_service_bound)
         self._idempotency_adapter = idempotency_adapter
@@ -959,6 +1034,12 @@ class OrchestrationEngineService:
                 "Approval continuation storage is unavailable.",
                 status_code=503,
             )
+        if not getattr(self, "_continuation_store_supports_atomic_cancel", True):
+            return _service_error(
+                "continuation_store_unavailable",
+                "Approval continuation storage does not support atomic cancellation.",
+                status_code=503,
+            )
         try:
             continuation_ref = _parse_continuation_ref(payload.get("continuation_ref"))
             record = await self._continuation_call(
@@ -988,24 +1069,67 @@ class OrchestrationEngineService:
             return _service_error("invalid_request", "Cancellation request fields are invalid.", status_code=400)
 
         try:
-            cancelled_record = await self._continuation_call(
-                "cancel",
+            claimed_record = await self._continuation_call(
+                "claim_cancel",
                 app_id=app_id,
                 continuation_ref=record.continuation_ref,
+                reason=reason,
             )
-            if not isinstance(cancelled_record, ContinuationRecord) or cancelled_record.state != "cancelled":
+            if not isinstance(claimed_record, ContinuationRecord) or claimed_record.state != "cancelling":
                 raise ServiceContractError(
-                    "continuation_cancel_failed",
-                    "Continuation cancellation did not commit.",
+                    "continuation_cancel_claim_failed",
+                    "Continuation cancel claim did not commit.",
                     status_code=503,
                 )
-            runtime = self._runtime_factory(app_id)
-            runner = OrchestrationRunner(runtime=runtime)
-            events = runner.cancel_pause(record.pause, trace_id=trace_id, reason=reason)
+            claim_token = claimed_record.claim_token
+            assert claim_token is not None
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except (TypeError, ValueError, OverflowError):
+            return _service_error("invalid_request", "Cancellation request fields are invalid.", status_code=400)
+
+        try:
+            runtime = self._runtime_factory(app_id)
+            runner = OrchestrationRunner(runtime=runtime)
+            events = runner.cancel_pause(claimed_record.pause, trace_id=trace_id, reason=reason)
+        except ServiceContractError as exc:
+            try:
+                await self._continuation_call(
+                    "release_cancel",
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError:
+                pass
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except Exception:
+            try:
+                await self._continuation_call(
+                    "release_cancel",
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError:
+                pass
             return _service_error("engine_internal_error", "Cancellation failed.", status_code=500)
+
+        try:
+            committed = await self._continuation_call(
+                "commit_cancel",
+                app_id=app_id,
+                continuation_ref=record.continuation_ref,
+                claim_token=claim_token,
+            )
+            if not isinstance(committed, ContinuationRecord) or committed.state != "cancelled":
+                raise ServiceContractError(
+                    "continuation_cancel_commit_failed",
+                    "Continuation cancel commit did not persist.",
+                    status_code=503,
+                )
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
         return ServiceResponse(
             status_code=200,
