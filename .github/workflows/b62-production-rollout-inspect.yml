@@ -1,4 +1,4 @@
-name: B62 Production Post-Failure Read-Only Inspect
+name: B62 Production Cleanup Config Dry Run
 
 on:
   push:
@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  inspect:
+  dry-run:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,36 +19,65 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Fresh production read-only state
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e627c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+      - name: Generate complete config excluding exactly one malformed legacy alias
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          B62_BASE_URL: https://padiem-chat.charliekant.workers.dev
-          B14_BASE_URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev
         run: |
-          set -euo pipefail
-          python .github/scripts/b62_cloudflare_preflight.py
-          python .github/scripts/b62_cloudflare_live_readiness.py
-          python .github/scripts/b62_cloudflare_deployed_parity.py
           python - <<'PY'
-          import json, os, re
+          import json, os, pathlib, re
           from urllib.request import Request, urlopen
-          from urllib.error import HTTPError
           account=os.environ['CLOUDFLARE_ACCOUNT_ID']; token=os.environ['CLOUDFLARE_API_TOKEN']
           req=Request(f'https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/padiem-chat/settings',headers={'Authorization':f'Bearer {token}','Accept':'application/json'},method='GET')
-          try:
-              with urlopen(req,timeout=20) as r: payload=json.loads(r.read(524288).decode())
-          except HTTPError as e: raise SystemExit(f'settings HTTP {e.code}')
+          with urlopen(req,timeout=20) as r: payload=json.loads(r.read(524288).decode())
           items=(payload.get('result') or {}).get('bindings') or []
-          valid=re.compile(r'^[A-Za-z0-9_]+$')
-          invalid=[i for i in items if isinstance(i,dict) and isinstance(i.get('name'),str) and not valid.fullmatch(i['name'])]
-          correct=[i for i in items if isinstance(i,dict) and i.get('name')=='PADIEM_CHAT_TEST_GUARD_DIGEST']
-          alias=[i for i in invalid if i.get('type')=='plain_text' and i.get('name','').startswith('PADIEM_CHAT_TEST_GUARD_DIGEST=')]
-          print(f'BINDING_COUNT={len(items)}')
-          print(f'INVALID_BINDING_NAME_COUNT={len(invalid)}')
-          print(f'MALFORMED_GUARD_ALIAS_COUNT={len(alias)}')
-          print(f'VALID_GUARD_BINDING_COUNT={len(correct)}')
-          print('BINDING_VALUES_LOGGED=false')
-          if len(invalid)!=1 or len(alias)!=1 or len(correct)!=1:
-              raise SystemExit('Unexpected invalid binding shape; refusing cleanup assumption')
+          valid_name=re.compile(r'^[A-Za-z0-9_]+$')
+          invalid=[i for i in items if isinstance(i,dict) and isinstance(i.get('name'),str) and not valid_name.fullmatch(i['name'])]
+          aliases=[i for i in invalid if i.get('type')=='plain_text' and i.get('name','').startswith('PADIEM_CHAT_TEST_GUARD_DIGEST=')]
+          correct=[i for i in items if isinstance(i,dict) and i.get('name')=='PADIEM_CHAT_TEST_GUARD_DIGEST' and i.get('type')=='plain_text']
+          if len(invalid)!=1 or len(aliases)!=1 or len(correct)!=1:
+              raise SystemExit('Legacy cleanup shape mismatch; refusing dry-run')
+          clean=[i for i in items if i is not aliases[0]]
+          by={i.get('name'):i for i in clean if isinstance(i,dict) and isinstance(i.get('name'),str)}
+          required={'ASSETS':'assets','B14_SERVICE':'service','PADIEM_CHAT_DB':'d1','PADIEM_CHAT_QUOTA_SALT':'secret_text','PADIEM_CHAT_RUNTIME_MODE':'plain_text','PADIEM_CHAT_LIVE_ENABLED':'plain_text','PADIEM_CHAT_TIMEOUT_SECONDS':'plain_text','PADIEM_CHAT_B14_BASE_URL':'plain_text','PADIEM_CHAT_ANONYMOUS_BURST_LIMIT':'plain_text','PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT':'plain_text','PADIEM_CHAT_USER_BURST_LIMIT':'plain_text','PADIEM_CHAT_USER_DAILY_LIMIT':'plain_text','PADIEM_CHAT_GLOBAL_DAILY_LIMIT':'plain_text','PADIEM_CHAT_TEST_GUARD_DIGEST':'plain_text'}
+          for name,kind in required.items():
+              if by.get(name,{}).get('type') != kind: raise SystemExit(f'missing binding {name}')
+          if len(clean)!=14: raise SystemExit(f'unexpected cleaned binding count {len(clean)}')
+          service=by['B14_SERVICE']; d1=by['PADIEM_CHAT_DB']
+          def q(v): return json.dumps(str(v),ensure_ascii=False)
+          lines=['name = "padiem-chat"','main = "worker.py"','compatibility_date = "2026-08-25"','compatibility_flags = ["python_workers"]','workers_dev = true','keep_vars = false','','[assets]','directory = "static"','binding = "ASSETS"','','[[services]]','binding = "B14_SERVICE"',f'service = {q(service["service"])}']
+          if isinstance(service.get('environment'),str) and service['environment'].strip(): lines.append(f'environment = {q(service["environment"])}')
+          lines += ['','[[d1_databases]]','binding = "PADIEM_CHAT_DB"','database_name = "existing-production-d1"',f'database_id = {q(d1["database_id"])}','','[vars]']
+          plain=0
+          for i in clean:
+              if i.get('type')!='plain_text': continue
+              name,text=i.get('name'),i.get('text')
+              if not isinstance(name,str) or not isinstance(text,str): raise SystemExit('malformed plain var')
+              if name=='PADIEM_CHAT_RUNTIME_MODE': text='mock'
+              elif name=='PADIEM_CHAT_LIVE_ENABLED': text='false'
+              lines.append(f'{q(name)} = {q(text)}'); plain+=1
+          p=pathlib.Path('apps/padiem-chat/wrangler.toml'); p.write_text('\n'.join(lines)+'\n',encoding='utf-8'); os.chmod(p,0o600)
+          print('LEGACY_INVALID_BINDING_TO_REMOVE=1')
+          print('EXPECTED_POSTDEPLOY_BINDING_COUNT=14')
+          print(f'VALID_PLAIN_VARS_IN_CONFIG={plain}')
+          print('KEEP_VARS=false')
+          print('EXISTING_SECRET_VALUE_LOGGED=false')
+          print('D1_DATABASE_ID_LOGGED=false')
           PY
+      - name: Dry-run exact source with cleanup config
+        working-directory: apps/padiem-chat
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --dry-run
+          echo 'B62_CLEANUP_DRY_RUN=PASS'
+          echo 'PRODUCTION_MUTATION=0'
