@@ -15,6 +15,7 @@ from starlette.staticfiles import StaticFiles
 from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
 from .auth import GoogleOAuthClient
 from .auth_routes import auth_ready, auth_status, current_user_id, google_callback, google_start, logout
+from .auto_grounding import AutoGroundingService
 from .b14_client import B14Client, ChatRuntimeError
 from .config import ConfigError, Settings
 from .documents import (
@@ -159,6 +160,24 @@ def _apply_b62_model_policy(messages: list[dict[str, str]]) -> tuple[str, list[d
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
     return policy.model_id, policy.messages
+
+
+def _public_evidence(items) -> list[dict[str, Any]]:
+    raw = [
+        {
+            "id": item.id,
+            "title": item.title,
+            "url": item.url,
+            "snippet": item.snippet,
+            "retrieved_at": item.retrieved_at,
+            "provider": item.provider,
+            "source_type": item.source_type,
+        }
+        for item in items
+    ]
+    projected = public_chat_result({"evidence": raw})
+    evidence = projected.get("evidence", [])
+    return evidence if isinstance(evidence, list) else []
 
 
 async def health(request: Request) -> JSONResponse:
@@ -369,6 +388,18 @@ async def api_chat_stream(request: Request):
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
 
+    auto_grounding: AutoGroundingService = request.app.state.auto_grounding
+    try:
+        auto_plan = await auto_grounding.prepare(
+            messages,
+            skill=skill,
+            additional_system_context=reference_context,
+        )
+    except GroundingError as exc:
+        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+    if auto_plan.prepared is not None:
+        reference_context = auto_plan.prepared.context
+
     client: B14Client = request.app.state.b14_client
     stream = client.stream_text_auto(
         messages,
@@ -417,6 +448,10 @@ async def api_chat_stream(request: Request):
                     yield _public_sse("delta", {"delta": event.delta_content})
                 if event.done:
                     done_payload: dict[str, Any] = {"done": True}
+                    if auto_plan.prepared is not None:
+                        done_payload["answer_status"] = "answered_with_evidence"
+                        done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
+                        done_payload["tool"] = {"id": "web_search", "title": "웹 검색"}
                     if uid is not None and store is not None and latest_user:
                         answer = "".join(answer_parts)
                         try:
@@ -581,15 +616,27 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         if tool_request is None:
-            client: B14Client = request.app.state.b14_client
-            result = await client.complete(
-                messages,
-                skill=skill,
-                additional_system_context=reference_context,
-                attachments=image_attachments,
-            )
+            auto_grounding: AutoGroundingService = request.app.state.auto_grounding
+            auto_decision = None if image_attachments else auto_grounding.decide(messages, skill=skill)
+            if auto_decision is not None and auto_decision.requires_search:
+                grounded: GroundedChatService = request.app.state.grounded_chat
+                result = await grounded.complete(
+                    messages,
+                    skill=skill,
+                    tool=get_tool_presentation("web_search"),
+                    tool_input=auto_decision.query,
+                    additional_system_context=reference_context,
+                )
+            else:
+                client: B14Client = request.app.state.b14_client
+                result = await client.complete(
+                    messages,
+                    skill=skill,
+                    additional_system_context=reference_context,
+                    attachments=image_attachments,
+                )
         else:
-            grounded: GroundedChatService = request.app.state.grounded_chat
+            grounded = request.app.state.grounded_chat
             result = await grounded.complete(
                 messages,
                 skill=skill,
@@ -671,6 +718,7 @@ def create_app(
     app.state.b14_client = B14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
+    app.state.auto_grounding = AutoGroundingService(app.state.web_provider)
     return app
 
 
