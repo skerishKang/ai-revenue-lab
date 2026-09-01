@@ -393,6 +393,8 @@ def _parse_cancel_reason(value: Any) -> str:
     reason = value if value is not None else "user_cancelled"
     if not isinstance(reason, str):
         raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a string.")
+    if not reason.strip():
+        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
     if not (1 <= len(reason) <= _MAX_CANCEL_REASON_LEN):
         raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
     return reason
