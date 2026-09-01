@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Read-only deployed streaming-chain parity audit for Padiem Chat.
+"""Non-mutating deployed streaming-chain parity audit for Padiem Chat.
 
-The audit makes GET requests only. It compares the public B62 browser assets
-against this checkout and probes both POST-only streaming route surfaces with
-GET so no chat, model/provider, quota, D1, or Worker mutation can occur.
+Browser assets and the B14 POST-only streaming surface are checked with GET.
+The B62 stream route is framework-aware: a single empty/malformed POST must
+fail closed as ``422 invalid_request`` before quota, history, B14 or provider
+execution. No valid chat request is sent by this audit.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,7 +20,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
-USER_AGENT = "b62-deployed-parity/1.1"
+USER_AGENT = "b62-deployed-parity/1.2"
 MAX_PUBLIC_BODY_BYTES = 2_097_152
 B62_STREAM_PATH = "/api/chat/stream"
 B14_AUTO_STREAM_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
@@ -45,6 +47,8 @@ class ParityResult:
     asset_parity: dict[str, bool]
     stream_route_present: bool
     stream_get_status: int
+    stream_probe_status: int
+    stream_probe_error_code: str | None
     b14_auto_stream_route_present: bool
     b14_auto_stream_get_status: int
 
@@ -82,6 +86,20 @@ def _read_bounded(response: Any) -> bytes:
     return body
 
 
+def _http_result_from_error(exc: HTTPError) -> HTTPResult:
+    try:
+        body = exc.read(MAX_PUBLIC_BODY_BYTES + 1)
+    finally:
+        exc.close()
+    if len(body) > MAX_PUBLIC_BODY_BYTES:
+        raise AuditError("public parity error response exceeded the bounded body limit")
+    return HTTPResult(
+        int(exc.code),
+        {str(k).lower(): str(v) for k, v in exc.headers.items()},
+        body,
+    )
+
+
 def fetch_get(
     url: str,
     *,
@@ -100,23 +118,45 @@ def fetch_get(
                 _read_bounded(response),
             )
     except HTTPError as exc:
-        try:
-            body = exc.read(MAX_PUBLIC_BODY_BYTES + 1)
-        finally:
-            exc.close()
-        if len(body) > MAX_PUBLIC_BODY_BYTES:
-            raise AuditError("public parity error response exceeded the bounded body limit")
-        return HTTPResult(
-            int(exc.code),
-            {str(k).lower(): str(v) for k, v in exc.headers.items()},
-            body,
-        )
+        return _http_result_from_error(exc)
     except URLError as exc:
         raise AuditError("network error while reading a public streaming surface") from exc
     except AuditError:
         raise
     except Exception as exc:
         raise AuditError("unexpected error while reading a public streaming surface") from exc
+
+
+def fetch_invalid_post(
+    url: str,
+    *,
+    opener: Callable[..., Any] = urlopen,
+) -> HTTPResult:
+    request = Request(
+        url,
+        data=b"",
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
+        },
+        method="POST",
+    )
+    try:
+        with opener(request, timeout=20) as response:
+            return HTTPResult(
+                int(response.status),
+                {str(k).lower(): str(v) for k, v in response.headers.items()},
+                _read_bounded(response),
+            )
+    except HTTPError as exc:
+        return _http_result_from_error(exc)
+    except URLError as exc:
+        raise AuditError("network error while probing the public B62 stream route") from exc
+    except AuditError:
+        raise
+    except Exception as exc:
+        raise AuditError("unexpected error while probing the public B62 stream route") from exc
 
 
 def _sha256(data: bytes) -> str:
@@ -142,7 +182,7 @@ def asset_matches(
     return _sha256(result.body) == _sha256(local)
 
 
-def _post_only_route_probe(
+def _post_only_get_probe(
     *,
     base_url: str,
     path: str,
@@ -160,17 +200,38 @@ def _post_only_route_probe(
     raise AuditError(f"unexpected HTTP {result.status} while probing {label}")
 
 
+def _error_code(body: bytes) -> str | None:
+    try:
+        payload = json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise AuditError("B62 invalid-POST probe did not return JSON") from exc
+    if not isinstance(payload, dict):
+        return None
+    error = payload.get("error")
+    if not isinstance(error, dict):
+        return None
+    code = error.get("code")
+    return code if isinstance(code, str) else None
+
+
 def stream_route_probe(
     *,
     base_url: str,
-    fetcher: Callable[[str], HTTPResult] = fetch_get,
-) -> tuple[bool, int]:
-    return _post_only_route_probe(
-        base_url=base_url,
-        path=B62_STREAM_PATH,
-        label="public B62 stream route",
-        fetcher=fetcher,
-    )
+    poster: Callable[[str], HTTPResult] = fetch_invalid_post,
+) -> tuple[bool, int, str | None]:
+    """Prove B62 route existence without authorizing quota or provider execution."""
+
+    result = poster(base_url + B62_STREAM_PATH)
+    code = _error_code(result.body) if result.status == 422 else None
+    if result.status == 422 and code == "invalid_request":
+        return True, result.status, code
+    if result.status == 404:
+        return False, result.status, code
+    if result.status == 422:
+        raise AuditError(
+            "B62 invalid-POST probe returned 422 without the expected invalid_request signature"
+        )
+    raise AuditError(f"unexpected HTTP {result.status} while probing public B62 stream route")
 
 
 def b14_auto_stream_route_probe(
@@ -178,7 +239,7 @@ def b14_auto_stream_route_probe(
     base_url: str,
     fetcher: Callable[[str], HTTPResult] = fetch_get,
 ) -> tuple[bool, int]:
-    return _post_only_route_probe(
+    return _post_only_get_probe(
         base_url=base_url,
         path=B14_AUTO_STREAM_PATH,
         label="public B14 auto-stream route",
@@ -192,6 +253,7 @@ def audit(
     b14_base_url: str,
     repo_root: Path,
     fetcher: Callable[[str], HTTPResult] = fetch_get,
+    poster: Callable[[str], HTTPResult] = fetch_invalid_post,
 ) -> ParityResult:
     origin = normalized_base_url(base_url, "B62_BASE_URL")
     b14_origin = normalized_base_url(b14_base_url, "B14_BASE_URL")
@@ -203,7 +265,19 @@ def audit(
             local_path=repo_root / relative_path,
             fetcher=fetcher,
         )
-    stream_present, stream_status = stream_route_probe(base_url=origin, fetcher=fetcher)
+
+    # Keep the historic GET observation for diagnostics. With the terminal StaticFiles
+    # mount, a deployed POST-only B62 route can legitimately return GET=404.
+    stream_get = fetcher(origin + B62_STREAM_PATH)
+    if stream_get.status not in (404, 405):
+        raise AuditError(
+            f"unexpected HTTP {stream_get.status} while reading public B62 stream route with GET"
+        )
+
+    stream_present, stream_probe_status, stream_probe_code = stream_route_probe(
+        base_url=origin,
+        poster=poster,
+    )
     b14_stream_present, b14_stream_status = b14_auto_stream_route_probe(
         base_url=b14_origin,
         fetcher=fetcher,
@@ -211,7 +285,9 @@ def audit(
     return ParityResult(
         parity,
         stream_present,
-        stream_status,
+        stream_get.status,
+        stream_probe_status,
+        stream_probe_code,
         b14_stream_present,
         b14_stream_status,
     )
@@ -228,8 +304,12 @@ def emit(result: ParityResult) -> None:
         print(f"B62_{name}_PARITY={rendered}")
     print(f"STREAM_ROUTE_PRESENT={_render_bool(result.stream_route_present)}")
     print(f"STREAM_ROUTE_GET_HTTP={result.stream_get_status}")
+    print("STREAM_ROUTE_PROBE_METHOD=POST_INVALID")
+    print(f"STREAM_ROUTE_PROBE_HTTP={result.stream_probe_status}")
+    print(f"STREAM_ROUTE_PROBE_ERROR_CODE={result.stream_probe_error_code or 'none'}")
     print(f"B62_STREAM_ROUTE_PRESENT={_render_bool(result.stream_route_present)}")
     print(f"B62_STREAM_ROUTE_GET_HTTP={result.stream_get_status}")
+    print(f"B62_STREAM_ROUTE_PROBE_HTTP={result.stream_probe_status}")
     print(
         f"B14_AUTO_STREAM_ROUTE_PRESENT={_render_bool(result.b14_auto_stream_route_present)}"
     )
@@ -238,9 +318,13 @@ def emit(result: ParityResult) -> None:
         f"DEPLOYED_PROGRESSIVE_SSE_SURFACE={'READY' if result.b62_ready else 'HOLD'}"
     )
     print(f"DEPLOYED_PROGRESSIVE_SSE_CHAIN={'READY' if result.ready else 'HOLD'}")
-    print("HTTP_METHODS_USED=GET_ONLY")
+    print("HTTP_METHODS_USED=GET_PLUS_ONE_INVALID_POST")
+    print("INVALID_ROUTE_PROBE_POSTS=1")
     print("CHAT_POSTS=0")
+    print("VALID_CHAT_POSTS=0")
     print("REAL_PROVIDER_CALLS=0")
+    print("QUOTA_MUTATION=0")
+    print("HISTORY_MUTATION=0")
 
     summary = os.getenv("GITHUB_STEP_SUMMARY")
     if summary:
@@ -253,6 +337,13 @@ def emit(result: ParityResult) -> None:
                 f"| B62_STREAM_ROUTE_PRESENT | `{_render_bool(result.stream_route_present)}` |\n"
             )
             handle.write(f"| B62_STREAM_ROUTE_GET_HTTP | `{result.stream_get_status}` |\n")
+            handle.write("| B62_STREAM_ROUTE_PROBE_METHOD | `POST_INVALID` |\n")
+            handle.write(
+                f"| B62_STREAM_ROUTE_PROBE_HTTP | `{result.stream_probe_status}` |\n"
+            )
+            handle.write(
+                f"| B62_STREAM_ROUTE_PROBE_ERROR_CODE | `{result.stream_probe_error_code or 'none'}` |\n"
+            )
             handle.write(
                 "| B14_AUTO_STREAM_ROUTE_PRESENT | "
                 f"`{_render_bool(result.b14_auto_stream_route_present)}` |\n"
@@ -266,8 +357,9 @@ def emit(result: ParityResult) -> None:
             handle.write(
                 f"| DEPLOYED_PROGRESSIVE_SSE_CHAIN | `{'READY' if result.ready else 'HOLD'}` |\n"
             )
-            handle.write("| HTTP methods used | `GET only` |\n")
-            handle.write("| Chat/provider calls | `0` |\n")
+            handle.write("| HTTP methods used | `GET + one invalid POST` |\n")
+            handle.write("| Valid chat/provider calls | `0` |\n")
+            handle.write("| Quota/history mutation | `0` |\n")
 
 
 def main() -> int:
