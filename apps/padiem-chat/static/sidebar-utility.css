@@ -1,15 +1,8 @@
 .sidebar-bottom {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 264px;
   display: grid;
   gap: 8px;
-  padding: 12px 16px 16px;
-  background: var(--sidebar);
+  padding-top: 14px;
   border-top: 1px solid var(--line);
-  border-right: 1px solid var(--line);
-  z-index: 30;
 }
 .sidebar-bottom .settings-button {
   width: 100%;
@@ -47,17 +40,4 @@
 .sidebar-bottom .login-button {
   margin-left: 0;
   flex-shrink: 0;
-}
-.sidebar {
-  padding-bottom: 120px;
-}
-@media (max-width: 920px) {
-  .sidebar-bottom {
-    width: 264px;
-    z-index: 30;
-  }
-  .main-panel {
-    position: relative;
-    z-index: 1;
-  }
 }

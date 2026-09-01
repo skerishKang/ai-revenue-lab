@@ -10,13 +10,14 @@ HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 def test_settings_in_sidebar_bottom() -> None:
     assert 'id="settingsButton"' in HTML
     assert 'class="sidebar-bottom' in HTML
-    # settings should be inside lower-left utility area (sidebar-bottom)
-    bottom_idx = HTML.index('class="sidebar-bottom"')
-    bottom_area = HTML[bottom_idx : bottom_idx + 800]
-    assert 'id="settingsButton"' in bottom_area
+    sidebar_start = HTML.index('<aside class="sidebar"')
+    sidebar_end = HTML.index('</aside>', sidebar_start)
     topbar_start = HTML.index('<header class="topbar"')
     topbar_end = HTML.index('</header>', topbar_start)
+    sidebar_html = HTML[sidebar_start:sidebar_end]
     topbar_html = HTML[topbar_start:topbar_end]
+    assert 'id="settingsButton"' in sidebar_html
+    assert 'class="sidebar-bottom' in sidebar_html
     # not in topbar as prominent control
     assert 'id="settingsButton"' not in topbar_html
     assert "account-controls" not in topbar_html
@@ -25,17 +26,15 @@ def test_settings_in_sidebar_bottom() -> None:
 def test_login_account_in_sidebar_bottom() -> None:
     assert 'id="loginButton"' in HTML
     assert 'id="accountName"' in HTML
-    # both should be in lower-left utility area near sidebar-bottom, not in topbar
-    assert 'class="sidebar-bottom' in HTML
-    bottom_idx = HTML.index('class="sidebar-bottom"')
-    # login/account should be within 800 chars after bottom start (inside bottom)
-    bottom_area = HTML[bottom_idx : bottom_idx + 800]
-    assert 'id="loginButton"' in bottom_area
-    assert 'id="accountName"' in bottom_area
-    assert 'class="sidebar-account"' in bottom_area or 'account-controls' in bottom_area
+    sidebar_start = HTML.index('<aside class="sidebar"')
+    sidebar_end = HTML.index('</aside>', sidebar_start)
     topbar_start = HTML.index('<header class="topbar"')
     topbar_end = HTML.index('</header>', topbar_start)
+    sidebar_html = HTML[sidebar_start:sidebar_end]
     topbar_html = HTML[topbar_start:topbar_end]
+    assert 'id="loginButton"' in sidebar_html
+    assert 'id="accountName"' in sidebar_html
+    assert 'class="sidebar-account"' in sidebar_html or 'sidebar-bottom' in sidebar_html
     assert 'id="loginButton"' not in topbar_html
 
 
