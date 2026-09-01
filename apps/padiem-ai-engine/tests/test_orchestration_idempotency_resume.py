@@ -33,7 +33,19 @@ def _agent_payload() -> dict:
     }
 
 
-def _resume_payload(*, idempotency_key: str = "idem_resume") -> dict:
+def _decision_payload(now: datetime) -> dict:
+    return {
+        "decision_id": "dec_resume_1",
+        "pause_id": "pause_resume_1",
+        "outcome": "approved",
+        "authority_ref": "control:approval",
+        "evidence_ref": "evidence:approval",
+        "decided_at": (now - timedelta(seconds=1)).isoformat(),
+    }
+
+
+def _resume_payload(*, idempotency_key: str = "idem_resume", now: datetime | None = None) -> dict:
+    timestamp = now or datetime.now(timezone.utc)
     return {
         "app_id": "b62",
         "agent": _agent_payload(),
@@ -44,14 +56,7 @@ def _resume_payload(*, idempotency_key: str = "idem_resume") -> dict:
             "idempotency_key": idempotency_key,
             "timeout_seconds": 15.0,
         },
-        "decision": {
-            "decision_id": "dec_resume_1",
-            "pause_id": "pause_resume_1",
-            "outcome": "approved",
-            "authority_ref": "control:approval",
-            "evidence_ref": "evidence:approval",
-            "decided_at": (datetime.now(timezone.utc) + timedelta(seconds=1)).isoformat(),
-        },
+        "decision": _decision_payload(timestamp),
     }
 
 
@@ -65,8 +70,8 @@ def _fingerprint() -> str:
     )
 
 
-def _pause() -> ApprovalPause:
-    now = datetime.now(timezone.utc)
+def _pause(now: datetime | None = None) -> ApprovalPause:
+    timestamp = now or datetime.now(timezone.utc)
     return ApprovalPause(
         pause_id="pause_resume_1",
         run_id="run_resume_1",
@@ -75,8 +80,8 @@ def _pause() -> ApprovalPause:
         invocation_sha256="0" * 64,
         requirement=ApprovalRequirement.USER_CONFIRMATION,
         step_index=1,
-        created_at=now,
-        expires_at=now + timedelta(minutes=10),
+        created_at=timestamp - timedelta(seconds=2),
+        expires_at=timestamp + timedelta(minutes=10),
         trace_id="tr_orch_test",
     )
 
@@ -86,10 +91,11 @@ def _issue_bound_continuation(
     *,
     idempotency_key: str = "idem_resume",
     request_fingerprint_value: str | None = None,
+    now: datetime | None = None,
 ) -> str:
     return store.issue(
         app_id="b62",
-        pause=_pause(),
+        pause=_pause(now),
         plan_id=None,
         idempotency_key=idempotency_key,
         request_fingerprint=request_fingerprint_value or _fingerprint(),
@@ -163,8 +169,9 @@ async def test_bound_idempotency_resume_runs_once_and_commits_once() -> None:
         approval_decision_verifier=Verifier(),
         continuation_store=store,
     )
-    payload = _resume_payload()
-    ref = _issue_bound_continuation(store)
+    now = datetime.now(timezone.utc)
+    payload = _resume_payload(now=now)
+    ref = _issue_bound_continuation(store, now=now)
     payload["continuation_ref"] = ref
 
     response = await service.resume_payload(payload)
@@ -189,8 +196,9 @@ async def test_bound_idempotency_resume_rejects_key_mismatch_before_rerun() -> N
         approval_decision_verifier=Verifier(),
         continuation_store=store,
     )
-    payload = _resume_payload(idempotency_key="idem_client_other")
-    ref = _issue_bound_continuation(store, idempotency_key="idem_server")
+    now = datetime.now(timezone.utc)
+    payload = _resume_payload(idempotency_key="idem_client_other", now=now)
+    ref = _issue_bound_continuation(store, idempotency_key="idem_server", now=now)
     payload["continuation_ref"] = ref
 
     response = await service.resume_payload(payload)
@@ -214,8 +222,9 @@ async def test_bound_idempotency_resume_rejects_fingerprint_mismatch_before_reru
         approval_decision_verifier=Verifier(),
         continuation_store=store,
     )
-    payload = _resume_payload()
-    ref = _issue_bound_continuation(store, request_fingerprint_value="f" * 64)
+    now = datetime.now(timezone.utc)
+    payload = _resume_payload(now=now)
+    ref = _issue_bound_continuation(store, request_fingerprint_value="f" * 64, now=now)
     payload["continuation_ref"] = ref
 
     response = await service.resume_payload(payload)
@@ -239,8 +248,9 @@ async def test_unbound_resume_rejects_unexpected_idempotency_key_before_rerun() 
         approval_decision_verifier=Verifier(),
         continuation_store=store,
     )
-    payload = _resume_payload()
-    ref = store.issue(app_id="b62", pause=_pause(), plan_id=None)
+    now = datetime.now(timezone.utc)
+    payload = _resume_payload(now=now)
+    ref = store.issue(app_id="b62", pause=_pause(now), plan_id=None)
     payload["continuation_ref"] = ref
 
     response = await service.resume_payload(payload)
