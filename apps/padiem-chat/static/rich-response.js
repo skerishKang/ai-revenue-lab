@@ -14,6 +14,7 @@
   const TABLE_SEPARATOR_CELL = /^:?-{3,}:?$/;
   const INLINE_PATTERN = /(`[^`\n]+`|\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|\*[^*\n]+\*|_[^_\n]+_)/g;
   const INLINE_LINK_PATTERN = /^\[([^\]\n]+)\]\(([^)\s]+)\)$/;
+  const INLINE_WORD_CHAR_PATTERN = /[\p{L}\p{N}_]/u;
 
   function copyText(text) {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
@@ -109,6 +110,15 @@
     container.appendChild(document.createTextNode(value));
   }
 
+  function isStandaloneUnderscoreEmphasis(text, index, token) {
+    const before = index > 0 ? text[index - 1] : "";
+    const after = text[index + token.length] || "";
+    return (
+      (!before || !INLINE_WORD_CHAR_PATTERN.test(before))
+      && (!after || !INLINE_WORD_CHAR_PATTERN.test(after))
+    );
+  }
+
   function appendInline(container, value) {
     const text = String(value || "");
     let cursor = 0;
@@ -130,7 +140,11 @@
         container.appendChild(strong);
       } else if (
         (token.startsWith("*") && token.endsWith("*"))
-        || (token.startsWith("_") && token.endsWith("_"))
+        || (
+          token.startsWith("_")
+          && token.endsWith("_")
+          && isStandaloneUnderscoreEmphasis(text, match.index, token)
+        )
       ) {
         const emphasis = document.createElement("em");
         emphasis.textContent = token.slice(1, -1);
