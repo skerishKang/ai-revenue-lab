@@ -20,7 +20,7 @@ from app.usage_gate import UsageDecision
 MODEL = "openrouter/free"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 WORKER_PATH = Path(__file__).resolve().parents[1] / "worker.py"
-MAIN_PATH = Path(__file__).resolve().parents[1] / "app" / "main.py"
+APP_FACTORY_PATH = Path(__file__).resolve().parents[1] / "app" / "app_factory.py"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -299,11 +299,11 @@ def test_dispatch_aware_stream_clears_refundability_before_transport_attempt():
 
 def test_worker_wires_completed_and_streaming_transports_with_separate_public_stream_route():
     worker = WORKER_PATH.read_text(encoding="utf-8")
-    main = MAIN_PATH.read_text(encoding="utf-8")
+    app_factory = APP_FACTORY_PATH.read_text(encoding="utf-8")
 
     assert "CloudflareB14ServiceTransport(b14_binding)" in worker
     assert "CloudflareB14StreamingServiceTransport(b14_binding)" in worker
     assert "stream_transport=stream_transport" in worker
-    assert 'Route("/api/chat", api_chat, methods=["POST"])' in main
-    assert 'Route("/api/chat/stream", api_chat_stream, methods=["POST"])' in main
-    assert "/api/stream" not in main
+    assert 'Route("/api/chat", api_chat, methods=["POST"])' in app_factory
+    assert 'Route("/api/chat/stream", api_chat_stream, methods=["POST"])' in app_factory
+    assert "/api/stream" not in app_factory
