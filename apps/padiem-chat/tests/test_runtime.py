@@ -344,6 +344,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
     assert "자동 추천" in html
@@ -356,11 +357,13 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
     assert "웹 검색 · 준비 중" in html
     assert "모의 응답 · 실제 모델 호출 없음" in js
-    assert 'fetch("/api/chat"' in js
+    assert "chatTransport.requestCompleted(payload, signal)" in js
+    assert 'fetch("/api/chat"' in transport
     assert "conversationSkill" in js
     assert "OPENROUTER" not in html.upper()
     assert "API_KEY" not in html
     assert "API_KEY" not in js
+    assert "API_KEY" not in transport
 
 
 def test_runtime_reuses_accepted_phase1_css_exactly():

@@ -5,18 +5,18 @@ import subprocess
 from pathlib import Path
 
 
-APP_PATH = Path(__file__).resolve().parents[1] / "static" / "app.js"
+ROOT = Path(__file__).resolve().parents[1]
+APP_PATH = ROOT / "static" / "app.js"
+TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
+INDEX_PATH = ROOT / "static" / "index.html"
 
 
 def _source() -> str:
     return APP_PATH.read_text(encoding="utf-8")
 
 
-def _stream_helpers() -> str:
-    source = _source()
-    start = source.index("  function parseSseFrame(frame) {")
-    end = source.index("  function formatBytes(bytes) {")
-    return source[start:end]
+def _transport_source() -> str:
+    return TRANSPORT_PATH.read_text(encoding="utf-8")
 
 
 def _run_node(script: str, *args: str) -> str:
@@ -29,20 +29,32 @@ def _run_node(script: str, *args: str) -> str:
     return completed.stdout.strip()
 
 
+def _transport_runtime() -> str:
+    return "global.window = globalThis;\n" + _transport_source()
+
+
 def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     source = _source()
+    transport = _transport_source()
+    html = INDEX_PATH.read_text(encoding="utf-8")
 
-    assert 'fetch("/api/chat/stream"' in source
-    assert 'fetch("/api/chat"' in source
+    assert "chatTransport.requestStreaming(payload, signal)" in source
+    assert "chatTransport.requestCompleted(payload, signal)" in source
     assert "if (attachments) {" in source
     assert "return await requestCompletedAnswer(" in source
     assert "return await requestStreamingAnswer(" in source
-    assert '"Accept": "text/event-stream"' in source
-    assert '"Accept": "application/json"' in source
+    assert 'fetch("/api/chat/stream"' in transport
+    assert 'fetch("/api/chat"' in transport
+    assert '"Accept": "text/event-stream"' in transport
+    assert '"Accept": "application/json"' in transport
+    assert 'fetch("/api/chat/stream"' not in source
+    assert 'fetch("/api/chat"' not in source
+    assert html.index('<script src="./document-binary.js"></script>') < html.index('<script src="./chat-transport.js"></script>')
+    assert html.index('<script src="./chat-transport.js"></script>') < html.index('<script src="./app.js"></script>')
+    assert html.index('<script src="./app.js"></script>') < html.index('<script src="./a11y.js"></script>')
 
 
 def test_sse_parser_accepts_comments_unknown_fields_and_multiline_data() -> None:
-    helpers = _stream_helpers()
     frame = (
         ": keepalive\r\n"
         "event: delta\r\n"
@@ -50,7 +62,7 @@ def test_sse_parser_accepts_comments_unknown_fields_and_multiline_data() -> None
         "data: {\"delta\":\"첫\"}\r\n"
         "data: {\"extra\":true}\r\n"
     )
-    script = helpers + "\nconsole.log(JSON.stringify(parseSseFrame(process.argv[1])));"
+    script = _transport_runtime() + "\nconsole.log(JSON.stringify(PadiemChatTransport.parseSseFrame(process.argv[1])));"
     parsed = json.loads(_run_node(script, frame))
 
     assert parsed == {
@@ -60,14 +72,13 @@ def test_sse_parser_accepts_comments_unknown_fields_and_multiline_data() -> None
 
 
 def test_sse_reader_handles_fragmented_crlf_and_multiple_frames() -> None:
-    helpers = _stream_helpers()
     chunks = [
         "event: delta\r",
         "\ndata: {\"delta\":\"안\"}\r\n\r",
         "\nevent: delta\ndata: {\"delta\":\"녕\"}\n\n",
         ": heartbeat\n\nevent: done\r\ndata: {\"done\":true}\r\n\r\n",
     ]
-    script = helpers + r'''
+    script = _transport_runtime() + r'''
 const chunks = JSON.parse(process.argv[1]);
 const encoder = new TextEncoder();
 let index = 0;
@@ -89,7 +100,7 @@ const response = {
 };
 const events = [];
 (async () => {
-  await readSseEvents(response, async (frame) => {
+  await PadiemChatTransport.readSseEvents(response, async (frame) => {
     events.push(frame);
     return false;
   });
@@ -108,12 +119,11 @@ const events = [];
 
 
 def test_sse_reader_cancels_when_consumer_stops_early() -> None:
-    helpers = _stream_helpers()
     chunks = [
         'event: delta\ndata: {"delta":"부분"}\n\n',
         'event: done\ndata: {"done":true}\n\n',
     ]
-    script = helpers + r'''
+    script = _transport_runtime() + r'''
 const chunks = JSON.parse(process.argv[1]);
 const encoder = new TextEncoder();
 let index = 0;
@@ -135,7 +145,7 @@ const response = {
 };
 (async () => {
   let seen = 0;
-  await readSseEvents(response, async () => { seen += 1; return true; });
+  await PadiemChatTransport.readSseEvents(response, async () => { seen += 1; return true; });
   console.log(JSON.stringify({ seen, cancelled, released }));
 })().catch((error) => { console.error(error); process.exit(1); });
 '''
@@ -163,7 +173,7 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     assert "project_files_used" in done_source
 
     partial_start = source.index("  function renderStreamError(")
-    partial_end = source.index("  function parseSseFrame(", partial_start)
+    partial_end = source.index("  function formatBytes(", partial_start)
     partial_source = source[partial_start:partial_end]
     assert "content.replaceChildren()" not in partial_source
     assert "content.appendChild(buildRetryBox" in partial_source
@@ -225,7 +235,8 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
 
 def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary() -> None:
     source = _source()
-    assert 'id="cancelStreamButton"' in (APP_PATH.parent / "index.html").read_text(encoding="utf-8")
+    transport = _transport_source()
+    assert 'id="cancelStreamButton"' in INDEX_PATH.read_text(encoding="utf-8")
     assert "cancelActiveStream" in source
     assert 'activeRequestCancelReason = "user_cancel"' in source
     assert "renderCancelled(article" in source
@@ -233,7 +244,8 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
     assert '"다시 생성"' in source
     assert 'retry.textContent = actionLabel' in source
     assert "requestStreamingAnswer(article" in source
-    assert 'fetch("/api/chat/stream"' in source
+    assert "chatTransport.requestStreaming(payload, signal)" in source
+    assert 'fetch("/api/chat/stream"' in transport
 
 
 def test_timeout_error_keeps_incomplete_answer_in_fail_closed_states() -> None:
@@ -247,7 +259,7 @@ def test_timeout_error_keeps_incomplete_answer_in_fail_closed_states() -> None:
 
 def test_cancel_control_has_mobile_safe_target_and_accessibility_contract() -> None:
     source = _source()
-    html = (APP_PATH.parent / "index.html").read_text(encoding="utf-8")
+    html = INDEX_PATH.read_text(encoding="utf-8")
     css = (APP_PATH.parent / "padiem-cinematic-chat.css").read_text(encoding="utf-8")
     assert 'aria-label="답변 생성 취소"' in html
     assert 'cancelStreamButton.hidden = !inFlight' in source
