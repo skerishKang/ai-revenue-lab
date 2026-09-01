@@ -1,4 +1,4 @@
-name: B62 Production Rollout One Shot
+name: B62 Production Post-Failure Read-Only Inspect
 
 on:
   push:
@@ -8,14 +8,10 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: b62-production-rollout
-  cancel-in-progress: false
-
 jobs:
-  rollout:
+  inspect:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,261 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
-        with:
-          version: "0.12.5"
-
-      - name: Lock exact source and read-only upstream preflight
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "f563b270990a831e25388276095a85b6dd3fcc0b"
-          python .github/scripts/b62_cloudflare_preflight.py | tee /tmp/b62-preflight.txt
-          grep -q '^B14_HEALTH_HTTP=200$' /tmp/b62-preflight.txt
-          grep -q '^B14_PROVIDER_MODE=live$' /tmp/b62-preflight.txt
-          grep -q '^B14_HAS_KEY=true$' /tmp/b62-preflight.txt
-          grep -q '^PADIEM_CHAT_WORKER_STATE=existing$' /tmp/b62-preflight.txt
-          echo 'PREDEPLOY_READ_ONLY_GATE=PASS'
-
-      - name: Snapshot current production settings and build config generator
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          cat > /tmp/b62_prod_config.py <<'PY'
-          import argparse, json, os, pathlib
-          from urllib.request import Request, urlopen
-          from urllib.error import HTTPError
-
-          CF_API = "https://api.cloudflare.com/client/v4"
-          WORKER = "padiem-chat"
-          SETTINGS = pathlib.Path("/tmp/b62-original-settings.json")
-          CONFIG = pathlib.Path("apps/padiem-chat/wrangler.toml")
-          REQUIRED = {
-              "ASSETS": "assets",
-              "B14_SERVICE": "service",
-              "PADIEM_CHAT_DB": "d1",
-              "PADIEM_CHAT_QUOTA_SALT": "secret_text",
-              "PADIEM_CHAT_RUNTIME_MODE": "plain_text",
-              "PADIEM_CHAT_LIVE_ENABLED": "plain_text",
-              "PADIEM_CHAT_TIMEOUT_SECONDS": "plain_text",
-              "PADIEM_CHAT_B14_BASE_URL": "plain_text",
-              "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT": "plain_text",
-              "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT": "plain_text",
-              "PADIEM_CHAT_USER_BURST_LIMIT": "plain_text",
-              "PADIEM_CHAT_USER_DAILY_LIMIT": "plain_text",
-              "PADIEM_CHAT_GLOBAL_DAILY_LIMIT": "plain_text",
-          }
-          SUPPORTED = {"assets", "service", "d1", "plain_text", "secret_text"}
-
-          def headers():
-              return {
-                  "Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}",
-                  "Accept": "application/json",
-                  "User-Agent": "b62-production-rollout/1.0",
-              }
-
-          def get_json(url):
-              req = Request(url, headers=headers(), method="GET")
-              try:
-                  with urlopen(req, timeout=20) as r:
-                      return r.status, json.loads(r.read(524288).decode("utf-8"))
-              except HTTPError as e:
-                  raw = e.read(524288)
-                  try:
-                      payload = json.loads(raw.decode("utf-8")) if raw else {}
-                  except Exception:
-                      payload = {}
-                  return e.code, payload
-
-          def current_settings():
-              account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
-              status, payload = get_json(f"{CF_API}/accounts/{account}/workers/scripts/{WORKER}/settings")
-              if status != 200 or payload.get("success") is not True:
-                  raise SystemExit(f"Worker settings read failed: HTTP {status}")
-              return payload
-
-          def bindings(payload):
-              items = (payload.get("result") or {}).get("bindings") or []
-              if not isinstance(items, list):
-                  raise SystemExit("Malformed Worker settings bindings")
-              return [item for item in items if isinstance(item, dict)]
-
-          def by_name(items):
-              return {item.get("name"): item for item in items if isinstance(item.get("name"), str)}
-
-          def validate(items):
-              names = by_name(items)
-              for name, kind in REQUIRED.items():
-                  item = names.get(name)
-                  if not item or item.get("type") != kind:
-                      raise SystemExit(f"Required binding missing or wrong type: {name}")
-              unknown = sorted({str(item.get("type")) for item in items if item.get("type") not in SUPPORTED})
-              if unknown:
-                  raise SystemExit(f"Unsupported existing binding types: {unknown}")
-              if not isinstance(names["PADIEM_CHAT_DB"].get("database_id"), str):
-                  raise SystemExit("D1 database id unavailable")
-              if not isinstance(names["B14_SERVICE"].get("service"), str):
-                  raise SystemExit("B14 service target unavailable")
-              return names
-
-          def plain_map(items):
-              out = {}
-              for item in items:
-                  if item.get("type") != "plain_text":
-                      continue
-                  name, text = item.get("name"), item.get("text")
-                  if not isinstance(name, str) or not isinstance(text, str):
-                      raise SystemExit("Malformed plain-text binding")
-                  out[name] = text
-              return out
-
-          def q(value):
-              return json.dumps(str(value), ensure_ascii=False)
-
-          def write_config(payload, mode):
-              items = bindings(payload)
-              names = validate(items)
-              plain = plain_map(items)
-              service = names["B14_SERVICE"]
-              d1 = names["PADIEM_CHAT_DB"]
-              if mode == "safe":
-                  runtime, live = "mock", "false"
-              elif mode == "live":
-                  runtime, live = "b14", "true"
-              else:
-                  raise SystemExit("invalid config mode")
-              lines = [
-                  'name = "padiem-chat"',
-                  'main = "worker.py"',
-                  'compatibility_date = "2026-08-25"',
-                  'compatibility_flags = ["python_workers"]',
-                  'workers_dev = true',
-                  'keep_vars = true',
-                  '',
-                  '[assets]',
-                  'directory = "static"',
-                  'binding = "ASSETS"',
-                  '',
-                  '[[services]]',
-                  'binding = "B14_SERVICE"',
-                  f'service = {q(service["service"])}',
-              ]
-              if isinstance(service.get("environment"), str) and service["environment"].strip():
-                  lines.append(f'environment = {q(service["environment"])}')
-              lines += [
-                  '',
-                  '[[d1_databases]]',
-                  'binding = "PADIEM_CHAT_DB"',
-                  'database_name = "existing-production-d1"',
-                  f'database_id = {q(d1["database_id"])}',
-                  '',
-                  '[vars]',
-              ]
-              for name, value in plain.items():
-                  if name == "PADIEM_CHAT_RUNTIME_MODE":
-                      value = runtime
-                  elif name == "PADIEM_CHAT_LIVE_ENABLED":
-                      value = live
-                  lines.append(f'{q(name)} = {q(value)}')
-              CONFIG.write_text("\n".join(lines) + "\n", encoding="utf-8")
-              os.chmod(CONFIG, 0o600)
-              print(f"CONFIG_MODE={mode}")
-              print(f"CONFIG_BINDING_COUNT={len(items)}")
-              print("SECRET_VALUES_LOGGED=false")
-              print("D1_DATABASE_ID_LOGGED=false")
-
-          def shape(items):
-              result = {}
-              for item in items:
-                  name = item.get("name")
-                  kind = item.get("type")
-                  if not isinstance(name, str) or not isinstance(kind, str):
-                      continue
-                  entry = {"type": kind}
-                  if kind == "d1":
-                      entry["database_id"] = item.get("database_id")
-                  elif kind == "service":
-                      entry["service"] = item.get("service")
-                      entry["environment"] = item.get("environment")
-                  elif kind == "plain_text":
-                      entry["text"] = item.get("text")
-                  result[name] = entry
-              return result
-
-          def verify(original, current, mode):
-              original_items = bindings(original)
-              current_items = bindings(current)
-              validate(current_items)
-              a, b = shape(original_items), shape(current_items)
-              if set(a) != set(b):
-                  raise SystemExit("Binding name set changed during deployment")
-              for name in a:
-                  if a[name]["type"] != b[name]["type"]:
-                      raise SystemExit(f"Binding type changed: {name}")
-                  kind = a[name]["type"]
-                  if kind in {"d1", "service"} and a[name] != b[name]:
-                      raise SystemExit(f"Non-secret binding target changed: {name}")
-                  if kind == "plain_text":
-                      expected = a[name].get("text")
-                      if name == "PADIEM_CHAT_RUNTIME_MODE":
-                          expected = "mock" if mode == "safe" else "b14"
-                      elif name == "PADIEM_CHAT_LIVE_ENABLED":
-                          expected = "false" if mode == "safe" else "true"
-                      if b[name].get("text") != expected:
-                          raise SystemExit(f"Plain-text binding changed unexpectedly: {name}")
-              print(f"BINDING_PRESERVATION_{mode.upper()}=PASS")
-              print(f"BINDING_COUNT_AFTER_{mode.upper()}={len(current_items)}")
-
-          parser = argparse.ArgumentParser()
-          sub = parser.add_subparsers(dest="cmd", required=True)
-          sub.add_parser("snapshot")
-          build = sub.add_parser("build")
-          build.add_argument("--mode", choices=["safe", "live"], required=True)
-          check = sub.add_parser("verify")
-          check.add_argument("--mode", choices=["safe", "live"], required=True)
-          args = parser.parse_args()
-
-          if args.cmd == "snapshot":
-              payload = current_settings()
-              items = bindings(payload)
-              names = validate(items)
-              plain = plain_map(items)
-              if plain.get("PADIEM_CHAT_RUNTIME_MODE", "").lower() != "b14" or plain.get("PADIEM_CHAT_LIVE_ENABLED", "").lower() != "true":
-                  raise SystemExit("Predeploy production runtime/live state is not b14/true")
-              SETTINGS.write_text(json.dumps(payload), encoding="utf-8")
-              os.chmod(SETTINGS, 0o600)
-              print(f"SNAPSHOT_BINDING_COUNT={len(items)}")
-              print(f"SNAPSHOT_SECRET_COUNT={sum(1 for item in items if item.get('type') == 'secret_text')}")
-              print("SNAPSHOT_VALUES_LOGGED=false")
-          elif args.cmd == "build":
-              original = json.loads(SETTINGS.read_text(encoding="utf-8"))
-              write_config(original, args.mode)
-          elif args.cmd == "verify":
-              original = json.loads(SETTINGS.read_text(encoding="utf-8"))
-              verify(original, current_settings(), args.mode)
-          PY
-          python /tmp/b62_prod_config.py snapshot
-          python /tmp/b62_prod_config.py build --mode safe
-
-      - name: Deploy exact source in safe-hold posture
-        working-directory: apps/padiem-chat
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy
-          echo 'B62_SAFE_DEPLOYED=true' >> "$GITHUB_ENV"
-          echo 'SAFE_HOLD_DEPLOY=PASS'
-
-      - name: Verify safe-hold bindings and deployed source parity
+      - name: Fresh production read-only state
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -285,117 +27,28 @@ jobs:
           B14_BASE_URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev
         run: |
           set -euo pipefail
-          python /tmp/b62_prod_config.py verify --mode safe
-          python .github/scripts/b62_cloudflare_deployed_parity.py | tee /tmp/b62-safe-parity.txt
-          grep -q '^B62_APP_JS_PARITY=true$' /tmp/b62-safe-parity.txt
-          grep -q '^B62_SEARCH_SOURCES_JS_PARITY=true$' /tmp/b62-safe-parity.txt
-          grep -q '^B62_RICH_RESPONSE_JS_PARITY=true$' /tmp/b62-safe-parity.txt
-          grep -q '^B62_STREAM_ROUTE_PRESENT=true$' /tmp/b62-safe-parity.txt
-          grep -q '^B14_AUTO_STREAM_ROUTE_GET_HTTP=405$' /tmp/b62-safe-parity.txt
-          echo 'SAFE_HOLD_PARITY=PASS'
-
-      - name: Generate live production config
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: python /tmp/b62_prod_config.py build --mode live
-
-      - name: Re-arm exact source on B14 live runtime
-        working-directory: apps/padiem-chat
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy
-          echo 'LIVE_DEPLOY=PASS'
-
-      - name: Verify live bindings and progressive chain
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          B62_BASE_URL: https://padiem-chat.charliekant.workers.dev
-          B14_BASE_URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev
-        run: |
-          set -euo pipefail
-          python /tmp/b62_prod_config.py verify --mode live
-          python .github/scripts/b62_cloudflare_deployed_parity.py | tee /tmp/b62-live-parity.txt
-          grep -q '^B62_APP_JS_PARITY=true$' /tmp/b62-live-parity.txt
-          grep -q '^B62_SEARCH_SOURCES_JS_PARITY=true$' /tmp/b62-live-parity.txt
-          grep -q '^B62_RICH_RESPONSE_JS_PARITY=true$' /tmp/b62-live-parity.txt
-          grep -q '^B62_STREAM_ROUTE_PRESENT=true$' /tmp/b62-live-parity.txt
-          grep -q '^B14_AUTO_STREAM_ROUTE_GET_HTTP=405$' /tmp/b62-live-parity.txt
-          grep -q '^DEPLOYED_PROGRESSIVE_SSE_CHAIN=READY$' /tmp/b62-live-parity.txt
-          echo 'LIVE_PARITY=PASS'
-
-      - name: Bounded ordinary and progressive live smoke
-        env:
-          B62_BASE_URL: https://padiem-chat.charliekant.workers.dev
-        run: |
+          python .github/scripts/b62_cloudflare_preflight.py
+          python .github/scripts/b62_cloudflare_live_readiness.py
+          python .github/scripts/b62_cloudflare_deployed_parity.py
           python - <<'PY'
-          import json, os
+          import json, os, re
           from urllib.request import Request, urlopen
           from urllib.error import HTTPError
-
-          base = os.environ["B62_BASE_URL"].rstrip("/")
-          payload = {"messages": [{"role": "user", "content": "2+2는 무엇인가요? 숫자만 답하세요."}], "mode": "auto", "skill": "auto"}
-          body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-
-          req = Request(base + "/api/chat", data=body, headers={"Content-Type": "application/json", "Accept": "application/json", "User-Agent": "b62-prod-smoke/1.0"}, method="POST")
-          with urlopen(req, timeout=60) as r:
-              data = json.loads(r.read(524288).decode("utf-8"))
-              if r.status != 200 or not isinstance(data.get("answer"), str) or not data["answer"].strip():
-                  raise SystemExit("ordinary live chat smoke failed")
-              print("ORDINARY_CHAT_HTTP=200")
-              print("ORDINARY_CHAT_ANSWER_NONEMPTY=true")
-
-          stream_payload = {"messages": [{"role": "user", "content": "테스트 완료라고 짧게 답해 주세요."}], "mode": "auto", "skill": "auto"}
-          stream_body = json.dumps(stream_payload, ensure_ascii=False).encode("utf-8")
-          req = Request(base + "/api/chat/stream", data=stream_body, headers={"Content-Type": "application/json", "Accept": "text/event-stream", "User-Agent": "b62-prod-smoke/1.0"}, method="POST")
-          with urlopen(req, timeout=90) as r:
-              content_type = (r.headers.get("content-type") or "").lower()
-              if r.status != 200 or not content_type.startswith("text/event-stream"):
-                  raise SystemExit("progressive live chat smoke did not return SSE")
-              text = r.read(1048576).decode("utf-8")
-          has_delta = "event: delta" in text
-          has_done = "event: done" in text and '"done":true' in text.replace(" ", "")
-          if not has_delta or not has_done:
-              raise SystemExit("progressive live chat smoke missing delta/done")
-          print("PROGRESSIVE_CHAT_HTTP=200")
-          print("PROGRESSIVE_CHAT_DELTA=true")
-          print("PROGRESSIVE_CHAT_DONE=true")
-          print("EXPECTED_REAL_PROVIDER_CALLS=2")
+          account=os.environ['CLOUDFLARE_ACCOUNT_ID']; token=os.environ['CLOUDFLARE_API_TOKEN']
+          req=Request(f'https://api.cloudflare.com/client/v4/accounts/{account}/workers/scripts/padiem-chat/settings',headers={'Authorization':f'Bearer {token}','Accept':'application/json'},method='GET')
+          try:
+              with urlopen(req,timeout=20) as r: payload=json.loads(r.read(524288).decode())
+          except HTTPError as e: raise SystemExit(f'settings HTTP {e.code}')
+          items=(payload.get('result') or {}).get('bindings') or []
+          valid=re.compile(r'^[A-Za-z0-9_]+$')
+          invalid=[i for i in items if isinstance(i,dict) and isinstance(i.get('name'),str) and not valid.fullmatch(i['name'])]
+          correct=[i for i in items if isinstance(i,dict) and i.get('name')=='PADIEM_CHAT_TEST_GUARD_DIGEST']
+          alias=[i for i in invalid if i.get('type')=='plain_text' and i.get('name','').startswith('PADIEM_CHAT_TEST_GUARD_DIGEST=')]
+          print(f'BINDING_COUNT={len(items)}')
+          print(f'INVALID_BINDING_NAME_COUNT={len(invalid)}')
+          print(f'MALFORMED_GUARD_ALIAS_COUNT={len(alias)}')
+          print(f'VALID_GUARD_BINDING_COUNT={len(correct)}')
+          print('BINDING_VALUES_LOGGED=false')
+          if len(invalid)!=1 or len(alias)!=1 or len(correct)!=1:
+              raise SystemExit('Unexpected invalid binding shape; refusing cleanup assumption')
           PY
-
-      - name: Final read-only production audit
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          B62_BASE_URL: https://padiem-chat.charliekant.workers.dev
-          B14_BASE_URL: https://ai-revenue-korean-ai-platform.charliekant.workers.dev
-        run: |
-          set -euo pipefail
-          python .github/scripts/b62_cloudflare_live_readiness.py | tee /tmp/b62-final-readiness.txt
-          grep -q '^PUBLIC_LIVE_ACTIVE=true$' /tmp/b62-final-readiness.txt
-          grep -q '^RUNTIME_MODE=b14$' /tmp/b62-final-readiness.txt
-          grep -q '^LIVE_SWITCH=true$' /tmp/b62-final-readiness.txt
-          python .github/scripts/b62_cloudflare_deployed_parity.py | tee /tmp/b62-final-parity.txt
-          grep -q '^B62_APP_JS_PARITY=true$' /tmp/b62-final-parity.txt
-          grep -q '^B62_RICH_RESPONSE_JS_PARITY=true$' /tmp/b62-final-parity.txt
-          grep -q '^DEPLOYED_PROGRESSIVE_SSE_CHAIN=READY$' /tmp/b62-final-parity.txt
-          echo 'B62_PRODUCTION_ROLLOUT=PASS'
-
-      - name: Fail closed to mock/false on rollout failure
-        if: ${{ failure() && env.B62_SAFE_DEPLOYED == 'true' }}
-        working-directory: apps/padiem-chat
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-          python /tmp/b62_prod_config.py build --mode safe
-          cd apps/padiem-chat
-          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy
-          echo 'FAIL_CLOSED_RUNTIME=mock'
-          echo 'FAIL_CLOSED_LIVE=false'
