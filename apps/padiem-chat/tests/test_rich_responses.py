@@ -26,9 +26,10 @@ def test_rich_response_assets_are_additive_and_ordered():
     assert app_index < rich_index < outputs_index
 
 
-def test_rich_renderer_is_text_only_and_has_no_execution_path():
+def test_rich_renderer_is_dom_safe_and_has_no_execution_path():
     _, _, js, _, _, _ = sources()
     assert "document.createElement" in js
+    assert "document.createTextNode" in js
     assert ".textContent =" in js
     assert "innerHTML" not in js
     assert "insertAdjacentHTML" not in js
@@ -71,11 +72,21 @@ def test_raw_answer_remains_phase12_source_after_visual_enhancement():
     assert "outputContent.textContent = activeOutput.content" in outputs_js
 
 
-def test_unknown_inline_markup_is_not_activated():
+def test_inline_markdown_is_supported_without_unsafe_html_or_links():
     _, _, js, _, _, _ = sources()
-    assert "createElement(\"a\")" not in js or 'anchor.download = safeTableFilename(index)' in js
-    assert "href =" not in js.replace("anchor.href = url", "")
-    assert "markdown" not in js.lower()
+    assert "INLINE_PATTERN" in js
+    assert "INLINE_LINK_PATTERN" in js
+    assert "appendInline(" in js
+    assert 'document.createElement("strong")' in js
+    assert 'document.createElement("em")' in js
+    assert 'document.createElement("code")' in js
+    assert 'document.createElement("a")' in js
+    assert "safeInlineLink(" in js
+    assert 'parsed.protocol !== "http:" && parsed.protocol !== "https:"' in js
+    assert 'anchor.target = "_blank"' in js
+    assert 'anchor.rel = "noopener noreferrer"' in js
+    assert "innerHTML" not in js
+    assert "insertAdjacentHTML" not in js
 
 
 def test_phase1_styles_remain_byte_identical():
