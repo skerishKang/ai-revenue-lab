@@ -50,7 +50,7 @@ def _resume_payload(*, idempotency_key: str = "idem_resume") -> dict:
             "outcome": "approved",
             "authority_ref": "control:approval",
             "evidence_ref": "evidence:approval",
-            "decided_at": datetime.now(timezone.utc).isoformat(),
+            "decided_at": (datetime.now(timezone.utc) + timedelta(seconds=1)).isoformat(),
         },
     }
 
