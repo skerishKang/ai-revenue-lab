@@ -38,6 +38,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Validate deployed parity contract
+        run: python .github/scripts/b62_cloudflare_deployed_parity_contract_test.py
       - name: Validate repository mock-only deploy config
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py
       - name: Read-only Cloudflare and B14 preflight
