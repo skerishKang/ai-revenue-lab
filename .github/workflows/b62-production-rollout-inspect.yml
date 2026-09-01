@@ -1,4 +1,4 @@
-name: B62 Production Read-Only Audit
+name: B62 Production D1 Metadata Read-Only Audit
 
 on:
   push:
@@ -15,156 +15,64 @@ concurrency:
 jobs:
   audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           ref: f563b270990a831e25388276095a85b6dd3fcc0b
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
-        with:
-          version: "0.12.5"
-
-      - name: Exact source gate
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "f563b270990a831e25388276095a85b6dd3fcc0b"
-          echo 'EXACT_SOURCE=f563b270990a831e25388276095a85b6dd3fcc0b'
-          echo 'PRODUCTION_MUTATION=NONE'
-
-      - name: Audit current production settings and build dry-run config
+      - name: Read existing Worker-bound D1 metadata only
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os, pathlib, re
+          import json, os
+          from urllib.error import HTTPError
           from urllib.request import Request, urlopen
 
           api='https://api.cloudflare.com/client/v4'
           account=os.environ['CLOUDFLARE_ACCOUNT_ID']
-          worker='padiem-chat'
-          req=Request(f'{api}/accounts/{account}/workers/scripts/{worker}/settings',headers={'Authorization':f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}",'Accept':'application/json','User-Agent':'b62-read-only-audit/1.0'})
+          token=os.environ['CLOUDFLARE_API_TOKEN']
+          headers={'Authorization':f'Bearer {token}','Accept':'application/json','User-Agent':'b62-d1-metadata-audit/1.0'}
+
+          req=Request(f'{api}/accounts/{account}/workers/scripts/padiem-chat/settings',headers=headers)
           with urlopen(req,timeout=20) as r:
-              payload=json.loads(r.read(524288).decode('utf-8'))
-          if payload.get('success') is not True:
-              raise SystemExit('settings request failed')
-          bindings=(payload.get('result') or {}).get('bindings') or []
-          if not isinstance(bindings,list):
-              raise SystemExit('malformed settings bindings')
-          by={b.get('name'):b for b in bindings if isinstance(b,dict) and isinstance(b.get('name'),str)}
-          bad=[b for b in bindings if isinstance(b,dict) and isinstance(b.get('name'),str) and not re.fullmatch(r'[A-Za-z0-9_]+',b['name'])]
-          aliases=[b for b in bad if b.get('type')=='plain_text' and b.get('name','').startswith('PADIEM_CHAT_TEST_GUARD_DIGEST=')]
-          required={
-              'ASSETS':'assets','B14_SERVICE':'service','PADIEM_CHAT_DB':'d1',
-              'PADIEM_CHAT_QUOTA_SALT':'secret_text','PADIEM_CHAT_RUNTIME_MODE':'plain_text',
-              'PADIEM_CHAT_LIVE_ENABLED':'plain_text','PADIEM_CHAT_TEST_GUARD_DIGEST':'plain_text'}
-          for name,typ in required.items():
-              if by.get(name,{}).get('type') != typ:
-                  raise SystemExit(f'missing/wrong required binding {name}')
-          runtime=by['PADIEM_CHAT_RUNTIME_MODE'].get('text')
-          live=by['PADIEM_CHAT_LIVE_ENABLED'].get('text')
-          d1id=by['PADIEM_CHAT_DB'].get('database_id')
-          service=by['B14_SERVICE'].get('service')
-          if not isinstance(d1id,str) or not d1id:
-              raise SystemExit('D1 id unavailable')
-          if not isinstance(service,str) or not service:
-              raise SystemExit('B14 service target unavailable')
-          print(f'CURRENT_BINDING_COUNT={len(bindings)}')
-          print(f'MALFORMED_BINDING_COUNT={len(bad)}')
-          print(f'MALFORMED_GUARD_ALIAS_COUNT={len(aliases)}')
-          print(f'CURRENT_RUNTIME={runtime}')
-          print(f'CURRENT_LIVE={live}')
-          print('D1_ID_PRESENT=true')
-          print('B14_SERVICE_PRESENT=true')
-          print('QUOTA_SALT_SECRET_BOUND=true')
-          print('SECRETS_LOGGED=false')
+              settings=json.loads(r.read(524288).decode())
+          bindings=(settings.get('result') or {}).get('bindings') or []
+          d1=[b for b in bindings if b.get('name')=='PADIEM_CHAT_DB' and b.get('type')=='d1']
+          if len(d1)!=1 or not d1[0].get('database_id'):
+              raise SystemExit('exact D1 binding not found')
+          database_id=d1[0]['database_id']
+          print('WORKER_D1_BINDING_COUNT=1')
+          print('D1_ID_LOGGED=false')
 
-          clean=[b for b in bindings if b not in aliases]
-          if len(aliases) != 1:
-              raise SystemExit('legacy malformed alias shape changed')
-          q=lambda v: json.dumps(str(v),ensure_ascii=False)
-          plain={b['name']:b.get('text','') for b in clean if b.get('type')=='plain_text' and isinstance(b.get('name'),str)}
-          svc=by['B14_SERVICE']
-          lines=[
-              'name = "padiem-chat"',
-              'main = "worker.py"',
-              'compatibility_date = "2026-08-25"',
-              'compatibility_flags = ["python_workers"]',
-              'workers_dev = true',
-              'keep_vars = false',
-              '',
-              '[assets]',
-              'directory = "static"',
-              'binding = "ASSETS"',
-              '',
-              '[[services]]',
-              'binding = "B14_SERVICE"',
-              f'service = {q(service)}',
-          ]
-          if isinstance(svc.get('environment'),str) and svc['environment'].strip():
-              lines.append(f'environment = {q(svc["environment"])}')
-          lines += [
-              '',
-              '[[d1_databases]]',
-              'binding = "PADIEM_CHAT_DB"',
-              'database_name = "existing-production-d1"',
-              f'database_id = {q(d1id)}',
-              '',
-              '[vars]',
-          ]
-          for name,value in plain.items():
-              lines.append(f'{q(name)} = {q(value)}')
-          path=pathlib.Path('apps/padiem-chat/wrangler.toml')
-          path.write_text('\n'.join(lines)+'\n',encoding='utf-8')
-          os.chmod(path,0o600)
-          print('DRY_RUN_CONFIG_BINDINGS=14')
+          for endpoint,label in [
+              (f'{api}/accounts/{account}/d1/database/{database_id}','GET_BY_ID'),
+              (f'{api}/accounts/{account}/d1/database/{database_id}/query','QUERY_BY_ID'),
+          ]:
+              try:
+                  if label=='QUERY_BY_ID':
+                      body=json.dumps({'sql':'SELECT 1 AS ok'}).encode()
+                      rq=Request(endpoint,data=body,method='POST',headers={**headers,'Content-Type':'application/json'})
+                  else:
+                      rq=Request(endpoint,headers=headers)
+                  with urlopen(rq,timeout=20) as r:
+                      payload=json.loads(r.read(524288).decode())
+                  result=payload.get('result')
+                  print(f'{label}_HTTP=200')
+                  print(f'{label}_SUCCESS={str(payload.get("success") is True).lower()}')
+                  if label=='GET_BY_ID' and isinstance(result,dict):
+                      name=result.get('name')
+                      if isinstance(name,str) and name.strip():
+                          print(f'D1_DATABASE_NAME={name}')
+                          print('D1_DATABASE_NAME_RECOVERED=true')
+                  if label=='QUERY_BY_ID':
+                      print('D1_READ_QUERY_AVAILABLE=true')
+              except HTTPError as e:
+                  print(f'{label}_HTTP={e.code}')
+                  print(f'{label}_SUCCESS=false')
+              except Exception as e:
+                  print(f'{label}_ERROR={type(e).__name__}')
+          print('PRODUCTION_MUTATION=NONE')
           PY
-
-      - name: Audit served exact-source parity
-        env:
-          B62_BASE_URL: https://padiem-chat.charliekant.workers.dev
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import hashlib, os, pathlib
-          from urllib.request import Request, urlopen
-          base=os.environ['B62_BASE_URL'].rstrip('/')
-          pairs=[
-              ('app.js','apps/padiem-chat/static/app.js'),
-              ('rich-response.js','apps/padiem-chat/static/rich-response.js'),
-              ('index.html','apps/padiem-chat/static/index.html'),
-          ]
-          all_ok=True
-          for remote,local in pairs:
-              req=Request(f'{base}/{remote}',headers={'User-Agent':'b62-read-only-audit/1.0','Cache-Control':'no-cache'})
-              with urlopen(req,timeout=20) as r:
-                  data=r.read(8*1024*1024)
-                  status=r.status
-              src=pathlib.Path(local).read_bytes()
-              ok=(status==200 and data==src)
-              all_ok &= ok
-              print(f'{remote.upper().replace("-","_").replace(".","_")}_HTTP={status}')
-              print(f'{remote.upper().replace("-","_").replace(".","_")}_PARITY={str(ok).lower()}')
-              print(f'{remote.upper().replace("-","_").replace(".","_")}_REMOTE_SHA256={hashlib.sha256(data).hexdigest()}')
-              print(f'{remote.upper().replace("-","_").replace(".","_")}_SOURCE_SHA256={hashlib.sha256(src).hexdigest()}')
-          print(f'EXACT_STATIC_PARITY={str(all_ok).lower()}')
-          PY
-
-      - name: Verify no-x-provision CLI and mutation-free dry-run
-        working-directory: apps/padiem-chat
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --help | tee /tmp/help.txt
-          grep -q -- '--x-provision' /tmp/help.txt
-          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --dry-run --no-x-provision | tee /tmp/dryrun.txt
-          echo 'NO_X_PROVISION_FLAG_PRESENT=true'
-          echo 'NO_X_PROVISION_DRY_RUN=PASS'
-          echo 'PRODUCTION_MUTATION=NONE'
