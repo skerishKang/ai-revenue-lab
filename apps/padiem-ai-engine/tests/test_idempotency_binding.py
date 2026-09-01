@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 
@@ -69,10 +70,15 @@ class FakeD1Statement:
                 record["updated_at"] = updated_at
             return {"success": True}
         if sql.startswith("DELETE"):
-            app_id, key, not_state = params
+            if len(params) == 3:
+                app_id, key, not_state = params
+                expected_expires_at = None
+            else:
+                app_id, key, not_state, expected_expires_at = params
             record = self._db.records.get((app_id, key))
             if record is not None and record["state"] != not_state:
-                del self._db.records[(app_id, key)]
+                if expected_expires_at is None or record["expires_at"] == expected_expires_at:
+                    del self._db.records[(app_id, key)]
             return {"success": True}
         raise AssertionError(f"unexpected run sql: {sql}")
 
@@ -144,6 +150,52 @@ def test_durable_idempotency_binding_is_app_scoped() -> None:
     assert second_app is None
     assert ("b62", "shared") in db.records
     assert ("b61", "shared") in db.records
+
+
+def test_expired_reserved_idempotency_key_is_recovered_without_replay_or_conflict() -> None:
+    db = FakeD1()
+    adapter = CloudflareD1IdempotencyAdapter(db)
+    expired = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
+    db.records[("b62", "stale")] = {
+        "app_id": "b62",
+        "idempotency_key": "stale",
+        "request_fingerprint": "a" * 64,
+        "state": "reserved",
+        "result_json": None,
+        "created_at": expired,
+        "updated_at": expired,
+        "expires_at": expired,
+    }
+
+    recovered = asyncio.run(adapter.begin(app_id="b62", idempotency_key="stale", request_fingerprint="b" * 64))
+
+    assert recovered is None
+    record = db.records[("b62", "stale")]
+    assert record["state"] == "reserved"
+    assert record["request_fingerprint"] == "b" * 64
+    assert any("expires_at=?" in sql for sql in db.sql)
+
+
+def test_completed_idempotency_record_replays_even_after_reservation_recovery_window() -> None:
+    db = FakeD1()
+    adapter = CloudflareD1IdempotencyAdapter(db)
+    expired = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
+    db.records[("b62", "done")] = {
+        "app_id": "b62",
+        "idempotency_key": "done",
+        "request_fingerprint": "c" * 64,
+        "state": "completed",
+        "result_json": json.dumps(_result("old cached answer").to_public_dict()),
+        "created_at": expired,
+        "updated_at": expired,
+        "expires_at": expired,
+    }
+
+    replay = asyncio.run(adapter.begin(app_id="b62", idempotency_key="done", request_fingerprint="c" * 64))
+
+    assert isinstance(replay, ExecutionResult)
+    assert replay.answer == "old cached answer"
+    assert db.records[("b62", "done")]["state"] == "completed"
 
 
 def test_worker_injects_idempotency_binding_without_process_local_fake_store() -> None:
