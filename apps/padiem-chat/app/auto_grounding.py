@@ -3,13 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from padiem_ai_core.grounding_runtime import GroundingRuntimeError, PreparedGrounding
-from padiem_ai_core.search_decision import SearchDecision, decide_search
+from padiem_ai_core.search_decision import SearchDecision, SearchDisposition, decide_search
 from padiem_ai_core.search_preparation import prepare_search_grounding
 
 from .b14_client import MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS
 from .grounding import GroundingError, _CoreWebProviderAdapter, _translate_core_error
 from .task_modes import TaskMode
-from .web_tools import WebProvider
+from .web_tools import MockWebProvider, WebProvider
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,7 +39,17 @@ class AutoGroundingService:
         self._core_provider = _CoreWebProviderAdapter(web_provider)
 
     def decide(self, messages: list[dict[str, str]], *, skill: TaskMode) -> SearchDecision:
-        return decide_search(latest_user_question(messages), task_id=skill.id)
+        decision = decide_search(latest_user_question(messages), task_id=skill.id)
+        # Mock evidence is a deterministic QA surface, not truthful current evidence.
+        # It remains available when the browser explicitly selects a web tool, but
+        # ordinary Auto chat must never silently treat it as real-world verification.
+        if isinstance(self._web_provider, MockWebProvider) and decision.requires_search:
+            return SearchDecision(
+                SearchDisposition.NO_SEARCH,
+                "mock_provider_auto_search_disabled",
+                decision.query,
+            )
+        return decision
 
     async def prepare(
         self,
