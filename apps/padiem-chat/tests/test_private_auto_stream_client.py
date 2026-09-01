@@ -13,16 +13,16 @@ from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
     _refund_active_reservation,
 )
-from app.model_policy import DEFAULT_B14_MODEL_ID
+from app.model_policy import DEFAULT_B14_MODEL_ID, MEDIUM_B14_MODEL_ID
 from app.skills import get_skill
 from app.usage_gate import UsageDecision
 
 
-AUTO_PATH = "/api/pilot/v1/chat/completions/auto-stream-preview"
+MANUAL_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 REQUEST_MODEL = DEFAULT_B14_MODEL_ID
-OBSERVED_MODEL = "catalog/model-a"
-OBSERVED_PROVIDER = "provider-a"
+OBSERVED_MODEL = MEDIUM_B14_MODEL_ID
+OBSERVED_PROVIDER = "Poolside"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -44,7 +44,7 @@ def _settings() -> Settings:
 
 def _frame(content: str) -> bytes:
     payload = {
-        "id": "b62_auto_stream_1",
+        "id": "b62_poolside_stream_1",
         "object": "chat.completion.chunk",
         "model": OBSERVED_MODEL,
         "choices": [
@@ -55,13 +55,13 @@ def _frame(content: str) -> bytes:
             }
         ],
         "business14": {
-            "request_id": "b14_auto_stream_1",
-            "route_mode": "auto",
+            "request_id": "b14_poolside_stream_1",
+            "route_mode": "manual",
             "selected_provider": OBSERVED_PROVIDER,
             "selected_model": OBSERVED_MODEL,
-            "selected_upstream_model": "upstream/model-a",
-            "selected_route_id": "route:auto-a",
-            "reason_codes": ["auto_selection"],
+            "selected_upstream_model": "poolside/laguna-s-2.1",
+            "selected_route_id": f"platform:{OBSERVED_MODEL}",
+            "reason_codes": ["manual_selection", "external_fallback_disabled"],
             "fallback_used": False,
             "attempt_count": 1,
             "route_evidence_status": "live_streaming_router_preview",
@@ -75,7 +75,7 @@ def _error_frame(code: str = "upstream_rate_limited") -> bytes:
         "error": {
             "code": code,
             "message": "bounded B14 stream error",
-            "request_id": "b14_auto_stream_1",
+            "request_id": "b14_poolside_stream_1",
             "after_stream_start": True,
         }
     }
@@ -86,11 +86,11 @@ def _error_frame(code: str = "upstream_rate_limited") -> bytes:
     )
 
 
-def test_private_compat_stream_uses_auto_endpoint_and_router_owned_policy():
+def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
     async def scenario():
         seen_url = None
         seen = None
-        upstream = ChunkStream([_frame("Auto 토큰"), b"data: [DONE]\n\n"])
+        upstream = ChunkStream([_frame("Laguna 토큰"), b"data: [DONE]\n\n"])
 
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal seen_url, seen
@@ -116,9 +116,9 @@ def test_private_compat_stream_uses_auto_endpoint_and_router_owned_policy():
         ]
 
         skill = get_skill()
-        assert seen_url == "https://b14.internal" + AUTO_PATH
+        assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
-        assert seen["model"] == REQUEST_MODEL == "b14/auto"
+        assert seen["model"] == REQUEST_MODEL == MEDIUM_B14_MODEL_ID
         assert seen["business14"]["required_capabilities"] == ["chat"]
         assert seen["business14"]["allow_external_fallback"] is False
         assert seen["business14"]["max_attempts"] == 1
@@ -129,7 +129,7 @@ def test_private_compat_stream_uses_auto_endpoint_and_router_owned_policy():
         assert seen["messages"][0]["role"] == "system"
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
 
-        assert events[0].delta_content == "Auto 토큰"
+        assert events[0].delta_content == "Laguna 토큰"
         assert events[0].done is False
         assert not hasattr(events[0], "route")
         assert not hasattr(events[0], "model")
@@ -141,7 +141,7 @@ def test_private_compat_stream_uses_auto_endpoint_and_router_owned_policy():
     asyncio.run(scenario())
 
 
-def test_private_compat_stream_poolside_alias_is_stripped_before_b14_auto():
+def test_private_compat_stream_poolside_alias_is_stripped_before_manual_route():
     async def scenario():
         seen = None
         upstream = ChunkStream([_frame("답변"), b"data: [DONE]\n\n"])
@@ -162,7 +162,7 @@ def test_private_compat_stream_poolside_alias_is_stripped_before_b14_auto():
                 [{"role": "user", "content": "/poolside 한국어로 답해줘"}]
             )
         ]
-        assert seen["model"] == REQUEST_MODEL == "b14/auto"
+        assert seen["model"] == REQUEST_MODEL == MEDIUM_B14_MODEL_ID
         assert seen["messages"][-1] == {"role": "user", "content": "한국어로 답해줘"}
         assert events[-1].done is True
 
