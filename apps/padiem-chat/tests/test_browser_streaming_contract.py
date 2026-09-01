@@ -168,8 +168,8 @@ def test_stream_state_commits_only_on_done_and_partial_error_is_preserved() -> N
     done_start = source.index("  function applyStreamDone(")
     done_end = source.index("  async function requestStreamingAnswer(", done_start)
     done_source = source[done_start:done_end]
-    assert 'messages = outboundMessages.concat([{ role: "assistant", content: answer }]).slice(-20);' in done_source
-    assert "conversation_id" in done_source
+    assert "conversationState.commitAssistant(outboundMessages, answer);" in done_source
+    assert "conversationState.setConversationId(data.conversation_id);" in done_source
     assert "project_files_used" in done_source
 
     partial_start = source.index("  function renderStreamError(")
@@ -213,7 +213,7 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
 def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
     source = _source()
     lifecycle_start = source.index("  const MESSAGE_LIFECYCLE")
-    lifecycle_end = source.index("  let messages = []", lifecycle_start)
+    lifecycle_end = source.index("  let inFlight = false;", lifecycle_start)
     lifecycle = source[lifecycle_start:lifecycle_end]
 
     assert 'STREAMING: "streaming"' in lifecycle
