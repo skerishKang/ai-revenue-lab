@@ -35,7 +35,8 @@ shared Firebase identity
    ┌──────┼──────┐
    ▼      ▼      ▼
 Business 1  Business 2  Business N
-own app     own app     own roles
+own app     own app     own app
+own roles   own roles   own roles
 own DB      own DB      own DB
 ```
 
