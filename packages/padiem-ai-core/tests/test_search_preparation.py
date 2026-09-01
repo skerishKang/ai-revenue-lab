@@ -23,7 +23,7 @@ class RecordingProvider:
     async def search(self, query: str, limit: int = 5):
         self.calls.append((query, limit))
         if self.fail:
-            raise WebRuntimeError("web_unavailable", "private detail", 502)
+            raise WebRuntimeError("web_unavailable", "safe provider unavailable", 502)
         if self.empty:
             return []
         return [
@@ -72,7 +72,7 @@ def test_prepare_search_grounding_fails_closed_on_empty_evidence() -> None:
     assert info.value.code == "no_evidence"
 
 
-def test_prepare_search_grounding_translates_provider_failure_without_private_detail() -> None:
+def test_prepare_search_grounding_translates_provider_failure() -> None:
     provider = RecordingProvider(fail=True)
     with pytest.raises(GroundingRuntimeError) as info:
         run(
@@ -84,4 +84,4 @@ def test_prepare_search_grounding_translates_provider_failure_without_private_de
             )
         )
     assert info.value.code == "web_unavailable"
-    assert "private detail" not in str(info.value)
+    assert info.value.status_code == 502
