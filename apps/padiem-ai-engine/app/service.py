@@ -186,16 +186,18 @@ class EngineService:
             manifest = current_engine_contract_manifest()
             endpoints = [e.to_public_dict() for e in manifest.endpoints]
         except Exception:
-            # Fallback to static truthful posture if manifest unavailable
+            # Fail-closed: if authoritative posture source is unavailable, do not
+            # advertise unproven features as available. Liveness stays ok, but
+            # feature readiness must be unavailable/deferred and not expose exception.
             posture = {
-                "completed_run": "available",
-                "provider_streaming_run": "available",
-                "orchestration_run": "available",
-                "orchestration_resume": "available",
-                "orchestration_cancel": "available",
-                "orchestration_stream": "deferred",
-                "idempotency_replay": "deferred",
-                "service_identity_wire_enforcement": "available",
+                "completed_run": "unavailable",
+                "provider_streaming_run": "unavailable",
+                "orchestration_run": "unavailable",
+                "orchestration_resume": "unavailable",
+                "orchestration_cancel": "unavailable",
+                "orchestration_stream": "unavailable",
+                "idempotency_replay": "unavailable",
+                "service_identity_wire_enforcement": "unavailable",
             }
             endpoints = []
 

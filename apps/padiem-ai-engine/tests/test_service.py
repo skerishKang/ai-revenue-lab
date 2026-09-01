@@ -427,3 +427,30 @@ def test_service_identity_posture_includes_all_authenticated_non_health_routes()
     assert "/internal/v1/execute" in paths
     assert "/internal/v1/health" in paths
     assert "/internal/v1/orchestrate" in paths
+
+
+def test_health_manifest_failure_fallback_does_not_advertise_available():
+    # Simulate manifest/posture source failure — health must stay liveness ok but fail closed on readiness
+    import app.contract_manifest as cm
+    from unittest.mock import patch
+
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    with patch.object(cm, "engine_capability_posture", side_effect=RuntimeError("INTERNAL_POSTURE_FAILURE")):
+        with patch.object(cm, "current_engine_contract_manifest", side_effect=RuntimeError("INTERNAL_MANIFEST_FAILURE")):
+            health = svc.health()
+            serialized = json.dumps(health.body).lower()
+            assert health.status_code == 200
+            assert health.body["status"] == "ok"
+            # Liveness preserved, but no feature may be advertised as available
+            caps = health.body.get("capabilities", {})
+            for fid in ("completed_run", "provider_streaming_run", "orchestration_run", "orchestration_resume", "orchestration_cancel", "service_identity_wire_enforcement"):
+                assert caps.get(fid) != "available", f"{fid} must not be available on fallback"
+                assert caps.get(fid) in ("deferred", "unavailable")
+            # Backward-compat booleans must also be false (not hiding deferred)
+            assert health.body.get("completed_run") is False
+            assert health.body.get("streaming_run") is False
+            # Must not leak exception text or secrets
+            assert "internal_posture_failure" not in serialized
+            assert "internal_manifest_failure" not in serialized
+            assert "api_key" not in serialized
+            assert "credential" not in serialized
