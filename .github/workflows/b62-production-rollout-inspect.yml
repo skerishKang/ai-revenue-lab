@@ -1,4 +1,4 @@
-name: B62 Production Rollout Inspect
+name: B62 Production Rollout Dry Run
 
 on:
   push:
@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  inspect-production-bindings:
+  production-config-dry-run:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,66 +19,144 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Inspect binding metadata without values
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+      - name: Generate production-complete safe-hold config in runner only
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           python - <<'PY'
-          import json, os
+          import json, os, pathlib
           from urllib.request import Request, urlopen
           from urllib.error import HTTPError
 
           base = "https://api.cloudflare.com/client/v4"
           account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
           token = os.environ["CLOUDFLARE_API_TOKEN"]
-          headers = {"Authorization": f"Bearer {token}", "Accept": "application/json", "User-Agent": "b62-prod-inspect/1.0"}
+          headers = {"Authorization": f"Bearer {token}", "Accept": "application/json", "User-Agent": "b62-prod-config/1.0"}
 
-          def get(url):
-              req = Request(url, headers=headers, method="GET")
-              try:
-                  with urlopen(req, timeout=20) as r:
-                      raw = r.read(262144)
-                      return r.status, json.loads(raw.decode("utf-8"))
-              except HTTPError as e:
-                  raw = e.read(262144)
-                  try:
-                      payload = json.loads(raw.decode("utf-8")) if raw else {}
-                  except Exception:
-                      payload = {}
-                  return e.code, payload
-
-          status, payload = get(f"{base}/accounts/{account}/workers/scripts/padiem-chat/settings")
-          print(f"WORKER_SETTINGS_HTTP={status}")
+          req = Request(f"{base}/accounts/{account}/workers/scripts/padiem-chat/settings", headers=headers, method="GET")
+          try:
+              with urlopen(req, timeout=20) as r:
+                  payload = json.loads(r.read(262144).decode("utf-8"))
+                  status = r.status
+          except HTTPError as e:
+              status = e.code
+              payload = {}
           if status != 200 or payload.get("success") is not True:
-              raise SystemExit(1)
-          result = payload.get("result") or {}
-          bindings = result.get("bindings") or []
-          print(f"BINDING_COUNT={len(bindings)}")
-          d1_id = None
-          for item in bindings:
-              if not isinstance(item, dict):
-                  continue
-              name = item.get("name", "?")
-              kind = item.get("type", "?")
-              print(
-                  "BINDING=" + str(name)
-                  + ";TYPE=" + str(kind)
-                  + ";HAS_TEXT=" + str(isinstance(item.get("text"), str)).lower()
-                  + ";HAS_DATABASE_ID=" + str(isinstance(item.get("database_id"), str)).lower()
-                  + ";HAS_DATABASE_NAME=" + str(isinstance(item.get("database_name"), str)).lower()
-                  + ";HAS_SERVICE=" + str(isinstance(item.get("service"), str)).lower()
-                  + ";HAS_ENVIRONMENT=" + str(isinstance(item.get("environment"), str)).lower()
-              )
-              if name == "PADIEM_CHAT_DB" and kind == "d1" and isinstance(item.get("database_id"), str):
-                  d1_id = item["database_id"]
+              raise SystemExit(f"Worker settings read failed: HTTP {status}")
 
-          if d1_id:
-              d1_status, d1_payload = get(f"{base}/accounts/{account}/d1/database/{d1_id}")
-              d1_result = d1_payload.get("result") if isinstance(d1_payload, dict) else None
-              print(f"D1_METADATA_HTTP={d1_status}")
-              print(f"D1_METADATA_HAS_NAME={str(isinstance(d1_result, dict) and isinstance(d1_result.get('name'), str)).lower()}")
-          else:
-              print("D1_METADATA_HTTP=not_attempted")
-              print("D1_METADATA_HAS_NAME=false")
+          bindings = (payload.get("result") or {}).get("bindings") or []
+          by_name = {item.get("name"): item for item in bindings if isinstance(item, dict) and isinstance(item.get("name"), str)}
+          required = {
+              "ASSETS": "assets",
+              "B14_SERVICE": "service",
+              "PADIEM_CHAT_DB": "d1",
+              "PADIEM_CHAT_QUOTA_SALT": "secret_text",
+              "PADIEM_CHAT_RUNTIME_MODE": "plain_text",
+              "PADIEM_CHAT_LIVE_ENABLED": "plain_text",
+              "PADIEM_CHAT_TIMEOUT_SECONDS": "plain_text",
+              "PADIEM_CHAT_B14_BASE_URL": "plain_text",
+              "PADIEM_CHAT_ANONYMOUS_BURST_LIMIT": "plain_text",
+              "PADIEM_CHAT_ANONYMOUS_DAILY_LIMIT": "plain_text",
+              "PADIEM_CHAT_USER_BURST_LIMIT": "plain_text",
+              "PADIEM_CHAT_USER_DAILY_LIMIT": "plain_text",
+              "PADIEM_CHAT_GLOBAL_DAILY_LIMIT": "plain_text",
+          }
+          for name, kind in required.items():
+              item = by_name.get(name)
+              if not item or item.get("type") != kind:
+                  raise SystemExit(f"Required production binding missing or wrong type: {name}")
+
+          supported = {"assets", "service", "d1", "plain_text", "secret_text"}
+          unknown = sorted({str(item.get("type")) for item in bindings if isinstance(item, dict) and item.get("type") not in supported})
+          if unknown:
+              raise SystemExit(f"Unsupported existing binding types: {unknown}")
+
+          service = by_name["B14_SERVICE"]
+          d1 = by_name["PADIEM_CHAT_DB"]
+          if not isinstance(service.get("service"), str) or not service["service"].strip():
+              raise SystemExit("B14 service target unavailable")
+          if not isinstance(d1.get("database_id"), str) or not d1["database_id"].strip():
+              raise SystemExit("D1 database id unavailable")
+
+          def q(value):
+              return json.dumps(str(value), ensure_ascii=False)
+
+          lines = [
+              'name = "padiem-chat"',
+              'main = "worker.py"',
+              'compatibility_date = "2026-08-25"',
+              'compatibility_flags = ["python_workers"]',
+              'workers_dev = true',
+              'keep_vars = true',
+              '',
+              '[assets]',
+              'directory = "static"',
+              'binding = "ASSETS"',
+              '',
+              '[[services]]',
+              'binding = "B14_SERVICE"',
+              f'service = {q(service["service"])}',
+          ]
+          if isinstance(service.get("environment"), str) and service["environment"].strip():
+              lines.append(f'environment = {q(service["environment"])}')
+          lines += [
+              '',
+              '[[d1_databases]]',
+              'binding = "PADIEM_CHAT_DB"',
+              'database_name = "existing-production-d1"',
+              f'database_id = {q(d1["database_id"])}',
+              '',
+              '[vars]',
+          ]
+
+          plain_count = 0
+          for item in bindings:
+              if not isinstance(item, dict) or item.get("type") != "plain_text":
+                  continue
+              name = item.get("name")
+              text = item.get("text")
+              if not isinstance(name, str) or not isinstance(text, str):
+                  raise SystemExit("Malformed existing plain-text binding")
+              if name == "PADIEM_CHAT_RUNTIME_MODE":
+                  text = "mock"
+              elif name == "PADIEM_CHAT_LIVE_ENABLED":
+                  text = "false"
+              lines.append(f'{q(name)} = {q(text)}')
+              plain_count += 1
+
+          config = pathlib.Path("apps/padiem-chat/wrangler.toml")
+          config.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          os.chmod(config, 0o600)
+          print("PRODUCTION_CONFIG_GENERATED=true")
+          print(f"PRESERVED_BINDING_COUNT={len(bindings)}")
+          print(f"PRESERVED_PLAIN_TEXT_COUNT={plain_count}")
+          print("SAFE_HOLD_RUNTIME=mock")
+          print("SAFE_HOLD_LIVE=false")
+          print("D1_DATABASE_ID_LOGGED=false")
+          print("SECRET_VALUES_LOGGED=false")
           PY
+      - name: Verify pywrangler dry-run support
+        working-directory: apps/padiem-chat
+        run: |
+          set -euo pipefail
+          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --help > /tmp/pywrangler-deploy-help.txt
+          grep -q -- '--dry-run' /tmp/pywrangler-deploy-help.txt
+          echo 'PYWRANGLER_DRY_RUN_SUPPORTED=true'
+      - name: Bundle exact source without production mutation
+        working-directory: apps/padiem-chat
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --dry-run
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'B62_PRODUCTION_DRY_RUN=PASS'
