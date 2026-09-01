@@ -26,6 +26,7 @@ def test_settings_from_values_and_env_share_validation(monkeypatch):
     monkeypatch.delenv("PADIEM_CHAT_LIVE_ENABLED", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
     monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_CHAT_DAUM_REST_API_KEY", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_AUTH_MODE", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_QUOTA_SALT", raising=False)
     assert Settings.from_env() == direct
@@ -39,6 +40,7 @@ def test_worker_bindings_default_to_mock_web_off_auth_off_with_finite_limits():
     assert settings.live_enabled is False
     assert settings.web_provider == "off"
     assert settings.firecrawl_api_key is None
+    assert settings.daum_rest_api_key is None
     assert settings.web_timeout_seconds == 15.0
     assert settings.auth_mode == "off"
     assert settings.public_base_url is None
@@ -82,6 +84,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
         "PADIEM_CHAT_LIVE_ENABLED",
         "PADIEM_CHAT_WEB_PROVIDER",
         "FIRECRAWL_API_KEY",
+        "PADIEM_CHAT_DAUM_REST_API_KEY",
         "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
         "PADIEM_CHAT_AUTH_MODE",
         "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -101,6 +104,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "OPENROUTER" not in joined
     assert "BUSINESS14_PROVIDER_KEY" not in joined
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
+    assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
@@ -113,6 +117,16 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert configured.firecrawl_api_key == "fc-server-only-test"
     assert configured.web_timeout_seconds == 11.0
     assert "fc-server-only-test" not in repr(configured)
+
+    with pytest.raises(ConfigError):
+        settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "daum"})
+    daum = settings_from_worker_bindings({
+        "PADIEM_CHAT_WEB_PROVIDER": "daum",
+        "PADIEM_CHAT_DAUM_REST_API_KEY": "kakao-rest-server-only-test",
+    })
+    assert daum.web_provider == "daum"
+    assert daum.daum_rest_api_key == "kakao-rest-server-only-test"
+    assert "kakao-rest-server-only-test" not in repr(daum)
 
     google = settings_from_worker_bindings({
         "PADIEM_CHAT_AUTH_MODE": "google",
@@ -196,6 +210,7 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert "OPENROUTER_API_KEY" not in worker
     assert "PADIEM_CHAT_B14_BASE_URL" not in worker
     assert "FIRECRAWL_API_KEY" not in worker
+    assert "PADIEM_CHAT_DAUM_REST_API_KEY" not in worker
     assert "GOOGLE_CLIENT_SECRET" not in worker
 
 
