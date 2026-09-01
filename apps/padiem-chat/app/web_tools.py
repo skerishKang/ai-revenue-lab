@@ -6,6 +6,7 @@ import httpx
 
 from padiem_ai_core import Evidence as CoreEvidence
 from padiem_ai_core.web_runtime import (
+    DAUM_SEARCH_ORIGIN,
     FIRECRAWL_ORIGIN,
     MAX_PROVIDER_RESPONSE_BYTES,
     MAX_QUERY_CHARS,
@@ -13,6 +14,7 @@ from padiem_ai_core.web_runtime import (
     MAX_SNIPPET_CHARS,
     MAX_TITLE_CHARS,
     MAX_URL_CHARS,
+    DaumWebProvider as CoreDaumWebProvider,
     FirecrawlWebProvider as CoreFirecrawlWebProvider,
     MockWebProvider as CoreMockWebProvider,
     OffWebProvider as CoreOffWebProvider,
@@ -68,6 +70,8 @@ def normalize_public_url(value: str) -> str:
 def _runtime_error_message(exc: WebRuntimeError) -> str:
     if exc.code == "web_tools_off":
         return "웹 도구가 아직 활성화되지 않았습니다."
+    if exc.code == "web_fetch_unavailable":
+        return "웹 페이지 본문 가져오기는 아직 설정되지 않았습니다."
     if exc.code == "web_response_too_large":
         return "웹 도구 응답이 너무 커서 안전하게 처리할 수 없습니다."
     if exc.code == "web_timeout":
@@ -195,6 +199,33 @@ class FirecrawlWebProvider:
         return _from_core_evidence(item)
 
 
+class DaumWebProvider:
+    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+        if settings.web_provider != "daum" or not settings.daum_rest_api_key:
+            raise ValueError("Daum provider requires configured server settings")
+        config = WebRuntimeConfig(
+            provider="daum",
+            daum_rest_api_key=settings.daum_rest_api_key,
+            firecrawl_api_key=settings.firecrawl_api_key,
+            web_timeout_seconds=settings.web_timeout_seconds,
+        )
+        self._core = CoreDaumWebProvider(config, transport=transport)
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        try:
+            items = await self._core.search(query, limit=limit)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return [_from_core_evidence(item) for item in items]
+
+    async def fetch(self, url: str) -> Evidence:
+        try:
+            item = await self._core.fetch(url)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return _from_core_evidence(item)
+
+
 def create_web_provider(
     settings: Settings,
     transport: httpx.AsyncBaseTransport | None = None,
@@ -205,6 +236,8 @@ def create_web_provider(
         provider = MockWebProvider()
     elif settings.web_provider == "firecrawl":
         provider = FirecrawlWebProvider(settings, transport=transport)
+    elif settings.web_provider == "daum":
+        provider = DaumWebProvider(settings, transport=transport)
     else:
         raise RuntimeError("unreachable web provider configuration")
 

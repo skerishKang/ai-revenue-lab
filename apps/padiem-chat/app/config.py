@@ -57,6 +57,7 @@ class Settings:
     live_enabled: bool = False
     web_provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
+    daum_rest_api_key: str | None = field(default=None, repr=False)
     web_timeout_seconds: float = 15.0
     auth_mode: str = "off"
     public_base_url: str | None = None
@@ -80,6 +81,7 @@ class Settings:
         live_enabled: object = False,
         web_provider: object = "off",
         firecrawl_api_key: object = None,
+        daum_rest_api_key: object = None,
         web_timeout_seconds: object = 15.0,
         auth_mode: object = "off",
         public_base_url: object = None,
@@ -113,12 +115,16 @@ class Settings:
         live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
 
         web = str(web_provider or "off").strip().lower()
-        if web not in {"off", "mock", "firecrawl"}:
-            raise ConfigError("PADIEM_CHAT_WEB_PROVIDER must be off, mock, or firecrawl")
-        raw_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
-        key = raw_key or None
-        if web == "firecrawl" and key is None:
+        if web not in {"off", "mock", "firecrawl", "daum"}:
+            raise ConfigError("PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, or daum")
+        raw_firecrawl_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
+        firecrawl_key = raw_firecrawl_key or None
+        if web == "firecrawl" and firecrawl_key is None:
             raise ConfigError("FIRECRAWL_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=firecrawl")
+        raw_daum_key = "" if daum_rest_api_key is None else str(daum_rest_api_key).strip()
+        daum_key = raw_daum_key or None
+        if web == "daum" and daum_key is None:
+            raise ConfigError("PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum")
 
         try:
             web_timeout = float(web_timeout_seconds)
@@ -184,7 +190,8 @@ class Settings:
             timeout_seconds=timeout,
             live_enabled=live,
             web_provider=web,
-            firecrawl_api_key=key,
+            firecrawl_api_key=firecrawl_key,
+            daum_rest_api_key=daum_key,
             web_timeout_seconds=web_timeout,
             auth_mode=auth,
             public_base_url=public,
@@ -209,6 +216,7 @@ class Settings:
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
             web_provider=os.getenv("PADIEM_CHAT_WEB_PROVIDER", "off"),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
+            daum_rest_api_key=os.getenv("PADIEM_CHAT_DAUM_REST_API_KEY"),
             web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "15"),
             auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
             public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),
