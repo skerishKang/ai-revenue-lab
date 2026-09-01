@@ -11,26 +11,68 @@ export const ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel";
 const ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller";
 const ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential";
 
-const REQUEST_ALLOWED = new Set([
+const EXECUTION_ALLOWED = new Set([
   "agent",
   "messages",
   "session_id",
   "additional_system_context",
   "trace_id",
   "execution_context",
+]);
+
+const ORCHESTRATION_ALLOWED = new Set([
+  ...EXECUTION_ALLOWED,
   "subject_id",
   "agent_plan",
-  "agent_definition",
-  "compiled_agent_profile",
-  "tool_authorization",
   "recovery_policy",
   "max_retries",
   "require_evidence",
   "require_verification",
+]);
+
+const ORCHESTRATION_RESUME_ALLOWED = new Set([
+  ...EXECUTION_ALLOWED,
   "continuation_ref",
   "decision",
-  "reason",
+  "subject_id",
+  "agent_plan",
+  "recovery_policy",
+  "max_retries",
 ]);
+
+const DEFERRED_AUTHORITY_FIELDS = new Set([
+  "agent_definition",
+  "compiled_agent_profile",
+  "tool_authorization",
+  "tool_runtime",
+  "tool_arguments",
+  "pause",
+]);
+
+export const ORCHESTRATION_FIELD_PARITY = Object.freeze({
+  app_id: "CLIENT_OWNED_AND_INJECTED",
+  agent: "SUPPORTED_AND_MAPPED",
+  messages: "SUPPORTED_AND_MAPPED",
+  session_id: "SUPPORTED_AND_MAPPED",
+  additional_system_context: "SUPPORTED_AND_MAPPED",
+  trace_id: "SUPPORTED_AND_MAPPED",
+  execution_context: "SUPPORTED_AND_MAPPED",
+  subject_id: "SUPPORTED_AND_MAPPED",
+  agent_plan: "SUPPORTED_AND_MAPPED",
+  recovery_policy: "SUPPORTED_AND_MAPPED",
+  max_retries: "SUPPORTED_AND_MAPPED",
+  require_evidence: "SUPPORTED_AND_MAPPED",
+  require_verification: "SUPPORTED_AND_MAPPED",
+  continuation_ref: "RESUME_ONLY_SUPPORTED_AND_MAPPED",
+  decision: "RESUME_ONLY_SUPPORTED_AND_MAPPED",
+  reason: "CANCEL_ONLY_SUPPORTED_AND_MAPPED",
+  agent_definition: "EXPLICITLY_DEFERRED_AND_REJECTED",
+  compiled_agent_profile: "EXPLICITLY_DEFERRED_AND_REJECTED",
+  tool_authorization: "EXPLICITLY_DEFERRED_AND_REJECTED",
+  tool_runtime: "EXPLICITLY_DEFERRED_AND_REJECTED",
+  tool_arguments: "EXPLICITLY_DEFERRED_AND_REJECTED",
+  pause: "UNSUPPORTED_AND_NOT_EXPOSED",
+});
 
 export class PadiemAiEngineClientError extends Error {
   constructor(code, message, { status = null, retryable = false, metadata = null } = {}) {
@@ -123,11 +165,22 @@ function normalizeExecutionContext(value) {
   return context;
 }
 
-function exactRunPayload(appId, run) {
+function rejectDeferredAuthorityFields(run) {
+  const rejected = Object.keys(run).filter((key) => DEFERRED_AUTHORITY_FIELDS.has(key));
+  if (rejected.length > 0) {
+    throw new PadiemAiEngineClientError(
+      "unsupported_orchestration_field",
+      "Engine orchestration authority-bearing fields are not client-supplied in this contract version",
+    );
+  }
+}
+
+function exactRunPayload(appId, run, { allowed = EXECUTION_ALLOWED } = {}) {
   if (!run || typeof run !== "object" || Array.isArray(run)) {
     throw new PadiemAiEngineClientError("invalid_engine_request", "Engine run request must be an object");
   }
-  const unknown = Object.keys(run).filter((key) => !REQUEST_ALLOWED.has(key));
+  rejectDeferredAuthorityFields(run);
+  const unknown = Object.keys(run).filter((key) => !allowed.has(key));
   if (unknown.length > 0) {
     throw new PadiemAiEngineClientError("invalid_engine_request", "Engine run request contains unsupported fields");
   }
@@ -144,16 +197,12 @@ function exactRunPayload(appId, run) {
     ...(run.execution_context === undefined ? {} : { execution_context: normalizeExecutionContext(run.execution_context) }),
     ...(run.subject_id === undefined ? {} : { subject_id: run.subject_id }),
     ...(run.agent_plan === undefined ? {} : { agent_plan: run.agent_plan }),
-    ...(run.agent_definition === undefined ? {} : { agent_definition: run.agent_definition }),
-    ...(run.compiled_agent_profile === undefined ? {} : { compiled_agent_profile: run.compiled_agent_profile }),
-    ...(run.tool_authorization === undefined ? {} : { tool_authorization: run.tool_authorization }),
     ...(run.recovery_policy === undefined ? {} : { recovery_policy: run.recovery_policy }),
     ...(run.max_retries === undefined ? {} : { max_retries: run.max_retries }),
     ...(run.require_evidence === undefined ? {} : { require_evidence: run.require_evidence }),
     ...(run.require_verification === undefined ? {} : { require_verification: run.require_verification }),
     ...(run.continuation_ref === undefined ? {} : { continuation_ref: run.continuation_ref }),
     ...(run.decision === undefined ? {} : { decision: run.decision }),
-    ...(run.reason === undefined ? {} : { reason: run.reason }),
   };
 }
 
@@ -218,7 +267,7 @@ export class PadiemAiEngineClient {
   _headers() { return authenticatedHeaders(this.callerId, this.credential); }
 
   async execute(run) {
-    const payload = exactRunPayload(this.appId, run);
+    const payload = exactRunPayload(this.appId, run, { allowed: EXECUTION_ALLOWED });
     const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_EXECUTE_PATH}`, {
       method: "POST", headers: this._headers(), body: JSON.stringify(payload),
     });
@@ -230,7 +279,7 @@ export class PadiemAiEngineClient {
   }
 
   async orchestrate(request) {
-    const payload = exactRunPayload(this.appId, request);
+    const payload = exactRunPayload(this.appId, request, { allowed: ORCHESTRATION_ALLOWED });
     const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_ORCHESTRATE_PATH}`, {
       method: "POST", headers: this._headers(), body: JSON.stringify(payload),
     });
@@ -242,7 +291,7 @@ export class PadiemAiEngineClient {
   }
 
   async resumeOrchestration(request) {
-    const payload = exactRunPayload(this.appId, request);
+    const payload = exactRunPayload(this.appId, request, { allowed: ORCHESTRATION_RESUME_ALLOWED });
     const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_ORCHESTRATE_RESUME_PATH}`, {
       method: "POST", headers: this._headers(), body: JSON.stringify(payload),
     });
@@ -262,7 +311,7 @@ export class PadiemAiEngineClient {
   }
 
   async *stream(run) {
-    const payload = exactRunPayload(this.appId, run);
+    const payload = exactRunPayload(this.appId, run, { allowed: EXECUTION_ALLOWED });
     const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_STREAM_PATH}`, {
       method: "POST", headers: this._headers(), body: JSON.stringify(payload),
     });
