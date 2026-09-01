@@ -395,3 +395,218 @@ async def test_orchestrate_stream_route_is_explicitly_deferred_not_routed() -> N
     assert response.status_code == 404
     assert response.body["ok"] is False
     assert response.body["error"]["code"] == "not_found"
+
+
+# ==============================================================================
+# Bounded wire validation — Issue #1247
+# ==============================================================================
+
+
+async def test_orchestrate_rejects_unknown_fields() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["unexpected_field"] = 123
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["ok"] is False
+    assert response.body["error"]["code"] == "invalid_request"
+
+
+async def test_orchestrate_accepts_known_plan_and_recovery_fields() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="bounded ok"),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["agent_plan"] = {
+        "agent_id": "agent:padiem:orchestrator@1",
+        "steps": [
+            {"step_id": "step_1", "objective": "do something", "tool_id": "calc"},
+        ],
+    }
+    payload["recovery_policy"] = {
+        "retryable_driver_codes": ["TIMEOUT", "OVERLOADED"],
+        "max_retries_per_step": 2,
+    }
+    payload["max_retries"] = 5
+    payload["subject_id"] = "user:alice"
+    payload["require_evidence"] = False
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 200
+    assert response.body["ok"] is True
+
+
+async def test_orchestrate_forwards_require_evidence_true_to_runtime_gate() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["require_evidence"] = True
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["ok"] is False
+    assert response.body["error"]["code"] == "required_evidence_missing"
+
+
+@pytest.mark.parametrize("value", [True, 11, 99, "3", 1.5])
+async def test_orchestrate_rejects_invalid_max_retries(value) -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["max_retries"] = value
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_max_retries"
+
+
+@pytest.mark.parametrize(
+    "plan",
+    [
+        {"agent_id": "agent:padiem:orchestrator_1", "steps": [{"step_id": "s1", "objective": "x"}], "extra": 1},
+        {"agent_id": "bad space", "steps": []},
+        {"agent_id": "agent:padiem:orchestrator_1", "steps": "not-a-list"},
+    ],
+)
+async def test_orchestrate_rejects_invalid_agent_plan(plan) -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["agent_plan"] = plan
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_plan"
+
+
+@pytest.mark.parametrize(
+    "policy",
+    [
+        {"retryable_driver_codes": "not-a-list", "max_retries_per_step": 1},
+        {"retryable_driver_codes": [123], "max_retries_per_step": 1},
+        {"max_retries_per_step": 1, "bogus": 2},
+    ],
+)
+async def test_orchestrate_rejects_invalid_recovery_policy(policy) -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["recovery_policy"] = policy
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_recovery_policy"
+
+
+@pytest.mark.parametrize("field", ["require_evidence", "require_verification"])
+async def test_orchestrate_rejects_non_bool_flags(field) -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload[field] = "yes"
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == f"invalid_{field}"
+
+
+async def test_orchestrate_rejects_invalid_subject_id() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    payload = make_valid_payload()
+    payload["subject_id"] = "bad subject id"
+    response = await service.orchestrate_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_subject_id"
+
+
+async def test_resume_rejects_unknown_fields() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_valid_payload()
+    payload["continuation_ref"] = make_server_continuation(service)
+    payload["decision"] = make_decision_payload("approved")
+    payload["unexpected"] = 1
+    response = await service.resume_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_request"
+
+
+async def test_resume_rejects_invalid_options_preserves_continuation() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = make_valid_payload()
+    ref = make_server_continuation(service)
+    payload["continuation_ref"] = ref
+    payload["decision"] = make_decision_payload("approved")
+    payload["max_retries"] = 11
+    response = await service.resume_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_max_retries"
+    assert service._continuation_store._records[ref].state == "active"
+
+
+async def test_cancel_rejects_unknown_fields() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = {
+        "app_id": "b62",
+        "continuation_ref": make_server_continuation(service),
+        "reason": "user_cancelled",
+        "unexpected": 1,
+    }
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_request"
+
+
+async def test_cancel_rejects_empty_reason_preserves_continuation() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": ""}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_cancel_reason"
+    assert service._continuation_store._records[ref].state == "active"
+
+
+@pytest.mark.parametrize("reason", ["x" * 257, 123, {"a": 1}])
+async def test_cancel_rejects_invalid_reason_values(reason) -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    payload = {
+        "app_id": "b62",
+        "continuation_ref": make_server_continuation(service),
+        "reason": reason,
+    }
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_cancel_reason"

@@ -12,14 +12,17 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import inspect
 import json
+import re
 import secrets
 from typing import Any, Awaitable, Protocol
 
 from padiem_ai_core import (
     AgentPlan,
     AgentPlanStep,
+    AgentPlannerError,
     AgentProfile,
     AgentRecoveryPolicy,
+    AgentRecoveryError,
     ApprovalOutcome,
     ApprovalPause,
     ApprovalRequirement,
@@ -53,6 +56,35 @@ from app.service import (
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
+
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_AGENT_ID_RE = re.compile(
+    r"^agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
+)
+
+_MAX_ORCHESTRATION_RETRIES = 10
+_MAX_AGENT_STEP_RETRIES = 4
+_MAX_CANCEL_REASON_LEN = 256
+
+_EXEC_FIELDS = frozenset({
+    "app_id", "agent", "messages", "session_id", "additional_system_context",
+    "trace_id", "execution_context",
+})
+_ORCHESTRATION_OPTIONS = frozenset({
+    "agent_plan", "recovery_policy", "max_retries", "subject_id",
+    "require_evidence", "require_verification",
+})
+_ORCHESTRATION_RESUME_OPTIONS = frozenset({
+    "agent_plan", "recovery_policy", "max_retries", "subject_id",
+})
+_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS
+_RESUME_ALLOWED = (_EXEC_FIELDS | {"continuation_ref", "decision"}) | _ORCHESTRATION_RESUME_OPTIONS
+_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
+
+_AGENT_PLAN_ALLOWED = frozenset({"agent_id", "steps"})
+_PLAN_STEP_ALLOWED = frozenset({"step_id", "objective", "tool_id", "depends_on"})
+_RECOVERY_ALLOWED = frozenset({"retryable_driver_codes", "max_retries_per_step"})
 
 
 def _server_generated_trace_id() -> str:
@@ -232,31 +264,113 @@ class InMemoryContinuationStore:
 _DEFAULT_CONTINUATION_STORE = InMemoryContinuationStore()
 
 
+def _parse_max_retries(value: Any) -> int:
+    if value is None:
+        return 3
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ServiceContractError("invalid_max_retries", "max_retries must be an integer.")
+    if not 0 <= value <= _MAX_ORCHESTRATION_RETRIES:
+        raise ServiceContractError(
+            "invalid_max_retries",
+            f"max_retries must be between 0 and {_MAX_ORCHESTRATION_RETRIES}.",
+        )
+    return value
+
+
+def _parse_max_retries_per_step(value: Any) -> int:
+    if value is None:
+        return 1
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ServiceContractError("invalid_recovery_policy", "max_retries_per_step must be an integer.")
+    if not 0 <= value <= _MAX_AGENT_STEP_RETRIES:
+        raise ServiceContractError(
+            "invalid_recovery_policy",
+            f"max_retries_per_step must be between 0 and {_MAX_AGENT_STEP_RETRIES}.",
+        )
+    return value
+
+
+def _parse_subject_id(value: Any) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or not _SAFE_ID_RE.fullmatch(value):
+        raise ServiceContractError("invalid_subject_id", "subject_id must be a bounded safe identifier.")
+    return value
+
+
+def _require_strict_bool(value: Any, *, name: str) -> bool:
+    if value is None:
+        return False
+    if not isinstance(value, bool):
+        raise ServiceContractError(f"invalid_{name}", f"{name} must be a boolean.")
+    return value
+
+
+def _parse_retryable_driver_codes(value: Any) -> tuple[str, ...]:
+    if isinstance(value, (str, bytes)) or not isinstance(value, (list, tuple)):
+        raise ServiceContractError("invalid_recovery_policy", "retryable_driver_codes must be an array of strings.")
+    codes: list[str] = []
+    for code in tuple(value):
+        if not isinstance(code, str) or not _IDENTIFIER_RE.fullmatch(code):
+            raise ServiceContractError(
+                "invalid_recovery_policy",
+                "retryable_driver_codes must contain bounded safe identifiers.",
+            )
+        codes.append(code)
+    return tuple(codes)
+
+
+def _parse_plan_step(value: Any) -> AgentPlanStep:
+    if not isinstance(value, Mapping):
+        raise ServiceContractError("invalid_plan", "each plan step must be an object.")
+    data = dict(value)
+    unknown = set(data) - _PLAN_STEP_ALLOWED
+    if unknown:
+        raise ServiceContractError("invalid_plan", "plan step contains unsupported fields.")
+    step_id = data.get("step_id", "")
+    if not isinstance(step_id, str) or not _IDENTIFIER_RE.fullmatch(step_id):
+        raise ServiceContractError("invalid_plan", "plan step.step_id must be a bounded safe identifier.")
+    objective = data.get("objective", "")
+    if not isinstance(objective, str):
+        raise ServiceContractError("invalid_plan", "plan step.objective must be a string.")
+    raw_tool_id = data.get("tool_id", None)
+    tool_id: str | None = None
+    if raw_tool_id is not None:
+        if not isinstance(raw_tool_id, str) or not _IDENTIFIER_RE.fullmatch(raw_tool_id):
+            raise ServiceContractError("invalid_plan", "plan step.tool_id must be a bounded safe identifier or null.")
+        tool_id = raw_tool_id
+    raw_depends_on = data.get("depends_on", ())
+    if isinstance(raw_depends_on, (str, bytes)) or not isinstance(raw_depends_on, (list, tuple)):
+        raise ServiceContractError("invalid_plan", "plan step.depends_on must be an array of strings.")
+    depends_on: tuple[str, ...] = ()
+    for dep in raw_depends_on:
+        if not isinstance(dep, str) or not _IDENTIFIER_RE.fullmatch(dep):
+            raise ServiceContractError("invalid_plan", "plan step.depends_on must contain bounded safe identifiers.")
+        depends_on += (dep,)
+    return AgentPlanStep(
+        step_id=step_id,
+        objective=objective,
+        tool_id=tool_id,
+        depends_on=depends_on,
+    )
+
+
 def _parse_agent_plan(value: Any) -> AgentPlan | None:
     if value is None:
         return None
     if not isinstance(value, Mapping):
         raise ServiceContractError("invalid_plan", "agent_plan must be an object.")
     data = dict(value)
+    unknown = set(data) - _AGENT_PLAN_ALLOWED
+    if unknown:
+        raise ServiceContractError("invalid_plan", "agent_plan contains unsupported fields.")
     agent_id = data.get("agent_id")
-    if not isinstance(agent_id, str):
-        raise ServiceContractError("invalid_plan", "agent_plan.agent_id must be a string.")
+    if not isinstance(agent_id, str) or not _AGENT_ID_RE.fullmatch(agent_id):
+        raise ServiceContractError("invalid_plan", "agent_plan.agent_id must be a canonical versioned Agent id.")
     raw_steps = data.get("steps", ())
-    if not isinstance(raw_steps, (list, tuple)):
+    if isinstance(raw_steps, (str, bytes)) or not isinstance(raw_steps, (list, tuple)):
         raise ServiceContractError("invalid_plan", "agent_plan.steps must be an array.")
-    steps: list[AgentPlanStep] = []
-    for step_item in raw_steps:
-        if not isinstance(step_item, Mapping):
-            raise ServiceContractError("invalid_plan", "each plan step must be an object.")
-        sd = dict(step_item)
-        steps.append(
-            AgentPlanStep(
-                step_id=sd.get("step_id", ""),
-                objective=sd.get("objective", ""),
-                tool_id=sd.get("tool_id"),
-                depends_on=tuple(sd.get("depends_on", ())),
-            )
-        )
+    steps: list[AgentPlanStep] = [_parse_plan_step(step_item) for step_item in raw_steps]
     return AgentPlan(agent_id=agent_id, steps=tuple(steps))
 
 
@@ -266,12 +380,34 @@ def _parse_recovery_policy(value: Any) -> AgentRecoveryPolicy | None:
     if not isinstance(value, Mapping):
         raise ServiceContractError("invalid_recovery_policy", "recovery_policy must be an object.")
     data = dict(value)
-    codes = tuple(data.get("retryable_driver_codes", ()))
-    max_retries = data.get("max_retries_per_step", 1)
+    unknown = set(data) - _RECOVERY_ALLOWED
+    if unknown:
+        raise ServiceContractError("invalid_recovery_policy", "recovery_policy contains unsupported fields.")
     return AgentRecoveryPolicy(
-        retryable_driver_codes=codes,
-        max_retries_per_step=max_retries,
+        retryable_driver_codes=_parse_retryable_driver_codes(data.get("retryable_driver_codes", ())),
+        max_retries_per_step=_parse_max_retries_per_step(data.get("max_retries_per_step", 1)),
     )
+
+
+def _parse_cancel_reason(value: Any) -> str:
+    reason = value if value is not None else "user_cancelled"
+    if not isinstance(reason, str):
+        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a string.")
+    if not (1 <= len(reason) <= _MAX_CANCEL_REASON_LEN):
+        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
+    return reason
+
+
+def _parse_orchestration_options(payload: Mapping[str, Any]) -> tuple[
+    AgentPlan | None, AgentRecoveryPolicy | None, int, str | None, bool, bool
+]:
+    plan = _parse_agent_plan(payload.get("agent_plan"))
+    rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
+    max_retries = _parse_max_retries(payload.get("max_retries", 3))
+    subject_id = _parse_subject_id(payload.get("subject_id"))
+    require_evidence = _require_strict_bool(payload.get("require_evidence"), name="require_evidence")
+    require_verification = _require_strict_bool(payload.get("require_verification"), name="require_verification")
+    return plan, rec_policy, max_retries, subject_id, require_evidence, require_verification
 
 
 def _parse_required_timestamp(data: Mapping[str, Any], name: str) -> datetime:
@@ -516,6 +652,10 @@ class OrchestrationEngineService:
         if not isinstance(app_id, str) or not app_id.strip():
             return _service_error("invalid_request", "app_id must be a non-empty string.", status_code=400)
 
+        extra = set(payload) - _ORCHESTRATE_ALLOWED
+        if extra:
+            return _service_error("invalid_request", "Request contains unsupported fields.", status_code=400)
+
         exec_payload = {
             k: payload[k]
             for k in ("app_id", "agent", "messages", "session_id", "additional_system_context", "trace_id", "execution_context")
@@ -531,21 +671,27 @@ class OrchestrationEngineService:
             exec_req = _execution_request_with_trace(exec_req, trace_id)
             ctx = ExecutionContext(trace_id=trace_id)
 
-        plan = _parse_agent_plan(payload.get("agent_plan"))
-        rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
-        max_retries = int(payload.get("max_retries", 3))
-
-        orch_req = OrchestrationRequest(
-            execution_request=exec_req,
-            context=ctx,
-            app_id=app_id,
-            subject_id=payload.get("subject_id"),
-            agent_plan=plan,
-            recovery_policy=rec_policy,
-            max_retries=max_retries,
-            require_evidence=bool(payload.get("require_evidence", False)),
-            require_verification=bool(payload.get("require_verification", False)),
-        )
+        try:
+            plan, rec_policy, max_retries, subject_id, require_evidence, require_verification = (
+                _parse_orchestration_options(payload)
+            )
+            orch_req = OrchestrationRequest(
+                execution_request=exec_req,
+                context=ctx,
+                app_id=app_id,
+                subject_id=subject_id,
+                agent_plan=plan,
+                recovery_policy=rec_policy,
+                max_retries=max_retries,
+                require_evidence=require_evidence,
+                require_verification=require_verification,
+            )
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except (AgentPlannerError, AgentRecoveryError, OrchestrationError) as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=400)
+        except (TypeError, ValueError, OverflowError):
+            return _service_error("invalid_request", "Orchestration request fields are invalid.", status_code=400)
 
         try:
             runtime = self._runtime_factory(app_id)
@@ -593,6 +739,9 @@ class OrchestrationEngineService:
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return _service_error("invalid_request", "app_id must be a non-empty string.", status_code=400)
+        extra = set(payload) - _RESUME_ALLOWED
+        if extra:
+            return _service_error("invalid_request", "Request contains unsupported fields.", status_code=400)
         if not self._continuation_store_is_explicit:
             return _service_error(
                 "continuation_store_unavailable",
@@ -678,6 +827,31 @@ class OrchestrationEngineService:
                 or decision.decided_at != submission.decided_at
             ):
                 raise ServiceContractError("invalid_verified_decision", "Verified decision does not match the submitted decision.", status_code=422)
+            # Pre-mutation validation: parse the remaining orchestration fields
+            # and construct the resume request BEFORE claiming the continuation.
+            # A rejection here leaves the continuation ACTIVE and unclaimed.
+            rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
+            max_retries = _parse_max_retries(payload.get("max_retries", 3))
+            subject_id = _parse_subject_id(payload.get("subject_id"))
+            resume_req = OrchestrationResumeRequest(
+                pause=record.pause,
+                decision=decision,
+                execution_request=exec_req,
+                context=ctx,
+                app_id=app_id,
+                subject_id=subject_id,
+                agent_plan=plan,
+                recovery_policy=rec_policy,
+                max_retries=max_retries,
+            )
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except (AgentPlannerError, AgentRecoveryError, OrchestrationError) as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=400)
+        except (TypeError, ValueError, OverflowError):
+            return _service_error("invalid_request", "Resume request fields are invalid.", status_code=400)
+
+        try:
             claimed_record = await self._continuation_call(
                 "claim",
                 app_id=app_id,
@@ -696,20 +870,7 @@ class OrchestrationEngineService:
         claim_token = record.claim_token
         assert claim_token is not None
 
-        rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
         try:
-            max_retries = int(payload.get("max_retries", 3))
-            resume_req = OrchestrationResumeRequest(
-                pause=record.pause,
-                decision=decision,
-                execution_request=exec_req,
-                context=ctx,
-                app_id=app_id,
-                subject_id=payload.get("subject_id"),
-                agent_plan=plan,
-                recovery_policy=rec_policy,
-                max_retries=max_retries,
-            )
             runtime = self._runtime_factory(app_id)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.resume(resume_req)
@@ -784,6 +945,9 @@ class OrchestrationEngineService:
         """Cancel only a server-issued continuation."""
         if not isinstance(payload, Mapping):
             return _service_error("invalid_request", "Request body must be an object.", status_code=400)
+        extra = set(payload) - _CANCEL_ALLOWED
+        if extra:
+            return _service_error("invalid_request", "Request contains unsupported fields.", status_code=400)
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return _service_error("invalid_request", "app_id must be a non-empty string.", status_code=400)
@@ -806,6 +970,22 @@ class OrchestrationEngineService:
                     "Approval continuation storage returned an invalid record.",
                     status_code=503,
                 )
+            if record.pause.trace_id is None:
+                raise ServiceContractError(
+                    "continuation_identity_mismatch",
+                    "server-issued continuation is missing trace identity.",
+                    status_code=409,
+                )
+            # Pre-mutation validation: validate the cancel reason before any
+            # continuation state change so malformed input never mutates state.
+            reason = _parse_cancel_reason(payload.get("reason", "user_cancelled"))
+            trace_id = record.pause.trace_id
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except (TypeError, ValueError, OverflowError):
+            return _service_error("invalid_request", "Cancellation request fields are invalid.", status_code=400)
+
+        try:
             cancelled_record = await self._continuation_call(
                 "cancel",
                 app_id=app_id,
@@ -817,14 +997,6 @@ class OrchestrationEngineService:
                     "Continuation cancellation did not commit.",
                     status_code=503,
                 )
-            if record.pause.trace_id is None:
-                raise ServiceContractError(
-                    "continuation_identity_mismatch",
-                    "server-issued continuation is missing trace identity.",
-                    status_code=409,
-                )
-            trace_id = record.pause.trace_id
-            reason = payload.get("reason", "user_cancelled")
             runtime = self._runtime_factory(app_id)
             runner = OrchestrationRunner(runtime=runtime)
             events = runner.cancel_pause(record.pause, trace_id=trace_id, reason=reason)
