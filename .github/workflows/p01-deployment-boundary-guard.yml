@@ -1,0 +1,38 @@
+name: P01 Deployment Boundary Guard
+
+on:
+  pull_request:
+    paths:
+      - 'packages/padiem-ai-core/**'
+      - 'apps/padiem-ai-engine/**'
+      - 'packages/padiem-control-plane/**'
+      - 'docs/architecture/**'
+      - 'docs/operations/P01_SOURCE_INTEGRITY_AND_DEPLOYMENT_BOUNDARY_v1.md'
+      - '.github/scripts/p01_deployment_boundary_guard.py'
+      - '.github/tests/test_p01_deployment_boundary_guard.py'
+      - '.github/workflows/p01-deployment-boundary-guard.yml'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-deployment-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Run repository deployment-boundary guard
+        run: python .github/scripts/p01_deployment_boundary_guard.py
+
+      - name: Run guard regression tests
+        run: python -m pytest .github/tests/test_p01_deployment_boundary_guard.py -q
+
+      - name: Record no production deployment
+        run: |
+          echo 'P01_SOURCE_INTEGRITY_CI=PASS'
+          echo 'REPOSITORY_OWNED_PREVIEW_DEPLOYMENT=0'
+          echo 'PRODUCTION_DEPLOYMENT=0'
