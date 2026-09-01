@@ -1,7 +1,7 @@
 (function(){
   "use strict";
   const VALID=["light","dark","cinematic","padiem-home"];
-  const THEME_COLORS={light:"#f8f8fb",dark:"#0b0c0e",cinematic:"#06080d","padiem-home":"#e6e9ee"};
+  const THEME_COLORS={light:"#f8f8fb",dark:"#131417",cinematic:"#04070d","padiem-home":"#e6e9ee"};
   const COLOR_SCHEMES={light:"light",dark:"dark",cinematic:"dark","padiem-home":"light"};
   function isValid(t){return VALID.indexOf(t)!==-1;}
   function getSystemFallback(){
@@ -28,7 +28,7 @@
     if(document.body) document.body.setAttribute("data-theme",theme);
     var cs=COLOR_SCHEMES[theme]||"dark";
     var mc=document.querySelector('meta[name="color-scheme"]'); if(mc) mc.setAttribute("content",cs);
-    var tc=document.querySelector('meta[name="theme-color"]'); if(tc) tc.setAttribute("content",THEME_COLORS[theme]||"#06080d");
+    var tc=document.querySelector('meta[name="theme-color"]'); if(tc) tc.setAttribute("content",THEME_COLORS[theme]||"#04070d");
     if(persist){
       try{
         var url=new URL(location.href);

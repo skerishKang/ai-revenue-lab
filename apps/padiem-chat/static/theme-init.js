@@ -14,8 +14,8 @@
     var mc=document.querySelector('meta[name="color-scheme"]'); if(mc) mc.setAttribute("content",cs);
     var tc=document.querySelector('meta[name="theme-color"]');
     if(tc){
-      var map={light:"#f8f8fb",dark:"#0b0c0e",cinematic:"#06080d","padiem-home":"#e6e9ee"};
-      tc.setAttribute("content",map[s]||"#06080d");
+      var map={light:"#f8f8fb",dark:"#131417",cinematic:"#04070d","padiem-home":"#e6e9ee"};
+      tc.setAttribute("content",map[s]||"#04070d");
     }
   }catch(e){}
 })();
