@@ -4,9 +4,9 @@ from .grounding_runtime import (
     GroundingPolicy,
     GroundingRuntimeError,
     PreparedGrounding,
-    dedupe_evidence,
     prepare_combined_grounding_context,
 )
+from .source_quality import select_grounding_evidence
 from .web_runtime import MAX_QUERY_CHARS, WebProvider, WebRuntimeError
 
 
@@ -21,8 +21,8 @@ async def prepare_search_grounding(
     """Retrieve and prepare bounded search evidence without running synthesis.
 
     This is the shared pre-synthesis seam used by products that need progressive
-    model streaming after retrieval. Retrieval stays Core-owned and callers only
-    receive the prepared, injection-safe evidence context.
+    model streaming after retrieval. Retrieval and source-quality selection stay
+    Core-owned; callers only receive the prepared, injection-safe evidence context.
     """
 
     if not isinstance(query, str):
@@ -44,9 +44,14 @@ async def prepare_search_grounding(
     except WebRuntimeError as exc:
         raise GroundingRuntimeError(exc.code, exc.message, exc.status_code) from exc
 
-    evidence = dedupe_evidence(found, limit=resolved_policy.max_simple_sources)
+    selection = select_grounding_evidence(
+        safe_query,
+        found,
+        policy=resolved_policy.source_quality_policy,
+        limit=resolved_policy.max_simple_sources,
+    )
     return prepare_combined_grounding_context(
-        evidence,
+        selection.evidence,
         additional_system_context=additional_system_context,
         max_total_context_chars=max_total_context_chars,
         policy=resolved_policy,
