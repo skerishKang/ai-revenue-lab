@@ -41,7 +41,8 @@ def evidence(
     query: str | None = None,
 ) -> Evidence:
     resolved = index if url_index is None else url_index
-    relevance_text = query or "Source"
+    query_terms = (query or "Source").split()
+    relevance_text = " | ".join(query_terms[:3]) or "Source"
     return Evidence(
         id=f"ev_{index}_{source_type}",
         title=f"{relevance_text} Source {resolved}",
