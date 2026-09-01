@@ -33,12 +33,33 @@ async def _maybe_await(value: Any) -> Any:
     return value
 
 
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 def _utcnow_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return _utcnow().isoformat()
 
 
 def _expires_at_iso(ttl_seconds: int) -> str:
-    return (datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds)).isoformat()
+    return (_utcnow() + timedelta(seconds=ttl_seconds)).isoformat()
+
+
+def _parse_timestamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _is_expired(value: Any) -> bool:
+    parsed = _parse_timestamp(value)
+    return parsed is not None and parsed <= _utcnow()
 
 
 def _public_result(result: ExecutionResult | Mapping[str, Any]) -> dict[str, Any]:
@@ -144,6 +165,25 @@ class CloudflareD1IdempotencyAdapter:
             idempotency_key,
         )
 
+    async def _release_expired_reservation(
+        self,
+        *,
+        app_id: str,
+        idempotency_key: str,
+        record: Mapping[str, Any],
+    ) -> bool:
+        if record.get("state") == "completed" or not _is_expired(record.get("expires_at")):
+            return False
+        await self._run(
+            f"DELETE FROM {_TABLE_NAME} "
+            "WHERE app_id=? AND idempotency_key=? AND state != ? AND expires_at=?",
+            app_id,
+            idempotency_key,
+            "completed",
+            record.get("expires_at"),
+        )
+        return True
+
     async def begin(
         self,
         *,
@@ -152,6 +192,12 @@ class CloudflareD1IdempotencyAdapter:
         request_fingerprint: str,
     ) -> ExecutionResult | None:
         record = await self._record(app_id=app_id, idempotency_key=idempotency_key)
+        if record is not None and await self._release_expired_reservation(
+            app_id=app_id,
+            idempotency_key=idempotency_key,
+            record=record,
+        ):
+            record = None
         if record is not None:
             if record.get("request_fingerprint") != request_fingerprint:
                 raise IdempotencyConflictError("idempotency key is bound to a different request")
