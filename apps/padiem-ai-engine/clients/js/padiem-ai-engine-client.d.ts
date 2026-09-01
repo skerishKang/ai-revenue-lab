@@ -7,6 +7,31 @@ export const ENGINE_ORCHESTRATE_PATH: "/internal/v1/orchestrate";
 export const ENGINE_ORCHESTRATE_RESUME_PATH: "/internal/v1/orchestrate/resume";
 export const ENGINE_ORCHESTRATE_CANCEL_PATH: "/internal/v1/orchestrate/cancel";
 
+export const ORCHESTRATION_FIELD_PARITY: Readonly<{
+  app_id: "CLIENT_OWNED_AND_INJECTED";
+  agent: "SUPPORTED_AND_MAPPED";
+  messages: "SUPPORTED_AND_MAPPED";
+  session_id: "SUPPORTED_AND_MAPPED";
+  additional_system_context: "SUPPORTED_AND_MAPPED";
+  trace_id: "SUPPORTED_AND_MAPPED";
+  execution_context: "SUPPORTED_AND_MAPPED";
+  subject_id: "SUPPORTED_AND_MAPPED";
+  agent_plan: "SUPPORTED_AND_MAPPED";
+  recovery_policy: "SUPPORTED_AND_MAPPED";
+  max_retries: "SUPPORTED_AND_MAPPED";
+  require_evidence: "SUPPORTED_AND_MAPPED";
+  require_verification: "SUPPORTED_AND_MAPPED";
+  continuation_ref: "RESUME_ONLY_SUPPORTED_AND_MAPPED";
+  decision: "RESUME_ONLY_SUPPORTED_AND_MAPPED";
+  reason: "CANCEL_ONLY_SUPPORTED_AND_MAPPED";
+  agent_definition: "EXPLICITLY_DEFERRED_AND_REJECTED";
+  compiled_agent_profile: "EXPLICITLY_DEFERRED_AND_REJECTED";
+  tool_authorization: "EXPLICITLY_DEFERRED_AND_REJECTED";
+  tool_runtime: "EXPLICITLY_DEFERRED_AND_REJECTED";
+  tool_arguments: "EXPLICITLY_DEFERRED_AND_REJECTED";
+  pause: "UNSUPPORTED_AND_NOT_EXPOSED";
+}>;
+
 export interface EngineBinding {
   fetch(input: string | URL | Request, init?: RequestInit): Promise<Response>;
 }
@@ -53,17 +78,28 @@ export interface EngineRunRequest {
   additional_system_context?: string | null;
   trace_id?: string | null;
   execution_context?: EngineExecutionContext;
+}
+
+export interface EngineOrchestrationRequest extends EngineRunRequest {
   subject_id?: string | null;
   agent_plan?: EngineAgentPlan;
-  agent_definition?: Record<string, unknown>;
-  compiled_agent_profile?: Record<string, unknown>;
-  tool_authorization?: Record<string, unknown>;
   recovery_policy?: Record<string, unknown>;
   max_retries?: number;
   require_evidence?: boolean;
   require_verification?: boolean;
-  continuation_ref?: string;
-  decision?: Record<string, unknown>;
+}
+
+export interface EngineOrchestrationResumeRequest extends EngineRunRequest {
+  continuation_ref: string;
+  decision: Record<string, unknown>;
+  subject_id?: string | null;
+  agent_plan?: EngineAgentPlan;
+  recovery_policy?: Record<string, unknown>;
+  max_retries?: number;
+}
+
+export interface EngineOrchestrationCancelRequest {
+  continuation_ref: string;
   reason?: string;
 }
 
@@ -107,6 +143,7 @@ export interface EngineHealthResult {
   completed_run: boolean;
   streaming_run: boolean;
   orchestration_run?: boolean;
+  capabilities?: Record<string, "available" | "deferred" | "unavailable">;
   [key: string]: unknown;
 }
 
@@ -127,9 +164,9 @@ export interface PadiemAiEngineClientOptions {
 export class PadiemAiEngineClient {
   constructor(options: PadiemAiEngineClientOptions);
   execute(run: EngineRunRequest): Promise<EngineCompletedResult>;
-  orchestrate(request: EngineRunRequest): Promise<EngineOrchestrationResult>;
-  resumeOrchestration(request: EngineRunRequest): Promise<EngineOrchestrationResult>;
-  cancelOrchestrationPause(request: Record<string, unknown>): Promise<Record<string, unknown>>;
+  orchestrate(request: EngineOrchestrationRequest): Promise<EngineOrchestrationResult>;
+  resumeOrchestration(request: EngineOrchestrationResumeRequest): Promise<EngineOrchestrationResult>;
+  cancelOrchestrationPause(request: EngineOrchestrationCancelRequest): Promise<Record<string, unknown>>;
   stream(run: EngineRunRequest): AsyncGenerator<EngineStreamEvent, void, unknown>;
   health(): Promise<EngineHealthResult>;
 }
