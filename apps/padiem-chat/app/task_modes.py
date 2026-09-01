@@ -5,6 +5,13 @@ from types import MappingProxyType
 from padiem_ai_core import AgentProfile
 
 
+_BASE_TRUTHFULNESS_INSTRUCTION = (
+    "확인되지 않은 사실, 숫자, 날짜, 인용문, URL, 출처, 검색 결과나 실행 결과를 만들어내지 마세요. "
+    "현재 정보나 외부 사실 확인이 필요한데 웹 근거가 제공되지 않았다면 확인했다고 주장하지 말고 불확실성을 명확히 밝히세요. "
+    "사용자가 제공한 자료를 기준으로 작업하라고 한 경우에는 그 자료의 경계를 지키고 외부 사실을 임의로 섞지 마세요."
+)
+
+
 class TaskMode(AgentProfile):
     """B62 user-facing task preset backed by Core's profile contract.
 
@@ -24,12 +31,13 @@ class TaskMode(AgentProfile):
         optimize_for: str,
         max_tokens: int,
     ) -> None:
+        combined_instruction = f"{system_instruction.rstrip()} {_BASE_TRUTHFULNESS_INSTRUCTION}"
         AgentProfile.__init__(
             self,
             id=id,
             title=title,
             description=short_description,
-            system_instruction=system_instruction,
+            system_instruction=combined_instruction,
             task_type=task_type,
             optimize_for=optimize_for,
             max_tokens=max_tokens,
