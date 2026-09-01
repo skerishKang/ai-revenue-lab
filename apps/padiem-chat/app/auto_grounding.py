@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import os
 
 from padiem_ai_core.grounding_runtime import GroundingRuntimeError, PreparedGrounding
 from padiem_ai_core.search_decision import SearchDecision, SearchDisposition, decide_search
@@ -32,24 +31,24 @@ def latest_user_question(messages: list[dict[str, str]]) -> str:
     raise GroundingError(422, "tool_input_required", "검색 여부를 판단할 사용자 질문이 필요합니다.")
 
 
-def _mock_runtime_active() -> bool:
-    return os.getenv("PADIEM_CHAT_RUNTIME_MODE", "").strip().lower() == "mock"
-
-
 class AutoGroundingService:
     """B62 consumer of Core-owned search decision and grounding contracts."""
 
     def __init__(self, web_provider: WebProvider):
         self._web_provider = web_provider
         self._core_provider = _CoreWebProviderAdapter(web_provider)
+        self._automatic_search_enabled = bool(
+            getattr(web_provider, "_automatic_search_enabled", True)
+        )
 
     def decide(self, messages: list[dict[str, str]], *, skill: TaskMode) -> SearchDecision:
         decision = decide_search(latest_user_question(messages), task_id=skill.id)
-        # Automatic grounding is a live factuality feature. Preview/mock runtime must
-        # preserve its deterministic zero-network answer path, and MockWebProvider
-        # evidence is QA-only rather than truthful current-world verification.
+        # Automatic grounding is a live factuality feature. Preview providers created
+        # from mock Settings explicitly disable it. MockWebProvider evidence is QA-only
+        # and must never silently count as current-world verification.
         if decision.requires_search and (
-            _mock_runtime_active() or isinstance(self._web_provider, MockWebProvider)
+            not self._automatic_search_enabled
+            or isinstance(self._web_provider, MockWebProvider)
         ):
             return SearchDecision(
                 SearchDisposition.NO_SEARCH,
