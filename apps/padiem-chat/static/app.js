@@ -63,6 +63,7 @@
   const projectFilesList = document.getElementById("projectFilesList");
   const projectFilesEmpty = document.getElementById("projectFilesEmpty");
   const chatTransport = window.PadiemChatTransport;
+  const conversationState = window.PadiemChatConversationState;
 
   const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
   const MAX_DOCUMENT_BYTES = 96 * 1024;
@@ -100,15 +101,12 @@
     },
   });
 
-  let messages = [];
   let inFlight = false;
   let activeRequestController = null;
   let activeRequestArticle = null;
   let activeRequestCancelReason = null;
   let conversationEpoch = 0;
-  let conversationSkill = "auto";
   let selectedAttachment = null;
-  let conversationId = null;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
   let projects = [];
   let projectsReady = false;
@@ -226,7 +224,7 @@
     retry.textContent = actionLabel;
     retry.addEventListener("click", async () => {
       article.remove();
-      conversationId = retryContext.conversationId;
+      conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
       const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext);
@@ -571,9 +569,7 @@
       activeRequestArticle = null;
     }
     inFlight = false;
-    messages = [];
-    conversationSkill = "auto";
-    conversationId = null;
+    conversationState.reset();
     if (!preserveProject) {
       activeProject = null;
       activeProjectFileCount = 0;
@@ -799,7 +795,7 @@
           : "대화를 삭제하지 못했습니다.";
         throw new Error(message);
       }
-      const deletedActiveConversation = conversationId === id;
+      const deletedActiveConversation = conversationState.getConversationId() === id;
       if (deletedActiveConversation) resetConversation(true);
       await loadRecentConversations();
       if (deletedActiveConversation) {
@@ -836,9 +832,8 @@
       if (savedProjectId && !restoredProject) throw new Error("이 대화의 프로젝트를 불러오지 못했습니다.");
       clearAttachment();
       messageList.replaceChildren();
-      messages = [];
-      conversationSkill = "auto";
-      conversationId = data.conversation.id;
+      conversationState.reset();
+      conversationState.setConversationId(data.conversation.id);
       activeProject = restoredProject;
       activeProjectFileCount = 0;
       renderProjectState();
@@ -848,9 +843,8 @@
         if (!item || typeof item.content !== "string") return;
         if (item.role === "user") addUserMessage(item.content, null);
         if (item.role === "assistant") renderStoredAssistant(item.content);
-        if (item.role === "user" || item.role === "assistant") messages.push({ role: item.role, content: item.content });
+        if (item.role === "user" || item.role === "assistant") conversationState.appendMessage({ role: item.role, content: item.content });
       });
-      messages = messages.slice(-20);
       closeSidebar();
       input.focus();
     } catch (error) {
@@ -861,8 +855,8 @@
   async function requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, signal) {
     const data = await chatTransport.requestCompleted(payload, signal);
     renderAnswer(article, data);
-    messages = outboundMessages.concat([{ role: "assistant", content: data.answer }]).slice(-20);
-    if (typeof data.conversation_id === "string") conversationId = data.conversation_id;
+    conversationState.commitAssistant(outboundMessages, data.answer);
+    if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
     if (typeof data.project_id === "string") {
       const resolvedProject = projectById(data.project_id) || contextSnapshot.project;
       if (resolvedProject) activeProject = resolvedProject;
@@ -877,8 +871,8 @@
   }
 
   function applyStreamDone(article, data, answer, outboundMessages, contextSnapshot) {
-    messages = outboundMessages.concat([{ role: "assistant", content: answer }]).slice(-20);
-    if (typeof data.conversation_id === "string") conversationId = data.conversation_id;
+    conversationState.commitAssistant(outboundMessages, answer);
+    if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
     if (typeof data.project_id === "string") {
       const snapshotProject = contextSnapshot.project && contextSnapshot.project.id === data.project_id ? contextSnapshot.project : null;
       const boundedProject = data.project && data.project.id === data.project_id && typeof data.project.name === "string" ? data.project : null;
@@ -1018,14 +1012,14 @@
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
-    if (selectedSkill) conversationSkill = selectedSkill;
+    if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
-    const contextSnapshot = { conversationId, project: activeProject };
+    const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
-    const outbound = messages.concat([{ role: "user", content: prompt }]).slice(-20);
-    const success = await requestAnswer(outbound, conversationSkill, attachmentSnapshot, contextSnapshot);
+    const outbound = conversationState.outboundWithUser(prompt);
+    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot);
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
 
