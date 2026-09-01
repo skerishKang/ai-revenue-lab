@@ -1,0 +1,286 @@
+/* Padiem Glass portrait composition layer.
+ * Keeps the chat surface readable while reserving the right side for metallic portrait art.
+ * Female uses the Drive-approved cyber-07 derivative; Male uses cyber-03.
+ * The portrait mask is conversation-driven: chat travel reveals and re-covers the face in a loop.
+ */
+
+@property --glass-mask-start {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 24%;
+}
+
+@property --glass-mask-full {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 58%;
+}
+
+html[data-theme="padiem-glass"] {
+  --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
+  --glass-art-x: 0px;
+  --glass-art-y: 0px;
+  --glass-art-scale: 1;
+  --glass-pointer-x: 0px;
+  --glass-pointer-y: 0px;
+  --glass-mask-start: 24%;
+  --glass-mask-full: 58%;
+  --glass-reveal: 0;
+  --glass-art-opacity: .58;
+  --glass-chat-surface: rgba(238, 242, 245, .82);
+  --glass-chat-border: rgba(255, 255, 255, .58);
+  --glass-composer-surface: rgba(248, 250, 251, .90);
+  --glass-card-surface: rgba(244, 247, 249, .72);
+}
+
+html[data-theme="padiem-glass"][data-glass-variant="female"] {
+  --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
+}
+
+html[data-theme="padiem-glass"][data-glass-variant="male"] {
+  --padiem-glass-portrait-image: url("./assets/padiem-glass-male.jpg");
+}
+
+html[data-theme="padiem-glass"] .main-panel {
+  isolation: isolate;
+}
+
+html[data-theme="padiem-glass"] .main-panel::before {
+  content: "";
+  position: fixed;
+  /* Keep portrait above the shell/background stack but below readable surfaces. */
+  z-index: 1;
+  top: 68px;
+  right: 0;
+  bottom: 0;
+  width: min(48vw, 680px);
+  pointer-events: none;
+  background-image: var(--padiem-glass-portrait-image);
+  background-repeat: no-repeat;
+  background-position: right 52%;
+  background-size: auto min(90vh, 900px);
+  opacity: var(--glass-art-opacity);
+  filter: saturate(.68) contrast(.94) brightness(1.08);
+  transform:
+    translate3d(
+      calc(var(--glass-art-x) + var(--glass-pointer-x)),
+      calc(var(--glass-art-y) + var(--glass-pointer-y)),
+      0
+    )
+    scale(var(--glass-art-scale));
+  transform-origin: right center;
+  transition:
+    transform 620ms cubic-bezier(.2,.75,.25,1),
+    opacity 240ms ease,
+    --glass-mask-start 900ms cubic-bezier(.22,.7,.2,1),
+    --glass-mask-full 900ms cubic-bezier(.22,.7,.2,1);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent var(--glass-mask-start),
+    rgba(0,0,0,.56) calc(var(--glass-mask-start) + 7%),
+    #000 var(--glass-mask-full),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent var(--glass-mask-start),
+    rgba(0,0,0,.56) calc(var(--glass-mask-start) + 7%),
+    #000 var(--glass-mask-full),
+    #000 100%
+  );
+}
+
+html[data-theme="padiem-glass"] .topbar,
+html[data-theme="padiem-glass"] .conversation {
+  position: relative;
+  z-index: 2;
+}
+
+html[data-theme="padiem-glass"] .conversation {
+  background: linear-gradient(155deg, rgba(248,250,251,.86), var(--glass-chat-surface));
+  border: 1px solid var(--glass-chat-border);
+  border-radius: 30px;
+  box-shadow: 0 24px 70px rgba(28, 36, 44, .16), inset 0 1px 0 rgba(255,255,255,.72);
+  backdrop-filter: blur(30px) saturate(106%);
+  -webkit-backdrop-filter: blur(30px) saturate(106%);
+  padding-left: clamp(18px, 2.4vw, 34px);
+  padding-right: clamp(18px, 2.4vw, 34px);
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .conversation {
+  background: linear-gradient(155deg, rgba(248,250,251,.88), rgba(233,238,241,.84));
+}
+
+html[data-theme="padiem-glass"] .starter,
+html[data-theme="padiem-glass"] .source-card,
+html[data-theme="padiem-glass"] .rich-block,
+html[data-theme="padiem-glass"] .output-card,
+html[data-theme="padiem-glass"] .document-card,
+html[data-theme="padiem-glass"] .project-card,
+html[data-theme="padiem-glass"] .project-file-card,
+html[data-theme="padiem-glass"] .rich-response,
+html[data-theme="padiem-glass"] .route-details,
+html[data-theme="padiem-glass"] .reference-note {
+  background-color: var(--glass-card-surface) !important;
+  backdrop-filter: blur(26px) saturate(104%);
+  -webkit-backdrop-filter: blur(26px) saturate(104%);
+}
+
+html[data-theme="padiem-glass"] .composer {
+  background: linear-gradient(165deg, rgba(255,255,255,.94), var(--glass-composer-surface));
+  border-color: rgba(255,255,255,.76);
+  box-shadow: 0 24px 70px rgba(28,36,44,.20), inset 0 1px 0 rgba(255,255,255,.88);
+  backdrop-filter: blur(32px) saturate(104%);
+  -webkit-backdrop-filter: blur(32px) saturate(104%);
+}
+
+html[data-theme="padiem-glass"] .composer-wrap {
+  background: linear-gradient(to bottom, transparent, rgba(187,195,202,.30) 26%, rgba(174,184,192,.58) 100%) !important;
+}
+
+html[data-theme="padiem-glass"] .message-bubble {
+  background: rgba(31, 40, 49, .84);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+html[data-theme="padiem-glass"] .glass-variant-control {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(29, 39, 48, .12);
+}
+
+html[data-theme="padiem-glass"] .glass-variant-control[hidden] {
+  display: none !important;
+}
+
+html[data-theme="padiem-glass"] .glass-variant-label {
+  margin: 0 0 8px;
+  color: #53606c;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .08em;
+}
+
+html[data-theme="padiem-glass"] .glass-variant-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+html[data-theme="padiem-glass"] .glass-variant-option {
+  min-height: 44px;
+  border: 1px solid rgba(29, 39, 48, .14);
+  border-radius: 13px;
+  background: rgba(255,255,255,.54);
+  color: #24313b;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+html[data-theme="padiem-glass"] .glass-variant-option[aria-pressed="true"] {
+  background: rgba(33, 45, 56, .84);
+  border-color: rgba(33, 45, 56, .90);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(27,35,43,.14);
+}
+
+html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
+  outline-color: rgba(62, 111, 143, .48);
+}
+
+@media (min-width: 1280px) {
+  html[data-theme="padiem-glass"] .conversation {
+    width: min(760px, calc(100vw - 264px - 360px - 84px));
+    margin-left: clamp(36px, 4vw, 72px);
+    margin-right: 0;
+  }
+
+  html[data-theme="padiem-glass"] .composer-wrap {
+    left: calc(264px + clamp(36px, 4vw, 72px));
+    transform: none;
+    width: min(760px, calc(100vw - 264px - 360px - 84px));
+  }
+
+  html[data-theme="padiem-glass"] .main-panel::before {
+    width: clamp(360px, 32vw, 560px);
+    right: max(0px, calc((100vw - 1740px) / 2));
+    background-size: auto min(88vh, 900px);
+    opacity: .66;
+  }
+}
+
+@media (max-width: 1279px) {
+  html[data-theme="padiem-glass"] .main-panel::before {
+    width: min(52vw, 560px);
+    opacity: .44;
+  }
+}
+
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] .main-panel::before {
+    top: 62px;
+    right: -24vw;
+    width: 82vw;
+    background-size: auto 72vh;
+    opacity: .22;
+    filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px);
+    --glass-mask-start: 8%;
+    --glass-mask-full: 34%;
+  }
+
+  html[data-theme="padiem-glass"] .conversation {
+    background: rgba(242, 245, 247, .90);
+    border-radius: 24px;
+  }
+
+  html[data-theme="padiem-glass"] .composer {
+    background: rgba(249, 251, 252, .94);
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"] .main-panel::before {
+    right: -34vw;
+    width: 94vw;
+    opacity: .16;
+  }
+
+  html[data-theme="padiem-glass"] .conversation {
+    border-radius: 20px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="padiem-glass"] .main-panel::before {
+    transform: none !important;
+    transition: none !important;
+    --glass-mask-start: 6%;
+    --glass-mask-full: 24%;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html[data-theme="padiem-glass"] {
+    --glass-chat-surface: rgba(245, 247, 249, .97);
+    --glass-composer-surface: rgba(250, 251, 252, .98);
+    --glass-card-surface: rgba(247, 249, 250, .96);
+  }
+
+  html[data-theme="padiem-glass"] .main-panel::before {
+    opacity: .14;
+  }
+
+  html[data-theme="padiem-glass"] .conversation,
+  html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .starter,
+  html[data-theme="padiem-glass"] .source-card,
+  html[data-theme="padiem-glass"] .rich-response {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
