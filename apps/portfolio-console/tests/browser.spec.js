@@ -147,14 +147,15 @@ test.describe('Portfolio Console Browser Tests', () => {
     expect(await workBtn.evaluate(el => el.tagName)).toBe('BUTTON');
   });
 
-  test('business view shows 58 represented Businesses through B59', async ({ page }) => {
+  test('business view shows 60 represented Businesses through B61', async ({ page }) => {
     await page.click('.view-nav-item[data-view="business"]');
-    await expect(page.locator('.biz-item')).toHaveCount(58);
+    await expect(page.locator('.biz-item')).toHaveCount(60);
     await expect(page.locator('.biz-item[data-biz-number="38"]')).toContainText('AI 운동 코치');
     await expect(page.locator('.biz-item[data-biz-number="54"]')).toContainText('한국형 AI 코드 에이전트');
     await expect(page.locator('.biz-item[data-biz-number="57"]')).toHaveCount(1);
     await expect(page.locator('.biz-item[data-biz-number="58"]')).toHaveCount(1);
     await expect(page.locator('.biz-item[data-biz-number="59"]')).toHaveCount(1);
+    await expect(page.locator('.biz-item[data-biz-number="61"]')).toContainText('스토리메모리');
     await expect(page.locator('.biz-item[data-biz-number="56"]')).toHaveCount(0);
   });
 
@@ -177,9 +178,9 @@ test.describe('Portfolio Console Browser Tests', () => {
     await page.keyboard.press('Escape');
   });
 
-  test('projects remain 13 while Business registry expands to 58', async ({ page }) => {
+  test('projects remain 13 while Business registry expands to 60', async ({ page }) => {
     await page.waitForTimeout(100);
     expect(await page.evaluate(() => window.ARL_PROJECTS.length)).toBe(13);
-    expect(await page.evaluate(() => window.ARL_BUSINESSES.length)).toBe(58);
+    expect(await page.evaluate(() => window.ARL_BUSINESSES.length)).toBe(60);
   });
 });

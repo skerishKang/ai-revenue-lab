@@ -9,13 +9,13 @@ test.describe('Portfolio Console Business Launcher', () => {
   test('Business index is the default launcher view', async ({ page }) => {
     await expect(page.locator('#view-business')).toBeVisible();
     await expect(page.locator('.view-nav-item[data-view="business"]')).toHaveClass(/is-active/);
-    await expect(page.locator('.biz-item')).toHaveCount(59);
+    await expect(page.locator('.biz-item')).toHaveCount(60);
   });
 
   test('launcher separates internal web, non-web and all external or successor Businesses', async ({ page }) => {
     const summary = page.locator('#business-launcher-summary');
     await expect(summary).toBeVisible();
-    await expect(summary).toContainText('바로 열기 47');
+    await expect(summary).toContainText('바로 열기 48');
     await expect(summary).toContainText('비웹 1');
     await expect(summary).toContainText('확장 11');
     await expect(summary).toContainText('미배포 0');
@@ -96,7 +96,7 @@ test.describe('Portfolio Console Business Launcher', () => {
       surfaceUrl: business.surfaceUrl || '',
     })));
     const reviewRequired = audit.filter((item) => item.owner === 'OWNER_REVIEW_REQUIRED');
-    expect(reviewRequired).toHaveLength(46);
+    expect(reviewRequired).toHaveLength(47);
     expect(reviewRequired.every((item) => /^https:\/\//.test(item.surfaceUrl))).toBe(true);
 
     for (const item of reviewRequired) {
