@@ -64,6 +64,7 @@
   const projectFilesEmpty = document.getElementById("projectFilesEmpty");
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
+  const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
 
   const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
   const MAX_DOCUMENT_BYTES = 96 * 1024;
@@ -78,28 +79,6 @@
     [".json", "application/json"],
   ]);
   const DEFAULT_NOTE = "사진과 TXT·Markdown·CSV·JSON 문서 한 개를 첨부할 수 있습니다. PDF·Office 문서는 아직 지원하지 않습니다.";
-
-  const MESSAGE_LIFECYCLE = Object.freeze({
-    STREAMING: "streaming",
-    COMPLETED: "completed",
-    FAILED: "failed",
-    CANCELLED: "cancelled",
-    TIMED_OUT: "timed_out",
-  });
-  window.PadiemChatLifecycle = Object.freeze({
-    states: MESSAGE_LIFECYCLE,
-    isCompleted(article) {
-      return Boolean(article && article.dataset.lifecycle === MESSAGE_LIFECYCLE.COMPLETED);
-    },
-    set(article, state) {
-      if (!article || !Object.values(MESSAGE_LIFECYCLE).includes(state)) return;
-      article.dataset.lifecycle = state;
-      article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
-        bubbles: true,
-        detail: { state },
-      }));
-    },
-  });
 
   let inFlight = false;
   let activeRequestController = null;

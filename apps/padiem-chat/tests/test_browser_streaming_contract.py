@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APP_PATH = ROOT / "static" / "app.js"
 TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
+LIFECYCLE_PATH = ROOT / "static" / "message-lifecycle.js"
 INDEX_PATH = ROOT / "static" / "index.html"
 
 
@@ -50,7 +51,9 @@ def test_text_only_streams_but_attachment_keeps_completed_json() -> None:
     assert 'fetch("/api/chat/stream"' not in source
     assert 'fetch("/api/chat"' not in source
     assert html.index('<script src="./document-binary.js"></script>') < html.index('<script src="./chat-transport.js"></script>')
-    assert html.index('<script src="./chat-transport.js"></script>') < html.index('<script src="./app.js"></script>')
+    assert html.index('<script src="./chat-transport.js"></script>') < html.index('<script src="./conversation-state.js"></script>')
+    assert html.index('<script src="./conversation-state.js"></script>') < html.index('<script src="./message-lifecycle.js"></script>')
+    assert html.index('<script src="./message-lifecycle.js"></script>') < html.index('<script src="./app.js"></script>')
     assert html.index('<script src="./app.js"></script>') < html.index('<script src="./a11y.js"></script>')
 
 
@@ -212,9 +215,7 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
 
 def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
     source = _source()
-    lifecycle_start = source.index("  const MESSAGE_LIFECYCLE")
-    lifecycle_end = source.index("  let inFlight = false;", lifecycle_start)
-    lifecycle = source[lifecycle_start:lifecycle_end]
+    lifecycle = LIFECYCLE_PATH.read_text(encoding="utf-8")
 
     assert 'STREAMING: "streaming"' in lifecycle
     assert 'COMPLETED: "completed"' in lifecycle
@@ -223,6 +224,10 @@ def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -
     assert 'TIMED_OUT: "timed_out"' in lifecycle
     assert 'isCompleted(article)' in lifecycle
     assert '"padiem:message-lifecycle"' in lifecycle
+    assert 'bubbles: true' in lifecycle
+    assert 'detail: { state }' in lifecycle
+    assert 'const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;' in source
+    assert 'window.PadiemChatLifecycle = Object.freeze' not in source
 
     outputs = (APP_PATH.parent / "outputs.js").read_text(encoding="utf-8")
     export = (APP_PATH.parent / "conversation-export.js").read_text(encoding="utf-8")
