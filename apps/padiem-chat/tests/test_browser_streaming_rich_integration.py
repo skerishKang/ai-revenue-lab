@@ -65,6 +65,27 @@ def test_composer_disabled_state_is_the_single_rich_enhancement_gate() -> None:
 def test_progressive_rich_response_executes_only_after_final_dom_settles() -> None:
     runtime = _rich_runtime()
     script = r'''
+class TextNode {
+  constructor(value) {
+    this.tagName = "#TEXT";
+    this.children = [];
+    this.parentNode = null;
+    this._text = String(value ?? "");
+  }
+
+  get textContent() {
+    return this._text;
+  }
+
+  set textContent(value) {
+    this._text = String(value ?? "");
+  }
+
+  hasClass() {
+    return false;
+  }
+}
+
 class Element {
   constructor(tagName) {
     this.tagName = String(tagName || "div").toUpperCase();
@@ -133,6 +154,7 @@ class Element {
 
 const document = {
   createElement(tagName) { return new Element(tagName); },
+  createTextNode(value) { return new TextNode(value); },
 };
 const messageInput = { disabled: true };
 const messageList = {
