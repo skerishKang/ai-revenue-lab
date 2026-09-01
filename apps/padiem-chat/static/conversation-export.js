@@ -2,7 +2,10 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
-  const accountControls = document.querySelector(".account-controls");
+  const accountControls =
+    document.querySelector(".account-controls") ||
+    document.querySelector(".sidebar-account") ||
+    document.querySelector(".sidebar-bottom");
   const loginButton = document.getElementById("loginButton");
 
   if (!messageList || !accountControls) return;
@@ -16,8 +19,19 @@
   exportButton.hidden = true;
   exportButton.disabled = true;
 
-  if (loginButton) accountControls.insertBefore(exportButton, loginButton);
-  else accountControls.appendChild(exportButton);
+  if (loginButton && accountControls.contains(loginButton)) {
+    let ref = loginButton;
+    while (ref.parentElement && ref.parentElement !== accountControls) {
+      ref = ref.parentElement;
+    }
+    if (ref.parentElement === accountControls) {
+      accountControls.insertBefore(exportButton, ref);
+    } else {
+      accountControls.appendChild(exportButton);
+    }
+  } else {
+    accountControls.appendChild(exportButton);
+  }
 
   const SKIP_SELECTOR = [
     ".typing",
@@ -164,4 +178,21 @@
   observer.observe(messageList, { childList: true, subtree: true, characterData: true });
   messageList.addEventListener("padiem:message-lifecycle", updateExportState);
   updateExportState();
+
+  function ensureSidebarOpenForExport() {
+    const shellEl = document.querySelector(".app-shell");
+    const mobile = window.matchMedia("(max-width: 920px)").matches;
+    if (!mobile) return;
+    if (shellEl && !shellEl.classList.contains("sidebar-open")) {
+      shellEl.classList.add("sidebar-open");
+      const menu = document.getElementById("mobileMenu");
+      if (menu) menu.setAttribute("aria-expanded", "true");
+      const scrim = document.getElementById("sidebarScrim");
+      if (scrim) scrim.hidden = false;
+    }
+  }
+
+  document.addEventListener("padiem:request-export", () => {
+    ensureSidebarOpenForExport();
+  });
 })();

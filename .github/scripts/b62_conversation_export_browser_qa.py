@@ -135,6 +135,12 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
             raise AssertionError(f"mobile export target under 44px: {box!r}")
 
     await page.screenshot(path=str(OUT_DIR / f"{name}-ready.png"), full_page=True)
+    if mobile:
+        menu = page.locator("#mobileMenu")
+        if await menu.get_attribute("aria-expanded") != "true":
+            await menu.click()
+        await page.locator("#sidebar").wait_for(state="visible")
+        await export_button.scroll_into_view_if_needed()
     requests_before_first_export = list(api_requests)
     first_filename, first_text = await _download_text(page, f"{name}-first-export")
     if api_requests != requests_before_first_export:
@@ -146,7 +152,22 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     if not first_filename.startswith("Padiem-Chat-대화-") or not first_filename.endswith(".txt"):
         raise AssertionError(f"unexpected bounded filename: {first_filename!r}")
 
+    if mobile:
+        menu = page.locator("#mobileClose")
+        if await menu.get_attribute("aria-expanded") != "false":
+            await menu.click()
+        await page.wait_for_function(
+            "() => document.getElementById('mobileMenu')?.getAttribute('aria-expanded') === 'false'",
+            timeout=5_000,
+        )
+
     await _send(page, FOLLOWUP_PROMPT, 2)
+    if mobile:
+        menu = page.locator("#mobileMenu")
+        if await menu.get_attribute("aria-expanded") != "true":
+            await menu.click()
+        await page.locator("#sidebar").wait_for(state="visible")
+        await export_button.scroll_into_view_if_needed()
     requests_before_second_export = list(api_requests)
     second_filename, second_text = await _download_text(page, f"{name}-second-export")
     if api_requests != requests_before_second_export:

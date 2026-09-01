@@ -1,0 +1,43 @@
+.sidebar-bottom {
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.sidebar-bottom .settings-button {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-weight: 650;
+  cursor: pointer;
+  text-align: left;
+  margin-left: 0;
+}
+.sidebar-account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 8px;
+  border-radius: 12px;
+}
+.sidebar-account .account-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+.sidebar-bottom .login-button {
+  margin-left: 0;
+  flex-shrink: 0;
+}

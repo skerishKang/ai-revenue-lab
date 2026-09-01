@@ -334,7 +334,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _open_sidebar_if_mobile(page, mobile)
     await page.screenshot(path=str(OUT_DIR / f"{name}-history-new-chat.png"), full_page=True)
 
-    await _close_sidebar_if_mobile(page, mobile)
+    await _open_sidebar_if_mobile(page, mobile)
     await page.locator("#loginButton").click()
     await page.wait_for_function(
         "() => document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('historySection')?.hidden === true",
