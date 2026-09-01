@@ -81,15 +81,17 @@ html[data-theme="cinematic"] .sidebar .section-heading-row h2 {
 }
 
 /* Cinematic distinction ----------------------------------------------------
- * DARK remains neutral charcoal. CINEMATIC gets an unmistakable cool-blue /
- * warm-gold atmospheric split plus more glass depth, while preserving the
- * same DOM, layout and dark-surface readability contract. */
+ * DARK is a flat neutral-charcoal utility mode (see padiem-themes.css).
+ * CINEMATIC owns the filmic layer: an unmistakable cool-blue / warm-gold
+ * atmospheric split, deeper blue-black canvas, vignette and glass depth —
+ * while preserving the same DOM, layout and dark-surface readability
+ * contract. (#1273) */
 html[data-theme="cinematic"] body {
   background:
     radial-gradient(circle at 76% 22%, rgba(108,190,255,.28), transparent 24%),
     radial-gradient(circle at 14% 78%, rgba(239,201,132,.20), transparent 27%),
     radial-gradient(circle at 58% 44%, rgba(225,241,255,.075), transparent 30%),
-    linear-gradient(135deg, #070a10 0%, #0a0d13 46%, #040609 100%) !important;
+    linear-gradient(135deg, #050810 0%, #0a101c 46%, #030509 100%) !important;
 }
 
 html[data-theme="cinematic"] body::before {
@@ -101,48 +103,48 @@ html[data-theme="cinematic"] body::before {
 
 html[data-theme="cinematic"] .sidebar {
   background:
-    linear-gradient(180deg, rgba(8,13,20,.91), rgba(7,8,10,.83)),
-    rgba(6,7,9,.86) !important;
-  border-right-color: rgba(136,201,255,.16) !important;
+    linear-gradient(180deg, rgba(7,11,19,.93), rgba(5,8,14,.86)),
+    rgba(4,7,12,.9) !important;
+  border-right-color: rgba(136,201,255,.20) !important;
   box-shadow:
-    22px 0 70px rgba(0,0,0,.18),
-    inset -1px 0 0 rgba(136,201,255,.10),
-    10px 0 42px rgba(91,166,230,.055) !important;
+    22px 0 70px rgba(0,0,0,.28),
+    inset -1px 0 0 rgba(136,201,255,.14),
+    10px 0 48px rgba(91,166,230,.08) !important;
 }
 
 html[data-theme="cinematic"] .topbar {
-  background: linear-gradient(180deg, rgba(8,13,20,.72), rgba(8,9,11,.14)) !important;
-  border-bottom-color: rgba(136,201,255,.16) !important;
+  background: linear-gradient(180deg, rgba(7,11,19,.78), rgba(6,9,15,.16)) !important;
+  border-bottom-color: rgba(136,201,255,.20) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    0 10px 30px rgba(25,83,126,.08) !important;
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 10px 30px rgba(25,83,126,.12) !important;
 }
 
 html[data-theme="cinematic"] .starter {
   background:
-    linear-gradient(145deg, rgba(224,242,255,.095), rgba(255,255,255,.024)),
-    rgba(8,13,19,.58) !important;
-  border-color: rgba(136,201,255,.20) !important;
+    linear-gradient(145deg, rgba(224,242,255,.10), rgba(255,255,255,.024)),
+    rgba(7,11,18,.62) !important;
+  border-color: rgba(136,201,255,.24) !important;
   box-shadow:
-    0 0 22px rgba(96,178,242,.085),
-    inset 0 1px 0 rgba(255,255,255,.075) !important;
+    0 0 26px rgba(96,178,242,.10),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
 
 html[data-theme="cinematic"] .composer {
   background:
-    linear-gradient(145deg, rgba(19,31,43,.76), rgba(10,12,16,.72)) !important;
-  border-color: rgba(136,201,255,.22) !important;
+    linear-gradient(145deg, rgba(18,30,46,.8), rgba(8,11,17,.76)) !important;
+  border-color: rgba(136,201,255,.26) !important;
   box-shadow:
-    0 0 34px rgba(93,178,246,.11),
-    0 18px 44px rgba(0,0,0,.22),
-    inset 0 1px 0 rgba(255,255,255,.07) !important;
+    0 0 40px rgba(93,178,246,.14),
+    0 18px 44px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
 
 html[data-theme="cinematic"] .app-shell::before {
   opacity: .58 !important;
   box-shadow:
-    0 0 14px rgba(136,201,255,.14),
-    0 0 18px rgba(239,201,132,.08) !important;
+    0 0 16px rgba(136,201,255,.18),
+    0 0 22px rgba(239,201,132,.10) !important;
 }
 
 /* Mobile product polish ---------------------------------------------------- */
