@@ -327,8 +327,20 @@ class Default(WorkerEntrypoint):
         )
         if path == HEALTH_PATH and result.status_code == 200:
             health = dict(result.body)
-            health["streaming_run"] = True
-            health["orchestration_run"] = True
-            health["service_identity"] = "required_for_execute_and_stream"
+            # Truthful posture: health from EngineService already carries
+            # bounded capabilities and b14 separate. Do not overstate with
+            # hardcoded booleans. Only ensure service identity mentions all
+            # authenticated non-health routes, including orchestration.
+            health["service_identity"] = "required_for_all_non_health_routes"
+            # Keep backward-compat booleans in sync with capabilities if present
+            caps = health.get("capabilities")
+            if isinstance(caps, dict):
+                if "completed_run" in caps:
+                    health["completed_run"] = caps["completed_run"] == "available"
+                if "provider_streaming_run" in caps:
+                    health["streaming_run"] = caps["provider_streaming_run"] == "available"
+                # Ensure orchestration_run reflects capability, not hardcoded true
+                if "orchestration_run" in caps:
+                    health["orchestration_run"] = caps["orchestration_run"] == "available"
             result = ServiceResponse(status_code=200, body=health)
         return _json_response(result)

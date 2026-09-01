@@ -133,12 +133,15 @@ def current_engine_contract_manifest() -> EngineContractManifest:
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("streaming_run", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("provider_streaming_run", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("service_identity_contract", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("service_identity_wire_enforcement", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("execution_context", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_run", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_resume", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_cancel", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("orchestration_stream", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("idempotency_replay", EngineFeatureState.DEFERRED),
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
@@ -150,6 +153,34 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("provider_selection", EngineFeatureState.UNAVAILABLE),
         ),
     )
+
+
+def engine_capability_posture() -> dict[str, str]:
+    """Single authoritative source for health/manifest capability posture.
+
+    Returns a bounded vocabulary map for the 8 posture fields required by #1237.
+    States are AVAILABLE only when the route/runtime is truly wired at the
+    Worker boundary; otherwise DEFERRED/UNAVAILABLE. This is the truth that both
+    health and manifest must report identically.
+    """
+    manifest = current_engine_contract_manifest()
+    wanted = (
+        "completed_run",
+        "provider_streaming_run",
+        "orchestration_run",
+        "orchestration_resume",
+        "orchestration_cancel",
+        "orchestration_stream",
+        "idempotency_replay",
+        "service_identity_wire_enforcement",
+    )
+    posture: dict[str, str] = {}
+    for fid in wanted:
+        try:
+            posture[fid] = manifest.feature_state(fid).value
+        except ContractManifestError:
+            posture[fid] = EngineFeatureState.DEFERRED.value
+    return posture
 
 
 def require_compatible_engine_contract(*, requested_major: int, required_features: tuple[str, ...] = ()) -> EngineContractManifest:
