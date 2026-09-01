@@ -178,4 +178,21 @@
   observer.observe(messageList, { childList: true, subtree: true, characterData: true });
   messageList.addEventListener("padiem:message-lifecycle", updateExportState);
   updateExportState();
+
+  function ensureSidebarOpenForExport() {
+    const shellEl = document.querySelector(".app-shell");
+    const mobile = window.matchMedia("(max-width: 920px)").matches;
+    if (!mobile) return;
+    if (shellEl && !shellEl.classList.contains("sidebar-open")) {
+      shellEl.classList.add("sidebar-open");
+      const menu = document.getElementById("mobileMenu");
+      if (menu) menu.setAttribute("aria-expanded", "true");
+      const scrim = document.getElementById("sidebarScrim");
+      if (scrim) scrim.hidden = false;
+    }
+  }
+
+  document.addEventListener("padiem:request-export", () => {
+    ensureSidebarOpenForExport();
+  });
 })();
