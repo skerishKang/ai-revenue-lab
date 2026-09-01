@@ -272,8 +272,8 @@ def _community_intent(query: str) -> bool:
 
 
 def _relevance(query: str, evidence: Evidence) -> tuple[float, tuple[str, ...]]:
-    if evidence.provider == "mock":
-        return 1.0, ("synthetic_mock_evidence",)
+    if evidence.provider in {"mock", "test"}:
+        return 1.0, ("synthetic_test_evidence",)
 
     query_terms = _significant_query_tokens(query)
     if not query_terms:
