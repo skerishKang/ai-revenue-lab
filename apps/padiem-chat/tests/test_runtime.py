@@ -345,6 +345,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
     transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
+    conversation_state = (root / "static/conversation-state.js").read_text(encoding="utf-8")
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
     assert "자동 추천" in html
@@ -359,11 +360,13 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "모의 응답 · 실제 모델 호출 없음" in js
     assert "chatTransport.requestCompleted(payload, signal)" in js
     assert 'fetch("/api/chat"' in transport
-    assert "conversationSkill" in js
+    assert "conversationState.setSkill(selectedSkill)" in js
+    assert 'let skill = "auto";' in conversation_state
     assert "OPENROUTER" not in html.upper()
     assert "API_KEY" not in html
     assert "API_KEY" not in js
     assert "API_KEY" not in transport
+    assert "API_KEY" not in conversation_state
 
 
 def test_runtime_reuses_accepted_phase1_css_exactly():
