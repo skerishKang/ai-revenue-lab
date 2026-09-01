@@ -78,7 +78,6 @@ def _pause() -> ApprovalPause:
         created_at=now,
         expires_at=now + timedelta(minutes=10),
         trace_id="tr_orch_test",
-        agent_id="agent:padiem:orchestrator_1",
     )
 
 
