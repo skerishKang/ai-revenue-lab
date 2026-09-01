@@ -200,9 +200,15 @@ def create_web_provider(
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> WebProvider:
     if settings.web_provider == "off":
-        return OffWebProvider()
-    if settings.web_provider == "mock":
-        return MockWebProvider()
-    if settings.web_provider == "firecrawl":
-        return FirecrawlWebProvider(settings, transport=transport)
-    raise RuntimeError("unreachable web provider configuration")
+        provider: WebProvider = OffWebProvider()
+    elif settings.web_provider == "mock":
+        provider = MockWebProvider()
+    elif settings.web_provider == "firecrawl":
+        provider = FirecrawlWebProvider(settings, transport=transport)
+    else:
+        raise RuntimeError("unreachable web provider configuration")
+
+    # Automatic search is a live factuality path. Explicit web-tool QA remains
+    # available in preview, but ordinary mock runtime must stay zero-network.
+    setattr(provider, "_automatic_search_enabled", settings.runtime_mode == "b14")
+    return provider
