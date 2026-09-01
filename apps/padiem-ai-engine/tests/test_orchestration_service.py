@@ -29,7 +29,8 @@ from app.orchestration_service import (
     InMemoryContinuationStore,
     OrchestrationEngineService,
 )
-from app.service import ServiceResponse
+from app.service import ServiceContractError, ServiceResponse
+from padiem_ai_core import OrchestrationRunner
 
 
 class MockEngineRuntime:
@@ -625,3 +626,202 @@ async def test_cancel_rejects_invalid_reason_values(reason) -> None:
     response = await service.cancel_payload(payload)
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_cancel_reason"
+
+
+# ==============================================================================
+# Atomic cancellation — Issue #1246
+# ==============================================================================
+
+
+class FailingCancelClaimStore(InMemoryContinuationStore):
+    def claim_cancel(self, *, app_id: str, continuation_ref: str, reason: str):  # type: ignore[override]
+        raise ServiceContractError(
+            "continuation_cancel_claim_failed", "injected cancel claim failure", status_code=503
+        )
+
+
+class FailingCancelCommitStore(InMemoryContinuationStore):
+    def commit_cancel(self, *, app_id: str, continuation_ref: str, claim_token: str):  # type: ignore[override]
+        raise ServiceContractError(
+            "continuation_cancel_commit_failed", "injected cancel commit failure", status_code=503
+        )
+
+
+def _make_expired_continuation(service: OrchestrationEngineService) -> str:
+    now = datetime.now(timezone.utc)
+    pause = ApprovalPause(
+        pause_id="pause_exp_1",
+        run_id="run_exp_1",
+        agent_runtime_id="agent:padiem:orchestrator_1",
+        tool_id="calc",
+        invocation_sha256="0" * 64,
+        requirement=ApprovalRequirement.USER_CONFIRMATION,
+        step_index=1,
+        created_at=now - timedelta(minutes=20),
+        expires_at=now - timedelta(minutes=10),
+        trace_id="tr_orch_test",
+    )
+    store = service._continuation_store
+    ref = store.issue(app_id="b62", pause=pause, plan_id=None)
+    return ref
+
+
+async def test_cancel_atomic_success_commits_cancelled_once() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 200
+    assert response.body["ok"] is True
+    assert response.body["status"] == "cancelled"
+    assert len(response.body["events"]) == 1
+    assert service._continuation_store._records[ref].state == "cancelled"
+    assert service._continuation_store._records[ref].cancel_reason == "user_cancelled"
+    assert service._continuation_store._records[ref].cancel_event_fingerprint is not None
+
+
+async def test_cancel_runtime_factory_failure_before_commit_leaves_active() -> None:
+    def failing_factory(app_id: str):
+        raise RuntimeError("runtime factory boom")
+
+    service = OrchestrationEngineService(
+        runtime_factory=failing_factory,
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 500
+    assert response.body["ok"] is False
+    assert service._continuation_store._records[ref].state == "active"
+
+
+async def test_cancel_core_failure_before_commit_leaves_active() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    original = OrchestrationRunner.cancel_pause
+
+    def failing_cancel(self, pause, *, trace_id=None, reason="user_cancelled"):  # type: ignore[no-untyped-def]
+        raise ServiceContractError("core_cancel_failed", "Core cancellation failed.", status_code=503)
+
+    OrchestrationRunner.cancel_pause = failing_cancel  # type: ignore[method-assign]
+    try:
+        payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+        response = await service.cancel_payload(payload)
+        assert response.status_code == 503
+        assert response.body["ok"] is False
+        assert response.body["error"]["code"] == "core_cancel_failed"
+        assert service._continuation_store._records[ref].state == "active"
+    finally:
+        OrchestrationRunner.cancel_pause = original  # type: ignore[method-assign]
+
+
+async def test_cancel_claim_failure_means_no_core_event() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=FailingCancelClaimStore(),
+    )
+    ref = make_server_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "continuation_cancel_claim_failed"
+    # No Core event should have been produced — state remains active, not cancelling
+    assert service._continuation_store._records[ref].state == "active"
+
+
+async def test_cancel_commit_failure_after_core_returns_503_and_leaves_cancelling() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=FailingCancelCommitStore(),
+    )
+    ref = make_server_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "continuation_cancel_commit_failed"
+    # Core event was generated but durable commit failed — deterministic cancelling/reconciliable state
+    assert service._continuation_store._records[ref].state == "cancelling"
+
+
+async def test_cancel_repeated_does_not_emit_duplicate_core_event() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    first = await service.cancel_payload(payload)
+    assert first.status_code == 200
+    assert len(first.body["events"]) == 1
+    second = await service.cancel_payload(payload)
+    assert second.status_code == 409
+    assert second.body["error"]["code"] in ("continuation_cancelled", "continuation_cancel_in_progress")
+    # No second event — still exactly one durable cancelled record
+    assert service._continuation_store._records[ref].state == "cancelled"
+
+
+async def test_cancel_claim_first_blocks_resume() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="should not run"),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    # Simulate concurrent cancel winning the race by directly claiming cancel
+    store = service._continuation_store
+    store.claim_cancel(app_id="b62", continuation_ref=ref, reason="user_cancelled")
+    assert store._records[ref].state == "cancelling"
+    payload = make_valid_payload()
+    payload["continuation_ref"] = ref
+    payload["decision"] = make_decision_payload("approved")
+    response = await service.resume_payload(payload)
+    assert response.status_code == 409
+    assert response.body["error"]["code"] in (
+        "continuation_cancel_in_progress",
+        "continuation_claimed",
+        "continuation_cancelled",
+    )
+
+
+async def test_resume_claim_first_blocks_cancel() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        approval_decision_verifier=TestApprovalDecisionVerifier(),
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = make_server_continuation(service)
+    store = service._continuation_store
+    store.claim(app_id="b62", continuation_ref=ref)
+    assert store._records[ref].state == "claimed"
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 409
+    assert response.body["error"]["code"] == "continuation_claimed"
+
+
+async def test_cancel_expired_continuation_returns_409_and_no_core_event() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+        continuation_store=InMemoryContinuationStore(),
+    )
+    ref = _make_expired_continuation(service)
+    payload = {"app_id": "b62", "continuation_ref": ref, "reason": "user_cancelled"}
+    response = await service.cancel_payload(payload)
+    assert response.status_code == 409
+    assert response.body["error"]["code"] == "continuation_expired"
