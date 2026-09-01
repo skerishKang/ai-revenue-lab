@@ -1,4 +1,4 @@
-name: B62 Production D1 Metadata Read-Only Audit
+name: B62 Pywrangler Bundle Read-Only Audit
 
 on:
   push:
@@ -15,64 +15,59 @@ concurrency:
 jobs:
   audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           ref: f563b270990a831e25388276095a85b6dd3fcc0b
-      - name: Read existing Worker-bound D1 metadata only
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+      - name: Exact source gate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "f563b270990a831e25388276095a85b6dd3fcc0b"
+          echo 'EXACT_SOURCE=f563b270990a831e25388276095a85b6dd3fcc0b'
+          echo 'PRODUCTION_MUTATION=NONE'
+      - name: Build mutation-free pywrangler dry-run outdir
+        working-directory: apps/padiem-chat
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/b62-out
+          mkdir -p /tmp/b62-out
+          uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy --dry-run --outdir /tmp/b62-out 2>&1 | tee /tmp/pywrangler-dryrun.log
+          echo 'PYWRANGLER_DRY_RUN=PASS'
+          echo 'PRODUCTION_MUTATION=NONE'
+      - name: Inventory generated upload bundle without contents
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, os
-          from urllib.error import HTTPError
-          from urllib.request import Request, urlopen
-
-          api='https://api.cloudflare.com/client/v4'
-          account=os.environ['CLOUDFLARE_ACCOUNT_ID']
-          token=os.environ['CLOUDFLARE_API_TOKEN']
-          headers={'Authorization':f'Bearer {token}','Accept':'application/json','User-Agent':'b62-d1-metadata-audit/1.0'}
-
-          req=Request(f'{api}/accounts/{account}/workers/scripts/padiem-chat/settings',headers=headers)
-          with urlopen(req,timeout=20) as r:
-              settings=json.loads(r.read(524288).decode())
-          bindings=(settings.get('result') or {}).get('bindings') or []
-          d1=[b for b in bindings if b.get('name')=='PADIEM_CHAT_DB' and b.get('type')=='d1']
-          if len(d1)!=1 or not d1[0].get('database_id'):
-              raise SystemExit('exact D1 binding not found')
-          database_id=d1[0]['database_id']
-          print('WORKER_D1_BINDING_COUNT=1')
-          print('D1_ID_LOGGED=false')
-
-          for endpoint,label in [
-              (f'{api}/accounts/{account}/d1/database/{database_id}','GET_BY_ID'),
-              (f'{api}/accounts/{account}/d1/database/{database_id}/query','QUERY_BY_ID'),
-          ]:
-              try:
-                  if label=='QUERY_BY_ID':
-                      body=json.dumps({'sql':'SELECT 1 AS ok'}).encode()
-                      rq=Request(endpoint,data=body,method='POST',headers={**headers,'Content-Type':'application/json'})
-                  else:
-                      rq=Request(endpoint,headers=headers)
-                  with urlopen(rq,timeout=20) as r:
-                      payload=json.loads(r.read(524288).decode())
-                  result=payload.get('result')
-                  print(f'{label}_HTTP=200')
-                  print(f'{label}_SUCCESS={str(payload.get("success") is True).lower()}')
-                  if label=='GET_BY_ID' and isinstance(result,dict):
-                      name=result.get('name')
-                      if isinstance(name,str) and name.strip():
-                          print(f'D1_DATABASE_NAME={name}')
-                          print('D1_DATABASE_NAME_RECOVERED=true')
-                  if label=='QUERY_BY_ID':
-                      print('D1_READ_QUERY_AVAILABLE=true')
-              except HTTPError as e:
-                  print(f'{label}_HTTP={e.code}')
-                  print(f'{label}_SUCCESS=false')
-              except Exception as e:
-                  print(f'{label}_ERROR={type(e).__name__}')
-          print('PRODUCTION_MUTATION=NONE')
+          from pathlib import Path
+          root=Path('/tmp/b62-out')
+          files=sorted(p for p in root.rglob('*') if p.is_file())
+          print(f'OUTDIR_FILE_COUNT={len(files)}')
+          print(f'OUTDIR_TOTAL_BYTES={sum(p.stat().st_size for p in files)}')
+          for p in files:
+              rel=p.relative_to(root).as_posix()
+              suffix=p.suffix.lower() or '<none>'
+              print(f'BUNDLE_FILE path={rel} bytes={p.stat().st_size} suffix={suffix}')
+          app=Path('apps/padiem-chat')
+          pyroot=app/'python_modules'
+          if pyroot.exists():
+              pyfiles=sorted(p for p in pyroot.rglob('*') if p.is_file())
+              print(f'PYTHON_MODULES_GENERATED=true')
+              print(f'PYTHON_MODULE_FILE_COUNT={len(pyfiles)}')
+              print(f'PYTHON_MODULE_TOTAL_BYTES={sum(p.stat().st_size for p in pyfiles)}')
+              for p in pyfiles[:200]:
+                  print('PYMODULE_FILE='+p.relative_to(app).as_posix())
+          else:
+              print('PYTHON_MODULES_GENERATED=false')
+          deploy_cfg=app/'.wrangler/deploy/config.json'
+          print(f'WRANGLER_DEPLOY_REDIRECT_PRESENT={str(deploy_cfg.exists()).lower()}')
+          print('SOURCE_CONTENT_LOGGED=false')
+          print('SECRET_EXPOSED=false')
           PY
