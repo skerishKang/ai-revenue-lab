@@ -9,24 +9,24 @@ test.describe('Portfolio Console Business Launcher', () => {
   test('Business index is the default launcher view', async ({ page }) => {
     await expect(page.locator('#view-business')).toBeVisible();
     await expect(page.locator('.view-nav-item[data-view="business"]')).toHaveClass(/is-active/);
-    await expect(page.locator('.biz-item')).toHaveCount(58);
+    await expect(page.locator('.biz-item')).toHaveCount(59);
   });
 
   test('launcher separates internal web, non-web and all external or successor Businesses', async ({ page }) => {
     const summary = page.locator('#business-launcher-summary');
     await expect(summary).toBeVisible();
-    await expect(summary).toContainText('바로 열기 46');
+    await expect(summary).toContainText('바로 열기 47');
     await expect(summary).toContainText('비웹 1');
     await expect(summary).toContainText('확장 11');
     await expect(summary).toContainText('미배포 0');
   });
 
-  test('B1 owner rejection is rendered as redesign while technical phase truth remains available', async ({ page }) => {
+  test('B1 is routed to live owner review while technical phase truth remains available', async ({ page }) => {
     const row = page.locator('.biz-item[data-biz-number="1"]');
     const badges = row.locator('.biz-phase-badge');
-    await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REJECTED');
+    await expect(row).toHaveAttribute('data-owner-ui-status', 'OWNER_REVIEW_REQUIRED');
     await expect(badges).toHaveCount(3);
-    await expect(badges.nth(0)).toHaveText('UI · 재설계');
+    await expect(badges.nth(0)).toHaveText('UI · 검토 필요');
     await expect(badges.nth(1)).toHaveText('UX · UI 확정 대기');
     await expect(badges.nth(2)).toHaveText('BE · 동결');
 
@@ -40,7 +40,7 @@ test.describe('Portfolio Console Business Launcher', () => {
       };
     });
     expect(identity).toEqual({
-      ownerUiStatus: 'OWNER_REJECTED',
+      ownerUiStatus: 'OWNER_REVIEW_REQUIRED',
       uiStatus: 'UI_NOT_READY',
       uxStatus: 'BLOCKED_BY_UI',
       backendStatus: 'FROZEN',
@@ -96,7 +96,7 @@ test.describe('Portfolio Console Business Launcher', () => {
       surfaceUrl: business.surfaceUrl || '',
     })));
     const reviewRequired = audit.filter((item) => item.owner === 'OWNER_REVIEW_REQUIRED');
-    expect(reviewRequired).toHaveLength(44);
+    expect(reviewRequired).toHaveLength(46);
     expect(reviewRequired.every((item) => /^https:\/\//.test(item.surfaceUrl))).toBe(true);
 
     for (const item of reviewRequired) {
