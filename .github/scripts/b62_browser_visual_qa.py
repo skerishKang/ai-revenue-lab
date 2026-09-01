@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -59,6 +60,159 @@ async def _assert_error_clear_of_composer(page: Page, error_box) -> float:
             f"error card is occluded by fixed composer: error={error_geometry}, composer={composer_geometry}, clearance={clearance}"
         )
     return round(float(clearance), 2)
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+async def _glass_reveal(page: Page) -> float:
+    value = await page.evaluate(
+        "() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0"
+    )
+    return round(float(value), 3)
+
+
+async def _assert_glass_portrait_image_loaded(page: Page, *, variant: str) -> dict[str, Any]:
+    image = await page.locator(".main-panel").evaluate(
+        """
+        async (el) => {
+          const style = getComputedStyle(el, '::before');
+          const backgroundImage = style.backgroundImage || '';
+          const match = backgroundImage.match(/url\\([\"']?(.*?)[\"']?\\)/);
+          if (!match) throw new Error(`portrait background URL missing: ${backgroundImage}`);
+          const url = match[1];
+          const response = await fetch(url, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`portrait request failed: ${response.status} ${url}`);
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          const img = new Image();
+          try {
+            img.src = objectUrl;
+            await img.decode();
+            return {
+              backgroundImage,
+              url,
+              status: response.status,
+              contentType: response.headers.get('content-type') || '',
+              bytes: blob.size,
+              naturalWidth: img.naturalWidth,
+              naturalHeight: img.naturalHeight,
+              opacity: style.opacity,
+              width: style.width,
+              zIndex: style.zIndex,
+              maskImage: style.maskImage,
+              transform: style.transform,
+            };
+          } finally {
+            URL.revokeObjectURL(objectUrl);
+          }
+        }
+        """
+    )
+    if image["naturalWidth"] <= 0 or image["naturalHeight"] <= 0 or image["bytes"] <= 1000:
+        raise AssertionError(f"Padiem Glass portrait did not decode: {image}")
+    expected_name = f"padiem-glass-{variant}.jpg"
+    if expected_name not in image["url"]:
+        raise AssertionError(f"Padiem Glass portrait URL mismatch: expected={expected_name}, actual={image['url']}")
+    if image["zIndex"] != "1":
+        raise AssertionError(f"Padiem Glass portrait must render above shell background: {image['zIndex']}")
+    return image
+
+
+async def _send_glass_turn(page: Page, *, variant: str, turn: int) -> None:
+    expected = await page.locator("#messageList .assistant-message").count() + 1
+    await page.locator("#messageInput").fill(f"Padiem Glass {variant} 시각 검수 대화 {turn}")
+    if await page.locator("#sendButton").is_disabled():
+        raise AssertionError("Padiem Glass preview send button stayed disabled")
+    await page.locator("#sendButton").click()
+    await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
+    await page.wait_for_function(
+        "expected => document.querySelectorAll('#messageList .assistant-message').length >= expected",
+        arg=expected,
+        timeout=15_000,
+    )
+    await page.wait_for_function(
+        "expected => [...document.querySelectorAll('#messageList .assistant-content')].filter(el => el.textContent?.includes('지금은 미리보기 환경입니다')).length >= expected",
+        arg=expected,
+        timeout=15_000,
+    )
+    await page.wait_for_timeout(950)
+
+
+async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
+    await page.set_viewport_size({"width": 1440, "height": 1000})
+    await page.goto(
+        f"{BASE_URL}/?theme=padiem-glass&glass={variant}",
+        wait_until="domcontentloaded",
+        timeout=30_000,
+    )
+    await page.locator("#messageInput").wait_for(state="visible")
+    await page.wait_for_timeout(900)
+
+    theme = await page.locator("html").get_attribute("data-theme")
+    glass_variant = await page.locator("html").get_attribute("data-glass-variant")
+    if theme != "padiem-glass":
+        raise AssertionError(f"Padiem Glass preview did not activate: {theme!r}")
+    if glass_variant != variant:
+        raise AssertionError(f"Padiem Glass variant mismatch: expected={variant!r}, actual={glass_variant!r}")
+
+    await _assert_no_horizontal_overflow(page, f"glass-{variant}-home")
+    conversation_box = await _assert_in_viewport(page, ".conversation")
+    composer_box = await _assert_in_viewport(page, "#composerForm")
+    portrait = await _assert_glass_portrait_image_loaded(page, variant=variant)
+    initial_reveal = await _glass_reveal(page)
+    if initial_reveal > 0.15:
+        raise AssertionError(f"Padiem Glass must start covered: reveal={initial_reveal}")
+
+    home_name = f"desktop-glass-{variant}-home.png"
+    await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
+
+    peak: dict[str, Any] | None = None
+    covered_again: dict[str, Any] | None = None
+    reveal_samples: list[dict[str, Any]] = [{"turn": 0, "reveal": initial_reveal}]
+    chat_name = f"desktop-glass-{variant}-chat.png"
+
+    for turn in range(1, 8):
+        await _send_glass_turn(page, variant=variant, turn=turn)
+        await _assert_no_horizontal_overflow(page, f"glass-{variant}-turn-{turn}")
+        reveal = await _glass_reveal(page)
+        reveal_samples.append({"turn": turn, "reveal": reveal})
+        if turn == 1:
+            await page.screenshot(path=str(OUT_DIR / chat_name), full_page=True)
+        if peak is None and reveal >= 0.70:
+            peak_name = f"desktop-glass-{variant}-reveal-peak.png"
+            await page.screenshot(path=str(OUT_DIR / peak_name), full_page=True)
+            peak = {"turn": turn, "reveal": reveal, "screenshot": peak_name}
+            continue
+        if peak is not None and reveal <= 0.30:
+            covered_name = f"desktop-glass-{variant}-covered-again.png"
+            await page.screenshot(path=str(OUT_DIR / covered_name), full_page=True)
+            covered_again = {"turn": turn, "reveal": reveal, "screenshot": covered_name}
+            break
+
+    if peak is None:
+        raise AssertionError(f"Padiem Glass reveal peak was not reached: {reveal_samples}")
+    if covered_again is None:
+        raise AssertionError(f"Padiem Glass did not return to covered state after peak: {reveal_samples}")
+
+    return {
+        "variant": variant,
+        "theme": theme,
+        "conversation_box": conversation_box,
+        "composer_box": composer_box,
+        "portrait": portrait,
+        "home_screenshot": home_name,
+        "chat_screenshot": chat_name,
+        "reveal_loop": {
+            "covered": {"turn": 0, "reveal": initial_reveal, "screenshot": home_name},
+            "peak": peak,
+            "covered_again": covered_again,
+            "samples": reveal_samples,
+            "status": "PASS",
+        },
+        "status": "PASS",
+    }
 
 
 async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
@@ -201,6 +355,7 @@ async def main() -> None:
         "runtime_expectation": "mock",
         "provider_calls_expected": 0,
         "views": {},
+        "padiem_glass_preview": {},
     }
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
@@ -216,8 +371,30 @@ async def main() -> None:
                 mobile_page, name="mobile", width=390, height=844, mobile=True
             )
             await mobile_page.close()
+
+            for variant in ("female", "male"):
+                glass_page = await browser.new_page()
+                report["padiem_glass_preview"][variant] = await _capture_glass_preview(
+                    glass_page, variant=variant
+                )
+                await glass_page.close()
         finally:
             await browser.close()
+
+    female_home = OUT_DIR / report["padiem_glass_preview"]["female"]["home_screenshot"]
+    male_home = OUT_DIR / report["padiem_glass_preview"]["male"]["home_screenshot"]
+    female_hash = _sha256_file(female_home)
+    male_hash = _sha256_file(male_home)
+    if female_hash == male_hash:
+        raise AssertionError(
+            "Padiem Glass Female/Male variants rendered pixel-identical home screenshots; portrait layer is not visibly contributing"
+        )
+    report["padiem_glass_visual_distinction"] = {
+        "female_home_sha256": female_hash,
+        "male_home_sha256": male_hash,
+        "different": True,
+        "status": "PASS",
+    }
 
     report["status"] = "PASS"
     (OUT_DIR / "report.json").write_text(

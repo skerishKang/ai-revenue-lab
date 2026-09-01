@@ -1,0 +1,294 @@
+/* Padiem Glass — additive fifth theme for B62 / Padiem Chat.
+ * Existing Light/Dark/Cinematic/Padiem Home definitions remain untouched.
+ *
+ * Background image slot:
+ *   --padiem-glass-background-image: url("./assets/your-image.webp");
+ *
+ * Until an owner-approved image is supplied, the slot remains `none` and
+ * the fallback atmospheric field keeps the theme fully usable.
+ */
+
+html[data-theme="padiem-glass"] {
+  color-scheme: light;
+  --padiem-glass-background-image: none;
+  --bg: #aeb6bf;
+  --page-bg: #aeb6bf;
+  --panel: rgba(235, 239, 242, .46);
+  --sidebar: rgba(42, 50, 59, .46);
+  --sidebar-text: #f7f9fb;
+  --text: #17202a;
+  --muted: #53606c;
+  --line: rgba(255, 255, 255, .38);
+  --accent: #79bce7;
+  --accent-soft: rgba(121, 188, 231, .16);
+  --accent-strong: #2f6f99;
+  --gold: #c7a76b;
+  --gold-soft: rgba(199, 167, 107, .14);
+  --blue: #79bce7;
+  --danger: #a93838;
+  --shadow: 0 20px 60px rgba(24, 33, 42, .16);
+  --card-bg: rgba(239, 243, 246, .48);
+  --card-border: rgba(255, 255, 255, .42);
+  --card-shadow: 0 18px 48px rgba(28, 38, 49, .14), inset 0 1px 0 rgba(255, 255, 255, .58);
+  --composer-bg: rgba(244, 247, 249, .58);
+  --composer-border: rgba(255, 255, 255, .54);
+  --composer-shadow: 0 22px 58px rgba(26, 35, 44, .18), inset 0 1px 0 rgba(255, 255, 255, .66);
+  --user-bubble-bg: rgba(33, 45, 57, .76);
+  --user-bubble-text: #ffffff;
+  --assistant-surface-bg: rgba(244, 247, 249, .36);
+  --assistant-surface-border: rgba(255, 255, 255, .40);
+  --input-text: #17202a;
+  --placeholder: rgba(35, 45, 55, .48);
+  --focus-ring: rgba(121, 188, 231, .42);
+  --topbar-bg: rgba(47, 56, 65, .36);
+  --glass: rgba(244, 247, 249, .42);
+}
+
+html[data-theme="padiem-glass"] body {
+  color: var(--text);
+  background-color: #aeb6bf;
+  background-image:
+    linear-gradient(180deg, rgba(26, 34, 42, .20), rgba(255, 255, 255, .05) 38%, rgba(29, 38, 47, .20)),
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, .38), transparent 34%),
+    radial-gradient(circle at 76% 62%, rgba(105, 156, 189, .24), transparent 38%),
+    linear-gradient(135deg, #88939d 0%, #b8c1c8 36%, #d5d9dc 58%, #909aa4 100%),
+    var(--padiem-glass-background-image);
+  background-size: cover, cover, cover, cover, cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html[data-theme="padiem-glass"] body::before {
+  background:
+    linear-gradient(90deg, rgba(17, 24, 31, .11), transparent 24%, transparent 72%, rgba(17, 24, 31, .08)),
+    linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 38%, rgba(17, 24, 31, .10));
+  box-shadow: inset 0 0 180px 48px rgba(20, 29, 38, .12);
+  pointer-events: none;
+}
+
+html[data-theme="padiem-glass"] body::after {
+  opacity: .10;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+  background-size: 84px 84px;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+html[data-theme="padiem-glass"] .app-shell::before {
+  background: linear-gradient(90deg, rgba(121, 188, 231, .82), rgba(255, 255, 255, .72), rgba(199, 167, 107, .66));
+  opacity: .34;
+}
+
+html[data-theme="padiem-glass"] .sidebar {
+  background: linear-gradient(180deg, rgba(43, 51, 60, .58), rgba(35, 43, 51, .42));
+  color: #f6f8fa;
+  border-right: 1px solid rgba(255, 255, 255, .24);
+  box-shadow: 18px 0 52px rgba(20, 28, 36, .15), inset -1px 0 0 rgba(255, 255, 255, .08);
+  backdrop-filter: blur(28px) saturate(115%);
+  -webkit-backdrop-filter: blur(28px) saturate(115%);
+}
+
+html[data-theme="padiem-glass"] .brand { color: #ffffff; letter-spacing: .02em; font-weight: 650; }
+html[data-theme="padiem-glass"] .brand-mark,
+html[data-theme="padiem-glass"] .assistant-avatar {
+  background: rgba(239, 244, 247, .20);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, .30);
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .18);
+  backdrop-filter: blur(16px);
+}
+
+html[data-theme="padiem-glass"] .home-link,
+html[data-theme="padiem-glass"] .new-chat,
+html[data-theme="padiem-glass"] .side-item,
+html[data-theme="padiem-glass"] .recent-item,
+html[data-theme="padiem-glass"] .sidebar-bottom .settings-button,
+html[data-theme="padiem-glass"] .sidebar-account,
+html[data-theme="padiem-glass"] .login-button,
+html[data-theme="padiem-glass"] .conversation-export-button {
+  background: rgba(241, 245, 248, .12);
+  color: rgba(255, 255, 255, .92);
+  border-color: rgba(255, 255, 255, .20);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+html[data-theme="padiem-glass"] .new-chat:hover,
+html[data-theme="padiem-glass"] .recent-item:hover,
+html[data-theme="padiem-glass"] .home-link:hover,
+html[data-theme="padiem-glass"] .sidebar-bottom .settings-button:hover {
+  background: rgba(248, 250, 252, .20);
+  border-color: rgba(255, 255, 255, .32);
+}
+
+html[data-theme="padiem-glass"] .sidebar-footer,
+html[data-theme="padiem-glass"] .recent-section,
+html[data-theme="padiem-glass"] .sidebar-bottom {
+  border-color: rgba(255, 255, 255, .15);
+  color: rgba(255, 255, 255, .68);
+}
+
+html[data-theme="padiem-glass"] .topbar {
+  background: linear-gradient(180deg, rgba(49, 58, 67, .46), rgba(58, 67, 76, .24));
+  border-bottom: 1px solid rgba(255, 255, 255, .22);
+  box-shadow: 0 10px 32px rgba(20, 28, 36, .08), inset 0 1px 0 rgba(255, 255, 255, .12);
+  backdrop-filter: blur(26px) saturate(112%);
+  -webkit-backdrop-filter: blur(26px) saturate(112%);
+}
+
+html[data-theme="padiem-glass"] .model-pill,
+html[data-theme="padiem-glass"] .mobile-menu {
+  background: rgba(243, 247, 249, .18);
+  color: #f8fafb;
+  border-color: rgba(255, 255, 255, .26);
+  backdrop-filter: blur(14px);
+}
+
+html[data-theme="padiem-glass"] .empty-state {
+  text-shadow: 0 2px 18px rgba(255, 255, 255, .22);
+}
+html[data-theme="padiem-glass"] .empty-state h1 { color: #16212a; letter-spacing: -.04em; }
+html[data-theme="padiem-glass"] .empty-copy { color: #44515d; }
+html[data-theme="padiem-glass"] .eyebrow { color: #334a5b; letter-spacing: .16em; }
+html[data-theme="padiem-glass"] .eyebrow::before { background: rgba(121, 188, 231, .95); box-shadow: 0 0 12px rgba(121, 188, 231, .32); }
+
+html[data-theme="padiem-glass"] .starter {
+  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
+  color: #18232c;
+  border: 1px solid rgba(255, 255, 255, .52);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+}
+html[data-theme="padiem-glass"] .starter:not(:disabled):hover {
+  background: linear-gradient(155deg, rgba(255, 255, 255, .68), rgba(234, 239, 242, .42));
+  border-color: rgba(255, 255, 255, .72);
+  transform: translateY(-1px);
+}
+html[data-theme="padiem-glass"] .starter strong { color: #17212a; }
+html[data-theme="padiem-glass"] .starter small { color: #53606c; }
+html[data-theme="padiem-glass"] .starter-icon {
+  background: rgba(34, 46, 57, .10);
+  color: #2d4557;
+  border: 1px solid rgba(255, 255, 255, .42);
+}
+
+html[data-theme="padiem-glass"] .composer {
+  background: linear-gradient(165deg, rgba(249, 251, 252, .68), rgba(226, 232, 236, .42));
+  border: 1px solid rgba(255, 255, 255, .64);
+  box-shadow: var(--composer-shadow);
+  backdrop-filter: blur(30px) saturate(110%);
+  -webkit-backdrop-filter: blur(30px) saturate(110%);
+}
+html[data-theme="padiem-glass"] .composer-wrap {
+  background: linear-gradient(to bottom, transparent, rgba(183, 192, 200, .16) 28%, rgba(146, 156, 166, .30) 100%) !important;
+}
+html[data-theme="padiem-glass"] .composer textarea { color: #17202a; }
+html[data-theme="padiem-glass"] .composer textarea::placeholder { color: rgba(37, 48, 58, .48); }
+html[data-theme="padiem-glass"] .composer-note { color: rgba(41, 52, 63, .62) !important; }
+html[data-theme="padiem-glass"] .tool-button {
+  background: rgba(255, 255, 255, .26);
+  color: #25333e;
+  border-color: rgba(255, 255, 255, .38);
+}
+
+html[data-theme="padiem-glass"] .message-bubble {
+  background: rgba(31, 43, 54, .74);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, .20);
+  box-shadow: 0 14px 34px rgba(24, 33, 42, .14);
+  backdrop-filter: blur(18px);
+}
+html[data-theme="padiem-glass"] .assistant-content { color: #17212a !important; }
+html[data-theme="padiem-glass"] .assistant-meta { color: #53606c !important; }
+
+html[data-theme="padiem-glass"] .source-card,
+html[data-theme="padiem-glass"] .rich-block,
+html[data-theme="padiem-glass"] .output-card,
+html[data-theme="padiem-glass"] .document-card,
+html[data-theme="padiem-glass"] .project-card,
+html[data-theme="padiem-glass"] .project-file-card,
+html[data-theme="padiem-glass"] .rich-response,
+html[data-theme="padiem-glass"] .route-details,
+html[data-theme="padiem-glass"] .reference-note {
+  background: rgba(244, 247, 249, .52) !important;
+  color: #17212a !important;
+  border-color: rgba(255, 255, 255, .52) !important;
+  box-shadow: 0 18px 48px rgba(26, 35, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .48) !important;
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+}
+
+html[data-theme="padiem-glass"] .assistant-content .rich-response,
+html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-paragraph,
+html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-heading,
+html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-list,
+html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-quote,
+html[data-theme="padiem-glass"] .answer-action,
+html[data-theme="padiem-glass"] .reference-note,
+html[data-theme="padiem-glass"] .route-details {
+  color: #17212a !important;
+}
+
+html[data-theme="padiem-glass"] .settings-dialog::backdrop {
+  background: rgba(22, 30, 38, .32);
+  backdrop-filter: blur(8px);
+}
+html[data-theme="padiem-glass"] .settings-panel {
+  background: linear-gradient(160deg, rgba(246, 249, 251, .76), rgba(216, 224, 229, .56));
+  color: #17212a;
+  border: 1px solid rgba(255, 255, 255, .66);
+  box-shadow: 0 30px 90px rgba(17, 25, 33, .24), inset 0 1px 0 rgba(255, 255, 255, .62);
+  backdrop-filter: blur(34px) saturate(112%);
+  -webkit-backdrop-filter: blur(34px) saturate(112%);
+}
+html[data-theme="padiem-glass"] .theme-option,
+html[data-theme="padiem-glass"] .language-option,
+html[data-theme="padiem-glass"] .settings-done,
+html[data-theme="padiem-glass"] .settings-close {
+  background: rgba(255, 255, 255, .34);
+  color: #24313b;
+  border-color: rgba(255, 255, 255, .54);
+}
+html[data-theme="padiem-glass"] .theme-option[aria-pressed="true"],
+html[data-theme="padiem-glass"] .language-option[aria-pressed="true"] {
+  background: rgba(38, 54, 67, .82);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, .34);
+}
+
+html[data-theme="padiem-glass"] :focus-visible {
+  outline-color: rgba(92, 159, 204, .88);
+  box-shadow: 0 0 0 4px rgba(121, 188, 231, .22);
+}
+
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body { background-attachment: scroll; }
+  html[data-theme="padiem-glass"] .sidebar {
+    background: linear-gradient(180deg, rgba(39, 47, 56, .80), rgba(35, 43, 51, .70));
+    backdrop-filter: blur(30px) saturate(110%);
+  }
+  html[data-theme="padiem-glass"] .composer {
+    background: linear-gradient(165deg, rgba(249, 251, 252, .80), rgba(226, 232, 236, .62));
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html[data-theme="padiem-glass"] .sidebar,
+  html[data-theme="padiem-glass"] .topbar,
+  html[data-theme="padiem-glass"] .starter,
+  html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .settings-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  html[data-theme="padiem-glass"] .starter,
+  html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .settings-panel {
+    background: rgba(238, 242, 245, .92);
+  }
+}
