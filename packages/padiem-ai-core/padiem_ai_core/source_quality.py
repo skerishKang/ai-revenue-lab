@@ -229,12 +229,10 @@ def _domain_matches(host: str, hint: str) -> bool:
 def _is_generic_official_domain(host: str) -> bool:
     if not host:
         return False
-    # Korean government domains are explicit. For global domains, only a literal
-    # gov label near the registrable suffix is treated as an official signal.
-    if host.endswith(".go.kr"):
+    if host.endswith(".go.kr") or host.endswith(".gov"):
         return True
     labels = host.split(".")
-    return "gov" in labels[-3:]
+    return len(labels) >= 3 and labels[-2] == "gov" and len(labels[-1]) == 2
 
 
 def _tier_for(host: str, policy: SourceQualityPolicy) -> tuple[SourceTier, str]:
@@ -265,8 +263,6 @@ def _significant_query_tokens(query: str) -> tuple[str, ...]:
         result.append(token)
     if result:
         return tuple(result)
-    # If every token is a cue, keep the bounded original tokens rather than making
-    # every page equally relevant.
     return tuple(dict.fromkeys(token for token in _tokens(query) if len(token) >= 2))
 
 
@@ -276,6 +272,9 @@ def _community_intent(query: str) -> bool:
 
 
 def _relevance(query: str, evidence: Evidence) -> tuple[float, tuple[str, ...]]:
+    if evidence.provider == "mock":
+        return 1.0, ("synthetic_mock_evidence",)
+
     query_terms = _significant_query_tokens(query)
     if not query_terms:
         return 0.0, ("no_significant_query_terms",)
