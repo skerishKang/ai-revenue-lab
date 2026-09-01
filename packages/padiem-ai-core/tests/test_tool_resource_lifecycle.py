@@ -13,6 +13,7 @@ from padiem_ai_core.tool_resource_policy import (
     ToolResourcePolicyError,
     resolve_tool_resources,
 )
+from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, MAX_TOOL_OUTPUT_BYTES
 
 
 def tool_spec(*, timeout_seconds: float = 60.0) -> ToolSpec:
@@ -55,20 +56,20 @@ def test_resource_policy_rejects_widening_outside_runtime_bounds() -> None:
 
 def test_resource_policy_public_projection_has_no_authority_or_credentials() -> None:
     public = resolve_tool_resources(tool_spec(), ToolResourcePolicy(max_timeout_seconds=15.0)).to_public_dict()
-    rendered = repr(public).lower()
+    public_keys = set(public)
 
     assert public == {
         "tool_id": "calculator",
-        "argument_bytes": 1048576,
-        "output_bytes": 1048576,
+        "argument_bytes": MAX_TOOL_ARGUMENT_BYTES,
+        "output_bytes": MAX_TOOL_OUTPUT_BYTES,
         "timeout_seconds": 15.0,
         "narrowed": True,
     }
-    assert "credential" not in rendered
-    assert "token" not in rendered
-    assert "authorization" not in rendered
-    assert "arguments" not in rendered
-    assert "output" not in rendered
+    assert "credential" not in public_keys
+    assert "token" not in public_keys
+    assert "authorization" not in public_keys
+    assert "arguments" not in public_keys
+    assert "output" not in public_keys
 
 
 def test_tool_lifecycle_event_is_bounded_scalar_public_envelope() -> None:
