@@ -7,6 +7,7 @@ import {
   ENGINE_ORCHESTRATE_PATH,
   ENGINE_ORCHESTRATE_RESUME_PATH,
   ENGINE_ORCHESTRATE_CANCEL_PATH,
+  ORCHESTRATION_FIELD_PARITY,
   PadiemAiEngineClient,
   PadiemAiEngineClientError,
 } from "../padiem-ai-engine-client.mjs";
@@ -151,7 +152,7 @@ test("resumeOrchestration rejects serialized pause state", async () => {
       pause: { pause_id: "p1" },
       decision: { decision_id: "d1", pause_id: "p1", outcome: "approved" },
     }),
-    (error) => error instanceof PadiemAiEngineClientError && error.code === "invalid_engine_request",
+    (error) => error instanceof PadiemAiEngineClientError && error.code === "unsupported_orchestration_field",
   );
 });
 
@@ -217,4 +218,73 @@ test("cancelOrchestrationPause keeps app identity client-owned and rejects extra
     (error) => error instanceof PadiemAiEngineClientError && error.code === "invalid_engine_request",
   );
   assert.equal(fake.calls.length, 0);
+});
+
+test("orchestrate rejects deferred authority-bearing fields before fetch", async () => {
+  const fake = {
+    calls: [],
+    async fetch(...args) {
+      this.calls.push(args);
+      return new Response("{}", { status: 500 });
+    },
+  };
+  const client = new PadiemAiEngineClient({
+    binding: fake,
+    appId: VALID_APP_ID,
+    callerId: VALID_CALLER_ID,
+    credential: VALID_CREDENTIAL,
+  });
+
+  for (const field of ["agent_definition", "compiled_agent_profile", "tool_authorization"]) {
+    await assert.rejects(
+      client.orchestrate({
+        ...makeValidRequest(),
+        [field]: { caller_supplied: true },
+      }),
+      (error) => error instanceof PadiemAiEngineClientError && error.code === "unsupported_orchestration_field",
+    );
+  }
+  assert.equal(fake.calls.length, 0);
+});
+
+test("execute and stream do not expose orchestration-only fields", async () => {
+  const fake = {
+    calls: [],
+    async fetch(...args) {
+      this.calls.push(args);
+      return new Response("{}", { status: 500 });
+    },
+  };
+  const client = new PadiemAiEngineClient({
+    binding: fake,
+    appId: VALID_APP_ID,
+    callerId: VALID_CALLER_ID,
+    credential: VALID_CREDENTIAL,
+  });
+
+  await assert.rejects(
+    client.execute({ ...makeValidRequest(), subject_id: "user:alice" }),
+    (error) => error instanceof PadiemAiEngineClientError && error.code === "invalid_engine_request",
+  );
+
+  const stream = client.stream({ ...makeValidRequest(), agent_plan: { agent_id: "agent:padiem:orchestrator@1", steps: [] } });
+  await assert.rejects(
+    async () => {
+      for await (const _event of stream) {
+        // Should fail before a fetch occurs.
+      }
+    },
+    (error) => error instanceof PadiemAiEngineClientError && error.code === "invalid_engine_request",
+  );
+
+  assert.equal(fake.calls.length, 0);
+});
+
+test("orchestration field parity table marks unsupported authority fields explicitly", () => {
+  assert.equal(ORCHESTRATION_FIELD_PARITY.agent_definition, "EXPLICITLY_DEFERRED_AND_REJECTED");
+  assert.equal(ORCHESTRATION_FIELD_PARITY.compiled_agent_profile, "EXPLICITLY_DEFERRED_AND_REJECTED");
+  assert.equal(ORCHESTRATION_FIELD_PARITY.tool_authorization, "EXPLICITLY_DEFERRED_AND_REJECTED");
+  assert.equal(ORCHESTRATION_FIELD_PARITY.agent_plan, "SUPPORTED_AND_MAPPED");
+  assert.equal(ORCHESTRATION_FIELD_PARITY.decision, "RESUME_ONLY_SUPPORTED_AND_MAPPED");
+  assert.equal(ORCHESTRATION_FIELD_PARITY.reason, "CANCEL_ONLY_SUPPORTED_AND_MAPPED");
 });
