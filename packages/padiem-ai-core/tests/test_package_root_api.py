@@ -70,6 +70,7 @@ def test_package_root_all_names_are_direct_or_lazy_exports() -> None:
 
 def test_tool_runtime_exports_remain_lazy_until_requested() -> None:
     fresh_core = importlib.reload(core)
+    fresh_core.__dict__.pop("ToolRuntime", None)
 
     assert "ToolRuntime" in fresh_core.__all__
     assert "ToolRuntime" in fresh_core._TOOL_RUNTIME_EXPORTS
@@ -78,6 +79,7 @@ def test_tool_runtime_exports_remain_lazy_until_requested() -> None:
 
 def test_tool_runtime_lazy_export_preserves_optional_dependency_error(monkeypatch: pytest.MonkeyPatch) -> None:
     fresh_core = importlib.reload(core)
+    fresh_core.__dict__.pop("ToolRuntime", None)
     real_import_module = fresh_core.importlib.import_module
 
     def missing_jsonschema(name: str, package: str | None = None):
