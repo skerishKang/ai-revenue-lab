@@ -2,8 +2,8 @@
 
 This module is intentionally product-neutral. It converts a trusted first-party
 server wire object into the accepted Core #1313 Context Permission + Knowledge
-Boundary contract, without parsing StoryMemory locators, reading product storage,
-or carrying private source bytes in diagnostics.
+Boundary contract, without parsing product-specific locators, reading product
+storage, or carrying private source bytes in diagnostics.
 """
 
 from __future__ import annotations
