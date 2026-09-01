@@ -25,6 +25,7 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.idempotency_binding import CloudflareD1IdempotencyAdapter
 from app.identity_enforcement import authenticate_request
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
@@ -42,6 +43,7 @@ from app.streaming_service import (
 )
 
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+ENGINE_IDEMPOTENCY_BINDING_NAME = "ENGINE_IDEMPOTENCY"
 
 
 def _binding_value(env: Any, name: str) -> Any | None:
@@ -49,6 +51,20 @@ def _binding_value(env: Any, name: str) -> Any | None:
         return getattr(env, name)
     except (AttributeError, TypeError):
         return None
+
+
+def _idempotency_adapter_for_env(env: Any) -> CloudflareD1IdempotencyAdapter | None:
+    """Return the trusted durable idempotency adapter when explicitly bound.
+
+    Absence is intentional: Core then keeps keyed orchestration fail-closed as
+    `idempotency_unavailable`. This Worker must not install a process-local fake
+    store as production truth.
+    """
+
+    binding = _binding_value(env, ENGINE_IDEMPOTENCY_BINDING_NAME)
+    if binding is None:
+        return None
+    return CloudflareD1IdempotencyAdapter(binding)
 
 
 def _json_response(result: ServiceResponse) -> Response:
@@ -158,6 +174,7 @@ def _engine_services_for_env(
     config = B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN)
     b14_client = B14ExecutionClient(config, transport=transport)
     b14_stream_client = B14StreamingClient(config, transport=transport)
+    idempotency_adapter = _idempotency_adapter_for_env(env)
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
         return ExecutionRuntime(app_id=app_id, b14_client=b14_client)
@@ -180,6 +197,7 @@ def _engine_services_for_env(
         OrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
+            idempotency_adapter=idempotency_adapter,
         ),
     )
 
