@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from typing import Any, Awaitable, Callable, Sequence
 
 from .contracts import Evidence
+from .source_quality import SourceQualityPolicy, select_grounding_evidence
 from .web_runtime import (
     MAX_QUERY_CHARS,
     MAX_RESULTS,
@@ -49,6 +50,7 @@ class GroundingPolicy:
     max_page_fetches: int = MAX_RESEARCH_PAGE_FETCHES
     search_limit_per_query: int = MAX_RESULTS
     preamble: str = DEFAULT_GROUNDING_PREAMBLE
+    source_quality_policy: SourceQualityPolicy = field(default_factory=SourceQualityPolicy)
 
     def __post_init__(self) -> None:
         bounds = (
@@ -66,6 +68,8 @@ class GroundingPolicy:
             raise ValueError("preamble must be a non-empty string")
         if self.max_context_chars < len(self.preamble.rstrip()) + 64:
             raise ValueError("max_context_chars is too small for the grounding preamble")
+        if not isinstance(self.source_quality_policy, SourceQualityPolicy):
+            raise ValueError("source_quality_policy must be SourceQualityPolicy")
 
 
 @dataclass(frozen=True, slots=True)
@@ -314,6 +318,15 @@ class GroundedResearchRuntime:
     def _web_error(exc: WebRuntimeError) -> GroundingRuntimeError:
         return GroundingRuntimeError(exc.code, exc.message, exc.status_code)
 
+    def _quality_select(self, query: str, items: Sequence[Evidence], *, limit: int) -> list[Evidence]:
+        selection = select_grounding_evidence(
+            query,
+            items,
+            policy=self._policy.source_quality_policy,
+            limit=limit,
+        )
+        return list(selection.evidence)
+
     async def run_search(
         self,
         query: str,
@@ -327,7 +340,7 @@ class GroundedResearchRuntime:
             found = await self._web_provider.search(query, limit=self._policy.max_simple_sources)
         except WebRuntimeError as exc:
             raise self._web_error(exc) from exc
-        evidence = dedupe_evidence(found, limit=self._policy.max_simple_sources)
+        evidence = self._quality_select(query, found, limit=self._policy.max_simple_sources)
         prepared = prepare_combined_grounding_context(
             evidence,
             additional_system_context=additional_system_context,
@@ -387,7 +400,12 @@ class GroundedResearchRuntime:
                     limit=self._policy.search_limit_per_query,
                 )
                 searches_completed += 1
-                collected.extend(item for item in found if isinstance(item, Evidence))
+                selected = self._quality_select(
+                    search_query,
+                    [item for item in found if isinstance(item, Evidence)],
+                    limit=self._policy.search_limit_per_query,
+                )
+                collected.extend(selected)
             except WebRuntimeError:
                 searches_failed += 1
 
@@ -399,7 +417,7 @@ class GroundedResearchRuntime:
                     "research web evidence is unavailable",
                     502,
                 )
-            raise GroundingRuntimeError("no_evidence", "no usable evidence was found", 404)
+            raise GroundingRuntimeError("no_evidence", "no relevant evidence was found", 404)
 
         enriched = list(candidates)
         pages_enriched = 0

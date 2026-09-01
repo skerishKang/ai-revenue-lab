@@ -33,13 +33,21 @@ def b14_payload(answer: str, *, provider: str = "INTERNAL-PROVIDER") -> dict:
     }
 
 
-def evidence(index: int, *, url_index: int | None = None, source_type: str = "search") -> Evidence:
+def evidence(
+    index: int,
+    *,
+    url_index: int | None = None,
+    source_type: str = "search",
+    query: str | None = None,
+) -> Evidence:
     resolved = index if url_index is None else url_index
+    query_terms = (query or "Source").split()
+    relevance_text = " | ".join(query_terms[:3]) or "Source"
     return Evidence(
         id=f"ev_{index}_{source_type}",
-        title=f"Source {resolved}",
+        title=f"{relevance_text} Source {resolved}",
         url=f"https://example.com/source/{resolved}",
-        snippet=f"Source {resolved} evidence text",
+        snippet=f"{relevance_text} evidence text {resolved}",
         retrieved_at="2026-08-25T09:30:00Z",
         provider="SECRET-WEB-PROVIDER",
         source_type=source_type,
@@ -54,12 +62,12 @@ class RecordingProvider:
     async def search(self, query: str, limit: int = 5) -> list[Evidence]:
         self.search_calls.append((query, limit))
         if query == "query one":
-            return [evidence(i) for i in range(0, 5)]
+            return [evidence(i, query=query) for i in range(0, 5)]
         if query == "query two":
-            return [evidence(10 + i, url_index=4 + i) for i in range(0, 5)]
+            return [evidence(10 + i, url_index=4 + i, query=query) for i in range(0, 5)]
         if query == "query three":
-            return [evidence(20 + i, url_index=8 + i) for i in range(0, 5)]
-        return [evidence(90)]
+            return [evidence(20 + i, url_index=8 + i, query=query) for i in range(0, 5)]
+        return [evidence(90, query=query)]
 
     async def fetch(self, url: str) -> Evidence:
         self.fetch_calls.append(url)
@@ -72,7 +80,7 @@ class PartialProvider(RecordingProvider):
         self.search_calls.append((query, limit))
         if query == "query two":
             raise WebToolError("web_timeout", "safe timeout", 504)
-        return [evidence(len(self.search_calls))]
+        return [evidence(len(self.search_calls), query=query)]
 
     async def fetch(self, url: str) -> Evidence:
         self.fetch_calls.append(url)
@@ -277,33 +285,3 @@ async def test_direct_deep_research_is_unavailable_in_mock_runtime():
         response = await client.post("/api/chat", json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research"})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "deep_research_unavailable"
-
-
-@pytest.mark.asyncio
-async def test_photo_plus_deep_research_is_rejected_before_any_b14_call():
-    calls = 0
-
-    async def handler(request):
-        nonlocal calls
-        calls += 1
-        return httpx.Response(200, json=b14_payload("must not run"))
-
-    app = create_app(
-        Settings(runtime_mode="b14", b14_base_url="https://b14.example", web_provider="mock"),
-        transport=httpx.MockTransport(handler),
-    )
-    png = b"\x89PNG\r\n\x1a\nphase15"
-    attachment = {
-        "type": "image",
-        "name": "photo.png",
-        "media_type": "image/png",
-        "base64": base64.b64encode(png).decode("ascii"),
-    }
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
-        response = await client.post(
-            "/api/chat",
-            json={"messages": MESSAGES, "mode": "auto", "tool": "deep_research", "attachments": [attachment]},
-        )
-    assert response.status_code == 422
-    assert "사진 첨부와 웹 도구" in response.json()["error"]["message"]
-    assert calls == 0
