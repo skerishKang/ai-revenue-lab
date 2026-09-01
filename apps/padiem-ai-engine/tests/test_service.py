@@ -314,16 +314,143 @@ async def test_health_and_route_methods_make_zero_runtime_calls() -> None:
     missing = await service.handle(method="GET", path="/internal/v1/missing")
 
     assert health.status_code == 200
-    assert health.body == {
-        "status": "ok",
-        "service": "padiem-ai-engine",
-        "core_available": True,
-        "b14_service_bound": True,
-        "completed_run": True,
-        "streaming_run": False,
-    }
+    # Liveness separated from feature readiness (#1237)
+    assert health.body["status"] == "ok"
+    assert health.body["service"] == "padiem-ai-engine"
+    assert health.body["core_available"] is True
+    assert health.body["b14_service_bound"] is True
+    # Backward-compat booleans derived from bounded capabilities
+    assert health.body["completed_run"] is True
+    assert health.body["streaming_run"] is True
+    # Explicit bounded posture – health must carry capabilities
+    assert "capabilities" in health.body
+    assert health.body["capabilities"]["completed_run"] == "available"
+    assert health.body["capabilities"]["provider_streaming_run"] == "available"
     assert health_post.status_code == 405
     assert execute_get.status_code == 405
     assert missing.status_code == 404
     assert runtime.calls == []
     assert factory.app_ids == []
+
+
+# --- #1237 regression: A-I -----------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_health_succeeds_without_caller_credential() -> None:
+    service = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = await service.handle(method="GET", path=HEALTH_PATH, content_type=None, body=b"")
+    assert health.status_code == 200
+    assert health.body["status"] == "ok"
+
+
+@pytest.mark.asyncio
+async def test_liveness_remains_ok_when_b14_absent() -> None:
+    service = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=False)
+    health = await service.handle(method="GET", path=HEALTH_PATH)
+    assert health.status_code == 200
+    assert health.body["status"] == "ok"
+    assert health.body["b14_service_bound"] is False
+    assert health.body["core_available"] is True
+
+
+@pytest.mark.asyncio
+async def test_b14_binding_state_is_truthful() -> None:
+    svc_bound = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    svc_unbound = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=False)
+    h_bound = await svc_bound.handle(method="GET", path=HEALTH_PATH)
+    h_unbound = await svc_unbound.handle(method="GET", path=HEALTH_PATH)
+    assert h_bound.body["b14_service_bound"] is True
+    assert h_unbound.body["b14_service_bound"] is False
+
+
+def test_implemented_but_blocked_orchestration_not_available():
+    # Orchestration stream is not routed at Worker boundary → must not be AVAILABLE
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    assert manifest.feature_state("orchestration_stream").value != "available"
+    assert manifest.feature_state("orchestration_stream").value in ("deferred", "unavailable")
+
+
+def test_deferred_idempotency_not_reported_available():
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    assert manifest.feature_state("idempotency_replay").value != "available"
+    assert manifest.feature_state("execution_idempotency_replay_completed").value != "available"
+
+
+def test_unrouted_orchestration_stream_not_available():
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    assert manifest.feature_state("orchestration_stream").value in ("deferred", "unavailable")
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = svc.health()
+    assert health.body["capabilities"]["orchestration_stream"] in ("deferred", "unavailable")
+    assert health.body["capabilities"]["idempotency_replay"] in ("deferred", "unavailable")
+
+
+@pytest.mark.asyncio
+async def test_manifest_and_health_cannot_disagree():
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = await svc.handle(method="GET", path=HEALTH_PATH)
+    caps = health.body["capabilities"]
+    for fid in ("completed_run", "provider_streaming_run", "orchestration_run", "orchestration_resume", "orchestration_cancel", "orchestration_stream", "idempotency_replay", "service_identity_wire_enforcement"):
+        assert caps[fid] == manifest.feature_state(fid).value
+
+
+def test_no_secret_projection_in_health():
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = svc.health()
+    serialized = json.dumps(health.body).lower()
+    for forbidden in ("api_key", "authorization", "credential_sha256", "credential", "account_id", "secret"):
+        assert forbidden not in serialized
+
+
+def test_service_identity_posture_includes_all_authenticated_non_health_routes():
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = svc.health()
+    # Service identity must mention all non-health routes
+    identity = str(health.body.get("service_identity", ""))
+    # Must mention orchestration
+    assert "orchestration" in identity.lower() or "all_non_health" in identity.lower()
+    # Endpoints declared in manifest must include orchestration paths
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    paths = {e.path for e in manifest.endpoints}
+    assert "/internal/v1/execute" in paths
+    assert "/internal/v1/health" in paths
+    assert "/internal/v1/orchestrate" in paths
+
+
+def test_health_manifest_failure_fallback_does_not_advertise_available():
+    # Simulate manifest/posture source failure — health must stay liveness ok but fail closed on readiness
+    import app.contract_manifest as cm
+    from unittest.mock import patch
+
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    with patch.object(cm, "engine_capability_posture", side_effect=RuntimeError("INTERNAL_POSTURE_FAILURE")):
+        with patch.object(cm, "current_engine_contract_manifest", side_effect=RuntimeError("INTERNAL_MANIFEST_FAILURE")):
+            health = svc.health()
+            serialized = json.dumps(health.body).lower()
+            assert health.status_code == 200
+            assert health.body["status"] == "ok"
+            # Liveness preserved, but no feature may be advertised as available
+            caps = health.body.get("capabilities", {})
+            for fid in ("completed_run", "provider_streaming_run", "orchestration_run", "orchestration_resume", "orchestration_cancel", "service_identity_wire_enforcement"):
+                assert caps.get(fid) != "available", f"{fid} must not be available on fallback"
+                assert caps.get(fid) in ("deferred", "unavailable")
+            # Backward-compat booleans must also be false (not hiding deferred)
+            assert health.body.get("completed_run") is False
+            assert health.body.get("streaming_run") is False
+            # Must not leak exception text or secrets
+            assert "internal_posture_failure" not in serialized
+            assert "internal_manifest_failure" not in serialized
+            assert "api_key" not in serialized
+            assert "credential" not in serialized
