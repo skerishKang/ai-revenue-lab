@@ -7,6 +7,7 @@ import pytest
 
 from app.auto_grounding import AutoGroundingService
 from app.config import Settings
+from app.evidence import Evidence
 from app.grounding import GroundedChatService
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
@@ -26,6 +27,35 @@ def completion_payload(answer: str = "근거 [1]에 따르면 확인된 내용�
             "selected_provider": "Poolside",
         },
     }
+
+
+class RecordingProvider:
+    def __init__(self):
+        self.search_calls: list[tuple[str, int]] = []
+
+    async def search(self, query: str, limit: int = 5):
+        self.search_calls.append((query, limit))
+        return [
+            Evidence(
+                id=f"auto_{index}",
+                title=f"Verified source {index}",
+                url=f"https://example.com/source/{index}",
+                snippet=f"Verified current fact {index}",
+                retrieved_at="2026-09-01T00:00:00Z",
+                provider="test",
+                source_type="search",
+            )
+            for index in range(1, limit + 1)
+        ]
+
+    async def fetch(self, url: str):
+        raise AssertionError("automatic simple search must not fetch pages")
+
+
+def install_provider(app, provider) -> None:
+    app.state.web_provider = provider
+    app.state.grounded_chat = GroundedChatService(app.state.b14_client, provider)
+    app.state.auto_grounding = AutoGroundingService(provider)
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -92,6 +122,8 @@ async def test_current_question_auto_searches_once_and_returns_grounded_envelope
         ),
         transport=httpx.MockTransport(b14_handler),
     )
+    provider = RecordingProvider()
+    install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={"messages": CURRENT, "mode": "auto"})
 
@@ -101,6 +133,7 @@ async def test_current_question_auto_searches_once_and_returns_grounded_envelope
     assert body["tool"] == {"id": "web_search", "title": "웹 검색"}
     assert len(body["evidence"]) == 5
     assert "provider" not in body["evidence"][0]
+    assert provider.search_calls == [(CURRENT[0]["content"], 5)]
     assert len(seen) == 1
     system = seen[0]["messages"][0]["content"]
     assert "웹 근거 사용 규칙" in system
@@ -123,6 +156,8 @@ async def test_stable_concept_does_not_over_search() -> None:
         ),
         transport=httpx.MockTransport(b14_handler),
     )
+    provider = RecordingProvider()
+    install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat", json={"messages": STABLE, "mode": "auto", "skill": "explain"})
 
@@ -130,6 +165,7 @@ async def test_stable_concept_does_not_over_search() -> None:
     body = response.json()
     assert "answer_status" not in body
     assert "evidence" not in body
+    assert provider.search_calls == []
     assert len(seen) == 1
     assert "웹 근거 사용 규칙" not in seen[0]["messages"][0]["content"]
     assert "확인되지 않은 사실" in seen[0]["messages"][0]["content"]
@@ -176,6 +212,8 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
         ),
         transport=httpx.MockTransport(b14_handler),
     )
+    provider = RecordingProvider()
+    install_provider(app, provider)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
 
@@ -190,6 +228,7 @@ async def test_current_question_streams_after_search_and_done_exposes_safe_evide
     assert done["tool"] == {"id": "web_search", "title": "웹 검색"}
     assert len(done["evidence"]) == 5
     assert "provider" not in done["evidence"][0]
+    assert provider.search_calls == [(CURRENT[0]["content"], 5)]
     assert len(seen) == 1
     assert seen[0]["model"] == DEFAULT_B14_MODEL_ID
     assert seen[0]["business14"]["allow_external_fallback"] is False
@@ -223,9 +262,7 @@ async def test_stream_required_search_with_no_evidence_never_calls_laguna() -> N
         transport=httpx.MockTransport(b14_handler),
     )
     provider = EmptyProvider()
-    app.state.web_provider = provider
-    app.state.grounded_chat = GroundedChatService(app.state.b14_client, provider)
-    app.state.auto_grounding = AutoGroundingService(provider)
+    install_provider(app, provider)
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post("/api/chat/stream", json={"messages": CURRENT, "mode": "auto"})
