@@ -12,6 +12,8 @@
   const FENCE_PATTERN = /^\s*```([A-Za-z0-9_+.#-]*)\s*$/;
   const FENCE_CLOSE_PATTERN = /^\s*```\s*$/;
   const TABLE_SEPARATOR_CELL = /^:?-{3,}:?$/;
+  const INLINE_PATTERN = /(`[^`\n]+`|\[[^\]\n]+\]\([^)\s]+\)|\*\*[^*\n]+\*\*|\*[^*\n]+\*|_[^_\n]+_)/g;
+  const INLINE_LINK_PATTERN = /^\[([^\]\n]+)\]\(([^)\s]+)\)$/;
 
   function copyText(text) {
     if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
@@ -67,6 +69,93 @@
     URL.revokeObjectURL(url);
   }
 
+  function safeInlineLink(value) {
+    if (typeof value !== "string" || !value.trim()) return null;
+    let parsed;
+    try {
+      parsed = new URL(value.trim());
+    } catch (_) {
+      return null;
+    }
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+    if (parsed.username || parsed.password) return null;
+
+    let host = parsed.hostname.toLowerCase().replace(/\.$/, "");
+    if (host.startsWith("[") && host.endsWith("]")) host = host.slice(1, -1);
+    if (
+      !host
+      || host === "localhost"
+      || host.endsWith(".localhost")
+      || host.endsWith(".local")
+      || host.endsWith(".internal")
+      || host === "::1"
+      || host.startsWith("fe80:")
+      || host.startsWith("fc")
+      || host.startsWith("fd")
+      || /^(?:127\.|10\.|169\.254\.|192\.168\.)/.test(host)
+    ) {
+      return null;
+    }
+    const private172 = host.match(/^172\.(\d+)\./);
+    if (private172) {
+      const second = Number(private172[1]);
+      if (second >= 16 && second <= 31) return null;
+    }
+    return parsed.href;
+  }
+
+  function appendText(container, value) {
+    if (!value) return;
+    container.appendChild(document.createTextNode(value));
+  }
+
+  function appendInline(container, value) {
+    const text = String(value || "");
+    let cursor = 0;
+    INLINE_PATTERN.lastIndex = 0;
+    let match;
+
+    while ((match = INLINE_PATTERN.exec(text)) !== null) {
+      appendText(container, text.slice(cursor, match.index));
+      const token = match[0];
+
+      if (token.startsWith("`") && token.endsWith("`")) {
+        const code = document.createElement("code");
+        code.className = "rich-inline-code";
+        code.textContent = token.slice(1, -1);
+        container.appendChild(code);
+      } else if (token.startsWith("**") && token.endsWith("**")) {
+        const strong = document.createElement("strong");
+        strong.textContent = token.slice(2, -2);
+        container.appendChild(strong);
+      } else if (
+        (token.startsWith("*") && token.endsWith("*"))
+        || (token.startsWith("_") && token.endsWith("_"))
+      ) {
+        const emphasis = document.createElement("em");
+        emphasis.textContent = token.slice(1, -1);
+        container.appendChild(emphasis);
+      } else {
+        const linkMatch = token.match(INLINE_LINK_PATTERN);
+        const safeHref = linkMatch ? safeInlineLink(linkMatch[2]) : null;
+        if (linkMatch && safeHref) {
+          const anchor = document.createElement("a");
+          anchor.textContent = linkMatch[1];
+          anchor.href = safeHref;
+          anchor.target = "_blank";
+          anchor.rel = "noopener noreferrer";
+          container.appendChild(anchor);
+        } else {
+          appendText(container, token);
+        }
+      }
+
+      cursor = match.index + token.length;
+    }
+
+    appendText(container, text.slice(cursor));
+  }
+
   function splitTableRow(line) {
     let value = String(line || "").trim();
     if (!value.includes("|")) return null;
@@ -110,7 +199,7 @@
     const sourceLevel = match[1].length;
     const heading = document.createElement(`h${Math.min(sourceLevel + 2, 6)}`);
     heading.className = "rich-response-heading";
-    heading.textContent = match[2].trim();
+    appendInline(heading, match[2].trim());
     container.appendChild(heading);
   }
 
@@ -123,7 +212,7 @@
       const match = lines[cursor].match(pattern);
       if (!match) break;
       const item = document.createElement("li");
-      item.textContent = match[1].trim();
+      appendInline(item, match[1].trim());
       list.appendChild(item);
       cursor += 1;
     }
@@ -142,7 +231,7 @@
       parts.push(match[1]);
       cursor += 1;
     }
-    quote.textContent = parts.join("\n").trim();
+    appendInline(quote, parts.join("\n").trim());
     container.appendChild(quote);
     return cursor;
   }
@@ -208,7 +297,7 @@
     tableData.header.forEach((value) => {
       const th = document.createElement("th");
       th.scope = "col";
-      th.textContent = value;
+      appendInline(th, value);
       headRow.appendChild(th);
     });
     thead.appendChild(headRow);
@@ -220,7 +309,7 @@
         const tr = document.createElement("tr");
         row.forEach((value) => {
           const td = document.createElement("td");
-          td.textContent = value;
+          appendInline(td, value);
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -243,7 +332,7 @@
     }
     const paragraph = document.createElement("p");
     paragraph.className = "rich-response-paragraph";
-    paragraph.textContent = parts.join("\n").trim();
+    appendInline(paragraph, parts.join("\n").trim());
     container.appendChild(paragraph);
     return cursor;
   }
