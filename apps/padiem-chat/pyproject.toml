@@ -14,6 +14,7 @@ dependencies = [
   "pypdf>=6.16.2,<7",
   "openpyxl>=3.1,<4",
   "padiem-ai-core @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
+  "padiem-ai-engine-client @ file://${PROJECT_ROOT}/../padiem-ai-engine/clients/python",
 ]
 
 [project.optional-dependencies]
