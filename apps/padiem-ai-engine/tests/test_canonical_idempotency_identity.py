@@ -156,13 +156,52 @@ async def test_exact_logical_request_replays_without_second_runtime_call() -> No
     assert second.body["orchestration"]["events"][-1]["metadata"]["replay"] is True
 
 
+async def test_same_logical_request_with_new_trace_still_replays() -> None:
+    service, runtime = _service()
+    original = _payload()
+    retry = deepcopy(original)
+    retry["trace_id"] = "tr_canonical_retry"
+    retry["execution_context"]["trace_id"] = "tr_canonical_retry"
+
+    first = await service.orchestrate_payload(original)
+    second = await service.orchestrate_payload(retry)
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert runtime.call_count == 1
+    assert second.body["orchestration"]["events"][-1]["metadata"]["replay"] is True
+
+
 async def test_same_key_rejects_material_logical_execution_changes_before_rerun() -> None:
     mutations = [
         lambda value: value.__setitem__("subject_id", "subject:beta"),
+        lambda value: value.__setitem__("session_id", "session:canonical_2"),
         lambda value: value.__setitem__("additional_system_context", "Project beta context"),
         lambda value: value["agent"].__setitem__("system_instruction", "Execute a different policy"),
         lambda value: value["agent"].__setitem__("required_capabilities", ["chat", "tools"]),
         lambda value: value["agent"].__setitem__("model_policy", {"mode": "deep"}),
+        lambda value: value["execution_context"].__setitem__("timeout_seconds", 20.0),
+        lambda value: value.__setitem__(
+            "agent_plan",
+            {
+                "agent_id": "agent:padiem:orchestrator_1@1",
+                "steps": [
+                    {
+                        "step_id": "step_1",
+                        "objective": "Use a materially different plan",
+                        "tool_id": None,
+                        "depends_on": [],
+                    }
+                ],
+            },
+        ),
+        lambda value: value.__setitem__(
+            "recovery_policy",
+            {
+                "retryable_driver_codes": ["upstream_timeout"],
+                "max_retries_per_step": 2,
+            },
+        ),
         lambda value: value.__setitem__("max_retries", 3),
         lambda value: value.__setitem__("require_evidence", True),
         lambda value: value.__setitem__("require_verification", True),
