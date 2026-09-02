@@ -28,6 +28,7 @@ html[data-theme="padiem-glass"] {
   --glass-mask-full: 58%;
   --glass-reveal: 0;
   --glass-art-opacity: .58;
+  --glass-art-filter: saturate(.68) contrast(.94) brightness(1.08);
   --glass-chat-surface: rgba(238, 242, 245, .82);
   --glass-chat-border: rgba(255, 255, 255, .58);
   --glass-composer-surface: rgba(248, 250, 251, .90);
@@ -36,16 +37,20 @@ html[data-theme="padiem-glass"] {
 
 html[data-theme="padiem-glass"][data-glass-variant="female"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
-  --glass-portrait-x: calc(100% - 54px);
-  --glass-mask-start: 8%;
-  --glass-mask-full: 40%;
+  --glass-portrait-x: calc(100% - 68px);
+  --glass-mask-start: 2%;
+  --glass-mask-full: 26%;
+  --glass-art-opacity: .70;
+  --glass-art-filter: saturate(.72) contrast(1.01) brightness(1.05);
 }
 
 html[data-theme="padiem-glass"][data-glass-variant="male"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-male.jpg");
-  --glass-portrait-x: calc(100% - 38px);
-  --glass-mask-start: 6%;
-  --glass-mask-full: 36%;
+  --glass-portrait-x: calc(100% - 54px);
+  --glass-mask-start: 0%;
+  --glass-mask-full: 22%;
+  --glass-art-opacity: .78;
+  --glass-art-filter: saturate(.82) contrast(1.12) brightness(1.02);
 }
 
 html[data-theme="padiem-glass"] .main-panel {
@@ -67,7 +72,7 @@ html[data-theme="padiem-glass"] .main-panel::before {
   background-position: var(--glass-portrait-x) 52%;
   background-size: auto min(90vh, 900px);
   opacity: var(--glass-art-opacity);
-  filter: saturate(.68) contrast(.94) brightness(1.08);
+  filter: var(--glass-art-filter);
   transform:
     translate3d(
       calc(var(--glass-art-x) + var(--glass-pointer-x)),
@@ -216,7 +221,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
     width: clamp(360px, 32vw, 560px);
     right: max(0px, calc((100vw - 1740px) / 2));
     background-size: auto min(88vh, 900px);
-    opacity: .66;
+    opacity: var(--glass-art-opacity);
   }
 }
 
