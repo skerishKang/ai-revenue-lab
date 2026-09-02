@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import hashlib
 from typing import Protocol
 
 from padiem_ai_core.contracts import AgentProfile
-from padiem_ai_core.execution_context import ExecutionContext
+from padiem_ai_core.execution_context import (
+    MAX_TIMEOUT_SECONDS,
+    MIN_TIMEOUT_SECONDS,
+    ExecutionContext,
+)
 from padiem_ai_core.execution_runtime import ExecutionRequest
 from padiem_ai_core.orchestration import (
     OrchestrationRequest,
@@ -103,10 +109,22 @@ def _agent_profile() -> AgentProfile:
 
 
 class P01RequestFactory:
-    def __init__(self, *, timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS) -> None:
+    def __init__(
+        self,
+        *,
+        timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
+        clock: Callable[[], datetime] | None = None,
+    ) -> None:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise P01AdapterError("invalid_timeout", "P01 timeout must be numeric.")
-        self._timeout_seconds = float(timeout_seconds)
+        normalized_timeout = float(timeout_seconds)
+        if not MIN_TIMEOUT_SECONDS <= normalized_timeout <= MAX_TIMEOUT_SECONDS:
+            raise P01AdapterError(
+                "invalid_timeout",
+                f"P01 timeout must be between {MIN_TIMEOUT_SECONDS:g} and {MAX_TIMEOUT_SECONDS:g} seconds.",
+            )
+        self._timeout_seconds = normalized_timeout
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
 
     def build(self, run: ClawRun, *, lease: SandboxLease | None = None) -> P01RequestBundle:
         if run.terminal:
@@ -158,8 +176,7 @@ class P01RequestFactory:
             orchestration_request=orchestration_request,
         )
 
-    @staticmethod
-    def _validate_cloud_lease(run: ClawRun, lease: SandboxLease | None) -> None:
+    def _validate_cloud_lease(self, run: ClawRun, lease: SandboxLease | None) -> None:
         if lease is None:
             raise P01AdapterError(
                 "cloud_lease_required",
@@ -179,6 +196,17 @@ class P01RequestFactory:
             raise P01AdapterError(
                 "cloud_lease_inactive",
                 "Sandbox lease must be active before P01 handoff.",
+            )
+        now = self._clock()
+        if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
+            raise P01AdapterError(
+                "invalid_clock",
+                "Sandbox lease validation clock must be timezone-aware.",
+            )
+        if now.astimezone(timezone.utc) >= lease.expires_at:
+            raise P01AdapterError(
+                "cloud_lease_expired",
+                "Sandbox lease expired before P01 handoff.",
             )
 
 
@@ -201,7 +229,7 @@ class ClawOrchestrationProjector:
         self._app_id = app_id
         self._p01_run_id: str | None = None
         self._last_sequence = 0
-        self._seen_event_ids: set[str] = set()
+        self._seen_events: dict[str, tuple[object, ...]] = {}
 
     @property
     def p01_run_id(self) -> str | None:
@@ -209,24 +237,32 @@ class ClawOrchestrationProjector:
 
     @property
     def event_count(self) -> int:
-        return len(self._seen_event_ids)
+        return len(self._seen_events)
 
     def consume(self, event: OrchestrationEvent) -> RunProjection:
         if not isinstance(event, OrchestrationEvent):
             raise P01ProjectionError("invalid_event", "Expected canonical P01 OrchestrationEvent.")
-        if event.event_id in self._seen_event_ids:
-            return self._run.projection()
         if event.trace_id != self._trace_id or event.app_id != self._app_id:
             raise P01ProjectionError(
                 "event_correlation_mismatch",
                 "P01 event does not match the Claw trace/app correlation.",
             )
 
+        fingerprint = self._event_fingerprint(event)
+        seen = self._seen_events.get(event.event_id)
+        if seen is not None:
+            if seen != fingerprint:
+                raise P01ProjectionError(
+                    "event_id_reuse_conflict",
+                    "P01 event_id was reused with different lifecycle data.",
+                )
+            return self._run.projection()
+
         if self._p01_run_id is None:
-            if event.kind is not OrchestrationEventKind.RUN_STARTED:
+            if event.kind is not OrchestrationEventKind.RUN_STARTED or event.sequence != 1:
                 raise P01ProjectionError(
                     "missing_run_started",
-                    "First P01 event must be RUN_STARTED.",
+                    "First P01 event must be RUN_STARTED at sequence 1.",
                 )
             self._p01_run_id = event.run_id
         elif event.run_id != self._p01_run_id:
@@ -241,10 +277,29 @@ class ClawOrchestrationProjector:
                 "P01 event sequence must increase monotonically.",
             )
 
-        self._project_kind(event)
+        try:
+            self._project_kind(event)
+        except RunStateError:
+            raise P01ProjectionError(
+                "invalid_event_transition",
+                "P01 event is incompatible with the current Claw lifecycle state.",
+            ) from None
         self._last_sequence = event.sequence
-        self._seen_event_ids.add(event.event_id)
+        self._seen_events[event.event_id] = fingerprint
         return self._run.projection()
+
+    @staticmethod
+    def _event_fingerprint(event: OrchestrationEvent) -> tuple[object, ...]:
+        return (
+            event.run_id,
+            event.trace_id,
+            event.app_id,
+            event.kind.value,
+            event.sequence,
+            event.timestamp_iso,
+            event.message,
+            tuple(sorted(event.metadata.items())),
+        )
 
     def _project_kind(self, event: OrchestrationEvent) -> None:
         kind = event.kind
