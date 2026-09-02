@@ -1,17 +1,18 @@
 """Generic platform-owned Provider call adapter for Business 14.
 
-OpenAI-compatible chat completions for any registered ``platform_secret``
-Provider. The Agnes AI integration is the first concrete registration, but this
-module contains no Agnes-specific code: it reads the Provider spec passed to it
-and uses only that Provider's own credential binding and fixed origin.
+OpenAI-compatible chat completions for registered platform Providers. Providers
+may use a server-owned secret or an explicitly keyless fixed route. The adapter
+reads only the Provider spec passed to it and never accepts a caller-supplied
+upstream origin or platform credential.
 
 Security boundary
 ------------------
-- secret read from the Provider spec's own binding only (never a caller key);
+- platform secrets are read only from the Provider spec's own binding;
+- keyless routes send no Authorization header and cannot borrow another key;
 - fixed upstream origin from the spec (no arbitrary caller URL);
 - redirects disabled; bounded per-phase timeouts; bounded response bytes;
-- missing secret fails closed with zero upstream calls;
-- the secret value is never logged, returned, or stored.
+- missing required secret fails closed with zero upstream calls;
+- secret values are never logged, returned, or stored.
 """
 
 from __future__ import annotations
@@ -39,11 +40,10 @@ from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
     get_platform_provider,
-    is_secret_present,
     register_platform_provider,
     resolve_secret,
 )
-from app.pilot.redaction import redact_headers, redact_sensitive
+from app.pilot.redaction import redact_sensitive
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
@@ -95,6 +95,25 @@ def _require_spec(platform_provider_id: str) -> PlatformProviderSpec:
     return spec
 
 
+def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
+    """Build the fixed Provider auth boundary without credential widening."""
+    headers = {"Content-Type": "application/json"}
+    if spec.credential_source == CredentialSource.NONE:
+        return headers
+    if spec.credential_source == CredentialSource.PLATFORM_SECRET:
+        secret = resolve_secret(spec)
+        if not secret:
+            raise PilotNotConfigured(
+                f"Provider '{spec.provider_id}' secret is not configured "
+                f"(binding {spec.credential_binding_name})."
+            )
+        headers["Authorization"] = f"Bearer {secret}"
+        return headers
+    raise PilotNotConfigured(
+        f"Provider '{spec.provider_id}' credential source is not supported by the platform adapter."
+    )
+
+
 def _raise_upstream_error(status: int) -> None:
     if status in (401, 403):
         raise UpstreamAuthFailed()
@@ -120,11 +139,11 @@ async def call_platform_chat_completions(
     max_tokens: int | None = 300,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
-    """Completed-JSON call to a platform-owned Provider (generic, non-streaming).
+    """Completed-JSON call to a fixed platform Provider.
 
     Mock mode (``B14_PROVIDER_MODE=mock``) returns a canned response with zero
-    upstream calls. Live mode resolves the Provider's own secret and fails closed
-    if the secret is missing.
+    upstream calls. Live mode applies the Provider spec's credential contract:
+    server-owned secret or explicitly keyless.
     """
     import os
 
@@ -142,19 +161,8 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
-    secret = resolve_secret(spec)
-    if not secret:
-        # Fail closed, zero upstream calls.
-        raise PilotNotConfigured(
-            f"Provider '{spec.provider_id}' secret is not configured "
-            f"(binding {spec.credential_binding_name})."
-        )
-
+    headers = _request_headers(spec)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {secret}",
-    }
     body: dict[str, Any] = {
         "model": upstream_model,
         "messages": messages,
@@ -260,10 +268,10 @@ async def stream_platform_chat_completions(
     max_tokens: int | None = 300,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
-    """Streaming call to a platform-owned Provider (OpenAI-compatible SSE).
+    """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
 
     Yields :class:`OpenRouterStreamEvent` for compatibility with the Router
-    streaming executor. Same security boundary as the completed-JSON path.
+    streaming executor. Same secret/keyless boundary as completed JSON.
     """
     import os
 
@@ -291,18 +299,8 @@ async def stream_platform_chat_completions(
             yield event
         return
 
-    secret = resolve_secret(spec)
-    if not secret:
-        raise PilotNotConfigured(
-            f"Provider '{spec.provider_id}' secret is not configured "
-            f"(binding {spec.credential_binding_name})."
-        )
-
+    headers = _request_headers(spec)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {secret}",
-    }
     body: dict[str, Any] = {
         "model": upstream_model,
         "messages": messages,
@@ -482,9 +480,6 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
 
 # ---------------------------------------------------------------------------
 # Provider onboarding — generic, one registration per Provider.
-# Agnes AI is the first platform-owned Provider. Each later Provider is added
-# the same way with its own credential binding and fixed origin; no Agnes-
-# specific code path exists anywhere in this module.
 # ---------------------------------------------------------------------------
 register_platform_provider(
     PlatformProviderSpec(
@@ -497,9 +492,8 @@ register_platform_provider(
     )
 )
 
-# Poolside is registered through the same generic platform-owned Provider
-# plane. The module contains only non-secret route metadata; the existing
-# Secrets Store resource is bound by wrangler.toml below.
 from app.pilot.poolside_provider import register_poolside_provider
+from app.pilot.kilo_provider import register_kilo_provider
 
 register_poolside_provider()
+register_kilo_provider()
