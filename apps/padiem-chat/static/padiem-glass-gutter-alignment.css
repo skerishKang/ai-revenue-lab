@@ -1,14 +1,20 @@
 /* B62 #1422/#1423/#1424/#1425/#1427 — shared conversation/composer grid.
  *
  * The fixed composer is the canonical outer horizontal baseline. The
- * conversation reuses that lane; avatar/meta remains an internal sub-grid;
- * prose gets a readable measure without shrinking wide answer surfaces such
- * as code, tables, sources, and error/retry cards.
+ * conversation reuses that lane. A bounded inner gutter keeps the P avatar/meta
+ * identity rail visually intentional, while user bubbles and answer/error
+ * surfaces extend back to the shared composer right edge. Prose keeps a
+ * readable measure without shrinking the wide structured answer surface.
  */
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
   --padiem-chat-reading-measure: 76ch;
   --padiem-chat-meta-gap: 12px;
+  --padiem-chat-inner-gutter: clamp(24px, 2.5vw, 35px);
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+  padding-inline: var(--padiem-chat-inner-gutter) !important;
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
@@ -30,8 +36,17 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-me
   margin-bottom: 6px !important;
 }
 
-/* Keep prose readable while allowing wide structured answer surfaces to use
- * the full shared lane. */
+/* The assistant identity rail starts inside the bounded conversation padding.
+ * Wide answer/error cards then recover that right-side padding so their outer
+ * edge lands on the same boundary as the composer. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .rich-response,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > .error-box {
+  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;
+  max-width: none !important;
+}
+
+/* Keep prose readable while allowing code, tables, sources and the enclosing
+ * rich-answer card to use the widened shared lane. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-paragraph,
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-heading,
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-list,
@@ -40,15 +55,11 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
   max-inline-size: min(var(--padiem-chat-reading-measure), 100%);
 }
 
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
-  width: 100% !important;
-  max-width: none !important;
-}
-
-/* User turns occupy the same outer lane as the composer but keep a compact,
- * readable bubble rather than expanding full-width. */
+/* User turns keep the left-side breathing room and compact bubble max-width,
+ * but recover exactly one inner gutter on the right so the bubble terminates
+ * on the shared composer boundary. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
-  width: 100% !important;
+  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;
   padding-left: clamp(36px, 8vw, 96px) !important;
 }
 
@@ -123,10 +134,12 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   }
 }
 
-/* Tablet/mobile: follow the actual fixed composer 28px viewport gutter. */
+/* Tablet/mobile: follow the actual fixed composer viewport gutter while the
+ * inner content gutter collapses independently. */
 @media (max-width: 920px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
     --padiem-chat-meta-gap: 10px;
+    --padiem-chat-inner-gutter: clamp(14px, 4vw, 24px);
   }
 
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
