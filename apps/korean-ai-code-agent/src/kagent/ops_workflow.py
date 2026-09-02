@@ -9,7 +9,6 @@ from typing import Callable, Protocol
 from .contracts import ContractError
 from .ops_contracts import (
     ApprovalAction,
-    ApprovalDecision,
     ApprovalProjection,
     ArtifactRef,
     BusinessObjectKind,
@@ -688,24 +687,6 @@ class QuoteToOrderCoordinator:
             )
         )
         return issued
-
-    @staticmethod
-    def approved_projection(pending: ApprovalProjection, *, actor_ref: str, decided_at: datetime) -> ApprovalProjection:
-        """Test/helper projection only; does not validate a real P01 approval token."""
-        if pending.decision is not ApprovalDecision.PENDING:
-            raise OpsWorkflowError("only a pending approval can be projected as approved")
-        return ApprovalProjection(
-            approval_id=pending.approval_id,
-            workspace_id=pending.workspace_id,
-            action=pending.action,
-            target_kind=pending.target_kind,
-            target_id=pending.target_id,
-            target_version=pending.target_version,
-            action_fingerprint=pending.action_fingerprint,
-            decision=ApprovalDecision.APPROVED,
-            actor_ref=actor_ref,
-            decided_at=decided_at,
-        )
 
     @staticmethod
     def _evidence_id(prefix: str, object_id: str, version: int, external_ref: str) -> str:
