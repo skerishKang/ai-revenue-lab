@@ -18,7 +18,7 @@ separately reviewed Core adapter.
 
 | Provider | Search endpoint | Credential env | W2 mode | Production / distribution gate |
 |---|---|---|---|---|
-| TinyFish | `GET https://api.search.tinyfish.ai` | `TINYFISH_API_KEY` | direct Search | standard terms permit training/evaluation on Customer Data; sensitive default is not eligible without separate acceptable terms |
+| TinyFish | `GET https://api.search.tinyfish.ai` | `TINYFISH_API_KEY` | direct Search | standard terms limit the license to internal business use and allow training/evaluation on Customer Data; a public customer-facing Padiem default requires a separate acceptable agreement |
 | Parallel | `POST https://api.parallel.ai/v1/search` | `PARALLEL_API_KEY` | `mode=fast` | results stay internal unless benchmark publication is permitted by the applicable agreement; Production terms/account tier require review |
 | Brave | `GET https://api.search.brave.com/res/v1/web/search` | `BRAVE_SEARCH_API_KEY` | raw Web Search | retention/ZDR tier review required before privacy-sensitive Production use |
 | Tavily | `POST https://api.tavily.com/search` | `TAVILY_API_KEY` | basic search, no answer/raw content | privacy/data-use review required before Production |
