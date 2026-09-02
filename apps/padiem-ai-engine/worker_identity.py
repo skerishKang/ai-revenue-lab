@@ -68,6 +68,7 @@ def _engine_services_for_env(
     b14_client = B14ExecutionClient(config, transport=transport)
     b14_stream_client = B14StreamingClient(config, transport=transport)
     continuation_store = _continuation_store_for_env(env)
+    idempotency_adapter = legacy_worker._idempotency_adapter_for_env(env)
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
         return ExecutionRuntime(app_id=app_id, b14_client=b14_client)
@@ -90,6 +91,7 @@ def _engine_services_for_env(
         IdentityBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
+            idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
         ),
