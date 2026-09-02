@@ -15,3 +15,121 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-me
   font-size: 15px !important;
   font-weight: 800 !important;
 }
+
+/* Owner composition pass ---------------------------------------------------
+ * Use more of the horizontal canvas at ordinary desktop sizes while keeping a
+ * deliberate breathing gap before the portrait. The composer stays inset
+ * inside the same reading frame rather than floating as a narrower island.
+ */
+@media (min-width: 1440px) {
+  html[data-theme="padiem-glass"] body .app-shell .conversation {
+    width: min(
+      1200px,
+      calc(
+        100vw
+        - var(--workspace-rail, 252px)
+        - clamp(48px, 4vw, 72px)
+        - clamp(360px, 32vw, 560px)
+        - 48px
+      )
+    ) !important;
+    margin-left: clamp(48px, 4vw, 72px) !important;
+    margin-right: 0 !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + clamp(48px, 4vw, 72px) + 16px) !important;
+    width: min(
+      1168px,
+      calc(
+        100vw
+        - var(--workspace-rail, 252px)
+        - clamp(48px, 4vw, 72px)
+        - clamp(360px, 32vw, 560px)
+        - 80px
+      )
+    ) !important;
+    transform: none !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  html[data-theme="padiem-glass"] body .app-shell .conversation {
+    width: min(
+      700px,
+      calc(
+        100vw
+        - var(--workspace-rail, 252px)
+        - clamp(300px, 32vw, 380px)
+        - 48px
+      )
+    ) !important;
+    margin-left: 24px !important;
+    margin-right: 0 !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + 38px) !important;
+    width: min(
+      672px,
+      calc(
+        100vw
+        - var(--workspace-rail, 252px)
+        - clamp(300px, 32vw, 380px)
+        - 76px
+      )
+    ) !important;
+    transform: none !important;
+  }
+}
+
+/* The old bottom wash and persistent attachment capability note made the
+ * composer look like a separate footer layer. Keep the runtime note node for
+ * JS state, but remove it from ordinary Glass presentation. */
+html[data-theme="padiem-glass"] body .app-shell .composer-wrap {
+  background: transparent !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell .composer-note {
+  display: none !important;
+}
+
+/* Match the quieter modern chat-input treatment: no browser-blue textarea
+ * ring. Focus is still visible through a subtle neutral change on the whole
+ * composer, preserving keyboard accessibility without the bright blue box. */
+html[data-theme="padiem-glass"] body .app-shell .composer textarea:focus,
+html[data-theme="padiem-glass"] body .app-shell .composer textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell .composer:focus-within {
+  border-color: rgba(79, 91, 101, .22) !important;
+  box-shadow:
+    0 20px 54px rgba(28, 36, 44, .16),
+    inset 0 1px 0 rgba(255, 255, 255, .80),
+    0 0 0 1px rgba(255, 255, 255, .34) !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:focus-within {
+  border-color: rgba(255, 255, 255, .30) !important;
+  box-shadow:
+    0 18px 46px rgba(27, 35, 43, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .10),
+    0 0 0 1px rgba(255, 255, 255, .10) !important;
+}
+
+/* The house glyph used for the planning starter was visually disappearing on
+ * the bright Glass card. Keep the same action and replace only its visible
+ * mark with a higher-contrast planning/check symbol. */
+html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon {
+  font-size: 0 !important;
+  color: #5d6a74 !important;
+}
+
+html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon::before {
+  content: "✓";
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+}
