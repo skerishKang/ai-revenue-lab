@@ -1,0 +1,132 @@
+name: B62 PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "apps/padiem-chat/**"
+      - ".github/workflows/b62-pr-preview.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Resolve isolated preview identity
+        id: preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          account_id = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          token = os.environ["CLOUDFLARE_API_TOKEN"]
+          pr_number = os.environ["PR_NUMBER"]
+          name = f"padiem-chat-pr-{pr_number}"
+          request = urllib.request.Request(
+              f"https://api.cloudflare.com/client/v4/accounts/{account_id}/workers/subdomain",
+              headers={"Authorization": f"Bearer {token}"},
+          )
+          with urllib.request.urlopen(request, timeout=20) as response:
+              payload = json.load(response)
+          if not payload.get("success"):
+              raise SystemExit("Cloudflare workers.dev subdomain lookup failed")
+          subdomain = payload["result"]["subdomain"]
+          url = f"https://{name}.{subdomain}.workers.dev"
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"name={name}\n")
+              out.write(f"url={url}\n")
+          PY
+
+      - name: Prepare mock-only preview config
+        working-directory: apps/padiem-chat
+        env:
+          PREVIEW_NAME: ${{ steps.preview.outputs.name }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          path = Path("wrangler.toml")
+          text = path.read_text(encoding="utf-8")
+          lines = text.splitlines()
+          lines[0] = f'name = "{os.environ["PREVIEW_NAME"]}"'
+          text = "\n".join(lines) + "\n"
+          if 'PADIEM_CHAT_RUNTIME_MODE = "mock"' not in text:
+              raise SystemExit("preview must remain mock runtime")
+          if 'PADIEM_CHAT_LIVE_ENABLED = "false"' not in text:
+              raise SystemExit("preview must keep live disabled")
+          path.write_text(text, encoding="utf-8")
+          PY
+          grep -F 'PADIEM_CHAT_RUNTIME_MODE = "mock"' wrangler.toml
+          grep -F 'PADIEM_CHAT_LIVE_ENABLED = "false"' wrangler.toml
+
+      - name: Deploy isolated PR preview
+        working-directory: apps/padiem-chat
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: uvx --from 'workers-py>=1.16.2,<2' pywrangler deploy
+
+      - name: Verify exact-head static assets
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsS --retry 2 --retry-delay 1 "$PREVIEW_URL/padiem-glass-portrait.css" -o /tmp/portrait.css; then
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS --retry 3 --retry-delay 1 "$PREVIEW_URL/padiem-glass-brand-polish.css" -o /tmp/brand.css
+          cmp apps/padiem-chat/static/padiem-glass-portrait.css /tmp/portrait.css
+          cmp apps/padiem-chat/static/padiem-glass-brand-polish.css /tmp/brand.css
+          curl -fsS --retry 3 --retry-delay 1 "$PREVIEW_URL/?theme=padiem-glass&glass=female" -o /tmp/index.html
+          grep -F 'Padiem Chat' /tmp/index.html >/dev/null
+
+      - name: Publish preview URL
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          {
+            echo "## B62 isolated PR preview"
+            echo
+            echo "- Head: \`$HEAD_SHA\`"
+            echo "- Preview: $PREVIEW_URL/?theme=padiem-glass&glass=female"
+            echo "- Runtime: mock-only; live provider disabled"
+            echo "- Production worker: untouched"
+          } >> "$GITHUB_STEP_SUMMARY"
