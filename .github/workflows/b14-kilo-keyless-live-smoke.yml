@@ -1,0 +1,96 @@
+name: B14 Kilo Keyless Live Smoke
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/b14-kilo-keyless-live-smoke.yml'
+      - 'apps/korean-ai-platform/**'
+
+permissions:
+  contents: read
+
+jobs:
+  kilo-live-smoke:
+    if: github.head_ref == 'feat/b14-956-kilo-nemotron-free'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v5
+      - name: Install locked dependencies
+        run: uv sync --group dev --frozen
+      - name: Run exactly two anonymous Kilo/Nemotron live calls
+        env:
+          B14_PROVIDER_MODE: live
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run python - <<'PY'
+          import asyncio
+          from app.pilot.kilo_provider import (
+              KILO_MODEL_ID,
+              KILO_PROVIDER_ID,
+              KILO_UPSTREAM_MODEL,
+          )
+          from app.pilot.platform import (
+              call_platform_chat_completions,
+              stream_platform_chat_completions,
+          )
+
+          SYNTHETIC = [{"role": "user", "content": "Reply briefly with the words: KILO NEMOTRON LIVE OK"}]
+
+          async def main():
+              completed = await call_platform_chat_completions(
+                  model_id=KILO_MODEL_ID,
+                  upstream_model=KILO_UPSTREAM_MODEL,
+                  provider="Kilo Gateway / NVIDIA",
+                  platform_provider_id=KILO_PROVIDER_ID,
+                  messages=SYNTHETIC,
+                  temperature=0.0,
+                  max_tokens=32,
+              )
+              choices = completed.get("choices") or []
+              text = ""
+              if choices and isinstance(choices[0], dict):
+                  message = choices[0].get("message") or {}
+                  if isinstance(message, dict):
+                      text = message.get("content") or ""
+              if not isinstance(text, str) or not text.strip():
+                  raise RuntimeError("completed smoke returned no visible content")
+              if completed.get("_mock") is True or completed.get("_live") is not True:
+                  raise RuntimeError("completed smoke did not prove live execution")
+              print("KILO_COMPLETED_LIVE_SMOKE=PASS")
+              print(f"KILO_COMPLETED_MODEL={completed.get('model', '')}")
+
+              visible = []
+              saw_done = False
+              async for event in stream_platform_chat_completions(
+                  model_id=KILO_MODEL_ID,
+                  upstream_model=KILO_UPSTREAM_MODEL,
+                  provider="Kilo Gateway / NVIDIA",
+                  platform_provider_id=KILO_PROVIDER_ID,
+                  messages=SYNTHETIC,
+                  temperature=0.0,
+                  max_tokens=32,
+              ):
+                  if event.delta_content:
+                      visible.append(event.delta_content)
+                  if event.done:
+                      saw_done = True
+              if not saw_done or not "".join(visible).strip():
+                  raise RuntimeError("stream smoke did not finish with visible content")
+              print("KILO_SSE_LIVE_SMOKE=PASS")
+              print("REAL_PROVIDER_CALLS=2")
+              print("KILO_API_KEY_USED=NO")
+
+          asyncio.run(main())
+          PY
