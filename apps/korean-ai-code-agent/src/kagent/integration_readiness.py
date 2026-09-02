@@ -35,6 +35,9 @@ class ExternalAdapterKind(str, Enum):
     GITHUB_REPOSITORY_READ = "github_repository_read"
     GITHUB_DRAFT_WRITE = "github_draft_write"
     COMMUNICATION_OUTBOUND = "communication_outbound"
+    COMMUNICATION_INBOUND = "communication_inbound"
+    ATTACHMENT_SCANNER = "attachment_scanner"
+    RETENTION_STORAGE = "retention_storage"
     ACCOUNTING_READ = "accounting_read"
 
 
@@ -48,6 +51,8 @@ class LiveCapability(str, Enum):
     MANAGED_CLOUD_RUN = "managed_cloud_run"
     DRAFT_PR_OUTPUT = "draft_pr_output"
     BUSINESS_MESSAGING = "business_messaging"
+    BUSINESS_INBOUND_REVIEW = "business_inbound_review"
+    LIVE_DATA_RETENTION = "live_data_retention"
     FINANCE_PROJECTION_LIVE_READ = "finance_projection_live_read"
 
 
@@ -76,6 +81,22 @@ _REQUIRED_ADAPTERS: dict[LiveCapability, frozenset[ExternalAdapterKind]] = {
             ExternalAdapterKind.CONTROL_PLANE_IDENTITY,
             ExternalAdapterKind.CONTROL_PLANE_ENTITLEMENT,
             ExternalAdapterKind.COMMUNICATION_OUTBOUND,
+        }
+    ),
+    LiveCapability.BUSINESS_INBOUND_REVIEW: frozenset(
+        {
+            ExternalAdapterKind.CONTROL_PLANE_IDENTITY,
+            ExternalAdapterKind.CONTROL_PLANE_ENTITLEMENT,
+            ExternalAdapterKind.COMMUNICATION_INBOUND,
+            ExternalAdapterKind.ATTACHMENT_SCANNER,
+            ExternalAdapterKind.RETENTION_STORAGE,
+        }
+    ),
+    LiveCapability.LIVE_DATA_RETENTION: frozenset(
+        {
+            ExternalAdapterKind.CONTROL_PLANE_IDENTITY,
+            ExternalAdapterKind.CONTROL_PLANE_ENTITLEMENT,
+            ExternalAdapterKind.RETENTION_STORAGE,
         }
     ),
     LiveCapability.FINANCE_PROJECTION_LIVE_READ: frozenset(
@@ -146,7 +167,7 @@ class IntegrationReadinessDecision:
 
     def safe_dict(self) -> dict[str, Any]:
         return {
-            "contract_version": "claw-integration-readiness.v1",
+            "contract_version": "claw-integration-readiness.v2",
             "capability": self.capability.value,
             "live_configured": self.live_configured,
             "required_adapters": [item.value for item in self.required_adapters],
