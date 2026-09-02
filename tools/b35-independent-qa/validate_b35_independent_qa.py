@@ -352,9 +352,10 @@ def check_source_mapping(commercial_root: Path, package_root: Path) -> CheckResu
         r.details.append("SOURCE_MAPPING.md missing in package_root")
         return r
     text = sm.read_text(encoding="utf-8", errors="ignore")
-    # Must reference product authority
+    # Must reference product authority - fail-closed (C2)
     for marker in [PRODUCT_COMMIT, "PRODUCT_CONTRACT", "CURRENT_PRODUCT_AUTHORITY", "파디엠"]:
         if marker not in text:
+            r.passed = False
             r.details.append(f"SOURCE_MAPPING missing product authority marker: {marker}")
 
     # Must cover Slide 1..10
@@ -793,18 +794,28 @@ def check_stale_rejection(commercial_root: Path, package_root: Path, product_con
     else:
         r.details.append("V3.1 journey markers present (5/5)")
 
-    # Forbidden stale as current claims
-    for phrase in STALE_FORBIDDEN_AS_CURRENT:
-        if phrase in combined:
-            # Allow if in README/SOURCE_MAPPING as historical note? Check context
-            # If phrase appears near "HISTORICAL" or "STALE" it's ok
-            # Otherwise fail
-            ctx_ok = "HISTORICAL" in combined or "STALE" in combined or "PRE_V3" in combined
-            if not ctx_ok:
-                r.passed = False
-                r.details.append(f"stale marker as current: {phrase}")
-            else:
-                r.details.append(f"stale marker {phrase} found but in historical context (ok)")
+    # Forbidden stale as current claims - per-file local context (C3)
+    for rel, txt in texts.items():
+        for phrase in STALE_FORBIDDEN_AS_CURRENT:
+            if phrase in txt:
+                # Determine if this file is internal documentation that may legitimately contain historical markers
+                is_internal_doc = any(k in rel for k in ["README", "SOURCE_MAPPING", "VISUAL_QA", "CUSTOMIZATION", "REFERENCE_COMPARISON", "CURRENT_PRODUCT_AUTHORITY"])
+                # Check local historical context within same file (within 800 chars of phrase)
+                local_ok = False
+                if is_internal_doc and ("HISTORICAL" in txt or "STALE" in txt or "PRE_V3" in txt):
+                    # Check proximity: historical token within 1000 chars of phrase occurrence
+                    for m in re.finditer(re.escape(phrase), txt):
+                        start = max(0, m.start() - 1000)
+                        end = m.end() + 1000
+                        window = txt[start:end]
+                        if "HISTORICAL" in window or "STALE" in window or "PRE_V3" in window:
+                            local_ok = True
+                            break
+                if local_ok:
+                    r.details.append(f"stale marker {phrase} in {rel} with local historical context (ok)")
+                else:
+                    r.passed = False
+                    r.details.append(f"stale marker as current in {rel}: {phrase}")
 
     # Check that reusable master does not claim old seven-step as primary
     # Old seven-step: check for historical education sequence not qualified as delivery detail
@@ -823,12 +834,58 @@ def check_stale_rejection(commercial_root: Path, package_root: Path, product_con
             else:
                 r.details.append(f"{label} missing stale marker disclaimer (should mark historical)")
 
-    # Check for price-hypothesis vs stale price claim
-    # If price appears without hypothesis, that's stale
-    # This is more for TEXT_FIT? But include here
-    if "PRICE_HYPOTHESIS_ONLY" not in combined and "가설" not in combined:
-        r.details.append("price hypothesis wording missing in package (should retain 가설)")
-        r.passed = False
+    # Check for price-hypothesis vs stale price claim - per-file (C1)
+    # For any file containing price tokens, hypothesis wording must be present in same file
+    for rel, txt in texts.items():
+        has_price = any(tok in txt for tok in PRICE_TOKENS)
+        if has_price and "PRICE_HYPOTHESIS_ONLY" not in txt and "가설" not in txt and "hypothesis" not in txt.lower():
+            # Allow if file is internal doc that lists forbidden? No, price in customer outputs must have hypothesis
+            if any(x in rel for x in [".pptx", ".pdf", ".docx", ".xlsx"]) or "Meeting" in rel or "Followup" in rel:
+                r.passed = False
+                r.details.append(f"price hypothesis wording missing in {rel} (price without 가설)")
+
+    # Cross-cutting: CUSTOMER_SEND_READY and legal-review completion false claims (C1)
+    for rel, txt in texts.items():
+        for phrase in FORBIDDEN_COMPLETION_CLAIMS:
+            if phrase in txt:
+                # Allow checklist/documentation context
+                is_listing = False
+                for m in re.finditer(re.escape(phrase), txt):
+                    window = txt[max(0, m.start()-800): m.end()+800]
+                    if any(k in window for k in ["Forbidden", "금지", "불가", "DRAFT · PROFESSIONAL LEGAL REVIEW REQUIRED", "발송 전 체크", "[ ]", "주의:"]):
+                        is_listing = True
+                        break
+                if not is_listing:
+                    r.passed = False
+                    r.details.append(f"forbidden completion claim in {rel}: {phrase}")
+
+    # Cross-cutting: forbidden customer phrases (C1) - per-file, allow listing context
+    for rel, txt in texts.items():
+        for phrase in FORBIDDEN_PHRASES_CUSTOMER:
+            if phrase == "성과 보장":
+                continue  # handled separately
+            if phrase in txt:
+                is_listing = False
+                for m in re.finditer(re.escape(phrase), txt):
+                    window = txt[max(0, m.start()-800): m.end()+800]
+                    if any(k in window for k in ["금지 발언", "Forbidden", "금지", "forbidden", "발송 전 체크", "금지 표현", "주의:"]):
+                        is_listing = True
+                        break
+                if not is_listing:
+                    r.passed = False
+                    r.details.append(f"forbidden customer phrase in {rel}: {phrase}")
+        # Special handling for 성과 보장 - only allowed in negation or in forbidden listing
+        if "성과 보장" in txt:
+            for m in re.finditer(r"성과 보장", txt):
+                ctx = txt[max(0, m.start()-30): m.end()+30]
+                window = txt[max(0, m.start()-800): m.end()+800]
+                is_listing = any(k in window for k in ["금지 발언", "Forbidden", "금지", "forbidden", "발송 전 체크", "금지 표현"])
+                if is_listing:
+                    continue
+                if "보장하지" not in ctx and "의미하지 않" not in ctx and "보장하라고 요구" not in ctx and "보장하지 않는다" not in ctx:
+                    r.passed = False
+                    r.details.append(f"forbidden phrase '성과 보장' without negation in {rel}: ...{ctx}...")
+                    break
 
     return r
 
@@ -883,6 +940,37 @@ def check_private_boundary(package_root: Path) -> CheckResult:
         r.details.extend(found_private[:10])
     else:
         r.details.append("no real customer/contact/private data patterns found")
+
+    # Cross-cutting (C1): also check CUSTOMER_SEND_READY and legal completion in private boundary scope
+    for p in files_to_scan:
+        try:
+            if p.suffix == ".md":
+                txt = p.read_text(encoding="utf-8", errors="ignore")
+            elif p.suffix == ".pptx":
+                txt = extract_pptx_text(p) or ""
+            elif p.suffix == ".docx":
+                txt = extract_docx_text(p) or ""
+            elif p.suffix == ".xlsx":
+                txt = extract_xlsx_text(p) or ""
+            elif p.suffix == ".pdf":
+                txt, _ = try_pdf_text(p)
+                txt = txt or ""
+            else:
+                continue
+        except Exception:
+            continue
+        for phrase in FORBIDDEN_COMPLETION_CLAIMS:
+            if phrase in txt:
+                is_listing = False
+                for m in re.finditer(re.escape(phrase), txt):
+                    window = txt[max(0, m.start()-800): m.end()+800]
+                    if any(k in window for k in ["Forbidden", "금지", "불가", "DRAFT · PROFESSIONAL LEGAL REVIEW REQUIRED", "발송 전 체크", "[ ]"]):
+                        is_listing = True
+                        break
+                if not is_listing:
+                    r.passed = False
+                    r.details.append(f"forbidden completion claim in {p.name}: {phrase}")
+                    break
 
     # Also check that reusable master contains required placeholder disclaimer
     xlsx_cands = list(package_root.rglob("*.xlsx"))
@@ -1161,33 +1249,119 @@ def main() -> int:
     else:
         print("OVERALL: FAIL - one or more verdicts failed/unavailable (do not convert to PASS)")
 
-    # Additional cross-cutting checks (price hypothesis & no-send) - already embedded but summarize
-    print()
-    print("CROSS-CUTTING (embedded)")
-    # Quick price check
-    combined_text = ""
+    # Additional cross-cutting checks (C1) - fail-closed promotion to owning verdicts
+    # These checks were already done per-file in verdicts, but we re-evaluate here to ensure overall_pass is fail-closed
+    # Gather combined text for summary (but verdict promotion is per-file already)
+    # Build per-file texts for cross-cutting (listing-aware)
+    cross_texts = {}
     for p in package_root.rglob("*.md"):
         try:
-            combined_text += p.read_text(encoding="utf-8", errors="ignore") + "\n"
+            cross_texts[str(p.relative_to(package_root))] = p.read_text(encoding="utf-8", errors="ignore")
         except Exception:
             pass
-    price_ok = any(tok in combined_text for tok in PRICE_TOKENS) and ("가설" in combined_text or "PRICE_HYPOTHESIS" in combined_text)
-    print(f"  Price hypothesis wording: {'OK' if price_ok else 'MISSING/FAIL'}")
-    # No-send check
-    no_send_ok = not any(phrase in combined_text for phrase in FORBIDDEN_COMPLETION_CLAIMS)
-    print(f"  No customer-send claim: {'OK' if no_send_ok else 'FORBIDDEN CLAIM FOUND'}")
-    # Forbidden customer phrases
-    forbidden_found = [ph for ph in FORBIDDEN_PHRASES_CUSTOMER if ph in combined_text and ph != "성과 보장"]
-    # 성과 보장 special
-    if "성과 보장" in combined_text:
-        # check context
-        import re as _re
-        for m in _re.finditer(r"성과 보장", combined_text):
-            ctx = combined_text[max(0, m.start()-20): m.end()+20]
-            if "의미하지 않" not in ctx and "보장하지" not in ctx:
-                forbidden_found.append("성과 보장 (not in negation)")
+    for p in package_root.rglob("*.pptx"):
+        ttxt = extract_pptx_text(p)
+        if ttxt:
+            cross_texts[str(p.relative_to(package_root))] = ttxt
+    for p in package_root.rglob("*.pdf"):
+        ttxt, _ = try_pdf_text(p)
+        if ttxt:
+            cross_texts[str(p.relative_to(package_root))] = ttxt
+    for p in package_root.rglob("*.docx"):
+        ttxt = extract_docx_text(p)
+        if ttxt:
+            cross_texts[str(p.relative_to(package_root))] = ttxt
+    for p in package_root.rglob("*.xlsx"):
+        ttxt = extract_xlsx_text(p)
+        if ttxt:
+            cross_texts[str(p.relative_to(package_root))] = ttxt
+    combined_text = "\n".join(cross_texts.values())
 
+    # Price hypothesis - per-file listing-aware
+    price_ok = True
+    has_price = False
+    for rel, txt in cross_texts.items():
+        if any(tok in txt for tok in PRICE_TOKENS):
+            has_price = True
+            if "가설" not in txt and "PRICE_HYPOTHESIS" not in txt and "hypothesis" not in txt.lower():
+                price_ok = False
+                break
+    if not has_price:
+        price_ok = True
+    print()
+    print("CROSS-CUTTING (embedded, fail-closed)")
+    print(f"  Price hypothesis wording: {'OK' if price_ok else 'MISSING/FAIL'}")
+
+    # No-send - per-file with listing allowance
+    no_send_ok = True
+    for rel, txt in cross_texts.items():
+        for phrase in FORBIDDEN_COMPLETION_CLAIMS:
+            if phrase in txt:
+                is_listing = False
+                for m in re.finditer(re.escape(phrase), txt):
+                    window = txt[max(0, m.start()-800): m.end()+800]
+                    if any(k in window for k in ["Forbidden", "금지", "불가", "DRAFT · PROFESSIONAL LEGAL REVIEW REQUIRED", "발송 전 체크", "[ ]", "주의:"]):
+                        is_listing = True
+                        break
+                if not is_listing:
+                    no_send_ok = False
+                    break
+        if not no_send_ok:
+            break
+    print(f"  No customer-send claim: {'OK' if no_send_ok else 'FORBIDDEN CLAIM FOUND'}")
+
+    # Forbidden phrases - per-file with listing allowance
+    forbidden_found = []
+    for rel, txt in cross_texts.items():
+        for ph in FORBIDDEN_PHRASES_CUSTOMER:
+            if ph == "성과 보장":
+                continue
+            if ph in txt:
+                is_listing = False
+                for m in re.finditer(re.escape(ph), txt):
+                    window = txt[max(0, m.start()-800): m.end()+800]
+                    if any(k in window for k in ["금지 발언", "Forbidden", "금지", "forbidden", "발송 전 체크", "금지 표현", "주의:"]):
+                        is_listing = True
+                        break
+                if not is_listing:
+                    forbidden_found.append(ph)
+                    break
+        if forbidden_found:
+            break
+    if "성과 보장" in combined_text:
+        import re as _re
+        found_neg = False
+        for rel, txt in cross_texts.items():
+            if "성과 보장" in txt:
+                for m in _re.finditer(r"성과 보장", txt):
+                    window = txt[max(0, m.start()-800): m.end()+800]
+                    if any(k in window for k in ["금지 발언", "Forbidden", "금지", "forbidden", "발송 전 체크"]):
+                        continue
+                    ctx = txt[max(0, m.start()-30): m.end()+30]
+                    if "의미하지 않" not in ctx and "보장하지" not in ctx and "보장하라고 요구" not in ctx and "보장하지 않는다" not in ctx:
+                        found_neg = True
+                        break
+                if found_neg:
+                    break
+        if found_neg:
+            forbidden_found.append("성과 보장 (not in negation)")
     print(f"  Forbidden phrases: {forbidden_found if forbidden_found else 'none'}")
+
+    # Fail-closed promotion: if cross-cutting fails, force owning verdict to FAIL
+    # This ensures overall_pass cannot be true while cross-cutting is violated
+    if not price_ok or not no_send_ok or forbidden_found:
+        for r in results:
+            if not price_ok and r.name == "STALE_ARTIFACT_REJECTION" and r.passed:
+                r.passed = False
+                r.details.append("C1 promotion: price hypothesis violation forces STALE_ARTIFACT_REJECTION_FAIL")
+            if (not no_send_ok or forbidden_found) and r.name == "STALE_ARTIFACT_REJECTION" and r.passed:
+                # Check again per-file to avoid false promotion when already failed
+                r.passed = False
+                r.details.append(f"C1 promotion: forbidden/send claim forces STALE_ARTIFACT_REJECTION_FAIL (no_send_ok={no_send_ok}, forbidden={forbidden_found[:2]})")
+        # Recompute all_pass after promotion
+        all_pass = all(rr.passed for rr in results)
+        if not all_pass:
+            print("\nC1 PROMOTION: cross-cutting violation promoted to verdict FAIL -> overall FAIL")
 
     # Write evidence
     output_json = Path(args.output_json)

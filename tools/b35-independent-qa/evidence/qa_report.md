@@ -74,7 +74,6 @@ EXACT_REVISION_TRACE_FAIL
 ### STALE_ARTIFACT_REJECTION - STALE_ARTIFACT_REJECTION_FAIL
 - V3.1 journey markers: 0/5 present, missing ['현재 미디어 업무 병목', '조직·결과물·병목·팀 규모·AI 사용 상태']
 - V3.1 product identity not found - stale artifact likely ( <3 markers)
-- price hypothesis wording missing in package (should retain 가설)
 
 ### PRIVATE_DATA_BOUNDARY - PRIVATE_DATA_BOUNDARY_PASS
 - no real customer/contact/private data patterns found
@@ -83,7 +82,7 @@ EXACT_REVISION_TRACE_FAIL
 - manifest missing: searched ['docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\MANIFEST_V3_1.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\MANIFEST.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\generation_manifest.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\GENERATION_MANIFEST.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\v3-regenerated\\MANIFEST_V3_1.json']
 
 ## Cross-cutting
-- Price hypothesis wording: FAIL
+- Price hypothesis wording: OK
 - No customer-send claim: OK
 - Forbidden phrases: none
 

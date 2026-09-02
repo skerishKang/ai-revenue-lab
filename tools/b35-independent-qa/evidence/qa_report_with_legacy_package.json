@@ -87,19 +87,6 @@
     ]
   },
   "price_hypothesis_ok": true,
-  "no_send_ok": false,
-  "forbidden_found": [
-    "AI 도입 의무",
-    "반드시 도입",
-    "법적으로 안전",
-    "저작권 문제 없음",
-    "개인정보 문제 없음",
-    "지원금 수령 가능",
-    "자동 수의계약",
-    "1억원 이하",
-    "성과 보장 (not in negation)",
-    "성과 보장 (not in negation)",
-    "성과 보장 (not in negation)",
-    "성과 보장 (not in negation)"
-  ]
+  "no_send_ok": true,
+  "forbidden_found": []
 }
