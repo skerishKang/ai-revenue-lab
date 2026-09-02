@@ -1,8 +1,10 @@
 """Canonical logical-execution fingerprint binding for Engine idempotency.
 
-Core remains the owner of idempotency lifecycle semantics. This adapter only
-replaces the legacy partial orchestration fingerprint with the Engine's already
-accepted exact logical-execution identity before calls reach the durable store.
+Core remains the owner of idempotency lifecycle semantics. This module replaces
+the legacy partial orchestration fingerprint with a material-execution identity
+that follows the accepted continuation field classification while deliberately
+excluding observability/replay identifiers such as ``trace_id`` and the
+``idempotency_key`` itself.
 """
 
 from __future__ import annotations
@@ -11,11 +13,64 @@ from contextvars import ContextVar, Token
 import inspect
 from typing import Any
 
+from padiem_ai_core.execution_context import request_fingerprint
+
+from app.continuation_identity import (
+    _agent_identity,
+    agent_plan_identity_fingerprint,
+    recovery_policy_identity_fingerprint,
+)
+
 
 _CANONICAL_IDEMPOTENCY_FINGERPRINT: ContextVar[str | None] = ContextVar(
     "padiem_engine_canonical_idempotency_fingerprint",
     default=None,
 )
+
+
+def canonical_logical_execution_fingerprint(
+    *,
+    app_id: str,
+    request: Any,
+    context: Any,
+    subject_id: str | None,
+    plan: Any | None,
+    recovery_policy: Any | None,
+    max_retries: int,
+    require_evidence: bool,
+    require_verification: bool,
+) -> str:
+    """Fingerprint execution semantics, not transport/observability identity.
+
+    ``trace_id`` is intentionally excluded because retries may legitimately use a
+    fresh trace while remaining the same logical execution. ``idempotency_key``
+    is also excluded because it selects the durable replay record; including the
+    key in the record fingerprint would add no execution meaning.
+
+    Material fields mirror the continuation identity classification: full agent
+    semantics, messages, session/system context, bounded execution budget,
+    subject, plan, recovery policy, retry budget, and evidence/verification
+    requirements.
+    """
+
+    return request_fingerprint(
+        {
+            "app_id": app_id,
+            "agent": _agent_identity(request),
+            "messages": [dict(message) for message in request.messages],
+            "session_id": request.session_id,
+            "additional_system_context": request.additional_system_context,
+            "timeout_seconds": context.timeout_seconds,
+            "subject_id": subject_id,
+            "plan_fingerprint": agent_plan_identity_fingerprint(plan),
+            "recovery_policy_fingerprint": recovery_policy_identity_fingerprint(
+                recovery_policy
+            ),
+            "max_retries": max_retries,
+            "require_evidence": require_evidence,
+            "require_verification": require_verification,
+        }
+    )
 
 
 def _validate_fingerprint(value: str) -> str:
