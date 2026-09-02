@@ -58,7 +58,7 @@
     tool_resolution: "필요한 도구를 확인하고 있어요.",
     tool_started: "도구를 사용하고 있어요.",
     tool_completed: "도구 작업을 마쳤어요.",
-    tool_failed: "도구 작업을 완료하지 못했습니다.",
+    tool_failed: "도구 작업 상태를 확인하고 있어요.",
     evidence_attached: "출처와 근거를 준비했어요.",
     verification_completed: "출처와 결과를 확인했어요.",
     approval_paused: "계속하기 전에 확인이 필요합니다.",
@@ -79,19 +79,19 @@
   function normalizedEvents(rawEvents) {
     if (!Array.isArray(rawEvents)) return [];
     const events = [];
-    const sequences = new Set();
+    let previousSequence = 0;
     for (const raw of rawEvents) {
       if (!isRecord(raw)) return [];
       if (!kindValues.has(raw.kind)) return [];
-      if (!Number.isInteger(raw.sequence) || raw.sequence < 1 || sequences.has(raw.sequence)) return [];
+      if (!Number.isInteger(raw.sequence) || raw.sequence <= previousSequence) return [];
       if (typeof raw.event_id !== "string" || !safeId.test(raw.event_id)) return [];
       if (typeof raw.run_id !== "string" || !safeId.test(raw.run_id)) return [];
       if (typeof raw.trace_id !== "string" || !safeId.test(raw.trace_id)) return [];
       if (typeof raw.app_id !== "string" || !safeId.test(raw.app_id)) return [];
-      sequences.add(raw.sequence);
+      previousSequence = raw.sequence;
       events.push(Object.freeze({ kind: raw.kind, sequence: raw.sequence }));
     }
-    return events.sort((a, b) => a.sequence - b.sequence);
+    return events;
   }
 
   function approvalView(orchestration, events) {
@@ -180,7 +180,7 @@
     if (!model.approval) return model;
 
     const card = document.createElement("div");
-    card.className = "error-box orchestration-approval";
+    card.className = "orchestration-approval";
     card.dataset.orchestrationUi = "approval";
     card.setAttribute("role", "group");
     card.setAttribute("aria-label", "작업 계속 확인");
