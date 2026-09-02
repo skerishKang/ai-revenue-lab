@@ -17,6 +17,9 @@ _REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _EXACT_REVISION_RE = re.compile(r"^[0-9a-fA-F]{7,64}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+_CREDENTIAL_TEXT_RE = re.compile(
+    r"(?i)(?:\b(?:api[_-]?key|token|secret|password)\s*[:=]\s*\S+|\bbearer\s+\S+|\bsk-(?:or-v1-)?[A-Za-z0-9._-]{8,}\b)"
+)
 _SUCCESS_TERMINAL_REASONS = frozenset({"completed", "run_completed", "success"})
 
 
@@ -41,7 +44,7 @@ def _text(value: str, field_name: str, *, limit: int) -> str:
     value = value.strip()
     if not value or len(value) > limit or any(ord(ch) < 32 and ch not in "\n\t" for ch in value):
         raise ContractError(f"{field_name} must be bounded and non-empty")
-    if redact_secrets(value) != value:
+    if _CREDENTIAL_TEXT_RE.search(value) or redact_secrets(value) != value:
         raise ContractError(f"{field_name} must not contain raw credential material")
     return value
 
