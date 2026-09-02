@@ -1,16 +1,144 @@
-# Padiem Claw — Korean AI Code Agent (B54)
+# Business 54 · Korean AI Code Agent
 
-Business 54의 canonical source workspace입니다.
+Business 54의 Phase 1 CLI/TUI vertical slice입니다. 제품 권위는 Issues #372, #376이며, 이전 browser-hosted coding workspace와 독립 AI Model Router 방향은 superseded입니다.
+
+## Padiem Claw product identity
 
 > Product brand: **Padiem Claw**  
 > Product family/category: **Padiem Agents**  
 > Stable source path: `apps/korean-ai-code-agent/**`
 
-**Single-line promise:** A Korean-first repo workspace that gets permission for every file write or command execution.
+Padiem Claw는 이 기존 B54 Korean AI Code Agent를 폐기하거나 새 제품으로 복제하지 않고, Phase 1 terminal-first 안전 계약을 그대로 기준선으로 삼아 local + cloud AgentOps 제품으로 확장하는 public/product identity입니다.
 
-Padiem Claw는 한국어 우선 실행형 AI Agent 제품으로, 기존 Phase 1 foreground-safe CLI를 보존하면서 local + cloud AgentOps 제품으로 발전합니다. Phase 1의 안전 계약은 Phase 2에서도 약화하지 않습니다.
+## Primary terminal UX
 
-## Architecture boundary
+```text
+terminal launch
+→ repository selection
+→ Korean task
+→ read-only inspection
+→ clean/dirty Git status report (read-only)
+→ bounded plan
+→ deterministic Business 14 mock-adapter evidence
+→ unified diff preview
+→ explicit write permission
+→ explicit allowlisted command permission
+→ review
+→ user apply / reject / revise
+```
+
+## Run
+
+Python 3.11+:
+
+```bash
+cd apps/korean-ai-code-agent
+python -m pip install -e .
+kagent --help
+kagent . plan "인증 흐름을 분석해줘"
+kagent . run "저장 버튼 오류를 찾아 테스트까지 고쳐줘"
+```
+
+Phase 1 requires the task text to contain Korean. English code/file names may be mixed into the Korean task.
+
+The Business 14 adapter is a **deterministic mock contract** in this slice. It emits a stable request ID, normalized route marker, `resolved_not_called`, and `network_called=false`; it does not duplicate Business 14 Provider selection, BYOK, catalog, fallback, or live model execution. `BUSINESS14_BASE_URL` and `BUSINESS14_MODEL` are reported only as configuration presence/identity.
+
+## Permission defaults
+
+```text
+repository read: allowed after repository selection
+file write: ask
+command execution: ask
+network: off
+git mutation: off
+push / merge / deploy: absent
+```
+
+The patch preview is deliberately deterministic and bounded. Before apply, KAgent verifies that the selected file still matches the previewed original text. If the file changed after preview, apply fails closed instead of overwriting another change.
+
+Repository inspection skips symbolic links. Path resolution rejects any symlink or relative path that resolves outside the selected repository root.
+
+Git status reporting runs only:
+
+```text
+git status --porcelain=v1 --untracked-files=all
+```
+
+It never runs `git add`, `reset`, `clean`, `checkout`, `commit`, `push`, `merge`, or deployment commands.
+
+## Allowed test commands
+
+Only these exact command shapes are accepted:
+
+```text
+python -m unittest
+python -m unittest discover
+python -m compileall .
+```
+
+Captured stdout/stderr is redacted before display for Bearer tokens, `sk-*` key shapes, and common `api_key` / `token` / `secret` / `password` assignments.
+
+## Tests
+
+```bash
+PYTHONPATH=src python -m unittest discover -s tests -v
+python -m compileall -q src tests
+```
+
+Committed tests cover:
+
+- help startup;
+- Korean task contract and normal run journey;
+- plan-only no-write behavior;
+- repository-root and symlink-escape containment;
+- clean/dirty Git status detection using read-only Git commands;
+- deterministic, network-free Business 14 mock-adapter evidence;
+- denied writes and bounded approved writes;
+- concurrent-change fail-closed behavior;
+- reject preserving the original file;
+- arbitrary shell/Git/network command rejection;
+- a disposable failing unittest followed by a corrected passing unittest;
+- stdout/stderr secret redaction.
+
+These tests are committed contracts. Exact-head CI for the current-main restack passed on both `ubuntu-latest` and `windows-latest` with Python 3.12, `compileall`, and the full stdlib unittest suite before merge. This validates the bounded CLI contract without making a live B14/provider call.
+
+## Non-goals / hard boundaries
+
+- no browser coding workspace;
+- no Provider registry or billing duplication from Business 14;
+- no real model/API request in this slice;
+- no credential discovery or logging;
+- no arbitrary shell execution;
+- no automatic Git reset/clean/checkout/commit/push/merge;
+- no deployment;
+- no background agent;
+- no production sandbox claim.
+
+```text
+CLI_TUI_FIRST
+DETERMINISTIC_VERTICAL_SLICE
+BUSINESS_14_DEPENDENT
+B14_MOCK_ADAPTER_NETWORK_FREE
+WRITE_PERMISSION_REQUIRED
+COMMAND_ALLOWLIST_REQUIRED
+SYMLINK_ESCAPE_BLOCKED
+WORKTREE_STATE_READ_ONLY
+SECRET_OUTPUT_REDACTED
+NETWORK_OFF
+GIT_MUTATION_OFF
+WINDOWS_EXACT_HEAD_VALIDATED
+DO_NOT_MERGE
+```
+
+## Phase 2 — Padiem Claw cloud mode
+
+Phase 2 extends the product boundary without weakening the Phase 1 safety contract or duplicating shared platform authority.
+
+The first cloud milestone is deliberately narrow:
+
+**one repository → one task → one isolated sandbox → verified diff**
+
+### Authority boundaries
 
 ```text
 B54 Padiem Claw
@@ -18,100 +146,26 @@ B54 Padiem Claw
   consumes:
     P01 Padiem AI Core -> Agent/Tool/Skill/Approval/Recovery/Evidence/Orchestration
     Padiem AI Engine -> cross-runtime service boundary over Core
-    B14 Korean AI Platform -> Provider/model credentials, routing, fallback, execution
+    B14 Korean AI Platform -> provider/model credentials, routing, fallback, execution
     Shared Control Plane -> identity, entitlement, usage, credits, audit
     B62 Padiem Chat -> discovery/handoff/progress/result presentation only
 ```
 
-B54는 별도 provider router, generic Agent runtime, Tool runtime, recovery engine을 재구현하지 않습니다.
+B54 does not reimplement a provider router, generic Agent runtime, Tool runtime, recovery engine, or shared account/credit plane.
 
-## Phase 1 contract
-
-### Default permissions
-- Repository reads are allowed only after the user has selected a repository.
-- File writes always require an explicit `write` approval.
-- Command execution always requires an explicit `command` approval.
-- Network, git commit, push, merge, deploy, and background execution are out of scope for this phase.
-
-### Supported task request
-
-```json
-{
-  "repositoryRef": "/absolute/path/to/repo",
-  "task": "요청 내용을 한글로 설명"
-}
-```
-
-`repositoryRef` is optional when the command is already running from the target repository.
-
-### Provider execution boundary
-- B54 owns the Korean CLI UX, repository reads, local patch preparation, approvals, tests, and the evidence summary.
-- B14 owns model/provider registration, provider/model selection, fallback, credential ownership, usage, and actual LLM execution.
-- The Phase 1 wired runtime accepts B14-compatible mock execution fields through environment placeholders so tests can exercise the integration boundary without live provider calls.
-- The mock contract is intentionally narrow and does not let B54 own provider APIs.
-
-## Local CLI
-
-```bash
-node apps/korean-ai-code-agent/cli.mjs --repo /path/to/repo "한글 작업 요청"
-```
-
-Large repositories can be scanned deterministically with:
-
-```bash
-node apps/korean-ai-code-agent/cli.mjs \
-  --repo /path/to/repo \
-  --max-files 64 \
-  --max-scan-files 4096 \
-  "분석해"
-```
-
-### Exact repository pinning
-
-The CLI records the repository's current git HEAD in `repository.gitHead` when a commit exists. If the repository changes before the user responds to a write or command approval, the CLI pauses instead of mutating the moved state.
-
-### Proposal safety checks
-
-When a proposal contains a file patch:
-- the target path must stay inside the selected repository,
-- existing symlink targets are rejected,
-- the preview records whether the file already exists,
-- a moved repository or changed target invalidates the write approval before apply.
-
-## Tests
-
-```bash
-npm run test:b54-korean-ai-code-agent
-```
-
-The deterministic suite covers:
-- repository inspection and exact repository-ref behavior,
-- large repository scan bounds,
-- mocked B14 integration,
-- write approval and rejection,
-- changed-reference rejection,
-- symlink-target rejection,
-- command approval, rejection, and deny-by-default command policy,
-- happy and failure evidence paths.
-
-## Phase 2 — Padiem Claw cloud mode
-
-Phase 2 adds cloud/background-ready product boundaries while consuming canonical P01 orchestration. `ClawTaskIntent`, `ClawRun`, `RunProjection`, and `SandboxLease` remain distinct contracts.
-
-The first cloud milestone is deliberately narrow:
-
-**one repository → one task → one isolated sandbox → verified diff**
+`ClawTaskIntent`, `ClawRun`, `RunProjection`, and `SandboxLease` remain distinct contracts. Sandbox allocation is product infrastructure state and is not proof that canonical P01 Agent execution started.
 
 Cloud execution is not production-ready until:
-1. a reviewed sandbox threat model exists,
-2. task/run/sandbox contracts are stable,
-3. lifecycle controls support cancel, timeout, recovery, and audit,
-4. GitHub mutation is permission-gated and begins with branch + Draft PR output,
+
+1. a reviewed sandbox threat model exists;
+2. task/run/sandbox contracts are stable;
+3. lifecycle controls support cancel, timeout, recovery, and audit;
+4. GitHub mutation is permission-gated and starts with branch + Draft PR output;
 5. exact-head verification is repeatable.
 
-Phase 2 does **not** authorize silent commit, push, merge, or deploy. Durable background execution, resume/recovery, and later parallel fan-out come only after the single-run sandbox path is reliable.
+Phase 2 does **not** authorize silent commit, push, merge, deploy, or automatic resurrection of a stopped terminal run. Durable background execution, resume/recovery, and later parallel fan-out come only after the single-run sandbox path is reliable.
 
-## Key invariants
+### Cloud-mode invariants
 
 ```text
 sandbox lease allocated != agent execution started
@@ -125,17 +179,10 @@ GitHub automation defaults to Draft PR before any later merge authority
 ## Documentation
 
 - Canonical documentation pack: [`docs/README.md`](docs/README.md)
-- [Source of Truth](./docs/SOURCE_OF_TRUTH.md)
-- [Product Charter & PRD](./docs/PRODUCT_CHARTER_AND_PRD.md)
-- [System Architecture](./docs/SYSTEM_ARCHITECTURE.md)
-- [Security & Trust](./docs/SECURITY_AND_TRUST.md)
-- [Operations Runbook](./docs/OPERATIONS_RUNBOOK.md)
-- [Release & Rollback](./docs/RELEASE_AND_ROLLBACK.md)
-- [Reliability & Incident Response](./docs/RELIABILITY_AND_INCIDENT_RESPONSE.md)
-- [Business & Pricing](./docs/BUSINESS_AND_PRICING.md)
-- [Roadmap](./docs/ROADMAP.md)
-- [One-page documentation portal](./docs/index.html)
-- [Product landing/portal prototype](./site/index.html)
+- One-page product/operations overview: [`docs/index.html`](docs/index.html)
+- Initial product landing/portal: [`site/index.html`](site/index.html)
+
+The canonical documentation pack covers source-of-truth, product/PRD, architecture, security, operations, release/rollback, reliability/incident response, business/pricing, and roadmap material.
 
 ## Governance
 
