@@ -37,7 +37,7 @@ html[data-theme="padiem-glass"] {
 
 html[data-theme="padiem-glass"][data-glass-variant="female"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
-  --glass-portrait-x: calc(100% - 68px);
+  --glass-portrait-x: 100%;
   --glass-mask-start: 2%;
   --glass-mask-full: 26%;
   --glass-art-opacity: .70;
@@ -46,7 +46,7 @@ html[data-theme="padiem-glass"][data-glass-variant="female"] {
 
 html[data-theme="padiem-glass"][data-glass-variant="male"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-male.jpg");
-  --glass-portrait-x: calc(100% - 54px);
+  --glass-portrait-x: 100%;
   --glass-mask-start: 0%;
   --glass-mask-full: 22%;
   --glass-art-opacity: .78;
