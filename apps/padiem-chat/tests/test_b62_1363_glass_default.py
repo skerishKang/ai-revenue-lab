@@ -3,6 +3,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 THEME_JS = (ROOT / "static/theme.js").read_text(encoding="utf-8")
 THEME_INIT = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
+GLASS_CSS = (ROOT / "static/padiem-glass.css").read_text(encoding="utf-8")
+
+
+def test_glass_mobile_starter_text_can_break_unbreakable_token_run():
+    # Glass mobile default exposed a 7px horizontal overflow (scrollWidth=397
+    # at 390px): the document starter's formats run "TXT·Markdown·CSV·…" has
+    # no line-break opportunity, so its min-content width forced the 1fr
+    # starter-grid track past the viewport.
+    starter_small_rules = [
+        line for line in GLASS_CSS.splitlines()
+        if ".starter small" in line and "padiem-glass" in line
+    ]
+    assert starter_small_rules
+    assert any("overflow-wrap: anywhere" in rule for rule in starter_small_rules)
+    # The fix must stay theme-scoped and must not hide overflow globally.
+    assert "overflow-x: hidden" not in GLASS_CSS
 
 
 def test_bare_url_default_is_padiem_glass():

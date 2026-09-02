@@ -170,7 +170,7 @@ html[data-theme="padiem-glass"] .starter:not(:disabled):hover {
   transform: translateY(-1px);
 }
 html[data-theme="padiem-glass"] .starter strong { color: #17212a; }
-html[data-theme="padiem-glass"] .starter small { color: #53606c; }
+html[data-theme="padiem-glass"] .starter small { color: #53606c; overflow-wrap: anywhere; }
 html[data-theme="padiem-glass"] .starter-icon {
   background: rgba(34, 46, 57, .10);
   color: #2d4557;
