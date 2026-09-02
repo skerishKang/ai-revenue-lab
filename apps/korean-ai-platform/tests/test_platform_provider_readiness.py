@@ -7,14 +7,18 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 
 
-def _agnes_provider(data: dict) -> dict:
+def _provider(data: dict, provider_id: str) -> dict:
     matches = [
         provider
         for provider in data["providers"]
-        if provider["provider_id"] == "agnes-ai"
+        if provider["provider_id"] == provider_id
     ]
     assert len(matches) == 1
     return matches[0]
+
+
+def _agnes_provider(data: dict) -> dict:
+    return _provider(data, "agnes-ai")
 
 
 def test_provider_readiness_mock_without_agnes_secret_is_not_ready(monkeypatch):
@@ -26,11 +30,15 @@ def test_provider_readiness_mock_without_agnes_secret_is_not_ready(monkeypatch):
     assert response.status_code == 200
     data = response.json()
     agnes = _agnes_provider(data)
+    kilo = _provider(data, "kilo")
     assert data["status"] == "not_ready"
     assert data["provider_mode"] == "mock"
     assert agnes["credential_source"] == "platform_secret"
     assert agnes["credential_ready"] is False
     assert agnes["route_ready"] is False
+    assert kilo["credential_source"] == "none"
+    assert kilo["credential_ready"] is True
+    assert kilo["route_ready"] is False
 
 
 def test_provider_readiness_live_with_agnes_secret_is_ready(monkeypatch):
@@ -43,18 +51,21 @@ def test_provider_readiness_live_with_agnes_secret_is_ready(monkeypatch):
     assert response.status_code == 200
     data = response.json()
     agnes = _agnes_provider(data)
+    kilo = _provider(data, "kilo")
     assert data["status"] == "ready"
     assert data["provider_mode"] == "live"
-    assert data["ready_provider_count"] >= 1
+    assert data["ready_provider_count"] >= 2
     assert agnes["credential_ready"] is True
     assert agnes["route_ready"] is True
     assert agnes["models"] == ["agnes-ai/agnes-2.5-flash"]
+    assert kilo["credential_ready"] is True
+    assert kilo["route_ready"] is True
     assert secret not in response.text
     assert "AGNES_API_KEY" not in response.text
     assert "credential_binding_name" not in response.text
 
 
-def test_provider_readiness_live_with_placeholder_secret_fails_closed(monkeypatch):
+def test_provider_readiness_live_with_placeholder_agnes_still_has_keyless_kilo(monkeypatch):
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("AGNES_API_KEY", "test-key")
 
@@ -63,9 +74,14 @@ def test_provider_readiness_live_with_placeholder_secret_fails_closed(monkeypatc
     assert response.status_code == 200
     data = response.json()
     agnes = _agnes_provider(data)
-    assert data["status"] == "not_ready"
+    kilo = _provider(data, "kilo")
+    assert data["status"] == "ready"
+    assert data["ready_provider_count"] >= 1
     assert agnes["credential_ready"] is False
     assert agnes["route_ready"] is False
+    assert kilo["credential_source"] == "none"
+    assert kilo["credential_ready"] is True
+    assert kilo["route_ready"] is True
 
 
 def test_provider_readiness_makes_no_upstream_provider_call(monkeypatch):
