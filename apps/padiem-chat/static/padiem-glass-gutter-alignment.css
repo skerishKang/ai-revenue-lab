@@ -36,6 +36,11 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-me
   margin-bottom: 6px !important;
 }
 
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
+  width: 100% !important;
+  max-width: none !important;
+}
+
 /* The assistant identity rail starts inside the bounded conversation padding.
  * Wide answer/error cards then recover that right-side padding so their outer
  * edge lands on the same boundary as the composer. */
