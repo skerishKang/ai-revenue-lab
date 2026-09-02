@@ -68,15 +68,21 @@ EXACT_REVISION_TRACE_FAIL
 
 ### STALE_ARTIFACT_REJECTION - STALE_ARTIFACT_REJECTION_PASS
 - V3.1 journey markers present (5/5)
-- seven-step present without delivery-detail qualification (warning)
-- README correctly marks historical binaries
+- README missing stale marker disclaimer (should mark historical)
 - SOURCE_MAPPING correctly marks historical binaries
 
 ### PRIVATE_DATA_BOUNDARY - PRIVATE_DATA_BOUNDARY_PASS
 - no real customer/contact/private data patterns found
 
 ### EXACT_REVISION_TRACE - EXACT_REVISION_TRACE_FAIL
-- manifest missing: searched ['docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\MANIFEST_V3_1.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\MANIFEST.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\generation_manifest.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\GENERATION_MANIFEST.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\v3-regenerated\\MANIFEST_V3_1.json']
+- product_contract present: reference\business-35-ai-media-education-dx-v3\PRODUCT_CONTRACT.md
+- manifest found: generation_manifest.json
+- SOURCE_REVISION invalid: PENDING_ACCEPTED_1503_LANE_A_HEAD_63adbefcf24a
+- PRODUCT_AUTHORITY_REVISION 961ff2ae5390f6c6fc99f6969d5ef3b7665ea82f != expected 05932da3af774220372f0e9f3716b07cd83511f9
+- GENERATOR_REVISION invalid format (must be [0-9a-f]{40}): 899958e83bd7 (EXACT_REVISION_TRACE_FAIL)
+- OUTPUT_FILE_LIST: 35 entries
+- OUTPUT_HASHES: 35 entries
+- hash mismatches: ['Business35_Customer_Meeting_Script.md: expected c26b862 got 100d5c8', 'Business35_Followup_Email_Templates.md: expected 5a98045 got b0c58c4', 'Business35_Master_Proposal_10p.pptx: expected b75f84d got c3ec267']
 
 ## Cross-cutting
 - Price hypothesis wording: OK

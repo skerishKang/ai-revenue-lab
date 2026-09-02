@@ -43,6 +43,10 @@ PRODUCT_PR = "#370"
 PRODUCT_COMMIT = "05932da3af774220372f0e9f3716b07cd83511f9"
 PRODUCT_CONTRACT_REL = "reference/business-35-ai-media-education-dx-v3/PRODUCT_CONTRACT.md"
 
+# Exact accepted source revision for final G3 (CENTRAL). Any other 40-hex
+# SOURCE_REVISION must fail EXACT_REVISION_TRACE (format-only PASS is forbidden).
+ACCEPTED_SOURCE_REVISION = "63adbefcf24a91a5a064c6b8e13779e151ba7de7"
+
 # Price hypothesis tokens (standard ladder)
 PRICE_TOKENS = [
     "300만–500만원",
@@ -1014,6 +1018,26 @@ def check_private_boundary(package_root: Path) -> CheckResult:
 
 def check_exact_revision_trace(commercial_root: Path, package_root: Path, product_contract: Path, manifest_path: Optional[Path]) -> CheckResult:
     r = CheckResult(name="EXACT_REVISION_TRACE", passed=True)
+    # Fail-closed: actual product authority file dependency must exist and be readable.
+    # Missing/unreadable product_contract can never be inferred PASS.
+    try:
+        pc = Path(product_contract) if product_contract is not None else None
+    except Exception:
+        pc = None
+    if pc is None or not pc.is_file():
+        r.passed = False
+        r.details.append(f"product_contract missing/unreadable: {product_contract} (fail-closed, no inference to PASS)")
+    else:
+        try:
+            if pc.stat().st_size == 0:
+                r.passed = False
+                r.details.append(f"product_contract empty: {pc} (fail-closed)")
+            else:
+                pc.read_text(encoding="utf-8", errors="ignore")
+                r.details.append(f"product_contract present: {pc}")
+        except Exception as e:
+            r.passed = False
+            r.details.append(f"product_contract unreadable: {pc}: {e} (fail-closed)")
     # Find manifest
     candidates = []
     if manifest_path and manifest_path.exists():
@@ -1068,8 +1092,13 @@ def check_exact_revision_trace(commercial_root: Path, package_root: Path, produc
     else:
         src_rev = data.get("SOURCE_REVISION") or data.get("source_revision") or data.get("source")
         if isinstance(src_rev, str) and re.fullmatch(r"[0-9a-f]{40}", src_rev):
-            r.details.append(f"SOURCE_REVISION format OK: {src_rev[:7]}...")
-            # Verify against current product authority? For now just format
+            if src_rev == ACCEPTED_SOURCE_REVISION:
+                r.details.append(f"SOURCE_REVISION exact match OK: {src_rev[:7]}...")
+            else:
+                r.passed = False
+                r.details.append(
+                    f"SOURCE_REVISION {src_rev} != ACCEPTED_SOURCE_REVISION {ACCEPTED_SOURCE_REVISION} (EXACT_REVISION_TRACE_FAIL)"
+                )
         else:
             r.passed = False
             r.details.append(f"SOURCE_REVISION invalid: {src_rev}")
@@ -1088,14 +1117,16 @@ def check_exact_revision_trace(commercial_root: Path, package_root: Path, produc
         r.details.append("manifest missing PRODUCT_AUTHORITY_REVISION")
 
     gen_rev = data.get("GENERATOR_REVISION") or data.get("generator_revision") or data.get("generator")
-    if gen_rev and isinstance(gen_rev, str) and re.fullmatch(r"[0-9a-f]{40}", str(gen_rev)):
-        r.details.append(f"GENERATOR_REVISION OK: {str(gen_rev)[:7]}...")
+    # Fail-closed: GENERATOR_REVISION must be full 40-char lowercase hex.
+    # 12-char / unknown / unusual / missing all fail; no PASS on format-unusual.
+    if isinstance(gen_rev, str) and re.fullmatch(r"[0-9a-f]{40}", gen_rev):
+        r.details.append(f"GENERATOR_REVISION OK: {gen_rev[:7]}...")
     else:
+        r.passed = False
         if gen_rev:
-            r.details.append(f"GENERATOR_REVISION present but format unusual: {gen_rev}")
+            r.details.append(f"GENERATOR_REVISION invalid format (must be [0-9a-f]{{40}}): {gen_rev} (EXACT_REVISION_TRACE_FAIL)")
         else:
-            r.passed = False
-            r.details.append("manifest missing GENERATOR_REVISION")
+            r.details.append("manifest missing GENERATOR_REVISION (EXACT_REVISION_TRACE_FAIL)")
 
     # Output file list and hashes
     file_list = data.get("OUTPUT_FILE_LIST") or data.get("output_file_list") or data.get("files") or data.get("artifacts")
@@ -1239,7 +1270,7 @@ def main() -> int:
             print(f"    - {d}")
         if len(r.details) > 8:
             print(f"    - ... +{len(r.details)-8} more")
-        if not r.passed:
+        if not r.passed or r.unavailable:
             all_pass = False
 
     print()
@@ -1358,8 +1389,8 @@ def main() -> int:
                 # Check again per-file to avoid false promotion when already failed
                 r.passed = False
                 r.details.append(f"C1 promotion: forbidden/send claim forces STALE_ARTIFACT_REJECTION_FAIL (no_send_ok={no_send_ok}, forbidden={forbidden_found[:2]})")
-        # Recompute all_pass after promotion
-        all_pass = all(rr.passed for rr in results)
+        # Recompute all_pass after promotion (unavailable can never be PASS)
+        all_pass = all(rr.passed and not rr.unavailable for rr in results)
         if not all_pass:
             print("\nC1 PROMOTION: cross-cutting violation promoted to verdict FAIL -> overall FAIL")
 

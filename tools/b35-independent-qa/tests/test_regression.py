@@ -24,6 +24,51 @@ sys.path.insert(0, str(TOOL_DIR))
 import validate_b35_independent_qa as v
 
 PRODUCT_COMMIT = v.PRODUCT_COMMIT
+ACCEPTED_SOURCE_REVISION = v.ACCEPTED_SOURCE_REVISION
+
+
+def make_exact_trace_fixture(tmp: Path, source_rev: str, generator_rev: str,
+                             product_contract_exists: bool = True):
+    """Minimal fail-closed fixture for check_exact_revision_trace.
+
+    Builds a package with one real output file + matching manifest hashes so
+    that only the field under test determines PASS/FAIL. Returns
+    (commercial_root, package_root, product_contract_path, manifest_path).
+    """
+    import hashlib
+
+    comm = tmp / "commercial_exact"
+    comm.mkdir(parents=True, exist_ok=True)
+    (comm / "CURRENT_PRODUCT_AUTHORITY.md").write_text(
+        f"PRODUCT_COMMIT={PRODUCT_COMMIT}\n", encoding="utf-8")
+
+    pkg = tmp / "exact_pkg"
+    pkg.mkdir(parents=True, exist_ok=True)
+    out = pkg / "dummy_output.txt"
+    out.write_text("hello exact trace", encoding="utf-8")
+    digest = hashlib.sha256(out.read_bytes()).hexdigest()
+    manifest_data = {
+        "SOURCE_REVISION": source_rev,
+        "PRODUCT_AUTHORITY_REVISION": PRODUCT_COMMIT,
+        "GENERATOR_REVISION": generator_rev,
+        "OUTPUT_FILE_LIST": ["dummy_output.txt"],
+        "OUTPUT_HASHES": {"dummy_output.txt": digest},
+    }
+    manifest_path = pkg / "MANIFEST_V3_1.json"
+    manifest_path.write_text(
+        json.dumps(manifest_data, ensure_ascii=False, indent=2),
+        encoding="utf-8")
+
+    if product_contract_exists:
+        pc = tmp / "PRODUCT_CONTRACT.md"
+        pc.write_text("# PRODUCT_CONTRACT\nauthority: frozen\n", encoding="utf-8")
+    else:
+        # Intentionally do NOT create this file: tests the actual authority
+        # file dependency missing, not a SOURCE_MAPPING string edit.
+        pc = tmp / "MISSING_PRODUCT_CONTRACT.md"
+        if pc.exists():
+            pc.unlink()
+    return comm, pkg, pc, manifest_path
 
 def make_commercial_with_sources(tmp: Path, correct_sha=True):
     comm = tmp / "commercial"
@@ -239,6 +284,65 @@ class TestRegression(unittest.TestCase):
             r = v.check_source_mapping(comm, pkg)
             self.assertFalse(r.passed)
             self.assertTrue(any("PRODUCT_CONTRACT" in d for d in r.details))
+
+    def test_wrong_source_revision_aaaa_fails_exact_trace(self):
+        """A: arbitrary 40-hex SOURCE_REVISION != ACCEPTED => EXACT_REVISION_TRACE_FAIL"""
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            comm, pkg, pc, manifest = make_exact_trace_fixture(
+                tmp,
+                source_rev="a" * 40,
+                generator_rev="b" * 40,
+                product_contract_exists=True,
+            )
+            self.assertNotEqual("a" * 40, ACCEPTED_SOURCE_REVISION)
+            r = v.check_exact_revision_trace(comm, pkg, pc, manifest)
+            self.assertFalse(r.passed, f"wrong SOURCE_REVISION should fail: {r.details}")
+            self.assertIn("FAIL", r.verdict)
+            self.assertTrue(any("ACCEPTED_SOURCE_REVISION" in d for d in r.details))
+
+    def test_short_generator_revision_fails_exact_trace(self):
+        """B: 12-char GENERATOR_REVISION (Lane B rejected 899958e83bd7) => EXACT_REVISION_TRACE_FAIL"""
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            comm, pkg, pc, manifest = make_exact_trace_fixture(
+                tmp,
+                source_rev=ACCEPTED_SOURCE_REVISION,
+                generator_rev="899958e83bd7",
+                product_contract_exists=True,
+            )
+            r = v.check_exact_revision_trace(comm, pkg, pc, manifest)
+            self.assertFalse(r.passed, f"12-char GENERATOR_REVISION should fail: {r.details}")
+            self.assertIn("FAIL", r.verdict)
+            self.assertTrue(any("GENERATOR_REVISION" in d for d in r.details))
+
+    def test_actual_product_contract_missing_fails_required_verdict(self):
+        """C: actual product_contract file missing => required verdict FAIL => overall FAIL.
+
+        This tests the real authority file dependency (Path missing), not a
+        SOURCE_MAPPING string edit (covered separately by
+        test_missing_product_contract_in_mapping_fails).
+        """
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            comm, pkg, pc_valid, manifest = make_exact_trace_fixture(
+                tmp,
+                source_rev=ACCEPTED_SOURCE_REVISION,
+                generator_rev="c" * 40,
+                product_contract_exists=True,
+            )
+            r_ok = v.check_exact_revision_trace(comm, pkg, pc_valid, manifest)
+            self.assertTrue(r_ok.passed, f"valid fixture should pass exact trace: {r_ok.details}")
+            # Same manifest/package but the actual authority file is absent.
+            pc_missing = tmp / "MISSING_PRODUCT_CONTRACT.md"
+            self.assertFalse(pc_missing.exists())
+            r = v.check_exact_revision_trace(comm, pkg, pc_missing, manifest)
+            self.assertFalse(r.passed, f"missing product_contract file should fail: {r.details}")
+            self.assertIn("FAIL", r.verdict)
+            self.assertTrue(any("product_contract" in d for d in r.details))
+            # Required verdict FAIL must force overall FAIL (no inference to PASS).
+            overall = all([r.passed and not r.unavailable])
+            self.assertFalse(overall, "missing product_contract must force overall FAIL")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

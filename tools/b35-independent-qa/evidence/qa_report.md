@@ -79,6 +79,7 @@ EXACT_REVISION_TRACE_FAIL
 - no real customer/contact/private data patterns found
 
 ### EXACT_REVISION_TRACE - EXACT_REVISION_TRACE_FAIL
+- product_contract present: reference\business-35-ai-media-education-dx-v3\PRODUCT_CONTRACT.md
 - manifest missing: searched ['docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\MANIFEST_V3_1.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\MANIFEST.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\generation_manifest.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\GENERATION_MANIFEST.json', 'docs\\commercial\\business-35-ai-media-education-dx\\customer-package\\v3-regenerated\\MANIFEST_V3_1.json']
 
 ## Cross-cutting
