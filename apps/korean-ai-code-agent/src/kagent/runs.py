@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Iterable
 
-from .contracts import ClawRunStatus, ClawTaskIntent, ContractError, RunProjection
+from .contracts import ClawRunStatus, ClawTaskIntent, RunProjection
 
 
 class RunStateError(RuntimeError):
@@ -56,8 +56,8 @@ class ClawRun:
 
     @classmethod
     def create(cls, run_id: str, intent: ClawTaskIntent) -> "ClawRun":
-        # RunProjection provides the shared identifier validation without
-        # duplicating identifier grammar in this mutable lifecycle container.
+        # RunProjection provides shared identifier validation without duplicating
+        # identifier grammar in this mutable lifecycle container.
         RunProjection(
             run_id=run_id,
             task_id=intent.task_id,
