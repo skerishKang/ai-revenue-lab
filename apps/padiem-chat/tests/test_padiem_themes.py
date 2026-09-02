@@ -24,11 +24,12 @@ def test_html_contains_inline_theme_init_and_no_flash():
     assert HTML.index("padiem-themes.css") > HTML.index("padiem-cinematic-workspace.css")
     # no inline script violating CSP
     assert "<script>" not in HTML.replace('<script src=', '<SRCS')
-    # theme-init must use URL param (policy-compliant, no localStorage) and prefers-color-scheme
+    # theme-init must use URL param (policy-compliant, no localStorage) and canonical Glass fallback
     init = (ROOT / "static/theme-init.js").read_text(encoding="utf-8")
     assert "URLSearchParams" in init
     assert 'get("theme")' in init or "get('theme')" in init
-    assert "prefers-color-scheme" in init
+    assert '"padiem-glass"' in init
+    assert 's="padiem-glass"' in init or "s='padiem-glass'" in init
     assert "localStorage" not in init
     assert "sessionStorage" not in init
     # theme.js before app.js to ensure theme set before app boot

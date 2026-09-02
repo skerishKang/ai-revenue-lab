@@ -12,7 +12,7 @@
       if(G.indexOf(g)!==-1) glass=g;
     }catch(e){}
     if(T.indexOf(s)===-1){
-      s=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";
+      s="padiem-glass";
     }
     document.documentElement.setAttribute("data-theme",s);
     document.documentElement.setAttribute("data-glass-variant",glass);

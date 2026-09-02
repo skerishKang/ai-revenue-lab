@@ -117,8 +117,7 @@
   }
 
   function getSystemFallback(){
-    try{if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";}catch(e){}
-    return "light";
+    return "padiem-glass";
   }
 
   function getUrlTheme(){
@@ -302,8 +301,7 @@
       var mql=window.matchMedia("(prefers-color-scheme: dark)");
       var handler=function(){
         if(getUrlTheme()) return;
-        var fallback=getSystemFallback();
-        applyTheme(fallback,false);
+        return;
       };
       if(mql.addEventListener) mql.addEventListener("change",handler);
       else if(mql.addListener) mql.addListener(handler);
