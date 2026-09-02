@@ -115,7 +115,6 @@ jobs:
           print(f"PAGES_URL={deployment.get('url', '')}")
           PY
 
-          # New Pages projects can need a short TLS/DNS propagation interval.
           ready=0
           for attempt in $(seq 1 40); do
             if curl -fsS --retry 1 --retry-delay 1 "${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" -o /tmp/index.html; then
@@ -128,11 +127,11 @@ jobs:
 
           curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-portrait.css" -o /tmp/portrait.css
           curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-brand-polish.css" -o /tmp/brand.css
-          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-female.jpg" -o /tmp/female.jpg
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/assets/padiem-glass-female.jpg" -o /tmp/female.jpg
 
           cmp apps/padiem-chat/static/padiem-glass-portrait.css /tmp/portrait.css
           cmp apps/padiem-chat/static/padiem-glass-brand-polish.css /tmp/brand.css
-          cmp apps/padiem-chat/static/padiem-glass-female.jpg /tmp/female.jpg
+          cmp apps/padiem-chat/static/assets/padiem-glass-female.jpg /tmp/female.jpg
           grep -F 'Padiem Chat' /tmp/index.html >/dev/null
 
           echo "url=${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
