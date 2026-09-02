@@ -181,10 +181,10 @@ class AgentProfile:
     id: str
     title: str
     description: str
-    system_instruction: str
+    system_instruction: str | None
     task_type: str
     optimize_for: str
-    max_tokens: int
+    max_tokens: int | None
     allowed_tools: tuple[str, ...] = ()
     required_capabilities: tuple[str, ...] = ()
     context_policy: Mapping[str, Any] = field(default_factory=dict)
@@ -196,11 +196,16 @@ class AgentProfile:
         object.__setattr__(self, "id", _identifier("agent id", self.id))
         object.__setattr__(self, "title", _non_empty("title", self.title))
         object.__setattr__(self, "description", _non_empty("description", self.description))
-        object.__setattr__(self, "system_instruction", _non_empty("system_instruction", self.system_instruction))
+        if self.system_instruction is not None:
+            object.__setattr__(self, "system_instruction", _non_empty("system_instruction", self.system_instruction))
         object.__setattr__(self, "task_type", _identifier("task_type", self.task_type))
         object.__setattr__(self, "optimize_for", _identifier("optimize_for", self.optimize_for))
-        if isinstance(self.max_tokens, bool) or not isinstance(self.max_tokens, int) or self.max_tokens <= 0:
-            raise ValueError("max_tokens must be a positive integer")
+        if self.max_tokens is not None and (
+            isinstance(self.max_tokens, bool)
+            or not isinstance(self.max_tokens, int)
+            or self.max_tokens <= 0
+        ):
+            raise ValueError("max_tokens must be a positive integer or None")
         if isinstance(self.max_steps, bool) or not isinstance(self.max_steps, int) or not 1 <= self.max_steps <= 100:
             raise ValueError("max_steps must be between 1 and 100")
         object.__setattr__(self, "allowed_tools", _tuple_of_identifiers("allowed_tools", self.allowed_tools))
