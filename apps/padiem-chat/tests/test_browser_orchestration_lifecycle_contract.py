@@ -128,7 +128,7 @@ console.log(JSON.stringify({model, approve, deny, cancel}));
     assert result["cancel"] == {"continuationRef": "cont_ExactOpaqueRef_12345"}
 
 
-def test_orchestration_consumer_fails_closed_on_malformed_or_unknown_events() -> None:
+def test_orchestration_consumer_fails_closed_on_malformed_unknown_or_reordered_events() -> None:
     source = LIFECYCLE_PATH.read_text(encoding="utf-8")
     script = r'''
 global.window = globalThis;
@@ -137,22 +137,24 @@ global.CustomEvent = class CustomEvent {};
 const base = {event_id:"evt_1",run_id:"run_1",trace_id:"trace_1",app_id:"padiem-chat",kind:"run_started",sequence:1};
 const unknown = PadiemChatOrchestrationUI.viewModel({events:[{...base,kind:"hidden_reasoning"}]});
 const duplicate = PadiemChatOrchestrationUI.viewModel({events:[base,{...base,event_id:"evt_2",kind:"run_completed"}]});
+const reordered = PadiemChatOrchestrationUI.viewModel({events:[{...base,sequence:2},{...base,event_id:"evt_2",kind:"run_completed",sequence:1}]});
 const malformedApproval = PadiemChatOrchestrationUI.viewModel({
   events:[base,{...base,event_id:"evt_2",kind:"approval_paused",sequence:2}],
   approval_pause:{status:"paused",continuation_id:"pause_1",requirement:"user_confirmation",expires_at:"2026-09-03T01:00:00Z"},
   continuation_ref:"not-an-engine-continuation",
 });
-console.log(JSON.stringify({unknown, duplicate, malformedApproval}));
+console.log(JSON.stringify({unknown, duplicate, reordered, malformedApproval}));
 '''
     result = _run_node(script)
 
     assert result["unknown"]["valid"] is False
     assert result["duplicate"]["valid"] is False
+    assert result["reordered"]["valid"] is False
     assert result["malformedApproval"]["valid"] is True
     assert result["malformedApproval"]["approval"] is None
 
 
-def test_orchestration_presenter_does_not_claim_engine_or_authority() -> None:
+def test_orchestration_presenter_does_not_claim_engine_authority_or_failure_state() -> None:
     source = LIFECYCLE_PATH.read_text(encoding="utf-8")
 
     assert "PadiemChatOrchestrationUI" in source
@@ -162,4 +164,5 @@ def test_orchestration_presenter_does_not_claim_engine_or_authority() -> None:
     assert "evidence_ref" not in source
     assert "decision_id" not in source
     assert "tool_arguments" not in source
+    assert 'card.className = "error-box' not in source
     assert "PadiemChatLifecycle.set(article, model.terminal" not in source
