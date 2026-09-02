@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
 
@@ -62,7 +62,7 @@ class SupplierResponseObservation:
         received_at = _aware(self.received_at, "received_at")
         if received_at < sent_at:
             raise ContractError("received_at cannot precede sent_at")
-        if received_at - sent_at > __import__("datetime").timedelta(days=365):
+        if received_at - sent_at > timedelta(days=365):
             raise ContractError("supplier response interval exceeds supported bound")
         object.__setattr__(self, "sent_at", sent_at)
         object.__setattr__(self, "received_at", received_at)
