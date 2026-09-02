@@ -102,12 +102,22 @@ class SalesOrderProjection:
     sale_total: Money
     commercial_request_id: str
     commercial_request_version: int
+    supplier_quote_id: str
+    supplier_quote_version: int
     line_refs: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        for field_name in ("sales_order_id", "workspace_id", "customer_id", "customer_quote_id", "acceptance_decision_id", "commercial_request_id"):
+        for field_name in (
+            "sales_order_id",
+            "workspace_id",
+            "customer_id",
+            "customer_quote_id",
+            "acceptance_decision_id",
+            "commercial_request_id",
+            "supplier_quote_id",
+        ):
             object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
-        for field_name in ("customer_quote_version", "commercial_request_version"):
+        for field_name in ("customer_quote_version", "commercial_request_version", "supplier_quote_version"):
             value = getattr(self, field_name)
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ContractError(f"{field_name} must be positive")
@@ -126,7 +136,7 @@ class SalesOrderProjection:
 
     def safe_dict(self) -> dict[str, Any]:
         return {
-            "contract_version": "claw-ops-sales-order-projection.v1",
+            "contract_version": "claw-ops-sales-order-projection.v2",
             "sales_order_id": self.sales_order_id,
             "workspace_id": self.workspace_id,
             "customer_id": self.customer_id,
@@ -139,6 +149,8 @@ class SalesOrderProjection:
             "sale_total": self.sale_total.safe_dict(),
             "commercial_request_id": self.commercial_request_id,
             "commercial_request_version": self.commercial_request_version,
+            "supplier_quote_id": self.supplier_quote_id,
+            "supplier_quote_version": self.supplier_quote_version,
             "line_refs": list(self.line_refs),
             "accounting_authority": False,
             "payment_authority": False,
@@ -215,6 +227,8 @@ class InMemoryCustomerQuoteDecisionLedger:
             sale_total=quote.sale_total,
             commercial_request_id=quote.commercial_request_id,
             commercial_request_version=quote.commercial_request_version,
+            supplier_quote_id=quote.supplier_quote_id,
+            supplier_quote_version=quote.supplier_quote_version,
             line_refs=tuple(line.line_id for line in quote.lines),
         )
 
