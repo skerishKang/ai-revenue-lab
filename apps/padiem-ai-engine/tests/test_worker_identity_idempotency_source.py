@@ -13,7 +13,7 @@ def test_identity_worker_injects_existing_optional_idempotency_adapter() -> None
 
     assert "idempotency_adapter = legacy_worker._idempotency_adapter_for_env(env)" in source
     assert "idempotency_adapter=idempotency_adapter" in source
-    assert "IdentityBoundOrchestrationEngineService(" in source
+    assert "CanonicalIdempotencyOrchestrationEngineService(" in source
 
 
 def test_source_wiring_does_not_activate_production_binding() -> None:
