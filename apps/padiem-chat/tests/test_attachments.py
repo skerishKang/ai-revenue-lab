@@ -62,7 +62,8 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         )
     assert response.status_code == 200
     assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
-    assert seen["body"]["messages"][1] == {"role": "user", "content": "안녕"}
+    assert seen["body"]["messages"] == [{"role": "user", "content": "안녕"}]
+    assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
     assert seen["body"]["business14"]["allow_external_fallback"] is False
     assert seen["body"]["business14"]["max_attempts"] == 1
