@@ -20,7 +20,7 @@ def test_1423_outer_surfaces_stay_wide_while_prose_has_readable_measure() -> Non
 
 
 def test_1424_user_bubble_anchors_to_shared_right_edge_without_full_width() -> None:
-    assert ".user-message {\n  width: 100% !important;" in ALIGNMENT_CSS
+    assert ".user-message {\n  width: calc(100% + var(--padiem-chat-inner-gutter)) !important;" in ALIGNMENT_CSS
     assert "padding-left: clamp(36px, 8vw, 96px) !important;" in ALIGNMENT_CSS
     assert ".user-message .message-bubble {\n  margin-left: auto !important;\n  max-width: min(660px, 88%) !important;" in ALIGNMENT_CSS
     assert "max-width: min(620px, 92%) !important;" in ALIGNMENT_CSS
