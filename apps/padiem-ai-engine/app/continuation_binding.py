@@ -14,22 +14,30 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import secrets
-from typing import Protocol
+from typing import Any, Protocol
 
 from padiem_ai_core import ApprovalPause
 
 from app.continuation_identity import ContinuationExecutionIdentity
+from app.orchestration_service import ContinuationRecord
 from app.service import ServiceContractError
 
 
 @dataclass(frozen=True, slots=True)
-class IdentityBoundContinuationRecord:
-    app_id: str
-    pause: ApprovalPause
-    continuation_ref: str
-    execution_identity: ContinuationExecutionIdentity
-    state: str = "active"
-    claim_token: str | None = None
+class IdentityBoundContinuationRecord(ContinuationRecord):
+    """Legacy-compatible continuation record plus canonical execution identity.
+
+    Subclassing ``ContinuationRecord`` is intentional: the shared cancellation
+    route may inspect only the generic lifecycle fields, while resume additionally
+    requires ``execution_identity``. This prevents the identity-bound service from
+    losing the #1240 atomic cancel contract merely because its record is richer.
+    """
+
+    execution_identity: ContinuationExecutionIdentity | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.execution_identity, ContinuationExecutionIdentity):
+            raise ValueError("execution_identity must be ContinuationExecutionIdentity")
 
 
 class IdentityBoundContinuationStore(Protocol):
@@ -73,6 +81,30 @@ class IdentityBoundContinuationStore(Protocol):
         claim_token: str,
     ) -> None: ...
 
+    def claim_cancel(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        reason: str,
+    ) -> IdentityBoundContinuationRecord: ...
+
+    def commit_cancel(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+    ) -> IdentityBoundContinuationRecord: ...
+
+    def release_cancel(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+    ) -> IdentityBoundContinuationRecord: ...
+
     def cancel(
         self,
         *,
@@ -105,6 +137,8 @@ class InMemoryIdentityBoundContinuationStore:
             app_id=app_id,
             pause=pause,
             continuation_ref=ref,
+            plan_id=pause.plan_id,
+            request_fingerprint=execution_identity.request_fingerprint,
             execution_identity=execution_identity,
         )
         return ref
@@ -144,6 +178,12 @@ class InMemoryIdentityBoundContinuationStore:
             raise ServiceContractError(
                 "continuation_claimed",
                 "Continuation is already being resumed.",
+                status_code=409,
+            )
+        if record.state == "cancelling":
+            raise ServiceContractError(
+                "continuation_cancel_in_progress",
+                "Continuation is already being cancelled.",
                 status_code=409,
             )
         if record.pause.expires_at <= datetime.now(timezone.utc):
@@ -194,6 +234,7 @@ class InMemoryIdentityBoundContinuationStore:
         app_id: str,
         continuation_ref: str,
         claim_token: str,
+        state: str,
     ) -> IdentityBoundContinuationRecord:
         record = self._records.get(continuation_ref)
         if record is None or record.app_id != app_id:
@@ -208,9 +249,10 @@ class InMemoryIdentityBoundContinuationStore:
                 "Continuation has already been consumed.",
                 status_code=409,
             )
-        if record.state != "claimed" or record.claim_token != claim_token:
+        if record.state != state or record.claim_token != claim_token:
+            code = "continuation_cancel_claim_failed" if state == "cancelling" else "continuation_claim_failed"
             raise ServiceContractError(
-                "continuation_claim_failed",
+                code,
                 "Continuation claim is no longer valid.",
                 status_code=409,
             )
@@ -227,6 +269,7 @@ class InMemoryIdentityBoundContinuationStore:
             app_id=app_id,
             continuation_ref=continuation_ref,
             claim_token=claim_token,
+            state="claimed",
         )
         self._records[continuation_ref] = replace(
             record,
@@ -245,6 +288,7 @@ class InMemoryIdentityBoundContinuationStore:
             app_id=app_id,
             continuation_ref=continuation_ref,
             claim_token=claim_token,
+            state="claimed",
         )
         state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
         self._records[continuation_ref] = replace(
@@ -253,16 +297,81 @@ class InMemoryIdentityBoundContinuationStore:
             claim_token=None,
         )
 
+    def claim_cancel(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        reason: str,
+    ) -> IdentityBoundContinuationRecord:
+        record = self._get(app_id=app_id, continuation_ref=continuation_ref)
+        claimed = replace(
+            record,
+            state="cancelling",
+            claim_token=f"cancel_{secrets.token_urlsafe(24)}",
+            cancel_reason=reason,
+        )
+        self._records[continuation_ref] = claimed
+        return claimed
+
+    def commit_cancel(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+    ) -> IdentityBoundContinuationRecord:
+        record = self._claimed(
+            app_id=app_id,
+            continuation_ref=continuation_ref,
+            claim_token=claim_token,
+            state="cancelling",
+        )
+        cancelled = replace(record, state="cancelled", claim_token=None)
+        self._records[continuation_ref] = cancelled
+        return cancelled
+
+    def release_cancel(
+        self,
+        *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+    ) -> IdentityBoundContinuationRecord:
+        record = self._claimed(
+            app_id=app_id,
+            continuation_ref=continuation_ref,
+            claim_token=claim_token,
+            state="cancelling",
+        )
+        state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
+        released = replace(
+            record,
+            state=state,
+            claim_token=None,
+            cancel_reason=None,
+            cancel_event_fingerprint=None,
+        )
+        self._records[continuation_ref] = released
+        return released
+
     def cancel(
         self,
         *,
         app_id: str,
         continuation_ref: str,
     ) -> IdentityBoundContinuationRecord:
-        record = self._get(app_id=app_id, continuation_ref=continuation_ref)
-        cancelled = replace(record, state="cancelled", claim_token=None)
-        self._records[continuation_ref] = cancelled
-        return cancelled
+        claimed = self.claim_cancel(
+            app_id=app_id,
+            continuation_ref=continuation_ref,
+            reason="user_cancelled",
+        )
+        assert claimed.claim_token is not None
+        return self.commit_cancel(
+            app_id=app_id,
+            continuation_ref=continuation_ref,
+            claim_token=claimed.claim_token,
+        )
 
 
 def assert_continuation_identity(
