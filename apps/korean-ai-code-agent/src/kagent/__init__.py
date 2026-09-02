@@ -1,3 +1,3 @@
-"""Business 54 · Korean AI Code Agent."""
+"""Business 54 · Padiem Claw / Korean AI Code Agent."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

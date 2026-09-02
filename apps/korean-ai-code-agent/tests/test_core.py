@@ -133,7 +133,7 @@ class AgentSessionTests(unittest.TestCase):
         completed = subprocess.CompletedProcess(
             args=[], returncode=0, stdout=" M README.md\n", stderr=""
         )
-        with mock.patch("kagent.core.subprocess.run", return_value=completed) as run:
+        with mock.patch("kagent.workspace.subprocess.run", return_value=completed) as run:
             status = session.git_worktree_status()
         run.assert_called_once_with(
             ["git", "status", "--porcelain=v1", "--untracked-files=all"],
@@ -147,6 +147,15 @@ class AgentSessionTests(unittest.TestCase):
         self.assertEqual(status["changed_count"], 1)
         self.assertNotIn("commit", run.call_args.args[0])
         self.assertNotIn("push", run.call_args.args[0])
+
+    def test_workspace_inspection_limit_fails_closed(self):
+        temp, root = self.make_repo()
+        self.addCleanup(temp.cleanup)
+        session = AgentSession.open(root, "파일 범위를 확인해줘")
+        with self.assertRaises(AgentBoundaryError):
+            session.inspect(limit=0)
+        with self.assertRaises(AgentBoundaryError):
+            session.inspect(limit=1001)
 
     @unittest.skipUnless(shutil.which("git"), "git executable required")
     def test_git_clean_and_dirty_detection_without_mutation(self):
