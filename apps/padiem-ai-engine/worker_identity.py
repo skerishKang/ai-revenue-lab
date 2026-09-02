@@ -2,7 +2,7 @@
 
 All transport/auth/streaming behavior remains in the existing worker module. This
 entrypoint replaces only the orchestration service factory so approval resumes
-use the canonical continuation execution identity contract.
+and durable idempotency use the canonical logical-execution identity contract.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from app.cloudflare_transport import (
     CloudflareB14ServiceBindingTransport,
 )
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
-from app.orchestration_identity_service import IdentityBoundOrchestrationEngineService
+from app.orchestration_idempotency_service import CanonicalIdempotencyOrchestrationEngineService
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
 
@@ -45,7 +45,7 @@ def _continuation_store_for_env(env: Any) -> CloudflareD1IdentityBoundContinuati
 
 def _engine_services_for_env(
     env: Any,
-) -> tuple[EngineService, StreamingEngineService, IdentityBoundOrchestrationEngineService]:
+) -> tuple[EngineService, StreamingEngineService, CanonicalIdempotencyOrchestrationEngineService]:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
@@ -54,7 +54,7 @@ def _engine_services_for_env(
         return (
             EngineService(runtime_factory=unavailable, b14_service_bound=False),
             StreamingEngineService(runtime_factory=unavailable, b14_service_bound=False),
-            IdentityBoundOrchestrationEngineService(
+            CanonicalIdempotencyOrchestrationEngineService(
                 runtime_factory=unavailable,
                 b14_service_bound=False,
             ),
@@ -88,7 +88,7 @@ def _engine_services_for_env(
             runtime_factory=streaming_runtime_factory,
             b14_service_bound=True,
         ),
-        IdentityBoundOrchestrationEngineService(
+        CanonicalIdempotencyOrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
