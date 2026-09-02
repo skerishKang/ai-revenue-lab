@@ -5,8 +5,10 @@ continuation record is not valid for resume unless it carries the canonical
 execution identity that was present when the pause was issued.
 
 Production implementations must persist the lifecycle state and execution
-identity atomically in one durable authority. The in-memory implementation here
-is a network-free reference used to prove semantics only.
+identity atomically in one durable authority. Admission-aware callers may also
+persist bounded evidence of the trusted run admission that authorized the paused
+execution. The in-memory implementation here is a network-free reference used to
+prove semantics only.
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ from typing import Any, Protocol
 from padiem_ai_core import ApprovalPause
 
 from app.continuation_identity import ContinuationExecutionIdentity
+from app.execution_admission_resume import OriginalAdmissionBinding
 from app.orchestration_service import ContinuationRecord
 from app.service import ServiceContractError
 
@@ -29,15 +32,21 @@ class IdentityBoundContinuationRecord(ContinuationRecord):
 
     Subclassing ``ContinuationRecord`` is intentional: the shared cancellation
     route may inspect only the generic lifecycle fields, while resume additionally
-    requires ``execution_identity``. This prevents the identity-bound service from
-    losing the #1240 atomic cancel contract merely because its record is richer.
+    requires ``execution_identity``. ``original_admission`` is optional for
+    backward compatibility until the admission-aware Worker composition is
+    activated; once present it is trusted server evidence, never browser input.
     """
 
     execution_identity: ContinuationExecutionIdentity | None = None
+    original_admission: OriginalAdmissionBinding | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.execution_identity, ContinuationExecutionIdentity):
             raise ValueError("execution_identity must be ContinuationExecutionIdentity")
+        if self.original_admission is not None and not isinstance(
+            self.original_admission, OriginalAdmissionBinding
+        ):
+            raise ValueError("original_admission must be OriginalAdmissionBinding or None")
 
 
 class IdentityBoundContinuationStore(Protocol):
@@ -49,6 +58,7 @@ class IdentityBoundContinuationStore(Protocol):
         app_id: str,
         pause: ApprovalPause,
         execution_identity: ContinuationExecutionIdentity,
+        original_admission: OriginalAdmissionBinding | None = None,
     ) -> str: ...
 
     def resolve(
@@ -125,11 +135,20 @@ class InMemoryIdentityBoundContinuationStore:
         app_id: str,
         pause: ApprovalPause,
         execution_identity: ContinuationExecutionIdentity,
+        original_admission: OriginalAdmissionBinding | None = None,
     ) -> str:
         if not isinstance(execution_identity, ContinuationExecutionIdentity):
             raise ServiceContractError(
                 "invalid_continuation_identity",
                 "Continuation execution identity is invalid.",
+                status_code=500,
+            )
+        if original_admission is not None and not isinstance(
+            original_admission, OriginalAdmissionBinding
+        ):
+            raise ServiceContractError(
+                "invalid_continuation_admission",
+                "Continuation original admission binding is invalid.",
                 status_code=500,
             )
         ref = f"cont_{secrets.token_urlsafe(32)}"
@@ -140,6 +159,7 @@ class InMemoryIdentityBoundContinuationStore:
             plan_id=pause.plan_id,
             request_fingerprint=execution_identity.request_fingerprint,
             execution_identity=execution_identity,
+            original_admission=original_admission,
         )
         return ref
 
