@@ -222,8 +222,12 @@
      */
     var travel=messageTravel+overflowTravel+scrollTravel;
     var reveal=smoothstep(pingPong(travel));
-    var maskStart=24*(1-reveal);
-    var maskFull=58-(46*reveal);
+    var variant=getGlassVariant();
+    var restMaskStart=variant==="male"?0:2;
+    var restMaskFull=variant==="male"?22:26;
+    var openMaskFull=variant==="male"?12:14;
+    var maskStart=restMaskStart*(1-reveal);
+    var maskFull=restMaskFull-((restMaskFull-openMaskFull)*reveal);
 
     root.style.setProperty("--glass-reveal",reveal.toFixed(3));
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
