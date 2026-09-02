@@ -1,0 +1,239 @@
+name: B14 Padiem tier quality benchmark once
+
+on:
+  push:
+    branches:
+      - test/b14-1435-tier-quality-benchmark
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install exact locked dependencies
+        working-directory: apps/korean-ai-platform
+        run: uv sync --group dev --frozen
+
+      - name: Run bounded sequential B14 benchmark
+        working-directory: apps/korean-ai-platform
+        env:
+          B14_PROVIDER_MODE: live
+        run: |
+          set -euo pipefail
+          uv run python - <<'PY'
+          from __future__ import annotations
+
+          import asyncio
+          import json
+          import os
+          import time
+          from pathlib import Path
+
+          from app.pilot.errors import (
+              MalformedUpstreamResponse,
+              UpstreamAuthFailed,
+              UpstreamClientError,
+              UpstreamRateLimited,
+              UpstreamResponseTooLarge,
+              UpstreamServerError,
+              UpstreamTimeout,
+          )
+          from app.pilot.kilo_provider import (
+              KILO_LAGUNA_MODEL_ID,
+              KILO_LAGUNA_UPSTREAM_MODEL,
+              KILO_MINIMAX_M3_MODEL_ID,
+              KILO_MINIMAX_M3_UPSTREAM_MODEL,
+              KILO_NEMOTRON_MODEL_ID,
+              KILO_NEMOTRON_UPSTREAM_MODEL,
+              KILO_PROVIDER_ID,
+          )
+          from app.pilot.platform import call_platform_chat_completions
+
+          corpus_path = Path('../padiem-chat/tests/fixtures/padiem_tier_benchmark_v1.json')
+          corpus = json.loads(corpus_path.read_text(encoding='utf-8'))
+          assert corpus['version'] == 'padiem-tier-benchmark-v1'
+          assert corpus['data_policy'] == 'synthetic_non_sensitive_only'
+          assert len(corpus['cases']) == 6
+
+          # The corpus is deliberately non-self-authorizing. #1435 is the
+          # separate bounded live-execution authority for this one-shot lane.
+          assert corpus['provider_calls_authorized'] is False
+
+          candidates = [
+              {
+                  'tier': 'Padiem Plus candidate',
+                  'model_id': KILO_LAGUNA_MODEL_ID,
+                  'upstream_model': KILO_LAGUNA_UPSTREAM_MODEL,
+                  'provider': 'Kilo Gateway / Poolside',
+              },
+              {
+                  'tier': 'Padiem Pro candidate',
+                  'model_id': KILO_NEMOTRON_MODEL_ID,
+                  'upstream_model': KILO_NEMOTRON_UPSTREAM_MODEL,
+                  'provider': 'Kilo Gateway / NVIDIA',
+              },
+              {
+                  'tier': 'Padiem Max candidate',
+                  'model_id': KILO_MINIMAX_M3_MODEL_ID,
+                  'upstream_model': KILO_MINIMAX_M3_UPSTREAM_MODEL,
+                  'provider': 'Kilo Gateway / MiniMax',
+              },
+          ]
+
+          MAX_CALLS = 18
+          results = []
+          call_count = 0
+          consecutive_server_errors = 0
+          stop_reason = None
+          disposition = 'BENCHMARK_COMPLETE'
+
+          async def run_one(candidate, case):
+              started = time.monotonic()
+              completed = await call_platform_chat_completions(
+                  model_id=candidate['model_id'],
+                  upstream_model=candidate['upstream_model'],
+                  provider=candidate['provider'],
+                  platform_provider_id=KILO_PROVIDER_ID,
+                  messages=[{'role': 'user', 'content': case['prompt']}],
+                  temperature=0.2,
+                  max_tokens=500,
+              )
+              wall_ms = int((time.monotonic() - started) * 1000)
+              choices = completed.get('choices') or []
+              text = ''
+              if choices and isinstance(choices[0], dict):
+                  message = choices[0].get('message') or {}
+                  if isinstance(message, dict):
+                      text = message.get('content') or ''
+              return completed, text, wall_ms
+
+          async def main():
+              nonlocal_vars = None
+              return None
+
+          async def execute():
+              global call_count, consecutive_server_errors, stop_reason, disposition
+              for case in corpus['cases']:
+                  if stop_reason:
+                      break
+                  for candidate in candidates:
+                      if stop_reason:
+                          break
+                      if call_count >= MAX_CALLS:
+                          stop_reason = 'MAX_PROVIDER_CALLS_REACHED'
+                          disposition = 'PROVIDER_BLOCKED_PARTIAL'
+                          break
+
+                      call_count += 1
+                      row = {
+                          'call_index': call_count,
+                          'tier': candidate['tier'],
+                          'model_id': candidate['model_id'],
+                          'requested_model': candidate['upstream_model'],
+                          'case_id': case['id'],
+                          'category': case['category'],
+                          'rubric': case['rubric'],
+                      }
+
+                      try:
+                          completed, text, wall_ms = await run_one(candidate, case)
+                          reported_model = completed.get('model') or ''
+                          row.update({
+                              'result': 'PASS',
+                              'reported_model': reported_model,
+                              'latency_ms': completed.get('_upstream_latency_ms', wall_ms),
+                              'wall_ms': wall_ms,
+                              'response_text': text,
+                              'visible_content': bool(isinstance(text, str) and text.strip()),
+                              'usage': completed.get('usage'),
+                          })
+                          results.append(row)
+                          consecutive_server_errors = 0
+
+                          if completed.get('_live') is not True or completed.get('_mock') is True:
+                              stop_reason = 'LIVE_EXECUTION_NOT_PROVEN'
+                              disposition = 'ROUTE_DEFECT'
+                          elif not row['visible_content']:
+                              stop_reason = 'VISIBLE_CONTENT_MISSING'
+                              disposition = 'PROVIDER_BLOCKED_PARTIAL'
+                          elif reported_model and reported_model != candidate['upstream_model']:
+                              stop_reason = 'MODEL_ROUTE_MISMATCH'
+                              disposition = 'ROUTE_DEFECT'
+
+                          print(
+                              f"call={call_count} tier={candidate['tier']} case={case['id']} "
+                              f"result=PASS latency_ms={row['latency_ms']}"
+                          )
+
+                      except UpstreamRateLimited:
+                          row.update({'result': 'UPSTREAM_RATE_LIMIT', 'response_text': ''})
+                          results.append(row)
+                          stop_reason = 'UPSTREAM_RATE_LIMIT'
+                          disposition = 'RATE_LIMIT_BLOCKED_PARTIAL'
+                      except UpstreamAuthFailed:
+                          row.update({'result': 'UPSTREAM_AUTH_FAILED', 'response_text': ''})
+                          results.append(row)
+                          stop_reason = 'UNEXPECTED_AUTH_REQUEST'
+                          disposition = 'ROUTE_DEFECT'
+                      except UpstreamServerError:
+                          row.update({'result': 'UPSTREAM_SERVER_ERROR', 'response_text': ''})
+                          results.append(row)
+                          consecutive_server_errors += 1
+                          if consecutive_server_errors >= 2:
+                              stop_reason = 'PROVIDER_5XX_STREAK'
+                              disposition = 'PROVIDER_BLOCKED_PARTIAL'
+                      except (UpstreamClientError, MalformedUpstreamResponse, UpstreamResponseTooLarge, UpstreamTimeout) as exc:
+                          row.update({'result': type(exc).__name__, 'response_text': ''})
+                          results.append(row)
+                          stop_reason = type(exc).__name__
+                          disposition = 'PROVIDER_BLOCKED_PARTIAL'
+
+                      if stop_reason:
+                          print(f"STOP_REASON={stop_reason}")
+                          break
+                      if call_count < MAX_CALLS:
+                          await asyncio.sleep(2)
+
+          asyncio.run(execute())
+
+          output = {
+              'benchmark_version': corpus['version'],
+              'execution_authority': 'GitHub issue #1435',
+              'source_sha': os.environ.get('GITHUB_SHA', ''),
+              'max_provider_calls': MAX_CALLS,
+              'provider_calls_attempted': call_count,
+              'parallelism': 1,
+              'ordering': 'case_round_robin_sequential',
+              'disposition': disposition,
+              'stop_reason': stop_reason,
+              'results': results,
+          }
+          out = Path('../../padiem-tier-quality-benchmark-results.json')
+          out.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding='utf-8')
+          print(
+              f"FINAL_DISPOSITION={disposition} PROVIDER_CALLS_ATTEMPTED={call_count} "
+              f"STOP_REASON={stop_reason or 'NONE'}"
+          )
+          PY
+
+      - name: Upload benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: padiem-tier-quality-benchmark-results
+          path: padiem-tier-quality-benchmark-results.json
+          if-no-files-found: error
+          retention-days: 7
