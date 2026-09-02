@@ -38,6 +38,7 @@ class CloudExecutionTerminal(str, Enum):
     ACTIVE = "active"
     COMPLETED = "completed"
     FAILED_CLEANED_UP = "failed_cleaned_up"
+    CANCELLED_CLEANED_UP = "cancelled_cleaned_up"
     TEARDOWN_FAILED = "teardown_failed"
 
 
@@ -112,6 +113,7 @@ class CloudM1ExecutionProjection:
     completed_stages: tuple[CloudM1Stage, ...]
     failed_stage: CloudM1Stage | None
     receipt_count: int
+    cancellation_ref: str | None = None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -122,8 +124,13 @@ class CloudM1ExecutionProjection:
             "completed_stages": [stage.value for stage in self.completed_stages],
             "failed_stage": self.failed_stage.value if self.failed_stage else None,
             "receipt_count": self.receipt_count,
+            "cancellation_ref": self.cancellation_ref,
             "automatic_retry": False,
+            "automatic_resume": False,
+            "automatic_redispatch": False,
             "post_failure_continuation": False,
+            "post_cancellation_output": False,
+            "p01_cancellation_authority": False,
         }
 
 
@@ -136,10 +143,13 @@ class CloudM1StageReceiptLedger:
         self._by_event_id: dict[str, CloudM1StageReceipt] = {}
         self._failed_stage: CloudM1Stage | None = None
         self._terminal = CloudExecutionTerminal.ACTIVE
+        self._cancellation: tuple[str, datetime] | None = None
 
     def _expected_stage(self) -> CloudM1Stage | None:
         if self._terminal is not CloudExecutionTerminal.ACTIVE:
             return None
+        if self._cancellation is not None:
+            return CloudM1Stage.TEARDOWN
         if self._failed_stage is not None:
             return CloudM1Stage.TEARDOWN
         if not self._receipts:
@@ -149,6 +159,30 @@ class CloudM1StageReceiptLedger:
             return None
         index = FIXED_CLOUD_M1_STAGE_ORDER.index(last.stage)
         return FIXED_CLOUD_M1_STAGE_ORDER[index + 1]
+
+    def request_cancellation(
+        self,
+        *,
+        cancellation_ref: str,
+        run_id: str,
+        observed_at: datetime,
+    ) -> CloudM1ExecutionProjection:
+        cancellation_ref = _id(cancellation_ref, "cancellation_ref")
+        run_id = _id(run_id, "run_id")
+        observed_at = _aware(observed_at, "observed_at")
+        if run_id != self.plan.run_id:
+            raise ContractError("cancellation does not belong to execution-plan run")
+        if self._terminal is not CloudExecutionTerminal.ACTIVE:
+            raise ContractError("terminal Cloud execution cannot accept cancellation")
+        if self._receipts and observed_at < self._receipts[-1].observed_at:
+            raise ContractError("cancellation observation cannot precede latest stage receipt")
+        candidate = (cancellation_ref, observed_at)
+        if self._cancellation is not None:
+            if self._cancellation != candidate:
+                raise ContractError("conflicting Cloud execution cancellation replay")
+            return self.projection()
+        self._cancellation = candidate
+        return self.projection()
 
     def append(self, receipt: CloudM1StageReceipt) -> CloudM1ExecutionProjection:
         if not isinstance(receipt, CloudM1StageReceipt):
@@ -164,6 +198,8 @@ class CloudM1StageReceiptLedger:
             raise ContractError("terminal Cloud execution cannot accept more receipts")
         if self._receipts and receipt.observed_at < self._receipts[-1].observed_at:
             raise ContractError("stage receipt timestamps must be monotonic")
+        if self._cancellation is not None and receipt.observed_at < self._cancellation[1]:
+            raise ContractError("stage receipt cannot predate cancellation observation")
         expected = self._expected_stage()
         if receipt.stage is not expected:
             raise ContractError("stage receipt is out of server-owned execution order")
@@ -181,6 +217,8 @@ class CloudM1StageReceiptLedger:
                 self._terminal = CloudExecutionTerminal.TEARDOWN_FAILED
             elif self._failed_stage is not None:
                 self._terminal = CloudExecutionTerminal.FAILED_CLEANED_UP
+            elif self._cancellation is not None:
+                self._terminal = CloudExecutionTerminal.CANCELLED_CLEANED_UP
             else:
                 self._terminal = CloudExecutionTerminal.COMPLETED
             return self.projection()
@@ -203,6 +241,7 @@ class CloudM1StageReceiptLedger:
             completed_stages=completed,
             failed_stage=self._failed_stage,
             receipt_count=len(self._receipts),
+            cancellation_ref=self._cancellation[0] if self._cancellation else None,
         )
 
     def safe_receipts(self) -> tuple[dict[str, Any], ...]:
@@ -211,3 +250,5 @@ class CloudM1StageReceiptLedger:
 
 AUTOMATIC_STAGE_RETRY_SUPPORTED = False
 POST_FAILURE_STAGE_CONTINUATION_SUPPORTED = False
+POST_CANCELLATION_OUTPUT_SUPPORTED = False
+B54_CANONICAL_P01_CANCELLATION_AUTHORITY = False
