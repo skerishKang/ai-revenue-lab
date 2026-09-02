@@ -1,9 +1,15 @@
-/* B62 #1422 — shared conversation/composer horizontal grid.
+/* B62 #1422/#1423/#1424/#1425/#1427 — shared conversation/composer grid.
  *
- * The bottom composer is the canonical horizontal baseline.  Glass chat mode
- * must use the same outer left/right lane for conversation content while the
- * avatar/meta rail remains an internal sub-grid.
+ * The fixed composer is the canonical outer horizontal baseline. The
+ * conversation reuses that lane; avatar/meta remains an internal sub-grid;
+ * prose gets a readable measure without shrinking wide answer surfaces such
+ * as code, tables, sources, and error/retry cards.
  */
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+  --padiem-chat-reading-measure: 76ch;
+  --padiem-chat-meta-gap: 12px;
+}
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
   width: 100% !important;
@@ -16,9 +22,39 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
   max-width: none !important;
 }
 
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message {
+  gap: var(--padiem-chat-meta-gap) !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-meta {
+  margin-bottom: 6px !important;
+}
+
+/* Keep prose readable while allowing wide structured answer surfaces to use
+ * the full shared lane. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-paragraph,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-heading,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-list,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .rich-response-quote,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content > p:not(.rich-response-source) {
+  max-inline-size: min(var(--padiem-chat-reading-measure), 100%);
+}
+
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
   width: 100% !important;
   max-width: none !important;
+}
+
+/* User turns occupy the same outer lane as the composer but keep a compact,
+ * readable bubble rather than expanding full-width. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
+  width: 100% !important;
+  padding-left: clamp(36px, 8vw, 96px) !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
+  margin-left: auto !important;
+  max-width: min(660px, 88%) !important;
 }
 
 /* Wide desktop: reuse the accepted composer geometry exactly. */
@@ -50,7 +86,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
   }
 }
 
-/* Compact desktop: preserve the portrait breathing room but share one lane. */
+/* Compact desktop: preserve portrait breathing room but share one lane. */
 @media (min-width: 1024px) and (max-width: 1439px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
     --padiem-chat-lane-offset: 38px;
@@ -78,9 +114,8 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
   }
 }
 
-/* Transitional desktop/tablet: editorial mode already centers the composer at
- * 860px; make the conversation itself the same lane instead of nesting an
- * 860px message list inside a wider 920px shell. */
+/* Transitional desktop/tablet: editorial mode centers the composer in the
+ * main panel; make the conversation the same lane. */
 @media (min-width: 921px) and (max-width: 1023px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
     width: min(860px, calc(100vw - var(--workspace-rail, 252px) - 56px)) !important;
@@ -88,12 +123,19 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
   }
 }
 
-/* Mobile/tablet: override the higher-specificity editorial 64px chat gutter
- * and follow the actual fixed composer widths from styles.css. */
+/* Tablet/mobile: follow the actual fixed composer 28px viewport gutter. */
 @media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+    --padiem-chat-meta-gap: 10px;
+  }
+
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
     width: calc(100vw - 28px) !important;
     margin-inline: auto !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
+    padding-left: 30px !important;
   }
 }
 
@@ -104,5 +146,9 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
 
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
     padding-left: 24px !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message .message-bubble {
+    max-width: min(620px, 92%) !important;
   }
 }
