@@ -58,7 +58,7 @@ B54 must consume these shared authorities rather than recreate them.
 
 ## Phase 2 refactor
 
-The former `AgentSession` was a practical Phase 1 façade but mixed session state, repository safety, Git probing, B14 mock logic, patch state and secret redaction. Phase 2 starts separating responsibilities without breaking the existing CLI.
+The former `AgentSession` was a practical Phase 1 façade but mixed session state, repository safety, Git probing, B14 mock logic, patch state and secret redaction. Phase 2 separates those responsibilities while preserving the existing CLI surface.
 
 ```text
 kagent/security.py     output-secret redaction
@@ -67,8 +67,12 @@ kagent/contracts.py    immutable task/run/sandbox projection contracts
 kagent/runs.py         B54 product lifecycle state machine only
 kagent/sandbox.py      provider-neutral sandbox lease port + network-free fake
 kagent/preparation.py  cloud workspace preparation only; never starts an agent
-kagent/core.py         Phase 1 compatibility façade + task-intent projection
+kagent/workspace.py    repository containment + read-only Git inspection
+kagent/patching.py     pure proposed-patch value object; no filesystem writes
+kagent/core.py         Phase 1 compatibility façade + composition root
 ```
+
+`AgentSession` now remains primarily as a compatibility façade. Repository containment/Git reads, patch diff construction, B14 preview and redaction are separated behind dedicated components instead of accumulating future cloud/P01/GitHub logic in one class.
 
 ### Product run states
 
@@ -96,7 +100,7 @@ network_policy
 writable_workspace
 ```
 
-There is intentionally **no user-supplied sandbox hostname/endpoint** and no Provider/model credential in these contracts. Default network policy is `off`; TTL is bounded to 60–3600 seconds.
+There is intentionally **no user-supplied sandbox hostname/endpoint** and no Provider/model credential in these contracts. Default network policy is `off`; TTL is bounded to 60–3600 seconds. Wire-facing enum, integer and boolean fields are validated/coerced explicitly rather than relying only on Python type hints.
 
 The default `UnconfiguredSandboxProvider` fails closed. The committed `DeterministicFakeSandboxProvider` is for network-free tests and architecture exercises only and is not a production sandbox claim.
 
@@ -156,11 +160,9 @@ git mutation: off
 push / merge / deploy: absent
 ```
 
-The patch preview remains deterministic and bounded. Before apply, KAgent verifies that the selected file still matches the previewed original text. If the file changed after preview, apply fails closed instead of overwriting another change.
+The patch preview remains deterministic and bounded. `PendingPatch` is a pure value object; actual filesystem writes remain behind `AgentSession.apply()` and still require explicit write permission. Before apply, KAgent verifies that the selected file still matches the previewed original text. If the file changed after preview, apply fails closed instead of overwriting another change.
 
-Repository inspection skips symbolic links. Path resolution rejects any symlink or relative path that resolves outside the selected repository root.
-
-Git status reporting runs only:
+`RepositoryWorkspace` owns path containment and read-only repository inspection. Symbolic links are skipped during inspection, and any path resolving outside the selected root is rejected. Its Git probe runs only:
 
 ```text
 git status --porcelain=v1 --untracked-files=all
@@ -190,17 +192,19 @@ python -m compileall -q src tests
 Committed tests cover the Phase 1 contracts plus Phase 2 boundaries:
 
 - CLI help, Korean task contract and read-only Plan mode;
-- repository-root and symlink-escape containment;
+- repository-root and symlink-escape containment plus bounded inspection limits;
 - clean/dirty Git status using read-only Git commands;
 - deterministic network-free B14 preview compatibility;
 - denied/approved bounded writes and concurrent-change fail-closed behavior;
 - command allowlist, failing/passing test evidence and secret redaction;
 - `ClawTaskIntent`, `RunProjection`, sandbox request/lease validation and safe serialization;
+- malformed wire enum/type rejection and bounded scalar validation;
 - legal/illegal run transitions and terminal-state immutability;
 - approval-state projection and changed-file bounds;
 - sandbox network-off default, TTL bounds, lease expiry/release and cross-run isolation;
 - unconfigured cloud provider fail-closed behavior;
-- explicit proof that workspace preparation stops at `PREPARING` rather than claiming P01 agent execution.
+- explicit proof that workspace preparation stops at `PREPARING` rather than claiming P01 agent execution;
+- Phase 1 `AgentSession` compatibility after workspace/patch/B14/security extraction.
 
 ## Non-goals / hard boundaries
 
@@ -221,6 +225,8 @@ B54_CANONICAL
 PADIEM_CLAW_WORKING_IDENTITY
 CLI_TUI_COMPATIBILITY_PRESERVED
 TASK_RUN_SANDBOX_BOUNDARIES_SPLIT
+WORKSPACE_IO_BOUNDARY_SPLIT
+PATCH_VALUE_OBJECT_SPLIT
 P01_SEMANTICS_NOT_DUPLICATED
 B14_ROUTING_NOT_DUPLICATED
 B14_PREVIEW_NETWORK_FREE
