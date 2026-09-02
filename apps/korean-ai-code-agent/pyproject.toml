@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "korean-ai-code-agent"
-version = "0.1.0"
-description = "Business 54 Korean-first permission-gated coding-agent CLI vertical slice"
+version = "0.2.0"
+description = "Business 54 Padiem Claw cloud-ready task, run, and sandbox boundary foundations"
 requires-python = ">=3.11"
 dependencies = []
 

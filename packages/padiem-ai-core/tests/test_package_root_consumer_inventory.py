@@ -18,6 +18,40 @@ SKIP_PARTS = {
 }
 
 EXPECTED_RUNTIME_ROOT_IMPORTS = {
+    "apps/korean-ai-code-agent/src/kagent/github_draft_pr.py": frozenset(
+        {"ApprovalOutcome", "VerifiedApprovalDecision"}
+    ),
+    "apps/korean-ai-code-agent/src/kagent/github_pr_outbox.py": frozenset(
+        {"ApprovalOutcome", "VerifiedApprovalDecision"}
+    ),
+    "apps/korean-ai-code-agent/src/kagent/ops_customer_quote_send.py": frozenset(
+        {"ApprovalOutcome", "VerifiedApprovalDecision"}
+    ),
+    "apps/korean-ai-code-agent/src/kagent/ops_delivery_communication.py": frozenset(
+        {"ApprovalOutcome", "VerifiedApprovalDecision"}
+    ),
+    "apps/korean-ai-code-agent/src/kagent/p01_adapter.py": frozenset(
+        {
+            "AgentProfile",
+            "ExecutionContext",
+            "ExecutionRequest",
+            "OrchestrationEvent",
+            "OrchestrationEventKind",
+            "OrchestrationRequest",
+            "OrchestrationResult",
+        }
+    ),
+    "apps/korean-ai-code-agent/src/kagent/p01_resume.py": frozenset(
+        {
+            "ApprovalOutcome",
+            "ApprovalPause",
+            "OrchestrationError",
+            "OrchestrationEvent",
+            "OrchestrationEventKind",
+            "OrchestrationResult",
+            "OrchestrationResumeRequest",
+        }
+    ),
     "apps/living-learning/app/ai/padiem_core.py": frozenset(
         {
             "AgentProfile",
