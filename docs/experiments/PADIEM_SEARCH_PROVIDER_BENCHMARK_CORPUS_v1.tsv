@@ -1,0 +1,61 @@
+id	language	category	freshness	query
+KR-NEWS-01	ko	latest_news_current_affairs	CURRENT	오늘 기준 한국은행의 가장 최근 기준금리 결정은 무엇이며, 한국은행이 제시한 핵심 근거는 무엇인가?
+KR-NEWS-02	ko	latest_news_current_affairs	CURRENT	가장 최근 발표된 한국의 월간 반도체 수출액과 전년 동월 대비 증감률은 얼마인가?
+KR-NEWS-03	ko	latest_news_current_affairs	CURRENT	오늘 장 마감 기준 코스피 종가와 전일 대비 변동은 얼마인가?
+KR-NEWS-04	ko	latest_news_current_affairs	CURRENT	현재 기상청 기상특보에서 광주·전남에 발효 중인 특보가 있는가? 있다면 무엇인가?
+KR-NEWS-05	ko	latest_news_current_affairs	CURRENT	가장 최근 통계청 고용동향에서 한국 실업률은 얼마인가?
+KR-NEWS-06	ko	latest_news_current_affairs	CURRENT	최근 한 달 안에 대한민국 정부가 발표한 인공지능 정책 중 가장 중요한 공식 발표 하나를 찾아 핵심 내용을 요약하라.
+KR-NEWS-07	ko	latest_news_current_affairs	CURRENT	최근 한 달 안에 국회 본회의를 통과한 법률안 가운데 디지털·AI·개인정보와 관련된 법안이 있는가?
+KR-NEWS-08	ko	latest_news_current_affairs	CURRENT	현재 질병관리청이 국민에게 알리고 있는 주요 감염병 주의·유행 정보가 있는가?
+KR-NEWS-09	ko	latest_news_current_affairs	CURRENT	오늘 기준 전국 보통휘발유 평균 판매가격은 리터당 얼마인가?
+KR-NEWS-10	ko	latest_news_current_affairs	CURRENT	오늘 기준 원/달러 환율의 최근 공시값은 얼마인가?
+KR-GOV-01	ko	government_public_policy	CURRENT_YEAR	2026년 대한민국 최저임금 시급은 얼마이며 공식 적용 기간은 언제부터 언제까지인가?
+KR-GOV-02	ko	government_public_policy	CURRENT_YEAR	2026년 전기승용차 구매 보조금 산정 방식에서 차량 가격에 따른 국비 지원 차등 기준은 어떻게 되는가?
+KR-GOV-03	ko	government_public_policy	SLOW	주민등록 전입신고를 온라인으로 할 수 있는 공식 정부 서비스와 기본 절차는 무엇인가?
+KR-GOV-04	ko	government_public_policy	SLOW	대한민국 일반 복수여권을 재발급할 때 현재 기본 수수료와 신청 가능한 공식 경로는 무엇인가?
+KR-GOV-05	ko	government_public_policy	CURRENT	현재 육아휴직 급여의 주요 지급 기준과 상한은 어떻게 되는가?
+KR-GOV-06	ko	government_public_policy	CURRENT	현재 국민연금 보험료율은 얼마이며 직장가입자의 사용자와 근로자 부담 비율은 어떻게 되는가?
+KR-GOV-07	ko	government_public_policy	CURRENT	대한민국에서 개인정보 유출 사고가 발생한 사업자가 따라야 할 신고·통지의 기본 의무는 무엇인가?
+KR-GOV-08	ko	government_public_policy	CURRENT	현재 청년 창업기업이 확인할 수 있는 대표적인 중앙정부 창업지원 사업 검색 포털은 무엇이며 어떤 정보를 제공하는가?
+KR-GOV-09	ko	government_public_policy	SLOW	재난문자에는 어떤 유형이 있고 긴급재난문자와 안전안내문자는 어떻게 구분되는가?
+KR-GOV-10	ko	government_public_policy	CURRENT	대한민국 법정공휴일 제도에서 대체공휴일이 적용되는 주요 공휴일 범위는 현재 어떻게 되는가?
+KR-FACT-01	ko	general_korean_factual	STABLE	직지심체요절이 현존하는 세계 최고(最古)의 금속활자본으로 평가되는 근거와 현재 소장처는 어디인가?
+KR-FACT-02	ko	general_korean_factual	STABLE	훈민정음이 창제된 해와 반포된 해는 각각 언제인가?
+KR-FACT-03	ko	general_korean_factual	STABLE	제주 화산섬과 용암동굴이 유네스코 세계자연유산에 등재된 해와 핵심 구성 지역은 무엇인가?
+KR-FACT-04	ko	general_korean_factual	STABLE	조선이 한양을 수도로 정하고 천도한 시기는 언제이며 당시 한양이 선택된 배경은 무엇인가?
+KR-FACT-05	ko	general_korean_factual	STABLE	5·18 민주화운동 기념일은 언제이며 국가기념일로 지정된 법적·역사적 의미는 무엇인가?
+KR-LOCAL-01	ko	korean_local_daily_life	CURRENT	광주 도시철도 1호선 평동역에서 소태역 방향 첫차와 막차 시간은 현재 어떻게 되는가?
+KR-LOCAL-02	ko	korean_local_daily_life	CURRENT	광주광역시 남구에서 일반 종량제 생활폐기물을 배출할 수 있는 기본 요일·시간 규칙은 무엇인가?
+KR-LOCAL-03	ko	korean_local_daily_life	CURRENT	국립광주박물관의 오늘 기준 관람시간, 휴관일, 관람료는 어떻게 되는가?
+KR-LOCAL-04	ko	korean_local_daily_life	CURRENT	광주공항 국내선 주차장의 현재 기본 주차요금과 1일 최대요금은 얼마인가?
+KR-LOCAL-05	ko	korean_local_daily_life	CURRENT	광주광역시 시내버스 일반 성인 교통카드 요금은 현재 얼마인가?
+KR-DEV-01	ko	developer_api_docs	CURRENT	현재 Python의 최신 안정 버전은 무엇이며 공식 릴리스 날짜는 언제인가?
+KR-DEV-02	ko	developer_api_docs	CURRENT	Cloudflare Workers에서 Python Worker가 현재 지원하는 런타임·호환성 모델의 핵심 제약은 무엇인가?
+KR-DEV-03	ko	developer_api_docs	CURRENT	GitHub REST API의 인증된 일반 요청에 적용되는 현재 primary rate limit의 기본값은 얼마인가?
+KR-DEV-04	ko	developer_api_docs	CURRENT	Neon Postgres에서 현재 공식적으로 지원한다고 문서화한 주요 PostgreSQL 확장 기능을 확인할 수 있는 문서는 어디인가?
+KR-DEV-05	ko	developer_api_docs	CURRENT	Kakao Daum 웹문서 검색 API의 엔드포인트, 정렬 옵션, 현재 일일 쿼터는 무엇인가?
+KR-CHECK-01	ko	fact_check_conflicting_sources	CURRENT	“한국의 전기차 구매 보조금은 차종과 차량 가격에 관계없이 모두 같은 금액이다”라는 주장은 사실인가?
+KR-CHECK-02	ko	fact_check_conflicting_sources	CURRENT	“모바일 주민등록증”과 “주민등록증 모바일 확인서비스”는 완전히 같은 제도라는 주장은 사실인가?
+KR-CHECK-03	ko	fact_check_conflicting_sources	CURRENT_YEAR	“대한민국 최저임금은 서울·부산·광주처럼 지역마다 다르다”라는 주장은 사실인가?
+KR-CHECK-04	ko	fact_check_conflicting_sources	CURRENT	“Daum Search API는 모든 검색 유형을 합쳐 하루 5만 건이고 웹문서 검색도 별도 제한 없이 5만 건이다”라는 주장은 현재 공식 쿼터와 일치하는가?
+KR-CHECK-05	ko	fact_check_conflicting_sources	CURRENT	“대한민국 여권은 만료일 6개월 전이 되어야만 재발급 신청이 가능하다”라는 주장은 현재 공식 안내와 일치하는가?
+EN-NEWS-01	en	current_tech_news	CURRENT	What is the current Node.js LTS release line and its latest maintenance version?
+EN-NEWS-02	en	current_tech_news	CURRENT	What is the latest stable Kubernetes release currently listed by the Kubernetes project, and when was it released?
+EN-NEWS-03	en	current_tech_news	CURRENT	What is the latest stable Google Chrome desktop version currently published for the Stable channel?
+EN-NEWS-04	en	current_tech_news	CURRENT	What is the most recent major PostgreSQL release and its latest minor release currently available?
+EN-NEWS-05	en	current_tech_news	CURRENT	What is the latest announced major change to GitHub Actions hosted runners within the past 90 days?
+EN-DOC-01	en	official_documentation	SLOW	According to GitHub's official documentation, how does workflow-level `concurrency` with `cancel-in-progress` behave?
+EN-DOC-02	en	official_documentation	CURRENT	According to Cloudflare's current D1 documentation, what transaction or batch guarantees are provided for grouped SQL statements?
+EN-DOC-03	en	official_documentation	SLOW	According to PostgreSQL's current documentation, what is the purpose of logical replication publications and subscriptions?
+EN-DOC-04	en	official_documentation	SLOW	According to MDN, how should `AbortController` be used to cancel a `fetch()` request?
+EN-DOC-05	en	official_documentation	CURRENT	According to OpenAI's current API documentation, what are the supported patterns for receiving streamed Responses API events?
+EN-CODE-01	en	coding_troubleshooting	SLOW	A Python HTTPS request fails with `CERTIFICATE_VERIFY_FAILED`. What are the safe troubleshooting steps that preserve TLS verification?
+EN-CODE-02	en	coding_troubleshooting	CURRENT	A Node.js ESM project throws `ERR_MODULE_NOT_FOUND` for a local import. What path and file-extension rules should be checked first?
+EN-CODE-03	en	coding_troubleshooting	CURRENT	How can a PostgreSQL administrator identify sessions involved in blocking or deadlock-related waits using current system views?
+EN-CODE-04	en	coding_troubleshooting	CURRENT	A Cloudflare Worker Service Binding is `undefined` at runtime. Which binding configuration and environment mismatch checks should be performed first?
+EN-CODE-05	en	coding_troubleshooting	CURRENT	In GitHub Actions, what does `permissions: contents: read` grant to the workflow token, and what common operation will still require additional permission?
+EN-RES-01	en	general_research	STABLE	What amount of moderate-intensity physical activity does the WHO recommend per week for adults aged 18–64?
+EN-RES-02	en	general_research	STABLE	What does the IPCC conclude about human influence on observed global warming since the pre-industrial period?
+EN-RES-03	en	general_research	CURRENT	What are the latest OECD projections or measurements showing about population ageing in South Korea?
+EN-RES-04	en	general_research	STABLE	What is the diameter of the James Webb Space Telescope's primary mirror and how is it segmented?
+EN-RES-05	en	general_research	STABLE	Why are `example.com`, `example.net`, and `example.org` reserved, and which standards or IANA resources define their intended use?
