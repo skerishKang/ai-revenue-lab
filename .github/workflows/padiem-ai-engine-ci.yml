@@ -84,6 +84,11 @@ jobs:
         working-directory: apps/padiem-ai-engine
         run: node --test clients/js/test/client.test.mjs
 
+      - name: Cross-account ingress contract tests
+        if: steps.engine-source.outputs.present == 'true'
+        working-directory: apps/padiem-ai-engine
+        run: node --test ingress/test/worker.test.mjs
+
       - name: Padiem AI Core full tests
         if: steps.engine-source.outputs.present == 'true'
         working-directory: packages/padiem-ai-core

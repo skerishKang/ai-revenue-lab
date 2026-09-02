@@ -1,0 +1,14 @@
+name = "padiem-ai-engine-ingress"
+main = "worker.mjs"
+compatibility_date = "2026-09-02"
+workers_dev = true
+
+[vars]
+# Non-secret caller identifier. The matching high-entropy secrets
+# (PADIEM_ENGINE_CALLER_SECRET, PADIEM_INGRESS_CLIENT_SECRET) are injected via
+# `wrangler secret put` and are never committed to source.
+PADIEM_ENGINE_CALLER_ID = "storymemory-b61"
+
+[[services]]
+binding = "ENGINE"
+service = "padiem-ai-engine"
