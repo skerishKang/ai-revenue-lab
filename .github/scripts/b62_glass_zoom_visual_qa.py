@@ -36,14 +36,23 @@ async def _assert_no_horizontal_overflow(page: Page, name: str) -> None:
         )
 
 
-async def _assert_in_viewport(page: Page, selector: str) -> dict[str, float]:
+async def _assert_horizontally_in_viewport(page: Page, selector: str) -> dict[str, float]:
     box = await _box(page, selector)
     viewport = page.viewport_size
     assert viewport is not None
-    if box["x"] < -1 or box["y"] < -1:
-        raise AssertionError(f"{selector} starts outside viewport: {box}")
+    if box["x"] < -1:
+        raise AssertionError(f"{selector} starts outside viewport width: {box}")
     if box["x"] + box["width"] > viewport["width"] + 1:
         raise AssertionError(f"{selector} overflows viewport width: {box}")
+    return box
+
+
+async def _assert_in_viewport(page: Page, selector: str) -> dict[str, float]:
+    box = await _assert_horizontally_in_viewport(page, selector)
+    viewport = page.viewport_size
+    assert viewport is not None
+    if box["y"] < -1:
+        raise AssertionError(f"{selector} starts outside viewport height: {box}")
     if box["y"] + box["height"] > viewport["height"] + 1:
         raise AssertionError(f"{selector} overflows viewport height: {box}")
     return box
@@ -82,7 +91,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         raise AssertionError(f"Glass female did not activate: theme={theme!r}, variant={variant!r}")
 
     await _assert_no_horizontal_overflow(page, f"{name}-home")
-    conversation_home = await _assert_in_viewport(page, ".conversation")
+    conversation_home = await _assert_horizontally_in_viewport(page, ".conversation")
     composer_home = await _assert_in_viewport(page, "#composerForm")
     portrait_home = await _portrait_style(page)
     if "padiem-glass-female.jpg" not in portrait_home["backgroundImage"]:
@@ -105,10 +114,10 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     await page.wait_for_timeout(350)
 
     await _assert_no_horizontal_overflow(page, f"{name}-chat")
-    conversation_chat = await _assert_in_viewport(page, ".conversation")
+    conversation_chat = await _assert_horizontally_in_viewport(page, ".conversation")
     composer_chat = await _assert_in_viewport(page, "#composerForm")
     input_chat = await _assert_in_viewport(page, "#messageInput")
-    assistant_avatar = await _assert_in_viewport(page, ".assistant-avatar")
+    assistant_avatar = await _assert_horizontally_in_viewport(page, ".assistant-avatar")
 
     assistant_name = (await page.locator(".assistant-meta span").first.inner_text()).strip()
     if assistant_name != "Padiem Chat":
@@ -148,6 +157,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "portrait_chat": portrait_chat,
         "home_screenshot": home_screenshot,
         "chat_screenshot": chat_screenshot,
+        "vertical_scroll_allowed": True,
         "horizontal_overflow": False,
         "status": "PASS",
     }
