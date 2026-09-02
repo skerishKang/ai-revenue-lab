@@ -16,7 +16,7 @@ from app.usage_gate import InMemoryUsageCounterStore
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 QUOTA_SALT = "b62-runtime-test-quota-salt-not-a-real-secret-0001"
 ACTIVE_MODEL = DEFAULT_B14_MODEL_ID
-ACTIVE_PROVIDER = "Poolside"
+ACTIVE_PROVIDER = "Kilo Gateway / NVIDIA"
 
 
 def success_payload():
@@ -75,7 +75,7 @@ async def test_mock_mode_makes_zero_network_calls():
 
 
 @pytest.mark.asyncio
-async def test_b14_request_is_fixed_explicit_poolside_route_and_has_no_provider_key():
+async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provider_key():
     seen = {}
 
     async def handler(request):
@@ -115,7 +115,7 @@ async def test_b14_request_is_fixed_explicit_poolside_route_and_has_no_provider_
 
 
 @pytest.mark.asyncio
-async def test_poolside_alias_strips_command_and_keeps_exact_manual_route():
+async def test_pro_alias_strips_command_and_keeps_exact_default_manual_route():
     seen = {}
 
     async def handler(request):
@@ -125,7 +125,7 @@ async def test_poolside_alias_strips_command_and_keeps_exact_manual_route():
     result = await B14Client(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
         httpx.MockTransport(handler),
-    ).complete([{"role": "user", "content": "/poolside 오늘 날씨를 설명해줘"}])
+    ).complete([{"role": "user", "content": "/pro 오늘 날씨를 설명해줘"}])
 
     assert seen["body"]["model"] == ACTIVE_MODEL
     assert seen["body"]["messages"][-1] == {"role": "user", "content": "오늘 날씨를 설명해줘"}
