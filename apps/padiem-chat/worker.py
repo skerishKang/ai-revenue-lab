@@ -19,6 +19,7 @@ from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounter
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.main import create_app
+from app.orchestration_routes import install_orchestration_routes
 from app.project_files import D1ProjectFileStore
 from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
@@ -30,6 +31,7 @@ from app.worker_config import (
     response_headers_for_path,
     settings_from_worker_bindings,
 )
+from app.worker_orchestration import build_orchestration_bridge
 
 _worker_app = None
 
@@ -263,6 +265,15 @@ class Default(WorkerEntrypoint):
                     _worker_app.state.web_provider,
                 )
                 _worker_app.state.b14_service_bound = b14_binding is not None
+                install_orchestration_routes(
+                    _worker_app,
+                    build_orchestration_bridge(
+                        self.env,
+                        settings=settings,
+                        db_binding=db_binding,
+                        request_factory=Request,
+                    ),
+                )
             except ConfigError:
                 response = Response(
                     "Padiem Chat runtime configuration is invalid.",

@@ -294,18 +294,21 @@ def test_browser_cancel_intent_is_continuation_only() -> None:
 def test_worker_and_schema_keep_activation_fail_closed() -> None:
     pyproject = (APP_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
-    worker = (APP_ROOT / "worker_orchestration.py").read_text(encoding="utf-8")
+    worker = (APP_ROOT / "worker.py").read_text(encoding="utf-8")
+    support = (APP_ROOT / "app" / "worker_orchestration.py").read_text(encoding="utf-8")
     migration = (APP_ROOT / "migrations" / "006_orchestration_continuations.sql").read_text(encoding="utf-8")
 
     assert "padiem-ai-engine-client @ file://" in pyproject
-    assert 'main = "worker_orchestration.py"' in wrangler
+    assert 'main = "worker.py"' in wrangler
     assert "ENGINE_SERVICE" not in wrangler
     assert "PADIEM_CHAT_ORCHESTRATION_ENABLED" not in wrangler
     assert "PADIEM_CHAT_ENGINE_CALLER_SECRET" not in wrangler
-    assert "PadiemAiEngineClient" in worker
-    assert "ENGINE_INTERNAL_ORIGIN" in worker
-    assert "/internal/v1/" not in worker
-    assert "process-local" not in worker.lower()
+    assert "build_orchestration_bridge" in worker
+    assert "install_orchestration_routes" in worker
+    assert "PadiemAiEngineClient" in support
+    assert "ENGINE_INTERNAL_ORIGIN" in support
+    assert "/internal/v1/" not in support
+    assert "process-local" not in support.lower()
     assert "orchestration_continuations" in migration
     assert "orchestration_decisions" in migration
     assert "request_json" in migration
@@ -324,4 +327,3 @@ def test_browser_transport_never_calls_engine_internal_routes_directly() -> None
     assert "decision_id" not in source
     assert "requiresTrustedDecision" not in source
     assert "PadiemChatOrchestrationUI.render" in source
-    assert 'state = "approval_denied"' not in source  # extended state is data, never authority

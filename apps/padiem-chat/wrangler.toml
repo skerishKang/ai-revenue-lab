@@ -1,5 +1,5 @@
 name = "padiem-chat"
-main = "worker_orchestration.py"
+main = "worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
