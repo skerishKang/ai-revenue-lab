@@ -118,6 +118,41 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     inner_gutter_left = round(float(conversation_padding["left"]), 2)
     inner_gutter_right = round(float(conversation_padding["right"]), 2)
 
+    # Resolve the declared reading-measure token using the paragraph's actual
+    # font metrics. A ch unit is font-dependent, so an arbitrary pixel ceiling
+    # would reject a correctly applied 76ch measure on some platforms/fonts.
+    prose_measure = await page.locator(
+        "#shared-gutter-rich-fixture .rich-response-paragraph"
+    ).evaluate(
+        """
+        (el) => {
+          const shell = el.closest('.app-shell');
+          if (!shell) throw new Error('app shell missing');
+          const token = getComputedStyle(shell)
+            .getPropertyValue('--padiem-chat-reading-measure')
+            .trim();
+          if (!token) throw new Error('reading measure token missing');
+
+          const style = getComputedStyle(el);
+          const probe = document.createElement('div');
+          probe.style.position = 'absolute';
+          probe.style.visibility = 'hidden';
+          probe.style.pointerEvents = 'none';
+          probe.style.inlineSize = token;
+          probe.style.font = style.font;
+          probe.style.letterSpacing = style.letterSpacing;
+          document.body.appendChild(probe);
+          const px = probe.getBoundingClientRect().width;
+          probe.remove();
+          return { token, px };
+        }
+        """
+    )
+    prose_measure_token = str(prose_measure["token"])
+    prose_measure_px = round(float(prose_measure["px"]), 2)
+    if prose_measure_px <= 0:
+        raise AssertionError(f"{name} reading measure did not resolve: {prose_measure}")
+
     # Outer shell contract: conversation and composer are exactly one lane.
     _assert_close(conversation["x"], composer["x"], name=f"{name} outer left gutter")
     _assert_close(_right(conversation), _right(composer), name=f"{name} outer right gutter")
@@ -153,8 +188,16 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     if assistant_gap < 8 or assistant_gap > 12.5:
         raise AssertionError(f"{name} assistant meta/content gap out of range: {assistant_gap}")
 
-    if width >= 1024 and prose["width"] > 760:
-        raise AssertionError(f"{name} prose measure too wide: {prose['width']}")
+    if prose["width"] > prose_measure_px + 1.5:
+        raise AssertionError(
+            f"{name} prose exceeds {prose_measure_token} measure: "
+            f"{prose['width']} vs {prose_measure_px}"
+        )
+    if rich_surface["width"] > prose_measure_px + 8 and prose["width"] >= rich_surface["width"] - 1.5:
+        raise AssertionError(
+            f"{name} prose failed to stay narrower than wide answer surface: "
+            f"{prose['width']} vs {rich_surface['width']}"
+        )
     if retry_control["width"] <= 0 or retry_control["height"] <= 0:
         raise AssertionError(f"{name} retry control disappeared: {retry_control}")
 
@@ -187,6 +230,8 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "assistant_gap_px": assistant_gap,
         "rich_surface": rich_surface,
         "prose": prose,
+        "prose_measure_token": prose_measure_token,
+        "prose_measure_px": prose_measure_px,
         "error_surface": error_surface,
         "retry_control": retry_control,
         "horizontal_overflow": False,
