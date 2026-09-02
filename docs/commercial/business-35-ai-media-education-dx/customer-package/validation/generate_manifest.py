@@ -34,6 +34,7 @@ from accepted_source import (  # noqa: E402
     PRODUCT_AUTHORITY_REVISION,
     PRODUCT_CONTRACT_BLOB_SHA,
 )
+from real_export import PROVENANCE_PATH  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -106,8 +107,30 @@ def file_sha256(p: Path) -> str:
     return h.hexdigest()
 
 
+def load_render_provenance() -> dict:
+    """Require real-exporter provenance (fail-closed, render-fidelity)."""
+    if not PROVENANCE_PATH.is_file():
+        raise SystemExit("FAIL: real-export provenance missing "
+                         f"({PROVENANCE_PATH.name}); run export_pdfs.py + render_artifacts.py first.")
+    try:
+        prov = json.loads(PROVENANCE_PATH.read_text(encoding="utf-8"))
+    except Exception as e:
+        raise SystemExit(f"FAIL: real-export provenance unreadable ({e}).")
+    if prov.get("REAL_DOCUMENT_EXPORT") != "PASS" or not prov.get("DOCUMENT_EXPORTER"):
+        raise SystemExit("FAIL: REAL_DOCUMENT_EXPORT != PASS "
+                         f"(got {prov.get('REAL_DOCUMENT_EXPORT')!r}).")
+    if prov.get("REAL_XLSX_RENDER") != "PASS" or not prov.get("XLSX_EXPORTER"):
+        raise SystemExit("FAIL: REAL_XLSX_RENDER != PASS "
+                         f"(got {prov.get('REAL_XLSX_RENDER')!r}).")
+    for key in ("PDF_PRODUCERS", "XLSX_EXPORT_PDF_SHA256", "XLSX_EXPORT_PDF_PRODUCER"):
+        if not prov.get(key):
+            raise SystemExit(f"FAIL: provenance field missing: {key}.")
+    return prov
+
+
 def main() -> int:
     generator_rev, content_hash = resolve_generator_revision()
+    prov = load_render_provenance()
 
     try:
         base_sha = subprocess.run(
@@ -142,6 +165,14 @@ def main() -> int:
         "PRODUCT_CONTRACT_BLOB_SHA": PRODUCT_CONTRACT_BLOB_SHA,
         "GENERATOR_REVISION": generator_rev,
         "BUILDER_CONTENT_HASH": content_hash,
+        "DOCUMENT_EXPORTER": prov["DOCUMENT_EXPORTER"],
+        "XLSX_EXPORTER": prov["XLSX_EXPORTER"],
+        "REAL_DOCUMENT_EXPORT": prov["REAL_DOCUMENT_EXPORT"],
+        "REAL_XLSX_RENDER": prov["REAL_XLSX_RENDER"],
+        "PDF_PRODUCERS": prov["PDF_PRODUCERS"],
+        "XLSX_EXPORT_PDF_SHA256": prov["XLSX_EXPORT_PDF_SHA256"],
+        "XLSX_EXPORT_PDF_PRODUCER": prov["XLSX_EXPORT_PDF_PRODUCER"],
+        "XLSX_EXPORT_PDF_PAGES": prov.get("XLSX_EXPORT_PDF_PAGES"),
         "BASE_SHA": base_sha,
         "GENERATED_AT": datetime.datetime(2026, 9, 3, 0, 0, 0).isoformat() + "Z",
         "OUTPUT_FILE_LIST": output_list,
@@ -169,6 +200,10 @@ def main() -> int:
         f"PRODUCT_CONTRACT_BLOB_SHA={manifest['PRODUCT_CONTRACT_BLOB_SHA']}",
         f"GENERATOR_REVISION={manifest['GENERATOR_REVISION']}",
         f"BUILDER_CONTENT_HASH={manifest['BUILDER_CONTENT_HASH']}",
+        f"DOCUMENT_EXPORTER={manifest['DOCUMENT_EXPORTER']}",
+        f"XLSX_EXPORTER={manifest['XLSX_EXPORTER']}",
+        f"REAL_DOCUMENT_EXPORT={manifest['REAL_DOCUMENT_EXPORT']}",
+        f"REAL_XLSX_RENDER={manifest['REAL_XLSX_RENDER']}",
         f"BASE_SHA={manifest['BASE_SHA']}",
         f"CURRENT_BINARY_STATUS={manifest['CURRENT_BINARY_STATUS']}",
         "```",

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Render real visual evidence PNGs from the final artifacts (no placeholders).
+"""Render real visual evidence PNGs from the final artifacts (render-fidelity).
 
-- PPTX/PDF/DOCX evidence: the final PDFs (proposal 10p / one-page / questionnaire)
-  are rasterized page-by-page with PyMuPDF (real PDF rendering, not synthetic).
-- XLSX evidence: every sheet of the final quote workbook is rendered from its
-  REAL cell values/styles via openpyxl into PNG (real sheet export, not synthetic).
+- PPTX/PDF/DOCX evidence: the final real-exported PDFs (proposal 10p /
+  one-page / questionnaire) are rasterized page-by-page with PyMuPDF.
+- XLSX evidence: the actual workbook is exported sheet-by-sheet to PDF by a
+  REAL spreadsheet renderer (Excel COM preferred, LibreOffice Calc headless),
+  preserving merges, fills, fonts, borders, column widths, row heights,
+  conditional formatting, and print areas; each sheet PDF page is rasterized
+  to PNG. Recreated Pillow tables are FORBIDDEN.
 
-Fail-closed: when no real renderer is available (PyMuPDF missing, font missing,
-or a source artifact missing), exit non-zero and report
-REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING. Placeholder images are forbidden and
-are never generated as a substitute.
+Fail-closed: when no real renderer is available, exit non-zero and report
+REAL_XLSX_RENDER=UNAVAILABLE_BLOCKING (or REAL_RENDER_EVIDENCE variant).
+Placeholder/synthetic images are forbidden and never generated as substitute.
 """
 
 from pathlib import Path
@@ -21,6 +23,16 @@ try:
 except Exception:
     pass
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from real_export import (  # noqa: E402
+    REAL_EXPORT_DIR,
+    RealExportUnavailable,
+    export_xlsx_sheets_pdf,
+    normalize_pdf_determinism,
+    pdf_producer,
+    write_provenance,
+)
+
 ROOT = Path(__file__).resolve().parent.parent
 
 PDF_JOBS = [
@@ -30,11 +42,7 @@ PDF_JOBS = [
 ]
 
 XLSX_NAME = "Business35_Pilot_Quote_Template.xlsx"
-
-FONT_CANDIDATES = [
-    r"C:\Windows\Fonts\malgun.ttf",
-    r"C:\Windows\Fonts\malgunbd.ttf",
-]
+XLSX_SHEET_PDF = REAL_EXPORT_DIR / "quote-sheets.pdf"
 
 
 def render_pdfs() -> list[str]:
@@ -69,82 +77,58 @@ def render_pdfs() -> list[str]:
 
 def render_xlsx() -> list[str]:
     try:
-        from openpyxl import load_workbook
+        import fitz
     except Exception as e:
-        print(f"REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING (openpyxl missing: {e})")
+        print(f"REAL_XLSX_RENDER=UNAVAILABLE_BLOCKING (PyMuPDF missing: {e})")
         raise SystemExit(1)
-    try:
-        from PIL import Image, ImageDraw, ImageFont
-    except Exception as e:
-        print(f"REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING (Pillow missing: {e})")
-        raise SystemExit(1)
-    font_path = next((p for p in FONT_CANDIDATES if Path(p).is_file()), None)
-    if font_path is None:
-        print("REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING (Korean TTF font missing)")
-        raise SystemExit(1)
-
     src = ROOT / XLSX_NAME
     if not src.is_file():
-        print(f"REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING (missing {XLSX_NAME})")
+        print(f"REAL_XLSX_RENDER=UNAVAILABLE_BLOCKING (missing {XLSX_NAME})")
         raise SystemExit(1)
-    wb = load_workbook(str(src), data_only=False)
+    REAL_EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        exporter, sheets, pages = export_xlsx_sheets_pdf(src, XLSX_SHEET_PDF)
+    except RealExportUnavailable as e:
+        print(f"REAL_XLSX_RENDER=UNAVAILABLE_BLOCKING ({e})")
+        write_provenance(REAL_XLSX_RENDER="UNAVAILABLE_BLOCKING", XLSX_EXPORTER="NONE")
+        raise SystemExit(1)
+    normalize_pdf_determinism(XLSX_SHEET_PDF)
+    producer = pdf_producer(XLSX_SHEET_PDF)
+    low = producer.lower()
+    if any(t in low for t in ("fpdf", "pyfpdf", "reportlab", "pypdf", "fitz", "mupdf", "pillow", "pil")):
+        print(f"REAL_XLSX_RENDER=UNAVAILABLE_BLOCKING (synthetic producer: {producer})")
+        write_provenance(REAL_XLSX_RENDER="UNAVAILABLE_BLOCKING",
+                         XLSX_EXPORTER="SYNTHETIC_REJECTED")
+        raise SystemExit(1)
     outdir = ROOT / "xlsx-rendered"
     outdir.mkdir(parents=True, exist_ok=True)
     for stale in outdir.glob("*.png"):
         stale.unlink()
-
-    font = ImageFont.truetype(font_path, 15)
-    font_small = ImageFont.truetype(font_path, 12)
+    zoom = 1.5
+    mat = fitz.Matrix(zoom, zoom)
     made: list[str] = []
-    for ws in wb.worksheets:
-        # Real cell values (formulas shown as stored; values reflect the workbook).
-        rows: list[list[str]] = []
-        for row in ws.iter_rows(values_only=True):
-            vals = [(str(v) if v is not None else "") for v in row]
-            while vals and vals[-1] == "":
-                vals.pop()
-            if any(vals):
-                rows.append(vals)
-        if not rows:
-            rows = [["(empty)"]]
-        ncols = max(len(r) for r in rows)
-        for r in rows:
-            r.extend([""] * (ncols - len(r)))
-        # Column widths from real content (deterministic, capped).
-        draw_probe = ImageDraw.Draw(Image.new("RGB", (10, 10)))
-        col_w: list[int] = []
-        for c in range(ncols):
-            best = 60
-            for r in rows:
-                for line in r[c].splitlines() or [""]:
-                    w = int(draw_probe.textlength(line, font=font_small)) + 18
-                    best = max(best, min(w, 420))
-            col_w.append(best)
-        row_h = 26
-        header_h = 34
-        # Row heights grow deterministically with real multiline content.
-        row_hs = [row_h * max(1, max(len(v.splitlines()) for v in r)) for r in rows]
-        W = sum(col_w) + 2
-        H = header_h + sum(row_hs) + 30
-        img = Image.new("RGB", (W, H), "#FFFFFF")
-        d = ImageDraw.Draw(img)
-        d.rectangle([0, 0, W, header_h], fill="#1F3A5F")
-        d.text((10, 8), f"{XLSX_NAME} — {ws.title} (real sheet render)", fill="#FFFFFF", font=font)
-        y = header_h
-        for ri, r in enumerate(rows):
-            x = 0
-            rh = row_hs[ri]
-            fill = "#F2F4F7" if ri == 0 else "#FFFFFF"
-            for ci, val in enumerate(r):
-                d.rectangle([x, y, x + col_w[ci], y + rh], fill=fill, outline="#B0B7C0")
-                d.text((x + 6, y + 4), "\n".join(ln[:60] for ln in val.splitlines()), fill="#1F3A5F", font=font_small)
-                x += col_w[ci]
-            y += rh
-        d.text((10, H - 20), "파디엠 · DRAFT · real openpyxl sheet render", fill="#555A60", font=font_small)
-        dest = outdir / (ws.title.lower().replace(" ", "-") + ".png")
-        img.save(str(dest), "PNG")
+    doc = fitz.open(str(XLSX_SHEET_PDF))
+    if doc.page_count != len(sheets):
+        print(f"REAL_XLSX_RENDER=UNAVAILABLE_BLOCKING "
+              f"(sheet/page mismatch: {len(sheets)} sheets vs {doc.page_count} pages)")
+        write_provenance(REAL_XLSX_RENDER="UNAVAILABLE_BLOCKING",
+                         XLSX_EXPORTER="SHEET_PAGE_MISMATCH")
+        raise SystemExit(1)
+    for sheet, page in zip(sheets, doc):
+        pix = page.get_pixmap(matrix=mat)
+        dest = outdir / (sheet.lower().replace(" ", "-") + ".png")
+        pix.save(str(dest))
         made.append(f"xlsx-rendered/{dest.name}")
-        print(f"rendered {dest.name} from sheet {ws.title} ({len(rows)} rows x {ncols} cols)")
+        print(f"rendered {dest.name} from real sheet export: {sheet} "
+              f"({pix.width}x{pix.height})")
+    doc.close()
+    import hashlib
+    sha = hashlib.sha256(XLSX_SHEET_PDF.read_bytes()).hexdigest()
+    write_provenance(REAL_XLSX_RENDER="PASS", XLSX_EXPORTER=exporter,
+                     XLSX_EXPORT_PDF_SHA256=sha,
+                     XLSX_EXPORT_PDF_PRODUCER=producer,
+                     XLSX_EXPORT_PDF_PAGES=pages)
+    print(f"REAL_XLSX_RENDER=PASS via {exporter} ({len(sheets)} sheets)")
     return made
 
 

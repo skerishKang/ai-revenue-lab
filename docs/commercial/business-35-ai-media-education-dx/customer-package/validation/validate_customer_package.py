@@ -5,6 +5,11 @@ Checks file presence, PDF page counts, forbidden claims, source linkage,
 price consistency, and absence of customer/performance claims. Text-based
 checks are performed on PDFs via pdftotext; geometry checks are performed
 on the PPTX via python-pptx.
+
+Render-fidelity gates (CENTRAL G2 R1/R2): customer PDFs must be real native-
+engine exports (PowerPoint/Word COM or LibreOffice), never synthetic
+fallbacks; XLSX evidence must come from a real spreadsheet renderer; PPTX/PDF
+aspect parity is enforced for proposal and one-page.
 """
 
 from __future__ import annotations
@@ -34,6 +39,16 @@ FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 PENDING_MARKER = "PENDING" + "_ACCEPTED_1503"
 
 DIAGNOSTIC_Q1_Q5 = ["조직 유형", "결과물 유형", "병목 지점", "현재 팀 규모", "AI 사용 상태"]
+
+# Real-engine provenance tokens (render-fidelity). Synthetic producers banned.
+REAL_ENGINE_TOKENS = ["microsoft", "powerpoint", "word", "excel", "libreoffice", "office"]
+SYNTHETIC_PRODUCER_TOKENS = ["fpdf", "pyfpdf", "reportlab", "pypdf", "fitz", "mupdf",
+                             "pillow", "pil", "borb", "pdfminer"]
+REAL_DOCUMENT_PDFS = [
+    "Business35_Master_Proposal_10p.pdf",
+    "Business35_OnePage_Offer.pdf",
+    "Business35_Diagnostic_Questionnaire.pdf",
+]
 
 SIX_STAGE_TOKENS = [
     "사람이 승인하는 운영체계",
@@ -134,6 +149,36 @@ def pdf_pages(name: str) -> int:
         return -1
 
 
+def pdf_producer(name: str) -> str:
+    try:
+        import fitz
+        doc = fitz.open(str(ROOT / name))
+        prod = (doc.metadata or {}).get("producer", "") or ""
+        doc.close()
+        return prod
+    except Exception:
+        return ""
+
+
+def pdf_first_page_aspect(name: str) -> float:
+    import fitz
+    doc = fitz.open(str(ROOT / name))
+    r = doc[0].rect
+    doc.close()
+    return r.width / r.height if r.height else 0.0
+
+
+def pptx_slide_aspect(name: str) -> float:
+    from pptx import Presentation
+    prs = Presentation(str(ROOT / name))
+    return prs.slide_width / prs.slide_height
+
+
+def _ns(txt: str) -> str:
+    """Whitespace-collapsed text: real-engine PDF extraction wraps lines mid-token."""
+    return re.sub(r"\s+", "", txt)
+
+
 def main() -> int:
     problems: list[str] = []
 
@@ -175,6 +220,80 @@ def main() -> int:
             check(False, f"GENERATOR_REVISION commit lookup ran ({e})", problems)
     check(PENDING_MARKER not in manifest_raw,
           f"manifest has no {PENDING_MARKER} marker", problems)
+
+    # ---- Render-fidelity provenance gates (G2 R1/R2) ----
+    check(manifest.get("REAL_DOCUMENT_EXPORT") == "PASS",
+          f"manifest REAL_DOCUMENT_EXPORT == PASS (got {manifest.get('REAL_DOCUMENT_EXPORT')!r})",
+          problems)
+    check(manifest.get("REAL_XLSX_RENDER") == "PASS",
+          f"manifest REAL_XLSX_RENDER == PASS (got {manifest.get('REAL_XLSX_RENDER')!r})",
+          problems)
+    for field in ("DOCUMENT_EXPORTER", "XLSX_EXPORTER"):
+        val = str(manifest.get(field, ""))
+        check(bool(val) and any(t in val.lower() for t in REAL_ENGINE_TOKENS),
+              f"manifest {field} names a real engine (got {val!r})", problems)
+    check(isinstance(manifest.get("PDF_PRODUCERS"), dict) and len(manifest["PDF_PRODUCERS"]) >= 3,
+          "manifest records PDF_PRODUCERS for the real-exported PDFs", problems)
+    check(bool(manifest.get("XLSX_EXPORT_PDF_SHA256")) and bool(manifest.get("XLSX_EXPORT_PDF_PRODUCER")),
+          "manifest records XLSX sheet-export PDF sha/producer", problems)
+
+    # Committed PDFs must carry a real native-engine producer (synthetic banned).
+    try:
+        for name in REAL_DOCUMENT_PDFS:
+            prod = pdf_producer(name)
+            low = prod.lower()
+            check(bool(prod) and any(t in low for t in REAL_ENGINE_TOKENS),
+                  f"real-engine producer in {name} (got {prod!r})", problems)
+            check(not any(t in low for t in SYNTHETIC_PRODUCER_TOKENS),
+                  f"no synthetic producer in {name}", problems)
+        # Manifest producer claims must match the committed PDFs.
+        claimed = manifest.get("PDF_PRODUCERS", {}) or {}
+        for name in REAL_DOCUMENT_PDFS:
+            if name in claimed:
+                check(pdf_producer(name) == claimed[name],
+                      f"manifest PDF_PRODUCERS claim matches {name}", problems)
+    except Exception as e:
+        check(False, f"PDF producer provenance check ran ({e})", problems)
+
+    # PPTX/PDF aspect parity: real export preserves 16:9 slide geometry.
+    try:
+        for pptx_name, pdf_name, label in [
+                ("Business35_Master_Proposal_10p.pptx", "Business35_Master_Proposal_10p.pdf", "proposal"),
+                ("Business35_OnePage_Offer_Source.pptx", "Business35_OnePage_Offer.pdf", "one-page")]:
+            src_aspect = pptx_slide_aspect(pptx_name)
+            pdf_aspect = pdf_first_page_aspect(pdf_name)
+            parity = abs(src_aspect - pdf_aspect) / src_aspect if src_aspect else 1.0
+            check(parity <= 0.02,
+                  f"{label} PPTX/PDF aspect parity (pptx {src_aspect:.4f} vs pdf {pdf_aspect:.4f})",
+                  problems)
+    except Exception as e:
+        check(False, f"PPTX/PDF aspect parity check ran ({e})", problems)
+
+    # XLSX sheet-export intermediate cross-check (when present in worktree).
+    try:
+        xpdf = ROOT / "validation" / ".real_export" / "quote-sheets.pdf"
+        if xpdf.is_file():
+            import fitz as _fitz
+            _d = _fitz.open(str(xpdf))
+            _pages = _d.page_count
+            _prod = (_d.metadata or {}).get("producer", "") or ""
+            _d.close()
+            check(_pages == 9, f"real XLSX sheet-export has 9 pages (got {_pages})", problems)
+            check(any(t in _prod.lower() for t in REAL_ENGINE_TOKENS),
+                  f"real XLSX sheet-export producer (got {_prod!r})", problems)
+            if manifest.get("XLSX_EXPORT_PDF_SHA256"):
+                h = hashlib.sha256()
+                with xpdf.open("rb") as fh:
+                    for chunk in iter(lambda: fh.read(8192), b""):
+                        h.update(chunk)
+                check(h.hexdigest() == manifest["XLSX_EXPORT_PDF_SHA256"],
+                      "manifest XLSX_EXPORT_PDF_SHA256 matches worktree intermediate", problems)
+        else:
+            check(bool(manifest.get("XLSX_EXPORT_PDF_SHA256")),
+                  "XLSX sheet-export sha recorded in manifest (intermediate not in worktree)",
+                  problems)
+    except Exception as e:
+        check(False, f"XLSX sheet-export cross-check ran ({e})", problems)
 
     # Manifest output hashes must match the real files, completely.
     if manifest:
@@ -242,13 +361,16 @@ def main() -> int:
 
     # V3.1 six-stage primary journey exists in the proposal; 7-step delivery
     # detail must not be the primary identity.
+    # NOTE: real-engine extraction wraps lines mid-token, so token checks run
+    # on whitespace-collapsed text.
     prop_txt_early = pdf_text("Business35_Master_Proposal_10p.pdf")
+    prop_ns = _ns(prop_txt_early)
     for tok in SIX_STAGE_TOKENS:
-        check(tok in prop_txt_early,
+        check(_ns(tok) in prop_ns,
               f"proposal carries V3.1 six-stage journey token: {tok}", problems)
     check("7단계 업무전환 구조" not in prop_txt_early,
           "proposal does not define 7-step sequence as primary identity", problems)
-    check("제품을 정의하는 7단계" in prop_txt_early and "delivery detail" in prop_txt_early,
+    check("제품을정의하는7단계" in prop_ns and "deliverydetail" in prop_ns.lower(),
           "proposal marks Week/step sequence as downstream delivery detail", problems)
 
     # Rendered images present
@@ -300,10 +422,13 @@ def main() -> int:
     for f in ["Business35_Master_Proposal_10p.pdf", "Business35_OnePage_Offer.pdf",
               "Business35_Diagnostic_Questionnaire.pdf"]:
         txt = pdf_text(f)
-        check("실제 고객" not in txt or "합성 예시" in txt or "주장이 아닙니다" in txt,
+        txt_ns = _ns(txt)
+        check("실제 고객" not in txt or "합성 예시" in txt or "주장이 아닙니다" in txt
+              or "주장이아닙니다" in txt_ns,
               f"no real-customer framing misuse in {f}", problems)
         has_revenue_disclaimer = ("매출" not in txt) or bool(
             re.search(r"매출\s*주장\s*이\s*아닙", txt) or "주장이 아닙니다" in txt
+            or "주장이아닙니다" in txt_ns or "주장이아닙니" in txt_ns
             or "주장이 아닙니" in txt or "주장이\n아닙니다" in txt)
         check(has_revenue_disclaimer, f"no revenue claim in {f}", problems)
 
@@ -419,7 +544,8 @@ def main() -> int:
                   f"VISUAL_QA.md declares no independent pixel verdict ({verdict!r} absent)", problems)
         check("#1507" in vqa_text or "W4" in vqa_text,
               "VISUAL_QA.md defers final pixel verdict to W4", problems)
-        check("PyMuPDF" in vqa_text and "openpyxl" in vqa_text,
+        check("PyMuPDF" in vqa_text
+              and any(t in vqa_text for t in ("PowerPoint", "Word", "Excel", "COM", "LibreOffice")),
               "VISUAL_QA.md records real renderer provenance", problems)
 
     # Real render evidence present (placeholders are forbidden).

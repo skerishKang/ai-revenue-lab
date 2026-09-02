@@ -17,8 +17,8 @@ governance and readiness detail.
 """
 
 from docx import Document
-from docx.shared import Pt, Inches, RGBColor
-from docx.enum.text import WD_BREAK
+from docx.shared import Pt, Inches, Cm, RGBColor
+from docx.enum.text import WD_BREAK, WD_LINE_SPACING
 
 from pathlib import Path
 import datetime
@@ -41,88 +41,91 @@ def heading(doc, text):
     return h
 
 
+def _tight(p, after=2):
+    """Single spacing + tight trailing space (pagination fit for real Word export)."""
+    p.paragraph_format.space_after = Pt(after)
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    return p
+
+
 def narrative(doc, question, guide):
-    p = doc.add_paragraph()
+    p = _tight(doc.add_paragraph())
     r = p.add_run(question)
     r.bold = True
-    r.font.size = Pt(10.5)
+    r.font.size = Pt(9.5)
     r.font.name = "Malgun Gothic"
-    p2 = doc.add_paragraph()
+    p2 = _tight(doc.add_paragraph())
     r2 = p2.add_run(f"({guide})")
-    r2.font.size = Pt(8.5)
+    r2.font.size = Pt(7.5)
     r2.font.color.rgb = GRAY
     r2.font.name = "Malgun Gothic"
     for _ in range(2):
-        line = doc.add_paragraph()
+        line = _tight(doc.add_paragraph())
         lr = line.add_run("_" * 60)
-        lr.font.size = Pt(11)
+        lr.font.size = Pt(9.5)
         lr.font.name = "Malgun Gothic"
-        line.paragraph_format.space_after = Pt(8)
 
 
 def short_answer(doc, question, guide):
-    p = doc.add_paragraph()
+    p = _tight(doc.add_paragraph())
     r = p.add_run(question)
     r.bold = True
-    r.font.size = Pt(10.5)
+    r.font.size = Pt(9.5)
     r.font.name = "Malgun Gothic"
-    p2 = doc.add_paragraph()
+    p2 = _tight(doc.add_paragraph())
     r2 = p2.add_run(f"({guide})")
-    r2.font.size = Pt(8.5)
+    r2.font.size = Pt(7.5)
     r2.font.color.rgb = GRAY
     r2.font.name = "Malgun Gothic"
-    line = doc.add_paragraph()
+    line = _tight(doc.add_paragraph())
     lr = line.add_run("_" * 60)
-    lr.font.size = Pt(11)
+    lr.font.size = Pt(9.5)
     lr.font.name = "Malgun Gothic"
-    line.paragraph_format.space_after = Pt(8)
 
 
 def yesno(doc, question, options):
-    p = doc.add_paragraph()
+    p = _tight(doc.add_paragraph())
     r = p.add_run(question)
     r.bold = True
-    r.font.size = Pt(10.5)
+    r.font.size = Pt(9.5)
     r.font.name = "Malgun Gothic"
-    op = doc.add_paragraph()
+    op = _tight(doc.add_paragraph())
     for label in options:
         run = op.add_run(f"  ☐  {label}")
-        run.font.size = Pt(10.5)
+        run.font.size = Pt(9.5)
         run.font.name = "Malgun Gothic"
-    op.paragraph_format.space_after = Pt(8)
 
 
 def choice(doc, question, options):
-    p = doc.add_paragraph()
+    p = _tight(doc.add_paragraph())
     r = p.add_run(question)
     r.bold = True
-    r.font.size = Pt(10.5)
+    r.font.size = Pt(9.5)
     r.font.name = "Malgun Gothic"
-    op = doc.add_paragraph()
+    op = _tight(doc.add_paragraph())
     for label in options:
         run = op.add_run(f"  ☐  {label}    ")
-        run.font.size = Pt(10.5)
+        run.font.size = Pt(9.5)
         run.font.name = "Malgun Gothic"
-    op.paragraph_format.space_after = Pt(8)
 
 
 def page_header(doc, title, page_no):
-    ph = doc.add_paragraph()
+    ph = _tight(doc.add_paragraph(), after=4)
     pr = ph.add_run("파디엠 · AI 업무전환 진단 질문지   ")
-    pr.font.size = Pt(10)
+    pr.font.size = Pt(9)
     pr.font.bold = True
     pr.font.color.rgb = NAVY
     pr.font.name = "Malgun Gothic"
     pt = ph.add_run(title + "   ")
-    pt.font.size = Pt(12)
+    pt.font.size = Pt(10.5)
     pt.font.bold = True
     pt.font.color.rgb = NAVY
     pt.font.name = "Malgun Gothic"
     prr = ph.add_run(f"[ {page_no} / 3 ]")
-    prr.font.size = Pt(9)
+    prr.font.size = Pt(8)
     prr.font.color.rgb = GRAY
     prr.font.name = "Malgun Gothic"
-    ph.paragraph_format.space_after = Pt(8)
 
 
 def page_break(doc):
@@ -137,10 +140,15 @@ def build():
     doc = Document()
     style = doc.styles["Normal"]
     style.font.name = "Malgun Gothic"
-    style.font.size = Pt(10.5)
+    style.font.size = Pt(9.5)
+    style.paragraph_format.space_after = Pt(2)
+    style.paragraph_format.space_before = Pt(0)
+    style.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
 
-    # Narrower margins to fit 3 pages
+    # A4 page setup + narrow margins so Word's real pagination fits 3 pages.
     for section in doc.sections:
+        section.page_width = Cm(21.0)
+        section.page_height = Cm(29.7)
         section.top_margin = Inches(0.5)
         section.bottom_margin = Inches(0.5)
         section.left_margin = Inches(0.6)
@@ -151,21 +159,21 @@ def build():
     for run in title.runs:
         run.font.color.rgb = NAVY
         run.font.name = "Malgun Gothic"
-        run.font.size = Pt(18)
+        run.font.size = Pt(15)
 
-    sub = doc.add_paragraph()
+    sub = _tight(doc.add_paragraph())
     sr = sub.add_run("고객 진단 질문지 · V3.1 다섯 가지 입력 + 흐름·거버넌스 확인")
-    sr.font.size = Pt(12)
+    sr.font.size = Pt(10.5)
     sr.font.bold = True
     sr.font.color.rgb = NAVY
 
-    guide = doc.add_paragraph()
+    guide = _tight(doc.add_paragraph())
     gr = guide.add_run(
         "V3.1 입력(Q1–Q5): 조직 유형 / 결과물 유형 / 병목 지점 / 현재 팀 규모 / AI 사용 상태. "
         "본 질문지는 견적·일정 확정 전 진단 자료로만 사용됩니다. "
         "실제 개인정보나 내부자료의 원문을 기입하지 마시고, 분류·포함 여부만 표시해 주세요."
     )
-    gr.font.size = Pt(9)
+    gr.font.size = Pt(8)
     gr.font.color.rgb = GRAY
     gr.font.name = "Malgun Gothic"
 
@@ -205,14 +213,14 @@ def build():
     narrative(doc, "Q16. 파일럿 담당자", "1팀 6–10명 + 운영 책임자 1인 (역할·인원·주당 투입 시간, Q4와 별개)")
     short_answer(doc, "Q17. 예산 승인자", "파일럿 예산 최종 승인 직책 (실명 대신 직책만)")
 
-    closing = doc.add_paragraph()
+    closing = _tight(doc.add_paragraph())
     cr = closing.add_run(
         "\n본 질문지는 견적·일정 확정 전 진단 자료로만 사용됩니다. "
         "가격은 시장 검증 전 자사 가격 가설이며 실제 계약·매출 주장이 아닙니다. "
         "조직별 사용정책·검토체계, 개인정보·저작권·조달 관련 사항은 고객별 확인과 "
         "전문 법률·계약 검토가 필요합니다."
     )
-    cr.font.size = Pt(9)
+    cr.font.size = Pt(8)
     cr.font.color.rgb = GRAY
     cr.font.name = "Malgun Gothic"
 

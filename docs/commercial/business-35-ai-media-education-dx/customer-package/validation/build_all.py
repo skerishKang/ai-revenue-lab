@@ -4,10 +4,11 @@
 Steps:
   0. materialize exact accepted Lane A source (git show 63adbefc:...) — fail-closed
   1. build PPTX/DOCX/XLSX via accepted-source-driven builders
-  2. export PDFs (libreoffice when present, else deterministic fpdf2 fallback)
-  3. render REAL PNG evidence (PyMuPDF pdf pages + openpyxl sheet renders)
+  2. export PDFs via REAL document renderers only (PowerPoint/Word COM or
+     LibreOffice; synthetic fallback forbidden — fail-closed)
+  3. render REAL PNG evidence (PyMuPDF pdf pages + real spreadsheet sheet export)
   4. generate manifest with exact revision trace (requires GENERATOR_REVISION env)
-  5. validate (fail-closed)
+  5. validate (fail-closed, incl. render-fidelity gates)
 
 Deterministic: fixed timestamps, sorted file lists, no random.
 GENERATOR_REVISION env (full 40-char generator code commit) is required for
