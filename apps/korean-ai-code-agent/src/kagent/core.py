@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 import difflib
-import hashlib
 import os
 import re
 import subprocess
+
+from .adapters import DeterministicBusiness14Preview
+from .contracts import ClawTaskIntent, ExecutionMode
+from .security import redact_secrets
 
 
 class AgentBoundaryError(RuntimeError):
@@ -14,21 +17,6 @@ class AgentBoundaryError(RuntimeError):
 
 
 _KOREAN_TASK_RE = re.compile(r"[가-힣]")
-_SECRET_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
-    (re.compile(r"(?i)(authorization\s*:\s*bearer\s+)[^\s]+"), r"\1[REDACTED]"),
-    (re.compile(r"\bsk-(?:or-v1-)?[A-Za-z0-9._-]{8,}\b"), "[REDACTED_KEY]"),
-    (
-        re.compile(r"(?i)((?:api[_-]?key|token|secret|password)\s*[=:]\s*)[^\s]+"),
-        r"\1[REDACTED]",
-    ),
-)
-
-
-def redact_secrets(text: str) -> str:
-    redacted = text
-    for pattern, replacement in _SECRET_PATTERNS:
-        redacted = pattern.sub(replacement, redacted)
-    return redacted
 
 
 @dataclass
@@ -61,6 +49,29 @@ class AgentSession:
         if not _KOREAN_TASK_RE.search(normalized_task):
             raise AgentBoundaryError("Phase 1에서는 한국어 작업 설명을 한 글자 이상 포함해야 합니다.")
         return cls(root=resolved, task=normalized_task, route=route)
+
+    def task_intent(
+        self,
+        *,
+        task_id: str,
+        execution_mode: ExecutionMode = ExecutionMode.LOCAL,
+        source_surface: str = "cli",
+        requested_revision: str | None = None,
+        trace_id: str | None = None,
+    ) -> ClawTaskIntent:
+        """Project the foreground session into the new B54 product task boundary.
+
+        Route/provider details intentionally do not enter the task contract.
+        """
+        return ClawTaskIntent(
+            task_id=task_id,
+            task=self.task,
+            repository_ref=str(self.root),
+            execution_mode=execution_mode,
+            requested_revision=requested_revision,
+            source_surface=source_surface,
+            trace_id=trace_id,
+        )
 
     def contained(self, relative: str | Path) -> Path:
         candidate = (self.root / relative).resolve()
@@ -151,19 +162,8 @@ class AgentSession:
         }
 
     def business14_mock_response(self) -> dict[str, object]:
-        """Deterministic adapter contract preview; never performs network I/O."""
-        canonical_route = "b14/auto" if self.route in {"business14/auto", "b14/auto"} else self.route
-        digest = hashlib.sha256(
-            f"{canonical_route}\0{self.task}".encode("utf-8")
-        ).hexdigest()[:12]
-        return {
-            "adapter": "business14-deterministic-mock",
-            "route": canonical_route,
-            "request_id": f"kagent_{digest}",
-            "status": "resolved_not_called",
-            "provider_mode": "mock",
-            "network_called": False,
-        }
+        """Backward-compatible network-free B14 route preview."""
+        return DeterministicBusiness14Preview().preview(task=self.task, route=self.route)
 
     def prepare_demo_patch(self, relative: str | None = None) -> str:
         if not self.read_files:
