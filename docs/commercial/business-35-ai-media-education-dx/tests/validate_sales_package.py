@@ -226,6 +226,48 @@ def main() -> int:
                if m not in PRICE_RANGE_TOKENS]
         check(not bad, f"price-optional doc {doc} shows only standard ranges (off-range: {bad or 'none'})", problems)
 
+    # ---- V3.1 questionnaire actual-field coverage (G1 blocker) ----
+    q03 = read_md("03-diagnostic-questionnaire.md")
+    required_v31_inputs = ["조직 유형", "결과물 유형", "병목 지점", "현재 팀 규모", "AI 사용 상태"]
+    for phrase in required_v31_inputs:
+        # Must appear as a fillable question field, not just header prose: look for 질문 line containing phrase or heading + 질문 block
+        has_fillable = bool(re.search(r"질문:\s*[^\n]*" + re.escape(phrase), q03)) or bool(re.search(r"##\s+\d+\.\s*" + re.escape(phrase), q03))
+        check(has_fillable, f"03 questionnaire has fillable field for V3.1 input: {phrase}", problems)
+        # Also ensure not only mapping statement: at least one 질문 block must contain phrase
+        if phrase == "현재 팀 규모":
+            # Distinguish from pilot staffing — must not be only Q11 pilot staffing phrase
+            pilot_only = ("파일럿 팀(6–10명)" in q03 and phrase not in q03)
+            check(not pilot_only, "03 current team size not replaced by pilot staffing", problems)
+
+    # ---- Pilot plan legal-review gate regression (G1 blocker) ----
+    pilot = read_md("04-six-week-pilot-plan.md")
+    check("서명된 SOW 초안" not in pilot, "04 pilot plan does not use contradictory '서명된 SOW 초안'", problems)
+    # Old completion that authorized signature/payment as already-cleared completion when legal pending
+    check("완료 기준: 착수금 입금 + SOW 서명" not in pilot, "04 pilot plan does not authorize signature/payment as cleared Week 0 completion while DRAFT", problems)
+    # Must explicitly gate signature/payment/final annex on legal review + owner/customer finalization
+    check("법률 검토 완료 전 서명 불가" in pilot or "법률 검토 완료 전 서명·" in pilot, "04 pilot plan gates signature before legal review (법률 검토 완료 전 서명 불가)", problems)
+    check("전문 법률/계약 검토 + owner 승인 + 고객별 최종 확정" in pilot, "04 pilot plan requires legal + owner/customer-specific finalization before signature/payment/final annex", problems)
+    check("초안 합의 및 법률 검토 의뢰" in pilot, "04 Week 0 completion is draft agreement + legal review request, not signature/payment", problems)
+
+    # ---- Offer ID disambiguation regression (G1 blocker) ----
+    # Generic 상품 B without B1/B2 is ambiguous on current ladder A/B1/B2/C
+    for doc in CUSTOMER_DOCS + ["README.md"]:
+        text = read_md(doc) if (ROOT / doc).is_file() else ""
+        # Find generic 상품 B pattern: "상품 B" not followed by 1,2 or C clarification; allow "상품 B(" only if it is B1/B2
+        generic_b = re.search(r"상품\s*B(?![12])", text)
+        # Allow if the file explicitly clarifies but still contains generic? We forbid any generic token.
+        # Exception: SOURCES.md or README may reference? But we enforce for SOW at minimum.
+        if doc in ["05-statement-of-work-draft.md"]:
+            check(generic_b is None, f"no ambiguous generic '상품 B' in {doc} (use B1/B2)", problems)
+        # For other docs, also forbid bare 상품 B followed by space/기준
+        if generic_b and doc != "05-statement-of-work-draft.md":
+            # If other doc contains generic, fail as well to keep terminology consistent
+            check(False, f"no ambiguous generic '상품 B' in {doc}", problems)
+    # Ensure SOW uses B2 for the 1,500–2,500 range when that range appears
+    sow_text_for_b = read_md("05-statement-of-work-draft.md")
+    if "1,500만–2,500만원" in sow_text_for_b:
+        check("B2" in sow_text_for_b and "상품 B2" in sow_text_for_b, "SOW 1,500–2,500만원 range labeled as B2, not generic B", problems)
+
     # Exclusion rules present
     scorecard = read_md("08-customer-qualification-scorecard.md")
     for rule in EXCLUSION_RULES:

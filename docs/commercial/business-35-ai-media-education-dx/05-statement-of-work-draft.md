@@ -74,7 +74,7 @@ All bracketed values are placeholders to be completed only after owner approval 
 ## 일정
 
 ```text
-Week 0 계약·범위 확정
+Week 0 범위 합의 초안 및 법률 검토 의뢰 (서명·결제 전)
 Week 1 기준선 진단
 Week 2 직무별 교육
 Week 3 실제 업무 실습
@@ -102,7 +102,8 @@ Week 6 성과측정·플레이북 인도
 
 ```text
 [최종 승인 금액] 원 (VAT 별도 여부는 최종 견적 시 명시)
-상품 B 기준 표준 가격 범위: 1,500만–2,500만원 (시장 검증 전 가설)
+상품 B2(표준 6주 파일럿) 기준 표준 가격 범위: 1,500만–2,500만원 (시장 검증 전 가설)
+A/B1/B2/C offer terminology per CURRENT_PRODUCT_AUTHORITY.md — B1=1,000만–1,500만원 디자인 파트너, B2=1,500만–2,500만원 표준 파일럿
 ```
 
 ## 지급 조건
