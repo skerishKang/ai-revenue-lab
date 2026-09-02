@@ -96,6 +96,7 @@ def test_unsafe_result_urls_are_dropped():
         "results": [
             {"title": "bad", "url": "file:///etc/passwd", "snippet": "x"},
             {"title": "credentials", "url": "https://user:pass@example.com/x", "snippet": "x"},
+            {"title": "local", "url": "http://127.0.0.1/private", "snippet": "x"},
             {"title": "good", "url": "https://example.com/good", "snippet": "ok"},
         ]
     }
