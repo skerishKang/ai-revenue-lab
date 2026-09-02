@@ -7,6 +7,7 @@ from kagent.contracts import ContractError
 from kagent.ops_contracts import (
     ApprovalDecision,
     ApprovalProjection,
+    BusinessObjectKind,
     CommercialRequest,
     LineItem,
     Money,
@@ -145,7 +146,7 @@ class QuoteToOrderWorkflowTests(unittest.TestCase):
         self.assertEqual(sent.status.value, "sent")
         evidence = self.coordinator.ledger.evidence_for_object(
             workspace_id="ws_1",
-            kind=sent.__class__.__module__ and __import__("kagent.ops_contracts", fromlist=["BusinessObjectKind"]).BusinessObjectKind.SUPPLIER_RFQ,
+            kind=BusinessObjectKind.SUPPLIER_RFQ,
             object_id=sent.rfq_id,
             version=sent.version,
         )
