@@ -1,0 +1,8 @@
+name = "padiem-ai-engine-ingress"
+main = "worker.mjs"
+compatibility_date = "2026-09-02"
+workers_dev = true
+
+[[services]]
+binding = "ENGINE"
+service = "padiem-ai-engine"
