@@ -1,0 +1,108 @@
+/* B62 #1422 — shared conversation/composer horizontal grid.
+ *
+ * The bottom composer is the canonical horizontal baseline.  Glass chat mode
+ * must use the same outer left/right lane for conversation content while the
+ * avatar/meta rail remains an internal sub-grid.
+ */
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
+  width: 100% !important;
+  margin-inline: 0 !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-body,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-content {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .error-box {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Wide desktop: reuse the accepted composer geometry exactly. */
+@media (min-width: 1440px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+    --padiem-chat-lane-offset: calc(clamp(48px, 4vw, 72px) + 16px);
+    --padiem-chat-lane-width: min(
+      1168px,
+      calc(
+        100vw
+        - var(--workspace-rail, 252px)
+        - clamp(48px, 4vw, 72px)
+        - clamp(360px, 32vw, 560px)
+        - 80px
+      )
+    );
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    width: var(--padiem-chat-lane-width) !important;
+    margin-left: var(--padiem-chat-lane-offset) !important;
+    margin-right: 0 !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + var(--padiem-chat-lane-offset)) !important;
+    width: var(--padiem-chat-lane-width) !important;
+    transform: none !important;
+  }
+}
+
+/* Compact desktop: preserve the portrait breathing room but share one lane. */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+    --padiem-chat-lane-offset: 38px;
+    --padiem-chat-lane-width: min(
+      672px,
+      calc(
+        100vw
+        - var(--workspace-rail, 252px)
+        - clamp(300px, 32vw, 380px)
+        - 76px
+      )
+    );
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    width: var(--padiem-chat-lane-width) !important;
+    margin-left: var(--padiem-chat-lane-offset) !important;
+    margin-right: 0 !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + var(--padiem-chat-lane-offset)) !important;
+    width: var(--padiem-chat-lane-width) !important;
+    transform: none !important;
+  }
+}
+
+/* Transitional desktop/tablet: editorial mode already centers the composer at
+ * 860px; make the conversation itself the same lane instead of nesting an
+ * 860px message list inside a wider 920px shell. */
+@media (min-width: 921px) and (max-width: 1023px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    width: min(860px, calc(100vw - var(--workspace-rail, 252px) - 56px)) !important;
+    margin-inline: auto !important;
+  }
+}
+
+/* Mobile/tablet: override the higher-specificity editorial 64px chat gutter
+ * and follow the actual fixed composer widths from styles.css. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    width: calc(100vw - 28px) !important;
+    margin-inline: auto !important;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+    width: calc(100vw - 20px) !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
+    padding-left: 24px !important;
+  }
+}

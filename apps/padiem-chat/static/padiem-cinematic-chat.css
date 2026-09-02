@@ -5,6 +5,7 @@
 @import url('./padiem-first-use.css');
 @import url('./padiem-bright-readability.css');
 @import url('./padiem-glass-brand-polish.css');
+@import url('./padiem-glass-gutter-alignment.css');
 
 .cancel-stream-button {
   min-width: 64px;
