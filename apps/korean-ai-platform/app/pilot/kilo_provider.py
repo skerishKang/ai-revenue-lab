@@ -37,6 +37,8 @@ KILO_LAGUNA_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
 KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
 KILO_HY3_MODEL_ID = "kilo/tencent-hy3-free"
 KILO_HY3_UPSTREAM_MODEL = "tencent/hy3:free"
+KILO_MINIMAX_M3_MODEL_ID = "kilo/minimax-minimax-m3-free"
+KILO_MINIMAX_M3_UPSTREAM_MODEL = "minimax/minimax-m3:free"
 
 # Backwards-compatible names used by the first Provider 03 tests/consumers.
 KILO_MODEL_ID = KILO_NEMOTRON_MODEL_ID
@@ -77,6 +79,14 @@ KILO_FREE_ROUTES = (
         provider="Kilo Gateway / Tencent",
         context_window=262_144,
         sort_order=92,
+    ),
+    _KiloFreeRoute(
+        model_id=KILO_MINIMAX_M3_MODEL_ID,
+        upstream_model=KILO_MINIMAX_M3_UPSTREAM_MODEL,
+        display_name="Kilo: MiniMax M3 (free)",
+        provider="Kilo Gateway / MiniMax",
+        context_window=1_048_576,
+        sort_order=93,
     ),
 )
 
