@@ -80,13 +80,13 @@ class ArtifactExportTests(unittest.TestCase):
             ArtifactExportManifest("m1", "run_1", "lease_1", (artifact(lease_id="lease_2"),))
 
     def test_policy_enforces_file_count_individual_and_total_bytes(self):
-        policy = ArtifactExportPolicy(max_files=2, max_file_bytes=100, max_total_bytes=150)
+        policy = ArtifactExportPolicy(max_files=2, max_file_bytes=1024, max_total_bytes=1500)
         with self.assertRaises(ContractError):
-            ArtifactExportManifest("m1", "run_1", "lease_1", (artifact(size=101),)).validate_against(policy)
+            ArtifactExportManifest("m1", "run_1", "lease_1", (artifact(size=1025),)).validate_against(policy)
         with self.assertRaises(ContractError):
             ArtifactExportManifest(
                 "m1", "run_1", "lease_1",
-                (artifact(size=80), artifact("out/b.json", artifact_id="a2", size=80)),
+                (artifact(size=800), artifact("out/b.json", artifact_id="a2", size=800)),
             ).validate_against(policy)
         with self.assertRaises(ContractError):
             ArtifactExportManifest(
