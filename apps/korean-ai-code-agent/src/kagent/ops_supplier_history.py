@@ -125,6 +125,8 @@ class SupplierPriceObservation:
         object.__setattr__(self, "captured_at", _aware(self.captured_at, "captured_at"))
         if not isinstance(self.unit_price, Money):
             raise ContractError("unit_price must be Money")
+        if self.unit_price.amount_minor < 0:
+            raise ContractError("supplier unit_price must not be negative")
         object.__setattr__(self, "evidence_ref", _ref(self.evidence_ref, "evidence_ref", limit=512))
 
 
