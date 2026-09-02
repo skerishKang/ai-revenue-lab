@@ -21,7 +21,11 @@
   }
 
   function inChat(){
-    return Boolean(shell && shell.dataset.state === "chat");
+    return Boolean(
+      shell
+      && shell.dataset.state === "chat"
+      && document.documentElement.getAttribute("data-theme") === "padiem-glass"
+    );
   }
 
   function documentHeight(){
