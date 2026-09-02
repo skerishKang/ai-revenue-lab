@@ -1,0 +1,44 @@
+{
+  "version": "padiem-tier-benchmark-v1",
+  "language": "ko-KR",
+  "data_policy": "synthetic_non_sensitive_only",
+  "provider_calls_authorized": false,
+  "cases": [
+    {
+      "id": "KR-CONV-001",
+      "category": "korean_conversation",
+      "prompt": "친구가 새 직장 첫날이라 많이 긴장하고 있습니다. 과하게 들뜨지 않게, 자연스러운 한국어로 짧게 응원 메시지를 써 주세요.",
+      "rubric": ["natural_korean", "tone_fit", "concise", "no_unneeded_disclaimer"]
+    },
+    {
+      "id": "KR-REASON-001",
+      "category": "reasoning",
+      "prompt": "A, B, C 세 상자가 있습니다. 금화는 한 상자에만 있고, 'A에는 없다', 'B에 있다', 'C에는 없다'라는 세 문장 중 정확히 하나만 참입니다. 금화가 든 상자를 고르고 이유를 간단히 설명해 주세요.",
+      "rubric": ["correct_answer", "valid_reasoning", "no_contradiction"]
+    },
+    {
+      "id": "KR-INSTR-001",
+      "category": "instruction_following",
+      "prompt": "아래 조건을 모두 지켜 답하세요. 1) 정확히 세 줄, 2) 각 줄은 12자 이내, 3) 첫 줄은 '요약:'으로 시작, 4) 주제는 비 오는 날 우산을 챙기는 이유입니다.",
+      "rubric": ["all_constraints_met", "topic_relevance", "no_extra_text"]
+    },
+    {
+      "id": "KR-CODE-001",
+      "category": "coding",
+      "prompt": "다음 Python 함수는 빈 리스트에서 예외가 납니다. 동작 의도는 값이 없으면 0을 반환하는 것입니다. 최소 수정으로 고치고 이유를 한 문장으로 설명해 주세요.\n\ndef average(values):\n    return sum(values) / len(values)",
+      "rubric": ["correct_fix", "minimal_change", "clear_explanation"]
+    },
+    {
+      "id": "KR-LONG-001",
+      "category": "long_answer",
+      "prompt": "가상의 소규모 독서모임이 매주 수요일 저녁에 6명이 모이고, 한 달에 한 권을 읽습니다. 신규 참여자가 부담 없이 적응하도록 첫 한 달 운영안을 5개 항목으로 제안해 주세요. 각 항목은 실행 가능한 수준으로 구체적으로 쓰되 불필요하게 길게 쓰지 마세요.",
+      "rubric": ["structured_answer", "practicality", "specificity", "balanced_length"]
+    },
+    {
+      "id": "KR-SUMMARY-001",
+      "category": "summarization",
+      "prompt": "다음은 가상의 공지입니다. 핵심만 두 문장으로 요약해 주세요.\n\n'이번 주 토요일 오전 10시부터 오후 1시까지 건물 전기 점검이 예정되어 있습니다. 점검 중 엘리베이터와 지하주차장 출입 게이트가 일시 중단될 수 있습니다. 냉장 보관이 필요한 물품은 사전에 대비해 주시고, 노트북과 휴대전화는 금요일까지 충분히 충전해 두시기 바랍니다. 작업이 조기 종료되면 즉시 정상 운영으로 전환됩니다.'",
+      "rubric": ["key_facts_preserved", "two_sentences", "no_hallucination"]
+    }
+  ]
+}
