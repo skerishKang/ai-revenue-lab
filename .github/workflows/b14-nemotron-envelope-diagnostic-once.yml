@@ -1,0 +1,118 @@
+name: B14 Nemotron envelope diagnostic once
+
+on:
+  push:
+    branches:
+      - test/b14-1452-nemotron-envelope-diagnostic
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install exact locked dependencies
+        run: uv sync --group dev --frozen
+
+      - name: Run exactly one adapter call and classify only on malformed envelope
+        env:
+          B14_PROVIDER_MODE: live
+        run: |
+          set -euo pipefail
+          uv run python - <<'PY'
+          import asyncio
+          import httpx
+
+          from app.pilot.completed_response_shape import classify_completed_response_structure
+          from app.pilot.errors import MalformedUpstreamResponse, PilotError
+          from app.pilot.kilo_provider import (
+              KILO_NEMOTRON_MODEL_ID,
+              KILO_NEMOTRON_UPSTREAM_MODEL,
+              KILO_PROVIDER_ID,
+          )
+          from app.pilot.platform import call_platform_chat_completions
+
+          captured = {"body": b"", "status": None}
+          original_post = httpx.AsyncClient.post
+
+          async def capture_post(self, *args, **kwargs):
+              response = await original_post(self, *args, **kwargs)
+              # Keep raw bytes only in process memory. Never print or persist them.
+              captured["body"] = response.content
+              captured["status"] = response.status_code
+              return response
+
+          httpx.AsyncClient.post = capture_post
+
+          SYNTHETIC = [{
+              "role": "user",
+              "content": "한국어로 한 문장만 답하세요: 오늘은 맑은 날입니다.",
+          }]
+
+          async def main():
+              try:
+                  completed = await call_platform_chat_completions(
+                      model_id=KILO_NEMOTRON_MODEL_ID,
+                      upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
+                      provider="Kilo Gateway / NVIDIA",
+                      platform_provider_id=KILO_PROVIDER_ID,
+                      messages=SYNTHETIC,
+                      temperature=0.0,
+                      max_tokens=64,
+                  )
+              except MalformedUpstreamResponse:
+                  shape = classify_completed_response_structure(captured["body"])
+                  fields = shape.safe_log_fields()
+                  print("NEMOTRON_COMPLETED_DIAGNOSTIC=MALFORMED")
+                  print(f"HTTP_STATUS={captured['status']}")
+                  print(f"STRUCTURE_CATEGORY={fields['category']}")
+                  print(f"DECODED_TYPE={fields['decoded_type']}")
+                  print(f"SAFE_TOP_LEVEL_KEYS={fields['safe_top_level_keys']}")
+                  print(f"CHOICES_TYPE={fields['choices_type']}")
+                  print(f"CHOICES_COUNT={fields['choices_count']}")
+                  print("RAW_BODY_PRINTED=NO")
+                  print("REAL_PROVIDER_CALLS=1")
+                  print("RETRY=NO")
+                  return
+              except PilotError as exc:
+                  print("NEMOTRON_COMPLETED_DIAGNOSTIC=OTHER_BOUNDED_PROVIDER_ERROR")
+                  print(f"ERROR_CODE={exc.code}")
+                  print(f"HTTP_STATUS={captured['status']}")
+                  print("RAW_BODY_PRINTED=NO")
+                  print("REAL_PROVIDER_CALLS=1")
+                  print("RETRY=NO")
+                  return
+              finally:
+                  httpx.AsyncClient.post = original_post
+
+              choices = completed.get("choices") or []
+              text = ""
+              if choices and isinstance(choices[0], dict):
+                  message = choices[0].get("message") or {}
+                  if isinstance(message, dict):
+                      text = message.get("content") or ""
+              print("NEMOTRON_COMPLETED_DIAGNOSTIC=PASS")
+              print(f"REPORTED_MODEL_MATCH={completed.get('model') == KILO_NEMOTRON_UPSTREAM_MODEL}")
+              print(f"VISIBLE_CONTENT={bool(isinstance(text, str) and text.strip())}")
+              print(f"UPSTREAM_LATENCY_MS={completed.get('_upstream_latency_ms', '')}")
+              print("RAW_BODY_PRINTED=NO")
+              print("REAL_PROVIDER_CALLS=1")
+              print("RETRY=NO")
+
+          asyncio.run(main())
+          PY
