@@ -76,6 +76,24 @@ class DenyingAdapter(AllowingAdapter):
         )
 
 
+class UnboundAdapter(AllowingAdapter):
+    def resolve_admission(self, request):
+        self.calls.append(request)
+        now = datetime.now(timezone.utc)
+        return TrustedExecutionAdmission(
+            decision_id="adm_run_unbound",
+            app_id=request.app_id,
+            subject_id=request.subject_id,
+            capability=request.capability,
+            allowed=True,
+            authority_ref="control-plane:entitlement:run",
+            policy_revision="policy:run:1",
+            issued_at=now - timedelta(minutes=1),
+            expires_at=now + timedelta(minutes=5),
+            request_fingerprint=None,
+        )
+
+
 def _payload() -> dict:
     return {
         "app_id": "b62",
@@ -151,6 +169,18 @@ async def test_denied_trusted_run_admission_fails_before_core() -> None:
 
     assert response.status_code == 403
     assert response.body["error"]["code"] == "entitlement_denied"
+    assert runtime.call_count == 0
+    assert len(adapter.calls) == 1
+
+
+async def test_unbound_trusted_run_admission_is_not_execution_authority() -> None:
+    adapter = UnboundAdapter()
+    service, runtime = _service(adapter)
+
+    response = await service.orchestrate_payload(_payload())
+
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "entitlement_request_mismatch"
     assert runtime.call_count == 0
     assert len(adapter.calls) == 1
 
