@@ -9,6 +9,7 @@ import re
 from typing import Any
 
 from .contracts import ContractError
+from .ops_attachment_scan import TrustedAttachmentScanReceipt, require_clean_attachment_scans
 from .ops_communications import AttachmentPolicy, InboundCommunication
 from .security import redact_secrets
 
@@ -116,6 +117,7 @@ class InboundQuarantineRecord:
             "trusted_execution_input": False,
             "trusted_business_data": False,
             "automatic_record_creation": False,
+            "attachment_scan_required": True,
         }
 
 
@@ -153,9 +155,17 @@ class InMemoryInboundQuarantine:
         self._message_by_event[provider_ref] = message
         return record
 
-    def release_for_review(self, provider_event_ref: str, *, review_ref: str, now: datetime) -> InboundQuarantineRecord:
+    def release_for_review(
+        self,
+        provider_event_ref: str,
+        *,
+        review_ref: str,
+        now: datetime,
+        scan_receipts: tuple[TrustedAttachmentScanReceipt, ...] = (),
+    ) -> InboundQuarantineRecord:
         provider_ref = _ref(provider_event_ref, "provider_event_ref")
         review = _ref(review_ref, "review_ref")
+        release_time = _aware(now, "now")
         try:
             existing = self._by_provider_event[provider_ref]
             message = self._message_by_event[provider_ref]
@@ -166,6 +176,12 @@ class InMemoryInboundQuarantine:
                 return existing
             raise ContractError("released inbound event cannot be rebound to another review")
         self.attachment_policy.require_accepted(message.attachments)
+        require_clean_attachment_scans(message.attachments, scan_receipts)
+        for receipt in scan_receipts:
+            if receipt.scanned_at < existing.quarantined_at:
+                raise ContractError("attachment scan cannot predate quarantine")
+            if receipt.scanned_at > release_time:
+                raise ContractError("attachment scan cannot be from the future")
         released = InboundQuarantineRecord(
             provider_event_ref=existing.provider_event_ref,
             inbound_id=existing.inbound_id,
@@ -173,7 +189,7 @@ class InMemoryInboundQuarantine:
             fingerprint=existing.fingerprint,
             state=InboundQuarantineState.RELEASED_FOR_REVIEW,
             quarantined_at=existing.quarantined_at,
-            released_at=now,
+            released_at=release_time,
             review_ref=review,
         )
         self._by_provider_event[provider_ref] = released
