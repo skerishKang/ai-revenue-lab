@@ -75,6 +75,166 @@ async def _portrait_style(page: Page) -> dict[str, Any]:
     )
 
 
+async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
+    loaded = await page.evaluate(
+        "Boolean(window.__padiemConversationMotion && window.__padiemConversationMotion.isFollowingLatest)"
+    )
+    if not loaded:
+        raise AssertionError(f"conversation motion helper did not load at {name}")
+
+    recommendation_display = await page.locator(
+        '.recent-section[aria-labelledby="recentTitle"]'
+    ).evaluate("el => getComputedStyle(el).display")
+    if recommendation_display != "none":
+        raise AssertionError(
+            f"generic sidebar recommendations remain visible during chat at {name}: {recommendation_display}"
+        )
+
+    clearance = await page.evaluate(
+        "Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--padiem-composer-clearance')) || 0"
+    )
+    composer_wrap_height = await page.locator(".composer-wrap").evaluate(
+        "el => el.getBoundingClientRect().height"
+    )
+    if clearance < max(220, composer_wrap_height + 60):
+        raise AssertionError(
+            f"composer clearance is too small at {name}: clearance={clearance}, composer={composer_wrap_height}"
+        )
+
+    # Grow the current assistant answer deterministically. Both the conversation
+    # follow helper and the Glass portrait motion observe this real DOM growth.
+    await page.evaluate(
+        """
+        () => {
+          const content = document.querySelector('#messageList .assistant-content');
+          if (!content) throw new Error('assistant content missing');
+          const tail = document.createElement('div');
+          tail.id = 'conversation-motion-test-tail';
+          for (let i = 0; i < 48; i += 1) {
+            const line = document.createElement('span');
+            line.style.display = 'block';
+            line.textContent = `대화 진행 자동 추적 검증 ${i + 1}`;
+            tail.appendChild(line);
+          }
+          content.appendChild(tail);
+        }
+        """
+    )
+    await page.wait_for_timeout(350)
+
+    followed = await page.evaluate(
+        """
+        () => ({
+          following: window.__padiemConversationMotion.isFollowingLatest(),
+          remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight),
+          composerTop: document.querySelector('.composer-wrap').getBoundingClientRect().top,
+          latestBottom: document.querySelector('#conversation-motion-test-tail').getBoundingClientRect().bottom,
+          reveal: Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0,
+        })
+        """
+    )
+    if not followed["following"]:
+        raise AssertionError(f"latest-answer follow unexpectedly paused at {name}: {followed}")
+    if followed["remaining"] > 4:
+        raise AssertionError(f"latest-answer growth was not followed at {name}: {followed}")
+    if followed["latestBottom"] > followed["composerTop"] - 12:
+        raise AssertionError(f"latest answer is covered by the fixed composer at {name}: {followed}")
+
+    # An intentional upward wheel is a user signal: auto-follow must pause.
+    await page.wait_for_timeout(600)
+    await page.mouse.wheel(0, -520)
+    await page.wait_for_timeout(180)
+    paused_before = await page.evaluate(
+        """
+        () => ({
+          following: window.__padiemConversationMotion.isFollowingLatest(),
+          y: window.scrollY,
+        })
+        """
+    )
+    if paused_before["following"]:
+        raise AssertionError(f"user scroll-up did not pause auto-follow at {name}: {paused_before}")
+
+    await page.evaluate(
+        """
+        () => {
+          const tail = document.querySelector('#conversation-motion-test-tail');
+          for (let i = 0; i < 12; i += 1) {
+            const line = document.createElement('span');
+            line.style.display = 'block';
+            line.textContent = `사용자 과거 읽기 중 추가 토큰 ${i + 1}`;
+            tail.appendChild(line);
+          }
+        }
+        """
+    )
+    await page.wait_for_timeout(220)
+    paused_after = await page.evaluate(
+        """
+        () => ({
+          following: window.__padiemConversationMotion.isFollowingLatest(),
+          y: window.scrollY,
+        })
+        """
+    )
+    if paused_after["following"]:
+        raise AssertionError(f"DOM growth resumed follow while user was reading history at {name}: {paused_after}")
+    if abs(float(paused_after["y"]) - float(paused_before["y"])) > 8:
+        raise AssertionError(
+            f"viewport moved while auto-follow was paused at {name}: before={paused_before}, after={paused_after}"
+        )
+
+    # Returning to the end restores normal progressive-follow behavior.
+    await page.evaluate(
+        "window.scrollTo(0, Math.max(document.documentElement.scrollHeight, document.body.scrollHeight))"
+    )
+    await page.wait_for_timeout(180)
+    resumed = await page.evaluate(
+        "window.__padiemConversationMotion.isFollowingLatest()"
+    )
+    if not resumed:
+        raise AssertionError(f"returning to conversation end did not resume follow at {name}")
+
+    await page.evaluate(
+        """
+        () => {
+          const tail = document.querySelector('#conversation-motion-test-tail');
+          const line = document.createElement('span');
+          line.style.display = 'block';
+          line.textContent = '최신 답변 추적 재개 검증';
+          tail.appendChild(line);
+        }
+        """
+    )
+    await page.wait_for_timeout(220)
+    resumed_state = await page.evaluate(
+        """
+        () => ({
+          following: window.__padiemConversationMotion.isFollowingLatest(),
+          remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight),
+        })
+        """
+    )
+    if not resumed_state["following"] or resumed_state["remaining"] > 4:
+        raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
+
+    return {
+        "helper_loaded": True,
+        "composer_clearance_px": round(float(clearance), 2),
+        "composer_wrap_height_px": round(float(composer_wrap_height), 2),
+        "latest_growth_followed": True,
+        "latest_answer_clears_composer": True,
+        "user_scroll_up_pauses": True,
+        "growth_while_paused_keeps_viewport": True,
+        "return_to_end_resumes": True,
+        "glass_reveal_after_growth": followed["reveal"],
+        "sidebar_generic_recommendations_hidden": True,
+        "status": "PASS",
+    }
+
+
 async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[str, Any]:
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(
@@ -127,14 +287,29 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         """
         (el) => {
           const s = getComputedStyle(el);
-          return { color: s.color, backgroundColor: s.backgroundColor };
+          return { color: s.color, backgroundColor: s.backgroundColor, boxShadow: s.boxShadow };
+        }
+        """
+    )
+    composer_style = await page.locator("#composerForm").evaluate(
+        """
+        (el) => {
+          const s = getComputedStyle(el);
+          return { backgroundColor: s.backgroundColor, backgroundImage: s.backgroundImage };
         }
         """
     )
     if input_style["color"] not in {"rgb(255, 255, 255)", "rgba(255, 255, 255, 1)"}:
         raise AssertionError(f"chat input text is not white at {name}: {input_style}")
-    if input_style["backgroundColor"] in {"rgba(0, 0, 0, 0)", "transparent"}:
-        raise AssertionError(f"chat input lacks readable field surface at {name}: {input_style}")
+    if input_style["backgroundColor"] not in {"rgba(0, 0, 0, 0)", "transparent"}:
+        raise AssertionError(f"nested Glass textarea surface returned at {name}: {input_style}")
+    if input_style["boxShadow"] not in {"none", "rgba(0, 0, 0, 0) 0px 0px 0px 0px"}:
+        raise AssertionError(f"nested Glass textarea shadow returned at {name}: {input_style}")
+    if (
+        composer_style["backgroundColor"] in {"rgba(0, 0, 0, 0)", "transparent"}
+        and composer_style["backgroundImage"] == "none"
+    ):
+        raise AssertionError(f"outer composer lost its readable surface at {name}: {composer_style}")
 
     portrait_chat = await _portrait_style(page)
     if portrait_chat["opacity"] < 0.15 or portrait_chat["width"] < 250:
@@ -142,6 +317,8 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
 
     chat_screenshot = f"{name}-female-chat.png"
     await page.screenshot(path=str(OUT_DIR / chat_screenshot), full_page=True)
+
+    motion = await _assert_conversation_motion(page, name)
 
     return {
         "viewport": {"width": width, "height": height},
@@ -153,8 +330,10 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "assistant_avatar": assistant_avatar,
         "assistant_name": assistant_name,
         "input_style": input_style,
+        "composer_style": composer_style,
         "portrait_home": portrait_home,
         "portrait_chat": portrait_chat,
+        "conversation_motion": motion,
         "home_screenshot": home_screenshot,
         "chat_screenshot": chat_screenshot,
         "vertical_scroll_allowed": True,
@@ -166,7 +345,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
 async def main() -> None:
     report: dict[str, Any] = {
         "base_url": BASE_URL,
-        "purpose": "Padiem Glass 1920x1080 browser zoom-equivalent desktop visual contract",
+        "purpose": "Padiem Glass zoom-responsive composition and live conversation-follow contract",
         "browser_zoom_forced": False,
         "views": {},
     }
