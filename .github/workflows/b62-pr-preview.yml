@@ -1,0 +1,156 @@
+name: B62 PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "apps/padiem-chat/**"
+      - ".github/workflows/b62-pr-preview.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: padiem-chat-pr-preview
+      PREVIEW_BRANCH: pr-${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${HEAD_SHA}"
+          test -f apps/padiem-chat/static/index.html
+          grep -F 'Padiem Chat' apps/padiem-chat/static/index.html >/dev/null
+
+      - name: Ensure dedicated Padiem Chat Pages project exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}" || { echo "Missing CLOUDFLARE_API_TOKEN" >&2; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID}" || { echo "Missing CLOUDFLARE_ACCOUNT_ID" >&2; exit 1; }
+
+          set +e
+          create_output="$(npx --yes wrangler@4 pages project create "${PROJECT_NAME}" --production-branch main 2>&1)"
+          create_rc=$?
+          set -e
+          printf '%s\n' "${create_output}"
+          if [ "${create_rc}" -ne 0 ] && ! grep -Fq 'already exists' <<<"${create_output}"; then
+            exit "${create_rc}"
+          fi
+
+      - name: Deploy exact-head static visual preview
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy apps/padiem-chat/static \
+            --project-name "${PROJECT_NAME}" \
+            --branch "${PREVIEW_BRANCH}" \
+            --commit-hash "${HEAD_SHA}" \
+            --commit-message "B62 PR #${{ github.event.pull_request.number }} exact-head visual preview" \
+            --commit-dirty=false 2>&1 | tee /tmp/pages-deploy.log
+
+          immutable_url="$(grep -Eo 'https://[0-9a-f]+\.'"${PROJECT_NAME}"'\.pages\.dev' /tmp/pages-deploy.log | head -n 1)"
+          alias_url="https://${PREVIEW_BRANCH}.${PROJECT_NAME}.pages.dev"
+          test -n "${immutable_url}"
+          echo "immutable_url=${immutable_url}" >> "${GITHUB_OUTPUT}"
+          echo "alias_url=${alias_url}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify exact-head deployment record
+        id: preview
+        shell: bash
+        env:
+          IMMUTABLE_URL: ${{ steps.deploy.outputs.immutable_url }}
+          ALIAS_URL: ${{ steps.deploy.outputs.alias_url }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          project = os.environ["PROJECT_NAME"]
+          head = os.environ["HEAD_SHA"]
+          token = os.environ["CLOUDFLARE_API_TOKEN"]
+          request = urllib.request.Request(
+              f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/{project}/deployments",
+              headers={"Authorization": f"Bearer {token}"},
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              payload = json.load(response)
+          if not payload.get("success"):
+              raise SystemExit("Pages deployment lookup failed")
+          matching = []
+          for deployment in payload.get("result", []):
+              metadata = (deployment.get("deployment_trigger") or {}).get("metadata") or {}
+              if metadata.get("commit_hash") == head:
+                  matching.append(deployment)
+          if not matching:
+              raise SystemExit(f"exact-head Pages deployment not found for {head}")
+          deployment = matching[0]
+          if deployment.get("environment") != "preview":
+              raise SystemExit(f"unexpected Pages environment: {deployment.get('environment')!r}")
+          print("PAGES_EXACT_HEAD_DEPLOYMENT=PASS")
+          print(f"PAGES_DEPLOYMENT_ID={deployment.get('id', '')}")
+          print(f"PAGES_ENVIRONMENT={deployment.get('environment', '')}")
+          print(f"PAGES_URL={deployment.get('url', '')}")
+          PY
+
+          ready=0
+          for attempt in $(seq 1 40); do
+            if curl -fsS --retry 1 --retry-delay 1 "${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" -o /tmp/index.html; then
+              ready=1
+              break
+            fi
+            sleep 3
+          done
+          test "${ready}" = "1"
+
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-portrait.css" -o /tmp/portrait.css
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-brand-polish.css" -o /tmp/brand.css
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/assets/padiem-glass-female.jpg" -o /tmp/female.jpg
+
+          cmp apps/padiem-chat/static/padiem-glass-portrait.css /tmp/portrait.css
+          cmp apps/padiem-chat/static/padiem-glass-brand-polish.css /tmp/brand.css
+          cmp apps/padiem-chat/static/assets/padiem-glass-female.jpg /tmp/female.jpg
+          grep -F 'Padiem Chat' /tmp/index.html >/dev/null
+
+          echo "url=${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
+          echo "alias_url=${ALIAS_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish preview URL
+        shell: bash
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+          ALIAS_URL: ${{ steps.preview.outputs.alias_url }}
+        run: |
+          {
+            echo "## B62 isolated static PR preview"
+            echo
+            echo "- Head: \`${HEAD_SHA}\`"
+            echo "- Immutable preview: ${PREVIEW_URL}"
+            echo "- PR alias: ${ALIAS_URL}"
+            echo "- Pages project: \`${PROJECT_NAME}\`"
+            echo "- Scope: exact-head static UI only"
+            echo "- Production Padiem Chat Worker: untouched"
+            echo "- Backend/provider calls: not part of this visual preview"
+          } >> "${GITHUB_STEP_SUMMARY}"
