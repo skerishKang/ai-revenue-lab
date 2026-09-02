@@ -19,13 +19,28 @@ from padiem_ai_core import (
 )
 from workers import Request
 
+from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.orchestration_identity_service import IdentityBoundOrchestrationEngineService
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
+
+ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
+
+
+def _continuation_store_for_env(env: Any) -> CloudflareD1IdentityBoundContinuationStore | None:
+    """Resolve the explicit durable continuation authority; never fake Production state."""
+    binding = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        return CloudflareD1IdentityBoundContinuationStore(binding)
+    except (TypeError, ValueError):
+        return None
 
 
 def _engine_services_for_env(
@@ -52,6 +67,7 @@ def _engine_services_for_env(
     config = B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN)
     b14_client = B14ExecutionClient(config, transport=transport)
     b14_stream_client = B14StreamingClient(config, transport=transport)
+    continuation_store = _continuation_store_for_env(env)
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
         return ExecutionRuntime(app_id=app_id, b14_client=b14_client)
@@ -74,11 +90,15 @@ def _engine_services_for_env(
         IdentityBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
+            continuation_store=continuation_store,
+            approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
         ),
     )
 
 
 # Default.fetch resolves this global from legacy_worker, so replace only the
-# factory seam before exporting the unchanged WorkerEntrypoint class.
+# factory seam before exporting the unchanged WorkerEntrypoint class. All
+# non-health requests still pass legacy_worker service-identity authentication
+# before this service factory is used.
 legacy_worker._engine_services_for_env = _engine_services_for_env
 Default = legacy_worker.Default
