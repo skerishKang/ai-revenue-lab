@@ -2,7 +2,9 @@
 
 ```text
 CURRENT_PRODUCT_AUTHORITY=V3_1_MERGED_PR_370
-PRE_V3_1_GENERATED_ARTIFACTS=STALE_FOR_SEND
+SOURCE_REVISION=63adbefcf24a91a5a064c6b8e13779e151ba7de7
+PRODUCT_AUTHORITY_REVISION=05932da3af774220372f0e9f3716b07cd83511f9
+CURRENT_BINARY_STATUS=V3_1_REGENERATED_FROM_ACCEPTED_SOURCE
 PROVIDER=파디엠
 CONTRACTING_ENTITY=파디엠
 BUSINESS_DETAILS_VERIFICATION_PENDING
@@ -12,7 +14,11 @@ DO_NOT_SEND
 DO_NOT_MERGE
 ```
 
-This branch contains the existing Business 35 customer-package build system and historical generated artifacts. It is **not** currently customer-send-ready.
+This directory contains the Business 35 customer package regenerated from the
+exact accepted Lane A source (see GENERATION_MANIFEST.json for the full
+revision trace). It is **not** currently customer-send-ready: W4 pixel review,
+business-details verification, legal/contract review, and customer-specific
+price approval are still required.
 
 The product source of truth changed after these binaries were generated: merged PR #370 established **파디엠 AI 미디어 업무전환 스튜디오** as the accepted V3.1 product direction. See `../CURRENT_PRODUCT_AUTHORITY.md` and `reference/business-35-ai-media-education-dx-v3/PRODUCT_CONTRACT.md`.
 
@@ -72,7 +78,10 @@ xlsx-rendered/
 validation/
 ```
 
-These files remain useful as **historical pre-V3.1 build evidence**, but the generated customer artifacts must be regenerated after the V3.1 source/story/design reconciliation. Do not relabel old binaries as current by editing Markdown only.
+These files are the V3.1 regenerated customer artifacts (see SOURCE_MAPPING.md
+for the current mapping and GENERATION_MANIFEST.json for hashes). Pre-V3.1
+binaries from PR #359 remain historical evidence only. Do not relabel old
+binaries as current by editing Markdown only.
 
 ## Commercial offer continuity
 
@@ -123,22 +132,25 @@ The package does not need to copy the website pixel-for-pixel, but it must feel 
 
 ## Regeneration gate
 
-Before any customer send:
+Completed for this package:
 
-1. rewrite proposal/one-page/customer scripts against `CURRENT_PRODUCT_AUTHORITY.md`;
-2. regenerate PPTX/PDF/DOCX/XLSX from those updated sources;
-3. rerun repository validator and formula checks;
-4. rerender all pages/sheets;
-5. perform fresh Web CTO pixel review after regeneration;
-6. verify official Padiem business details;
-7. complete required legal/contract review;
-8. explicitly approve price hypothesis for the specific customer scope.
+1. proposal/one-page/customer scripts rewritten against accepted Lane A source;
+2. PPTX/PDF/DOCX/XLSX regenerated from those sources (GENERATION_MANIFEST.json);
+3. repository validator and formula checks rerun;
+4. all pages/sheets rerendered with real renderers.
+
+Still required before any customer send:
+
+5. fresh W4 Web CTO pixel review after regeneration (#1507);
+6. official Padiem business details verification;
+7. required legal/contract review;
+8. explicit price-hypothesis approval for the specific customer scope.
 
 Until all eight are complete:
 
 ```text
 CUSTOMER_SEND_READY=false
-PRE_V3_1_GENERATED_ARTIFACTS=STALE_FOR_SEND
+W4_PIXEL_REVIEW=AWAITING_W4_1507
 DO_NOT_SEND
 DO_NOT_MERGE
 ```

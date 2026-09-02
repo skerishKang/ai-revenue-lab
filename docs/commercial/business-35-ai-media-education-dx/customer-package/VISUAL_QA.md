@@ -1,15 +1,16 @@
-# VISUAL_QA — Business 35 Customer Package (V3.1 Deterministic Build)
+# VISUAL_QA — Business 35 Customer Package (V3.1 Regenerated Render Log)
 
 ```text
 CURRENT_PRODUCT_AUTHORITY=V3_1_MERGED_PR_370
 PRODUCT_CONTRACT=reference/business-35-ai-media-education-dx-v3/PRODUCT_CONTRACT.md
-GENERATOR_LINEAGE=PR #359 @ ef343f420661cda5f86cc2848404bca8f1dffe54
+SOURCE_REVISION=63adbefcf24a91a5a064c6b8e13779e151ba7de7
+PRODUCT_AUTHORITY_REVISION=05932da3af774220372f0e9f3716b07cd83511f9
 GENERATION_MANIFEST=GENERATION_MANIFEST.json
-BUILD_MODE=DETERMINISTIC_REGENERATION
-BASE_SHA=c6e0c610bf764006c9b32b73784aef7854f08cd0
+BUILD_MODE=DETERMINISTIC_REGENERATION_FROM_ACCEPTED_SOURCE
+RENDER_MODE=REAL_RENDER_ONLY
 ```
 
-## Generated artifacts under QA
+## Generated artifacts under render (Lane B scope: generation only)
 
 ```text
 Business35_Master_Proposal_10p.pptx / .pdf (10 slides)
@@ -21,7 +22,13 @@ Business35_Diagnostic_Questionnaire
 Business35_Pilot_Quote_Template.xlsx (9 sheets)
 ```
 
-## Rendered evidence (deterministic placeholders for W4 pixel QA)
+## Rendered evidence (real renders from the final artifacts)
+
+PDF pages rasterized with PyMuPDF (real PDF rendering, deterministic scale);
+XLSX sheets rendered from real cell values/styles via openpyxl + Pillow.
+No synthetic placeholders are used. When no real renderer is available the
+build fails with REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING instead of
+generating placeholder evidence.
 
 ```text
 rendered/proposal-01.png
@@ -49,37 +56,37 @@ xlsx-rendered/assumptions.png
 xlsx-rendered/approval.png
 ```
 
-Every rendered filename above is listed for traceability. Fresh headless render required for final W4 Web CTO pixel review.
+Every rendered filename above is listed for traceability and matches the
+actual files produced by validation/render_artifacts.py.
 
-## QA verdict (current deterministic build)
+## Render verdict ownership (Lane B declares no pixel verdict)
+
+Lane B performs render generation only. The final independent pixel verdict
+(BLOCKER / MAJOR counts, Korean glyph legibility, layout defects) belongs to
+the W4 independent review (#1507) and is awaited:
 
 ```text
-BLOCKER: 0
-MAJOR: 0
-blocker_count: 0
-major_count: 0
-OVERLAP: 0
-CLIPPING: 0
-TEXT_OVERFLOW: 0
-KOREAN_GLYPH: PASS
-PRICE_LABEL: PASS
-FOOTER: PASS
+LANE_B_PIXEL_VERDICT=NOT_DECLARED
+W4_PIXEL_REVIEW=AWAITING_W4_1507
 ```
-
-Geometry checks: no shape overflow, no text overlap (slides 3/4/8 verified), editable text/shapes, page numbers, speaker notes, 16:9.
 
 ## Notes
 
-- This build recovers generation infrastructure from PR #359 and reconciles it to current main (Lane B parallel-safe). Historical pre-V3.1 binaries remain STALE_FOR_SEND.
-- Final V3.1 customer binaries must be regenerated from accepted #1503 exact source revision; this manifest records PENDING_ACCEPTED_1503 until then.
-- validator는 시각 검증을 대신하지 않는다. 이 검사는 구조/공식/매핑 검증이며, 실제 픽셀 가독성·계층·테이블·브랜드 연속성은 W4 Web CTO pixel review에서 별도로 확인해야 한다.
-- Deterministic: fixed timestamps (2026-09-03), deterministic core properties, sorted output lists, Pillow/reportlab placeholders for evidence.
+- This package was regenerated from the exact accepted Lane A source
+  (SOURCE_REVISION above) with the generator commit recorded in
+  GENERATION_MANIFEST.json. Pre-V3.1 binaries from PR #359 remain historical
+  evidence only (see SOURCE_MAPPING.md historical section).
+- validator는 시각 검증을 대신하지 않는다. 이 검사는 구조/공식/매핑/리비전
+  검증이며, 실제 픽셀 가독성·계층·테이블·브랜드 연속성은 W4 Web CTO pixel
+  review (#1507)에서 별도로 확인해야 한다.
+- Deterministic: fixed timestamps (2026-09-03), deterministic core properties,
+  sorted output lists, real-renderer evidence only.
 
 ## Current disposition
 
 ```text
-CURRENT_V3_1_ARTIFACTS=REGENERATED_DETERMINISTIC
-CURRENT_V3_1_PIXEL_REVIEW=PENDING_W4
+CURRENT_V3_1_ARTIFACTS=V3_1_REGENERATED_FROM_ACCEPTED_SOURCE
+CURRENT_V3_1_PIXEL_REVIEW=AWAITING_W4_1507
 CUSTOMER_SEND_READY=false
 DO_NOT_SEND
 DRAFT
