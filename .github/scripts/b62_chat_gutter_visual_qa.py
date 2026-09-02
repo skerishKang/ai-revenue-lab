@@ -101,31 +101,44 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     error_surface = await _box(page, "#shared-gutter-error-fixture")
     retry_control = await _box(page, "#shared-gutter-error-fixture .retry-button")
 
-    inner_gutter = await page.locator('.app-shell[data-state="chat"]').evaluate(
+    # Resolve the actual used padding rather than parsing the raw custom-property
+    # token. The token uses clamp(), so parseFloat('--padiem-chat-inner-gutter')
+    # is NaN even when the browser has correctly resolved it to a pixel value.
+    conversation_padding = await page.locator(".conversation").evaluate(
         """
-        (el) => Number.parseFloat(
-          getComputedStyle(el).getPropertyValue('--padiem-chat-inner-gutter')
-        ) || 0
+        (el) => {
+          const style = getComputedStyle(el);
+          return {
+            left: Number.parseFloat(style.paddingLeft) || 0,
+            right: Number.parseFloat(style.paddingRight) || 0,
+          };
+        }
         """
     )
-    inner_gutter = round(float(inner_gutter), 2)
+    inner_gutter_left = round(float(conversation_padding["left"]), 2)
+    inner_gutter_right = round(float(conversation_padding["right"]), 2)
 
     # Outer shell contract: conversation and composer are exactly one lane.
     _assert_close(conversation["x"], composer["x"], name=f"{name} outer left gutter")
     _assert_close(_right(conversation), _right(composer), name=f"{name} outer right gutter")
     _assert_close(conversation["width"], composer["width"], name=f"{name} outer lane width")
 
-    # Internal identity rail contract: message content starts inside a bounded,
-    # symmetric gutter instead of flattening the avatar/meta column.
+    # Internal identity rail contract: message content starts inside the actual
+    # bounded, symmetric conversation padding instead of flattening avatar/meta.
     _assert_close(
         message_list["x"] - conversation["x"],
-        inner_gutter,
+        inner_gutter_left,
         name=f"{name} message-list left inner gutter",
     )
     _assert_close(
         _right(conversation) - _right(message_list),
-        inner_gutter,
+        inner_gutter_right,
         name=f"{name} message-list right inner gutter",
+    )
+    _assert_close(
+        inner_gutter_left,
+        inner_gutter_right,
+        name=f"{name} symmetric conversation inner gutter",
     )
     _assert_close(assistant_avatar["x"], message_list["x"], name=f"{name} avatar rail start")
 
@@ -163,7 +176,8 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "viewport": {"width": width, "height": height},
         "conversation": conversation,
         "composer": composer,
-        "inner_gutter_px": inner_gutter,
+        "inner_gutter_left_px": inner_gutter_left,
+        "inner_gutter_right_px": inner_gutter_right,
         "message_list": message_list,
         "user_message": user_message,
         "user_bubble": user_bubble,
