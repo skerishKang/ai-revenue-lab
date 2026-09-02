@@ -222,12 +222,15 @@ class RunReconciliationTests(unittest.TestCase):
         queue.record_p01_cursor(
             dispatch_id="dispatch_1",
             p01_run_id="orch_1",
+            sequence=1,
+            event_id="evt_1",
+        )
+        queue.record_p01_cursor(
+            dispatch_id="dispatch_1",
+            p01_run_id="orch_1",
             sequence=2,
             event_id="evt_2",
-        ) if False else None
-        # First sequence must be 1, then advance to 2.
-        queue.record_p01_cursor(dispatch_id="dispatch_1", p01_run_id="orch_1", sequence=1, event_id="evt_1")
-        queue.record_p01_cursor(dispatch_id="dispatch_1", p01_run_id="orch_1", sequence=2, event_id="evt_2")
+        )
         snap = snapshot(queue, status=ClawRunStatus.RUNNING)
 
         cases = (
