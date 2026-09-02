@@ -1,25 +1,20 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 from typing import Protocol
 
-from padiem_ai_core.contracts import AgentProfile
-from padiem_ai_core.execution_context import (
-    MAX_TIMEOUT_SECONDS,
-    MIN_TIMEOUT_SECONDS,
+from padiem_ai_core import (
+    AgentProfile,
     ExecutionContext,
-)
-from padiem_ai_core.execution_runtime import ExecutionRequest
-from padiem_ai_core.orchestration import (
-    OrchestrationRequest,
-    OrchestrationResult,
-)
-from padiem_ai_core.orchestration_events import (
+    ExecutionRequest,
     OrchestrationEvent,
     OrchestrationEventKind,
+    OrchestrationRequest,
+    OrchestrationResult,
 )
 
 from .contracts import (
@@ -118,11 +113,19 @@ class P01RequestFactory:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise P01AdapterError("invalid_timeout", "P01 timeout must be numeric.")
         normalized_timeout = float(timeout_seconds)
-        if not MIN_TIMEOUT_SECONDS <= normalized_timeout <= MAX_TIMEOUT_SECONDS:
+        # Validate against the canonical public P01 contract instead of importing
+        # private/internal timeout constants. This makes Core the single authority
+        # for the accepted execution budget.
+        try:
+            ExecutionContext(
+                trace_id="claw_timeout_contract_probe",
+                timeout_seconds=normalized_timeout,
+            )
+        except ValueError:
             raise P01AdapterError(
                 "invalid_timeout",
-                f"P01 timeout must be between {MIN_TIMEOUT_SECONDS:g} and {MAX_TIMEOUT_SECONDS:g} seconds.",
-            )
+                "P01 timeout is outside the canonical Core execution-context bounds.",
+            ) from None
         self._timeout_seconds = normalized_timeout
         self._clock = clock or (lambda: datetime.now(timezone.utc))
 
@@ -271,10 +274,11 @@ class ClawOrchestrationProjector:
                 "P01 event belongs to a different orchestration run.",
             )
 
-        if event.sequence <= self._last_sequence:
+        expected_sequence = self._last_sequence + 1
+        if event.sequence != expected_sequence:
             raise P01ProjectionError(
-                "event_sequence_regression",
-                "P01 event sequence must increase monotonically.",
+                "event_sequence_gap",
+                "P01 event sequence must be contiguous and monotonic.",
             )
 
         try:
@@ -370,6 +374,7 @@ class P01CoreOrchestrationAdapter:
                     "invalid_p01_result",
                     "P01 runner returned an invalid orchestration result.",
                 )
+            self._validate_result_correlation(run, bundle, result)
             for event in result.events:
                 projector.consume(event)
 
@@ -390,6 +395,9 @@ class P01CoreOrchestrationAdapter:
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
             )
+        except asyncio.CancelledError:
+            self._cancel_run_if_possible(run)
+            raise
         except P01AdapterError:
             self._fail_run_if_possible(run)
             raise
@@ -405,6 +413,46 @@ class P01CoreOrchestrationAdapter:
                 "p01_execution_failed",
                 "P01 orchestration failed without a safe product result.",
             ) from None
+
+    @staticmethod
+    def _validate_result_correlation(
+        run: ClawRun,
+        bundle: P01RequestBundle,
+        result: OrchestrationResult,
+    ) -> None:
+        expected_trace = bundle.context.trace_id
+        expected_app = bundle.orchestration_request.app_id
+        metadata = result.execution_result.metadata
+        if (
+            result.context.trace_id != expected_trace
+            or result.app_id != expected_app
+            or metadata.trace_id != expected_trace
+            or metadata.app_id != expected_app
+            or metadata.agent_id != P01_AGENT_ID
+            or metadata.session_id != run.run_id
+        ):
+            raise P01AdapterError(
+                "p01_result_correlation_mismatch",
+                "P01 result does not match the trusted Claw run correlation.",
+            )
+
+    @staticmethod
+    def _cancel_run_if_possible(run: ClawRun) -> None:
+        if run.terminal:
+            return
+        if run.status in {
+            ClawRunStatus.QUEUED,
+            ClawRunStatus.PREPARING,
+            ClawRunStatus.RUNNING,
+            ClawRunStatus.WAITING_APPROVAL,
+        }:
+            try:
+                run.transition(
+                    ClawRunStatus.CANCELLED,
+                    summary="P01 실행이 취소되었습니다.",
+                )
+            except RunStateError:
+                pass
 
     @staticmethod
     def _fail_run_if_possible(run: ClawRun) -> None:
