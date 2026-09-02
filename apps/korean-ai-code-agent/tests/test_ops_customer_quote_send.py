@@ -105,11 +105,11 @@ class CustomerQuoteSendTests(unittest.TestCase):
         self.assertEqual(receipt.quote_version, req.quote.version)
         self.assertEqual(len(fake.sent), 1)
 
-    def test_rejected_decision_or_wrong_pause_fails_closed(self):
+    def test_denied_decision_or_wrong_pause_fails_closed(self):
         req = request_for()
         sender = ApprovalGatedCustomerQuoteSender(DeterministicFakeCustomerQuoteOutboundPort(delivered_at=NOW))
         with self.assertRaises(ContractError):
-            sender.send(request=req, binding=self.binding(req), decision=decision(outcome=ApprovalOutcome.REJECTED))
+            sender.send(request=req, binding=self.binding(req), decision=decision(outcome=ApprovalOutcome.DENIED))
         with self.assertRaises(ContractError):
             sender.send(request=req, binding=self.binding(req), decision=decision(pause_id="other_pause"))
 
