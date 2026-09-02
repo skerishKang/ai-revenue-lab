@@ -1,0 +1,83 @@
+name: B14 Kilo MiniMax M3 live smoke once
+
+on:
+  push:
+    branches:
+      - test/b14-1442-minimax-live-smoke
+
+permissions:
+  contents: read
+
+jobs:
+  minimax-m3-live-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/korean-ai-platform
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install exact locked dependencies
+        run: uv sync --group dev --frozen
+
+      - name: Run exactly one completed call through B14 adapter
+        env:
+          B14_PROVIDER_MODE: live
+        run: |
+          set -euo pipefail
+          uv run python - <<'PY'
+          import asyncio
+
+          from app.pilot.kilo_provider import (
+              KILO_MINIMAX_M3_MODEL_ID,
+              KILO_MINIMAX_M3_UPSTREAM_MODEL,
+              KILO_PROVIDER_ID,
+          )
+          from app.pilot.platform import call_platform_chat_completions
+
+          SYNTHETIC = [{
+              "role": "user",
+              "content": "한국어로 한 문장만 답하세요: 오늘 테스트는 정상입니다.",
+          }]
+
+          async def main():
+              completed = await call_platform_chat_completions(
+                  model_id=KILO_MINIMAX_M3_MODEL_ID,
+                  upstream_model=KILO_MINIMAX_M3_UPSTREAM_MODEL,
+                  provider="Kilo Gateway / MiniMax",
+                  platform_provider_id=KILO_PROVIDER_ID,
+                  messages=SYNTHETIC,
+                  temperature=0.0,
+                  max_tokens=64,
+              )
+              choices = completed.get("choices") or []
+              text = ""
+              if choices and isinstance(choices[0], dict):
+                  message = choices[0].get("message") or {}
+                  if isinstance(message, dict):
+                      text = message.get("content") or ""
+
+              if completed.get("_live") is not True or completed.get("_mock") is True:
+                  raise RuntimeError("MINIMAX_M3_LIVE_EXECUTION_NOT_PROVEN")
+              if not isinstance(text, str) or not text.strip():
+                  raise RuntimeError("MINIMAX_M3_VISIBLE_CONTENT_MISSING")
+
+              print("MINIMAX_M3_COMPLETED_LIVE_SMOKE=PASS")
+              print(f"REQUESTED_MODEL={KILO_MINIMAX_M3_UPSTREAM_MODEL}")
+              print(f"REPORTED_MODEL={completed.get('model', '')}")
+              print(f"VISIBLE_CONTENT_CHARS={len(text.strip())}")
+              print(f"UPSTREAM_LATENCY_MS={completed.get('_upstream_latency_ms', '')}")
+              print("REAL_PROVIDER_CALLS=1")
+              print("KILO_API_KEY_USED=NO")
+
+          asyncio.run(main())
+          PY
