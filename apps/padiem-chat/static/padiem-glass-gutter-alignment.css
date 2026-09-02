@@ -159,10 +159,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
 }
 
 @media (max-width: 620px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: calc(100vw - 20px) !important;
-  }
-
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
     padding-left: 24px !important;
   }
