@@ -103,20 +103,13 @@ html[data-theme="padiem-glass"] body .app-shell .composer textarea:focus-visible
   box-shadow: none !important;
 }
 
-html[data-theme="padiem-glass"] body .app-shell .composer:focus-within {
+html[data-theme="padiem-glass"] body .app-shell .composer:focus-within,
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:focus-within {
   border-color: rgba(79, 91, 101, .22) !important;
   box-shadow:
     0 20px 54px rgba(28, 36, 44, .16),
     inset 0 1px 0 rgba(255, 255, 255, .80),
     0 0 0 1px rgba(255, 255, 255, .34) !important;
-}
-
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer:focus-within {
-  border-color: rgba(255, 255, 255, .30) !important;
-  box-shadow:
-    0 18px 46px rgba(27, 35, 43, .22),
-    inset 0 1px 0 rgba(255, 255, 255, .10),
-    0 0 0 1px rgba(255, 255, 255, .10) !important;
 }
 
 /* The house glyph used for the planning starter was visually disappearing on
@@ -158,8 +151,21 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   scroll-margin-top: 92px;
 }
 
-/* One composer surface only. The textarea no longer reads as a second dark
- * rectangle nested inside the outer composer. */
+/* Keep one stable bright Glass composer before and after the first turn.
+ * State changes may alter controls, but must not flip the whole input surface
+ * from frosted light to charcoal. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer {
+  background: linear-gradient(165deg, rgba(255, 255, 255, .94), var(--glass-composer-surface)) !important;
+  border-color: rgba(255, 255, 255, .76) !important;
+  box-shadow:
+    0 24px 70px rgba(28, 36, 44, .20),
+    inset 0 1px 0 rgba(255, 255, 255, .88) !important;
+  color: #17202a !important;
+}
+
+/* One composer surface only. The textarea remains transparent rather than
+ * becoming a nested rectangle, while its foreground matches the bright Glass
+ * surface in both home and active-chat states. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea {
   min-height: 50px !important;
   padding: 8px 8px 4px !important;
@@ -167,8 +173,22 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer tex
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #ffffff !important;
-  caret-color: #ffffff;
+  color: #17202a !important;
+  caret-color: #17202a !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea::placeholder {
+  color: rgba(37, 48, 58, .48) !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer .tool-button {
+  background: rgba(255, 255, 255, .26) !important;
+  color: #25333e !important;
+  border-color: rgba(255, 255, 255, .38) !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer .tool-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .46) !important;
 }
 
 /* During generation, the cancel action occupies the send-control position as
@@ -188,8 +208,8 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-strea
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, .92);
-  color: #303942;
+  background: rgba(47, 57, 66, .90);
+  color: #ffffff;
   box-shadow: 0 8px 22px rgba(16, 24, 32, .18);
   font-size: 0;
 }
@@ -201,7 +221,37 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-strea
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button:hover:not(:disabled) {
-  background: #ffffff;
+  background: rgba(37, 46, 54, .96);
+}
+
+/* Quota/provider/runtime failures must remain legible on a bright translucent
+ * frame. Avoid pale text on a low-opacity pink card: keep the red signal but
+ * use a near-white tint and dark burgundy foreground. */
+html[data-theme="padiem-glass"] body .error-box {
+  border: 1px solid rgba(126, 48, 48, .24) !important;
+  background: linear-gradient(155deg, rgba(255, 249, 249, .96), rgba(246, 229, 229, .90)) !important;
+  color: #5f2929 !important;
+  box-shadow: 0 12px 28px rgba(73, 35, 35, .08) !important;
+}
+
+html[data-theme="padiem-glass"] body .error-box strong {
+  color: #7f2828 !important;
+}
+
+html[data-theme="padiem-glass"] body .error-box p {
+  color: #633333 !important;
+}
+
+html[data-theme="padiem-glass"] body .error-box .retry-button {
+  border-color: rgba(126, 48, 48, .28) !important;
+  background: rgba(255, 255, 255, .82) !important;
+  color: #762626 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .80) !important;
+}
+
+html[data-theme="padiem-glass"] body .error-box .retry-button:hover:not(:disabled) {
+  background: #ffffff !important;
+  border-color: rgba(126, 48, 48, .40) !important;
 }
 
 /* Canned starter prompts belong on the home surface. Once a real conversation

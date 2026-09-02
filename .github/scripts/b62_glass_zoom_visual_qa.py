@@ -299,8 +299,8 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         }
         """
     )
-    if input_style["color"] not in {"rgb(255, 255, 255)", "rgba(255, 255, 255, 1)"}:
-        raise AssertionError(f"chat input text is not white at {name}: {input_style}")
+    if input_style["color"] not in {"rgb(23, 32, 42)", "rgba(23, 32, 42, 1)"}:
+        raise AssertionError(f"chat input text does not match bright Glass foreground at {name}: {input_style}")
     if input_style["backgroundColor"] not in {"rgba(0, 0, 0, 0)", "transparent"}:
         raise AssertionError(f"nested Glass textarea surface returned at {name}: {input_style}")
     if input_style["boxShadow"] not in {"none", "rgba(0, 0, 0, 0) 0px 0px 0px 0px"}:
