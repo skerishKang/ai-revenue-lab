@@ -53,7 +53,7 @@ def test_kilo_explicit_free_models_are_registered_keyless() -> None:
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside", 262_144),
         KILO_HY3_MODEL_ID: (KILO_HY3_UPSTREAM_MODEL, "Kilo Gateway / Tencent", 262_144),
     }
-    assert len(KILO_FREE_ROUTES) == 3
+    assert len(KILO_FREE_ROUTES) == 4
     assert KILO_MODEL_ID == KILO_NEMOTRON_MODEL_ID
     assert KILO_UPSTREAM_MODEL == KILO_NEMOTRON_UPSTREAM_MODEL
 
