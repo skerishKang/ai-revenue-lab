@@ -42,7 +42,9 @@ def test_mobile_conversation_matches_existing_composer_gutters() -> None:
     assert "@media (max-width: 920px)" in ALIGNMENT_CSS
     assert "width: calc(100vw - 28px) !important;" in ALIGNMENT_CSS
     assert "@media (max-width: 620px)" in ALIGNMENT_CSS
-    assert "width: calc(100vw - 20px) !important;" in ALIGNMENT_CSS
+    # The narrow breakpoint may tighten bubble padding, but it must not change
+    # the 14px outer conversation/composer gutter established at <=920px.
+    assert "width: calc(100vw - 20px) !important;" not in ALIGNMENT_CSS
     assert "padding-left: 24px !important;" in ALIGNMENT_CSS
 
 
