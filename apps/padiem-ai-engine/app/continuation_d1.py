@@ -1,8 +1,9 @@
 """Durable D1 adapter for identity-bound Engine approval continuations.
 
-Only bounded pause metadata, lifecycle state, and canonical execution hashes are
-persisted. Raw user messages, Tool arguments/results, model output, credentials,
-and hidden reasoning are deliberately absent.
+Only bounded pause metadata, lifecycle state, canonical execution hashes, and
+optional bounded evidence of the trusted original run admission are persisted.
+Raw user messages, Tool arguments/results, model output, credentials, payment
+records, and hidden reasoning are deliberately absent.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from padiem_ai_core.agent_approval import ApprovalPause, ApprovalRequirement
 
 from app.continuation_binding import IdentityBoundContinuationRecord
 from app.continuation_identity import ContinuationExecutionIdentity
+from app.execution_admission_resume import OriginalAdmissionBinding
 from app.service import ServiceContractError
 
 _TABLE_NAME = "padiem_engine_continuations"
@@ -87,27 +89,53 @@ def _pause_from_json(value: Any) -> ApprovalPause:
     )
 
 
-def _identity_json(identity: ContinuationExecutionIdentity) -> str:
+def _original_admission_payload(
+    original_admission: OriginalAdmissionBinding,
+) -> dict[str, str | None]:
+    if not isinstance(original_admission, OriginalAdmissionBinding):
+        raise ValueError("original admission binding is invalid")
+    return {
+        "decision_id": original_admission.decision_id,
+        "app_id": original_admission.app_id,
+        "subject_id": original_admission.subject_id,
+        "authority_ref": original_admission.authority_ref,
+        "policy_revision": original_admission.policy_revision,
+        "request_fingerprint": original_admission.request_fingerprint,
+    }
+
+
+def _identity_json(
+    identity: ContinuationExecutionIdentity,
+    original_admission: OriginalAdmissionBinding | None = None,
+) -> str:
+    payload: dict[str, Any] = {
+        "request_fingerprint": identity.request_fingerprint,
+        "plan_fingerprint": identity.plan_fingerprint,
+        "subject_id": identity.subject_id,
+        "recovery_policy_fingerprint": identity.recovery_policy_fingerprint,
+        "max_retries": identity.max_retries,
+        "require_evidence": identity.require_evidence,
+        "require_verification": identity.require_verification,
+    }
+    if original_admission is not None:
+        payload["original_admission_binding"] = _original_admission_payload(original_admission)
     return json.dumps(
-        {
-            "request_fingerprint": identity.request_fingerprint,
-            "plan_fingerprint": identity.plan_fingerprint,
-            "subject_id": identity.subject_id,
-            "recovery_policy_fingerprint": identity.recovery_policy_fingerprint,
-            "max_retries": identity.max_retries,
-            "require_evidence": identity.require_evidence,
-            "require_verification": identity.require_verification,
-        },
+        payload,
         ensure_ascii=False,
         separators=(",", ":"),
         sort_keys=True,
     )
 
 
-def _identity_from_json(value: Any) -> ContinuationExecutionIdentity:
+def _identity_mapping(value: Any) -> Mapping[str, Any]:
     data = json.loads(str(value))
     if not isinstance(data, Mapping):
         raise ValueError("continuation identity is invalid")
+    return data
+
+
+def _identity_from_json(value: Any) -> ContinuationExecutionIdentity:
+    data = _identity_mapping(value)
     return ContinuationExecutionIdentity(
         request_fingerprint=data["request_fingerprint"],
         plan_fingerprint=data.get("plan_fingerprint"),
@@ -116,6 +144,42 @@ def _identity_from_json(value: Any) -> ContinuationExecutionIdentity:
         max_retries=data["max_retries"],
         require_evidence=data["require_evidence"],
         require_verification=data["require_verification"],
+    )
+
+
+def _required_bounded_text(data: Mapping[str, Any], name: str) -> str:
+    value = data.get(name)
+    if not isinstance(value, str) or not value.strip() or len(value) > 512:
+        raise ValueError(f"{name} is invalid")
+    return value
+
+
+def _original_admission_from_identity_json(value: Any) -> OriginalAdmissionBinding | None:
+    data = _identity_mapping(value)
+    raw = data.get("original_admission_binding")
+    if raw is None:
+        return None
+    if not isinstance(raw, Mapping):
+        raise ValueError("original admission binding is invalid")
+    subject_id = raw.get("subject_id")
+    if subject_id is not None and (
+        not isinstance(subject_id, str) or not subject_id.strip() or len(subject_id) > 512
+    ):
+        raise ValueError("original admission subject_id is invalid")
+    request_fingerprint = _required_bounded_text(raw, "request_fingerprint")
+    if len(request_fingerprint) != 64:
+        raise ValueError("original admission request_fingerprint is invalid")
+    try:
+        int(request_fingerprint, 16)
+    except ValueError as exc:
+        raise ValueError("original admission request_fingerprint is invalid") from exc
+    return OriginalAdmissionBinding(
+        decision_id=_required_bounded_text(raw, "decision_id"),
+        app_id=_required_bounded_text(raw, "app_id"),
+        subject_id=subject_id,
+        authority_ref=_required_bounded_text(raw, "authority_ref"),
+        policy_revision=_required_bounded_text(raw, "policy_revision"),
+        request_fingerprint=request_fingerprint.lower(),
     )
 
 
@@ -144,7 +208,9 @@ class CloudflareD1IdentityBoundContinuationStore:
     def _record(self, row: Mapping[str, Any]) -> IdentityBoundContinuationRecord:
         try:
             pause = _pause_from_json(row["pause_json"])
-            identity = _identity_from_json(row["execution_identity_json"])
+            identity_json = row["execution_identity_json"]
+            identity = _identity_from_json(identity_json)
+            original_admission = _original_admission_from_identity_json(identity_json)
             return IdentityBoundContinuationRecord(
                 app_id=str(row["app_id"]),
                 pause=pause,
@@ -160,6 +226,7 @@ class CloudflareD1IdentityBoundContinuationStore:
                     else None
                 ),
                 execution_identity=identity,
+                original_admission=original_admission,
             )
         except (KeyError, TypeError, ValueError, json.JSONDecodeError):
             raise ServiceContractError(
@@ -212,12 +279,21 @@ class CloudflareD1IdentityBoundContinuationStore:
         app_id: str,
         pause: ApprovalPause,
         execution_identity: ContinuationExecutionIdentity,
+        original_admission: OriginalAdmissionBinding | None = None,
     ) -> str:
         if not isinstance(pause, ApprovalPause) or not isinstance(
             execution_identity, ContinuationExecutionIdentity
         ):
             raise ServiceContractError(
                 "invalid_continuation", "Approval continuation input is invalid.", status_code=500
+            )
+        if original_admission is not None and not isinstance(
+            original_admission, OriginalAdmissionBinding
+        ):
+            raise ServiceContractError(
+                "invalid_continuation_admission",
+                "Continuation original admission binding is invalid.",
+                status_code=500,
             )
         ref = f"cont_{secrets.token_urlsafe(32)}"
         now = _now_iso()
@@ -230,7 +306,7 @@ class CloudflareD1IdentityBoundContinuationStore:
                 app_id,
                 ref,
                 _pause_json(pause),
-                _identity_json(execution_identity),
+                _identity_json(execution_identity, original_admission),
                 "active",
                 None,
                 None,
