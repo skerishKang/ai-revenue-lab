@@ -29,6 +29,7 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-co
 }
 
 html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message {
+  grid-template-columns: 32px minmax(0, 1fr) !important;
   gap: var(--padiem-chat-meta-gap) !important;
 }
 
