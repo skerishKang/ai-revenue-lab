@@ -205,11 +205,14 @@ class StreamingExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
-            b14_request = B14ChatRequest(
-                messages=(
+            messages = request.messages
+            if system_instruction is not None:
+                messages = (
                     {"role": "system", "content": system_instruction},
-                    *request.messages,
-                ),
+                    *messages,
+                )
+            b14_request = B14ChatRequest(
+                messages=messages,
                 model=model,
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,

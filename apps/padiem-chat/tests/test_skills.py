@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from types import MappingProxyType
 
 import httpx
@@ -57,23 +56,24 @@ def test_public_metadata_exposes_only_safe_fields():
     public = skill_public_metadata(skill)
     assert public == {"id": "explain", "title": "쉽게 설명"}
     assert "system_instruction" not in public
-    assert skill.system_instruction not in json.dumps(public, ensure_ascii=False)
+    assert skill.system_instruction is None
+    assert skill.max_tokens is None
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("skill_id", "task_type", "optimize_for", "max_tokens"),
+    ("skill_id", "task_type", "optimize_for"),
     [
-        ("code", "coding", "balanced", 1000),
-        ("summarize", "document", "korean", 700),
-        ("translate", "korean", "korean", 800),
+        ("code", "coding", "balanced"),
+        ("summarize", "document", "korean"),
+        ("translate", "korean", "korean"),
     ],
 )
-async def test_skill_maps_to_server_owned_b14_hints(skill_id, task_type, optimize_for, max_tokens):
+async def test_skill_maps_routing_hints_without_response_shaping(skill_id, task_type, optimize_for):
     seen = {}
 
     async def handler(request):
-        seen["body"] = json.loads(request.content)
+        seen["body"] = __import__("json").loads(request.content)
         return httpx.Response(200, json=_success_payload())
 
     skill = get_skill(skill_id)
@@ -84,18 +84,16 @@ async def test_skill_maps_to_server_owned_b14_hints(skill_id, task_type, optimiz
 
     body = seen["body"]
     assert body["model"] == DEFAULT_B14_MODEL_ID
-    assert body["max_tokens"] == max_tokens
+    assert "max_tokens" not in body
     assert body["business14"]["task_type"] == task_type
     assert body["business14"]["optimize_for"] == optimize_for
     assert body["business14"]["allow_external_fallback"] is False
     assert body["business14"]["max_attempts"] == 1
     assert body["business14"]["required_capabilities"] == ["chat"]
-    assert body["messages"][0] == {"role": "system", "content": skill.system_instruction}
-    assert body["messages"][1:] == USER_MESSAGES
-    assert sum(1 for item in body["messages"] if item["role"] == "system") == 1
+    assert body["messages"] == USER_MESSAGES
+    assert sum(1 for item in body["messages"] if item["role"] == "system") == 0
     assert result["skill"] == {"id": skill.id, "title": skill.title}
     assert result["route"]["model"] == DEFAULT_B14_MODEL_ID
-    assert skill.system_instruction not in json.dumps(result, ensure_ascii=False)
 
 
 @pytest.mark.asyncio

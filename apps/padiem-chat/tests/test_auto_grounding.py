@@ -167,8 +167,8 @@ async def test_stable_concept_does_not_over_search() -> None:
     assert "evidence" not in body
     assert provider.search_calls == []
     assert len(seen) == 1
-    assert "웹 근거 사용 규칙" not in seen[0]["messages"][0]["content"]
-    assert "확인되지 않은 사실" in seen[0]["messages"][0]["content"]
+    assert seen[0]["messages"] == STABLE
+    assert "max_tokens" not in seen[0]
 
 
 @pytest.mark.asyncio

@@ -105,10 +105,14 @@ def _normalize_additional_system_context(value: str | None) -> str | None:
     return text
 
 
-def _compose_system_instruction(request: "ExecutionRequest") -> str:
-    parts = [request.agent.system_instruction]
+def _compose_system_instruction(request: "ExecutionRequest") -> str | None:
+    parts: list[str] = []
+    if request.agent.system_instruction is not None:
+        parts.append(request.agent.system_instruction)
     if request.additional_system_context is not None:
         parts.append(request.additional_system_context)
+    if not parts:
+        return None
     content = "\n\n".join(parts)
     if len(content) > MAX_COMPOSED_SYSTEM_CHARS:
         raise ValueError("composed system instruction exceeds B14 message limit")
@@ -355,11 +359,14 @@ class ExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
-            b14_request = B14ChatRequest(
-                messages=(
+            messages = request.messages
+            if system_instruction is not None:
+                messages = (
                     {"role": "system", "content": system_instruction},
-                    *request.messages,
-                ),
+                    *messages,
+                )
+            b14_request = B14ChatRequest(
+                messages=messages,
                 model=model,
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
@@ -427,7 +434,7 @@ class ExecutionRuntime:
                 "invalid_execution_result",
                 "Model execution returned an invalid result contract.",
                 metadata=metadata,
-            )
+            ) from None
 
         metadata = self._metadata(
             request=request,
