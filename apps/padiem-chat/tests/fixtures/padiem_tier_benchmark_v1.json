@@ -13,7 +13,8 @@
     {
       "id": "KR-REASON-001",
       "category": "reasoning",
-      "prompt": "A, B, C 세 상자가 있습니다. 금화는 한 상자에만 있고, 'A에는 없다', 'B에 있다', 'C에는 없다'라는 세 문장 중 정확히 하나만 참입니다. 금화가 든 상자를 고르고 이유를 간단히 설명해 주세요.",
+      "prompt": "A, B, C 세 상자가 있습니다. 금화는 한 상자에만 있고, 'A에는 없다', 'B에는 없다', 'A에 있다'라는 세 문장 중 정확히 하나만 참입니다. 금화가 든 상자를 고르고 이유를 간단히 설명해 주세요.",
+      "expected_answer": "B",
       "rubric": ["correct_answer", "valid_reasoning", "no_contradiction"]
     },
     {
