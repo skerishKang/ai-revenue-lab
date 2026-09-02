@@ -4,7 +4,7 @@ This module defines the credential-source contract shared by every
 platform-owned upstream Provider. The first concrete registration is Agnes AI
 (see ``app/pilot/platform.py``), but this module is intentionally Provider-agnostic:
 any Provider is onboarded one at a time through :func:`register_platform_provider`
-with its own credential binding and a fixed upstream origin.
+with its own credential boundary and a fixed upstream origin.
 
 Credential sources
 -------------------
@@ -13,13 +13,14 @@ Credential sources
   the request. The secret value is never logged, returned, stored, or reused.
 - ``request_byok`` — the caller supplies a per-request key (handled by the
   separate BYOK gateway path; this plane only records the source).
-- ``none`` — no credential required (e.g. a public endpoint).
+- ``none`` — no credential is required by the fixed Provider route.
 
 Security invariants enforced here:
 - fixed/server-configured upstream origin only (no caller-supplied URL);
 - host allow-list per Provider (defense in depth on top of SSRF validation);
 - cross-Provider key isolation (each Provider reads only its own binding);
-- missing required secret fails closed (``resolve_secret`` returns ``""``).
+- missing required secret fails closed (``resolve_secret`` returns ``""``);
+- keyless routes never synthesize or borrow another Provider's credential.
 """
 
 from __future__ import annotations
@@ -29,8 +30,6 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urlparse
-
-from app.pilot.errors import PilotNotConfigured
 
 
 class CredentialSource(str, Enum):
@@ -57,13 +56,14 @@ class PlatformProviderSpec:
             raise ValueError("provider_id is required")
         if not isinstance(self.credential_source, CredentialSource):
             raise ValueError("credential_source must be a CredentialSource")
-        if not self.credential_binding_name:
-            raise ValueError("credential_binding_name is required")
+        if (
+            self.credential_source == CredentialSource.PLATFORM_SECRET
+            and not self.credential_binding_name
+        ):
+            raise ValueError("platform_secret providers require credential_binding_name")
         _validate_origin(self.base_origin, self.allowed_hosts)
-        if self.credential_source == CredentialSource.PLATFORM_SECRET and not self.allowed_hosts:
-            raise ValueError(
-                "platform_secret providers must declare allowed_hosts"
-            )
+        if not self.allowed_hosts:
+            raise ValueError("platform providers must declare allowed_hosts")
 
 
 _PLATFORM_PROVIDERS: dict[str, PlatformProviderSpec] = {}
@@ -73,8 +73,8 @@ def register_platform_provider(spec: PlatformProviderSpec) -> None:
     """Register (or replace) a platform-owned Provider.
 
     Generic by design: onboarding Agnes AI or any later Provider is a single
-    ``register_platform_provider(...)`` call with that Provider's own binding
-    name and fixed origin. No Provider-specific code path is added here.
+    ``register_platform_provider(...)`` call with that Provider's own credential
+    contract and fixed origin. No Provider-specific execution path is added here.
     """
     global _PLATFORM_PROVIDERS
     _PLATFORM_PROVIDERS[spec.provider_id] = spec
@@ -118,12 +118,12 @@ def _looks_like_placeholder(value: str) -> bool:
 
 
 def resolve_secret(spec: PlatformProviderSpec) -> str:
-    """Return the platform secret for ``spec``, or ``""`` if absent/placeholder.
+    """Return the platform secret for ``spec``, or ``""`` when none is used.
 
     The secret value is NEVER logged, stored in metadata, or returned outside
     the single outbound Authorization header of the Provider ``spec`` describes.
     Cross-Provider reuse is structurally impossible: this function reads only
-    ``spec.credential_binding_name``.
+    ``spec.credential_binding_name`` for ``platform_secret`` Providers.
     """
     if spec.credential_source != CredentialSource.PLATFORM_SECRET:
         return ""
@@ -136,7 +136,16 @@ def resolve_secret(spec: PlatformProviderSpec) -> str:
 
 
 def is_secret_present(spec: PlatformProviderSpec) -> bool:
-    """Eligibility check: a platform_secret Provider is eligible iff its secret exists."""
+    """Return whether the Provider's credential requirement is satisfied.
+
+    Keyless ``none`` routes are ready by definition once the fixed Provider spec
+    exists. ``request_byok`` is intentionally not satisfied by this server-owned
+    plane; it must use the separate BYOK request path.
+    """
+    if spec.credential_source == CredentialSource.NONE:
+        return True
+    if spec.credential_source == CredentialSource.REQUEST_BYOK:
+        return False
     return bool(resolve_secret(spec))
 
 
