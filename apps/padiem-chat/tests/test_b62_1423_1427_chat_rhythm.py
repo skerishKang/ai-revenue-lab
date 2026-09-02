@@ -28,7 +28,8 @@ def test_1424_user_bubble_anchors_to_shared_right_edge_without_full_width() -> N
 
 def test_1425_avatar_meta_remains_internal_and_gap_is_tighter() -> None:
     assert "--padiem-chat-meta-gap: 12px;" in ALIGNMENT_CSS
-    assert ".assistant-message {\n  gap: var(--padiem-chat-meta-gap) !important;" in ALIGNMENT_CSS
+    assert "grid-template-columns: 32px minmax(0, 1fr) !important;" in ALIGNMENT_CSS
+    assert "gap: var(--padiem-chat-meta-gap) !important;" in ALIGNMENT_CSS
     assert ".assistant-meta {\n  margin-bottom: 6px !important;" in ALIGNMENT_CSS
     assert "--padiem-chat-meta-gap: 10px;" in ALIGNMENT_CSS
     assert "display: none" not in ALIGNMENT_CSS
