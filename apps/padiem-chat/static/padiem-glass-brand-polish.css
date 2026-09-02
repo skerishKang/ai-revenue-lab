@@ -1,0 +1,17 @@
+/* Padiem Glass brand parity correction (#1369).
+ * The assistant mark intentionally reuses the exact visual treatment of the
+ * top-left Padiem Chat brand mark, while keeping the existing message DOM.
+ */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .assistant-message .assistant-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border: 1px solid rgba(255, 255, 255, .30) !important;
+  border-radius: 10px !important;
+  background: rgba(239, 244, 247, .20) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 26px rgba(17, 25, 33, .12), inset 0 1px 0 rgba(255, 255, 255, .18) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
