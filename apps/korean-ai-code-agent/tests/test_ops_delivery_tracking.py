@@ -154,15 +154,24 @@ class DeliveryTrackingTests(unittest.TestCase):
         coordinator.append(
             self.snapshot(
                 version=2,
+                status=DeliveryStatus.CONFIRMED,
+                promised_date=date(2026, 9, 2),
+                observed_at=datetime(2026, 9, 2, 16, 0, tzinfo=timezone.utc),
+            )
+        )
+        coordinator.append(
+            self.snapshot(
+                version=3,
                 status=DeliveryStatus.DELIVERED,
                 promised_date=date(2026, 9, 2),
                 actual=date(2026, 9, 2),
+                observed_at=datetime(2026, 9, 2, 17, 0, tzinfo=timezone.utc),
             )
         )
         with self.assertRaisesRegex(ContractError, "transition"):
             coordinator.append(
                 self.snapshot(
-                    version=3,
+                    version=4,
                     status=DeliveryStatus.AT_RISK,
                     promised_date=date(2026, 9, 3),
                     observed_at=datetime(2026, 9, 3, 9, 0, tzinfo=timezone.utc),
