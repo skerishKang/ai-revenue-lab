@@ -76,7 +76,7 @@ class IntegrationReadinessTests(unittest.TestCase):
         future[0] = probe(ExternalAdapterKind.CONTROL_PLANE_IDENTITY, issued_at=NOW + timedelta(minutes=1), expires_at=NOW + timedelta(hours=1))
         self.assertFalse(evaluate_live_capability(probes=tuple(future), capability=LiveCapability.MANAGED_CLOUD_RUN, now=NOW).live_configured)
 
-    def test_draft_pr_adds_github_write_and_other_capabilities_have_narrow_sets(self):
+    def test_draft_pr_and_outbound_messaging_have_narrow_required_sets(self):
         draft = managed_probes() + (probe(ExternalAdapterKind.GITHUB_DRAFT_WRITE),)
         self.assertTrue(evaluate_live_capability(probes=draft, capability=LiveCapability.DRAFT_PR_OUTPUT, now=NOW).live_configured)
         messaging = (
@@ -85,6 +85,34 @@ class IntegrationReadinessTests(unittest.TestCase):
             probe(ExternalAdapterKind.COMMUNICATION_OUTBOUND),
         )
         self.assertTrue(evaluate_live_capability(probes=messaging, capability=LiveCapability.BUSINESS_MESSAGING, now=NOW).live_configured)
+
+    def test_inbound_review_requires_webhook_scanner_and_retention_storage(self):
+        inbound = (
+            probe(ExternalAdapterKind.CONTROL_PLANE_IDENTITY),
+            probe(ExternalAdapterKind.CONTROL_PLANE_ENTITLEMENT),
+            probe(ExternalAdapterKind.COMMUNICATION_INBOUND),
+            probe(ExternalAdapterKind.ATTACHMENT_SCANNER),
+            probe(ExternalAdapterKind.RETENTION_STORAGE),
+        )
+        decision = evaluate_live_capability(probes=inbound, capability=LiveCapability.BUSINESS_INBOUND_REVIEW, now=NOW)
+        self.assertTrue(decision.live_configured)
+        missing_scanner = tuple(item for item in inbound if item.adapter_kind is not ExternalAdapterKind.ATTACHMENT_SCANNER)
+        decision = evaluate_live_capability(probes=missing_scanner, capability=LiveCapability.BUSINESS_INBOUND_REVIEW, now=NOW)
+        self.assertFalse(decision.live_configured)
+        self.assertIn(ExternalAdapterKind.ATTACHMENT_SCANNER, decision.missing_or_untrusted_adapters)
+        fake_scanner = tuple(
+            probe(item.adapter_kind, state=ExternalAdapterState.DETERMINISTIC_FAKE) if item.adapter_kind is ExternalAdapterKind.ATTACHMENT_SCANNER else item
+            for item in inbound
+        )
+        self.assertFalse(evaluate_live_capability(probes=fake_scanner, capability=LiveCapability.BUSINESS_INBOUND_REVIEW, now=NOW).live_configured)
+
+    def test_live_data_retention_requires_storage_adapter_and_finance_requires_accounting_read(self):
+        retention = (
+            probe(ExternalAdapterKind.CONTROL_PLANE_IDENTITY),
+            probe(ExternalAdapterKind.CONTROL_PLANE_ENTITLEMENT),
+            probe(ExternalAdapterKind.RETENTION_STORAGE),
+        )
+        self.assertTrue(evaluate_live_capability(probes=retention, capability=LiveCapability.LIVE_DATA_RETENTION, now=NOW).live_configured)
         finance = (
             probe(ExternalAdapterKind.CONTROL_PLANE_IDENTITY),
             probe(ExternalAdapterKind.CONTROL_PLANE_ENTITLEMENT),
@@ -113,6 +141,7 @@ class IntegrationReadinessTests(unittest.TestCase):
         self.assertFalse(DEPLOYMENT_APPROVAL_FROM_READINESS)
         self.assertFalse(REAL_CONNECTOR_PROBES_CONFIGURED)
         safe = evaluate_live_capability(probes=managed_probes(), capability=LiveCapability.MANAGED_CLOUD_RUN, now=NOW).safe_dict()
+        self.assertEqual(safe["contract_version"], "claw-integration-readiness.v2")
         self.assertFalse(safe["fake_counts_as_connected"])
         self.assertFalse(safe["security_certification"])
         self.assertFalse(safe["deployment_approval"])
