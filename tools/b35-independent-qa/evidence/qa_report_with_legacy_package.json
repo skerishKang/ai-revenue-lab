@@ -1,0 +1,98 @@
+{
+  "issue": 1505,
+  "lane": "C / Independent Package QA",
+  "branch": "feat/b35-w3-independent-qa-v31",
+  "base_sha": "eae88e0066c1b119bfa6c75d8b16c127b0137e5e",
+  "commercial_root": "docs\\commercial\\business-35-ai-media-education-dx",
+  "package_root": "docs\\commercial\\business-35-ai-media-education-dx\\customer-package",
+  "product_contract": "reference\\business-35-ai-media-education-dx-v3\\PRODUCT_CONTRACT.md",
+  "product_commit": "05932da3af774220372f0e9f3716b07cd83511f9",
+  "verdicts": {
+    "PACKAGE_INVENTORY": "PACKAGE_INVENTORY_PASS",
+    "SOURCE_MAPPING": "SOURCE_MAPPING_PASS",
+    "STRUCTURAL_QA": "STRUCTURAL_QA_PASS",
+    "FORMULA_QA": "FORMULA_QA_PASS",
+    "TEXT_FIT": "TEXT_FIT_PASS",
+    "STALE_ARTIFACT_REJECTION": "STALE_ARTIFACT_REJECTION_PASS",
+    "PRIVATE_DATA_BOUNDARY": "PRIVATE_DATA_BOUNDARY_PASS",
+    "EXACT_REVISION_TRACE": "EXACT_REVISION_TRACE_FAIL"
+  },
+  "passed": {
+    "PACKAGE_INVENTORY": true,
+    "SOURCE_MAPPING": true,
+    "STRUCTURAL_QA": true,
+    "FORMULA_QA": true,
+    "TEXT_FIT": true,
+    "STALE_ARTIFACT_REJECTION": true,
+    "PRIVATE_DATA_BOUNDARY": true,
+    "EXACT_REVISION_TRACE": false
+  },
+  "overall_pass": false,
+  "details": {
+    "PACKAGE_INVENTORY": [
+      "inventory: all required families present"
+    ],
+    "SOURCE_MAPPING": [
+      "source mapping covers Slides 1..10 and families"
+    ],
+    "STRUCTURAL_QA": [
+      "proposal PPTX Business35_Master_Proposal_10p.pptx: 10 slides OK",
+      "  notes slides: 10/10",
+      "OnePage PPTX Business35_OnePage_Offer_Source.pptx: 1 slide OK",
+      "PDF Master Proposal PDF Business35_Master_Proposal_10p.pdf: 10 pages OK via pymupdf",
+      "PDF OnePage Offer PDF Business35_OnePage_Offer.pdf: 1 pages OK via pymupdf",
+      "PDF Questionnaire PDF Business35_Diagnostic_Questionnaire.pdf: 3 pages OK via pymupdf",
+      "optional PDF missing for Quote PDF (ok if XLSX-only quote)",
+      "DOCX Business35_Diagnostic_Questionnaire.docx: 9 question markers",
+      "DOCX Business35_Diagnostic_Questionnaire.docx missing DRAFT",
+      "XLSX Business35_Pilot_Quote_Template.xlsx sheets: ['Instructions', 'Customer Scope', 'Offer A', 'Offer B1', 'Offer B2', 'Offer C', 'Optional Items', 'Assumptions', 'Approval']",
+      "  matches legacy 9-sheet Quote template"
+    ],
+    "FORMULA_QA": [
+      "no formula error values in data_only view",
+      "CF on Offer A includes B4",
+      "CF on Offer B1 includes B4",
+      "CF on Offer B2 includes B4",
+      "CF on Offer C includes B4",
+      "printArea Instructions: not set (warning)",
+      "printArea Customer Scope: not set (warning)",
+      "printArea Offer A: not set (warning)",
+      "printArea Offer B1: not set (warning)",
+      "printArea Offer B2: not set (warning)",
+      "printArea Offer C: not set (warning)",
+      "printArea Optional Items: not set (warning)",
+      "printArea Assumptions: not set (warning)",
+      "printArea Approval: not set (warning)",
+      "at least one formula cell present"
+    ],
+    "TEXT_FIT": [
+      "no overflow in Business35_Master_Proposal_10p.pptx",
+      "no overflow in Business35_OnePage_Offer_Source.pptx",
+      "no text overlap detected",
+      "no broken glyph in Business35_Diagnostic_Questionnaire.pdf via pymupdf",
+      "no broken glyph in Business35_Master_Proposal_10p.pdf via pymupdf",
+      "no broken glyph in Business35_OnePage_Offer.pdf via pymupdf"
+    ],
+    "STALE_ARTIFACT_REJECTION": [
+      "V3.1 journey markers present (5/5)",
+      "README missing stale marker disclaimer (should mark historical)",
+      "SOURCE_MAPPING correctly marks historical binaries"
+    ],
+    "PRIVATE_DATA_BOUNDARY": [
+      "no real customer/contact/private data patterns found"
+    ],
+    "EXACT_REVISION_TRACE": [
+      "product_contract present: reference\\business-35-ai-media-education-dx-v3\\PRODUCT_CONTRACT.md",
+      "manifest found: generation_manifest.json",
+      "SOURCE_REVISION invalid: PENDING_ACCEPTED_1503_LANE_A_HEAD_63adbefcf24a",
+      "PRODUCT_AUTHORITY_REVISION 961ff2ae5390f6c6fc99f6969d5ef3b7665ea82f != expected 05932da3af774220372f0e9f3716b07cd83511f9",
+      "GENERATOR_REVISION invalid format (must be [0-9a-f]{40}): 899958e83bd7 (EXACT_REVISION_TRACE_FAIL)",
+      "OUTPUT_FILE_LIST: 35 entries",
+      "OUTPUT_HASHES: 35 entries",
+      "hash mismatches: ['Business35_Customer_Meeting_Script.md: expected c26b862 got 100d5c8', 'Business35_Followup_Email_Templates.md: expected 5a98045 got b0c58c4', 'Business35_Master_Proposal_10p.pptx: expected b75f84d got c3ec267']"
+    ]
+  },
+  "price_hypothesis_ok": true,
+  "no_send_ok": true,
+  "forbidden_found": []
+}
