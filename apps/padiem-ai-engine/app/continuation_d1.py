@@ -14,7 +14,7 @@ import json
 import secrets
 from typing import Any
 
-from padiem_ai_core import ApprovalPause, ApprovalRequirement
+from padiem_ai_core.agent_approval import ApprovalPause, ApprovalRequirement
 
 from app.continuation_binding import IdentityBoundContinuationRecord
 from app.continuation_identity import ContinuationExecutionIdentity

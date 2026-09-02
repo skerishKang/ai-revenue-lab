@@ -12,7 +12,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from padiem_ai_core import ApprovalOutcome, ApprovalPause, VerifiedApprovalDecision
+from padiem_ai_core.agent_approval import (
+    ApprovalOutcome,
+    ApprovalPause,
+    VerifiedApprovalDecision,
+)
 
 from app.service import ServiceContractError
 
