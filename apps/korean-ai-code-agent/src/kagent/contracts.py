@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 import re
 from typing import Any
@@ -42,6 +43,12 @@ class ResourceClass(str, Enum):
     LARGE = "large"
 
 
+class SandboxLeaseState(str, Enum):
+    RESERVED = "reserved"
+    RELEASED = "released"
+    EXPIRED = "expired"
+
+
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 
@@ -62,6 +69,12 @@ def _bounded_text(value: str, field_name: str, *, limit: int, allow_empty: bool 
     if _CONTROL_RE.search(normalized):
         raise ContractError(f"{field_name} contains control characters")
     return normalized
+
+
+def _aware_utc(value: datetime, field_name: str) -> datetime:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ContractError(f"{field_name} must be timezone-aware")
+    return value.astimezone(timezone.utc)
 
 
 @dataclass(frozen=True, slots=True)
@@ -153,6 +166,60 @@ class SandboxLeaseRequest:
             "ttl_seconds": self.ttl_seconds,
             "network_policy": self.network_policy.value,
             "writable_workspace": self.writable_workspace,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class SandboxLease:
+    lease_id: str
+    run_id: str
+    execution_mode: ExecutionMode
+    resource_class: ResourceClass
+    network_policy: NetworkPolicy
+    writable_workspace: bool
+    created_at: datetime
+    expires_at: datetime
+    state: SandboxLeaseState = SandboxLeaseState.RESERVED
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "lease_id", _safe_id(self.lease_id, "lease_id"))
+        object.__setattr__(self, "run_id", _safe_id(self.run_id, "run_id"))
+        created = _aware_utc(self.created_at, "created_at")
+        expires = _aware_utc(self.expires_at, "expires_at")
+        if expires <= created:
+            raise ContractError("expires_at must be after created_at")
+        object.__setattr__(self, "created_at", created)
+        object.__setattr__(self, "expires_at", expires)
+
+    def with_state(self, state: SandboxLeaseState) -> "SandboxLease":
+        if self.state is not SandboxLeaseState.RESERVED:
+            raise ContractError("only a reserved lease may change state")
+        if state is SandboxLeaseState.RESERVED:
+            return self
+        return SandboxLease(
+            lease_id=self.lease_id,
+            run_id=self.run_id,
+            execution_mode=self.execution_mode,
+            resource_class=self.resource_class,
+            network_policy=self.network_policy,
+            writable_workspace=self.writable_workspace,
+            created_at=self.created_at,
+            expires_at=self.expires_at,
+            state=state,
+        )
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "contract_version": "sandbox-lease.v1",
+            "lease_id": self.lease_id,
+            "run_id": self.run_id,
+            "execution_mode": self.execution_mode.value,
+            "resource_class": self.resource_class.value,
+            "network_policy": self.network_policy.value,
+            "writable_workspace": self.writable_workspace,
+            "created_at": self.created_at.isoformat().replace("+00:00", "Z"),
+            "expires_at": self.expires_at.isoformat().replace("+00:00", "Z"),
+            "state": self.state.value,
         }
 
 
