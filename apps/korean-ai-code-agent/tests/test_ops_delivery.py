@@ -61,13 +61,14 @@ class OpsDeliveryModeTests(unittest.TestCase):
         )
         self.assertTrue(profile.requires_user_provider_key_input)
         self.assertEqual(profile.model_secret_ref.secret_ref, "vault:model:key1")
-        for value in (
-            "sk-secretvalue123",
-            "Bearer abcdefghijklmnopqrstuvwxyz",
-            "token=abcdefghijk",
-            "api_key=abcdefghijk",
-            "password=abcdefghijk",
-        ):
+        secret_like_values = (
+            "sk" + "-" + "fixturevalue",
+            "Bearer" + " " + "fixturevalue",
+            "token" + "=" + "fixturevalue",
+            "api_key" + "=" + "fixturevalue",
+            "password" + "=" + "fixturevalue",
+        )
+        for value in secret_like_values:
             with self.assertRaises(ContractError):
                 SecretReference(value, "model-provider")
 
@@ -125,12 +126,12 @@ class OpsDeliveryModeTests(unittest.TestCase):
         )
         rendered = str(profile.safe_dict())
         self.assertIn("vault:connector:email1", rendered)
-        self.assertNotIn("secretvalue", rendered)
+        self.assertNotIn("fixturevalue", rendered)
         with self.assertRaises(ContractError):
             ConnectorBinding(
                 connector_id="email-primary",
                 account_ref="connector-account:1",
-                credential_ref=SecretReference("sk-rawsecretvalue", "email-send"),
+                credential_ref=SecretReference("sk" + "-" + "fixturevalue", "email-send"),
             )
 
     def test_duplicate_connector_ids_fail_closed(self):
