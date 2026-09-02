@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Generate the Business 35 pilot quote template XLSX.
 
+Commercial truth (A/B1/B2/C price hypotheses) is consumed from the exact
+accepted Lane A revision via ``accepted_source`` (01-one-page-offer.md).
+
 Sheets: Instructions, Customer Scope, Offer A, Offer B, Offer C,
 Optional Items, Assumptions, Approval.
 
@@ -14,6 +17,9 @@ from openpyxl.utils import get_column_letter
 
 from pathlib import Path
 import datetime
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from accepted_source import require_accepted_source, offer_price_tokens  # noqa: E402
 OUT = Path(__file__).resolve().parent.parent / "Business35_Pilot_Quote_Template.xlsx"
 
 NAVY = "1F3A5F"
@@ -39,6 +45,9 @@ def set_cell(ws, row, col, value, bold=False, size=11, color=None, fill=None, al
 FIXED_DT = datetime.datetime(2026, 9, 3, 0, 0, 0)
 
 def build():
+    snapshot = require_accepted_source()
+    prices = offer_price_tokens(snapshot)  # fail-closed verification of A/B1/B2/C
+    assert prices["B1"] == "1,000만–1,500만원" and prices["B2"] == "1,500만–2,500만원"
     wb = Workbook()
     # deterministic properties
     try:
@@ -207,6 +216,8 @@ def build():
 
     Path(OUT).parent.mkdir(parents=True, exist_ok=True)
     wb.save(str(OUT))
+    from normalize_ooxml import normalize_ooxml
+    normalize_ooxml(OUT)
     print(f"saved {OUT}")
 
 

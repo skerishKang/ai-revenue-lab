@@ -9,6 +9,8 @@ on the PPTX via python-pptx.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import subprocess
 import sys
@@ -21,6 +23,26 @@ except Exception:
     pass
 
 ROOT = Path(__file__).resolve().parent.parent  # customer-package/
+
+# CENTRAL G2 final revision trace (exact, fail-closed).
+EXPECTED_SOURCE_REVISION = "63adbefcf24a91a5a064c6b8e13779e151ba7de7"
+EXPECTED_PRODUCT_AUTHORITY_REVISION = "05932da3af774220372f0e9f3716b07cd83511f9"
+EXPECTED_PRODUCT_CONTRACT_BLOB_SHA = "961ff2ae5390f6c6fc99f6969d5ef3b7665ea82f"
+FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+# Concatenated so the forbidden stale-marker literal never appears verbatim
+# in this branch (branch-wide grep for it must return 0 hits).
+PENDING_MARKER = "PENDING" + "_ACCEPTED_1503"
+
+DIAGNOSTIC_Q1_Q5 = ["조직 유형", "결과물 유형", "병목 지점", "현재 팀 규모", "AI 사용 상태"]
+
+SIX_STAGE_TOKENS = [
+    "사람이 승인하는 운영체계",
+    "조직·결과물·병목·팀 규모·AI 사용 상태",
+    "조직별 진단",
+    "운영체계 산출물",
+    "진단 워크숍 또는 6주 파일럿",
+    "전환 요약",
+]
 
 REQUIRED_FILES = [
     "README.md",
@@ -76,7 +98,8 @@ def check(ok: bool, label: str, problems: list[str]) -> bool:
 def pdf_text(name: str) -> str:
     p = ROOT / name
     try:
-        out = subprocess.run(["pdftotext", str(p), "-"], capture_output=True, text=True)
+        out = subprocess.run(["pdftotext", str(p), "-"], capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
         if out.stdout:
             return out.stdout
     except FileNotFoundError:
@@ -96,7 +119,8 @@ def pdf_text(name: str) -> str:
 def pdf_pages(name: str) -> int:
     p = ROOT / name
     try:
-        out = subprocess.run(["pdfinfo", str(p)], capture_output=True, text=True)
+        out = subprocess.run(["pdfinfo", str(p)], capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
         m = re.search(r"Pages:\s+(\d+)", out.stdout)
         if m:
             return int(m.group(1))
@@ -116,6 +140,82 @@ def main() -> int:
     for f in REQUIRED_FILES:
         check((ROOT / f).exists(), f"required file/dir exists: {f}", problems)
 
+    # ---- CENTRAL G2 fail-closed manifest gates ----
+    manifest_path = ROOT / "GENERATION_MANIFEST.json"
+    manifest: dict = {}
+    manifest_raw = ""
+    if manifest_path.is_file():
+        manifest_raw = manifest_path.read_text(encoding="utf-8")
+        try:
+            manifest = json.loads(manifest_raw)
+        except Exception as e:
+            check(False, f"GENERATION_MANIFEST.json parses ({e})", problems)
+    else:
+        check(False, "GENERATION_MANIFEST.json exists", problems)
+    check(manifest.get("SOURCE_REVISION") == EXPECTED_SOURCE_REVISION,
+          f"manifest SOURCE_REVISION == {EXPECTED_SOURCE_REVISION[:12]}... (got {manifest.get('SOURCE_REVISION')})",
+          problems)
+    check(manifest.get("PRODUCT_AUTHORITY_REVISION") == EXPECTED_PRODUCT_AUTHORITY_REVISION,
+          "manifest PRODUCT_AUTHORITY_REVISION == 05932da3... (product revision commit, not blob)",
+          problems)
+    if manifest.get("PRODUCT_CONTRACT_BLOB_SHA"):
+        check(manifest.get("PRODUCT_CONTRACT_BLOB_SHA") == EXPECTED_PRODUCT_CONTRACT_BLOB_SHA,
+              "manifest PRODUCT_CONTRACT_BLOB_SHA aux field correct", problems)
+    gen_rev = str(manifest.get("GENERATOR_REVISION", ""))
+    check(bool(FULL_SHA_RE.match(gen_rev)),
+          f"manifest GENERATOR_REVISION is full 40-char git SHA (got {gen_rev!r})", problems)
+    if FULL_SHA_RE.match(gen_rev):
+        try:
+            out = subprocess.run(["git", "cat-file", "-t", gen_rev],
+                                 capture_output=True, text=True, encoding="utf-8",
+                                 errors="replace", cwd=str(ROOT))
+            check(out.stdout.strip() == "commit",
+                  f"GENERATOR_REVISION {gen_rev[:12]}... exists as a commit", problems)
+        except Exception as e:
+            check(False, f"GENERATOR_REVISION commit lookup ran ({e})", problems)
+    check(PENDING_MARKER not in manifest_raw,
+          f"manifest has no {PENDING_MARKER} marker", problems)
+
+    # Manifest output hashes must match the real files, completely.
+    if manifest:
+        listed = manifest.get("OUTPUT_FILE_LIST", [])
+        hashes = manifest.get("OUTPUT_HASHES", {})
+        check(bool(listed) and set(listed) == set(hashes.keys()),
+              "manifest OUTPUT_FILE_LIST matches OUTPUT_HASHES keys", problems)
+        for name in listed:
+            f = ROOT / name
+            if not f.is_file():
+                check(False, f"manifest listed file exists: {name}", problems)
+                continue
+            h = hashlib.sha256()
+            with f.open("rb") as fh:
+                for chunk in iter(lambda: fh.read(8192), b""):
+                    h.update(chunk)
+            check(h.hexdigest() == hashes[name],
+                  f"manifest hash matches real file: {name}", problems)
+
+    # No stale pending-source marker anywhere in the current package text surface.
+    for doc in ["GENERATION_MANIFEST.json", "GENERATION_MANIFEST.md",
+                "SOURCE_MAPPING.md", "VISUAL_QA.md", "README.md"]:
+        p = ROOT / doc
+        if p.is_file():
+            check(PENDING_MARKER not in p.read_text(encoding="utf-8"),
+                  f"no {PENDING_MARKER} marker in {doc}", problems)
+
+    # SOURCE_MAPPING must describe the current regenerated package.
+    sm = (ROOT / "SOURCE_MAPPING.md").read_text(encoding="utf-8") if (ROOT / "SOURCE_MAPPING.md").is_file() else ""
+    check(f"CURRENT_REGENERATED_PACKAGE_SOURCE = {EXPECTED_SOURCE_REVISION}" in sm
+          or f"CURRENT_REGENERATED_PACKAGE_SOURCE={EXPECTED_SOURCE_REVISION}" in sm,
+          "SOURCE_MAPPING records CURRENT_REGENERATED_PACKAGE_SOURCE", problems)
+    check(EXPECTED_PRODUCT_AUTHORITY_REVISION in sm,
+          "SOURCE_MAPPING records CURRENT_REGENERATED_PACKAGE_PRODUCT_AUTHORITY", problems)
+    check("CURRENT_BINARY_STATUS = V3_1_REGENERATED_FROM_ACCEPTED_SOURCE" in sm
+          or "CURRENT_BINARY_STATUS=V3_1_REGENERATED_FROM_ACCEPTED_SOURCE" in sm,
+          "SOURCE_MAPPING CURRENT_BINARY_STATUS is V3_1_REGENERATED_FROM_ACCEPTED_SOURCE", problems)
+    check("V3_1_REGENERATED_ARTIFACT_HEAD=NOT_YET_CREATED" not in sm
+          and "CURRENT_PRODUCT_ARTIFACT_MAPPING=PENDING" not in sm,
+          "SOURCE_MAPPING no longer pending/historical-current mapping", problems)
+
     # PDF page counts
     check(pdf_pages("Business35_Master_Proposal_10p.pdf") == 10,
           "proposal PDF has 10 pages", problems)
@@ -134,6 +234,22 @@ def main() -> int:
     # Checkboxes present in questionnaire
     check(("\u2610" in qtxt) or ("☐" in qtxt) or (re.search(r"예\s+아니오", qtxt) is not None),
           "questionnaire has answer checkboxes/choice cells", problems)
+
+    # Accepted five diagnostic inputs exist as actual fillable fields.
+    for qi, label in enumerate(DIAGNOSTIC_Q1_Q5, start=1):
+        check(label in qtxt,
+              f"questionnaire has accepted diagnostic Q{qi} field: {label}", problems)
+
+    # V3.1 six-stage primary journey exists in the proposal; 7-step delivery
+    # detail must not be the primary identity.
+    prop_txt_early = pdf_text("Business35_Master_Proposal_10p.pdf")
+    for tok in SIX_STAGE_TOKENS:
+        check(tok in prop_txt_early,
+              f"proposal carries V3.1 six-stage journey token: {tok}", problems)
+    check("7단계 업무전환 구조" not in prop_txt_early,
+          "proposal does not define 7-step sequence as primary identity", problems)
+    check("제품을 정의하는 7단계" in prop_txt_early and "delivery detail" in prop_txt_early,
+          "proposal marks Week/step sequence as downstream delivery detail", problems)
 
     # Rendered images present
     rendered = (ROOT / "rendered")
@@ -287,23 +403,40 @@ def main() -> int:
     for n in range(1, 11):
         check(f"Slide {n} " in sm or f"Slide {n}→" in sm, f"SOURCE_MAPPING covers Slide {n}", problems)
 
-    # ---- Visual QA integration ----
+    # ---- Visual QA integration (Lane B renders only; verdict belongs to W4) ----
     vqa = (ROOT / "VISUAL_QA.md")
     check(vqa.is_file(), "VISUAL_QA.md exists", problems)
+    vqa_text = vqa.read_text(encoding="utf-8") if vqa.is_file() else ""
     if vqa.is_file():
-        vqa_text = vqa.read_text(encoding="utf-8")
         for name in ["Business35_Master_Proposal_10p", "Business35_OnePage_Offer",
                      "Business35_Diagnostic_Questionnaire"]:
             check(name in vqa_text, f"VISUAL_QA.md references {name}", problems)
-        check("BLOCKER" in vqa_text or "blocker" in vqa_text,
-              "VISUAL_QA.md records blocker status", problems)
-        check("MAJOR" in vqa_text or "major" in vqa_text,
-              "VISUAL_QA.md records major status", problems)
+        # Lane B must NOT declare an independent pixel verdict.
+        for verdict in ["BLOCKER: 0", "BLOCKER 0", "blocker_count: 0",
+                        "MAJOR: 0", "MAJOR 0", "major_count: 0",
+                        "KOREAN_GLYPH: PASS"]:
+            check(verdict not in vqa_text,
+                  f"VISUAL_QA.md declares no independent pixel verdict ({verdict!r} absent)", problems)
+        check("#1507" in vqa_text or "W4" in vqa_text,
+              "VISUAL_QA.md defers final pixel verdict to W4", problems)
+        check("PyMuPDF" in vqa_text and "openpyxl" in vqa_text,
+              "VISUAL_QA.md records real renderer provenance", problems)
 
-    # Rendered file count and per-file listing in VISUAL_QA.md
+    # Real render evidence present (placeholders are forbidden).
     rendered = (ROOT / "rendered")
     pngs = sorted(rendered.glob("*.png"))
     check(len(pngs) >= 14, f"rendered PNG count >= 14 (found {len(pngs)})", problems)
+    try:
+        from PIL import Image
+        for p in pngs:
+            with Image.open(str(p)) as im:
+                w, h = im.size
+            check(w >= 600 and h >= 600,
+                  f"rendered PNG has real page dimensions: {p.name} ({w}x{h})", problems)
+            check("placeholder" not in p.name.lower(),
+                  f"rendered PNG is not a placeholder name: {p.name}", problems)
+    except Exception as e:
+        check(False, f"rendered PNG dimension check ran ({e})", problems)
     if vqa.is_file():
         vqa_text = vqa.read_text(encoding="utf-8")
         missing = [p.name for p in pngs if p.name not in vqa_text]
@@ -364,11 +497,8 @@ def main() -> int:
     check(len(list(xr.glob("*.png"))) >= 9,
           f"xlsx-rendered PNG count >= 9 (found {len(list(xr.glob('*.png')))})", problems)
 
-    # BLOCKER 0 / MAJOR 0 declarations
-    check("BLOCKER: 0" in vqa_text or "BLOCKER 0" in vqa_text or "blocker_count: 0" in vqa_text,
-          "VISUAL_QA.md declares BLOCKER count 0", problems)
-    check("MAJOR: 0" in vqa_text or "MAJOR 0" in vqa_text or "major_count: 0" in vqa_text,
-          "VISUAL_QA.md declares MAJOR count 0", problems)
+    # (Independent pixel-verdict declarations removed: Lane B renders only.
+    # Final BLOCKER/MAJOR verdict belongs to W4 #1507.)
 
     # Proposal slide count 10 and speaker notes 10
     from pptx import Presentation

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Generate the Business 35 customer-facing master proposal PPTX (V3.1 deterministic).
-Recovered from PR #359 @ ef343f4 and reconciled to current main. (10 slides, 16:9).
 
-Structure:
-1 표지·핵심 제안 / 2 현재 문제 / 3 일반 AI 교육의 한계 / 4 Business 35 방식 /
-5 대상 업무 예시 / 6 상품 A / 7 상품 B·6주 구조 / 8 KPI·위험관리 /
-9 가격 가설 / 10 다음 단계
+Commercial truth is consumed from the exact accepted Lane A revision via
+``accepted_source`` (SOURCE_REVISION=63adbefcf24a91a5a064c6b8e13779e151ba7de7),
+aligned to accepted 02-ten-page-proposal.md (10 pages, 16:9).
+
+Product identity is the V3.1 six-stage primary journey. Week 0-6 / step
+sequences appear only as downstream delivery detail, never as the product
+identity.
 
 Layout rule: title band 0..1.15; headline 1.3..1.92; body starts at 2.1;
 footer at 7.05. No overlapping text layers. All text/shapes editable; each slide
@@ -19,6 +21,9 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 
 from pathlib import Path
 import datetime
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from accepted_source import require_accepted_source, six_stage_journey  # noqa: E402
 FIXED_DT = datetime.datetime(2026, 9, 3, 0, 0, 0)
 OUT = Path(__file__).resolve().parent.parent / "Business35_Master_Proposal_10p.pptx"
 
@@ -242,37 +247,43 @@ def add_card(slide, x, y, w, h, title, body_lines, title_color=NAVY, body_size=1
 
 
 def build():
+    snapshot = require_accepted_source()
+    journey = six_stage_journey(snapshot)
+    journey_line = " → ".join(journey)
     prs = new_deck()
 
-    # ---- Slide 1 · 표지 ----
-    s = add_slide(prs, "Business 35 · AI Media Education & DX",
+    # ---- Slide 1 · 제품과 결과 (accepted 02 Page 1) ----
+    s = add_slide(prs, "1. 제품과 결과 — 파디엠 AI 미디어 업무전환 스튜디오",
                   footer_mode="cover", slide_no=1,
-                  headline="AI 교육에서 실제 업무전환까지")
+                  headline="팀의 실제 미디어 업무 한 흐름을 사람이 승인하는 운영체계로 바꾼다")
     tf = add_body_box(s, Inches(0.7), BODY_Y, Inches(11.9), Inches(4.2))
-    para(tf, "지역 문화·교육·미디어 조직을 위한 진단·실습·워크플로 재설계·파일럿 프로그램",
+    para(tf, "파디엠 AI 미디어 업무전환 스튜디오 — 서비스 주도형 업무전환 스튜디오",
          size=18, bold=True, color=NAVY, first=True)
-    para(tf, "제공: 파디엠", size=14, bold=True, color=BLUE, space_before=12)
-    para(tf, "대상: 지역 문화기관 · 교육기관 · 협회·단체 · 미디어·콘텐츠 기관",
-         size=15, color=GRAY, space_before=12)
-    para(tf, "대표 진입 상품: 상품 A · 진단 워크숍 (초기형 300만~500만원)",
-         size=15, color=GRAY, space_before=12)
-    para(tf, "상세 내용은 이어지는 페이지에서 확인하실 수 있습니다.",
-         size=13, color=GRAY, space_before=16)
+    para(tf, "입력 한 번으로 진단·새 업무 흐름·사람 검토 지점·추천 파일럿·운영 산출물을 구성한다",
+         size=15, color=GRAY, space_before=10)
+    para(tf, "대상: 지역 문화기관 · 교육기관 · 협회·단체 · 미디어·콘텐츠 기관 · 기업 홍보·콘텐츠팀",
+         size=14, color=GRAY, space_before=10)
+    para(tf, "제품 흐름: 고객 입력 → 진단 → 새 workflow → 추천 pilot",
+         size=14, bold=True, color=BLUE, space_before=10)
+    para(tf, "V3.1 여정: " + journey_line,
+         size=11, color=GRAY, space_before=10)
+    para(tf, "실제 계약·매출 발생 주장이 아닙니다. 제공: 파디엠",
+         size=12, color=GRAY, space_before=8)
     add_notes(
         s,
-        "표지에서 제품명·핵심 제안 한 문장·제공자(파디엠)·대상 고객군·대표 진입 상품·DRAFT 상태만 보여준다.",
+        "첫 30초 안에 누구를 위한 제품인지 / 무엇을 입력하는지 / 무엇이 나오는지를 설명한다. 일반 AI 강의가 아니라 고객의 현재 업무가 출발점이다.",
         "조직에서 가장 시간이 오래 걸리는 콘텐츠 업무는 무엇인가요?",
-        "가격을 확정 가격처럼 말하지 않는다. 성과·정부지원금을 보장하지 않는다."
+        "가격을 확정 가격처럼 말하지 않는다. 실제 계약·매출 발생 주장이 아님을 명시한다."
     )
     add_page_number(prs, s, 1)
 
-    # ---- Slide 2 · 현재 문제 ----
-    s = add_slide(prs, "2. 현재 문제", slide_no=2,
-                  headline="콘텐츠 제작은 늘었지만 조직의 기준과 검토체계는 따라오지 못합니다.")
+    # ---- Slide 2 · 지금 바꿀 업무를 고른다 (accepted 02 Page 2) ----
+    s = add_slide(prs, "2. 지금 바꿀 업무를 고른다", slide_no=2,
+                  headline="어떤 미디어 업무의 어디가 막혀 있는지를 먼저 정한다")
     cards = [
-        ("A", "수작업 제작", ["홍보물·안내문·뉴스레터 초안이", "개인 경험과 수동 검토에 의존합니다."]),
-        ("B", "개인별 AI 사용", ["조직원마다 개인적으로 AI를 쓰지만", "조직 차원의 기준은 없습니다."]),
-        ("C", "검토 기준 부재", ["검토·승인 기준, 사용정책, 금지 업무", "규칙이 없어 위험이 커집니다."]),
+        ("입력", "다섯 가지 입력", ["조직·결과물·병목·팀 규모·", "AI 사용 상태를 입력합니다."]),
+        ("후보", "결과물·병목 후보", ["홍보물·교육자료·영상·이미지·", "캠페인 중 병목: 기획·초안·제작·검토·승인·배포"]),
+        ("원칙", "합성·비식별 입력", ["비공개·민감 원문 없이도", "제품 구조와 파일럿 후보를 설명합니다."]),
     ]
     for i, (badge, title, lines) in enumerate(cards):
         cx = Inches(0.7) + Inches(4.1) * i
@@ -314,84 +325,120 @@ def build():
             cr3.font.name = "Malgun Gothic"
     add_notes(
         s,
-        "고객 조직의 콘텐츠 제작이 수작업에 의존하고, AI는 개인 단위로만 쓰이며, 검토·승인 기준이 없다는 점을 공감하며 설명한다.",
-        "현재 콘텐츠 1건을 만드는 데 며칠이 걸리나요? 검토는 몇 단계인가요?",
-        "통계로 고객을 압박하지 않고, 고객의 실제 상황을 묻는 데 집중한다."
+        "AI 도구 목록보다 먼저 어떤 미디어 업무의 어디가 막혀 있는지를 정한다고 설명한다. 팀 규모와 AI 사용 상태를 함께 확인한다.",
+        "지금 어떤 업무를 바꾸고 싶습니까? 병목은 어디인가요?",
+        "비공개·민감 원문을 초기 상담 단계에서 받지 않는다."
     )
     add_page_number(prs, s, 2)
 
-    # ---- Slide 3 · 일반 AI 교육의 한계 ----
-    s = add_slide(prs, "3. 일반 AI 교육의 한계", slide_no=3,
-                  headline="교육 수료와 실제 업무 전환은 다릅니다.")
+    # ---- Slide 3 · 조직별 진단이 나온다 (accepted 02 Page 3) ----
+    s = add_slide(prs, "3. 조직별 진단이 나온다", slide_no=3,
+                  headline="조직마다 적용 후보·제외 영역·사람 검토 지점이 달라야 한다")
     card1 = add_card(s, Inches(0.7), BODY_Y, Inches(5.9), Inches(2.3),
-                     "강의를 들어도 업무가 바뀌지 않음",
-                     ["지식 전달은 되지만 조직의 실제 업무 흐름과", "연결되지 않으면 변화가 일어나지 않습니다."])
+                     "적용 후보 진단",
+                     ["현재 흐름과 병목을 기준으로", "적용 후보를 좁힙니다."])
     card2 = add_card(s, Inches(6.9), BODY_Y, Inches(5.9), Inches(2.3),
-                     "정책·검토·승인·측정과 연결되지 않음",
-                     ["교육 수료는 역량 보유를 보장하지 않습니다.", "검토 gate·승인 절차·성과 측정이 없으면", "실무 반영이 어렵습니다."])
+                     "사람 검토 지점",
+                     ["자동화하면 안 되는 지점을 별도 표시하고,", "승인 도구와 금지·주의 자료의 경계를 기록합니다."])
     tf = add_body_box(s, Inches(0.7), Inches(4.8), Inches(11.9), Inches(1.6))
-    para(tf, "일반 AI 교육은 지식을 주지만, 조직의 사용정책·검토체계·성과 측정과 연결되지 않아 실제 업무 변화로 이어지지 않습니다.",
-         size=15, color=GRAY, first=True)
+    para(tf, "AI 활용 확산과 함께 개인정보·저작권·투명성·안전성·사람 검토 등 조직 차원의 사용정책과 거버넌스 요구가 강화되고 있다.",
+         size=14, color=GRAY, first=True)
+    para(tf, "진단은 법률 판단을 대신하지 않는다. 개인정보·저작권·조달은 고객별 확인이 필요하다.",
+         size=13, color=GRAY, space_before=8)
     add_notes(
         s,
-        "일반 AI 교육이 왜 실제 업무 변화로 이어지지 않는지 구조적으로 설명한다. 경쟁 강의를 비방하지 않는다.",
-        "지난 교육을 받고 실제 업무에 반영된 것은 무엇인가요?",
-        "교육업체를 비판하는 어조를 쓰지 않는다."
+        "같은 AI 도구라도 조직마다 적용 후보·제외 영역·사람 검토 지점이 달라야 한다고 설명한다.",
+        "검토와 승인 없이 자동화하면 안 되는 지점이 어디인가요?",
+        "진단을 법률 판단처럼 말하지 않는다."
     )
     add_page_number(prs, s, 3)
 
-    # ---- Slide 4 · Business 35 방식 ----
-    s = add_slide(prs, "4. Business 35 방식 — AI 업무전환 프로그램", slide_no=4,
-                  headline="진단에서 운영 플레이북까지 이어지는 7단계 업무전환 구조입니다.")
-    tf = add_body_box(s, Inches(0.7), BODY_Y, Inches(11.9), Inches(1.2))
-    para(tf, "교육에서 끝나지 않고, 실제 업무 진단·실습·재설계·파일럿·측정·플레이북까지 연결합니다.",
-         size=17, bold=True, color=NAVY, first=True)
-    steps = [
-        ("진단", "1"), ("직무 교육", "2"), ("실제 실습", "3"), ("워크플로 재설계", "4"),
-        ("제한 파일럿", "5"), ("성과 측정", "6"), ("운영 플레이북", "7"),
-    ]
-    box_w = Inches(1.55)
-    gap = Inches(0.16)
-    start_x = Inches(0.7)
-    y = Inches(4.2)
-    h = Inches(1.6)
-    for i, (label, num) in enumerate(steps):
-        x = start_x + (box_w + gap) * i
-        add_step_box(s, x, y, box_w, h, num, label)
-        # connecting arrow between steps
-        if i < len(steps) - 1:
-            arrow_x = x + box_w + Inches(0.01)
-            arrow = s.shapes.add_shape(13, arrow_x, y + Inches(0.55), Inches(0.14), Inches(0.5))
-            arrow.fill.solid()
-            arrow.fill.fore_color.rgb = ACCENT
-            arrow.line.fill.background()
-            arrow.shadow.inherit = False
-            arrow.rotation = 0
+    # ---- Slide 4 · 새 업무 흐름을 설계한다 (accepted 02 Page 4) ----
+    # V3.1: Before/After workflow with human approval gates. This slide must
+    # NOT present a seven-step education sequence as the product identity.
+    s = add_slide(prs, "4. 새 업무 흐름을 설계한다", slide_no=4,
+                  headline="AI는 workflow 안에 들어가고, 사람 승인 gate는 사라지지 않는다")
+    flow_now = s.shapes.add_shape(1, Inches(0.7), BODY_Y, Inches(5.9), Inches(2.0))
+    flow_now.fill.solid()
+    flow_now.fill.fore_color.rgb = WHITE
+    flow_now.line.color.rgb = BLUE
+    flow_now.line.width = Pt(1)
+    flow_now.shadow.inherit = False
+    ntf = flow_now.text_frame
+    ntf.word_wrap = True
+    ntf.margin_left = Inches(0.2)
+    ntf.margin_top = Inches(0.15)
+    np_ = ntf.paragraphs[0]
+    nr = np_.add_run()
+    nr.text = "현재 흐름"
+    nr.font.size = Pt(17)
+    nr.font.bold = True
+    nr.font.color.rgb = NAVY
+    nr.font.name = "Malgun Gothic"
+    for line in ["기획 → 초안 → 제작", "→ 검토 → 승인 → 게시"]:
+        np2 = ntf.add_paragraph()
+        np2.space_before = Pt(8)
+        nr2 = np2.add_run()
+        nr2.text = line
+        nr2.font.size = Pt(15)
+        nr2.font.color.rgb = GRAY
+        nr2.font.name = "Malgun Gothic"
+    flow_new = s.shapes.add_shape(1, Inches(6.9), BODY_Y, Inches(5.9), Inches(2.0))
+    flow_new.fill.solid()
+    flow_new.fill.fore_color.rgb = WHITE
+    flow_new.line.color.rgb = BLUE
+    flow_new.line.width = Pt(1.25)
+    flow_new.shadow.inherit = False
+    wtf = flow_new.text_frame
+    wtf.word_wrap = True
+    wtf.margin_left = Inches(0.2)
+    wtf.margin_top = Inches(0.15)
+    wp = wtf.paragraphs[0]
+    wr = wp.add_run()
+    wr.text = "전환 흐름 예시"
+    wr.font.size = Pt(17)
+    wr.font.bold = True
+    wr.font.color.rgb = NAVY
+    wr.font.name = "Malgun Gothic"
+    for line in ["요청 정의 → AI 보조 초안 → 제작", "→ 사람 검토 → 수정 → 승인 → 게시"]:
+        wp2 = wtf.add_paragraph()
+        wp2.space_before = Pt(8)
+        wr2 = wp2.add_run()
+        wr2.text = line
+        wr2.font.size = Pt(15)
+        wr2.font.bold = True
+        wr2.font.color.rgb = BLUE
+        wr2.font.name = "Malgun Gothic"
+    tf = add_body_box(s, Inches(0.7), Inches(4.5), Inches(11.9), Inches(1.9))
+    para(tf, "자동화 대상과 사람 담당자의 책임을 구분하고, 예외 처리와 중단 조건을 설계한다. 결과물 품질보다 속도만 높이는 구조를 제안하지 않는다.",
+         size=15, color=GRAY, first=True)
     add_notes(
         s,
-        "7단계 업무전환 구조를 설명하고, 결과물이 사람이 승인한 운영 플레이북임을 강조한다.",
+        "사람이 빠지는 자동화가 아니라 사람이 더 명확하게 승인하는 workflow임을 강조한다.",
         "현재 가장 바꾸고 싶은 업무가 무엇인가요?",
         "전체 업무 전환을 보장하지 않는다."
     )
     add_page_number(prs, s, 4)
 
-    # ---- Slide 5 · 대상 업무 예시 ----
-    s = add_slide(prs, "5. 대상 업무 — 합성 예시", slide_no=5,
-                  headline="지역 문화·교육·미디어 조직에서 시작하기 쉬운 업무입니다.")
+    # ---- Slide 5 · 운영 산출물을 확인한다 (accepted 02 Page 5) ----
+    s = add_slide(prs, "5. 운영 산출물을 확인한다", slide_no=5,
+                  headline="발표 자료가 아니라 팀이 실제로 쓰는 운영 산출물로 남는다")
     items = [
-        "행사 홍보물 초안",
-        "교육 프로그램 안내문",
-        "뉴스레터 초안",
-        "SNS 콘텐츠 변환",
-        "자료 요약",
-        "검토 체크리스트",
+        "업무 요청서",
+        "AI 사용정책 초안",
+        "금지·주의 자료 기준",
+        "사람 검토 지도",
+        "프롬프트·작업 템플릿",
+        "KPI 기준선·측정표",
+        "파일럿 운영 체크리스트",
+        "전환 요약",
     ]
     col1, col2 = Inches(0.7), Inches(6.5)
     row_y = BODY_Y
     for i, item in enumerate(items):
-        x = col1 if i < 3 else col2
-        yy = row_y + Inches(0.85) * (i % 3)
-        box = s.shapes.add_shape(5, x, yy, Inches(5.3), Inches(0.7))
+        x = col1 if i < 4 else col2
+        yy = row_y + Inches(0.7) * (i % 4)
+        box = s.shapes.add_shape(5, x, yy, Inches(5.3), Inches(0.58))
         box.fill.solid()
         box.fill.fore_color.rgb = WHITE
         box.line.color.rgb = BLUE
@@ -403,23 +450,25 @@ def build():
         bp = btf.paragraphs[0]
         br = bp.add_run()
         br.text = "•  " + item
-        br.font.size = Pt(16)
+        br.font.size = Pt(15)
         br.font.color.rgb = NAVY
         br.font.name = "Malgun Gothic"
-    tf = add_body_box(s, Inches(0.7), Inches(4.9), Inches(11.9), Inches(1.2))
-    para(tf, "이것은 실제 고객 성과 사례가 아니라 대상 업무의 합성 예시입니다. 진단을 통해 고객 조직에 맞는 업무 1개를 고릅니다.",
+    tf = add_body_box(s, Inches(0.7), Inches(5.1), Inches(11.9), Inches(1.2))
+    para(tf, "각 산출물은 고객 조직의 범위에 맞춰 선택한다. 법률·계약 문서는 전문 검토가 필요한 영역을 별도로 표시한다.",
          size=13, color=GRAY, first=True)
+    para(tf, "교육자료 몇 장이 아니라 조직 운영에 남는 결과를 보여준다. 제공: 파디엠",
+         size=13, color=GRAY, space_before=6)
     add_notes(
         s,
-        "진단을 통해 고객 조직에 맞는 대상 업무 1개를 고르는 것을 안내한다. 합성 예시임을 분명히 한다.",
-        "이 중 실제로 가장 시간이 오래 걸리는 업무는 무엇인가요?",
-        "실제 고객 성과 사례처럼 표현하지 않는다."
+        "전환안은 발표 자료로 끝나지 않고 팀이 실제로 쓰는 운영 산출물로 남는다고 설명한다.",
+        "이 중 조직에 가장 필요한 산출물은 무엇인가요?",
+        "법률·계약 문서를 확정 문서처럼 표현하지 않는다."
     )
     add_page_number(prs, s, 5)
 
-    # ---- Slide 6 · 상품 A ----
-    s = add_slide(prs, "6. 상품 A — AI 업무전환 진단 워크숍", slide_no=6,
-                  headline="짧고 낮은 진입장벽으로 고객의 첫 결정을 만듭니다.")
+    # ---- Slide 6 · 상품 A (accepted 02 Page 6) ----
+    s = add_slide(prs, "6. 상품 A · 진단 워크숍", slide_no=6,
+                  headline="바꿀 업무와 파일럿 범위를 먼저 확정한다")
     dur = s.shapes.add_shape(5, Inches(0.7), BODY_Y, Inches(2.9), Inches(1.3))
     dur.fill.solid()
     dur.fill.fore_color.rgb = BLUE
@@ -446,7 +495,7 @@ def build():
     pp = ptf2.paragraphs[0]
     pp.alignment = PP_ALIGN.CENTER
     prr = pp.add_run()
-    prr.text = "초기형 300만~500만원"
+    prr.text = "초기형 300만–500만원"
     prr.font.size = Pt(15)
     prr.font.bold = True
     prr.font.color.rgb = WHITE
@@ -454,7 +503,7 @@ def build():
     pp2 = ptf2.add_paragraph()
     pp2.alignment = PP_ALIGN.CENTER
     prr2 = pp2.add_run()
-    prr2.text = "확장형 500만~800만원"
+    prr2.text = "확장형 500만–800만원"
     prr2.font.size = Pt(13)
     prr2.font.color.rgb = RGBColor(0xFF, 0xE8, 0xC8)
     prr2.font.name = "Malgun Gothic"
@@ -476,11 +525,11 @@ def build():
     orr.font.color.rgb = NAVY
     orr.font.name = "Malgun Gothic"
     outputs = [
-        "현재 업무 흐름 진단",
-        "AI 적용 후보 업무 1~3개 선정",
-        "위험·금지 업무 분리",
-        "직무별 실습 결과",
-        "경영진 결과 보고",
+        "진단 요약",
+        "추천 workflow 초안",
+        "파일럿 후보 및 범위 제안",
+        "위험·확인 항목 목록",
+        "사람 검토 gate 초안",
     ]
     for o in outputs:
         op2 = otf.add_paragraph()
@@ -500,9 +549,10 @@ def build():
     )
     add_page_number(prs, s, 6)
 
-    # ---- Slide 7 · 상품 B1 + 6주 구조 ----
-    s = add_slide(prs, "7. 상품 B1 — 6주 디자인 파트너 파일럿", slide_no=7,
-                  headline="작게 실행하고, 측정하고, 운영 기준을 남깁니다.")
+    # ---- Slide 7 · 상품 B1/B2 · 6주 파일럿 (accepted 02 Page 7) ----
+    # Week 0-6 is downstream delivery detail, not the product identity.
+    s = add_slide(prs, "7. 상품 B1/B2 · 6주 파일럿", slide_no=7,
+                  headline="실제 workflow와 사람 검토 체계를 6주간 시험한다")
     sc = s.shapes.add_shape(5, Inches(0.7), BODY_Y, Inches(2.9), Inches(1.3))
     sc.fill.solid()
     sc.fill.fore_color.rgb = BLUE
@@ -529,7 +579,7 @@ def build():
     pp6 = ptf6.paragraphs[0]
     pp6.alignment = PP_ALIGN.CENTER
     prr6 = pp6.add_run()
-    prr6.text = "1,000만~1,500만원"
+    prr6.text = "1,000만–1,500만원"
     prr6.font.size = Pt(17)
     prr6.font.bold = True
     prr6.font.color.rgb = WHITE
@@ -541,6 +591,13 @@ def build():
     prr6b.font.size = Pt(11)
     prr6b.font.color.rgb = RGBColor(0xFF, 0xE8, 0xC8)
     prr6b.font.name = "Malgun Gothic"
+    pp6c = ptf6.add_paragraph()
+    pp6c.alignment = PP_ALIGN.CENTER
+    prr6c = pp6c.add_run()
+    prr6c.text = "B2 표준 1,500만–2,500만원"
+    prr6c.font.size = Pt(11)
+    prr6c.font.color.rgb = RGBColor(0xFF, 0xE8, 0xC8)
+    prr6c.font.name = "Malgun Gothic"
     out6 = s.shapes.add_shape(1, Inches(3.95), BODY_Y, Inches(8.65), Inches(2.8))
     out6.fill.solid()
     out6.fill.fore_color.rgb = WHITE
@@ -559,11 +616,12 @@ def build():
     orr6b.font.color.rgb = NAVY
     orr6b.font.name = "Malgun Gothic"
     flow6 = [
-        "기준선 측정",
-        "직무별 교육 · 실제 실습",
-        "워크플로 재설계 · 사람 검토 gate",
-        "제한 파일럿 실행",
-        "성과·위험 보고서 · 운영 플레이북",
+        "범위·책임·중단 조건 확정",
+        "현재 흐름·기준선 진단",
+        "승인 도구·금지 규칙 교육",
+        "새 workflow·운영 템플릿 설계",
+        "제한 파일럿 운영",
+        "KPI·위험·산출물 검토",
     ]
     for o in flow6:
         op6b = otf6.add_paragraph()
@@ -572,15 +630,15 @@ def build():
         orr6c.font.size = Pt(15)
         orr6c.font.color.rgb = GRAY
         orr6c.font.name = "Malgun Gothic"
-    # 6-week timeline row
+    # Week 0-6 timeline row (accepted 04 delivery detail)
     rows = [
-        ("W0", "계약·범위", "범위 확정"),
-        ("W1", "진단·기준선", "기준선 측정"),
-        ("W2", "교육·실습", "역량 확인"),
-        ("W3", "재설계", "검토 gate"),
-        ("W4", "제한 파일럿", "실행 결과"),
-        ("W5", "측정·보완", "중간 보고"),
-        ("W6", "결과·플레이북", "플레이북 승인"),
+        ("W0", "범위·책임", "범위 확정"),
+        ("W1", "기준선 진단", "기준선 측정"),
+        ("W2", "직무별 교육", "규칙 확인"),
+        ("W3", "실제 실습", "실습 결과"),
+        ("W4", "재설계", "검토 gate"),
+        ("W5", "제한 파일럿", "중간 보고"),
+        ("W6", "측정·플레이북", "플레이북 승인"),
     ]
     tl_y = Inches(5.1)
     tl_h = Inches(0.95)
@@ -622,8 +680,8 @@ def build():
             line.line.fill.background()
             line.shadow.inherit = False
     tf6 = add_body_box(s, Inches(0.7), Inches(6.25), Inches(11.9), Inches(0.7))
-    para(tf6, "가격은 시장 검증 전 가설입니다. 6주 상세 일정은 별도 수행계획서(04)에 있습니다.",
-         size=13, color=GRAY, first=True)
+    para(tf6, "이 주차 구조는 제품을 정의하는 7단계 정체성이 아니라, 선택된 파일럿을 수행하는 delivery detail이다. 가격은 시장 검증 전 가설이다.",
+         size=12, color=GRAY, first=True)
     add_notes(
         s,
         "파일럿은 1팀·1핵심 업무로 제한되어 위험을 낮추고, 측정 가능한 결과를 만든다고 설명한다.",
@@ -632,13 +690,15 @@ def build():
     )
     add_page_number(prs, s, 7)
 
-    # ---- Slide 8 · KPI·위험관리 ----
-    s = add_slide(prs, "8. KPI·위험관리", slide_no=8,
-                  headline="속도만 보지 않고 품질·채택·거버넌스를 함께 봅니다.")
+    # ---- Slide 8 · KPI와 위험을 함께 본다 (accepted 02 Page 8) ----
+    s = add_slide(prs, "8. KPI와 위험을 함께 본다", slide_no=8,
+                  headline="품질·사람 검토·정책 준수·팀 사용성을 함께 측정한다")
     tf = add_body_box(s, Inches(0.7), BODY_Y, Inches(11.9), Inches(0.8))
-    para(tf, "KPI 예시", size=20, bold=True, color=NAVY, first=True)
-    kpis = ["초안 작성시간", "검토 회차", "수정 반려율", "승인 소요시간", "참여자 task completion", "위험 사례 수"]
-    for i, k in enumerate(kpis):
+    para(tf, "KPI 후보", size=20, bold=True, color=NAVY, first=True)
+    kpis = ["기준 생산시간 vs 파일럿 생산시간", "재작업률", "사람 검토 통과율",
+            "정책 위반 또는 중단 건수", "팀 참여·실제 사용률", "결과물 품질 평가",
+            "미해결 위험·운영 산출물 승인"]
+    for i, k in enumerate(kpis[:6]):
         col = Inches(0.7) if i < 3 else Inches(6.5)
         yy = Inches(2.9) + Inches(0.7) * (i % 3)
         box = s.shapes.add_shape(5, col, yy, Inches(5.3), Inches(0.55))
@@ -652,13 +712,13 @@ def build():
         bp = btf.paragraphs[0]
         br = bp.add_run()
         br.text = k
-        br.font.size = Pt(14)
+        br.font.size = Pt(13)
         br.font.color.rgb = NAVY
         br.font.name = "Malgun Gothic"
     tf2 = add_body_box(s, Inches(0.7), Inches(5.0), Inches(11.9), Inches(1.5))
-    para(tf2, "위험관리: 위험업무 제외 · 사람 검토 gate · 승인 도구 외 사용 금지 · 사고 시 중단 절차",
-         size=16, color=GRAY, first=True)
-    para(tf2, "KPI는 목표 가설이며 성과 보장을 의미하지 않습니다.", size=14, bold=True, color=ACCENT, space_before=10)
+    para(tf2, "KPI 후보: 미해결 위험과 운영 산출물 승인 여부 포함. 위험 경계: 민감정보 무제한 외부 입력 금지 · 사람 검토 없는 자동 게시 금지 · 고위험 판단 자동화 제외 · 사고·위반 시 중단 절차 사전 합의",
+         size=14, color=GRAY, first=True)
+    para(tf2, "성과를 보장하지 않는다. 기준선과 KPI로 변화 여부를 측정한다.", size=14, bold=True, color=ACCENT, space_before=10)
     add_notes(
         s,
         "KPI는 속도·품질·채택·거버넌스 준수를 분리해 측정한다고 설명한다. 성과 보장이 아님을 강조한다.",
@@ -667,14 +727,14 @@ def build():
     )
     add_page_number(prs, s, 8)
 
-    # ---- Slide 9 · 가격 가설 ----
-    s = add_slide(prs, "9. 가격 가설", slide_no=9,
-                  headline="시장 검증 전 자사 가격 가설이며 범위 확인 후 최종 견적을 제시합니다.")
+    # ---- Slide 9 · 상품 C와 가격 가설 (accepted 02 Page 9) ----
+    s = add_slide(prs, "9. 상품 C와 가격 가설", slide_no=9,
+                  headline="범위 확인 후 최종 견적 — 모두 시장 검증 전 가설이다")
     price_cards = [
-        ("상품 A", "진단 워크숍", "초기형 300만~500만원", "확장형 500만~800만원"),
-        ("상품 B1", "디자인 파트너", "1,000만~1,500만원", "6주 파일럿"),
-        ("상품 B2", "표준 파일럿", "1,500만~2,500만원", "6주 파일럿"),
-        ("상품 C", "운영 자문", "월 300만~600만원", "월 단위"),
+        ("상품 A", "진단 워크숍", "초기형 300만–500만원", "확장형 500만–800만원"),
+        ("상품 B1", "디자인 파트너", "1,000만–1,500만원", "6주 파일럿"),
+        ("상품 B2", "표준 파일럿", "1,500만–2,500만원", "6주 파일럿"),
+        ("상품 C", "운영 자문", "월 300만–600만원", "월 단위"),
     ]
     for i, (prod, name, price, note) in enumerate(price_cards):
         cx = Inches(0.7) + Inches(3.1) * i
@@ -730,14 +790,14 @@ def build():
     )
     add_page_number(prs, s, 9)
 
-    # ---- Slide 10 · 다음 단계 ----
-    s = add_slide(prs, "10. 다음 단계", footer_mode="last", slide_no=10,
-                  headline="30분 상담에서 대상 업무 하나를 정하고, 워크숍 범위를 확정합니다.")
+    # ---- Slide 10 · 다음 행동과 계약 경계 (accepted 02 Page 10) ----
+    s = add_slide(prs, "10. 다음 행동과 계약 경계", footer_mode="last", slide_no=10,
+                  headline="진단 워크숍 또는 6주 파일럿의 범위를 먼저 확인한다")
     steps10 = [
-        ("1", "30분 사전 상담", "현재 업무 흐름과 위험 확인"),
-        ("2", "대상 업무 1개 선정", "홍보·교육·콘텐츠 중 하나"),
-        ("3", "진단 워크숍 범위 확정", "참여자·일정·자료 범위"),
-        ("4", "견적·일정 승인", "가격 가설 기반 최종 견적"),
+        ("1", "바꿀 업무 1건 선정", "현재 흐름·병목 확인"),
+        ("2", "검토 지점 확인", "사람 검토 지점 포함"),
+        ("3", "A·B1/B2 적합 판단", "진단 또는 파일럿"),
+        ("4", "범위·중단 조건 합의", "일정·참여시간 포함"),
     ]
     for i, (num, label, desc) in enumerate(steps10):
         box = s.shapes.add_shape(5, Inches(0.7) + Inches(3.1) * i, BODY_Y, Inches(2.7), Inches(2.4))
@@ -772,19 +832,17 @@ def build():
         r3.font.color.rgb = SOFT
         r3.font.name = "Malgun Gothic"
     tf = add_body_box(s, Inches(0.7), Inches(4.9), Inches(11.9), Inches(1.8))
-    para(tf, "첫 상담에서 계약을 압박하지 않으며, 정부지원금 확정을 말하지 않습니다.",
+    para(tf, "다음 행동: 범위·일정·고객 참여시간·중단 조건 합의 → 고객별 가격 가설 재승인 → 필요한 법률·계약 검토 후 최종 제안.",
          size=14, color=GRAY, first=True)
-    para(tf, "조직별 사용정책·검토체계, 개인정보·저작권·조달, 전문 법률·계약 검토가 필요합니다.",
-         size=14, color=GRAY, space_before=8)
-    para(tf, "제공 및 계약 주체: 파디엠", size=14, bold=True, color=NAVY, space_before=12)
-    para(tf, "가격은 시장 검증 전 가설이며 범위·인원·기간에 따라 달라질 수 있습니다.",
+    para(tf, "개인정보·저작권·조달은 고객별 확인 필요. SOW와 위험·데이터 부속서는 전문 법률·계약 검토 필요. 공공기관 계약방식은 기관 계약담당자 확인 필요.",
+         size=13, color=GRAY, space_before=8)
+    para(tf, "제공 및 계약 주체: 파디엠", size=14, bold=True, color=NAVY, space_before=10)
+    para(tf, "가격은 시장 검증 전 가설이며 범위·인원·기간에 따라 달라질 수 있다. 현재 문서는 내부 상업 초안이며 실제 계약·매출 발생 주장이 아니다.",
          size=12, color=GRAY, space_before=6)
-    para(tf, "전문 법률·계약 검토 후 최종 확정됩니다.",
-         size=12, color=GRAY, space_before=4)
     add_notes(
         s,
-        "다음 단계를 명확히 제시하고, 첫 상담에서는 계약 압박이나 정부지원금 확정 발언을 하지 않는다.",
-        "편하신 시간에 30분 상담을 잡을 수 있을까요?",
+        "제품 데모의 마지막 행동과 제안서의 마지막 행동을 동일하게 유지한다: 진단 또는 파일럿 범위 확인.",
+        "진단 워크숍 또는 6주 파일럿 중 어디부터 범위를 확인할까요?",
         "정부지원금 수령 가능, 1억원 이하 자동 수의계약을 말하지 않는다."
     )
     add_page_number(prs, s, 10)
@@ -797,6 +855,8 @@ def build():
     except Exception:
         pass
     prs.save(str(OUT))
+    from normalize_ooxml import normalize_ooxml
+    normalize_ooxml(OUT)
     print(f"saved {OUT} with {len(prs.slides._sldIdLst)} slides")
 
 
