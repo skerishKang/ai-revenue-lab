@@ -72,10 +72,22 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             return await super().orchestrate_payload(payload)
 
         try:
-            await resolve_and_require_trusted_admission(
+            admission = await resolve_and_require_trusted_admission(
                 adapter=self._admission_adapter,
                 request=admission_request,
             )
+            # The generic admission contract allows an unbound decision for less
+            # sensitive capabilities. Engine orchestration does not: admission
+            # must explicitly bind the canonical server-derived logical request.
+            if (
+                admission_request.request_fingerprint is None
+                or admission.request_fingerprint != admission_request.request_fingerprint
+            ):
+                raise ExecutionAdmissionError(
+                    "entitlement_request_mismatch",
+                    "Trusted execution admission is not bound to this orchestration request.",
+                    status_code=403,
+                )
         except ExecutionAdmissionError as exc:
             return _service_error(
                 exc.code,
