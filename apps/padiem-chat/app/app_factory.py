@@ -11,7 +11,6 @@ from starlette.staticfiles import StaticFiles
 from .auth import GoogleOAuthClient
 from .auth_routes import auth_status, google_callback, google_start, logout
 from .auto_grounding import AutoGroundingService
-from .b14_client import B14Client
 from .chat_routes import api_chat, api_chat_stream
 from .config import Settings
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -22,6 +21,7 @@ from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
+from .tier_identity_client import PadiemTierB14Client
 from .usage_gate import UsageCounterStore, UsageGate
 from .web_tools import create_web_provider
 
@@ -94,7 +94,7 @@ def create_app(
     # enforce it by supplying a usage store.
     app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
-    app.state.b14_client = B14Client(resolved, transport=transport)
+    app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
     app.state.auto_grounding = AutoGroundingService(app.state.web_provider)

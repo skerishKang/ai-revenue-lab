@@ -22,7 +22,7 @@ MANUAL_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 REQUEST_MODEL = DEFAULT_B14_MODEL_ID
 OBSERVED_MODEL = MEDIUM_B14_MODEL_ID
-OBSERVED_PROVIDER = "Poolside"
+OBSERVED_PROVIDER = "Kilo Gateway / NVIDIA"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -44,7 +44,7 @@ def _settings() -> Settings:
 
 def _frame(content: str) -> bytes:
     payload = {
-        "id": "b62_poolside_stream_1",
+        "id": "b62_padiem_pro_stream_1",
         "object": "chat.completion.chunk",
         "model": OBSERVED_MODEL,
         "choices": [
@@ -55,11 +55,11 @@ def _frame(content: str) -> bytes:
             }
         ],
         "business14": {
-            "request_id": "b14_poolside_stream_1",
+            "request_id": "b14_padiem_pro_stream_1",
             "route_mode": "manual",
             "selected_provider": OBSERVED_PROVIDER,
             "selected_model": OBSERVED_MODEL,
-            "selected_upstream_model": "poolside/laguna-s-2.1",
+            "selected_upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
             "selected_route_id": f"platform:{OBSERVED_MODEL}",
             "reason_codes": ["manual_selection", "external_fallback_disabled"],
             "fallback_used": False,
@@ -75,7 +75,7 @@ def _error_frame(code: str = "upstream_rate_limited") -> bytes:
         "error": {
             "code": code,
             "message": "bounded B14 stream error",
-            "request_id": "b14_poolside_stream_1",
+            "request_id": "b14_padiem_pro_stream_1",
             "after_stream_start": True,
         }
     }
@@ -90,7 +90,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
     async def scenario():
         seen_url = None
         seen = None
-        upstream = ChunkStream([_frame("Laguna 토큰"), b"data: [DONE]\n\n"])
+        upstream = ChunkStream([_frame("Nemotron 토큰"), b"data: [DONE]\n\n"])
 
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal seen_url, seen
@@ -129,7 +129,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
         assert seen["messages"][0]["role"] == "system"
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
 
-        assert events[0].delta_content == "Laguna 토큰"
+        assert events[0].delta_content == "Nemotron 토큰"
         assert events[0].done is False
         assert not hasattr(events[0], "route")
         assert not hasattr(events[0], "model")
@@ -141,7 +141,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
     asyncio.run(scenario())
 
 
-def test_private_compat_stream_poolside_alias_is_stripped_before_manual_route():
+def test_private_compat_stream_pro_alias_is_stripped_before_manual_route():
     async def scenario():
         seen = None
         upstream = ChunkStream([_frame("답변"), b"data: [DONE]\n\n"])
@@ -159,7 +159,7 @@ def test_private_compat_stream_poolside_alias_is_stripped_before_manual_route():
         events = [
             event
             async for event in client.stream_text_auto(
-                [{"role": "user", "content": "/poolside 한국어로 답해줘"}]
+                [{"role": "user", "content": "/pro 한국어로 답해줘"}]
             )
         ]
         assert seen["model"] == REQUEST_MODEL == MEDIUM_B14_MODEL_ID

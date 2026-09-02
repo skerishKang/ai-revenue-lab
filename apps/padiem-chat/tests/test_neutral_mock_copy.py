@@ -22,6 +22,11 @@ FORBIDDEN_USER_JARGON = (
     "unassigned",
     "poolside",
     "laguna",
+    "kilo",
+    "nvidia",
+    "nemotron",
+    "tencent",
+    "hy3",
 )
 
 
@@ -37,7 +42,7 @@ def test_mock_completed_answer_uses_plain_truthful_preview_copy():
         result = await B14Client(Settings(runtime_mode="mock")).complete(MESSAGES)
         answer = result["answer"]
 
-        assert DEFAULT_B14_MODEL_ID == MEDIUM_B14_MODEL_ID == "poolside/laguna-s-2.1"
+        assert DEFAULT_B14_MODEL_ID == MEDIUM_B14_MODEL_ID == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
         assert result["request_id"] == "mock_b62"
         assert result["runtime"] == "mock"
         assert result["route"]["model"] == MEDIUM_B14_MODEL_ID

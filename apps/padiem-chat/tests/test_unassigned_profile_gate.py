@@ -51,7 +51,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_medium_reaches_service_binding_with_exact_laguna():
+def test_live_completed_default_pro_reaches_service_binding_with_exact_nemotron():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -74,7 +74,11 @@ def test_live_completed_medium_reaches_service_binding_with_exact_laguna():
             await client.complete(MESSAGES)
 
         assert DEFAULT_CHAT_PROFILE == "medium"
-        assert DEFAULT_B14_MODEL_ID == MEDIUM_B14_MODEL_ID == "poolside/laguna-s-2.1"
+        assert (
+            DEFAULT_B14_MODEL_ID
+            == MEDIUM_B14_MODEL_ID
+            == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        )
         assert calls == 1
         assert store.refunds == []
         assert await _refund_active_reservation() is False
@@ -82,7 +86,7 @@ def test_live_completed_medium_reaches_service_binding_with_exact_laguna():
     asyncio.run(scenario())
 
 
-def test_live_stream_medium_reaches_manual_stream_transport_without_pre_dispatch_refund():
+def test_live_stream_default_pro_reaches_manual_stream_transport_without_pre_dispatch_refund():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -114,7 +118,7 @@ def test_live_stream_medium_reaches_manual_stream_transport_without_pre_dispatch
     asyncio.run(scenario())
 
 
-def test_non_live_b14_preflight_remains_available_for_exact_medium_regression():
+def test_non_live_b14_preflight_remains_available_for_exact_default_pro_regression():
     async def scenario():
         calls = 0
 
