@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import unittest
 
 from padiem_ai_core.b14_execution import B14RouteMetadata
@@ -49,9 +49,10 @@ class _ResultFactory:
         terminal_status = RunStatus.COMPLETED
         if kinds and kinds[-1] is OrchestrationEventKind.APPROVAL_PAUSED:
             terminal_status = RunStatus.PAUSED
-        elif kinds and kinds[-1] is OrchestrationEventKind.RUN_FAILED:
-            terminal_status = RunStatus.FAILED
-        elif kinds and kinds[-1] is OrchestrationEventKind.RUN_CANCELLED:
+        elif kinds and kinds[-1] in {
+            OrchestrationEventKind.RUN_FAILED,
+            OrchestrationEventKind.RUN_CANCELLED,
+        }:
             terminal_status = RunStatus.FAILED
         execution_result = ExecutionResult(
             answer=answer,
@@ -144,12 +145,17 @@ class P01RequestFactoryTests(unittest.TestCase):
         )
         bundle = P01RequestFactory().build(run)
         self.assertIsNone(bundle.execution_request.additional_system_context)
-        self.assertNotIn(
-            "ignore policy",
-            str(tuple(bundle.execution_request.messages)),
-        )
+        self.assertNotIn("ignore policy", str(tuple(bundle.execution_request.messages)))
 
-    def test_cloud_factory_requires_matching_active_lease_and_preparing_state(self):
+    def test_timeout_policy_matches_current_core_bounds(self):
+        with self.assertRaises(P01AdapterError):
+            P01RequestFactory(timeout_seconds=0.5)
+        with self.assertRaises(P01AdapterError):
+            P01RequestFactory(timeout_seconds=61)
+        bundle = P01RequestFactory(timeout_seconds=30).build(self.local_run("run_timeout"))
+        self.assertEqual(bundle.context.timeout_seconds, 30.0)
+
+    def test_cloud_factory_requires_matching_active_unexpired_lease_and_preparing_state(self):
         run = self.cloud_run()
         with self.assertRaises(P01AdapterError):
             P01RequestFactory().build(run)
@@ -159,13 +165,17 @@ class P01RequestFactoryTests(unittest.TestCase):
         sandbox = DeterministicFakeSandboxProvider(clock=lambda: now)
         lease = CloudWorkspacePreparer(sandbox).prepare(run)
         self.assertEqual(run.status, ClawRunStatus.PREPARING)
-        bundle = P01RequestFactory().build(run, lease=lease)
+        bundle = P01RequestFactory(clock=lambda: now).build(run, lease=lease)
         self.assertEqual(bundle.orchestration_request.context.trace_id, bundle.context.trace_id)
 
         other = self.cloud_run("run_other")
         other_lease = CloudWorkspacePreparer(sandbox).prepare(other)
         with self.assertRaises(P01AdapterError):
-            P01RequestFactory().build(run, lease=other_lease)
+            P01RequestFactory(clock=lambda: now).build(run, lease=other_lease)
+
+        with self.assertRaises(P01AdapterError) as caught:
+            P01RequestFactory(clock=lambda: now + timedelta(hours=1)).build(run, lease=lease)
+        self.assertEqual(caught.exception.code, "cloud_lease_expired")
 
 
 class P01ProjectionTests(unittest.TestCase):
@@ -215,7 +225,6 @@ class P01ProjectionTests(unittest.TestCase):
         projector.consume(completion)
         self.assertEqual(run.status, ClawRunStatus.COMPLETED)
         self.assertTrue(run.terminal)
-        # Exact event replay is idempotent.
         projector.consume(completion)
         self.assertEqual(run.status, ClawRunStatus.COMPLETED)
 
@@ -224,6 +233,10 @@ class P01ProjectionTests(unittest.TestCase):
         projector = ClawOrchestrationProjector(run, trace_id=trace_id)
         with self.assertRaises(P01ProjectionError):
             projector.consume(self.event(OrchestrationEventKind.CONTEXT_PREPARED, 1))
+
+        projector = ClawOrchestrationProjector(run, trace_id=trace_id)
+        with self.assertRaises(P01ProjectionError):
+            projector.consume(self.event(OrchestrationEventKind.RUN_STARTED, 2))
 
         projector = ClawOrchestrationProjector(run, trace_id=trace_id)
         with self.assertRaises(P01ProjectionError):
@@ -245,6 +258,15 @@ class P01ProjectionTests(unittest.TestCase):
                     event_id="evt_regression",
                 )
             )
+        with self.assertRaises(P01ProjectionError):
+            projector.consume(
+                self.event(
+                    OrchestrationEventKind.CONTEXT_PREPARED,
+                    2,
+                    run_id="orch_other",
+                    event_id="evt_other_run",
+                )
+            )
         projector.consume(self.event(OrchestrationEventKind.RUN_COMPLETED, 2))
         with self.assertRaises(P01ProjectionError):
             projector.consume(
@@ -254,6 +276,26 @@ class P01ProjectionTests(unittest.TestCase):
                     event_id="evt_late",
                 )
             )
+
+    def test_event_id_replay_requires_identical_event_fingerprint(self):
+        run, trace_id = self.make_run()
+        projector = ClawOrchestrationProjector(run, trace_id=trace_id)
+        started = self.event(
+            OrchestrationEventKind.RUN_STARTED,
+            1,
+            event_id="evt_same_id",
+        )
+        projector.consume(started)
+        projector.consume(started)
+        with self.assertRaises(P01ProjectionError) as caught:
+            projector.consume(
+                self.event(
+                    OrchestrationEventKind.CONTEXT_PREPARED,
+                    2,
+                    event_id="evt_same_id",
+                )
+            )
+        self.assertEqual(caught.exception.code, "event_id_reuse_conflict")
 
 
 class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
