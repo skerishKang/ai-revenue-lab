@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 import re
-from typing import Any
+from typing import Any, TypeVar
 
 from .security import redact_secrets
 
@@ -51,9 +51,12 @@ class SandboxLeaseState(str, Enum):
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+_EnumT = TypeVar("_EnumT", bound=Enum)
 
 
 def _safe_id(value: str, field_name: str) -> str:
+    if not isinstance(value, str):
+        raise ContractError(f"{field_name} must be a string")
     normalized = value.strip()
     if not _SAFE_ID_RE.fullmatch(normalized):
         raise ContractError(f"{field_name} has an invalid identifier shape")
@@ -61,6 +64,8 @@ def _safe_id(value: str, field_name: str) -> str:
 
 
 def _bounded_text(value: str, field_name: str, *, limit: int, allow_empty: bool = False) -> str:
+    if not isinstance(value, str):
+        raise ContractError(f"{field_name} must be a string")
     normalized = value.strip()
     if not normalized and not allow_empty:
         raise ContractError(f"{field_name} is required")
@@ -71,7 +76,33 @@ def _bounded_text(value: str, field_name: str, *, limit: int, allow_empty: bool 
     return normalized
 
 
+def _enum_member(enum_type: type[_EnumT], value: object, field_name: str) -> _EnumT:
+    if isinstance(value, enum_type):
+        return value
+    try:
+        return enum_type(value)
+    except (TypeError, ValueError) as exc:
+        allowed = ", ".join(str(member.value) for member in enum_type)
+        raise ContractError(f"{field_name} must be one of: {allowed}") from exc
+
+
+def _bounded_int(value: int, field_name: str, *, minimum: int, maximum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ContractError(f"{field_name} must be an integer")
+    if not minimum <= value <= maximum:
+        raise ContractError(f"{field_name} must be between {minimum} and {maximum}")
+    return value
+
+
+def _strict_bool(value: bool, field_name: str) -> bool:
+    if not isinstance(value, bool):
+        raise ContractError(f"{field_name} must be a boolean")
+    return value
+
+
 def _aware_utc(value: datetime, field_name: str) -> datetime:
+    if not isinstance(value, datetime):
+        raise ContractError(f"{field_name} must be a datetime")
     if value.tzinfo is None or value.utcoffset() is None:
         raise ContractError(f"{field_name} must be timezone-aware")
     return value.astimezone(timezone.utc)
@@ -100,6 +131,11 @@ class ClawTaskIntent:
             self,
             "repository_ref",
             _bounded_text(self.repository_ref, "repository_ref", limit=1_024),
+        )
+        object.__setattr__(
+            self,
+            "execution_mode",
+            _enum_member(ExecutionMode, self.execution_mode, "execution_mode"),
         )
         object.__setattr__(
             self,
@@ -143,6 +179,11 @@ class SandboxLeaseRequest:
         object.__setattr__(self, "run_id", _safe_id(self.run_id, "run_id"))
         object.__setattr__(
             self,
+            "execution_mode",
+            _enum_member(ExecutionMode, self.execution_mode, "execution_mode"),
+        )
+        object.__setattr__(
+            self,
             "repository_ref",
             _bounded_text(self.repository_ref, "repository_ref", limit=1_024),
         )
@@ -152,8 +193,26 @@ class SandboxLeaseRequest:
                 "requested_revision",
                 _bounded_text(self.requested_revision, "requested_revision", limit=256),
             )
-        if not 60 <= self.ttl_seconds <= 3_600:
-            raise ContractError("ttl_seconds must be between 60 and 3600")
+        object.__setattr__(
+            self,
+            "resource_class",
+            _enum_member(ResourceClass, self.resource_class, "resource_class"),
+        )
+        object.__setattr__(
+            self,
+            "ttl_seconds",
+            _bounded_int(self.ttl_seconds, "ttl_seconds", minimum=60, maximum=3_600),
+        )
+        object.__setattr__(
+            self,
+            "network_policy",
+            _enum_member(NetworkPolicy, self.network_policy, "network_policy"),
+        )
+        object.__setattr__(
+            self,
+            "writable_workspace",
+            _strict_bool(self.writable_workspace, "writable_workspace"),
+        )
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -184,6 +243,31 @@ class SandboxLease:
     def __post_init__(self) -> None:
         object.__setattr__(self, "lease_id", _safe_id(self.lease_id, "lease_id"))
         object.__setattr__(self, "run_id", _safe_id(self.run_id, "run_id"))
+        object.__setattr__(
+            self,
+            "execution_mode",
+            _enum_member(ExecutionMode, self.execution_mode, "execution_mode"),
+        )
+        object.__setattr__(
+            self,
+            "resource_class",
+            _enum_member(ResourceClass, self.resource_class, "resource_class"),
+        )
+        object.__setattr__(
+            self,
+            "network_policy",
+            _enum_member(NetworkPolicy, self.network_policy, "network_policy"),
+        )
+        object.__setattr__(
+            self,
+            "writable_workspace",
+            _strict_bool(self.writable_workspace, "writable_workspace"),
+        )
+        object.__setattr__(
+            self,
+            "state",
+            _enum_member(SandboxLeaseState, self.state, "state"),
+        )
         created = _aware_utc(self.created_at, "created_at")
         expires = _aware_utc(self.expires_at, "expires_at")
         if expires <= created:
@@ -192,9 +276,10 @@ class SandboxLease:
         object.__setattr__(self, "expires_at", expires)
 
     def with_state(self, state: SandboxLeaseState) -> "SandboxLease":
+        normalized_state = _enum_member(SandboxLeaseState, state, "state")
         if self.state is not SandboxLeaseState.RESERVED:
             raise ContractError("only a reserved lease may change state")
-        if state is SandboxLeaseState.RESERVED:
+        if normalized_state is SandboxLeaseState.RESERVED:
             return self
         return SandboxLease(
             lease_id=self.lease_id,
@@ -205,7 +290,7 @@ class SandboxLease:
             writable_workspace=self.writable_workspace,
             created_at=self.created_at,
             expires_at=self.expires_at,
-            state=state,
+            state=normalized_state,
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -238,15 +323,32 @@ class RunProjection:
         object.__setattr__(self, "task_id", _safe_id(self.task_id, "task_id"))
         object.__setattr__(
             self,
+            "status",
+            _enum_member(ClawRunStatus, self.status, "status"),
+        )
+        object.__setattr__(
+            self,
+            "execution_mode",
+            _enum_member(ExecutionMode, self.execution_mode, "execution_mode"),
+        )
+        object.__setattr__(
+            self,
             "summary",
             _bounded_text(self.summary, "summary", limit=2_000, allow_empty=True),
         )
+        if not isinstance(self.changed_files, tuple):
+            raise ContractError("changed_files must be a tuple")
         if len(self.changed_files) > 100:
             raise ContractError("changed_files exceeds 100 entries")
         normalized_files: list[str] = []
         for path in self.changed_files:
             normalized_files.append(_bounded_text(path, "changed_file", limit=512))
         object.__setattr__(self, "changed_files", tuple(normalized_files))
+        object.__setattr__(
+            self,
+            "approval_required",
+            _strict_bool(self.approval_required, "approval_required"),
+        )
 
     def safe_dict(self) -> dict[str, Any]:
         return {
