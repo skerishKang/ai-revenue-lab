@@ -43,7 +43,7 @@ class OpsContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             Money(True, "KRW")  # type: ignore[arg-type]
         with self.assertRaises(ContractError):
-            Money(100, "WON")
+            Money(100, "KRWW")
 
     def test_quantity_rejects_binary_float_and_supports_decimal_text(self):
         line = LineItem(
