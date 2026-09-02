@@ -24,8 +24,17 @@ Business35_Pilot_Quote_Template.xlsx (9 sheets)
 
 ## Rendered evidence (real renders from the final artifacts)
 
-PDF pages rasterized with PyMuPDF (real PDF rendering, deterministic scale);
-XLSX sheets rendered from real cell values/styles via openpyxl + Pillow.
+Customer PDFs are real native-engine exports (Microsoft PowerPoint COM for
+proposal/one-page, Microsoft Word COM for questionnaire; LibreOffice headless
+accepted where COM is unavailable) — no recomposed fallback PDFs. PDF pages
+rasterized with PyMuPDF (real PDF rendering, deterministic scale); proposal
+and one-page preserve the 16:9 PPTX slide geometry. XLSX sheets are exported
+by Microsoft Excel COM (FitToPages 1x1, in-memory, source workbook unmutated;
+LibreOffice Calc headless accepted where COM is unavailable), preserving
+merges, fills, fonts, borders, column widths, row heights, conditional
+formatting, and print areas — no recreated Pillow tables.
+Renderer provenance (DOCUMENT_EXPORTER / XLSX_EXPORTER / REAL_* PASS) is
+recorded in GENERATION_MANIFEST.json.
 No synthetic placeholders are used. When no real renderer is available the
 build fails with REAL_RENDER_EVIDENCE=UNAVAILABLE_BLOCKING instead of
 generating placeholder evidence.
