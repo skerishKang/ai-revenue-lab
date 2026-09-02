@@ -12,6 +12,7 @@ import argparse
 import csv
 from dataclasses import asdict, dataclass
 import json
+import ipaddress
 import os
 from pathlib import Path
 import re
@@ -100,7 +101,7 @@ PROVIDERS: dict[str, ProviderSpec] = {
         "https://api.search.tinyfish.ai",
         "TINYFISH_API_KEY",
         "internal_results_only",
-        "standard_terms_train_on_customer_data; sensitive_default_not_eligible_without_separate_terms",
+        "standard_terms_internal_business_use_and_training; public_customer_app_not_eligible_without_separate_agreement",
         "Search API; 5 normalized results retained; no raw provider payload stored.",
     ),
     "parallel": ProviderSpec(
@@ -176,6 +177,18 @@ def _safe_url(value: Any) -> str:
         return ""
     if parsed.username is not None or parsed.password is not None:
         return ""
+    host = parsed.hostname.rstrip(".").lower()
+    if host == "localhost" or host.endswith((".localhost", ".local", ".internal", ".lan", ".home")):
+        return ""
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        if re.fullmatch(r"[0-9.]+", host):
+            return ""
+    else:
+        candidate = getattr(address, "ipv4_mapped", None) or address
+        if not candidate.is_global:
+            return ""
     return value
 
 
