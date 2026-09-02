@@ -7,6 +7,7 @@ on:
       - "apps/padiem-chat/app/**"
       - ".github/scripts/b62_browser_visual_qa.py"
       - ".github/scripts/b62_glass_zoom_visual_qa.py"
+      - ".github/scripts/b62_chat_gutter_visual_qa.py"
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
@@ -57,6 +58,8 @@ jobs:
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
       - name: Glass zoom-equivalent desktop QA
         run: uv run python ../../.github/scripts/b62_glass_zoom_visual_qa.py
+      - name: Shared gutter responsive browser QA
+        run: uv run python ../../.github/scripts/b62_chat_gutter_visual_qa.py
       - name: Print QA report
         if: always()
         run: |
@@ -65,6 +68,9 @@ jobs:
           fi
           if [ -f ../../.tmp/b62-browser-qa/glass-zoom-report.json ]; then
             cat ../../.tmp/b62-browser-qa/glass-zoom-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/shared-gutter-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/shared-gutter-report.json
           fi
       - name: Upload browser evidence
         if: always()

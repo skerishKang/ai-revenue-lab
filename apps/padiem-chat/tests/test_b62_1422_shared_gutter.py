@@ -27,8 +27,9 @@ def test_internal_message_rail_uses_full_outer_lane_but_keeps_avatar_grid() -> N
     assert ".message-list {\n  width: 100% !important;\n  margin-inline: 0 !important;" in ALIGNMENT_CSS
     assert ".assistant-body," in ALIGNMENT_CSS
     assert ".assistant-content {\n  width: 100% !important;\n  max-width: none !important;" in ALIGNMENT_CSS
-    # The alignment layer must not flatten the assistant grid or hide its avatar.
-    assert "grid-template-columns" not in ALIGNMENT_CSS
+    # Preserve the assistant grid and match its first track to the accepted
+    # 32px Glass avatar so the visible avatar-to-content gap stays intentional.
+    assert "grid-template-columns: 32px minmax(0, 1fr) !important;" in ALIGNMENT_CSS
     assert "assistant-avatar" not in ALIGNMENT_CSS
     assert "display: none" not in ALIGNMENT_CSS
 
@@ -41,7 +42,9 @@ def test_mobile_conversation_matches_existing_composer_gutters() -> None:
     assert "@media (max-width: 920px)" in ALIGNMENT_CSS
     assert "width: calc(100vw - 28px) !important;" in ALIGNMENT_CSS
     assert "@media (max-width: 620px)" in ALIGNMENT_CSS
-    assert "width: calc(100vw - 20px) !important;" in ALIGNMENT_CSS
+    # The narrow breakpoint may tighten bubble padding, but it must not change
+    # the 14px outer conversation/composer gutter established at <=920px.
+    assert "width: calc(100vw - 20px) !important;" not in ALIGNMENT_CSS
     assert "padding-left: 24px !important;" in ALIGNMENT_CSS
 
 
