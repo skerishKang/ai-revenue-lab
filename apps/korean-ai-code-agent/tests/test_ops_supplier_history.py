@@ -150,6 +150,19 @@ class SupplierHistoryTests(unittest.TestCase):
         self.assertEqual(usd.sample_count, 1)
         self.assertEqual(usd.latest_unit_price_minor, 8)
 
+    def test_negative_supplier_unit_price_is_rejected_even_if_generic_money_allows_it(self):
+        with self.assertRaisesRegex(ContractError, "negative"):
+            SupplierPriceObservation(
+                observation_id="price_negative",
+                workspace_id="ws_1",
+                supplier_id="supplier_1",
+                item_key="item_motor",
+                quote_id="quote_negative",
+                captured_at=NOW,
+                unit_price=Money(-1, "KRW"),
+                evidence_ref="evidence:price_negative",
+            )
+
     def test_unknown_history_remains_unknown_instead_of_inventing_score(self):
         summary = SupplierPerformanceLedger().summarize(
             workspace_id="ws_empty",
