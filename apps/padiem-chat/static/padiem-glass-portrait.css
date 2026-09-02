@@ -306,3 +306,158 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
     -webkit-backdrop-filter: none !important;
   }
 }
+
+/* Owner visual polish (#1369) ---------------------------------------------
+ * Browser zoom is user-controlled and cannot be safely forced to 100% from a
+ * web page. Keep the same composition useful across the effective viewport
+ * widths produced by common desktop zoom levels instead.
+ */
+html[data-theme="padiem-glass"] .home-link {
+  top: 26px;
+}
+
+html[data-theme="padiem-glass"] .home-link::before {
+  transform: translateY(1px);
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .assistant-avatar {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, .56) !important;
+  border-radius: 10px;
+  background: rgba(56, 65, 74, .72) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 24px rgba(24, 33, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .20) !important;
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .assistant-meta {
+  color: #53606c !important;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-transform: none !important;
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .demo-label {
+  border-color: rgba(54, 68, 79, .10) !important;
+  background: rgba(72, 84, 94, .08) !important;
+  color: #78838c !important;
+  letter-spacing: 0;
+  text-transform: none !important;
+}
+
+/* Ordinary answer text should read directly on the Glass frame, not inside a
+ * second pale rectangle. Structured child cards keep their own surfaces. */
+html[data-theme="padiem-glass"] .assistant-content > p,
+html[data-theme="padiem-glass"] .assistant-content > .rich-response {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-theme="padiem-glass"] .answer-actions {
+  margin-top: 14px;
+  gap: 8px;
+}
+
+html[data-theme="padiem-glass"] .answer-action {
+  min-height: 38px;
+  padding: 0 13px;
+  border-color: rgba(49, 61, 71, .14) !important;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .46) !important;
+  color: #3e4b56 !important;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+html[data-theme="padiem-glass"] .answer-action:hover,
+html[data-theme="padiem-glass"] .answer-action:focus-visible {
+  background: rgba(255, 255, 255, .68) !important;
+}
+
+/* Make the active chat composer readable as a field: muted gray surface,
+ * light entered text, and enough contrast for the placeholder/caret. */
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer {
+  padding: 10px 11px 9px;
+  border-color: rgba(255, 255, 255, .38) !important;
+  background: rgba(49, 56, 63, .92) !important;
+  box-shadow: 0 18px 46px rgba(27, 35, 43, .22), inset 0 1px 0 rgba(255, 255, 255, .10) !important;
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer textarea {
+  min-height: 52px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(104, 113, 121, .58) !important;
+  color: #ffffff !important;
+  caret-color: #ffffff;
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer textarea::placeholder {
+  color: rgba(255, 255, 255, .68) !important;
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-actions {
+  margin-top: 8px;
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .tool-button:not(:disabled) {
+  background: rgba(255, 255, 255, .12);
+  color: rgba(255, 255, 255, .88);
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .tool-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .18);
+}
+
+html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-note {
+  color: rgba(255, 255, 255, .58) !important;
+}
+
+/* The editorial rail is 252px on desktop. Reusing that token removes the
+ * historical 12px drift caused by the old hard-coded 264px composer math. */
+@media (min-width: 1280px) {
+  html[data-theme="padiem-glass"] .conversation {
+    width: min(760px, calc(100vw - var(--workspace-rail, 252px) - 360px - 84px)) !important;
+  }
+
+  html[data-theme="padiem-glass"] .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + clamp(36px, 4vw, 72px) + 16px) !important;
+    width: min(728px, calc(100vw - var(--workspace-rail, 252px) - 360px - 116px)) !important;
+    transform: none !important;
+  }
+
+  html[data-theme="padiem-glass"] .main-panel::before {
+    right: clamp(0px, calc((100vw - 1920px) * .35), 220px) !important;
+  }
+}
+
+/* Compact desktop composition for narrow effective viewports such as a
+ * 1536px display viewed around 150% zoom. Reserve a real portrait column
+ * instead of letting the conversation surface cover the face. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html[data-theme="padiem-glass"] .conversation {
+    width: min(620px, calc(100vw - var(--workspace-rail, 252px) - 300px - 48px)) !important;
+    margin-left: 24px !important;
+    margin-right: 0 !important;
+  }
+
+  html[data-theme="padiem-glass"] .composer-wrap {
+    left: calc(var(--workspace-rail, 252px) + 38px) !important;
+    width: min(592px, calc(100vw - var(--workspace-rail, 252px) - 300px - 76px)) !important;
+    transform: none !important;
+  }
+
+  html[data-theme="padiem-glass"] .main-panel::before {
+    right: 0 !important;
+    width: clamp(300px, 32vw, 380px) !important;
+    background-size: auto min(78vh, 780px) !important;
+    opacity: var(--glass-art-opacity) !important;
+  }
+}
