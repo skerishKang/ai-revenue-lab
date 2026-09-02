@@ -32,6 +32,13 @@
         document.head.appendChild(portrait);
       }
     }
+    if(!document.querySelector('script[data-padiem-conversation-motion]')){
+      var motion=document.createElement("script");
+      motion.src="./conversation-motion.js";
+      motion.defer=true;
+      motion.setAttribute("data-padiem-conversation-motion","");
+      document.head.appendChild(motion);
+    }
     var cs=(s==="light"||s==="padiem-home"||s==="padiem-glass")?"light":"dark";
     var mc=document.querySelector('meta[name="color-scheme"]'); if(mc) mc.setAttribute("content",cs);
     var tc=document.querySelector('meta[name="theme-color"]');

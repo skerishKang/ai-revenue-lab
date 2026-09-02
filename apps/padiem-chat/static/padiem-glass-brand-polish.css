@@ -133,3 +133,80 @@ html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon::
   font-weight: 800;
   line-height: 1;
 }
+
+/* Live conversation motion polish (#1376) ---------------------------------
+ * Keep the accepted home composition, but make the active chat behave like a
+ * modern fixed-composer conversation: the newest turn has a readable anchor,
+ * progressive text stays above the composer, and the Glass frame remains
+ * lighter than a large opaque sheet.
+ */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
+  padding-top: clamp(24px, 4vh, 44px) !important;
+  padding-bottom: var(--padiem-composer-clearance, 240px) !important;
+  background: linear-gradient(155deg, rgba(248, 250, 251, .74), rgba(233, 238, 241, .68)) !important;
+  box-shadow:
+    0 20px 58px rgba(28, 36, 44, .13),
+    inset 0 1px 0 rgba(255, 255, 255, .64) !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .message-list {
+  gap: 22px !important;
+  padding-top: 2px !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message {
+  scroll-margin-top: 92px;
+}
+
+/* One composer surface only. The textarea no longer reads as a second dark
+ * rectangle nested inside the outer composer. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer textarea {
+  min-height: 50px !important;
+  padding: 8px 8px 4px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  caret-color: #ffffff;
+}
+
+/* During generation, the cancel action occupies the send-control position as
+ * a compact stop button instead of adding a second text-heavy control. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button:not([hidden]) + .send-button {
+  display: none !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button {
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .92);
+  color: #303942;
+  box-shadow: 0 8px 22px rgba(16, 24, 32, .18);
+  font-size: 0;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button::before {
+  content: "■";
+  font-size: 12px;
+  line-height: 1;
+}
+
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .cancel-stream-button:hover:not(:disabled) {
+  background: #ffffff;
+}
+
+/* Canned starter prompts belong on the home surface. Once a real conversation
+ * exists, signed-in history/projects may remain, but unrelated suggestions do
+ * not compete with the active thread. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .recent-section[aria-labelledby="recentTitle"] {
+  display: none !important;
+}
