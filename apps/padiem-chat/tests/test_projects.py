@@ -302,7 +302,9 @@ async def test_new_project_chat_persists_project_and_injects_one_system_message(
     upstream = seen["body"]
     systems = [item for item in upstream["messages"] if item["role"] == "system"]
     assert len(systems) == 1
-    assert get_skill("auto").system_instruction in systems[0]["content"]
+    assert get_skill("auto").system_instruction is None
+    assert get_skill("auto").max_tokens is None
+    assert "max_tokens" not in upstream
     assert "프로젝트 컨텍스트 규칙" in systems[0]["content"]
     assert project.instructions in systems[0]["content"]
     assert sum(1 for item in upstream["messages"] if item["role"] == "system") == 1
