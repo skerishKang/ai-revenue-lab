@@ -18,6 +18,7 @@
 
 html[data-theme="padiem-glass"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
+  --glass-portrait-x: 100%;
   --glass-art-x: 0px;
   --glass-art-y: 0px;
   --glass-art-scale: 1;
@@ -35,10 +36,16 @@ html[data-theme="padiem-glass"] {
 
 html[data-theme="padiem-glass"][data-glass-variant="female"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
+  --glass-portrait-x: calc(100% - 54px);
+  --glass-mask-start: 8%;
+  --glass-mask-full: 40%;
 }
 
 html[data-theme="padiem-glass"][data-glass-variant="male"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-male.jpg");
+  --glass-portrait-x: calc(100% - 38px);
+  --glass-mask-start: 6%;
+  --glass-mask-full: 36%;
 }
 
 html[data-theme="padiem-glass"] .main-panel {
@@ -57,7 +64,7 @@ html[data-theme="padiem-glass"] .main-panel::before {
   pointer-events: none;
   background-image: var(--padiem-glass-portrait-image);
   background-repeat: no-repeat;
-  background-position: right 52%;
+  background-position: var(--glass-portrait-x) 52%;
   background-size: auto min(90vh, 900px);
   opacity: var(--glass-art-opacity);
   filter: saturate(.68) contrast(.94) brightness(1.08);
@@ -198,10 +205,11 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
     margin-right: 0;
   }
 
+  /* Keep the floating composer fully inside the Glass conversation frame. */
   html[data-theme="padiem-glass"] .composer-wrap {
     left: calc(264px + clamp(36px, 4vw, 72px));
     transform: none;
-    width: min(760px, calc(100vw - 264px - 360px - 84px));
+    width: min(736px, calc(100vw - 264px - 360px - 108px));
   }
 
   html[data-theme="padiem-glass"] .main-panel::before {
@@ -224,6 +232,7 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
     top: 62px;
     right: -24vw;
     width: 82vw;
+    background-position: right 52%;
     background-size: auto 72vh;
     opacity: .22;
     filter: saturate(.52) contrast(.86) brightness(1.16) blur(.4px);
@@ -234,6 +243,10 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
   html[data-theme="padiem-glass"] .conversation {
     background: rgba(242, 245, 247, .90);
     border-radius: 24px;
+  }
+
+  html[data-theme="padiem-glass"] .composer-wrap {
+    width: calc(100vw - 36px);
   }
 
   html[data-theme="padiem-glass"] .composer {
@@ -252,6 +265,10 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
     border-radius: 20px;
     padding-left: 14px;
     padding-right: 14px;
+  }
+
+  html[data-theme="padiem-glass"] .composer-wrap {
+    width: calc(100vw - 32px);
   }
 }
 
