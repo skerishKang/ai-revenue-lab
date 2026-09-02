@@ -91,13 +91,11 @@ async def test_b14_request_is_fixed_explicit_poolside_route_and_has_no_provider_
 
     assert seen["url"] == "https://b14.example/api/pilot/v1/chat/completions"
     assert seen["body"]["model"] == ACTIVE_MODEL
-    assert seen["body"]["messages"][0] == {
-        "role": "system",
-        "content": get_skill("auto").system_instruction,
-    }
-    assert sum(1 for item in seen["body"]["messages"] if item["role"] == "system") == 1
-    assert seen["body"]["messages"][1:] == USER_MESSAGES
-    assert seen["body"]["max_tokens"] == get_skill("auto").max_tokens
+    assert get_skill("auto").system_instruction is None
+    assert get_skill("auto").max_tokens is None
+    assert seen["body"]["messages"] == USER_MESSAGES
+    assert sum(1 for item in seen["body"]["messages"] if item["role"] == "system") == 0
+    assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"] == {
         "task_type": "general",
         "optimize_for": "korean",
