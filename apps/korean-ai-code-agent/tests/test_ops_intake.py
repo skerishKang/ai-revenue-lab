@@ -122,7 +122,7 @@ class IntakeTests(unittest.TestCase):
             trusted_customer_id="customer_1",
         )
         request = promote_candidate(candidate, request_id="req_1")
-        self.assertEqual(str(request.line_items[0].quantity), "20")
+        self.assertEqual(request.line_items[0].quantity, Decimal("20"))
 
     def test_unknown_field_blocks_promotion(self):
         unknown = ExtractedField(
