@@ -1,0 +1,93 @@
+# B35 Generation Manifest
+
+```text
+SOURCE_REVISION=63adbefcf24a91a5a064c6b8e13779e151ba7de7
+PRODUCT_AUTHORITY_REVISION=05932da3af774220372f0e9f3716b07cd83511f9
+PRODUCT_CONTRACT_BLOB_SHA=961ff2ae5390f6c6fc99f6969d5ef3b7665ea82f
+GENERATOR_REVISION=4222672615998399c13154c327aff5755e9750eb
+BUILDER_CONTENT_HASH=ea39199a63b0
+DOCUMENT_EXPORTER=Microsoft PowerPoint COM + Microsoft Word COM
+XLSX_EXPORTER=Microsoft Excel COM
+REAL_DOCUMENT_EXPORT=PASS
+REAL_XLSX_RENDER=PASS
+BASE_SHA=4222672615998399c13154c327aff5755e9750eb
+CURRENT_BINARY_STATUS=V3_1_REGENERATED_FROM_ACCEPTED_SOURCE
+```
+
+## Output File List
+
+- Business35_Customer_Meeting_Script.md
+- Business35_Diagnostic_Questionnaire.docx
+- Business35_Diagnostic_Questionnaire.pdf
+- Business35_Followup_Email_Templates.md
+- Business35_Master_Proposal_10p.pdf
+- Business35_Master_Proposal_10p.pptx
+- Business35_OnePage_Offer.pdf
+- Business35_OnePage_Offer_Source.pptx
+- Business35_Pilot_Quote_Template.xlsx
+- CUSTOMIZATION_CHECKLIST.md
+- README.md
+- SOURCE_MAPPING.md
+- rendered/onepage-1.png
+- rendered/proposal-01.png
+- rendered/proposal-02.png
+- rendered/proposal-03.png
+- rendered/proposal-04.png
+- rendered/proposal-05.png
+- rendered/proposal-06.png
+- rendered/proposal-07.png
+- rendered/proposal-08.png
+- rendered/proposal-09.png
+- rendered/proposal-10.png
+- rendered/questionnaire-1.png
+- rendered/questionnaire-2.png
+- rendered/questionnaire-3.png
+- xlsx-rendered/approval.png
+- xlsx-rendered/assumptions.png
+- xlsx-rendered/customer-scope.png
+- xlsx-rendered/instructions.png
+- xlsx-rendered/offer-a.png
+- xlsx-rendered/offer-b1.png
+- xlsx-rendered/offer-b2.png
+- xlsx-rendered/offer-c.png
+- xlsx-rendered/optional-items.png
+
+## Output Hashes (SHA256)
+
+```text
+c26b86262d0e6992096e011ed3dc6bed1faac0e5496ae4885d973774c5e29892  Business35_Customer_Meeting_Script.md
+4e39fa9b678aebf2c7cfdcdbe6f9fa848916e9cfb9235cfd61804775eaba141d  Business35_Diagnostic_Questionnaire.docx
+03d85da2874cb185396125f9fb0fbf5d100d8c1ff6d5050fea1f5b32450d4544  Business35_Diagnostic_Questionnaire.pdf
+5a9804546f558b0206de12bdf09189edabd86b3aab36d3d217a09c2c40c5aa27  Business35_Followup_Email_Templates.md
+ff25b8db21b8e6f866ae92cfdf767fdc5783d6031e5b19eb6e9aed7c78c1c43e  Business35_Master_Proposal_10p.pdf
+1cc0c2b00670f4d2787e4b46a79eee69f360fd3e61172832dfccebe7fb36af4b  Business35_Master_Proposal_10p.pptx
+e640fe0efe685ecbf2a93dfd75d87bc6624a70463f1602b0c7ec138d4e2af1e1  Business35_OnePage_Offer.pdf
+01e6f27cfb0cc3509dd3bb5db88c01d14579eff10f1e88f41be3b77e3f4ada03  Business35_OnePage_Offer_Source.pptx
+a249c68d754d7b1f09ccfe8fe48c0832adb1c764a59d661672ccc295a64475a3  Business35_Pilot_Quote_Template.xlsx
+ff2b132bcce209c620335899b57e741f5f001a860e9b20515061d60661f6ba55  CUSTOMIZATION_CHECKLIST.md
+ad71306674fe21c3a6f1109ae85642f47c9d6446fc546f543280b02132b0ee66  README.md
+c59c11b94a779c985bf006405d6f7b278798fc7bab2ad60f4e12960490096903  SOURCE_MAPPING.md
+2668a3c6c3db6ab97f40b849dd8fae4e6d949c4efbc0cde41cbd8d738557c05b  rendered/onepage-1.png
+835a9d5be7ec924a11c82cadade2949db3a1d8ff09352cd8d7ae6dc1ea5eb343  rendered/proposal-01.png
+96803d700b9b57143c10f7c49257dc4b9e45e69c953f5654d2dcca28ef3f8e27  rendered/proposal-02.png
+65ceaf12d04216e34e5d926fb94a5a9d55f3194275e143e44bd75cd0a26090ac  rendered/proposal-03.png
+f8d89509af6b19439aebcada2b377c17f90d215a382a02cb29bb18a09c762d5b  rendered/proposal-04.png
+00930135a77d002302ed8868798ec819baa322a6f1a1f990a361299481891b2d  rendered/proposal-05.png
+c22233e382e24ef860d4527e87f9b1518a036f51d62e761a1f6e2b66fde2c8f9  rendered/proposal-06.png
+8d13348b88724297638eeac84bc148b9b7cf1067580714301fdab81fd9e5471f  rendered/proposal-07.png
+d78a4869262e44bf8815df60559871d74555e161fcbb4b50a7c0a82c76e5343d  rendered/proposal-08.png
+fe4dadc69bcccb46327212d368283539c6a94a5177ae8fd9ea537c3de915831e  rendered/proposal-09.png
+79befe5cdfe365c95bebea45f1c306ab18bac3449f1977f4042d581ad16cd94a  rendered/proposal-10.png
+6ccd3a3e5955817e4695b420220717e1b4e9ecb261979f878d2a7e72255f0dca  rendered/questionnaire-1.png
+c963206377756e21f48770c4cc0f9267d95d57688c184cc45fd36f6d3bb96734  rendered/questionnaire-2.png
+6359297828c97a3804c3faad3e47538426aa0daa18599c9b17e4f6f3c19d9170  rendered/questionnaire-3.png
+b1611d363a311c9514e14a3b49328c800f16aee8ee58e3080d6a2d276c844465  xlsx-rendered/approval.png
+b23487cb84bd9e92ebe30ec139b5ed096ca20e050ac13e6bce1055b21b89772f  xlsx-rendered/assumptions.png
+12c2d15b689a33dece599c761b30bdafbe22a189b9cc0605b36152ef87f37db1  xlsx-rendered/customer-scope.png
+25dad5d85fdf95dc11c89d3ea09daf8959a0623ea8a53990a1898f07249471ce  xlsx-rendered/instructions.png
+1ea5c6c85d3dcd4ca01bb562c3f06ae5686dc6a2c35cbf3886344a0619f14b80  xlsx-rendered/offer-a.png
+a6a83aa071a17538751875ece9662ea2095e31a3d3c2d54514626e8aabbcd3bd  xlsx-rendered/offer-b1.png
+d111548595ea005b4eb7aecb51e9f0075a76f1491a4eecc79df99a5184f919e6  xlsx-rendered/offer-b2.png
+c6ad03dc7f356599a20c9e87708359e14ae393288ddf7439367569f647b4b309  xlsx-rendered/offer-c.png
+ab5f8cda50e4098dccea9b9543dfb89381a1e958951db70425129516e336b505  xlsx-rendered/optional-items.png
+```
