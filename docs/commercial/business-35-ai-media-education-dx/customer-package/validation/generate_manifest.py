@@ -16,6 +16,12 @@ commit's SHA). A 12-char content hash is recorded only as the auxiliary
 BUILDER_CONTENT_HASH field and is never substituted for the Git revision.
 The stale pending-source marker (see _PENDING_MARKER below) must never appear
 in the manifest. Fail-closed: any revision mismatch exits non-zero.
+
+CENTRAL G3 hash portability: hashed Markdown outputs are normalized to
+literal LF bytes on disk before hashing (see TEXT_OUTPUTS_LF), and both
+manifest files are written with explicit LF bytes. The package
+.gitattributes pins the same eol=lf convention, so raw-byte OUTPUT_HASHES
+stay valid in any fresh checkout on Windows/Linux regardless of autocrlf.
 """
 
 from __future__ import annotations
@@ -71,6 +77,42 @@ OUTPUTS = [
 # appears verbatim in this branch (branch-wide grep for it must return 0).
 FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 _PENDING_MARKER = "PENDING" + "_ACCEPTED_1503"
+
+# Hashed text outputs that must exist on disk as literal LF bytes before
+# OUTPUT_HASHES are computed (CENTRAL G3 hash-portability fix). The package
+# .gitattributes pins the same LF convention for every fresh checkout, so
+# raw-byte hashes stay valid across Windows/Linux regardless of autocrlf.
+TEXT_OUTPUTS_LF = [
+    "Business35_Customer_Meeting_Script.md",
+    "Business35_Followup_Email_Templates.md",
+    "README.md",
+    "SOURCE_MAPPING.md",
+    "CUSTOMIZATION_CHECKLIST.md",
+]
+
+
+def normalize_file_to_lf(p: Path) -> bool:
+    """Rewrite a UTF-8 text file with literal LF bytes. Returns True if changed."""
+    raw = p.read_bytes()
+    text = raw.decode("utf-8")
+    lf_text = text.replace("\r\n", "\n").replace("\r", "\n")
+    lf_raw = lf_text.encode("utf-8")
+    if lf_raw != raw:
+        p.write_bytes(lf_raw)
+        return True
+    return False
+
+
+def write_lf_text(p: Path, text: str) -> None:
+    """Write text with explicit LF bytes; never rely on OS newline translation."""
+    lf_text = text.replace("\r\n", "\n").replace("\r", "\n")
+    p.write_bytes(lf_text.encode("utf-8"))
+
+
+def assert_no_cr(p: Path) -> None:
+    raw = p.read_bytes()
+    if b"\r" in raw:
+        raise SystemExit(f"FAIL: non-LF bytes remain in hashed text output: {p.name}")
 
 
 def resolve_generator_revision() -> tuple[str, str]:
@@ -140,12 +182,24 @@ def main() -> int:
     except Exception:
         base_sha = "unknown"
 
+    # G3 hash portability: hashed Markdown outputs must be literal LF bytes
+    # on disk BEFORE hashing (no canonical-compare workaround; the committed
+    # bytes themselves are deterministic LF, matching .gitattributes eol=lf).
+    for name in TEXT_OUTPUTS_LF:
+        f = ROOT / name
+        if not f.is_file():
+            raise SystemExit(f"FAIL: expected LF text output missing: {name}")
+        changed = normalize_file_to_lf(f)
+        if changed:
+            print(f"  LF-normalized: {name}")
     # Collect outputs
     output_list: list[str] = []
     hashes: dict[str, str] = {}
     for name in OUTPUTS:
         f = ROOT / name
         if f.exists():
+            if name in TEXT_OUTPUTS_LF:
+                assert_no_cr(f)
             output_list.append(name)
             hashes[name] = file_sha256(f)
         else:
@@ -189,7 +243,8 @@ def main() -> int:
     out_json = ROOT / "GENERATION_MANIFEST.json"
     out_md = ROOT / "GENERATION_MANIFEST.md"
 
-    out_json.write_text(blob, encoding="utf-8")
+    # Explicit LF bytes; never rely on OS newline translation on write.
+    write_lf_text(out_json, blob)
 
     md_lines = [
         "# B35 Generation Manifest",
@@ -218,7 +273,9 @@ def main() -> int:
         md_lines.append(f"{hashes[k]}  {k}")
     md_lines.append("```")
     md_lines.append("")
-    out_md.write_text("\n".join(md_lines), encoding="utf-8")
+    write_lf_text(out_md, "\n".join(md_lines))
+    assert_no_cr(out_json)
+    assert_no_cr(out_md)
     print(f"manifest written: {out_json}")
     print(f"  SOURCE_REVISION={ACCEPTED_SOURCE_REVISION}")
     print(f"  PRODUCT_AUTHORITY_REVISION={PRODUCT_AUTHORITY_REVISION}")

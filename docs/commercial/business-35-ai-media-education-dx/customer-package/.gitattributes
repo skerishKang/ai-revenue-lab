@@ -1,0 +1,15 @@
+# B35 Lane B package-local EOL policy (CENTRAL G3 hash-portability fix).
+#
+# Hashed text artifacts must materialize as byte-identical LF in ANY fresh
+# checkout (Windows/Linux, regardless of core.autocrlf), so manifest
+# OUTPUT_HASHES computed over raw worktree bytes stay valid after checkout.
+*.md text eol=lf
+*.json text eol=lf
+validation/*.py text eol=lf
+
+# Binary artifacts: never undergo EOL conversion.
+*.pptx -text
+*.docx -text
+*.xlsx -text
+*.pdf -text
+*.png -text

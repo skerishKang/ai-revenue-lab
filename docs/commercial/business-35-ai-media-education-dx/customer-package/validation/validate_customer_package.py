@@ -10,6 +10,11 @@ Render-fidelity gates (CENTRAL G2 R1/R2): customer PDFs must be real native-
 engine exports (PowerPoint/Word COM or LibreOffice), never synthetic
 fallbacks; XLSX evidence must come from a real spreadsheet renderer; PPTX/PDF
 aspect parity is enforced for proposal and one-page.
+
+CENTRAL G3 hash-portability regression: `--fresh-checkout [COMMIT]` creates
+real detached git worktrees (default config AND forced core.autocrlf=true)
+and verifies manifest OUTPUT_HASHES against the fresh checkouts' raw bytes.
+No in-memory newline substitution is used as evidence.
 """
 
 from __future__ import annotations
@@ -177,6 +182,123 @@ def pptx_slide_aspect(name: str) -> float:
 def _ns(txt: str) -> str:
     """Whitespace-collapsed text: real-engine PDF extraction wraps lines mid-token."""
     return re.sub(r"\s+", "", txt)
+
+
+def _sha256_file(p: Path) -> str:
+    h = hashlib.sha256()
+    with p.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _repo_root() -> Path:
+    out = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                         capture_output=True, text=True, encoding="utf-8",
+                         errors="replace", cwd=str(ROOT))
+    top = out.stdout.strip()
+    if out.returncode != 0 or not top:
+        raise RuntimeError("not inside a git repository")
+    return Path(top)
+
+
+def _verify_hashes_in_tree(pkg_dir: Path) -> tuple[int, int, list[str], list[str]]:
+    """Hash every OUTPUT_HASHES entry's raw bytes. Returns (matched, total, mismatches, missing)."""
+    manifest_path = pkg_dir / "GENERATION_MANIFEST.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    expected = manifest.get("OUTPUT_HASHES", {})
+    matched = 0
+    mismatches: list[str] = []
+    missing: list[str] = []
+    for name in manifest.get("OUTPUT_FILE_LIST", []):
+        f = pkg_dir / name
+        if not f.is_file():
+            missing.append(name)
+            continue
+        if _sha256_file(f) == expected.get(name):
+            matched += 1
+        else:
+            mismatches.append(name)
+    return matched, len(manifest.get("OUTPUT_FILE_LIST", [])), mismatches, missing
+
+
+def cmd_fresh_checkout(commit: str, autocrlf_modes: list[str | None]) -> int:
+    """G3 regression: real detached worktree(s) must yield 35/35 raw-byte matches.
+
+    Each mode creates an actual `git worktree` checkout (never an in-memory
+    newline substitution) and hashes the 35 manifest files' real bytes.
+    """
+    import shutil
+    import tempfile
+    try:
+        repo = _repo_root()
+    except Exception as e:
+        print(f"FAIL  fresh-checkout repo lookup ({e})")
+        return 1
+    try:
+        rel = ROOT.resolve().relative_to(repo.resolve())
+    except Exception as e:
+        print(f"FAIL  fresh-checkout package path ({e})")
+        return 1
+    # Resolve the commit fail-closed before creating any worktree.
+    probe = subprocess.run(["git", "rev-parse", "--verify", f"{commit}^{{commit}}"],
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", cwd=str(repo))
+    if probe.returncode != 0:
+        print(f"FAIL  fresh-checkout unknown commit: {commit}")
+        return 1
+    full_sha = probe.stdout.strip()
+    print(f"fresh-checkout target: {full_sha}")
+    overall_ok = True
+    for mode in autocrlf_modes:
+        label = "default-config" if mode is None else f"core.autocrlf={mode}"
+        parent = Path(tempfile.mkdtemp(prefix="b35-fresh-"))
+        wt = parent / "wt"
+        try:
+            cmd = ["git"]
+            if mode is not None:
+                cmd += ["-c", f"core.autocrlf={mode}"]
+            cmd += ["worktree", "add", "--detach", str(wt), full_sha]
+            add = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
+                                 errors="replace", cwd=str(repo))
+            if add.returncode != 0:
+                print(f"FAIL  fresh-checkout worktree add [{label}]: {add.stderr.strip()[:300]}")
+                overall_ok = False
+                continue
+            pkg = wt / rel
+            # The hashed text surface must be literal LF bytes in a fresh checkout.
+            cr_hits = []
+            for name in ("Business35_Customer_Meeting_Script.md",
+                         "Business35_Followup_Email_Templates.md",
+                         "README.md", "SOURCE_MAPPING.md",
+                         "CUSTOMIZATION_CHECKLIST.md",
+                         "GENERATION_MANIFEST.json", "GENERATION_MANIFEST.md"):
+                raw = (pkg / name).read_bytes()
+                if b"\r" in raw:
+                    cr_hits.append(name)
+            if cr_hits:
+                print(f"FAIL  fresh-checkout non-LF bytes [{label}]: {cr_hits}")
+                overall_ok = False
+                continue
+            matched, total, mismatches, missing = _verify_hashes_in_tree(pkg)
+            status = "MATCH" if (matched == total and total > 0 and not missing) else "MISMATCH"
+            print(f"fresh-checkout [{label}]: {matched}/{total} {status}")
+            for name in mismatches:
+                print(f"  hash-mismatch: {name}")
+            for name in missing:
+                print(f"  missing: {name}")
+            if status != "MATCH":
+                overall_ok = False
+        finally:
+            subprocess.run(["git", "worktree", "remove", "--force", str(wt)],
+                           capture_output=True, cwd=str(repo))
+            subprocess.run(["git", "worktree", "prune"], capture_output=True, cwd=str(repo))
+            shutil.rmtree(parent, ignore_errors=True)
+    if overall_ok:
+        print("FRESH_WINDOWS_CHECKOUT_HASHES: 35/35 MATCH in all modes")
+        return 0
+    print("FRESH_WINDOWS_CHECKOUT_HASHES: FAILED")
+    return 1
 
 
 def main() -> int:
@@ -662,4 +784,23 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # G3 regression entry point (post-artifact-commit smoke; NOT part of the
+    # pre-commit deterministic build):
+    #   python validate_customer_package.py --fresh-checkout [<commit>] [--autocrlf-modes default,true]
+    args = sys.argv[1:]
+    if args and args[0] == "--fresh-checkout":
+        target = "HEAD"
+        modes: list[str | None] = [None, "true"]
+        rest = args[1:]
+        if rest and not rest[0].startswith("--"):
+            target = rest[0]
+            rest = rest[1:]
+        for a in rest:
+            if a.startswith("--autocrlf-modes="):
+                modes = [None if m == "default" else m
+                         for m in a.split("=", 1)[1].split(",") if m]
+        if not modes:
+            print("FAIL  fresh-checkout needs at least one autocrlf mode")
+            sys.exit(1)
+        sys.exit(cmd_fresh_checkout(target, modes))
     sys.exit(main())
