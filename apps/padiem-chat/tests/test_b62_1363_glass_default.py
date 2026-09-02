@@ -56,6 +56,20 @@ def test_explicit_glass_male_override():
     assert 'searchParams.set("glass",variant)' in THEME_JS
 
 
+def test_glass_reveal_keeps_variant_rest_masks_legible():
+    # Runtime motion must start from the same legible portrait masks as the
+    # female/male CSS variants instead of restoring the old 24%/58% half-face
+    # mask on the first animation frame.
+    assert 'var variant=getGlassVariant();' in THEME_JS
+    assert 'var restMaskStart=variant==="male"?0:2;' in THEME_JS
+    assert 'var restMaskFull=variant==="male"?22:26;' in THEME_JS
+    assert 'var openMaskFull=variant==="male"?12:14;' in THEME_JS
+    assert 'var maskStart=restMaskStart*(1-reveal);' in THEME_JS
+    assert 'var maskFull=restMaskFull-((restMaskFull-openMaskFull)*reveal);' in THEME_JS
+    assert 'var maskStart=24*(1-reveal);' not in THEME_JS
+    assert 'var maskFull=58-(46*reveal);' not in THEME_JS
+
+
 def test_os_color_scheme_does_not_override_bare_glass():
     # init must not use prefers-color-scheme for theme fallback
     assert 'prefers-color-scheme' not in THEME_INIT or 's="padiem-glass"' in THEME_INIT
