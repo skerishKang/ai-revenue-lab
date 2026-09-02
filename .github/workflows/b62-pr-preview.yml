@@ -52,6 +52,7 @@ jobs:
           fi
 
       - name: Deploy exact-head static visual preview
+        id: deploy
         shell: bash
         run: |
           set -euo pipefail
@@ -60,17 +61,60 @@ jobs:
             --branch "${PREVIEW_BRANCH}" \
             --commit-hash "${HEAD_SHA}" \
             --commit-message "B62 PR #${{ github.event.pull_request.number }} exact-head visual preview" \
-            --commit-dirty=false
+            --commit-dirty=false 2>&1 | tee /tmp/pages-deploy.log
 
-      - name: Verify isolated Pages preview
+          immutable_url="$(grep -Eo 'https://[0-9a-f]+\.'"${PROJECT_NAME}"'\.pages\.dev' /tmp/pages-deploy.log | head -n 1)"
+          alias_url="https://${PREVIEW_BRANCH}.${PROJECT_NAME}.pages.dev"
+          test -n "${immutable_url}"
+          echo "immutable_url=${immutable_url}" >> "${GITHUB_OUTPUT}"
+          echo "alias_url=${alias_url}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify exact-head deployment record
         id: preview
         shell: bash
+        env:
+          IMMUTABLE_URL: ${{ steps.deploy.outputs.immutable_url }}
+          ALIAS_URL: ${{ steps.deploy.outputs.alias_url }}
         run: |
           set -euo pipefail
-          preview_url="https://${PREVIEW_BRANCH}.${PROJECT_NAME}.pages.dev"
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          account = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          project = os.environ["PROJECT_NAME"]
+          head = os.environ["HEAD_SHA"]
+          token = os.environ["CLOUDFLARE_API_TOKEN"]
+          request = urllib.request.Request(
+              f"https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/{project}/deployments",
+              headers={"Authorization": f"Bearer {token}"},
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              payload = json.load(response)
+          if not payload.get("success"):
+              raise SystemExit("Pages deployment lookup failed")
+          matching = []
+          for deployment in payload.get("result", []):
+              metadata = (deployment.get("deployment_trigger") or {}).get("metadata") or {}
+              if metadata.get("commit_hash") == head:
+                  matching.append(deployment)
+          if not matching:
+              raise SystemExit(f"exact-head Pages deployment not found for {head}")
+          deployment = matching[0]
+          if deployment.get("environment") != "preview":
+              raise SystemExit(f"unexpected Pages environment: {deployment.get('environment')!r}")
+          print("PAGES_EXACT_HEAD_DEPLOYMENT=PASS")
+          print(f"PAGES_DEPLOYMENT_ID={deployment.get('id', '')}")
+          print(f"PAGES_ENVIRONMENT={deployment.get('environment', '')}")
+          print(f"PAGES_URL={deployment.get('url', '')}")
+          PY
+
+          # New Pages projects can need a short TLS/DNS propagation interval.
+          # Use the immutable deployment URL and allow up to two minutes before failing.
           ready=0
-          for attempt in 1 2 3 4 5 6 7 8 9 10; do
-            if curl -fsS --retry 1 --retry-delay 1 "${preview_url}/?theme=padiem-glass&glass=female" -o /tmp/index.html; then
+          for attempt in $(seq 1 40); do
+            if curl -fsS --retry 1 --retry-delay 1 "${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" -o /tmp/index.html; then
               ready=1
               break
             fi
@@ -78,27 +122,30 @@ jobs:
           done
           test "${ready}" = "1"
 
-          curl -fsS --retry 3 --retry-delay 1 "${preview_url}/padiem-glass-portrait.css" -o /tmp/portrait.css
-          curl -fsS --retry 3 --retry-delay 1 "${preview_url}/padiem-glass-brand-polish.css" -o /tmp/brand.css
-          curl -fsS --retry 3 --retry-delay 1 "${preview_url}/padiem-glass-female.jpg" -o /tmp/female.jpg
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-portrait.css" -o /tmp/portrait.css
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-brand-polish.css" -o /tmp/brand.css
+          curl -fsS --retry 3 --retry-delay 1 "${IMMUTABLE_URL}/padiem-glass-female.jpg" -o /tmp/female.jpg
 
           cmp apps/padiem-chat/static/padiem-glass-portrait.css /tmp/portrait.css
           cmp apps/padiem-chat/static/padiem-glass-brand-polish.css /tmp/brand.css
           cmp apps/padiem-chat/static/padiem-glass-female.jpg /tmp/female.jpg
           grep -F 'Padiem Chat' /tmp/index.html >/dev/null
 
-          echo "url=${preview_url}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
+          echo "url=${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
+          echo "alias_url=${ALIAS_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
 
       - name: Publish preview URL
         shell: bash
         env:
           PREVIEW_URL: ${{ steps.preview.outputs.url }}
+          ALIAS_URL: ${{ steps.preview.outputs.alias_url }}
         run: |
           {
             echo "## B62 isolated static PR preview"
             echo
             echo "- Head: \`${HEAD_SHA}\`"
-            echo "- Preview: ${PREVIEW_URL}"
+            echo "- Immutable preview: ${PREVIEW_URL}"
+            echo "- PR alias: ${ALIAS_URL}"
             echo "- Pages project: \`${PROJECT_NAME}\`"
             echo "- Scope: exact-head static UI only"
             echo "- Production Padiem Chat Worker: untouched"
