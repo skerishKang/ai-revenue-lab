@@ -35,6 +35,18 @@ ATTACHMENT_SHA = "b" * 64
 
 
 class GmailContractsTests(unittest.TestCase):
+    def approved_attachment(self, **overrides):
+        values = dict(
+            attachment_ref="artifact_1",
+            filename="report.pdf",
+            mime_type="application/pdf",
+            size_bytes=1024,
+            sha256=ATTACHMENT_SHA,
+            quarantine_evidence_ref="quarantine_evidence_1",
+        )
+        values.update(overrides)
+        return GmailApprovedAttachment(**values)
+
     def message(self, **overrides):
         values = dict(
             message_id="msg_1",
@@ -61,13 +73,7 @@ class GmailContractsTests(unittest.TestCase):
             bcc_addresses=(),
             subject="Approved subject",
             body_sha256=BODY_SHA,
-            attachments=(
-                GmailApprovedAttachment(
-                    attachment_ref="artifact_1",
-                    filename="report.pdf",
-                    sha256=ATTACHMENT_SHA,
-                ),
-            ),
+            attachments=(self.approved_attachment(),),
             thread_id="thread_1",
             reply_message_ref="msg_original",
         )
@@ -127,6 +133,7 @@ class GmailContractsTests(unittest.TestCase):
         rendered = pending.safe_dict()
         self.assertFalse(rendered["raw_bytes_present"])
         self.assertFalse(rendered["model_usable"])
+
         accepted = GmailAttachmentManifest(
             attachment_ref="att_1",
             message_id="msg_1",
@@ -135,10 +142,13 @@ class GmailContractsTests(unittest.TestCase):
             size_bytes=1024,
             sha256=ATTACHMENT_SHA,
             quarantine_state=AttachmentQuarantineState.ACCEPTED,
+            quarantine_evidence_ref="quarantine_evidence_1",
         )
+        rendered = accepted.safe_dict()
         self.assertTrue(accepted.model_usable())
+        self.assertEqual(rendered["quarantine_evidence_ref"], "quarantine_evidence_1")
 
-    def test_accepted_attachment_requires_hash_evidence(self):
+    def test_accepted_attachment_requires_hash_and_trusted_quarantine_evidence(self):
         with self.assertRaises(ContractError):
             GmailAttachmentManifest(
                 attachment_ref="att_1",
@@ -147,6 +157,26 @@ class GmailContractsTests(unittest.TestCase):
                 mime_type="application/pdf",
                 size_bytes=1024,
                 quarantine_state=AttachmentQuarantineState.ACCEPTED,
+            )
+        with self.assertRaises(ContractError):
+            GmailAttachmentManifest(
+                attachment_ref="att_1",
+                message_id="msg_1",
+                filename="invoice.pdf",
+                mime_type="application/pdf",
+                size_bytes=1024,
+                sha256=ATTACHMENT_SHA,
+                quarantine_state=AttachmentQuarantineState.ACCEPTED,
+            )
+        with self.assertRaises(ContractError):
+            GmailAttachmentManifest(
+                attachment_ref="att_1",
+                message_id="msg_1",
+                filename="invoice.pdf",
+                mime_type="application/pdf",
+                size_bytes=1024,
+                quarantine_state=AttachmentQuarantineState.PENDING,
+                quarantine_evidence_ref="quarantine_evidence_1",
             )
 
     def test_message_content_is_untrusted_and_headers_are_explicit(self):
@@ -200,14 +230,27 @@ class GmailContractsTests(unittest.TestCase):
             baseline.material_fingerprint,
             self.snapshot(body_sha256="c" * 64).material_fingerprint,
         )
-        changed_attachment = GmailApprovedAttachment(
-            attachment_ref="artifact_1",
-            filename="report.pdf",
-            sha256="d" * 64,
+        self.assertNotEqual(
+            baseline.material_fingerprint,
+            self.snapshot(attachments=(self.approved_attachment(sha256="d" * 64),)).material_fingerprint,
         )
         self.assertNotEqual(
             baseline.material_fingerprint,
-            self.snapshot(attachments=(changed_attachment,)).material_fingerprint,
+            self.snapshot(
+                attachments=(self.approved_attachment(mime_type="application/octet-stream"),)
+            ).material_fingerprint,
+        )
+        self.assertNotEqual(
+            baseline.material_fingerprint,
+            self.snapshot(attachments=(self.approved_attachment(size_bytes=2048),)).material_fingerprint,
+        )
+        self.assertNotEqual(
+            baseline.material_fingerprint,
+            self.snapshot(
+                attachments=(
+                    self.approved_attachment(quarantine_evidence_ref="quarantine_evidence_2"),
+                )
+            ).material_fingerprint,
         )
         self.assertNotEqual(
             baseline.material_fingerprint,
