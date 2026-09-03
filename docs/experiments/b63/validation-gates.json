@@ -1,0 +1,52 @@
+{
+  "schema_version": "b63.validation-gates.v1",
+  "business": {
+    "number": 63,
+    "status": "proposed",
+    "slug": "clinical-ai-egress"
+  },
+  "authority": {
+    "parent_issue": 731,
+    "customer_discovery_issue": 735,
+    "r0_issue": 736,
+    "validation_infra_issue": 753
+  },
+  "customer_gate": {
+    "min_interviews": 5,
+    "min_hospital_interviews": 3,
+    "min_problem_severity_2": 2,
+    "min_clinical_domain_gap_2": 2,
+    "min_paid_or_grant_backed_poc_paths": 1
+  },
+  "r0_gate": {
+    "min_base_cases": 100,
+    "min_holdout_base_cases": 30,
+    "require_synthetic_public_only": true,
+    "require_synthetic_identifier_collision_safe": true,
+    "required_systems": [
+      "s0_ipu_current",
+      "s1_generic_pii_baseline",
+      "s3_b63_hybrid_r0"
+    ],
+    "require_tests_passed": true,
+    "require_changed_file_secret_scan_passed": true,
+    "require_synthetic_identifier_safety_passed": true,
+    "require_independent_holdout": true,
+    "require_unseen_holdout_templates": true,
+    "require_unseen_holdout_lexicon": true,
+    "require_s3_frozen_before_holdout_evaluation": true,
+    "require_exact_head_benchmark_evidence": true,
+    "require_clean_git_evaluation": true,
+    "require_clinical_utility_measured": true,
+    "forbid_catastrophic_recall_collapse": true,
+    "required_reproducibility_fields": [
+      "fixed_seed",
+      "corpus_version",
+      "schema_version",
+      "git_sha",
+      "runtime_version",
+      "deterministic_ordering"
+    ],
+    "audit_note": "R0-A PASS requires independent holdout and evidence-safety hardening discovered in PR #103 audit; thresholds remain validation-only and do not authorize product build."
+  }
+}

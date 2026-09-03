@@ -1,0 +1,49 @@
+{
+  "schema_version": "b63.r0-result.v1",
+  "business": {
+    "number": 63,
+    "status": "proposed"
+  },
+  "dataset": {
+    "real_patient_data_used": false,
+    "synthetic_public_only": true,
+    "synthetic_identifier_collision_safe": false,
+    "base_cases": 109
+  },
+  "systems": {
+    "s0_ipu_current": true,
+    "s1_generic_pii_baseline": true,
+    "s2_clinical_baseline": false,
+    "s3_b63_hybrid_r0": true
+  },
+  "tests": {
+    "passed": true,
+    "changed_file_secret_scan_passed": false,
+    "synthetic_identifier_safety_passed": false
+  },
+  "evaluation_design": {
+    "holdout_independent": true,
+    "holdout_base_cases": 40,
+    "unseen_holdout_templates": true,
+    "unseen_holdout_lexicon": true,
+    "s3_frozen_before_holdout_evaluation": true
+  },
+  "reproducibility": {
+    "fixed_seed": true,
+    "corpus_version": "0.1.0",
+    "schema_version": "0.1.0",
+    "git_sha": "2b003b6cf683e11392b19deaf47ad5c0bce0fcdc",
+    "runtime_version": "Python 3.11.16 / GitHub Actions run 32834009698",
+    "deterministic_ordering": true,
+    "git_dirty": false,
+    "exact_head_benchmark_evidence": true
+  },
+  "result": {
+    "measurable_advantage": "YES",
+    "holdout_measurable_advantage": "YES",
+    "r0_decision": "NARROW",
+    "catastrophic_recall_collapse": false,
+    "clinical_utility_measured": true,
+    "utility_measurement_level": "VERBATIM_RETENTION"
+  }
+}
