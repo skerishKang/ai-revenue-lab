@@ -16,6 +16,7 @@ from typing import Iterable
 from app.pilot.capability_evidence import (
     CapabilityRequirementResult,
     ModelCapability,
+    canonical_capability_from_legacy_tag,
     capability_profile_from_catalog_model,
     evaluate_capability_requirements,
 )
@@ -45,8 +46,13 @@ def _normalize_requirements(
             raise ValueError("capability requirement must be a string or ModelCapability")
         try:
             normalized.append(ModelCapability(value))
-        except ValueError as exc:
-            raise ValueError("unsupported canonical capability requirement") from exc
+            continue
+        except ValueError:
+            pass
+        legacy = canonical_capability_from_legacy_tag(value)
+        if legacy is None:
+            raise ValueError("unsupported canonical capability requirement")
+        normalized.append(legacy)
     if len(set(normalized)) != len(normalized):
         raise ValueError("capability requirements must not contain duplicates")
     return tuple(normalized)

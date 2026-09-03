@@ -33,8 +33,10 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
+from app.pilot.capability_routing import filter_capability_eligible_models
 from app.pilot.catalog import (
     CatalogModel,
+    TASK_TYPE_REQUIRED_CAPABILITIES,
     get_catalog_by_id,
     get_catalog_models,
     filter_catalog as _filter_catalog,
@@ -270,13 +272,15 @@ def resolve_auto_route(
 ) -> RouteDecision:
     """Resolve an automatic route for b14/auto.
 
-    Uses catalog metadata to deterministically select the best model.
+    Uses canonical capability evidence to deterministically select the best model.
     Does NOT make upstream calls.
 
     Hard constraints (applied first):
     - Model must be enabled
-    - Model must have all required_capabilities
-    - task_type capability requirements (TASK_TYPE_REQUIRED_CAPABILITIES)
+    - plan/catalog tags such as ``free`` remain hard eligibility filters
+    - execution capabilities are evaluated through canonical capability evidence
+    - task_type requirements compose with explicit capability requirements
+    - UNKNOWN and UNSUPPORTED canonical capability evidence are both ineligible
 
     Preferences (applied second, all enforced):
     - provider_order: listed providers win in the given order
@@ -290,10 +294,41 @@ def resolve_auto_route(
     """
     request_id = _new_request_id()
 
-    raw_candidates = _filter_catalog(
-        required_capabilities=required_capabilities,
-        task_type=task_type,
+    # Compatibility hook only: calling the legacy filter with no requirements
+    # returns the enabled catalog without allowing free-form tag subsets to act
+    # as capability authority. Existing tests may monkeypatch this source hook.
+    source_candidates = _filter_catalog(
+        required_capabilities=None,
+        task_type=None,
     )
+
+    requested = list(required_capabilities or [])
+    plan_tags = [value for value in requested if value == "free"]
+    execution_requirements = [value for value in requested if value != "free"]
+
+    if plan_tags:
+        source_candidates = [
+            model
+            for model in source_candidates
+            if all(tag in model.capabilities for tag in plan_tags)
+        ]
+
+    task_requirements = sorted(TASK_TYPE_REQUIRED_CAPABILITIES.get(task_type, frozenset()))
+    try:
+        canonical_candidates = filter_capability_eligible_models(
+            source_candidates,
+            execution_requirements,
+        )
+        canonical_candidates = filter_capability_eligible_models(
+            canonical_candidates,
+            task_requirements,
+        )
+    except ValueError as exc:
+        raise NoSafeRoute(
+            reason_code="invalid_capability_requirement",
+            message="지원하지 않는 capability 요구사항이 포함되어 있습니다.",
+            upstream_called=False,
+        ) from exc
 
     excluded: list[dict[str, str]] = []
     secret_missing_ids: set[str] = set()
@@ -301,7 +336,7 @@ def resolve_auto_route(
     all_models = get_catalog_models()
     candidates = []
     for m in all_models:
-        if m in raw_candidates:
+        if m in canonical_candidates:
             if m.credential_source == "platform_secret" and not _platform_secret_present(m):
                 secret_missing_ids.add(m.model_id)
                 continue
