@@ -1,13 +1,13 @@
 (() => {
   "use strict";
 
-  const MAX_BINARY_BYTES = 2 * 1024 * 1024;
-  const MIME_BY_EXTENSION = new Map([
-    [".pdf", "application/pdf"],
-    [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-    [".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
-    [".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
-  ]);
+  const attachmentCapabilities = window.PadiemAttachmentCapabilities;
+  const MAX_BINARY_BYTES = attachmentCapabilities.limits.binaryBytes;
+  const MIME_BY_EXTENSION = new Map();
+  attachmentCapabilities.binaryDocuments.forEach((format) => {
+    const mediaType = format.mediaTypes[0];
+    format.extensions.forEach((extension) => MIME_BY_EXTENSION.set(extension, mediaType));
+  });
 
   function extensionOf(name) {
     const lower = String(name || "").toLowerCase();
@@ -44,9 +44,9 @@
 
   async function read(file) {
     const mediaType = canonicalMediaType(file);
-    if (!mediaType) throw new Error("지원하지 않는 바이너리 문서 형식입니다.");
+    if (!mediaType) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).unsupportedFormat);
     if (!file || file.size < 1) throw new Error("빈 문서는 첨부할 수 없습니다.");
-    if (file.size > MAX_BINARY_BYTES) throw new Error("PDF·Office 문서는 2 MiB 이하만 첨부할 수 있습니다.");
+    if (file.size > MAX_BINARY_BYTES) throw new Error(attachmentCapabilities.copy(document.documentElement.lang).binaryTooLarge);
 
     const buffer = await file.arrayBuffer();
     if (buffer.byteLength !== file.size || buffer.byteLength < 1 || buffer.byteLength > MAX_BINARY_BYTES) {
