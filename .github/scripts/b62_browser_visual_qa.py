@@ -73,6 +73,37 @@ async def _glass_reveal(page: Page) -> float:
     return round(float(value), 3)
 
 
+async def _glass_motion_snapshot(page: Page) -> dict[str, Any]:
+    return await page.evaluate(
+        """
+        () => {
+          const root = document.documentElement;
+          const rootStyle = getComputedStyle(root);
+          const main = document.querySelector('.main-panel');
+          const portrait = main ? getComputedStyle(main, '::before') : null;
+          const bodyNoise = getComputedStyle(document.body, '::after');
+          const conversation = document.querySelector('.conversation');
+          const conversationStyle = conversation ? getComputedStyle(conversation) : null;
+          return {
+            mode: root.getAttribute('data-glass-mode'),
+            reveal: parseFloat(rootStyle.getPropertyValue('--glass-reveal')) || 0,
+            artX: rootStyle.getPropertyValue('--glass-art-x').trim(),
+            artY: rootStyle.getPropertyValue('--glass-art-y').trim(),
+            artScale: rootStyle.getPropertyValue('--glass-art-scale').trim(),
+            pointerX: rootStyle.getPropertyValue('--glass-pointer-x').trim(),
+            pointerY: rootStyle.getPropertyValue('--glass-pointer-y').trim(),
+            maskStart: rootStyle.getPropertyValue('--glass-mask-start').trim(),
+            maskFull: rootStyle.getPropertyValue('--glass-mask-full').trim(),
+            portraitOpacity: portrait ? parseFloat(portrait.opacity) : 0,
+            portraitTransform: portrait ? portrait.transform : '',
+            bodyNoiseOpacity: parseFloat(bodyNoise.opacity) || 0,
+            conversationBackground: conversationStyle ? conversationStyle.backgroundImage : '',
+          };
+        }
+        """
+    )
+
+
 async def _assert_glass_portrait_image_loaded(page: Page, *, variant: str) -> dict[str, Any]:
     image = await page.locator(".main-panel").evaluate(
         """
@@ -148,7 +179,11 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         timeout=30_000,
     )
     await page.locator("#messageInput").wait_for(state="visible")
-    await page.wait_for_timeout(900)
+    await page.wait_for_function(
+        "() => document.documentElement.getAttribute('data-glass-mode') === 'home'",
+        timeout=5_000,
+    )
+    await page.wait_for_timeout(700)
 
     theme = await page.locator("html").get_attribute("data-theme")
     glass_variant = await page.locator("html").get_attribute("data-glass-variant")
@@ -165,36 +200,62 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     if initial_reveal > 0.15:
         raise AssertionError(f"Padiem Glass must start covered: reveal={initial_reveal}")
 
+    home_before_pointer = await _glass_motion_snapshot(page)
+    await page.mouse.move(1180, 180)
+    await page.wait_for_timeout(120)
+    home_after_pointer = await _glass_motion_snapshot(page)
+    if home_after_pointer["pointerX"] in {"", "0px", "0.0px"} and home_after_pointer["pointerY"] in {"", "0px", "0.0px"}:
+        raise AssertionError(f"Padiem Glass home portrait lost cinematic pointer response: {home_after_pointer}")
+
     home_name = f"desktop-glass-{variant}-home.png"
     await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
 
-    peak: dict[str, Any] | None = None
-    covered_again: dict[str, Any] | None = None
-    reveal_samples: list[dict[str, Any]] = [{"turn": 0, "reveal": initial_reveal}]
     chat_name = f"desktop-glass-{variant}-chat.png"
-
-    for turn in range(1, 8):
+    reading_samples: list[dict[str, Any]] = []
+    for turn in range(1, 6):
         await _send_glass_turn(page, variant=variant, turn=turn)
+        await page.wait_for_function(
+            "() => document.documentElement.getAttribute('data-glass-mode') === 'reading'",
+            timeout=5_000,
+        )
         await _assert_no_horizontal_overflow(page, f"glass-{variant}-turn-{turn}")
-        reveal = await _glass_reveal(page)
-        reveal_samples.append({"turn": turn, "reveal": reveal})
+        snapshot = await _glass_motion_snapshot(page)
+        reading_samples.append({"turn": turn, **snapshot})
+        if snapshot["reveal"] > 0.01:
+            raise AssertionError(f"Glass reading mode must freeze reveal travel: {snapshot}")
+        if snapshot["pointerX"] not in {"", "0px", "0.0px"} or snapshot["pointerY"] not in {"", "0px", "0.0px"}:
+            raise AssertionError(f"Glass reading mode pointer drifted: {snapshot}")
+        if snapshot["artX"] not in {"", "0px", "0.0px"} or snapshot["artY"] not in {"", "0px", "0.0px"}:
+            raise AssertionError(f"Glass reading mode portrait travel drifted: {snapshot}")
+        if snapshot["artScale"] not in {"", "1", "1.0", "1.000"}:
+            raise AssertionError(f"Glass reading mode portrait scale drifted: {snapshot}")
         if turn == 1:
             await page.screenshot(path=str(OUT_DIR / chat_name), full_page=True)
-        if peak is None and reveal >= 0.70:
-            peak_name = f"desktop-glass-{variant}-reveal-peak.png"
-            await page.screenshot(path=str(OUT_DIR / peak_name), full_page=True)
-            peak = {"turn": turn, "reveal": reveal, "screenshot": peak_name}
-            continue
-        if peak is not None and reveal <= 0.30:
-            covered_name = f"desktop-glass-{variant}-covered-again.png"
-            await page.screenshot(path=str(OUT_DIR / covered_name), full_page=True)
-            covered_again = {"turn": turn, "reveal": reveal, "screenshot": covered_name}
-            break
 
-    if peak is None:
-        raise AssertionError(f"Padiem Glass reveal peak was not reached: {reveal_samples}")
-    if covered_again is None:
-        raise AssertionError(f"Padiem Glass did not return to covered state after peak: {reveal_samples}")
+    reading_before_pointer = await _glass_motion_snapshot(page)
+    await page.mouse.move(70, 80)
+    await page.evaluate("window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight))")
+    await page.wait_for_timeout(300)
+    reading_after_pointer_scroll = await _glass_motion_snapshot(page)
+
+    stable_keys = ("reveal", "artX", "artY", "artScale", "pointerX", "pointerY", "maskStart", "maskFull")
+    for key in stable_keys:
+        if reading_before_pointer[key] != reading_after_pointer_scroll[key]:
+            raise AssertionError(
+                f"Glass reading mode changed after pointer/scroll for {key}: "
+                f"before={reading_before_pointer[key]!r}, after={reading_after_pointer_scroll[key]!r}"
+            )
+
+    if reading_before_pointer["portraitOpacity"] >= home_before_pointer["portraitOpacity"]:
+        raise AssertionError(
+            "Glass reading mode must reduce portrait prominence: "
+            f"home={home_before_pointer['portraitOpacity']}, reading={reading_before_pointer['portraitOpacity']}"
+        )
+    if reading_before_pointer["bodyNoiseOpacity"] >= home_before_pointer["bodyNoiseOpacity"]:
+        raise AssertionError(
+            "Glass reading mode must reduce atmospheric grid noise: "
+            f"home={home_before_pointer['bodyNoiseOpacity']}, reading={reading_before_pointer['bodyNoiseOpacity']}"
+        )
 
     return {
         "variant": variant,
@@ -204,11 +265,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         "portrait": portrait,
         "home_screenshot": home_name,
         "chat_screenshot": chat_name,
-        "reveal_loop": {
-            "covered": {"turn": 0, "reveal": initial_reveal, "screenshot": home_name},
-            "peak": peak,
-            "covered_again": covered_again,
-            "samples": reveal_samples,
+        "home_cinematic": {
+            "before_pointer": home_before_pointer,
+            "after_pointer": home_after_pointer,
+            "status": "PASS",
+        },
+        "reading_calm": {
+            "samples": reading_samples,
+            "before_pointer_scroll": reading_before_pointer,
+            "after_pointer_scroll": reading_after_pointer_scroll,
             "status": "PASS",
         },
         "status": "PASS",
