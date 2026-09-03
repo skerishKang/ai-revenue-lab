@@ -12,7 +12,7 @@ RICH_PATH = ROOT / "static" / "rich-response.js"
 def _rich_runtime() -> str:
     rich = RICH_PATH.read_text(encoding="utf-8")
     start = rich.index("  const HEADING_PATTERN")
-    end = rich.index("  const messageObserver", start)
+    end = rich.index('  messageList.addEventListener("padiem:message-lifecycle"', start)
     return rich[start:end]
 
 
