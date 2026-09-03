@@ -15,6 +15,7 @@ dependencies = [
   "openpyxl>=3.1,<4",
   "padiem-ai-core @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
   "padiem-ai-engine-client @ file://${PROJECT_ROOT}/../padiem-ai-engine/clients/python",
+  "padiem-control-plane @ file://${PROJECT_ROOT}/../../packages/padiem-control-plane",
 ]
 
 [project.optional-dependencies]
