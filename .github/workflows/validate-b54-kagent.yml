@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'apps/korean-ai-code-agent/**'
+      - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker.py'
+      - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker_rpc.py'
       - '.github/workflows/validate-b54-kagent.yml'
   workflow_dispatch:
 
@@ -30,12 +32,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install monorepo P01 conformance dependency
+      - name: Install monorepo conformance dependencies
         working-directory: apps/korean-ai-code-agent
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e "../../packages/padiem-ai-core[tools]"
+          python -m pip install --disable-pip-version-check -e "../../packages/padiem-control-plane"
 
       - name: Compile source and tests
         working-directory: apps/korean-ai-code-agent
