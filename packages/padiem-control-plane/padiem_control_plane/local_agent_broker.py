@@ -56,6 +56,12 @@ def _ttl(name: str, value: int, *, minimum: int, maximum: int) -> int:
     return value
 
 
+def _generation(name: str, value: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ControlPlaneContractError("invalid_device_credential_generation", f"{name} must be a positive integer")
+    return value
+
+
 class BrokerBindingState(str, Enum):
     ACTIVE = "active"
     REVOKED = "revoked"
@@ -82,8 +88,7 @@ class BrokerDeviceBinding:
     def __post_init__(self) -> None:
         for name in ("binding_ref", "device_id", "account_ref", "workspace_ref"):
             object.__setattr__(self, name, _ref(name, getattr(self, name)))
-        if isinstance(self.credential_generation, bool) or not isinstance(self.credential_generation, int) or self.credential_generation < 1:
-            raise ControlPlaneContractError("invalid_device_binding", "credential_generation must be positive")
+        object.__setattr__(self, "credential_generation", _generation("credential_generation", self.credential_generation))
         object.__setattr__(self, "credential_digest", _digest("credential_digest", self.credential_digest))
         issued = _aware("issued_at", self.issued_at)
         expires = _aware("credential_expires_at", self.credential_expires_at)
@@ -123,8 +128,7 @@ class BrokerDeviceSession:
     def __post_init__(self) -> None:
         for name in ("session_id", "binding_ref", "device_id", "account_ref", "workspace_ref"):
             object.__setattr__(self, name, _ref(name, getattr(self, name)))
-        if isinstance(self.credential_generation, bool) or not isinstance(self.credential_generation, int) or self.credential_generation < 1:
-            raise ControlPlaneContractError("invalid_device_session", "credential_generation must be positive")
+        object.__setattr__(self, "credential_generation", _generation("credential_generation", self.credential_generation))
         issued = _aware("issued_at", self.issued_at)
         expires = _aware("expires_at", self.expires_at)
         if expires <= issued or (expires - issued).total_seconds() > MAX_SESSION_TTL_SECONDS:
@@ -152,6 +156,7 @@ class BrokerCommandRecord:
     run_id: str
     tool_request_ref: str
     binding_ref: str
+    credential_generation: int
     sequence: int
     request_fingerprint: str
     issued_at: datetime
@@ -166,6 +171,7 @@ class BrokerCommandRecord:
     def __post_init__(self) -> None:
         for name in ("command_id", "run_id", "tool_request_ref", "binding_ref"):
             object.__setattr__(self, name, _ref(name, getattr(self, name)))
+        object.__setattr__(self, "credential_generation", _generation("credential_generation", self.credential_generation))
         if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
             raise ControlPlaneContractError("invalid_broker_command", "sequence must be positive")
         object.__setattr__(self, "request_fingerprint", _digest("request_fingerprint", self.request_fingerprint))
@@ -202,6 +208,7 @@ class BrokerCommandRecord:
             "run_id": self.run_id,
             "tool_request_ref": self.tool_request_ref,
             "binding_ref": self.binding_ref,
+            "credential_generation": self.credential_generation,
             "sequence": self.sequence,
             "request_fingerprint": self.request_fingerprint,
             "issued_at": self.issued_at.isoformat(),
@@ -294,6 +301,9 @@ class InMemoryLocalAgentBrokerAuthority:
         credential_ttl_seconds: int = 2_592_000,
     ) -> BrokerDeviceBinding:
         binding_ref = _ref("binding_ref", binding_ref)
+        device_id = _ref("device_id", device_id)
+        account_ref = _ref("account_ref", account_ref)
+        workspace_ref = _ref("workspace_ref", workspace_ref)
         now = _aware("now", now)
         ttl = _ttl("credential_ttl_seconds", credential_ttl_seconds, minimum=300, maximum=2_592_000)
         if binding_ref in self._bindings:
@@ -343,7 +353,7 @@ class InMemoryLocalAgentBrokerAuthority:
         credential_ttl_seconds: int = 2_592_000,
     ) -> BrokerDeviceBinding:
         binding = self._binding(binding_ref, now=now)
-        if expected_generation != binding.credential_generation:
+        if _generation("expected_generation", expected_generation) != binding.credential_generation:
             raise ControlPlaneContractError("stale_device_credential_generation", "credential generation is stale")
         now = _aware("now", now)
         ttl = _ttl("credential_ttl_seconds", credential_ttl_seconds, minimum=300, maximum=2_592_000)
@@ -439,6 +449,7 @@ class InMemoryLocalAgentBrokerAuthority:
             run_id=run_id,
             tool_request_ref=tool_request_ref,
             binding_ref=binding.binding_ref,
+            credential_generation=binding.credential_generation,
             sequence=sequence,
             request_fingerprint=request_fingerprint,
             issued_at=now,
@@ -468,6 +479,7 @@ class InMemoryLocalAgentBrokerAuthority:
         items = [
             item for item in self._commands.values()
             if item.binding_ref == binding.binding_ref
+            and item.credential_generation == binding.credential_generation
             and item.state is BrokerCommandState.QUEUED
             and item.sequence > after_sequence
             and item.issued_at <= now < item.expires_at
@@ -497,6 +509,8 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
         if command.binding_ref != binding.binding_ref:
             raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
+        if command.credential_generation != binding.credential_generation:
+            raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
         if command.state is not BrokerCommandState.QUEUED:
             raise ControlPlaneContractError("broker_command_replay", "command has already been admitted or acknowledged")
         if now < command.issued_at or now >= command.expires_at:
@@ -553,6 +567,8 @@ class InMemoryLocalAgentBrokerAuthority:
             command = self._commands[command_id]
         except KeyError as exc:
             raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
+        if command.credential_generation != binding.credential_generation:
+            raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
         if command.state is not BrokerCommandState.ADMITTED:
             raise ControlPlaneContractError("broker_ack_without_admission", "command must be admitted exactly once before acknowledgement")
         expected = (
@@ -575,6 +591,7 @@ SERVER_SIDE_LOCAL_AGENT_BROKER_AUTHORITY = True
 KEYED_DEVICE_CREDENTIAL_DIGEST_ONLY = True
 BOUND_BROKER_SESSION = True
 MONOTONIC_COMMAND_SEQUENCE = True
+COMMAND_CREDENTIAL_GENERATION_BOUND = True
 EXACT_REQUEST_FINGERPRINT = True
 ADMISSION_BEFORE_ACK = True
 RAW_ARGV_IN_BROKER_COMMAND = False
