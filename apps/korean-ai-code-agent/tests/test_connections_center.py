@@ -73,7 +73,33 @@ class ConnectionsCenterFixture(unittest.TestCase):
             health_ref="health_1",
         )
 
-    def local_snapshot(self, *, state: DeviceLifecycle = DeviceLifecycle.ONLINE) -> LocalAgentManagementSnapshot:
+    def activity(
+        self,
+        *,
+        request_id: str = "request_1",
+        run_id: str = "run_1",
+        ended_at: datetime | None = None,
+    ) -> LocalAgentActivitySummary:
+        ended = ended_at or NOW - timedelta(minutes=4)
+        return LocalAgentActivitySummary(
+            request_id=request_id,
+            run_id=run_id,
+            root_ref="root_padiem",
+            executable_profile_ref="python_profile",
+            termination="exited",
+            started_at=ended - timedelta(minutes=1),
+            ended_at=ended,
+            exit_code=0,
+            dirty_worktree_before=False,
+            dirty_worktree_after=False,
+        )
+
+    def local_snapshot(
+        self,
+        *,
+        state: DeviceLifecycle = DeviceLifecycle.ONLINE,
+        recent_activity: tuple[LocalAgentActivitySummary, ...] | None = None,
+    ) -> LocalAgentManagementSnapshot:
         device = LocalAgentDeviceProfile(
             device_id="device_1",
             workspace_ref="workspace_1",
@@ -95,24 +121,36 @@ class ConnectionsCenterFixture(unittest.TestCase):
             state=state,
         )
         permissions = default_device_permission_profile(device=device)
-        activity = LocalAgentActivitySummary(
-            request_id="request_1",
-            run_id="run_1",
-            root_ref="root_padiem",
-            executable_profile_ref="python_profile",
-            termination="exited",
-            started_at=NOW - timedelta(minutes=5),
-            ended_at=NOW - timedelta(minutes=4),
-            exit_code=0,
-            dirty_worktree_before=False,
-            dirty_worktree_after=False,
-        )
+        activities = recent_activity if recent_activity is not None else (self.activity(),)
         return LocalAgentManagementSnapshot(
             device_name="Office Windows",
             device=device,
             binding=binding,
             permissions=permissions,
-            recent_activity=(activity,),
+            recent_activity=activities,
+        )
+
+    def connector_card(self, *, now: datetime = NOW) -> ConnectorAccountCard:
+        return ConnectorAccountCard(
+            service_label="Google Drive",
+            binding=self.connector_binding(),
+            health=self.connector_health(),
+            now=now,
+            last_successful_probe_at=NOW - timedelta(seconds=20),
+        )
+
+    def device_card(
+        self,
+        *,
+        snapshot: LocalAgentManagementSnapshot | None = None,
+        last_seen_at: datetime | None = None,
+    ) -> LocalAgentDeviceCard:
+        return LocalAgentDeviceCard(
+            snapshot=snapshot or self.local_snapshot(),
+            arch="x86_64",
+            client_version="1.0.0",
+            compatibility=DeviceCompatibility.CURRENT,
+            last_seen_at=last_seen_at if last_seen_at is not None else NOW - timedelta(seconds=15),
         )
 
 
@@ -207,14 +245,7 @@ class ConnectorCardTests(ConnectionsCenterFixture):
 
 class LocalAgentCardTests(ConnectionsCenterFixture):
     def test_device_card_composes_existing_management_snapshot(self):
-        card = LocalAgentDeviceCard(
-            snapshot=self.local_snapshot(),
-            arch="x86_64",
-            client_version="1.0.0",
-            compatibility=DeviceCompatibility.CURRENT,
-            last_seen_at=NOW - timedelta(seconds=15),
-        )
-        rendered = card.safe_dict()
+        rendered = self.device_card().safe_dict()
         self.assertEqual(rendered["device_name"], "Office Windows")
         self.assertEqual(rendered["paired_account_ref"], "account_1")
         self.assertEqual(rendered["status"], DeviceLifecycle.ONLINE.value)
@@ -226,6 +257,22 @@ class LocalAgentCardTests(ConnectionsCenterFixture):
         self.assertIn("delete", rendered["management_actions"])
         self.assertFalse(rendered["ui_action_authority"])
         self.assertFalse(rendered["raw_device_credential"])
+
+    def test_device_card_chooses_latest_activity_by_timestamp(self):
+        older = self.activity(
+            request_id="request_old",
+            run_id="run_old",
+            ended_at=NOW - timedelta(minutes=20),
+        )
+        newer = self.activity(
+            request_id="request_new",
+            run_id="run_new",
+            ended_at=NOW - timedelta(minutes=2),
+        )
+        snapshot = self.local_snapshot(recent_activity=(older, newer))
+        rendered = self.device_card(snapshot=snapshot).safe_dict()
+        self.assertEqual(rendered["last_local_action"]["request_id"], "request_new")
+        self.assertEqual(rendered["last_local_action"]["run_id"], "run_new")
 
     def test_update_required_lifecycle_cannot_be_hidden(self):
         snapshot = self.local_snapshot(state=DeviceLifecycle.UPDATE_REQUIRED)
@@ -303,49 +350,142 @@ class CapabilityEscalationTests(unittest.TestCase):
 
 class AggregateCenterTests(ConnectionsCenterFixture):
     def test_center_places_connector_and_device_revocation_in_one_surface(self):
-        connector = ConnectorAccountCard(
-            service_label="Google Drive",
-            binding=self.connector_binding(),
-            health=self.connector_health(),
-            now=NOW,
-            last_successful_probe_at=NOW - timedelta(seconds=20),
-        )
-        device = LocalAgentDeviceCard(
-            snapshot=self.local_snapshot(),
-            arch="x86_64",
-            client_version="1.0.0",
-            compatibility=DeviceCompatibility.CURRENT,
-            last_seen_at=NOW - timedelta(seconds=15),
-        )
         center = ConnectionsDevicesCenterSnapshot(
             workspace_ref="workspace_1",
             generated_at=NOW,
-            connectors=(connector,),
-            devices=(device,),
+            connectors=(self.connector_card(),),
+            devices=(self.device_card(),),
         )
         rendered = center.safe_dict()
         self.assertEqual(len(rendered["connectors"]), 1)
         self.assertEqual(len(rendered["devices"]), 1)
-        self.assertEqual({item["kind"] for item in rendered["revocation_targets"]}, {"connector", "local_agent"})
+        self.assertEqual(
+            {item["kind"] for item in rendered["revocation_targets"]},
+            {"connector", "local_agent"},
+        )
         self.assertTrue(rendered["revocation_one_place"])
         self.assertFalse(rendered["secret_value_visible"])
         self.assertFalse(rendered["ui_action_authority"])
         self.assertFalse(rendered["real_backend_wired"])
 
     def test_workspace_mismatch_fails_closed(self):
-        connector = ConnectorAccountCard(
-            service_label="Drive",
-            binding=self.connector_binding(),
-            health=self.connector_health(),
-            now=NOW,
-        )
         with self.assertRaises(ContractError):
             ConnectionsDevicesCenterSnapshot(
                 workspace_ref="workspace_other",
                 generated_at=NOW,
-                connectors=(connector,),
+                connectors=(self.connector_card(),),
                 devices=(),
             )
+
+    def test_escalation_target_must_exist_in_center(self):
+        unknown_connector = CapabilityEscalationReview(
+            review_ref="review_unknown_connector",
+            target_kind=EscalationTargetKind.CONNECTOR,
+            target_ref="binding_missing",
+            current_scope=("files.read",),
+            requested_scope=("files.read", "files.update"),
+            reason="Synthetic integrity check.",
+            sensitivity=EscalationSensitivity.SENSITIVE,
+            requested_at=NOW,
+        )
+        with self.assertRaises(ContractError):
+            ConnectionsDevicesCenterSnapshot(
+                workspace_ref="workspace_1",
+                generated_at=NOW,
+                connectors=(self.connector_card(),),
+                devices=(self.device_card(),),
+                escalation_reviews=(unknown_connector,),
+            )
+
+        unknown_device = CapabilityEscalationReview(
+            review_ref="review_unknown_device",
+            target_kind=EscalationTargetKind.LOCAL_AGENT,
+            target_ref="device_missing",
+            current_scope=("filesystem.read",),
+            requested_scope=("filesystem.read", "filesystem.write"),
+            reason="Synthetic integrity check.",
+            sensitivity=EscalationSensitivity.HIGH,
+            requested_at=NOW,
+        )
+        with self.assertRaises(ContractError):
+            ConnectionsDevicesCenterSnapshot(
+                workspace_ref="workspace_1",
+                generated_at=NOW,
+                connectors=(self.connector_card(),),
+                devices=(self.device_card(),),
+                escalation_reviews=(unknown_device,),
+            )
+
+    def test_future_observations_are_rejected_by_center(self):
+        with self.assertRaises(ContractError):
+            ConnectionsDevicesCenterSnapshot(
+                workspace_ref="workspace_1",
+                generated_at=NOW,
+                connectors=(self.connector_card(now=NOW + timedelta(seconds=1)),),
+                devices=(),
+            )
+
+        with self.assertRaises(ContractError):
+            ConnectionsDevicesCenterSnapshot(
+                workspace_ref="workspace_1",
+                generated_at=NOW,
+                connectors=(),
+                devices=(self.device_card(last_seen_at=NOW + timedelta(seconds=1)),),
+            )
+
+        future_activity = self.activity(
+            request_id="request_future",
+            run_id="run_future",
+            ended_at=NOW + timedelta(seconds=1),
+        )
+        with self.assertRaises(ContractError):
+            ConnectionsDevicesCenterSnapshot(
+                workspace_ref="workspace_1",
+                generated_at=NOW,
+                connectors=(),
+                devices=(self.device_card(snapshot=self.local_snapshot(recent_activity=(future_activity,))),),
+            )
+
+        future_review = CapabilityEscalationReview(
+            review_ref="review_future",
+            target_kind=EscalationTargetKind.CONNECTOR,
+            target_ref="binding_drive_1",
+            current_scope=("files.read",),
+            requested_scope=("files.read", "files.update"),
+            reason="Synthetic future timestamp check.",
+            sensitivity=EscalationSensitivity.SENSITIVE,
+            requested_at=NOW + timedelta(seconds=1),
+        )
+        with self.assertRaises(ContractError):
+            ConnectionsDevicesCenterSnapshot(
+                workspace_ref="workspace_1",
+                generated_at=NOW,
+                connectors=(self.connector_card(),),
+                devices=(),
+                escalation_reviews=(future_review,),
+            )
+
+    def test_valid_escalation_target_is_accepted_and_remains_non_authoritative(self):
+        review = CapabilityEscalationReview(
+            review_ref="review_valid",
+            target_kind=EscalationTargetKind.CONNECTOR,
+            target_ref="binding_drive_1",
+            current_scope=("files.read",),
+            requested_scope=("files.read", "files.update"),
+            reason="Synthetic visible pending review.",
+            sensitivity=EscalationSensitivity.SENSITIVE,
+            requested_at=NOW,
+        )
+        center = ConnectionsDevicesCenterSnapshot(
+            workspace_ref="workspace_1",
+            generated_at=NOW,
+            connectors=(self.connector_card(),),
+            devices=(),
+            escalation_reviews=(review,),
+        )
+        rendered = center.safe_dict()["escalation_reviews"][0]
+        self.assertTrue(rendered["approval_required"])
+        self.assertFalse(rendered["ui_may_apply_without_trusted_authority"])
 
     def test_repository_nonclaims_are_explicit(self):
         self.assertFalse(REAL_CONNECTIONS_CENTER_BACKEND_WIRED)
