@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 import hashlib
+import json
 import re
 from typing import Any, Protocol
 
@@ -32,15 +33,6 @@ def _aware(value: datetime, field_name: str) -> datetime:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise ContractError(f"{field_name} must be timezone-aware")
     return value.astimezone(timezone.utc)
-
-
-def _bounded_text(value: str, field_name: str, maximum: int = 512) -> str:
-    if not isinstance(value, str):
-        raise ContractError(f"{field_name} must be text")
-    normalized = redact_secrets(value.strip())
-    if not normalized or len(normalized) > maximum:
-        raise ContractError(f"{field_name} must be bounded text")
-    return normalized
 
 
 def _sha256(value: str, field_name: str) -> str:
@@ -399,11 +391,7 @@ class CloudflareBuildTriggerProjection:
         object.__setattr__(self, "path_excludes", _path_patterns(self.path_excludes))
         object.__setattr__(self, "build_command_fingerprint", _sha256(self.build_command_fingerprint, "build_command_fingerprint"))
         object.__setattr__(self, "deploy_command_fingerprint", _sha256(self.deploy_command_fingerprint, "deploy_command_fingerprint"))
-        object.__setattr__(
-            self,
-            "environment_variable_names",
-            _unique_refs(self.environment_variable_names, "environment_variable_name"),
-        )
+        object.__setattr__(self, "environment_variable_names", _unique_refs(self.environment_variable_names, "environment_variable_name"))
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -423,6 +411,26 @@ class CloudflareBuildTriggerProjection:
         }
 
 
+def cloudflare_build_trigger_fingerprint(trigger: CloudflareBuildTriggerProjection) -> str:
+    if not isinstance(trigger, CloudflareBuildTriggerProjection):
+        raise ContractError("trigger must be CloudflareBuildTriggerProjection")
+    payload = {
+        "worker_ref": trigger.worker_ref,
+        "trigger_ref": trigger.trigger_ref,
+        "environment": trigger.environment.value,
+        "root_directory": trigger.root_directory,
+        "branch_includes": list(trigger.branch_includes),
+        "branch_excludes": list(trigger.branch_excludes),
+        "path_includes": list(trigger.path_includes),
+        "path_excludes": list(trigger.path_excludes),
+        "build_command_fingerprint": trigger.build_command_fingerprint,
+        "deploy_command_fingerprint": trigger.deploy_command_fingerprint,
+        "environment_variable_names": list(trigger.environment_variable_names),
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class CloudflareLogProjection:
     resource_ref: str
@@ -435,8 +443,7 @@ class CloudflareLogProjection:
         object.__setattr__(self, "log_ref", _ref(self.log_ref, "log_ref"))
         if not isinstance(self.lines, tuple) or len(self.lines) > MAX_LOG_LINES:
             raise ContractError("Cloudflare logs exceed line bound")
-        normalized = tuple(redact_secrets(str(line))[:MAX_LOG_LINE_CHARS] for line in self.lines)
-        object.__setattr__(self, "lines", normalized)
+        object.__setattr__(self, "lines", tuple(redact_secrets(str(line))[:MAX_LOG_LINE_CHARS] for line in self.lines))
         if not isinstance(self.truncated, bool):
             raise ContractError("truncated must be boolean")
 
@@ -522,9 +529,8 @@ class CloudflareProductionMutationPlan:
             CloudflareMutationAction.PRODUCTION_DEPLOY,
             CloudflareMutationAction.WORKER_ROLLBACK,
             CloudflareMutationAction.PAGES_ROLLBACK,
-            CloudflareMutationAction.BUILD_CONFIG_UPDATE,
         }:
-            raise ContractError("action is not supported by generic Cloudflare Production plan")
+            raise ContractError("generic Production plan supports only deploy/rollback release actions")
         for field_name in (
             "account_ref", "resource_ref", "expected_current_release_ref", "target_release_ref",
             "source_revision_ref", "bounded_diff_ref", "recovery_target_ref", "smoke_plan_ref",
@@ -539,7 +545,6 @@ class CloudflareProductionMutationPlan:
             CloudflareMutationAction.PRODUCTION_DEPLOY: "production_deploy",
             CloudflareMutationAction.WORKER_ROLLBACK: "worker_rollback",
             CloudflareMutationAction.PAGES_ROLLBACK: "pages_rollback",
-            CloudflareMutationAction.BUILD_CONFIG_UPDATE: "build_config_update",
         }[self.action]
         if self.intent.tool_name != expected_tool:
             raise ContractError("P01 Cloudflare tool does not match requested Production action")
@@ -597,6 +602,12 @@ class CloudflareMutationReceipt:
     def __post_init__(self) -> None:
         if not isinstance(self.action, CloudflareMutationAction):
             object.__setattr__(self, "action", CloudflareMutationAction(self.action))
+        if self.action not in {
+            CloudflareMutationAction.PRODUCTION_DEPLOY,
+            CloudflareMutationAction.WORKER_ROLLBACK,
+            CloudflareMutationAction.PAGES_ROLLBACK,
+        }:
+            raise ContractError("release receipt cannot represent build-config or DNS mutation")
         for field_name in (
             "resource_ref", "before_release_ref", "after_release_ref", "expected_target_release_ref",
             "recovery_target_ref", "provider_request_ref", "readback_evidence_ref", "smoke_evidence_ref",
@@ -622,6 +633,127 @@ class CloudflareMutationReceipt:
             "readback_evidence_ref": self.readback_evidence_ref,
             "smoke_evidence_ref": self.smoke_evidence_ref,
             "smoke_passed": self.smoke_passed,
+            "completed_at": self.completed_at.isoformat().replace("+00:00", "Z"),
+            "raw_token": False,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CloudflareBuildConfigMutationPlan:
+    intent: ConnectorWriteIntent
+    account_ref: str
+    worker_ref: str
+    environment: CloudflareEnvironment
+    expected_current_config_fingerprint: str
+    target_config_fingerprint: str
+    bounded_diff_ref: str
+    recovery_config_fingerprint: str
+    negative_probe_plan_ref: str
+    positive_probe_plan_ref: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.intent, ConnectorWriteIntent) or self.intent.connector_id != "cloudflare":
+            raise ContractError("build config mutation requires Cloudflare ConnectorWriteIntent")
+        if self.intent.tool_name != "build_config_update":
+            raise ContractError("build config mutation requires build_config_update P01 tool")
+        object.__setattr__(self, "account_ref", _ref(self.account_ref, "account_ref"))
+        object.__setattr__(self, "worker_ref", _ref(self.worker_ref, "worker_ref"))
+        if not isinstance(self.environment, CloudflareEnvironment):
+            object.__setattr__(self, "environment", CloudflareEnvironment(self.environment))
+        for field_name in (
+            "expected_current_config_fingerprint", "target_config_fingerprint", "recovery_config_fingerprint"
+        ):
+            object.__setattr__(self, field_name, _sha256(getattr(self, field_name), field_name))
+        for field_name in ("bounded_diff_ref", "negative_probe_plan_ref", "positive_probe_plan_ref"):
+            object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
+        if self.intent.expected_version_ref != self.expected_current_config_fingerprint:
+            raise ContractError("P01 expected_version_ref must match current build config fingerprint")
+        if self.intent.target_ref != self.worker_ref:
+            raise ContractError("P01 build config target must match exact Worker")
+        if self.target_config_fingerprint == self.expected_current_config_fingerprint:
+            raise ContractError("target build config must differ from current config")
+        if self.recovery_config_fingerprint == self.target_config_fingerprint:
+            raise ContractError("recovery build config must differ from target config")
+
+    def validate_binding(self, binding: CloudflareResourceBinding) -> None:
+        if not isinstance(binding, CloudflareResourceBinding):
+            raise ContractError("binding must be CloudflareResourceBinding")
+        if binding.binding_ref != self.intent.binding_ref or binding.account_ref != self.account_ref:
+            raise ContractError("Cloudflare build config plan binding/account mismatch")
+        binding.require_resource(CloudflareResourceKind.WORKER, self.worker_ref)
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "intent": self.intent.safe_dict(),
+            "account_ref": self.account_ref,
+            "worker_ref": self.worker_ref,
+            "environment": self.environment.value,
+            "expected_current_config_fingerprint": self.expected_current_config_fingerprint,
+            "target_config_fingerprint": self.target_config_fingerprint,
+            "bounded_diff_ref": self.bounded_diff_ref,
+            "recovery_config_fingerprint": self.recovery_config_fingerprint,
+            "negative_probe_plan_ref": self.negative_probe_plan_ref,
+            "positive_probe_plan_ref": self.positive_probe_plan_ref,
+            "explicit_p01_approval": True,
+            "post_action_config_readback_required": True,
+            "negative_watch_probe_required": True,
+            "positive_watch_probe_required": True,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CloudflareBuildConfigMutationReceipt:
+    worker_ref: str
+    environment: CloudflareEnvironment
+    before_config_fingerprint: str
+    after_config_fingerprint: str
+    expected_target_config_fingerprint: str
+    recovery_config_fingerprint: str
+    provider_request_ref: str
+    readback_evidence_ref: str
+    negative_probe_evidence_ref: str
+    positive_probe_evidence_ref: str
+    negative_probe_passed: bool
+    positive_probe_passed: bool
+    completed_at: datetime
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "worker_ref", _ref(self.worker_ref, "worker_ref"))
+        if not isinstance(self.environment, CloudflareEnvironment):
+            object.__setattr__(self, "environment", CloudflareEnvironment(self.environment))
+        for field_name in (
+            "before_config_fingerprint", "after_config_fingerprint", "expected_target_config_fingerprint",
+            "recovery_config_fingerprint",
+        ):
+            object.__setattr__(self, field_name, _sha256(getattr(self, field_name), field_name))
+        for field_name in (
+            "provider_request_ref", "readback_evidence_ref", "negative_probe_evidence_ref", "positive_probe_evidence_ref",
+        ):
+            object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
+        object.__setattr__(self, "completed_at", _aware(self.completed_at, "completed_at"))
+        if self.after_config_fingerprint != self.expected_target_config_fingerprint:
+            raise ContractError("Cloudflare build config readback does not match approved target")
+        if self.before_config_fingerprint == self.after_config_fingerprint:
+            raise ContractError("Cloudflare build config receipt must prove a config change")
+        if not isinstance(self.negative_probe_passed, bool) or not self.negative_probe_passed:
+            raise ContractError("nonmatching-path negative build probe must pass")
+        if not isinstance(self.positive_probe_passed, bool) or not self.positive_probe_passed:
+            raise ContractError("matching-path positive build probe must pass")
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "worker_ref": self.worker_ref,
+            "environment": self.environment.value,
+            "before_config_fingerprint": self.before_config_fingerprint,
+            "after_config_fingerprint": self.after_config_fingerprint,
+            "expected_target_config_fingerprint": self.expected_target_config_fingerprint,
+            "recovery_config_fingerprint": self.recovery_config_fingerprint,
+            "provider_request_ref": self.provider_request_ref,
+            "readback_evidence_ref": self.readback_evidence_ref,
+            "negative_probe_evidence_ref": self.negative_probe_evidence_ref,
+            "positive_probe_evidence_ref": self.positive_probe_evidence_ref,
+            "negative_probe_passed": self.negative_probe_passed,
+            "positive_probe_passed": self.positive_probe_passed,
             "completed_at": self.completed_at.isoformat().replace("+00:00", "Z"),
             "raw_token": False,
         }
