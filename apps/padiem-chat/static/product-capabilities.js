@@ -38,16 +38,14 @@
 
   function projectDeployment(data) {
     if (!data || typeof data !== "object" || Array.isArray(data)) return EMPTY_DEPLOYMENT;
-    const authConfigured = bool(data.auth_configured);
-    const historyBound = bool(data.history_store_bound);
     return Object.freeze({
       loaded: true,
       webSearch: bool(data.web_tools_ready),
       deepResearch: bool(data.deep_research_ready),
-      auth: authConfigured && historyBound,
-      projects: authConfigured && historyBound && bool(data.projects_code_ready),
-      projectFiles: authConfigured && historyBound && bool(data.project_files_code_ready) && bool(data.project_file_store_bound),
-      savedOutputs: authConfigured && historyBound && bool(data.saved_outputs_code_ready) && bool(data.saved_output_store_bound),
+      auth: bool(data.auth_configured) && bool(data.history_store_bound),
+      projects: bool(data.projects_code_ready),
+      projectFiles: bool(data.project_files_code_ready) && bool(data.project_file_store_bound),
+      savedOutputs: bool(data.saved_outputs_code_ready) && bool(data.saved_output_store_bound),
     });
   }
 
@@ -106,7 +104,7 @@
   }
 
   function syncAccountVisibility() {
-    const authAvailable = deployment.loaded && deployment.auth && auth.loaded && auth.ready;
+    const authAvailable = auth.loaded && auth.ready;
     const projectsAvailable = deployment.loaded
       && deployment.projects
       && authAvailable
