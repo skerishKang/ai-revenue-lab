@@ -1,0 +1,53 @@
+name: Internal Platform Registry CI
+
+on:
+  pull_request:
+    paths:
+      - 'docs/internal-platform/**'
+      - 'apps/portfolio-console/internal-platform-*.js'
+      - 'apps/portfolio-console/internal-platform.css'
+      - 'apps/portfolio-console/businesses.js'
+      - 'apps/portfolio-console/package.json'
+      - 'apps/portfolio-console/tests/internal-platform-registry.test.js'
+      - '.github/workflows/internal-platform-registry-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/internal-platform/**'
+      - 'apps/portfolio-console/internal-platform-*.js'
+      - 'apps/portfolio-console/internal-platform.css'
+      - 'apps/portfolio-console/businesses.js'
+      - 'apps/portfolio-console/package.json'
+      - 'apps/portfolio-console/tests/internal-platform-registry.test.js'
+      - '.github/workflows/internal-platform-registry-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  internal-platform-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript syntax
+        working-directory: apps/portfolio-console
+        run: |
+          node --check internal-platform-manifest.js
+          node --check internal-platform-console.js
+          node --check businesses.js
+
+      - name: Internal Platform registry contract
+        working-directory: apps/portfolio-console
+        run: node tests/internal-platform-registry.test.js
+
+      - name: Diff whitespace gate
+        run: git diff --check origin/${{ github.base_ref || 'main' }}...HEAD
