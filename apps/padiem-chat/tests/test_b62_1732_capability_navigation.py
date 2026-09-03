@@ -110,9 +110,13 @@ def test_sidebar_search_is_real_capability_backed_navigation_and_mirrors_busy_st
     assert "mobileClose.click();" in source
 
 
-def test_auth_and_project_visibility_requires_real_deployment_and_session_capability() -> None:
+def test_auth_status_controls_account_session_visibility_while_health_controls_code_capability() -> None:
     source = CAPABILITIES.read_text(encoding="utf-8")
-    assert "const authAvailable = deployment.loaded && deployment.auth && auth.loaded && auth.ready;" in source
+    assert "projects: bool(data.projects_code_ready)," in source
+    assert "projectFiles: bool(data.project_files_code_ready) && bool(data.project_file_store_bound)," in source
+    assert "savedOutputs: bool(data.saved_outputs_code_ready) && bool(data.saved_output_store_bound)," in source
+    assert "const authAvailable = auth.loaded && auth.ready;" in source
+    assert "&& deployment.projects" in source
     assert "&& auth.authenticated" in source
     assert "&& auth.historyReady;" in source
     assert "setHidden(loginButton, !authAvailable);" in source
