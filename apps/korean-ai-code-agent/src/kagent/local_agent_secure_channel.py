@@ -8,7 +8,12 @@ import re
 from typing import Any
 
 from .contracts import ContractError
-from .local_agent_pairing import DeviceBinding, DeviceLifecycle, DeviceSession
+from .local_agent_command_material import (
+    OutboundCommandMaterialRequest,
+    ResolvedLocalCommandMaterial,
+    parse_command_material_wire_projection,
+)
+from .local_agent_pairing import DeviceBinding, DeviceCommandEnvelope, DeviceLifecycle, DeviceSession
 from .local_agent_secure_transport import (
     OutboundLocalAgentTransportPort,
     OutboundPollRequest,
@@ -17,6 +22,7 @@ from .local_agent_secure_transport import (
 from .security import redact_secrets
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
+_MAX_POLLED_COMMANDS = 256
 
 
 def _ref(value: str, field_name: str) -> str:
@@ -161,27 +167,92 @@ class PinnedOutboundLocalAgentChannel:
             raise ContractError("transport must implement poll/acknowledge")
         self._authority = authority
         self._transport = transport
+        self._polled_commands: dict[str, tuple[str, DeviceCommandEnvelope]] = {}
 
     @property
     def authority(self) -> PinnedOutboundBrokerBinding:
         return self._authority
+
+    def _prune_polled_commands(self, *, now: datetime) -> None:
+        now = _aware(now, "now")
+        expired = [
+            command_id
+            for command_id, (_, command) in self._polled_commands.items()
+            if now >= command.expires_at
+        ]
+        for command_id in expired:
+            del self._polled_commands[command_id]
 
     def poll(
         self,
         *,
         binding: DeviceBinding,
         request: OutboundPollRequest,
-    ):
+    ) -> tuple[DeviceCommandEnvelope, ...]:
         if not isinstance(request, OutboundPollRequest):
             raise ContractError("request must be OutboundPollRequest")
         now = request.requested_at
         self._authority.require_current_binding(binding, now=now)
         self._authority.require_session(request.session, now=now)
-        return self._transport.poll(
+        commands = self._transport.poll(
             config=self._authority.config,
             binding=binding,
             request=request,
         )
+        if type(commands) is not tuple or not all(isinstance(command, DeviceCommandEnvelope) for command in commands):
+            raise ContractError("outbound transport poll must return DeviceCommandEnvelope tuple")
+        self._prune_polled_commands(now=now)
+        pending: list[tuple[str, tuple[str, DeviceCommandEnvelope]]] = []
+        seen_ids: set[str] = set()
+        for command in commands:
+            if command.command_id in seen_ids:
+                raise ContractError("outbound transport returned duplicate command_id")
+            seen_ids.add(command.command_id)
+            if command.binding_ref != binding.binding_ref:
+                raise ContractError("polled command binding does not match pinned channel")
+            if command.sequence <= request.after_sequence:
+                raise ContractError("polled command sequence must exceed requested cursor")
+            if not (command.issued_at <= now < command.expires_at):
+                raise ContractError("polled command must be current at poll time")
+            prior = self._polled_commands.get(command.command_id)
+            current = (request.session.session_id, command)
+            if prior is not None and prior != current:
+                raise ContractError("polled command_id was rebound to different command metadata")
+            pending.append((command.command_id, current))
+        new_ids = sum(1 for command_id, _ in pending if command_id not in self._polled_commands)
+        if len(self._polled_commands) + new_ids > _MAX_POLLED_COMMANDS:
+            raise ContractError("pinned outbound channel command correlation bound exceeded")
+        for command_id, current in pending:
+            self._polled_commands[command_id] = current
+        return commands
+
+    def resolve_material(
+        self,
+        *,
+        binding: DeviceBinding,
+        request: OutboundCommandMaterialRequest,
+    ) -> ResolvedLocalCommandMaterial:
+        if not isinstance(request, OutboundCommandMaterialRequest):
+            raise ContractError("request must be OutboundCommandMaterialRequest")
+        now = request.requested_at
+        self._authority.require_current_binding(binding, now=now)
+        self._authority.require_session(request.session, now=now)
+        self._prune_polled_commands(now=now)
+        observed = self._polled_commands.get(request.command.command_id)
+        if observed is None:
+            raise ContractError("command material requires a command previously polled by this channel")
+        observed_session_id, observed_command = observed
+        if observed_session_id != request.session.session_id or observed_command != request.command:
+            raise ContractError("command material request does not match exact polled command/session")
+        resolver = getattr(self._transport, "resolve_material", None)
+        if not callable(resolver):
+            raise ContractError("outbound transport does not implement command material resolution")
+        payload = resolver(
+            config=self._authority.config,
+            binding=binding,
+            request=request,
+        )
+        return parse_command_material_wire_projection(payload, outbound_request=request)
 
     def acknowledge(
         self,
@@ -210,9 +281,12 @@ class PinnedOutboundLocalAgentChannel:
             "caller_endpoint_override": False,
             "public_inbound_port": False,
             "raw_device_credential": False,
+            "command_material_resolution": True,
+            "polled_command_correlation_bound": _MAX_POLLED_COMMANDS,
             "real_broker_configured": False,
         }
 
 
 CALLER_FACING_CONFIG_ARGUMENT = False
 PINNED_BROKER_AUTHORITY = True
+COMMAND_MATERIAL_REQUIRES_POLLED_COMMAND = True
