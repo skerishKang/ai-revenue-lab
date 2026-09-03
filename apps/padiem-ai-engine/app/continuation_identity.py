@@ -18,25 +18,11 @@ from padiem_ai_core import (
     ExecutionRequest,
     request_fingerprint,
 )
-
-
-def _agent_identity(request: ExecutionRequest) -> dict[str, Any]:
-    agent = request.agent
-    return {
-        "id": agent.id,
-        "title": agent.title,
-        "description": agent.description,
-        "system_instruction": agent.system_instruction,
-        "task_type": agent.task_type,
-        "optimize_for": agent.optimize_for,
-        "max_tokens": agent.max_tokens,
-        "allowed_tools": list(agent.allowed_tools),
-        "required_capabilities": list(agent.required_capabilities),
-        "context_policy": agent.context_policy,
-        "model_policy": agent.model_policy,
-        "max_steps": agent.max_steps,
-        "output_contract": agent.output_contract,
-    }
+from padiem_ai_core.logical_execution_identity import (
+    agent_identity_payload,
+    agent_plan_identity_fingerprint,
+    recovery_policy_identity_fingerprint,
+)
 
 
 def execution_request_identity_payload(
@@ -45,10 +31,10 @@ def execution_request_identity_payload(
     request: ExecutionRequest,
     context: ExecutionContext,
 ) -> dict[str, Any]:
-    """Return the canonical logical-execution projection used for replay/binding."""
+    """Return the exact paused-execution projection used for continuation binding."""
     return {
         "app_id": app_id,
-        "agent": _agent_identity(request),
+        "agent": agent_identity_payload(request),
         "messages": [dict(message) for message in request.messages],
         "session_id": request.session_id,
         "additional_system_context": request.additional_system_context,
@@ -69,39 +55,6 @@ def execution_request_identity_fingerprint(
 ) -> str:
     return request_fingerprint(
         execution_request_identity_payload(app_id=app_id, request=request, context=context)
-    )
-
-
-def agent_plan_identity_fingerprint(plan: AgentPlan | None) -> str | None:
-    if plan is None:
-        return None
-    return request_fingerprint(
-        {
-            "agent_id": plan.agent_id,
-            "steps": [
-                {
-                    "step_id": step.step_id,
-                    "objective": step.objective,
-                    "tool_id": step.tool_id,
-                    "depends_on": list(step.depends_on),
-                }
-                for step in plan.steps
-            ],
-        }
-    )
-
-
-def recovery_policy_identity_fingerprint(
-    policy: AgentRecoveryPolicy | None,
-) -> str | None:
-    if policy is None:
-        return None
-    # Code order has no authorization meaning; canonicalize it as a set.
-    return request_fingerprint(
-        {
-            "retryable_driver_codes": sorted(policy.retryable_driver_codes),
-            "max_retries_per_step": policy.max_retries_per_step,
-        }
     )
 
 
