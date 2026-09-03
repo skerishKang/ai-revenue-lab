@@ -100,7 +100,7 @@
     identity({ n:50, s:"private-data-connector-hub", t:"Private Data Connector Hub", k:"사내자료 커넥터 허브", a:NA.CANDIDATE, l:"integrated_successor", st:"external", p:5, pc:"expanded-successor", bk:"integrated-successor", sn:"Ieeon", sk:"이어온" }),
     identity({ n:51, s:"ai-workflow-marketplace", t:"AI Workflow Marketplace", k:"AI 워크플로우 마켓", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-51-ai-workflow-marketplace-v1/" }),
     identity({ n:52, s:"scheduled-agent-operations", t:"Scheduled Agent Operations", k:"예약형 AI 운영", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-52-scheduled-agent-operations-v1/" }),
-    identity({ n:53, s:"embedded-ai-sdk", t:"Embedded AI SDK", k:"임베드 AI SDK", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-53-embedded-ai-sdk-v1/" }),
+    identity({ n:53, s:"padiem-sidecar", t:"Padiem Sidecar", k:"파디엠 사이드카", a:NA.PROPOSED, l:"research", st:"review", p:78, w:"docs/products/padiem-sidecar/" }),
     identity({ n:54, s:"korean-ai-code-agent", t:"Korean AI Code Agent", k:"한국형 AI 코드 에이전트", a:NA.PROPOSED, l:"mvp_vertical_slice", st:"review", p:5, w:"apps/korean-ai-code-agent/" }),
     identity({ n:55, s:"local-ai-fleet", t:"Local AI Fleet", k:"로컬 AI 플릿", a:NA.CANDIDATE, l:"visual_reference", st:"review", p:5, w:"reference/business-55-local-ai-fleet-v1/" }),
     // B56 is intentionally unused.
