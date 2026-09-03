@@ -24,6 +24,7 @@
   let outputs = [];
   let activeOutput = null;
   let loadInFlight = false;
+  let lastAuthenticated = false;
 
   function setStatus(text, state = "normal") {
     outputStatus.textContent = text || "";
@@ -49,9 +50,7 @@
       try {
         await navigator.clipboard.writeText(text);
         return true;
-      } catch (_) {
-        // Continue to the local fallback below.
-      }
+      } catch (_) {}
     }
     const textarea = document.createElement("textarea");
     textarea.value = text;
@@ -84,9 +83,7 @@
   }
 
   function lifecycleApi() {
-    return window.PadiemChatLifecycle || {
-      isCompleted() { return false; },
-    };
+    return window.PadiemChatLifecycle || { isCompleted() { return false; } };
   }
 
   function removeAnswerActions(article) {
@@ -140,10 +137,7 @@
     if (loadInFlight) return outputsReady;
     loadInFlight = true;
     try {
-      const response = await fetch("/api/outputs", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
+      const response = await fetch("/api/outputs", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.outputs)) throw new Error("saved outputs unavailable");
       outputs = data.outputs.filter((item) => item && typeof item.id === "string" && typeof item.title === "string");
@@ -252,14 +246,9 @@
   async function openOutput(id) {
     if (!outputsReady) return;
     try {
-      const response = await fetch(`/api/outputs/${encodeURIComponent(id)}`, {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
+      const response = await fetch(`/api/outputs/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.output || typeof data.output.content !== "string") {
-        throw new Error("저장한 답변을 불러오지 못했습니다.");
-      }
+      if (!response.ok || !data || !data.output || typeof data.output.content !== "string") throw new Error("저장한 답변을 불러오지 못했습니다.");
       activeOutput = data.output;
       outputTitleInput.value = typeof activeOutput.title === "string" ? activeOutput.title : "저장한 답변";
       outputContent.textContent = activeOutput.content;
@@ -311,10 +300,7 @@
     if (!window.confirm("이 저장한 답변을 삭제할까요? 원래 대화는 삭제되지 않습니다.")) return;
     outputDeleteButton.disabled = true;
     try {
-      const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, {
-        method: "DELETE",
-        headers: { "Accept": "application/json" },
-      });
+      const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, { method: "DELETE", headers: { "Accept": "application/json" } });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.deleted !== true) throw new Error("저장한 답변을 삭제하지 못했습니다.");
       closeOutput();
@@ -330,18 +316,13 @@
     if (outputsReady) outputsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   outputDialogClose.addEventListener("click", closeOutput);
-  outputDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeOutput();
-  });
+  outputDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeOutput(); });
   outputCopyButton.addEventListener("click", async () => {
     if (!activeOutput) return;
     const copied = await copyText(activeOutput.content);
     setStatus(copied ? "답변을 복사했습니다." : "복사하지 못했습니다.", copied ? "normal" : "error");
   });
-  outputDownloadButton.addEventListener("click", () => {
-    if (activeOutput) downloadText(activeOutput.content, activeOutput.title);
-  });
+  outputDownloadButton.addEventListener("click", () => { if (activeOutput) downloadText(activeOutput.content, activeOutput.title); });
   outputRenameButton.addEventListener("click", renameOutput);
   outputDeleteButton.addEventListener("click", deleteOutput);
 
@@ -350,7 +331,19 @@
   messageList.addEventListener("padiem:message-lifecycle", enhanceAllAnswers);
 
   function isAuthenticated() {
-    return Boolean(loginButton && loginButton.dataset.authenticated === "true" && loginButton.disabled === false);
+    const current = Boolean(loginButton && loginButton.dataset.authenticated === "true" && loginButton.disabled === false);
+    if (current) lastAuthenticated = true;
+    else if (loginButton && loginButton.dataset.authenticated === "false") lastAuthenticated = false;
+    return current;
+  }
+
+  function preserveAuthenticatedLocaleProjection() {
+    if (!lastAuthenticated || !loginButton || loginButton.disabled) return;
+    const locale = window.__padiemLocale;
+    if (!locale || typeof locale.text !== "function") return;
+    loginButton.dataset.authenticated = "true";
+    loginButton.textContent = locale.text("logout");
+    loginButton.title = locale.text("logout-title");
   }
 
   if (loginButton) {
@@ -361,6 +354,7 @@
     authObserver.observe(loginButton, { childList: true, subtree: true, attributes: true });
     if (isAuthenticated()) loadOutputs();
     else disableOutputs();
+    window.addEventListener("padiem:localechange", preserveAuthenticatedLocaleProjection);
   } else {
     disableOutputs();
   }
