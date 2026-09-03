@@ -101,7 +101,7 @@ def test_no_matching_free_route_fails_before_upstream():
             required_capabilities=["free", "video"],
             optimize_for="balanced",
         )
-    assert info.value.reason_code == "no_candidate_meets_capabilities"
+    assert info.value.reason_code == "invalid_capability_requirement"
     assert info.value.upstream_called is False
 
 
