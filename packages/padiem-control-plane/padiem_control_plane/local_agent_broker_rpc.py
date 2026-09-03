@@ -35,6 +35,8 @@ class LocalAgentBrokerRpcFacade:
     The facade does not authenticate a public HTTP caller and does not own
     persistence. A future deployed adapter must provide a durable authority
     instance and its own network authentication before invoking this facade.
+    Numeric values are passed through unchanged so the canonical core, rather
+    than RPC coercion, remains the sole type/range validator.
     """
 
     def __init__(self, *, authority: InMemoryLocalAgentBrokerAuthority) -> None:
@@ -47,7 +49,7 @@ class LocalAgentBrokerRpcFacade:
             return operation()
         except ControlPlaneContractError as exc:
             return {"ok": False, "error": {"code": exc.code, "message": exc.safe_message}}
-        except (KeyError, TypeError, ValueError) as exc:
+        except (KeyError, TypeError, ValueError):
             return {
                 "ok": False,
                 "error": {
@@ -65,7 +67,7 @@ class LocalAgentBrokerRpcFacade:
                 workspace_ref=payload["workspace_ref"],
                 credential=_credential(payload["credential_b64"]),
                 now=_dt(payload["now"]),
-                credential_ttl_seconds=int(payload.get("credential_ttl_seconds", 2_592_000)),
+                credential_ttl_seconds=payload.get("credential_ttl_seconds", 2_592_000),
             )
             return {"ok": True, "binding": binding.safe_dict()}
 
@@ -75,10 +77,10 @@ class LocalAgentBrokerRpcFacade:
         def operation() -> dict[str, Any]:
             binding = self._authority.rotate_credential(
                 payload["binding_ref"],
-                expected_generation=int(payload["expected_generation"]),
+                expected_generation=payload["expected_generation"],
                 new_credential=_credential(payload["new_credential_b64"]),
                 now=_dt(payload["now"]),
-                credential_ttl_seconds=int(payload.get("credential_ttl_seconds", 2_592_000)),
+                credential_ttl_seconds=payload.get("credential_ttl_seconds", 2_592_000),
             )
             return {"ok": True, "binding": binding.safe_dict()}
 
@@ -100,7 +102,7 @@ class LocalAgentBrokerRpcFacade:
                 account_ref=payload["account_ref"],
                 workspace_ref=payload["workspace_ref"],
                 now=_dt(payload["now"]),
-                ttl_seconds=int(payload.get("ttl_seconds", 900)),
+                ttl_seconds=payload.get("ttl_seconds", 900),
             )
             return {"ok": True, "session": session.safe_dict()}
 
@@ -115,7 +117,7 @@ class LocalAgentBrokerRpcFacade:
                 tool_request_ref=payload["tool_request_ref"],
                 request_fingerprint=payload["request_fingerprint"],
                 now=_dt(payload["now"]),
-                ttl_seconds=int(payload.get("ttl_seconds", 300)),
+                ttl_seconds=payload.get("ttl_seconds", 300),
             )
             return {"ok": True, "command": command.safe_dict()}
 
@@ -127,9 +129,9 @@ class LocalAgentBrokerRpcFacade:
                 session_id=payload["session_id"],
                 binding_ref=payload["binding_ref"],
                 credential=_credential(payload["credential_b64"]),
-                after_sequence=int(payload.get("after_sequence", 0)),
+                after_sequence=payload.get("after_sequence", 0),
                 now=_dt(payload["now"]),
-                limit=int(payload.get("limit", 32)),
+                limit=payload.get("limit", 32),
             )
             return {"ok": True, "commands": [item.safe_dict() for item in commands]}
 
@@ -168,6 +170,7 @@ class LocalAgentBrokerRpcFacade:
 
 
 STRUCTURED_CLONE_SAFE_LOCAL_AGENT_BROKER_RPC = True
+RPC_NUMERIC_COERCION = False
 PUBLIC_HTTP_AUTHENTICATION_IMPLEMENTED = False
 DURABLE_BROKER_PERSISTENCE_CONFIGURED = False
 RAW_DEVICE_CREDENTIAL_RETURNED = False
