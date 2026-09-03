@@ -20,14 +20,6 @@ from .windows_local_executor import (
 )
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
-_BLOCKED_EXECUTION_STATES = frozenset(
-    {
-        DeviceLifecycle.UNPAIRED,
-        DeviceLifecycle.REVOKED,
-        DeviceLifecycle.CREDENTIAL_EXPIRED,
-        DeviceLifecycle.UPDATE_REQUIRED,
-    }
-)
 
 
 def _ref(value: str, field_name: str) -> str:
@@ -190,12 +182,10 @@ class LocalAgentRuntimeAssemblyReceipt:
 
 
 class BoundLocalAgentRuntimeAssembly:
-    """Compose existing Local Agent authorities without defining a broker wire format.
+    """Correlate current Local Agent identity/session state before delegated Windows execution.
 
-    Network transport/replay admission remains #1634. This class accepts an
-    already materialized LocalCommandRequest, validates current paired-session
-    context, then delegates P01/local authorization and process execution to the
-    configured Windows runtime.
+    Broker command admission/replay remains #1634. P01/local permission authority
+    and subprocess execution remain in the existing Windows runtime stack.
     """
 
     def __init__(
@@ -217,7 +207,6 @@ class BoundLocalAgentRuntimeAssembly:
             raise ContractError("broker_authority must be PinnedOutboundBrokerBinding")
         if not hasattr(runtime, "execute_with_receipt") or not hasattr(runtime, "cancel"):
             raise ContractError("runtime must support execute_with_receipt and cancel")
-
         if binding.device_id != device.device_id or permissions.device_id != device.device_id:
             raise ContractError("Local Agent assembly device correlation mismatch")
         if binding.workspace_ref != device.workspace_ref or permissions.workspace_ref != device.workspace_ref:
@@ -234,7 +223,6 @@ class BoundLocalAgentRuntimeAssembly:
             or broker_authority.credential_generation != binding.credential_generation
         ):
             raise ContractError("pinned broker authority does not match current device binding")
-
         self._device = device
         self._binding = binding
         self._permissions = permissions
@@ -249,8 +237,8 @@ class BoundLocalAgentRuntimeAssembly:
 
     def _require_context(self, *, session: DeviceSession, now: datetime) -> None:
         now = _aware(now, "now")
-        if self._binding.state in _BLOCKED_EXECUTION_STATES:
-            raise ContractError(f"Local Agent binding state {self._binding.state.value} cannot execute")
+        if self._binding.state is not DeviceLifecycle.ONLINE:
+            raise ContractError("Local Agent binding must be ONLINE to execute")
         self._broker_authority.require_current_binding(self._binding, now=now)
         self._broker_authority.require_session(session, now=now)
 
@@ -273,7 +261,6 @@ class BoundLocalAgentRuntimeAssembly:
         self._permissions.root_policy(request.root_ref)
         if request.requested_at > now:
             raise ContractError("local command request cannot be from the future")
-
         with self._lock:
             if request.request_id in self._active_owners:
                 raise ContractError("local command request is already active in this assembly")
@@ -283,7 +270,6 @@ class BoundLocalAgentRuntimeAssembly:
         finally:
             with self._lock:
                 self._active_owners.pop(request.request_id, None)
-
         return LocalAgentRuntimeAssemblyReceipt.from_windows_receipt(
             binding=self._binding,
             session=session,
@@ -314,9 +300,9 @@ class BoundLocalAgentRuntimeAssembly:
         current = True
         reason = None
         try:
+            if self._binding.state is not DeviceLifecycle.ONLINE:
+                raise ContractError("binding lifecycle is not ONLINE")
             self._broker_authority.require_current_binding(self._binding, now=now)
-            if self._binding.state in _BLOCKED_EXECUTION_STATES:
-                raise ContractError("binding lifecycle blocks execution")
         except ContractError as exc:
             current = False
             reason = str(exc)
@@ -332,6 +318,7 @@ class BoundLocalAgentRuntimeAssembly:
             "broker_config_fingerprint": self._broker_authority.config_fingerprint,
             "current": current,
             "blocked_reason": reason,
+            "online_required": True,
             "p01_authorization_reused": True,
             "windows_executor_reused": True,
             "broker_wire_protocol_defined": False,
@@ -344,6 +331,7 @@ class BoundLocalAgentRuntimeAssembly:
 
 
 ONE_LOCAL_AGENT_RUNTIME_ASSEMBLY = True
+ONLINE_BINDING_REQUIRED = True
 BROKER_WIRE_PROTOCOL_INVENTED = False
 REPLAY_MODEL_DUPLICATED = False
 RAW_CREDENTIAL_IN_ASSEMBLY_RECEIPT = False
