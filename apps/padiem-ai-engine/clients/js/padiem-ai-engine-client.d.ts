@@ -15,6 +15,8 @@ export const ORCHESTRATION_FIELD_PARITY: Readonly<{
   additional_system_context: "SUPPORTED_AND_MAPPED";
   trace_id: "SUPPORTED_AND_MAPPED";
   execution_context: "SUPPORTED_AND_MAPPED";
+  context_permission: "EXECUTE_ONLY_SUPPORTED_AND_MAPPED";
+  context_permission_required: "EXECUTE_ONLY_SUPPORTED_AND_MAPPED";
   subject_id: "SUPPORTED_AND_MAPPED";
   agent_plan: "SUPPORTED_AND_MAPPED";
   recovery_policy: "SUPPORTED_AND_MAPPED";
@@ -80,6 +82,11 @@ export interface EngineRunRequest {
   execution_context?: EngineExecutionContext;
 }
 
+export interface EngineExecuteRequest extends EngineRunRequest {
+  context_permission?: Record<string, unknown>;
+  context_permission_required?: boolean;
+}
+
 export interface EngineOrchestrationRequest extends EngineRunRequest {
   subject_id?: string | null;
   agent_plan?: EngineAgentPlan;
@@ -108,6 +115,7 @@ export interface EngineCompletedResult {
   answer: string;
   route: Record<string, unknown>;
   metadata: Record<string, unknown>;
+  context_permission?: Record<string, unknown>;
 }
 
 export interface EngineOrchestrationResult {
@@ -163,7 +171,7 @@ export interface PadiemAiEngineClientOptions {
 
 export class PadiemAiEngineClient {
   constructor(options: PadiemAiEngineClientOptions);
-  execute(run: EngineRunRequest): Promise<EngineCompletedResult>;
+  execute(run: EngineExecuteRequest): Promise<EngineCompletedResult>;
   orchestrate(request: EngineOrchestrationRequest): Promise<EngineOrchestrationResult>;
   resumeOrchestration(request: EngineOrchestrationResumeRequest): Promise<EngineOrchestrationResult>;
   cancelOrchestrationPause(request: EngineOrchestrationCancelRequest): Promise<Record<string, unknown>>;
