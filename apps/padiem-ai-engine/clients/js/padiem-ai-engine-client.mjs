@@ -20,6 +20,12 @@ const EXECUTION_ALLOWED = new Set([
   "execution_context",
 ]);
 
+const EXECUTE_ALLOWED = new Set([
+  ...EXECUTION_ALLOWED,
+  "context_permission",
+  "context_permission_required",
+]);
+
 const ORCHESTRATION_ALLOWED = new Set([
   ...EXECUTION_ALLOWED,
   "subject_id",
@@ -57,6 +63,8 @@ export const ORCHESTRATION_FIELD_PARITY = Object.freeze({
   additional_system_context: "SUPPORTED_AND_MAPPED",
   trace_id: "SUPPORTED_AND_MAPPED",
   execution_context: "SUPPORTED_AND_MAPPED",
+  context_permission: "EXECUTE_ONLY_SUPPORTED_AND_MAPPED",
+  context_permission_required: "EXECUTE_ONLY_SUPPORTED_AND_MAPPED",
   subject_id: "SUPPORTED_AND_MAPPED",
   agent_plan: "SUPPORTED_AND_MAPPED",
   recovery_policy: "SUPPORTED_AND_MAPPED",
@@ -195,6 +203,8 @@ function exactRunPayload(appId, run, { allowed = EXECUTION_ALLOWED } = {}) {
     ...(run.additional_system_context === undefined ? {} : { additional_system_context: run.additional_system_context }),
     ...(run.trace_id === undefined ? {} : { trace_id: run.trace_id }),
     ...(run.execution_context === undefined ? {} : { execution_context: normalizeExecutionContext(run.execution_context) }),
+    ...(run.context_permission === undefined ? {} : { context_permission: run.context_permission }),
+    ...(run.context_permission_required === undefined ? {} : { context_permission_required: run.context_permission_required }),
     ...(run.subject_id === undefined ? {} : { subject_id: run.subject_id }),
     ...(run.agent_plan === undefined ? {} : { agent_plan: run.agent_plan }),
     ...(run.recovery_policy === undefined ? {} : { recovery_policy: run.recovery_policy }),
@@ -267,7 +277,7 @@ export class PadiemAiEngineClient {
   _headers() { return authenticatedHeaders(this.callerId, this.credential); }
 
   async execute(run) {
-    const payload = exactRunPayload(this.appId, run, { allowed: EXECUTION_ALLOWED });
+    const payload = exactRunPayload(this.appId, run, { allowed: EXECUTE_ALLOWED });
     const response = await this.binding.fetch(`${ENGINE_INTERNAL_ORIGIN}${ENGINE_EXECUTE_PATH}`, {
       method: "POST", headers: this._headers(), body: JSON.stringify(payload),
     });
