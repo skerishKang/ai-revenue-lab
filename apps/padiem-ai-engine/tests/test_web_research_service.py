@@ -11,6 +11,7 @@ from padiem_ai_core import (
     Evidence,
     ExecutionRequest,
     ExecutionResult,
+    ExecutionRuntimeError,
     GroundedResearchRuntime,
     MockWebProvider,
     RunMetadata,
@@ -179,6 +180,8 @@ def test_search_projects_core_grounding_and_public_sources() -> None:
     assert result.body["operation"] == "search"
     assert result.body["answer"] == "grounded answer"
     assert result.body["research"] is None
+    assert "route" not in result.body
+    assert "metadata" not in result.body
     assert len(result.body["sources"]) == 5
     assert result.body["sources"][0]["provider"] == "mock"
     assert len(execution.requests) == 1
@@ -325,6 +328,43 @@ def test_public_evidence_projection_excludes_provider_private_runtime_bytes() ->
     }
     serialized = json.dumps(result.body, ensure_ascii=False)
     assert SecretBearingProvider.private_runtime_secret not in serialized
+    assert "route" not in result.body
+    assert "metadata" not in result.body
+
+
+def test_execution_failure_does_not_project_b14_or_run_metadata() -> None:
+    private_metadata = RunMetadata(
+        trace_id="private-trace",
+        app_id="reference-product",
+        agent_id="reference-research-agent",
+        status=RunStatus.FAILED,
+        provider="privateprovider",
+        model="private-model",
+    )
+
+    class FailingExecutionRuntime:
+        async def run(self, request: ExecutionRequest) -> ExecutionResult:
+            raise ExecutionRuntimeError(
+                "upstream_timeout",
+                "Model execution timed out.",
+                metadata=private_metadata,
+                retryable=True,
+            )
+
+    svc = WebResearchEngineService(
+        research_runtime_factory=lambda _app_id: GroundedResearchRuntime(MockWebProvider()),
+        execution_runtime_factory=lambda _app_id: FailingExecutionRuntime(),
+        b14_service_bound=True,
+    )
+    result = run(svc.research_payload(request_payload("search")))
+
+    assert result.status_code == 504
+    assert result.body["error"]["code"] == "upstream_timeout"
+    assert result.body["error"]["metadata"] is None
+    serialized = json.dumps(result.body, ensure_ascii=False)
+    assert "privateprovider" not in serialized
+    assert "private-model" not in serialized
+    assert "private-trace" not in serialized
 
 
 def test_missing_b14_binding_fails_before_web_or_execution_factory() -> None:
