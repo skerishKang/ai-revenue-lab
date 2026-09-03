@@ -24,6 +24,7 @@
   let outputs = [];
   let activeOutput = null;
   let loadInFlight = false;
+  let lastAuthenticated = false;
 
   function setStatus(text, state = "normal") {
     outputStatus.textContent = text || "";
@@ -49,9 +50,7 @@
       try {
         await navigator.clipboard.writeText(text);
         return true;
-      } catch (_) {
-        // Continue to the local fallback below.
-      }
+      } catch (_) {}
     }
     const textarea = document.createElement("textarea");
     textarea.value = text;
@@ -84,9 +83,7 @@
   }
 
   function lifecycleApi() {
-    return window.PadiemChatLifecycle || {
-      isCompleted() { return false; },
-    };
+    return window.PadiemChatLifecycle || { isCompleted() { return false; } };
   }
 
   function removeAnswerActions(article) {
@@ -140,10 +137,7 @@
     if (loadInFlight) return outputsReady;
     loadInFlight = true;
     try {
-      const response = await fetch("/api/outputs", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
+      const response = await fetch("/api/outputs", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.outputs)) throw new Error("saved outputs unavailable");
       outputs = data.outputs.filter((item) => item && typeof item.id === "string" && typeof item.title === "string");
@@ -252,14 +246,9 @@
   async function openOutput(id) {
     if (!outputsReady) return;
     try {
-      const response = await fetch(`/api/outputs/${encodeURIComponent(id)}`, {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
+      const response = await fetch(`/api/outputs/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.output || typeof data.output.content !== "string") {
-        throw new Error("저장한 답변을 불러오지 못했습니다.");
-      }
+      if (!response.ok || !data || !data.output || typeof data.output.content !== "string") throw new Error("저장한 답변을 불러오지 못했습니다.");
       activeOutput = data.output;
       outputTitleInput.value = typeof activeOutput.title === "string" ? activeOutput.title : "저장한 답변";
       outputContent.textContent = activeOutput.content;
@@ -311,10 +300,7 @@
     if (!window.confirm("이 저장한 답변을 삭제할까요? 원래 대화는 삭제되지 않습니다.")) return;
     outputDeleteButton.disabled = true;
     try {
-      const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, {
-        method: "DELETE",
-        headers: { "Accept": "application/json" },
-      });
+      const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, { method: "DELETE", headers: { "Accept": "application/json" } });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.deleted !== true) throw new Error("저장한 답변을 삭제하지 못했습니다.");
       closeOutput();
@@ -330,18 +316,13 @@
     if (outputsReady) outputsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   outputDialogClose.addEventListener("click", closeOutput);
-  outputDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeOutput();
-  });
+  outputDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeOutput(); });
   outputCopyButton.addEventListener("click", async () => {
     if (!activeOutput) return;
     const copied = await copyText(activeOutput.content);
     setStatus(copied ? "답변을 복사했습니다." : "복사하지 못했습니다.", copied ? "normal" : "error");
   });
-  outputDownloadButton.addEventListener("click", () => {
-    if (activeOutput) downloadText(activeOutput.content, activeOutput.title);
-  });
+  outputDownloadButton.addEventListener("click", () => { if (activeOutput) downloadText(activeOutput.content, activeOutput.title); });
   outputRenameButton.addEventListener("click", renameOutput);
   outputDeleteButton.addEventListener("click", deleteOutput);
 
@@ -349,15 +330,51 @@
   messageObserver.observe(messageList, { childList: true, subtree: true });
   messageList.addEventListener("padiem:message-lifecycle", enhanceAllAnswers);
 
+  function normalizeAuthProjection() {
+    if (!loginButton) return false;
+    const raw = loginButton.textContent.trim();
+    let projectedState = loginButton.dataset.authenticated;
+    if (raw === "로그아웃" || raw === "Log out") projectedState = "true";
+    else if (raw === "로그인" || raw === "Log in") projectedState = "false";
+    if (projectedState && loginButton.dataset.authenticated !== projectedState) {
+      loginButton.dataset.authenticated = projectedState;
+    }
+    const authenticated = loginButton.dataset.authenticated === "true" && loginButton.disabled === false;
+    const locale = window.__padiemLocale;
+    if (locale && typeof locale.text === "function") {
+      const nextText = locale.text(authenticated ? "logout" : "login");
+      const nextTitle = locale.text(loginButton.disabled ? "login-unavailable-title" : authenticated ? "logout-title" : "login-title");
+      if (loginButton.textContent !== nextText) loginButton.textContent = nextText;
+      if (loginButton.title !== nextTitle) loginButton.title = nextTitle;
+    }
+    return authenticated;
+  }
+
+  function isAuthenticated() {
+    const current = normalizeAuthProjection();
+    if (current) lastAuthenticated = true;
+    else if (loginButton && loginButton.dataset.authenticated === "false") lastAuthenticated = false;
+    return current;
+  }
+
+  function preserveAuthenticatedLocaleProjection() {
+    if (!lastAuthenticated || !loginButton || loginButton.disabled) {
+      normalizeAuthProjection();
+      return;
+    }
+    if (loginButton.dataset.authenticated !== "true") loginButton.dataset.authenticated = "true";
+    normalizeAuthProjection();
+  }
+
   if (loginButton) {
     const authObserver = new MutationObserver(() => {
-      const loggedIn = loginButton.textContent.trim() === "로그아웃" && loginButton.disabled === false;
-      if (loggedIn) loadOutputs();
+      if (isAuthenticated()) loadOutputs();
       else disableOutputs();
     });
     authObserver.observe(loginButton, { childList: true, subtree: true, attributes: true });
-    if (loginButton.textContent.trim() === "로그아웃" && loginButton.disabled === false) loadOutputs();
+    if (isAuthenticated()) loadOutputs();
     else disableOutputs();
+    window.addEventListener("padiem:localechange", preserveAuthenticatedLocaleProjection);
   } else {
     disableOutputs();
   }
