@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+import re
 
 from .contracts import CanonicalSubjectRef, ControlPlaneContractError
 from .entitlements import EntitlementSnapshot
@@ -10,13 +11,23 @@ B14_ROUTING_POLICY_VERSION_V1 = "b14.routing.entitlement.v1"
 B14_EXTERNAL_ROUTE_GRANT_V1 = "b14.route.external"
 _B14_ROUTING_GRANT_PREFIX = "b14."
 _B14_ROUTING_GRANTS_V1 = frozenset({B14_EXTERNAL_ROUTE_GRANT_V1})
+_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+
+
+def _identifier(name: str, value: str) -> str:
+    if not isinstance(value, str) or not _IDENTIFIER_RE.fullmatch(value):
+        raise ControlPlaneContractError(
+            "invalid_b14_routing_policy",
+            f"{name} must be a non-empty safe identifier",
+        )
+    return value
 
 
 def _aware_now(value: datetime) -> datetime:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise ControlPlaneContractError(
             "invalid_b14_routing_policy",
-            "now must be timezone-aware",
+            "timestamp must be timezone-aware",
         )
     return value
 
@@ -26,8 +37,8 @@ class TrustedB14RoutingPolicyV1:
     """Narrow Control-Plane-produced routing policy consumed by Business 14.
 
     This is not an account, subscription, payment, credit, or product-plan
-    record.  It carries only routing authority that has already been resolved
-    by trusted Control Plane state for one exact product subject.
+    record. It carries only routing authority already resolved by trusted
+    Control Plane state for one exact product subject.
     """
 
     snapshot_id: str
@@ -45,6 +56,9 @@ class TrustedB14RoutingPolicyV1:
                 "invalid_b14_routing_policy",
                 "unsupported B14 routing policy version",
             )
+        object.__setattr__(self, "snapshot_id", _identifier("snapshot_id", self.snapshot_id))
+        object.__setattr__(self, "product_id", _identifier("product_id", self.product_id))
+        object.__setattr__(self, "revision", _identifier("revision", self.revision))
         if not isinstance(self.subject, CanonicalSubjectRef):
             raise ControlPlaneContractError(
                 "invalid_b14_routing_policy",
@@ -55,8 +69,8 @@ class TrustedB14RoutingPolicyV1:
                 "invalid_b14_routing_policy",
                 "external_routes_allowed must be bool",
             )
-        _aware_now(self.issued_at)
-        _aware_now(self.expires_at)
+        object.__setattr__(self, "issued_at", _aware_now(self.issued_at))
+        object.__setattr__(self, "expires_at", _aware_now(self.expires_at))
         if self.expires_at <= self.issued_at:
             raise ControlPlaneContractError(
                 "invalid_b14_routing_policy",
@@ -89,7 +103,7 @@ def trusted_b14_routing_policy_v1_from_entitlement(
 
         ``b14.route.external``
 
-    Missing grant means deny.  Model tiers, cost classes, product plan names and
+    Missing grant means deny. Model tiers, cost classes, product plan names and
     capability entitlements are deliberately not part of v1 and must be added
     only through a later versioned cross-axis contract.
     """
@@ -99,11 +113,7 @@ def trusted_b14_routing_policy_v1_from_entitlement(
             "invalid_b14_routing_policy",
             "snapshot must be EntitlementSnapshot",
         )
-    if not isinstance(expected_product_id, str) or not expected_product_id:
-        raise ControlPlaneContractError(
-            "invalid_b14_routing_policy",
-            "expected_product_id must be a non-empty product identifier",
-        )
+    checked_product_id = _identifier("expected_product_id", expected_product_id)
     if not isinstance(expected_subject, CanonicalSubjectRef):
         raise ControlPlaneContractError(
             "invalid_b14_routing_policy",
@@ -111,7 +121,7 @@ def trusted_b14_routing_policy_v1_from_entitlement(
         )
 
     checked_now = _aware_now(now)
-    if snapshot.product_id != expected_product_id:
+    if snapshot.product_id != checked_product_id:
         raise ControlPlaneContractError(
             "b14_routing_product_mismatch",
             "entitlement snapshot product does not match the trusted B14 request context",
