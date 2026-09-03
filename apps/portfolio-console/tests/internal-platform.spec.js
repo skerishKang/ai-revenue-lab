@@ -4,10 +4,22 @@ test.describe('Internal Platform view', () => {
   test('keeps platform components separate from Business numbering and exposes current Engine work', async ({ page }) => {
     const consoleErrors = [];
     const pageErrors = [];
+    const unexpectedHttpErrors = [];
+    const expectedGithubStatus404s = [];
+
     page.on('console', (msg) => {
       if (msg.type() === 'error') consoleErrors.push(msg.text());
     });
     page.on('pageerror', (error) => pageErrors.push(String(error)));
+    page.on('response', (response) => {
+      if (response.status() < 400) return;
+      const url = response.url();
+      if (response.status() === 404 && url.endsWith('/api/github-status')) {
+        expectedGithubStatus404s.push(url);
+        return;
+      }
+      unexpectedHttpErrors.push(`${response.status()} ${url}`);
+    });
 
     await page.goto('/');
 
@@ -68,6 +80,14 @@ test.describe('Internal Platform view', () => {
     await expect(page.locator('.view-nav-item[data-view="platform"]')).toContainText('INTERNAL PLATFORM');
 
     expect(pageErrors).toEqual([]);
-    expect(consoleErrors).toEqual([]);
+    expect(unexpectedHttpErrors).toEqual([]);
+    expect(expectedGithubStatus404s.length).toBeGreaterThan(0);
+
+    // Chromium emits only a generic console error for the expected static-server
+    // 404. Any other console error remains a regression.
+    const unexpectedConsoleErrors = consoleErrors.filter((message) =>
+      !message.includes('Failed to load resource: the server responded with a status of 404')
+    );
+    expect(unexpectedConsoleErrors).toEqual([]);
   });
 });
