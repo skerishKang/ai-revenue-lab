@@ -11,7 +11,11 @@ AUTO_B14_MODEL_ID = "b14/auto"
 # Padiem Plus / Padiem Pro / Padiem Max.
 LOW_B14_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
 MEDIUM_B14_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-HIGH_B14_MODEL_ID = "kilo/tencent-hy3-free"
+MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
+# Compatibility name retained for consumers that reason in low/medium/high
+# profiles. High currently names the Max product tier but is deliberately not
+# an executable B14 route until #1397 approves a replacement.
+HIGH_B14_MODEL_ID = MAX_HOLD_MODEL_ID
 
 PADIEM_PLUS = "Padiem Plus"
 PADIEM_PRO = "Padiem Pro"
@@ -21,7 +25,7 @@ PADIEM_MAX = "Padiem Max"
 KILO_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
 
 # Historical sentinel retained for older adapters/tests that import it. It is
-# not part of the active three-tier mapping.
+# not part of the active product-tier mapping.
 UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
 
 PROFILE_MODEL_IDS: dict[str, str] = {
@@ -30,25 +34,28 @@ PROFILE_MODEL_IDS: dict[str, str] = {
     "high": HIGH_B14_MODEL_ID,
 }
 
+# Product identity and route executability are separate on purpose. A Padiem
+# tier may remain user-visible while its backing route is temporarily HOLD.
 PRODUCT_TIER_NAMES: dict[str, str] = {
     LOW_B14_MODEL_ID: PADIEM_PLUS,
     MEDIUM_B14_MODEL_ID: PADIEM_PRO,
     HIGH_B14_MODEL_ID: PADIEM_MAX,
 }
+EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
 
-# Initial free-preview mapping. This is deliberately replaceable: the Padiem
-# tier is the product identity; the concrete upstream model may change after
-# benchmark/availability review without renaming the tier.
+# Current source posture after bounded activation/benchmark evidence:
 #
 #   Padiem Plus -> Kilo-hosted Poolside Laguna S 2.1 free
 #   Padiem Pro  -> Kilo-hosted NVIDIA Nemotron 3 Ultra free (default)
-#   Padiem Max  -> Kilo-hosted Tencent Hy3 free
+#   Padiem Max  -> HOLD (Hy3 is inactive after HTTP 404; no replacement is
+#                  auto-promoted from volatile free availability)
 #
 # `b14/auto` and provider-side `kilo-auto/free` remain disabled.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
 # Slash selectors are hidden/operator test controls. Normal UI can later expose
-# the product tier names without exposing provider/model identities.
+# the product tier names without exposing provider/model identities. `/max`
+# resolves to the Max product identity but fails closed before B14 while HOLD.
 MODEL_ALIASES: dict[str, str] = {
     "/plus": LOW_B14_MODEL_ID,
     "/pro": MEDIUM_B14_MODEL_ID,
@@ -60,11 +67,12 @@ MODEL_ALIASES: dict[str, str] = {
 
 # Product capability claims remain conservative. Free/promotional status is not
 # encoded as a durable B62 capability because upstream zero-cost availability
-# can change independently of the Padiem product tier.
+# can change independently of the Padiem product tier. HOLD has no executable
+# capabilities.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
     MEDIUM_B14_MODEL_ID: frozenset({"chat", "long_context"}),
-    HIGH_B14_MODEL_ID: frozenset({"chat", "reasoning", "long_context"}),
+    HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
 }
@@ -93,20 +101,24 @@ def _latest_user_index(messages: list[dict[str, str]]) -> int | None:
 
 
 def product_tier_name(model_id: str) -> str:
-    """Return the user-facing Padiem tier for an approved exact model route."""
+    """Return the user-facing Padiem tier for a known product-tier identity."""
     try:
         return PRODUCT_TIER_NAMES[model_id]
     except KeyError as exc:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
 
 
-def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
-    """Resolve ordinary B62 chat to one of the three Padiem product tiers.
+def resolve_model_policy(
+    messages: list[dict[str, str]],
+    *,
+    require_executable: bool = True,
+) -> ResolvedModelPolicy:
+    """Resolve ordinary B62 chat to a Padiem product tier.
 
-    Ordinary chat defaults to Padiem Pro. Hidden ``/plus``, ``/pro`` and
-    ``/max`` selectors are available for bounded owner testing and are stripped
-    from the user message before B14 dispatch. Provider/model identities are not
-    part of the browser-facing product contract. Unknown aliases fail closed.
+    Ordinary chat defaults to executable Padiem Pro. Hidden ``/plus``, ``/pro``
+    and ``/max`` selectors are owner/test controls. Callers that only need to
+    recognize product identity may set ``require_executable=False``; every path
+    that can reach B14 execution must retain the default fail-closed gate.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
@@ -131,6 +143,11 @@ def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
             "model_alias_requires_prompt",
             "AI 등급 선택 뒤에 질문을 입력해 주세요.",
         )
+    if require_executable and not model_policy_is_executable(model_id):
+        raise ModelPolicyError(
+            "tier_unavailable",
+            "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+        )
 
     out[user_index]["content"] = remainder.strip()
     profile = next(
@@ -145,10 +162,10 @@ def model_supports(model_id: str, capability: str) -> bool:
 
 
 def model_profile_is_assigned(model_id: str) -> bool:
-    """Return whether the model ID is an approved concrete B62 tier mapping."""
+    """Return whether the identifier belongs to a known Padiem product tier."""
     return model_id in PRODUCT_TIER_NAMES
 
 
 def model_policy_is_executable(model_id: str) -> bool:
     """Return whether B62 may dispatch this exact product-tier route to B14."""
-    return model_profile_is_assigned(model_id)
+    return model_id in EXECUTABLE_B14_MODEL_IDS

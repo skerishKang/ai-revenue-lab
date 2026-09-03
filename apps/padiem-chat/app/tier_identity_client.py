@@ -5,8 +5,13 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 from .attachments import ImageAttachment
-from .b14_client import B14Client, ChatStreamEvent
-from .model_policy import ModelPolicyError, product_tier_name, resolve_model_policy
+from .b14_client import B14Client, ChatRuntimeError, ChatStreamEvent
+from .model_policy import (
+    ModelPolicyError,
+    model_policy_is_executable,
+    product_tier_name,
+    resolve_model_policy,
+)
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 # Product identity is handled deterministically at the Padiem boundary instead
@@ -35,6 +40,8 @@ _UNDERLYING_DETAIL_MARKERS = (
     "원래 모델",
 )
 
+_TIER_UNAVAILABLE_MESSAGE = "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요."
+
 
 def _latest_user_text(messages: list[dict[str, str]]) -> str:
     for message in reversed(messages):
@@ -44,7 +51,8 @@ def _latest_user_text(messages: list[dict[str, str]]) -> str:
     return ""
 
 
-def _identity_answer(messages: list[dict[str, str]], model_id: str) -> str | None:
+def tier_identity_answer(messages: list[dict[str, str]], model_id: str) -> str | None:
+    """Return a local product-identity answer without asserting route availability."""
     text = _latest_user_text(messages).strip()
     if not text or not any(pattern.search(text) for pattern in _SELF_IDENTITY_PATTERNS):
         return None
@@ -65,9 +73,10 @@ def _identity_answer(messages: list[dict[str, str]], model_id: str) -> str | Non
 class PadiemTierB14Client(B14Client):
     """B14 client with deterministic Padiem-tier self-identification.
 
-    This wrapper performs zero Provider calls for direct self-identity questions.
-    Ordinary prompts are delegated byte-for-byte through the existing B14Client,
-    so no hidden identity system prompt changes general answer behavior.
+    A held product tier may still answer what product identity it represents,
+    but ordinary execution is rejected before the base B14 client. This keeps
+    product identity stable while preventing a dead/volatile route from being
+    called merely because the tier name still exists.
     """
 
     async def complete(
@@ -77,8 +86,8 @@ class PadiemTierB14Client(B14Client):
         additional_system_context: str | None = None,
         attachments: tuple[ImageAttachment, ...] = (),
     ) -> dict[str, Any]:
-        policy = resolve_model_policy(messages)
-        answer = None if attachments else _identity_answer(policy.messages, policy.model_id)
+        policy = resolve_model_policy(messages, require_executable=False)
+        answer = None if attachments else tier_identity_answer(policy.messages, policy.model_id)
         if answer is not None:
             resolved_skill = skill or get_task_mode()
             return {
@@ -88,6 +97,8 @@ class PadiemTierB14Client(B14Client):
                 "route": {"mode": "manual", "model": policy.model_id, "provider": None},
                 "skill": task_mode_public_metadata(resolved_skill),
             }
+        if not model_policy_is_executable(policy.model_id):
+            raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
         return await super().complete(
             messages,
             skill=skill,
@@ -102,12 +113,14 @@ class PadiemTierB14Client(B14Client):
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
-        policy = resolve_model_policy(messages)
-        answer = _identity_answer(policy.messages, policy.model_id)
+        policy = resolve_model_policy(messages, require_executable=False)
+        answer = tier_identity_answer(policy.messages, policy.model_id)
         if answer is not None:
             yield ChatStreamEvent(delta_content=answer)
             yield ChatStreamEvent(done=True)
             return
+        if not model_policy_is_executable(policy.model_id):
+            raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
 
         stream = super().stream_text_auto(
             messages,
