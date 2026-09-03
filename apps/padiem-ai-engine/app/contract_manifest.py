@@ -18,6 +18,7 @@ import re
 from .orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
+from .web_research_service import RESEARCH_PATH
 
 ENGINE_CONTRACT_FAMILY = "padiem-ai-engine"
 ENGINE_CONTRACT_MAJOR = 1
@@ -129,6 +130,7 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(ORCHESTRATE_PATH, "POST", "application/json"),
             EngineEndpointContract(ORCHESTRATE_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(ORCHESTRATE_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(RESEARCH_PATH, "POST", "application/json"),
         ),
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),
@@ -145,6 +147,9 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("web_search_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("web_fetch_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("deep_research_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
