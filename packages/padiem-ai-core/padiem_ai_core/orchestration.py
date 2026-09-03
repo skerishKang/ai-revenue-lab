@@ -66,9 +66,9 @@ from .execution_context import (
     ExecutionContext,
     IdempotencyAdapter,
     IdempotencyConflictError,
-    request_fingerprint,
 )
 from .execution_runtime import ExecutionRequest, ExecutionResult, ExecutionRuntimeError
+from .logical_execution_identity import canonical_logical_execution_fingerprint
 from .memory import MemoryNamespace, MemoryScope
 from .memory_read import MemoryReadAuthorization, MemoryReadPolicy
 from .memory_context import RankedMemoryItem, assemble_long_context, rank_retrieval_results
@@ -327,12 +327,17 @@ class OrchestrationRunner:
         emit(OrchestrationEventKind.RUN_STARTED, f"Orchestration started for app '{app_id}'", {"app_id": app_id})
 
         # 2. CONTEXT_PREPARED & Idempotency Check
-        fingerprint_payload = {
-            "app_id": app_id,
-            "agent_id": request.execution_request.agent.id,
-            "messages": [m for m in request.execution_request.messages],
-        }
-        fp = request_fingerprint(fingerprint_payload)
+        fp = canonical_logical_execution_fingerprint(
+            app_id=app_id,
+            request=request.execution_request,
+            context=request.context,
+            subject_id=request.subject_id,
+            plan=request.agent_plan,
+            recovery_policy=request.recovery_policy,
+            max_retries=request.max_retries,
+            require_evidence=request.require_evidence,
+            require_verification=request.require_verification,
+        )
         emit(OrchestrationEventKind.CONTEXT_PREPARED, "Execution context validated and bound", {
             "timeout_seconds": request.context.timeout_seconds,
             "idempotency_present": request.context.idempotency_key is not None,
@@ -874,12 +879,17 @@ class OrchestrationRunner:
                 emit(OrchestrationEventKind.RUN_FAILED, "Tool authorization context missing approval confirmation", {"error": "missing_approval_authorization"})
                 raise OrchestrationError("missing_approval_authorization", f"Tool '{pause.tool_id}' requires explicit confirmation in tool_authorization")
 
-        fingerprint_payload = {
-            "app_id": app_id,
-            "agent_id": request.execution_request.agent.id,
-            "messages": [message for message in request.execution_request.messages],
-        }
-        fp = request_fingerprint(fingerprint_payload)
+        fp = canonical_logical_execution_fingerprint(
+            app_id=app_id,
+            request=request.execution_request,
+            context=request.context,
+            subject_id=request.subject_id,
+            plan=request.agent_plan,
+            recovery_policy=request.recovery_policy,
+            max_retries=request.max_retries,
+            require_evidence=request.require_evidence,
+            require_verification=request.require_verification,
+        )
 
         async def _commit_idempotency(result: ExecutionResult) -> None:
             if request.context.idempotency_key is None or self._idempotency is None:
