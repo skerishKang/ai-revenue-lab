@@ -119,12 +119,24 @@ B54 therefore projects a `GmailAttachmentManifest` first and keeps:
 raw_bytes_present = false
 ```
 
-An attachment is model-usable only after quarantine has produced accepted state plus
-SHA-256 evidence. Repository default quarantine ingress is capped at 10 MiB per
-attachment for this workflow; this is intentionally narrower than provider mail-size
-limits.
+An attachment is model-usable only after quarantine has produced all three trusted
+facts:
 
-No attachment is executed automatically.
+```text
+quarantine_state = accepted
+sha256 = exact content digest
+quarantine_evidence_ref = trusted evidence reference
+```
+
+An `accepted` attachment without both the SHA-256 digest and trusted quarantine
+evidence ref fails closed. Pending/rejected attachments are not allowed to carry an
+accepted-quarantine evidence ref.
+
+Repository default quarantine ingress is capped at 10 MiB per attachment for this
+workflow; this is intentionally narrower than provider mail-size limits.
+
+No attachment is executed automatically, and raw attachment bytes never enter model
+context merely because Gmail returned an attachment id.
 
 ## Draft material snapshot
 
@@ -137,13 +149,23 @@ It binds:
 - To, Cc and Bcc recipients;
 - subject;
 - body SHA-256;
-- exact approved attachment refs, filenames and hashes;
+- exact approved attachment ref;
+- attachment filename;
+- attachment MIME type;
+- attachment byte size;
+- attachment SHA-256;
+- trusted quarantine evidence ref;
 - thread id;
 - reply message ref.
 
+Only `GmailApprovedAttachment` values that already carry these accepted-quarantine
+facts may enter the send material snapshot.
+
 The canonical snapshot produces a deterministic SHA-256 `material_fingerprint`.
 Recipient order within To/Cc/Bcc is normalized for the fingerprint, but moving an
-address between those header classes remains a material change.
+address between those header classes remains a material change. Any attachment MIME,
+size, hash or quarantine-evidence change is also a material change and invalidates the
+previous approval.
 
 Repository safety cap:
 
@@ -200,7 +222,7 @@ model generated text       != delivery evidence
 
 1. trusted Gmail OAuth/account binding is live;
 2. read-only mailbox/thread canary passes within bounded scope;
-3. real attachment quarantine pipeline is wired;
+3. real attachment quarantine pipeline is wired and emits trusted evidence refs;
 4. MCP `create_draft` live canary passes with P01 policy/evidence;
 5. separately reviewed Gmail API `drafts.send` adapter is wired;
 6. exact draft readback -> P01 approval -> send preflight -> provider receipt canary
@@ -214,6 +236,7 @@ GMAIL_PROVIDER_COMPOSE_SCOPE_INCLUDES_SEND = YES
 GMAIL_PROVIDER_SCOPE_ALONE_GRANTS_PADIEM_SEND_AUTHORITY = NO
 GMAIL_SEND_REQUIRES_P01_APPROVAL = YES
 GMAIL_ATTACHMENT_QUARANTINE_REQUIRED = YES
+GMAIL_ACCEPTED_ATTACHMENT_REQUIRES_TRUSTED_EVIDENCE = YES
 GMAIL_BULK_MAILBOX_DUMP_SUPPORTED = NO
 GMAIL_AUTONOMOUS_MASS_SEND_SUPPORTED = NO
 REAL_GMAIL_SEND_CONFIGURED = NO
