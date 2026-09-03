@@ -82,12 +82,10 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     if not loaded:
         raise AssertionError(f"conversation motion helper did not load at {name}")
 
-    recommendation_display = await page.locator(
-        '.recent-section[aria-labelledby="recentTitle"]'
-    ).evaluate("el => getComputedStyle(el).display")
-    if recommendation_display != "none":
+    recommendation_count = await page.locator("#sidebar [data-prompt]").count()
+    if recommendation_count != 0:
         raise AssertionError(
-            f"generic sidebar recommendations remain visible during chat at {name}: {recommendation_display}"
+            f"generic sidebar recommendations must be removed at {name}: count={recommendation_count}"
         )
 
     clearance = await page.evaluate(
@@ -237,7 +235,7 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         "return_to_end_resumes": True,
         "glass_reveal_after_growth": followed["reveal"],
         "glass_reveal_after_resume": resumed_state["reveal"],
-        "sidebar_generic_recommendations_hidden": True,
+        "sidebar_generic_recommendations_removed": True,
         "status": "PASS",
     }
 

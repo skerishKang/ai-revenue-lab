@@ -8,6 +8,7 @@ on:
       - ".github/scripts/b62_browser_visual_qa.py"
       - ".github/scripts/b62_glass_zoom_visual_qa.py"
       - ".github/scripts/b62_chat_gutter_visual_qa.py"
+      - ".github/scripts/b62_sidebar_ia_browser_qa.py"
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
@@ -56,6 +57,8 @@ jobs:
           exit 1
       - name: Desktop and mobile browser QA
         run: uv run python ../../.github/scripts/b62_browser_visual_qa.py
+      - name: Sidebar and home IA browser QA
+        run: uv run python ../../.github/scripts/b62_sidebar_ia_browser_qa.py
       - name: Glass zoom-equivalent desktop QA
         run: uv run python ../../.github/scripts/b62_glass_zoom_visual_qa.py
       - name: Shared gutter responsive browser QA
@@ -65,6 +68,9 @@ jobs:
         run: |
           if [ -f ../../.tmp/b62-browser-qa/report.json ]; then
             cat ../../.tmp/b62-browser-qa/report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/sidebar-ia-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/sidebar-ia-report.json
           fi
           if [ -f ../../.tmp/b62-browser-qa/glass-zoom-report.json ]; then
             cat ../../.tmp/b62-browser-qa/glass-zoom-report.json

@@ -4,6 +4,7 @@
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
+.sidebar-bottom .home-link,
 .sidebar-bottom .settings-button {
   width: 100%;
   min-height: 44px;
@@ -14,9 +15,19 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #fff;
+  color: var(--text);
   font-weight: 650;
-  cursor: pointer;
   text-align: left;
+}
+.sidebar-bottom .home-link {
+  text-decoration: none;
+}
+.sidebar-bottom .home-link:hover,
+.sidebar-bottom .settings-button:hover {
+  background: rgba(255,255,255,.82);
+}
+.sidebar-bottom .settings-button {
+  cursor: pointer;
   margin-left: 0;
 }
 .sidebar-account {

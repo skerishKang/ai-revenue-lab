@@ -348,9 +348,10 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
     assert "자동 추천" in html
+    assert '<div class="starter-grid" aria-label="추천 질문">' in html
     assert 'data-skill="explain"' in html
     assert 'data-skill="plan"' in html
-    assert 'data-skill="brainstorm"' in html
+    assert 'id="recentTitle"' not in html
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
     assert "지원 문서 형식" in html
