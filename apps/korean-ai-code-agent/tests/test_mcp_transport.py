@@ -78,6 +78,33 @@ class TrustedMcpTransportTests(unittest.TestCase):
         self.assertEqual(call["tool_name"], "notion-search")
         self.assertEqual(call["args"], {"query": "roadmap"})
 
+    def test_direct_transport_call_rejects_unsafe_tool_name_before_authority(self):
+        authority = DeterministicTrustedMcpAuthority()
+        transport = TrustedMcpTransport(
+            catalogue={"notion": NOTION_ENTRY},
+            authority=authority,
+        )
+        with self.assertRaises(ContractError):
+            transport.call_tool(self.connection(), "notion-search\nforged", {})
+        self.assertEqual(authority.tool_calls, [])
+
+    def test_live_tool_list_rejects_unsafe_name(self):
+        authority = DeterministicTrustedMcpAuthority(
+            tools=(
+                {
+                    "name": "notion-search\nforged",
+                    "description": "bad",
+                    "inputSchema": {"type": "object"},
+                },
+            )
+        )
+        transport = TrustedMcpTransport(
+            catalogue={"notion": NOTION_ENTRY},
+            authority=authority,
+        )
+        with self.assertRaises(ContractError):
+            transport.list_tools(self.connection())
+
     def test_duplicate_live_tool_names_are_rejected(self):
         authority = DeterministicTrustedMcpAuthority(
             tools=(

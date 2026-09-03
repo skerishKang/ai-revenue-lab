@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any, Protocol
 
 from .connector_platform import (
@@ -14,6 +15,16 @@ from .contracts import ContractError
 
 MAX_MCP_TOOLS = 128
 REQUEST_TIMEOUT_SECONDS = 30
+_TOOL_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:\-/]{0,255}$")
+
+
+def _safe_tool_name(value: str) -> str:
+    if not isinstance(value, str):
+        raise ContractError("tool_name must be a string")
+    normalized = value.strip()
+    if not _TOOL_NAME_RE.fullmatch(normalized):
+        raise ContractError("tool_name must be a bounded safe tool name")
+    return normalized
 
 
 @dataclass(frozen=True, slots=True)
@@ -119,6 +130,7 @@ class TrustedMcpTransport:
             input_schema = record.get("inputSchema", record.get("input_schema", {"type": "object"}))
             if not isinstance(name, str):
                 raise ContractError("trusted MCP tool record is missing name")
+            name = _safe_tool_name(name)
             if name in seen:
                 raise ContractError("trusted MCP tool list contains duplicate names")
             seen.add(name)
@@ -136,8 +148,7 @@ class TrustedMcpTransport:
         args: dict[str, Any],
     ) -> ConnectorCallResult:
         entry = self._entry(connection)
-        if not isinstance(tool_name, str) or not tool_name.strip():
-            raise ContractError("tool_name is required")
+        tool_name = _safe_tool_name(tool_name)
         if not isinstance(args, dict):
             raise ContractError("MCP args must be an object")
         response = self._authority.call_tool(
@@ -145,7 +156,7 @@ class TrustedMcpTransport:
             actor_ref=connection.actor_ref,
             connector_id=entry.connector_id,
             endpoint=self._endpoint(entry),
-            tool_name=tool_name.strip(),
+            tool_name=tool_name,
             args=dict(args),
             timeout_seconds=REQUEST_TIMEOUT_SECONDS,
         )
