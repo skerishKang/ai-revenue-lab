@@ -30,10 +30,14 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
   filter: saturate(.42) contrast(.90) brightness(1.10) blur(.35px);
 }
 
-html[data-theme="padiem-glass"][data-glass-mode="reading"] .conversation {
-  background: linear-gradient(155deg, rgba(251, 252, 253, .97), rgba(242, 246, 248, .94));
-  border-color: rgba(255, 255, 255, .78);
-  box-shadow: 0 20px 54px rgba(28, 36, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .84);
+/* Existing Glass brand polish intentionally owns the active-chat composition
+ * with a high-specificity !important rule. Reading mode is a later product
+ * state, so match that scope explicitly instead of relying on stylesheet order.
+ */
+html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation {
+  background: linear-gradient(155deg, rgba(251, 252, 253, .97), rgba(242, 246, 248, .94)) !important;
+  border-color: rgba(255, 255, 255, .78) !important;
+  box-shadow: 0 20px 54px rgba(28, 36, 44, .11), inset 0 1px 0 rgba(255, 255, 255, .84) !important;
   backdrop-filter: blur(22px) saturate(102%);
   -webkit-backdrop-filter: blur(22px) saturate(102%);
 }
@@ -68,9 +72,9 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
     filter: saturate(.34) contrast(.86) brightness(1.12) blur(.6px);
   }
 
-  html[data-theme="padiem-glass"][data-glass-mode="reading"] .conversation {
-    background: rgba(247, 249, 250, .97);
-    box-shadow: 0 14px 38px rgba(28, 36, 44, .09), inset 0 1px 0 rgba(255, 255, 255, .82);
+  html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation {
+    background: rgba(247, 249, 250, .97) !important;
+    box-shadow: 0 14px 38px rgba(28, 36, 44, .09), inset 0 1px 0 rgba(255, 255, 255, .82) !important;
   }
 }
 
