@@ -8,13 +8,13 @@ Status: repository-side trust-boundary composition. No real broker or remote-con
 
 ## Purpose
 
-The Local Agent already had separate, tested implementations for device/session identity, local permissions, P01 execution approval, Windows subprocess execution and protected credential/pinned broker state. M1a composes those pieces into one execution boundary instead of creating another executor, policy engine or replay model.
+M1a composes the Local Agent trust pieces already present on main instead of creating another executor, approval engine, permission model or replay model.
 
 ```text
 DeviceBinding + DeviceSession
-        ↓ exact correlation
+        ↓ exact identity + ONLINE lifecycle
 PinnedOutboundBrokerBinding
-        ↓ current credential generation/ref fingerprint
+        ↓ exact credential generation/ref fingerprint
 LocalAgentDeviceProfile + DevicePermissionProfile
         ↓ exact selected root set
 BoundLocalAgentRuntimeAssembly
@@ -23,104 +23,92 @@ WindowsSubprocessLocalAgentRuntime
         ↓
 P01LocalPermissionWindowsExecutionAuthorizationPort
         ↓ canonical P01 approval + recomputed local narrowing policy
-bounded Windows execution receipt
+WindowsExecutionReceipt
         ↓
 LocalAgentRuntimeAssemblyReceipt
 ```
 
 ## Authority ownership
 
-M1a does not move authority boundaries.
-
 ```text
 Device identity/session/replay admission = #1634
 Local allow/ask/deny policy             = #1635
 P01 Tool/Approval/Evidence              = canonical P01/Core authority
-Physical Windows process execution      = existing Windows executor
-Credential-at-rest + broker pinning      = #1755
-M1a assembly                             = correlation + fail-closed composition only
+Physical Windows execution             = existing Windows executor
+Credential-at-rest + broker pinning     = #1755
+M1a                                     = correlation + fail-closed composition
 ```
 
 ## Construction gate
 
-`BoundLocalAgentRuntimeAssembly` requires one exact current configuration:
+The assembly requires:
 
-- `LocalAgentDeviceProfile`;
-- `DeviceBinding`;
-- `DevicePermissionProfile`;
-- `PinnedOutboundBrokerBinding`;
-- a runtime implementing `execute_with_receipt` + `cancel`.
+- one `LocalAgentDeviceProfile`;
+- one `DeviceBinding`;
+- one `DevicePermissionProfile`;
+- one `PinnedOutboundBrokerBinding`;
+- one receipt-capable Windows runtime.
 
-Construction rejects:
+Construction rejects device/workspace mismatch, a permission root set different from the selected device root set, and pinned broker binding/account/workspace/device/credential-generation mismatch.
 
-- device mismatch;
-- workspace mismatch;
-- permission root set different from the selected device root set;
-- pinned broker binding/account/workspace/device/generation mismatch.
+The root set is exact. After a trusted root revoke/add change, callers must rebuild the assembly from the new management snapshot instead of continuing with stale hidden authority.
 
-The permission root set is exact rather than a hidden superset/subset. A revoked root therefore requires rebuilding the assembly from the new trusted management snapshot.
+## ONLINE is mandatory for execution
+
+The canonical #1634 pairing implementation changes the binding to `ONLINE` when a device successfully connects. Its `accept_command()` path also requires `DeviceLifecycle.ONLINE`.
+
+M1a therefore applies the same lifecycle rule:
+
+```text
+ONLINE         -> eligible for further session/request validation
+PAIRED_OFFLINE -> execution refused
+UNPAIRED       -> execution refused
+REVOKED        -> execution refused
+CREDENTIAL_EXPIRED -> execution refused
+UPDATE_REQUIRED    -> execution refused
+```
+
+A structurally unexpired `DeviceSession` by itself cannot override an offline or otherwise blocked binding state.
 
 ## Execution gate
 
-Before delegation to the Windows runtime:
+Before delegating to the Windows runtime:
 
-1. binding lifecycle must permit execution;
-2. credential must not be expired;
-3. pinned broker credential generation/ref fingerprint must still match;
+1. binding state must be exactly `ONLINE`;
+2. pinned broker authority must still match the exact current binding credential generation/ref fingerprint;
+3. credential must be current;
 4. `DeviceSession` must be current;
 5. session binding/device/account/workspace must exactly match;
 6. request device must match;
-7. request root must exist in both selected roots and current permission roots;
-8. request timestamp cannot be in the future.
+7. request root must exist in the selected device roots;
+8. the same root must exist in the current permission profile;
+9. request timestamp cannot be in the future.
 
-Blocked lifecycle states:
+Only after those checks does the assembly call the configured runtime.
 
-```text
-UNPAIRED
-REVOKED
-CREDENTIAL_EXPIRED
-UPDATE_REQUIRED
-```
+## P01/local permission authority is reused
 
-`PAIRED_OFFLINE` is not independently treated as a remote-online claim; a current valid `DeviceSession` is still required by `execute`. The real broker will remain responsible for truthful online/offline session creation.
+The assembly does **not** approve a command.
 
-## P01 and local policy are reused, not duplicated
+The existing real repository authorization adapter, `P01LocalPermissionWindowsExecutionAuthorizationPort`, already:
 
-The assembly does **not** decide whether a command is approved.
-
-The configured `WindowsSubprocessLocalAgentRuntime` already calls `WindowsExecutionAuthorizationPort`. The real repository implementation `P01LocalPermissionWindowsExecutionAuthorizationPort`:
-
-- resolves trusted authority evidence for the exact command fingerprint;
+- resolves trusted evidence for the exact command fingerprint;
 - recomputes the current local permission decision;
-- rejects local `DENY`;
-- validates the canonical P01 approval pause and verified decision;
-- binds approval to the exact ToolInvocation digest;
-- consumes the command fingerprint/decision once;
-- issues only a short-lived exact Windows execution grant.
+- refuses local `DENY`;
+- verifies canonical P01 approval pause/decision;
+- binds approval to the exact canonical ToolInvocation digest;
+- consumes approval/command authority once;
+- issues a short-lived exact Windows execution grant.
 
-M1a simply preserves that path.
+M1a preserves that path unchanged.
 
 ## Windows executor is reused
 
-The existing `WindowsSubprocessLocalAgentRuntime` remains the physical executor and already enforces:
-
-- Windows only;
-- explicit executable profile allowlist;
-- selected-root real-path containment;
-- shell/script-host prohibition;
-- `shell=False`;
-- bounded environment allowlist;
-- bounded stdout/stderr capture;
-- timeout/cancellation;
-- dirty-worktree observation;
-- no admin elevation;
-- no automatic Git network authority.
-
-M1a does not create a second subprocess implementation.
+`WindowsSubprocessLocalAgentRuntime` remains the physical executor. Its existing protections include explicit executable profiles, selected-root real-path containment, blocked shell/script hosts, `shell=False`, bounded environment inheritance, bounded output capture, timeout/cancellation, dirty-worktree observation, no admin elevation and no automatic Git network authority.
 
 ## Bounded assembly receipt
 
-`LocalAgentRuntimeAssemblyReceipt` records correlation/evidence-safe state only:
+`LocalAgentRuntimeAssemblyReceipt` contains only bounded correlation/result metadata:
 
 ```text
 assembly_ref
@@ -141,7 +129,7 @@ dirty-worktree before/after
 stdout/stderr character counts
 ```
 
-Not included:
+It does not contain:
 
 ```text
 raw argv
@@ -152,66 +140,69 @@ broker payload
 client-authoritative approval state
 ```
 
-The receipt verifies that the Windows receipt's request/run/device/root identity exactly matches the input request before it can be constructed.
+The assembly also verifies that the executor receipt's request/run/device/root identity exactly equals the original request before constructing this receipt.
 
 ## Cancellation ownership
 
-While `execute` is active, the assembly records only:
+While a request is active, the assembly tracks only:
 
 ```text
 request_id -> exact session_id
 ```
 
-`cancel` first revalidates the current binding/session and then refuses cancellation unless the exact session owns that active request. It delegates the actual process termination to the existing runtime.
+Cancellation revalidates the current ONLINE binding/session and refuses any request that is not owned by that exact session, then delegates process termination to the existing runtime.
 
-This is request ownership for cancellation, **not a second network replay model**.
+This is cancellation ownership only; it is not a second command replay/admission model.
 
-## Broker protocol non-scope
+## Broker protocol remains out of scope
 
-M1a intentionally does not define how a future Padiem broker serializes a `DeviceCommandEnvelope` into argv/cwd or transfers command payloads.
+M1a intentionally does not define how a future Padiem broker maps a `DeviceCommandEnvelope` into `LocalCommandRequest` argv/cwd material.
 
 ```text
 BROKER_WIRE_PROTOCOL_INVENTED = NO
 REPLAY_MODEL_DUPLICATED = NO
 ```
 
-The #1634 pairing/session/command admission contract remains canonical. The physical HTTPS/WSS broker adapter is still future work.
+The #1634 command/session replay contract remains canonical. A future physical HTTPS/WSS broker adapter must integrity-bind the admitted command envelope to the materialized local request before this assembly is used remotely.
 
 ## Deterministic CI gate
 
-Tests use fake receipt runtimes and never execute a real process. They verify:
+Tests verify:
 
-- valid execution delegates to the configured runtime;
+- valid ONLINE execution delegates to the configured receipt runtime;
 - bounded receipt correlation;
-- wrong session/account rejected before runtime;
-- wrong request device rejected before runtime;
-- unpaired/revoked/expired/update-required binding rejected;
-- stale pinned credential generation rejected;
-- permission/device root sets must exactly match;
-- future request rejected;
+- wrong account/session or request device fails before runtime;
+- `PAIRED_OFFLINE` fails even with a structurally current session;
+- unpaired/revoked/credential-expired/update-required fail;
+- stale pinned credential generation fails;
+- selected-root and permission-root sets must exactly match;
+- future request fails;
 - cancellation only by the exact owning session;
-- no raw argv/stdout/stderr/credential in assembly receipt;
-- no live broker/Production claim.
+- no raw argv/stdout/stderr/device credential in the assembly receipt;
+- no real broker/Production claim.
+
+CI uses fake receipt runtimes only. It does not execute a real Windows process.
 
 ## Live gate
 
-Before #1633/#1634 can be considered live-ready:
+Before #1633/#1634 can be called live-ready:
 
-1. real trusted Padiem broker/control endpoint exists;
-2. physical HTTPS/WSS transport is implemented against that endpoint;
-3. trusted broker admission produces current `DeviceSession` and accepted command evidence;
-4. broker command payload mapping to `LocalCommandRequest` is specified and cryptographically/integrity bound;
-5. disposable Windows device validates DPAPI restart/rotation/revocation;
-6. actual `P01LocalPermissionWindowsExecutionAuthorizationPort` evidence source is wired;
-7. actual Windows executor runs a non-destructive approved command under a selected disposable root;
-8. cancel/timeout/reconnect behavior is acceptance-tested;
-9. bounded evidence/readback proves the exact command and result correlation;
-10. explicit owner/live approval is obtained before any Production remote-control claim.
+1. deploy the canonical trusted Padiem Local Agent broker/control endpoint;
+2. implement the physical HTTPS/WSS adapter;
+3. obtain broker-issued current `DeviceSession` and canonical command admission evidence;
+4. define and integrity-bind the admitted `DeviceCommandEnvelope` to the resulting `LocalCommandRequest`;
+5. validate Windows DPAPI restart/rotation/revoke on a disposable device;
+6. wire the real trusted P01 authority evidence source;
+7. execute one non-destructive approved command under a disposable selected root;
+8. test cancel/timeout/offline/reconnect/replay behavior;
+9. capture bounded evidence/readback;
+10. obtain explicit live/Production approval before any Production remote-control claim.
 
 ## Non-claims
 
 ```text
 ONE_LOCAL_AGENT_RUNTIME_ASSEMBLY = YES
+ONLINE_BINDING_REQUIRED = YES
 P01_AUTHORIZATION_REUSED = YES
 WINDOWS_EXECUTOR_REUSED = YES
 BROKER_WIRE_PROTOCOL_INVENTED = NO
