@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "padiem-contact-verification",
+  "main": "contact_verification_worker.py",
+  "compatibility_date": "2026-09-03",
+  "compatibility_flags": ["python_workers"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true
+  }
+}
