@@ -8,12 +8,14 @@ import pytest
 
 from padiem_ai_core import (
     B14RouteMetadata,
+    Evidence,
     ExecutionRequest,
     ExecutionResult,
     GroundedResearchRuntime,
     MockWebProvider,
     RunMetadata,
     RunStatus,
+    WebRuntimeError,
 )
 
 from app.web_research_service import (
@@ -85,6 +87,68 @@ class RecordingExecutionRuntime:
                 agent_id=request.agent.id,
                 status=RunStatus.COMPLETED,
             ),
+        )
+
+
+class TimeoutProvider:
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        raise WebRuntimeError("web_timeout", "web request timed out", 504)
+
+    async def fetch(self, url: str) -> Evidence:
+        raise WebRuntimeError("web_timeout", "web request timed out", 504)
+
+
+class CancelledProvider:
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        raise asyncio.CancelledError()
+
+    async def fetch(self, url: str) -> Evidence:
+        raise asyncio.CancelledError()
+
+
+class UnsafeEvidenceProvider:
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        return [
+            Evidence(
+                id="unsafe-source",
+                title="Current policy",
+                snippet="Current policy details",
+                retrieved_at="2026-09-03T00:00:00Z",
+                provider="test",
+                source_type="search",
+                url="http://127.0.0.1/private",
+            )
+        ]
+
+    async def fetch(self, url: str) -> Evidence:
+        raise AssertionError("fetch is not used in this test")
+
+
+class SecretBearingProvider:
+    private_runtime_secret = "PRIVATE-RUNTIME-BYTES"
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        return [
+            Evidence(
+                id="public-source",
+                title="Current policy",
+                snippet="Current policy details",
+                retrieved_at="2026-09-03T00:00:00Z",
+                provider="test",
+                source_type="search",
+                url="https://example.com/policy",
+            )
+        ]
+
+    async def fetch(self, url: str) -> Evidence:
+        return Evidence(
+            id="public-fetch",
+            title="Public page",
+            snippet="Public page details",
+            retrieved_at="2026-09-03T00:00:00Z",
+            provider="test",
+            source_type="fetch",
+            url=url,
         )
 
 
@@ -215,6 +279,52 @@ def test_url_is_rejected_for_non_fetch_operation() -> None:
     assert result.status_code == 400
     assert result.body["error"]["code"] == "invalid_research_request"
     assert execution.requests == []
+
+
+def test_web_timeout_is_normalized_and_retryable() -> None:
+    svc, execution = service(provider=TimeoutProvider())
+    result = run(svc.research_payload(request_payload("search")))
+
+    assert result.status_code == 504
+    assert result.body["error"]["code"] == "web_timeout"
+    assert result.body["error"]["retryable"] is True
+    assert execution.requests == []
+
+
+def test_cancellation_propagates_without_engine_normalization() -> None:
+    svc, execution = service(provider=CancelledProvider())
+
+    with pytest.raises(asyncio.CancelledError):
+        run(svc.research_payload(request_payload("search")))
+    assert execution.requests == []
+
+
+def test_source_trust_rejection_stays_rejected_before_synthesis() -> None:
+    svc, execution = service(provider=UnsafeEvidenceProvider())
+    result = run(svc.research_payload(request_payload("search")))
+
+    assert result.status_code == 404
+    assert result.body["error"]["code"] == "no_evidence"
+    assert execution.requests == []
+
+
+def test_public_evidence_projection_excludes_provider_private_runtime_bytes() -> None:
+    svc, execution = service(provider=SecretBearingProvider())
+    result = run(svc.research_payload(request_payload("search")))
+
+    assert result.status_code == 200
+    assert len(execution.requests) == 1
+    assert set(result.body["sources"][0]) == {
+        "id",
+        "title",
+        "url",
+        "snippet",
+        "retrieved_at",
+        "provider",
+        "source_type",
+    }
+    serialized = json.dumps(result.body, ensure_ascii=False)
+    assert SecretBearingProvider.private_runtime_secret not in serialized
 
 
 def test_missing_b14_binding_fails_before_web_or_execution_factory() -> None:
