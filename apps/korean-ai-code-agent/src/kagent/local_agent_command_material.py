@@ -9,7 +9,7 @@ from typing import Any, Protocol
 from .contracts import ContractError
 from .local_agent import LocalCommandRequest
 from .local_agent_pairing import DeviceBinding, DeviceCommandEnvelope, DeviceSession
-from .local_agent_secure_transport import OutboundTransportConfig
+from .local_agent_secure_transport import OutboundLocalAgentTransportPort, OutboundTransportConfig
 from .windows_local_executor import command_request_fingerprint
 
 
@@ -192,6 +192,19 @@ class ResolvedLocalCommandMaterial:
 
 class OutboundCommandMaterialTransportPort(Protocol):
     """Physical extension implemented by the same outbound broker transport object."""
+
+    def resolve_material(
+        self,
+        *,
+        config: OutboundTransportConfig,
+        binding: DeviceBinding,
+        request: OutboundCommandMaterialRequest,
+    ) -> dict[str, Any]:
+        ...
+
+
+class OutboundLocalAgentMaterialTransportPort(OutboundLocalAgentTransportPort, Protocol):
+    """Existing poll/ack transport plus bounded command-material resolution."""
 
     def resolve_material(
         self,
