@@ -284,10 +284,10 @@ class AdmittedLocalAgentExecutionBridge:
             raise ContractError("command run does not match the materialized local request")
         if request.device_id != session.device_id:
             raise ContractError("materialized local request device does not match the current session")
-        if request.requested_at < command.issued_at:
-            raise ContractError("materialized local request cannot predate the command envelope")
-        if request.requested_at > now or request.requested_at >= command.expires_at:
-            raise ContractError("materialized local request is outside the current command lifetime")
+        if request.requested_at > command.issued_at:
+            raise ContractError("materialized local request cannot follow the command envelope issuance")
+        if request.requested_at > now:
+            raise ContractError("materialized local request cannot be from the future")
 
         fingerprint = command_request_fingerprint(request)
         evidence = self._client.resolve(
@@ -357,6 +357,7 @@ SESSION_BINDING_RUN_EXACT = True
 TOOL_REQUEST_REF_EXACT = True
 SEQUENCE_EXACT = True
 COMMAND_EXPIRY_NOT_WIDENED = True
+REQUEST_MATERIAL_AT_OR_BEFORE_COMMAND_ISSUANCE = True
 REPLAY_MODEL_DUPLICATED = False
 BROKER_WIRE_PROTOCOL_INVENTED = False
 RAW_ARGV_IN_ADMISSION_EVIDENCE = False
