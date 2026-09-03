@@ -12,6 +12,15 @@
 
 (function () {
   "use strict";
+
+  // Internal Platform is deliberately independent from Business manifest
+  // validity. Its own manifest/view remains discoverable even if Business
+  // identity data fails closed.
+  if (typeof document !== "undefined" && document.readyState === "loading") {
+    document.write('<script src="./internal-platform-manifest.js?v=internal-platform-20260903-1"><\/script>');
+    document.write('<script src="./internal-platform-console.js?v=internal-platform-20260903-1"><\/script>');
+  }
+
   var manifest = window.ARL_MANIFEST;
   if (!manifest || !Array.isArray(manifest)) {
     window.ARL_BUSINESSES = [];
@@ -26,8 +35,6 @@
   // only so its DOMContentLoaded decorator is registered before the audit's final
   // owner/external presentation pass; the audit therefore owns the final labels.
   if (typeof document !== "undefined" && document.readyState === "loading") {
-    document.write('<script src="./internal-platform-manifest.js?v=internal-platform-20260903-1"><\/script>');
-    document.write('<script src="./internal-platform-console.js?v=internal-platform-20260903-1"><\/script>');
     document.write('<link rel="stylesheet" href="./business-launcher.css?v=business-launcher-20260809-1">');
     document.write('<script src="./review-surfaces-396.js?v=review-surfaces-20260809-2"><\/script>');
     document.write('<script src="./business-launcher.js?v=business-launcher-20260809-1"><\/script>');
