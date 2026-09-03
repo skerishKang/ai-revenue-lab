@@ -85,6 +85,15 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "request_fingerprint",
         }
     ),
+    "apps/padiem-ai-engine/app/execution_admission_service.py": frozenset(
+        {
+            "ExecutionContext",
+            "OrchestrationError",
+            "OrchestrationRequest",
+            "OrchestrationResumeRequest",
+            "OrchestrationRunner",
+        }
+    ),
     "apps/padiem-ai-engine/app/execution_context_wire.py": frozenset(
         {"ExecutionContext"}
     ),
