@@ -57,17 +57,21 @@ This boundary does **not** assign an image-capable Provider/model. While the cur
 
 ## Attachments and document boundary
 
-Current browser attachments are intentionally bounded:
+The browser-visible ephemeral composer attachment contract is defined by `static/attachment-capabilities.js`. It is intentionally bounded and separate from persistent Project files:
 
 ```text
-Images:   JPEG / PNG / WebP, one per request, up to 4 MiB
-Documents: TXT / Markdown / CSV / JSON, one per request,
-           UTF-8 text only, up to 96 KiB / 40,000 characters
+Images:           JPEG / PNG / WebP, one attachment per request, up to 4 MiB
+Text documents:   TXT / Markdown / CSV / JSON, one attachment per request,
+                  UTF-8 text only, up to 96 KiB / 40,000 characters
+Binary documents: PDF / DOCX / PPTX / XLSX, one attachment per request,
+                  raw binary payload up to 2 MiB
 ```
 
 Text-document content is wrapped as **untrusted reference data** inside the server-owned additional system context. It cannot select a provider, endpoint or model, and the full document text is not returned in public response metadata or written into ordinary conversation history.
 
-PDF, DOCX, PPTX and XLSX extraction are **not supported yet**. They are deliberately deferred until a compatible extraction path is proven for the exact Cloudflare Python Worker runtime or moved behind an approved dedicated extraction service. B62 must not silently treat unsupported binary files as text.
+PDF, DOCX, PPTX and XLSX are supported as ephemeral composer attachments through the existing completed `/api/chat` attachment contract. The browser validates the bounded raw file and sends base64 to the existing B62 server parser; the frontend does not reimplement document extraction, Core semantics, provider routing or a synthetic streaming bridge. Binary attachment content is request-scoped and is not persisted in ordinary conversation history.
+
+Project files are a distinct persistence capability. They remain validated UTF-8 text files only; composer support for PDF/DOCX/PPTX/XLSX does **not** imply persistent binary Project-file support.
 
 ## Auth, history, Projects and Saved Outputs
 
