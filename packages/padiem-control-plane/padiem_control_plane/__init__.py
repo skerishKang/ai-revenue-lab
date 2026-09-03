@@ -7,6 +7,12 @@ from .auth_sessions import (
     apply_auth_session_transition,
     validate_auth_session_transition_batch,
 )
+from .b14_routing_policy import (
+    B14_EXTERNAL_ROUTE_GRANT_V1,
+    B14_ROUTING_POLICY_VERSION_V1,
+    TrustedB14RoutingPolicyV1,
+    trusted_b14_routing_policy_v1_from_entitlement,
+)
 from .contracts import (
     BillingDisposition,
     CanonicalSubjectRef,
@@ -46,6 +52,8 @@ __all__ = [
     "AuthSessionState",
     "AuthSessionTransition",
     "AuthSessionTransitionKind",
+    "B14_EXTERNAL_ROUTE_GRANT_V1",
+    "B14_ROUTING_POLICY_VERSION_V1",
     "BillingDisposition",
     "CanonicalPaymentEvent",
     "CanonicalSubjectRef",
@@ -67,10 +75,12 @@ __all__ = [
     "RouteEvidenceStatus",
     "SubjectType",
     "TokenUsage",
+    "TrustedB14RoutingPolicyV1",
     "UsageEvent",
     "UsageOutcome",
     "apply_auth_session_transition",
     "apply_credit_ledger_batch",
+    "trusted_b14_routing_policy_v1_from_entitlement",
     "validate_auth_session_transition_batch",
     "validate_credit_ledger_batch",
     "validate_payment_event_batch",
