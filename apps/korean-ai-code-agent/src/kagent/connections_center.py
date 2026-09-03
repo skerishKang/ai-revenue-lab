@@ -22,32 +22,12 @@ _MAX_LABEL_CHARS = 160
 _MAX_REASON_CHARS = 1000
 _MAX_ITEMS = 128
 _WRITE_MARKERS = (
-    "write",
-    "create",
-    "update",
-    "delete",
-    "send",
-    "post",
-    "deploy",
-    "rollback",
-    "mutate",
-    "admin",
-    "manage",
-    "edit",
-    "commit",
-    "push",
+    "write", "create", "update", "delete", "send", "post", "deploy",
+    "rollback", "mutate", "admin", "manage", "edit", "commit", "push",
 )
 _MATERIAL_MARKERS = (
-    "delete",
-    "deploy",
-    "rollback",
-    "admin",
-    "billing",
-    "dns",
-    "secret",
-    "grant",
-    "revoke",
-    "membership",
+    "delete", "deploy", "rollback", "admin", "billing", "dns", "secret",
+    "grant", "revoke", "membership",
 )
 
 
@@ -220,9 +200,11 @@ class ConnectorAccountCard:
         object.__setattr__(self, "service_label", _text(self.service_label, "service_label", _MAX_LABEL_CHARS))
         if not isinstance(self.binding, ConnectorBindingProjection):
             raise ContractError("binding must be ConnectorBindingProjection")
-        if self.health is not None:
-            if not isinstance(self.health, ConnectorHealthProjection) or self.health.binding_ref != self.binding.binding_ref:
-                raise ContractError("health must match connector binding")
+        if self.health is not None and (
+            not isinstance(self.health, ConnectorHealthProjection)
+            or self.health.binding_ref != self.binding.binding_ref
+        ):
+            raise ContractError("health must match connector binding")
         object.__setattr__(self, "now", _aware(self.now, "now"))
         if not isinstance(self.account_exposure, AccountExposure):
             try:
@@ -317,14 +299,17 @@ class LocalAgentDeviceCard:
                 raise ContractError("invalid device compatibility") from exc
         if self.last_seen_at is not None:
             object.__setattr__(self, "last_seen_at", _aware(self.last_seen_at, "last_seen_at"))
-        if self.snapshot.binding.state is DeviceLifecycle.UPDATE_REQUIRED and self.compatibility is not DeviceCompatibility.UPDATE_REQUIRED:
+        if (
+            self.snapshot.binding.state is DeviceLifecycle.UPDATE_REQUIRED
+            and self.compatibility is not DeviceCompatibility.UPDATE_REQUIRED
+        ):
             raise ContractError("update-required lifecycle must be visible as update-required compatibility")
 
     @property
     def management_actions(self) -> tuple[DeviceManagementAction, ...]:
         if self.snapshot.binding.state is DeviceLifecycle.REVOKED:
             return (DeviceManagementAction.DELETE,)
-        actions: list[DeviceManagementAction] = [
+        actions = [
             DeviceManagementAction.DISABLE,
             DeviceManagementAction.REVOKE,
             DeviceManagementAction.DELETE,
@@ -335,7 +320,11 @@ class LocalAgentDeviceCard:
 
     def safe_dict(self) -> dict[str, Any]:
         snapshot = self.snapshot.safe_dict()
-        last_action = snapshot["recent_activity"][0] if snapshot["recent_activity"] else None
+        latest_activity = max(
+            self.snapshot.recent_activity,
+            key=lambda item: item.ended_at,
+            default=None,
+        )
         return {
             "device_id": snapshot["device_id"],
             "device_name": snapshot["device_name"],
@@ -349,7 +338,7 @@ class LocalAgentDeviceCard:
             "compatibility": self.compatibility.value,
             "roots": snapshot["roots"],
             "global_capabilities": snapshot["global_capabilities"],
-            "last_local_action": last_action,
+            "last_local_action": latest_activity.safe_dict() if latest_activity else None,
             "management_actions": [action.value for action in self.management_actions],
             "outbound_only": True,
             "whole_pc_grant": False,
@@ -375,12 +364,18 @@ class CapabilityEscalationReview:
         object.__setattr__(self, "review_ref", _ref(self.review_ref, "review_ref"))
         object.__setattr__(self, "target_ref", _ref(self.target_ref, "target_ref"))
         if not isinstance(self.target_kind, EscalationTargetKind):
-            object.__setattr__(self, "target_kind", EscalationTargetKind(self.target_kind))
+            try:
+                object.__setattr__(self, "target_kind", EscalationTargetKind(self.target_kind))
+            except (TypeError, ValueError) as exc:
+                raise ContractError("invalid escalation target kind") from exc
         object.__setattr__(self, "current_scope", _refs(self.current_scope, "current_scope"))
         object.__setattr__(self, "requested_scope", _refs(self.requested_scope, "requested_scope"))
         object.__setattr__(self, "reason", _text(self.reason, "reason", _MAX_REASON_CHARS))
         if not isinstance(self.sensitivity, EscalationSensitivity):
-            object.__setattr__(self, "sensitivity", EscalationSensitivity(self.sensitivity))
+            try:
+                object.__setattr__(self, "sensitivity", EscalationSensitivity(self.sensitivity))
+            except (TypeError, ValueError) as exc:
+                raise ContractError("invalid escalation sensitivity") from exc
         object.__setattr__(self, "requested_at", _aware(self.requested_at, "requested_at"))
         if self.trusted_approval_ref is not None:
             object.__setattr__(self, "trusted_approval_ref", _ref(self.trusted_approval_ref, "trusted_approval_ref"))
@@ -454,10 +449,33 @@ class ConnectionsDevicesCenterSnapshot:
             raise ContractError("connector card workspace mismatch")
         if any(item.snapshot.device.workspace_ref != self.workspace_ref for item in self.devices):
             raise ContractError("device card workspace mismatch")
-        connector_refs = [item.binding.binding_ref for item in self.connectors]
-        device_refs = [item.snapshot.device.device_id for item in self.devices]
+        if any(item.now > self.generated_at for item in self.connectors):
+            raise ContractError("connector observation cannot be newer than Center snapshot")
+        if any(item.last_seen_at is not None and item.last_seen_at > self.generated_at for item in self.devices):
+            raise ContractError("device observation cannot be newer than Center snapshot")
+        if any(
+            activity.ended_at > self.generated_at
+            for item in self.devices
+            for activity in item.snapshot.recent_activity
+        ):
+            raise ContractError("device activity cannot be newer than Center snapshot")
+        if any(item.requested_at > self.generated_at for item in self.escalation_reviews):
+            raise ContractError("escalation request cannot be newer than Center snapshot")
+
+        connector_refs = tuple(item.binding.binding_ref for item in self.connectors)
+        device_refs = tuple(item.snapshot.device.device_id for item in self.devices)
+        review_refs = tuple(item.review_ref for item in self.escalation_reviews)
         if len(connector_refs) != len(set(connector_refs)) or len(device_refs) != len(set(device_refs)):
             raise ContractError("Connections Center identities must be unique")
+        if len(review_refs) != len(set(review_refs)):
+            raise ContractError("escalation review refs must be unique")
+        connector_set = set(connector_refs)
+        device_set = set(device_refs)
+        for review in self.escalation_reviews:
+            if review.target_kind is EscalationTargetKind.CONNECTOR and review.target_ref not in connector_set:
+                raise ContractError("escalation review references an unknown connector binding")
+            if review.target_kind is EscalationTargetKind.LOCAL_AGENT and review.target_ref not in device_set:
+                raise ContractError("escalation review references an unknown Local Agent device")
 
     def safe_dict(self) -> dict[str, Any]:
         connector_cards = [item.safe_dict() for item in self.connectors]
@@ -466,10 +484,11 @@ class ConnectionsDevicesCenterSnapshot:
             {
                 "kind": "connector",
                 "target_ref": item.binding.binding_ref,
-                "actions": [action.value for action in item.management_actions if action in {
-                    ConnectionManagementAction.DISCONNECT,
-                    ConnectionManagementAction.REVOKE,
-                }],
+                "actions": [
+                    action.value
+                    for action in item.management_actions
+                    if action in {ConnectionManagementAction.DISCONNECT, ConnectionManagementAction.REVOKE}
+                ],
             }
             for item in self.connectors
             if item.management_actions
@@ -478,11 +497,15 @@ class ConnectionsDevicesCenterSnapshot:
             {
                 "kind": "local_agent",
                 "target_ref": item.snapshot.device.device_id,
-                "actions": [action.value for action in item.management_actions if action in {
-                    DeviceManagementAction.DISABLE,
-                    DeviceManagementAction.REVOKE,
-                    DeviceManagementAction.DELETE,
-                }],
+                "actions": [
+                    action.value
+                    for action in item.management_actions
+                    if action in {
+                        DeviceManagementAction.DISABLE,
+                        DeviceManagementAction.REVOKE,
+                        DeviceManagementAction.DELETE,
+                    }
+                ],
             }
             for item in self.devices
         )
