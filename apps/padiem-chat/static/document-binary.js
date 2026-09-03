@@ -64,11 +64,29 @@
     });
   }
 
+  function pendingMeta() {
+    const input = document.getElementById("attachmentFileInput");
+    const file = input && input.files ? input.files[0] : null;
+    if (!file || !canRead(file)) return null;
+    let mediaType;
+    try {
+      mediaType = canonicalMediaType(file);
+    } catch (_) {
+      return null;
+    }
+    return Object.freeze({
+      name: file.name || "document",
+      mediaType,
+      byteSize: file.size,
+    });
+  }
+
   const api = Object.freeze({
     formats: Object.freeze(Array.from(MIME_BY_EXTENSION.keys())),
     maxBytes: MAX_BINARY_BYTES,
     canRead,
     read,
+    pendingMeta,
   });
 
   window.PadiemBinaryDocuments = api;
