@@ -44,7 +44,7 @@ assert.match(businessesSource, /internal-platform-console\.js/);
 assert.doesNotMatch(businessesSource, /ARL_BUSINESSES\s*=\s*.*ARL_INTERNAL_PLATFORMS/);
 
 const consoleSource = fs.readFileSync(consolePath, 'utf8');
-assert.match(consoleSource, /data-view=\\?"platform\\?"/);
+assert.match(consoleSource, /dataset\.view\s*=\s*"platform"/);
 assert.match(consoleSource, /Internal Platform/);
 assert.match(consoleSource, /Business number/);
 
