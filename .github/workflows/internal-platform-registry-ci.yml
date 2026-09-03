@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -50,4 +52,6 @@ jobs:
         run: node tests/internal-platform-registry.test.js
 
       - name: Diff whitespace gate
-        run: git diff --check origin/${{ github.base_ref || 'main' }}...HEAD
+        run: |
+          BASE="$(git merge-base origin/main HEAD)"
+          git diff --check "${BASE}"..HEAD
