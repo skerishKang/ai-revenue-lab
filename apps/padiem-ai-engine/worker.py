@@ -20,6 +20,8 @@ from padiem_ai_core import (
     ExecutionRuntime,
     StreamingExecutionRuntime,
 )
+from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
+from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
 
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
@@ -41,9 +43,15 @@ from app.streaming_service import (
     PreparedStream,
     StreamingEngineService,
 )
+from app.web_research_service import RESEARCH_PATH, WebResearchEngineService
 
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
 ENGINE_IDEMPOTENCY_BINDING_NAME = "ENGINE_IDEMPOTENCY"
+ENGINE_WEB_PROVIDER_ENV = "PADIEM_ENGINE_WEB_PROVIDER"
+ENGINE_FIRECRAWL_API_KEY_ENV = "PADIEM_ENGINE_FIRECRAWL_API_KEY"
+ENGINE_DAUM_REST_API_KEY_ENV = "PADIEM_ENGINE_DAUM_REST_API_KEY"
+ENGINE_DAUM_SEARCH_SORT_ENV = "PADIEM_ENGINE_DAUM_SEARCH_SORT"
+ENGINE_WEB_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS"
 
 
 def _binding_value(env: Any, name: str) -> Any | None:
@@ -51,6 +59,32 @@ def _binding_value(env: Any, name: str) -> Any | None:
         return getattr(env, name)
     except (AttributeError, TypeError):
         return None
+
+
+def _env_text(env: Any, name: str) -> str | None:
+    value = _binding_value(env, name)
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _web_runtime_config_for_env(env: Any) -> WebRuntimeConfig:
+    """Build Core web configuration from server-only deployment state.
+
+    The request wire has no provider, endpoint, credential or research-budget
+    fields. Callers therefore cannot select or mint web-provider authority.
+    """
+
+    timeout_raw = _env_text(env, ENGINE_WEB_TIMEOUT_SECONDS_ENV)
+    timeout = 15.0 if timeout_raw is None else float(timeout_raw)
+    return WebRuntimeConfig(
+        provider=_env_text(env, ENGINE_WEB_PROVIDER_ENV) or "off",
+        firecrawl_api_key=_env_text(env, ENGINE_FIRECRAWL_API_KEY_ENV),
+        daum_rest_api_key=_env_text(env, ENGINE_DAUM_REST_API_KEY_ENV),
+        daum_search_sort=_env_text(env, ENGINE_DAUM_SEARCH_SORT_ENV) or "accuracy",
+        web_timeout_seconds=timeout,
+    )
 
 
 def _idempotency_adapter_for_env(env: Any) -> CloudflareD1IdempotencyAdapter | None:
@@ -144,28 +178,35 @@ def _authenticate_non_health_request(env: Any, headers: Any, body: bytes) -> Res
 
 def _engine_services_for_env(
     env: Any,
-) -> tuple[EngineService, StreamingEngineService, OrchestrationEngineService]:
+) -> tuple[
+    EngineService,
+    StreamingEngineService,
+    OrchestrationEngineService,
+    WebResearchEngineService,
+]:
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
+        unavailable_factory = lambda app_id: (_ for _ in ()).throw(  # noqa: E731
+            RuntimeError("unreachable without B14 service binding")
+        )
         completed = EngineService(
-            runtime_factory=lambda app_id: (_ for _ in ()).throw(
-                RuntimeError("unreachable without B14 service binding")
-            ),
+            runtime_factory=unavailable_factory,
             b14_service_bound=False,
         )
         streaming = StreamingEngineService(
-            runtime_factory=lambda app_id: (_ for _ in ()).throw(
-                RuntimeError("unreachable without B14 service binding")
-            ),
+            runtime_factory=unavailable_factory,
             b14_service_bound=False,
         )
         orchestration = OrchestrationEngineService(
-            runtime_factory=lambda app_id: (_ for _ in ()).throw(
-                RuntimeError("unreachable without B14 service binding")
-            ),
+            runtime_factory=unavailable_factory,
             b14_service_bound=False,
         )
-        return completed, streaming, orchestration
+        research = WebResearchEngineService(
+            research_runtime_factory=unavailable_factory,
+            execution_runtime_factory=unavailable_factory,
+            b14_service_bound=False,
+        )
+        return completed, streaming, orchestration, research
 
     transport = CloudflareB14ServiceBindingTransport(
         binding=binding,
@@ -185,6 +226,13 @@ def _engine_services_for_env(
             b14_stream_client=b14_stream_client,
         )
 
+    def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
+        # Core validates provider/key/timeout configuration. Provider selection
+        # is deployment authority only and cannot be supplied by the request.
+        return GroundedResearchRuntime(
+            create_web_provider(_web_runtime_config_for_env(env))
+        )
+
     return (
         EngineService(
             runtime_factory=runtime_factory,
@@ -198,6 +246,11 @@ def _engine_services_for_env(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
+        ),
+        WebResearchEngineService(
+            research_runtime_factory=research_runtime_factory,
+            execution_runtime_factory=runtime_factory,
+            b14_service_bound=True,
         ),
     )
 
@@ -294,8 +347,18 @@ class Default(WorkerEntrypoint):
                     )
                 )
 
-        orchestration_paths = {ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH, ORCHESTRATE_CANCEL_PATH}
-        if path not in {HEALTH_PATH, STREAM_PATH, "/internal/v1/execute"} | orchestration_paths:
+        orchestration_paths = {
+            ORCHESTRATE_PATH,
+            ORCHESTRATE_RESUME_PATH,
+            ORCHESTRATE_CANCEL_PATH,
+        }
+        allowed_paths = {
+            HEALTH_PATH,
+            STREAM_PATH,
+            "/internal/v1/execute",
+            RESEARCH_PATH,
+        } | orchestration_paths
+        if path not in allowed_paths:
             result = ServiceResponse(
                 status_code=404,
                 body={
@@ -315,10 +378,24 @@ class Default(WorkerEntrypoint):
             if auth_error is not None:
                 return auth_error
 
-        completed_service, streaming_service, orchestration_service = _engine_services_for_env(self.env)
+        (
+            completed_service,
+            streaming_service,
+            orchestration_service,
+            research_service,
+        ) = _engine_services_for_env(self.env)
 
         if path in orchestration_paths:
             result = await orchestration_service.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
+
+        if path == RESEARCH_PATH:
+            result = await research_service.handle(
                 method=method,
                 path=path,
                 content_type=content_type,
@@ -345,19 +422,13 @@ class Default(WorkerEntrypoint):
         )
         if path == HEALTH_PATH and result.status_code == 200:
             health = dict(result.body)
-            # Truthful posture: health from EngineService already carries
-            # bounded capabilities and b14 separate. Do not overstate with
-            # hardcoded booleans. Only ensure service identity mentions all
-            # authenticated non-health routes, including orchestration.
             health["service_identity"] = "required_for_all_non_health_routes"
-            # Keep backward-compat booleans in sync with capabilities if present
             caps = health.get("capabilities")
             if isinstance(caps, dict):
                 if "completed_run" in caps:
                     health["completed_run"] = caps["completed_run"] == "available"
                 if "provider_streaming_run" in caps:
                     health["streaming_run"] = caps["provider_streaming_run"] == "available"
-                # Ensure orchestration_run reflects capability, not hardcoded true
                 if "orchestration_run" in caps:
                     health["orchestration_run"] = caps["orchestration_run"] == "available"
             result = ServiceResponse(status_code=200, body=health)
