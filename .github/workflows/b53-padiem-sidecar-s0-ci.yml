@@ -43,6 +43,10 @@ jobs:
       - name: Padiem Sidecar registry and docs contract
         run: node apps/portfolio-console/tests/padiem-sidecar-registry.test.js
 
+      - name: Portfolio Console static regression
+        working-directory: apps/portfolio-console
+        run: npm run test:static
+
       - name: Diff whitespace gate
         shell: bash
         run: |
