@@ -305,16 +305,25 @@ def test_reference_context_has_hard_bounded_budget():
     assert len(context) <= MAX_REFERENCE_CONTEXT_CHARS
 
 
-def test_frontend_contract_explicitly_defers_pdf_docx_and_keeps_phase1_css():
+def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_files_and_keeps_phase1_css():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     migration = (root / "migrations/003_project_files.sql").read_text(encoding="utf-8")
     assert 'id="attachmentFileInput"' in html
     assert 'id="projectFilesPanel"' in html
-    assert 'id="projectFileInput"' in html
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
-    assert "PDF·DOCX는 아직 지원하지 않습니다" in html
+    assert 'id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json"' in html
+    assert "프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다." in html
+    assert "PDF·DOCX·PPTX·XLSX는 저장하지 않습니다." in html
+    assert 'script src="./attachment-capabilities.js"' in html
+    assert 'label: "PDF"' in capabilities
+    assert 'label: "DOCX"' in capabilities
+    assert 'label: "PPTX"' in capabilities
+    assert 'label: "XLSX"' in capabilities
+    assert "binaryBytes: 2 * 1024 * 1024" in capabilities
+    assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
+    assert "PDF·DOCX는 아직 지원하지 않습니다" not in html
     assert "application/pdf" not in html
     assert "application/vnd.openxmlformats" not in html
     assert 'fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`' in js
