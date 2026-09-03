@@ -211,12 +211,13 @@ def _public_result(
             status_code=500,
         )
 
+    # Keep the research contract narrower than the generic /execute contract.
+    # B14 route/model/provider metadata and execution metadata are intentionally
+    # not projected upward; only the answer and Core-owned public evidence are.
     body: dict[str, Any] = {
         "ok": True,
         "operation": request.operation,
         "answer": synthesis.answer,
-        "route": synthesis.route.to_public_dict(),
-        "metadata": synthesis.metadata.to_public_dict(),
         "sources": [item.to_public_dict() for item in result.prepared.evidence],
         "research": None,
     }
@@ -344,7 +345,6 @@ class WebResearchEngineService:
                 exc.safe_message,
                 status_code=_status_for_runtime_error(exc),
                 retryable=exc.retryable,
-                metadata=exc.metadata.to_public_dict(),
             )
         except (TypeError, ValueError, OverflowError):
             return _service_error(
