@@ -101,8 +101,9 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
             f"composer clearance is too small at {name}: clearance={clearance}, composer={composer_wrap_height}"
         )
 
-    # Grow the current assistant answer deterministically. Both the conversation
-    # follow helper and the Glass portrait motion observe this real DOM growth.
+    # Grow the current assistant answer deterministically. Conversation follow
+    # still tracks the newest tokens, but the Glass portrait must stay visually
+    # fixed because reading mode is keyed to explicit app conversation state.
     await page.evaluate(
         """
         () => {
@@ -140,6 +141,8 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         raise AssertionError(f"latest-answer growth was not followed at {name}: {followed}")
     if followed["latestBottom"] > followed["composerTop"] - 12:
         raise AssertionError(f"latest answer is covered by the fixed composer at {name}: {followed}")
+    if abs(float(followed["reveal"])) > 0.01:
+        raise AssertionError(f"Glass portrait reveal moved during active reading at {name}: {followed}")
 
     # An intentional upward wheel is a user signal: auto-follow must pause.
     await page.wait_for_timeout(600)
@@ -214,11 +217,14 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
           following: window.__padiemConversationMotion.isFollowingLatest(),
           remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
             - (window.scrollY + window.innerHeight),
+          reveal: Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0,
         })
         """
     )
     if not resumed_state["following"] or resumed_state["remaining"] > 4:
         raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
+    if abs(float(resumed_state["reveal"])) > 0.01:
+        raise AssertionError(f"Glass portrait reveal resumed with scroll follow at {name}: {resumed_state}")
 
     return {
         "helper_loaded": True,
@@ -230,6 +236,7 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         "growth_while_paused_keeps_viewport": True,
         "return_to_end_resumes": True,
         "glass_reveal_after_growth": followed["reveal"],
+        "glass_reveal_after_resume": resumed_state["reveal"],
         "sidebar_generic_recommendations_hidden": True,
         "status": "PASS",
     }
@@ -247,8 +254,11 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
 
     theme = await page.locator("html").get_attribute("data-theme")
     variant = await page.locator("html").get_attribute("data-glass-variant")
+    mode_home = await page.locator("html").get_attribute("data-glass-mode")
     if theme != "padiem-glass" or variant != "female":
         raise AssertionError(f"Glass female did not activate: theme={theme!r}, variant={variant!r}")
+    if mode_home != "home":
+        raise AssertionError(f"Glass home must stay cinematic at {name}: mode={mode_home!r}")
 
     await _assert_no_horizontal_overflow(page, f"{name}-home")
     conversation_home = await _assert_horizontally_in_viewport(page, ".conversation")
@@ -270,6 +280,10 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     await page.wait_for_function(
         "() => document.querySelector('#messageList .assistant-content')?.textContent?.includes('지금은 미리보기 환경입니다')",
         timeout=15_000,
+    )
+    await page.wait_for_function(
+        "() => document.documentElement.getAttribute('data-glass-mode') === 'reading'",
+        timeout=5_000,
     )
     await page.wait_for_timeout(350)
 
@@ -312,8 +326,14 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         raise AssertionError(f"outer composer lost its readable surface at {name}: {composer_style}")
 
     portrait_chat = await _portrait_style(page)
-    if portrait_chat["opacity"] < 0.15 or portrait_chat["width"] < 250:
-        raise AssertionError(f"female portrait disappeared in chat at {name}: {portrait_chat}")
+    if "padiem-glass-female.jpg" not in portrait_chat["backgroundImage"]:
+        raise AssertionError(f"female portrait asset disappeared in chat at {name}: {portrait_chat}")
+    if portrait_chat["opacity"] < 0.04 or portrait_chat["width"] < 250:
+        raise AssertionError(f"female portrait became imperceptible in chat at {name}: {portrait_chat}")
+    if portrait_chat["opacity"] >= portrait_home["opacity"]:
+        raise AssertionError(
+            f"female portrait must step back during reading at {name}: home={portrait_home}, chat={portrait_chat}"
+        )
 
     chat_screenshot = f"{name}-female-chat.png"
     await page.screenshot(path=str(OUT_DIR / chat_screenshot), full_page=True)
@@ -322,6 +342,8 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
 
     return {
         "viewport": {"width": width, "height": height},
+        "glass_mode_home": mode_home,
+        "glass_mode_chat": "reading",
         "conversation_home": conversation_home,
         "composer_home": composer_home,
         "conversation_chat": conversation_chat,
@@ -333,6 +355,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "composer_style": composer_style,
         "portrait_home": portrait_home,
         "portrait_chat": portrait_chat,
+        "portrait_prominence_reduced": True,
         "conversation_motion": motion,
         "home_screenshot": home_screenshot,
         "chat_screenshot": chat_screenshot,
@@ -345,7 +368,7 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
 async def main() -> None:
     report: dict[str, Any] = {
         "base_url": BASE_URL,
-        "purpose": "Padiem Glass zoom-responsive composition and live conversation-follow contract",
+        "purpose": "Padiem Glass zoom-responsive composition with cinematic home and calm active reading",
         "browser_zoom_forced": False,
         "views": {},
     }
