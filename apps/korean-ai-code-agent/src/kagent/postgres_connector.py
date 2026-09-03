@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 import hashlib
-import json
 import re
 from typing import Any, Protocol
 
@@ -27,14 +26,14 @@ _FORBIDDEN_WORDS = frozenset(
         "LOCK", "LISTEN", "NOTIFY", "UNLISTEN", "LOAD", "DISCARD", "PREPARE", "EXECUTE",
         "DEALLOCATE", "CLUSTER", "REINDEX", "REFRESH", "COMMENT", "SECURITY", "LABEL",
         "IMPORT", "REASSIGN", "CHECKPOINT", "BEGIN", "START", "COMMIT", "ROLLBACK",
-        "SAVEPOINT", "RELEASE", "ABORT", "END",
+        "SAVEPOINT", "RELEASE", "ABORT", "END", "INTO",
     }
 )
 _FORBIDDEN_FUNCTIONS = frozenset(
     {
         "NEXTVAL", "SETVAL", "PG_NOTIFY", "PG_CANCEL_BACKEND", "PG_TERMINATE_BACKEND",
         "PG_RELOAD_CONF", "PG_ROTATE_LOGFILE", "PG_SWITCH_WAL", "PG_CREATE_RESTORE_POINT",
-        "PG_BACKUP_START", "PG_BACKUP_STOP", "SET_CONFIG", "LO_IMPORT", "LO_EXPORT",
+        "PG_BACKUP_START", "PG_BACKUP_STOP", "SET_CONFIG", "LO_IMPORT", "LO_EXPORT", "LO_UNLINK",
         "PG_ADVISORY_LOCK", "PG_ADVISORY_XACT_LOCK", "PG_TRY_ADVISORY_LOCK",
         "PG_TRY_ADVISORY_XACT_LOCK", "PG_ADVISORY_UNLOCK", "PG_ADVISORY_UNLOCK_ALL",
     }
@@ -65,6 +64,12 @@ def _aware(value: datetime, field_name: str) -> datetime:
 def _positive_int(value: int, field_name: str, maximum: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= maximum:
         raise ContractError(f"{field_name} must be between 1 and {maximum}")
+    return value
+
+
+def _non_negative_int(value: int, field_name: str, maximum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= maximum:
+        raise ContractError(f"{field_name} must be between 0 and {maximum}")
     return value
 
 
@@ -129,6 +134,8 @@ def _scan_sql(sql: str) -> tuple[SqlToken, ...]:
                         continue
                     i += 1
                     break
+                # PostgreSQL escape-string syntax can use a backslash; treating
+                # an escaped next byte as part of the literal is conservative.
                 if sql[i] == "\\" and i + 1 < n:
                     i += 2
                 else:
@@ -175,6 +182,7 @@ def _scan_sql(sql: str) -> tuple[SqlToken, ...]:
             continue
         tokens.append(SqlToken(SqlTokenKind.SYMBOL, ch))
         i += 1
+
     if not tokens:
         raise ContractError("sql contains no executable statement")
     semicolons = [idx for idx, token in enumerate(tokens) if token.kind is SqlTokenKind.SYMBOL and token.value == ";"]
@@ -217,11 +225,50 @@ def _contains_phrase(words: tuple[str, ...], phrase: tuple[str, ...]) -> bool:
     return any(words[i:i + width] == phrase for i in range(0, len(words) - width + 1))
 
 
+def _quoted_identifier_keyword(token: SqlToken) -> str | None:
+    if token.kind is not SqlTokenKind.QUOTED_IDENTIFIER:
+        return None
+    raw = token.value
+    if len(raw) < 2 or raw[0] != '"' or raw[-1] != '"':
+        return None
+    inner = raw[1:-1].replace('""', '"')
+    if not _IDENT_RE.fullmatch(inner):
+        return None
+    return inner.upper()
+
+
+def _callable_keyword(token: SqlToken) -> str | None:
+    if token.kind is SqlTokenKind.WORD:
+        return token.value.upper()
+    return _quoted_identifier_keyword(token)
+
+
+def _top_level_words(tokens: tuple[SqlToken, ...]) -> tuple[str, ...]:
+    words: list[str] = []
+    depth = 0
+    for token in tokens:
+        if token.kind is SqlTokenKind.SYMBOL and token.value == "(":
+            depth += 1
+            continue
+        if token.kind is SqlTokenKind.SYMBOL and token.value == ")":
+            depth -= 1
+            if depth < 0:
+                raise ContractError("unbalanced SQL parentheses")
+            continue
+        if depth == 0 and token.kind is SqlTokenKind.WORD:
+            words.append(token.value.upper())
+    if depth != 0:
+        raise ContractError("unbalanced SQL parentheses")
+    return tuple(words)
+
+
 def classify_postgres_read_sql(sql: str) -> PostgresReadAnalysis:
     tokens = _scan_sql(sql)
     words = _word_sequence(tokens)
-    if not words:
+    top_words = _top_level_words(tokens)
+    if not words or not top_words:
         raise ContractError("read SQL must contain SQL keywords")
+
     forbidden = sorted(set(words) & _FORBIDDEN_WORDS)
     if forbidden:
         raise ContractError(f"read SQL contains prohibited operation: {forbidden[0]}")
@@ -229,22 +276,29 @@ def classify_postgres_read_sql(sql: str) -> PostgresReadAnalysis:
         if _contains_phrase(words, phrase):
             raise ContractError("row-locking SELECT forms are prohibited in read mode")
     for idx, token in enumerate(tokens[:-1]):
-        if token.kind is SqlTokenKind.WORD and token.value.upper() in _FORBIDDEN_FUNCTIONS:
+        callable_name = _callable_keyword(token)
+        if callable_name in _FORBIDDEN_FUNCTIONS:
             if tokens[idx + 1].kind is SqlTokenKind.SYMBOL and tokens[idx + 1].value == "(":
-                raise ContractError(f"read SQL calls prohibited side-effect function: {token.value}")
+                raise ContractError(f"read SQL calls prohibited side-effect function: {callable_name}")
 
-    first = words[0]
+    first = top_words[0]
     kind: PostgresReadKind
     if first == "EXPLAIN":
         kind = PostgresReadKind.EXPLAIN
-        if "ANALYZE" in words:
+        if "ANALYZE" in top_words or "ANALYZE" in words:
             raise ContractError("EXPLAIN ANALYZE is prohibited in read mode")
-        if "SELECT" not in words and "WITH" not in words:
+        # EXPLAIN options live inside parentheses; the explained statement must
+        # still have a top-level SELECT or WITH that terminates in SELECT.
+        if "SELECT" not in top_words:
             raise ContractError("EXPLAIN must target a read-only SELECT/CTE")
-    elif first in {"SELECT", "WITH"}:
+    elif first == "SELECT":
         kind = PostgresReadKind.SELECT
-        if first == "WITH" and "SELECT" not in words:
-            raise ContractError("WITH statement must terminate in a SELECT")
+    elif first == "WITH":
+        kind = PostgresReadKind.SELECT
+        # SELECT inside a CTE body is not enough: the final top-level statement
+        # itself must be SELECT. This rejects `WITH x AS (SELECT 1) VALUES (1)`.
+        if "SELECT" not in top_words[1:]:
+            raise ContractError("WITH statement must terminate in a top-level SELECT")
     else:
         raise ContractError("read mode accepts only SELECT, WITH ... SELECT, or EXPLAIN of a read query")
 
@@ -359,6 +413,15 @@ class PostgresReadRequest:
         }
 
 
+def validate_postgres_read_request(binding: PostgresBindingProjection, request: PostgresReadRequest) -> None:
+    if not isinstance(binding, PostgresBindingProjection) or not isinstance(request, PostgresReadRequest):
+        raise ContractError("binding/request must be Postgres read contract values")
+    if request.binding_ref != binding.binding_ref or request.workspace_ref != binding.workspace_ref:
+        raise ContractError("Postgres read request binding/workspace mismatch")
+    if not set(request.schema_scope).issubset(set(binding.allowed_schemas)):
+        raise ContractError("Postgres read request exceeds allowed schema scope")
+
+
 def _safe_cell(value: Any) -> Any:
     if value is None or isinstance(value, (bool, int, float)):
         return value
@@ -392,8 +455,16 @@ class PostgresQueryResult:
                 raise ContractError("each result row must match result columns")
             normalized_rows.append(tuple(_safe_cell(value) for value in row))
         object.__setattr__(self, "rows", tuple(normalized_rows))
-        _positive_int(max(self.total_rows_observed, 1), "total_rows_observed", 10_000_000)
-        _positive_int(max(self.total_bytes_observed, 1), "total_bytes_observed", 100_000_000)
+        object.__setattr__(
+            self,
+            "total_rows_observed",
+            _non_negative_int(self.total_rows_observed, "total_rows_observed", 10_000_000),
+        )
+        object.__setattr__(
+            self,
+            "total_bytes_observed",
+            _non_negative_int(self.total_bytes_observed, "total_bytes_observed", 100_000_000),
+        )
         if not isinstance(self.truncated, bool):
             raise ContractError("truncated must be boolean")
         masks = tuple(_identifier(item, "masked_column") for item in self.masked_columns)
