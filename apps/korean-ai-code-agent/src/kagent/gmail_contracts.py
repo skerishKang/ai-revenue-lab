@@ -88,6 +88,14 @@ def _aware(value: datetime, field_name: str) -> datetime:
     return value.astimezone(timezone.utc)
 
 
+def _size(value: int, field_name: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ContractError(f"{field_name} must be a non-negative integer")
+    if value > MAX_ATTACHMENT_BYTES_FOR_QUARANTINE:
+        raise ContractError("attachment exceeds B54 quarantine ingress bound")
+    return value
+
+
 class GmailCapability(str, Enum):
     READ = "read"
     CREATE_DRAFT = "create_draft"
@@ -155,16 +163,14 @@ class GmailAttachmentManifest:
     size_bytes: int
     sha256: str | None = None
     quarantine_state: AttachmentQuarantineState = AttachmentQuarantineState.PENDING
+    quarantine_evidence_ref: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "attachment_ref", _safe_ref(self.attachment_ref, "attachment_ref"))
         object.__setattr__(self, "message_id", _safe_ref(self.message_id, "message_id"))
         object.__setattr__(self, "filename", _bounded_text(self.filename, "filename", 512))
         object.__setattr__(self, "mime_type", _bounded_text(self.mime_type, "mime_type", 255))
-        if isinstance(self.size_bytes, bool) or not isinstance(self.size_bytes, int) or self.size_bytes < 0:
-            raise ContractError("size_bytes must be a non-negative integer")
-        if self.size_bytes > MAX_ATTACHMENT_BYTES_FOR_QUARANTINE:
-            raise ContractError("attachment exceeds B54 quarantine ingress bound")
+        object.__setattr__(self, "size_bytes", _size(self.size_bytes, "size_bytes"))
         if self.sha256 is not None:
             object.__setattr__(self, "sha256", _fingerprint(self.sha256, "sha256"))
         if not isinstance(self.quarantine_state, AttachmentQuarantineState):
@@ -176,11 +182,23 @@ class GmailAttachmentManifest:
                 )
             except (TypeError, ValueError) as exc:
                 raise ContractError("invalid attachment quarantine state") from exc
-        if self.quarantine_state is AttachmentQuarantineState.ACCEPTED and self.sha256 is None:
-            raise ContractError("accepted attachment requires SHA-256 evidence")
+        object.__setattr__(
+            self,
+            "quarantine_evidence_ref",
+            _optional_ref(self.quarantine_evidence_ref, "quarantine_evidence_ref"),
+        )
+        if self.quarantine_state is AttachmentQuarantineState.ACCEPTED:
+            if self.sha256 is None or self.quarantine_evidence_ref is None:
+                raise ContractError("accepted attachment requires SHA-256 and quarantine evidence")
+        elif self.quarantine_evidence_ref is not None:
+            raise ContractError("only accepted attachment may carry quarantine evidence")
 
     def model_usable(self) -> bool:
-        return self.quarantine_state is AttachmentQuarantineState.ACCEPTED and self.sha256 is not None
+        return (
+            self.quarantine_state is AttachmentQuarantineState.ACCEPTED
+            and self.sha256 is not None
+            and self.quarantine_evidence_ref is not None
+        )
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -191,6 +209,7 @@ class GmailAttachmentManifest:
             "size_bytes": self.size_bytes,
             "sha256": self.sha256,
             "quarantine_state": self.quarantine_state.value,
+            "quarantine_evidence_ref": self.quarantine_evidence_ref,
             "raw_bytes_present": False,
             "model_usable": self.model_usable(),
         }
@@ -294,18 +313,31 @@ class GmailThreadProjection:
 class GmailApprovedAttachment:
     attachment_ref: str
     filename: str
+    mime_type: str
+    size_bytes: int
     sha256: str
+    quarantine_evidence_ref: str
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "attachment_ref", _safe_ref(self.attachment_ref, "attachment_ref"))
         object.__setattr__(self, "filename", _bounded_text(self.filename, "filename", 512))
+        object.__setattr__(self, "mime_type", _bounded_text(self.mime_type, "mime_type", 255))
+        object.__setattr__(self, "size_bytes", _size(self.size_bytes, "size_bytes"))
         object.__setattr__(self, "sha256", _fingerprint(self.sha256, "sha256"))
+        object.__setattr__(
+            self,
+            "quarantine_evidence_ref",
+            _safe_ref(self.quarantine_evidence_ref, "quarantine_evidence_ref"),
+        )
 
-    def canonical_dict(self) -> dict[str, str]:
+    def canonical_dict(self) -> dict[str, Any]:
         return {
             "attachment_ref": self.attachment_ref,
             "filename": self.filename,
+            "mime_type": self.mime_type,
+            "size_bytes": self.size_bytes,
             "sha256": self.sha256,
+            "quarantine_evidence_ref": self.quarantine_evidence_ref,
         }
 
 
