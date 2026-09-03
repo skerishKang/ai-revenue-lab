@@ -349,14 +349,17 @@
   messageObserver.observe(messageList, { childList: true, subtree: true });
   messageList.addEventListener("padiem:message-lifecycle", enhanceAllAnswers);
 
+  function isAuthenticated() {
+    return Boolean(loginButton && loginButton.dataset.authenticated === "true" && loginButton.disabled === false);
+  }
+
   if (loginButton) {
     const authObserver = new MutationObserver(() => {
-      const loggedIn = loginButton.textContent.trim() === "로그아웃" && loginButton.disabled === false;
-      if (loggedIn) loadOutputs();
+      if (isAuthenticated()) loadOutputs();
       else disableOutputs();
     });
     authObserver.observe(loginButton, { childList: true, subtree: true, attributes: true });
-    if (loginButton.textContent.trim() === "로그아웃" && loginButton.disabled === false) loadOutputs();
+    if (isAuthenticated()) loadOutputs();
     else disableOutputs();
   } else {
     disableOutputs();
