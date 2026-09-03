@@ -65,21 +65,17 @@
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
+  const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const binaryDocuments = window.PadiemBinaryDocuments;
 
-  const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
-  const MAX_DOCUMENT_BYTES = 96 * 1024;
-  const MAX_DOCUMENT_CHARS = 40000;
-  const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-  const ALLOWED_DOCUMENT_TYPES = new Set(["text/plain", "text/markdown", "text/csv", "application/json"]);
-  const DOCUMENT_EXTENSION_TYPES = new Map([
-    [".txt", "text/plain"],
-    [".md", "text/markdown"],
-    [".markdown", "text/markdown"],
-    [".csv", "text/csv"],
-    [".json", "application/json"],
-  ]);
-  const DEFAULT_NOTE = "사진과 TXT·Markdown·CSV·JSON 문서 한 개를 첨부할 수 있습니다. PDF·Office 문서는 아직 지원하지 않습니다.";
+  const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
+  const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
+  const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;
+  const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
+  const ALLOWED_DOCUMENT_TYPES = new Set(attachmentCapabilities.textDocuments.flatMap((format) => format.mediaTypes));
+  const DOCUMENT_EXTENSION_TYPES = new Map(
+    attachmentCapabilities.textDocuments.flatMap((format) => format.extensions.map((extension) => [extension, format.mediaTypes[0]]))
+  );
 
   let inFlight = false;
   let activeRequestController = null;
@@ -95,8 +91,11 @@
   let editingProjectId = null;
   let dialogProjectFiles = [];
 
+  function attachmentCopy() {
+    return attachmentCapabilities.copy(document.documentElement.lang);
+  }
   function idleNote() {
-    return activeProject ? `‘${activeProject.name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.` : DEFAULT_NOTE;
+    return activeProject ? `‘${activeProject.name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.` : attachmentCopy().idleNote;
   }
   function setNote(text, state = "normal") {
     runtimeNote.textContent = text;
@@ -309,19 +308,19 @@
   }
   async function readDocumentFile(file) {
     const mediaType = documentMediaType(file);
-    if (!mediaType) throw new Error("현재는 TXT, Markdown, CSV, JSON 문서만 지원합니다. PDF·Office 문서는 아직 지원하지 않습니다.");
-    if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) throw new Error("텍스트 문서는 96 KiB 이하만 첨부할 수 있습니다.");
+    if (!mediaType) throw new Error(attachmentCopy().unsupportedFormat);
+    if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) throw new Error(attachmentCopy().textTooLarge);
     const raw = await readAsText(file);
     if (typeof raw !== "string") throw new Error("문서를 읽지 못했습니다.");
     const text = raw.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     if (!text.trim()) throw new Error("빈 문서는 첨부할 수 없습니다.");
-    if (text.length > MAX_DOCUMENT_CHARS) throw new Error("문서는 40,000자 이하만 첨부할 수 있습니다.");
+    if (text.length > MAX_DOCUMENT_CHARS) throw new Error(attachmentCopy().textTooLong);
     if (text.includes("\u0000")) throw new Error("바이너리 파일은 텍스트 문서로 첨부할 수 없습니다.");
     return { type: "document", name: file.name || "document.txt", mediaType, text, byteSize: file.size };
   }
   async function selectImage(file) {
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error("JPEG, PNG, WebP 사진만 첨부할 수 있습니다.");
-    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error("사진은 4 MiB 이하만 첨부할 수 있습니다.");
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
+    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
     const dataUrl = await readAsDataUrl(file);
     const expectedPrefix = `data:${file.type};base64,`;
     if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error("사진 형식을 확인할 수 없습니다.");
@@ -687,7 +686,7 @@
       await loadProjects();
       if (deletingActiveProject) {
         renderProjectState();
-        setNote(DEFAULT_NOTE);
+        setNote(idleNote());
       }
       input.focus();
     } catch (error) {
@@ -1099,8 +1098,11 @@
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
   });
+  window.addEventListener("padiem:localechange", () => {
+    if (!selectedAttachment) setNote(idleNote());
+  });
 
-  setNote(DEFAULT_NOTE);
+  setNote(idleNote());
   renderProjectState();
   updateComposer();
   loadAuthStatus();
