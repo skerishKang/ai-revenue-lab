@@ -1,0 +1,14 @@
+{
+  "contract_version": "b14-cloudflare-deployment-scope.v1",
+  "worker_service_name": "ai-revenue-korean-ai-platform",
+  "repository_root": "apps/korean-ai-platform",
+  "cloudflare_root_directory": "apps/korean-ai-platform",
+  "repository_relative_watch_paths": [
+    "apps/korean-ai-platform/*"
+  ],
+  "shared_monorepo_dependency_paths": [],
+  "watch_path_authority": "external_cloudflare_workers_builds",
+  "repository_guard_only": true,
+  "production_deploy_authority": false,
+  "security_certification": false
+}
