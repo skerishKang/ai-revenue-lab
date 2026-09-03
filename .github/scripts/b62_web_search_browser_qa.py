@@ -76,8 +76,8 @@ async def _run_view(
         raise AssertionError("web-search composer control must be visible and enabled")
     if not await web_starter.is_visible() or await web_starter.is_disabled():
         raise AssertionError("web-search starter must be visible and enabled")
-    if not await deep_button.is_disabled():
-        raise AssertionError("deep research must remain disabled in mock runtime")
+    if await deep_button.is_visible():
+        raise AssertionError("deep research must be hidden when unavailable in mock runtime")
 
     if mobile and not await page.locator("#mobileMenu").is_visible():
         raise AssertionError("mobile menu must remain visible on mobile viewport")
