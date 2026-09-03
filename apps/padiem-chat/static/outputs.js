@@ -333,13 +333,19 @@
   function normalizeAuthProjection() {
     if (!loginButton) return false;
     const raw = loginButton.textContent.trim();
-    if (raw === "로그아웃" || raw === "Log out") loginButton.dataset.authenticated = "true";
-    else if (raw === "로그인" || raw === "Log in") loginButton.dataset.authenticated = "false";
+    let projectedState = loginButton.dataset.authenticated;
+    if (raw === "로그아웃" || raw === "Log out") projectedState = "true";
+    else if (raw === "로그인" || raw === "Log in") projectedState = "false";
+    if (projectedState && loginButton.dataset.authenticated !== projectedState) {
+      loginButton.dataset.authenticated = projectedState;
+    }
     const authenticated = loginButton.dataset.authenticated === "true" && loginButton.disabled === false;
     const locale = window.__padiemLocale;
     if (locale && typeof locale.text === "function") {
-      loginButton.textContent = locale.text(authenticated ? "logout" : "login");
-      loginButton.title = locale.text(loginButton.disabled ? "login-unavailable-title" : authenticated ? "logout-title" : "login-title");
+      const nextText = locale.text(authenticated ? "logout" : "login");
+      const nextTitle = locale.text(loginButton.disabled ? "login-unavailable-title" : authenticated ? "logout-title" : "login-title");
+      if (loginButton.textContent !== nextText) loginButton.textContent = nextText;
+      if (loginButton.title !== nextTitle) loginButton.title = nextTitle;
     }
     return authenticated;
   }
@@ -356,7 +362,7 @@
       normalizeAuthProjection();
       return;
     }
-    loginButton.dataset.authenticated = "true";
+    if (loginButton.dataset.authenticated !== "true") loginButton.dataset.authenticated = "true";
     normalizeAuthProjection();
   }
 
