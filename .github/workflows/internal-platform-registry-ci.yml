@@ -11,8 +11,6 @@ on:
       - 'apps/portfolio-console/tests/internal-platform-registry.test.js'
       - '.github/workflows/internal-platform-registry-ci.yml'
   push:
-    branches:
-      - main
     paths:
       - 'docs/internal-platform/**'
       - 'apps/portfolio-console/internal-platform-*.js'
