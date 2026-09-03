@@ -330,20 +330,34 @@
   messageObserver.observe(messageList, { childList: true, subtree: true });
   messageList.addEventListener("padiem:message-lifecycle", enhanceAllAnswers);
 
+  function normalizeAuthProjection() {
+    if (!loginButton) return false;
+    const raw = loginButton.textContent.trim();
+    if (raw === "로그아웃" || raw === "Log out") loginButton.dataset.authenticated = "true";
+    else if (raw === "로그인" || raw === "Log in") loginButton.dataset.authenticated = "false";
+    const authenticated = loginButton.dataset.authenticated === "true" && loginButton.disabled === false;
+    const locale = window.__padiemLocale;
+    if (locale && typeof locale.text === "function") {
+      loginButton.textContent = locale.text(authenticated ? "logout" : "login");
+      loginButton.title = locale.text(loginButton.disabled ? "login-unavailable-title" : authenticated ? "logout-title" : "login-title");
+    }
+    return authenticated;
+  }
+
   function isAuthenticated() {
-    const current = Boolean(loginButton && loginButton.dataset.authenticated === "true" && loginButton.disabled === false);
+    const current = normalizeAuthProjection();
     if (current) lastAuthenticated = true;
     else if (loginButton && loginButton.dataset.authenticated === "false") lastAuthenticated = false;
     return current;
   }
 
   function preserveAuthenticatedLocaleProjection() {
-    if (!lastAuthenticated || !loginButton || loginButton.disabled) return;
-    const locale = window.__padiemLocale;
-    if (!locale || typeof locale.text !== "function") return;
+    if (!lastAuthenticated || !loginButton || loginButton.disabled) {
+      normalizeAuthProjection();
+      return;
+    }
     loginButton.dataset.authenticated = "true";
-    loginButton.textContent = locale.text("logout");
-    loginButton.title = locale.text("logout-title");
+    normalizeAuthProjection();
   }
 
   if (loginButton) {
