@@ -12,18 +12,20 @@ from dataclasses import dataclass
 import json
 from typing import Any, Callable, Mapping, Protocol
 
-from padiem_ai_core import (
-    AgentProfile,
+from padiem_ai_core.contracts import AgentProfile
+from padiem_ai_core.execution_runtime import (
     ExecutionRequest,
     ExecutionResult,
     ExecutionRuntimeError,
+    MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
+)
+from padiem_ai_core.grounding_runtime import (
     GroundedResearchResult,
     GroundedResearchRuntime,
     GroundedSynthesisResult,
     GroundingRuntimeError,
-    MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS,
-    MAX_QUERY_CHARS,
 )
+from padiem_ai_core.web_runtime import MAX_QUERY_CHARS
 
 from app.service import (
     ServiceContractError,
