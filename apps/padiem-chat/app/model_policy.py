@@ -108,14 +108,17 @@ def product_tier_name(model_id: str) -> str:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
 
 
-def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
+def resolve_model_policy(
+    messages: list[dict[str, str]],
+    *,
+    require_executable: bool = True,
+) -> ResolvedModelPolicy:
     """Resolve ordinary B62 chat to a Padiem product tier.
 
     Ordinary chat defaults to executable Padiem Pro. Hidden ``/plus``, ``/pro``
-    and ``/max`` selectors are owner/test controls. A known tier whose backing
-    route is HOLD fails closed before B14 dispatch; B62 never silently replaces
-    it with another volatile free model. Provider/model identities remain outside
-    the browser-facing product contract.
+    and ``/max`` selectors are owner/test controls. Callers that only need to
+    recognize product identity may set ``require_executable=False``; every path
+    that can reach B14 execution must retain the default fail-closed gate.
     """
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
@@ -140,7 +143,7 @@ def resolve_model_policy(messages: list[dict[str, str]]) -> ResolvedModelPolicy:
             "model_alias_requires_prompt",
             "AI 등급 선택 뒤에 질문을 입력해 주세요.",
         )
-    if not model_policy_is_executable(model_id):
+    if require_executable and not model_policy_is_executable(model_id):
         raise ModelPolicyError(
             "tier_unavailable",
             "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
