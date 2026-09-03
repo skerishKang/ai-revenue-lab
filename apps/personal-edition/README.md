@@ -1,12 +1,20 @@
 # Personal Edition
 
-Status: **Active first revenue experiment**
+Status: **Active Business 1 product**
 
 Personal Edition transforms a user-supplied conversation, note, journal entry, or voice transcript into a polished recurring letter or compact magazine. Explicit feedback must materially change the next edition.
 
+## Current governance
+
+Personal Edition owns its product-specific grounding, prohibited-inference, editorial, adaptation, privacy, and human-review quality contracts.
+
+General provider/model selection is no longer governed by the historical Personal Edition benchmark program. Portfolio-wide provider/model eligibility, availability, cost/latency/quality policy, fallback, and route evidence belong to **Business 14 · Korean AI Platform / Router Core (#371)**.
+
+Historical benchmark/pilot Issues **#2, #12, #40, and #49** were closed `not_planned` on 2026-08-30. The old `scripts/benchmark.py` utility remains in the tree for historical/product-local diagnostic use, but it is not authoritative for new cross-provider/model role decisions in its current legacy form. Historical PR #50 remains closed and unmerged.
+
 ## Current scope
 
-The first paid pilot tests:
+The historical first paid-pilot experiment tested:
 
 ```text
 user material
@@ -18,12 +26,17 @@ user material
 → visibly adapted next edition
 ```
 
+This flow remains useful product history, but the July HY3 benchmark and KRW 4,900 pilot plan are not current execution or pricing authority. Any new paid pilot must be opened against the current B1 product/runtime contract.
+
 ## Canonical documents
 
 - `../../docs/decisions/ADR-0001-first-revenue-experiment.md`
 - `../../docs/decisions/ADR-0002-product-workspaces.md`
 - `../../docs/product/PERSONAL_EDITION_MVP_CONTRACT.md`
 - `../../docs/architecture/PERSONAL_EDITION_MVP_ARCHITECTURE.md`
+
+Historical experiment reference (provenance only, not current model-selection authority):
+
 - `../../docs/experiments/HY3_PERSONAL_EDITION_BENCHMARK.md`
 
 ## Implementation rule
@@ -188,9 +201,11 @@ Fail-closed behavior:
 - In production (`APP_ENV=production`), `AI_BASE_URL` must use HTTPS.
 - Credentials are never printed, logged, or stored in database rows.
 
-## Phase 5A — Benchmark tasks
+This direct configuration remains an application compatibility path. It does not make Personal Edition the portfolio authority for provider/model strategy; new general routing/model-selection decisions belong to Business 14 / Router Core (#371).
 
-The benchmark runner executes five distinct production-path tasks:
+## Legacy Phase 5A benchmark tasks — non-authoritative
+
+The benchmark runner executes five distinct production-path tasks, but this runner is now a **legacy/product-local diagnostic utility**. It must not be used as the authoritative basis for new cross-provider/model ranking or role assignment without a fresh scoped issue and repair/validation against the current architecture.
 
 ```bash
 python3 -m scripts.benchmark run <task> [options]
@@ -220,7 +235,7 @@ python3 -m scripts.benchmark run <task> [options]
 python3 -m scripts.benchmark run first_edition --fixture korean_founder --repeat 3 --db var/benchmark.db
 ```
 
-## Phase 5A — Repeated benchmark runs
+## Legacy Phase 5A — Repeated benchmark runs
 
 Each repetition uses isolated synthetic participant and input identities derived from the benchmark name, fixture name, and run index. No repetition inherits editions, feedback, or idempotency records from another.
 
@@ -228,7 +243,7 @@ Durable evidence is stored in a file-backed SQLite database (default: `var/bench
 
 No real participant data is used in any benchmark run.
 
-## Phase 5A — Human correction time
+## Legacy Phase 5A — Human correction time
 
 ### During benchmark execution
 
@@ -252,7 +267,7 @@ python3 -m scripts.pilot_ops update-correction --run-id <RECORD_ID> --minutes 12
 
 Validation: minutes must be ≥ 0.0. The value is persisted in the `benchmark_runs` and `pilot_ops_records` tables.
 
-## Phase 5A — Benchmark and pilot evidence
+## Legacy Phase 5A — Benchmark and pilot evidence
 
 ### Database location
 
@@ -277,7 +292,9 @@ The `--export-safe` flag:
 
 No credentials, API keys, or full generated private output appear in exported evidence.
 
-## Phase 5A — Manual pilot workflow
+## Historical Phase 5A — Manual pilot workflow
+
+The following records the old pilot workflow for provenance. **It does not authorize a current paid pilot, participant study, pricing offer, or revenue claim.**
 
 ### Invitation and consent
 
@@ -286,17 +303,17 @@ No credentials, API keys, or full generated private output appear in exported ev
 3. Participant enters the token at `/p/access`.
 4. Participant submits input at `/p/p1/input` with consent confirmed.
 
-### Free sample and paid editions
+### Historical free-sample and paid-edition hypothesis
 
-- One sample edition may be free.
-- Seven subsequent editions for KRW 4,900 is a hypothesis, not proof of payment or revenue.
-- No payment gateway, email automation, or public signup is implemented.
+- One sample edition could be free under the old experiment.
+- Seven subsequent editions for KRW 4,900 was a historical hypothesis, not current pricing and not proof of payment or revenue.
+- No payment gateway, email automation, or public signup is implemented by this historical workflow.
 
 ### Review before publication
 
 Every edition passes through `pending_review` state. An administrator must explicitly publish or reject each edition. Automatic publication is prohibited.
 
-## Phase 5A — Payment evidence restrictions
+## Historical Phase 5A — Payment evidence restrictions
 
 Payment evidence records must never contain:
 
@@ -309,7 +326,7 @@ Payment evidence records must never contain:
 
 The `PaymentEvidenceRecord` model enforces these restrictions at construction time.
 
-## Phase 5A — Deletion and revocation
+## Historical Phase 5A — Deletion and revocation
 
 ### Operator deletion command
 
@@ -341,8 +358,9 @@ The `export-evidence --export-safe` command pseudonymizes participant identifier
 
 ## Known limitations
 
+- The legacy benchmark runner is not authoritative for new cross-provider/model decisions; closed Issue #49 records known historical classification/accounting defects that were not merged as a repair.
+- The old Gemini 15-case report is diagnostic evidence only and must not be presented as an accepted cross-model ranking.
 - No live provider call was performed in automated tests. All tests use `MockProvider` or monkeypatched adapters.
-- No real participant, payment, or revenue exists. All data is synthetic.
-- No payment gateway, email automation, public signup, or automatic publication is implemented.
-- The KRW 4,900 for seven editions is a pricing hypothesis, not proven revenue.
+- No current participant, payment, or revenue claim is authorized by this README.
+- The KRW 4,900 for seven editions is historical pricing hypothesis, not current pricing or proven revenue.
 - External provider configuration requires manual environment setup.
