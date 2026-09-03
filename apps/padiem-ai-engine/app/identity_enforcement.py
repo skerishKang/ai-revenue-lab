@@ -80,7 +80,7 @@ def parse_caller_registry_v1(raw: str) -> EngineCallerRegistry:
 
     try:
         payload = json.loads(raw)
-    except ValueError:
+    except (ValueError, RecursionError):
         raise ServiceIdentityError(
             "invalid_caller_registry",
             "Padiem AI Engine caller registry V1 is not valid JSON",
@@ -122,10 +122,16 @@ def parse_caller_registry_v1(raw: str) -> EngineCallerRegistry:
                 "invalid_caller_registry",
                 "Padiem AI Engine caller registry V1 caller entries must contain exactly caller_id, credential, and allowed_app_ids",
             )
+        allowed_app_ids = entry["allowed_app_ids"]
+        if not isinstance(allowed_app_ids, list):
+            raise ServiceIdentityError(
+                "invalid_caller_registry",
+                "Padiem AI Engine caller registry V1 allowed_app_ids must be a JSON array",
+            )
         callers.append(
             TrustedEngineCaller(
                 caller_id=entry["caller_id"],
-                allowed_app_ids=tuple(entry["allowed_app_ids"]),
+                allowed_app_ids=tuple(allowed_app_ids),
                 credential_sha256=caller_secret_digest(entry["credential"]),
             )
         )
