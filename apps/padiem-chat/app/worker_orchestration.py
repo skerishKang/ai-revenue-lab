@@ -16,6 +16,7 @@ from padiem_ai_engine_client import (
     PadiemAiEngineClient,
 )
 
+from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
 from .worker_config import binding_value
 
@@ -108,8 +109,14 @@ def build_orchestration_bridge(
     settings: Any,
     db_binding: Any,
     request_factory: Any,
+    canonical_subject_resolver: Any | None = None,
 ) -> B62EngineOrchestrationBridge | None:
-    """Fail closed unless every server-owned activation prerequisite is present."""
+    """Fail closed unless every server-owned activation prerequisite is present.
+
+    Supplying a canonical subject resolver opts this source composition into the
+    #1228 Control Plane identity path. Ordinary Worker composition currently does
+    not supply one, so Production behavior is unchanged until separately activated.
+    """
     if _server_text(env, ORCHESTRATION_ENABLED_ENV).lower() != "true":
         return None
     if getattr(settings, "runtime_mode", "mock") != "b14":
@@ -131,7 +138,11 @@ def build_orchestration_bridge(
         )
     except (TypeError, ValueError):
         return None
-    return B62EngineOrchestrationBridge(
-        client=client,
-        store=D1OrchestrationStateStore(db_binding),
-    )
+    store = D1OrchestrationStateStore(db_binding)
+    if canonical_subject_resolver is not None:
+        return CanonicalSubjectB62EngineOrchestrationBridge(
+            client=client,
+            store=store,
+            canonical_subject_resolver=canonical_subject_resolver,
+        )
+    return B62EngineOrchestrationBridge(client=client, store=store)
