@@ -1,0 +1,135 @@
+.ip-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.ip-search-field {
+  display: grid;
+  gap: 6px;
+  width: min(520px, 100%);
+}
+
+.ip-search-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #8b95a7);
+}
+
+.ip-search-field input {
+  width: 100%;
+}
+
+.ip-intro {
+  margin: 0 0 18px;
+  color: var(--text-muted, #8b95a7);
+  line-height: 1.55;
+}
+
+.ip-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ip-item {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.7fr) minmax(220px, 1.7fr) minmax(210px, 1.5fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid var(--border, rgba(148, 163, 184, 0.2));
+  border-radius: 14px;
+  background: var(--surface, rgba(15, 23, 42, 0.72));
+  cursor: pointer;
+}
+
+.ip-item:hover,
+.ip-item:focus-visible {
+  border-color: var(--accent, #7c9cff);
+  outline: none;
+}
+
+.ip-id {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent, #8aa4ff);
+}
+
+.ip-title-group,
+.ip-source-group {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ip-title {
+  font-weight: 750;
+}
+
+.ip-korean,
+.ip-role,
+.ip-source-label {
+  color: var(--text-muted, #8b95a7);
+  font-size: 0.86rem;
+}
+
+.ip-source {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.ip-status {
+  white-space: nowrap;
+}
+
+.ip-dialog-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.ip-dialog-list li + li {
+  margin-top: 5px;
+}
+
+.ip-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted, #8b95a7);
+  border: 1px dashed var(--border, rgba(148, 163, 184, 0.25));
+  border-radius: 14px;
+}
+
+@media (max-width: 900px) {
+  .ip-item {
+    grid-template-columns: minmax(92px, 0.7fr) 1.5fr auto;
+  }
+
+  .ip-source-group {
+    grid-column: 2 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .ip-toolbar {
+    display: block;
+  }
+
+  .ip-item {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+
+  .ip-title-group,
+  .ip-source-group {
+    grid-column: 1 / -1;
+  }
+
+  .ip-status {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

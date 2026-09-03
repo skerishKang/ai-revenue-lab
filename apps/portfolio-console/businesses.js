@@ -6,10 +6,21 @@
  *  The sole identity source is business-manifest.js → window.ARL_MANIFEST.
  *  Review deployment metadata is loaded from review-surfaces-396.js.
  *  Business launcher behavior is layered on top without changing app.js.
+ *  Internal Platform is loaded as a separate manifest/view and never enters
+ *  the Business-number authority array.
  */
 
 (function () {
   "use strict";
+
+  // Internal Platform is deliberately independent from Business manifest
+  // validity. Its own manifest/view remains discoverable even if Business
+  // identity data fails closed.
+  if (typeof document !== "undefined" && document.readyState === "loading") {
+    document.write('<script src="./internal-platform-manifest.js?v=internal-platform-20260903-1"><\/script>');
+    document.write('<script src="./internal-platform-console.js?v=internal-platform-20260903-1"><\/script>');
+  }
+
   var manifest = window.ARL_MANIFEST;
   if (!manifest || !Array.isArray(manifest)) {
     window.ARL_BUSINESSES = [];
