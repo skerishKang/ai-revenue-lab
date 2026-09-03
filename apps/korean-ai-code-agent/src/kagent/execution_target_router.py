@@ -10,6 +10,7 @@ from .contracts import ContractError
 
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
+_WINDOWS_DRIVE_PATH_RE = re.compile(r"^[A-Za-z]:/")
 _MAX_MANIFEST_PATHS = 256
 _FORBIDDEN_TRANSFER_PARTS = frozenset({
     ".env",
@@ -33,13 +34,15 @@ def _manifest_path(value: str) -> str:
     if not isinstance(value, str) or not value.strip() or len(value) > 1024:
         raise ContractError("hybrid manifest path must be bounded")
     raw = value.strip().replace("\\", "/")
+    if _WINDOWS_DRIVE_PATH_RE.match(raw):
+        raise ContractError("hybrid manifest paths must be relative and traversal-free")
     path = PurePosixPath(raw)
     if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
         raise ContractError("hybrid manifest paths must be relative and traversal-free")
     lowered = {part.casefold() for part in path.parts}
     if lowered & _FORBIDDEN_TRANSFER_PARTS:
         raise ContractError("hybrid manifest contains a credential-sensitive path")
-    if any(part.casefold().endswith(('.pem', '.key', '.pfx', '.p12')) for part in path.parts):
+    if any(part.casefold().endswith((".pem", ".key", ".pfx", ".p12")) for part in path.parts):
         raise ContractError("hybrid manifest contains a private-key-like path")
     return str(path)
 
