@@ -27,6 +27,10 @@ from padiem_ai_core.grounding_runtime import (
 )
 from padiem_ai_core.web_runtime import MAX_QUERY_CHARS
 
+from app.evidence_projection import (
+    EngineEvidenceProjectionError,
+    project_terminal_evidence,
+)
 from app.service import (
     ServiceContractError,
     ServiceResponse,
@@ -214,11 +218,16 @@ def _public_result(
     # Keep the research contract narrower than the generic /execute contract.
     # B14 route/model/provider metadata and execution metadata are intentionally
     # not projected upward; only the answer and Core-owned public evidence are.
+    # Evidence is projected through the single canonical #1745 Engine projection.
+    try:
+        evidence_fields = project_terminal_evidence(result)
+    except EngineEvidenceProjectionError as exc:
+        return _service_error(exc.code, exc.safe_message, status_code=500)
     body: dict[str, Any] = {
         "ok": True,
         "operation": request.operation,
         "answer": synthesis.answer,
-        "sources": [item.to_public_dict() for item in result.prepared.evidence],
+        **evidence_fields,
         "research": None,
     }
     if isinstance(result, GroundedResearchResult):

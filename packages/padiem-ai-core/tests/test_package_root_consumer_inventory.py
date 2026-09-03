@@ -85,6 +85,19 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "request_fingerprint",
         }
     ),
+    "apps/padiem-ai-engine/app/evidence_projection.py": frozenset(
+        {
+            "AcceptedVerification",
+            "Evidence",
+            "EvidenceGraph",
+            "ExecutionResult",
+            "GroundedResearchResult",
+            "GroundedSynthesisResult",
+            "OrchestrationResult",
+            "StreamingExecutionEvent",
+            "project_grounded_citations",
+        }
+    ),
     "apps/padiem-ai-engine/app/execution_admission_service.py": frozenset(
         {
             "ExecutionContext",

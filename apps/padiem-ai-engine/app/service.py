@@ -22,6 +22,10 @@ from app.context_permission_wire import (
     parse_engine_context_permission,
     request_with_allowed_context_refs,
 )
+from app.evidence_projection import (
+    EngineEvidenceProjectionError,
+    project_terminal_evidence,
+)
 from app.execution_context_wire import parse_execution_context
 
 EXECUTE_PATH = "/internal/v1/execute"
@@ -284,9 +288,18 @@ class EngineService:
 
         if not isinstance(result, ExecutionResult):
             return _service_error("invalid_execution_result", "Padiem AI Engine returned an invalid execution result.", status_code=500)
+        # #1745 parity chokepoint: the completed-run terminal body shares the one
+        # canonical Engine evidence projection with stream and research. Core's
+        # ExecutionResult carries no grounded evidence, so nothing is projected;
+        # absence is normalized unavailable, never a fabricated verified-empty set.
+        try:
+            evidence_fields = project_terminal_evidence(result)
+        except EngineEvidenceProjectionError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=500)
         body: dict[str, Any] = {
             "ok": True,
             "answer": result.answer,
+            **evidence_fields,
             "route": result.route.to_public_dict(),
             "metadata": result.metadata.to_public_dict(),
         }

@@ -19,6 +19,7 @@ from padiem_ai_core import (
     StreamingExecutionEvent,
 )
 
+from app.evidence_projection import project_terminal_evidence
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
     ServiceContractError,
@@ -77,7 +78,18 @@ def _encode_line(payload: dict[str, Any]) -> str:
 
 
 def _event_line(event: StreamingExecutionEvent) -> str:
-    return _encode_line({"ok": True, "event": event.to_public_dict()})
+    # #1745 parity chokepoint: the settling terminal event line is extended with
+    # the same canonical Engine evidence projection used by execute and research.
+    # Core's streaming contract carries no grounded evidence, so today this adds
+    # nothing and stream output is byte-identical; when Core settles evidence on
+    # a terminal event, stream converges with non-stream automatically instead
+    # of forking a second streaming evidence protocol.
+    return _encode_line(
+        {
+            "ok": True,
+            "event": {**event.to_public_dict(), **project_terminal_evidence(event)},
+        }
+    )
 
 
 def _error_line(response: ServiceResponse) -> str:

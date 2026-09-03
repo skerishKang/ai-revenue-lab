@@ -669,6 +669,10 @@ class OrchestrationEngineService:
         request_fingerprint_value: str | None = None,
     ) -> dict[str, Any]:
         body = result.to_public_dict()
+        # #1745: Core's OrchestrationResult.to_public_dict evidence block is
+        # forwarded unmodified. Orchestration reuses the same canonical Evidence
+        # model (Core citation authority behind app.evidence_projection) and the
+        # Engine never forks a second orchestration-specific evidence shape.
         pause = result.approval_pause
         if pause is not None:
             if self._approval_decision_verifier is None or not self._continuation_store_is_explicit:
