@@ -12,6 +12,7 @@ from app.contract_manifest import (
 from app.orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
+from app.web_research_service import RESEARCH_PATH
 
 
 def test_manifest_matches_existing_internal_v1_routes() -> None:
@@ -27,16 +28,18 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", ORCHESTRATE_PATH),
         ("POST", ORCHESTRATE_RESUME_PATH),
         ("POST", ORCHESTRATE_CANCEL_PATH),
+        ("POST", RESEARCH_PATH),
     ]
 
 
-def test_orchestration_routes_declared_by_manifest() -> None:
+def test_orchestration_and_research_routes_declared_by_manifest() -> None:
     public = current_engine_contract_manifest().to_public_dict()
     endpoints = {(item["method"], item["path"]) for item in public["endpoints"]}
 
     assert ("POST", ORCHESTRATE_PATH) in endpoints
     assert ("POST", ORCHESTRATE_RESUME_PATH) in endpoints
     assert ("POST", ORCHESTRATE_CANCEL_PATH) in endpoints
+    assert ("POST", RESEARCH_PATH) in endpoints
 
 
 def test_current_completed_streaming_and_orchestration_features_are_available() -> None:
@@ -68,6 +71,9 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "approval_continuation",
         "execution_idempotency_replay_completed",
         "execution_idempotency_replay_streaming",
+        "web_search_projection",
+        "web_fetch_projection",
+        "deep_research_projection",
         "tool_runtime_projection",
         "skill_runtime_projection",
         "agent_runtime_projection",
@@ -100,6 +106,9 @@ def test_wrong_major_fails_closed() -> None:
 def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
     for feature_id in (
         "approval_continuation",
+        "web_search_projection",
+        "web_fetch_projection",
+        "deep_research_projection",
         "memory_rag_projection",
         "public_browser_api",
         "provider_selection",
