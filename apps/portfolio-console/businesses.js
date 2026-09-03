@@ -6,6 +6,8 @@
  *  The sole identity source is business-manifest.js → window.ARL_MANIFEST.
  *  Review deployment metadata is loaded from review-surfaces-396.js.
  *  Business launcher behavior is layered on top without changing app.js.
+ *  Internal Platform is loaded as a separate manifest/view and never enters
+ *  the Business-number authority array.
  */
 
 (function () {
@@ -24,6 +26,8 @@
   // only so its DOMContentLoaded decorator is registered before the audit's final
   // owner/external presentation pass; the audit therefore owns the final labels.
   if (typeof document !== "undefined" && document.readyState === "loading") {
+    document.write('<script src="./internal-platform-manifest.js?v=internal-platform-20260903-1"><\/script>');
+    document.write('<script src="./internal-platform-console.js?v=internal-platform-20260903-1"><\/script>');
     document.write('<link rel="stylesheet" href="./business-launcher.css?v=business-launcher-20260809-1">');
     document.write('<script src="./review-surfaces-396.js?v=review-surfaces-20260809-2"><\/script>');
     document.write('<script src="./business-launcher.js?v=business-launcher-20260809-1"><\/script>');
