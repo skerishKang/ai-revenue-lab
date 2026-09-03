@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
+
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse, Response
 
@@ -16,6 +18,7 @@ from .auth import (
     verify_oauth_state,
 )
 from .config import Settings
+from .control_plane_identity import TrustedProductAuthEvidence, bridge_trusted_product_auth
 from .history import HistoryStore
 
 
@@ -77,6 +80,46 @@ async def google_start(request: Request) -> Response:
     return response
 
 
+async def _write_identity_shadow_after_login(
+    request: Request,
+    *,
+    product_user_id: str,
+    provider_subject: str,
+    authenticated_at: datetime,
+    expires_at: datetime,
+) -> None:
+    """Best-effort shadow write; never turns migration telemetry into login authority.
+
+    The canonical values still come only from the injected trusted Control Plane
+    authority. Failure here means the later shared-authority path has no usable
+    shadow and therefore fails closed; the existing B62 Google login remains
+    available during the migration/shadow phase.
+    """
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    if authority is None or shadow_store is None:
+        return
+    try:
+        bridged = await bridge_trusted_product_auth(
+            authority,
+            TrustedProductAuthEvidence(
+                product_user_id=product_user_id,
+                provider="google",
+                provider_subject=provider_subject,
+                authenticated_at=authenticated_at,
+                expires_at=expires_at,
+            ),
+            now=authenticated_at,
+        )
+        await shadow_store.save_projection(bridged)
+    except Exception:
+        # Shadow/parity collection is intentionally not the compatibility login
+        # authority. Shared-authority consumers independently fail closed if the
+        # projection/current canonical session cannot later be resolved.
+        return
+
+
 async def google_callback(request: Request) -> Response:
     if not auth_ready(request):
         return _unavailable()
@@ -102,7 +145,10 @@ async def google_callback(request: Request) -> Response:
         profile = await store.upsert_google_user(
             identity["subject"], identity["email"], identity["name"], identity["picture"]
         )
-        session = create_session_token(settings, profile.id)
+        authenticated_epoch = int(datetime.now(timezone.utc).timestamp())
+        authenticated_at = datetime.fromtimestamp(authenticated_epoch, tz=timezone.utc)
+        expires_at = authenticated_at + timedelta(seconds=settings.session_max_age_seconds)
+        session = create_session_token(settings, profile.id, now=authenticated_epoch)
     except AuthError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
     except Exception:
@@ -110,6 +156,15 @@ async def google_callback(request: Request) -> Response:
             {"error": {"code": "auth_storage_error", "message": "로그인 정보를 저장하지 못했습니다. 다시 시도해 주세요."}},
             status_code=503,
         )
+
+    await _write_identity_shadow_after_login(
+        request,
+        product_user_id=profile.id,
+        provider_subject=identity["subject"],
+        authenticated_at=authenticated_at,
+        expires_at=expires_at,
+    )
+
     response = RedirectResponse("/", status_code=302)
     response.set_cookie(SESSION_COOKIE, session, **session_cookie_kwargs(settings))
     response.delete_cookie(OAUTH_STATE_COOKIE, path="/", secure=True, httponly=True, samesite="lax")
