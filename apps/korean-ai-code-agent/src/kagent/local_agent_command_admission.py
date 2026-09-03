@@ -284,6 +284,10 @@ class AdmittedLocalAgentExecutionBridge:
             raise ContractError("command run does not match the materialized local request")
         if request.device_id != session.device_id:
             raise ContractError("materialized local request device does not match the current session")
+        if request.requested_at < command.issued_at:
+            raise ContractError("materialized local request cannot predate the command envelope")
+        if request.requested_at > now or request.requested_at >= command.expires_at:
+            raise ContractError("materialized local request is outside the current command lifetime")
 
         fingerprint = command_request_fingerprint(request)
         evidence = self._client.resolve(
@@ -310,6 +314,8 @@ class AdmittedLocalAgentExecutionBridge:
             raise ContractError("trusted admission request fingerprint mismatch")
         if evidence.accepted_at < command.issued_at:
             raise ContractError("trusted admission cannot predate the command envelope")
+        if evidence.accepted_at < request.requested_at:
+            raise ContractError("trusted admission cannot predate local request materialization")
         if evidence.accepted_at > now:
             raise ContractError("trusted admission cannot be from the future")
         if evidence.expires_at > command.expires_at:
