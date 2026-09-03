@@ -1,0 +1,45 @@
+name: B53 Padiem Sidecar S0 CI
+
+on:
+  push:
+    branches:
+      - feat/1722-b53-padiem-sidecar-s0
+    paths:
+      - 'apps/portfolio-console/business-manifest.js'
+      - 'apps/portfolio-console/package.json'
+      - 'apps/portfolio-console/tests/padiem-sidecar-registry.test.js'
+      - 'docs/products/padiem-sidecar/**'
+      - '.github/workflows/b53-padiem-sidecar-s0-ci.yml'
+  pull_request:
+    paths:
+      - 'apps/portfolio-console/business-manifest.js'
+      - 'apps/portfolio-console/package.json'
+      - 'apps/portfolio-console/tests/padiem-sidecar-registry.test.js'
+      - 'docs/products/padiem-sidecar/**'
+      - '.github/workflows/b53-padiem-sidecar-s0-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  b53-sidecar-s0-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript syntax
+        run: |
+          node --check apps/portfolio-console/business-manifest.js
+          node --check apps/portfolio-console/tests/padiem-sidecar-registry.test.js
+
+      - name: Padiem Sidecar registry and docs contract
+        run: node apps/portfolio-console/tests/padiem-sidecar-registry.test.js
+
+      - name: Diff whitespace gate
+        run: git diff --check origin/${{ github.event.repository.default_branch }}...HEAD || git diff --check HEAD^
