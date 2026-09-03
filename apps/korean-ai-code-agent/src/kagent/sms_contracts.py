@@ -13,8 +13,8 @@ from .contracts import ContractError
 from .security import redact_secrets
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
+_PHONE_LIKE_RE = re.compile(r"^\+?[0-9][0-9() .\-]{6,30}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-MAX_SMS_TEXT_CHARS = 4000
 MAX_ALLOWED_RECIPIENTS = 10_000
 MAX_RUN_SENDS = 100
 MAX_WORKSPACE_HOURLY_SENDS = 1000
@@ -29,6 +29,13 @@ def _ref(value: str, field_name: str) -> str:
         raise ContractError(f"{field_name} must be a bounded safe reference")
     if redact_secrets(value) != value:
         raise ContractError(f"{field_name} must not contain credential material")
+    return value
+
+
+def _recipient_ref(value: str) -> str:
+    value = _ref(value, "recipient_ref")
+    if _PHONE_LIKE_RE.fullmatch(value):
+        raise ContractError("recipient_ref must be opaque and must not be a phone number")
     return value
 
 
@@ -114,7 +121,7 @@ class SmsBinding:
             raise ContractError("SMS sender profiles must be unique")
         if any(v.provider_ref != self.provider.provider_ref for v in self.senders):
             raise ContractError("sender provider must match binding provider")
-        recipients = tuple(_ref(v, "recipient_ref") for v in self.allowed_recipient_refs)
+        recipients = tuple(_recipient_ref(v) for v in self.allowed_recipient_refs)
         if not recipients or len(recipients) > MAX_ALLOWED_RECIPIENTS or len(recipients) != len(set(recipients)):
             raise ContractError("SMS recipients must be non-empty, unique and bounded")
         object.__setattr__(self, "allowed_recipient_refs", recipients)
@@ -133,7 +140,7 @@ class SmsBinding:
             and _ref(workspace_ref, "workspace_ref") == self.workspace_ref
             and sender is not None
             and sender.provider_registered
-            and _ref(recipient_ref, "recipient_ref") in self.allowed_recipient_refs
+            and _recipient_ref(recipient_ref) in self.allowed_recipient_refs
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -161,7 +168,7 @@ class SmsAdvertisingConsent:
     opt_out_ref: str | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "recipient_ref", _ref(self.recipient_ref, "recipient_ref"))
+        object.__setattr__(self, "recipient_ref", _recipient_ref(self.recipient_ref))
         object.__setattr__(self, "consent_ref", _ref(self.consent_ref, "consent_ref"))
         object.__setattr__(self, "consent_evidence_ref", _ref(self.consent_evidence_ref, "consent_evidence_ref"))
         object.__setattr__(self, "consented_at", _aware(self.consented_at, "consented_at"))
@@ -201,12 +208,7 @@ class SmsComplianceProjection:
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "scheduled_at", _aware(self.scheduled_at, "scheduled_at"))
-        for name in (
-            "sender_identity_present",
-            "advertisement_label_present",
-            "free_opt_out_present",
-            "has_promotional_content",
-        ):
+        for name in ("sender_identity_present", "advertisement_label_present", "free_opt_out_present", "has_promotional_content"):
             if not isinstance(getattr(self, name), bool):
                 raise ContractError(f"{name} must be bool")
 
@@ -273,8 +275,9 @@ class SmsOutboundMaterial:
     template_revision_ref: str | None = None
 
     def __post_init__(self) -> None:
-        for name in ("binding_ref", "workspace_ref", "provider_ref", "sender_ref", "recipient_ref", "workflow_ref"):
+        for name in ("binding_ref", "workspace_ref", "provider_ref", "sender_ref", "workflow_ref"):
             object.__setattr__(self, name, _ref(getattr(self, name), name))
+        object.__setattr__(self, "recipient_ref", _recipient_ref(self.recipient_ref))
         if not isinstance(self.purpose, SmsPurpose):
             try:
                 object.__setattr__(self, "purpose", SmsPurpose(self.purpose))
@@ -366,37 +369,24 @@ def sms_outbound_preflight(
     compliance: SmsComplianceProjection,
     advertising_consent: SmsAdvertisingConsent | None = None,
 ) -> SmsPreflightDecision:
-    if not all((
-        isinstance(binding, SmsBinding),
-        isinstance(material, SmsOutboundMaterial),
-        isinstance(approval, SmsOutboundApproval),
-        isinstance(intent, ConnectorWriteIntent),
-        isinstance(rate_budget, SmsRateBudget),
-        isinstance(compliance, SmsComplianceProjection),
-    )):
+    if not all((isinstance(binding, SmsBinding), isinstance(material, SmsOutboundMaterial), isinstance(approval, SmsOutboundApproval), isinstance(intent, ConnectorWriteIntent), isinstance(rate_budget, SmsRateBudget), isinstance(compliance, SmsComplianceProjection))):
         raise ContractError("invalid SMS preflight contract")
     current = _aware(now, "now")
 
-    if not binding.authorizes(
-        binding_ref=material.binding_ref,
-        workspace_ref=material.workspace_ref,
-        sender_ref=material.sender_ref,
-        recipient_ref=material.recipient_ref,
-    ):
+    if not binding.authorizes(binding_ref=material.binding_ref, workspace_ref=material.workspace_ref, sender_ref=material.sender_ref, recipient_ref=material.recipient_ref):
         sender = binding.sender(material.sender_ref)
         if sender is not None and not sender.provider_registered:
             return SmsPreflightDecision.SENDER_UNVERIFIED
         return SmsPreflightDecision.OUT_OF_SCOPE
     if material.provider_ref != binding.provider.provider_ref:
         return SmsPreflightDecision.OUT_OF_SCOPE
-
     if compliance.scheduled_at != material.scheduled_at:
         return SmsPreflightDecision.MATERIAL_CHANGED
     if compliance.has_promotional_content and material.purpose is not SmsPurpose.ADVERTISING:
         return SmsPreflightDecision.PURPOSE_MISMATCH
 
     if material.purpose is SmsPurpose.ADVERTISING:
-        if advertising_consent is None or not advertising_consent.active_at(current) or advertising_consent.recipient_ref != material.recipient_ref:
+        if advertising_consent is None or advertising_consent.recipient_ref != material.recipient_ref or not advertising_consent.active_at(current):
             return SmsPreflightDecision.CONSENT_REQUIRED
         if not compliance.advertising_fields_present():
             return SmsPreflightDecision.COMPLIANCE_REQUIRED
@@ -405,7 +395,6 @@ def sms_outbound_preflight(
 
     if not rate_budget.allows(workspace_ref=material.workspace_ref, provider_ref=material.provider_ref, now=current):
         return SmsPreflightDecision.RATE_LIMIT
-
     if intent.connector_id != "sms" or intent.tool_name != material.tool_name:
         return SmsPreflightDecision.WRONG_CONNECTOR_OR_TOOL
     if intent.binding_ref != material.binding_ref or intent.target_ref != material.target_ref:
