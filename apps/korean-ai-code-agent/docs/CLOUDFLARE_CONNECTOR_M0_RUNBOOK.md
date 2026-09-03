@@ -67,11 +67,11 @@ A Worker deployment may contain one version at 100% or two versions whose percen
 
 A Worker rollback activates a previous version by creating a new deployment. Platform-resource state such as KV/R2/D1/Durable Object resources is not fully versioned with Worker code, so rollback compatibility must be checked before approval.
 
-Production plan requires:
+Release mutation plan requires:
 
 ```text
 expected current deployment
-+ exact target version
++ exact target version/deployment
 + source/artifact identity
 + bounded diff
 + explicit P01 approval/evidence
@@ -101,6 +101,32 @@ Repository M0 exposes path/branch/root configuration and command fingerprints, b
 
 Workers Builds configuration API has a distinct credential boundary: current Cloudflare documentation requires a user-scoped API token with Workers Builds Configuration permission. The connector must not silently substitute a broad all-account credential.
 
+Build configuration is **not release state**. It has its own canonical fingerprint over the safe trigger projection. A build-config mutation requires:
+
+```text
+expected current config fingerprint
++ exact target config fingerprint
++ bounded config diff
++ recovery config fingerprint
++ explicit P01 approval/evidence
++ exact Worker/account binding
++ post-action config readback
++ nonmatching-path negative probe plan
++ matching-path positive probe plan
+```
+
+A successful build-config receipt additionally requires:
+
+```text
+actual after-config fingerprint == approved target
+negative probe PASS
+  = a path outside the watch scope does NOT trigger the target Production build
+positive probe PASS
+  = an intended matching path DOES trigger the expected build
+```
+
+This is the repository contract that matches #1589's operational acceptance. A deploy/rollback smoke cannot substitute for these two build-watch probes.
+
 ## Preview vs Production
 
 ```text
@@ -108,12 +134,17 @@ PREVIEW
   = preview_deploy / retry_preview_build
   = separate non-Production plan
 
-PRODUCTION
+PRODUCTION RELEASE
   = production_deploy
   = worker_rollback
   = pages_rollback
+  = release-state expected/current/target/recovery + smoke
+
+PRODUCTION BUILD CONFIG
   = build_config_update
-  = explicit Production plan only
+  = config-state expected/current/target/recovery
+  + negative watch-path probe
+  + positive watch-path probe
 ```
 
 Authentication alone never grants Production authority.
@@ -131,9 +162,9 @@ ALL_ACCOUNT_BINDING = NO
 
 DNS mutation, if ever added, requires a dedicated stronger tool/issue rather than generic Cloudflare Production authority.
 
-## Production receipt
+## Release receipt
 
-A successful Production action is not complete until the connector records:
+A successful Production deploy/rollback is not complete until the connector records:
 
 ```text
 before release
@@ -146,7 +177,9 @@ smoke evidence
 smoke PASS
 ```
 
-If actual readback does not equal the approved target, or smoke fails, the receipt cannot claim success.
+If actual readback does not equal the approved target, or smoke fails, the release receipt cannot claim success.
+
+A build-config mutation uses the separate config receipt described above; it must not be represented by a release receipt.
 
 ## Live gate
 
@@ -157,11 +190,11 @@ Before #1650 can be marked live-ready:
 3. inspect current Worker/Pages release state;
 4. prove current and rollback targets are visible;
 5. inspect Workers Builds root/watch paths without secret values;
-6. verify #1589 watch-path behavior separately;
+6. for #1589/build config, prove exact config fingerprint before/after plus negative and positive watch-path probes;
 7. perform read-only status/log canary;
 8. if preview writes are enabled, perform one approved preview canary;
-9. Production action requires separate explicit owner/P01 approval;
-10. prove post-action readback, smoke and recovery path.
+9. Production release action requires separate explicit owner/P01 approval;
+10. prove post-action readback, smoke and recovery path for release actions.
 
 ## Non-claims
 
