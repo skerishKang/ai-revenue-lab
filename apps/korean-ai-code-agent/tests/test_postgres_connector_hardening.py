@@ -1,9 +1,19 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import unittest
 
 from kagent.contracts import ContractError
-from kagent.postgres_connector import PostgresQueryResult, classify_postgres_read_sql
+from kagent.postgres_connector import (
+    PostgresBindingProjection,
+    PostgresQueryBudget,
+    PostgresQueryResult,
+    PostgresReadRequest,
+    classify_postgres_read_sql,
+    validate_postgres_read_request,
+)
+
+NOW = datetime(2026, 9, 3, 7, 20, tzinfo=timezone.utc)
 
 
 class PostgresConnectorHardeningTests(unittest.TestCase):
@@ -44,6 +54,61 @@ class PostgresConnectorHardeningTests(unittest.TestCase):
             statement_timeout_applied=True,
         )
         self.assertEqual(result.total_rows_observed, 0)
+
+    def test_binding_workspace_and_schema_scope_must_match_exact_trusted_binding(self):
+        binding = PostgresBindingProjection(
+            binding_ref="binding_1",
+            workspace_ref="workspace_1",
+            project_ref="project_1",
+            branch_ref="branch_1",
+            database_ref="appdb",
+            role_ref="readonly",
+            allowed_schemas=("public", "reporting"),
+        )
+        request = PostgresReadRequest(
+            binding_ref="binding_1",
+            workspace_ref="workspace_1",
+            sql="SELECT 1 AS id",
+            parameters=(),
+            budget=PostgresQueryBudget(),
+            requested_at=NOW,
+            schema_scope=("public",),
+        )
+        validate_postgres_read_request(binding, request)
+
+        mismatches = (
+            PostgresReadRequest(
+                binding_ref="binding_2",
+                workspace_ref="workspace_1",
+                sql="SELECT 1",
+                parameters=(),
+                budget=PostgresQueryBudget(),
+                requested_at=NOW,
+                schema_scope=("public",),
+            ),
+            PostgresReadRequest(
+                binding_ref="binding_1",
+                workspace_ref="workspace_2",
+                sql="SELECT 1",
+                parameters=(),
+                budget=PostgresQueryBudget(),
+                requested_at=NOW,
+                schema_scope=("public",),
+            ),
+            PostgresReadRequest(
+                binding_ref="binding_1",
+                workspace_ref="workspace_1",
+                sql="SELECT 1",
+                parameters=(),
+                budget=PostgresQueryBudget(),
+                requested_at=NOW,
+                schema_scope=("private",),
+            ),
+        )
+        for bad in mismatches:
+            with self.subTest(bad=bad.safe_dict()):
+                with self.assertRaises(ContractError):
+                    validate_postgres_read_request(binding, bad)
 
 
 if __name__ == "__main__":
