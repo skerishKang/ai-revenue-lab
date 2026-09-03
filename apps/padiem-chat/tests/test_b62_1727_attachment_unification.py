@@ -17,6 +17,8 @@ def test_binary_reader_has_no_transport_or_dom_interception():
         "isChatStreamRequest",
         "completedChatUrl",
         "removeButton.click",
+        "let pending =",
+        "pending = next",
     ]
     for token in forbidden:
         assert token not in BINARY_JS
@@ -30,6 +32,15 @@ def test_binary_reader_exports_pure_attachment_api():
     assert "mediaType," in BINARY_JS
     assert "base64," in BINARY_JS
     assert "byteSize:" in BINARY_JS
+
+
+def test_binary_qa_metadata_is_computed_from_file_input_not_stored_state():
+    assert "function pendingMeta()" in BINARY_JS
+    assert 'document.getElementById("attachmentFileInput")' in BINARY_JS
+    assert "input && input.files ? input.files[0] : null" in BINARY_JS
+    assert "pendingMeta," in BINARY_JS
+    assert "base64" not in BINARY_JS.split("function pendingMeta()", 1)[1].split("const api", 1)[0]
+    assert "text" not in BINARY_JS.split("function pendingMeta()", 1)[1].split("const api", 1)[0]
 
 
 def test_app_owns_binary_attachment_in_selected_attachment_state():
