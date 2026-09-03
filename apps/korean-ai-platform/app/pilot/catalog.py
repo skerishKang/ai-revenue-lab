@@ -42,6 +42,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
+from app.pilot.cost_evidence import ConfiguredCostEvidence
 from app.pilot.openrouter_config import openrouter_config
 
 _CURRENCY_USD = "usd"
@@ -94,9 +95,21 @@ class CatalogModel:
         )
 
     def cost_usd_per_1k(self) -> float | None:
-        if not self.price_is_known:
+        """Return the configured combined price proxy per 1K tokens.
+
+        This is the configured input+output snapshot rate scaled from per-1M
+        to per-1K for legacy ranking/display consumers. It is not a measured
+        request cost or invoice amount. Unknown/partial pricing remains None.
+        """
+        combined = ConfiguredCostEvidence(
+            self.input_price_usd_per_1m,
+            self.output_price_usd_per_1m,
+            snapshot_state=self.snapshot_state,
+            currency=self.currency,
+        ).combined_rate_usd_per_1m()
+        if combined is None:
             return None
-        return None
+        return combined / 1_000.0
 
     def estimate_cost_usd(self, prompt_tokens: int, completion_tokens: int) -> float | None:
         """Estimated cost from the configured price snapshot.
@@ -318,6 +331,21 @@ def filter_catalog(
     return candidates
 
 
+def _configured_cost_ranking_key(model: CatalogModel) -> tuple[int, float]:
+    """Return the frozen configured-cost evidence ordering for one model.
+
+    Known configured prices sort before unknown/partial prices. In particular,
+    unknown must never collapse to the same key as an explicitly evidenced
+    zero-price route.
+    """
+    return ConfiguredCostEvidence(
+        model.input_price_usd_per_1m,
+        model.output_price_usd_per_1m,
+        snapshot_state=model.snapshot_state,
+        currency=model.currency,
+    ).ranking_key()
+
+
 def select_by_optimize(
     candidates: list[CatalogModel],
     optimize_for: str,
@@ -336,7 +364,7 @@ def select_by_optimize(
     """
     key_fns = {
         "cost": lambda m: (
-            (m.input_price_usd_per_1m or 0.0) + (m.output_price_usd_per_1m or 0.0),
+            *_configured_cost_ranking_key(m),
             m.sort_order,
             m.model_id,
         ),
@@ -344,7 +372,7 @@ def select_by_optimize(
         "korean": lambda m: (-m.korean_score, m.sort_order, m.model_id),
         "balanced": lambda m: (
             -m.korean_score,
-            (m.input_price_usd_per_1m or 0.0) + (m.output_price_usd_per_1m or 0.0),
+            *_configured_cost_ranking_key(m),
             m.latency_ms,
             m.sort_order,
             m.model_id,
