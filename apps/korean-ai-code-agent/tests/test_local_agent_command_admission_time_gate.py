@@ -87,24 +87,39 @@ def _receipt(request: LocalCommandRequest, session: DeviceSession, base: datetim
 
 
 class CommandMaterializationTimeGateTests(unittest.TestCase):
-    def test_request_cannot_predate_command(self) -> None:
+    def test_request_command_issuance_order_is_not_duplicated_in_execution_bridge(self) -> None:
         base = datetime(2026, 9, 3, 14, 0, tzinfo=timezone.utc)
         session = _session(base)
         command = _command(base, session)
         request = _request(command, session, base + timedelta(seconds=30))
+        fingerprint = command_request_fingerprint(request)
+        evidence = TrustedDeviceCommandAdmissionEvidence(
+            admission_ref="admission_time_preissued_1",
+            authority_ref="broker_authority_time",
+            command_id=command.command_id,
+            session_id=session.session_id,
+            binding_ref=session.binding_ref,
+            run_id=command.run_id,
+            tool_request_ref=command.tool_request_ref,
+            sequence=command.sequence,
+            request_fingerprint=fingerprint,
+            accepted_at=base + timedelta(minutes=1, seconds=30),
+            expires_at=base + timedelta(minutes=5),
+        )
         assembly = _FakeAssembly(_receipt(request, session, base))
         bridge = AdmittedLocalAgentExecutionBridge(
-            expected_admission_authority_ref="broker_authority_time",
+            expected_admission_authority_ref=evidence.authority_ref,
+            admission_client=DeterministicTrustedDeviceCommandAdmissionClient((evidence,)),
         )
-        with self.assertRaisesRegex(ContractError, "predate the command envelope"):
-            bridge.execute(
-                session=session,
-                command=command,
-                request=request,
-                assembly=assembly,
-                now=base + timedelta(minutes=3),
-            )
-        self.assertEqual(assembly.calls, [])
+        receipt = bridge.execute(
+            session=session,
+            command=command,
+            request=request,
+            assembly=assembly,
+            now=base + timedelta(minutes=3),
+        )
+        self.assertEqual(receipt.request_fingerprint, fingerprint)
+        self.assertEqual(assembly.calls, [request.request_id])
 
     def test_request_cannot_be_future_or_at_command_expiry(self) -> None:
         base = datetime(2026, 9, 3, 14, 0, tzinfo=timezone.utc)
