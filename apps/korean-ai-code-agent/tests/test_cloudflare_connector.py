@@ -13,6 +13,8 @@ from kagent.cloudflare_connector import (
     RAW_CLOUDFLARE_TOKEN_IN_B54,
     REAL_CLOUDFLARE_ADAPTER_CONFIGURED,
     SECRET_READBACK_SUPPORTED,
+    CloudflareBuildConfigMutationPlan,
+    CloudflareBuildConfigMutationReceipt,
     CloudflareBuildTriggerProjection,
     CloudflareCredentialProjection,
     CloudflareCredentialSubject,
@@ -29,6 +31,7 @@ from kagent.cloudflare_connector import (
     CloudflareWorkerVersion,
     PagesDeploymentEnvironment,
     WorkerTrafficVersion,
+    cloudflare_build_trigger_fingerprint,
 )
 from kagent.connector_trust import ConnectorWriteIntent
 from kagent.contracts import ContractError
@@ -37,6 +40,9 @@ NOW = datetime(2026, 9, 3, 7, 30, tzinfo=timezone.utc)
 DIGEST = hashlib.sha256(b"artifact").hexdigest()
 BINDINGS = hashlib.sha256(b"bindings").hexdigest()
 COMMAND = hashlib.sha256(b"command").hexdigest()
+CONFIG_OLD = hashlib.sha256(b"old-config").hexdigest()
+CONFIG_NEW = hashlib.sha256(b"new-config").hexdigest()
+CONFIG_RECOVERY = hashlib.sha256(b"recovery-config").hexdigest()
 
 
 class CloudflareCredentialAndBindingTests(unittest.TestCase):
@@ -174,8 +180,8 @@ class CloudflareReleaseStateTests(unittest.TestCase):
 
 
 class CloudflareBuildProjectionTests(unittest.TestCase):
-    def test_build_projection_exposes_root_watch_paths_and_env_names_not_values(self):
-        trigger = CloudflareBuildTriggerProjection(
+    def trigger(self) -> CloudflareBuildTriggerProjection:
+        return CloudflareBuildTriggerProjection(
             worker_ref="worker_1",
             trigger_ref="trigger_prod",
             environment=CloudflareEnvironment.PRODUCTION,
@@ -188,6 +194,9 @@ class CloudflareBuildProjectionTests(unittest.TestCase):
             deploy_command_fingerprint=COMMAND,
             environment_variable_names=("NODE_VERSION", "PUBLIC_ORIGIN"),
         )
+
+    def test_build_projection_exposes_root_watch_paths_and_env_names_not_values(self):
+        trigger = self.trigger()
         rendered = trigger.safe_dict()
         self.assertEqual(rendered["root_directory"], "apps/korean-ai-platform")
         self.assertEqual(rendered["path_includes"], ["apps/korean-ai-platform/*"])
@@ -207,6 +216,12 @@ class CloudflareBuildProjectionTests(unittest.TestCase):
                 deploy_command_fingerprint=COMMAND,
                 environment_variable_names=(),
             )
+
+    def test_build_trigger_fingerprint_uses_safe_config_projection(self):
+        first = cloudflare_build_trigger_fingerprint(self.trigger())
+        second = cloudflare_build_trigger_fingerprint(self.trigger())
+        self.assertEqual(first, second)
+        self.assertRegex(first, r"^[a-f0-9]{64}$")
 
 
 class CloudflareProductionGateTests(unittest.TestCase):
@@ -256,7 +271,7 @@ class CloudflareProductionGateTests(unittest.TestCase):
         self.assertTrue(rendered["post_action_readback_required"])
         self.assertTrue(rendered["post_action_smoke_required"])
 
-    def test_production_plan_rejects_stale_expected_state_and_dns_generic_action(self):
+    def test_release_plan_rejects_stale_state_dns_and_build_config_actions(self):
         with self.assertRaises(ContractError):
             CloudflareProductionMutationPlan(
                 intent=self.intent(tool_name="production_deploy", target_ref="worker_1", expected="deployment_old"),
@@ -273,24 +288,29 @@ class CloudflareProductionGateTests(unittest.TestCase):
                 smoke_plan_ref="smoke_1",
                 rollback_compatibility_checked=True,
             )
-        with self.assertRaises(ContractError):
-            CloudflareProductionMutationPlan(
-                intent=self.intent(tool_name="dns_update", target_ref="zone_1", expected="dns_state_1"),
-                action=CloudflareMutationAction.DNS_UPDATE,
-                account_ref="account_1",
-                resource_kind=CloudflareResourceKind.ZONE,
-                resource_ref="zone_1",
-                expected_current_release_ref="dns_state_1",
-                target_release_ref="dns_state_2",
-                source_revision_ref="git_abc123",
-                artifact_fingerprint=DIGEST,
-                bounded_diff_ref="diff_1",
-                recovery_target_ref="dns_state_1",
-                smoke_plan_ref="smoke_1",
-                rollback_compatibility_checked=True,
-            )
+        for action, tool in (
+            (CloudflareMutationAction.DNS_UPDATE, "dns_update"),
+            (CloudflareMutationAction.BUILD_CONFIG_UPDATE, "build_config_update"),
+        ):
+            with self.subTest(action=action):
+                with self.assertRaises(ContractError):
+                    CloudflareProductionMutationPlan(
+                        intent=self.intent(tool_name=tool, target_ref="worker_1", expected="state_1"),
+                        action=action,
+                        account_ref="account_1",
+                        resource_kind=CloudflareResourceKind.WORKER,
+                        resource_ref="worker_1",
+                        expected_current_release_ref="state_1",
+                        target_release_ref="state_2",
+                        source_revision_ref="git_abc123",
+                        artifact_fingerprint=DIGEST,
+                        bounded_diff_ref="diff_1",
+                        recovery_target_ref="state_1",
+                        smoke_plan_ref="smoke_1",
+                        rollback_compatibility_checked=True,
+                    )
 
-    def test_receipt_requires_exact_readback_and_passing_smoke(self):
+    def test_release_receipt_requires_exact_readback_and_passing_smoke(self):
         receipt = CloudflareMutationReceipt(
             action=CloudflareMutationAction.PRODUCTION_DEPLOY,
             resource_ref="worker_1",
@@ -305,6 +325,20 @@ class CloudflareProductionGateTests(unittest.TestCase):
             completed_at=NOW,
         )
         self.assertTrue(receipt.safe_dict()["smoke_passed"])
+        with self.assertRaises(ContractError):
+            CloudflareMutationReceipt(
+                action=CloudflareMutationAction.BUILD_CONFIG_UPDATE,
+                resource_ref="worker_1",
+                before_release_ref="deployment_1",
+                after_release_ref="version_2",
+                expected_target_release_ref="version_2",
+                recovery_target_ref="version_1",
+                provider_request_ref="request_1",
+                readback_evidence_ref="readback_1",
+                smoke_evidence_ref="smoke_evidence_1",
+                smoke_passed=True,
+                completed_at=NOW,
+            )
         with self.assertRaises(ContractError):
             CloudflareMutationReceipt(
                 action=CloudflareMutationAction.PRODUCTION_DEPLOY,
@@ -333,6 +367,79 @@ class CloudflareProductionGateTests(unittest.TestCase):
                 smoke_passed=False,
                 completed_at=NOW,
             )
+
+    def test_build_config_plan_binds_exact_config_state_worker_and_probe_plans(self):
+        plan = CloudflareBuildConfigMutationPlan(
+            intent=self.intent(tool_name="build_config_update", target_ref="worker_1", expected=CONFIG_OLD),
+            account_ref="account_1",
+            worker_ref="worker_1",
+            environment=CloudflareEnvironment.PRODUCTION,
+            expected_current_config_fingerprint=CONFIG_OLD,
+            target_config_fingerprint=CONFIG_NEW,
+            bounded_diff_ref="build_diff_1",
+            recovery_config_fingerprint=CONFIG_RECOVERY,
+            negative_probe_plan_ref="negative_probe_1",
+            positive_probe_plan_ref="positive_probe_1",
+        )
+        plan.validate_binding(self.binding())
+        rendered = plan.safe_dict()
+        self.assertTrue(rendered["negative_watch_probe_required"])
+        self.assertTrue(rendered["positive_watch_probe_required"])
+        self.assertTrue(rendered["post_action_config_readback_required"])
+
+        with self.assertRaises(ContractError):
+            CloudflareBuildConfigMutationPlan(
+                intent=self.intent(tool_name="build_config_update", target_ref="worker_1", expected=CONFIG_RECOVERY),
+                account_ref="account_1",
+                worker_ref="worker_1",
+                environment=CloudflareEnvironment.PRODUCTION,
+                expected_current_config_fingerprint=CONFIG_OLD,
+                target_config_fingerprint=CONFIG_NEW,
+                bounded_diff_ref="build_diff_1",
+                recovery_config_fingerprint=CONFIG_RECOVERY,
+                negative_probe_plan_ref="negative_probe_1",
+                positive_probe_plan_ref="positive_probe_1",
+            )
+
+    def test_build_config_receipt_requires_exact_readback_negative_and_positive_probes(self):
+        receipt = CloudflareBuildConfigMutationReceipt(
+            worker_ref="worker_1",
+            environment=CloudflareEnvironment.PRODUCTION,
+            before_config_fingerprint=CONFIG_OLD,
+            after_config_fingerprint=CONFIG_NEW,
+            expected_target_config_fingerprint=CONFIG_NEW,
+            recovery_config_fingerprint=CONFIG_RECOVERY,
+            provider_request_ref="request_1",
+            readback_evidence_ref="readback_1",
+            negative_probe_evidence_ref="negative_evidence_1",
+            positive_probe_evidence_ref="positive_evidence_1",
+            negative_probe_passed=True,
+            positive_probe_passed=True,
+            completed_at=NOW,
+        )
+        self.assertTrue(receipt.safe_dict()["positive_probe_passed"])
+        for negative, positive, after in (
+            (False, True, CONFIG_NEW),
+            (True, False, CONFIG_NEW),
+            (True, True, CONFIG_RECOVERY),
+        ):
+            with self.subTest(negative=negative, positive=positive, after=after):
+                with self.assertRaises(ContractError):
+                    CloudflareBuildConfigMutationReceipt(
+                        worker_ref="worker_1",
+                        environment=CloudflareEnvironment.PRODUCTION,
+                        before_config_fingerprint=CONFIG_OLD,
+                        after_config_fingerprint=after,
+                        expected_target_config_fingerprint=CONFIG_NEW,
+                        recovery_config_fingerprint=CONFIG_RECOVERY,
+                        provider_request_ref="request_1",
+                        readback_evidence_ref="readback_1",
+                        negative_probe_evidence_ref="negative_evidence_1",
+                        positive_probe_evidence_ref="positive_evidence_1",
+                        negative_probe_passed=negative,
+                        positive_probe_passed=positive,
+                        completed_at=NOW,
+                    )
 
     def test_forbidden_default_nonclaims_are_explicit(self):
         self.assertFalse(RAW_CLOUDFLARE_TOKEN_IN_B54)
