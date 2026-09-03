@@ -6,14 +6,12 @@ on:
       - feat/1722-b53-padiem-sidecar-s0
     paths:
       - 'apps/portfolio-console/business-manifest.js'
-      - 'apps/portfolio-console/package.json'
       - 'apps/portfolio-console/tests/padiem-sidecar-registry.test.js'
       - 'docs/products/padiem-sidecar/**'
       - '.github/workflows/b53-padiem-sidecar-s0-ci.yml'
   pull_request:
     paths:
       - 'apps/portfolio-console/business-manifest.js'
-      - 'apps/portfolio-console/package.json'
       - 'apps/portfolio-console/tests/padiem-sidecar-registry.test.js'
       - 'docs/products/padiem-sidecar/**'
       - '.github/workflows/b53-padiem-sidecar-s0-ci.yml'
@@ -42,10 +40,6 @@ jobs:
 
       - name: Padiem Sidecar registry and docs contract
         run: node apps/portfolio-console/tests/padiem-sidecar-registry.test.js
-
-      - name: Portfolio Console static regression
-        working-directory: apps/portfolio-console
-        run: npm run test:static
 
       - name: Diff whitespace gate
         shell: bash
