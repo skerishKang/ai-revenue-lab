@@ -5,6 +5,8 @@
   var platforms = Array.isArray(window.ARL_INTERNAL_PLATFORMS) ? window.ARL_INTERNAL_PLATFORMS : [];
   var active = false;
   var lastFocused = null;
+  var languageObserver = null;
+  var headerObserver = null;
 
   function esc(value) {
     return String(value == null ? "" : value)
@@ -139,6 +141,31 @@
     if (searchInput) searchInput.placeholder = text("ID, 이름, 소스 경로, 역할, 현재 작업 검색", "Search ID, name, source path, role, or current work");
   }
 
+  function setHeaderCount(count) {
+    if (!active) return;
+    var badge = document.querySelector("#header-count");
+    if (badge) badge.textContent = "IP " + count;
+  }
+
+  function expectedHeader() {
+    return text("내부 플랫폼 관리", "Internal Platform");
+  }
+
+  function setPlatformHeader() {
+    if (!active) return;
+    var prefix = document.querySelector("#header-prefix");
+    var expected = expectedHeader();
+    if (prefix && prefix.textContent !== expected) prefix.textContent = expected;
+    setHeaderCount(filteredPlatforms().length);
+  }
+
+  function restoreDefaultHeader() {
+    var prefix = document.querySelector("#header-prefix");
+    if (!prefix) return;
+    var attribute = lang() === "en" ? "data-prefix-en" : "data-prefix-ko";
+    prefix.textContent = prefix.getAttribute(attribute) || text("내 비즈니스 관리", "Business Operations");
+  }
+
   function render() {
     var list = document.querySelector("#ip-list");
     if (!list) return;
@@ -241,25 +268,6 @@
     if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
   }
 
-  function setHeaderCount(count) {
-    if (!active) return;
-    var badge = document.querySelector("#header-count");
-    if (badge) badge.textContent = text("IP " + count, "IP " + count);
-  }
-
-  function setPlatformHeader() {
-    var prefix = document.querySelector("#header-prefix");
-    if (prefix) prefix.textContent = text("내부 플랫폼 관리", "Internal Platform");
-    setHeaderCount(filteredPlatforms().length);
-  }
-
-  function restoreDefaultHeader() {
-    var prefix = document.querySelector("#header-prefix");
-    if (!prefix) return;
-    var attribute = lang() === "en" ? "data-prefix-en" : "data-prefix-ko";
-    prefix.textContent = prefix.getAttribute(attribute) || text("내 비즈니스 관리", "Business Operations");
-  }
-
   function closeDrawer() {
     var sidebar = document.querySelector("#sidebar");
     var overlay = document.querySelector("#drawer-overlay");
@@ -292,6 +300,41 @@
     restoreDefaultHeader();
   }
 
+  function schedulePlatformResync() {
+    if (!active) return;
+    window.requestAnimationFrame(function () {
+      if (!active) return;
+      showPlatformView();
+      window.requestAnimationFrame(setPlatformHeader);
+    });
+  }
+
+  function installObservers() {
+    if (!languageObserver) {
+      languageObserver = new MutationObserver(function () {
+        schedulePlatformResync();
+      });
+      languageObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["lang"]
+      });
+    }
+
+    var prefix = document.querySelector("#header-prefix");
+    if (prefix && !headerObserver) {
+      headerObserver = new MutationObserver(function () {
+        if (!active) return;
+        var expected = expectedHeader();
+        if (prefix.textContent !== expected) prefix.textContent = expected;
+      });
+      headerObserver.observe(prefix, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+  }
+
   function bindEvents() {
     var platformButton = document.querySelector('[data-view="platform"]');
     if (platformButton) platformButton.addEventListener("click", showPlatformView);
@@ -302,15 +345,6 @@
 
     var input = document.querySelector("#ip-search-input");
     if (input) input.addEventListener("input", render);
-
-    document.querySelectorAll(".lang-btn").forEach(function (button) {
-      button.addEventListener("click", function () {
-        if (!active) return;
-        window.setTimeout(function () {
-          showPlatformView();
-        }, 0);
-      });
-    });
 
     var closeButton = document.querySelector("#ip-dialog-close-btn");
     if (closeButton) closeButton.addEventListener("click", closeDialog);
@@ -339,6 +373,7 @@
     updatePlatformCopy();
     render();
     bindEvents();
+    installObservers();
   }
 
   document.addEventListener("DOMContentLoaded", init);
