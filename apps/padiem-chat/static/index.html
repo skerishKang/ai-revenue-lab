@@ -30,7 +30,6 @@
         <button class="mobile-close" id="mobileClose" aria-label="메뉴 닫기">×</button>
         <a class="brand" href="./" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
       </div>
-      <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
       <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>새 채팅</span></button>
       <nav class="side-nav" aria-label="채팅 메뉴">
         <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span></button>
@@ -55,14 +54,9 @@
         <div id="outputsList"></div>
         <p class="history-empty" id="outputsEmpty" hidden>저장한 답변이 없습니다.</p>
       </section>
-      <section class="recent-section" aria-labelledby="recentTitle">
-        <h2 id="recentTitle">추천 질문</h2>
-        <button class="recent-item" type="button" data-prompt="AI를 아주 쉽게 설명해줘" data-skill="explain">AI를 쉽게 설명해줘</button>
-        <button class="recent-item" type="button" data-prompt="3박 4일 제주도 가족 여행 계획을 짜줘" data-skill="plan">제주도 여행 계획</button>
-        <button class="recent-item" type="button" data-prompt="오늘 저녁 메뉴를 세 가지 추천해줘" data-skill="brainstorm">저녁 메뉴 추천</button>
-      </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>편하게 질문해 보세요</span></div>
-      <div class="sidebar-bottom" aria-label="계정 및 설정">
+      <div class="sidebar-bottom" aria-label="서비스, 계정 및 설정">
+        <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
           <span class="account-name" id="accountName" hidden></span>
