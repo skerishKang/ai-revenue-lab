@@ -18,11 +18,10 @@ from padiem_ai_core import (
     B14ExecutionConfig,
     B14StreamingClient,
     ExecutionRuntime,
-    GroundedResearchRuntime,
     StreamingExecutionRuntime,
-    WebRuntimeConfig,
-    create_web_provider,
 )
+from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
+from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
 
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
