@@ -198,6 +198,15 @@ _LEGACY_SUPPORTED_MAP: dict[str, ModelCapability] = {
     "coding": ModelCapability.CODING,
     "long_context": ModelCapability.LONG_CONTEXT,
 }
+def canonical_capability_from_legacy_tag(tag: str) -> ModelCapability | None:
+    """Return the frozen canonical capability for one legacy catalog tag.
+
+    This is intentionally strict and does not case-fold, trim, or treat pricing
+    tags such as ``free`` as execution capabilities.
+    """
+    if not isinstance(tag, str):
+        return None
+    return _LEGACY_SUPPORTED_MAP.get(tag)
 def capability_profile_from_catalog_model(
     model: CatalogModel,
     *,
