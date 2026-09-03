@@ -13,12 +13,18 @@ from .connector_platform import (
 
 REQUEST_TIMEOUT_SECONDS = 30
 PAGE_SIZE = 25
-FILE_FIELDS = "id,name,mimeType,modifiedTime,webViewLink,size,owners(emailAddress)"
+FILE_FIELDS = (
+    "id,name,mimeType,driveId,parents,trashed,modifiedTime,version,"
+    "md5Checksum,sha256Checksum,headRevisionId,resourceKey,"
+    "shortcutDetails(targetId,targetMimeType,targetResourceKey),"
+    "webViewLink,size,owners(emailAddress)"
+)
 EXPORTABLE_MIME: dict[str, str] = {
     "application/vnd.google-apps.document": "text/plain",
     "application/vnd.google-apps.spreadsheet": "text/csv",
     "application/vnd.google-apps.presentation": "text/plain",
 }
+GOOGLE_SHORTCUT_MIME = "application/vnd.google-apps.shortcut"
 
 _TEXTUAL_APPLICATION_MIME = frozenset(
     {
@@ -54,7 +60,10 @@ DRIVE_TOOLS: tuple[ConnectorTool, ...] = (
     ),
     ConnectorTool(
         name="get_file_metadata",
-        description="Get name, type, size, owner, modified time and link for one file.",
+        description=(
+            "Get bounded metadata for one file, including Drive location, modified time, "
+            "server version and shortcut target metadata when present."
+        ),
         input_schema={
             "type": "object",
             "properties": {"fileId": {"type": "string", "description": "Google Drive file id."}},
@@ -65,7 +74,8 @@ DRIVE_TOOLS: tuple[ConnectorTool, ...] = (
         name="read_file_content",
         description=(
             "Read text from one file. Google Docs, Sheets and Slides are exported "
-            "to bounded text-compatible formats."
+            "to bounded text-compatible formats. Shortcuts are metadata-only and must "
+            "be resolved through an independently authorized target."
         ),
         input_schema={
             "type": "object",
@@ -147,10 +157,16 @@ def _file_line(file: dict[str, Any]) -> str:
     mime = file.get("mimeType")
     modified = file.get("modifiedTime")
     file_id = file.get("id")
+    drive_id = file.get("driveId")
+    version = file.get("version")
     if isinstance(mime, str) and mime:
         parts.append(mime)
     if isinstance(modified, str) and modified:
         parts.append(f"modified {modified}")
+    if isinstance(version, str) and version:
+        parts.append(f"version {version}")
+    if isinstance(drive_id, str) and drive_id:
+        parts.append(f"shared-drive: {drive_id}")
     if isinstance(file_id, str) and file_id:
         parts.append(f"id: {file_id}")
     return "- " + " · ".join(parts)
@@ -222,10 +238,13 @@ class GoogleDriveReadTransport:
             params = {
                 "pageSize": str(PAGE_SIZE),
                 "fields": f"files({FILE_FIELDS})",
+                "supportsAllDrives": "true",
+                "includeItemsFromAllDrives": "true",
             }
             if query:
-                params["q"] = drive_query(query)
+                params["q"] = f"({drive_query(query)}) and trashed = false"
             else:
+                params["q"] = "trashed = false"
                 params["orderBy"] = "modifiedTime desc"
             body = self._json(connection, "/files", params)
             files = body.get("files", [])
@@ -242,7 +261,7 @@ class GoogleDriveReadTransport:
             file = self._json(
                 connection,
                 f"/files/{quote(file_id, safe='')}",
-                {"fields": FILE_FIELDS},
+                {"fields": FILE_FIELDS, "supportsAllDrives": "true"},
             )
             owner = None
             owners = file.get("owners")
@@ -256,6 +275,9 @@ class GoogleDriveReadTransport:
                 lines.append(f"size: {size} bytes")
             if owner:
                 lines.append(f"owner: {owner}")
+            shortcut = file.get("shortcutDetails")
+            if isinstance(shortcut, dict) and isinstance(shortcut.get("targetId"), str):
+                lines.append(f"shortcut-target-id: {shortcut['targetId']}")
             return bounded_connector_result("\n".join(lines))
 
         if tool_name == "read_file_content":
@@ -266,10 +288,24 @@ class GoogleDriveReadTransport:
             metadata = self._json(
                 connection,
                 f"/files/{encoded}",
-                {"fields": "id,name,mimeType"},
+                {
+                    "fields": "id,name,mimeType,trashed,driveId,version,shortcutDetails(targetId,targetMimeType,targetResourceKey)",
+                    "supportsAllDrives": "true",
+                },
             )
             name = metadata.get("name") if isinstance(metadata.get("name"), str) else file_id
             mime = metadata.get("mimeType") if isinstance(metadata.get("mimeType"), str) else None
+            if metadata.get("trashed") is True:
+                return bounded_connector_result(
+                    f"{name} is trashed and is not readable through this connector.",
+                    is_error=True,
+                )
+            if mime == GOOGLE_SHORTCUT_MIME:
+                return bounded_connector_result(
+                    f"{name} is a Google Drive shortcut. The shortcut target must be resolved and "
+                    "independently authorized before content can be read.",
+                    is_error=True,
+                )
             export_as = EXPORTABLE_MIME.get(mime or "")
             if not export_as and not is_textual_mime(mime):
                 return bounded_connector_result(
