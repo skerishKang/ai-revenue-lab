@@ -11,6 +11,7 @@ from starlette.staticfiles import StaticFiles
 from .auth import GoogleOAuthClient
 from .auth_routes import auth_status, google_callback, google_start, logout
 from .auto_grounding import AutoGroundingService
+from .b14_client import B14Client, ChatRuntimeError
 from .chat_routes import api_chat, api_chat_stream
 from .config import Settings
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -62,6 +63,8 @@ def create_app(
     project_file_store: ProjectFileStore | None = None,
     saved_output_store: SavedOutputStore | None = None,
     usage_store: UsageCounterStore | None = None,
+    control_plane_identity_authority=None,
+    identity_shadow_store=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -87,6 +90,10 @@ def create_app(
     app.state.history_store = history_store
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
+    # Optional migration/shadow seams only. Ordinary/Production Worker composition does
+    # not supply these yet, so this source addition does not activate Control Plane runtime.
+    app.state.control_plane_identity_authority = control_plane_identity_authority
+    app.state.identity_shadow_store = identity_shadow_store
     app.state.usage_gate = UsageGate(resolved, usage_store)
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
