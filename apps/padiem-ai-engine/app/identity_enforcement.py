@@ -4,13 +4,26 @@ The contract is server-side only: callers identify themselves with a bounded
 caller id plus a high-entropy credential kept in deployment secret storage.
 The request body remains the source of the requested ``app_id``; identity
 verification binds that app to the authenticated caller before execution.
+
+Deployment configuration supports two mutually exclusive authorities:
+
+- ``PADIEM_ENGINE_CALLER_REGISTRY_V1``: a versioned, secret-backed,
+  bounded multi-caller registry payload. When configured it is the only
+  caller authority; a malformed or blank payload fails closed and never
+  falls back to the legacy configuration.
+- the legacy one-caller trio (``PADIEM_ENGINE_CALLER_ID``,
+  ``PADIEM_ENGINE_CALLER_SECRET``, ``PADIEM_ENGINE_ALLOWED_APPS``):
+  authoritative only while the V1 registry variable is genuinely absent,
+  preserving existing deployment behavior unchanged.
 """
 
 from __future__ import annotations
 
+import json
 from typing import Any, Mapping
 
 from app.service_identity import (
+    MAX_ENGINE_CALLERS,
     EngineCallerRegistry,
     ServiceIdentityError,
     TrustedEngineCaller,
@@ -24,18 +37,126 @@ CALLER_ID_ENV = "PADIEM_ENGINE_CALLER_ID"
 CALLER_SECRET_ENV = "PADIEM_ENGINE_CALLER_SECRET"
 CALLER_ALLOWED_APPS_ENV = "PADIEM_ENGINE_ALLOWED_APPS"
 
+CALLER_REGISTRY_V1_ENV = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+CALLER_REGISTRY_V1_VERSION = 1
+
+# Bounded serialized registry input. A registry legally packed to the
+# generic contract limits (64 callers, 32 app ids and a 512-byte credential
+# each) stays well below this cap, so the bound only rejects absurd
+# deployment payloads before any parsing or credential digesting happens.
+MAX_CALLER_REGISTRY_V1_BYTES = 524288
+
+_CALLER_REGISTRY_V1_TOP_LEVEL_KEYS = frozenset({"version", "callers"})
+_CALLER_REGISTRY_V1_ENTRY_KEYS = frozenset(
+    {"caller_id", "credential", "allowed_app_ids"}
+)
+
 
 def _text(value: Any) -> str:
     return value if isinstance(value, str) else ""
 
 
-def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
-    """Build the one-caller registry from deployment configuration.
+def parse_caller_registry_v1(raw: str) -> EngineCallerRegistry:
+    """Parse the bounded V1 secret-backed multi-caller registry payload.
 
-    Multiple callers can be introduced later with a dedicated secret-backed
-    registry. This first activation slice intentionally supports one explicit
-    first-party caller and refuses partially configured state.
+    Every failure raises ``ServiceIdentityError`` (fail closed). Safe error
+    messages never contain payload fragments or credential plaintext. Each
+    entry credential is immediately converted with the existing
+    ``caller_secret_digest`` contract before constructing a
+    ``TrustedEngineCaller``; no second authentication implementation is
+    introduced here.
     """
+
+    if not isinstance(raw, str):
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry V1 must be a JSON string",
+        )
+    if len(raw.encode("utf-8")) > MAX_CALLER_REGISTRY_V1_BYTES:
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry V1 exceeds the bounded input size",
+        )
+
+    try:
+        payload = json.loads(raw)
+    except ValueError:
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry V1 is not valid JSON",
+        ) from None
+
+    if not isinstance(payload, dict) or set(payload.keys()) != _CALLER_REGISTRY_V1_TOP_LEVEL_KEYS:
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry V1 must contain exactly version and callers",
+        )
+
+    version = payload["version"]
+    if (
+        isinstance(version, bool)
+        or not isinstance(version, int)
+        or version != CALLER_REGISTRY_V1_VERSION
+    ):
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry V1 version is unsupported",
+        )
+
+    callers_raw = payload["callers"]
+    if not isinstance(callers_raw, list):
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            "Padiem AI Engine caller registry V1 callers must be a JSON array",
+        )
+    if not 1 <= len(callers_raw) <= MAX_ENGINE_CALLERS:
+        raise ServiceIdentityError(
+            "invalid_caller_registry",
+            f"Padiem AI Engine caller registry V1 must contain 1 to {MAX_ENGINE_CALLERS} callers",
+        )
+
+    callers = []
+    for entry in callers_raw:
+        if not isinstance(entry, dict) or set(entry.keys()) != _CALLER_REGISTRY_V1_ENTRY_KEYS:
+            raise ServiceIdentityError(
+                "invalid_caller_registry",
+                "Padiem AI Engine caller registry V1 caller entries must contain exactly caller_id, credential, and allowed_app_ids",
+            )
+        callers.append(
+            TrustedEngineCaller(
+                caller_id=entry["caller_id"],
+                allowed_app_ids=tuple(entry["allowed_app_ids"]),
+                credential_sha256=caller_secret_digest(entry["credential"]),
+            )
+        )
+
+    return EngineCallerRegistry(callers=tuple(callers))
+
+
+def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
+    """Build the caller registry from deployment configuration.
+
+    When ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` is configured, the parsed
+    secret-backed registry is the single caller authority: a malformed,
+    blank, or unsupported payload fails closed and never falls back to the
+    legacy one-caller trio. When the registry variable is genuinely absent,
+    the legacy one-caller trio remains authoritative with unchanged
+    behavior and refuses partially configured state.
+    """
+
+    registry_raw = getattr(env, CALLER_REGISTRY_V1_ENV, None)
+    if registry_raw is not None:
+        if not isinstance(registry_raw, str):
+            raise ServiceIdentityError(
+                "invalid_caller_registry",
+                "Padiem AI Engine caller registry V1 must be a JSON string",
+            )
+        if not registry_raw.strip():
+            raise ServiceIdentityError(
+                "invalid_caller_registry",
+                "Padiem AI Engine caller registry V1 is configured but blank",
+            )
+        return parse_caller_registry_v1(registry_raw)
 
     caller_id = _text(getattr(env, CALLER_ID_ENV, None)).strip()
     secret = _text(getattr(env, CALLER_SECRET_ENV, None))
