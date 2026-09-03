@@ -120,16 +120,17 @@ def _validate_payload(
 
 
 def _apply_b62_model_policy(messages: list[dict[str, str]]) -> tuple[str, list[dict[str, str]]]:
-    """Validate the tier selector while preserving it until B14Client dispatch.
+    """Recognize the product tier while preserving the selector until dispatch.
 
-    The route layer needs the selected model for capability checks, but the
-    B14Client remains the single owner that strips hidden tier aliases before
-    provider execution. Returning the original validated messages prevents a
-    double-resolution bug where `/plus` or `/max` was stripped too early and
-    then silently re-resolved to the default Padiem Pro route.
+    Browser validation recognizes a known Padiem tier even when its physical
+    backing route is temporarily HOLD. The route layer then permits only local
+    self-identity handling for a held tier and rejects ordinary execution before
+    tools/grounding/B14. Executable clients retain their own final fail-closed
+    gate. Returning the original validated messages also prevents double
+    resolution of stripped aliases.
     """
     try:
-        policy = resolve_model_policy(messages)
+        policy = resolve_model_policy(messages, require_executable=False)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
     return policy.model_id, [dict(message) for message in messages]
