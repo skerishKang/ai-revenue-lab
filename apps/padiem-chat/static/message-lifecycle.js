@@ -229,7 +229,7 @@
     return model;
   }
 
-  window.PadiemChatOrchestrationUI = Object.freeze({
+  const orchestrationUi = Object.freeze({
     kinds: orchestrationKinds,
     normalizedEvents,
     viewModel,
@@ -237,4 +237,130 @@
     cancelIntent,
     render,
   });
+  window.PadiemChatOrchestrationUI = orchestrationUi;
+
+  function setExtendedLifecycle(article, state) {
+    if (!article) return;
+    article.dataset.lifecycle = state;
+    article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
+      bubbles: true,
+      detail: { state },
+    }));
+  }
+
+  function currentAssistantArticle() {
+    const messageList = document.getElementById("messageList");
+    if (!messageList) return null;
+    const items = messageList.querySelectorAll(".assistant-message");
+    return items.length ? items[items.length - 1] : null;
+  }
+
+  function clearOrchestrationUi(article) {
+    if (!article) return;
+    article.querySelectorAll("[data-orchestration-ui]").forEach((node) => node.remove());
+  }
+
+  function applyCompletedOrchestration(article, requestPayload, data) {
+    if (!article || !data || typeof data.answer !== "string" || !data.answer) {
+      throw new Error("AI 작업 완료 응답을 확인할 수 없습니다.");
+    }
+    if (data.orchestration) orchestrationUi.render(article, data.orchestration, {});
+    const content = article.querySelector(".assistant-content");
+    content.replaceChildren();
+    const paragraph = document.createElement("p");
+    paragraph.textContent = data.answer;
+    content.appendChild(paragraph);
+    const label = article.querySelector("[data-runtime-label]");
+    if (label) label.textContent = "AI 응답";
+    const conversationState = window.PadiemChatConversationState;
+    if (conversationState) {
+      conversationState.commitAssistant(requestPayload.messages, data.answer);
+      if (typeof data.conversation_id === "string") conversationState.setConversationId(data.conversation_id);
+    }
+    window.PadiemChatLifecycle.set(article, states.COMPLETED);
+    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function renderDecisionTerminal(article, message, state) {
+    clearOrchestrationUi(article);
+    const content = article.querySelector(".assistant-content");
+    content.replaceChildren();
+    const paragraph = document.createElement("p");
+    paragraph.textContent = message;
+    content.appendChild(paragraph);
+    const label = article.querySelector("[data-runtime-label]");
+    if (label) label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
+    if (state === "orchestration_cancelled") {
+      window.PadiemChatLifecycle.set(article, states.CANCELLED);
+    } else {
+      setExtendedLifecycle(article, state);
+    }
+  }
+
+  function renderApprovalError(article, orchestration, requestPayload, error) {
+    renderApprovalPause(article, orchestration, requestPayload);
+    const content = article.querySelector(".assistant-content");
+    const note = document.createElement("p");
+    note.className = "reference-note";
+    note.textContent = error instanceof Error ? error.message : "확인 요청을 처리하지 못했습니다.";
+    content.appendChild(note);
+  }
+
+  function renderApprovalPause(article, orchestration, requestPayload) {
+    const transport = window.PadiemChatTransport;
+    if (!article || !transport) throw new Error("확인 화면을 표시할 수 없습니다.");
+    const content = article.querySelector(".assistant-content");
+    content.replaceChildren();
+    const label = article.querySelector("[data-runtime-label]");
+    if (label) label.textContent = "확인 대기 중";
+
+    const handlers = {
+      onApprovalIntent: async (intent) => {
+        if (!intent) return;
+        orchestrationUi.render(article, orchestration, {});
+        try {
+          const data = await transport.resumeOrchestration(intent);
+          if (data.decision_status === "denied") {
+            renderDecisionTerminal(article, "요청을 진행하지 않았습니다.", "approval_denied");
+            return;
+          }
+          if (data.orchestration && data.orchestration.approval_pause) {
+            renderApprovalPause(article, data.orchestration, requestPayload);
+            return;
+          }
+          applyCompletedOrchestration(article, requestPayload, data);
+        } catch (error) {
+          renderApprovalError(article, orchestration, requestPayload, error);
+        }
+      },
+      onCancelIntent: async (intent) => {
+        if (!intent) return;
+        orchestrationUi.render(article, orchestration, {});
+        try {
+          await transport.cancelOrchestration(intent);
+          renderDecisionTerminal(article, "작업을 취소했습니다.", "orchestration_cancelled");
+        } catch (error) {
+          renderApprovalError(article, orchestration, requestPayload, error);
+        }
+      },
+    };
+    orchestrationUi.render(article, orchestration, handlers);
+    setExtendedLifecycle(article, "approval_paused");
+    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function bindOrchestrationController() {
+    const transport = window.PadiemChatTransport;
+    if (!transport || typeof transport.setOrchestrationPauseHandler !== "function") return false;
+    transport.setOrchestrationPauseHandler(({ orchestration, requestPayload }) => {
+      const article = currentAssistantArticle();
+      renderApprovalPause(article, orchestration, requestPayload);
+    });
+    return true;
+  }
+
+  window.PadiemChatOrchestrationController = Object.freeze({
+    bind: bindOrchestrationController,
+  });
+  bindOrchestrationController();
 })();

@@ -1,6 +1,8 @@
 (() => {
   "use strict";
 
+  let orchestrationPauseHandler = null;
+
   function errorFor(data, fallback) {
     const message = data && data.error && typeof data.error.message === "string" ? data.error.message : fallback;
     const error = new Error(message);
@@ -107,116 +109,24 @@
     return data;
   }
 
-  function currentAssistantArticle() {
-    const items = document.querySelectorAll(".assistant-message");
-    return items.length ? items[items.length - 1] : null;
+  function setOrchestrationPauseHandler(handler) {
+    if (handler !== null && typeof handler !== "function") throw new TypeError("orchestration pause handler must be a function or null");
+    orchestrationPauseHandler = handler;
   }
 
-  function setExtendedLifecycle(article, state) {
-    if (!article) return;
-    article.dataset.lifecycle = state;
-    article.dispatchEvent(new CustomEvent("padiem:message-lifecycle", {
-      bubbles: true,
-      detail: { state },
-    }));
-  }
-
-  function clearOrchestrationUi(article) {
-    if (!article) return;
-    article.querySelectorAll("[data-orchestration-ui]").forEach((node) => node.remove());
-  }
-
-  function applyCompletedOrchestration(article, requestPayload, data) {
-    if (!article || !data || typeof data.answer !== "string" || !data.answer) {
-      throw new Error("AI 작업 완료 응답을 확인할 수 없습니다.");
+  function notifyOrchestrationPause(orchestration, requestPayload) {
+    if (typeof orchestrationPauseHandler !== "function") {
+      throw new Error("확인 화면을 표시할 수 없습니다.");
     }
-    const orchestration = data.orchestration;
-    if (window.PadiemChatOrchestrationUI && orchestration) {
-      window.PadiemChatOrchestrationUI.render(article, orchestration, {});
-    }
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    const paragraph = document.createElement("p");
-    paragraph.textContent = data.answer;
-    content.appendChild(paragraph);
-    const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = "AI 응답";
-    if (window.PadiemChatConversationState) {
-      window.PadiemChatConversationState.commitAssistant(requestPayload.messages, data.answer);
-      if (typeof data.conversation_id === "string") {
-        window.PadiemChatConversationState.setConversationId(data.conversation_id);
-      }
-    }
-    window.PadiemChatLifecycle.set(article, window.PadiemChatLifecycle.states.COMPLETED);
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    orchestrationPauseHandler(Object.freeze({ orchestration, requestPayload }));
   }
 
-  function renderDecisionTerminal(article, message, state) {
-    clearOrchestrationUi(article);
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    const paragraph = document.createElement("p");
-    paragraph.textContent = message;
-    content.appendChild(paragraph);
-    const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = state === "approval_denied" ? "진행하지 않음" : "작업 취소됨";
-    if (state === "orchestration_cancelled") {
-      window.PadiemChatLifecycle.set(article, window.PadiemChatLifecycle.states.CANCELLED);
-    } else {
-      setExtendedLifecycle(article, state);
-    }
+  async function resumeOrchestration(intent, signal) {
+    return postOrchestration("/api/orchestration/resume", intent, signal);
   }
 
-  function renderApprovalError(article, orchestration, requestPayload, error) {
-    renderApprovalPause(article, orchestration, requestPayload);
-    const content = article.querySelector(".assistant-content");
-    const note = document.createElement("p");
-    note.className = "reference-note";
-    note.textContent = error instanceof Error ? error.message : "확인 요청을 처리하지 못했습니다.";
-    content.appendChild(note);
-  }
-
-  function renderApprovalPause(article, orchestration, requestPayload) {
-    const ui = window.PadiemChatOrchestrationUI;
-    if (!article || !ui) throw new Error("확인 화면을 표시할 수 없습니다.");
-    const content = article.querySelector(".assistant-content");
-    content.replaceChildren();
-    const label = article.querySelector("[data-runtime-label]");
-    if (label) label.textContent = "확인 대기 중";
-
-    const handlers = {
-      onApprovalIntent: async (intent) => {
-        if (!intent) return;
-        ui.render(article, orchestration, {});
-        try {
-          const data = await postOrchestration("/api/orchestration/resume", intent);
-          if (data.decision_status === "denied") {
-            renderDecisionTerminal(article, "요청을 진행하지 않았습니다.", "approval_denied");
-            return;
-          }
-          if (data.orchestration && data.orchestration.approval_pause) {
-            renderApprovalPause(article, data.orchestration, requestPayload);
-            return;
-          }
-          applyCompletedOrchestration(article, requestPayload, data);
-        } catch (error) {
-          renderApprovalError(article, orchestration, requestPayload, error);
-        }
-      },
-      onCancelIntent: async (intent) => {
-        if (!intent) return;
-        ui.render(article, orchestration, {});
-        try {
-          await postOrchestration("/api/orchestration/cancel", intent);
-          renderDecisionTerminal(article, "작업을 취소했습니다.", "orchestration_cancelled");
-        } catch (error) {
-          renderApprovalError(article, orchestration, requestPayload, error);
-        }
-      },
-    };
-    ui.render(article, orchestration, handlers);
-    setExtendedLifecycle(article, "approval_paused");
-    article.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  async function cancelOrchestration(intent, signal) {
+    return postOrchestration("/api/orchestration/cancel", intent, signal);
   }
 
   function syntheticSseResponse(data) {
@@ -240,8 +150,7 @@
       throw error;
     }
     if (data.orchestration && data.orchestration.approval_pause) {
-      const article = currentAssistantArticle();
-      renderApprovalPause(article, data.orchestration, payload);
+      notifyOrchestrationPause(data.orchestration, payload);
       const paused = new Error("approval paused");
       paused.name = "AbortError";
       throw paused;
@@ -277,5 +186,8 @@
     requestCompleted,
     requestStreaming,
     orchestrationReady,
+    resumeOrchestration,
+    cancelOrchestration,
+    setOrchestrationPauseHandler,
   });
 })();
