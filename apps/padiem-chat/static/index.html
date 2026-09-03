@@ -112,7 +112,7 @@
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
             <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
-            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>최신 정보 · 출처와 함께</small></span></button>
+            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
         <div class="message-list" id="messageList" hidden></div>
@@ -140,8 +140,8 @@
             <div class="composer-tools">
               <input id="attachmentFileInput" type="file" hidden />
               <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
-              <button type="button" class="tool-button" id="webSearchButton" disabled aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
-              <button type="button" class="tool-button" id="deepResearchButton" disabled aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
+              <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
+              <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
             </div>
             <button class="cancel-stream-button" id="cancelStreamButton" type="button" aria-label="답변 생성 취소" hidden>취소</button>
             <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
