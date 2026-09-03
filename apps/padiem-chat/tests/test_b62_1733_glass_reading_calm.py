@@ -68,6 +68,17 @@ def test_reading_css_is_glass_only_and_reduces_visual_noise() -> None:
         assert other_theme not in READING
 
 
+def test_reading_surface_overrides_legacy_chat_glass_with_explicit_state_scope() -> None:
+    selector = 'html[data-theme="padiem-glass"][data-glass-mode="reading"] body .app-shell[data-state="chat"] .conversation'
+    assert selector in READING
+    block = READING.split(selector, 1)[1].split("}", 1)[0]
+    assert 'rgba(251, 252, 253, .97)' in block
+    assert 'rgba(242, 246, 248, .94)' in block
+    assert 'background:' in block and '!important' in block
+    assert 'border-color:' in block and '!important' in block
+    assert 'box-shadow:' in block and '!important' in block
+
+
 def test_mobile_reading_posture_is_calmer_and_overflow_is_not_hidden() -> None:
     assert '@media (max-width: 920px)' in READING
     assert '@media (max-width: 620px)' in READING
