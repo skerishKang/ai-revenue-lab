@@ -63,8 +63,17 @@ WHOLE_ACCOUNT_CALENDAR_ACCESS = NO
 
 ## Event time
 
-`CalendarEventTime` requires an explicit IANA timezone for every event material
-snapshot.
+`CalendarEventTime` requires an explicit bounded IANA-style timezone identifier for
+every event material snapshot.
+
+B54 deliberately does **not** require the host OS or Python runtime to carry a local
+IANA timezone database just to validate the connector contract. The identifier is
+lexically bounded and preserved exactly in the approval fingerprint; the trusted
+Google Calendar provider remains the authority that accepts or rejects whether a
+particular identifier exists.
+
+This keeps Linux and Windows contract behavior deterministic without adding a tzdata
+runtime dependency or pretending B54 owns the canonical timezone database.
 
 ### Timed event
 
@@ -74,11 +83,11 @@ Requires:
 all_day = false
 start_at = timezone-aware datetime
 end_at   = timezone-aware datetime
-time_zone = explicit IANA zone
+time_zone = explicit bounded IANA-style identifier
 ```
 
-The canonical fingerprint uses UTC instants plus the declared timezone name, so a
-change in either instant or intended zone is material.
+The canonical fingerprint uses UTC instants plus the declared timezone identifier, so
+a change in either instant or intended zone is material.
 
 ### All-day event
 
@@ -88,7 +97,7 @@ Requires:
 all_day = true
 start_date = inclusive date
 end_date   = exclusive date
-time_zone   = explicit IANA zone
+time_zone   = explicit bounded IANA-style identifier
 ```
 
 Timed and all-day representations cannot be mixed.
@@ -156,7 +165,7 @@ authority.
 - description SHA-256;
 - location;
 - attendee emails;
-- all-day/timed boundaries and timezone;
+- all-day/timed boundaries and timezone identifier;
 - recurrence target;
 - recurrence rules;
 - reminder policy;
@@ -242,6 +251,14 @@ returned ETag evidence.
 
 `CalendarMutationReceipt` wraps the shared `ConnectorWriteReceipt`.
 
+The receipt is accepted only when its connector receipt target exactly matches the
+approved mutation target:
+
+```text
+create                 -> calendar:<calendar_id>:new
+update/delete/respond  -> calendar:<calendar_id>:event:<event_id>
+```
+
 For create/update/respond, a trusted result ETag hash is required. Delete does not
 invent a returned Event ETag when the provider operation does not return one.
 
@@ -271,12 +288,15 @@ model text       != mutation evidence
 CALENDAR_SCOPE_BOUNDED = YES
 ALL_DAY_TIMED_EXPLICIT = YES
 TIMEZONE_EXPLICIT = YES
+HOST_TZ_DATABASE_REQUIRED = NO
+PROVIDER_TIMEZONE_AUTHORITY = YES
 RECURRENCE_TARGET_EXPLICIT = YES
 ATTENDEE_NOTIFICATION_SIDE_EFFECT_BOUND = YES
 P01_MUTATION_APPROVAL_REQUIRED = YES
 CALENDAR_REST_IF_MATCH_SUPPORTED = YES
 CALENDAR_MCP_ETAG_IF_MATCH_ATOMICITY_VERIFIED = NO
 STALE_ETAG_WRITE_ALLOWED = NO
+RECEIPT_TARGET_EXACT = YES
 EVENT_CONTENT_TRUSTED = NO
 REAL_GOOGLE_CALENDAR_OAUTH_CONFIGURED = NO
 REAL_GOOGLE_CALENDAR_MUTATION_CONFIGURED = NO

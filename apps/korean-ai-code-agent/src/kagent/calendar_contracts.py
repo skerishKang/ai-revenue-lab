@@ -7,7 +7,6 @@ import hashlib
 import json
 import re
 from typing import Any
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .connector_trust import ConnectorWriteIntent, ConnectorWriteReceipt
 from .contracts import ContractError
@@ -21,6 +20,10 @@ MAX_SUMMARY_CHARS = 998
 MAX_LOCATION_CHARS = 1024
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_TZ_NAME_RE = re.compile(
+    r"^(?:UTC|[A-Za-z][A-Za-z0-9._+\-]{0,63}/[A-Za-z0-9][A-Za-z0-9._+\-]{0,63}"
+    r"(?:/[A-Za-z0-9][A-Za-z0-9._+\-]{0,63})?)$"
+)
 
 
 def _safe_ref(value: str, field_name: str) -> str:
@@ -85,13 +88,17 @@ def _emails(values: tuple[str, ...], field_name: str) -> tuple[str, ...]:
 
 
 def _timezone_name(value: str) -> str:
-    if not isinstance(value, str) or not value.strip() or len(value.strip()) > 128:
-        raise ContractError("time_zone must be a bounded IANA timezone name")
+    """Validate a bounded provider timezone identifier without a host tz database.
+
+    B54 preserves the declared IANA-style identifier in approval material. The
+    trusted Calendar provider is the authority that resolves whether that identifier
+    exists. This avoids OS-specific `zoneinfo`/`tzdata` behavior in product contracts.
+    """
+    if not isinstance(value, str):
+        raise ContractError("time_zone must be a bounded IANA timezone identifier")
     normalized = value.strip()
-    try:
-        ZoneInfo(normalized)
-    except ZoneInfoNotFoundError as exc:
-        raise ContractError("time_zone must be a valid IANA timezone name") from exc
+    if not _TZ_NAME_RE.fullmatch(normalized):
+        raise ContractError("time_zone must use a bounded IANA timezone identifier shape")
     return normalized
 
 
@@ -192,10 +199,6 @@ class CalendarEventTime:
             end = _aware(self.end_at, "end_at")
             if end <= start:
                 raise ContractError("timed event end_at must be after start_at")
-            zone = ZoneInfo(self.time_zone)
-            # Require the supplied instants to be representable in the declared zone.
-            start.astimezone(zone)
-            end.astimezone(zone)
 
     def canonical_dict(self) -> dict[str, Any]:
         if self.all_day:
@@ -384,9 +387,15 @@ class CalendarMutationMaterial:
         if len(self.reminders) > MAX_REMINDERS or any(not isinstance(item, CalendarReminder) for item in self.reminders):
             raise ContractError("calendar reminders exceed bounded contract")
         if not isinstance(self.conference_policy, CalendarConferencePolicy):
-            object.__setattr__(self, "conference_policy", CalendarConferencePolicy(self.conference_policy))
+            try:
+                object.__setattr__(self, "conference_policy", CalendarConferencePolicy(self.conference_policy))
+            except (TypeError, ValueError) as exc:
+                raise ContractError("invalid conference policy") from exc
         if not isinstance(self.notification_level, CalendarNotificationLevel):
-            object.__setattr__(self, "notification_level", CalendarNotificationLevel(self.notification_level))
+            try:
+                object.__setattr__(self, "notification_level", CalendarNotificationLevel(self.notification_level))
+            except (TypeError, ValueError) as exc:
+                raise ContractError("invalid notification level") from exc
         object.__setattr__(self, "event_id", _optional_ref(self.event_id, "event_id"))
         if self.expected_etag_sha256 is not None:
             object.__setattr__(
@@ -395,7 +404,10 @@ class CalendarMutationMaterial:
                 _fingerprint(self.expected_etag_sha256, "expected_etag_sha256"),
             )
         if self.response_status is not None and not isinstance(self.response_status, CalendarResponseStatus):
-            object.__setattr__(self, "response_status", CalendarResponseStatus(self.response_status))
+            try:
+                object.__setattr__(self, "response_status", CalendarResponseStatus(self.response_status))
+            except (TypeError, ValueError) as exc:
+                raise ContractError("invalid response status") from exc
 
         if self.operation is CalendarCapability.CREATE_EVENT:
             if self.event_id is not None or self.expected_etag_sha256 is not None:
@@ -553,6 +565,13 @@ class CalendarMutationReceipt:
             raise ContractError("invalid Calendar receipt operation")
         object.__setattr__(self, "calendar_id", _safe_ref(self.calendar_id, "calendar_id"))
         object.__setattr__(self, "event_id", _safe_ref(self.event_id, "event_id"))
+        expected_target = (
+            f"calendar:{self.calendar_id}:new"
+            if self.operation is CalendarCapability.CREATE_EVENT
+            else f"calendar:{self.calendar_id}:event:{self.event_id}"
+        )
+        if self.connector_receipt.target_ref != expected_target:
+            raise ContractError("Calendar receipt target does not match exact mutation target")
         if self.result_etag_sha256 is not None:
             object.__setattr__(
                 self,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 import unittest
 
 from kagent.calendar_contracts import (
@@ -137,6 +137,7 @@ class CalendarContractsTests(unittest.TestCase):
         )
         self.assertTrue(all_day.canonical_dict()["all_day"])
         self.assertEqual(all_day.canonical_dict()["end_date"], "2026-09-11")
+        self.assertEqual(self.timed(time_zone="UTC").time_zone, "UTC")
         with self.assertRaises(ContractError):
             CalendarEventTime(
                 all_day=True,
@@ -145,7 +146,9 @@ class CalendarContractsTests(unittest.TestCase):
                 end_date=date(2026, 9, 10),
             )
         with self.assertRaises(ContractError):
-            self.timed(time_zone="Not/A_Real_Zone")
+            self.timed(time_zone="Not A Zone")
+        with self.assertRaises(ContractError):
+            self.timed(time_zone="Asia//Seoul")
 
     def test_recurrence_instance_requires_parent_and_original_start_identity(self):
         with self.assertRaises(ContractError):
@@ -351,6 +354,26 @@ class CalendarContractsTests(unittest.TestCase):
                 operation=CalendarCapability.UPDATE_EVENT,
                 calendar_id="primary",
                 event_id="event_1",
+            )
+
+    def test_receipt_requires_exact_mutation_target(self):
+        wrong_target = ConnectorWriteReceipt(
+            receipt_ref="receipt_calendar_wrong_target",
+            connector_id="google-calendar",
+            binding_ref="binding_calendar_1",
+            idempotency_key="idem_calendar_wrong_target",
+            provider_operation_ref="calendar_update_wrong_target",
+            target_ref="calendar:primary:event:event_other",
+            committed_at=NOW,
+            evidence_ref="p01_evidence_calendar_wrong_target",
+        )
+        with self.assertRaises(ContractError):
+            CalendarMutationReceipt(
+                connector_receipt=wrong_target,
+                operation=CalendarCapability.UPDATE_EVENT,
+                calendar_id="primary",
+                event_id="event_1",
+                result_etag_sha256=ETAG_HASH,
             )
 
     def test_delete_receipt_does_not_invent_returned_etag(self):
