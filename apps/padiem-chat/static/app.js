@@ -65,6 +65,7 @@
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
+  const binaryDocuments = window.PadiemBinaryDocuments;
 
   const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
   const MAX_DOCUMENT_BYTES = 96 * 1024;
@@ -331,7 +332,10 @@
   async function selectAttachment(file) {
     if (!file) return;
     try {
-      const next = ALLOWED_IMAGE_TYPES.has(file.type) ? await selectImage(file) : await readDocumentFile(file);
+      let next;
+      if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
+      else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
+      else next = await readDocumentFile(file);
       if (selectedAttachment && selectedAttachment.previewUrl) URL.revokeObjectURL(selectedAttachment.previewUrl);
       selectedAttachment = next;
       renderSelectedAttachment();
@@ -344,6 +348,9 @@
     if (!attachment) return undefined;
     if (attachment.type === "image") {
       return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
+    }
+    if (typeof attachment.base64 === "string" && attachment.base64) {
+      return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
     }
     return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, text: attachment.text }];
   }
