@@ -58,16 +58,35 @@ jobs:
       - name: Desktop and mobile authenticated history QA
         run: uv run python ../../.github/scripts/b62_auth_history_browser_qa.py
       - name: Account and session presentation QA
-        run: uv run python ../../.github/scripts/b62_account_session_browser_qa.py
+        run: |
+          set -euo pipefail
+          for theme in light dark cinematic padiem-home padiem-glass; do
+            for viewport in desktop mobile; do
+              for account_case in signed expired unavailable; do
+                echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
+                uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+                  --theme "$theme" \
+                  --viewport "$viewport" \
+                  --case "$account_case"
+              done
+            done
+          done
+          uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+            --theme light \
+            --viewport desktop \
+            --case english-expired
       - name: Print QA reports
         if: always()
         run: |
           if [ -f ../../.tmp/b62-auth-history-browser-qa/report.json ]; then
             cat ../../.tmp/b62-auth-history-browser-qa/report.json
           fi
-          if [ -f ../../.tmp/b62-auth-history-browser-qa/account-session-report.json ]; then
-            cat ../../.tmp/b62-auth-history-browser-qa/account-session-report.json
-          fi
+          for report in ../../.tmp/b62-auth-history-browser-qa/account-session-*.json; do
+            if [ -f "$report" ]; then
+              echo "=== $report ==="
+              cat "$report"
+            fi
+          done
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4
