@@ -74,8 +74,18 @@ class _Request:
     ) -> None:
         self.url = url
         self.method = method
+        self._body_bytes = body
+        self._content_type = content_type
         self.body = _AsyncBody(body)
         self.headers = {"content-type": content_type}
+
+    def clone(self):
+        return _Request(
+            url=self.url,
+            method=self.method,
+            body=self._body_bytes,
+            content_type=self._content_type,
+        )
 
 
 class _EdgeBinding:
@@ -152,12 +162,19 @@ def test_edge_forwards_exact_valid_request_through_private_service_fetch() -> No
     request = _Request()
     response = asyncio.run(edge.Default(_EdgeEnv(binding)).fetch(request))
 
-    assert binding.requests == [request]
+    assert len(binding.requests) == 1
+    forwarded = binding.requests[0]
+    assert forwarded is not request
+    assert forwarded.url == request.url
+    assert forwarded.method == request.method
+    assert forwarded.headers == request.headers
+    assert forwarded._body_bytes == request._body_bytes
     assert response is binding.response
     assert response.status == 401
     assert edge.PRIVATE_SERVICE_BINDING_FETCH is True
     assert edge.EDGE_TO_STATE_DEVICE_TRANSPORT == "service_binding_fetch"
-    assert edge.BOUNDED_BODY_ENFORCED_BY_PRIVATE_STATE is True
+    assert edge.BOUNDED_BODY is True
+    assert edge.BOUNDED_BODY_REVALIDATED_BY_PRIVATE_STATE is True
 
 
 def test_edge_keeps_closed_public_boundary_before_private_binding() -> None:
