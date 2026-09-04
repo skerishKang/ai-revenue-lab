@@ -95,6 +95,17 @@ def test_issue_and_verify_binds_canonical_session_and_exact_google_connector_sco
     assert token not in json.dumps(public)
 
 
+def test_canonical_unicode_and_space_subject_id_is_preserved_without_new_identity_grammar():
+    authority = ConnectorConnectTicketAuthority(signing_key=KEY)
+    auth = session(subject=CanonicalSubjectRef(SubjectType.USER, "사용자 001"))
+    token = issue(authority, auth_session=auth)
+
+    claims = authority.verify(token=token, now=NOW, auth_session=auth)
+
+    assert claims.subject_id == "사용자 001"
+    assert decode_payload(token)["subject_id"] == "사용자 001"
+
+
 def test_drive_scope_is_separate_and_readonly_only():
     authority = ConnectorConnectTicketAuthority(signing_key=KEY)
     token = issue(
