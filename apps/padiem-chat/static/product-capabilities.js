@@ -502,15 +502,6 @@
   if (loginButton) {
     const authUiObserver = new MutationObserver(() => {
       const previousState = auth.sessionState;
-      if (previousState === "expired") {
-        const expectedAction = expectedAccountActionText();
-        if (loginButton.textContent.trim() !== expectedAction) {
-          const copy = currentAccountCopy();
-          setText(loginButton, copy.signInAgain);
-          loginButton.title = copy.expiredTitle;
-        }
-        return;
-      }
       if (previousState !== "signed_in") return;
       const expectedAction = auth.loaded && auth.ready ? expectedAccountActionText() : "";
       const actualAction = loginButton.textContent.trim();
@@ -547,6 +538,12 @@
       loginButton.setAttribute("aria-disabled", "true");
       loginButton.setAttribute("aria-busy", "true");
     }, { capture: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      if (auth.loaded) syncAccountPresentation();
+    }, { once: true });
   }
 
   window.addEventListener("pageshow", () => {
