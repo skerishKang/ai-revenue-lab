@@ -6,6 +6,8 @@ on:
       - 'apps/padiem-chat/**'
       - '.github/scripts/b62_accessibility_browser_qa.py'
       - '.github/scripts/b62_small_type_accessibility_qa.py'
+      - '.github/scripts/b62_confirm_dialog_browser_qa.py'
+      - '.github/scripts/b62_product_confirm_helpers.py'
       - '.github/workflows/b62-accessibility-browser-qa.yml'
   workflow_dispatch:
 
@@ -59,6 +61,8 @@ jobs:
         run: uv run python ../../.github/scripts/b62_accessibility_browser_qa.py
       - name: All-theme small-type accessibility QA
         run: uv run python ../../.github/scripts/b62_small_type_accessibility_qa.py
+      - name: All-theme product confirmation dialog QA
+        run: uv run python ../../.github/scripts/b62_confirm_dialog_browser_qa.py
       - name: Print QA report
         if: always()
         run: |
@@ -67,6 +71,9 @@ jobs:
           fi
           if [ -f ../../.tmp/b62-accessibility-browser-qa/small-type-accessibility-report.json ]; then
             cat ../../.tmp/b62-accessibility-browser-qa/small-type-accessibility-report.json
+          fi
+          if [ -f ../../.tmp/b62-accessibility-browser-qa/confirm-dialog-report.json ]; then
+            cat ../../.tmp/b62-accessibility-browser-qa/confirm-dialog-report.json
           fi
       - name: Upload browser evidence
         if: always()
