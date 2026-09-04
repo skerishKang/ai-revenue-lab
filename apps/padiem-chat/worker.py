@@ -258,12 +258,9 @@ class Default(WorkerEntrypoint):
                     if b14_binding is not None
                     else None
                 )
-                _worker_app = create_app(
-                    settings=settings,
-                    history_store=history_store,
-                    control_plane_identity_authority=identity_authority,
-                    identity_shadow_store=identity_shadow_store,
-                )
+                _worker_app = create_app(settings=settings, history_store=history_store)
+                _worker_app.state.control_plane_identity_authority = identity_authority
+                _worker_app.state.identity_shadow_store = identity_shadow_store
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
