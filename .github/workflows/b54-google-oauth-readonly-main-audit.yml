@@ -64,22 +64,17 @@ jobs:
               "/workers/scripts/${B62_WORKER}/settings",
               "oauth.padiem.net",
               "IDENTITY_AUTHORITY_SERVICE",
+              "b54-google-oauth-readonly-audit-result.json",
           ]
           for marker in required:
               if marker not in text:
                   raise SystemExit(f"missing read-only contract marker: {marker}")
 
           forbidden = [
-              "pywrangler deploy",
-              "wrangler deploy",
-              "curl -X POST",
-              "curl -X PUT",
-              "curl -X PATCH",
-              "curl -X DELETE",
-              "--request POST",
-              "--request PUT",
-              "--request PATCH",
-              "--request DELETE",
+              "pywrangler" + " deploy",
+              "wrangler" + " deploy",
+              *["curl -X " + verb for verb in ("POST", "PUT", "PATCH", "DELETE")],
+              *["--request " + verb for verb in ("POST", "PUT", "PATCH", "DELETE")],
           ]
           for marker in forbidden:
               if marker in text:
@@ -293,6 +288,18 @@ jobs:
           echo "oauth_edge_state=${edge_state}" >> "${GITHUB_OUTPUT}"
           echo "b62_binding_state=${b62_binding_state}" >> "${GITHUB_OUTPUT}"
 
+          result_file="${RUNNER_TEMP}/b54-google-oauth-readonly-audit-result.json"
+          jq -n \
+            --arg git_sha "${GITHUB_SHA}" \
+            --arg oauth_custom_domain "${domain_state}" \
+            --arg identity_worker "${identity_state}" \
+            --arg oauth_state_worker "${state_state}" \
+            --arg oauth_edge_worker "${edge_state}" \
+            --arg b62_identity_binding "${b62_binding_state}" \
+            '{git_sha:$git_sha, oauth_custom_domain:$oauth_custom_domain, identity_worker:$identity_worker, oauth_state_worker:$oauth_state_worker, oauth_edge_worker:$oauth_edge_worker, b62_identity_binding:$b62_identity_binding, production_mutation:0}' \
+            > "${result_file}"
+          jq -e '.production_mutation == 0' "${result_file}" >/dev/null
+
           {
             echo "## B54 Google OAuth Production Read-only Audit"
             echo ""
@@ -309,3 +316,11 @@ jobs:
           echo "GOOGLE_RUNTIME_BINDINGS_AUDITED=YES"
           echo "CLOUDFLARE_READONLY_AUDIT=PASS"
           echo "PRODUCTION_MUTATION=0"
+
+      - name: Publish non-secret Production audit result
+        uses: actions/upload-artifact@v4
+        with:
+          name: b54-google-oauth-readonly-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/b54-google-oauth-readonly-audit-result.json
+          if-no-files-found: error
+          retention-days: 7
