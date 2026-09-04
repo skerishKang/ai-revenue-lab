@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 
+from .agent_skill_service import AGENT_SKILL_RUN_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from .service import EXECUTE_PATH, HEALTH_PATH
@@ -134,6 +135,9 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(RESEARCH_PATH, "POST", "application/json"),
             EngineEndpointContract(MEMORY_PATH, "POST", "application/json"),
             EngineEndpointContract(MEMORY_WRITE_PATH, "POST", "application/json"),
+            # E4A source route is declared for first-party compatibility but its
+            # feature posture remains DEFERRED until trusted live bindings exist.
+            EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
         ),
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),
