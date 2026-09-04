@@ -461,7 +461,14 @@
   }
 
   if (loginButton) {
-    const authUiObserver = new MutationObserver(queueAuthRefresh);
+    const authUiObserver = new MutationObserver(() => {
+      // app.js still owns compatibility auth actions and may update the same
+      // legacy button while its status request settles. ProductCapabilities is
+      // the final presentation owner: immediately re-project the last trusted
+      // auth snapshot, then refresh that snapshot from the server.
+      syncAccountPresentation();
+      queueAuthRefresh();
+    });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
     loginButton.addEventListener("click", () => {
       if (auth.sessionState !== "signed_in") return;
