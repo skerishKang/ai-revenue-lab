@@ -12,6 +12,7 @@ from padiem_ai_core.document_normalization import (
     normalize_document_name,
     normalize_document_text,
     normalize_text_document,
+    validate_document_identity,
 )
 
 MAX_DOCUMENT_BYTES = MAX_TEXT_DOCUMENT_BYTES
@@ -52,11 +53,9 @@ def _safe_name(value: Any) -> str:
 
 def _validate_media_and_extension(name: str, media_type: Any) -> str:
     try:
-        normalized = normalize_text_document(name=name, media_type=media_type, text="x")
-        return normalized.media_type
+        _, normalized_media = validate_document_identity(name=name, media_type=media_type, source_kind="text")
+        return normalized_media
     except DocumentNormalizationError as exc:
-        if exc.code in {"empty_document", "text_bytes_too_large", "text_too_long"}:
-            raise DocumentValidationError("문서 내용 형식이 올바르지 않습니다.") from exc
         raise _translate_text_error(exc) from exc
 
 
