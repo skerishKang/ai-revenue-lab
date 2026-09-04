@@ -2,6 +2,7 @@
   "use strict";
 
   const VALID_LOCALES = ["ko", "en"];
+  const TRUSTED_AUTH_SESSION_STATES = new Set(["unavailable", "guest", "signed_in", "expired"]);
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const nativeConfirm = typeof window.confirm === "function" ? window.confirm.bind(window) : null;
 
@@ -11,13 +12,13 @@
       "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기",
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "설정", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "언어", "done": "완료",
-      "login": "로그인", "logout": "로그아웃", "hello": "안녕하세요.", "ask": "무엇을 도와드릴까요?", "copy": "궁금한 것을 평소 말하듯 편하게 물어보세요.",
+      "login": "로그인", "logout": "로그아웃", "sign-in-again": "다시 로그인", "hello": "안녕하세요.", "ask": "무엇을 도와드릴까요?", "copy": "궁금한 것을 평소 말하듯 편하게 물어보세요.",
       "easy-title": "쉽게 설명해줘", "easy-copy": "어려운 내용도 쉬운 말로", "life-title": "생활 도움", "life-copy": "일상 질문과 계획 세우기", "document-title": "문서와 대화",
       "input": "무엇이든 물어보세요", "file": "파일", "web": "웹 검색", "research": "심층 리서치", "footer": "편하게 질문해 보세요",
       "main-menu": "주요 메뉴", "chat-menu": "채팅 메뉴", "account-settings": "계정 및 설정", "home-aria": "Padiem Chat 홈", "home-open": "Padiem Home 열기",
       "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
       "projects-empty": "아직 프로젝트가 없습니다.", "history-title": "최근 대화", "history-empty": "저장된 대화가 없습니다.", "outputs-empty": "저장한 답변이 없습니다.",
-      "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-title": "Google 계정으로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다",
+      "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-title": "Google 계정으로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다", "expired-title": "세션이 만료되었습니다. 다시 로그인합니다",
       "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
       "composer": "메시지 작성", "project-banner": "프로젝트", "project-edit": "지침·파일", "project-exit": "나가기", "attachment-preview-alt": "선택한 사진 미리보기", "attachment-remove": "첨부 파일 제거",
       "message-input-label": "메시지 입력", "web-unavailable-title": "웹 검색은 준비 중입니다", "research-unavailable-title": "심층 리서치는 현재 사용할 수 없습니다", "cancel": "취소", "cancel-answer": "답변 생성 취소", "send": "메시지 보내기",
@@ -36,13 +37,13 @@
       "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu",
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "Settings", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "Language", "done": "Done",
-      "login": "Log in", "logout": "Log out", "hello": "Hello.", "ask": "What can I help you with?", "copy": "Ask anything in your own words.",
+      "login": "Log in", "logout": "Log out", "sign-in-again": "Sign in again", "hello": "Hello.", "ask": "What can I help you with?", "copy": "Ask anything in your own words.",
       "easy-title": "Explain simply", "easy-copy": "Make difficult ideas easy", "life-title": "Everyday help", "life-copy": "Questions and planning", "document-title": "Chat with documents",
       "input": "Ask anything", "file": "File", "web": "Web search", "research": "Deep research", "footer": "Ask comfortably",
       "main-menu": "Main menu", "chat-menu": "Chat menu", "account-settings": "Account and settings", "home-aria": "Padiem Chat home", "home-open": "Open Padiem Home",
       "coming-soon": "Coming soon", "login-after": "Log in first", "checking": "Checking", "setup-needed": "Setup needed", "empty": "Empty", "create-new": "Create new",
       "projects-empty": "No projects yet.", "history-title": "Recent conversations", "history-empty": "No saved conversations.", "outputs-empty": "No saved answers.",
-      "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-title": "Log in with your Google account", "logout-title": "Log out of the current account",
+      "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-title": "Log in with your Google account", "logout-title": "Log out of the current account", "expired-title": "Your session expired. Sign in again",
       "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
       "composer": "Message composer", "project-banner": "Project", "project-edit": "Instructions & files", "project-exit": "Exit", "attachment-preview-alt": "Selected image preview", "attachment-remove": "Remove attachment",
       "message-input-label": "Message input", "web-unavailable-title": "Web search is coming soon", "research-unavailable-title": "Deep research is currently unavailable", "cancel": "Cancel", "cancel-answer": "Cancel answer generation", "send": "Send message",
@@ -137,12 +138,39 @@
   function syncLoginButton(lang) {
     const button = document.getElementById("loginButton");
     if (!button) return;
+    const accountRoot = button.closest(".sidebar-account");
+    const state = accountRoot?.dataset.accountState || "";
     const raw = button.textContent.trim();
-    if (raw === "로그아웃" || raw === "Log out") button.dataset.authenticated = "true";
-    else if (raw === "로그인" || raw === "Log in") button.dataset.authenticated = "false";
+
+    if (state === "expired" || raw === "다시 로그인" || raw === "Sign in again") {
+      button.dataset.authenticated = "false";
+      button.textContent = text("sign-in-again", lang);
+      button.title = text("expired-title", lang);
+      return;
+    }
+
+    if (state === "signed_in" || raw === "로그아웃" || raw === "Log out") {
+      button.dataset.authenticated = "true";
+    } else if (state === "guest" || state === "unavailable" || raw === "로그인" || raw === "Log in") {
+      button.dataset.authenticated = "false";
+    }
+
     const authenticated = button.dataset.authenticated === "true";
     button.textContent = authenticated ? text("logout", lang) : text("login", lang);
-    button.title = button.disabled ? text("login-unavailable-title", lang) : authenticated ? text("logout-title", lang) : text("login-title", lang);
+    button.title = state === "unavailable" || button.disabled
+      ? text("login-unavailable-title", lang)
+      : authenticated
+        ? text("logout-title", lang)
+        : text("login-title", lang);
+  }
+
+  function syncLoginButtonFromCapability(event) {
+    const state = event?.detail?.auth?.sessionState;
+    if (!TRUSTED_AUTH_SESSION_STATES.has(state)) return;
+    const button = document.getElementById("loginButton");
+    const accountRoot = button?.closest(".sidebar-account");
+    if (!button || !accountRoot || accountRoot.dataset.accountState !== state) return;
+    syncLoginButton(getCurrent());
   }
 
   function applyStaticBindings(lang) {
@@ -325,5 +353,6 @@
     localizeExisting: () => localizeExistingDynamicControls(getCurrent())
   };
 
+  window.addEventListener("padiem:capabilitychange", syncLoginButtonFromCapability);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

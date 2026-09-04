@@ -112,6 +112,7 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
                 "authenticated": state.authenticated,
                 "history_ready": state.authenticated,
                 "project_files_ready": False,
+                "session_state": "signed_in" if state.authenticated else "guest",
                 "user": (
                     {
                         "id": "usr_browser_fixture",
@@ -342,8 +343,12 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     )
     if state.logout_posts != 1:
         raise AssertionError(f"logout must POST exactly once, saw {state.logout_posts}")
-    if not await page.locator("#accountName").is_hidden():
-        raise AssertionError("account name must be hidden after logout")
+    if await page.locator("#accountName").is_hidden():
+        raise AssertionError("guest account label must remain visible after logout")
+    if (await page.locator("#accountName").inner_text()).strip() != "게스트":
+        raise AssertionError("logout must return account presentation to guest")
+    if await page.locator(".sidebar-account").get_attribute("data-account-state") != "guest":
+        raise AssertionError("logout must project guest account state")
     if not await page.locator("#historySection").is_hidden():
         raise AssertionError("history must be hidden after logout")
     await _assert_no_horizontal_overflow(page, f"{name}-logout")
@@ -378,6 +383,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "new_history_entry": "PASS",
         "logout_posts": state.logout_posts,
         "logout_clears_history_ui": "PASS",
+        "logout_guest_presentation": "PASS",
         "stream_post_count": len(state.stream_posts),
         "explicit_routing_selector": False,
         "stubbed_decorative_font_hosts": sorted(stubbed_static_hosts),

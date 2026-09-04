@@ -42,24 +42,42 @@ def _unavailable() -> JSONResponse:
 async def auth_status(request: Request) -> JSONResponse:
     ready = auth_ready(request)
     store: HistoryStore | None = request.app.state.history_store
+    session_cookie_present = bool(request.cookies.get(SESSION_COOKIE))
     user = None
     authenticated = False
+    session_state = "guest"
     if ready and store is not None:
         uid = current_user_id(request)
         if uid:
             try:
                 profile = await store.get_user(uid)
             except Exception:
+                # Presentation-only projection: a transient profile lookup failure
+                # must not be reclassified as a valid guest or signed-in state.
                 profile = None
-            if profile is not None:
-                authenticated = True
-                user = profile.public_dict()
+                session_state = "unavailable"
+            else:
+                if profile is not None:
+                    authenticated = True
+                    user = profile.public_dict()
+                    session_state = "signed_in"
+                elif session_cookie_present:
+                    session_state = "expired"
+        elif session_cookie_present:
+            # A browser carrying a compatibility session cookie that no longer
+            # resolves may recover by signing in again. This state is never used
+            # as access authority; it is only projected for truthful B62 UX.
+            session_state = "expired"
     payload = {
         "ready": ready,
         "authenticated": authenticated,
         "history_ready": ready and store is not None,
         "user": user,
     }
+    # Keep the legacy unavailable payload stable. Once auth is actually ready,
+    # expose a bounded presentation state so the browser does not infer expiry.
+    if ready:
+        payload["session_state"] = session_state
     if ready and getattr(request.app.state, "project_file_store", None) is not None:
         payload["project_files_ready"] = True
     return JSONResponse(payload)

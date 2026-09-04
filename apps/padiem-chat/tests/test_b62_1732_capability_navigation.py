@@ -115,11 +115,11 @@ def test_auth_status_controls_account_session_visibility_while_health_controls_c
     assert "projects: bool(data.projects_code_ready)," in source
     assert "projectFiles: bool(data.project_files_code_ready) && bool(data.project_file_store_bound)," in source
     assert "savedOutputs: bool(data.saved_outputs_code_ready) && bool(data.saved_output_store_bound)," in source
-    assert "const authAvailable = auth.loaded && auth.ready;" in source
+    assert 'const authAvailable = auth.loaded && auth.ready && auth.sessionState !== "unavailable";' in source
     assert "&& deployment.projects" in source
     assert "&& auth.authenticated" in source
     assert "&& auth.historyReady;" in source
-    assert "setHidden(loginButton, !authAvailable);" in source
+    assert "syncAccountPresentation();" in source
     assert "setHidden(projectsNavButton, !projectsAvailable);" in source
 
     server = APP_FACTORY.read_text(encoding="utf-8")

@@ -36,9 +36,27 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 48px;
   padding: 6px 8px;
+  border: 1px solid transparent;
   border-radius: 12px;
+}
+.sidebar-account[hidden] {
+  display: none !important;
+}
+.account-avatar {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255,255,255,.62);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 780;
+  line-height: 1;
 }
 .sidebar-account .account-name {
   flex: 1;
@@ -52,5 +70,37 @@
 }
 .sidebar-bottom .login-button {
   margin-left: 0;
+  min-height: 44px;
   flex-shrink: 0;
+}
+.sidebar-account[data-account-state="guest"] .account-name {
+  color: var(--muted);
+  font-weight: 600;
+}
+.sidebar-account[data-account-state="expired"] {
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+  background: color-mix(in srgb, var(--danger) 7%, transparent);
+}
+.sidebar-account[data-account-state="expired"] .account-avatar,
+.sidebar-account[data-account-state="expired"] .account-name {
+  color: var(--danger);
+}
+.sidebar-account[data-account-state="expired"] .account-avatar {
+  border-color: color-mix(in srgb, var(--danger) 36%, var(--line));
+}
+.sidebar-account[data-account-state="signed_in"] .account-avatar {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+}
+.sidebar-bottom .login-button[aria-busy="true"] {
+  cursor: progress;
+}
+
+@media (max-width: 640px) {
+  .sidebar-account {
+    min-height: 52px;
+  }
+  .sidebar-bottom .login-button {
+    min-width: 88px;
+  }
 }

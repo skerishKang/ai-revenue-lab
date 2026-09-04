@@ -26,6 +26,7 @@
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
   const accountName = document.getElementById("accountName");
+  const accountContainer = document.querySelector(".sidebar-account");
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
@@ -607,7 +608,7 @@
     projectNameInput.focus();
   }
   function closeProjectDialog() {
-    if (projectDialog.open) projectDialog.close();
+    if (projectDialog.open && typeof projectDialog.close === "function") projectDialog.close();
     editingProjectId = null;
     dialogProjectFiles = [];
     projectFileInput.value = "";
@@ -709,33 +710,60 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    const english = document.documentElement.lang === "en";
+    const sessionState = !ready
+      ? "unavailable"
+      : authenticated
+        ? "signed_in"
+        : authState.session_state === "expired"
+          ? "expired"
+          : "guest";
+
+    if (accountContainer) {
+      accountContainer.dataset.accountState = sessionState;
+      accountContainer.hidden = sessionState === "unavailable";
+    }
+    loginButton.hidden = sessionState === "unavailable";
     loginButton.disabled = !ready;
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
-    if (!ready) {
-      loginButton.textContent = "로그인";
-      loginButton.title = "로그인 기능이 설정되지 않았습니다";
+
+    if (sessionState === "unavailable") {
+      loginButton.textContent = english ? "Sign in" : "로그인";
+      loginButton.title = english ? "Sign-in is unavailable" : "로그인 기능이 설정되지 않았습니다";
       accountName.hidden = true;
       accountName.textContent = "";
       clearHistoryUI();
       clearProjectsUI();
       return;
     }
-    if (authenticated) {
-      loginButton.textContent = "로그아웃";
-      loginButton.title = "현재 계정에서 로그아웃합니다";
-      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name : "";
-      accountName.textContent = name;
-      accountName.hidden = !name;
+
+    if (sessionState === "signed_in") {
+      loginButton.textContent = english ? "Sign out" : "로그아웃";
+      loginButton.title = english ? "Sign out of the current account" : "현재 계정에서 로그아웃합니다";
+      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
+      accountName.textContent = name || (english ? "Signed in" : "로그인됨");
+      accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = "확인 중";
-    } else {
-      loginButton.textContent = "로그인";
-      loginButton.title = "Google 계정으로 로그인합니다";
-      accountName.hidden = true;
-      accountName.textContent = "";
+      projectsBadge.textContent = english ? "Checking" : "확인 중";
+      return;
+    }
+
+    if (sessionState === "expired") {
+      loginButton.textContent = english ? "Sign in again" : "다시 로그인";
+      loginButton.title = english ? "Your session expired. Sign in again" : "세션이 만료되었습니다. 다시 로그인합니다";
+      accountName.textContent = english ? "Session expired" : "세션 만료";
+      accountName.hidden = false;
       clearHistoryUI();
       clearProjectsUI();
+      return;
     }
+
+    loginButton.textContent = english ? "Sign in" : "로그인";
+    loginButton.title = english ? "Sign in with your Google account" : "Google 계정으로 로그인합니다";
+    accountName.textContent = english ? "Guest" : "게스트";
+    accountName.hidden = false;
+    clearHistoryUI();
+    clearProjectsUI();
   }
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {

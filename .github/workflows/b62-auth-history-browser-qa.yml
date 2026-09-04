@@ -5,6 +5,7 @@ on:
     paths:
       - "apps/padiem-chat/**"
       - ".github/scripts/b62_auth_history_browser_qa.py"
+      - ".github/scripts/b62_account_session_browser_qa.py"
       - ".github/workflows/b62-auth-history-browser-qa.yml"
   workflow_dispatch:
 
@@ -35,8 +36,8 @@ jobs:
           version: "0.12.5"
       - name: Resolve B62
         run: uv sync --extra dev
-      - name: Run existing auth/history contract tests
-        run: uv run pytest -q tests/test_auth_history.py
+      - name: Run auth/history and account-session contract tests
+        run: uv run pytest -q tests/test_auth_history.py tests/test_b62_1816_account_session_presentation.py
       - name: Install pinned Playwright
         run: uv pip install 'playwright==1.55.0'
       - name: Install Chromium runtime
@@ -44,24 +45,74 @@ jobs:
       - name: Start mock Padiem Chat
         run: |
           set -euo pipefail
-          uv run uvicorn app.main:app --host 127.0.0.1 --port 8769 > /tmp/b62-auth-history-browser-server.log 2>&1 &
-          echo $! > /tmp/b62-auth-history-browser-server.pid
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8769 > /tmp/b62-auth-history-server.log 2>&1 &
+          echo $! > /tmp/b62-auth-history-server.pid
           for i in $(seq 1 30); do
             if curl --fail --silent http://127.0.0.1:8769/health >/dev/null; then
               exit 0
             fi
             sleep 1
           done
-          cat /tmp/b62-auth-history-browser-server.log
+          cat /tmp/b62-auth-history-server.log
           exit 1
       - name: Desktop and mobile authenticated history QA
         run: uv run python ../../.github/scripts/b62_auth_history_browser_qa.py
-      - name: Print QA report
+      - name: Account and session presentation QA
+        run: |
+          set -euo pipefail
+
+          # Keep the fast, already-stable cases parallel. Expired-session probes
+          # mutate the same account presentation surface through two browser
+          # projection layers and are intentionally serialized so a failing
+          # Chromium process cannot poison sibling Playwright pipes or hide the
+          # primary diagnostic behind xargs/EPIPE noise.
+          stable_cases_file="$(mktemp)"
+          for theme in light dark cinematic padiem-home padiem-glass; do
+            for viewport in desktop mobile; do
+              for account_case in signed unavailable; do
+                printf '%s %s %s\n' "$theme" "$viewport" "$account_case" >> "$stable_cases_file"
+              done
+            done
+          done
+
+          xargs -r -P 4 -n 3 bash -c '
+            set -euo pipefail
+            theme="$1"
+            viewport="$2"
+            account_case="$3"
+            echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
+            timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+              --theme "$theme" \
+              --viewport "$viewport" \
+              --case "$account_case"
+          ' _ < "$stable_cases_file"
+
+          for theme in light dark cinematic padiem-home padiem-glass; do
+            for viewport in desktop mobile; do
+              echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-expired"
+              timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+                --theme "$theme" \
+                --viewport "$viewport" \
+                --case expired
+            done
+          done
+
+          timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+            --theme light \
+            --viewport desktop \
+            --case english-expired
+      - name: Print QA reports
         if: always()
         run: |
           if [ -f ../../.tmp/b62-auth-history-browser-qa/report.json ]; then
             cat ../../.tmp/b62-auth-history-browser-qa/report.json
           fi
+          for report in ../../.tmp/b62-auth-history-browser-qa/account-session-*.json; do
+            if [ -f "$report" ]; then
+              echo "=== $report ==="
+              cat "$report"
+            fi
+          done
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4

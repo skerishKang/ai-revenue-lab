@@ -7,11 +7,14 @@
   const webSearchStarter = document.getElementById("webSearchStarterButton");
   const deepResearchButton = document.getElementById("deepResearchButton");
   const loginButton = document.getElementById("loginButton");
+  const accountName = document.getElementById("accountName");
+  const accountContainer = document.querySelector(".sidebar-account");
   const projectsNavButton = document.getElementById("projectsNavButton");
   const messageInput = document.getElementById("messageInput");
   const mobileClose = document.getElementById("mobileClose");
   const modePill = document.querySelector(".model-pill");
 
+  const SESSION_STATES = new Set(["unavailable", "guest", "signed_in", "expired"]);
   const EMPTY_DEPLOYMENT = Object.freeze({
     loaded: false,
     webSearch: false,
@@ -27,6 +30,8 @@
     authenticated: false,
     historyReady: false,
     projectFilesReady: false,
+    sessionState: "unavailable",
+    displayName: "",
   });
 
   const MODE_PRESENTATION = Object.freeze({
@@ -62,13 +67,48 @@
     }),
   });
 
+  const ACCOUNT_COPY = Object.freeze({
+    ko: Object.freeze({
+      guest: "게스트",
+      signedIn: "로그인됨",
+      expired: "세션 만료",
+      login: "로그인",
+      logout: "로그아웃",
+      signInAgain: "다시 로그인",
+      loginTitle: "Google 계정으로 로그인합니다",
+      logoutTitle: "현재 계정에서 로그아웃합니다",
+      expiredTitle: "세션이 만료되었습니다. 다시 로그인합니다",
+    }),
+    en: Object.freeze({
+      guest: "Guest",
+      signedIn: "Signed in",
+      expired: "Session expired",
+      login: "Sign in",
+      logout: "Sign out",
+      signInAgain: "Sign in again",
+      loginTitle: "Sign in with your Google account",
+      logoutTitle: "Sign out of the current account",
+      expiredTitle: "Your session expired. Sign in again",
+    }),
+  });
+
   let deployment = EMPTY_DEPLOYMENT;
   let auth = EMPTY_AUTH;
   let authRefreshQueued = false;
+  let authRefreshTail = Promise.resolve();
   let modePanel = null;
+  let accountAvatar = null;
 
   function bool(value) {
     return value === true;
+  }
+
+  function text(value, max = 80) {
+    return typeof value === "string" ? value.trim().slice(0, max) : "";
+  }
+
+  function setText(element, value) {
+    if (element && element.textContent !== value) element.textContent = value;
   }
 
   function projectDeployment(data) {
@@ -86,20 +126,28 @@
 
   function projectAuth(data) {
     if (!data || typeof data !== "object" || Array.isArray(data)) return EMPTY_AUTH;
+    const ready = bool(data.ready);
+    const authenticated = ready && bool(data.authenticated);
+    let sessionState = SESSION_STATES.has(data.session_state) ? data.session_state : "guest";
+    if (!ready) sessionState = "unavailable";
+    else if (authenticated) sessionState = "signed_in";
+    else if (sessionState === "signed_in") sessionState = "guest";
+    const displayName = authenticated && data.user && typeof data.user === "object"
+      ? text(data.user.name)
+      : "";
     return Object.freeze({
       loaded: true,
-      ready: bool(data.ready),
-      authenticated: bool(data.authenticated),
+      ready,
+      authenticated,
       historyReady: bool(data.history_ready),
       projectFilesReady: bool(data.project_files_ready),
+      sessionState,
+      displayName,
     });
   }
 
   function publicState() {
-    return Object.freeze({
-      deployment,
-      auth,
-    });
+    return Object.freeze({ deployment, auth });
   }
 
   function dispatch() {
@@ -138,14 +186,105 @@
     syncSidebarSearch();
   }
 
+  function currentAccountCopy() {
+    return ACCOUNT_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+  }
+
+  function expectedAccountActionText() {
+    const copy = currentAccountCopy();
+    if (auth.sessionState === "signed_in") return copy.logout;
+    if (auth.sessionState === "expired") return copy.signInAgain;
+    return copy.login;
+  }
+
+  function expectedAccountNameText() {
+    const copy = currentAccountCopy();
+    if (auth.sessionState === "signed_in") return auth.displayName || copy.signedIn;
+    if (auth.sessionState === "expired") return copy.expired;
+    if (auth.sessionState === "guest") return copy.guest;
+    return "";
+  }
+
+  function ensureAccountAvatar() {
+    if (!accountContainer || accountAvatar) return accountAvatar;
+    accountAvatar = document.createElement("span");
+    accountAvatar.className = "account-avatar";
+    accountAvatar.setAttribute("aria-hidden", "true");
+    if (accountName) accountContainer.insertBefore(accountAvatar, accountName);
+    else accountContainer.prepend(accountAvatar);
+    return accountAvatar;
+  }
+
+  function syncAccountPresentation() {
+    if (!loginButton || !accountContainer) return;
+    const copy = currentAccountCopy();
+    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const available = auth.loaded && auth.ready && state !== "unavailable";
+    accountContainer.dataset.accountState = state;
+    accountContainer.hidden = !available;
+    loginButton.hidden = !available;
+    loginButton.removeAttribute("aria-busy");
+    loginButton.disabled = !available;
+    loginButton.setAttribute("aria-disabled", available ? "false" : "true");
+
+    if (!available) {
+      if (accountName) {
+        accountName.hidden = true;
+        setText(accountName, "");
+      }
+      if (accountAvatar) accountAvatar.hidden = true;
+      return;
+    }
+
+    const avatar = ensureAccountAvatar();
+    avatar.hidden = false;
+    if (state === "signed_in") {
+      const visibleName = auth.displayName || copy.signedIn;
+      setText(accountName, visibleName);
+      accountName.hidden = false;
+      setText(avatar, visibleName.charAt(0).toUpperCase() || "P");
+      setText(loginButton, copy.logout);
+      loginButton.title = copy.logoutTitle;
+      return;
+    }
+    if (state === "expired") {
+      setText(accountName, copy.expired);
+      accountName.hidden = false;
+      setText(avatar, "!");
+      setText(loginButton, copy.signInAgain);
+      loginButton.title = copy.expiredTitle;
+      return;
+    }
+    setText(accountName, copy.guest);
+    accountName.hidden = false;
+    setText(avatar, document.documentElement.lang === "en" ? "G" : "게");
+    setText(loginButton, copy.login);
+    loginButton.title = copy.loginTitle;
+  }
+
+  function accountPresentationMatchesTrustedState() {
+    if (!loginButton || !accountContainer) return true;
+    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const available = auth.loaded && auth.ready && state !== "unavailable";
+    if (accountContainer.hidden !== !available || loginButton.hidden !== !available) return false;
+    if (!available) {
+      if (!accountName) return true;
+      return accountName.hidden && accountName.textContent.trim() === "";
+    }
+    if (loginButton.textContent.trim() !== expectedAccountActionText()) return false;
+    if (accountContainer.dataset.accountState !== state) return false;
+    if (accountName && (accountName.hidden || accountName.textContent.trim() !== expectedAccountNameText())) return false;
+    return true;
+  }
+
   function syncAccountVisibility() {
-    const authAvailable = auth.loaded && auth.ready;
+    const authAvailable = auth.loaded && auth.ready && auth.sessionState !== "unavailable";
     const projectsAvailable = deployment.loaded
       && deployment.projects
       && authAvailable
       && auth.authenticated
       && auth.historyReady;
-    setHidden(loginButton, !authAvailable);
+    syncAccountPresentation();
     setHidden(projectsNavButton, !projectsAvailable);
   }
 
@@ -178,17 +317,17 @@
     button.setAttribute("aria-disabled", enabled ? "false" : "true");
     button.setAttribute("aria-pressed", mode === MODE_PRESENTATION.selected ? "true" : "false");
 
-    const text = document.createElement("span");
+    const textContainer = document.createElement("span");
     const title = document.createElement("strong");
     const detail = document.createElement("small");
     title.textContent = copy[mode][0];
     detail.textContent = copy[mode][1];
-    text.append(title, detail);
+    textContainer.append(title, detail);
 
     const state = document.createElement("span");
     state.className = "mode-option-state";
     state.textContent = enabled ? copy.available : copy.preview;
-    button.append(text, state);
+    button.append(textContainer, state);
     return button;
   }
 
@@ -297,7 +436,6 @@
       if (modePanel.contains(event.target) || modePill.contains(event.target)) return;
       closeModePanel();
     });
-    window.addEventListener("padiem:localechange", syncModeCopy);
   }
 
   async function refreshDeployment() {
@@ -315,19 +453,27 @@
     return deployment;
   }
 
-  async function refreshAuth() {
+  async function readAuthFresh() {
+    let nextAuth = EMPTY_AUTH;
     try {
       const response = await nativeFetch("/api/auth/status", {
         headers: { "Accept": "application/json" },
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
-      auth = response.ok ? projectAuth(data) : EMPTY_AUTH;
+      nextAuth = response.ok ? projectAuth(data) : EMPTY_AUTH;
     } catch (_) {
-      auth = EMPTY_AUTH;
+      nextAuth = EMPTY_AUTH;
     }
+    auth = nextAuth;
     syncAll();
     return auth;
+  }
+
+  function refreshAuth() {
+    const run = authRefreshTail.then(readAuthFresh, readAuthFresh);
+    authRefreshTail = run.catch(() => EMPTY_AUTH);
+    return run;
   }
 
   function queueAuthRefresh() {
@@ -354,8 +500,31 @@
   }
 
   if (loginButton) {
-    const authUiObserver = new MutationObserver(queueAuthRefresh);
+    const authUiObserver = new MutationObserver(() => {
+      if (auth.sessionState !== "signed_in") return;
+      const expectedAction = expectedAccountActionText();
+      const actualAction = loginButton.textContent.trim();
+      if (actualAction !== expectedAction) queueAuthRefresh();
+    });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
+    loginButton.addEventListener("click", () => {
+      if (auth.sessionState !== "signed_in") return;
+      loginButton.disabled = true;
+      loginButton.setAttribute("aria-disabled", "true");
+      loginButton.setAttribute("aria-busy", "true");
+    }, { capture: true });
+  }
+
+  function reconcileAccountPresentationAfterLocaleBootstrap() {
+    window.setTimeout(() => {
+      if (auth.loaded) syncAccountPresentation();
+    }, 0);
+  }
+
+  if (document.readyState === "complete") {
+    reconcileAccountPresentationAfterLocaleBootstrap();
+  } else {
+    window.addEventListener("load", reconcileAccountPresentationAfterLocaleBootstrap, { once: true });
   }
 
   window.addEventListener("pageshow", () => {
@@ -363,6 +532,10 @@
     refreshAuth();
   });
   window.addEventListener("focus", queueAuthRefresh);
+  window.addEventListener("padiem:localechange", () => {
+    syncModeCopy();
+    reconcileAccountPresentationAfterLocaleBootstrap();
+  });
 
   window.PadiemProductCapabilities = Object.freeze({
     get: publicState,
