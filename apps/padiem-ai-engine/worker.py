@@ -30,7 +30,7 @@ from app.cloudflare_transport import (
 from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
 from app.identity_enforcement import authenticate_request
-from app.memory_service import MEMORY_PATH, MemoryRetrievalEngineService
+from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH, MemoryRetrievalEngineService
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -179,16 +179,19 @@ def _authenticate_non_health_request(env: Any, headers: Any, body: bytes) -> Res
 
 
 def _memory_service_for_env(env: Any) -> MemoryRetrievalEngineService:
-    """Compose the memory read projection from server-only deployment state.
+    """Compose the memory read/write projection from server-only deployment state.
 
-    Trusted memory bindings (read authorization + product retrieval provider)
+    Trusted memory bindings (read authorization + retrieval provider, and the
+    separate write authorization + policy + classifier + idempotent adapter)
     are deployment/code authority and are registered outside this Worker in
-    this slice. Their absence is intentional: the route then fails closed as
-    `memory_binding_unavailable` and the request wire can never substitute a
-    storage endpoint, provider or credential for the missing authority.
+    this slice. Their absence is intentional: each route fails closed as
+    `memory_binding_unavailable` / `memory_write_binding_unavailable`, and the
+    request wire can never substitute a storage endpoint, provider, adapter or
+    credential for the missing authority. Read and write registries stay
+    separate: binding one never enables the other.
     """
 
-    return MemoryRetrievalEngineService(bindings={})
+    return MemoryRetrievalEngineService(bindings={}, write_bindings={})
 
 
 def _engine_services_for_env(env: Any) -> EngineServices:
@@ -374,6 +377,7 @@ class Default(WorkerEntrypoint):
             "/internal/v1/execute",
             RESEARCH_PATH,
             MEMORY_PATH,
+            MEMORY_WRITE_PATH,
         } | orchestration_paths
         if path not in allowed_paths:
             result = ServiceResponse(
@@ -415,7 +419,7 @@ class Default(WorkerEntrypoint):
             )
             return _json_response(result)
 
-        if path == MEMORY_PATH:
+        if path in (MEMORY_PATH, MEMORY_WRITE_PATH):
             result = await services.memory.handle(
                 method=method,
                 path=path,
