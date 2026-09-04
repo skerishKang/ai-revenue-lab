@@ -190,6 +190,13 @@
     return ACCOUNT_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
   }
 
+  function expectedAccountActionText() {
+    const copy = currentAccountCopy();
+    if (auth.sessionState === "signed_in") return copy.logout;
+    if (auth.sessionState === "expired") return copy.signInAgain;
+    return copy.login;
+  }
+
   function ensureAccountAvatar() {
     if (!accountContainer || accountAvatar) return accountAvatar;
     accountAvatar = document.createElement("span");
@@ -471,12 +478,16 @@
 
   if (loginButton) {
     const authUiObserver = new MutationObserver(() => {
-      // app.js still owns compatibility auth actions and may update the same
-      // legacy button while its status request settles. ProductCapabilities is
-      // the final presentation owner: immediately re-project the last trusted
-      // auth snapshot, then refresh that snapshot from the server.
+      const expected = auth.loaded && auth.ready ? expectedAccountActionText() : "";
+      const actual = loginButton.textContent.trim();
+      if (actual === expected) return;
+      const previousState = auth.sessionState;
+      // app.js still owns the compatibility auth action and may briefly write
+      // legacy button copy. Re-project the last trusted server snapshot first.
       syncAccountPresentation();
-      queueAuthRefresh();
+      // Only a signed-in overwrite can represent a completed logout transition.
+      // Guest/expired presentation changes must not create a refresh feedback loop.
+      if (previousState === "signed_in") queueAuthRefresh();
     });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
     loginButton.addEventListener("click", () => {
