@@ -185,4 +185,11 @@
   drawerObserver.observe(shell, { attributes: true, attributeFilter: ["class"] });
   mobileViewport.addEventListener("change", syncDrawerAccessibility);
   syncDrawerAccessibility();
+
+  if (!document.querySelector("script[data-interaction-polish-loader]")) {
+    const interactionPolish = document.createElement("script");
+    interactionPolish.src = "./interaction-polish.js";
+    interactionPolish.dataset.interactionPolishLoader = "true";
+    document.head.appendChild(interactionPolish);
+  }
 })();
