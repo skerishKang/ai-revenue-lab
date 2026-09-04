@@ -55,10 +55,10 @@ jobs:
           done
           cat /tmp/b62-auth-history-server.log
           exit 1
-      - name: Desktop and mobile authenticated history QA
-        run: uv run python ../../.github/scripts/b62_auth_history_browser_qa.py
       - name: Account and session presentation QA
         run: uv run python ../../.github/scripts/b62_account_session_browser_qa.py
+      - name: Desktop and mobile authenticated history QA
+        run: uv run python ../../.github/scripts/b62_auth_history_browser_qa.py
       - name: Print QA reports
         if: always()
         run: |
