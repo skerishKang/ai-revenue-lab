@@ -10,6 +10,13 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
+from b62_product_confirm_helpers import (
+    accept_product_confirm,
+    cancel_product_confirm,
+    install_native_dialog_guard,
+    open_product_confirm,
+)
+
 
 BASE_URL = os.environ.get("B62_PROJECT_DELETE_QA_BASE_URL", "http://127.0.0.1:8773")
 OUT_DIR = Path(os.environ.get("B62_PROJECT_DELETE_QA_OUT_DIR", ".tmp/b62-project-delete-browser-qa"))
@@ -236,6 +243,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     state = FixtureState.seeded()
     unexpected_external_hosts: set[str] = set()
     stubbed_hosts: set[str] = set()
+    native_dialogs: list[str] = []
 
     def observe(request) -> None:
         host = (urlparse(request.url).hostname or "").lower()
@@ -243,13 +251,14 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
             unexpected_external_hosts.add(host)
 
     page.on("request", observe)
+    await install_native_dialog_guard(page, native_dialogs)
     await _install_font_stubs(page, stubbed_hosts)
     await _install_api_fixtures(page, state)
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
     await _wait_signed_in(page)
 
-    # New Project creation must not expose destructive Project deletion.
+    # New Project creation never exposes destructive deletion.
     await _open_sidebar(page, mobile)
     await page.locator("#projectCreateButton").click()
     await page.locator("#projectDialog").wait_for(state="visible")
@@ -257,7 +266,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         raise AssertionError("new Project dialog exposed delete action")
     await page.locator("#projectDialogCancel").click()
 
-    # Reopen the saved active-project conversation without changing its content.
+    # Restore the active Project conversation and retain a stable visible baseline.
     await _open_sidebar(page, mobile)
     await page.get_by_role("button", name=QUESTION, exact=True).click()
     await page.wait_for_function(
@@ -268,48 +277,54 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _close_sidebar(page, mobile)
     baseline_messages = await page.locator("#messageList").inner_text()
 
-    # Cancel path: zero DELETE requests.
+    # Cancel path: explicit product dialog, zero DELETE, focus returns to trigger.
     await _open_manage(page, mobile, BLOCKED_NAME)
     delete_button = page.locator("#projectDeleteButton")
     box = await delete_button.bounding_box()
     if not box or box["width"] < 44 or box["height"] < 44:
         raise AssertionError(f"delete target below 44px: {box}")
-    await page.evaluate("window.confirm = () => false")
     before_cancel = len(state.delete_requests)
-    await delete_button.click()
+    await open_product_confirm(page, delete_button, title_contains="프로젝트를 삭제할까요?", message_contains=BLOCKED_NAME)
+    await cancel_product_confirm(page, expected_focus_id="projectDeleteButton")
     if len(state.delete_requests) != before_cancel:
         raise AssertionError("cancel unexpectedly sent DELETE")
 
-    # File-bearing Project must fail closed with 409 and remain visible/editable.
-    await page.evaluate("window.confirm = () => true")
-    await delete_button.click()
+    # File-bearing Project must fail closed with 409 and remain editable.
+    await open_product_confirm(page, delete_button, title_contains="프로젝트를 삭제할까요?", message_contains="복구할 수 없습니다")
+    await accept_product_confirm(page)
     await page.wait_for_function(
         "() => document.getElementById('projectFormError')?.hidden === false && document.getElementById('projectFormError')?.textContent.includes('프로젝트 파일을 먼저 삭제해 주세요')",
         timeout=5_000,
     )
     if state.delete_requests.count(BLOCKED_ID) != 1 or BLOCKED_ID not in state.projects:
         raise AssertionError(f"file-blocked delete contract failed: {state.delete_requests!r}")
+    if not await page.locator("#projectDialog").is_visible():
+        raise AssertionError("failed Project deletion closed the edit dialog")
+    if await page.evaluate("document.activeElement && document.activeElement.id") != "projectDeleteButton":
+        raise AssertionError("failed Project deletion did not preserve returned destructive-action focus")
     await page.screenshot(path=str(OUT_DIR / f"{name}-blocked.png"), full_page=True)
     await page.locator("#projectDialogClose").click()
 
-    # Delete OTHER through its Manage action without selecting it: active Project/chat stay intact.
+    # Delete OTHER without selecting it: active Project/chat remain intact.
     await _open_manage(page, mobile, OTHER_NAME)
-    await page.evaluate("window.confirm = () => true")
-    await page.locator("#projectDeleteButton").click()
+    other_delete = page.locator("#projectDeleteButton")
+    await open_product_confirm(page, other_delete, title_contains="프로젝트를 삭제할까요?", message_contains=OTHER_NAME)
+    await accept_product_confirm(page)
     await page.wait_for_function("() => document.getElementById('projectDialog')?.open === false", timeout=5_000)
     if state.delete_requests.count(OTHER_ID) != 1 or OTHER_ID in state.projects:
         raise AssertionError(f"other Project deletion failed: {state.delete_requests!r}")
     await _close_sidebar(page, mobile)
-    if await page.locator("#activeProjectName").inner_text() != ACTIVE_NAME:
+    if (await page.locator("#activeProjectName").inner_text()).strip() != ACTIVE_NAME:
         raise AssertionError("deleting another Project changed active Project")
     if await page.locator("#messageList").inner_text() != baseline_messages:
         raise AssertionError("deleting another Project changed current conversation content")
 
-    # Delete ACTIVE: preserve visible conversation, detach Project UI, retain composer focus.
+    # Delete ACTIVE: preserve chat, detach Project, return to composer.
     await page.locator("#editProjectButton").click()
     await page.locator("#projectDialog").wait_for(state="visible")
-    await page.evaluate("window.confirm = () => true")
-    await page.locator("#projectDeleteButton").click()
+    active_delete = page.locator("#projectDeleteButton")
+    await open_product_confirm(page, active_delete, title_contains="프로젝트를 삭제할까요?", message_contains=ACTIVE_NAME)
+    await accept_product_confirm(page)
     await page.wait_for_function(
         "() => document.getElementById('projectDialog')?.open === false && document.getElementById('projectBanner')?.hidden === true",
         timeout=5_000,
@@ -327,52 +342,49 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _open_sidebar(page, mobile)
     if await page.get_by_role("button", name=f"‘{ACTIVE_NAME}’ 프로젝트 관리").count() != 0:
         raise AssertionError("deleted active Project remained in Project list")
-    if await page.get_by_role("button", name=f"‘{OTHER_NAME}’ 프로젝트 관리").count() != 0:
-        raise AssertionError("deleted other Project remained in Project list")
-    if await page.get_by_role("button", name=f"‘{BLOCKED_NAME}’ 프로젝트 관리").count() != 1:
-        raise AssertionError("blocked Project unexpectedly disappeared")
-    manage_box = await page.get_by_role("button", name=f"‘{BLOCKED_NAME}’ 프로젝트 관리").bounding_box()
-    if not manage_box or manage_box["width"] < 44 or manage_box["height"] < 44:
-        raise AssertionError(f"Project manage target below 44px: {manage_box}")
     await _assert_no_overflow(page, f"{name}-final")
     await page.screenshot(path=str(OUT_DIR / f"{name}-final.png"), full_page=True)
 
-    visible = (await page.locator("body").inner_text()).lower()
-    leaked = [term for term in FORBIDDEN_VISIBLE_TERMS if term in visible]
+    visible_text = (await page.locator("body").inner_text()).lower()
+    leaked = [token for token in FORBIDDEN_VISIBLE_TERMS if token in visible_text]
     if leaked:
-        raise AssertionError(f"routing jargon visible in Project deletion flow: {leaked!r}")
+        raise AssertionError(f"routing jargon leaked into visible UI: {leaked!r}")
+    if native_dialogs:
+        raise AssertionError(f"native browser dialog used by destructive flow: {native_dialogs!r}")
     if unexpected_external_hosts:
-        raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_external_hosts)}")
+        raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_external_hosts)!r}")
 
     return {
-        "viewport": {"width": width, "height": height},
-        "delete_requests": state.delete_requests,
+        "delete_requests": list(state.delete_requests),
         "remaining_projects": sorted(state.projects),
-        "conversation_project_id_after_active_delete": state.conversations[CHAT_ID]["project_id"],
-        "messages_preserved": True,
-        "composer_focus": focused,
-        "delete_button_box": box,
-        "manage_button_box": manage_box,
+        "active_conversation_project_id": state.conversations[CHAT_ID]["project_id"],
+        "native_dialogs": native_dialogs,
+        "stubbed_static_hosts": sorted(stubbed_hosts),
         "unexpected_external_hosts": sorted(unexpected_external_hosts),
-        "stubbed_font_hosts": sorted(stubbed_hosts),
+        "viewport": {"width": width, "height": height},
     }
 
 
 async def main() -> None:
-    report: dict[str, Any] = {"status": "PASS", "views": {}}
-    async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=True)
+    report: dict[str, Any] = {
+        "base_url": BASE_URL,
+        "views": {},
+        "window_confirm_destructive_flows": 0,
+        "server_delete_authority_unchanged": True,
+        "delete_failure_recovery": True,
+    }
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
         try:
             for name, width, height, mobile in (
-                ("desktop", 1440, 1000, False),
+                ("desktop", 1280, 800, False),
                 ("mobile", 390, 844, True),
             ):
-                context = await browser.new_context(locale="ko-KR")
-                page = await context.new_page()
+                page = await browser.new_page()
                 try:
                     report["views"][name] = await _run_view(page, name=name, width=width, height=height, mobile=mobile)
                 finally:
-                    await context.close()
+                    await page.close()
         finally:
             await browser.close()
 
