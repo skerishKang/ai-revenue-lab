@@ -197,6 +197,14 @@
     return copy.login;
   }
 
+  function expectedAccountNameText() {
+    const copy = currentAccountCopy();
+    if (auth.sessionState === "signed_in") return auth.displayName || copy.signedIn;
+    if (auth.sessionState === "expired") return copy.expired;
+    if (auth.sessionState === "guest") return copy.guest;
+    return "";
+  }
+
   function ensureAccountAvatar() {
     if (!accountContainer || accountAvatar) return accountAvatar;
     accountAvatar = document.createElement("span");
@@ -252,6 +260,21 @@
     setText(avatar, document.documentElement.lang === "en" ? "G" : "게");
     setText(loginButton, copy.login);
     loginButton.title = copy.loginTitle;
+  }
+
+  function accountPresentationMatchesTrustedState() {
+    if (!loginButton || !accountContainer) return true;
+    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const available = auth.loaded && auth.ready && state !== "unavailable";
+    if (accountContainer.hidden !== !available || loginButton.hidden !== !available) return false;
+    if (!available) {
+      if (!accountName) return true;
+      return accountName.hidden && accountName.textContent.trim() === "";
+    }
+    if (loginButton.textContent.trim() !== expectedAccountActionText()) return false;
+    if (accountContainer.dataset.accountState !== state) return false;
+    if (accountName && (accountName.hidden || accountName.textContent.trim() !== expectedAccountNameText())) return false;
+    return true;
   }
 
   function syncAccountVisibility() {
@@ -478,18 +501,36 @@
 
   if (loginButton) {
     const authUiObserver = new MutationObserver(() => {
-      const expected = auth.loaded && auth.ready ? expectedAccountActionText() : "";
-      const actual = loginButton.textContent.trim();
-      if (actual === expected) return;
       const previousState = auth.sessionState;
-      // app.js still owns the compatibility auth action and may briefly write
-      // legacy button copy. Re-project the last trusted server snapshot first.
-      syncAccountPresentation();
-      // Only a signed-in overwrite can represent a completed logout transition.
-      // Guest/expired presentation changes must not create a refresh feedback loop.
-      if (previousState === "signed_in") queueAuthRefresh();
+      const expectedAction = auth.loaded && auth.ready ? expectedAccountActionText() : "";
+      const actualAction = loginButton.textContent.trim();
+      const actionDrifted = actualAction !== expectedAction;
+      if (!accountPresentationMatchesTrustedState()) {
+        // app.js may still write legacy account DOM while it owns compatibility
+        // auth/history actions. Presentation is always re-projected from the
+        // latest trusted /api/auth/status snapshot held here.
+        syncAccountPresentation();
+      }
+      // Only a signed-in action drift can represent a completed logout
+      // transition and justify one fresh server read. Guest/expired visual
+      // drift never creates a network refresh feedback loop.
+      if (previousState === "signed_in" && actionDrifted) queueAuthRefresh();
     });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
+    if (accountName) {
+      authUiObserver.observe(accountName, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["hidden"],
+      });
+    }
+    if (accountContainer) {
+      authUiObserver.observe(accountContainer, {
+        attributes: true,
+        attributeFilter: ["hidden", "data-account-state"],
+      });
+    }
     loginButton.addEventListener("click", () => {
       if (auth.sessionState !== "signed_in") return;
       loginButton.disabled = true;
