@@ -120,21 +120,6 @@ async def _snapshot(page: Page) -> dict[str, Any]:
     )
 
 
-async def _refresh(page: Page) -> None:
-    try:
-        await asyncio.wait_for(
-            page.evaluate("() => window.PadiemProductCapabilities.refresh()"),
-            timeout=8.0,
-        )
-    except TimeoutError as error:
-        snapshot = await _snapshot(page)
-        raise AssertionError(
-            "capability refresh exceeded 8s; "
-            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-        ) from error
-    await page.wait_for_timeout(80)
-
-
 async def _assert_target(page: Page, selector: str, label: str) -> dict[str, float]:
     box = await page.locator(selector).bounding_box()
     if not box:
@@ -151,125 +136,141 @@ async def _assert_no_overflow(page: Page, label: str) -> None:
         raise AssertionError(f"horizontal overflow at {label}: {scroll_width}>{inner_width}")
 
 
-async def _assert_state(
+async def _wait_product_state(page: Page, expected: str, *, name: str) -> None:
+    if expected == "unavailable":
+        predicate = """() => {
+          const root = document.querySelector('.sidebar-account');
+          const button = document.getElementById('loginButton');
+          const auth = window.PadiemProductCapabilities?.get?.().auth;
+          return auth?.sessionState === 'unavailable' && root?.hidden === true && button?.hidden === true;
+        }"""
+    else:
+        predicate = f"""() => {{
+          const root = document.querySelector('.sidebar-account');
+          const auth = window.PadiemProductCapabilities?.get?.().auth;
+          return auth?.sessionState === {expected!r} && root?.dataset.accountState === {expected!r} && root?.hidden === false;
+        }}"""
+    try:
+        await page.wait_for_function(predicate, timeout=5_000)
+    except Exception as error:
+        snapshot = await _snapshot(page)
+        raise AssertionError(
+            f"trusted {expected} presentation did not settle at {name}; "
+            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        ) from error
+
+
+async def _load_state(
     page: Page,
     state: dict[str, Any],
     expected: str,
     *,
+    url: str,
+    mobile: bool,
     name: str,
-    button_text: str | None,
-    account_text: str | None,
-) -> dict[str, Any]:
+    first: bool = False,
+) -> None:
     state["session"] = expected
-    await _refresh(page)
+    if first:
+        await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
+    else:
+        await page.reload(wait_until="domcontentloaded", timeout=30_000)
+    await page.locator("#messageInput").wait_for(state="visible")
+    await _open_sidebar(page, mobile)
+    await _wait_product_state(page, expected, name=name)
+
+
+async def _assert_visible_state(
+    page: Page,
+    expected: str,
+    *,
+    name: str,
+    button_text: str,
+    account_text: str,
+) -> dict[str, Any]:
     container = page.locator(".sidebar-account")
     button = page.locator("#loginButton")
     account = page.locator("#accountName")
     snapshot = await _snapshot(page)
-
-    if expected == "unavailable":
-        if not await container.is_hidden() or not await button.is_hidden():
-            raise AssertionError(
-                f"auth unavailable must fail closed at {name}: {json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-            )
-        return {"state": expected, "hidden": True, "snapshot": snapshot, "status": "PASS"}
-
-    if await container.is_hidden():
-        await page.wait_for_timeout(200)
-        later = await _snapshot(page)
-        raise AssertionError(
-            f"account container hidden after trusted {expected} refresh at {name}; "
-            f"initial={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}; "
-            f"later={json.dumps(later, ensure_ascii=False, sort_keys=True)}"
-        )
-
-    await container.wait_for(state="visible")
     if await container.get_attribute("data-account-state") != expected:
-        raise AssertionError(
-            f"wrong account state at {name}: {await container.get_attribute('data-account-state')}; "
-            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-        )
-    if button_text is not None and (await button.inner_text()).strip() != button_text:
-        raise AssertionError(
-            f"wrong account action at {name}: {(await button.inner_text()).strip()!r}; "
-            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-        )
-    if account_text is not None and (await account.inner_text()).strip() != account_text:
-        raise AssertionError(
-            f"wrong account copy at {name}: {(await account.inner_text()).strip()!r}; "
-            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-        )
+        raise AssertionError(f"wrong account state at {name}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}")
+    if (await button.inner_text()).strip() != button_text:
+        raise AssertionError(f"wrong account action at {name}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}")
+    if (await account.inner_text()).strip() != account_text or await account.is_hidden():
+        raise AssertionError(f"wrong account copy at {name}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}")
     if await button.get_attribute("aria-disabled") != "false" or await button.is_disabled():
-        raise AssertionError(
-            f"account action must be operable at {name}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-        )
+        raise AssertionError(f"account action must be operable at {name}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}")
     target = await _assert_target(page, "#loginButton", f"{name}-{expected}-action")
     return {"state": expected, "hidden": False, "target": target, "snapshot": snapshot, "status": "PASS"}
 
 
-async def _synchronize_signed_in_action(page: Page, state: dict[str, Any], *, mobile: bool, label: str) -> None:
-    state["session"] = "signed_in"
-    baseline_history_reads = state["history_reads"]
-    await page.reload(wait_until="domcontentloaded", timeout=30_000)
-    await page.locator("#messageInput").wait_for(state="visible")
-
+async def _wait_history_consumed(state: dict[str, Any], baseline: int, *, label: str) -> None:
     for _ in range(50):
-        if state["history_reads"] > baseline_history_reads:
-            break
-        await page.wait_for_timeout(100)
-    else:
-        snapshot = await _snapshot(page)
-        raise AssertionError(
-            f"app auth did not consume signed-in history readiness at {label}; "
-            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
-        )
-
-    await page.wait_for_function(
-        "() => document.getElementById('historySection')?.hidden === false",
-        timeout=5_000,
-    )
-    await _open_sidebar(page, mobile)
-    await _refresh(page)
-    await page.wait_for_function(
-        "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'signed_in' && document.getElementById('loginButton')?.textContent.trim() === '로그아웃'",
-        timeout=5_000,
-    )
+        if state["history_reads"] > baseline:
+            return
+        await asyncio.sleep(0.1)
+    raise AssertionError(f"app auth did not consume signed-in history readiness at {label}")
 
 
 async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     state: dict[str, Any] = {"session": "guest", "logout_posts": 0, "history_reads": 0}
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": width, "height": height})
-    await page.goto(f"{BASE_URL}/?theme={theme}", wait_until="domcontentloaded", timeout=30_000)
-    await page.locator("#messageInput").wait_for(state="visible")
-    await _open_sidebar(page, mobile)
-
+    url = f"{BASE_URL}/?theme={theme}"
     label = f"{theme}-{viewport_name}"
     results: dict[str, Any] = {}
-    results["guest"] = await _assert_state(
-        page, state, "guest", name=label, button_text="로그인", account_text="게스트"
-    )
-    results["expired"] = await _assert_state(
-        page, state, "expired", name=label, button_text="다시 로그인", account_text="세션 만료"
-    )
-    results["signed_in"] = await _assert_state(
-        page, state, "signed_in", name=label, button_text="로그아웃", account_text=USER_NAME
+
+    await _load_state(page, state, "guest", url=url, mobile=mobile, name=f"{label}-guest", first=True)
+    results["guest"] = await _assert_visible_state(
+        page, "guest", name=label, button_text="로그인", account_text="게스트"
     )
 
-    await _synchronize_signed_in_action(page, state, mobile=mobile, label=label)
+    await _load_state(page, state, "expired", url=url, mobile=mobile, name=f"{label}-expired")
+    results["expired"] = await _assert_visible_state(
+        page, "expired", name=label, button_text="다시 로그인", account_text="세션 만료"
+    )
+
+    baseline_history_reads = state["history_reads"]
+    await _load_state(page, state, "signed_in", url=url, mobile=mobile, name=f"{label}-signed-in")
+    await _wait_history_consumed(state, baseline_history_reads, label=label)
+    await page.wait_for_function("() => document.getElementById('historySection')?.hidden === false", timeout=5_000)
+    results["signed_in"] = await _assert_visible_state(
+        page, "signed_in", name=label, button_text="로그아웃", account_text=USER_NAME
+    )
+
     await page.locator("#loginButton").focus()
     await page.locator("#loginButton").click(timeout=5_000, no_wait_after=True)
-    await page.wait_for_function(
-        "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest' && document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('accountName')?.hidden === false && document.getElementById('accountName')?.textContent.trim() === '게스트'",
-        timeout=5_000,
-    )
+    try:
+        await page.wait_for_function(
+            """() => {
+              const root = document.querySelector('.sidebar-account');
+              const button = document.getElementById('loginButton');
+              const account = document.getElementById('accountName');
+              return root?.dataset.accountState === 'guest'
+                && root?.hidden === false
+                && button?.textContent.trim() === '로그인'
+                && account?.hidden === false
+                && account?.textContent.trim() === '게스트';
+            }""",
+            timeout=5_000,
+        )
+    except Exception as error:
+        snapshot = await _snapshot(page)
+        raise AssertionError(
+            f"logout did not settle to guest at {label}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        ) from error
     if state["logout_posts"] != 1:
         raise AssertionError(f"logout must POST once at {label}: {state['logout_posts']}")
     results["logout"] = {"posts": state["logout_posts"], "returns_to": "guest", "status": "PASS"}
 
-    results["unavailable"] = await _assert_state(
-        page, state, "unavailable", name=label, button_text=None, account_text=None
-    )
+    await _load_state(page, state, "unavailable", url=url, mobile=mobile, name=f"{label}-unavailable")
+    snapshot = await _snapshot(page)
+    if not await page.locator(".sidebar-account").is_hidden() or not await page.locator("#loginButton").is_hidden():
+        raise AssertionError(
+            f"auth unavailable must fail closed at {label}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        )
+    results["unavailable"] = {"state": "unavailable", "hidden": True, "snapshot": snapshot, "status": "PASS"}
+
     await _assert_no_overflow(page, label)
     await page.screenshot(path=str(OUT_DIR / f"account-session-{label}.png"), full_page=True)
     return {"theme": theme, "viewport": viewport_name, "states": results, "horizontal_overflow": False, "status": "PASS"}
@@ -280,8 +281,9 @@ async def _run_english_probe(page: Page) -> dict[str, Any]:
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": 1440, "height": 900})
     await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
+    await page.locator("#messageInput").wait_for(state="visible")
     await page.wait_for_function("() => document.documentElement.lang === 'en'", timeout=5_000)
-    await _refresh(page)
+    await _wait_product_state(page, "expired", name="english-expired")
     if (await page.locator("#accountName").inner_text()).strip() != "Session expired":
         raise AssertionError("English expired-session copy did not project")
     if (await page.locator("#loginButton").inner_text()).strip() != "Sign in again":
