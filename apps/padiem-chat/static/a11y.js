@@ -46,11 +46,33 @@
 
     let active = null;
 
+    function watchRecoverableTrigger(returnFocus) {
+      if (!(returnFocus instanceof HTMLButtonElement)) return;
+      let sawDisabled = returnFocus.disabled;
+      const observer = new MutationObserver(() => {
+        if (!returnFocus.isConnected) {
+          observer.disconnect();
+          return;
+        }
+        if (returnFocus.disabled) {
+          sawDisabled = true;
+          return;
+        }
+        if (!sawDisabled) return;
+        const ownerDialog = returnFocus.closest("dialog");
+        if (!ownerDialog || ownerDialog.open) returnFocus.focus();
+        observer.disconnect();
+      });
+      observer.observe(returnFocus, { attributes: true, attributeFilter: ["disabled"] });
+      window.setTimeout(() => observer.disconnect(), 5000);
+    }
+
     function settle(value) {
       if (!active) return;
       const current = active;
       active = null;
       if (dialog.open) dialog.close();
+      if (value === true) watchRecoverableTrigger(current.returnFocus);
       queueMicrotask(() => {
         if (current.returnFocus && current.returnFocus.isConnected && typeof current.returnFocus.focus === "function") {
           current.returnFocus.focus();
