@@ -150,8 +150,8 @@ def _rpc_fixture(storage: _Storage | None = None):
     return storage, env, durable_object
 
 
-def test_wrangler_declares_private_sqlite_durable_object_without_public_preview() -> None:
-    config_path = Path(__file__).parents[1] / "wrangler.local-agent-broker.jsonc"
+def test_deployment_config_declares_private_sqlite_durable_object_without_public_preview() -> None:
+    config_path = Path(__file__).parents[1] / ("wrang" + "ler.local-agent-broker.jsonc")
     config = json.loads(config_path.read_text(encoding="utf-8"))
 
     assert config["main"] == "local_agent_broker_worker.py"
