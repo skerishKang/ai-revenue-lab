@@ -1,0 +1,82 @@
+name: B54 1820 Dispatch Authorized Private Bootstrap v2
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: read
+  actions: write
+
+concurrency:
+  group: b54-1820-dispatch-private-bootstrap-v2
+  cancel-in-progress: false
+
+env:
+  EXPECTED_MAIN_SHA: 50b0a3aadd634abaf5fd4948dbd28c0da462cada
+  AUTHORIZATION_ISSUE: "1820"
+  CONFIRMATION: BOOTSTRAP_PADIEM_LOCAL_AGENT_BROKER_PRIVATE
+
+jobs:
+  dispatch-canonical-gate:
+    if: >-
+      github.event.pull_request.head.ref == 'ops/b54-1820-dispatch-private-bootstrap-v2' &&
+      github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require exact current main and recorded owner authorization
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch_json="${RUNNER_TEMP}/main.json"
+          comments_json="${RUNNER_TEMP}/authorization-comments.json"
+
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" \
+            -o "${branch_json}"
+          jq -e --arg sha "${EXPECTED_MAIN_SHA}" '.commit.sha == $sha' "${branch_json}" >/dev/null
+
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${AUTHORIZATION_ISSUE}/comments?per_page=100" \
+            -o "${comments_json}"
+          jq -e --arg confirmation "${CONFIRMATION}" '
+            any(
+              .[];
+              (.body | contains("EXPLICIT_PRODUCTION_AUTHORIZATION = YES")) and
+              (.body | contains($confirmation))
+            )
+          ' "${comments_json}" >/dev/null
+
+          echo "EXACT_MAIN_SHA=PASS"
+          echo "RECORDED_PRODUCTION_AUTHORIZATION=PASS"
+
+      - name: Dispatch canonical bootstrap_private workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          payload="$(jq -cn \
+            --arg ref main \
+            --arg mode bootstrap_private \
+            --arg target_sha "${EXPECTED_MAIN_SHA}" \
+            --arg confirmation "${CONFIRMATION}" \
+            '{ref:$ref,inputs:{mode:$mode,target_sha:$target_sha,confirmation:$confirmation}}')"
+
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/b54-local-agent-broker-production-gate.yml/dispatches" \
+            -d "${payload}"
+
+          echo "CANONICAL_BOOTSTRAP_DISPATCH=REQUESTED"
+          echo "CLOUDFLARE_MUTATION_IN_DISPATCHER=0"
