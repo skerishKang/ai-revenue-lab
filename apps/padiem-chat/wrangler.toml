@@ -12,10 +12,6 @@ binding = "ASSETS"
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
-[[services]]
-binding = "IDENTITY_AUTHORITY_SERVICE"
-service = "padiem-control-plane-identity"
-
 [vars]
 PADIEM_CHAT_RUNTIME_MODE = "mock"
 PADIEM_CHAT_TIMEOUT_SECONDS = "20"
