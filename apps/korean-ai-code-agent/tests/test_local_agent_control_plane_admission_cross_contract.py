@@ -3,8 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import json
-
-import pytest
+import unittest
 
 from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_admission_http import AdmissionEnabledLocalAgentBrokerHttpHandler
@@ -327,136 +326,137 @@ def _open_and_poll(binding, channel):
     return session, command
 
 
-def test_full_physical_material_admission_execution_ack_order_and_evidence_ref() -> None:
-    authority, binding, local_request, resolver, references, request_port, channel, assembly, runtime = _fixture()
-    session, command = _open_and_poll(binding, channel)
-    local_clock = _SequenceClock(
-        [
-            BASE + timedelta(seconds=35),  # material request
-            BASE + timedelta(seconds=40),  # admission request (server accepts at 41)
-            BASE + timedelta(seconds=42),  # Windows execution
-            BASE + timedelta(seconds=50),  # ack request (server acks at 52)
-        ]
-    )
-    coordinator = ControlPlaneAdmittedExecutionCoordinator(
-        channel=channel,
-        assembly=assembly,
-        clock=local_clock,
-    )
+class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
+    def test_full_physical_material_admission_execution_ack_order_and_evidence_ref(self) -> None:
+        authority, binding, local_request, resolver, references, request_port, channel, assembly, runtime = _fixture()
+        session, command = _open_and_poll(binding, channel)
+        coordinator = ControlPlaneAdmittedExecutionCoordinator(
+            channel=channel,
+            assembly=assembly,
+            clock=_SequenceClock(
+                [
+                    BASE + timedelta(seconds=35),
+                    BASE + timedelta(seconds=40),
+                    BASE + timedelta(seconds=42),
+                    BASE + timedelta(seconds=50),
+                ]
+            ),
+        )
 
-    receipt = coordinator.execute_polled_command(
-        binding=binding,
-        session=session,
-        command=command,
-        material_request_ref="material_physical_1",
-    )
-
-    assert [name for name, _ in request_port.calls] == [
-        "session",
-        "poll",
-        "material",
-        "admission",
-        "acknowledge",
-    ]
-    assert resolver.requests[0].command_id == command.command_id
-    assert resolver.requests[0].request_fingerprint == command_request_fingerprint(local_request)
-    assert references.calls == 1
-    assert runtime.executed == [local_request.request_id]
-    assert receipt.execution.admission_ref == ADMISSION_REF
-    assert receipt.evidence_ref == EVIDENCE_REF
-    assert receipt.execution.authorization_ref == "windows_p01_grant_cross_1"
-    assert request_port.calls[-1][1]["admission_ref"] == ADMISSION_REF
-    assert request_port.calls[-1][1]["evidence_ref"] == EVIDENCE_REF
-
-    stored = authority._commands[command.command_id]
-    assert stored.state.value == "acknowledged"
-    assert stored.admission_ref == ADMISSION_REF
-    assert stored.evidence_ref == EVIDENCE_REF
-    assert stored.admitted_at == BASE + timedelta(seconds=41)
-    assert stored.acknowledged_at == BASE + timedelta(seconds=52)
-
-    safe = receipt.safe_dict()
-    assert safe["material_before_admission"] is True
-    assert safe["ack_exact_admission_evidence"] is True
-    assert safe["raw_argv"] is False
-    assert safe["stdout"] is False
-    assert safe["stderr"] is False
-    assert safe["raw_device_credential"] is False
-    assert safe["p01_payload"] is False
-
-
-def test_execution_failure_does_not_emit_acknowledgement() -> None:
-    authority, binding, _request, _resolver, references, request_port, channel, assembly, runtime = _fixture(
-        fail_runtime=True
-    )
-    session, command = _open_and_poll(binding, channel)
-    coordinator = ControlPlaneAdmittedExecutionCoordinator(
-        channel=channel,
-        assembly=assembly,
-        clock=_SequenceClock(
-            [
-                BASE + timedelta(seconds=35),
-                BASE + timedelta(seconds=40),
-                BASE + timedelta(seconds=42),
-            ]
-        ),
-    )
-
-    with pytest.raises(RuntimeError, match="Windows execution failure"):
-        coordinator.execute_polled_command(
+        receipt = coordinator.execute_polled_command(
             binding=binding,
             session=session,
             command=command,
-            material_request_ref="material_physical_fail_1",
+            material_request_ref="material_physical_1",
         )
 
-    assert [name for name, _ in request_port.calls] == ["session", "poll", "material", "admission"]
-    assert references.calls == 1
-    assert runtime.executed == ["request_physical_1"]
-    stored = authority._commands[command.command_id]
-    assert stored.state.value == "admitted"
-    assert stored.acknowledged_at is None
+        self.assertEqual(
+            [name for name, _ in request_port.calls],
+            ["session", "poll", "material", "admission", "acknowledge"],
+        )
+        self.assertEqual(resolver.requests[0].command_id, command.command_id)
+        self.assertEqual(resolver.requests[0].request_fingerprint, command_request_fingerprint(local_request))
+        self.assertEqual(references.calls, 1)
+        self.assertEqual(runtime.executed, [local_request.request_id])
+        self.assertEqual(receipt.execution.admission_ref, ADMISSION_REF)
+        self.assertEqual(receipt.evidence_ref, EVIDENCE_REF)
+        self.assertEqual(receipt.execution.authorization_ref, "windows_p01_grant_cross_1")
+        self.assertEqual(request_port.calls[-1][1]["admission_ref"], ADMISSION_REF)
+        self.assertEqual(request_port.calls[-1][1]["evidence_ref"], EVIDENCE_REF)
+
+        stored = authority._commands[command.command_id]
+        self.assertEqual(stored.state.value, "acknowledged")
+        self.assertEqual(stored.admission_ref, ADMISSION_REF)
+        self.assertEqual(stored.evidence_ref, EVIDENCE_REF)
+        self.assertEqual(stored.admitted_at, BASE + timedelta(seconds=41))
+        self.assertEqual(stored.acknowledged_at, BASE + timedelta(seconds=52))
+
+        safe = receipt.safe_dict()
+        self.assertIs(safe["material_before_admission"], True)
+        self.assertIs(safe["ack_exact_admission_evidence"], True)
+        self.assertIs(safe["raw_argv"], False)
+        self.assertIs(safe["stdout"], False)
+        self.assertIs(safe["stderr"], False)
+        self.assertIs(safe["raw_device_credential"], False)
+        self.assertIs(safe["p01_payload"], False)
+
+    def test_execution_failure_does_not_emit_acknowledgement(self) -> None:
+        authority, binding, _request, _resolver, references, request_port, channel, assembly, runtime = _fixture(
+            fail_runtime=True
+        )
+        session, command = _open_and_poll(binding, channel)
+        coordinator = ControlPlaneAdmittedExecutionCoordinator(
+            channel=channel,
+            assembly=assembly,
+            clock=_SequenceClock(
+                [
+                    BASE + timedelta(seconds=35),
+                    BASE + timedelta(seconds=40),
+                    BASE + timedelta(seconds=42),
+                ]
+            ),
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "Windows execution failure"):
+            coordinator.execute_polled_command(
+                binding=binding,
+                session=session,
+                command=command,
+                material_request_ref="material_physical_fail_1",
+            )
+
+        self.assertEqual(
+            [name for name, _ in request_port.calls],
+            ["session", "poll", "material", "admission"],
+        )
+        self.assertEqual(references.calls, 1)
+        self.assertEqual(runtime.executed, ["request_physical_1"])
+        stored = authority._commands[command.command_id]
+        self.assertEqual(stored.state.value, "admitted")
+        self.assertIsNone(stored.acknowledged_at)
+
+    def test_conformed_admission_preserves_evidence_ref_without_changing_execution_evidence_type(self) -> None:
+        _authority, binding, local_request, _resolver, _references, _request_port, channel, _assembly, _runtime = _fixture()
+        session, command = _open_and_poll(binding, channel)
+        resolved = channel.resolve_broker_material(
+            binding=binding,
+            session=session,
+            command=command,
+            request_ref="material_physical_conformance_1",
+            now=BASE + timedelta(seconds=35),
+        )
+        conformed = channel.admit_resolved(
+            binding=binding,
+            session=session,
+            command=command,
+            resolved=resolved,
+            now=BASE + timedelta(seconds=40),
+        )
+        self.assertEqual(conformed.evidence.admission_ref, ADMISSION_REF)
+        self.assertEqual(conformed.evidence_ref, EVIDENCE_REF)
+        self.assertNotIn("evidence_ref", conformed.evidence.safe_dict())
+        self.assertEqual(conformed.evidence.request_fingerprint, command_request_fingerprint(local_request))
+        self.assertEqual(conformed.safe_dict()["evidence_ref"], EVIDENCE_REF)
+
+    def test_runtime_truth_flags_preserve_authority_and_production_nonclaims(self) -> None:
+        self.assertIs(PHYSICAL_ADMISSION_EVIDENCE_SOURCE, True)
+        self.assertIs(SERVER_OWNED_ADMISSION_REFS, True)
+        self.assertIs(CLIENT_ADMISSION_AUTHORITY, False)
+        self.assertIs(POST_MATERIAL_ADMISSION_ORDER, True)
+        self.assertIs(CONTROL_PLANE_ADMISSION_CONFORMANCE_REUSED, True)
+        self.assertIs(EVIDENCE_REF_END_TO_END, True)
+        self.assertIs(ADMITTED_EXECUTION_BRIDGE_REUSED, True)
+        self.assertIs(WINDOWS_AUTHORIZATION_REUSED, True)
+        self.assertIs(ACK_EXACT_ADMISSION_EVIDENCE, True)
+        self.assertIs(ACK_ON_EXECUTION_FAILURE, False)
+        self.assertIs(SECOND_REPLAY_SEQUENCE_AUTHORITY, False)
+        self.assertIs(SECOND_FINGERPRINT_AUTHORITY, False)
+        self.assertIs(P01_AUTHORITY_DUPLICATED, False)
+        self.assertIs(LIVE_BROKER_CONFIGURED, False)
+        self.assertIs(LIVE_WINDOWS_ACCEPTANCE, False)
+        self.assertIs(PRODUCTION_MUTATION, False)
+        self.assertIs(PRODUCTION_READY, False)
 
 
-def test_conformed_admission_preserves_evidence_ref_without_changing_execution_evidence_type() -> None:
-    _authority, binding, local_request, _resolver, _references, _request_port, channel, _assembly, _runtime = _fixture()
-    session, command = _open_and_poll(binding, channel)
-    resolved = channel.resolve_broker_material(
-        binding=binding,
-        session=session,
-        command=command,
-        request_ref="material_physical_conformance_1",
-        now=BASE + timedelta(seconds=35),
-    )
-    conformed = channel.admit_resolved(
-        binding=binding,
-        session=session,
-        command=command,
-        resolved=resolved,
-        now=BASE + timedelta(seconds=40),
-    )
-    assert conformed.evidence.admission_ref == ADMISSION_REF
-    assert conformed.evidence_ref == EVIDENCE_REF
-    assert "evidence_ref" not in conformed.evidence.safe_dict()
-    assert conformed.evidence.request_fingerprint == command_request_fingerprint(local_request)
-    assert conformed.safe_dict()["evidence_ref"] == EVIDENCE_REF
-
-
-def test_runtime_truth_flags_preserve_authority_and_production_nonclaims() -> None:
-    assert PHYSICAL_ADMISSION_EVIDENCE_SOURCE is True
-    assert SERVER_OWNED_ADMISSION_REFS is True
-    assert CLIENT_ADMISSION_AUTHORITY is False
-    assert POST_MATERIAL_ADMISSION_ORDER is True
-    assert CONTROL_PLANE_ADMISSION_CONFORMANCE_REUSED is True
-    assert EVIDENCE_REF_END_TO_END is True
-    assert ADMITTED_EXECUTION_BRIDGE_REUSED is True
-    assert WINDOWS_AUTHORIZATION_REUSED is True
-    assert ACK_EXACT_ADMISSION_EVIDENCE is True
-    assert ACK_ON_EXECUTION_FAILURE is False
-    assert SECOND_REPLAY_SEQUENCE_AUTHORITY is False
-    assert SECOND_FINGERPRINT_AUTHORITY is False
-    assert P01_AUTHORITY_DUPLICATED is False
-    assert LIVE_BROKER_CONFIGURED is False
-    assert LIVE_WINDOWS_ACCEPTANCE is False
-    assert PRODUCTION_MUTATION is False
-    assert PRODUCTION_READY is False
+if __name__ == "__main__":
+    unittest.main()
