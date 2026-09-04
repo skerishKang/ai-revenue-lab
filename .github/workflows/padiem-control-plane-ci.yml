@@ -76,20 +76,24 @@ jobs:
         run: |
           set -euo pipefail
           secret_file="${RUNNER_TEMP}/b54-local-agent-ci-secrets.env"
-          trap 'rm -f "${secret_file}"' EXIT
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "$(python -c 'import secrets; print(secrets.token_hex(32))')" > "${secret_file}"
           chmod 600 "${secret_file}"
 
+          cp wrangler.local-agent-broker.jsonc "${temp_config}"
           uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-            --config wrangler.local-agent-broker.jsonc \
             --secrets-file "${secret_file}" \
             --dry-run \
             --outdir "${RUNNER_TEMP}/b54-state-dry-run"
+          rm -f "${temp_config}"
 
+          cp wrangler.local-agent-broker-edge.jsonc "${temp_config}"
           uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-            --config wrangler.local-agent-broker-edge.jsonc \
             --dry-run \
             --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
+          rm -f "${temp_config}"
 
           test -d "${RUNNER_TEMP}/b54-state-dry-run"
           test -d "${RUNNER_TEMP}/b54-edge-dry-run"
