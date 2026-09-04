@@ -97,13 +97,12 @@ async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
         await _fulfill_json(route, {"conversations": []})
 
     async def google_start(route: Route) -> None:
+        # This probe verifies the product recovery intent, not Google OAuth itself.
+        # A 204 navigation response keeps the current product document alive so the
+        # browser harness can assert the request without introducing a synthetic
+        # second-document lifecycle or external OAuth side effect.
         state["google_start_reads"] += 1
-        await route.fulfill(
-            status=200,
-            content_type="text/html; charset=utf-8",
-            body="<!doctype html><html><head><title>OAuth recovery fixture</title></head><body>fixture</body></html>",
-            headers={"Cache-Control": "no-store"},
-        )
+        await route.fulfill(status=204, body="", headers={"Cache-Control": "no-store"})
 
     await page.route("**/api/auth/status", auth_status)
     await page.route("**/api/auth/logout", logout)
