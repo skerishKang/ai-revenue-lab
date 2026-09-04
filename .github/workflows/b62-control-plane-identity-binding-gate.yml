@@ -1,0 +1,575 @@
+name: B62 Control Plane Identity Binding Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
+      - "apps/padiem-chat/app/control_plane_identity_worker.py"
+      - "apps/padiem-chat/app/connector_ticket_routes.py"
+      - "apps/padiem-chat/worker.py"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "B62 Control Plane identity binding gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activate_identity_binding
+          - rollback_identity_binding
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-control-plane-identity-binding-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  IDENTITY_WORKER: padiem-control-plane-identity
+  IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+  ZONE_NAME: padiem.net
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+      - name: Validate source-only binding boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          worker = Path("apps/padiem-chat/worker.py").read_text(encoding="utf-8")
+          config = Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
+          adapter = Path("apps/padiem-chat/app/control_plane_identity_worker.py").read_text(encoding="utf-8")
+          identity = Path("packages/padiem-control-plane/identity_authority_worker.py").read_text(encoding="utf-8")
+
+          assert "IDENTITY_AUTHORITY_SERVICE" in worker
+          assert "IDENTITY_AUTHORITY_SERVICE" not in config
+          assert "PRODUCTION_IDENTITY_BINDING = False" in adapter
+          assert "CLIENT_IDENTITY_AUTHORITY = False" in adapter
+          assert "PUBLIC_FETCH = False" in identity
+          assert "CONNECT_TICKET_ISSUED_BY_CONTROL_PLANE = True" in identity
+          assert "CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY = False" in identity
+
+          gate = Path(".github/workflows/b62-control-plane-identity-binding-gate.yml").read_text(encoding="utf-8")
+          assert 'type: "inherit"' in gate
+          assert 'type: "service"' in gate
+          assert 'service: "padiem-control-plane-identity"' in gate
+          assert "/workers/scripts/${B62_WORKER}/settings" in gate
+          assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in gate
+          assert "SOURCE_ETAG_UNCHANGED=PASS" in gate
+          assert "EXISTING_BINDINGS_UNCHANGED=PASS" in gate
+          assert "PUBLIC_TOPOLOGY_UNCHANGED=PASS" in gate
+          assert "WORKER_SOURCE_REDEPLOY=NO" in gate
+          assert "LOCAL_AGENT_INGRESS_CHANGED=NO" in gate
+          print("B62_IDENTITY_BINDING_GATE_SOURCE=PASS")
+          print("DEFAULT_B62_CONFIG_MUTATION=NO")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      binding_state: ${{ steps.audit.outputs.binding_state }}
+      active_version: ${{ steps.audit.outputs.active_version }}
+      latest_version: ${{ steps.audit.outputs.latest_version }}
+    steps:
+      - name: Read-only Production Worker and identity authority audit
+        id: audit
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          settings="${RUNNER_TEMP}/b62-settings.json"
+          deployments="${RUNNER_TEMP}/b62-deployments.json"
+          versions="${RUNNER_TEMP}/b62-versions.json"
+          subdomain="${RUNNER_TEMP}/b62-subdomain.json"
+          identity_settings="${RUNNER_TEMP}/identity-settings.json"
+          identity_subdomain="${RUNNER_TEMP}/identity-subdomain.json"
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/settings" -o "${identity_settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/subdomain" -o "${identity_subdomain}"
+
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
+          jq -e '.success == true' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result.bindings | type == "array")' "${identity_settings}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${identity_subdomain}" >/dev/null
+
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          latest="$(jq -r '.result.items[0].id' "${versions}")"
+          test -n "${active}" && test "${active}" != "null"
+          test -n "${latest}" && test "${latest}" != "null"
+          test "${active}" = "${latest}"
+          echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
+          echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"
+          echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
+
+          duplicate_count="$(jq --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | select(.name == $name)] | length' "${settings}")"
+          if [ "${duplicate_count}" -eq 0 ]; then
+            echo "binding_state=absent" >> "${GITHUB_OUTPUT}"
+            echo "IDENTITY_BINDING=ABSENT"
+          elif [ "${duplicate_count}" -eq 1 ]; then
+            jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" '.result.bindings[] | select(.name == $name) | .type == "service" and .service == $service' "${settings}" >/dev/null
+            echo "binding_state=present_expected" >> "${GITHUB_OUTPUT}"
+            echo "IDENTITY_BINDING=PRESENT_EXPECTED"
+          else
+            echo "Refusing ambiguous duplicate identity bindings" >&2
+            exit 1
+          fi
+
+          jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null
+
+          domains="${RUNNER_TEMP}/worker-domains.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $identity)] | length == 0' "${domains}" >/dev/null
+
+          echo "IDENTITY_WORKER_PRIVATE=PASS"
+          echo "B62_BINDING_READONLY_AUDIT=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  activate-identity-binding:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_identity_binding' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Require explicit binding activation authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          BINDING_STATE: ${{ needs.cloudflare-readonly.outputs.binding_state }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ACTIVATE_B62_CONTROL_PLANE_IDENTITY_SERVICE_BINDING"
+          test "${BINDING_STATE}" = "absent"
+          echo "B62_IDENTITY_BINDING_ACTIVATION_AUTHORIZATION=PASS"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Capture exact pre-mutation Worker state
+        id: before
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          settings="${RUNNER_TEMP}/settings-before.json"
+          deployments="${RUNNER_TEMP}/deployments-before.json"
+          versions="${RUNNER_TEMP}/versions-before.json"
+          domains="${RUNNER_TEMP}/domains-before.json"
+          subdomain="${RUNNER_TEMP}/subdomain-before.json"
+          identity_subdomain="${RUNNER_TEMP}/identity-subdomain-before.json"
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/subdomain" -o "${identity_subdomain}"
+
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
+          jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $identity)] | length == 0' "${domains}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${identity_subdomain}" >/dev/null
+
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          latest="$(jq -r '.result.items[0].id' "${versions}")"
+          test "${active}" = "${latest}"
+
+          detail="${RUNNER_TEMP}/version-before.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
+          jq -e '.success == true and (.result.resources.script.etag | type == "string") and (.result.resources.script.etag | length) > 0' "${detail}" >/dev/null
+          etag="$(jq -r '.result.resources.script.etag' "${detail}")"
+
+          jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/b62-domains-before-safe.json"
+          jq '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${subdomain}" > "${RUNNER_TEMP}/b62-subdomain-before-safe.json"
+          jq '.result.bindings' "${settings}" > "${RUNNER_TEMP}/b62-bindings-before-private.json"
+
+          echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
+          echo "source_etag=${etag}" >> "${GITHUB_OUTPUT}"
+          echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
+          echo "PREMUTATION_BINDING_ABSENT=PASS"
+
+      - name: Build inherit-only binding mutation payload
+        shell: bash
+        env:
+          ACTIVE_VERSION: ${{ steps.before.outputs.active_version }}
+        run: |
+          set -euo pipefail
+          python - "${RUNNER_TEMP}/settings-before.json" "${RUNNER_TEMP}/binding-patch.json" "${ACTIVE_VERSION}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${TARGET_SHA}" <<'PY'
+          import json
+          import sys
+
+          settings_path, output_path, active_version, binding_name, identity_worker, target_sha = sys.argv[1:]
+          payload = json.load(open(settings_path, encoding="utf-8"))
+          bindings = payload["result"]["bindings"]
+          names = [b.get("name") for b in bindings]
+          if any(not isinstance(name, str) or not name for name in names):
+              raise SystemExit("All existing bindings must have stable names")
+          if len(names) != len(set(names)) or binding_name in names:
+              raise SystemExit("Refusing duplicate or pre-existing identity binding")
+          inherited = [
+              {"name": name, "type": "inherit", "version_id": active_version}
+              for name in names
+          ]
+          inherited.append({
+              "name": binding_name,
+              "type": "service",
+              "service": identity_worker,
+          })
+          patch = {
+              "bindings": inherited,
+              "annotations": {
+                  "workers/message": f"B62 Control Plane identity binding {target_sha}",
+                  "workers/tag": f"identity-binding-{target_sha[:12]}",
+              },
+          }
+          with open(output_path, "w", encoding="utf-8") as handle:
+              json.dump(patch, handle, separators=(",", ":"))
+          PY
+          echo "INHERIT_EXISTING_BINDINGS=PASS"
+          echo "SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO"
+
+      - name: Patch only Worker bindings through Cloudflare settings API
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/binding-patch-response.json"
+          curl -fsS -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -F "settings=@${RUNNER_TEMP}/binding-patch.json;type=application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${response}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${response}" >/dev/null
+          jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" '[.result.bindings[] | select(.name == $name and .type == "service" and .service == $service)] | length == 1' "${response}" >/dev/null
+          echo "B62_IDENTITY_BINDING_PATCH=SUCCESS"
+          echo "WORKER_SOURCE_REDEPLOY=NO"
+
+      - name: Read back exact post-mutation state
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BEFORE_VERSION: ${{ steps.before.outputs.active_version }}
+          BEFORE_ETAG: ${{ steps.before.outputs.source_etag }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          settings="${RUNNER_TEMP}/settings-after.json"
+          deployments="${RUNNER_TEMP}/deployments-after.json"
+          versions="${RUNNER_TEMP}/versions-after.json"
+          domains="${RUNNER_TEMP}/domains-after.json"
+          subdomain="${RUNNER_TEMP}/subdomain-after.json"
+
+          ready=no
+          for _ in $(seq 1 30); do
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
+            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+              ready=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${ready}" = yes
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+          latest="$(jq -r '.result.items[0].id' "${versions}")"
+          test "${active}" = "${latest}"
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+          detail="${RUNNER_TEMP}/version-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
+          jq -e --arg etag "${BEFORE_ETAG}" '.success == true and .result.resources.script.etag == $etag' "${detail}" >/dev/null
+
+          python - "${RUNNER_TEMP}/b62-bindings-before-private.json" "${settings}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" <<'PY'
+          import json
+          import sys
+          before_path, after_path, binding_name, identity_worker = sys.argv[1:]
+          before = json.load(open(before_path, encoding="utf-8"))
+          after = json.load(open(after_path, encoding="utf-8"))["result"]["bindings"]
+          identity = [b for b in after if b.get("name") == binding_name]
+          if len(identity) != 1 or identity[0].get("type") != "service" or identity[0].get("service") != identity_worker:
+              raise SystemExit("Identity binding readback mismatch")
+          after_existing = [b for b in after if b.get("name") != binding_name]
+          if before != after_existing:
+              raise SystemExit("Existing Worker bindings changed during identity binding patch")
+          PY
+
+          jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/b62-domains-after-safe.json"
+          jq '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${subdomain}" > "${RUNNER_TEMP}/b62-subdomain-after-safe.json"
+          cmp -s "${RUNNER_TEMP}/b62-domains-before-safe.json" "${RUNNER_TEMP}/b62-domains-after-safe.json"
+          cmp -s "${RUNNER_TEMP}/b62-subdomain-before-safe.json" "${RUNNER_TEMP}/b62-subdomain-after-safe.json"
+
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+
+          echo "SOURCE_ETAG_UNCHANGED=PASS"
+          echo "EXISTING_BINDINGS_UNCHANGED=PASS"
+          echo "IDENTITY_SERVICE_BINDING_ADDED=PASS"
+          echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
+          echo "PUBLIC_TOPOLOGY_UNCHANGED=PASS"
+          echo "LOCAL_AGENT_INGRESS_CHANGED=NO"
+
+  rollback-identity-binding:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'rollback_identity_binding' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Require explicit binding rollback authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          BINDING_STATE: ${{ needs.cloudflare-readonly.outputs.binding_state }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ROLLBACK_B62_CONTROL_PLANE_IDENTITY_SERVICE_BINDING"
+          test "${BINDING_STATE}" = "present_expected"
+          echo "B62_IDENTITY_BINDING_ROLLBACK_AUTHORIZATION=PASS"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Capture exact pre-rollback Worker state
+        id: before
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          settings="${RUNNER_TEMP}/rollback-settings-before.json"
+          deployments="${RUNNER_TEMP}/rollback-deployments-before.json"
+          versions="${RUNNER_TEMP}/rollback-versions-before.json"
+          domains="${RUNNER_TEMP}/rollback-domains-before.json"
+          subdomain="${RUNNER_TEMP}/rollback-subdomain-before.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          latest="$(jq -r '.result.items[0].id' "${versions}")"
+          test "${active}" = "${latest}"
+          jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" '[.result.bindings[] | select(.name == $name and .type == "service" and .service == $service)] | length == 1' "${settings}" >/dev/null
+
+          detail="${RUNNER_TEMP}/rollback-version-before.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
+          etag="$(jq -er '.result.resources.script.etag' "${detail}")"
+          jq '.result.bindings' "${settings}" > "${RUNNER_TEMP}/rollback-bindings-before-private.json"
+          jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/rollback-domains-before-safe.json"
+          jq '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${subdomain}" > "${RUNNER_TEMP}/rollback-subdomain-before-safe.json"
+          echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
+          echo "source_etag=${etag}" >> "${GITHUB_OUTPUT}"
+          echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
+
+      - name: Build inherit-only rollback payload
+        shell: bash
+        env:
+          ACTIVE_VERSION: ${{ steps.before.outputs.active_version }}
+        run: |
+          set -euo pipefail
+          python - "${RUNNER_TEMP}/rollback-settings-before.json" "${RUNNER_TEMP}/rollback-binding-patch.json" "${ACTIVE_VERSION}" "${IDENTITY_BINDING}" "${TARGET_SHA}" <<'PY'
+          import json
+          import sys
+          settings_path, output_path, active_version, binding_name, target_sha = sys.argv[1:]
+          bindings = json.load(open(settings_path, encoding="utf-8"))["result"]["bindings"]
+          remaining = [b for b in bindings if b.get("name") != binding_name]
+          if len(remaining) != len(bindings) - 1:
+              raise SystemExit("Expected exactly one identity binding before rollback")
+          names = [b.get("name") for b in remaining]
+          if any(not isinstance(name, str) or not name for name in names) or len(names) != len(set(names)):
+              raise SystemExit("Existing binding names are not safely inheritable")
+          patch = {
+              "bindings": [
+                  {"name": name, "type": "inherit", "version_id": active_version}
+                  for name in names
+              ],
+              "annotations": {
+                  "workers/message": f"Rollback B62 Control Plane identity binding {target_sha}",
+                  "workers/tag": f"identity-binding-rollback-{target_sha[:12]}",
+              },
+          }
+          with open(output_path, "w", encoding="utf-8") as handle:
+              json.dump(patch, handle, separators=(",", ":"))
+          PY
+          echo "ROLLBACK_INHERIT_EXISTING_BINDINGS=PASS"
+
+      - name: Remove only identity binding through Cloudflare settings API
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/rollback-patch-response.json"
+          curl -fsS -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -F "settings=@${RUNNER_TEMP}/rollback-binding-patch.json;type=application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${response}"
+          jq -e '.success == true' "${response}" >/dev/null
+          jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${response}" >/dev/null
+          echo "B62_IDENTITY_BINDING_ROLLBACK_PATCH=SUCCESS"
+          echo "WORKER_SOURCE_REDEPLOY=NO"
+
+      - name: Read back rollback exactness
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BEFORE_VERSION: ${{ steps.before.outputs.active_version }}
+          BEFORE_ETAG: ${{ steps.before.outputs.source_etag }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          deployments="${RUNNER_TEMP}/rollback-deployments-after.json"
+          ready=no
+          for _ in $(seq 1 30); do
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
+            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+              ready=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${ready}" = yes
+
+          settings="${RUNNER_TEMP}/rollback-settings-after.json"
+          versions="${RUNNER_TEMP}/rollback-versions-after.json"
+          domains="${RUNNER_TEMP}/rollback-domains-after.json"
+          subdomain="${RUNNER_TEMP}/rollback-subdomain-after.json"
+          detail="${RUNNER_TEMP}/rollback-version-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
+
+          latest="$(jq -r '.result.items[0].id' "${versions}")"
+          test "${active}" = "${latest}"
+          jq -e --arg etag "${BEFORE_ETAG}" '.result.resources.script.etag == $etag' "${detail}" >/dev/null
+          jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
+
+          python - "${RUNNER_TEMP}/rollback-bindings-before-private.json" "${settings}" "${IDENTITY_BINDING}" <<'PY'
+          import json
+          import sys
+          before_path, after_path, binding_name = sys.argv[1:]
+          before = json.load(open(before_path, encoding="utf-8"))
+          expected = [b for b in before if b.get("name") != binding_name]
+          after = json.load(open(after_path, encoding="utf-8"))["result"]["bindings"]
+          if expected != after:
+              raise SystemExit("Rollback modified an existing non-identity binding")
+          PY
+
+          jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/rollback-domains-after-safe.json"
+          jq '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${subdomain}" > "${RUNNER_TEMP}/rollback-subdomain-after-safe.json"
+          cmp -s "${RUNNER_TEMP}/rollback-domains-before-safe.json" "${RUNNER_TEMP}/rollback-domains-after-safe.json"
+          cmp -s "${RUNNER_TEMP}/rollback-subdomain-before-safe.json" "${RUNNER_TEMP}/rollback-subdomain-after-safe.json"
+
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+
+          echo "SOURCE_ETAG_UNCHANGED=PASS"
+          echo "EXISTING_BINDINGS_UNCHANGED=PASS"
+          echo "IDENTITY_SERVICE_BINDING_REMOVED=PASS"
+          echo "PUBLIC_TOPOLOGY_UNCHANGED=PASS"
+          echo "LOCAL_AGENT_INGRESS_CHANGED=NO"
