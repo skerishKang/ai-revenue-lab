@@ -113,9 +113,15 @@ jobs:
           assert "CLOUDFLARE_ERROR_BODY_JSON=NO" in gate
           assert "-F \"settings=<${RUNNER_TEMP}/binding-patch.json" in gate
           assert "-F \"settings=@${RUNNER_TEMP}/binding-patch.json" not in gate
+          assert "-F \"settings=<${RUNNER_TEMP}/rollback-binding-patch.json" in gate
+          assert "-F \"settings=@${RUNNER_TEMP}/rollback-binding-patch.json" not in gate
+          assert "B62_IDENTITY_BINDING_ROLLBACK_PATCH_HTTP_STATUS=" in gate
+          assert "CLOUDFLARE_ROLLBACK_ERROR_BODY_JSON=NO" in gate
           print("B62_IDENTITY_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")
           print("SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
+          print("ROLLBACK_PATCH_ERROR_BODY_CAPTURE=YES")
+          print("ROLLBACK_SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
           print("DEFAULT_B62_CONFIG_MUTATION=NO")
           print("PRODUCTION_MUTATION=0")
           PY
@@ -548,14 +554,46 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
+
           response="${RUNNER_TEMP}/rollback-patch-response.json"
-          curl -fsS -X PATCH \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -F "settings=@${RUNNER_TEMP}/rollback-binding-patch.json;type=application/json" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
-            -o "${response}"
+
+          http_status="$(
+            curl -sS -X PATCH \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -F "settings=<${RUNNER_TEMP}/rollback-binding-patch.json;type=application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+
+          echo "B62_IDENTITY_BINDING_ROLLBACK_PATCH_HTTP_STATUS=${http_status}"
+
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo "B62_IDENTITY_BINDING_ROLLBACK_PATCH=FAIL"
+
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{
+                success,
+                errors: [
+                  (.errors // [])[] |
+                  {
+                    code,
+                    message,
+                    documentation_url,
+                    source
+                  }
+                ]
+              }' "${response}"
+            else
+              echo "CLOUDFLARE_ROLLBACK_ERROR_BODY_JSON=NO"
+            fi
+
+            exit 1
+          fi
+
           jq -e '.success == true' "${response}" >/dev/null
           jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${response}" >/dev/null
+
           echo "B62_IDENTITY_BINDING_ROLLBACK_PATCH=SUCCESS"
           echo "WORKER_SOURCE_REDEPLOY=NO"
 
