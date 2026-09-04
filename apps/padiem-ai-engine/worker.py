@@ -27,6 +27,7 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
 from app.identity_enforcement import authenticate_request
 from app.orchestration_service import (
@@ -176,37 +177,31 @@ def _authenticate_non_health_request(env: Any, headers: Any, body: bytes) -> Res
     return None
 
 
-def _engine_services_for_env(
-    env: Any,
-) -> tuple[
-    EngineService,
-    StreamingEngineService,
-    OrchestrationEngineService,
-    WebResearchEngineService,
-]:
+def _engine_services_for_env(env: Any) -> EngineServices:
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable_factory = lambda app_id: (_ for _ in ()).throw(  # noqa: E731
             RuntimeError("unreachable without B14 service binding")
         )
-        completed = EngineService(
-            runtime_factory=unavailable_factory,
-            b14_service_bound=False,
+        return EngineServices(
+            completed=EngineService(
+                runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            streaming=StreamingEngineService(
+                runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            orchestration=OrchestrationEngineService(
+                runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            research=WebResearchEngineService(
+                research_runtime_factory=unavailable_factory,
+                execution_runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
         )
-        streaming = StreamingEngineService(
-            runtime_factory=unavailable_factory,
-            b14_service_bound=False,
-        )
-        orchestration = OrchestrationEngineService(
-            runtime_factory=unavailable_factory,
-            b14_service_bound=False,
-        )
-        research = WebResearchEngineService(
-            research_runtime_factory=unavailable_factory,
-            execution_runtime_factory=unavailable_factory,
-            b14_service_bound=False,
-        )
-        return completed, streaming, orchestration, research
 
     transport = CloudflareB14ServiceBindingTransport(
         binding=binding,
@@ -233,21 +228,21 @@ def _engine_services_for_env(
             create_web_provider(_web_runtime_config_for_env(env))
         )
 
-    return (
-        EngineService(
+    return EngineServices(
+        completed=EngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
         ),
-        StreamingEngineService(
+        streaming=StreamingEngineService(
             runtime_factory=streaming_runtime_factory,
             b14_service_bound=True,
         ),
-        OrchestrationEngineService(
+        orchestration=OrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
         ),
-        WebResearchEngineService(
+        research=WebResearchEngineService(
             research_runtime_factory=research_runtime_factory,
             execution_runtime_factory=runtime_factory,
             b14_service_bound=True,
@@ -320,6 +315,11 @@ def _ndjson_response(
 
 
 class Default(WorkerEntrypoint):
+    # Route dispatch addresses each service by name through this overridable
+    # composition seam; the canonical identity entrypoint subclasses Default
+    # and supplies its own factory instead of replacing module globals.
+    engine_services_factory = staticmethod(_engine_services_for_env)
+
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
         method = str(getattr(request, "method", ""))
@@ -378,15 +378,10 @@ class Default(WorkerEntrypoint):
             if auth_error is not None:
                 return auth_error
 
-        (
-            completed_service,
-            streaming_service,
-            orchestration_service,
-            research_service,
-        ) = _engine_services_for_env(self.env)
+        services = self.engine_services_factory(self.env)
 
         if path in orchestration_paths:
-            result = await orchestration_service.handle(
+            result = await services.orchestration.handle(
                 method=method,
                 path=path,
                 content_type=content_type,
@@ -395,7 +390,7 @@ class Default(WorkerEntrypoint):
             return _json_response(result)
 
         if path == RESEARCH_PATH:
-            result = await research_service.handle(
+            result = await services.research.handle(
                 method=method,
                 path=path,
                 content_type=content_type,
@@ -404,7 +399,7 @@ class Default(WorkerEntrypoint):
             return _json_response(result)
 
         if path == STREAM_PATH:
-            prepared = await streaming_service.prepare(
+            prepared = await services.streaming.prepare(
                 method=method,
                 path=path,
                 content_type=content_type,
@@ -412,9 +407,9 @@ class Default(WorkerEntrypoint):
             )
             if isinstance(prepared, ServiceResponse):
                 return _json_response(prepared)
-            return _ndjson_response(streaming_service, prepared)
+            return _ndjson_response(services.streaming, prepared)
 
-        result = await completed_service.handle(
+        result = await services.completed.handle(
             method=method,
             path=path,
             content_type=content_type,
