@@ -15,9 +15,15 @@ dependencies = [
 tools = [
   "jsonschema>=4.23,<5",
 ]
+documents = [
+  "pypdf>=6.16.2,<7",
+  "openpyxl>=3.1,<4",
+]
 dev = [
   "pytest>=8,<10",
   "jsonschema>=4.23,<5",
+  "pypdf>=6.16.2,<7",
+  "openpyxl>=3.1,<4",
 ]
 
 [tool.setuptools.packages.find]
