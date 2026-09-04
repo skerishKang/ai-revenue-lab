@@ -80,13 +80,13 @@ jobs:
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "$(python -c 'import secrets; print(secrets.token_hex(32))')" > "${secret_file}"
           chmod 600 "${secret_file}"
 
-          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
             --config wrangler.local-agent-broker.jsonc \
             --secrets-file "${secret_file}" \
             --dry-run \
             --outdir "${RUNNER_TEMP}/b54-state-dry-run"
 
-          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
             --config wrangler.local-agent-broker-edge.jsonc \
             --dry-run \
             --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
