@@ -82,11 +82,6 @@ async def _open_sidebar(page: Page, mobile: bool) -> None:
     await page.locator("#sidebar").wait_for(state="visible")
 
 
-async def _refresh(page: Page) -> None:
-    await page.evaluate("() => window.PadiemProductCapabilities.refresh()")
-    await page.wait_for_timeout(80)
-
-
 async def _snapshot(page: Page) -> dict[str, Any]:
     return await page.evaluate(
         """() => {
@@ -124,6 +119,21 @@ async def _snapshot(page: Page) -> dict[str, Any]:
     )
 
 
+async def _refresh(page: Page) -> None:
+    try:
+        await asyncio.wait_for(
+            page.evaluate("() => window.PadiemProductCapabilities.refresh()"),
+            timeout=8.0,
+        )
+    except TimeoutError as error:
+        snapshot = await _snapshot(page)
+        raise AssertionError(
+            "capability refresh exceeded 8s; "
+            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        ) from error
+    await page.wait_for_timeout(80)
+
+
 async def _assert_target(page: Page, selector: str, label: str) -> dict[str, float]:
     box = await page.locator(selector).bounding_box()
     if not box:
@@ -150,6 +160,7 @@ async def _assert_state(
     account_text: str | None,
 ) -> dict[str, Any]:
     state["session"] = expected
+    print(f"ACCOUNT_SESSION_STATE_START={name}:{expected}", flush=True)
     await _refresh(page)
     container = page.locator(".sidebar-account")
     button = page.locator("#loginButton")
