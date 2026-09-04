@@ -1,62 +1,69 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import PurePath
 from typing import Any, Iterable
 
-MAX_DOCUMENT_CHARS = 40_000
-MAX_DOCUMENT_BYTES = 96 * 1024
-MAX_DOCUMENT_NAME_CHARS = 120
+from padiem_ai_core.document_normalization import (
+    MAX_DOCUMENT_CHARS,
+    MAX_DOCUMENT_NAME_CHARS,
+    MAX_TEXT_DOCUMENT_BYTES,
+    TEXT_DOCUMENT_MEDIA,
+    DocumentNormalizationError,
+    normalize_document_name,
+    normalize_document_text,
+    normalize_text_document,
+    validate_document_identity,
+)
+
+MAX_DOCUMENT_BYTES = MAX_TEXT_DOCUMENT_BYTES
 MAX_EPHEMERAL_DOCUMENT_CONTEXT_CHARS = 2_800
 MAX_PROJECT_FILES_CONTEXT_CHARS = 2_600
 MAX_REFERENCE_CONTEXT_CHARS = 8_000
-
-ALLOWED_DOCUMENT_MEDIA = {
-    "text/plain": {".txt"},
-    "text/markdown": {".md", ".markdown"},
-    "text/csv": {".csv"},
-    "application/json": {".json"},
-}
+ALLOWED_DOCUMENT_MEDIA = TEXT_DOCUMENT_MEDIA
 
 
 class DocumentValidationError(ValueError):
     pass
 
 
+_TEXT_ERROR_MESSAGES = {
+    "invalid_name": "문서 파일 이름 형식이 올바르지 않습니다.",
+    "name_required": "문서 파일 이름이 필요합니다.",
+    "unsupported_text_media_type": "현재는 TXT, Markdown, CSV, JSON 문서만 지원합니다.",
+    "media_extension_mismatch": "문서 확장자와 파일 형식이 일치하지 않습니다.",
+    "invalid_text": "문서 내용 형식이 올바르지 않습니다.",
+    "empty_document": "빈 문서는 첨부할 수 없습니다.",
+    "text_too_long": "문서는 40,000자 이하만 첨부할 수 있습니다.",
+    "binary_text_rejected": "바이너리 파일은 문서로 첨부할 수 없습니다.",
+    "excessive_control_characters": "텍스트 문서로 읽을 수 없는 제어 문자가 너무 많습니다.",
+    "text_bytes_too_large": "문서는 96 KiB 이하만 첨부할 수 있습니다.",
+}
+
+
+def _translate_text_error(exc: DocumentNormalizationError) -> DocumentValidationError:
+    return DocumentValidationError(_TEXT_ERROR_MESSAGES.get(exc.code, "문서를 안전하게 읽지 못했습니다."))
+
+
 def _safe_name(value: Any) -> str:
-    if not isinstance(value, str):
-        raise DocumentValidationError("문서 파일 이름 형식이 올바르지 않습니다.")
-    cleaned = "".join(ch for ch in value.strip() if ch >= " " and ch != "\x7f")
-    if not cleaned:
-        raise DocumentValidationError("문서 파일 이름이 필요합니다.")
-    if len(cleaned) > MAX_DOCUMENT_NAME_CHARS:
-        cleaned = cleaned[:MAX_DOCUMENT_NAME_CHARS]
-    return cleaned
+    try:
+        return normalize_document_name(value)
+    except DocumentNormalizationError as exc:
+        raise _translate_text_error(exc) from exc
 
 
 def _validate_media_and_extension(name: str, media_type: Any) -> str:
-    if not isinstance(media_type, str) or media_type not in ALLOWED_DOCUMENT_MEDIA:
-        raise DocumentValidationError("현재는 TXT, Markdown, CSV, JSON 문서만 지원합니다.")
-    suffix = PurePath(name.lower()).suffix
-    if suffix not in ALLOWED_DOCUMENT_MEDIA[media_type]:
-        raise DocumentValidationError("문서 확장자와 파일 형식이 일치하지 않습니다.")
-    return media_type
+    try:
+        _, normalized_media = validate_document_identity(name=name, media_type=media_type, source_kind="text")
+        return normalized_media
+    except DocumentNormalizationError as exc:
+        raise _translate_text_error(exc) from exc
 
 
 def _validate_text(value: Any) -> str:
-    if not isinstance(value, str):
-        raise DocumentValidationError("문서 내용 형식이 올바르지 않습니다.")
-    text = value.removeprefix("\ufeff").replace("\r\n", "\n").replace("\r", "\n")
-    if not text.strip():
-        raise DocumentValidationError("빈 문서는 첨부할 수 없습니다.")
-    if len(text) > MAX_DOCUMENT_CHARS:
-        raise DocumentValidationError("문서는 40,000자 이하만 첨부할 수 있습니다.")
-    if "\x00" in text:
-        raise DocumentValidationError("바이너리 파일은 문서로 첨부할 수 없습니다.")
-    bad_controls = sum(1 for ch in text if ord(ch) < 32 and ch not in {"\n", "\t"})
-    if bad_controls > max(3, len(text) // 500):
-        raise DocumentValidationError("텍스트 문서로 읽을 수 없는 제어 문자가 너무 많습니다.")
-    return text
+    try:
+        return normalize_document_text(value)
+    except DocumentNormalizationError as exc:
+        raise _translate_text_error(exc) from exc
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,18 +83,30 @@ class DocumentAttachment:
         }
 
 
+def _from_core(document: Any) -> DocumentAttachment:
+    return DocumentAttachment(
+        name=document.name,
+        media_type=document.media_type,
+        text=document.text,
+        byte_size=document.byte_size,
+    )
+
+
 def parse_document_item(item: Any) -> DocumentAttachment:
     if not isinstance(item, dict) or set(item) != {"type", "name", "media_type", "text"}:
         raise DocumentValidationError("지원하지 않는 문서 첨부 항목이 있습니다.")
     if item.get("type") != "document":
         raise DocumentValidationError("문서 첨부 형식이 올바르지 않습니다.")
-    name = _safe_name(item.get("name"))
-    media_type = _validate_media_and_extension(name, item.get("media_type"))
-    text = _validate_text(item.get("text"))
-    byte_size = len(text.encode("utf-8"))
-    if byte_size > MAX_DOCUMENT_BYTES:
-        raise DocumentValidationError("문서는 96 KiB 이하만 첨부할 수 있습니다.")
-    return DocumentAttachment(name=name, media_type=media_type, text=text, byte_size=byte_size)
+    try:
+        return _from_core(
+            normalize_text_document(
+                name=item.get("name"),
+                media_type=item.get("media_type"),
+                text=item.get("text"),
+            )
+        )
+    except DocumentNormalizationError as exc:
+        raise _translate_text_error(exc) from exc
 
 
 def validate_document_fields(name: Any, media_type: Any, text: Any) -> DocumentAttachment:
