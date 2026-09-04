@@ -16,6 +16,7 @@ from app.contract_manifest import (
 )
 from app.orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
+from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
 from app.web_research_service import RESEARCH_PATH
@@ -40,6 +41,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RUN_PATH),
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
+        ("POST", MULTIMODAL_EXECUTE_PATH),
     ]
 
 
@@ -94,6 +96,9 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "skill_runtime_projection",
         "agent_runtime_projection",
         "memory_rag_projection",
+        "multimodal_completed_run",
+        "multimodal_streaming_run",
+        "document_projection",
     ):
         assert manifest.feature_state(feature_id) is EngineFeatureState.DEFERRED
 
@@ -112,6 +117,16 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
     assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
+
+
+def test_multimodal_route_is_declared_but_capabilities_stay_deferred() -> None:
+    manifest = current_engine_contract_manifest()
+    endpoints = {(item.method, item.path) for item in manifest.endpoints}
+
+    assert ("POST", MULTIMODAL_EXECUTE_PATH) in endpoints
+    assert manifest.feature_state("multimodal_completed_run") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("multimodal_streaming_run") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
 
 
 def test_public_browser_api_and_provider_selection_are_unavailable() -> None:
@@ -144,6 +159,9 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
         "memory_rag_projection",
         "agent_runtime_projection",
         "skill_runtime_projection",
+        "multimodal_completed_run",
+        "multimodal_streaming_run",
+        "document_projection",
         "public_browser_api",
         "provider_selection",
     ):
