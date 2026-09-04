@@ -1,5 +1,6 @@
 import pytest
 
+from app.agent_skill_service import AGENT_SKILL_RUN_PATH
 from app.contract_manifest import (
     ENGINE_CONTRACT_FAMILY,
     ENGINE_CONTRACT_MAJOR,
@@ -32,6 +33,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", RESEARCH_PATH),
         ("POST", MEMORY_PATH),
         ("POST", MEMORY_WRITE_PATH),
+        ("POST", AGENT_SKILL_RUN_PATH),
     ]
 
 
@@ -45,6 +47,7 @@ def test_orchestration_and_research_routes_declared_by_manifest() -> None:
     assert ("POST", RESEARCH_PATH) in endpoints
     assert ("POST", MEMORY_PATH) in endpoints
     assert ("POST", MEMORY_WRITE_PATH) in endpoints
+    assert ("POST", AGENT_SKILL_RUN_PATH) in endpoints
 
 
 def test_current_completed_streaming_and_orchestration_features_are_available() -> None:
@@ -87,6 +90,16 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         assert manifest.feature_state(feature_id) is EngineFeatureState.DEFERRED
 
 
+def test_agent_skill_route_is_declared_but_runtime_features_stay_deferred() -> None:
+    manifest = current_engine_contract_manifest()
+    endpoints = {(item.method, item.path) for item in manifest.endpoints}
+
+    assert ("POST", AGENT_SKILL_RUN_PATH) in endpoints
+    assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.DEFERRED
+
+
 def test_public_browser_api_and_provider_selection_are_unavailable() -> None:
     manifest = current_engine_contract_manifest()
 
@@ -115,6 +128,8 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
         "web_fetch_projection",
         "deep_research_projection",
         "memory_rag_projection",
+        "agent_runtime_projection",
+        "skill_runtime_projection",
         "public_browser_api",
         "provider_selection",
     ):

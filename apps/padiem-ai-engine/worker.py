@@ -23,6 +23,7 @@ from padiem_ai_core import (
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
 from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
 
+from app.agent_skill_service import AGENT_SKILL_RUN_PATH, AgentSkillEngineService
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -219,6 +220,12 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 b14_service_bound=False,
             ),
             memory=_memory_service_for_env(env),
+            # E4A source projection is intentionally not production-activated.
+            # Without a trusted resolver the route exists but fails closed.
+            agent_skill=AgentSkillEngineService(
+                runtime_factory=unavailable_factory,
+                binding_resolver=None,
+            ),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -266,6 +273,13 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             b14_service_bound=True,
         ),
         memory=_memory_service_for_env(env),
+        agent_skill=AgentSkillEngineService(
+            runtime_factory=runtime_factory,
+            # Trusted registry/session/entitlement activation is a later
+            # production gate (#1751/#1753). Do not fabricate it here.
+            binding_resolver=None,
+            idempotency_adapter=idempotency_adapter,
+        ),
     )
 
 
@@ -378,6 +392,7 @@ class Default(WorkerEntrypoint):
             RESEARCH_PATH,
             MEMORY_PATH,
             MEMORY_WRITE_PATH,
+            AGENT_SKILL_RUN_PATH,
         } | orchestration_paths
         if path not in allowed_paths:
             result = ServiceResponse(
@@ -403,6 +418,21 @@ class Default(WorkerEntrypoint):
 
         if path in orchestration_paths:
             result = await services.orchestration.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
+
+        if path == AGENT_SKILL_RUN_PATH:
+            if services.agent_skill is None:
+                return _error_response(
+                    "agent_skill_runtime_unavailable",
+                    "Trusted Agent/Skill runtime authority is unavailable.",
+                    503,
+                )
+            result = await services.agent_skill.handle(
                 method=method,
                 path=path,
                 content_type=content_type,
