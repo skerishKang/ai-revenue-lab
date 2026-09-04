@@ -11,7 +11,8 @@
   },
   "secrets": {
     "required": [
-      "CONTROL_PLANE_IDENTITY_LOOKUP_KEY"
+      "CONTROL_PLANE_IDENTITY_LOOKUP_KEY",
+      "GOOGLE_CONNECT_TICKET_KEY"
     ]
   },
   "durable_objects": {
