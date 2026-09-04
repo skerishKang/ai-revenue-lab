@@ -243,6 +243,25 @@ async def _wait_state(page: Page, expected: str, *, label: str, timeout: int = 8
             && root?.hidden === true
             && button?.hidden === true;
         }"""
+    elif expected == "expired":
+        predicate = """() => {
+          const root = document.querySelector('.sidebar-account');
+          const button = document.getElementById('loginButton');
+          const account = document.getElementById('accountName');
+          const auth = window.PadiemProductCapabilities?.get?.().auth;
+          const english = document.documentElement.lang === 'en';
+          const expectedButton = english ? 'Sign in again' : '다시 로그인';
+          const expectedAccount = english ? 'Session expired' : '세션 만료';
+          return auth?.sessionState === 'expired'
+            && root?.dataset.accountState === 'expired'
+            && root?.hidden === false
+            && button?.hidden === false
+            && button?.disabled === false
+            && button?.getAttribute('aria-disabled') === 'false'
+            && button?.textContent.trim() === expectedButton
+            && account?.hidden === false
+            && account?.textContent.trim() === expectedAccount;
+        }"""
     else:
         predicate = f"""() => {{
           const root = document.querySelector('.sidebar-account');
