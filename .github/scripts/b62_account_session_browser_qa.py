@@ -180,7 +180,11 @@ async def _open_state_page(
         await page.set_viewport_size({"width": width, "height": height})
         suffix = f"&lang={lang}" if lang else ""
         await page.goto(f"{BASE_URL}/?theme={theme}{suffix}", wait_until="domcontentloaded", timeout=30_000)
-        await page.locator("#messageInput").wait_for(state="visible", timeout=5_000)
+        await page.locator(".sidebar-account").wait_for(state="attached", timeout=5_000)
+        await page.wait_for_function(
+            "() => typeof window.PadiemProductCapabilities?.get === 'function'",
+            timeout=5_000,
+        )
         await _open_sidebar(page, mobile)
         await _wait_product_state(page, session, name=name)
         return page, state
