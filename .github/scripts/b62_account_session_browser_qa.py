@@ -87,6 +87,43 @@ async def _refresh(page: Page) -> None:
     await page.wait_for_timeout(80)
 
 
+async def _snapshot(page: Page) -> dict[str, Any]:
+    return await page.evaluate(
+        """() => {
+          const container = document.querySelector('.sidebar-account');
+          const button = document.getElementById('loginButton');
+          const account = document.getElementById('accountName');
+          const rect = container ? container.getBoundingClientRect() : null;
+          const style = container ? getComputedStyle(container) : null;
+          const publicState = window.PadiemProductCapabilities?.get?.() || null;
+          return {
+            href: location.href,
+            auth: publicState ? publicState.auth : null,
+            container: container ? {
+              hidden: container.hidden,
+              hiddenAttr: container.hasAttribute('hidden'),
+              accountState: container.dataset.accountState || null,
+              display: style?.display || null,
+              visibility: style?.visibility || null,
+              opacity: style?.opacity || null,
+              rect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null,
+            } : null,
+            button: button ? {
+              hidden: button.hidden,
+              text: button.textContent?.trim() || '',
+              disabled: button.disabled,
+              ariaDisabled: button.getAttribute('aria-disabled'),
+              title: button.title,
+            } : null,
+            account: account ? {
+              hidden: account.hidden,
+              text: account.textContent?.trim() || '',
+            } : null,
+          };
+        }"""
+    )
+
+
 async def _assert_target(page: Page, selector: str, label: str) -> dict[str, float]:
     box = await page.locator(selector).bounding_box()
     if not box:
@@ -117,23 +154,46 @@ async def _assert_state(
     container = page.locator(".sidebar-account")
     button = page.locator("#loginButton")
     account = page.locator("#accountName")
+    snapshot = await _snapshot(page)
 
     if expected == "unavailable":
         if not await container.is_hidden() or not await button.is_hidden():
-            raise AssertionError(f"auth unavailable must fail closed at {name}")
-        return {"state": expected, "hidden": True, "status": "PASS"}
+            raise AssertionError(
+                f"auth unavailable must fail closed at {name}: {json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+            )
+        return {"state": expected, "hidden": True, "snapshot": snapshot, "status": "PASS"}
+
+    if await container.is_hidden():
+        await page.wait_for_timeout(200)
+        later = await _snapshot(page)
+        raise AssertionError(
+            f"account container hidden after trusted {expected} refresh at {name}; "
+            f"initial={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}; "
+            f"later={json.dumps(later, ensure_ascii=False, sort_keys=True)}"
+        )
 
     await container.wait_for(state="visible")
     if await container.get_attribute("data-account-state") != expected:
-        raise AssertionError(f"wrong account state at {name}: {await container.get_attribute('data-account-state')}")
+        raise AssertionError(
+            f"wrong account state at {name}: {await container.get_attribute('data-account-state')}; "
+            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        )
     if button_text is not None and (await button.inner_text()).strip() != button_text:
-        raise AssertionError(f"wrong account action at {name}: {(await button.inner_text()).strip()!r}")
+        raise AssertionError(
+            f"wrong account action at {name}: {(await button.inner_text()).strip()!r}; "
+            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        )
     if account_text is not None and (await account.inner_text()).strip() != account_text:
-        raise AssertionError(f"wrong account copy at {name}: {(await account.inner_text()).strip()!r}")
+        raise AssertionError(
+            f"wrong account copy at {name}: {(await account.inner_text()).strip()!r}; "
+            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        )
     if await button.get_attribute("aria-disabled") != "false" or await button.is_disabled():
-        raise AssertionError(f"account action must be operable at {name}")
+        raise AssertionError(
+            f"account action must be operable at {name}; snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        )
     target = await _assert_target(page, "#loginButton", f"{name}-{expected}-action")
-    return {"state": expected, "hidden": False, "target": target, "status": "PASS"}
+    return {"state": expected, "hidden": False, "target": target, "snapshot": snapshot, "status": "PASS"}
 
 
 async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
