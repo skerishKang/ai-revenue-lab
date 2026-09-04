@@ -43,6 +43,28 @@
   outline-offset: 2px;
 }
 
+/* Keep the end of a long answer clear of an expanded multiline composer.
+ * The JS value is bounded to at least the historical 230px clearance. */
+.app-shell[data-state="chat"] .conversation {
+  padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+}
+
+/* JS resolves the actual textarea scroll height so multiline prompts grow in
+ * place instead of becoming a tiny internal scroll box. The source CSS still
+ * owns the hard 180px ceiling. */
+.composer textarea {
+  overflow-y: hidden;
+}
+
+@media (max-width: 920px) {
+  /* visualViewport differs from the layout viewport while a software keyboard
+   * overlays the page on some mobile browsers. Keep the fixed composer above
+   * that bounded inset; browsers that resize the layout viewport resolve 0px. */
+  .composer-wrap {
+    bottom: var(--padiem-visual-keyboard-inset, 0px) !important;
+  }
+}
+
 @media (max-width: 700px) {
   .composer-interaction-status {
     margin-inline: 4px;
