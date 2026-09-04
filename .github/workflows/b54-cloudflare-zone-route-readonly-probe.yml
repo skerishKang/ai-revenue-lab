@@ -57,6 +57,7 @@ jobs:
               '/workers/routes',
               'PRODUCTION_MUTATION=0',
               'DIRECT_ZONE_ROUTE_READ=PASS',
+              'DIRECT_ZONE_ROUTE_HTTP_STATUS=',
           ]
           for token in required:
               if token not in text:
@@ -98,7 +99,6 @@ jobs:
             -o "${domains}"
           jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
 
-          jq '[.result[] | {hostname,service,environment,zone_id,zone_name}]' "${domains}" > "${RUNNER_TEMP}/domains-safe.json"
           zone_ids="$(jq -r --arg zone "${ZONE_NAME}" '
             [.result[]
              | select((.zone_name? == $zone) or (.hostname? == $zone) or (.hostname? | endswith("." + $zone)))
@@ -114,7 +114,12 @@ jobs:
           routes="${RUNNER_TEMP}/routes.json"
           code="$(curl -sS -o "${routes}" -w '%{http_code}' "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" || true)"
-          test "${code}" = "200"
+          echo "DIRECT_ZONE_ROUTE_HTTP_STATUS=${code}"
+          if [ "${code}" != "200" ]; then
+            jq -c '{success,errors:[.errors[]? | {code,message}]}' "${routes}" 2>/dev/null || true
+            echo "PRODUCTION_MUTATION=0"
+            exit 1
+          fi
           jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
 
           python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
