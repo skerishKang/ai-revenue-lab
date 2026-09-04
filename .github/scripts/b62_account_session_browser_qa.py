@@ -98,11 +98,11 @@ async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
 
     async def google_start(route: Route) -> None:
         # Verify the recovery navigation intent without entering a synthetic
-        # replacement document or real Google OAuth flow. Aborting the routed
-        # main-frame request keeps the product document authoritative and makes
-        # the probe deterministic.
+        # replacement document or real Google OAuth flow. A 204 navigation
+        # response preserves the current product document while allowing the
+        # browser navigation lifecycle to settle deterministically.
         state["google_start_reads"] += 1
-        await route.abort("aborted")
+        await route.fulfill(status=204, body="")
 
     await page.route("**/api/auth/status", auth_status)
     await page.route("**/api/auth/logout", logout)
@@ -337,7 +337,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 result["recovery"] = {
                     "google_start_navigations": state["google_start_reads"],
                     "real_google_oauth": 0,
-                    "navigation_aborted_by_fixture": True,
+                    "navigation_no_content_by_fixture": True,
                     "status": "PASS",
                 }
 
