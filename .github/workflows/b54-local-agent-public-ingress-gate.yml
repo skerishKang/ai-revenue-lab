@@ -1,0 +1,500 @@
+name: B54 Local Agent Public Ingress Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-local-agent-public-ingress-gate.yml"
+      - "packages/padiem-control-plane/local_agent_broker_edge_worker.py"
+      - "packages/padiem-control-plane/local_agent_broker_device_http.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker-edge.jsonc"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Public ingress gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activate_custom_domain
+          - rollback_custom_domain
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      local_preflight_comment_id:
+        description: "Fresh #1828 local Wrangler-OAuth route-audit comment id; required for activation"
+        required: false
+        default: ""
+        type: string
+      confirmation:
+        description: "Exact activation/rollback confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: b54-local-agent-public-ingress-gate
+  cancel-in-progress: false
+
+env:
+  PUBLIC_HOSTNAME: local-agent.padiem.net
+  ZONE_NAME: padiem.net
+  STATE_WORKER: padiem-local-agent-broker-state
+  EDGE_WORKER: padiem-local-agent-broker-edge
+  EXPECTED_STATE_VERSION: 8de403cd-b6c9-4280-a673-1e3fa4bea203
+  EXPECTED_EDGE_VERSION: 7bf165c0-f320-4bb4-8410-1d516fa4960a
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+      - name: Validate closed broker source boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+
+          root = Path("packages/padiem-control-plane")
+          state = json.loads((root / "wrangler.local-agent-broker.jsonc").read_text(encoding="utf-8"))
+          edge = json.loads((root / "wrangler.local-agent-broker-edge.jsonc").read_text(encoding="utf-8"))
+
+          assert state["name"] == "padiem-local-agent-broker-state"
+          assert state["workers_dev"] is False and state["preview_urls"] is False
+          assert "routes" not in state and "route" not in state
+
+          assert edge["name"] == "padiem-local-agent-broker-edge"
+          assert edge["workers_dev"] is False and edge["preview_urls"] is False
+          assert "routes" not in edge and "route" not in edge
+          assert edge["services"] == [{
+              "binding": "LOCAL_AGENT_BROKER_SERVICE",
+              "service": "padiem-local-agent-broker-state",
+          }]
+
+          device_source = (root / "local_agent_broker_device_http.py").read_text(encoding="utf-8")
+          tree = ast.parse(device_source)
+          routes = None
+          for node in tree.body:
+              if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "_DEVICE_HTTP_ROUTES" for t in node.targets):
+                  call = node.value
+                  assert isinstance(call, ast.Call) and isinstance(call.func, ast.Name) and call.func.id == "frozenset"
+                  assert len(call.args) == 1 and isinstance(call.args[0], ast.Set)
+                  routes = {elt.value for elt in call.args[0].elts if isinstance(elt, ast.Constant) and isinstance(elt.value, str)}
+                  break
+          assert routes == {"/session", "/poll", "/material", "/heartbeat", "/acknowledge"}
+
+          edge_source = (root / "local_agent_broker_edge_worker.py").read_text(encoding="utf-8")
+          assert "ADMIN_BROKER_RPC_PUBLIC = False" in edge_source
+          assert "HTTPS_REQUIRED = True" in edge_source
+          assert "POST_ONLY = True" in edge_source
+          assert "CLOSED_DEVICE_ROUTES = True" in edge_source
+
+          state_worker_source = (root / "local_agent_broker_worker.py").read_text(encoding="utf-8")
+          assert "PUBLIC_ENDPOINT_ADDED = False" in state_worker_source
+          assert "ADMIN_BROKER_RPC_PUBLIC = False" in state_worker_source
+
+          print("PRIVATE_STATE_WORKER_PUBLIC=NO")
+          print("EDGE_ONLY_PUBLIC_CANDIDATE=YES")
+          print("CLOSED_DEVICE_ROUTES=PASS")
+          print("SOURCE_PRODUCTION_MUTATION=0")
+          PY
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      candidate_domain_state: ${{ steps.inspect.outputs.candidate_domain_state }}
+      candidate_domain_id: ${{ steps.inspect.outputs.candidate_domain_id }}
+    steps:
+      - name: Reconfirm deployed versions, private boundary, service binding and candidate domain
+        id: inspect
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+
+          domain_count="$(jq --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
+          if [ "${domain_count}" -eq 0 ]; then
+            echo "candidate_domain_state=absent" >> "${GITHUB_OUTPUT}"
+            echo "candidate_domain_id=" >> "${GITHUB_OUTPUT}"
+            echo "CANDIDATE_CUSTOM_DOMAIN=ABSENT"
+          elif [ "${domain_count}" -eq 1 ]; then
+            jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '.result[] | select(.hostname == $host) | .service == $edge' "${domains}" >/dev/null
+            domain_id="$(jq -r --arg host "${PUBLIC_HOSTNAME}" '.result[] | select(.hostname == $host) | .id' "${domains}")"
+            test -n "${domain_id}"
+            echo "candidate_domain_state=present_edge" >> "${GITHUB_OUTPUT}"
+            echo "candidate_domain_id=${domain_id}" >> "${GITHUB_OUTPUT}"
+            echo "CANDIDATE_CUSTOM_DOMAIN=PRESENT_EDGE"
+          else
+            echo "Refusing ambiguous Custom Domain state." >&2
+            exit 1
+          fi
+
+          for worker in "${STATE_WORKER}" "${EDGE_WORKER}"; do
+            subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
+            settings="${RUNNER_TEMP}/${worker}-settings.json"
+            deployments="${RUNNER_TEMP}/${worker}-deployments.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" \
+              -o "${subdomain}"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" \
+              -o "${settings}"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
+              -o "${deployments}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0' "${deployments}" >/dev/null
+
+            if [ "${worker}" = "${STATE_WORKER}" ]; then
+              jq -e --arg version "${EXPECTED_STATE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            else
+              jq -e --arg version "${EXPECTED_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+              jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${settings}" >/dev/null
+            fi
+          done
+
+          if [ "${{ inputs.mode }}" = "activate_custom_domain" ]; then
+            test "${domain_count}" -eq 0
+            python - <<'PY'
+          import socket
+          import sys
+          host = "local-agent.padiem.net"
+          try:
+              socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+          except socket.gaierror:
+              print("PUBLIC_DNS_RESOLUTION=NXDOMAIN_OR_UNRESOLVED")
+              sys.exit(0)
+          raise SystemExit("Refusing activation: public hostname already resolves")
+          PY
+          fi
+
+          if [ "${{ inputs.mode }}" = "rollback_custom_domain" ]; then
+            test "${domain_count}" -eq 1
+          fi
+
+          echo "DEPLOYED_VERSION_PIN=PASS"
+          echo "PRIVATE_WORKER_BOUNDARY=PASS"
+          echo "EDGE_SERVICE_BINDING=PASS"
+          echo "CLOUDFLARE_READONLY=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  local-route-evidence:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_custom_domain' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require fresh #1828 Wrangler-OAuth route audit evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_ID: ${{ inputs.local_preflight_comment_id }}
+        run: |
+          set -euo pipefail
+          [[ "${COMMENT_ID}" =~ ^[0-9]+$ ]]
+          comment="${RUNNER_TEMP}/local-route-comment.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${COMMENT_ID}" \
+            -o "${comment}"
+
+          jq -e --arg issue "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/1828" '.issue_url == $issue' "${comment}" >/dev/null
+          jq -e --arg owner "${GITHUB_REPOSITORY_OWNER}" '.user.login == $owner' "${comment}" >/dev/null
+          body="$(jq -r '.body' "${comment}")"
+          grep -Fq "B54_1828_LOCAL_ROUTE_PREFLIGHT" <<<"${body}"
+          grep -Fq "FRESH_MAIN_SHA = ${TARGET_SHA}" <<<"${body}"
+          grep -Fq "PUBLIC_HOSTNAME = ${PUBLIC_HOSTNAME}" <<<"${body}"
+          grep -Fq "WORKER_ROUTES_READ = PASS" <<<"${body}"
+          grep -Fq "PADIEM_ZONE_WORKER_ROUTE_COUNT = 0" <<<"${body}"
+          grep -Fq "HOST_ROUTE_COLLISION = NO" <<<"${body}"
+          grep -Fq "PUBLIC_DNS = NXDOMAIN" <<<"${body}"
+          grep -Fq "PRIVATE_BASELINE = PASS" <<<"${body}"
+          grep -Fq "PRODUCTION_MUTATION = 0" <<<"${body}"
+
+          created_at="$(jq -r '.created_at' "${comment}")"
+          created_epoch="$(date -u -d "${created_at}" +%s)"
+          now_epoch="$(date -u +%s)"
+          age="$((now_epoch - created_epoch))"
+          test "${age}" -ge 0
+          test "${age}" -le 1800
+          echo "FRESH_LOCAL_ROUTE_AUDIT=PASS"
+
+  activate-custom-domain:
+    needs: [source-contract, cloudflare-readonly, local-route-evidence]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_custom_domain' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Require explicit activation authorization and exact current main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          DOMAIN_STATE: ${{ needs.cloudflare-readonly.outputs.candidate_domain_state }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ACTIVATE_PADIEM_LOCAL_AGENT_PUBLIC_INGRESS_LOCAL_AGENT_PADIEM_NET"
+          test "${DOMAIN_STATE}" = "absent"
+          main="${RUNNER_TEMP}/main.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" \
+            -o "${main}"
+          jq -e --arg sha "${TARGET_SHA}" '.commit.sha == $sha' "${main}" >/dev/null
+          echo "PREMUTATION_EXACT_MAIN=PASS"
+
+      - name: Fail-closed recheck immediately before Custom Domain attach
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains-premutation.json"
+          state_sub="${RUNNER_TEMP}/state-sub-premutation.json"
+          edge_sub="${RUNNER_TEMP}/edge-sub-premutation.json"
+          edge_settings="${RUNNER_TEMP}/edge-settings-premutation.json"
+          state_deployments="${RUNNER_TEMP}/state-deployments-premutation.json"
+          edge_deployments="${RUNNER_TEMP}/edge-deployments-premutation.json"
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          test "$(jq --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length' "${domains}")" -eq 0
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${state_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${edge_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${edge_settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/deployments" -o "${state_deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/deployments" -o "${edge_deployments}"
+
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${edge_settings}" >/dev/null
+          jq -e --arg version "${EXPECTED_STATE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${state_deployments}" >/dev/null
+          jq -e --arg version "${EXPECTED_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${edge_deployments}" >/dev/null
+
+          python - <<'PY'
+          import socket
+          try:
+              socket.getaddrinfo("local-agent.padiem.net", 443, type=socket.SOCK_STREAM)
+          except socket.gaierror:
+              raise SystemExit(0)
+          raise SystemExit("Refusing activation: hostname began resolving before mutation")
+          PY
+          echo "PREMUTATION_PRIVATE_BOUNDARY=PASS"
+
+      - name: Attach exact Custom Domain to existing edge Worker
+        id: attach
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/attach-domain.json"
+          payload="$(jq -nc --arg hostname "${PUBLIC_HOSTNAME}" --arg service "${EDGE_WORKER}" --arg zone_name "${ZONE_NAME}" '{hostname:$hostname,service:$service,zone_name:$zone_name}')"
+          curl -fsS \
+            -X PUT \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "${payload}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${response}"
+          jq -e --arg hostname "${PUBLIC_HOSTNAME}" --arg service "${EDGE_WORKER}" '.success == true and .result.hostname == $hostname and .result.service == $service' "${response}" >/dev/null
+          domain_id="$(jq -r '.result.id' "${response}")"
+          test -n "${domain_id}"
+          echo "domain_id=${domain_id}" >> "${GITHUB_OUTPUT}"
+          echo "CUSTOM_DOMAIN_ATTACH=SUCCESS"
+          echo "WORKER_REDEPLOY=NO"
+          echo "DURABLE_OBJECT_MUTATION=NO"
+
+      - name: Read back exact public boundary and run bounded unauthenticated HTTPS smoke
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          ready=no
+          for _ in $(seq 1 60); do
+            domains="${RUNNER_TEMP}/domains-after.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+            count="$(jq --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length' "${domains}")"
+            if [ "${count}" -eq 1 ]; then
+              ready=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${ready}" = yes
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+
+          smoke=no
+          for _ in $(seq 1 60); do
+            get_body="${RUNNER_TEMP}/get-session.json"
+            get_code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${get_body}" -w '%{http_code}' "https://${PUBLIC_HOSTNAME}/session" || true)"
+            if [ "${get_code}" = "405" ] && jq -e '.ok == false and .error.code == "local_agent_http_post_required"' "${get_body}" >/dev/null 2>&1; then
+              smoke=yes
+              break
+            fi
+            sleep 5
+          done
+          test "${smoke}" = yes
+
+          missing_body="${RUNNER_TEMP}/missing-route.json"
+          missing_code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${missing_body}" -w '%{http_code}' -X POST -H 'Content-Type: application/json' --data '{}' "https://${PUBLIC_HOSTNAME}/not-a-device-route")"
+          test "${missing_code}" = "404"
+          jq -e '.ok == false and .error.code == "local_agent_http_route_not_found"' "${missing_body}" >/dev/null
+
+          auth_body="${RUNNER_TEMP}/unauth-session.json"
+          auth_code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${auth_body}" -w '%{http_code}' -X POST -H 'Content-Type: application/json' --data '{}' "https://${PUBLIC_HOSTNAME}/session")"
+          test "${auth_code}" = "401"
+          jq -e '.ok == false and .error.code == "local_agent_http_auth_required"' "${auth_body}" >/dev/null
+
+          state_sub="${RUNNER_TEMP}/state-sub-after.json"
+          edge_sub="${RUNNER_TEMP}/edge-sub-after.json"
+          edge_settings="${RUNNER_TEMP}/edge-settings-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${state_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${edge_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${edge_settings}"
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${edge_settings}" >/dev/null
+
+          echo "PUBLIC_CUSTOM_DOMAIN_READBACK=PASS"
+          echo "PUBLIC_HTTPS_BOUNDARY_SMOKE=PASS"
+          echo "PRIVATE_STATE_WORKER_PUBLIC=NO"
+          echo "WORKERS_DEV=NO"
+          echo "PREVIEW_URLS=NO"
+          echo "WINDOWS_LIVE_CANARY=NO"
+          echo "USER_ROLLOUT=NO"
+          echo "PRODUCTION_READY=NO"
+
+  rollback-custom-domain:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'rollback_custom_domain' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Require explicit rollback authorization and exact current main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          DOMAIN_STATE: ${{ needs.cloudflare-readonly.outputs.candidate_domain_state }}
+          DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ROLLBACK_PADIEM_LOCAL_AGENT_PUBLIC_INGRESS_LOCAL_AGENT_PADIEM_NET"
+          test "${DOMAIN_STATE}" = "present_edge"
+          test -n "${DOMAIN_ID}"
+          main="${RUNNER_TEMP}/main.json"
+          curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" -o "${main}"
+          jq -e --arg sha "${TARGET_SHA}" '.commit.sha == $sha' "${main}" >/dev/null
+          echo "ROLLBACK_EXACT_MAIN=PASS"
+
+      - name: Detach only the exact Custom Domain
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/detach-domain.json"
+          curl -fsS \
+            -X DELETE \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains/${DOMAIN_ID}" \
+            -o "${response}"
+          jq -e '.success == true' "${response}" >/dev/null
+
+          for _ in $(seq 1 30); do
+            domains="${RUNNER_TEMP}/domains-rollback.json"
+            curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+            count="$(jq --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
+            if [ "${count}" -eq 0 ]; then
+              break
+            fi
+            sleep 2
+          done
+          test "${count}" -eq 0
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+
+          state_sub="${RUNNER_TEMP}/state-sub-rollback.json"
+          edge_sub="${RUNNER_TEMP}/edge-sub-rollback.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${state_sub}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${edge_sub}"
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
+
+          echo "CUSTOM_DOMAIN_DETACH=SUCCESS"
+          echo "STATE_WORKER_DELETED=NO"
+          echo "EDGE_WORKER_DELETED=NO"
+          echo "DURABLE_OBJECT_DELETED=NO"
+          echo "WORKER_REDEPLOY=NO"
+          echo "WINDOWS_LIVE_CANARY=NO"
+          echo "PRODUCTION_READY=NO"
