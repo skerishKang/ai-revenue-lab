@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from padiem_ai_core import OrchestrationResult
+from padiem_ai_core.orchestration import OrchestrationResult
 
 from app.agent_skill_authority import TrustedAgentSkillSelection
 
