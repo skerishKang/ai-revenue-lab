@@ -30,6 +30,7 @@ from app.cloudflare_transport import (
 from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
 from app.identity_enforcement import authenticate_request
+from app.memory_service import MEMORY_PATH, MemoryRetrievalEngineService
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -177,6 +178,19 @@ def _authenticate_non_health_request(env: Any, headers: Any, body: bytes) -> Res
     return None
 
 
+def _memory_service_for_env(env: Any) -> MemoryRetrievalEngineService:
+    """Compose the memory read projection from server-only deployment state.
+
+    Trusted memory bindings (read authorization + product retrieval provider)
+    are deployment/code authority and are registered outside this Worker in
+    this slice. Their absence is intentional: the route then fails closed as
+    `memory_binding_unavailable` and the request wire can never substitute a
+    storage endpoint, provider or credential for the missing authority.
+    """
+
+    return MemoryRetrievalEngineService(bindings={})
+
+
 def _engine_services_for_env(env: Any) -> EngineServices:
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
@@ -201,6 +215,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 execution_runtime_factory=unavailable_factory,
                 b14_service_bound=False,
             ),
+            memory=_memory_service_for_env(env),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -247,6 +262,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             execution_runtime_factory=runtime_factory,
             b14_service_bound=True,
         ),
+        memory=_memory_service_for_env(env),
     )
 
 
@@ -357,6 +373,7 @@ class Default(WorkerEntrypoint):
             STREAM_PATH,
             "/internal/v1/execute",
             RESEARCH_PATH,
+            MEMORY_PATH,
         } | orchestration_paths
         if path not in allowed_paths:
             result = ServiceResponse(
@@ -391,6 +408,15 @@ class Default(WorkerEntrypoint):
 
         if path == RESEARCH_PATH:
             result = await services.research.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
+
+        if path == MEMORY_PATH:
+            result = await services.memory.handle(
                 method=method,
                 path=path,
                 content_type=content_type,

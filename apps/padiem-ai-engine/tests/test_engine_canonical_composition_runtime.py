@@ -138,6 +138,7 @@ def test_both_entrypoints_compose_full_named_bundle_never_tuples(identity_module
     from app.orchestration_idempotency_service import (
         CanonicalIdempotencyOrchestrationEngineService,
     )
+    from app.memory_service import MemoryRetrievalEngineService
     from app.service import EngineService
     from app.streaming_service import StreamingEngineService
     from app.web_research_service import WebResearchEngineService
@@ -151,6 +152,8 @@ def test_both_entrypoints_compose_full_named_bundle_never_tuples(identity_module
         assert isinstance(services.completed, EngineService)
         assert isinstance(services.streaming, StreamingEngineService)
         assert isinstance(services.research, WebResearchEngineService)
+        assert isinstance(services.memory, MemoryRetrievalEngineService)
+        assert services.memory.bound_app_ids == ()
 
     legacy_services = legacy._engine_services_for_env(unbound_env)
     identity_services = identity._engine_services_for_env(unbound_env)
@@ -190,6 +193,7 @@ def test_health_route_serves_without_caller_credential(identity_modules) -> None
         ("/internal/v1/execute", "b14_service_unavailable"),
         ("/internal/v1/research", "b14_service_unavailable"),
         ("/internal/v1/orchestrate", "b14_service_unavailable"),
+        ("/internal/v1/memory/retrieve", "memory_binding_unavailable"),
     ],
 )
 def test_authenticated_routes_reach_named_services_without_arity_failure(
@@ -229,3 +233,61 @@ def test_unauthorized_app_for_authenticated_caller_fails_closed(identity_modules
 
     assert response.status == 403
     assert _body(response)["error"]["code"] == "service_app_not_authorized"
+
+
+def test_memory_route_serves_from_bound_service_in_canonical_entrypoint(identity_modules) -> None:
+    from dataclasses import replace
+
+    from padiem_ai_core.memory import MemoryNamespace, MemoryScope
+    from padiem_ai_core.memory_read import MemoryReadAuthorization
+    from padiem_ai_core.retrieval import RetrievedItem
+
+    from app.memory_service import EngineMemoryBinding, MemoryRetrievalEngineService
+
+    _legacy, identity = identity_modules
+
+    class _Provider:
+        async def retrieve(self, request: Any) -> Any:
+            return (
+                RetrievedItem(
+                    id="m-1",
+                    namespace=request.namespaces[0],
+                    source_type="user_note",
+                    provider="fixture-store",
+                    source_ref="private-ref-1",
+                    content="stored preference",
+                ),
+            )
+
+    namespace = MemoryNamespace(app_id=ALLOWED_APP, scope=MemoryScope.USER, subject_id="u-1")
+    memory = MemoryRetrievalEngineService(
+        bindings={
+            ALLOWED_APP: EngineMemoryBinding(
+                authorization=MemoryReadAuthorization(
+                    app_id=ALLOWED_APP, readable_namespaces=(namespace,)
+                ),
+                provider=_Provider(),
+            )
+        }
+    )
+    env = _identity_env()
+    base = identity._engine_services_for_env(env)
+    entry = _entry(identity, env)
+    entry.engine_services_factory = lambda _env: replace(base, memory=memory)
+
+    body = json.dumps(
+        {
+            "app_id": ALLOWED_APP,
+            "query": "what does the user prefer?",
+            "namespaces": [{"scope": "user", "subject_id": "u-1"}],
+        }
+    ).encode("utf-8")
+    response = asyncio.run(entry.fetch(_Request("/internal/v1/memory/retrieve", body=body)))
+
+    assert response.status == 200
+    payload = _body(response)
+    assert payload["ok"] is True
+    assert payload["trust"] == "untrusted_reference"
+    assert payload["retrieval"]["item_count"] == 1
+    assert "private-ref-1" not in json.dumps(payload)
+    assert "stored preference" not in json.dumps(payload)
