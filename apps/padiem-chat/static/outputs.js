@@ -297,7 +297,13 @@
 
   async function deleteOutput() {
     if (!activeOutput || !outputsReady) return;
-    if (!window.confirm("이 저장한 답변을 삭제할까요? 원래 대화는 삭제되지 않습니다.")) return;
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "저장한 답변을 삭제할까요?",
+      message: "저장한 답변만 삭제합니다. 원래 대화는 삭제되지 않습니다.",
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
+    if (!confirmed) return;
     outputDeleteButton.disabled = true;
     try {
       const response = await fetch(`/api/outputs/${encodeURIComponent(activeOutput.id)}`, { method: "DELETE", headers: { "Accept": "application/json" } });

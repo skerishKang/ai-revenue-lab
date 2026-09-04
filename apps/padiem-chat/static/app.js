@@ -533,7 +533,12 @@
   }
   async function deleteProjectFile(fileId, name) {
     if (!editingProjectId || !authState.project_files_ready) return;
-    const confirmed = window.confirm(`‘${name}’ 파일을 프로젝트에서 삭제할까요?`);
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "프로젝트 파일을 삭제할까요?",
+      message: `‘${name}’ 파일을 이 프로젝트에서 삭제합니다. 삭제한 파일은 복구할 수 없습니다.`,
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
@@ -653,9 +658,12 @@
     if (!editingProjectId || !projectsReady || !authState.authenticated || inFlight) return;
     const project = projectById(editingProjectId);
     if (!project) return;
-    const confirmed = window.confirm(
-      `‘${project.name}’ 프로젝트를 삭제할까요?\n프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 되돌릴 수 없습니다.`
-    );
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "프로젝트를 삭제할까요?",
+      message: `‘${project.name}’ 프로젝트를 삭제합니다. 프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 복구할 수 없습니다.`,
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
     if (!confirmed) return;
     const deletingId = editingProjectId;
     const deletingActiveProject = Boolean(activeProject && activeProject.id === deletingId);
@@ -765,7 +773,12 @@
   }
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
-    const confirmed = window.confirm(`‘${title}’ 대화를 삭제할까요?\n삭제한 대화는 되돌릴 수 없습니다.`);
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "대화를 삭제할까요?",
+      message: `‘${title}’ 대화를 삭제합니다. 삭제한 대화는 복구할 수 없습니다.`,
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {

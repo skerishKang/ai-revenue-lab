@@ -10,6 +10,13 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
+from b62_product_confirm_helpers import (
+    accept_product_confirm,
+    cancel_product_confirm,
+    install_native_dialog_guard,
+    open_product_confirm,
+)
+
 
 BASE_URL = os.environ.get("B62_OUTPUTS_QA_BASE_URL", "http://127.0.0.1:8771")
 OUT_DIR = Path(os.environ.get("B62_OUTPUTS_QA_OUT_DIR", ".tmp/b62-saved-outputs-browser-qa"))
@@ -70,11 +77,7 @@ def _request_json(route: Route) -> dict[str, Any]:
 async def _stub_fonts(page: Page, seen: set[str]) -> None:
     async def css(route: Route) -> None:
         seen.add((urlparse(route.request.url).hostname or "").lower())
-        await route.fulfill(
-            status=200,
-            content_type="text/css; charset=utf-8",
-            body="/* deterministic Saved Outputs QA font stub */\n",
-        )
+        await route.fulfill(status=200, content_type="text/css; charset=utf-8", body="/* deterministic Saved Outputs QA font stub */\n")
 
     async def font(route: Route) -> None:
         seen.add((urlparse(route.request.url).hostname or "").lower())
@@ -224,6 +227,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     state = FixtureState()
     unexpected_hosts: set[str] = set()
     stubbed_hosts: set[str] = set()
+    native_dialogs: list[str] = []
 
     def observe(request) -> None:
         host = (urlparse(request.url).hostname or "").lower()
@@ -231,6 +235,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
             unexpected_hosts.add(host)
 
     page.on("request", observe)
+    await install_native_dialog_guard(page, native_dialogs)
     await page.add_init_script(
         """
         (() => {
@@ -260,7 +265,6 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await _wait_text(page, "#messageList", ANSWER)
     for selector in (".answer-copy", ".answer-download", ".answer-save"):
         await page.locator(f"#messageList {selector}").wait_for(state="visible")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-answer-actions.png"), full_page=True)
 
     await page.locator("#messageList .answer-copy").click()
     await page.wait_for_function("expected => window.__qaClipboardWrites?.at(-1) === expected", arg=ANSWER)
@@ -283,7 +287,6 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     list_text = (await page.locator("#outputsList .output-item").inner_text()).strip()
     if list_text != saved_title:
         raise AssertionError(f"Saved Outputs list must render title only: {list_text!r} != {saved_title!r}")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-outputs-list.png"), full_page=True)
 
     await page.locator("#outputsList .output-item").click()
     await page.locator("#savedOutputDialog").wait_for(state="visible")
@@ -294,7 +297,6 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     )
     if await page.locator("#savedOutputTitleInput").input_value() != saved_title:
         raise AssertionError("saved output title did not reopen correctly")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-output-open.png"), full_page=True)
 
     await page.locator("#savedOutputCopy").click()
     await page.wait_for_function(
@@ -310,11 +312,20 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         raise AssertionError(f"unexpected rename requests: {state.output_patches!r}")
     await _wait_text(page, "#outputsList", RENAMED_TITLE)
 
-    async def accept_dialog(dialog) -> None:
-        await dialog.accept()
+    delete_button = page.locator("#savedOutputDelete")
+    if mobile:
+        box = await delete_button.bounding_box()
+        if not box or box["height"] < 44:
+            raise AssertionError(f"mobile saved-output delete target below 44px: {box}")
+    await open_product_confirm(page, delete_button, title_contains="저장한 답변을 삭제할까요?", message_contains="원래 대화는 삭제되지 않습니다")
+    await cancel_product_confirm(page, expected_focus_id="savedOutputDelete")
+    if state.output_deletes != 0 or OUTPUT_ID not in state.outputs:
+        raise AssertionError("cancel deleted Saved Output")
+    if not await page.locator("#savedOutputDialog").is_visible():
+        raise AssertionError("cancel unexpectedly closed Saved Output detail dialog")
 
-    page.once("dialog", accept_dialog)
-    await page.locator("#savedOutputDelete").click()
+    await open_product_confirm(page, delete_button, title_contains="저장한 답변을 삭제할까요?", message_contains="저장한 답변만 삭제합니다")
+    await accept_product_confirm(page)
     await page.wait_for_function("() => document.getElementById('savedOutputDialog')?.open === false", timeout=5_000)
     await page.wait_for_function(
         "() => document.querySelectorAll('#outputsList .output-item').length === 0 && document.getElementById('outputsBadge')?.textContent.trim() === '비어 있음'",
@@ -327,6 +338,8 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await _no_overflow(page, f"{label}-deleted")
     await page.screenshot(path=str(OUT_DIR / f"{label}-outputs-deleted.png"), full_page=True)
 
+    if native_dialogs:
+        raise AssertionError(f"native browser dialog used by destructive flow: {native_dialogs!r}")
     if unexpected_hosts:
         raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_hosts)}")
 
@@ -339,6 +352,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         "clipboard_writes": len(clipboard),
         "answer_download": answer_download,
         "dialog_download": dialog_download,
+        "native_dialogs": native_dialogs,
         "stubbed_static_hosts": sorted(stubbed_hosts),
         "unexpected_external_hosts": sorted(unexpected_hosts),
         "viewport": {"width": width, "height": height},
@@ -347,35 +361,28 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
 
 async def main() -> None:
     report: dict[str, Any] = {
-        "status": "RUNNING",
-        "model_selection": "DEFERRED",
-        "real_provider_calls": 0,
-        "real_google_oauth": 0,
-        "real_d1": 0,
-        "production_mutation": False,
+        "base_url": BASE_URL,
         "views": {},
+        "window_confirm_destructive_flows": 0,
+        "saved_output_delete_scope": "saved-output-only",
     }
-    report_path = OUT_DIR / "report.json"
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    try:
-        async with async_playwright() as playwright:
-            browser = await playwright.chromium.launch(headless=True)
-            try:
-                desktop = await browser.new_page(viewport={"width": 1440, "height": 1000}, accept_downloads=True)
-                report["views"]["desktop"] = await _run(desktop, label="desktop", width=1440, height=1000, mobile=False)
-                await desktop.close()
-                mobile = await browser.new_page(viewport={"width": 390, "height": 844}, accept_downloads=True)
-                report["views"]["mobile"] = await _run(mobile, label="mobile", width=390, height=844, mobile=True)
-                await mobile.close()
-            finally:
-                await browser.close()
-        report["status"] = "PASS"
-    except Exception as exc:
-        report["status"] = "FAIL"
-        report["error"] = f"{type(exc).__name__}: {exc}"
-        raise
-    finally:
-        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            for label, width, height, mobile in (
+                ("desktop", 1280, 800, False),
+                ("mobile", 390, 844, True),
+            ):
+                page = await browser.new_page(accept_downloads=True)
+                try:
+                    report["views"][label] = await _run(page, label=label, width=width, height=height, mobile=mobile)
+                finally:
+                    await page.close()
+        finally:
+            await browser.close()
+
+    (OUT_DIR / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

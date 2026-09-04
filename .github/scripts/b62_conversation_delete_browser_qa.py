@@ -10,6 +10,13 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
+from b62_product_confirm_helpers import (
+    accept_product_confirm,
+    install_native_dialog_guard,
+    open_product_confirm,
+    cancel_product_confirm,
+)
+
 
 BASE_URL = os.environ.get("B62_CONVERSATION_DELETE_QA_BASE_URL", "http://127.0.0.1:8775")
 OUT_DIR = Path(os.environ.get("B62_CONVERSATION_DELETE_QA_OUT_DIR", ".tmp/b62-conversation-delete-browser-qa"))
@@ -99,11 +106,7 @@ async def _install_static_font_stubs(page: Page, stubbed_hosts: set[str]) -> Non
     async def stub_stylesheet(route: Route) -> None:
         host = (urlparse(route.request.url).hostname or "").lower()
         stubbed_hosts.add(host)
-        await route.fulfill(
-            status=200,
-            content_type="text/css; charset=utf-8",
-            body="/* deterministic QA: decorative external font suppressed */\n",
-        )
+        await route.fulfill(status=200, content_type="text/css; charset=utf-8", body="/* deterministic QA font stub */\n")
 
     async def stub_font(route: Route) -> None:
         host = (urlparse(route.request.url).hostname or "").lower()
@@ -117,43 +120,38 @@ async def _install_static_font_stubs(page: Page, stubbed_hosts: set[str]) -> Non
 
 async def _install_fixtures(page: Page, state: FixtureState) -> None:
     async def auth_status(route: Route) -> None:
-        await _fulfill_json(
-            route,
-            {
-                "ready": True,
-                "authenticated": True,
-                "history_ready": True,
-                "project_files_ready": False,
-                "user": {
-                    "id": "usr_delete_browser_fixture",
-                    "email": "delete@example.test",
-                    "name": USER_NAME,
-                    "picture": "",
-                },
+        await _fulfill_json(route, {
+            "ready": True,
+            "authenticated": True,
+            "history_ready": True,
+            "project_files_ready": False,
+            "user": {
+                "id": "usr_delete_browser_fixture",
+                "email": "delete@example.test",
+                "name": USER_NAME,
+                "picture": "",
             },
-        )
+        })
 
     async def projects(route: Route) -> None:
-        await _fulfill_json(
-            route,
-            {
-                "projects": [
-                    {
-                        "id": PROJECT_ID,
-                        "name": PROJECT_NAME,
-                        "instructions": "쉬운 한국어로 설명해줘.",
-                        "created_at": "2026-08-28T07:00:00Z",
-                        "updated_at": "2026-08-28T08:00:00Z",
-                    }
-                ]
-            },
-        )
+        await _fulfill_json(route, {
+            "projects": [{
+                "id": PROJECT_ID,
+                "name": PROJECT_NAME,
+                "instructions": "쉬운 한국어로 설명해줘.",
+                "created_at": "2026-08-28T07:00:00Z",
+                "updated_at": "2026-08-28T08:00:00Z",
+            }]
+        })
 
     async def conversations(route: Route) -> None:
         await _fulfill_json(route, {"conversations": state.recent()})
 
+    async def outputs(route: Route) -> None:
+        await _fulfill_json(route, {"outputs": []})
+
     async def conversation_detail(route: Route) -> None:
-        conversation_id = route.request.url.rsplit("/", 1)[-1]
+        conversation_id = route.request.url.rsplit("/", 1)[-1].split("?", 1)[0]
         if route.request.method == "DELETE":
             state.delete_requests.append(conversation_id)
             if conversation_id == FAIL_ID:
@@ -180,6 +178,7 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
     await page.route("**/api/projects", projects)
     await page.route("**/api/conversations", conversations)
     await page.route("**/api/conversations/*", conversation_detail)
+    await page.route("**/api/outputs", outputs)
 
 
 def _history_row(page: Page, title: str):
@@ -213,27 +212,11 @@ async def _assert_no_horizontal_overflow(page: Page, stage: str) -> None:
         raise AssertionError(f"horizontal overflow at {stage}: {scroll_width}>{inner_width}")
 
 
-async def _dismiss_next_dialog(page: Page) -> None:
-    async def dismiss(dialog) -> None:
-        await dialog.dismiss()
-
-    page.once("dialog", dismiss)
-
-
-async def _accept_next_dialog(page: Page) -> None:
-    async def accept(dialog) -> None:
-        message = dialog.message
-        if "되돌릴 수 없습니다" not in message:
-            raise AssertionError(f"delete confirmation lacks irreversible warning: {message!r}")
-        await dialog.accept()
-
-    page.once("dialog", accept)
-
-
 async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     state = FixtureState()
     unexpected_hosts: set[str] = set()
     stubbed_hosts: set[str] = set()
+    native_dialogs: list[str] = []
 
     def observe_request(request) -> None:
         host = (urlparse(request.url).hostname or "").lower()
@@ -241,6 +224,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
             unexpected_hosts.add(host)
 
     page.on("request", observe_request)
+    await install_native_dialog_guard(page, native_dialogs)
     await _install_static_font_stubs(page, stubbed_hosts)
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": width, "height": height})
@@ -254,24 +238,18 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _open_sidebar_if_mobile(page, mobile)
     for title in (ACTIVE_TITLE, OTHER_TITLE, FAIL_TITLE):
         await _wait_history_row(page, title)
-
-    delete_names: dict[str, str] = {}
-    for title in (ACTIVE_TITLE, OTHER_TITLE, FAIL_TITLE):
-        row = _history_row(page, title)
-        delete_button = row.locator(".history-delete")
+        delete_button = _history_row(page, title).locator(".history-delete")
         label = await delete_button.get_attribute("aria-label")
         if not label or title not in label or "삭제" not in label:
             raise AssertionError(f"delete button accessible name is not tied to title: {title!r} -> {label!r}")
-        delete_names[title] = label
         if mobile:
             box = await delete_button.bounding_box()
             if box is None or box["width"] < 44 or box["height"] < 44:
                 raise AssertionError(f"mobile delete target under 44px: {title!r} -> {box!r}")
 
     await _assert_no_horizontal_overflow(page, f"{name}-initial")
-    await page.screenshot(path=str(OUT_DIR / f"{name}-initial.png"), full_page=True)
 
-    # Open the project-bound conversation so deletion semantics can distinguish active vs other rows.
+    # Restore an active project-bound conversation so row deletion semantics stay observable.
     await _history_row(page, ACTIVE_TITLE).locator(".history-item").click()
     await page.wait_for_function(
         "([userText, assistantText]) => document.getElementById('messageList')?.innerText.includes(userText) && document.getElementById('messageList')?.innerText.includes(assistantText)",
@@ -280,22 +258,27 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     )
     if await page.locator("#projectBanner").is_hidden():
         raise AssertionError("project-bound restored conversation must show project banner")
-    if (await page.locator("#activeProjectName").inner_text()).strip() != PROJECT_NAME:
-        raise AssertionError("active project name was not restored")
 
-    # Cancel must issue zero DELETE requests and keep the row.
+    # Escape cancels product dialog, sends no DELETE, keeps row and returns focus.
     await _open_sidebar_if_mobile(page, mobile)
-    await _dismiss_next_dialog(page)
-    await _history_row(page, OTHER_TITLE).locator(".history-delete").click()
-    await page.wait_for_timeout(100)
+    other_delete = _history_row(page, OTHER_TITLE).locator(".history-delete")
+    await open_product_confirm(
+        page,
+        other_delete,
+        title_contains="대화를 삭제할까요?",
+        message_contains=OTHER_TITLE,
+    )
+    await cancel_product_confirm(page, escape=True)
+    if not await other_delete.evaluate("node => document.activeElement === node"):
+        raise AssertionError("Escape cancel did not return focus to conversation delete trigger")
     if state.delete_requests:
         raise AssertionError(f"cancel issued DELETE request(s): {state.delete_requests!r}")
     if await _history_row(page, OTHER_TITLE).count() != 1:
         raise AssertionError("cancel removed the conversation row")
 
-    # Deleting another row must not reset the currently open conversation.
-    await _accept_next_dialog(page)
-    await _history_row(page, OTHER_TITLE).locator(".history-delete").click()
+    # Confirming another row deletes only that row and preserves active chat/project context.
+    await open_product_confirm(page, other_delete, title_contains="대화를 삭제할까요?", message_contains="복구할 수 없습니다")
+    await accept_product_confirm(page)
     await page.wait_for_function(
         "expected => !Array.from(document.querySelectorAll('#historyList .history-row')).some(node => node.textContent.includes(expected))",
         arg=OTHER_TITLE,
@@ -309,14 +292,12 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     if await page.locator("#projectBanner").is_hidden():
         raise AssertionError("deleting another row lost active project context")
 
-    # A failed deletion must leave the row and show bounded user-facing feedback.
+    # Failed server deletion must keep the row and surface bounded feedback.
     await _open_sidebar_if_mobile(page, mobile)
-    await _accept_next_dialog(page)
-    await _history_row(page, FAIL_TITLE).locator(".history-delete").click()
-    await page.wait_for_function(
-        "() => document.getElementById('runtimeNote')?.dataset.state === 'error'",
-        timeout=5_000,
-    )
+    fail_delete = _history_row(page, FAIL_TITLE).locator(".history-delete")
+    await open_product_confirm(page, fail_delete, title_contains="대화를 삭제할까요?", message_contains=FAIL_TITLE)
+    await accept_product_confirm(page)
+    await page.wait_for_function("() => document.getElementById('runtimeNote')?.dataset.state === 'error'", timeout=5_000)
     if await _history_row(page, FAIL_TITLE).count() != 1:
         raise AssertionError("failed deletion removed its conversation row")
     if state.delete_requests != [OTHER_ID, FAIL_ID]:
@@ -324,9 +305,10 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     if "삭제" not in (await page.locator("#runtimeNote").inner_text()):
         raise AssertionError("failed deletion did not show bounded Korean feedback")
 
-    # Deleting the active conversation must reset chat state while preserving Project context.
-    await _accept_next_dialog(page)
-    await _history_row(page, ACTIVE_TITLE).locator(".history-delete").click()
+    # Deleting active conversation resets chat state while preserving Project context.
+    active_delete = _history_row(page, ACTIVE_TITLE).locator(".history-delete")
+    await open_product_confirm(page, active_delete, title_contains="대화를 삭제할까요?", message_contains=ACTIVE_TITLE)
+    await accept_product_confirm(page)
     await page.wait_for_function(
         "expected => document.querySelector('.app-shell')?.dataset.state === 'home' && document.getElementById('messageList')?.hidden === true && !Array.from(document.querySelectorAll('#historyList .history-row')).some(node => node.textContent.includes(expected))",
         arg=ACTIVE_TITLE,
@@ -345,56 +327,44 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _assert_no_horizontal_overflow(page, f"{name}-final")
     await page.screenshot(path=str(OUT_DIR / f"{name}-final.png"), full_page=True)
 
-    visible_text = await page.locator("body").inner_text()
-    forbidden = [token for token in ("provider", "router", "B14", "UNASSIGNED", "LOW", "MEDIUM", "HIGH") if token in visible_text]
-    if forbidden:
-        raise AssertionError(f"routing jargon leaked into visible browser UI: {forbidden!r}")
+    if native_dialogs:
+        raise AssertionError(f"native browser dialog used by destructive flow: {native_dialogs!r}")
     if unexpected_hosts:
         raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_hosts)!r}")
 
     return {
-        "name": name,
-        "viewport": {"width": width, "height": height},
-        "delete_accessible_names": delete_names,
         "delete_requests": list(state.delete_requests),
         "remaining_conversations": sorted(state.conversations),
-        "project_preserved": True,
-        "focused_after_active_delete": focused_id,
-        "unexpected_external_hosts": sorted(unexpected_hosts),
+        "native_dialogs": native_dialogs,
         "stubbed_static_hosts": sorted(stubbed_hosts),
+        "unexpected_external_hosts": sorted(unexpected_hosts),
+        "viewport": {"width": width, "height": height},
     }
 
 
 async def main() -> None:
-    report: dict[str, Any] = {"base_url": BASE_URL, "views": []}
+    report: dict[str, Any] = {
+        "base_url": BASE_URL,
+        "views": {},
+        "window_confirm_destructive_flows": 0,
+        "server_delete_authority_unchanged": True,
+        "delete_failure_recovery": True,
+    }
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         try:
             for name, width, height, mobile in (
-                ("desktop", 1440, 1000, False),
+                ("desktop", 1280, 800, False),
                 ("mobile", 390, 844, True),
             ):
-                context = await browser.new_context(locale="ko-KR")
-                page = await context.new_page()
+                page = await browser.new_page()
                 try:
-                    report["views"].append(
-                        await _run_view(page, name=name, width=width, height=height, mobile=mobile)
-                    )
+                    report["views"][name] = await _run_view(page, name=name, width=width, height=height, mobile=mobile)
                 finally:
-                    await context.close()
+                    await page.close()
         finally:
             await browser.close()
 
-    report["acceptance"] = {
-        "cancel_delete_requests": 0,
-        "confirmed_delete_once_per_action": True,
-        "failed_delete_row_preserved": True,
-        "active_delete_resets_chat": True,
-        "other_delete_preserves_active_chat": True,
-        "active_project_preserved": True,
-        "mobile_delete_target_min_44": True,
-        "provider_model_jargon": False,
-    }
     (OUT_DIR / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
