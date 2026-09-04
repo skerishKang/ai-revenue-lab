@@ -1,0 +1,93 @@
+name: B54 1828 Dispatch Authorized Public Ingress
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/b54-1828-dispatch-authorized-public-ingress.yml"
+
+permissions:
+  contents: read
+  issues: read
+  actions: write
+
+jobs:
+  dispatch-authorized-activation:
+    if: ${{ github.event.pull_request.head.ref == 'ops/b54-1828-dispatch-public-ingress' && github.event.pull_request.base.ref == 'main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      EXPECTED_MAIN_SHA: 0a29ad403b3013f0f03199cb01459ae141df44e2
+      AUTHORIZATION_COMMENT_ID: "5535901392"
+      PREFLIGHT_COMMENT_ID: "5535926260"
+      PUBLIC_HOSTNAME: local-agent.padiem.net
+      CONFIRMATION: ACTIVATE_PADIEM_LOCAL_AGENT_PUBLIC_INGRESS_LOCAL_AGENT_PADIEM_NET
+    steps:
+      - name: Verify exact main and recorded owner authorization
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          main="${RUNNER_TEMP}/main.json"
+          auth="${RUNNER_TEMP}/auth.json"
+          preflight="${RUNNER_TEMP}/preflight.json"
+
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" \
+            -o "${main}"
+          jq -e --arg sha "${EXPECTED_MAIN_SHA}" '.commit.sha == $sha' "${main}" >/dev/null
+
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${AUTHORIZATION_COMMENT_ID}" \
+            -o "${auth}"
+          jq -e --arg issue "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/1828" '.issue_url == $issue' "${auth}" >/dev/null
+          jq -e --arg owner "${GITHUB_REPOSITORY_OWNER}" '.user.login == $owner and .author_association == "OWNER"' "${auth}" >/dev/null
+          auth_body="$(jq -r '.body' "${auth}")"
+          grep -Fq "Explicit Production authorization — public Local Agent ingress" <<<"${auth_body}"
+          grep -Fq "Authorization is bounded to the already-reviewed Custom Domain gate merged at main \`${EXPECTED_MAIN_SHA}\`" <<<"${auth_body}"
+          grep -Fq "PUBLIC_HOSTNAME = ${PUBLIC_HOSTNAME}" <<<"${auth_body}"
+          grep -Fq "${CONFIRMATION}" <<<"${auth_body}"
+
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${PREFLIGHT_COMMENT_ID}" \
+            -o "${preflight}"
+          jq -e --arg issue "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/1828" '.issue_url == $issue' "${preflight}" >/dev/null
+          jq -e --arg owner "${GITHUB_REPOSITORY_OWNER}" '.user.login == $owner and .author_association == "OWNER"' "${preflight}" >/dev/null
+          preflight_body="$(jq -r '.body' "${preflight}")"
+          grep -Fq "B54_1828_LOCAL_ROUTE_PREFLIGHT" <<<"${preflight_body}"
+          grep -Fq "FRESH_MAIN_SHA = ${EXPECTED_MAIN_SHA}" <<<"${preflight_body}"
+          grep -Fq "PUBLIC_HOSTNAME = ${PUBLIC_HOSTNAME}" <<<"${preflight_body}"
+          grep -Fq "FINAL_DISPOSITION = READY_FOR_CENTRAL_CUSTOM_DOMAIN_ACTIVATION" <<<"${preflight_body}"
+
+          echo "DISPATCH_AUTHORITY_PREFLIGHT=PASS"
+          echo "CLOUDFLARE_MUTATION_FROM_DISPATCHER=0"
+
+      - name: Dispatch canonical public ingress activation gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          payload="$(jq -nc \
+            --arg ref main \
+            --arg mode activate_custom_domain \
+            --arg target_sha "${EXPECTED_MAIN_SHA}" \
+            --arg comment_id "${PREFLIGHT_COMMENT_ID}" \
+            --arg confirmation "${CONFIRMATION}" \
+            '{ref:$ref,inputs:{mode:$mode,target_sha:$target_sha,local_preflight_comment_id:$comment_id,confirmation:$confirmation}}')"
+          curl -fsS \
+            -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            --data "${payload}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/b54-local-agent-public-ingress-gate.yml/dispatches"
+          echo "CANONICAL_ACTIVATION_DISPATCH=REQUESTED"
+          echo "DISPATCHER_CLOUDFLARE_MUTATION=0"
