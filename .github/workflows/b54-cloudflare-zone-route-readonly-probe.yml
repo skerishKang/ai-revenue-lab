@@ -1,0 +1,141 @@
+name: B54 Cloudflare Zone Route Read-only Probe
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-cloudflare-zone-route-readonly-probe.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-cloudflare-zone-route-readonly-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-cloudflare-zone-route-readonly-probe
+  cancel-in-progress: false
+
+env:
+  ZONE_NAME: padiem.net
+  PUBLIC_HOSTNAME: oauth.padiem.net
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate immutable GET-only probe contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/b54-cloudflare-zone-route-readonly-probe.yml')
+          text = path.read_text(encoding='utf-8')
+          forbidden = [
+              '-X ' + 'POST',
+              '-X ' + 'PUT',
+              '-X ' + 'PATCH',
+              '-X ' + 'DELETE',
+              'pywrangler ' + 'deploy',
+              'wrangler ' + 'deploy',
+          ]
+          for token in forbidden:
+              if token in text:
+                  raise SystemExit(f'Forbidden mutation token present: {token}')
+          required = [
+              '/workers/domains',
+              '/workers/routes',
+              'PRODUCTION_MUTATION=0',
+              'DIRECT_ZONE_ROUTE_READ=PASS',
+              'DIRECT_ZONE_ROUTE_HTTP_STATUS=',
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f'Missing required read-only token: {token}')
+          print('GET_ONLY_SOURCE_CONTRACT=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+      - name: Require exact current main on push
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Derive padiem.net zone id from Worker Custom Domains and read routes
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+
+          zone_ids="$(jq -r --arg zone "${ZONE_NAME}" '
+            [.result[]
+             | select((.zone_name? == $zone) or (.hostname? == $zone) or (.hostname? | endswith("." + $zone)))
+             | .zone_id?
+             | select(type == "string" and length > 0)]
+            | unique[]?' "${domains}")"
+          zone_count="$(printf '%s\n' "${zone_ids}" | sed '/^$/d' | wc -l | tr -d ' ')"
+          test "${zone_count}" -eq 1
+          zone_id="$(printf '%s\n' "${zone_ids}" | sed '/^$/d' | head -n1)"
+          test -n "${zone_id}"
+          echo "PADIEM_ZONE_ID_DERIVED_FROM_WORKER_DOMAIN=YES"
+
+          routes="${RUNNER_TEMP}/routes.json"
+          code="$(curl -sS -o "${routes}" -w '%{http_code}' "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" || true)"
+          echo "DIRECT_ZONE_ROUTE_HTTP_STATUS=${code}"
+          if [ "${code}" != "200" ]; then
+            jq -c '{success,errors:[.errors[]? | {code,message}]}' "${routes}" 2>/dev/null || true
+            echo "PRODUCTION_MUTATION=0"
+            exit 1
+          fi
+          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+
+          python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
+          import json
+          import sys
+          routes_path, host = sys.argv[1:]
+          data = json.load(open(routes_path, encoding='utf-8'))
+          collisions = []
+          for row in data.get('result', []):
+              pattern = str(row.get('pattern', ''))
+              if host in pattern or '*.padiem.net' in pattern or '*padiem.net' in pattern:
+                  collisions.append(pattern)
+          if collisions:
+              raise SystemExit('OAuth hostname Worker route collision: ' + ', '.join(collisions))
+          print('WORKER_ROUTE_COLLISION=NO')
+          PY
+
+          echo "DIRECT_ZONE_ROUTE_READ=PASS"
+          echo "PRODUCTION_MUTATION=0"
