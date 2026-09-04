@@ -16,10 +16,9 @@ import re
 import secrets
 from typing import Any
 
-from padiem_ai_core import (
-    ExecutionContext,
-    ExecutionRequest,
-    IdempotencyConflictError,
+from padiem_ai_core.execution_context import ExecutionContext, IdempotencyConflictError
+from padiem_ai_core.execution_runtime import ExecutionRequest
+from padiem_ai_core.orchestration import (
     OrchestrationError,
     OrchestrationRequest,
     OrchestrationRunner,
