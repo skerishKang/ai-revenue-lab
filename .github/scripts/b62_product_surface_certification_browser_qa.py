@@ -227,26 +227,24 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     if root_theme != theme:
         raise AssertionError(f"theme mismatch at {label}: {root_theme!r}")
 
-    required_visible = (
-        "#newChatButton",
-        ".model-pill",
-        "#composerForm",
-        "#messageInput",
-        "#attachmentButton",
-    )
-    for selector in required_visible:
+    for selector in (".model-pill", "#composerForm", "#messageInput", "#attachmentButton"):
         if not await page.locator(selector).is_visible():
             raise AssertionError(f"required product surface hidden at {label}: {selector}")
 
     if viewport_name == "mobile":
         await page.locator("#mobileMenu").click()
         await page.wait_for_function("() => document.querySelector('.app-shell')?.classList.contains('sidebar-open')")
+        if not await page.locator("#newChatButton").is_visible():
+            raise AssertionError(f"new chat hidden in mobile drawer at {label}")
         if not await page.locator(".sidebar-account").is_visible():
             raise AssertionError(f"guest account surface not visible in mobile drawer at {label}")
         await page.locator("#mobileClose").click()
         await page.wait_for_function("() => !document.querySelector('.app-shell')?.classList.contains('sidebar-open')")
-    elif not await page.locator(".sidebar-account").is_visible():
-        raise AssertionError(f"guest account surface not visible on desktop at {label}")
+    else:
+        if not await page.locator("#newChatButton").is_visible():
+            raise AssertionError(f"new chat hidden on desktop at {label}")
+        if not await page.locator(".sidebar-account").is_visible():
+            raise AssertionError(f"guest account surface not visible on desktop at {label}")
 
     account_text = (await page.locator(".sidebar-account").inner_text()).strip()
     if "게스트" not in account_text or "로그인" not in account_text:
@@ -304,16 +302,23 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
         raise AssertionError(f"expected exactly one local mock chat request at {label}, saw {len(requests)}")
     await page.wait_for_function("() => document.activeElement?.id === 'messageInput'")
 
-    await page.locator("#newChatButton").click()
+    touch_targets = {
+        "attachment": await _target_height(page, "#attachmentButton", label),
+        "send": await _target_height(page, "#sendButton", label),
+    }
+    if viewport_name == "mobile":
+        await page.locator("#mobileMenu").click()
+        await page.wait_for_function("() => document.querySelector('.app-shell')?.classList.contains('sidebar-open')")
+        touch_targets["new_chat"] = await _target_height(page, "#newChatButton", label)
+        await page.locator("#newChatButton").click()
+    else:
+        touch_targets["new_chat"] = await _target_height(page, "#newChatButton", label)
+        await page.locator("#newChatButton").click()
+
     await page.wait_for_function("() => document.querySelector('.app-shell')?.dataset.state === 'home'")
     if not await page.locator("#messageList").is_hidden():
         raise AssertionError(f"new chat did not restore home state at {label}")
 
-    touch_targets = {
-        "new_chat": await _target_height(page, "#newChatButton", label),
-        "attachment": await _target_height(page, "#attachmentButton", label),
-        "send": await _target_height(page, "#sendButton", label),
-    }
     await _no_overflow(page, label)
     if unexpected_hosts:
         raise AssertionError(f"unexpected external hosts at {label}: {sorted(unexpected_hosts)}")
