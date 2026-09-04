@@ -8,6 +8,7 @@ import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.control_plane_identity import IdentityBridgeError
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.control_plane_identity_worker import (
     CloudflareControlPlaneIdentityAuthority,
@@ -18,7 +19,7 @@ from app.main import create_app
 
 
 SESSION_SECRET = "connector-ticket-session-secret-not-real-000000000"
-NOW = datetime(2026, 9, 4, 13, 40, tzinfo=timezone.utc)
+NOW = datetime.now(timezone.utc).replace(microsecond=0)
 
 
 def settings() -> Settings:
@@ -149,7 +150,7 @@ class FakeControlPlaneBinding:
 
 
 def cookie_for(profile_id: str) -> str:
-    return create_session_token(settings(), profile_id, now=int(NOW.timestamp()))
+    return create_session_token(settings(), profile_id)
 
 
 def app_fixture(*, with_shadow=True, binding=None):
@@ -200,6 +201,26 @@ async def test_service_binding_adapter_parses_canonical_link_session_and_private
     assert binding.calls[-1] == ("ticket", {"session_id": "sess_test", "connector_id": "gmail"})
     assert ticket.connect_ticket not in repr(ticket)
     assert ticket.safe_dict()["raw_connect_ticket"] is False
+
+
+@pytest.mark.asyncio
+async def test_service_binding_adapter_rejects_numeric_rpc_ok_status():
+    class NumericOkBinding(FakeControlPlaneBinding):
+        async def resolve_or_create_product_link(self, payload):
+            result = await super().resolve_or_create_product_link(payload)
+            result["ok"] = 1
+            return result
+
+    authority = CloudflareControlPlaneIdentityAuthority(NumericOkBinding())
+    with pytest.raises(IdentityBridgeError) as exc_info:
+        await authority.resolve_or_create_product_link(
+            product_id="b62",
+            product_user_id="usr_" + "1" * 32,
+            auth_provider="google",
+            provider_subject="provider-subject-private",
+        )
+    assert exc_info.value.status_code == 503
+    assert exc_info.value.code == "control_plane_rpc_invalid"
 
 
 @pytest.mark.asyncio
@@ -312,6 +333,7 @@ async def test_revoked_canonical_session_fails_closed_and_does_not_leak_rpc_mess
 @pytest.mark.asyncio
 async def test_login_bridge_with_service_binding_adapter_saves_authority_issued_shadow():
     access_token = "login-access-token-private"
+
     async def google_handler(request):
         if str(request.url).endswith("/token"):
             return httpx.Response(200, json={"access_token": access_token, "token_type": "Bearer", "expires_in": 3600})
