@@ -137,6 +137,15 @@ def _closed_mapping(value: Any, keys: frozenset[str], label: str) -> dict[str, A
     return value
 
 
+def _json_content_type(value: Any) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("Local Agent HTTP content-type is required")
+    media_type = value.split(";", 1)[0].strip().lower()
+    if media_type != "application/json":
+        raise ValueError("Local Agent HTTP content-type must be application/json")
+    return media_type
+
+
 @dataclass(frozen=True, slots=True)
 class TrustedLocalAgentHttpAuthContext:
     """Deployment-attested caller identity. Raw headers/tokens are intentionally outside this contract."""
@@ -602,6 +611,7 @@ class LocalAgentBrokerHttpHandler:
         *,
         method: str,
         route: str,
+        content_type: str,
         body: bytes,
         auth: TrustedLocalAgentHttpAuthContext | None,
     ) -> LocalAgentBrokerHttpResponse:
@@ -613,6 +623,10 @@ class LocalAgentBrokerHttpHandler:
             return self._error(405, "local_agent_http_post_required", "Local Agent broker routes accept POST only")
         if route not in _ROUTES:
             return self._error(404, "local_agent_http_route_not_found", "Local Agent broker route was not found")
+        try:
+            _json_content_type(content_type)
+        except (TypeError, ValueError):
+            return self._error(415, "local_agent_http_json_required", "Local Agent broker routes require application/json")
         if not isinstance(body, bytes) or not body:
             return self._error(400, "local_agent_http_invalid_json", "Local Agent broker request body is invalid")
         if len(body) > MAX_LOCAL_AGENT_HTTP_BODY_BYTES:
@@ -641,6 +655,7 @@ class LocalAgentBrokerHttpHandler:
             "deployable_http_handler_boundary": True,
             "routes": sorted(_ROUTES),
             "post_only": True,
+            "request_content_type": "application/json",
             "authenticated_context_required": True,
             "trusted_tls_attestation_required": True,
             "client_time_authority": False,
@@ -660,6 +675,7 @@ CONTROL_PLANE_BROKER_AUTHORITY_REUSED = True
 REPLAY_SEQUENCE_AUTHORITY_DUPLICATED = False
 BOUNDED_JSON = True
 CLOSED_SCHEMA = True
+REQUEST_CONTENT_TYPE_JSON_REQUIRED = True
 HEARTBEAT_SERVER_LAST_SEEN = True
 POLL_REQUEST_FINGERPRINT_PRESERVED = True
 MATERIAL_FINGERPRINT_EXACT = True
