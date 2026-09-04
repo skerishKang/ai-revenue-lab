@@ -16,6 +16,32 @@ Padiem Chat owns the consumer-facing chat, continuity, Projects, bounded user-re
 
 The B62 `LOW` / `MEDIUM` / `HIGH` product profiles are currently **UNASSIGNED** and Provider/model selection remains deferred. An unassigned product profile must not be documented or treated as a pretend executable Provider/model route.
 
+## Source readiness is not Production activation
+
+Repository code, browser controls and public readiness fields describe what B62 can support when the required bindings/configuration exist. They do **not** prove that a Production deployment has those capabilities activated.
+
+The browser uses existing public status endpoints only as a visibility projection:
+
+```text
+/health
+├─ web_tools_ready
+├─ deep_research_ready
+├─ auth_configured / history_store_bound
+├─ projects_code_ready
+├─ project_files_code_ready / project_file_store_bound
+└─ saved_outputs_code_ready / saved_output_store_bound
+
+/api/auth/status
+├─ ready
+├─ authenticated
+├─ history_ready
+└─ project_files_ready
+```
+
+Unavailable primary controls fail closed hidden. Available controls may remain visible while temporarily disabled/busy. This browser capability projection is presentation state only; it is not execution, ownership, approval or routing authority.
+
+A capability is Production-active only when the deployed Worker has the required runtime mode, service/binding/configuration and server-side readiness. Source presence alone is insufficient.
+
 ## Runtime modes
 
 ### Mock (default)
@@ -69,9 +95,57 @@ Binary documents: PDF / DOCX / PPTX / XLSX, one attachment per request,
 
 Text-document content is wrapped as **untrusted reference data** inside the server-owned additional system context. It cannot select a provider, endpoint or model, and the full document text is not returned in public response metadata or written into ordinary conversation history.
 
-PDF, DOCX, PPTX and XLSX are supported as ephemeral composer attachments through the existing completed `/api/chat` attachment contract. The browser validates the bounded raw file and sends base64 to the existing B62 server parser; the frontend does not reimplement document extraction, Core semantics, provider routing or a synthetic streaming bridge. Binary attachment content is request-scoped and is not persisted in ordinary conversation history.
+PDF, DOCX, PPTX and XLSX are supported as ephemeral composer attachments through the existing completed `/api/chat` attachment contract. The browser validates the bounded raw file and sends base64 to the existing B62 server parser; the frontend does not reimplement document extraction, Core semantics, provider routing or a synthetic attachment-streaming bridge. Binary attachment content is request-scoped and is not persisted in ordinary conversation history.
 
 Project files are a distinct persistence capability. They remain validated UTF-8 text files only; composer support for PDF/DOCX/PPTX/XLSX does **not** imply persistent binary Project-file support.
+
+## Streaming versus completed transport
+
+Transport choice is explicit and must not be inferred from the visual message lifecycle:
+
+```text
+attachment-free ordinary chat
+→ browser requestStreaming(...)
+→ /api/chat/stream (SSE)
+
+attachment-bearing composer request
+→ browser requestCompleted(...)
+→ /api/chat (JSON completion)
+
+orchestration-capable authenticated request
+→ browser checks /api/orchestration/status
+→ server /api/orchestration when applicable
+→ otherwise ordinary /api/chat/stream
+```
+
+Attachment-bearing requests do not create a synthetic attachment SSE bridge. The browser message lifecycle may render a completed response into the same conversation UI, but that does not change the underlying transport contract.
+
+The browser `chat-transport.js` remains network-oriented. Conversation/request epoch, selected attachment state and rendered message lifecycle remain app-owned rather than becoming transport authority.
+
+## Theme and locale URL authority
+
+Theme and locale are URL-authoritative browser presentation state. They are not persisted in `localStorage`, `sessionStorage` or cookies.
+
+Current theme contract:
+
+```text
+?theme=light
+?theme=dark
+?theme=cinematic
+?theme=padiem-home
+?theme=padiem-glass
+```
+
+If `theme` is absent or invalid, the current default/fallback is `padiem-glass`. Glass supports `?glass=female|male`, with `female` as the fallback variant. During active chat, Padiem Glass switches from cinematic home behavior to the calmer `reading` presentation state; this is visual state only.
+
+Current locale contract:
+
+```text
+?lang=ko
+?lang=en
+```
+
+If `lang` is absent or invalid, the fallback is Korean (`ko`). Changing language updates the URL with `history.replaceState`; browser storage is not an authority. Static controls and existing dynamic controls are localized from the same locale state, while capability-dependent controls remain hidden when unavailable.
 
 ## Auth, history, Projects and Saved Outputs
 
@@ -94,9 +168,26 @@ Saved Outputs persist only user-selected assistant answer text. Current limits a
 
 Every completed assistant answer may be copied or downloaded locally as UTF-8 `.txt`. The `저장` action and Saved Outputs sidebar are exposed only when authenticated D1 persistence is actually available. Saved Outputs are **not automatically injected into future chats, Projects or model context**. Saving an answer is therefore a library action, not hidden memory.
 
-Project/file/output access is owner-scoped server-side. Browser-supplied project, conversation, file or output identifiers never bypass ownership checks. Project instructions and file content are subordinate to core security/tool rules and do not change Business 14 routing authority.
+Project/file/output access is owner-scoped server-side. Browser-supplied project, conversation, file or output identifiers never bypass ownership checks. Project instructions and file content are subordinate to Core security/tool rules and do not change Business 14 routing authority.
 
 Voice/STT/TTS, image generation and PDF/DOCX/PPTX export are not claimed by this runtime. They remain deferred until a real, separately reviewed execution contract exists.
+
+## Orchestration and approval bridge ownership
+
+The browser may discover orchestration readiness through `/api/orchestration/status` and use product UI to present an approval pause. That UI is a projection/interaction surface, not approval authority.
+
+In the Cloudflare Worker composition, `worker.py` installs orchestration routes with `install_orchestration_routes(...)` and builds the bridge from server-side Worker bindings. The canonical-subject bridge resolves the Shared Control Plane subject for Engine requests while preserving B62's product-local `usr_*` owner key for B62 history/snapshot ownership.
+
+```text
+Browser
+→ B62 orchestration presentation + resume/cancel intent
+→ B62 server orchestration routes/bridge
+→ Padiem AI Engine / Core execution contract
+→ Shared Control Plane identity/approval authority where required
+→ Business 14 routing/provider boundary
+```
+
+The browser does not mint approval evidence, canonical subject identity, provider selection or tool execution authority. B62 must not reimplement Core/Engine/Control Plane shared semantics inside frontend state.
 
 ## Cloudflare Python Worker package
 
@@ -108,6 +199,8 @@ PADIEM_CHAT_RUNTIME_MODE=mock
 
 The deployed Worker creates the Starlette app from immutable Worker bindings through `settings_from_worker_bindings(self.env)`. It does not depend on browser-provided upstream configuration and it does not define an OpenRouter/provider-key binding.
 
+The Worker composes optional D1 stores, the fixed B14 service binding transport and orchestration routes only from server-side bindings. Base application source can therefore contain Projects, Saved Outputs, orchestration and other code while a particular deployment still reports those capabilities unavailable.
+
 Server-owned runtime configuration includes B14/web/auth settings, while the optional D1 binding name is:
 
 ```text
@@ -116,7 +209,7 @@ PADIEM_CHAT_DB
 
 No fake D1 database ID is committed to `wrangler.toml`. Without the actual binding, persistence-dependent capabilities remain unavailable rather than falling back to in-memory production state.
 
-`b14` mode without a valid B14 URL fails closed instead of silently falling back to mock.
+`b14` mode without a valid B14 URL fails closed instead of silently falling back to mock. Production live-AI readiness additionally depends on the server-owned abuse/quota gate; source code or `b14` mode alone is not sufficient.
 
 All responses receive `nosniff`, `DENY` frame policy and `no-referrer`; API, auth and health responses additionally receive `Cache-Control: no-store`.
 
