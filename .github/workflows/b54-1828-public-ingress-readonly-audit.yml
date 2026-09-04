@@ -40,7 +40,7 @@ jobs:
           jq -e --arg sha "${EXPECTED_MAIN_SHA}" '.commit.sha == $sha' "${main_json}" >/dev/null
           echo "EXACT_MAIN_SHA=PASS"
 
-      - name: Audit Cloudflare zone, routes, custom domains, DNS candidates and private Worker boundary
+      - name: Audit Cloudflare read authority matrix and private boundary
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -51,70 +51,105 @@ jobs:
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
           auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
 
+          cf_get() {
+            local url="$1"
+            local out="$2"
+            curl -sS "${auth[@]}" -o "${out}" -w '%{http_code}' "${url}"
+          }
+
           zones="${RUNNER_TEMP}/zones.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}&status=active&per_page=50" \
-            -o "${zones}"
-          jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
+          zone_http="$(cf_get "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}&status=active&per_page=50" "${zones}")"
+          if [ "${zone_http}" != "200" ] || ! jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null; then
+            echo "ZONE_READ_AUTHORITY=BLOCKED_HTTP_${zone_http}"
+            echo "PUBLIC_HOSTNAME_CANDIDATE=HOLD_AUTHORITY"
+            echo "PRODUCTION_MUTATION=0"
+            exit 0
+          fi
           zone_id="$(jq -r '.result[0].id' "${zones}")"
-          test -n "${zone_id}"
           echo "CLOUDFLARE_ZONE_AUTHORITY_AUDITED=YES"
           echo "ZONE_NAME=${ZONE_NAME}"
 
           routes="${RUNNER_TEMP}/routes.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
-            -o "${routes}"
-          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
-          echo "EXISTING_WORKER_ROUTES_AUDITED=YES"
-          echo "PADIEM_ZONE_WORKER_ROUTE_COUNT=$(jq '.result | length' "${routes}")"
-          echo "LOCAL_AGENT_EDGE_ROUTE_COUNT=$(jq --arg edge "${EDGE_WORKER}" '[.result[] | select(.script == $edge)] | length' "${routes}")"
-          jq -r '.result[] | select((.pattern | contains("agent")) or (.pattern | contains("claw")) or (.pattern | contains("broker"))) | "EXISTING_RELEVANT_ROUTE=" + .pattern + " -> " + (.script // "<none>")' "${routes}" | head -20
+          route_http="$(cf_get "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" "${routes}")"
+          if [ "${route_http}" = "200" ] && jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null; then
+            echo "WORKERS_ROUTES_READ_AUTHORITY=PASS"
+            echo "EXISTING_WORKER_ROUTES_AUDITED=YES"
+            echo "PADIEM_ZONE_WORKER_ROUTE_COUNT=$(jq '.result | length' "${routes}")"
+            echo "LOCAL_AGENT_EDGE_ROUTE_COUNT=$(jq --arg edge "${EDGE_WORKER}" '[.result[] | select(.script == $edge)] | length' "${routes}")"
+          else
+            echo "WORKERS_ROUTES_READ_AUTHORITY=BLOCKED_HTTP_${route_http}"
+          fi
 
           domains="${RUNNER_TEMP}/domains.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
-            -o "${domains}"
-          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
-          echo "CUSTOM_DOMAIN_COLLISIONS_AUDITED=YES"
-          echo "PADIEM_CUSTOM_DOMAIN_COUNT=$(jq --arg zone "${ZONE_NAME}" --arg suffix ".${ZONE_NAME}" '[.result[] | select(.hostname == $zone or (.hostname | endswith($suffix)))] | length' "${domains}")"
-          jq -r --arg zone "${ZONE_NAME}" --arg suffix ".${ZONE_NAME}" '.result[] | select(.hostname == $zone or (.hostname | endswith($suffix))) | "EXISTING_PADIEM_CUSTOM_DOMAIN=" + .hostname + " -> " + (.service // "<unknown-service>")' "${domains}" | head -30
+          domain_http="$(cf_get "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" "${domains}")"
+          if [ "${domain_http}" = "200" ] && jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null; then
+            echo "WORKERS_CUSTOM_DOMAINS_READ_AUTHORITY=PASS"
+            echo "CUSTOM_DOMAIN_COLLISIONS_AUDITED=YES"
+            echo "PADIEM_CUSTOM_DOMAIN_COUNT=$(jq --arg zone "${ZONE_NAME}" --arg suffix ".${ZONE_NAME}" '[.result[] | select(.hostname == $zone or (.hostname | endswith($suffix)))] | length' "${domains}")"
+          else
+            echo "WORKERS_CUSTOM_DOMAINS_READ_AUTHORITY=BLOCKED_HTTP_${domain_http}"
+          fi
 
           dns="${RUNNER_TEMP}/dns.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?per_page=500" \
-            -o "${dns}"
-          jq -e '.success == true and (.result | type == "array")' "${dns}" >/dev/null
-          echo "DNS_HOSTNAME_COLLISIONS_AUDITED=YES"
+          dns_http="$(cf_get "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?per_page=500" "${dns}")"
+          if [ "${dns_http}" = "200" ] && jq -e '.success == true and (.result | type == "array")' "${dns}" >/dev/null; then
+            echo "DNS_RECORDS_READ_AUTHORITY=PASS"
+            echo "DNS_HOSTNAME_COLLISIONS_AUDITED=YES"
+          else
+            echo "DNS_RECORDS_READ_AUTHORITY=BLOCKED_HTTP_${dns_http}"
+          fi
 
-          for host in agent.padiem.net claw.padiem.net local-agent.padiem.net broker.padiem.net; do
-            dns_count="$(jq --arg host "${host}" '[.result[] | select(.name == $host)] | length' "${dns}")"
-            domain_count="$(jq --arg host "${host}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
-            route_count="$(jq --arg host "${host}" '[.result[] | select(.pattern | startswith($host))] | length' "${routes}")"
-            if [ "${dns_count}" -eq 0 ] && [ "${domain_count}" -eq 0 ] && [ "${route_count}" -eq 0 ]; then
-              echo "HOST_CANDIDATE ${host}=AVAILABLE"
-            else
-              echo "HOST_CANDIDATE ${host}=OCCUPIED dns=${dns_count} custom_domain=${domain_count} route=${route_count}"
-            fi
-          done
+          all_collision_authority=yes
+          [ "${route_http}" = "200" ] || all_collision_authority=no
+          [ "${domain_http}" = "200" ] || all_collision_authority=no
+          [ "${dns_http}" = "200" ] || all_collision_authority=no
 
+          if [ "${all_collision_authority}" = yes ]; then
+            for host in agent.padiem.net claw.padiem.net local-agent.padiem.net broker.padiem.net; do
+              dns_count="$(jq --arg host "${host}" '[.result[] | select(.name == $host)] | length' "${dns}")"
+              domain_count="$(jq --arg host "${host}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
+              route_count="$(jq --arg host "${host}" '[.result[] | select(.pattern | startswith($host))] | length' "${routes}")"
+              if [ "${dns_count}" -eq 0 ] && [ "${domain_count}" -eq 0 ] && [ "${route_count}" -eq 0 ]; then
+                echo "HOST_CANDIDATE ${host}=AVAILABLE"
+              else
+                echo "HOST_CANDIDATE ${host}=OCCUPIED dns=${dns_count} custom_domain=${domain_count} route=${route_count}"
+              fi
+            done
+          else
+            echo "PUBLIC_HOSTNAME_CANDIDATE=HOLD_AUTHORITY"
+          fi
+
+          worker_boundary_ok=yes
           for worker in "${STATE_WORKER}" "${EDGE_WORKER}"; do
             subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
             settings="${RUNNER_TEMP}/${worker}-settings.json"
-            curl -fsS "${auth[@]}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" \
-              -o "${subdomain}"
-            curl -fsS "${auth[@]}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" \
-              -o "${settings}"
-            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-            echo "${worker}: PRIVATE_WORKERS_DEV_AND_PREVIEW_DISABLED=PASS"
+            sub_http="$(cf_get "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" "${subdomain}")"
+            settings_http="$(cf_get "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" "${settings}")"
+            if [ "${sub_http}" != "200" ] || [ "${settings_http}" != "200" ]; then
+              echo "${worker}: WORKER_SETTINGS_READ_AUTHORITY=BLOCKED subdomain_http=${sub_http} settings_http=${settings_http}"
+              worker_boundary_ok=no
+              continue
+            fi
+            if jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null; then
+              echo "${worker}: PRIVATE_WORKERS_DEV_AND_PREVIEW_DISABLED=PASS"
+            else
+              echo "${worker}: PRIVATE_WORKERS_DEV_AND_PREVIEW_DISABLED=FAIL"
+              worker_boundary_ok=no
+            fi
             if [ "${worker}" = "${EDGE_WORKER}" ]; then
-              jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${settings}" >/dev/null
-              echo "EDGE_SERVICE_BINDING_READBACK=PASS"
+              if jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${settings}" >/dev/null; then
+                echo "EDGE_SERVICE_BINDING_READBACK=PASS"
+              else
+                echo "EDGE_SERVICE_BINDING_READBACK=FAIL"
+                worker_boundary_ok=no
+              fi
             fi
           done
 
-          echo "PRIVATE_BASELINE_RECONFIRMED=YES"
+          if [ "${worker_boundary_ok}" = yes ]; then
+            echo "PRIVATE_BASELINE_RECONFIRMED=YES"
+          else
+            echo "PRIVATE_BASELINE_RECONFIRMED=NO_OR_UNREADABLE"
+          fi
           echo "PUBLIC_INGRESS_ACTIVATION=NOT_AUTHORIZED"
           echo "PRODUCTION_MUTATION=0"
