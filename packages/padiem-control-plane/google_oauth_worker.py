@@ -14,6 +14,7 @@ from google_oauth_ingress_runtime import (
     GoogleOAuthIngressRuntime,
     _decode_key_secret,
 )
+from google_oauth_random import production_google_oauth_token
 from google_oauth_webcrypto_sealer import GoogleOAuthWebCryptoSealer
 
 
@@ -71,6 +72,7 @@ class GoogleOAuthDurableObject(DurableObject):
                 redirect_uri=_required_env(env, "GOOGLE_OAUTH_REDIRECT_URI"),
             ),
             token_exchange=CloudflareGoogleOAuthTokenExchangePort(),
+            random_token=production_google_oauth_token,
         )
 
     async def begin_connect(self, payload: dict) -> dict:
@@ -127,6 +129,7 @@ GOOGLE_OAUTH_PRIVATE_STATE_WORKER_SOURCE = True
 SQLITE_BACKED_DURABLE_OBJECT = True
 PRIVATE_SERVICE_BINDING_RPC = True
 PUBLIC_FETCH = False
+PRODUCTION_RANDOM_SOURCE_HARDENED = True
 CONNECT_TICKET_RAW_RPC_RESPONSE = False
 AUTHORIZATION_CODE_RAW_RPC_RESPONSE = False
 ACCESS_TOKEN_RAW_RPC_RESPONSE = False
