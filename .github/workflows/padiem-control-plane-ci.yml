@@ -139,3 +139,33 @@ jobs:
           echo 'GOOGLE_OAUTH_WORKER_PACKAGING_PREFLIGHT=PASS'
           echo 'PUBLIC_HOSTNAME_CONFIGURED=NO'
           echo 'PRODUCTION_MUTATION=NO'
+
+      - name: Dry-run package canonical identity authority Worker
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/control-plane-identity-ci-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          python - <<'PY' > "${secret_file}"
+          import base64
+          import secrets
+          value = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('ascii').rstrip('=')
+          print(f'CONTROL_PLANE_IDENTITY_LOOKUP_KEY={value}')
+          PY
+          chmod 600 "${secret_file}"
+
+          cp wrangler.identity-authority.jsonc "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+            --secrets-file "${secret_file}" \
+            --dry-run \
+            --outdir "${RUNNER_TEMP}/control-plane-identity-dry-run"
+          rm -f "${temp_config}"
+
+          test -d "${RUNNER_TEMP}/control-plane-identity-dry-run"
+          echo 'CONTROL_PLANE_IDENTITY_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'PROVIDER_SUBJECT_PERSISTED=NO'
+          echo 'PUBLIC_ROUTE_CONFIGURED=NO'
+          echo 'PRODUCTION_MUTATION=NO'
