@@ -5,6 +5,7 @@ on:
     paths:
       - 'packages/padiem-control-plane/**'
       - '.github/workflows/padiem-control-plane-ci.yml'
+      - '.github/workflows/b54-local-agent-broker-production-gate.yml'
   workflow_dispatch:
 
 permissions:
@@ -58,3 +59,39 @@ jobs:
           print('DB_MUTATION=NO')
           print('LIVE_BILLING=NO')
           PY
+
+      - name: Set up Node for Python Worker packaging
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install uv for Python Worker packaging
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Dry-run package Local Agent broker Workers
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/b54-local-agent-ci-secrets.env"
+          trap 'rm -f "${secret_file}"' EXIT
+          printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "$(python -c 'import secrets; print(secrets.token_hex(32))')" > "${secret_file}"
+          chmod 600 "${secret_file}"
+
+          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
+            --config wrangler.local-agent-broker.jsonc \
+            --secrets-file "${secret_file}" \
+            --dry-run \
+            --outdir "${RUNNER_TEMP}/b54-state-dry-run"
+
+          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
+            --config wrangler.local-agent-broker-edge.jsonc \
+            --dry-run \
+            --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
+
+          test -d "${RUNNER_TEMP}/b54-state-dry-run"
+          test -d "${RUNNER_TEMP}/b54-edge-dry-run"
+          echo 'PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'PRODUCTION_MUTATION=NO'
