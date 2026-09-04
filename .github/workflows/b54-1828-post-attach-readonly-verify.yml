@@ -1,0 +1,95 @@
+name: B54 1828 Post-Attach Readonly Verify
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/b54-1828-post-attach-readonly-verify.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  post-attach-readonly-verify:
+    if: ${{ github.event.pull_request.head.ref == 'ops/b54-1828-dispatch-public-ingress' && github.event.pull_request.base.ref == 'main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      EXPECTED_MAIN_SHA: 0a29ad403b3013f0f03199cb01459ae141df44e2
+      PUBLIC_HOSTNAME: local-agent.padiem.net
+      STATE_WORKER: padiem-local-agent-broker-state
+      EDGE_WORKER: padiem-local-agent-broker-edge
+    steps:
+      - name: Verify exact main and Cloudflare readback only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+
+          main="${RUNNER_TEMP}/main.json"
+          curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" -o "${main}"
+          jq -e --arg sha "${EXPECTED_MAIN_SHA}" '.commit.sha == $sha' "${main}" >/dev/null
+
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains.json"
+          state_sub="${RUNNER_TEMP}/state-sub.json"
+          edge_sub="${RUNNER_TEMP}/edge-sub.json"
+          edge_settings="${RUNNER_TEMP}/edge-settings.json"
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${state_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${edge_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${edge_settings}"
+
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${edge_settings}" >/dev/null
+
+          echo "PUBLIC_CUSTOM_DOMAIN_READBACK=PASS"
+          echo "PRIVATE_STATE_WORKER_PUBLIC=NO"
+          echo "EDGE_SERVICE_BINDING=PASS"
+          echo "CLOUDFLARE_MUTATION=0"
+
+      - name: Wait for public DNS TLS and verify bounded unauthenticated boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          wait_for() {
+            local label="$1" expected="$2" method="$3" path="$4" data="$5" error_code="$6"
+            local body="${RUNNER_TEMP}/${label}.json"
+            local code=""
+            for _ in $(seq 1 90); do
+              if [ "${method}" = "GET" ]; then
+                code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${body}" -w '%{http_code}' "https://${PUBLIC_HOSTNAME}${path}" 2>/dev/null || true)"
+              else
+                code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${body}" -w '%{http_code}' -X "${method}" -H 'Content-Type: application/json' --data "${data}" "https://${PUBLIC_HOSTNAME}${path}" 2>/dev/null || true)"
+              fi
+              if [ "${code}" = "${expected}" ] && jq -e --arg ec "${error_code}" '.ok == false and .error.code == $ec' "${body}" >/dev/null 2>&1; then
+                echo "${label}=PASS"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "${label}=FAIL last_http_code=${code}" >&2
+            return 1
+          }
+
+          wait_for GET_SESSION_405 405 GET /session '' local_agent_http_post_required
+          wait_for UNKNOWN_POST_404 404 POST /not-a-device-route '{}' local_agent_http_route_not_found
+          wait_for UNAUTH_SESSION_401 401 POST /session '{}' local_agent_http_auth_required
+
+          echo "PUBLIC_HTTPS_BOUNDARY_SMOKE=PASS"
+          echo "WINDOWS_LIVE_CANARY=NO"
+          echo "USER_ROLLOUT=NO"
+          echo "PRODUCTION_READY=NO"
+          echo "PRODUCTION_MUTATION=0"
