@@ -505,16 +505,24 @@
       const expectedAction = auth.loaded && auth.ready ? expectedAccountActionText() : "";
       const actualAction = loginButton.textContent.trim();
       const actionDrifted = actualAction !== expectedAction;
+
+      if (previousState === "expired") {
+        if (actionDrifted) {
+          const copy = currentAccountCopy();
+          setText(loginButton, copy.signInAgain);
+          loginButton.title = copy.expiredTitle;
+        }
+        return;
+      }
+
+      if (previousState !== "signed_in") return;
       if (!accountPresentationMatchesTrustedState()) {
         // app.js may still write legacy account DOM while it owns compatibility
         // auth/history actions. Presentation is always re-projected from the
         // latest trusted /api/auth/status snapshot held here.
         syncAccountPresentation();
       }
-      // Only a signed-in action drift can represent a completed logout
-      // transition and justify one fresh server read. Guest/expired visual
-      // drift is healed locally and never creates a network refresh loop.
-      if (previousState === "signed_in" && actionDrifted) queueAuthRefresh();
+      if (actionDrifted) queueAuthRefresh();
     });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
     if (accountName) {
