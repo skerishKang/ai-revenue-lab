@@ -4,12 +4,13 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { handleIngress } from "../worker.mjs";
+import { handleIngress, MAX_ENGINE_ATTEMPTS } from "../worker.mjs";
 
 const EXECUTE_URL = "https://ingress.example/internal/v1/execute";
 const INGRESS_SECRET = "s".repeat(64);
 const ENGINE_CALLER_ID = "storymemory-b61";
 const ENGINE_CALLER_SECRET = "e".repeat(64);
+const ENGINE_CALLER_SECRET_NEXT = "n".repeat(64);
 const ENGINE_CREDENTIAL_HEADER = "x-padiem-engine-credential";
 const ENGINE_CALLER_HEADER = "x-padiem-engine-caller";
 
@@ -267,4 +268,391 @@ test("M. ingress source carries no StoryMemory locator/provider routing semantic
   assert.match(ingressSource, /PADIEM_ENGINE_CALLER_ID/);
   assert.match(ingressSource, /PADIEM_ENGINE_CALLER_SECRET/);
   assert.match(ingressSource, /PADIEM_INGRESS_CLIENT_SECRET/);
+});
+
+// ---------------------------------------------------------------------------
+// Dual-credential migration seam (#1753 A0): NEXT-first with exactly one
+// CURRENT retry on the precise service_authentication_failed 401 signal.
+// ---------------------------------------------------------------------------
+
+// Scripted multi-attempt environment. responses may contain Response objects
+// or Error instances (thrown to simulate timeout/engine fetch failure).
+function scriptedEnv(engineCallerSecretNext, responses) {
+  const calls = [];
+  let index = 0;
+
+  const env = {
+    PADIEM_INGRESS_CLIENT_SECRET: INGRESS_SECRET,
+    PADIEM_ENGINE_CALLER_ID: ENGINE_CALLER_ID,
+    PADIEM_ENGINE_CALLER_SECRET: ENGINE_CALLER_SECRET,
+    ENGINE: {
+      fetch: async (request) => {
+        calls.push(request);
+        const next = responses[index++];
+        if (next instanceof Error) throw next;
+        return next ?? new Response(JSON.stringify({ ok: true }), { status: 200 });
+      },
+    },
+  };
+
+  // NEXT is either configured (string) or absent (null/undefined env entry).
+  if (engineCallerSecretNext !== null && engineCallerSecretNext !== undefined) {
+    env.PADIEM_ENGINE_CALLER_SECRET_NEXT = engineCallerSecretNext;
+  }
+
+  return { calls, env };
+}
+
+function authFailure401(code = "service_authentication_failed") {
+  return new Response(JSON.stringify({ ok: false, error: { code } }), { status: 401 });
+}
+
+async function bodyOf(request) {
+  return new Uint8Array(await request.clone().arrayBuffer());
+}
+
+function assertNoCredentialLeak(response, bodyText) {
+  for (const secret of [INGRESS_SECRET, ENGINE_CALLER_SECRET, ENGINE_CALLER_SECRET_NEXT]) {
+    assert.ok(!bodyText.includes(secret), "response body leaked a credential");
+    for (const [, value] of response.headers) {
+      assert.ok(!value.includes(secret), "response header leaked a credential");
+    }
+  }
+}
+
+test("N1. NEXT absent -> CURRENT used, exactly one Engine call", async () => {
+  const { calls, env } = scriptedEnv(null, [
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
+});
+
+test("N2. NEXT present and accepted -> NEXT only, exactly one Engine call", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET_NEXT);
+});
+
+test("N3. NEXT exact auth 401 + CURRENT succeeds -> exactly two calls, in order", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true, answer: "42" }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 2);
+  assert.deepEqual(JSON.parse(await response.text()), { ok: true, answer: "42" });
+  assert.equal(calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET_NEXT);
+  assert.equal(calls[1].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
+});
+
+test("N4. NEXT 403 (even with auth-failure body) -> no fallback", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response(JSON.stringify({ ok: false, error: { code: "service_authentication_failed" } }), { status: 403 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 403);
+  assert.equal(calls.length, 1);
+});
+
+test("N5. NEXT 500 -> no fallback, original response returned", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response(JSON.stringify({ ok: false, error: { code: "boom" } }), { status: 500 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 500);
+  assert.equal(calls.length, 1);
+});
+
+test("N6. NEXT fetch throws (timeout) -> no fallback, 503 fail-closed", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Error("simulated timeout"),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 503);
+  assert.equal(calls.length, 1);
+});
+
+test("N7. NEXT 401 malformed JSON body -> no fallback", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response("{not-json,,", { status: 401 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 401);
+  assert.equal(calls.length, 1);
+});
+
+test("N8. NEXT 401 non-JSON body -> no fallback", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response("<html>401</html>", { status: 401 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 401);
+  assert.equal(calls.length, 1);
+});
+
+test("N9. NEXT 401 service_identity_unavailable -> no fallback", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401("service_identity_unavailable"),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 401);
+  assert.equal(calls.length, 1);
+});
+
+test("N10. NEXT 401 service_app_not_authorized -> no fallback", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401("service_app_not_authorized"),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 401);
+  assert.equal(calls.length, 1);
+});
+
+test("N10b. NEXT 401 JSON without error.code -> no fallback", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response(JSON.stringify({ ok: false }), { status: 401 }),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 401);
+  assert.equal(calls.length, 1);
+});
+
+test("N11. fallback replays byte-identical request body on both attempts", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const inboundBody = new Uint8Array(
+    await new Request(EXECUTE_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-padiem-ingress-credential": INGRESS_SECRET,
+      },
+      body: JSON.stringify({ app_id: "b61", messages: [{ role: "user", content: "unicode ✓ éè 漢字" }] }),
+    }).arrayBuffer(),
+  );
+
+  // validRequest()'s fixed payload for header assertions plus an explicit
+  // byte comparison between the two Engine attempts.
+  const response = await handleIngress(validRequest(), env);
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 2);
+
+  const first = await bodyOf(calls[0]);
+  const second = await bodyOf(calls[1]);
+  assert.deepEqual(first, second);
+
+  // And the replayed bytes equal the caller's original inbound body exactly.
+  const fresh = fakeEnv();
+  const passthrough = await handleIngress(
+    new Request(EXECUTE_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-padiem-ingress-credential": INGRESS_SECRET,
+      },
+      body: inboundBody,
+    }),
+    fresh.env,
+  );
+  assert.equal(passthrough.status, 200);
+  assert.deepEqual(await bodyOf(fresh.calls[0]), inboundBody);
+});
+
+test("N12. caller id identical on both fallback attempts (and only that header set)", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  await handleIngress(validRequest(), env);
+
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].headers.get(ENGINE_CALLER_HEADER), ENGINE_CALLER_ID);
+  assert.equal(calls[1].headers.get(ENGINE_CALLER_HEADER), ENGINE_CALLER_ID);
+  assert.equal(calls[0].url, calls[1].url);
+  assert.equal(calls[1].url, "https://padiem-ai-engine/internal/v1/execute");
+});
+
+test("N13. NEXT credential appears ONLY on the first attempt", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  // CURRENT also fails: response returned as-is, no third attempt.
+  assert.equal(response.status, 401);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET_NEXT);
+  assert.equal(calls[1].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
+  assert.notEqual(calls[1].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET_NEXT);
+});
+
+test("N14. CURRENT credential used only in fallback or current-only paths", async () => {
+  const fallbackCase = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  await handleIngress(validRequest(), fallbackCase.env);
+  assert.equal(fallbackCase.calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET_NEXT);
+  assert.equal(fallbackCase.calls[1].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
+
+  const currentOnly = scriptedEnv(null, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const resp = await handleIngress(validRequest(), currentOnly.env);
+  // NEXT absent: even a matching 401 signal produces exactly one CURRENT call.
+  assert.equal(resp.status, 401);
+  assert.equal(currentOnly.calls.length, 1);
+  assert.equal(currentOnly.calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
+});
+
+test("N15. ingress client auth unchanged while NEXT configured", async () => {
+  const missing = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, []);
+  const noCred = new Request(EXECUTE_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: "{}",
+  });
+  const r1 = await handleIngress(noCred, missing.env);
+  assert.equal(r1.status, 401);
+  assert.equal(missing.calls.length, 0);
+
+  const wrong = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, []);
+  const r2 = await handleIngress(validRequest(EXECUTE_URL, "wrong-" + INGRESS_SECRET), wrong.env);
+  assert.equal(r2.status, 401);
+  assert.equal(wrong.calls.length, 0);
+
+  const good = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const r3 = await handleIngress(validRequest(), good.env);
+  assert.equal(r3.status, 200);
+  assert.equal(good.calls.length, 1);
+});
+
+test("N16. caller-supplied Engine identity headers ignored across both attempts", async () => {
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  await handleIngress(validRequest(), env);
+
+  assert.equal(calls.length, 2);
+  for (const call of calls) {
+    assert.notEqual(call.headers.get(ENGINE_CREDENTIAL_HEADER), "attacker-credential-" + "z".repeat(50));
+    assert.notEqual(call.headers.get(ENGINE_CALLER_HEADER), "attacker-caller");
+    const engineHeaders = [...call.headers.keys()].filter((k) => /engine|caller/i.test(k)).sort();
+    assert.deepEqual(engineHeaders, [ENGINE_CALLER_HEADER, ENGINE_CREDENTIAL_HEADER]);
+  }
+});
+
+test("N17. no credential plaintext in returned response (fallback accept + fail paths)", async () => {
+  const ok = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const okResp = await handleIngress(validRequest(), ok.env);
+  assertNoCredentialLeak(okResp, await okResp.text());
+
+  const denied = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    authFailure401("service_app_not_authorized"),
+  ]);
+  const deniedResp = await handleIngress(validRequest(), denied.env);
+  assertNoCredentialLeak(deniedResp, await deniedResp.text());
+
+  const thrown = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [new Error("timeout")]);
+  const thrownResp = await handleIngress(validRequest(), thrown.env);
+  assert.equal(thrownResp.status, 503);
+  assertNoCredentialLeak(thrownResp, await thrownResp.text());
+});
+
+test("N18. oversized Engine 401-auth body stays fail-closed (502) with no fallback", async () => {
+  const oversized = "u".repeat(1024 * 1024 + 8);
+  const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    new Response(oversized, { status: 401 }),
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 502);
+  assert.deepEqual(JSON.parse(await response.text()).error.code, "engine_response_too_large");
+  assert.equal(calls.length, 1);
+
+  // Oversized response on the CURRENT fallback attempt also fails closed.
+  const second = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [
+    authFailure401(),
+    new Response(oversized, { status: 200 }),
+  ]);
+  const response2 = await handleIngress(validRequest(), second.env);
+  assert.equal(response2.status, 502);
+  assert.equal(second.calls.length, 2);
+});
+
+test("N19. MAX_ENGINE_ATTEMPTS is 2 and never exceeded", async () => {
+  assert.equal(MAX_ENGINE_ATTEMPTS, 2);
+
+  for (const responses of [
+    [authFailure401(), authFailure401(), new Response(JSON.stringify({ ok: true }), { status: 200 })],
+    [authFailure401(), new Error("timeout after fallback")],
+    [authFailure401(), authFailure401(), authFailure401(), authFailure401()],
+  ]) {
+    const { calls, env } = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, responses);
+    await handleIngress(validRequest(), env);
+    assert.ok(calls.length <= MAX_ENGINE_ATTEMPTS, `attempt cap breached: ${calls.length}`);
+    assert.equal(calls.length, 2);
+  }
+
+  // Timeout on the very first attempt stops all Engine work (no retry budget).
+  const thrown = scriptedEnv(ENGINE_CALLER_SECRET_NEXT, [new Error("timeout"), authFailure401()]);
+  const resp = await handleIngress(validRequest(), thrown.env);
+  assert.equal(resp.status, 503);
+  assert.equal(thrown.calls.length, 1);
+});
+
+test("N20. empty NEXT env behaves as absent (CURRENT only)", async () => {
+  const { calls, env } = scriptedEnv("", [
+    new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  ]);
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
+});
+
+test("N21. ingress source keeps dual-credential seam bounded and secret-clean", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const ingressSource = readFileSync(join(here, "..", "worker.mjs"), "utf8");
+
+  assert.match(ingressSource, /PADIEM_ENGINE_CALLER_SECRET_NEXT/);
+  assert.match(ingressSource, /MAX_ENGINE_ATTEMPTS\s*=\s*2/);
+  // No generic retry machinery: no while/for retry loops in the seam.
+  assert.doesNotMatch(ingressSource, /while\s*\(|for\s*\(\s*let\s+\w*attempt/i);
+  // NEXT must remain an ingress-owner secret read (never caller-supplied).
+  assert.doesNotMatch(ingressSource, /request\.headers\.get\(\s*["']x-padiem-engine-secret-next/i);
 });
