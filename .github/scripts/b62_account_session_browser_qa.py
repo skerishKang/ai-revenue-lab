@@ -13,10 +13,8 @@ BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Diagnostic isolation: restore the full theme/viewport matrix after the blocking
-# browser state is identified and fixed.
-THEMES = ("light",)
-VIEWPORTS = (("desktop", 1440, 1000, False),)
+THEMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
+VIEWPORTS = (("desktop", 1440, 1000, False), ("mobile", 390, 844, True))
 USER_NAME = "브라우저 계정 사용자"
 
 
@@ -209,6 +207,24 @@ async def _assert_state(
     return {"state": expected, "hidden": False, "target": target, "snapshot": snapshot, "status": "PASS"}
 
 
+async def _synchronize_signed_in_action(page: Page, state: dict[str, Any], *, mobile: bool, label: str) -> None:
+    state["session"] = "signed_in"
+    print(f"ACCOUNT_SESSION_ACTION_SYNC_START={label}", flush=True)
+    await page.reload(wait_until="domcontentloaded", timeout=30_000)
+    await page.locator("#messageInput").wait_for(state="visible")
+    await page.wait_for_function(
+        "() => document.getElementById('historySection')?.hidden === false",
+        timeout=5_000,
+    )
+    await _open_sidebar(page, mobile)
+    await _refresh(page)
+    await page.wait_for_function(
+        "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'signed_in' && document.getElementById('loginButton')?.textContent.trim() === '로그아웃'",
+        timeout=5_000,
+    )
+    print(f"ACCOUNT_SESSION_ACTION_SYNC_DONE={label}", flush=True)
+
+
 async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     state: dict[str, Any] = {"session": "guest", "logout_posts": 0}
     await _install_fixtures(page, state)
@@ -231,11 +247,12 @@ async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, h
         page, state, "signed_in", name=label, button_text="로그아웃", account_text=USER_NAME
     )
 
+    await _synchronize_signed_in_action(page, state, mobile=mobile, label=label)
     print(f"ACCOUNT_SESSION_LOGOUT_START={label}", flush=True)
     await page.locator("#loginButton").focus()
     await page.locator("#loginButton").click()
     await page.wait_for_function(
-        "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest' && document.getElementById('loginButton')?.textContent.trim() === '로그인'",
+        "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest' && document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('accountName')?.hidden === false && document.getElementById('accountName')?.textContent.trim() === '게스트'",
         timeout=5_000,
     )
     print(f"ACCOUNT_SESSION_LOGOUT_DONE={label}", flush=True)
