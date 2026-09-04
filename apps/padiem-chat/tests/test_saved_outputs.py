@@ -351,6 +351,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     repo = root.parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/outputs.js").read_text(encoding="utf-8")
+    a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
     worker = (root / "worker.py").read_text(encoding="utf-8")
 
     assert '<link rel="stylesheet" href="./outputs.css" />' in html
@@ -362,7 +363,9 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert "navigator.clipboard" in js and "document.execCommand" in js
     assert "new Blob([text]" in js and "URL.createObjectURL" in js and "URL.revokeObjectURL" in js
     assert 'save.hidden = !outputsReady' in js
-    assert "window.confirm" in js
+    assert "window.confirm(" not in js
+    assert "PadiemConfirmDialog.confirm" in js
+    assert 'dialog.id = "confirmDialog"' in a11y
     assert "innerHTML" not in js
     assert "D1SavedOutputStore" in worker
     assert "create_app(settings=settings, history_store=history_store)" in worker
