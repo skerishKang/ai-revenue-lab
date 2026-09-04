@@ -135,8 +135,8 @@ class LocalAgentBrokerStateSnapshot:
 
     @classmethod
     def capture(cls, authority: InMemoryLocalAgentBrokerAuthority) -> "LocalAgentBrokerStateSnapshot":
-        if not isinstance(authority, InMemoryLocalAgentBrokerAuthority):
-            raise ValueError("authority must be InMemoryLocalAgentBrokerAuthority")
+        if type(authority) is not InMemoryLocalAgentBrokerAuthority:
+            raise ValueError("authority must be exact InMemoryLocalAgentBrokerAuthority")
         return cls(
             authority_ref=authority.authority_ref,
             bindings=tuple(sorted(authority._bindings.values(), key=lambda item: item.binding_ref)),
