@@ -43,6 +43,12 @@
   outline-offset: 2px;
 }
 
+/* Keep the end of a long answer clear of an expanded multiline composer.
+ * The JS value is bounded to at least the historical 230px clearance. */
+.app-shell[data-state="chat"] .conversation {
+  padding-bottom: var(--padiem-composer-clearance, 230px) !important;
+}
+
 /* JS resolves the actual textarea scroll height so multiline prompts grow in
  * place instead of becoming a tiny internal scroll box. The source CSS still
  * owns the hard 180px ceiling. */
