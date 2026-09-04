@@ -8,6 +8,7 @@ from padiem_control_plane.local_agent_broker_http import (
     DurableLocalAgentSessionRecord,
     LocalAgentMaterialResolutionRequest,
 )
+from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from local_agent_broker_material_store import (
     MAX_DURABLE_COMMAND_MATERIAL_BYTES,
@@ -33,6 +34,14 @@ class LocalAgentBrokerDurableObject(DurableObject):
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state
         self.material_store = self._runtime.material_store
+        self._device_http = LocalAgentBrokerDeviceHttpService(
+            state_port=self._runtime.state_port,
+            pepper=str(env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+            authority_ref=self._runtime.authority_ref(),
+            rpc_factory=self._runtime.facade,
+            http_state=self._runtime.http_state,
+            material_resolver=self._runtime.material_store,
+        )
 
     def _authority_ref(self) -> str:
         return self._runtime.authority_ref()
@@ -72,6 +81,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
 
     async def acknowledge(self, payload: dict) -> dict:
         return self._runtime.acknowledge(payload)
+
+    async def handle_device_http(self, envelope: dict) -> dict:
+        return self._device_http.handle(envelope)
 
     async def fetch(self, request):
         del request
@@ -120,6 +132,9 @@ class Default(WorkerEntrypoint):
     async def acknowledge(self, payload: dict) -> dict:
         return await self._stub().acknowledge(payload)
 
+    async def handle_device_http(self, envelope: dict) -> dict:
+        return await self._stub().handle_device_http(envelope)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -163,6 +178,9 @@ BROKER_MATERIAL_BOUNDARY_CHANGED = False
 P01_AUTHORITY_CHANGED = False
 WIRE_CONTRACT_CHANGED = False
 DB_SEMANTICS_INTENTIONALLY_CHANGED = False
+PRIVATE_DEVICE_HTTP_SERVICE = True
+SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
+ADMIN_BROKER_RPC_PUBLIC = False
 PUBLIC_ENDPOINT_ADDED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
