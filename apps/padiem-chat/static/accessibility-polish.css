@@ -3,7 +3,7 @@
  * compact interactive controls are raised to practical readable sizes.
  */
 
-/* Sidebar and conversation metadata */
+/* Meaningful helper, badge and metadata copy: 12–13px practical floor. */
 .mini-badge,
 .demo-label,
 .attachment-copy small,
@@ -18,12 +18,21 @@
 .project-files-empty,
 .project-file-row small,
 .saved-output-header p,
-.answer-source-copy small {
+.answer-source-copy small,
+.document-attachment-icon,
+.project-banner-actions button,
+.project-file-add,
+.answer-action,
+.theme-picker-label,
+.theme-option,
+.language-option,
+.settings-label {
   font-size: 12px;
   line-height: 1.45;
 }
 
 .recent-section h2,
+.project-form label,
 .project-form-note,
 .project-form-error,
 .saved-output-status,
@@ -35,45 +44,78 @@
   line-height: 1.5;
 }
 
-/* Small helper copy on bright/default surfaces must not rely on pale grey. */
-.attachment-copy small,
-.history-empty,
-.project-banner-copy span,
-.project-banner-copy small,
-.project-dialog-header p,
-.project-form label span,
-.project-form-note,
-.project-files-heading small,
-.project-files-note,
-.project-files-empty,
-.project-file-row small,
-.saved-output-header p,
-.saved-output-status,
-.reference-note,
-.research-summary,
-.answer-source-number,
-.answer-source-copy small {
-  color: #5f6772;
+/* Bright first-use surfaces: avoid pale grey at small sizes. */
+html[data-theme="light"] .starter small,
+html[data-theme="light"] .composer-note,
+html[data-theme="light"] .mini-badge,
+html[data-theme="light"] .theme-picker-label,
+html[data-theme="light"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="light"] .language-option:not([aria-pressed="true"]) {
+  color: #565e69 !important;
 }
 
-.project-dialog-header p,
-.saved-output-header p {
-  font-size: 12px;
-  line-height: 1.45;
+html[data-theme="padiem-home"] .starter small,
+html[data-theme="padiem-home"] .composer-note,
+html[data-theme="padiem-home"] .mini-badge,
+html[data-theme="padiem-home"] .theme-picker-label,
+html[data-theme="padiem-home"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="padiem-home"] .language-option:not([aria-pressed="true"]) {
+  color: #4e5968 !important;
 }
 
-/* Compact controls: preserve density while staying in the existing practical
- * 40–44px product range. */
+/* Dark atmospheric surfaces need an opaque-enough light helper floor. */
+html[data-theme="dark"] .starter small,
+html[data-theme="dark"] .composer-note,
+html[data-theme="dark"] .mini-badge,
+html[data-theme="dark"] .theme-picker-label,
+html[data-theme="dark"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="dark"] .language-option:not([aria-pressed="true"]),
+html[data-theme="cinematic"] .starter small,
+html[data-theme="cinematic"] .composer-note,
+html[data-theme="cinematic"] .mini-badge,
+html[data-theme="cinematic"] .theme-picker-label,
+html[data-theme="cinematic"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="cinematic"] .language-option:not([aria-pressed="true"]) {
+  color: rgba(255, 255, 255, .72) !important;
+}
+
+/* Glass first-use cards sit over a variable image/gradient field. Use a color
+ * that remains >=4.5:1 even against the theme's raw #aeb6bf fallback. */
+html[data-theme="padiem-glass"] .starter small,
+html[data-theme="padiem-glass"] .composer-note,
+html[data-theme="padiem-glass"] .research-summary,
+html[data-theme="padiem-glass"] .reference-note,
+html[data-theme="padiem-glass"] .answer-source-number,
+html[data-theme="padiem-glass"] .answer-source-copy small,
+html[data-theme="padiem-glass"] .theme-picker-label,
+html[data-theme="padiem-glass"] .theme-option:not([aria-pressed="true"]),
+html[data-theme="padiem-glass"] .language-option:not([aria-pressed="true"]) {
+  color: #394955 !important;
+}
+
+html[data-theme="padiem-glass"] .sidebar .mini-badge,
+html[data-theme="padiem-glass"] .sidebar .history-empty,
+html[data-theme="padiem-glass"] .sidebar .account-name {
+  color: rgba(255, 255, 255, .82) !important;
+}
+
+/* Compact controls: preserve density while staying in the issue's existing
+ * practical 40–44px range. */
 .attachment-remove,
 .attachment-chip button,
 .section-add-button,
 .project-dialog-close,
 .project-banner-actions button,
+.project-file-add,
 .project-file-row button,
 .saved-output-close,
 .answer-action,
 .rich-code-copy,
-.rich-table-download {
+.rich-table-download,
+.settings-close,
+.theme-option,
+.language-option,
+.settings-done {
   min-width: 40px;
   min-height: 40px;
 }
@@ -81,7 +123,8 @@
 .attachment-remove,
 .section-add-button,
 .project-dialog-close,
-.saved-output-close {
+.saved-output-close,
+.settings-close {
   width: 40px;
   height: 40px;
 }
@@ -89,29 +132,6 @@
 .project-form-actions button,
 .saved-output-actions button {
   min-height: 44px;
-}
-
-/* Glass uses translucent surfaces; keep helper text opaque enough to remain
- * readable without making the overall theme visually heavier. */
-html[data-theme="padiem-glass"] .mini-badge,
-html[data-theme="padiem-glass"] .demo-label,
-html[data-theme="padiem-glass"] .attachment-copy small,
-html[data-theme="padiem-glass"] .message-attachment-meta,
-html[data-theme="padiem-glass"] .project-banner-copy span,
-html[data-theme="padiem-glass"] .project-banner-copy small,
-html[data-theme="padiem-glass"] .project-form label span,
-html[data-theme="padiem-glass"] .project-form-note,
-html[data-theme="padiem-glass"] .project-files-heading small,
-html[data-theme="padiem-glass"] .project-files-note,
-html[data-theme="padiem-glass"] .project-files-empty,
-html[data-theme="padiem-glass"] .project-file-row small,
-html[data-theme="padiem-glass"] .saved-output-header p,
-html[data-theme="padiem-glass"] .saved-output-status,
-html[data-theme="padiem-glass"] .reference-note,
-html[data-theme="padiem-glass"] .research-summary,
-html[data-theme="padiem-glass"] .answer-source-number,
-html[data-theme="padiem-glass"] .answer-source-copy small {
-  color: #46535f !important;
 }
 
 /* #1735 moved Padiem Home into the bottom utility stack. The older Glass
@@ -152,7 +172,9 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
 }
 
 @media (max-width: 620px) {
-  .composer-note {
+  .composer-note,
+  .theme-option,
+  .language-option {
     font-size: 12px;
     line-height: 1.45;
   }
@@ -160,11 +182,18 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
   .attachment-remove,
   .section-add-button,
   .project-dialog-close,
+  .project-banner-actions button,
+  .project-file-add,
   .project-file-row button,
   .saved-output-close,
   .answer-action,
   .rich-code-copy,
-  .rich-table-download {
+  .rich-table-download,
+  .settings-close,
+  .theme-option,
+  .language-option,
+  .settings-done,
+  .mobile-close {
     min-width: 44px;
     min-height: 44px;
   }
@@ -172,7 +201,9 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
   .attachment-remove,
   .section-add-button,
   .project-dialog-close,
-  .saved-output-close {
+  .saved-output-close,
+  .settings-close,
+  .mobile-close {
     width: 44px;
     height: 44px;
   }
