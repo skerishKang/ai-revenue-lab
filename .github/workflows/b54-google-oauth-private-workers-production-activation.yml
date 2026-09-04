@@ -1,3 +1,4 @@
+# Re-armed after Production OAuth secret provisioning for issue #1857.
 name: B54 Google OAuth Private Workers Production Activation
 
 on:
