@@ -1,0 +1,179 @@
+/* B62 #1736 — small-type and practical target accessibility polish.
+ * Keep primary conversation hierarchy unchanged; only helper/meta copy and
+ * compact interactive controls are raised to practical readable sizes.
+ */
+
+/* Sidebar and conversation metadata */
+.mini-badge,
+.demo-label,
+.attachment-copy small,
+.message-attachment-meta,
+.attachment-chip small,
+.composer-note,
+.project-banner-copy span,
+.project-banner-copy small,
+.project-form label span,
+.project-files-heading small,
+.project-files-note,
+.project-files-empty,
+.project-file-row small,
+.saved-output-header p,
+.answer-source-copy small {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.recent-section h2,
+.project-form-note,
+.project-form-error,
+.saved-output-status,
+.research-summary,
+.rich-code-header,
+.rich-table-actions,
+.answer-source-number {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Small helper copy on bright/default surfaces must not rely on pale grey. */
+.attachment-copy small,
+.history-empty,
+.project-banner-copy span,
+.project-banner-copy small,
+.project-dialog-header p,
+.project-form label span,
+.project-form-note,
+.project-files-heading small,
+.project-files-note,
+.project-files-empty,
+.project-file-row small,
+.saved-output-header p,
+.saved-output-status,
+.reference-note,
+.research-summary,
+.answer-source-number,
+.answer-source-copy small {
+  color: #5f6772;
+}
+
+.project-dialog-header p,
+.saved-output-header p {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Compact controls: preserve density while staying in the existing practical
+ * 40–44px product range. */
+.attachment-remove,
+.attachment-chip button,
+.section-add-button,
+.project-dialog-close,
+.project-banner-actions button,
+.project-file-row button,
+.saved-output-close,
+.answer-action,
+.rich-code-copy,
+.rich-table-download {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.attachment-remove,
+.section-add-button,
+.project-dialog-close,
+.saved-output-close {
+  width: 40px;
+  height: 40px;
+}
+
+.project-form-actions button,
+.saved-output-actions button {
+  min-height: 44px;
+}
+
+/* Glass uses translucent surfaces; keep helper text opaque enough to remain
+ * readable without making the overall theme visually heavier. */
+html[data-theme="padiem-glass"] .mini-badge,
+html[data-theme="padiem-glass"] .demo-label,
+html[data-theme="padiem-glass"] .attachment-copy small,
+html[data-theme="padiem-glass"] .message-attachment-meta,
+html[data-theme="padiem-glass"] .project-banner-copy span,
+html[data-theme="padiem-glass"] .project-banner-copy small,
+html[data-theme="padiem-glass"] .project-form label span,
+html[data-theme="padiem-glass"] .project-form-note,
+html[data-theme="padiem-glass"] .project-files-heading small,
+html[data-theme="padiem-glass"] .project-files-note,
+html[data-theme="padiem-glass"] .project-files-empty,
+html[data-theme="padiem-glass"] .project-file-row small,
+html[data-theme="padiem-glass"] .saved-output-header p,
+html[data-theme="padiem-glass"] .saved-output-status,
+html[data-theme="padiem-glass"] .reference-note,
+html[data-theme="padiem-glass"] .research-summary,
+html[data-theme="padiem-glass"] .answer-source-number,
+html[data-theme="padiem-glass"] .answer-source-copy small {
+  color: #46535f !important;
+}
+
+html[data-theme="dark"] .attachment-copy small,
+html[data-theme="dark"] .history-empty,
+html[data-theme="dark"] .project-banner-copy span,
+html[data-theme="dark"] .project-banner-copy small,
+html[data-theme="dark"] .project-dialog-header p,
+html[data-theme="dark"] .project-form label span,
+html[data-theme="dark"] .project-form-note,
+html[data-theme="dark"] .project-files-heading small,
+html[data-theme="dark"] .project-files-note,
+html[data-theme="dark"] .project-files-empty,
+html[data-theme="dark"] .project-file-row small,
+html[data-theme="dark"] .saved-output-header p,
+html[data-theme="dark"] .saved-output-status,
+html[data-theme="dark"] .reference-note,
+html[data-theme="dark"] .research-summary,
+html[data-theme="dark"] .answer-source-number,
+html[data-theme="dark"] .answer-source-copy small,
+html[data-theme="cinematic"] .attachment-copy small,
+html[data-theme="cinematic"] .history-empty,
+html[data-theme="cinematic"] .project-banner-copy span,
+html[data-theme="cinematic"] .project-banner-copy small,
+html[data-theme="cinematic"] .project-dialog-header p,
+html[data-theme="cinematic"] .project-form label span,
+html[data-theme="cinematic"] .project-form-note,
+html[data-theme="cinematic"] .project-files-heading small,
+html[data-theme="cinematic"] .project-files-note,
+html[data-theme="cinematic"] .project-files-empty,
+html[data-theme="cinematic"] .project-file-row small,
+html[data-theme="cinematic"] .saved-output-header p,
+html[data-theme="cinematic"] .saved-output-status,
+html[data-theme="cinematic"] .reference-note,
+html[data-theme="cinematic"] .research-summary,
+html[data-theme="cinematic"] .answer-source-number,
+html[data-theme="cinematic"] .answer-source-copy small {
+  color: rgba(255, 255, 255, .72);
+}
+
+@media (max-width: 620px) {
+  .composer-note {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .attachment-remove,
+  .section-add-button,
+  .project-dialog-close,
+  .project-file-row button,
+  .saved-output-close,
+  .answer-action,
+  .rich-code-copy,
+  .rich-table-download {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .attachment-remove,
+  .section-add-button,
+  .project-dialog-close,
+  .saved-output-close {
+    width: 44px;
+    height: 44px;
+  }
+}
