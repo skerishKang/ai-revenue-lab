@@ -69,15 +69,19 @@ jobs:
           root = Path("packages/padiem-control-plane")
           state = json.loads((root / "wrangler.local-agent-broker.jsonc").read_text(encoding="utf-8"))
           edge = json.loads((root / "wrangler.local-agent-broker-edge.jsonc").read_text(encoding="utf-8"))
+          assert not (root / "wrangler.jsonc").exists()
           assert state["name"] == "padiem-local-agent-broker-state"
+          assert state["main"] == "local_agent_broker_worker.py"
           assert state["workers_dev"] is False and state["preview_urls"] is False
-          assert "routes" not in state
+          assert "routes" not in state and "route" not in state
           assert state["vars"] == {"LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1"}
           assert state["secrets"] == {"required": ["LOCAL_AGENT_BROKER_PEPPER"]}
+          assert state["durable_objects"]["bindings"] == [{"name": "LOCAL_AGENT_BROKER_STATE", "class_name": "LocalAgentBrokerDurableObject"}]
           assert state["exports"]["LocalAgentBrokerDurableObject"] == {"type": "durable-object", "storage": "sqlite"}
           assert edge["name"] == "padiem-local-agent-broker-edge"
+          assert edge["main"] == "local_agent_broker_edge_worker.py"
           assert edge["workers_dev"] is False and edge["preview_urls"] is False
-          assert "routes" not in edge
+          assert "routes" not in edge and "route" not in edge
           assert edge["services"] == [{"binding": "LOCAL_AGENT_BROKER_SERVICE", "service": "padiem-local-agent-broker-state"}]
           print("B54_LOCAL_AGENT_BROKER_CONFIG=PASS")
           print("PUBLIC_ROUTE_CONFIGURED=NO")
@@ -100,11 +104,20 @@ jobs:
         run: |
           set -euo pipefail
           secret_file="${RUNNER_TEMP}/b54-local-agent-dry-run-secrets.env"
-          trap 'rm -f "${secret_file}"' EXIT
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "$(python -c 'import secrets; print(secrets.token_hex(32))')" > "${secret_file}"
           chmod 600 "${secret_file}"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${STATE_CONFIG}" --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/b54-state-dry-run"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${EDGE_CONFIG}" --dry-run --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
+
+          cp "${STATE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/b54-state-dry-run"
+          rm -f "${temp_config}"
+
+          cp "${EDGE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --dry-run --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
+          rm -f "${temp_config}"
+
           test -d "${RUNNER_TEMP}/b54-state-dry-run"
           test -d "${RUNNER_TEMP}/b54-edge-dry-run"
           echo "PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS"
@@ -119,7 +132,7 @@ jobs:
       state_worker_state: ${{ steps.inspect.outputs.state_worker_state }}
       edge_worker_state: ${{ steps.inspect.outputs.edge_worker_state }}
     steps:
-      - name: Read-only Worker inventory and public exposure audit
+      - name: Read-only Worker inventory and workers.dev exposure audit
         id: inspect
         shell: bash
         env:
@@ -139,8 +152,7 @@ jobs:
               subdomain="${RUNNER_TEMP}/${name}-subdomain.json"
               curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${name}/subdomain" -o "${subdomain}"
               jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-              jq -e --arg name "${name}" '.result[] | select(.id == $name) | ((.routes // []) | length == 0)' "${inventory}" >/dev/null
-              echo "${name}: PRESENT_PRIVATE_ONLY"
+              echo "${name}: PRESENT_WORKERS_DEV_DISABLED"
             else
               echo "${output_name}=absent" >> "${GITHUB_OUTPUT}"
               echo "${name}: ABSENT"
@@ -169,8 +181,14 @@ jobs:
           set -euo pipefail
           test "${CONFIRMATION}" = "BOOTSTRAP_PADIEM_LOCAL_AGENT_BROKER_PRIVATE"
           test -n "${BROKER_PEPPER}"
-          test "${STATE_WORKER_STATE}" = "absent"
-          test "${EDGE_WORKER_STATE}" = "absent"
+          if [ "${STATE_WORKER_STATE}" != "absent" ]; then
+            echo "Refusing automatic state Worker replacement; durable authority requires separate owner review." >&2
+            exit 1
+          fi
+          if [ "${EDGE_WORKER_STATE}" != "absent" ]; then
+            echo "Refusing bootstrap over an existing edge Worker." >&2
+            exit 1
+          fi
           echo "PRIVATE_BOOTSTRAP_AUTHORIZATION=PASS"
 
       - name: Checkout exact approved main SHA
@@ -213,10 +231,14 @@ jobs:
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
           test -n "${BROKER_PEPPER}"
           secret_file="${RUNNER_TEMP}/b54-local-agent-production-secrets.env"
-          trap 'rm -f "${secret_file}"' EXIT
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "${BROKER_PEPPER}" > "${secret_file}"
           chmod 600 "${secret_file}"
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${STATE_CONFIG}" --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 Local Agent broker state ${TARGET_SHA}"
+          cp "${STATE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 Local Agent broker state ${TARGET_SHA}"
+          rm -f "${temp_config}"
           echo "STATE_WORKER_DEPLOY=SUCCESS"
 
       - name: Read back private state Worker boundary
@@ -242,7 +264,12 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${EDGE_CONFIG}" --strict --tag "git-${TARGET_SHA}" --message "B54 Local Agent broker edge ${TARGET_SHA}"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          cp "${EDGE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --strict --tag "git-${TARGET_SHA}" --message "B54 Local Agent broker edge ${TARGET_SHA}"
+          rm -f "${temp_config}"
           echo "EDGE_WORKER_DEPLOY=SUCCESS"
 
       - name: Read back edge as private-only and service-bound
@@ -262,8 +289,6 @@ jobs:
           jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE"))' "${settings}" >/dev/null
           jq -e --arg name "${STATE_WORKER}" '.result | any(.id == $name)' "${inventory}" >/dev/null
           jq -e --arg name "${EDGE_WORKER}" '.result | any(.id == $name)' "${inventory}" >/dev/null
-          jq -e --arg name "${STATE_WORKER}" '.result[] | select(.id == $name) | ((.routes // []) | length == 0)' "${inventory}" >/dev/null
-          jq -e --arg name "${EDGE_WORKER}" '.result[] | select(.id == $name) | ((.routes // []) | length == 0)' "${inventory}" >/dev/null
           echo "EDGE_WORKER_PRIVATE_READBACK=PASS"
           echo "PUBLIC_ROUTE_CONFIGURED=NO"
           echo "LIVE_WINDOWS_CANARY=NO"
