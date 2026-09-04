@@ -1,0 +1,311 @@
+name: B54 Google OAuth Production Read-only Audit
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-google-oauth-readonly-main-audit.yml"
+      - ".github/workflows/b54-google-oauth-production-gate.yml"
+      - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-google-oauth-readonly-main-audit.yml"
+      - ".github/workflows/b54-google-oauth-production-gate.yml"
+      - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-google-oauth-readonly-main-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PUBLIC_HOSTNAME: oauth.padiem.net
+  ZONE_NAME: padiem.net
+  IDENTITY_WORKER: padiem-control-plane-identity
+  OAUTH_STATE_WORKER: padiem-google-oauth-state
+  OAUTH_EDGE_WORKER: padiem-google-oauth-edge
+  B62_WORKER: padiem-chat
+  B62_IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate immutable read-only audit contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=".github/workflows/b54-google-oauth-readonly-main-audit.yml"
+          test -f "${workflow}"
+
+          python - <<'PY'
+          from pathlib import Path
+
+          text = Path(".github/workflows/b54-google-oauth-readonly-main-audit.yml").read_text(encoding="utf-8")
+          required = [
+              "push:",
+              "branches:",
+              "- main",
+              "permissions:\n  contents: read",
+              "CLOUDFLARE_READONLY_AUDIT=PASS",
+              "PRODUCTION_MUTATION=0",
+              "/workers/domains",
+              "/workers/scripts/${B62_WORKER}/settings",
+              "oauth.padiem.net",
+              "IDENTITY_AUTHORITY_SERVICE",
+          ]
+          for marker in required:
+              if marker not in text:
+                  raise SystemExit(f"missing read-only contract marker: {marker}")
+
+          forbidden = [
+              "pywrangler deploy",
+              "wrangler deploy",
+              "curl -X POST",
+              "curl -X PUT",
+              "curl -X PATCH",
+              "curl -X DELETE",
+              "--request POST",
+              "--request PUT",
+              "--request PATCH",
+              "--request DELETE",
+          ]
+          for marker in forbidden:
+              if marker in text:
+                  raise SystemExit(f"mutation-capable command forbidden in audit workflow: {marker}")
+
+          print("READONLY_WORKFLOW_SOURCE_CONTRACT=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Require exact current main on push
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Audit Cloudflare Google OAuth topology without mutation
+        id: audit
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" \
+            '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
+          echo "PRIVATE_WORKER_CUSTOM_DOMAIN=NO"
+
+          domain_count="$(jq --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
+          if [ "${domain_count}" -eq 0 ]; then
+            domain_state="absent"
+            echo "OAUTH_CUSTOM_DOMAIN=ABSENT"
+          elif [ "${domain_count}" -eq 1 ]; then
+            jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${OAUTH_EDGE_WORKER}" \
+              '.result[] | select(.hostname == $host) | .service == $edge' "${domains}" >/dev/null
+            domain_state="present_expected_edge"
+            echo "OAUTH_CUSTOM_DOMAIN=PRESENT_EXPECTED_EDGE"
+          else
+            echo "Ambiguous oauth.padiem.net Custom Domain state" >&2
+            exit 1
+          fi
+
+          zones="${RUNNER_TEMP}/zones.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
+            -o "${zones}"
+          jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
+          zone_id="$(jq -r '.result[0].id' "${zones}")"
+          test -n "${zone_id}" && test "${zone_id}" != "null"
+
+          routes="${RUNNER_TEMP}/routes.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
+            -o "${routes}"
+          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+          python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
+          import json
+          import sys
+
+          routes_path, host = sys.argv[1:]
+          data = json.load(open(routes_path, encoding="utf-8"))
+          collisions = []
+          for row in data.get("result", []):
+              pattern = str(row.get("pattern", ""))
+              if host in pattern or "*.padiem.net" in pattern or "*padiem.net" in pattern:
+                  collisions.append(pattern)
+          if collisions:
+              raise SystemExit("Worker route collision for OAuth hostname: " + ", ".join(collisions))
+          print("WORKER_ROUTE_COLLISION=NO")
+          PY
+
+          inspect_worker() {
+            worker="$1"
+            settings="${RUNNER_TEMP}/${worker}-settings.json"
+            subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
+            deployments="${RUNNER_TEMP}/${worker}-deployments.json"
+            code="$(curl -sS -o "${settings}" -w '%{http_code}' "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" || true)"
+            if [ "${code}" = "404" ]; then
+              printf '%s\n' "absent"
+              return 0
+            fi
+            test "${code}" = "200"
+            jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" \
+              -o "${subdomain}"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
+              -o "${deployments}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            printf '%s\n' "present_private"
+          }
+
+          identity_state="$(inspect_worker "${IDENTITY_WORKER}")"
+          state_state="$(inspect_worker "${OAUTH_STATE_WORKER}")"
+          edge_state="$(inspect_worker "${OAUTH_EDGE_WORKER}")"
+
+          if [ "${identity_state}" = "present_private" ]; then
+            identity_settings="${RUNNER_TEMP}/${IDENTITY_WORKER}-settings.json"
+            jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${identity_settings}" >/dev/null
+            for binding in CONTROL_PLANE_IDENTITY_LOOKUP_KEY GOOGLE_CONNECT_TICKET_KEY CONTROL_PLANE_ALLOWED_PRODUCT CONTROL_PLANE_IDENTITY; do
+              jq -e --arg name "${binding}" '.result.bindings | any(.name == $name)' "${identity_settings}" >/dev/null
+            done
+            echo "IDENTITY_RUNTIME_BINDINGS=READY"
+          else
+            echo "IDENTITY_RUNTIME_BINDINGS=NOT_DEPLOYED"
+          fi
+
+          if [ "${state_state}" = "present_private" ]; then
+            state_settings="${RUNNER_TEMP}/${OAUTH_STATE_WORKER}-settings.json"
+            jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${state_settings}" >/dev/null
+            for binding in GOOGLE_CONNECT_TICKET_KEY GOOGLE_OAUTH_SEAL_KEY GOOGLE_OAUTH_CLIENT_SECRET GOOGLE_OAUTH_CLIENT_ID GOOGLE_OAUTH_REDIRECT_URI GOOGLE_OAUTH_AUTHORITY_REF GOOGLE_OAUTH_STATE; do
+              jq -e --arg name "${binding}" '.result.bindings | any(.name == $name)' "${state_settings}" >/dev/null
+            done
+            jq -e --arg redirect "https://${PUBLIC_HOSTNAME}/v1/google/callback" \
+              '.result.bindings | any(.name == "GOOGLE_OAUTH_REDIRECT_URI" and .text == $redirect)' "${state_settings}" >/dev/null
+            echo "OAUTH_STATE_RUNTIME_BINDINGS=READY"
+          else
+            echo "OAUTH_STATE_RUNTIME_BINDINGS=NOT_DEPLOYED"
+          fi
+
+          if [ "${edge_state}" = "present_private" ]; then
+            edge_settings="${RUNNER_TEMP}/${OAUTH_EDGE_WORKER}-settings.json"
+            jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${edge_settings}" >/dev/null
+            jq -e --arg state "${OAUTH_STATE_WORKER}" \
+              '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .type == "service" and .service == $state)' "${edge_settings}" >/dev/null
+            jq -e '.result.bindings | any(.name == "GOOGLE_OAUTH_ALLOWED_ORIGIN")' "${edge_settings}" >/dev/null
+            echo "OAUTH_EDGE_RUNTIME_BINDINGS=READY"
+          else
+            echo "OAUTH_EDGE_RUNTIME_BINDINGS=NOT_DEPLOYED"
+          fi
+
+          b62_settings="${RUNNER_TEMP}/b62-settings.json"
+          b62_deployments="${RUNNER_TEMP}/b62-deployments.json"
+          b62_versions="${RUNNER_TEMP}/b62-versions.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${b62_settings}"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+            -o "${b62_deployments}"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" \
+            -o "${b62_versions}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${b62_settings}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${b62_deployments}" >/dev/null
+          jq -e '.success == true and (.result.items | length) > 0' "${b62_versions}" >/dev/null
+          b62_active="$(jq -r '.result.deployments[0].versions[0].version_id' "${b62_deployments}")"
+          b62_latest="$(jq -r '.result.items[0].id' "${b62_versions}")"
+          test "${b62_active}" = "${b62_latest}"
+          echo "B62_LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
+
+          b62_binding_count="$(jq --arg name "${B62_IDENTITY_BINDING}" '[.result.bindings[]? | select(.name == $name)] | length' "${b62_settings}")"
+          if [ "${b62_binding_count}" -eq 0 ]; then
+            b62_binding_state="absent"
+            echo "B62_IDENTITY_SERVICE_BINDING=ABSENT"
+          elif [ "${b62_binding_count}" -eq 1 ]; then
+            jq -e --arg name "${B62_IDENTITY_BINDING}" --arg identity "${IDENTITY_WORKER}" \
+              '.result.bindings[] | select(.name == $name) | .type == "service" and .service == $identity' "${b62_settings}" >/dev/null
+            b62_binding_state="present_expected"
+            echo "B62_IDENTITY_SERVICE_BINDING=PRESENT_EXPECTED"
+          else
+            echo "Ambiguous duplicate B62 identity service bindings" >&2
+            exit 1
+          fi
+
+          if [ "${domain_state}" = "absent" ]; then
+            if python - "${PUBLIC_HOSTNAME}" <<'PY'
+          import socket
+          import sys
+
+          host = sys.argv[1]
+          try:
+              socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+          except socket.gaierror:
+              raise SystemExit(1)
+          raise SystemExit(0)
+          PY
+            then
+              echo "oauth.padiem.net resolves without the expected Worker Custom Domain" >&2
+              exit 1
+            else
+              echo "PUBLIC_DNS=NXDOMAIN_OR_UNRESOLVED"
+            fi
+          fi
+
+          echo "domain_state=${domain_state}" >> "${GITHUB_OUTPUT}"
+          echo "identity_state=${identity_state}" >> "${GITHUB_OUTPUT}"
+          echo "oauth_state_state=${state_state}" >> "${GITHUB_OUTPUT}"
+          echo "oauth_edge_state=${edge_state}" >> "${GITHUB_OUTPUT}"
+          echo "b62_binding_state=${b62_binding_state}" >> "${GITHUB_OUTPUT}"
+
+          {
+            echo "## B54 Google OAuth Production Read-only Audit"
+            echo ""
+            echo "- Git SHA: \`${GITHUB_SHA}\`"
+            echo "- OAuth Custom Domain: \`${domain_state}\`"
+            echo "- Identity Worker: \`${identity_state}\`"
+            echo "- OAuth State Worker: \`${state_state}\`"
+            echo "- OAuth Edge Worker: \`${edge_state}\`"
+            echo "- B62 identity binding: \`${b62_binding_state}\`"
+            echo "- Production mutation: \`0\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+          echo "OAUTH_HOST_COLLISION_AUDITED=YES"
+          echo "GOOGLE_RUNTIME_BINDINGS_AUDITED=YES"
+          echo "CLOUDFLARE_READONLY_AUDIT=PASS"
+          echo "PRODUCTION_MUTATION=0"
