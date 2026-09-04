@@ -42,23 +42,38 @@ def _unavailable() -> JSONResponse:
 async def auth_status(request: Request) -> JSONResponse:
     ready = auth_ready(request)
     store: HistoryStore | None = request.app.state.history_store
+    session_cookie_present = bool(request.cookies.get(SESSION_COOKIE))
     user = None
     authenticated = False
+    session_state = "unavailable" if not ready else "guest"
     if ready and store is not None:
         uid = current_user_id(request)
         if uid:
             try:
                 profile = await store.get_user(uid)
             except Exception:
+                # This projection is presentation-only. Do not turn a transient
+                # storage failure into guest or authenticated authority.
                 profile = None
-            if profile is not None:
-                authenticated = True
-                user = profile.public_dict()
+                session_state = "unavailable"
+            else:
+                if profile is not None:
+                    authenticated = True
+                    user = profile.public_dict()
+                    session_state = "signed_in"
+                elif session_cookie_present:
+                    session_state = "expired"
+        elif session_cookie_present:
+            # A browser still carrying a session cookie that no longer resolves
+            # to trusted B62 compatibility auth may recover by signing in again.
+            # This does not widen identity authority and is not used for access.
+            session_state = "expired"
     payload = {
         "ready": ready,
         "authenticated": authenticated,
         "history_ready": ready and store is not None,
         "user": user,
+        "session_state": session_state,
     }
     if ready and getattr(request.app.state, "project_file_store", None) is not None:
         payload["project_files_ready"] = True
