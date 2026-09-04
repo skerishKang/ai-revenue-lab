@@ -2,13 +2,10 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
-  const accountControls =
-    document.querySelector(".account-controls") ||
-    document.querySelector(".sidebar-account") ||
-    document.querySelector(".sidebar-bottom");
-  const loginButton = document.getElementById("loginButton");
+  const sidebarBottom = document.querySelector(".sidebar-bottom");
+  const accountControls = document.querySelector(".sidebar-account");
 
-  if (!messageList || !accountControls) return;
+  if (!messageList || !sidebarBottom) return;
 
   const exportButton = document.createElement("button");
   exportButton.type = "button";
@@ -19,18 +16,13 @@
   exportButton.hidden = true;
   exportButton.disabled = true;
 
-  if (loginButton && accountControls.contains(loginButton)) {
-    let ref = loginButton;
-    while (ref.parentElement && ref.parentElement !== accountControls) {
-      ref = ref.parentElement;
-    }
-    if (ref.parentElement === accountControls) {
-      accountControls.insertBefore(exportButton, ref);
-    } else {
-      accountControls.appendChild(exportButton);
-    }
+  // Conversation export is a conversation utility, not an account capability.
+  // Keep it outside the fail-closed account wrapper so guest/unavailable auth
+  // presentation cannot accidentally hide an otherwise exportable conversation.
+  if (accountControls && accountControls.parentElement === sidebarBottom) {
+    sidebarBottom.insertBefore(exportButton, accountControls);
   } else {
-    accountControls.appendChild(exportButton);
+    sidebarBottom.appendChild(exportButton);
   }
 
   const SKIP_SELECTOR = [
