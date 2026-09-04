@@ -114,41 +114,41 @@ html[data-theme="padiem-glass"] .answer-source-copy small {
   color: #46535f !important;
 }
 
-html[data-theme="dark"] .attachment-copy small,
-html[data-theme="dark"] .history-empty,
-html[data-theme="dark"] .project-banner-copy span,
-html[data-theme="dark"] .project-banner-copy small,
-html[data-theme="dark"] .project-dialog-header p,
-html[data-theme="dark"] .project-form label span,
-html[data-theme="dark"] .project-form-note,
-html[data-theme="dark"] .project-files-heading small,
-html[data-theme="dark"] .project-files-note,
-html[data-theme="dark"] .project-files-empty,
-html[data-theme="dark"] .project-file-row small,
-html[data-theme="dark"] .saved-output-header p,
-html[data-theme="dark"] .saved-output-status,
-html[data-theme="dark"] .reference-note,
-html[data-theme="dark"] .research-summary,
-html[data-theme="dark"] .answer-source-number,
-html[data-theme="dark"] .answer-source-copy small,
-html[data-theme="cinematic"] .attachment-copy small,
-html[data-theme="cinematic"] .history-empty,
-html[data-theme="cinematic"] .project-banner-copy span,
-html[data-theme="cinematic"] .project-banner-copy small,
-html[data-theme="cinematic"] .project-dialog-header p,
-html[data-theme="cinematic"] .project-form label span,
-html[data-theme="cinematic"] .project-form-note,
-html[data-theme="cinematic"] .project-files-heading small,
-html[data-theme="cinematic"] .project-files-note,
-html[data-theme="cinematic"] .project-files-empty,
-html[data-theme="cinematic"] .project-file-row small,
-html[data-theme="cinematic"] .saved-output-header p,
-html[data-theme="cinematic"] .saved-output-status,
-html[data-theme="cinematic"] .reference-note,
-html[data-theme="cinematic"] .research-summary,
-html[data-theme="cinematic"] .answer-source-number,
-html[data-theme="cinematic"] .answer-source-copy small {
-  color: rgba(255, 255, 255, .72);
+/* #1735 moved Padiem Home into the bottom utility stack. The older Glass
+ * theme presented it as a 36px absolute icon beside the brand; explicitly
+ * neutralize that legacy projection so DOM and visual IA agree. */
+html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link {
+  position: static !important;
+  inset: auto !important;
+  z-index: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 44px !important;
+  display: flex !important;
+  place-items: initial !important;
+  gap: 10px !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link::before {
+  content: none !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link .home-link-mark {
+  display: inline !important;
+}
+
+html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data-locale-key="home-link"] {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
 }
 
 @media (max-width: 620px) {
