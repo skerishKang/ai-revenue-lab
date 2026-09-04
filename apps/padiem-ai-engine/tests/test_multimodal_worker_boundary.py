@@ -24,6 +24,8 @@ if str(APP_ROOT) not in sys.path:
 CALLER_ID = "e5-boundary-caller"
 CALLER_SECRET = "e5-boundary-secret-0123456789abcdef-0123456789abcdef"
 ALLOWED_APP = "b62"
+MULTIMODAL_PATH = "/internal/v1/multimodal/execute"
+VALID_REF = "att_F1xture-Ref_000123"
 
 
 class _FakeResponse:
@@ -115,6 +117,25 @@ def _execute_body() -> bytes:
     return json.dumps({"app_id": ALLOWED_APP}).encode("utf-8")
 
 
+def _multimodal_payload() -> bytes:
+    return json.dumps(
+        {
+            "app_id": ALLOWED_APP,
+            "agent": {
+                "id": "vision-assistant",
+                "title": "Vision Assistant",
+                "description": "Bounded image-aware assistant fixture.",
+                "system_instruction": "Describe the attached image factually.",
+                "task_type": "general",
+                "optimize_for": "balanced",
+                "max_tokens": 256,
+            },
+            "messages": [{"role": "user", "content": "What is in this image?"}],
+            "attachment_ref": VALID_REF,
+        }
+    ).encode("utf-8")
+
+
 @pytest.mark.parametrize(
     ("path", "expected_code"),
     [
@@ -184,3 +205,94 @@ def test_legacy_worker_is_not_widened_by_e5a(identity_modules) -> None:
     assert "MULTIMODAL_EXECUTE_PATH" not in legacy_source
 
     assert legacy._engine_services_for_env(_identity_env()).multimodal is None
+
+
+def test_canonical_composition_wires_multimodal_service_without_resolver(
+    identity_modules,
+) -> None:
+    """Production composition has no trusted resolver in either composition shape."""
+
+    from app.multimodal_attachment_service import MultimodalAttachmentEngineService
+
+    _legacy, identity = identity_modules
+
+    for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
+        services = identity._engine_services_for_env(env)
+        assert isinstance(services.multimodal, MultimodalAttachmentEngineService)
+        assert services.multimodal._attachment_resolver is None
+
+
+def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
+    identity_modules,
+) -> None:
+    """Service identity fails closed before the attachment composition is built.
+
+    Reaching ``engine_services_factory`` at all would mean an unauthenticated
+    caller touched attachment resolution or Core/B14 execution wiring.
+    """
+
+    _legacy, identity = identity_modules
+
+    def forbidden_composition(env: Any) -> Any:
+        raise AssertionError("attachment composition reached before service identity")
+
+    saved = identity.Default.engine_services_factory
+    identity.Default.engine_services_factory = staticmethod(forbidden_composition)
+    try:
+        response = _fetch(
+            identity,
+            _identity_env(),
+            _Request(MULTIMODAL_PATH, body=_multimodal_payload(), authenticated=False),
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(saved)
+
+    assert response.status == 401
+    assert _body(response)["error"]["code"] == "service_authentication_failed"
+
+
+@pytest.mark.parametrize("b14_bound", [False, True])
+def test_valid_ref_fails_closed_through_canonical_fetch(
+    identity_modules, b14_bound: bool
+) -> None:
+    """A syntactically valid opaque ref still fails closed at the canonical fetch.
+
+    The runtime factory is instrumented to count invocations: zero calls plus
+    the bounded 503 prove no resolver, storage or Core/B14 execution fallback.
+    """
+
+    _legacy, identity = identity_modules
+    env = _identity_env(**({"B14_SERVICE": object()} if b14_bound else {}))
+    runtime_calls: list[str] = []
+
+    real_factory = identity.Default.engine_services_factory
+
+    def spying_factory(composition_env: Any) -> Any:
+        services = real_factory(composition_env)
+        assert services.multimodal is not None
+        assert services.multimodal._attachment_resolver is None
+        original = services.multimodal._runtime_factory
+
+        def counting_runtime_factory(app_id: str) -> Any:
+            runtime_calls.append(app_id)
+            return original(app_id)
+
+        services.multimodal._runtime_factory = counting_runtime_factory
+        return services
+
+    identity.Default.engine_services_factory = staticmethod(spying_factory)
+    try:
+        response = _fetch(
+            identity, env, _Request(MULTIMODAL_PATH, body=_multimodal_payload())
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(real_factory)
+
+    assert response.status == 503
+    payload = _body(response)
+    assert payload["ok"] is False
+    assert payload["error"]["code"] == "attachment_resolver_unavailable"
+    assert runtime_calls == []
+    serialized = str(response.body)
+    assert VALID_REF not in serialized
+    assert "data:" not in serialized
