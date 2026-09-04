@@ -60,17 +60,27 @@ jobs:
       - name: Account and session presentation QA
         run: |
           set -euo pipefail
+          cases_file="$(mktemp)"
           for theme in light dark cinematic padiem-home padiem-glass; do
             for viewport in desktop mobile; do
               for account_case in expired signed unavailable; do
-                echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
-                uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
-                  --theme "$theme" \
-                  --viewport "$viewport" \
-                  --case "$account_case"
+                printf '%s %s %s\n' "$theme" "$viewport" "$account_case" >> "$cases_file"
               done
             done
           done
+
+          xargs -r -P 4 -n 3 bash -c '
+            set -euo pipefail
+            theme="$1"
+            viewport="$2"
+            account_case="$3"
+            echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
+            uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+              --theme "$theme" \
+              --viewport "$viewport" \
+              --case "$account_case"
+          ' _ < "$cases_file"
+
           uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
             --theme light \
             --viewport desktop \
