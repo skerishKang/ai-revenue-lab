@@ -13,6 +13,7 @@
   const attachmentName = document.getElementById("attachmentName");
   const runtimeNote = document.getElementById("runtimeNote");
   const messageList = document.getElementById("messageList");
+  const composerWrap = form ? form.closest(".composer-wrap") : null;
   if (!form || !input || !sendButton || !cancelButton || !attachmentInput || !attachmentButton || !runtimeNote || !messageList) return;
 
   const phases = Object.freeze({
@@ -24,6 +25,8 @@
   });
   const terminalStates = new Set(["completed", "failed", "cancelled", "timed_out"]);
   const requestPhases = new Set([phases.PREPARING, phases.STREAMING, phases.CANCELLING]);
+  const COMPOSER_MIN_HEIGHT = 50;
+  const COMPOSER_MAX_HEIGHT = 180;
   let phase = phases.IDLE;
   let attachmentLoading = false;
   let terminalSettling = false;
@@ -57,6 +60,34 @@
 
   const statusNode = ensureStatus();
   ensureStyles();
+
+  function resizeComposerInput() {
+    input.style.height = "auto";
+    const contentHeight = Math.max(COMPOSER_MIN_HEIGHT, input.scrollHeight || COMPOSER_MIN_HEIGHT);
+    const nextHeight = Math.min(COMPOSER_MAX_HEIGHT, contentHeight);
+    input.style.height = `${nextHeight}px`;
+    input.style.overflowY = contentHeight > COMPOSER_MAX_HEIGHT ? "auto" : "hidden";
+    form.dataset.composerExpanded = nextHeight > COMPOSER_MIN_HEIGHT + 4 ? "true" : "false";
+  }
+
+  function visualKeyboardInset() {
+    const viewport = window.visualViewport;
+    if (!viewport) return 0;
+    const inset = window.innerHeight - viewport.height - viewport.offsetTop;
+    if (!Number.isFinite(inset)) return 0;
+    return Math.max(0, Math.round(inset));
+  }
+
+  function syncVisualViewport() {
+    const viewport = window.visualViewport;
+    const inset = visualKeyboardInset();
+    const viewportHeight = viewport && Number.isFinite(viewport.height)
+      ? Math.max(1, Math.round(viewport.height))
+      : Math.max(1, window.innerHeight);
+    document.documentElement.style.setProperty("--padiem-visual-keyboard-inset", `${inset}px`);
+    document.documentElement.style.setProperty("--padiem-visual-viewport-height", `${viewportHeight}px`);
+    if (composerWrap) composerWrap.dataset.keyboardInset = String(inset);
+  }
 
   function phaseText(next) {
     if (next === phases.ATTACHMENT_LOADING) return copy("파일을 안전하게 확인하고 있습니다.", "Checking the file before attaching it.");
@@ -144,6 +175,7 @@
     cancelButton.textContent = copy("취소", "Cancel");
     window.setTimeout(() => {
       syncRequestFromDom();
+      resizeComposerInput();
       focusComposer();
     }, 0);
   }
@@ -202,10 +234,15 @@
   }, true);
 
   input.addEventListener("input", () => {
+    resizeComposerInput();
     queueMicrotask(() => {
       if (attachmentLoading) guardAttachmentControls();
       else syncRequestFromDom();
     });
+  });
+
+  form.addEventListener("submit", () => {
+    queueMicrotask(resizeComposerInput);
   });
 
   cancelButton.addEventListener("click", () => {
@@ -239,6 +276,13 @@
   attachmentObserver.observe(attachmentTray, { attributes: true, attributeFilter: ["hidden"] });
   if (attachmentName) attachmentObserver.observe(attachmentName, { childList: true, subtree: true });
 
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", syncVisualViewport);
+    window.visualViewport.addEventListener("scroll", syncVisualViewport);
+  }
+  window.addEventListener("resize", syncVisualViewport);
+  window.addEventListener("orientationchange", syncVisualViewport);
+
   window.addEventListener("padiem:localechange", () => {
     if (phase !== phases.IDLE) statusNode.textContent = phaseText(phase);
     if (phase === phases.CANCELLING) cancelButton.textContent = copy("취소 중…", "Cancelling…");
@@ -248,9 +292,14 @@
     phases,
     currentPhase() { return phase; },
     terminalStates: Object.freeze(Array.from(terminalStates)),
+    resizeComposerInput,
+    syncVisualViewport,
+    visualKeyboardInset,
   });
 
   form.dataset.interactionPhase = phases.IDLE;
   form.setAttribute("aria-busy", "false");
+  resizeComposerInput();
+  syncVisualViewport();
   syncRequestFromDom();
 })();
