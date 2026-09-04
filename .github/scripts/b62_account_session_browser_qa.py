@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
@@ -16,6 +17,7 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 THEMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 VIEWPORTS = (("desktop", 1440, 1000, False), ("mobile", 390, 844, True))
 USER_NAME = "브라우저 계정 사용자"
+STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
 
 
 async def _fulfill_json(route: Route, payload: Any, status: int = 200) -> None:
@@ -25,6 +27,27 @@ async def _fulfill_json(route: Route, payload: Any, status: int = 200) -> None:
         body=json.dumps(payload, ensure_ascii=False),
         headers={"Cache-Control": "no-store"},
     )
+
+
+async def _install_static_font_stubs(page: Page, stubbed_hosts: set[str]) -> None:
+    async def stub_stylesheet(route: Route) -> None:
+        host = (urlparse(route.request.url).hostname or "").lower()
+        stubbed_hosts.add(host)
+        await route.fulfill(
+            status=200,
+            content_type="text/css; charset=utf-8",
+            body="/* deterministic account/session QA: external decorative font fetch suppressed */\n",
+            headers={"Cache-Control": "no-store"},
+        )
+
+    async def stub_font_binary(route: Route) -> None:
+        host = (urlparse(route.request.url).hostname or "").lower()
+        stubbed_hosts.add(host)
+        await route.fulfill(status=204, body="")
+
+    await page.route("https://cdn.jsdelivr.net/**", stub_stylesheet)
+    await page.route("https://fonts.googleapis.com/**", stub_stylesheet)
+    await page.route("https://fonts.gstatic.com/**", stub_font_binary)
 
 
 async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
@@ -239,8 +262,10 @@ async def _run_view(
         "history_reads": 0,
         "google_start_reads": 0,
     }
+    stubbed_hosts: set[str] = set()
     results: dict[str, Any] = {}
     try:
+        await _install_static_font_stubs(page, stubbed_hosts)
         await _install_fixtures(page, state)
         await page.goto(f"{BASE_URL}/?theme={theme}", wait_until="domcontentloaded", timeout=30_000)
         await page.wait_for_function(
@@ -317,6 +342,7 @@ async def _run_view(
             "viewport": viewport_name,
             "states": results,
             "history_consumed_by_app": state["history_reads"] > 0,
+            "stubbed_decorative_font_hosts": sorted(stubbed_hosts & STATIC_FONT_HOSTS),
             "horizontal_overflow": False,
             "production_mutation": False,
             "status": "PASS",
@@ -335,7 +361,9 @@ async def _run_english_probe(playwright: Any) -> dict[str, Any]:
         "history_reads": 0,
         "google_start_reads": 0,
     }
+    stubbed_hosts: set[str] = set()
     try:
+        await _install_static_font_stubs(page, stubbed_hosts)
         await _install_fixtures(page, state)
         await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
         await page.wait_for_function(
@@ -348,7 +376,12 @@ async def _run_english_probe(playwright: Any) -> dict[str, Any]:
         if (await page.locator("#loginButton").inner_text()).strip() != "Sign in again":
             raise AssertionError("English recovery action did not project")
         await _assert_target(page, "#loginButton", "english-expired-action")
-        return {"lang": "en", "expired_copy": "PASS", "status": "PASS"}
+        return {
+            "lang": "en",
+            "expired_copy": "PASS",
+            "stubbed_decorative_font_hosts": sorted(stubbed_hosts & STATIC_FONT_HOSTS),
+            "status": "PASS",
+        }
     finally:
         await page.close()
         await browser.close()
@@ -358,6 +391,7 @@ async def main() -> None:
     report: dict[str, Any] = {
         "base_url": BASE_URL,
         "fixture_boundary": "browser-route-fixtures-only",
+        "decorative_font_network": "stubbed-before-network",
         "real_google_oauth": 0,
         "production_mutation": False,
         "views": {},
