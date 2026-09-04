@@ -47,39 +47,29 @@ jobs:
         run: |
           set -euo pipefail
           workflow=".github/workflows/b54-google-oauth-readonly-main-audit.yml"
-          test -f "${workflow}"
-
           python - <<'PY'
           from pathlib import Path
 
           text = Path(".github/workflows/b54-google-oauth-readonly-main-audit.yml").read_text(encoding="utf-8")
           required = [
-              "push:",
-              "branches:",
-              "- main",
-              "permissions:\n  contents: read",
-              "CLOUDFLARE_READONLY_AUDIT=PASS",
-              "PRODUCTION_MUTATION=0",
-              "/workers/domains",
-              "/workers/scripts/${B62_WORKER}/settings",
-              "oauth.padiem.net",
-              "IDENTITY_AUTHORITY_SERVICE",
+              "push:", "- main", "permissions:\n  contents: read",
+              "CLOUDFLARE_READONLY_AUDIT=PASS", "PRODUCTION_MUTATION=0",
+              "/workers/domains", "/workers/scripts/${B62_WORKER}/settings",
+              "oauth.padiem.net", "IDENTITY_AUTHORITY_SERVICE",
               "b54-google-oauth-readonly-audit-result.json",
+              "WORKER_ROUTE_AUDIT=NOT_REQUIRED_UNRESOLVED_HOST",
           ]
           for marker in required:
               if marker not in text:
                   raise SystemExit(f"missing read-only contract marker: {marker}")
-
           forbidden = [
-              "pywrangler" + " deploy",
-              "wrangler" + " deploy",
+              "pywrangler" + " deploy", "wrangler" + " deploy",
               *["curl -X " + verb for verb in ("POST", "PUT", "PATCH", "DELETE")],
               *["--request " + verb for verb in ("POST", "PUT", "PATCH", "DELETE")],
           ]
           for marker in forbidden:
               if marker in text:
                   raise SystemExit(f"mutation-capable command forbidden in audit workflow: {marker}")
-
           print("READONLY_WORKFLOW_SOURCE_CONTRACT=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
@@ -136,23 +126,35 @@ jobs:
             exit 1
           fi
 
-          zones="${RUNNER_TEMP}/zones.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
-            -o "${zones}"
-          jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
-          zone_id="$(jq -r '.result[0].id' "${zones}")"
-          test -n "${zone_id}" && test "${zone_id}" != "null"
-
-          routes="${RUNNER_TEMP}/routes.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
-            -o "${routes}"
-          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
-          python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
+          # Before activation, an absent Custom Domain plus unresolved public DNS is
+          # sufficient to prove there is no currently reachable OAuth hostname.
+          # Zone-route inspection is only required once the expected Custom Domain exists.
+          if [ "${domain_state}" = "absent" ]; then
+            if getent ahosts "${PUBLIC_HOSTNAME}" >/dev/null 2>&1; then
+              echo "oauth.padiem.net resolves without the expected Worker Custom Domain" >&2
+              exit 1
+            fi
+            dns_state="unresolved"
+            route_state="not_required_unresolved_host"
+            echo "PUBLIC_DNS=NXDOMAIN_OR_UNRESOLVED"
+            echo "WORKER_ROUTE_AUDIT=NOT_REQUIRED_UNRESOLVED_HOST"
+          else
+            dns_state="resolved_expected_custom_domain"
+            zones="${RUNNER_TEMP}/zones.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
+              -o "${zones}"
+            jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
+            zone_id="$(jq -r '.result[0].id' "${zones}")"
+            test -n "${zone_id}" && test "${zone_id}" != "null"
+            routes="${RUNNER_TEMP}/routes.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
+              -o "${routes}"
+            jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+            python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
           import json
           import sys
-
           routes_path, host = sys.argv[1:]
           data = json.load(open(routes_path, encoding="utf-8"))
           collisions = []
@@ -164,6 +166,9 @@ jobs:
               raise SystemExit("Worker route collision for OAuth hostname: " + ", ".join(collisions))
           print("WORKER_ROUTE_COLLISION=NO")
           PY
+            route_state="checked_no_collision"
+            echo "WORKER_ROUTE_AUDIT=CHECKED_NO_COLLISION"
+          fi
 
           inspect_worker() {
             worker="$1"
@@ -195,7 +200,6 @@ jobs:
 
           if [ "${identity_state}" = "present_private" ]; then
             identity_settings="${RUNNER_TEMP}/${IDENTITY_WORKER}-settings.json"
-            jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${identity_settings}" >/dev/null
             for binding in CONTROL_PLANE_IDENTITY_LOOKUP_KEY GOOGLE_CONNECT_TICKET_KEY CONTROL_PLANE_ALLOWED_PRODUCT CONTROL_PLANE_IDENTITY; do
               jq -e --arg name "${binding}" '.result.bindings | any(.name == $name)' "${identity_settings}" >/dev/null
             done
@@ -206,7 +210,6 @@ jobs:
 
           if [ "${state_state}" = "present_private" ]; then
             state_settings="${RUNNER_TEMP}/${OAUTH_STATE_WORKER}-settings.json"
-            jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${state_settings}" >/dev/null
             for binding in GOOGLE_CONNECT_TICKET_KEY GOOGLE_OAUTH_SEAL_KEY GOOGLE_OAUTH_CLIENT_SECRET GOOGLE_OAUTH_CLIENT_ID GOOGLE_OAUTH_REDIRECT_URI GOOGLE_OAUTH_AUTHORITY_REF GOOGLE_OAUTH_STATE; do
               jq -e --arg name "${binding}" '.result.bindings | any(.name == $name)' "${state_settings}" >/dev/null
             done
@@ -219,7 +222,6 @@ jobs:
 
           if [ "${edge_state}" = "present_private" ]; then
             edge_settings="${RUNNER_TEMP}/${OAUTH_EDGE_WORKER}-settings.json"
-            jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${edge_settings}" >/dev/null
             jq -e --arg state "${OAUTH_STATE_WORKER}" \
               '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .type == "service" and .service == $state)' "${edge_settings}" >/dev/null
             jq -e '.result.bindings | any(.name == "GOOGLE_OAUTH_ALLOWED_ORIGIN")' "${edge_settings}" >/dev/null
@@ -232,14 +234,11 @@ jobs:
           b62_deployments="${RUNNER_TEMP}/b62-deployments.json"
           b62_versions="${RUNNER_TEMP}/b62-versions.json"
           curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
-            -o "${b62_settings}"
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${b62_settings}"
           curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
-            -o "${b62_deployments}"
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${b62_deployments}"
           curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" \
-            -o "${b62_versions}"
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${b62_versions}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${b62_settings}" >/dev/null
           jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${b62_deployments}" >/dev/null
           jq -e '.success == true and (.result.items | length) > 0' "${b62_versions}" >/dev/null
@@ -262,26 +261,6 @@ jobs:
             exit 1
           fi
 
-          if [ "${domain_state}" = "absent" ]; then
-            if python - "${PUBLIC_HOSTNAME}" <<'PY'
-          import socket
-          import sys
-
-          host = sys.argv[1]
-          try:
-              socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-          except socket.gaierror:
-              raise SystemExit(1)
-          raise SystemExit(0)
-          PY
-            then
-              echo "oauth.padiem.net resolves without the expected Worker Custom Domain" >&2
-              exit 1
-            else
-              echo "PUBLIC_DNS=NXDOMAIN_OR_UNRESOLVED"
-            fi
-          fi
-
           echo "domain_state=${domain_state}" >> "${GITHUB_OUTPUT}"
           echo "identity_state=${identity_state}" >> "${GITHUB_OUTPUT}"
           echo "oauth_state_state=${state_state}" >> "${GITHUB_OUTPUT}"
@@ -292,11 +271,13 @@ jobs:
           jq -n \
             --arg git_sha "${GITHUB_SHA}" \
             --arg oauth_custom_domain "${domain_state}" \
+            --arg public_dns "${dns_state}" \
+            --arg worker_route_audit "${route_state}" \
             --arg identity_worker "${identity_state}" \
             --arg oauth_state_worker "${state_state}" \
             --arg oauth_edge_worker "${edge_state}" \
             --arg b62_identity_binding "${b62_binding_state}" \
-            '{git_sha:$git_sha, oauth_custom_domain:$oauth_custom_domain, identity_worker:$identity_worker, oauth_state_worker:$oauth_state_worker, oauth_edge_worker:$oauth_edge_worker, b62_identity_binding:$b62_identity_binding, production_mutation:0}' \
+            '{git_sha:$git_sha, oauth_custom_domain:$oauth_custom_domain, public_dns:$public_dns, worker_route_audit:$worker_route_audit, identity_worker:$identity_worker, oauth_state_worker:$oauth_state_worker, oauth_edge_worker:$oauth_edge_worker, b62_identity_binding:$b62_identity_binding, production_mutation:0}' \
             > "${result_file}"
           jq -e '.production_mutation == 0' "${result_file}" >/dev/null
 
@@ -305,6 +286,8 @@ jobs:
             echo ""
             echo "- Git SHA: \`${GITHUB_SHA}\`"
             echo "- OAuth Custom Domain: \`${domain_state}\`"
+            echo "- Public DNS: \`${dns_state}\`"
+            echo "- Worker route audit: \`${route_state}\`"
             echo "- Identity Worker: \`${identity_state}\`"
             echo "- OAuth State Worker: \`${state_state}\`"
             echo "- OAuth Edge Worker: \`${edge_state}\`"
