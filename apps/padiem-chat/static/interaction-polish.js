@@ -27,6 +27,8 @@
   const requestPhases = new Set([phases.PREPARING, phases.STREAMING, phases.CANCELLING]);
   const COMPOSER_MIN_HEIGHT = 50;
   const COMPOSER_MAX_HEIGHT = 180;
+  const MIN_CONVERSATION_CLEARANCE = 230;
+  const COMPOSER_CLEARANCE_GAP = 24;
   let phase = phases.IDLE;
   let attachmentLoading = false;
   let terminalSettling = false;
@@ -61,6 +63,17 @@
   const statusNode = ensureStatus();
   ensureStyles();
 
+  function syncComposerClearance() {
+    if (!composerWrap) return;
+    const height = composerWrap.getBoundingClientRect().height;
+    const clearance = Math.max(
+      MIN_CONVERSATION_CLEARANCE,
+      Math.ceil((Number.isFinite(height) ? height : 0) + COMPOSER_CLEARANCE_GAP)
+    );
+    document.documentElement.style.setProperty("--padiem-composer-clearance", `${clearance}px`);
+    composerWrap.dataset.conversationClearance = String(clearance);
+  }
+
   function resizeComposerInput() {
     input.style.height = "auto";
     const contentHeight = Math.max(COMPOSER_MIN_HEIGHT, input.scrollHeight || COMPOSER_MIN_HEIGHT);
@@ -68,6 +81,7 @@
     input.style.height = `${nextHeight}px`;
     input.style.overflowY = contentHeight > COMPOSER_MAX_HEIGHT ? "auto" : "hidden";
     form.dataset.composerExpanded = nextHeight > COMPOSER_MIN_HEIGHT + 4 ? "true" : "false";
+    queueMicrotask(syncComposerClearance);
   }
 
   function visualKeyboardInset() {
@@ -87,6 +101,7 @@
     document.documentElement.style.setProperty("--padiem-visual-keyboard-inset", `${inset}px`);
     document.documentElement.style.setProperty("--padiem-visual-viewport-height", `${viewportHeight}px`);
     if (composerWrap) composerWrap.dataset.keyboardInset = String(inset);
+    syncComposerClearance();
   }
 
   function phaseText(next) {
@@ -276,6 +291,10 @@
   attachmentObserver.observe(attachmentTray, { attributes: true, attributeFilter: ["hidden"] });
   if (attachmentName) attachmentObserver.observe(attachmentName, { childList: true, subtree: true });
 
+  if (composerWrap && typeof ResizeObserver === "function") {
+    const composerObserver = new ResizeObserver(() => syncComposerClearance());
+    composerObserver.observe(composerWrap);
+  }
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", syncVisualViewport);
     window.visualViewport.addEventListener("scroll", syncVisualViewport);
@@ -293,6 +312,7 @@
     currentPhase() { return phase; },
     terminalStates: Object.freeze(Array.from(terminalStates)),
     resizeComposerInput,
+    syncComposerClearance,
     syncVisualViewport,
     visualKeyboardInset,
   });
