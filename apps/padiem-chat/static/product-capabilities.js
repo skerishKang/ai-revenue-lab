@@ -502,6 +502,7 @@
   if (loginButton) {
     const authUiObserver = new MutationObserver(() => {
       const previousState = auth.sessionState;
+      if (previousState !== "signed_in") return;
       const expectedAction = auth.loaded && auth.ready ? expectedAccountActionText() : "";
       const actualAction = loginButton.textContent.trim();
       const actionDrifted = actualAction !== expectedAction;
@@ -514,7 +515,7 @@
       // Only a signed-in action drift can represent a completed logout
       // transition and justify one fresh server read. Guest/expired visual
       // drift never creates a network refresh feedback loop.
-      if (previousState === "signed_in" && actionDrifted) queueAuthRefresh();
+      if (actionDrifted) queueAuthRefresh();
     });
     authUiObserver.observe(loginButton, { childList: true, subtree: true });
     if (accountName) {
