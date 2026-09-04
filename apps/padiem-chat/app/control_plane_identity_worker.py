@@ -132,7 +132,7 @@ class CloudflareControlPlaneIdentityAuthority:
                 "control_plane_identity_unavailable",
                 "Canonical identity service is unavailable.",
             ) from exc
-        if result is None or result.get("ok") not in (True, False):
+        if result is None or not isinstance(result.get("ok"), bool):
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data.")
         if result["ok"] is False:
             if set(result) != {"ok", "error"}:
