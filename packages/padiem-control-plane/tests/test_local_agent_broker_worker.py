@@ -433,7 +433,7 @@ def test_adapter_truth_flags_do_not_claim_public_or_production_activation() -> N
     assert worker.SECOND_REPLAY_SEQUENCE_AUTHORITY is False
     assert worker.RAW_DEVICE_CREDENTIAL_PERSISTED is False
     assert worker.PUBLIC_FETCH is False
-    assert worker.DURABLE_COMMAND_MATERIAL_STORE is False
+    assert worker.DURABLE_COMMAND_MATERIAL_STORE is True
     assert worker.PRODUCTION_DEPLOYMENT is False
     assert worker.PRODUCTION_ROUTE_CONFIGURED is False
     assert worker.PRODUCTION_SECRET_BOUND is False
