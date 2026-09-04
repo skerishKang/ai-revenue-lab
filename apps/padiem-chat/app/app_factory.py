@@ -13,6 +13,7 @@ from .auth_routes import auth_status, google_callback, google_start, logout
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
 from .config import Settings
+from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
 from .grounding import GroundedChatService
 from .history import HistoryStore
@@ -50,6 +51,8 @@ async def health(request: Request) -> JSONResponse:
         "quota_store_bound": usage_gate.quota_store_bound,
         "live_abuse_gate_ready": abuse_ready,
         "live_enabled": settings.runtime_mode == "b14" and abuse_ready,
+        "canonical_identity_bound": request.app.state.control_plane_identity_authority is not None,
+        "identity_shadow_bound": request.app.state.identity_shadow_store is not None,
     })
 
 
@@ -72,6 +75,7 @@ def create_app(
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
+        Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
@@ -89,8 +93,8 @@ def create_app(
     app.state.history_store = history_store
     app.state.project_file_store = project_file_store
     app.state.saved_output_store = saved_output_store
-    # Optional migration/shadow seams only. Ordinary/Production Worker composition does
-    # not supply these yet, so this source addition does not activate Control Plane runtime.
+    # Canonical identity remains Control Plane authority. Product D1 stores only
+    # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
     app.state.identity_shadow_store = identity_shadow_store
     app.state.usage_gate = UsageGate(resolved, usage_store)

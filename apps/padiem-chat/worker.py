@@ -15,6 +15,8 @@ import httpx
 from workers import Request, Response, WorkerEntrypoint
 
 from app.config import ConfigError
+from app.control_plane_identity_shadow import D1IdentityShadowStore
+from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
@@ -26,6 +28,7 @@ from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
+    IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
@@ -135,7 +138,7 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
             raise
         except Exception as exc:
             raise httpx.ReadError(
-                "Business 14 Service Binding stream read failed."
+                "Business 14 Service Binding stream read failed.",
             ) from exc
 
     async def aclose(self) -> None:
@@ -152,8 +155,6 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
                 if callable(cancel):
                     await cancel()
         except Exception:
-            # Closing is best-effort; never replace the bounded Core error with
-            # raw Service Binding/FFI close details.
             pass
         finally:
             release_lock = getattr(reader, "releaseLock", None)
@@ -230,9 +231,17 @@ class Default(WorkerEntrypoint):
                 settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
+                identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
+
                 history_store = D1HistoryStore(db_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
                 saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
+                identity_shadow_store = D1IdentityShadowStore(db_binding) if db_binding is not None else None
+                identity_authority = (
+                    CloudflareControlPlaneIdentityAuthority(identity_binding)
+                    if identity_binding is not None
+                    else None
+                )
                 base_usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
                 usage_store = (
                     DispatchAwareUsageCounterStore(base_usage_store)
@@ -250,6 +259,8 @@ class Default(WorkerEntrypoint):
                     else None
                 )
                 _worker_app = create_app(settings=settings, history_store=history_store)
+                _worker_app.state.control_plane_identity_authority = identity_authority
+                _worker_app.state.identity_shadow_store = identity_shadow_store
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
@@ -265,6 +276,7 @@ class Default(WorkerEntrypoint):
                     _worker_app.state.web_provider,
                 )
                 _worker_app.state.b14_service_bound = b14_binding is not None
+                _worker_app.state.identity_authority_service_bound = identity_binding is not None
                 install_orchestration_routes(
                     _worker_app,
                     build_orchestration_bridge(
