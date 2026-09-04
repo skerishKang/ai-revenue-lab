@@ -51,10 +51,12 @@
       const current = active;
       active = null;
       if (dialog.open) dialog.close();
-      if (current.returnFocus && current.returnFocus.isConnected && typeof current.returnFocus.focus === "function") {
-        current.returnFocus.focus();
-      }
-      current.resolve(value === true);
+      queueMicrotask(() => {
+        if (current.returnFocus && current.returnFocus.isConnected && typeof current.returnFocus.focus === "function") {
+          current.returnFocus.focus();
+        }
+        current.resolve(value === true);
+      });
     }
 
     cancelButton.addEventListener("click", () => settle(false));
@@ -64,7 +66,14 @@
       settle(false);
     });
     dialog.addEventListener("keydown", (event) => {
-      if (event.key !== "Tab" || !active) return;
+      if (!active) return;
+      if (event.key === "Escape") {
+        // The modal owns Escape. Do not let the mobile drawer's Escape handler
+        // close the underlying sidebar while confirmation is settling.
+        event.stopPropagation();
+        return;
+      }
+      if (event.key !== "Tab") return;
       const focusables = [cancelButton, confirmButton].filter((button) => !button.disabled && !button.hidden);
       if (focusables.length < 2) return;
       const first = focusables[0];
