@@ -78,6 +78,17 @@ def _validated_media(name: str, media_type: Any, allowed: dict[str, frozenset[st
     return media_type
 
 
+def validate_document_identity(*, name: Any, media_type: Any, source_kind: str) -> tuple[str, str]:
+    safe_name = normalize_document_name(name)
+    if source_kind == "text":
+        allowed = TEXT_DOCUMENT_MEDIA
+    elif source_kind == "binary":
+        allowed = BINARY_DOCUMENT_MEDIA
+    else:
+        raise DocumentNormalizationError("invalid_source_kind", "Document source kind must be text or binary.")
+    return safe_name, _validated_media(safe_name, media_type, allowed, kind=source_kind)
+
+
 def normalize_document_text(value: Any) -> str:
     if not isinstance(value, str):
         raise DocumentNormalizationError("invalid_text", "Document text must be a string.")
@@ -95,8 +106,7 @@ def normalize_document_text(value: Any) -> str:
 
 
 def normalize_text_document(*, name: Any, media_type: Any, text: Any) -> NormalizedDocument:
-    safe_name = normalize_document_name(name)
-    safe_media = _validated_media(safe_name, media_type, TEXT_DOCUMENT_MEDIA, kind="text")
+    safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="text")
     normalized = normalize_document_text(text)
     byte_size = len(normalized.encode("utf-8"))
     if byte_size > MAX_TEXT_DOCUMENT_BYTES:
@@ -119,7 +129,7 @@ def _append_bounded(parts: list[str], value: str) -> None:
 
 
 def _safe_ooxml_member(name: str) -> bool:
-    if not name or "\\" in name or name.startswith("/"):
+    if not name or "\\" in name or name.startswith("/") or "//" in name:
         return False
     if len(name) >= 2 and name[1] == ":":
         return False
@@ -157,18 +167,17 @@ def validate_ooxml_archive(payload: bytes) -> None:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
 
 
-def _xml_text_values(xml: bytes, local_name: str) -> list[str]:
+def _parse_xml(xml: bytes) -> ElementTree.Element:
     if b"<!doctype" in xml.lower():
         raise DocumentNormalizationError("ooxml_dtd_rejected", "DTDs are not supported in OOXML documents.")
     try:
-        root = ElementTree.fromstring(xml)
+        return ElementTree.fromstring(xml)
     except ElementTree.ParseError as exc:
         raise DocumentNormalizationError("ooxml_invalid_xml", "Invalid OOXML XML part.") from exc
-    values: list[str] = []
-    for element in root.iter():
-        if element.tag.rsplit("}", 1)[-1] == local_name and element.text:
-            values.append(element.text)
-    return values
+
+
+def _local_name(element: ElementTree.Element) -> str:
+    return element.tag.rsplit("}", 1)[-1]
 
 
 def extract_docx_text(payload: bytes) -> str:
@@ -176,17 +185,23 @@ def extract_docx_text(payload: bytes) -> str:
     try:
         with ZipFile(BytesIO(payload)) as archive:
             try:
-                xml = archive.read("word/document.xml")
+                root = _parse_xml(archive.read("word/document.xml"))
             except KeyError as exc:
                 raise DocumentNormalizationError("docx_missing_part", "DOCX is missing word/document.xml.") from exc
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
-    parts: list[str] = []
-    for value in _xml_text_values(xml, "t"):
-        _append_bounded(parts, value)
-    text = "".join(parts).strip()
+
+    paragraphs: list[str] = []
+    for paragraph in root.iter():
+        if _local_name(paragraph) != "p":
+            continue
+        pieces = [node.text or "" for node in paragraph.iter() if _local_name(node) == "t"]
+        value = "".join(pieces)
+        if value:
+            _append_bounded(paragraphs, value)
+    text = "\n".join(paragraphs).strip()
     if not text:
         raise DocumentNormalizationError("docx_empty", "DOCX contains no readable text.")
     return text
@@ -214,8 +229,9 @@ def extract_pptx_text(payload: bytes) -> str:
                 raise DocumentNormalizationError("pptx_missing_slides", "PPTX contains no slide XML parts.")
             slides: list[str] = []
             for slide_name in slide_names:
-                values = _xml_text_values(archive.read(slide_name), "t")
-                slide = " ".join(value for value in values if value).strip()
+                root = _parse_xml(archive.read(slide_name))
+                pieces = [node.text or "" for node in root.iter() if _local_name(node) == "t"]
+                slide = "\n".join(piece for piece in pieces if piece).strip()
                 if slide:
                     _append_bounded(slides, slide)
     except DocumentNormalizationError:
@@ -307,8 +323,7 @@ def _extract_xlsx_text(payload: bytes) -> str:
 
 
 def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
-    safe_name = normalize_document_name(name)
-    safe_media = _validated_media(safe_name, media_type, BINARY_DOCUMENT_MEDIA, kind="binary")
+    safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
     if not isinstance(payload, (bytes, bytearray)):
         raise DocumentNormalizationError("invalid_binary_payload", "Binary document payload must be bytes.")
     binary = bytes(payload)
