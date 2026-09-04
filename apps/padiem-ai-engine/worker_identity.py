@@ -1,8 +1,12 @@
 """Cloudflare Worker entrypoint with identity-bound orchestration continuation wiring.
 
 All transport/auth/streaming behavior remains in the existing worker module. This
-entrypoint replaces only the orchestration service factory so approval resumes
-and durable idempotency use the canonical logical-execution identity contract.
+canonical composition root supplies the identity-bound service bundle through an
+explicit named composition seam: it subclasses the shared ``Default`` entrypoint
+and overrides ``engine_services_factory`` so approval resumes and durable
+idempotency use the canonical logical-execution identity contract, while every
+Engine route family (completed, streaming, orchestration, research) stays
+addressable by name with no positional-tuple contract between modules.
 """
 
 from __future__ import annotations
@@ -17,6 +21,8 @@ from padiem_ai_core import (
     ExecutionRuntime,
     StreamingExecutionRuntime,
 )
+from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
+from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
@@ -25,9 +31,11 @@ from app.cloudflare_transport import (
     CloudflareB14ServiceBindingTransport,
 )
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
+from app.engine_composition import EngineServices
 from app.orchestration_idempotency_service import CanonicalIdempotencyOrchestrationEngineService
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
+from app.web_research_service import WebResearchEngineService
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
 
@@ -43,19 +51,42 @@ def _continuation_store_for_env(env: Any) -> CloudflareD1IdentityBoundContinuati
         return None
 
 
-def _engine_services_for_env(
+def _research_service_for_env(
     env: Any,
-) -> tuple[EngineService, StreamingEngineService, CanonicalIdempotencyOrchestrationEngineService]:
+    execution_runtime_factory: Any,
+    *,
+    b14_service_bound: bool,
+) -> WebResearchEngineService:
+    def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
+        # Core validates provider/key/timeout configuration. Provider selection
+        # is deployment authority only and cannot be supplied by the request.
+        return GroundedResearchRuntime(
+            create_web_provider(legacy_worker._web_runtime_config_for_env(env))
+        )
+
+    return WebResearchEngineService(
+        research_runtime_factory=research_runtime_factory,
+        execution_runtime_factory=execution_runtime_factory,
+        b14_service_bound=b14_service_bound,
+    )
+
+
+def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
             RuntimeError("unreachable without B14 service binding")
         )
-        return (
-            EngineService(runtime_factory=unavailable, b14_service_bound=False),
-            StreamingEngineService(runtime_factory=unavailable, b14_service_bound=False),
-            CanonicalIdempotencyOrchestrationEngineService(
+        return EngineServices(
+            completed=EngineService(runtime_factory=unavailable, b14_service_bound=False),
+            streaming=StreamingEngineService(runtime_factory=unavailable, b14_service_bound=False),
+            orchestration=CanonicalIdempotencyOrchestrationEngineService(
                 runtime_factory=unavailable,
+                b14_service_bound=False,
+            ),
+            research=_research_service_for_env(
+                env,
+                unavailable,
                 b14_service_bound=False,
             ),
         )
@@ -79,28 +110,33 @@ def _engine_services_for_env(
             b14_stream_client=b14_stream_client,
         )
 
-    return (
-        EngineService(
+    return EngineServices(
+        completed=EngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
         ),
-        StreamingEngineService(
+        streaming=StreamingEngineService(
             runtime_factory=streaming_runtime_factory,
             b14_service_bound=True,
         ),
-        CanonicalIdempotencyOrchestrationEngineService(
+        orchestration=CanonicalIdempotencyOrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
         ),
+        research=_research_service_for_env(
+            env,
+            runtime_factory,
+            b14_service_bound=True,
+        ),
     )
 
 
-# Default.fetch resolves this global from legacy_worker, so replace only the
-# factory seam before exporting the unchanged WorkerEntrypoint class. All
-# non-health requests still pass legacy_worker service-identity authentication
-# before this service factory is used.
-legacy_worker._engine_services_for_env = _engine_services_for_env
-Default = legacy_worker.Default
+class Default(legacy_worker.Default):
+    # Authentication, route allow-listing and response encoding stay inherited
+    # from the shared worker module; only the named service bundle below is
+    # identity-bound. No module-global replacement is performed anywhere.
+
+    engine_services_factory = staticmethod(_engine_services_for_env)
