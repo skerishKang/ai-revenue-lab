@@ -14,6 +14,7 @@ from padiem_ai_core.document_normalization import (
     MAX_XLSX_SHEETS,
     DocumentNormalizationError,
     extract_binary_document,
+    validate_document_identity,
 )
 
 from .documents import DocumentAttachment
@@ -103,6 +104,14 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
         raise BinaryDocumentValidationError("지원하지 않는 바이너리 문서 첨부 항목이 있습니다.")
     if item.get("type") != "document":
         raise BinaryDocumentValidationError("문서 첨부 형식이 올바르지 않습니다.")
+    try:
+        validate_document_identity(
+            name=item.get("name"),
+            media_type=item.get("media_type"),
+            source_kind="binary",
+        )
+    except DocumentNormalizationError as exc:
+        raise _translate_binary_error(exc, item.get("media_type")) from exc
     payload = _decode_payload(item.get("base64"))
     try:
         document = extract_binary_document(
