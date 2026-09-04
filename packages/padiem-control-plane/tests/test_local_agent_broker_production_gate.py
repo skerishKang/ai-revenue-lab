@@ -8,6 +8,7 @@ ROOT = Path(__file__).parents[1]
 REPO_ROOT = ROOT.parents[1]
 STATE_CONFIG = ROOT / ("wrang" + "ler.local-agent-broker.jsonc")
 EDGE_CONFIG = ROOT / ("wrang" + "ler.local-agent-broker-edge.jsonc")
+DEFAULT_CONFIG = ROOT / ("wrang" + "ler.jsonc")
 WORKFLOW = REPO_ROOT / ".github" / "workflows" / "b54-local-agent-broker-production-gate.yml"
 
 
@@ -17,6 +18,7 @@ def test_state_config_declares_server_owned_authority_and_required_secret_name_o
     assert config["workers_dev"] is False
     assert config["preview_urls"] is False
     assert "routes" not in config
+    assert "route" not in config
     assert config["vars"] == {
         "LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1"
     }
@@ -39,12 +41,17 @@ def test_edge_config_remains_private_until_separate_route_activation() -> None:
     assert config["workers_dev"] is False
     assert config["preview_urls"] is False
     assert "routes" not in config
+    assert "route" not in config
     assert config["services"] == [
         {
             "binding": "LOCAL_AGENT_BROKER_SERVICE",
             "service": "padiem-local-agent-broker-state",
         }
     ]
+
+
+def test_no_ambiguous_default_worker_config_is_committed() -> None:
+    assert not DEFAULT_CONFIG.exists()
 
 
 def test_production_gate_is_manual_only_exact_sha_and_defaults_to_non_mutating_preflight() -> None:
@@ -66,12 +73,18 @@ def test_production_gate_is_manual_only_exact_sha_and_defaults_to_non_mutating_p
 def test_production_gate_packages_before_mutation_and_deploys_state_before_edge() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     tool = "py" + "wrang" + "ler deploy"
+    default_name = "wrang" + "ler.jsonc"
     dry_run = "--dry-run"
     assert text.count(tool) >= 4
     assert text.count(dry_run) >= 2
     assert "workers-py>=1.17.1,<2" in text
     assert "--strict" in text
     assert "--secrets-file" in text
+    assert f'temp_config="{default_name}"' in text
+    assert 'cp "${STATE_CONFIG}" "${temp_config}"' in text
+    assert 'cp "${EDGE_CONFIG}" "${temp_config}"' in text
+    assert '--config "${STATE_CONFIG}"' not in text
+    assert '--config "${EDGE_CONFIG}"' not in text
 
     state_deploy = text.index("Deploy state Worker and SQLite Durable Object first")
     state_readback = text.index("Read back private state Worker boundary")
