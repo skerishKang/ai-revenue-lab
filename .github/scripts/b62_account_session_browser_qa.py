@@ -168,13 +168,9 @@ async def _load_state(
     url: str,
     mobile: bool,
     name: str,
-    first: bool = False,
 ) -> None:
     state["session"] = expected
-    if first:
-        await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
-    else:
-        await page.reload(wait_until="domcontentloaded", timeout=30_000)
+    await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
     await _open_sidebar(page, mobile)
     await _wait_product_state(page, expected, name=name)
@@ -220,7 +216,7 @@ async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, h
     label = f"{theme}-{viewport_name}"
     results: dict[str, Any] = {}
 
-    await _load_state(page, state, "guest", url=url, mobile=mobile, name=f"{label}-guest", first=True)
+    await _load_state(page, state, "guest", url=url, mobile=mobile, name=f"{label}-guest")
     results["guest"] = await _assert_visible_state(
         page, "guest", name=label, button_text="로그인", account_text="게스트"
     )
