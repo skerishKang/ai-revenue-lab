@@ -1,0 +1,124 @@
+name: B54 1812 Cloudflare Readonly Audit
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b54-1812-cloudflare-readonly-audit.yml'
+
+permissions:
+  contents: read
+
+env:
+  EXPECTED_MAIN_SHA: f8548e1631dc8b557091fa48f1acc5d93e0eb680
+  STATE_WORKER: padiem-local-agent-broker-state
+  EDGE_WORKER: padiem-local-agent-broker-edge
+
+jobs:
+  cloudflare-readonly-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact main source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require unchanged exact main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${EXPECTED_MAIN_SHA}"
+          test "$(git rev-parse origin/main)" = "${EXPECTED_MAIN_SHA}"
+          echo "EXACT_MAIN_SHA=PASS"
+
+      - name: Validate repository private-bootstrap source boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('packages/padiem-control-plane')
+          state = json.loads((root / 'wrangler.local-agent-broker.jsonc').read_text(encoding='utf-8'))
+          edge = json.loads((root / 'wrangler.local-agent-broker-edge.jsonc').read_text(encoding='utf-8'))
+          assert state['name'] == 'padiem-local-agent-broker-state'
+          assert edge['name'] == 'padiem-local-agent-broker-edge'
+          assert state['workers_dev'] is False and state['preview_urls'] is False
+          assert edge['workers_dev'] is False and edge['preview_urls'] is False
+          assert 'routes' not in state and 'routes' not in edge
+          assert state['secrets'] == {'required': ['LOCAL_AGENT_BROKER_PEPPER']}
+          assert edge['services'] == [{'binding': 'LOCAL_AGENT_BROKER_SERVICE', 'service': 'padiem-local-agent-broker-state'}]
+          print('REPOSITORY_PRIVATE_BOOTSTRAP_BOUNDARY=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+      - name: Read-only Cloudflare inventory and exposure audit
+        id: audit
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${CLOUDFLARE_API_TOKEN:-}" || -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            echo 'DISPOSITION=READINESS_BLOCKED_MISSING_DEPLOY_AUTHORITY'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 21
+          fi
+
+          inventory="${RUNNER_TEMP}/b54-1812-worker-inventory.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" \
+            -o "${inventory}"
+          jq -e '.success == true and (.result | type == "array")' "${inventory}" >/dev/null
+
+          present_count=0
+          for name in "${STATE_WORKER}" "${EDGE_WORKER}"; do
+            if jq -e --arg name "${name}" '.result | any(.id == $name)' "${inventory}" >/dev/null; then
+              present_count=$((present_count + 1))
+              subdomain="${RUNNER_TEMP}/${name}-subdomain.json"
+              curl -fsS \
+                -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${name}/subdomain" \
+                -o "${subdomain}"
+              if ! jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null; then
+                echo "LIVE_WORKER=${name}:EXPOSURE_MISMATCH"
+                echo 'DISPOSITION=READINESS_BLOCKED_CONFIG_OR_EXPOSURE_MISMATCH'
+                echo 'PRODUCTION_MUTATION=0'
+                exit 22
+              fi
+              echo "LIVE_WORKER=${name}:PRESENT_PRIVATE_ONLY"
+            else
+              echo "LIVE_WORKER=${name}:ABSENT"
+            fi
+          done
+
+          if [[ "${present_count}" -eq 0 ]]; then
+            echo 'DISPOSITION=BOOTSTRAP_READY_ABSENT'
+          else
+            echo 'DISPOSITION=EXISTING_PRIVATE_AUTHORITY_REVIEW_REQUIRED'
+          fi
+          echo 'WORKER_CREATE_UPDATE_DELETE=NO'
+          echo 'DURABLE_OBJECT_MUTATION=NO'
+          echo 'SECRET_WRITE=NO'
+          echo 'ROUTE_DNS_MUTATION=NO'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Record bounded audit summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## B54 #1812 read-only Cloudflare audit'
+            echo
+            echo "- exact main: \`${EXPECTED_MAIN_SHA}\`"
+            echo '- mutation: none'
+            echo '- worker create/update/delete: no'
+            echo '- durable object mutation: no'
+            echo '- secret write: no'
+            echo '- route/DNS mutation: no'
+          } >> "${GITHUB_STEP_SUMMARY}"
