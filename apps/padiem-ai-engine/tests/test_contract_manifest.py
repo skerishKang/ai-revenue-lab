@@ -10,6 +10,7 @@ from app.contract_manifest import (
     require_compatible_engine_contract,
 )
 from app.orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
+from app.memory_service import MEMORY_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
 from app.web_research_service import RESEARCH_PATH
@@ -29,6 +30,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", ORCHESTRATE_RESUME_PATH),
         ("POST", ORCHESTRATE_CANCEL_PATH),
         ("POST", RESEARCH_PATH),
+        ("POST", MEMORY_PATH),
     ]
 
 
@@ -40,6 +42,7 @@ def test_orchestration_and_research_routes_declared_by_manifest() -> None:
     assert ("POST", ORCHESTRATE_RESUME_PATH) in endpoints
     assert ("POST", ORCHESTRATE_CANCEL_PATH) in endpoints
     assert ("POST", RESEARCH_PATH) in endpoints
+    assert ("POST", MEMORY_PATH) in endpoints
 
 
 def test_current_completed_streaming_and_orchestration_features_are_available() -> None:

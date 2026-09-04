@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from app.memory_service import MemoryRetrievalEngineService
 from app.orchestration_service import OrchestrationEngineService
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
@@ -25,8 +26,9 @@ class EngineServices:
     streaming: StreamingEngineService
     orchestration: OrchestrationEngineService
     research: WebResearchEngineService
+    memory: MemoryRetrievalEngineService
 
     def __post_init__(self) -> None:
-        for name in ("completed", "streaming", "orchestration", "research"):
+        for name in ("completed", "streaming", "orchestration", "research", "memory"):
             if getattr(self, name) is None:
                 raise ValueError(f"engine service {name!r} must not be None")

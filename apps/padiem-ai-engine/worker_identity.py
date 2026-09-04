@@ -89,6 +89,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 unavailable,
                 b14_service_bound=False,
             ),
+            memory=legacy_worker._memory_service_for_env(env),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -131,6 +132,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             runtime_factory,
             b14_service_bound=True,
         ),
+        memory=legacy_worker._memory_service_for_env(env),
     )
 
 
