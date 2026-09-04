@@ -62,7 +62,7 @@ jobs:
           set -euo pipefail
           for theme in light dark cinematic padiem-home padiem-glass; do
             for viewport in desktop mobile; do
-              for account_case in signed expired unavailable; do
+              for account_case in expired signed unavailable; do
                 echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
                 uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
                   --theme "$theme" \
