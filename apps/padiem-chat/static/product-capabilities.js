@@ -95,6 +95,7 @@
   let deployment = EMPTY_DEPLOYMENT;
   let auth = EMPTY_AUTH;
   let authRefreshQueued = false;
+  let authRefreshGeneration = 0;
   let modePanel = null;
   let accountAvatar = null;
 
@@ -423,16 +424,20 @@
   }
 
   async function refreshAuth() {
+    const generation = ++authRefreshGeneration;
+    let nextAuth = EMPTY_AUTH;
     try {
       const response = await nativeFetch("/api/auth/status", {
         headers: { "Accept": "application/json" },
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
-      auth = response.ok ? projectAuth(data) : EMPTY_AUTH;
+      nextAuth = response.ok ? projectAuth(data) : EMPTY_AUTH;
     } catch (_) {
-      auth = EMPTY_AUTH;
+      nextAuth = EMPTY_AUTH;
     }
+    if (generation !== authRefreshGeneration) return auth;
+    auth = nextAuth;
     syncAll();
     return auth;
   }
