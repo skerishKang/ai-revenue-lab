@@ -23,7 +23,12 @@ from padiem_ai_core import (
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
 from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
 
-from app.agent_skill_service import AGENT_SKILL_RUN_PATH, AgentSkillEngineService
+from app.agent_skill_service import (
+    AGENT_SKILL_CANCEL_PATH,
+    AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_PATH,
+    AgentSkillEngineService,
+)
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -220,8 +225,8 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 b14_service_bound=False,
             ),
             memory=_memory_service_for_env(env),
-            # E4A source projection is intentionally not production-activated.
-            # Without a trusted resolver the route exists but fails closed.
+            # Agent/Skill source routes remain production-unactivated. Without
+            # trusted resolver/store/verifier they fail closed.
             agent_skill=AgentSkillEngineService(
                 runtime_factory=unavailable_factory,
                 binding_resolver=None,
@@ -247,8 +252,6 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         )
 
     def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
-        # Core validates provider/key/timeout configuration. Provider selection
-        # is deployment authority only and cannot be supplied by the request.
         return GroundedResearchRuntime(
             create_web_provider(_web_runtime_config_for_env(env))
         )
@@ -275,8 +278,8 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         memory=_memory_service_for_env(env),
         agent_skill=AgentSkillEngineService(
             runtime_factory=runtime_factory,
-            # Trusted registry/session/entitlement activation is a later
-            # production gate (#1751/#1753). Do not fabricate it here.
+            # Trusted registry/session/entitlement and continuation authority
+            # remain later Production gates (#1751/#1753).
             binding_resolver=None,
             idempotency_adapter=idempotency_adapter,
         ),
@@ -348,9 +351,6 @@ def _ndjson_response(
 
 
 class Default(WorkerEntrypoint):
-    # Route dispatch addresses each service by name through this overridable
-    # composition seam; the canonical identity entrypoint subclasses Default
-    # and supplies its own factory instead of replacing module globals.
     engine_services_factory = staticmethod(_engine_services_for_env)
 
     async def fetch(self, request: Any) -> Any:
@@ -385,6 +385,11 @@ class Default(WorkerEntrypoint):
             ORCHESTRATE_RESUME_PATH,
             ORCHESTRATE_CANCEL_PATH,
         }
+        agent_skill_paths = {
+            AGENT_SKILL_RUN_PATH,
+            AGENT_SKILL_RESUME_PATH,
+            AGENT_SKILL_CANCEL_PATH,
+        }
         allowed_paths = {
             HEALTH_PATH,
             STREAM_PATH,
@@ -392,8 +397,7 @@ class Default(WorkerEntrypoint):
             RESEARCH_PATH,
             MEMORY_PATH,
             MEMORY_WRITE_PATH,
-            AGENT_SKILL_RUN_PATH,
-        } | orchestration_paths
+        } | orchestration_paths | agent_skill_paths
         if path not in allowed_paths:
             result = ServiceResponse(
                 status_code=404,
@@ -425,7 +429,7 @@ class Default(WorkerEntrypoint):
             )
             return _json_response(result)
 
-        if path == AGENT_SKILL_RUN_PATH:
+        if path in agent_skill_paths:
             if services.agent_skill is None:
                 return _error_response(
                     "agent_skill_runtime_unavailable",
