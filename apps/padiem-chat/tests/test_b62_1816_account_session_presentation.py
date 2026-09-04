@@ -131,6 +131,7 @@ async def test_auth_status_storage_failure_never_self_asserts_identity() -> None
 def test_browser_projection_is_presentation_only_and_has_no_identity_authority() -> None:
     root = Path(__file__).resolve().parents[1]
     js = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
+    app_js = (root / "static/app.js").read_text(encoding="utf-8")
     css = (root / "static/sidebar-utility.css").read_text(encoding="utf-8")
 
     for marker in (
@@ -154,5 +155,6 @@ def test_browser_projection_is_presentation_only_and_has_no_identity_authority()
 
     assert 'fetch("/api/auth/status"' not in js
     assert 'nativeFetch("/api/auth/status"' in js
+    assert 'window.location.assign("/auth/google/start");' in app_js
     assert "min-height: 44px" in css
     assert '.sidebar-account[data-account-state="expired"]' in css

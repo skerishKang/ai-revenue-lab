@@ -97,10 +97,9 @@ async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
         await _fulfill_json(route, {"conversations": []})
 
     async def google_start(route: Route) -> None:
-        # Verify the recovery navigation intent without entering a synthetic
-        # replacement document or real Google OAuth flow. A 204 navigation
-        # response preserves the current product document while allowing the
-        # browser navigation lifecycle to settle deterministically.
+        # Safety net only. Expired CTA browser QA installs a capture-phase click
+        # probe and must never reach main-frame OAuth navigation. If product
+        # navigation escapes that probe, record it and keep the test hermetic.
         state["google_start_reads"] += 1
         await route.fulfill(status=204, body="")
 
@@ -174,6 +173,21 @@ async def _assert_visible_state(
         raise AssertionError(f"account action must be operable at {label}")
     target = await _assert_target(page, "#loginButton", f"{label}-{expected}-action")
     return {"state": expected, "hidden": False, "target": target, "status": "PASS"}
+
+
+async def _install_recovery_click_probe(page: Page) -> None:
+    await page.evaluate(
+        """() => {
+          const button = document.getElementById('loginButton');
+          if (!button) throw new Error('loginButton missing');
+          window.__b62RecoveryClickProbe = { count: 0 };
+          button.addEventListener('click', (event) => {
+            window.__b62RecoveryClickProbe.count += 1;
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }, { capture: true, once: true });
+        }"""
+    )
 
 
 async def _assert_no_overflow(page: Page, label: str) -> None:
@@ -287,7 +301,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 "theme": theme,
                 "viewport": viewport_name,
                 "case": case,
-                "fixture_boundary": "browser-route-fixtures-only",
+                "fixture_boundary": "browser-route-fixtures-plus-capture-click-probe",
                 "decorative_font_network": "stubbed-before-network",
                 "stubbed_decorative_font_hosts": sorted(stubbed_hosts & STATIC_FONT_HOSTS),
                 "real_google_oauth": 0,
@@ -331,13 +345,20 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                     button_text=expected_button,
                     account_text=expected_account,
                 )
+                await _install_recovery_click_probe(page)
                 await page.locator("#loginButton").focus()
-                await page.locator("#loginButton").click(timeout=5_000, no_wait_after=True)
-                await _wait_counter(state, "google_start_reads", 1, label=label)
+                await page.locator("#loginButton").click(timeout=5_000)
+                recovery_clicks = int(await page.evaluate("window.__b62RecoveryClickProbe?.count || 0"))
+                if recovery_clicks != 1:
+                    raise AssertionError(f"expired recovery CTA click was not delivered exactly once at {label}")
+                if state["google_start_reads"] != 0:
+                    raise AssertionError(f"expired browser QA escaped into OAuth navigation at {label}")
                 result["recovery"] = {
-                    "google_start_navigations": state["google_start_reads"],
+                    "ui_clicks": recovery_clicks,
+                    "oauth_route_contract": "/auth/google/start",
+                    "google_start_navigations": 0,
                     "real_google_oauth": 0,
-                    "navigation_no_content_by_fixture": True,
+                    "navigation_suppressed_by_capture_fixture": True,
                     "status": "PASS",
                 }
 
