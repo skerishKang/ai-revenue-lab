@@ -2,6 +2,10 @@ const EXECUTE_PATH = "/internal/v1/execute";
 const MAX_REQUEST_BODY_BYTES = 128 * 1024;
 const MAX_INGRESS_CREDENTIAL_CHARS = 512;
 const MAX_RESPONSE_BYTES = 1024 * 1024;
+// Hard ceiling on Engine attempts per ingress request: the initial attempt
+// plus, during the dual-credential migration window only, exactly one
+// CURRENT-credential retry. Never raised, never looped.
+export const MAX_ENGINE_ATTEMPTS = 2;
 
 // Ingress-owned canonical Engine service identity. These values live ONLY in
 // the ingress deployment secrets. They are minted here and never accepted from
@@ -9,6 +13,13 @@ const MAX_RESPONSE_BYTES = 1024 * 1024;
 // eliminating operational coupling across accounts.
 const CALLER_ID_ENV = "PADIEM_ENGINE_CALLER_ID";
 const CALLER_SECRET_ENV = "PADIEM_ENGINE_CALLER_SECRET";
+// Optional migration-window credential for zero-downtime rotation of the
+// opaque CURRENT secret. When configured, the FIRST Engine attempt presents
+// NEXT; CURRENT is presented at most once, and only as a retry on the exact
+// bounded Engine authentication-failure signal. Plaintext of NEXT is never
+// retained past the rotation and the CURRENT plaintext is never recoverable
+// from NEXT.
+const CALLER_SECRET_NEXT_ENV = "PADIEM_ENGINE_CALLER_SECRET_NEXT";
 // Separate cross-account client credential. The only credential a caller may
 // supply. Compared in constant time against the ingress secret.
 const INGRESS_CLIENT_SECRET_ENV = "PADIEM_INGRESS_CLIENT_SECRET";
@@ -63,6 +74,54 @@ function secretsEqual(a, b) {
     result |= ca ^ cb;
   }
   return result === 0;
+}
+
+// Exactly one bounded Engine attempt with a SELECTED caller credential. The
+// already-buffered request body Uint8Array is replayed unchanged; it is never
+// re-read from the incoming request. Returns { status, body } on success, or
+// a prepared fail-closed error Response on fetch failure or oversized body.
+async function engineAttempt(engineBinding, callerId, credential, body) {
+  let response;
+  try {
+    response = await engineBinding.fetch(
+      new Request(ENGINE_EXECUTE_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          [ENGINE_CALLER_HEADER]: callerId,
+          [ENGINE_CREDENTIAL_HEADER]: credential,
+        },
+        body,
+      }),
+    );
+  } catch {
+    return { error: jsonError(503, "engine_unavailable", "Padiem AI Engine is unavailable.") };
+  }
+
+  const buffered = new Uint8Array(await response.arrayBuffer());
+  if (buffered.byteLength > MAX_RESPONSE_BYTES) {
+    return { error: jsonError(502, "engine_response_too_large", "Padiem AI Engine response exceeded the safety limit.") };
+  }
+
+  return { status: response.status, body: buffered };
+}
+
+// Safe fallback detector for the migration seam ONLY. Consumes/parses the
+// first (NEXT) response body exactly once and returns true ONLY for the
+// precise non-executing Engine authentication-failure signal:
+// status 401 + bounded + JSON + error.code === service_authentication_failed.
+// Anything else (403/413/429/5xx, timeout, malformed/non-JSON/oversized
+// body, other error codes, or anything that could represent actual
+// Core/B14 execution) must NOT trigger a retry.
+function shouldRetryWithCurrent(status, bodyBytes) {
+  if (status !== 401) return false;
+  let payload;
+  try {
+    payload = JSON.parse(new TextDecoder().decode(bodyBytes));
+  } catch {
+    return false;
+  }
+  return payload?.error?.code === "service_authentication_failed";
 }
 
 export async function handleIngress(request, env) {
@@ -131,36 +190,30 @@ export async function handleIngress(request, env) {
     return jsonError(503, "engine_unavailable", "Padiem AI Engine is unavailable.");
   }
 
-  // Mint canonical Engine headers from ingress env secrets ONLY. Caller-
-  // supplied Engine headers are excluded from forwardHeaders.
-  const forwardHeaders = new Headers({
-    "content-type": "application/json",
-    [ENGINE_CALLER_HEADER]: engineCallerId,
-    [ENGINE_CREDENTIAL_HEADER]: engineCallerSecret,
-  });
+  // Dual-credential migration seam. When NEXT is absent (normal operation),
+  // behavior is semantically identical to pre-migration: exactly one Engine
+  // attempt with CURRENT. When NEXT is present, it is attempted first and
+  // CURRENT is used at most once, only on the exact auth-failure signal —
+  // for a hard maximum of MAX_ENGINE_ATTEMPTS (2) calls. The caller
+  // identity is ingress-owned in every attempt; caller-supplied Engine
+  // headers remain ignored.
+  const engineCallerSecretNext = readSecret(env, CALLER_SECRET_NEXT_ENV);
+  const primaryCredential = engineCallerSecretNext ?? engineCallerSecret;
 
-  let upstream;
-  try {
-    upstream = await env.ENGINE.fetch(
-      new Request(ENGINE_EXECUTE_URL, {
-        method: "POST",
-        headers: forwardHeaders,
-        body,
-      }),
-    );
-  } catch {
-    return jsonError(503, "engine_unavailable", "Padiem AI Engine is unavailable.");
-  }
+  const first = await engineAttempt(env.ENGINE, engineCallerId, primaryCredential, body);
+  if (first.error) return first.error;
 
-  const upstreamBody = new Uint8Array(await upstream.arrayBuffer());
-  if (upstreamBody.byteLength > MAX_RESPONSE_BYTES) {
-    return jsonError(502, "engine_response_too_large", "Padiem AI Engine response exceeded the safety limit.");
+  let result = first;
+  if (engineCallerSecretNext && shouldRetryWithCurrent(first.status, first.body)) {
+    const retry = await engineAttempt(env.ENGINE, engineCallerId, engineCallerSecret, body);
+    if (retry.error) return retry.error;
+    result = retry;
   }
 
   // Project only bounded safe response headers. Never reflect caller or Engine
   // internal headers across the account boundary.
-  return new Response(upstreamBody, {
-    status: upstream.status,
+  return new Response(result.body, {
+    status: result.status,
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
