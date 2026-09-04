@@ -75,13 +75,13 @@ jobs:
             viewport="$2"
             account_case="$3"
             echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-${account_case}"
-            uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+            timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
               --theme "$theme" \
               --viewport "$viewport" \
               --case "$account_case"
           ' _ < "$cases_file"
 
-          uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+          timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
             --theme light \
             --viewport desktop \
             --case english-expired
