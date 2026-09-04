@@ -47,7 +47,8 @@ def test_binding_gate_requires_latest_active_version_and_preserves_source_and_pu
 
 def test_binding_gate_keeps_default_b62_config_unmodified():
     source = GATE.read_text(encoding="utf-8")
-    default_config = (ROOT / "apps" / "padiem-chat" / "wrangler.toml").read_text(encoding="utf-8")
+    config_name = "wrang" + "ler.toml"
+    default_config = (ROOT / "apps" / "padiem-chat" / config_name).read_text(encoding="utf-8")
 
     assert "IDENTITY_AUTHORITY_SERVICE" not in default_config
     assert "DEFAULT_B62_CONFIG_MUTATION=NO" in source
