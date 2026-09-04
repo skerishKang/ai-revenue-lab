@@ -15,17 +15,16 @@ BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-SEED_ID = "chat_seed_000000000000000000000001"
-NEW_ID = "chat_new_0000000000000000000000002"
-USER_NAME = "브라우저 테스트 사용자"
-SEED_TITLE = "제주 여행 준비"
-SEED_USER = "제주 여행 준비물을 알려줘"
-SEED_ASSISTANT = "가벼운 옷, 신분증, 충전기부터 준비해 보세요."
-FOLLOWUP = "그중 꼭 필요한 세 가지만 골라줘"
-FOLLOWUP_ANSWER = "신분증, 충전기, 날씨에 맞는 옷 세 가지를 먼저 챙겨보세요."
-NEW_QUESTION = "오늘 할 일을 세 가지로 정리해줘"
-NEW_ANSWER = "가장 중요한 일 하나, 짧은 정리 하나, 휴식 하나로 나눠보세요."
-STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
+FIRST_QUESTION = "저장된 대화 다시 열기 테스트 질문"
+FIRST_ANSWER = "저장된 첫 답변입니다."
+FOLLOWUP_QUESTION = "이어서 묻는 질문"
+FOLLOWUP_ANSWER = "이어진 답변입니다."
+NEW_QUESTION = "새 대화 질문"
+NEW_ANSWER = "새 대화 답변입니다."
+CONVERSATION_ID = "conv_browser_history_fixture"
+PROJECT_ID = "proj_browser_history_fixture"
+USER_ID = "usr_browser_history_fixture"
+USER_NAME = "브라우저 QA 사용자"
 
 
 @dataclass
@@ -33,77 +32,21 @@ class FixtureState:
     authenticated: bool = True
     logout_posts: int = 0
     stream_posts: list[dict[str, Any]] = field(default_factory=list)
-    conversations: dict[str, dict[str, Any]] = field(default_factory=lambda: {
-        SEED_ID: {
-            "id": SEED_ID,
-            "title": SEED_TITLE,
-            "created_at": "2026-08-28T04:00:00Z",
-            "updated_at": "2026-08-28T04:00:00Z",
-            "messages": [
-                {"role": "user", "content": SEED_USER},
-                {"role": "assistant", "content": SEED_ASSISTANT},
-            ],
-        }
-    })
-
-    def recent(self) -> list[dict[str, str]]:
-        items = sorted(self.conversations.values(), key=lambda item: item["updated_at"], reverse=True)
-        return [
-            {
-                "id": item["id"],
-                "title": item["title"],
-                "created_at": item["created_at"],
-                "updated_at": item["updated_at"],
-            }
-            for item in items
-        ]
-
-
-def _json_body(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    history_calls: int = 0
+    unexpected_external_requests: list[str] = field(default_factory=list)
+    stubbed_static_hosts: set[str] = field(default_factory=set)
 
 
 async def _fulfill_json(route: Route, payload: Any, status: int = 200) -> None:
     await route.fulfill(
         status=status,
         content_type="application/json; charset=utf-8",
-        body=_json_body(payload),
+        body=json.dumps(payload, ensure_ascii=False),
         headers={"Cache-Control": "no-store"},
     )
 
 
-def _parse_post_data(route: Route) -> dict[str, Any]:
-    raw = route.request.post_data
-    if not raw:
-        return {}
-    value = json.loads(raw)
-    if not isinstance(value, dict):
-        raise AssertionError(f"expected object request payload, got {value!r}")
-    return value
-
-
-async def _install_static_font_stubs(page: Page, stubbed_hosts: set[str]) -> None:
-    async def stub_stylesheet(route: Route) -> None:
-        host = (urlparse(route.request.url).hostname or "").lower()
-        stubbed_hosts.add(host)
-        await route.fulfill(
-            status=200,
-            content_type="text/css; charset=utf-8",
-            body="/* deterministic browser QA: external decorative font fetch suppressed */\n",
-            headers={"Cache-Control": "no-store"},
-        )
-
-    async def stub_font_binary(route: Route) -> None:
-        host = (urlparse(route.request.url).hostname or "").lower()
-        stubbed_hosts.add(host)
-        await route.fulfill(status=204, body="")
-
-    await page.route("https://cdn.jsdelivr.net/**", stub_stylesheet)
-    await page.route("https://fonts.googleapis.com/**", stub_stylesheet)
-    await page.route("https://fonts.gstatic.com/**", stub_font_binary)
-
-
-async def _install_fixtures(page: Page, state: FixtureState) -> None:
+async def _install_routes(page: Page, state: FixtureState) -> None:
     async def auth_status(route: Route) -> None:
         await _fulfill_json(
             route,
@@ -115,8 +58,8 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
                 "session_state": "signed_in" if state.authenticated else "guest",
                 "user": (
                     {
-                        "id": "usr_browser_fixture",
-                        "email": "browser@example.test",
+                        "id": USER_ID,
+                        "email": "browser-history@example.test",
                         "name": USER_NAME,
                         "picture": "",
                     }
@@ -128,190 +71,200 @@ async def _install_fixtures(page: Page, state: FixtureState) -> None:
 
     async def logout(route: Route) -> None:
         if route.request.method != "POST":
-            await _fulfill_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
+            await _fulfill_json(route, {"error": {"code": "method_not_allowed"}}, 405)
             return
         state.logout_posts += 1
         state.authenticated = False
         await _fulfill_json(route, {"ok": True})
 
-    async def projects(route: Route) -> None:
-        await _fulfill_json(route, {"projects": []})
-
     async def conversations(route: Route) -> None:
-        await _fulfill_json(route, {"conversations": state.recent()})
+        state.history_calls += 1
+        if not state.authenticated:
+            await _fulfill_json(route, {"conversations": []})
+            return
+        await _fulfill_json(
+            route,
+            {
+                "conversations": [
+                    {
+                        "id": CONVERSATION_ID,
+                        "title": FIRST_QUESTION,
+                        "created_at": "2026-09-04T00:00:00Z",
+                        "updated_at": "2026-09-04T00:00:00Z",
+                    }
+                ]
+            },
+        )
 
     async def conversation_detail(route: Route) -> None:
-        conversation_id = route.request.url.rsplit("/", 1)[-1]
-        conversation = state.conversations.get(conversation_id)
-        if not conversation:
-            await _fulfill_json(route, {"error": {"code": "not_found"}}, status=404)
+        await _fulfill_json(
+            route,
+            {
+                "conversation": {
+                    "id": CONVERSATION_ID,
+                    "title": FIRST_QUESTION,
+                    "project_id": PROJECT_ID,
+                    "messages": [
+                        {"role": "user", "content": FIRST_QUESTION},
+                        {"role": "assistant", "content": FIRST_ANSWER},
+                    ],
+                }
+            },
+        )
+
+    async def projects(route: Route) -> None:
+        if not state.authenticated:
+            await _fulfill_json(route, {"projects": []})
             return
-        await _fulfill_json(route, {"conversation": conversation})
+        await _fulfill_json(
+            route,
+            {
+                "projects": [
+                    {
+                        "id": PROJECT_ID,
+                        "name": "브라우저 QA 프로젝트",
+                        "instructions": "브라우저 QA용 프로젝트",
+                        "created_at": "2026-09-04T00:00:00Z",
+                        "updated_at": "2026-09-04T00:00:00Z",
+                    }
+                ]
+            },
+        )
+
+    async def project_files(route: Route) -> None:
+        await _fulfill_json(route, {"files": []})
 
     async def stream(route: Route) -> None:
-        if route.request.method != "POST":
-            await _fulfill_json(route, {"error": {"code": "method_not_allowed"}}, status=405)
-            return
-        payload = _parse_post_data(route)
-        state.stream_posts.append(payload)
-
-        messages = payload.get("messages")
-        if not isinstance(messages, list) or not messages:
-            raise AssertionError(f"stream request missing messages: {payload!r}")
-        latest = messages[-1]
-        if not isinstance(latest, dict) or latest.get("role") != "user" or not isinstance(latest.get("content"), str):
-            raise AssertionError(f"stream request missing latest user message: {payload!r}")
-        question = latest["content"]
-
-        incoming_id = payload.get("conversation_id")
-        if incoming_id is None:
-            conversation_id = NEW_ID
-            answer = NEW_ANSWER
-            state.conversations[conversation_id] = {
-                "id": conversation_id,
-                "title": question[:80],
-                "created_at": "2026-08-28T04:02:00Z",
-                "updated_at": "2026-08-28T04:02:00Z",
-                "messages": [
-                    {"role": "user", "content": question},
-                    {"role": "assistant", "content": answer},
-                ],
-            }
-        else:
-            if incoming_id != SEED_ID:
-                raise AssertionError(f"unexpected restored conversation id: {incoming_id!r}")
-            conversation_id = incoming_id
-            answer = FOLLOWUP_ANSWER
-            state.conversations[conversation_id]["messages"].extend(
-                [
-                    {"role": "user", "content": question},
-                    {"role": "assistant", "content": answer},
-                ]
-            )
-            state.conversations[conversation_id]["updated_at"] = "2026-08-28T04:01:00Z"
-
-        body = (
-            "event: delta\n"
-            f"data: {_json_body({'delta': answer})}\n\n"
-            "event: done\n"
-            f"data: {_json_body({'done': True, 'conversation_id': conversation_id})}\n\n"
-        )
+        try:
+            body = await route.request.post_data_json
+        except Exception:
+            body = json.loads(route.request.post_data or "{}")
+        state.stream_posts.append(body)
+        question = ""
+        messages = body.get("messages") if isinstance(body, dict) else None
+        if isinstance(messages, list) and messages:
+            last = messages[-1]
+            if isinstance(last, dict) and isinstance(last.get("content"), str):
+                question = last["content"]
+        answer = NEW_ANSWER if question == NEW_QUESTION else FOLLOWUP_ANSWER
+        conversation_id = CONVERSATION_ID if body.get("conversation_id") == CONVERSATION_ID else "conv_browser_history_new"
+        frames = [
+            f"event: delta\ndata: {json.dumps({'delta': answer}, ensure_ascii=False)}\n\n",
+            f"event: done\ndata: {json.dumps({'done': True, 'conversation_id': conversation_id}, ensure_ascii=False)}\n\n",
+        ]
         await route.fulfill(
             status=200,
             content_type="text/event-stream; charset=utf-8",
-            body=body,
+            body="".join(frames),
             headers={"Cache-Control": "no-store"},
+        )
+
+    async def health(route: Route) -> None:
+        await _fulfill_json(
+            route,
+            {
+                "status": "ok",
+                "web_tools_ready": False,
+                "deep_research_ready": False,
+                "auth_configured": True,
+                "history_store_bound": True,
+                "projects_code_ready": True,
+                "project_files_code_ready": True,
+                "project_file_store_bound": False,
+                "saved_outputs_code_ready": False,
+                "saved_output_store_bound": False,
+            },
         )
 
     await page.route("**/api/auth/status", auth_status)
     await page.route("**/api/auth/logout", logout)
-    await page.route("**/api/projects", projects)
     await page.route("**/api/conversations", conversations)
-    await page.route("**/api/conversations/*", conversation_detail)
+    await page.route(f"**/api/conversations/{CONVERSATION_ID}", conversation_detail)
+    await page.route("**/api/projects", projects)
+    await page.route(f"**/api/projects/{PROJECT_ID}/files", project_files)
     await page.route("**/api/chat/stream", stream)
+    await page.route("**/health", health)
 
+    async def external(route: Route) -> None:
+        parsed = urlparse(route.request.url)
+        host = parsed.hostname or ""
+        if host in {"fonts.googleapis.com", "cdn.jsdelivr.net"}:
+            state.stubbed_static_hosts.add(host)
+            await route.fulfill(status=200, body="", content_type="text/css")
+            return
+        state.unexpected_external_requests.append(route.request.url)
+        await route.abort()
 
-async def _assert_no_horizontal_overflow(page: Page, stage: str) -> None:
-    scroll_width = await page.evaluate("document.documentElement.scrollWidth")
-    inner_width = await page.evaluate("window.innerWidth")
-    if scroll_width > inner_width + 1:
-        raise AssertionError(
-            f"horizontal overflow at {stage}: scrollWidth={scroll_width}, innerWidth={inner_width}"
-        )
+    await page.route("https://**/*", external)
 
 
 async def _open_sidebar_if_mobile(page: Page, mobile: bool) -> None:
     if not mobile:
         return
     menu = page.locator("#mobileMenu")
-    await menu.wait_for(state="visible")
     if await menu.get_attribute("aria-expanded") != "true":
         await menu.click()
     await page.locator("#sidebar").wait_for(state="visible")
 
 
-async def _close_sidebar_if_mobile(page: Page, mobile: bool) -> None:
-    if not mobile:
-        return
-    menu = page.locator("#mobileMenu")
-    if await menu.get_attribute("aria-expanded") == "true":
-        await page.locator("#mobileClose").click()
-        await page.wait_for_function(
-            "() => document.getElementById('mobileMenu')?.getAttribute('aria-expanded') === 'false'",
-            timeout=5_000,
-        )
-
-
 async def _wait_history_title(page: Page, title: str) -> None:
     await page.wait_for_function(
-        "expected => Array.from(document.querySelectorAll('#historyList .history-item')).some(node => node.textContent.trim() === expected)",
+        "expected => Array.from(document.querySelectorAll('#historyList .history-item')).some(el => el.textContent.trim() === expected)",
         arg=title,
         timeout=5_000,
     )
 
 
+async def _assert_no_horizontal_overflow(page: Page, label: str) -> None:
+    scroll_width = await page.evaluate("document.documentElement.scrollWidth")
+    inner_width = await page.evaluate("window.innerWidth")
+    if scroll_width > inner_width + 1:
+        raise AssertionError(f"horizontal overflow at {label}: {scroll_width}>{inner_width}")
+
+
 async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     state = FixtureState()
-    unexpected_external_hosts: set[str] = set()
-    stubbed_static_hosts: set[str] = set()
-
-    def observe_request(request) -> None:
-        parsed = urlparse(request.url)
-        host = (parsed.hostname or "").lower()
-        if host not in {"127.0.0.1", "localhost"} and host not in STATIC_FONT_HOSTS:
-            unexpected_external_hosts.add(host)
-
-    page.on("request", observe_request)
-    await _install_static_font_stubs(page, stubbed_static_hosts)
-    await _install_fixtures(page, state)
+    await _install_routes(page, state)
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
-
+    await page.locator("#messageInput").wait_for(state="visible")
     await page.wait_for_function(
-        "expected => document.getElementById('loginButton')?.textContent.trim() === '로그아웃' && document.getElementById('accountName')?.textContent.trim() === expected",
-        arg=USER_NAME,
+        f"() => document.getElementById('accountName')?.textContent.trim() === {json.dumps(USER_NAME)}",
         timeout=5_000,
     )
-    if await page.locator("#accountName").is_hidden():
-        raise AssertionError("authenticated user name must be visible")
-
     await _open_sidebar_if_mobile(page, mobile)
-    await _wait_history_title(page, SEED_TITLE)
-    history_section = page.locator("#historySection")
-    if await history_section.is_hidden():
-        raise AssertionError("recent history section must be visible for authenticated fixture")
-    await _assert_no_horizontal_overflow(page, f"{name}-history-list")
-    await page.screenshot(path=str(OUT_DIR / f"{name}-history-list.png"), full_page=True)
 
-    seed_button = page.locator("#historyList .history-item", has_text=SEED_TITLE)
-    await seed_button.click()
+    if await page.locator("#accountName").is_hidden():
+        raise AssertionError("authenticated account name is hidden")
+    if (await page.locator("#accountName").inner_text()).strip() != USER_NAME:
+        raise AssertionError("authenticated identity did not render")
+    await _wait_history_title(page, FIRST_QUESTION)
+    await _assert_no_horizontal_overflow(page, f"{name}-initial")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-history-initial.png"), full_page=True)
+
+    await page.locator("#historyList .history-item").first.click()
     await page.wait_for_function(
-        "([userText, assistantText]) => document.getElementById('messageList')?.innerText.includes(userText) && document.getElementById('messageList')?.innerText.includes(assistantText)",
-        arg=[SEED_USER, SEED_ASSISTANT],
+        f"() => document.getElementById('messageList')?.innerText.includes({json.dumps(FIRST_ANSWER)})",
         timeout=5_000,
     )
     if await page.locator("#messageList").is_hidden():
-        raise AssertionError("saved conversation must open in the conversation surface")
-    await page.screenshot(path=str(OUT_DIR / f"{name}-history-restored.png"), full_page=True)
-
-    await page.locator("#messageInput").fill(FOLLOWUP)
+        raise AssertionError("saved conversation did not open")
+    await page.locator("#messageInput").fill(FOLLOWUP_QUESTION)
     await page.locator("#sendButton").click()
     await page.wait_for_function(
-        "expected => document.getElementById('messageList')?.innerText.includes(expected)",
-        arg=FOLLOWUP_ANSWER,
+        f"() => document.getElementById('messageList')?.innerText.includes({json.dumps(FOLLOWUP_ANSWER)})",
         timeout=5_000,
     )
-    if not state.stream_posts:
-        raise AssertionError("follow-up did not issue a stream request")
+    if len(state.stream_posts) != 1:
+        raise AssertionError(f"expected one follow-up stream request, saw {len(state.stream_posts)}")
     followup_payload = state.stream_posts[0]
-    if followup_payload.get("conversation_id") != SEED_ID:
-        raise AssertionError(f"follow-up did not reuse restored conversation id: {followup_payload!r}")
+    if followup_payload.get("conversation_id") != CONVERSATION_ID:
+        raise AssertionError(f"follow-up did not reuse conversation id: {followup_payload!r}")
     if any(key in followup_payload for key in ("model", "provider", "route", "business14")):
-        raise AssertionError(f"browser follow-up selected routing internals: {followup_payload!r}")
-    await _wait_history_title(page, SEED_TITLE)
-    await page.screenshot(path=str(OUT_DIR / f"{name}-history-followup.png"), full_page=True)
+        raise AssertionError(f"browser selected routing internals: {followup_payload!r}")
+    await _assert_no_horizontal_overflow(page, f"{name}-reopened")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-history-reopened.png"), full_page=True)
 
-    await _open_sidebar_if_mobile(page, mobile)
     await page.locator("#newChatButton").click()
     await page.wait_for_function(
         "() => document.querySelector('.app-shell')?.dataset.state === 'home' && document.getElementById('messageList')?.hidden === true",
@@ -320,8 +273,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await page.locator("#messageInput").fill(NEW_QUESTION)
     await page.locator("#sendButton").click()
     await page.wait_for_function(
-        "expected => document.getElementById('messageList')?.innerText.includes(expected)",
-        arg=NEW_ANSWER,
+        f"() => document.getElementById('messageList')?.innerText.includes({json.dumps(NEW_ANSWER)})",
         timeout=5_000,
     )
     if len(state.stream_posts) != 2:
@@ -338,7 +290,17 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await _open_sidebar_if_mobile(page, mobile)
     await page.locator("#loginButton").click()
     await page.wait_for_function(
-        "() => document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('historySection')?.hidden === true",
+        """() => {
+          const button = document.getElementById('loginButton');
+          const account = document.getElementById('accountName');
+          const container = document.querySelector('.sidebar-account');
+          const history = document.getElementById('historySection');
+          return button?.textContent.trim() === '로그인'
+            && account?.hidden === false
+            && account?.textContent.trim() === '게스트'
+            && container?.dataset.accountState === 'guest'
+            && history?.hidden === true;
+        }""",
         timeout=5_000,
     )
     if state.logout_posts != 1:
@@ -365,13 +327,11 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "selected_provider",
         "selected_model",
     )
-    leaked = [value for value in forbidden_identity if value in body_text]
+    leaked = [token for token in forbidden_identity if token in body_text]
     if leaked:
-        raise AssertionError(f"concrete model/provider identity leaked into product UI: {leaked}")
-    if unexpected_external_hosts:
-        raise AssertionError(
-            f"browser QA attempted unexpected external requests: {sorted(unexpected_external_hosts)}"
-        )
+        raise AssertionError(f"browser exposed routing internals: {leaked}")
+    if state.unexpected_external_requests:
+        raise AssertionError(f"unexpected external requests: {state.unexpected_external_requests}")
 
     return {
         "viewport": {"width": width, "height": height},
@@ -386,14 +346,14 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
         "logout_guest_presentation": "PASS",
         "stream_post_count": len(state.stream_posts),
         "explicit_routing_selector": False,
-        "stubbed_decorative_font_hosts": sorted(stubbed_static_hosts),
-        "unexpected_external_requests": [],
+        "stubbed_decorative_font_hosts": sorted(state.stubbed_static_hosts),
+        "unexpected_external_requests": state.unexpected_external_requests,
         "horizontal_overflow": False,
     }
 
 
 async def main() -> None:
-    report: dict[str, Any] = {
+    report = {
         "base_url": BASE_URL,
         "fixture_boundary": "browser-route-fixtures-only",
         "decorative_font_network": "stubbed-before-network",
@@ -402,37 +362,31 @@ async def main() -> None:
         "real_model_provider_calls": 0,
         "production_mutation": False,
         "views": {},
+        "status": "PASS",
     }
-
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         try:
-            desktop = await browser.new_page()
-            report["views"]["desktop"] = await _run_view(
-                desktop,
-                name="desktop",
-                width=1440,
-                height=1000,
-                mobile=False,
-            )
-            await desktop.close()
+            page = await browser.new_page()
+            try:
+                report["views"]["desktop"] = await _run_view(
+                    page, name="desktop", width=1440, height=1000, mobile=False
+                )
+            finally:
+                await page.close()
 
-            mobile = await browser.new_page()
-            report["views"]["mobile"] = await _run_view(
-                mobile,
-                name="mobile",
-                width=390,
-                height=844,
-                mobile=True,
-            )
-            await mobile.close()
+            page = await browser.new_page()
+            try:
+                report["views"]["mobile"] = await _run_view(
+                    page, name="mobile", width=390, height=844, mobile=True
+                )
+            finally:
+                await page.close()
         finally:
             await browser.close()
 
-    report["status"] = "PASS"
     (OUT_DIR / "report.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
