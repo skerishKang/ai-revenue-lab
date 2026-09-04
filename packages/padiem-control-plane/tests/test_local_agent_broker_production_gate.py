@@ -69,7 +69,7 @@ def test_production_gate_packages_before_mutation_and_deploys_state_before_edge(
     dry_run = "--dry-run"
     assert text.count(tool) >= 4
     assert text.count(dry_run) >= 2
-    assert "workers-py>=1.72,<2" in text
+    assert "workers-py>=1.17.1,<2" in text
     assert "--strict" in text
     assert "--secrets-file" in text
 
