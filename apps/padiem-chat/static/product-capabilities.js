@@ -95,7 +95,7 @@
   let deployment = EMPTY_DEPLOYMENT;
   let auth = EMPTY_AUTH;
   let authRefreshQueued = false;
-  let authRefreshGeneration = 0;
+  let authRefreshTail = Promise.resolve();
   let modePanel = null;
   let accountAvatar = null;
 
@@ -423,8 +423,7 @@
     return deployment;
   }
 
-  async function refreshAuth() {
-    const generation = ++authRefreshGeneration;
+  async function readAuthFresh() {
     let nextAuth = EMPTY_AUTH;
     try {
       const response = await nativeFetch("/api/auth/status", {
@@ -436,10 +435,15 @@
     } catch (_) {
       nextAuth = EMPTY_AUTH;
     }
-    if (generation !== authRefreshGeneration) return auth;
     auth = nextAuth;
     syncAll();
     return auth;
+  }
+
+  function refreshAuth() {
+    const run = authRefreshTail.then(readAuthFresh, readAuthFresh);
+    authRefreshTail = run.catch(() => EMPTY_AUTH);
+    return run;
   }
 
   function queueAuthRefresh() {
