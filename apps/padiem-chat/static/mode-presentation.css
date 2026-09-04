@@ -1,0 +1,120 @@
+.model-pill[data-mode-control="true"] {
+  display: inline-flex !important;
+  appearance: none;
+  cursor: pointer;
+}
+
+.model-pill[data-mode-control="true"]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.mode-presentation-panel {
+  position: fixed;
+  z-index: 90;
+  top: 68px;
+  right: 24px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel, rgba(255, 255, 255, .96));
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(20px);
+}
+
+.mode-presentation-panel[hidden] {
+  display: none !important;
+}
+
+.mode-presentation-header {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.mode-presentation-header strong {
+  font-size: 15px;
+}
+
+.mode-presentation-header small,
+.mode-option small,
+.mode-presentation-truth {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.mode-option-list {
+  display: grid;
+  gap: 8px;
+}
+
+.mode-option {
+  width: 100%;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .72);
+  color: var(--text);
+  text-align: left;
+}
+
+.mode-option > span:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.mode-option strong {
+  font-size: 14px;
+}
+
+.mode-option[aria-pressed="true"] {
+  border-color: currentColor;
+}
+
+.mode-option:disabled {
+  cursor: not-allowed;
+  opacity: .62;
+}
+
+.mode-option-state {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(127, 127, 127, .12);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.mode-presentation-truth {
+  margin: 12px 2px 0;
+}
+
+html[data-theme="dark"] .mode-presentation-panel,
+html[data-theme="cinematic"] .mode-presentation-panel,
+html[data-theme="padiem-home"] .mode-presentation-panel,
+html[data-theme="padiem-glass"] .mode-presentation-panel {
+  background: rgba(14, 18, 26, .94);
+}
+
+html[data-theme="dark"] .mode-option,
+html[data-theme="cinematic"] .mode-option,
+html[data-theme="padiem-home"] .mode-option,
+html[data-theme="padiem-glass"] .mode-option {
+  background: rgba(255, 255, 255, .06);
+}
+
+@media (max-width: 720px) {
+  .mode-presentation-panel {
+    top: 60px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}
