@@ -540,10 +540,16 @@
     }, { capture: true });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
+  function reconcileAccountPresentationAfterLocaleBootstrap() {
+    window.setTimeout(() => {
       if (auth.loaded) syncAccountPresentation();
-    }, { once: true });
+    }, 0);
+  }
+
+  if (document.readyState === "complete") {
+    reconcileAccountPresentationAfterLocaleBootstrap();
+  } else {
+    window.addEventListener("load", reconcileAccountPresentationAfterLocaleBootstrap, { once: true });
   }
 
   window.addEventListener("pageshow", () => {
@@ -553,7 +559,7 @@
   window.addEventListener("focus", queueAuthRefresh);
   window.addEventListener("padiem:localechange", () => {
     syncModeCopy();
-    syncAccountPresentation();
+    reconcileAccountPresentationAfterLocaleBootstrap();
   });
 
   window.PadiemProductCapabilities = Object.freeze({
