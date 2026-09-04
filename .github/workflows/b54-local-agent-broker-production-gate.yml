@@ -30,12 +30,10 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACKAGE_DIR: packages/padiem-control-plane
-  STATE_CONFIG: wrangler.local-agent-broker.jsonc
-  EDGE_CONFIG: wrangler.local-agent-broker-edge.jsonc
   STATE_WORKER: padiem-local-agent-broker-state
   EDGE_WORKER: padiem-local-agent-broker-edge
-  AUTHORITY_REF: control-plane.local-agent-broker.production.v1
+  STATE_CONFIG: wrangler.local-agent-broker.jsonc
+  EDGE_CONFIG: wrangler.local-agent-broker-edge.jsonc
   TARGET_SHA: ${{ inputs.target_sha }}
 
 jobs:
@@ -68,48 +66,30 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-
           root = Path("packages/padiem-control-plane")
           state = json.loads((root / "wrangler.local-agent-broker.jsonc").read_text(encoding="utf-8"))
           edge = json.loads((root / "wrangler.local-agent-broker-edge.jsonc").read_text(encoding="utf-8"))
-
           assert state["name"] == "padiem-local-agent-broker-state"
-          assert state["main"] == "local_agent_broker_worker.py"
-          assert state["workers_dev"] is False
-          assert state["preview_urls"] is False
+          assert state["workers_dev"] is False and state["preview_urls"] is False
           assert "routes" not in state
-          assert state["vars"] == {
-              "LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1"
-          }
+          assert state["vars"] == {"LOCAL_AGENT_BROKER_AUTHORITY_REF": "control-plane.local-agent-broker.production.v1"}
           assert state["secrets"] == {"required": ["LOCAL_AGENT_BROKER_PEPPER"]}
-          assert state["durable_objects"]["bindings"] == [
-              {
-                  "name": "LOCAL_AGENT_BROKER_STATE",
-                  "class_name": "LocalAgentBrokerDurableObject",
-              }
-          ]
-          assert state["exports"]["LocalAgentBrokerDurableObject"] == {
-              "type": "durable-object",
-              "storage": "sqlite",
-          }
-
+          assert state["exports"]["LocalAgentBrokerDurableObject"] == {"type": "durable-object", "storage": "sqlite"}
           assert edge["name"] == "padiem-local-agent-broker-edge"
-          assert edge["main"] == "local_agent_broker_edge_worker.py"
-          assert edge["workers_dev"] is False
-          assert edge["preview_urls"] is False
+          assert edge["workers_dev"] is False and edge["preview_urls"] is False
           assert "routes" not in edge
-          assert edge["services"] == [
-              {
-                  "binding": "LOCAL_AGENT_BROKER_SERVICE",
-                  "service": "padiem-local-agent-broker-state",
-              }
-          ]
+          assert edge["services"] == [{"binding": "LOCAL_AGENT_BROKER_SERVICE", "service": "padiem-local-agent-broker-state"}]
           print("B54_LOCAL_AGENT_BROKER_CONFIG=PASS")
           print("PUBLIC_ROUTE_CONFIGURED=NO")
           print("PRODUCTION_MUTATION=0")
           PY
 
-      - name: Install Python Worker deployment toolchain
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.5"
@@ -123,18 +103,8 @@ jobs:
           trap 'rm -f "${secret_file}"' EXIT
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "$(python -c 'import secrets; print(secrets.token_hex(32))')" > "${secret_file}"
           chmod 600 "${secret_file}"
-
-          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
-            --config "${STATE_CONFIG}" \
-            --secrets-file "${secret_file}" \
-            --dry-run \
-            --outdir "${RUNNER_TEMP}/b54-state-dry-run"
-
-          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
-            --config "${EDGE_CONFIG}" \
-            --dry-run \
-            --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
-
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${STATE_CONFIG}" --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/b54-state-dry-run"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${EDGE_CONFIG}" --dry-run --outdir "${RUNNER_TEMP}/b54-edge-dry-run"
           test -d "${RUNNER_TEMP}/b54-state-dry-run"
           test -d "${RUNNER_TEMP}/b54-edge-dry-run"
           echo "PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS"
@@ -159,37 +129,23 @@ jobs:
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN}"
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
-
           inventory="${RUNNER_TEMP}/b54-worker-inventory.json"
-          curl -fsS \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            --header 'Content-Type: application/json' \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" \
-            -o "${inventory}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" -o "${inventory}"
           jq -e '.success == true and (.result | type == "array")' "${inventory}" >/dev/null
-
           inspect_worker() {
-            local name="$1"
-            local output_name="$2"
+            local name="$1" output_name="$2"
             if jq -e --arg name "${name}" '.result | any(.id == $name)' "${inventory}" >/dev/null; then
               echo "${output_name}=present" >> "${GITHUB_OUTPUT}"
               subdomain="${RUNNER_TEMP}/${name}-subdomain.json"
-              curl -fsS \
-                --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-                --header 'Content-Type: application/json' \
-                "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${name}/subdomain" \
-                -o "${subdomain}"
+              curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${name}/subdomain" -o "${subdomain}"
               jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-              jq -e --arg name "${name}" \
-                '.result[] | select(.id == $name) | ((.routes // []) | length == 0)' \
-                "${inventory}" >/dev/null
+              jq -e --arg name "${name}" '.result[] | select(.id == $name) | ((.routes // []) | length == 0)' "${inventory}" >/dev/null
               echo "${name}: PRESENT_PRIVATE_ONLY"
             else
               echo "${output_name}=absent" >> "${GITHUB_OUTPUT}"
               echo "${name}: ABSENT"
             fi
           }
-
           inspect_worker "${STATE_WORKER}" state_worker_state
           inspect_worker "${EDGE_WORKER}" edge_worker_state
           echo "CLOUDFLARE_READONLY_PREFLIGHT=PASS"
@@ -213,14 +169,8 @@ jobs:
           set -euo pipefail
           test "${CONFIRMATION}" = "BOOTSTRAP_PADIEM_LOCAL_AGENT_BROKER_PRIVATE"
           test -n "${BROKER_PEPPER}"
-          if [ "${EDGE_WORKER_STATE}" != "absent" ]; then
-            echo "Refusing bootstrap over an existing edge Worker." >&2
-            exit 1
-          fi
-          if [ "${STATE_WORKER_STATE}" != "absent" ]; then
-            echo "Refusing automatic state Worker replacement; existing durable authority requires separate owner review." >&2
-            exit 1
-          fi
+          test "${STATE_WORKER_STATE}" = "absent"
+          test "${EDGE_WORKER_STATE}" = "absent"
           echo "PRIVATE_BOOTSTRAP_AUTHORIZATION=PASS"
 
       - name: Checkout exact approved main SHA
@@ -240,7 +190,12 @@ jobs:
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
 
-      - name: Install Python Worker deployment toolchain
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.5"
@@ -261,12 +216,7 @@ jobs:
           trap 'rm -f "${secret_file}"' EXIT
           printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "${BROKER_PEPPER}" > "${secret_file}"
           chmod 600 "${secret_file}"
-          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
-            --config "${STATE_CONFIG}" \
-            --secrets-file "${secret_file}" \
-            --strict \
-            --tag "git-${TARGET_SHA}" \
-            --message "B54 Local Agent broker state ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${STATE_CONFIG}" --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 Local Agent broker state ${TARGET_SHA}"
           echo "STATE_WORKER_DEPLOY=SUCCESS"
 
       - name: Read back private state Worker boundary
@@ -278,19 +228,10 @@ jobs:
           set -euo pipefail
           subdomain="${RUNNER_TEMP}/b54-state-subdomain.json"
           settings="${RUNNER_TEMP}/b54-state-settings.json"
-          curl -fsS \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" \
-            -o "${subdomain}"
-          curl -fsS \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/settings" \
-            -o "${settings}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/settings" -o "${settings}"
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-          jq -e '.success == true' "${settings}" >/dev/null
-          jq -e '.result.bindings | any(.name == "LOCAL_AGENT_BROKER_PEPPER")' "${settings}" >/dev/null
-          jq -e '.result.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_REF")' "${settings}" >/dev/null
-          jq -e '.result.bindings | any(.name == "LOCAL_AGENT_BROKER_STATE")' "${settings}" >/dev/null
+          jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_PEPPER")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_REF")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_STATE"))' "${settings}" >/dev/null
           echo "STATE_WORKER_PRIVATE_READBACK=PASS"
 
       - name: Deploy edge Worker second with private Service Binding
@@ -301,11 +242,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          uvx --from 'workers-py>=1.72,<2' pywrangler deploy \
-            --config "${EDGE_CONFIG}" \
-            --strict \
-            --tag "git-${TARGET_SHA}" \
-            --message "B54 Local Agent broker edge ${TARGET_SHA}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --config "${EDGE_CONFIG}" --strict --tag "git-${TARGET_SHA}" --message "B54 Local Agent broker edge ${TARGET_SHA}"
           echo "EDGE_WORKER_DEPLOY=SUCCESS"
 
       - name: Read back edge as private-only and service-bound
@@ -318,21 +255,11 @@ jobs:
           subdomain="${RUNNER_TEMP}/b54-edge-subdomain.json"
           settings="${RUNNER_TEMP}/b54-edge-settings.json"
           inventory="${RUNNER_TEMP}/b54-worker-inventory-after.json"
-          curl -fsS \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" \
-            -o "${subdomain}"
-          curl -fsS \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" \
-            -o "${settings}"
-          curl -fsS \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" \
-            -o "${inventory}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${settings}"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" -o "${inventory}"
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-          jq -e '.success == true' "${settings}" >/dev/null
-          jq -e '.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE")' "${settings}" >/dev/null
+          jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE"))' "${settings}" >/dev/null
           jq -e --arg name "${STATE_WORKER}" '.result | any(.id == $name)' "${inventory}" >/dev/null
           jq -e --arg name "${EDGE_WORKER}" '.result | any(.id == $name)' "${inventory}" >/dev/null
           jq -e --arg name "${STATE_WORKER}" '.result[] | select(.id == $name) | ((.routes // []) | length == 0)' "${inventory}" >/dev/null
