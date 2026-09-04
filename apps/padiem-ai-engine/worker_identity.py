@@ -1,17 +1,16 @@
-"""Cloudflare Worker entrypoint with identity-bound orchestration continuation wiring.
+"""Cloudflare Worker entrypoint with identity-bound Engine composition.
 
-All transport/auth/streaming behavior remains in the existing worker module. This
-canonical composition root supplies the identity-bound service bundle through an
-explicit named composition seam: it subclasses the shared ``Default`` entrypoint
-and overrides ``engine_services_factory`` so approval resumes and durable
-idempotency use the canonical logical-execution identity contract, while every
-Engine route family (completed, streaming, orchestration, research) stays
-addressable by name with no positional-tuple contract between modules.
+All existing transport/auth/streaming behavior remains in ``worker.py``. This
+canonical composition root adds the E5 trusted multimodal reference route while
+preserving the explicit named service bundle introduced by #1792. The route is
+source-wired but remains fail-closed until a trusted attachment resolver is
+injected by a later Production activation gate.
 """
 
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import urlparse
 
 import worker as legacy_worker
 from padiem_ai_core import (
@@ -22,6 +21,7 @@ from padiem_ai_core import (
     StreamingExecutionRuntime,
 )
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
+from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRuntime
 from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
@@ -32,8 +32,12 @@ from app.cloudflare_transport import (
 )
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.engine_composition import EngineServices
+from app.multimodal_attachment_service import (
+    MULTIMODAL_EXECUTE_PATH,
+    MultimodalAttachmentEngineService,
+)
 from app.orchestration_idempotency_service import CanonicalIdempotencyOrchestrationEngineService
-from app.service import EngineService
+from app.service import EngineService, ServiceResponse
 from app.streaming_service import StreamingEngineService
 from app.web_research_service import WebResearchEngineService
 
@@ -58,8 +62,6 @@ def _research_service_for_env(
     b14_service_bound: bool,
 ) -> WebResearchEngineService:
     def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
-        # Core validates provider/key/timeout configuration. Provider selection
-        # is deployment authority only and cannot be supplied by the request.
         return GroundedResearchRuntime(
             create_web_provider(legacy_worker._web_runtime_config_for_env(env))
         )
@@ -90,6 +92,10 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 b14_service_bound=False,
             ),
             memory=legacy_worker._memory_service_for_env(env),
+            multimodal=MultimodalAttachmentEngineService(
+                runtime_factory=unavailable,
+                attachment_resolver=None,
+            ),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -110,6 +116,9 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             app_id=app_id,
             b14_stream_client=b14_stream_client,
         )
+
+    def multimodal_runtime_factory(app_id: str) -> MultimodalExecutionRuntime:
+        return MultimodalExecutionRuntime(app_id=app_id, b14_client=b14_client)
 
     return EngineServices(
         completed=EngineService(
@@ -133,12 +142,75 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             b14_service_bound=True,
         ),
         memory=legacy_worker._memory_service_for_env(env),
+        multimodal=MultimodalAttachmentEngineService(
+            runtime_factory=multimodal_runtime_factory,
+            # E5A source seam only. A deployment-owned resolver that proves
+            # app/tenant/subject scope is a later Production activation gate.
+            attachment_resolver=None,
+        ),
     )
 
 
 class Default(legacy_worker.Default):
-    # Authentication, route allow-listing and response encoding stay inherited
-    # from the shared worker module; only the named service bundle below is
-    # identity-bound. No module-global replacement is performed anywhere.
+    """Canonical Worker entrypoint with one additional E5 source route.
+
+    Existing routes remain inherited unchanged. The multimodal route repeats
+    only the same body-read/service-auth boundary before invoking its named
+    service; no storage resolver or alternate authentication mechanism lives
+    here.
+    """
 
     engine_services_factory = staticmethod(_engine_services_for_env)
+
+    async def fetch(self, request: Any) -> Any:
+        path = urlparse(str(request.url)).path
+        if path != MULTIMODAL_EXECUTE_PATH:
+            return await super().fetch(request)
+
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                body = str(text).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(
+                        status_code=400,
+                        body={
+                            "ok": False,
+                            "error": {
+                                "code": "invalid_request",
+                                "message": "Request body could not be read.",
+                                "retryable": False,
+                                "metadata": None,
+                            },
+                        },
+                    )
+                )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = self.engine_services_factory(self.env)
+        if services.multimodal is None:
+            return legacy_worker._error_response(
+                "attachment_resolver_unavailable",
+                "Trusted attachment resolver is unavailable.",
+                503,
+            )
+        result = await services.multimodal.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)

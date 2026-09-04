@@ -2,11 +2,7 @@
 
 The existing Engine wire paths are already ``/internal/v1/*``. This module
 makes that compatibility surface explicit for first-party cross-runtime clients
-without creating a new public endpoint or changing request/response semantics.
-
-The manifest reports Engine/Core-facing capabilities only. It deliberately does
-not expose Provider/model inventory, credentials, B14 routing internals, account
-IDs, Cloudflare bindings, or product entitlement state.
+without creating a public endpoint or exposing Provider/storage authority.
 """
 
 from __future__ import annotations
@@ -21,6 +17,7 @@ from .agent_skill_service import (
     AGENT_SKILL_RUN_PATH,
 )
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
+from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 from .orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
@@ -139,11 +136,12 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(RESEARCH_PATH, "POST", "application/json"),
             EngineEndpointContract(MEMORY_PATH, "POST", "application/json"),
             EngineEndpointContract(MEMORY_WRITE_PATH, "POST", "application/json"),
-            # E4 source routes are declared for first-party compatibility but
-            # remain DEFERRED until trusted live binding/store/verifier authority exists.
             EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_CANCEL_PATH, "POST", "application/json"),
+            # E5A completed one-image source route. Trusted storage resolution is
+            # intentionally not Production-wired yet, so capability stays DEFERRED.
+            EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
         ),
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),
@@ -167,6 +165,9 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("multimodal_completed_run", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("multimodal_streaming_run", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("document_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("public_browser_api", EngineFeatureState.UNAVAILABLE),
             EngineFeatureContract("provider_selection", EngineFeatureState.UNAVAILABLE),
         ),
@@ -174,13 +175,6 @@ def current_engine_contract_manifest() -> EngineContractManifest:
 
 
 def engine_capability_posture() -> dict[str, str]:
-    """Single authoritative source for health/manifest capability posture.
-
-    Returns a bounded vocabulary map for the 8 posture fields required by #1237.
-    States are AVAILABLE only when the route/runtime is truly wired at the
-    Worker boundary; otherwise DEFERRED/UNAVAILABLE. This is the truth that both
-    health and manifest must report identically.
-    """
     manifest = current_engine_contract_manifest()
     wanted = (
         "completed_run",
