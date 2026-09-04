@@ -4,6 +4,10 @@ from typing import Callable, TypeVar
 
 from workers import DurableObject, Response, WorkerEntrypoint
 
+from padiem_control_plane.local_agent_broker_http import (
+    DurableLocalAgentSessionRecord,
+    LocalAgentMaterialResolutionRequest,
+)
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from local_agent_broker_material_store import (
     MAX_DURABLE_COMMAND_MATERIAL_BYTES,
@@ -24,7 +28,6 @@ class LocalAgentBrokerDurableObject(DurableObject):
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
         self._runtime = LocalAgentBrokerDurableRuntime(storage=ctx.storage, env=env)
-        # Compatibility aliases retained for existing deployment-adapter tests.
         self._storage = ctx.storage
         self._backend = self._runtime.backend
         self._state_port = self._runtime.state_port
