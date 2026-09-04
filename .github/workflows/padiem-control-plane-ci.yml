@@ -152,8 +152,10 @@ jobs:
           python - <<'PY' > "${secret_file}"
           import base64
           import secrets
-          value = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('ascii').rstrip('=')
-          print(f'CONTROL_PLANE_IDENTITY_LOOKUP_KEY={value}')
+          def key():
+              return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('ascii').rstrip('=')
+          print(f'CONTROL_PLANE_IDENTITY_LOOKUP_KEY={key()}')
+          print(f'GOOGLE_CONNECT_TICKET_KEY={key()}')
           PY
           chmod 600 "${secret_file}"
 
@@ -166,6 +168,8 @@ jobs:
 
           test -d "${RUNNER_TEMP}/control-plane-identity-dry-run"
           echo 'CONTROL_PLANE_IDENTITY_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'SERVER_OWNED_CONNECTOR_CONTEXT=YES'
+          echo 'CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY=NO'
           echo 'PROVIDER_SUBJECT_PERSISTED=NO'
           echo 'PUBLIC_ROUTE_CONFIGURED=NO'
           echo 'PRODUCTION_MUTATION=NO'

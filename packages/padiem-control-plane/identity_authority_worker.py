@@ -15,6 +15,11 @@ from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
     decode_identity_lookup_key,
 )
+from identity_connector_ticket import (
+    CanonicalConnectorContextStore,
+    GoogleConnectTicketIssuer,
+    decode_connect_ticket_key,
+)
 
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
@@ -22,6 +27,7 @@ _ALLOWED_PRODUCT = "b62"
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
+_CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 
 
@@ -73,7 +79,7 @@ def _safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
 
 
 class CanonicalIdentityDurableObject(DurableObject):
-    """Private canonical product-link and auth-session authority."""
+    """Private canonical identity/session and connector-ticket authority."""
 
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
@@ -86,6 +92,13 @@ class CanonicalIdentityDurableObject(DurableObject):
                 _required_env(env, "CONTROL_PLANE_IDENTITY_LOOKUP_KEY")
             ),
             allowed_product_id=_ALLOWED_PRODUCT,
+        )
+        self._connector_context_store = CanonicalConnectorContextStore(ctx.storage)
+        self._connect_ticket_issuer = GoogleConnectTicketIssuer(
+            context_store=self._connector_context_store,
+            signing_key=decode_connect_ticket_key(
+                _required_env(env, "GOOGLE_CONNECT_TICKET_KEY")
+            ),
         )
 
     async def resolve_or_create_product_link(self, payload: dict) -> dict:
@@ -136,6 +149,25 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def issue_google_connect_ticket(self, payload: dict) -> dict:
+        """Mint one short-lived ticket after authoritative session re-read.
+
+        The caller supplies only the canonical session id and reviewed connector.
+        actor/account/workspace references are resolved exclusively inside this
+        private Control Plane Durable Object and cannot be client asserted.
+        """
+
+        try:
+            wire = _closed(payload, _CONNECT_KEYS, "Google connect-ticket RPC")
+            session = self._store.resolve_auth_session(session_id=wire["session_id"])
+            receipt = self._connect_ticket_issuer.issue(
+                auth_session=session,
+                connector_id=wire["connector_id"],
+            )
+            return {"ok": True, "ticket": receipt.to_private_rpc_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -158,6 +190,9 @@ class Default(WorkerEntrypoint):
     async def resolve_auth_session(self, payload: dict) -> dict:
         return await self._stub().resolve_auth_session(payload)
 
+    async def issue_google_connect_ticket(self, payload: dict) -> dict:
+        return await self._stub().issue_google_connect_ticket(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -168,6 +203,10 @@ SQLITE_BACKED_DURABLE_OBJECT = True
 PRIVATE_SERVICE_BINDING_RPC = True
 PROVIDER_SUBJECT_PERSISTED = False
 PRODUCT_D1_SHADOW_AUTHORITATIVE = False
+CONNECT_TICKET_ISSUED_BY_CONTROL_PLANE = True
+CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY = False
+RAW_CONNECT_TICKET_PUBLIC = False
+GOOGLE_WRITE_SCOPE = False
 PUBLIC_FETCH = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
