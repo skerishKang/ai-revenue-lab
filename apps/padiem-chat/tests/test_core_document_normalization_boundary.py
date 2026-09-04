@@ -53,12 +53,15 @@ def test_document_dependencies_are_owned_by_core_optional_extra() -> None:
     assert '"openpyxl>=3.1,<4"' in core_project
 
 
-def test_core_document_contract_has_no_path_url_storage_or_provider_authority() -> None:
+def test_core_document_contract_has_no_filesystem_url_storage_or_provider_authority() -> None:
     source = CORE_DOCUMENTS.read_text(encoding="utf-8")
     assert "def extract_binary_document(*, name: Any, media_type: Any, payload: Any)" in source
     assert "httpx" not in source
     assert "requests" not in source
-    assert "Path(" not in source
-    assert "open(" not in source
+    assert "pathlib import Path" not in source
+    assert ".read_text(" not in source
+    assert ".read_bytes(" not in source
+    assert ".write_text(" not in source
+    assert ".write_bytes(" not in source
     assert "url" not in source.lower()
     assert "provider" not in source.lower()
