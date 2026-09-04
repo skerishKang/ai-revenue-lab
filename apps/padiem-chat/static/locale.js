@@ -2,6 +2,7 @@
   "use strict";
 
   const VALID_LOCALES = ["ko", "en"];
+  const TRUSTED_AUTH_SESSION_STATES = new Set(["unavailable", "guest", "signed_in", "expired"]);
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const nativeConfirm = typeof window.confirm === "function" ? window.confirm.bind(window) : null;
 
@@ -161,6 +162,15 @@
       : authenticated
         ? text("logout-title", lang)
         : text("login-title", lang);
+  }
+
+  function syncLoginButtonFromCapability(event) {
+    const state = event?.detail?.auth?.sessionState;
+    if (!TRUSTED_AUTH_SESSION_STATES.has(state)) return;
+    const button = document.getElementById("loginButton");
+    const accountRoot = button?.closest(".sidebar-account");
+    if (!button || !accountRoot || accountRoot.dataset.accountState !== state) return;
+    syncLoginButton(getCurrent());
   }
 
   function applyStaticBindings(lang) {
@@ -343,5 +353,6 @@
     localizeExisting: () => localizeExistingDynamicControls(getCurrent())
   };
 
+  window.addEventListener("padiem:capabilitychange", syncLoginButtonFromCapability);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();
