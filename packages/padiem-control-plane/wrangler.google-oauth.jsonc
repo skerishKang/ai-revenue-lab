@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "padiem-google-oauth-state",
+  "main": "google_oauth_worker.py",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "GOOGLE_OAUTH_AUTHORITY_REF": "control-plane.google-oauth.production.v1"
+  },
+  "secrets": {
+    "required": [
+      "GOOGLE_CONNECT_TICKET_KEY",
+      "GOOGLE_OAUTH_SEAL_KEY",
+      "GOOGLE_OAUTH_CLIENT_SECRET"
+    ]
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "GOOGLE_OAUTH_STATE",
+        "class_name": "GoogleOAuthDurableObject"
+      }
+    ]
+  },
+  "exports": {
+    "GoogleOAuthDurableObject": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  },
+  "observability": {
+    "enabled": true
+  }
+}
