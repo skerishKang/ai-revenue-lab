@@ -1,0 +1,65 @@
+.composer-interaction-status {
+  margin: 7px 2px 0;
+  min-height: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.composer[data-interaction-phase]:not([data-interaction-phase="idle"]) {
+  border-color: color-mix(in srgb, var(--accent, #6557e8) 46%, var(--line, #e3e3e9));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #6557e8) 10%, transparent), var(--shadow-soft, 0 8px 30px rgba(0,0,0,.08));
+}
+
+.composer[data-interaction-phase="attachment_loading"] .tool-button,
+.composer[data-interaction-phase="preparing"] .send-button,
+.composer[data-interaction-phase="streaming"] .send-button,
+.composer[data-interaction-phase="cancelling"] .send-button {
+  cursor: progress;
+}
+
+.cancel-stream-button[aria-busy="true"] {
+  cursor: progress;
+  opacity: .72;
+}
+
+.retry-button[aria-busy="true"] {
+  cursor: progress;
+  opacity: .68;
+}
+
+.assistant-message[data-terminal-actions-safe="false"] .answer-actions {
+  display: none !important;
+}
+
+.assistant-message[data-lifecycle="timed_out"] .error-box {
+  border-style: dashed;
+}
+
+.composer :is(button, textarea):focus-visible,
+.error-box .retry-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent, #6557e8) 52%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .composer-interaction-status {
+    margin-inline: 4px;
+    font-size: 11px;
+  }
+
+  .cancel-stream-button,
+  .retry-button {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer[data-interaction-phase],
+  .cancel-stream-button,
+  .retry-button {
+    transition: none !important;
+    animation: none !important;
+  }
+}
