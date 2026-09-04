@@ -309,7 +309,8 @@ class TestHttpTransport:
         body = json.dumps(_payload()).encode("utf-8")
 
         assert _post(service, body, method="GET").status_code == 405
-        assert _post(service, body, path="/internal/v1/memory/write").status_code == 404
+        assert _post(service, body, path="/internal/v1/memory/unknown").status_code == 404
+        assert _post(service, body, path="/internal/v1/memory/write").status_code == 503
         assert _post(service, body, content_type="text/plain").status_code == 415
         assert _post(service, b"{", content_type="application/json").status_code == 400
         assert _post(service, b"x" * (32 * 1024 + 1)).status_code == 413

@@ -154,6 +154,7 @@ def test_both_entrypoints_compose_full_named_bundle_never_tuples(identity_module
         assert isinstance(services.research, WebResearchEngineService)
         assert isinstance(services.memory, MemoryRetrievalEngineService)
         assert services.memory.bound_app_ids == ()
+        assert services.memory.write_bound_app_ids == ()
 
     legacy_services = legacy._engine_services_for_env(unbound_env)
     identity_services = identity._engine_services_for_env(unbound_env)
@@ -194,6 +195,7 @@ def test_health_route_serves_without_caller_credential(identity_modules) -> None
         ("/internal/v1/research", "b14_service_unavailable"),
         ("/internal/v1/orchestrate", "b14_service_unavailable"),
         ("/internal/v1/memory/retrieve", "memory_binding_unavailable"),
+        ("/internal/v1/memory/write", "memory_write_binding_unavailable"),
     ],
 )
 def test_authenticated_routes_reach_named_services_without_arity_failure(
@@ -291,3 +293,96 @@ def test_memory_route_serves_from_bound_service_in_canonical_entrypoint(identity
     assert payload["retrieval"]["item_count"] == 1
     assert "private-ref-1" not in json.dumps(payload)
     assert "stored preference" not in json.dumps(payload)
+
+
+def test_memory_write_route_serves_from_bound_write_service_in_canonical_entrypoint(
+    identity_modules,
+) -> None:
+    from dataclasses import replace
+
+    from padiem_ai_core.memory import (
+        MemoryNamespace,
+        MemoryProvenance,
+        MemoryScope,
+        MemoryWriteAuthorization,
+        MemoryWriteOrigin,
+    )
+    from padiem_ai_core.memory_receipt import (
+        MemoryWriteDisposition,
+        MemoryWriteReceipt,
+    )
+
+    from app.memory_service import (
+        EngineMemoryWriteBinding,
+        MemoryRetrievalEngineService,
+        MemoryWriteClassification,
+    )
+
+    _legacy, identity = identity_modules
+
+    calls: list[Any] = []
+
+    class _WriteAdapter:
+        async def write(self, prepared: Any) -> Any:
+            calls.append(prepared)
+            request = prepared.request
+            return MemoryWriteReceipt(
+                memory_id=request.memory_id,
+                namespace_key=request.namespace.key,
+                idempotency_scope=request.idempotency_scope,
+                disposition=MemoryWriteDisposition.CREATED,
+                adapter_id="fixture-store",
+                storage_ref="private-storage-1",
+            )
+
+    def classifier(candidate: Any) -> MemoryWriteClassification:
+        return MemoryWriteClassification(
+            origin=MemoryWriteOrigin.USER_EXPLICIT,
+            provenance=MemoryProvenance(
+                source_type="attested_action",
+                source_ref="private-server-ref-1",
+                trace_id=candidate.trace_id,
+            ),
+        )
+
+    namespace = MemoryNamespace(app_id=ALLOWED_APP, scope=MemoryScope.USER, subject_id="u-1")
+    memory = MemoryRetrievalEngineService(
+        write_bindings={
+            ALLOWED_APP: EngineMemoryWriteBinding(
+                authorization=MemoryWriteAuthorization(
+                    app_id=ALLOWED_APP, writable_namespaces=(namespace.key,)
+                ),
+                adapter=_WriteAdapter(),
+                classifier=classifier,
+            )
+        }
+    )
+    assert memory.write_bound_app_ids == (ALLOWED_APP,)
+
+    env = _identity_env()
+    base = identity._engine_services_for_env(env)
+    entry = _entry(identity, env)
+    entry.engine_services_factory = lambda _env: replace(base, memory=memory)
+
+    body = json.dumps(
+        {
+            "app_id": ALLOWED_APP,
+            "memory_id": "m-w-1",
+            "namespace": {"scope": "user", "subject_id": "u-1"},
+            "content": "remember project baseline",
+            "idempotency_key": "idem-1",
+            "trace_id": "trace-1",
+        }
+    ).encode("utf-8")
+    response = asyncio.run(entry.fetch(_Request("/internal/v1/memory/write", body=body)))
+
+    assert response.status == 200
+    payload = _body(response)
+    assert payload["ok"] is True
+    assert payload["receipt"]["memory_id"] == "m-w-1"
+    assert payload["receipt"]["disposition"] == "created"
+    assert payload["receipt"]["adapter_id"] == "fixture-store"
+    assert len(calls) == 1
+    assert "private-storage-1" not in json.dumps(payload)
+    assert "private-server-ref-1" not in json.dumps(payload)
+    assert "remember project baseline" not in json.dumps(payload)
