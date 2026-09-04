@@ -382,7 +382,7 @@ async def test_login_bridge_with_service_binding_adapter_saves_authority_issued_
     assert "provider-subject-private" not in serialized
 
 
-def test_worker_and_wrangler_keep_identity_binding_server_owned():
+def test_worker_supports_private_identity_binding_without_activating_mock_config():
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[1]
@@ -393,10 +393,11 @@ def test_worker_and_wrangler_keep_identity_binding_server_owned():
     assert 'IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"' in (
         root / "app/worker_config.py"
     ).read_text(encoding="utf-8")
+    assert "identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)" in worker
     assert "CloudflareControlPlaneIdentityAuthority(identity_binding)" in worker
     assert "D1IdentityShadowStore(db_binding)" in worker
-    assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' in wrangler
-    assert 'service = "padiem-control-plane-identity"' in wrangler
+    assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' not in wrangler
+    assert 'service = "padiem-control-plane-identity"' not in wrangler
     assert 'set(payload) != {"connector_id"}' in route
     assert "account_ref" not in route
     assert "workspace_ref" not in route
