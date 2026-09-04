@@ -142,8 +142,7 @@ async def _wait_state(page: Page, expected: str, *, label: str) -> None:
     try:
         await page.wait_for_function(predicate, timeout=5_000)
     except Exception as error:
-        href = page.url
-        raise AssertionError(f"trusted {expected} presentation did not settle at {label}; href={href}") from error
+        raise AssertionError(f"trusted {expected} presentation did not settle at {label}; href={page.url}") from error
 
 
 async def _assert_target(page: Page, selector: str, label: str) -> dict[str, float]:
@@ -201,6 +200,28 @@ def _initial_session(case: str) -> str:
     return "unavailable"
 
 
+async def _bootstrap_diagnostics(page: Page, page_errors: list[str], request_failures: list[str]) -> dict[str, Any]:
+    diagnostic: dict[str, Any] = {
+        "href": page.url,
+        "page_errors": page_errors[-20:],
+        "request_failures": request_failures[-20:],
+    }
+    try:
+        diagnostic.update(await page.evaluate(
+            """() => ({
+              readyState: document.readyState,
+              title: document.title,
+              sidebarAccountPresent: Boolean(document.querySelector('.sidebar-account')),
+              loginButtonPresent: Boolean(document.getElementById('loginButton')),
+              capabilityType: typeof window.PadiemProductCapabilities,
+              scripts: Array.from(document.scripts).map((script) => ({ src: script.src, readyState: script.readyState || null })),
+            })"""
+        ))
+    except Exception as error:
+        diagnostic["diagnostic_evaluate_error"] = f"{type(error).__name__}: {error}"
+    return diagnostic
+
+
 async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]:
     if theme not in THEMES:
         raise ValueError(f"unsupported theme: {theme}")
@@ -220,20 +241,42 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
         "google_start_reads": 0,
     }
     stubbed_hosts: set[str] = set()
+    page_errors: list[str] = []
+    request_failures: list[str] = []
 
     print(f"ACCOUNT_SESSION_CASE_START={label}", flush=True)
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         page = await browser.new_page(viewport={"width": width, "height": height})
+        page.on("pageerror", lambda error: page_errors.append(str(error)))
+        page.on(
+            "requestfailed",
+            lambda request: request_failures.append(
+                f"{request.method} {request.url} :: {request.failure or 'request failed'}"
+            ),
+        )
         try:
             await _install_static_font_stubs(page, stubbed_hosts)
             await _install_fixtures(page, state)
             suffix = f"&lang={lang}" if lang else ""
             await page.goto(f"{BASE_URL}/?theme={theme}{suffix}", wait_until="domcontentloaded", timeout=30_000)
-            await page.wait_for_function(
-                "() => typeof window.PadiemProductCapabilities?.get === 'function' && document.querySelector('.sidebar-account')",
-                timeout=5_000,
-            )
+            try:
+                await page.locator(".sidebar-account").wait_for(state="attached", timeout=2_000)
+                await page.wait_for_function(
+                    "() => typeof window.PadiemProductCapabilities?.get === 'function'",
+                    timeout=5_000,
+                )
+            except Exception as error:
+                diagnostic = await _bootstrap_diagnostics(page, page_errors, request_failures)
+                print(
+                    "ACCOUNT_SESSION_BOOTSTRAP_DIAGNOSTIC="
+                    + json.dumps(diagnostic, ensure_ascii=False, sort_keys=True),
+                    flush=True,
+                )
+                raise AssertionError(
+                    f"account/session bootstrap did not expose product capabilities at {label}"
+                ) from error
+
             await _open_sidebar(page, mobile)
             await _wait_state(page, session, label=label)
 
@@ -247,6 +290,8 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 "real_google_oauth": 0,
                 "production_mutation": False,
                 "horizontal_overflow": False,
+                "page_errors": page_errors,
+                "request_failures": request_failures,
                 "status": "PASS",
             }
 
