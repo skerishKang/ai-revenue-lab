@@ -53,9 +53,9 @@ jobs:
               '-X ' + 'PUT',
               '-X ' + 'PATCH',
               '-X ' + 'DELETE',
-              '/workers/routes',
-              'rollback_custom_domain',
-              'activate_custom_domain',
+              '/workers/' + 'routes',
+              'rollback_' + 'custom_domain',
+              'activate_' + 'custom_domain',
           ]
           for token in forbidden:
               if token in text:
