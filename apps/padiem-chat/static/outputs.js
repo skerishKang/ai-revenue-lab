@@ -339,17 +339,27 @@
   function normalizeAuthProjection() {
     if (!loginButton) return false;
     const raw = loginButton.textContent.trim();
+    const accountState = loginButton.closest(".sidebar-account")?.dataset.accountState || "";
     let projectedState = loginButton.dataset.authenticated;
     if (raw === "로그아웃" || raw === "Log out") projectedState = "true";
-    else if (raw === "로그인" || raw === "Log in") projectedState = "false";
+    else if (raw === "로그인" || raw === "Log in" || raw === "다시 로그인" || raw === "Sign in again") projectedState = "false";
     if (projectedState && loginButton.dataset.authenticated !== projectedState) {
       loginButton.dataset.authenticated = projectedState;
     }
     const authenticated = loginButton.dataset.authenticated === "true" && loginButton.disabled === false;
     const locale = window.__padiemLocale;
     if (locale && typeof locale.text === "function") {
-      const nextText = locale.text(authenticated ? "logout" : "login");
-      const nextTitle = locale.text(loginButton.disabled ? "login-unavailable-title" : authenticated ? "logout-title" : "login-title");
+      const expired = accountState === "expired";
+      const nextText = locale.text(expired ? "sign-in-again" : authenticated ? "logout" : "login");
+      const nextTitle = locale.text(
+        expired
+          ? "expired-title"
+          : loginButton.disabled
+            ? "login-unavailable-title"
+            : authenticated
+              ? "logout-title"
+              : "login-title"
+      );
       if (loginButton.textContent !== nextText) loginButton.textContent = nextText;
       if (loginButton.title !== nextTitle) loginButton.title = nextTitle;
     }
