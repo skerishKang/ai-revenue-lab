@@ -42,8 +42,16 @@ from padiem_ai_core import (
     VerifiedApprovalDecision,
     request_fingerprint,
 )
+from padiem_ai_core.agent_approval import tool_invocation_digest
+from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
+from app.tool_projection import (
+    MAX_WIRE_TOOL_ARGUMENTS_BYTES,
+    EngineToolBinding,
+    EngineToolProjectionError,
+    json_size,
+)
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
     ServiceContractError,
@@ -78,8 +86,10 @@ _ORCHESTRATION_OPTIONS = frozenset({
 _ORCHESTRATION_RESUME_OPTIONS = frozenset({
     "agent_plan", "recovery_policy", "max_retries", "subject_id",
 })
-_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS
-_RESUME_ALLOWED = (_EXEC_FIELDS | {"continuation_ref", "decision"}) | _ORCHESTRATION_RESUME_OPTIONS
+_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS | {"tool_arguments"}
+_RESUME_ALLOWED = (
+    _EXEC_FIELDS | {"continuation_ref", "decision", "tool_arguments"}
+) | _ORCHESTRATION_RESUME_OPTIONS
 _CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
 
 _AGENT_PLAN_ALLOWED = frozenset({"agent_id", "steps"})
@@ -544,9 +554,12 @@ class OrchestrationEngineService:
         idempotency_adapter: Any | None = None,
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
+        tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
+        if tool_binding_resolver is not None and not callable(tool_binding_resolver):
+            raise ValueError("tool_binding_resolver must be callable")
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
         if continuation_store is not None:
@@ -570,6 +583,166 @@ class OrchestrationEngineService:
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store or _DEFAULT_CONTINUATION_STORE
         self._continuation_store_is_explicit = continuation_store is not None
+        self._tool_binding_resolver = tool_binding_resolver
+
+    # ------------------------------------------------------------------
+    # Trusted tool-runtime attachment (#1746)
+    # ------------------------------------------------------------------
+
+    def _resolve_tool_binding(self, app_id: str) -> EngineToolBinding | None:
+        """Look up the server-provisioned binding; callers never supply one."""
+        if self._tool_binding_resolver is None:
+            return None
+        try:
+            binding = self._tool_binding_resolver(app_id)
+        except Exception as exc:
+            raise EngineToolProjectionError(
+                "tool_runtime_unavailable",
+                "The Engine Tool runtime binding resolver failed.",
+                status_code=503,
+            ) from exc
+        if binding is None:
+            return None
+        if binding.app_id != app_id:
+            raise EngineToolProjectionError(
+                "tool_runtime_unavailable",
+                "The Engine Tool runtime binding does not match this application.",
+                status_code=503,
+            )
+        return binding
+
+    @staticmethod
+    def _parse_tool_arguments(value: Any) -> dict[str, dict[str, Any]]:
+        """Parse untrusted per-step argument data; it never carries authority."""
+        if value is None:
+            return {}
+        if isinstance(value, (str, bytes, bytearray)) or not isinstance(value, Mapping):
+            raise ServiceContractError(
+                "invalid_tool_arguments",
+                "tool_arguments must be an object keyed by plan step id.",
+            )
+        if len(value) > 64:
+            raise ServiceContractError(
+                "invalid_tool_arguments",
+                "tool_arguments contains too many entries.",
+            )
+        parsed: dict[str, dict[str, Any]] = {}
+        total = 0
+        for key, item in value.items():
+            if not isinstance(key, str) or not _IDENTIFIER_RE.fullmatch(key):
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments keys must be bounded safe step identifiers.",
+                )
+            if isinstance(item, (str, bytes, bytearray)) or not isinstance(item, Mapping):
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments values must be objects.",
+                )
+            arguments = dict(item)
+            try:
+                size = json_size(arguments)
+            except EngineToolProjectionError:
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments must contain JSON-compatible values only.",
+                ) from None
+            if size > MAX_TOOL_ARGUMENT_BYTES:
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments step entry exceeds the bounded argument size.",
+                )
+            total += size
+            parsed[key] = arguments
+        if total > MAX_WIRE_TOOL_ARGUMENTS_BYTES:
+            raise ServiceContractError(
+                "tool_arguments_too_large",
+                "tool_arguments exceed the bounded orchestration argument budget.",
+            )
+        return parsed
+
+    def _tool_request_kwargs(
+        self,
+        *,
+        app_id: str,
+        plan: AgentPlan | None,
+        raw_tool_arguments: Any,
+        resume: bool = False,
+    ) -> dict[str, Any]:
+        """Attach trusted tool authority to a Core request when provisioned.
+
+        Without a server binding, no tool authority is attached at all and a
+        plan can never execute tools; a caller cannot fabricate the fields.
+        """
+        if raw_tool_arguments is not None and plan is None:
+            raise ServiceContractError(
+                "tool_arguments_without_plan",
+                "tool_arguments requires an agent_plan.",
+            )
+        if plan is None:
+            return {}
+        binding = self._resolve_tool_binding(app_id)
+        if binding is None:
+            if raw_tool_arguments is not None:
+                raise ServiceContractError(
+                    "tool_runtime_unavailable",
+                    "Tool arguments require a provisioned trusted tool runtime binding.",
+                    status_code=503,
+                )
+            return {}
+        authority = binding.resolve_authority(plan.agent_id)
+        kwargs: dict[str, Any] = {
+            "agent_definition": authority.definition,
+            "compiled_agent_profile": authority.compiled,
+            "tool_authorization": authority.authorization,
+            "tool_runtime": binding.tool_runtime,
+            "tool_arguments": self._parse_tool_arguments(raw_tool_arguments),
+        }
+        if not resume:
+            # OrchestrationResumeRequest has no tool_registry / resource_policy
+            # fields; Core's resume executor drives tools through the runtime.
+            kwargs["tool_registry"] = binding.registry
+            kwargs["tool_resource_policy"] = binding.resource_policy
+        return kwargs
+
+    @staticmethod
+    def _assert_resumed_invocation_matches(
+        plan: AgentPlan,
+        pause: ApprovalPause,
+        tool_arguments: Mapping[str, Any],
+    ) -> None:
+        """Fail closed unless the paused invocation is resumed byte-identical."""
+        step_index = pause.step_index - 1
+        if not 0 <= step_index < len(plan.steps):
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed plan does not align with the paused step.",
+                status_code=409,
+            )
+        step = plan.steps[step_index]
+        if step.tool_id != pause.tool_id:
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed plan step does not match the paused tool.",
+                status_code=409,
+            )
+        arguments = dict(tool_arguments.get(step.step_id, {}) or {})
+        if not arguments and step.objective:
+            arguments["query"] = step.objective
+        try:
+            candidate = ToolInvocation(tool_id=step.tool_id, arguments=arguments)
+        except (TypeError, ValueError):
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed invocation does not satisfy the tool invocation contract.",
+                status_code=409,
+            ) from None
+        if tool_invocation_digest(candidate) != pause.invocation_sha256:
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed invocation does not match the paused invocation.",
+                status_code=409,
+            )
 
     async def _continuation_call(self, method: str, **kwargs: Any) -> Any:
         try:
@@ -756,6 +929,11 @@ class OrchestrationEngineService:
             plan, rec_policy, max_retries, subject_id, require_evidence, require_verification = (
                 _parse_orchestration_options(payload)
             )
+            tool_kwargs = self._tool_request_kwargs(
+                app_id=app_id,
+                plan=plan,
+                raw_tool_arguments=payload.get("tool_arguments"),
+            )
             orch_req = OrchestrationRequest(
                 execution_request=exec_req,
                 context=ctx,
@@ -766,8 +944,11 @@ class OrchestrationEngineService:
                 max_retries=max_retries,
                 require_evidence=require_evidence,
                 require_verification=require_verification,
+                **tool_kwargs,
             )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (AgentPlannerError, AgentRecoveryError, OrchestrationError) as exc:
             return _service_error(exc.code, exc.safe_message, status_code=400)
@@ -785,8 +966,12 @@ class OrchestrationEngineService:
                 status_code=409,
             )
         except OrchestrationError as exc:
+            if exc.code in {"authorization_denied", "missing_approval_authorization", "capability_missing"}:
+                return _service_error(exc.code, exc.safe_message, status_code=403)
             status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        except EngineToolProjectionError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except Exception:
             return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
         try:
@@ -914,6 +1099,24 @@ class OrchestrationEngineService:
             rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
             max_retries = _parse_max_retries(payload.get("max_retries", 3))
             subject_id = _parse_subject_id(payload.get("subject_id"))
+            tool_kwargs = self._tool_request_kwargs(
+                app_id=app_id,
+                plan=plan,
+                raw_tool_arguments=payload.get("tool_arguments"),
+                resume=True,
+            )
+            if (
+                plan is not None
+                and "tool_runtime" in tool_kwargs
+                and record.plan_id is not None
+            ):
+                # Continuation non-widening: the wire may only resume the exact
+                # invocation that produced the server-issued pause.
+                self._assert_resumed_invocation_matches(
+                    plan,
+                    record.pause,
+                    tool_kwargs.get("tool_arguments") or {},
+                )
             resume_req = OrchestrationResumeRequest(
                 pause=record.pause,
                 decision=decision,
@@ -924,8 +1127,11 @@ class OrchestrationEngineService:
                 agent_plan=plan,
                 recovery_policy=rec_policy,
                 max_retries=max_retries,
+                **tool_kwargs,
             )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (AgentPlannerError, AgentRecoveryError, OrchestrationError) as exc:
             return _service_error(exc.code, exc.safe_message, status_code=400)
@@ -974,6 +1180,8 @@ class OrchestrationEngineService:
                     )
                 except ServiceContractError as release_exc:
                     return _service_error(release_exc.code, release_exc.safe_message, status_code=release_exc.status_code)
+            if exc.code in {"missing_approval_authorization", "authorization_denied"}:
+                return _service_error(exc.code, exc.safe_message, status_code=403)
             status_code = 409 if exc.code in {"continuation_expired", "approval_denied", "continuation_identity_mismatch"} else 422
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
         except asyncio.CancelledError:
