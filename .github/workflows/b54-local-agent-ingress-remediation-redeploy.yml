@@ -1,0 +1,412 @@
+name: B54 Local Agent Ingress Remediation Redeploy
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-local-agent-ingress-remediation-redeploy.yml"
+      - "packages/padiem-control-plane/local_agent_broker_edge_worker.py"
+      - "packages/padiem-control-plane/local_agent_broker_worker.py"
+      - "packages/padiem-control-plane/local_agent_broker_private_http_bridge.py"
+      - "packages/padiem-control-plane/local_agent_broker_device_http.py"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker.jsonc"
+      - "packages/padiem-control-plane/wrangler.local-agent-broker-edge.jsonc"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Remediation gate mode; only redeploy_fetch_transport mutates Cloudflare"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - redeploy_fetch_transport
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Required only for redeploy_fetch_transport"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-local-agent-ingress-remediation-redeploy
+  cancel-in-progress: false
+
+env:
+  STATE_WORKER: padiem-local-agent-broker-state
+  EDGE_WORKER: padiem-local-agent-broker-edge
+  PUBLIC_HOSTNAME: local-agent.padiem.net
+  STATE_CONFIG: wrangler.local-agent-broker.jsonc
+  EDGE_CONFIG: wrangler.local-agent-broker-edge.jsonc
+  EXPECTED_PRE_FIX_STATE_VERSION: 8de403cd-b6c9-4280-a673-1e3fa4bea203
+  EXPECTED_PRE_FIX_EDGE_VERSION: 7bf165c0-f320-4bb4-8410-1d516fa4960a
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+      - name: Validate remediation source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("packages/padiem-control-plane")
+          state = json.loads((root / "wrangler.local-agent-broker.jsonc").read_text(encoding="utf-8"))
+          edge = json.loads((root / "wrangler.local-agent-broker-edge.jsonc").read_text(encoding="utf-8"))
+          assert state["name"] == "padiem-local-agent-broker-state"
+          assert state["workers_dev"] is False and state["preview_urls"] is False
+          assert "routes" not in state and "route" not in state
+          assert state["durable_objects"]["bindings"] == [{"name": "LOCAL_AGENT_BROKER_STATE", "class_name": "LocalAgentBrokerDurableObject"}]
+          assert state["secrets"] == {"required": ["LOCAL_AGENT_BROKER_PEPPER"]}
+          assert edge["name"] == "padiem-local-agent-broker-edge"
+          assert edge["workers_dev"] is False and edge["preview_urls"] is False
+          assert "routes" not in edge and "route" not in edge
+          assert edge["services"] == [{"binding": "LOCAL_AGENT_BROKER_SERVICE", "service": "padiem-local-agent-broker-state"}]
+
+          edge_source = (root / "local_agent_broker_edge_worker.py").read_text(encoding="utf-8")
+          state_source = (root / "local_agent_broker_worker.py").read_text(encoding="utf-8")
+          bridge_source = (root / "local_agent_broker_private_http_bridge.py").read_text(encoding="utf-8")
+          assert 'EDGE_TO_STATE_DEVICE_TRANSPORT = "service_binding_fetch"' in edge_source
+          assert "LOCAL_AGENT_BROKER_SERVICE.fetch(" in edge_source
+          assert "BOUNDED_BODY = True" in edge_source
+          assert 'EDGE_TO_STATE_DEVICE_TRANSPORT = "service_binding_fetch"' in state_source
+          assert "handle_private_device_fetch" in state_source
+          assert "CANONICAL_DEVICE_HTTP_SERVICE_REUSED = True" in bridge_source
+          assert "SECOND_DEVICE_AUTHORITY = False" in bridge_source
+          assert "ADMIN_RPC_HTTP_EXPOSED = False" in bridge_source
+          print("REMEDIATION_SOURCE_CONTRACT=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Dry-run package both exact Python Workers
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/b54-remediation-dry-run-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "$(python -c 'import secrets; print(secrets.token_hex(32))')" > "${secret_file}"
+          chmod 600 "${secret_file}"
+          cp "${STATE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/b54-remediation-state-dry-run"
+          rm -f "${temp_config}"
+          cp "${EDGE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --dry-run --outdir "${RUNNER_TEMP}/b54-remediation-edge-dry-run"
+          rm -f "${temp_config}"
+          test -d "${RUNNER_TEMP}/b54-remediation-state-dry-run"
+          test -d "${RUNNER_TEMP}/b54-remediation-edge-dry-run"
+          echo "WORKER_PACKAGING_PREFLIGHT=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require exact pinned pre-fix Production baseline
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+
+          for worker in "${STATE_WORKER}" "${EDGE_WORKER}"; do
+            subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
+            settings="${RUNNER_TEMP}/${worker}-settings.json"
+            deployments="${RUNNER_TEMP}/${worker}-deployments.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${subdomain}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${deployments}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            if [ "${worker}" = "${STATE_WORKER}" ]; then
+              jq -e --arg version "${EXPECTED_PRE_FIX_STATE_VERSION}" '.result.deployments[0].versions[0].version_id == $version' "${deployments}" >/dev/null
+              jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_PEPPER")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_REF")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_STATE"))' "${settings}" >/dev/null
+            else
+              jq -e --arg version "${EXPECTED_PRE_FIX_EDGE_VERSION}" '.result.deployments[0].versions[0].version_id == $version' "${deployments}" >/dev/null
+              jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${settings}" >/dev/null
+            fi
+          done
+          echo "PINNED_PRE_FIX_VERSIONS=PASS"
+          echo "PUBLIC_CUSTOM_DOMAIN_PRESERVED=PASS"
+          echo "PRIVATE_WORKER_BOUNDARY=PASS"
+          echo "EDGE_SERVICE_BINDING=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  redeploy-fetch-transport:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'redeploy_fetch_transport' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    steps:
+      - name: Require explicit remediation redeploy authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          BROKER_PEPPER: ${{ secrets.LOCAL_AGENT_BROKER_PEPPER }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "REDEPLOY_PADIEM_LOCAL_AGENT_FETCH_TRANSPORT_STATE_THEN_EDGE"
+          test -n "${BROKER_PEPPER}"
+          echo "REMEDIATION_REDEPLOY_AUTHORIZATION=PASS"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before first mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "PREMUTATION_EXACT_MAIN=PASS"
+
+      - name: Reconfirm pinned versions and Custom Domain immediately before mutation
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains-premutation.json"
+          state_deployments="${RUNNER_TEMP}/state-deployments-premutation.json"
+          edge_deployments="${RUNNER_TEMP}/edge-deployments-premutation.json"
+          state_sub="${RUNNER_TEMP}/state-sub-premutation.json"
+          edge_sub="${RUNNER_TEMP}/edge-sub-premutation.json"
+          edge_settings="${RUNNER_TEMP}/edge-settings-premutation.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/deployments" -o "${state_deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/deployments" -o "${edge_deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${state_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${edge_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${edge_settings}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+          jq -e --arg version "${EXPECTED_PRE_FIX_STATE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${state_deployments}" >/dev/null
+          jq -e --arg version "${EXPECTED_PRE_FIX_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${edge_deployments}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${edge_settings}" >/dev/null
+          echo "IMMEDIATE_PREMUTATION_BASELINE=PASS"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Redeploy corrected state Worker first
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BROKER_PEPPER: ${{ secrets.LOCAL_AGENT_BROKER_PEPPER }}
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/b54-remediation-production-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          printf 'LOCAL_AGENT_BROKER_PEPPER=%s\n' "${BROKER_PEPPER}" > "${secret_file}"
+          chmod 600 "${secret_file}"
+          cp "${STATE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 ingress remediation state ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "STATE_FIRST_REDEPLOY=SUCCESS"
+          echo "DURABLE_OBJECT_DELETE=NO"
+          echo "DURABLE_OBJECT_STORAGE_MIGRATION=NO"
+
+      - name: Read back new private state version before edge mutation
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          deployments="${RUNNER_TEMP}/state-after.json"
+          subdomain="${RUNNER_TEMP}/state-sub-after.json"
+          settings="${RUNNER_TEMP}/state-settings-after.json"
+          domains="${RUNNER_TEMP}/domains-after-state.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/deployments" -o "${deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg old "${EXPECTED_PRE_FIX_STATE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100 and .result.deployments[0].versions[0].version_id != $old' "${deployments}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_PEPPER")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_AUTHORITY_REF")) and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_STATE"))' "${settings}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          echo "STATE_PRIVATE_READBACK_AFTER_REDEPLOY=PASS"
+          echo "CUSTOM_DOMAIN_STILL_EDGE_AFTER_STATE=PASS"
+
+      - name: Reconfirm exact main before second mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "PRE_EDGE_EXACT_MAIN=PASS"
+
+      - name: Redeploy corrected edge Worker second
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          cp "${EDGE_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --strict --tag "git-${TARGET_SHA}" --message "B54 ingress remediation edge ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "EDGE_SECOND_REDEPLOY=SUCCESS"
+
+      - name: Read back exact public/private topology after both redeploys
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          deployments="${RUNNER_TEMP}/edge-after.json"
+          state_sub="${RUNNER_TEMP}/state-sub-final.json"
+          edge_sub="${RUNNER_TEMP}/edge-sub-final.json"
+          edge_settings="${RUNNER_TEMP}/edge-settings-final.json"
+          domains="${RUNNER_TEMP}/domains-final.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/deployments" -o "${deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/subdomain" -o "${state_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/subdomain" -o "${edge_sub}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${edge_settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg old "${EXPECTED_PRE_FIX_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100 and .result.deployments[0].versions[0].version_id != $old' "${deployments}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${edge_settings}" >/dev/null
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '[.result[] | select(.service == $state)] | length == 0' "${domains}" >/dev/null
+          echo "EDGE_PRIVATE_READBACK_AFTER_REDEPLOY=PASS"
+          echo "EDGE_SERVICE_BINDING_AFTER_REDEPLOY=PASS"
+          echo "PUBLIC_CUSTOM_DOMAIN_PRESERVED=PASS"
+          echo "CUSTOM_DOMAIN_MUTATION=NO"
+          echo "DNS_MUTATION=NO"
+          echo "WORKER_ROUTE_MUTATION=NO"
+
+      - name: Run bounded public 405 404 401 acceptance smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          wait_for() {
+            local label="$1" expected="$2" method="$3" path="$4" data="$5" error_code="$6"
+            local body="${RUNNER_TEMP}/${label}.json"
+            local code=""
+            for _ in $(seq 1 60); do
+              if [ "${method}" = "GET" ]; then
+                code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${body}" -w '%{http_code}' "https://${PUBLIC_HOSTNAME}${path}" 2>/dev/null || true)"
+              else
+                code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${body}" -w '%{http_code}' -X "${method}" -H 'Content-Type: application/json' --data "${data}" "https://${PUBLIC_HOSTNAME}${path}" 2>/dev/null || true)"
+              fi
+              if [ "${code}" = "${expected}" ] && jq -e --arg ec "${error_code}" '.ok == false and .error.code == $ec' "${body}" >/dev/null 2>&1; then
+                echo "${label}=PASS"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "${label}=FAIL last_http_code=${code}" >&2
+            return 1
+          }
+          wait_for GET_SESSION_405 405 GET /session '' local_agent_http_post_required
+          wait_for UNKNOWN_POST_404 404 POST /not-a-device-route '{}' local_agent_http_route_not_found
+          wait_for UNAUTH_SESSION_401 401 POST /session '{}' local_agent_http_auth_required
+          echo "PUBLIC_405_404_401_SMOKE=PASS"
+          echo "WINDOWS_LIVE_CANARY=NO"
+          echo "USER_ROLLOUT=NO"
+          echo "PRODUCTION_READY=NO"
+
+      - name: Record fail-closed remediation disposition
+        if: always()
+        shell: bash
+        run: |
+          echo "AUTO_WORKER_ROLLBACK=NO"
+          echo "CUSTOM_DOMAIN_DELETE=NO"
+          echo "DURABLE_OBJECT_DELETE=NO"
+          echo "WINDOWS_LIVE_CANARY=NO"
+          echo "USER_ROLLOUT=NO"

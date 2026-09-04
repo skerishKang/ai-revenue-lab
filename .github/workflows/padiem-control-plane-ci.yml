@@ -6,6 +6,7 @@ on:
       - 'packages/padiem-control-plane/**'
       - '.github/workflows/padiem-control-plane-ci.yml'
       - '.github/workflows/b54-local-agent-broker-production-gate.yml'
+      - '.github/workflows/b54-local-agent-ingress-remediation-redeploy.yml'
   workflow_dispatch:
 
 permissions:
