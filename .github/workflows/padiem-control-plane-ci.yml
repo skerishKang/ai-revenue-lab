@@ -98,5 +98,44 @@ jobs:
 
           test -d "${RUNNER_TEMP}/b54-state-dry-run"
           test -d "${RUNNER_TEMP}/b54-edge-dry-run"
-          echo 'PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'LOCAL_AGENT_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'PRODUCTION_MUTATION=NO'
+
+      - name: Dry-run package Google OAuth Workers
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/b54-google-oauth-ci-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          python - <<'PY' > "${secret_file}"
+          import base64
+          import secrets
+          def key():
+              return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('ascii').rstrip('=')
+          print(f'GOOGLE_CONNECT_TICKET_KEY={key()}')
+          print(f'GOOGLE_OAUTH_SEAL_KEY={key()}')
+          print('GOOGLE_OAUTH_CLIENT_SECRET=ci-only-placeholder-not-production')
+          PY
+          chmod 600 "${secret_file}"
+
+          cp wrangler.google-oauth.jsonc "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+            --secrets-file "${secret_file}" \
+            --dry-run \
+            --outdir "${RUNNER_TEMP}/b54-google-oauth-state-dry-run"
+          rm -f "${temp_config}"
+
+          cp wrangler.google-oauth-edge.jsonc "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+            --dry-run \
+            --outdir "${RUNNER_TEMP}/b54-google-oauth-edge-dry-run"
+          rm -f "${temp_config}"
+
+          test -d "${RUNNER_TEMP}/b54-google-oauth-state-dry-run"
+          test -d "${RUNNER_TEMP}/b54-google-oauth-edge-dry-run"
+          echo 'GOOGLE_OAUTH_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'PUBLIC_HOSTNAME_CONFIGURED=NO'
           echo 'PRODUCTION_MUTATION=NO'
