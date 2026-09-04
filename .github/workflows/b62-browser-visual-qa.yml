@@ -12,6 +12,7 @@ on:
       - ".github/scripts/b62_mode_presentation_browser_qa.py"
       - ".github/scripts/b62_capability_presentation_browser_qa.py"
       - ".github/scripts/b62_interaction_polish_browser_qa.py"
+      - ".github/scripts/b62_product_surface_certification_browser_qa.py"
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
@@ -68,6 +69,8 @@ jobs:
         run: uv run python ../../.github/scripts/b62_capability_presentation_browser_qa.py
       - name: Composer and response interaction polish browser QA
         run: uv run python ../../.github/scripts/b62_interaction_polish_browser_qa.py
+      - name: Product surface v2 certification browser QA
+        run: uv run python ../../.github/scripts/b62_product_surface_certification_browser_qa.py
       - name: Glass zoom-equivalent desktop QA
         run: uv run python ../../.github/scripts/b62_glass_zoom_visual_qa.py
       - name: Shared gutter responsive browser QA
@@ -89,6 +92,9 @@ jobs:
           fi
           if [ -f ../../.tmp/b62-browser-qa/interaction-polish-report.json ]; then
             cat ../../.tmp/b62-browser-qa/interaction-polish-report.json
+          fi
+          if [ -f ../../.tmp/b62-browser-qa/product-surface-certification-report.json ]; then
+            cat ../../.tmp/b62-browser-qa/product-surface-certification-report.json
           fi
           if [ -f ../../.tmp/b62-browser-qa/glass-zoom-report.json ]; then
             cat ../../.tmp/b62-browser-qa/glass-zoom-report.json
