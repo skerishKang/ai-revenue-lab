@@ -39,6 +39,10 @@ def _encoded(value: bytes = CREDENTIAL) -> str:
     return base64.b64encode(value).decode("ascii")
 
 
+def _parsed_timestamp(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
+
 class _Clock:
     def __init__(self, now: datetime) -> None:
         self.now = now
@@ -212,7 +216,7 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
 
     opened = _request(handler, route="/session", payload=_session_payload(client_now=BASE + timedelta(days=2)), auth=auth)
     assert opened.status == 200 and opened.body["ok"] is True
-    assert opened.body["session"]["issued_at"] == (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z")
+    assert _parsed_timestamp(opened.body["session"]["issued_at"]) == BASE + timedelta(seconds=1)
 
     queued = rpc.enqueue_command(
         {
@@ -255,8 +259,7 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
         },
         auth=auth,
     )
-    expected_heartbeat = (BASE + timedelta(seconds=4)).isoformat().replace("+00:00", "Z")
-    assert heartbeat.body["heartbeat"]["last_seen_at"] == expected_heartbeat
+    assert _parsed_timestamp(heartbeat.body["heartbeat"]["last_seen_at"]) == BASE + timedelta(seconds=4)
     assert state.load_session("session.http.1").last_seen_at == clock.now
 
     admitted = authority.admit_command(
@@ -287,9 +290,7 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
         auth=auth,
     )
     assert acknowledged.status == 200 and acknowledged.body["ok"] is True
-    assert acknowledged.body["command"]["acknowledged_at"] == (
-        BASE + timedelta(seconds=7)
-    ).isoformat().replace("+00:00", "Z")
+    assert _parsed_timestamp(acknowledged.body["command"]["acknowledged_at"]) == BASE + timedelta(seconds=7)
 
 
 def test_material_resolution_is_bound_to_exact_canonical_fingerprint_and_sequence() -> None:
@@ -297,37 +298,36 @@ def test_material_resolution_is_bound_to_exact_canonical_fingerprint_and_sequenc
         (_MaterialResolver(sequence=1, fingerprint="b" * 64), "local_agent_http_invalid_request"),
         (_MaterialResolver(sequence=2, fingerprint=FINGERPRINT), "local_agent_material_command_not_current"),
     ):
-        with __import__("contextlib").nullcontext():
-            _, rpc, clock, _, _, handler, auth = _fixture(resolver=resolver)
-            opened = _request(handler, route="/session", payload=_session_payload(), auth=auth)
-            assert opened.body["ok"] is True
-            queued = rpc.enqueue_command(
-                {
-                    "command_id": "command.http.1",
-                    "binding_ref": "binding.http.1",
-                    "run_id": "run.http.1",
-                    "tool_request_ref": "tool-request.http.1",
-                    "request_fingerprint": FINGERPRINT,
-                    "now": (BASE + timedelta(seconds=2)).isoformat(),
-                }
-            )
-            assert queued["ok"] is True
-            clock.now = BASE + timedelta(seconds=3)
-            result = _request(
-                handler,
-                route="/material",
-                payload={
-                    "request_ref": "material.http.1",
-                    "session_id": "session.http.1",
-                    "binding_ref": "binding.http.1",
-                    "credential_b64": _encoded(),
-                    "command_id": "command.http.1",
-                    "request_fingerprint": FINGERPRINT,
-                    "now": (BASE + timedelta(hours=3)).isoformat(),
-                },
-                auth=auth,
-            )
-            assert result.body["error"]["code"] == expected_code
+        _, rpc, clock, _, _, handler, auth = _fixture(resolver=resolver)
+        opened = _request(handler, route="/session", payload=_session_payload(), auth=auth)
+        assert opened.body["ok"] is True
+        queued = rpc.enqueue_command(
+            {
+                "command_id": "command.http.1",
+                "binding_ref": "binding.http.1",
+                "run_id": "run.http.1",
+                "tool_request_ref": "tool-request.http.1",
+                "request_fingerprint": FINGERPRINT,
+                "now": (BASE + timedelta(seconds=2)).isoformat(),
+            }
+        )
+        assert queued["ok"] is True
+        clock.now = BASE + timedelta(seconds=3)
+        result = _request(
+            handler,
+            route="/material",
+            payload={
+                "request_ref": "material.http.1",
+                "session_id": "session.http.1",
+                "binding_ref": "binding.http.1",
+                "credential_b64": _encoded(),
+                "command_id": "command.http.1",
+                "request_fingerprint": FINGERPRINT,
+                "now": (BASE + timedelta(hours=3)).isoformat(),
+            },
+            auth=auth,
+        )
+        assert result.body["error"]["code"] == expected_code
 
 
 def test_http_boundary_source_truth_keeps_production_unclaimed() -> None:
