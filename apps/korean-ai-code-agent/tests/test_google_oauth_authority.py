@@ -471,7 +471,7 @@ class GoogleOAuthAuthorityTests(unittest.TestCase):
         self.assertEqual(text, "hello drive")
         self.assertEqual(self.network.calls[-1]["max_response_bytes"], 100)
 
-        with self.assertRaisesRegex(ContractError, "byte bound"):
+        with self.assertRaisesRegex(ContractError, "trusted Google HTTP bound"):
             self.authority.get_json(
                 binding_ref="binding_google_1",
                 actor_ref="actor_1",
