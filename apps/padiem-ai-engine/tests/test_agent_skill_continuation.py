@@ -1,10 +1,4 @@
-"""Focused E4B conformance for server-issued Agent/Skill continuation (#1749).
-
-These tests exercise the real Core approval pause/resume ToolRuntime path while
-keeping Provider/B14 execution at zero.  The Engine wire may resume only the
-same caller intent and the same trusted authority, except for the one approval
-grant represented by the server-issued pause.
-"""
+"""Focused E4B conformance for server-issued Agent/Skill continuation (#1749)."""
 
 from __future__ import annotations
 
@@ -16,11 +10,7 @@ import pytest
 from padiem_ai_core.agent_approval import VerifiedApprovalDecision
 from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
 from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
-from padiem_ai_core.agent_profile_adapter import (
-    ToolRuntimeBinding,
-    TrustedAgentRuntimePolicy,
-    compile_agent_profile,
-)
+from padiem_ai_core.agent_profile_adapter import ToolRuntimeBinding, TrustedAgentRuntimePolicy, compile_agent_profile
 from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
 from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
 from padiem_ai_core.tool_runtime import ToolAuthorizationContext, ToolRuntime
@@ -49,8 +39,6 @@ class NoProviderRuntime:
 
 
 class EchoTrustedVerifier:
-    """Network-free verifier adapter fixture; Core receives only its trusted result."""
-
     def __init__(self) -> None:
         self.calls = 0
 
@@ -76,7 +64,7 @@ class ContinuationFixture:
         self.store = InMemoryContinuationStore()
         self.tool_runtime = ToolRuntime()
 
-        self.spec = ToolSpec(
+        spec = ToolSpec(
             id=RUNTIME_TOOL,
             title="Confirmation Tool",
             description="Network-free approval continuation fixture",
@@ -95,20 +83,11 @@ class ContinuationFixture:
         async def handler(arguments: dict) -> dict:
             self.handler_calls += 1
             assert arguments == {"query": PRIVATE_ARGUMENT}
-            return {
-                "ok": True,
-                "private_output": PRIVATE_OUTPUT,
-                "api_key": "sk-continuation-secret",
-            }
+            return {"ok": True, "private_output": PRIVATE_OUTPUT, "api_key": "sk-continuation-secret"}
 
-        self.tool_runtime.register(self.spec, handler)
+        self.tool_runtime.register(spec, handler)
         self.registry = ToolRegistrySnapshot.from_entries(
-            (
-                RegisteredTool.from_spec(
-                    canonical_tool_id=CANONICAL_TOOL,
-                    runtime_spec=self.spec,
-                ),
-            )
+            (RegisteredTool.from_spec(canonical_tool_id=CANONICAL_TOOL, runtime_spec=spec),)
         )
         self.definition = BoundedAgentDefinition(
             agent_id=AGENT_ID,
@@ -118,14 +97,9 @@ class ContinuationFixture:
             instruction="Use only server-authorized Tool runtime.",
             output_contract_ref="io:approval@1",
             allowed_tool_ids=(CANONICAL_TOOL,),
-            execution_budget=AgentExecutionBudget(
-                max_steps=2,
-                max_tool_calls=1,
-                max_skill_calls=1,
-                max_wall_seconds=20,
-            ),
+            execution_budget=AgentExecutionBudget(max_steps=2, max_tool_calls=1, max_skill_calls=1, max_wall_seconds=20),
         )
-        self.policy = TrustedAgentRuntimePolicy(
+        policy = TrustedAgentRuntimePolicy(
             context_policy_ref="context:default",
             model_policy_ref="model:auto",
             output_contract_ref="io:approval@1",
@@ -136,23 +110,12 @@ class ContinuationFixture:
             context_policy={},
             model_policy={},
             output_contract={},
-            tool_bindings=(
-                ToolRuntimeBinding(
-                    canonical_tool_id=CANONICAL_TOOL,
-                    runtime_tool_id=RUNTIME_TOOL,
-                ),
-            ),
+            tool_bindings=(ToolRuntimeBinding(canonical_tool_id=CANONICAL_TOOL, runtime_tool_id=RUNTIME_TOOL),),
         )
-        self.compiled = compile_agent_profile(self.definition, self.policy)
+        self.compiled = compile_agent_profile(self.definition, policy)
         self.plan = AgentPlan(
             agent_id=AGENT_ID,
-            steps=(
-                AgentPlanStep(
-                    step_id="confirm1",
-                    objective="private planner objective must not project",
-                    tool_id=RUNTIME_TOOL,
-                ),
-            ),
+            steps=(AgentPlanStep(step_id="confirm1", objective="private planner objective must not project", tool_id=RUNTIME_TOOL),),
         )
         self.current_binding = self._binding(user_confirmed=())
         self.service = AgentSkillEngineService(
@@ -173,23 +136,20 @@ class ContinuationFixture:
                 user_confirmed_tools=user_confirmed,
             ),
         )
-        tool_binding = EngineToolBinding(
-            app_id=APP_ID,
-            tool_runtime=self.tool_runtime,
-            registry=self.registry,
-            authorities={AGENT_ID: authority},
-        )
         return EngineAgentSkillBinding(
             app_id=APP_ID,
             subject_id=SUBJECT_ID,
-            tool_binding=tool_binding,
+            tool_binding=EngineToolBinding(
+                app_id=APP_ID,
+                tool_runtime=self.tool_runtime,
+                registry=self.registry,
+                authorities={AGENT_ID: authority},
+            ),
             agent_plans={AGENT_ID: self.plan},
         )
 
     def approve_pause_tool(self, *extra_tools: str) -> None:
-        self.current_binding = self._binding(
-            user_confirmed=tuple(sorted({RUNTIME_TOOL, *extra_tools}))
-        )
+        self.current_binding = self._binding(user_confirmed=tuple(sorted({RUNTIME_TOOL, *extra_tools})))
 
     def payload(self, **overrides):
         value = {
@@ -202,10 +162,10 @@ class ContinuationFixture:
         return value
 
     @staticmethod
-    def decision(pause_id: str, *, outcome: str = "approved") -> dict:
+    def decision(continuation_id: str, *, outcome: str = "approved") -> dict:
         return {
             "decision_id": "decision_1749",
-            "pause_id": pause_id,
+            "pause_id": continuation_id,
             "outcome": outcome,
             "authority_ref": "user:trusted",
             "evidence_ref": "evidence:session",
@@ -219,30 +179,27 @@ async def _pause(fx: ContinuationFixture):
     assert response.body["ok"] is True
     assert response.body["agent_skill"]["run_status"] == "paused"
     pause = response.body["agent_skill"]["approval_pause"]
-    assert pause is not None
     assert pause["tool_id"] == RUNTIME_TOOL
+    assert pause["continuation_id"]
     assert fx.handler_calls == 0
     assert fx.provider.calls == 0
     serialized = json.dumps(response.body, ensure_ascii=False, sort_keys=True)
     assert PRIVATE_ARGUMENT not in serialized
     assert PRIVATE_OUTPUT not in serialized
-    return response.body["continuation_ref"], pause
+    return response.body["continuation_ref"], pause["continuation_id"]
 
 
 @pytest.mark.asyncio
 async def test_pause_then_exact_approval_delta_resumes_real_core_tool_runtime() -> None:
     fx = ContinuationFixture()
-    continuation_ref, pause = await _pause(fx)
-
+    continuation_ref, continuation_id = await _pause(fx)
     fx.approve_pause_tool()
-    resume = fx.payload(
-        continuation_ref=continuation_ref,
-        decision=fx.decision(pause["pause_id"]),
+
+    response = await fx.service.resume_payload(
+        fx.payload(continuation_ref=continuation_ref, decision=fx.decision(continuation_id))
     )
-    response = await fx.service.resume_payload(resume)
 
     assert response.status_code == 200
-    assert response.body["ok"] is True
     assert response.body["agent_skill"]["run_status"] == "completed"
     assert fx.handler_calls == 1
     assert fx.provider.calls == 0
@@ -250,7 +207,6 @@ async def test_pause_then_exact_approval_delta_resumes_real_core_tool_runtime() 
     serialized = json.dumps(response.body, ensure_ascii=False, sort_keys=True)
     for forbidden in (PRIVATE_ARGUMENT, PRIVATE_OUTPUT, "sk-continuation-secret"):
         assert forbidden not in serialized
-
     with pytest.raises(Exception) as exc_info:
         fx.store.resolve(app_id=APP_ID, continuation_ref=continuation_ref)
     assert getattr(exc_info.value, "code", None) == "continuation_consumed"
@@ -259,14 +215,11 @@ async def test_pause_then_exact_approval_delta_resumes_real_core_tool_runtime() 
 @pytest.mark.asyncio
 async def test_resume_rejects_unrelated_permission_widening_before_claim() -> None:
     fx = ContinuationFixture()
-    continuation_ref, pause = await _pause(fx)
-
+    continuation_ref, continuation_id = await _pause(fx)
     fx.approve_pause_tool("rogue.tool")
+
     response = await fx.service.resume_payload(
-        fx.payload(
-            continuation_ref=continuation_ref,
-            decision=fx.decision(pause["pause_id"]),
-        )
+        fx.payload(continuation_ref=continuation_ref, decision=fx.decision(continuation_id))
     )
 
     assert response.status_code == 409
@@ -281,7 +234,7 @@ async def test_resume_rejects_unrelated_permission_widening_before_claim() -> No
 @pytest.mark.asyncio
 async def test_resume_rejects_changed_input_and_tool_arguments_before_claim() -> None:
     fx = ContinuationFixture()
-    continuation_ref, pause = await _pause(fx)
+    continuation_ref, continuation_id = await _pause(fx)
     fx.approve_pause_tool()
 
     for changed in (
@@ -289,18 +242,13 @@ async def test_resume_rejects_changed_input_and_tool_arguments_before_claim() ->
         {"tool_arguments": {"confirm1": {"query": "changed argument"}}},
     ):
         response = await fx.service.resume_payload(
-            fx.payload(
-                **changed,
-                continuation_ref=continuation_ref,
-                decision=fx.decision(pause["pause_id"]),
-            )
+            fx.payload(**changed, continuation_ref=continuation_ref, decision=fx.decision(continuation_id))
         )
         assert response.status_code == 409
         assert response.body["error"]["code"] == "continuation_identity_mismatch"
         active = fx.store.resolve(app_id=APP_ID, continuation_ref=continuation_ref)
         assert active.state == "active"
         assert active.claim_token is None
-
     assert fx.handler_calls == 0
     assert fx.provider.calls == 0
 
@@ -308,14 +256,10 @@ async def test_resume_rejects_changed_input_and_tool_arguments_before_claim() ->
 @pytest.mark.asyncio
 async def test_cancel_is_terminal_and_never_executes_tool_or_provider() -> None:
     fx = ContinuationFixture()
-    continuation_ref, pause = await _pause(fx)
+    continuation_ref, continuation_id = await _pause(fx)
 
     cancelled = await fx.service.cancel_payload(
-        {
-            "app_id": APP_ID,
-            "continuation_ref": continuation_ref,
-            "reason": "user_cancelled",
-        }
+        {"app_id": APP_ID, "continuation_ref": continuation_ref, "reason": "user_cancelled"}
     )
     assert cancelled.status_code == 200
     assert cancelled.body["status"] == "cancelled"
@@ -325,10 +269,7 @@ async def test_cancel_is_terminal_and_never_executes_tool_or_provider() -> None:
 
     fx.approve_pause_tool()
     resumed = await fx.service.resume_payload(
-        fx.payload(
-            continuation_ref=continuation_ref,
-            decision=fx.decision(pause["pause_id"]),
-        )
+        fx.payload(continuation_ref=continuation_ref, decision=fx.decision(continuation_id))
     )
     assert resumed.status_code == 409
     assert resumed.body["error"]["code"] == "continuation_cancelled"
@@ -339,9 +280,7 @@ async def test_cancel_is_terminal_and_never_executes_tool_or_provider() -> None:
 @pytest.mark.asyncio
 async def test_approval_pause_fails_closed_without_trusted_store_and_verifier() -> None:
     fx = ContinuationFixture(with_continuation=False)
-
     response = await fx.service.run_payload(fx.payload())
-
     assert response.status_code == 503
     assert response.body["error"]["code"] == "approval_verification_unavailable"
     assert fx.handler_calls == 0
