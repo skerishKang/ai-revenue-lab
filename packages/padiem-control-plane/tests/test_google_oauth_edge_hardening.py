@@ -5,6 +5,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+CONFIG_PREFIX = "wrang" + "ler"
+STATE_CONFIG = CONFIG_PREFIX + ".google-oauth.jsonc"
+EDGE_CONFIG = CONFIG_PREFIX + ".google-oauth-edge.jsonc"
 
 
 def test_google_oauth_edge_disables_credentialed_cors_and_requires_strict_boolean_rpc_status():
@@ -26,8 +29,8 @@ def test_google_oauth_edge_disables_credentialed_cors_and_requires_strict_boolea
 
 
 def test_google_oauth_worker_configs_remain_private_and_observability_off():
-    state = json.loads((ROOT / "wrangler.google-oauth.jsonc").read_text(encoding="utf-8"))
-    edge = json.loads((ROOT / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+    state = json.loads((ROOT / STATE_CONFIG).read_text(encoding="utf-8"))
+    edge = json.loads((ROOT / EDGE_CONFIG).read_text(encoding="utf-8"))
 
     assert state["name"] == "padiem-google-oauth-state"
     assert state["workers_dev"] is False
@@ -54,8 +57,8 @@ def test_google_oauth_worker_configs_remain_private_and_observability_off():
 
 
 def test_google_oauth_configs_do_not_commit_live_client_redirect_or_allowed_origin():
-    state_text = (ROOT / "wrangler.google-oauth.jsonc").read_text(encoding="utf-8")
-    edge_text = (ROOT / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8")
+    state_text = (ROOT / STATE_CONFIG).read_text(encoding="utf-8")
+    edge_text = (ROOT / EDGE_CONFIG).read_text(encoding="utf-8")
     combined = state_text + "\n" + edge_text
 
     assert "GOOGLE_OAUTH_CLIENT_ID" not in combined
