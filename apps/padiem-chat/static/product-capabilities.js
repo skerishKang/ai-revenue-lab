@@ -502,6 +502,15 @@
   if (loginButton) {
     const authUiObserver = new MutationObserver(() => {
       const previousState = auth.sessionState;
+      if (previousState === "expired") {
+        const expectedAction = expectedAccountActionText();
+        if (loginButton.textContent.trim() !== expectedAction) {
+          const copy = currentAccountCopy();
+          setText(loginButton, copy.signInAgain);
+          loginButton.title = copy.expiredTitle;
+        }
+        return;
+      }
       if (previousState !== "signed_in") return;
       const expectedAction = auth.loaded && auth.ready ? expectedAccountActionText() : "";
       const actualAction = loginButton.textContent.trim();
