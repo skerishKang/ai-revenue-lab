@@ -60,11 +60,17 @@ jobs:
       - name: Account and session presentation QA
         run: |
           set -euo pipefail
-          cases_file="$(mktemp)"
+
+          # Keep the fast, already-stable cases parallel. Expired-session probes
+          # mutate the same account presentation surface through two browser
+          # projection layers and are intentionally serialized so a failing
+          # Chromium process cannot poison sibling Playwright pipes or hide the
+          # primary diagnostic behind xargs/EPIPE noise.
+          stable_cases_file="$(mktemp)"
           for theme in light dark cinematic padiem-home padiem-glass; do
             for viewport in desktop mobile; do
-              for account_case in expired signed unavailable; do
-                printf '%s %s %s\n' "$theme" "$viewport" "$account_case" >> "$cases_file"
+              for account_case in signed unavailable; do
+                printf '%s %s %s\n' "$theme" "$viewport" "$account_case" >> "$stable_cases_file"
               done
             done
           done
@@ -79,7 +85,17 @@ jobs:
               --theme "$theme" \
               --viewport "$viewport" \
               --case "$account_case"
-          ' _ < "$cases_file"
+          ' _ < "$stable_cases_file"
+
+          for theme in light dark cinematic padiem-home padiem-glass; do
+            for viewport in desktop mobile; do
+              echo "RUN_ACCOUNT_SESSION_CASE=${theme}-${viewport}-expired"
+              timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
+                --theme "$theme" \
+                --viewport "$viewport" \
+                --case expired
+            done
+          done
 
           timeout 30s uv run python ../../.github/scripts/b62_account_session_browser_qa.py \
             --theme light \
