@@ -10,8 +10,17 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 
 _T = TypeVar("_T")
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
+_SEALED_ENVELOPE_RE = re.compile(r"^sealed:v1:[A-Za-z0-9_-]{16,262120}$")
 MAX_SEALED_BLOB_CHARS = 262_144
 MAX_AUTHORIZATION_STATE_TTL_SECONDS = 600
+MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
+
+GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
+_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
+    "gmail": (GMAIL_READONLY_SCOPE,),
+    "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+}
 
 _TICKET_SCHEMA = """
 CREATE TABLE IF NOT EXISTS google_oauth_connect_ticket_use (
@@ -92,16 +101,17 @@ def _sealed(value: Any, field_name: str) -> str:
         not isinstance(value, str)
         or not value
         or len(value) > MAX_SEALED_BLOB_CHARS
-        or any(ord(char) < 32 or ord(char) == 127 for char in value)
+        or _SEALED_ENVELOPE_RE.fullmatch(value) is None
     ):
         raise ControlPlaneContractError(
             "invalid_google_oauth_durable_record",
-            f"{field_name} must be bounded opaque ciphertext text",
+            f"{field_name} must use the bounded sealed:v1 envelope",
         )
     return value
 
 
-def _scopes(value: Any) -> tuple[str, ...]:
+def _reviewed_scopes(connector_id: str, value: Any) -> tuple[str, ...]:
+    connector_id = _safe_ref(connector_id, "connector_id")
     if not isinstance(value, tuple) or not value or any(not isinstance(item, str) or not item for item in value):
         raise ControlPlaneContractError(
             "invalid_google_oauth_durable_record",
@@ -112,7 +122,13 @@ def _scopes(value: Any) -> tuple[str, ...]:
             "invalid_google_oauth_durable_record",
             "scopes must be unique",
         )
-    return value
+    expected = _REVIEWED_SCOPES.get(connector_id)
+    if expected is None or set(value) != set(expected):
+        raise ControlPlaneContractError(
+            "unreviewed_google_oauth_scope",
+            "durable Google OAuth scopes must exactly match the reviewed readonly set",
+        )
+    return expected
 
 
 def _row_value(row: Any, name: str) -> Any:
@@ -147,6 +163,11 @@ class DurableGoogleOAuthAuthorizationState:
     def __post_init__(self) -> None:
         for name in ("state_ref", "ticket_id", "connector_id"):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+        if self.connector_id not in _REVIEWED_SCOPES:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "connector_id is not a reviewed Google readonly connector",
+            )
         object.__setattr__(self, "sealed_session", _sealed(self.sealed_session, "sealed_session"))
         created_at = _utc(self.created_at, "created_at")
         expires_at = _utc(self.expires_at, "expires_at")
@@ -188,7 +209,7 @@ class DurableGoogleOAuthCredential:
     def __post_init__(self) -> None:
         for name in ("binding_ref", "connector_id", "actor_ref", "account_ref", "workspace_ref"):
             object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
-        object.__setattr__(self, "scopes", _scopes(self.scopes))
+        object.__setattr__(self, "scopes", _reviewed_scopes(self.connector_id, self.scopes))
         object.__setattr__(
             self,
             "sealed_refresh_token",
@@ -236,8 +257,9 @@ class DurableGoogleOAuthCredential:
 class CloudflareDurableGoogleOAuthStore:
     """SQLite-backed Durable Object state for the future Google OAuth ingress.
 
-    This adapter persists only already-sealed sensitive payloads. It performs no
-    cryptography and therefore cannot turn plaintext into ciphertext by itself.
+    The adapter accepts only the canonical ``sealed:v1:<base64url>`` envelope.
+    Cryptography is intentionally outside this module; the future Worker-native
+    WebCrypto sealer must produce that envelope before persistence.
     """
 
     durable = True
@@ -270,10 +292,20 @@ class CloudflareDurableGoogleOAuthStore:
     ) -> DurableGoogleOAuthAuthorizationState:
         ticket_id = _safe_ref(ticket_id, "ticket_id")
         connector_id = _safe_ref(connector_id, "connector_id")
+        if connector_id not in _REVIEWED_SCOPES:
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_durable_record",
+                "connector_id is not a reviewed Google readonly connector",
+            )
         now = _utc(now, "now")
         ticket_expires_at = _utc(ticket_expires_at, "ticket_expires_at")
         if now >= ticket_expires_at:
             raise ControlPlaneContractError("expired_connect_ticket", "connector ticket has expired")
+        if ticket_expires_at > now + timedelta(seconds=MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS):
+            raise ControlPlaneContractError(
+                "invalid_connect_ticket",
+                "connector ticket residual lifetime exceeds the trusted bound",
+            )
         if not isinstance(state, DurableGoogleOAuthAuthorizationState):
             raise ValueError("state must be DurableGoogleOAuthAuthorizationState")
         if state.ticket_id != ticket_id or state.connector_id != connector_id:
@@ -358,14 +390,18 @@ class CloudflareDurableGoogleOAuthStore:
             )
             if _rows_written(deleted) != 1:
                 raise RuntimeError("authorization state disappeared during atomic consume")
-            if now >= state.expires_at:
-                raise ControlPlaneContractError(
-                    "expired_google_oauth_state",
-                    "authorization state has expired",
-                )
             return state
 
-        return self.transaction(operation)
+        # The delete must commit even when the state is expired. Raising inside
+        # transactionSync would roll the delete back and make an expired state
+        # replayable. Expiry is therefore checked only after successful commit.
+        state = self.transaction(operation)
+        if now >= state.expires_at:
+            raise ControlPlaneContractError(
+                "expired_google_oauth_state",
+                "authorization state has expired and was permanently consumed",
+            )
+        return state
 
     def save_credential(self, record: DurableGoogleOAuthCredential) -> None:
         if not isinstance(record, DurableGoogleOAuthCredential):
@@ -416,7 +452,7 @@ class CloudflareDurableGoogleOAuthStore:
         row = found[0]
         try:
             parsed_scopes = json.loads(_row_value(row, "scopes_json"))
-        except json.JSONDecodeError as exc:
+        except (TypeError, json.JSONDecodeError) as exc:
             raise RuntimeError("durable Google OAuth scopes row is invalid JSON") from exc
         if not isinstance(parsed_scopes, list):
             raise RuntimeError("durable Google OAuth scopes row must be a list")
@@ -444,17 +480,35 @@ class CloudflareDurableGoogleOAuthStore:
     def revoke_credential(self, *, binding_ref: str, revoked_at: datetime) -> None:
         binding_ref = _safe_ref(binding_ref, "binding_ref")
         revoked_at = _utc(revoked_at, "revoked_at")
-        cursor = self._sql.exec(
-            "UPDATE google_oauth_refresh_credential SET revoked_at = ? "
-            "WHERE binding_ref = ? AND revoked_at IS NULL",
-            _iso(revoked_at),
-            binding_ref,
-        )
-        if _rows_written(cursor) != 1:
-            raise ControlPlaneContractError(
-                "inactive_google_oauth_binding",
-                "Google OAuth credential is missing or already revoked",
+
+        def operation() -> None:
+            found = _rows(
+                self._sql.exec(
+                    "SELECT issued_at, revoked_at FROM google_oauth_refresh_credential WHERE binding_ref = ?",
+                    binding_ref,
+                )
             )
+            if len(found) != 1 or _row_value(found[0], "revoked_at") is not None:
+                raise ControlPlaneContractError(
+                    "inactive_google_oauth_binding",
+                    "Google OAuth credential is missing or already revoked",
+                )
+            issued_at = _parse_iso(_row_value(found[0], "issued_at"), "issued_at")
+            if revoked_at < issued_at:
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "credential revocation cannot predate issue time",
+                )
+            cursor = self._sql.exec(
+                "UPDATE google_oauth_refresh_credential SET revoked_at = ? "
+                "WHERE binding_ref = ? AND revoked_at IS NULL",
+                _iso(revoked_at),
+                binding_ref,
+            )
+            if _rows_written(cursor) != 1:
+                raise RuntimeError("Google OAuth credential disappeared during revocation")
+
+        self.transaction(operation)
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -462,12 +516,16 @@ class CloudflareDurableGoogleOAuthStore:
             "sqlite_storage": True,
             "connect_ticket_replay_durable": True,
             "oauth_state_single_use": True,
+            "expired_oauth_state_single_use": True,
+            "sealed_envelope_required": True,
             "sealed_session_only": True,
             "sealed_refresh_token_only": True,
+            "reviewed_readonly_scopes_only": True,
             "raw_refresh_token_persisted": False,
             "raw_pkce_verifier_persisted": False,
             "raw_connect_ticket_persisted": False,
             "cryptography_implemented_here": False,
+            "webcrypto_sealer_required": True,
             "production_deployment": False,
             "production_ready": False,
         }
@@ -475,5 +533,6 @@ class CloudflareDurableGoogleOAuthStore:
 
 WORKER_NATIVE_DURABLE_STORE_SOURCE_READY = True
 WEBCRYPTO_SEALER_REQUIRED = True
+SEALED_ENVELOPE_VERSION = "v1"
 PUBLIC_OAUTH_ROUTE_ADDED = False
 PRODUCTION_MUTATION = False
