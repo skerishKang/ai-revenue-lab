@@ -260,7 +260,6 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     )
     await _no_overflow(page, f"{label}-ready")
 
-    # Generate an answer and preserve existing copy/download/save contracts.
     await page.locator("#messageInput").fill(QUESTION)
     await page.locator("#sendButton").click()
     await _wait_text(page, "#messageList", ANSWER)
@@ -313,7 +312,6 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         raise AssertionError(f"unexpected rename requests: {state.output_patches!r}")
     await _wait_text(page, "#outputsList", RENAMED_TITLE)
 
-    # Product confirmation cancel must preserve output and return focus.
     delete_button = page.locator("#savedOutputDelete")
     if mobile:
         box = await delete_button.bounding_box()
@@ -326,7 +324,6 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     if not await page.locator("#savedOutputDialog").is_visible():
         raise AssertionError("cancel unexpectedly closed Saved Output detail dialog")
 
-    # Intentional confirmation deletes only Saved Output; source chat stays intact.
     await open_product_confirm(page, delete_button, title_contains="저장한 답변을 삭제할까요?", message_contains="저장한 답변만 삭제합니다")
     await accept_product_confirm(page)
     await page.wait_for_function("() => document.getElementById('savedOutputDialog')?.open === false", timeout=5_000)
@@ -370,7 +367,7 @@ async def main() -> None:
         "saved_output_delete_scope": "saved-output-only",
     }
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True, accept_downloads=True)
+        browser = await playwright.chromium.launch(headless=True)
         try:
             for label, width, height, mobile in (
                 ("desktop", 1280, 800, False),
