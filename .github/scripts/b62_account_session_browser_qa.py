@@ -18,6 +18,7 @@ THEMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
 VIEWPORTS = (("desktop", 1440, 1000, False), ("mobile", 390, 844, True))
 USER_NAME = "브라우저 계정 사용자"
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
+VIEW_TIMEOUT_SECONDS = 30.0
 
 
 async def _fulfill_json(route: Route, payload: Any, status: int = 200) -> None:
@@ -112,7 +113,7 @@ async def _open_sidebar(page: Page, mobile: bool) -> None:
         return
     menu = page.locator("#mobileMenu")
     if await menu.get_attribute("aria-expanded") != "true":
-        await menu.click()
+        await menu.click(timeout=5_000)
     await page.locator("#sidebar").wait_for(state="visible", timeout=5_000)
 
 
@@ -244,6 +245,17 @@ async def _refresh_capabilities(page: Page, state: dict[str, Any], session: str,
     await _wait_product_state(page, session, label=label)
 
 
+async def _safe_close(page: Page, browser: Any) -> None:
+    try:
+        await asyncio.wait_for(page.close(), timeout=3.0)
+    except Exception:
+        pass
+    try:
+        await asyncio.wait_for(browser.close(), timeout=3.0)
+    except Exception:
+        pass
+
+
 async def _run_view(
     playwright: Any,
     *,
@@ -254,6 +266,7 @@ async def _run_view(
     mobile: bool,
 ) -> dict[str, Any]:
     label = f"{theme}-{viewport_name}"
+    print(f"ACCOUNT_SESSION_QA_START={label}", flush=True)
     browser = await playwright.chromium.launch(headless=True)
     page = await browser.new_page(viewport={"width": width, "height": height})
     state: dict[str, Any] = {
@@ -280,26 +293,19 @@ async def _run_view(
             timeout=5_000,
         )
         results["signed_in"] = await _assert_visible_state(
-            page,
-            "signed_in",
-            label=label,
-            button_text="로그아웃",
-            account_text=USER_NAME,
+            page, "signed_in", label=label, button_text="로그아웃", account_text=USER_NAME
         )
+        print(f"ACCOUNT_SESSION_QA_SIGNED_IN={label}", flush=True)
 
         await page.locator("#loginButton").focus()
         await page.locator("#loginButton").click(timeout=5_000, no_wait_after=True)
         await _wait_counter(state, "logout_posts", 1, label=label)
         await _wait_product_state(page, "guest", label=f"{label}-logout-guest")
         results["guest"] = await _assert_visible_state(
-            page,
-            "guest",
-            label=label,
-            button_text="로그인",
-            account_text="게스트",
+            page, "guest", label=label, button_text="로그인", account_text="게스트"
         )
         results["logout"] = {"posts": state["logout_posts"], "returns_to": "guest", "status": "PASS"}
-        await page.screenshot(path=str(OUT_DIR / f"account-session-{label}-logout.png"), full_page=True)
+        print(f"ACCOUNT_SESSION_QA_LOGOUT={label}", flush=True)
 
         await _refresh_capabilities(page, state, "unavailable", label=f"{label}-unavailable")
         unavailable_snapshot = await _snapshot(page)
@@ -314,17 +320,14 @@ async def _run_view(
             "snapshot": unavailable_snapshot,
             "status": "PASS",
         }
+        print(f"ACCOUNT_SESSION_QA_UNAVAILABLE={label}", flush=True)
 
         await _refresh_capabilities(page, state, "expired", label=f"{label}-expired")
         results["expired"] = await _assert_visible_state(
-            page,
-            "expired",
-            label=label,
-            button_text="다시 로그인",
-            account_text="세션 만료",
+            page, "expired", label=label, button_text="다시 로그인", account_text="세션 만료"
         )
         await _assert_no_overflow(page, label)
-        await page.screenshot(path=str(OUT_DIR / f"account-session-{label}-expired.png"), full_page=True)
+        print(f"ACCOUNT_SESSION_QA_EXPIRED={label}", flush=True)
 
         await page.locator("#loginButton").focus()
         await page.locator("#loginButton").click(timeout=5_000, no_wait_after=True)
@@ -336,6 +339,7 @@ async def _run_view(
             "real_google_oauth": 0,
             "status": "PASS",
         }
+        print(f"ACCOUNT_SESSION_QA_PASS={label}", flush=True)
 
         return {
             "theme": theme,
@@ -348,8 +352,7 @@ async def _run_view(
             "status": "PASS",
         }
     finally:
-        await page.close()
-        await browser.close()
+        await _safe_close(page, browser)
 
 
 async def _run_english_probe(playwright: Any) -> dict[str, Any]:
@@ -383,8 +386,7 @@ async def _run_english_probe(playwright: Any) -> dict[str, Any]:
             "status": "PASS",
         }
     finally:
-        await page.close()
-        await browser.close()
+        await _safe_close(page, browser)
 
 
 async def main() -> None:
@@ -401,15 +403,21 @@ async def main() -> None:
         for theme in THEMES:
             for viewport_name, width, height, mobile in VIEWPORTS:
                 key = f"{theme}-{viewport_name}"
-                report["views"][key] = await _run_view(
-                    playwright,
-                    theme=theme,
-                    viewport_name=viewport_name,
-                    width=width,
-                    height=height,
-                    mobile=mobile,
-                )
-        report["english_probe"] = await _run_english_probe(playwright)
+                try:
+                    report["views"][key] = await asyncio.wait_for(
+                        _run_view(
+                            playwright,
+                            theme=theme,
+                            viewport_name=viewport_name,
+                            width=width,
+                            height=height,
+                            mobile=mobile,
+                        ),
+                        timeout=VIEW_TIMEOUT_SECONDS,
+                    )
+                except TimeoutError as error:
+                    raise AssertionError(f"account/session view exceeded {VIEW_TIMEOUT_SECONDS:.0f}s: {key}") from error
+        report["english_probe"] = await asyncio.wait_for(_run_english_probe(playwright), timeout=VIEW_TIMEOUT_SECONDS)
 
     path = OUT_DIR / "account-session-report.json"
     path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
