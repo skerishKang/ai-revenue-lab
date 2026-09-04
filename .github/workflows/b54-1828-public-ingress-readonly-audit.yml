@@ -69,7 +69,7 @@ jobs:
           echo "EXISTING_WORKER_ROUTES_AUDITED=YES"
           echo "PADIEM_ZONE_WORKER_ROUTE_COUNT=$(jq '.result | length' "${routes}")"
           echo "LOCAL_AGENT_EDGE_ROUTE_COUNT=$(jq --arg edge "${EDGE_WORKER}" '[.result[] | select(.script == $edge)] | length' "${routes}")"
-          jq -r --arg zone ".${ZONE_NAME}" '.result[] | select((.pattern | endswith($zone + "/*")) or (.pattern | contains("agent")) or (.pattern | contains("claw")) or (.pattern | contains("broker"))) | "EXISTING_RELEVANT_ROUTE=" + .pattern + " -> " + (.script // "<none>")' "${routes}" | head -20
+          jq -r '.result[] | select((.pattern | contains("agent")) or (.pattern | contains("claw")) or (.pattern | contains("broker"))) | "EXISTING_RELEVANT_ROUTE=" + .pattern + " -> " + (.script // "<none>")' "${routes}" | head -20
 
           domains="${RUNNER_TEMP}/domains.json"
           curl -fsS "${auth[@]}" \
@@ -77,8 +77,8 @@ jobs:
             -o "${domains}"
           jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
           echo "CUSTOM_DOMAIN_COLLISIONS_AUDITED=YES"
-          echo "PADIEM_CUSTOM_DOMAIN_COUNT=$(jq --arg suffix ".${ZONE_NAME}" '[.result[] | select(.hostname == $ENV.ZONE_NAME or (.hostname | endswith($suffix)))] | length' "${domains}")"
-          jq -r --arg suffix ".${ZONE_NAME}" '.result[] | select(.hostname == $ENV.ZONE_NAME or (.hostname | endswith($suffix))) | "EXISTING_PADIEM_CUSTOM_DOMAIN=" + .hostname + " -> " + (.service // "<unknown-service>")' "${domains}" | head -30
+          echo "PADIEM_CUSTOM_DOMAIN_COUNT=$(jq --arg zone "${ZONE_NAME}" --arg suffix ".${ZONE_NAME}" '[.result[] | select(.hostname == $zone or (.hostname | endswith($suffix)))] | length' "${domains}")"
+          jq -r --arg zone "${ZONE_NAME}" --arg suffix ".${ZONE_NAME}" '.result[] | select(.hostname == $zone or (.hostname | endswith($suffix))) | "EXISTING_PADIEM_CUSTOM_DOMAIN=" + .hostname + " -> " + (.service // "<unknown-service>")' "${domains}" | head -30
 
           dns="${RUNNER_TEMP}/dns.json"
           curl -fsS "${auth[@]}" \
