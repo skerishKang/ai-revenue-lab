@@ -4,9 +4,18 @@ from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pytest
-from openpyxl import Workbook
-from pypdf import PdfWriter
-from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+
+try:
+    from openpyxl import Workbook
+except ModuleNotFoundError:  # Core base install intentionally excludes document extras.
+    Workbook = None
+
+try:
+    from pypdf import PdfWriter
+    from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+except ModuleNotFoundError:  # Core base install intentionally excludes document extras.
+    PdfWriter = None
+    DecodedStreamObject = DictionaryObject = NameObject = None
 
 from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
@@ -69,7 +78,20 @@ def _pptx_xml(*parts: str) -> bytes:
     ).encode()
 
 
+def _require_pdf_extra() -> None:
+    if PdfWriter is None:
+        pytest.skip("pypdf is provided by the optional documents extra")
+
+
+def _require_xlsx_extra() -> None:
+    if Workbook is None:
+        pytest.skip("openpyxl is provided by the optional documents extra")
+
+
 def _minimal_text_pdf(text: str) -> bytes:
+    _require_pdf_extra()
+    assert PdfWriter is not None
+    assert DictionaryObject is not None and NameObject is not None and DecodedStreamObject is not None
     writer = PdfWriter()
     page = writer.add_blank_page(width=320, height=180)
     font = DictionaryObject(
@@ -93,6 +115,8 @@ def _minimal_text_pdf(text: str) -> bytes:
 
 
 def _blank_pdf(*, encrypted: bool = False, pages: int = 1) -> bytes:
+    _require_pdf_extra()
+    assert PdfWriter is not None
     writer = PdfWriter()
     for _ in range(pages):
         writer.add_blank_page(width=320, height=180)
@@ -104,6 +128,8 @@ def _blank_pdf(*, encrypted: bool = False, pages: int = 1) -> bytes:
 
 
 def _xlsx_bytes() -> bytes:
+    _require_xlsx_extra()
+    assert Workbook is not None
     workbook = Workbook()
     sheet = workbook.active
     sheet.title = "Summary"
@@ -182,8 +208,6 @@ def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -
         validate_document_identity(name="sample.docx", media_type=PDF_MIME, source_kind="binary")
     assert mismatch.value.code == "media_extension_mismatch"
 
-    # The Core contract accepts only caller-provided values/bytes. There is no
-    # filesystem path or remote URL parameter that could silently acquire I/O authority.
     import inspect
 
     assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload")
@@ -205,6 +229,7 @@ def test_pdf_bad_magic_encryption_page_limit_and_scanned_only_fail_closed() -> N
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=b"not a pdf")
     assert magic.value.code == "pdf_magic_mismatch"
 
+    _require_pdf_extra()
     with pytest.raises(DocumentNormalizationError) as encrypted:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=_blank_pdf(encrypted=True))
     assert encrypted.value.code == "pdf_encrypted"
