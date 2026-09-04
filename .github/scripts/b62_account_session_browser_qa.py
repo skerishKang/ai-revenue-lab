@@ -97,12 +97,12 @@ async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
         await _fulfill_json(route, {"conversations": []})
 
     async def google_start(route: Route) -> None:
-        # This probe verifies the product recovery intent, not Google OAuth itself.
-        # A 204 navigation response keeps the current product document alive so the
-        # browser harness can assert the request without introducing a synthetic
-        # second-document lifecycle or external OAuth side effect.
+        # Verify the recovery navigation intent without entering a synthetic
+        # replacement document or real Google OAuth flow. Aborting the routed
+        # main-frame request keeps the product document authoritative and makes
+        # the probe deterministic.
         state["google_start_reads"] += 1
-        await route.fulfill(status=204, body="", headers={"Cache-Control": "no-store"})
+        await route.abort("aborted")
 
     await page.route("**/api/auth/status", auth_status)
     await page.route("**/api/auth/logout", logout)
@@ -250,8 +250,12 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
         page.on("pageerror", lambda error: page_errors.append(str(error)))
         page.on(
             "requestfailed",
-            lambda request: request_failures.append(
-                f"{request.method} {request.url} :: {request.failure or 'request failed'}"
+            lambda request: (
+                None
+                if "/auth/google/start" in request.url
+                else request_failures.append(
+                    f"{request.method} {request.url} :: {request.failure or 'request failed'}"
+                )
             ),
         )
         try:
@@ -333,6 +337,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 result["recovery"] = {
                     "google_start_navigations": state["google_start_reads"],
                     "real_google_oauth": 0,
+                    "navigation_aborted_by_fixture": True,
                     "status": "PASS",
                 }
 
