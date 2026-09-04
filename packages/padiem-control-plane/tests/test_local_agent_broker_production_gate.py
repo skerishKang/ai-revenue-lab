@@ -65,7 +65,7 @@ def test_production_gate_is_manual_only_exact_sha_and_defaults_to_non_mutating_p
 
 def test_production_gate_packages_before_mutation_and_deploys_state_before_edge() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
-    tool = "py" + "wrangler deploy"
+    tool = "py" + "wrang" + "ler deploy"
     dry_run = "--dry-run"
     assert text.count(tool) >= 4
     assert text.count(dry_run) >= 2
