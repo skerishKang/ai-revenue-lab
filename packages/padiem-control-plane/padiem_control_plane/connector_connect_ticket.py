@@ -1,13 +1,13 @@
 """Short-lived server-trusted connector onboarding tickets.
 
-The browser is never authoritative for actor/account/workspace identity.  A
+The browser is never authoritative for actor/account/workspace identity. A
 trusted Control Plane caller first resolves an active canonical auth session,
-then issues this bounded ticket for one reviewed connector/scope set.  Product
+then issues this bounded ticket for one reviewed connector/scope set. Product
 connector ingress may verify the signature and exact claims, but the ticket is
 not a replacement for the canonical auth-session authority.
 
 The encoded ticket is a credential: never log it, persist it as public model
-context, or put it in a query string.  Only safe projections are exposed here.
+context, or put it in a query string. Only safe projections are exposed here.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ CONNECT_TICKET_VERSION = "v1"
 CONNECT_TICKET_AUDIENCE = "padiem-claw-google-oauth"
 MAX_CONNECT_TICKET_TTL_SECONDS = 300
 MAX_CLOCK_SKEW_SECONDS = 30
+MAX_CANONICAL_SUBJECT_ID_CHARS = 256
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 
@@ -69,6 +70,32 @@ def _safe_ref(name: str, value: str) -> str:
     return normalized
 
 
+def _canonical_subject_id(value: str) -> str:
+    """Mirror CanonicalSubjectRef's bounded opaque-id semantics.
+
+    Canonical subjects may legitimately contain Unicode or spaces. Tightening
+    them to the connector's ASCII safe-ref grammar would create a second,
+    incompatible identity authority at the connector boundary.
+    """
+
+    if not isinstance(value, str):
+        raise ControlPlaneContractError(
+            "invalid_connect_ticket",
+            "subject_id must be a string",
+        )
+    normalized = value.strip()
+    if (
+        not normalized
+        or len(normalized) > MAX_CANONICAL_SUBJECT_ID_CHARS
+        or any(ord(char) < 32 or ord(char) == 127 for char in normalized)
+    ):
+        raise ControlPlaneContractError(
+            "invalid_connect_ticket",
+            "subject_id must be a bounded non-empty opaque identifier",
+        )
+    return normalized
+
+
 def _aware(name: str, value: datetime) -> datetime:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise ControlPlaneContractError(
@@ -76,6 +103,21 @@ def _aware(name: str, value: datetime) -> datetime:
             f"{name} must be timezone-aware",
         )
     return value.astimezone(timezone.utc)
+
+
+def _epoch_datetime(name: str, value: object) -> datetime:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ControlPlaneContractError(
+            "invalid_connect_ticket",
+            f"{name} must be a non-negative integer epoch timestamp",
+        )
+    try:
+        return datetime.fromtimestamp(value, tz=timezone.utc)
+    except (ValueError, OverflowError, OSError) as exc:
+        raise ControlPlaneContractError(
+            "invalid_connect_ticket",
+            f"{name} is outside the supported timestamp range",
+        ) from exc
 
 
 def _b64url_encode(value: bytes) -> str:
@@ -130,13 +172,13 @@ class ConnectorConnectTicketClaims:
             "session_id",
             "product_id",
             "subject_type",
-            "subject_id",
             "connector_id",
             "actor_ref",
             "account_ref",
             "workspace_ref",
         ):
             object.__setattr__(self, name, _safe_ref(name, getattr(self, name)))
+        object.__setattr__(self, "subject_id", _canonical_subject_id(self.subject_id))
         if self.version != CONNECT_TICKET_VERSION:
             raise ControlPlaneContractError("invalid_connect_ticket", "unsupported ticket version")
         if self.audience != CONNECT_TICKET_AUDIENCE:
@@ -194,7 +236,7 @@ class ConnectorConnectTicketClaims:
 
 
 class ConnectorConnectTicketAuthority:
-    """HMAC authority for one-use-capable, short-lived connector tickets.
+    """HMAC authority for short-lived connector tickets.
 
     Replay consumption is intentionally delegated to the ingress durable store;
     signature verification alone must never be presented as replay prevention.
@@ -232,7 +274,11 @@ class ConnectorConnectTicketAuthority:
                 "inactive_auth_session",
                 "connector tickets require an active canonical auth session",
             )
-        if isinstance(ttl_seconds, bool) or not isinstance(ttl_seconds, int) or not 1 <= ttl_seconds <= MAX_CONNECT_TICKET_TTL_SECONDS:
+        if (
+            isinstance(ttl_seconds, bool)
+            or not isinstance(ttl_seconds, int)
+            or not 1 <= ttl_seconds <= MAX_CONNECT_TICKET_TTL_SECONDS
+        ):
             raise ControlPlaneContractError(
                 "invalid_connect_ticket",
                 "ttl_seconds is outside the trusted bound",
@@ -290,11 +336,9 @@ class ConnectorConnectTicketAuthority:
         if not isinstance(wire, dict) or set(wire) != _REQUIRED_WIRE_KEYS:
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket payload is not closed")
         try:
-            issued_at = datetime.fromtimestamp(wire["issued_at"], tz=timezone.utc)
-            expires_at = datetime.fromtimestamp(wire["expires_at"], tz=timezone.utc)
             scopes = tuple(wire["scopes"])
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket timestamps are invalid") from exc
+        except TypeError as exc:
+            raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket scopes are invalid") from exc
         claims = ConnectorConnectTicketClaims(
             ticket_id=wire["ticket_id"],
             session_id=wire["session_id"],
@@ -306,8 +350,8 @@ class ConnectorConnectTicketAuthority:
             account_ref=wire["account_ref"],
             workspace_ref=wire["workspace_ref"],
             scopes=scopes,
-            issued_at=issued_at,
-            expires_at=expires_at,
+            issued_at=_epoch_datetime("issued_at", wire["issued_at"]),
+            expires_at=_epoch_datetime("expires_at", wire["expires_at"]),
             audience=wire["audience"],
             version=wire["version"],
         )
@@ -315,11 +359,20 @@ class ConnectorConnectTicketAuthority:
             raise ControlPlaneContractError("invalid_connect_ticket", "connector ticket is not yet valid")
         if now >= claims.expires_at:
             raise ControlPlaneContractError("expired_connect_ticket", "connector ticket has expired")
-        if expected_connector_id is not None and claims.connector_id != _safe_ref("expected_connector_id", expected_connector_id):
-            raise ControlPlaneContractError("connector_ticket_mismatch", "connector ticket targets another connector")
+        if (
+            expected_connector_id is not None
+            and claims.connector_id != _safe_ref("expected_connector_id", expected_connector_id)
+        ):
+            raise ControlPlaneContractError(
+                "connector_ticket_mismatch",
+                "connector ticket targets another connector",
+            )
         if auth_session is not None:
             if not isinstance(auth_session, AuthSessionSnapshot) or not auth_session.is_active(now=now):
-                raise ControlPlaneContractError("inactive_auth_session", "canonical auth session is not active")
+                raise ControlPlaneContractError(
+                    "inactive_auth_session",
+                    "canonical auth session is not active",
+                )
             subject = auth_session.subject.to_public_dict()
             if (
                 claims.session_id != auth_session.session_id
@@ -327,7 +380,10 @@ class ConnectorConnectTicketAuthority:
                 or claims.subject_type != subject["subject_type"]
                 or claims.subject_id != subject["subject_id"]
             ):
-                raise ControlPlaneContractError("connector_ticket_session_mismatch", "ticket does not match the canonical auth session")
+                raise ControlPlaneContractError(
+                    "connector_ticket_session_mismatch",
+                    "ticket does not match the canonical auth session",
+                )
         return claims
 
 
