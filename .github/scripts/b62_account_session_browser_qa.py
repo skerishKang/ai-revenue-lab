@@ -65,6 +65,7 @@ async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
         await _fulfill_json(route, {"projects": []})
 
     async def empty_conversations(route: Route) -> None:
+        state["history_reads"] += 1
         await _fulfill_json(route, {"conversations": []})
 
     await page.route("**/api/auth/status", auth_status)
@@ -160,7 +161,6 @@ async def _assert_state(
     account_text: str | None,
 ) -> dict[str, Any]:
     state["session"] = expected
-    print(f"ACCOUNT_SESSION_STATE_START={name}:{expected}", flush=True)
     await _refresh(page)
     container = page.locator(".sidebar-account")
     button = page.locator("#loginButton")
@@ -209,9 +209,21 @@ async def _assert_state(
 
 async def _synchronize_signed_in_action(page: Page, state: dict[str, Any], *, mobile: bool, label: str) -> None:
     state["session"] = "signed_in"
-    print(f"ACCOUNT_SESSION_ACTION_SYNC_START={label}", flush=True)
+    baseline_history_reads = state["history_reads"]
     await page.reload(wait_until="domcontentloaded", timeout=30_000)
     await page.locator("#messageInput").wait_for(state="visible")
+
+    for _ in range(50):
+        if state["history_reads"] > baseline_history_reads:
+            break
+        await page.wait_for_timeout(100)
+    else:
+        snapshot = await _snapshot(page)
+        raise AssertionError(
+            f"app auth did not consume signed-in history readiness at {label}; "
+            f"snapshot={json.dumps(snapshot, ensure_ascii=False, sort_keys=True)}"
+        )
+
     await page.wait_for_function(
         "() => document.getElementById('historySection')?.hidden === false",
         timeout=5_000,
@@ -222,16 +234,13 @@ async def _synchronize_signed_in_action(page: Page, state: dict[str, Any], *, mo
         "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'signed_in' && document.getElementById('loginButton')?.textContent.trim() === '로그아웃'",
         timeout=5_000,
     )
-    print(f"ACCOUNT_SESSION_ACTION_SYNC_DONE={label}", flush=True)
 
 
 async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
-    state: dict[str, Any] = {"session": "guest", "logout_posts": 0}
+    state: dict[str, Any] = {"session": "guest", "logout_posts": 0, "history_reads": 0}
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": width, "height": height})
-    print(f"ACCOUNT_SESSION_GOTO_START={theme}-{viewport_name}", flush=True)
     await page.goto(f"{BASE_URL}/?theme={theme}", wait_until="domcontentloaded", timeout=30_000)
-    print(f"ACCOUNT_SESSION_GOTO_DONE={theme}-{viewport_name}", flush=True)
     await page.locator("#messageInput").wait_for(state="visible")
     await _open_sidebar(page, mobile)
 
@@ -248,14 +257,12 @@ async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, h
     )
 
     await _synchronize_signed_in_action(page, state, mobile=mobile, label=label)
-    print(f"ACCOUNT_SESSION_LOGOUT_START={label}", flush=True)
     await page.locator("#loginButton").focus()
-    await page.locator("#loginButton").click()
+    await page.locator("#loginButton").click(timeout=5_000, no_wait_after=True)
     await page.wait_for_function(
         "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest' && document.getElementById('loginButton')?.textContent.trim() === '로그인' && document.getElementById('accountName')?.hidden === false && document.getElementById('accountName')?.textContent.trim() === '게스트'",
         timeout=5_000,
     )
-    print(f"ACCOUNT_SESSION_LOGOUT_DONE={label}", flush=True)
     if state["logout_posts"] != 1:
         raise AssertionError(f"logout must POST once at {label}: {state['logout_posts']}")
     results["logout"] = {"posts": state["logout_posts"], "returns_to": "guest", "status": "PASS"}
@@ -269,7 +276,7 @@ async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, h
 
 
 async def _run_english_probe(page: Page) -> dict[str, Any]:
-    state: dict[str, Any] = {"session": "expired", "logout_posts": 0}
+    state: dict[str, Any] = {"session": "expired", "logout_posts": 0, "history_reads": 0}
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": 1440, "height": 900})
     await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
