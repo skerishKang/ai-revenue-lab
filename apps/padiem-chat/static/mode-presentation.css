@@ -1,4 +1,5 @@
 .model-pill[data-mode-control="true"] {
+  display: inline-flex !important;
   appearance: none;
   cursor: pointer;
 }
