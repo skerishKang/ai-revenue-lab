@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "padiem-control-plane-identity",
+  "main": "identity_authority_worker.py",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "CONTROL_PLANE_ALLOWED_PRODUCT": "b62"
+  },
+  "secrets": {
+    "required": [
+      "CONTROL_PLANE_IDENTITY_LOOKUP_KEY"
+    ]
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CONTROL_PLANE_IDENTITY",
+        "class_name": "CanonicalIdentityDurableObject"
+      }
+    ]
+  },
+  "exports": {
+    "CanonicalIdentityDurableObject": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  },
+  "observability": {
+    "enabled": false
+  }
+}
