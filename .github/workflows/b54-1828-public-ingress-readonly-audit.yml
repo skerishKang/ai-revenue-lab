@@ -1,0 +1,120 @@
+name: B54 1828 Public Ingress Readonly Audit
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-1828-public-ingress-readonly-audit
+  cancel-in-progress: false
+
+env:
+  EXPECTED_MAIN_SHA: 50b0a3aadd634abaf5fd4948dbd28c0da462cada
+  ZONE_NAME: padiem.net
+  STATE_WORKER: padiem-local-agent-broker-state
+  EDGE_WORKER: padiem-local-agent-broker-edge
+
+jobs:
+  cloudflare-ingress-readonly:
+    if: >-
+      github.event.pull_request.head.ref == 'ops/b54-1828-public-ingress-readonly-audit' &&
+      github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require exact current main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          main_json="${RUNNER_TEMP}/main.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" \
+            -o "${main_json}"
+          jq -e --arg sha "${EXPECTED_MAIN_SHA}" '.commit.sha == $sha' "${main_json}" >/dev/null
+          echo "EXACT_MAIN_SHA=PASS"
+
+      - name: Audit Cloudflare zone, routes, custom domains, DNS candidates and private Worker boundary
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          zones="${RUNNER_TEMP}/zones.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}&status=active&per_page=50" \
+            -o "${zones}"
+          jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
+          zone_id="$(jq -r '.result[0].id' "${zones}")"
+          test -n "${zone_id}"
+          echo "CLOUDFLARE_ZONE_AUTHORITY_AUDITED=YES"
+          echo "ZONE_NAME=${ZONE_NAME}"
+
+          routes="${RUNNER_TEMP}/routes.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
+            -o "${routes}"
+          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+          echo "EXISTING_WORKER_ROUTES_AUDITED=YES"
+          echo "PADIEM_ZONE_WORKER_ROUTE_COUNT=$(jq '.result | length' "${routes}")"
+          echo "LOCAL_AGENT_EDGE_ROUTE_COUNT=$(jq --arg edge "${EDGE_WORKER}" '[.result[] | select(.script == $edge)] | length' "${routes}")"
+          jq -r --arg zone ".${ZONE_NAME}" '.result[] | select((.pattern | endswith($zone + "/*")) or (.pattern | contains("agent")) or (.pattern | contains("claw")) or (.pattern | contains("broker"))) | "EXISTING_RELEVANT_ROUTE=" + .pattern + " -> " + (.script // "<none>")' "${routes}" | head -20
+
+          domains="${RUNNER_TEMP}/domains.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          echo "CUSTOM_DOMAIN_COLLISIONS_AUDITED=YES"
+          echo "PADIEM_CUSTOM_DOMAIN_COUNT=$(jq --arg suffix ".${ZONE_NAME}" '[.result[] | select(.hostname == $ENV.ZONE_NAME or (.hostname | endswith($suffix)))] | length' "${domains}")"
+          jq -r --arg suffix ".${ZONE_NAME}" '.result[] | select(.hostname == $ENV.ZONE_NAME or (.hostname | endswith($suffix))) | "EXISTING_PADIEM_CUSTOM_DOMAIN=" + .hostname + " -> " + (.service // "<unknown-service>")' "${domains}" | head -30
+
+          dns="${RUNNER_TEMP}/dns.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?per_page=500" \
+            -o "${dns}"
+          jq -e '.success == true and (.result | type == "array")' "${dns}" >/dev/null
+          echo "DNS_HOSTNAME_COLLISIONS_AUDITED=YES"
+
+          for host in agent.padiem.net claw.padiem.net local-agent.padiem.net broker.padiem.net; do
+            dns_count="$(jq --arg host "${host}" '[.result[] | select(.name == $host)] | length' "${dns}")"
+            domain_count="$(jq --arg host "${host}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
+            route_count="$(jq --arg host "${host}" '[.result[] | select(.pattern | startswith($host))] | length' "${routes}")"
+            if [ "${dns_count}" -eq 0 ] && [ "${domain_count}" -eq 0 ] && [ "${route_count}" -eq 0 ]; then
+              echo "HOST_CANDIDATE ${host}=AVAILABLE"
+            else
+              echo "HOST_CANDIDATE ${host}=OCCUPIED dns=${dns_count} custom_domain=${domain_count} route=${route_count}"
+            fi
+          done
+
+          for worker in "${STATE_WORKER}" "${EDGE_WORKER}"; do
+            subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
+            settings="${RUNNER_TEMP}/${worker}-settings.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" \
+              -o "${subdomain}"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" \
+              -o "${settings}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            echo "${worker}: PRIVATE_WORKERS_DEV_AND_PREVIEW_DISABLED=PASS"
+            if [ "${worker}" = "${EDGE_WORKER}" ]; then
+              jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${settings}" >/dev/null
+              echo "EDGE_SERVICE_BINDING_READBACK=PASS"
+            fi
+          done
+
+          echo "PRIVATE_BASELINE_RECONFIRMED=YES"
+          echo "PUBLIC_INGRESS_ACTIVATION=NOT_AUTHORIZED"
+          echo "PRODUCTION_MUTATION=0"
