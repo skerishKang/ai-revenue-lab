@@ -1,9 +1,7 @@
 from __future__ import annotations
-
 from typing import Callable, TypeVar
 
 from workers import DurableObject, Response, WorkerEntrypoint
-
 from padiem_control_plane.local_agent_broker_http import (
     DurableLocalAgentSessionRecord,
     LocalAgentMaterialResolutionRequest,
@@ -14,6 +12,7 @@ from local_agent_broker_material_store import (
     MAX_DURABLE_COMMAND_MATERIAL_BYTES,
     CloudflareDurableObjectCommandMaterialStore,
 )
+from local_agent_broker_private_http_bridge import handle_private_device_fetch
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
@@ -91,7 +90,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
 
 
 class Default(WorkerEntrypoint):
-    """Internal-only Service Binding gateway to the server-owned broker object."""
+    """Private Service Binding gateway to the server-owned broker object."""
 
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
@@ -136,8 +135,7 @@ class Default(WorkerEntrypoint):
         return await self._stub().handle_device_http(envelope)
 
     async def fetch(self, request):
-        del request
-        return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        return await handle_private_device_fetch(request, self._stub)
 
 
 CLOUDFLARE_DO_ADAPTER = True
@@ -153,6 +151,8 @@ CANONICAL_BROKER_RPC_REUSED = True
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 RAW_DEVICE_CREDENTIAL_PERSISTED = False
 PUBLIC_FETCH = False
+PRIVATE_SERVICE_BINDING_FETCH = True
+EDGE_TO_STATE_DEVICE_TRANSPORT = "service_binding_fetch"
 DURABLE_COMMAND_MATERIAL_STORE = True
 CANONICAL_MATERIAL_WIRE_REUSED = True
 SECOND_FINGERPRINT_ALGORITHM = False

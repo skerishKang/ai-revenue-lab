@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import base64
 import json
 from urllib.parse import urlparse
 
@@ -31,10 +30,7 @@ async def _bounded_request_body(request) -> bytes:
     output = bytearray()
     async for chunk in request.body:
         to_bytes = getattr(chunk, "to_bytes", None)
-        if callable(to_bytes):
-            raw = to_bytes()
-        else:
-            raw = bytes(chunk)
+        raw = to_bytes() if callable(to_bytes) else bytes(chunk)
         if not isinstance(raw, bytes):
             raw = bytes(raw)
         if len(output) + len(raw) > MAX_LOCAL_AGENT_HTTP_BODY_BYTES:
@@ -56,39 +52,34 @@ class Default(WorkerEntrypoint):
             return _error(404, "local_agent_http_route_not_found", "Local Agent broker route was not found")
 
         try:
+            forward_request = request.clone()
             body = await _bounded_request_body(request)
         except OverflowError:
             return _error(413, "local_agent_http_body_too_large", "Local Agent broker request body exceeds size bound")
+        except Exception:
+            return _error(400, "local_agent_http_invalid_json", "Local Agent broker request body is invalid")
         if not body:
             return _error(400, "local_agent_http_invalid_json", "Local Agent broker request body is invalid")
 
-        content_type = request.headers.get("content-type")
-        envelope = {
-            "method": request.method,
-            "route": parsed.path,
-            "content_type": str(content_type) if content_type is not None else "",
-            "body_b64": base64.b64encode(body).decode("ascii"),
-            "tls_verified": True,
-        }
-        result = await self.env.LOCAL_AGENT_BROKER_SERVICE.handle_device_http(envelope)
-        if (
-            type(result) is not dict
-            or type(result.get("status")) is not int
-            or type(result.get("headers")) is not dict
-            or type(result.get("body")) is not dict
-        ):
+        try:
+            response = await self.env.LOCAL_AGENT_BROKER_SERVICE.fetch(forward_request)
+        except Exception:
             return _error(503, "local_agent_http_dependency_unavailable", "Local Agent broker dependency is unavailable")
-        status = result["status"]
-        if not 100 <= status <= 599:
+
+        status = getattr(response, "status", None)
+        if type(status) is not int or not 100 <= status <= 599 or status >= 500:
             return _error(503, "local_agent_http_dependency_unavailable", "Local Agent broker dependency is unavailable")
-        return _response(status, result["body"])
+        return response
 
 
 PUBLIC_DEVICE_ROUTE_SOURCE = True
 PRIVATE_SERVICE_BINDING = True
+PRIVATE_SERVICE_BINDING_FETCH = True
+EDGE_TO_STATE_DEVICE_TRANSPORT = "service_binding_fetch"
 HTTPS_REQUIRED = True
 POST_ONLY = True
 BOUNDED_BODY = True
+BOUNDED_BODY_REVALIDATED_BY_PRIVATE_STATE = True
 CLOSED_DEVICE_ROUTES = True
 SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
 ADMIN_BROKER_RPC_PUBLIC = False

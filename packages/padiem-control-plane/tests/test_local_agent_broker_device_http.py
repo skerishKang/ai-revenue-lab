@@ -296,21 +296,35 @@ class _Request:
     def __init__(self, *, url: str, method: str = "POST", body: bytes = b"{}", content_type: str = "application/json") -> None:
         self.url = url
         self.method = method
+        self._body_bytes = body
+        self._content_type = content_type
         self.body = _BodyStream((body,)) if body is not None else None
         self.headers = _Headers({"content-type": content_type})
+
+    def clone(self):
+        return _Request(
+            url=self.url,
+            method=self.method,
+            body=self._body_bytes,
+            content_type=self._content_type,
+        )
 
 
 class _PrivateBrokerService:
     def __init__(self) -> None:
-        self.calls: list[dict] = []
+        self.calls: list[tuple[_Request, bytes]] = []
 
-    async def handle_device_http(self, envelope: dict):
-        self.calls.append(envelope)
-        return {
-            "status": 200,
-            "headers": {"cache-control": "no-store", "content-type": "application/json"},
-            "body": {"ok": True, "forwarded": True},
-        }
+    async def fetch(self, request: _Request):
+        body = bytearray()
+        if request.body is not None:
+            async for chunk in request.body:
+                body.extend(chunk.to_bytes())
+        self.calls.append((request, bytes(body)))
+        return _FakeResponse(
+            json.dumps({"ok": True, "forwarded": True}, sort_keys=True, separators=(",", ":")),
+            status=200,
+            headers={"cache-control": "no-store", "content-type": "application/json"},
+        )
 
 
 class _EdgeEnv:
@@ -335,12 +349,11 @@ def test_edge_forwards_only_https_post_device_routes_over_private_binding() -> N
     assert response.status == 200
     assert json.loads(response.body) == {"forwarded": True, "ok": True}
     assert len(service.calls) == 1
-    forwarded = service.calls[0]
-    assert forwarded["method"] == "POST"
-    assert forwarded["route"] == "/session"
-    assert forwarded["content_type"] == "application/json"
-    assert forwarded["tls_verified"] is True
-    assert base64.b64decode(forwarded["body_b64"], validate=True) == b'{"binding_ref":"binding.http.1"}'
+    forwarded, forwarded_body = service.calls[0]
+    assert forwarded.method == "POST"
+    assert forwarded.url == "https://agent.example.test/session"
+    assert forwarded.headers.get("content-type") == "application/json"
+    assert forwarded_body == b'{"binding_ref":"binding.http.1"}'
 
     for request_value, expected_status in (
         (_Request(url="http://agent.example.test/session"), 403),
