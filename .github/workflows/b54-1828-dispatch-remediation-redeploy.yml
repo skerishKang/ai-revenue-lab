@@ -1,0 +1,61 @@
+name: B54 1828 Dispatch Remediation Redeploy
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: b54-1828-dispatch-remediation-redeploy
+  cancel-in-progress: false
+
+env:
+  EXPECTED_MAIN_SHA: 3d0052a2d03aa0530e837aaef40bfd9eb3e3dd35
+  CONFIRMATION: REDEPLOY_PADIEM_LOCAL_AGENT_FETCH_TRANSPORT_STATE_THEN_EDGE
+
+jobs:
+  dispatch-canonical-redeploy:
+    if: >-
+      github.event.pull_request.head.ref == 'ops/b54-1828-dispatch-remediation-redeploy' &&
+      github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require exact current main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch_json="${RUNNER_TEMP}/main.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" \
+            -o "${branch_json}"
+          jq -e --arg sha "${EXPECTED_MAIN_SHA}" '.commit.sha == $sha' "${branch_json}" >/dev/null
+          echo "EXACT_MAIN_SHA=PASS"
+
+      - name: Dispatch canonical approved redeploy workflow
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          payload="$(jq -cn \
+            --arg ref main \
+            --arg mode redeploy_fetch_transport \
+            --arg target_sha "${EXPECTED_MAIN_SHA}" \
+            --arg confirmation "${CONFIRMATION}" \
+            '{ref:$ref,inputs:{mode:$mode,target_sha:$target_sha,confirmation:$confirmation}}')"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/b54-local-agent-ingress-remediation-redeploy.yml/dispatches" \
+            -d "${payload}"
+          echo "CANONICAL_REDEPLOY_DISPATCH=REQUESTED"
+          echo "DISPATCHER_CLOUDFLARE_MUTATION=0"
