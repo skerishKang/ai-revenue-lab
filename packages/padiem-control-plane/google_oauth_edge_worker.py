@@ -45,7 +45,6 @@ def _json_response(status: int, body: dict[str, Any], *, origin: str | None = No
         headers.update(
             {
                 "access-control-allow-origin": origin,
-                "access-control-allow-credentials": "true",
                 "vary": "Origin",
             }
         )
@@ -155,7 +154,7 @@ def _parse_callback_query(query: str) -> dict[str, Any]:
 
 
 def _validate_rpc_result(result: Any, success_field: str) -> dict[str, Any]:
-    if not isinstance(result, dict) or result.get("ok") not in (True, False):
+    if not isinstance(result, dict) or not isinstance(result.get("ok"), bool):
         raise RuntimeError("Google OAuth private RPC returned an invalid result")
     if result["ok"] is True:
         if set(result) != {"ok", success_field} or not isinstance(result[success_field], dict):
@@ -202,7 +201,6 @@ class Default(WorkerEntrypoint):
             headers.update(
                 {
                     "access-control-allow-origin": allowed_origin,
-                    "access-control-allow-credentials": "true",
                     "access-control-allow-methods": "POST",
                     "access-control-allow-headers": "Content-Type",
                     "access-control-max-age": "300",
@@ -261,6 +259,8 @@ CONNECT_TICKET_BODY_ONLY = True
 CONNECT_QUERY_FORBIDDEN = True
 CONNECT_EXACT_ORIGIN_REQUIRED = True
 CORS_WILDCARD = False
+CREDENTIALLED_CORS = False
+STRICT_BOOLEAN_RPC_STATUS = True
 CALLBACK_GET_ONLY = True
 CALLBACK_AUTHORIZATION_CODE_QUERY_PROTOCOL_REQUIRED = True
 CALLBACK_QUERY_AUTHORITY = False
