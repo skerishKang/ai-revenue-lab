@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
 import re
-from typing import Any
+from typing import Any, Callable, TypeVar
 
 from workers import DurableObject, Response, WorkerEntrypoint
 
 from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
-from padiem_control_plane.local_agent_broker_http import DurableLocalAgentSessionRecord
+from padiem_control_plane.local_agent_broker_http import (
+    DurableLocalAgentSessionRecord,
+    LocalAgentMaterialResolutionRequest,
+)
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_state_wire import (
@@ -18,6 +21,47 @@ from padiem_control_plane.local_agent_broker_state_wire import (
 )
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_T = TypeVar("_T")
+MAX_DURABLE_COMMAND_MATERIAL_BYTES = 196_608
+
+_MATERIAL_WIRE_KEYS = frozenset(
+    {
+        "contract_version",
+        "command_id",
+        "binding_ref",
+        "sequence",
+        "request_fingerprint",
+        "material",
+    }
+)
+_MATERIAL_KEYS = frozenset(
+    {
+        "request_id",
+        "run_id",
+        "device_id",
+        "root_ref",
+        "argv",
+        "cwd_relative",
+        "requested_at",
+        "timeout_seconds",
+        "shell_authority",
+        "admin_elevation",
+        "environment_payload",
+        "provider_authority",
+        "p01_approval_payload",
+    }
+)
+_MATERIAL_RESOLVE_RPC_KEYS = frozenset(
+    {
+        "request_ref",
+        "session_id",
+        "binding_ref",
+        "command_id",
+        "request_fingerprint",
+        "server_requested_at",
+    }
+)
 
 _BROKER_STATE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS local_agent_broker_state (
@@ -42,10 +86,28 @@ CREATE TABLE IF NOT EXISTS local_agent_http_session (
 )
 """
 
+_COMMAND_MATERIAL_SCHEMA = """
+CREATE TABLE IF NOT EXISTS local_agent_command_material (
+    command_id TEXT PRIMARY KEY,
+    binding_ref TEXT NOT NULL,
+    sequence INTEGER NOT NULL CHECK (sequence >= 1),
+    request_fingerprint TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    wire_text TEXT NOT NULL CHECK (length(wire_text) > 0),
+    UNIQUE(binding_ref, sequence)
+)
+"""
+
 
 def _safe_ref(value: Any, field_name: str) -> str:
     if not isinstance(value, str) or not _SAFE_REF_RE.fullmatch(value):
         raise ValueError(f"{field_name} must be a bounded safe reference")
+    return value
+
+
+def _digest(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
+        raise ValueError(f"{field_name} must be a lowercase SHA-256 digest")
     return value
 
 
@@ -81,6 +143,29 @@ def _parse_iso(value: Any, field_name: str) -> datetime:
     return _utc(parsed, field_name)
 
 
+def _closed_mapping(value: Any, keys: frozenset[str], label: str) -> dict[str, Any]:
+    if type(value) is not dict or frozenset(value) != keys:
+        raise ValueError(f"{label} schema mismatch")
+    return value
+
+
+def _canonical_json(value: dict[str, Any], *, maximum_bytes: int, label: str) -> tuple[str, bytes]:
+    try:
+        text = json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{label} must be deterministic JSON") from exc
+    encoded = text.encode("utf-8")
+    if not encoded or len(encoded) > maximum_bytes:
+        raise ValueError(f"{label} exceeds the serialized size bound")
+    return text, encoded
+
+
 def _row_value(row: Any, field_name: str) -> Any:
     if isinstance(row, dict):
         return row[field_name]
@@ -107,12 +192,7 @@ def _stale_state() -> ControlPlaneContractError:
 
 
 class CloudflareDurableObjectSerializedStateBackend:
-    """M2g serialized CAS backend over one SQLite-backed Durable Object.
-
-    One Durable Object is selected by the deployment-owned authority ref. The
-    table therefore contains exactly one authority row, and every load/CAS
-    verifies that row still belongs to the expected authority.
-    """
+    """M2g serialized CAS backend over one SQLite-backed Durable Object."""
 
     durable = True
 
@@ -326,41 +406,249 @@ class CloudflareDurableObjectHttpSessionState:
         }
 
 
+class CloudflareDurableObjectCommandMaterialStore:
+    """Durable exact-wire resolver for already-enqueued canonical broker commands."""
+
+    durable = True
+
+    def __init__(
+        self,
+        storage: Any,
+        *,
+        state_port: SerializedLocalAgentBrokerStatePort,
+        authority_ref: str,
+    ) -> None:
+        sql = getattr(storage, "sql", None)
+        if sql is None or not callable(getattr(sql, "exec", None)):
+            raise ValueError("SQLite-backed Durable Object storage is required")
+        if not isinstance(state_port, SerializedLocalAgentBrokerStatePort):
+            raise ValueError("state_port must be SerializedLocalAgentBrokerStatePort")
+        self._storage = storage
+        self._sql = sql
+        self._state_port = state_port
+        self._authority_ref = _safe_ref(authority_ref, "authority_ref")
+        self._sql.exec(_COMMAND_MATERIAL_SCHEMA)
+
+    def _command(self, command_id: str):
+        command_id = _safe_ref(command_id, "command_id")
+        snapshot = self._state_port.load(authority_ref=self._authority_ref).snapshot
+        matches = [item for item in snapshot.commands if item.command_id == command_id]
+        if len(matches) != 1:
+            raise ValueError("command material requires one canonical persisted broker command")
+        return matches[0]
+
+    def _validate_wire(self, wire: Any, *, command: Any) -> tuple[dict[str, Any], str]:
+        wire = _closed_mapping(wire, _MATERIAL_WIRE_KEYS, "command material wire")
+        if wire["contract_version"] != "claw-local-command-material.v1":
+            raise ValueError("unsupported Local Agent command material contract version")
+        command_id = _safe_ref(wire["command_id"], "command_id")
+        binding_ref = _safe_ref(wire["binding_ref"], "binding_ref")
+        sequence = _positive_int(wire["sequence"], "sequence")
+        fingerprint = _digest(wire["request_fingerprint"], "request_fingerprint")
+        if (
+            command_id != command.command_id
+            or binding_ref != command.binding_ref
+            or sequence != command.sequence
+            or fingerprint != command.request_fingerprint
+        ):
+            raise ValueError("command material wire does not match canonical broker command")
+        if command.state.value != "queued":
+            raise ValueError("new command material requires a queued canonical broker command")
+
+        material = _closed_mapping(wire["material"], _MATERIAL_KEYS, "command material")
+        if material["shell_authority"] is not False or material["admin_elevation"] is not False:
+            raise ValueError("command material cannot grant shell or admin authority")
+        for field_name in ("environment_payload", "provider_authority", "p01_approval_payload"):
+            if material[field_name] is not None:
+                raise ValueError(f"command material {field_name} must remain null")
+        argv = material["argv"]
+        if type(argv) is not list or not all(type(item) is str for item in argv):
+            raise ValueError("command material argv must be a JSON text list")
+
+        wire_text, _ = _canonical_json(
+            wire,
+            maximum_bytes=MAX_DURABLE_COMMAND_MATERIAL_BYTES,
+            label="command material wire",
+        )
+        return wire, wire_text
+
+    def store(self, wire: dict[str, Any]) -> dict[str, Any]:
+        command_id = _safe_ref(wire.get("command_id") if isinstance(wire, dict) else None, "command_id")
+        command = self._command(command_id)
+        wire, wire_text = self._validate_wire(wire, command=command)
+        cursor = self._sql.exec(
+            "INSERT OR IGNORE INTO local_agent_command_material "
+            "(command_id, binding_ref, sequence, request_fingerprint, expires_at, wire_text) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            command.command_id,
+            command.binding_ref,
+            command.sequence,
+            command.request_fingerprint,
+            _iso(command.expires_at),
+            wire_text,
+        )
+        if _rows_written(cursor) != 1:
+            raise ValueError("command material already exists or binding sequence was rebound")
+        return {
+            "stored": True,
+            "command_id": command.command_id,
+            "binding_ref": command.binding_ref,
+            "sequence": command.sequence,
+            "request_fingerprint": command.request_fingerprint,
+            "expires_at": _iso(command.expires_at),
+            "raw_argv": False,
+            "raw_device_credential": False,
+            "execution_approval": False,
+        }
+
+    def _load_row(self, command_id: str) -> Any | None:
+        rows = _rows(
+            self._sql.exec(
+                "SELECT command_id, binding_ref, sequence, request_fingerprint, expires_at, wire_text "
+                "FROM local_agent_command_material WHERE command_id = ?",
+                _safe_ref(command_id, "command_id"),
+            )
+        )
+        if len(rows) > 1:
+            raise RuntimeError("command material lookup was ambiguous")
+        return rows[0] if rows else None
+
+    def resolve(self, request: LocalAgentMaterialResolutionRequest) -> dict[str, Any]:
+        if not isinstance(request, LocalAgentMaterialResolutionRequest):
+            raise ValueError("request must be LocalAgentMaterialResolutionRequest")
+        row = self._load_row(request.command_id)
+        if row is None:
+            raise RuntimeError("durable Local Agent command material is not available")
+        expires_at = _parse_iso(_row_value(row, "expires_at"), "material.expires_at")
+        if request.server_requested_at >= expires_at:
+            self.purge_command(request.command_id)
+            raise RuntimeError("durable Local Agent command material is expired")
+        if (
+            _safe_ref(_row_value(row, "binding_ref"), "binding_ref") != request.binding_ref
+            or _digest(_row_value(row, "request_fingerprint"), "request_fingerprint")
+            != request.request_fingerprint
+        ):
+            raise ValueError("command material resolution correlation mismatch")
+
+        command = self._command(request.command_id)
+        if command.state.value != "queued" or request.server_requested_at >= command.expires_at:
+            self.purge_command(request.command_id)
+            raise RuntimeError("canonical broker command is no longer material-resolvable")
+        wire_text = _row_value(row, "wire_text")
+        if not isinstance(wire_text, str) or not wire_text:
+            raise RuntimeError("stored command material wire is invalid")
+        try:
+            wire = json.loads(wire_text)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("stored command material wire is invalid") from exc
+        wire, canonical_text = self._validate_wire(wire, command=command)
+        if canonical_text != wire_text:
+            raise RuntimeError("stored command material wire is not canonical")
+        if _positive_int(_row_value(row, "sequence"), "sequence") != command.sequence:
+            raise ValueError("stored command material sequence mismatch")
+        return wire
+
+    def purge_command(self, command_id: str) -> int:
+        cursor = self._sql.exec(
+            "DELETE FROM local_agent_command_material WHERE command_id = ?",
+            _safe_ref(command_id, "command_id"),
+        )
+        return _rows_written(cursor)
+
+    def purge_binding(self, binding_ref: str) -> int:
+        cursor = self._sql.exec(
+            "DELETE FROM local_agent_command_material WHERE binding_ref = ?",
+            _safe_ref(binding_ref, "binding_ref"),
+        )
+        return _rows_written(cursor)
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "durable": True,
+            "separate_material_table": True,
+            "canonical_material_wire_reused": True,
+            "second_fingerprint_algorithm": False,
+            "broker_metadata_expanded_with_argv": False,
+            "raw_device_credential_persisted": False,
+            "execution_approval": False,
+            "production_deployment": False,
+        }
+
+
 class LocalAgentBrokerDurableObject(DurableObject):
     """Server-selected durable host for canonical Local Agent broker authority."""
 
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
+        self._storage = ctx.storage
         self._backend = CloudflareDurableObjectSerializedStateBackend(ctx.storage)
+        self._state_port = SerializedLocalAgentBrokerStatePort(backend=self._backend)
         self.http_state = CloudflareDurableObjectHttpSessionState(ctx.storage)
+        self.material_store = CloudflareDurableObjectCommandMaterialStore(
+            ctx.storage,
+            state_port=self._state_port,
+            authority_ref=self._authority_ref(),
+        )
 
     def _authority_ref(self) -> str:
         return _safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
 
     def _facade(self) -> LocalAgentBrokerRpcFacade:
         pepper = str(self.env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8")
-        state_port = SerializedLocalAgentBrokerStatePort(backend=self._backend)
         authority = StateBackedLocalAgentBrokerAuthority(
             pepper=pepper,
             authority_ref=self._authority_ref(),
-            state_port=state_port,
+            state_port=self._state_port,
         )
         return LocalAgentBrokerRpcFacade(authority=authority)
+
+    def _transaction(self, operation: Callable[[], _T]) -> _T:
+        transaction_sync = getattr(self._storage, "transactionSync", None)
+        if not callable(transaction_sync):
+            raise RuntimeError("SQLite-backed Durable Object transactionSync is required")
+        return transaction_sync(operation)
 
     async def register_binding(self, payload: dict) -> dict:
         return self._facade().register_binding(payload)
 
     async def rotate_credential(self, payload: dict) -> dict:
-        return self._facade().rotate_credential(payload)
+        def operation() -> dict:
+            result = self._facade().rotate_credential(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_binding(result["binding"]["binding_ref"])
+            return result
+
+        return self._transaction(operation)
 
     async def revoke_binding(self, payload: dict) -> dict:
-        return self._facade().revoke_binding(payload)
+        def operation() -> dict:
+            result = self._facade().revoke_binding(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_binding(result["binding"]["binding_ref"])
+            return result
+
+        return self._transaction(operation)
 
     async def open_session(self, payload: dict) -> dict:
         return self._facade().open_session(payload)
 
     async def enqueue_command(self, payload: dict) -> dict:
         return self._facade().enqueue_command(payload)
+
+    async def store_command_material(self, wire: dict) -> dict:
+        return self._transaction(lambda: self.material_store.store(wire))
+
+    async def resolve_command_material(self, payload: dict) -> dict:
+        payload = _closed_mapping(payload, _MATERIAL_RESOLVE_RPC_KEYS, "material resolution RPC")
+        request = LocalAgentMaterialResolutionRequest(
+            request_ref=payload["request_ref"],
+            session_id=payload["session_id"],
+            binding_ref=payload["binding_ref"],
+            command_id=payload["command_id"],
+            request_fingerprint=payload["request_fingerprint"],
+            server_requested_at=_parse_iso(payload["server_requested_at"], "server_requested_at"),
+        )
+        return {"ok": True, "material": self.material_store.resolve(request)}
 
     async def poll(self, payload: dict) -> dict:
         return self._facade().poll(payload)
@@ -369,7 +657,13 @@ class LocalAgentBrokerDurableObject(DurableObject):
         return self._facade().admit_command(payload)
 
     async def acknowledge(self, payload: dict) -> dict:
-        return self._facade().acknowledge(payload)
+        def operation() -> dict:
+            result = self._facade().acknowledge(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_command(result["command"]["command_id"])
+            return result
+
+        return self._transaction(operation)
 
     async def fetch(self, request):
         del request
@@ -407,6 +701,12 @@ class Default(WorkerEntrypoint):
     async def enqueue_command(self, payload: dict) -> dict:
         return await self._stub().enqueue_command(payload)
 
+    async def store_command_material(self, wire: dict) -> dict:
+        return await self._stub().store_command_material(wire)
+
+    async def resolve_command_material(self, payload: dict) -> dict:
+        return await self._stub().resolve_command_material(payload)
+
     async def poll(self, payload: dict) -> dict:
         return await self._stub().poll(payload)
 
@@ -438,7 +738,17 @@ CANONICAL_BROKER_RPC_REUSED = True
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 RAW_DEVICE_CREDENTIAL_PERSISTED = False
 PUBLIC_FETCH = False
-DURABLE_COMMAND_MATERIAL_STORE = False
+DURABLE_COMMAND_MATERIAL_STORE = True
+CANONICAL_MATERIAL_WIRE_REUSED = True
+SECOND_FINGERPRINT_ALGORITHM = False
+BROKER_METADATA_EXPANDED_WITH_ARGV = False
+EXACT_COMMAND_CORRELATION_ON_STORE = True
+EXACT_RESOLUTION_CORRELATION = True
+QUEUED_STATE_REQUIRED_FOR_STORE = True
+MATERIAL_EXPIRY_BOUNDED = True
+ACK_PURGES_MATERIAL = True
+ROTATION_REVOCATION_PURGES_MATERIAL = True
+M2E_RESOLVER_PORT_IMPLEMENTED = True
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_SECRET_BOUND = False
