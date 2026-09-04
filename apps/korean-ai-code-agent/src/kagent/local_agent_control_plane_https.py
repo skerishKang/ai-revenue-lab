@@ -516,11 +516,10 @@ class ControlPlaneHttpsLongPollTransport:
             raise ContractError("broker acknowledgement sequence mismatch")
         if _digest(payload["request_fingerprint"], "request_fingerprint") != observed.request_fingerprint:
             raise ContractError("broker acknowledgement request fingerprint mismatch")
-        if _timestamp(payload["acknowledged_at"], "acknowledged_at") != now:
-            raise ContractError("broker acknowledgement timestamp mismatch")
         admitted_at = _timestamp(payload["admitted_at"], "admitted_at")
-        if admitted_at < envelope.issued_at or admitted_at > now:
-            raise ContractError("broker acknowledgement admitted_at is outside command lifecycle")
+        acknowledged_at = _timestamp(payload["acknowledged_at"], "acknowledged_at")
+        if not (envelope.issued_at <= admitted_at <= acknowledged_at < envelope.expires_at):
+            raise ContractError("broker acknowledgement timestamps are outside command lifecycle")
         del self._polled[command_id]
 
     def safe_dict(self) -> dict[str, Any]:
@@ -534,6 +533,7 @@ class ControlPlaneHttpsLongPollTransport:
             "material_resolution": True,
             "ack_admission_ref_required": True,
             "ack_evidence_ref_required": True,
+            "server_ack_time_authority": True,
             "production_broker_configured": False,
             "real_remote_execution": False,
         }
@@ -547,6 +547,7 @@ RAW_DEVICE_CREDENTIAL_IN_SAFE_STATE = False
 POLL_FINGERPRINT_FROM_CONTROL_PLANE = True
 ACK_ADMISSION_REF_REQUIRED = True
 ACK_EVIDENCE_REF_REQUIRED = True
+SERVER_ACK_TIME_AUTHORITY = True
 PUBLIC_INBOUND_PORT = False
 PRODUCTION_BROKER_CONFIGURED = False
 REAL_REMOTE_EXECUTION = False
