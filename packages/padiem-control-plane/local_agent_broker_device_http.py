@@ -16,6 +16,7 @@ from padiem_control_plane.local_agent_broker_http import (
 
 _DEVICE_HTTP_ROUTES = frozenset({"/session", "/poll", "/material", "/heartbeat", "/acknowledge"})
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
+_MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
 
 
 def _closed_mapping(value: Any, keys: frozenset[str], label: str) -> dict[str, Any]:
@@ -42,6 +43,8 @@ def _structured_response(response: LocalAgentBrokerHttpResponse) -> dict[str, An
 def _decode_body(value: Any) -> bytes:
     if not isinstance(value, str) or not value:
         raise ValueError("device HTTP body_b64 must be non-empty text")
+    if len(value) > _MAX_BODY_B64_CHARS:
+        raise OverflowError("device HTTP body exceeds size bound")
     try:
         body = base64.b64decode(value, validate=True)
     except (TypeError, ValueError) as exc:
@@ -136,6 +139,10 @@ class LocalAgentBrokerDeviceHttpService:
             decoded = json.loads(body.decode("utf-8"))
             if type(decoded) is not dict:
                 raise ValueError("body must be a JSON object")
+        except (UnicodeDecodeError, json.JSONDecodeError, TypeError, ValueError):
+            return _structured_response(_error(400, "local_agent_http_invalid_json", "Local Agent broker request body is invalid"))
+
+        try:
             binding_ref = decoded["binding_ref"]
             credential = _credential(decoded["credential_b64"])
             server_now = self._server_now()
@@ -144,13 +151,13 @@ class LocalAgentBrokerDeviceHttpService:
                 credential=credential,
                 now=server_now,
             )
-        except (ControlPlaneContractError, KeyError, TypeError, UnicodeDecodeError, ValueError):
+        except (ControlPlaneContractError, KeyError, TypeError, ValueError):
             return _structured_response(
                 _error(401, "local_agent_http_auth_required", "authenticated Local Agent broker access is required")
             )
 
         auth = TrustedLocalAgentHttpAuthContext(
-            principal_ref=f"device:{binding.device_id}",
+            principal_ref=binding.device_id,
             account_ref=binding.account_ref,
             workspace_ref=binding.workspace_ref,
             authenticated=True,
