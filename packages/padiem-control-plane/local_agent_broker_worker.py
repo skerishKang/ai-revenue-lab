@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import base64
+import json
 from typing import Callable, TypeVar
+from urllib.parse import urlparse
 
 from workers import DurableObject, Response, WorkerEntrypoint
 
 from padiem_control_plane.local_agent_broker_http import (
+    MAX_LOCAL_AGENT_HTTP_BODY_BYTES,
     DurableLocalAgentSessionRecord,
     LocalAgentMaterialResolutionRequest,
 )
-from local_agent_broker_device_http import LocalAgentBrokerDeviceHttpService
+from local_agent_broker_device_http import DEVICE_HTTP_ROUTES, LocalAgentBrokerDeviceHttpService
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from local_agent_broker_material_store import (
     MAX_DURABLE_COMMAND_MATERIAL_BYTES,
@@ -21,6 +25,35 @@ from local_agent_broker_sql_state import (
 )
 
 _T = TypeVar("_T")
+_PRIVATE_DEVICE_ROUTE_SET = frozenset(DEVICE_HTTP_ROUTES)
+_PRIVATE_RESPONSE_HEADERS = {"cache-control": "no-store", "content-type": "application/json"}
+
+
+def _private_response(status: int, body: dict) -> Response:
+    return Response(
+        json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+        status=status,
+        headers=_PRIVATE_RESPONSE_HEADERS,
+    )
+
+
+def _private_error(status: int, code: str, message: str) -> Response:
+    return _private_response(status, {"ok": False, "error": {"code": code, "message": message}})
+
+
+async def _bounded_private_request_body(request) -> bytes:
+    if request.body is None:
+        return b""
+    output = bytearray()
+    async for chunk in request.body:
+        to_bytes = getattr(chunk, "to_bytes", None)
+        raw = to_bytes() if callable(to_bytes) else bytes(chunk)
+        if not isinstance(raw, bytes):
+            raw = bytes(raw)
+        if len(output) + len(raw) > MAX_LOCAL_AGENT_HTTP_BODY_BYTES:
+            raise OverflowError("Local Agent private device request exceeds size bound")
+        output.extend(raw)
+    return bytes(output)
 
 
 class LocalAgentBrokerDurableObject(DurableObject):
@@ -91,7 +124,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
 
 
 class Default(WorkerEntrypoint):
-    """Internal-only Service Binding gateway to the server-owned broker object."""
+    """Private Service Binding gateway to the server-owned broker object."""
 
     def _authority_ref(self) -> str:
         return safe_ref(str(self.env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
@@ -136,8 +169,45 @@ class Default(WorkerEntrypoint):
         return await self._stub().handle_device_http(envelope)
 
     async def fetch(self, request):
-        del request
-        return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        parsed = urlparse(str(getattr(request, "url", "")))
+        if parsed.path not in _PRIVATE_DEVICE_ROUTE_SET:
+            return Response("Not Found", status=404, headers={"cache-control": "no-store"})
+        if parsed.scheme.lower() != "https":
+            return _private_error(403, "local_agent_http_tls_required", "Local Agent broker requires HTTPS")
+        if getattr(request, "method", None) != "POST":
+            return _private_error(405, "local_agent_http_post_required", "Local Agent broker routes accept POST only")
+
+        try:
+            body = await _bounded_private_request_body(request)
+        except OverflowError:
+            return _private_error(413, "local_agent_http_body_too_large", "Local Agent broker request body exceeds size bound")
+        except Exception:
+            return _private_error(400, "local_agent_http_invalid_json", "Local Agent broker request body is invalid")
+
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        envelope = {
+            "method": "POST",
+            "route": parsed.path,
+            "content_type": str(content_type) if content_type is not None else "",
+            "body_b64": base64.b64encode(body).decode("ascii"),
+            "tls_verified": True,
+        }
+
+        try:
+            result = await self._stub().handle_device_http(envelope)
+        except Exception:
+            return _private_error(503, "local_agent_http_dependency_unavailable", "Local Agent broker dependency is unavailable")
+
+        if (
+            type(result) is not dict
+            or type(result.get("status")) is not int
+            or type(result.get("headers")) is not dict
+            or type(result.get("body")) is not dict
+            or not 100 <= result["status"] <= 599
+        ):
+            return _private_error(503, "local_agent_http_dependency_unavailable", "Local Agent broker dependency is unavailable")
+        return _private_response(result["status"], result["body"])
 
 
 CLOUDFLARE_DO_ADAPTER = True
@@ -153,6 +223,8 @@ CANONICAL_BROKER_RPC_REUSED = True
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 RAW_DEVICE_CREDENTIAL_PERSISTED = False
 PUBLIC_FETCH = False
+PRIVATE_SERVICE_BINDING_FETCH = True
+EDGE_TO_STATE_DEVICE_TRANSPORT = "service_binding_fetch"
 DURABLE_COMMAND_MATERIAL_STORE = True
 CANONICAL_MATERIAL_WIRE_REUSED = True
 SECOND_FINGERPRINT_ALGORITHM = False
