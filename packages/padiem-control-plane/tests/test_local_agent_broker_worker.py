@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import base64
 from datetime import datetime, timedelta, timezone
+import importlib.util
 import json
 from pathlib import Path
 import sqlite3
@@ -41,7 +42,12 @@ _workers.WorkerEntrypoint = _FakeWorkerEntrypoint
 _workers.DurableObject = _FakeDurableObject
 sys.modules.setdefault("workers", _workers)
 
-import local_agent_broker_worker as worker  # noqa: E402
+_WORKER_PATH = Path(__file__).parents[1] / "local_agent_broker_worker.py"
+_WORKER_SPEC = importlib.util.spec_from_file_location("padiem_local_agent_broker_worker_test", _WORKER_PATH)
+assert _WORKER_SPEC is not None and _WORKER_SPEC.loader is not None
+worker = importlib.util.module_from_spec(_WORKER_SPEC)
+sys.modules[_WORKER_SPEC.name] = worker
+_WORKER_SPEC.loader.exec_module(worker)
 
 
 BASE = datetime(2026, 9, 4, 2, 0, tzinfo=timezone.utc)
