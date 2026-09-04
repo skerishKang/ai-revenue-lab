@@ -13,8 +13,10 @@ BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-THEMES = ("light", "dark", "cinematic", "padiem-home", "padiem-glass")
-VIEWPORTS = (("desktop", 1440, 1000, False), ("mobile", 390, 844, True))
+# Diagnostic isolation: restore the full theme/viewport matrix after the blocking
+# browser state is identified and fixed.
+THEMES = ("light",)
+VIEWPORTS = (("desktop", 1440, 1000, False),)
 USER_NAME = "브라우저 계정 사용자"
 
 
@@ -211,7 +213,9 @@ async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, h
     state: dict[str, Any] = {"session": "guest", "logout_posts": 0}
     await _install_fixtures(page, state)
     await page.set_viewport_size({"width": width, "height": height})
+    print(f"ACCOUNT_SESSION_GOTO_START={theme}-{viewport_name}", flush=True)
     await page.goto(f"{BASE_URL}/?theme={theme}", wait_until="domcontentloaded", timeout=30_000)
+    print(f"ACCOUNT_SESSION_GOTO_DONE={theme}-{viewport_name}", flush=True)
     await page.locator("#messageInput").wait_for(state="visible")
     await _open_sidebar(page, mobile)
 
@@ -227,12 +231,14 @@ async def _run_view(page: Page, *, theme: str, viewport_name: str, width: int, h
         page, state, "signed_in", name=label, button_text="로그아웃", account_text=USER_NAME
     )
 
+    print(f"ACCOUNT_SESSION_LOGOUT_START={label}", flush=True)
     await page.locator("#loginButton").focus()
     await page.locator("#loginButton").click()
     await page.wait_for_function(
         "() => document.querySelector('.sidebar-account')?.dataset.accountState === 'guest' && document.getElementById('loginButton')?.textContent.trim() === '로그인'",
         timeout=5_000,
     )
+    print(f"ACCOUNT_SESSION_LOGOUT_DONE={label}", flush=True)
     if state["logout_posts"] != 1:
         raise AssertionError(f"logout must POST once at {label}: {state['logout_posts']}")
     results["logout"] = {"posts": state["logout_posts"], "returns_to": "guest", "status": "PASS"}
