@@ -117,18 +117,26 @@ jobs:
           assert "-F \"settings=@${RUNNER_TEMP}/rollback-binding-patch.json" not in gate
           assert "B62_IDENTITY_BINDING_ROLLBACK_PATCH_HTTP_STATUS=" in gate
           assert "CLOUDFLARE_ROLLBACK_ERROR_BODY_JSON=NO" in gate
+          assert '"version_id": "latest"' in gate
+          assert "\"version_id\": active_version" not in gate
+          assert "B62_BINDINGS_SHAPE_OBSERVATION" in gate
+          assert "neither inherit/latest nor identical to pre-patch state" in gate
+          assert "neither inherit/latest nor identical to pre-rollback state" in gate
+          assert "before_by_name" in gate
+          assert "expected_by_name" in gate
           print("B62_IDENTITY_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")
           print("SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
           print("ROLLBACK_PATCH_ERROR_BODY_CAPTURE=YES")
           print("ROLLBACK_SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
+          print("PAYLOAD_INHERIT_VERSION_ID_LATEST=YES")
           print("DEFAULT_B62_CONFIG_MUTATION=NO")
           print("PRODUCTION_MUTATION=0")
           PY
 
   cloudflare-readonly:
     needs: source-contract
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
@@ -163,6 +171,8 @@ jobs:
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/subdomain" -o "${identity_subdomain}"
 
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          echo "B62_BINDINGS_SHAPE_OBSERVATION"
+          jq -c '.result.bindings | map({name, type, has_version_id: has("version_id"), version_id_type: (.version_id | type)})' "${settings}"
           jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
           jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
           jq -e '.success == true' "${subdomain}" >/dev/null
@@ -281,15 +291,13 @@ jobs:
 
       - name: Build inherit-only binding mutation payload
         shell: bash
-        env:
-          ACTIVE_VERSION: ${{ steps.before.outputs.active_version }}
         run: |
           set -euo pipefail
-          python - "${RUNNER_TEMP}/settings-before.json" "${RUNNER_TEMP}/binding-patch.json" "${ACTIVE_VERSION}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${TARGET_SHA}" <<'PY'
+          python - "${RUNNER_TEMP}/settings-before.json" "${RUNNER_TEMP}/binding-patch.json" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${TARGET_SHA}" <<'PY'
           import json
           import sys
 
-          settings_path, output_path, active_version, binding_name, identity_worker, target_sha = sys.argv[1:]
+          settings_path, output_path, binding_name, identity_worker, target_sha = sys.argv[1:]
           payload = json.load(open(settings_path, encoding="utf-8"))
           bindings = payload["result"]["bindings"]
           names = [b.get("name") for b in bindings]
@@ -298,7 +306,7 @@ jobs:
           if len(names) != len(set(names)) or binding_name in names:
               raise SystemExit("Refusing duplicate or pre-existing identity binding")
           inherited = [
-              {"name": name, "type": "inherit", "version_id": active_version}
+              {"name": name, "type": "inherit", "version_id": "latest"}
               for name in names
           ]
           inherited.append({
@@ -430,8 +438,15 @@ jobs:
           if len(identity) != 1 or identity[0].get("type") != "service" or identity[0].get("service") != identity_worker:
               raise SystemExit("Identity binding readback mismatch")
           after_existing = [b for b in after if b.get("name") != binding_name]
-          if before != after_existing:
+          if sorted(b.get("name") for b in before) != sorted(b.get("name") for b in after_existing):
               raise SystemExit("Existing Worker bindings changed during identity binding patch")
+          before_by_name = {b.get("name"): b for b in before}
+          for binding in after_existing:
+              version_id = binding.get("version_id", "latest")
+              inherit_path = binding.get("type") == "inherit" and version_id == "latest"
+              concrete_path = binding == before_by_name.get(binding.get("name"))
+              if not (inherit_path or concrete_path):
+                  raise SystemExit("Existing Worker binding neither inherit/latest nor identical to pre-patch state")
           PY
 
           jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/b62-domains-after-safe.json"
@@ -517,14 +532,12 @@ jobs:
 
       - name: Build inherit-only rollback payload
         shell: bash
-        env:
-          ACTIVE_VERSION: ${{ steps.before.outputs.active_version }}
         run: |
           set -euo pipefail
-          python - "${RUNNER_TEMP}/rollback-settings-before.json" "${RUNNER_TEMP}/rollback-binding-patch.json" "${ACTIVE_VERSION}" "${IDENTITY_BINDING}" "${TARGET_SHA}" <<'PY'
+          python - "${RUNNER_TEMP}/rollback-settings-before.json" "${RUNNER_TEMP}/rollback-binding-patch.json" "${IDENTITY_BINDING}" "${TARGET_SHA}" <<'PY'
           import json
           import sys
-          settings_path, output_path, active_version, binding_name, target_sha = sys.argv[1:]
+          settings_path, output_path, binding_name, target_sha = sys.argv[1:]
           bindings = json.load(open(settings_path, encoding="utf-8"))["result"]["bindings"]
           remaining = [b for b in bindings if b.get("name") != binding_name]
           if len(remaining) != len(bindings) - 1:
@@ -534,7 +547,7 @@ jobs:
               raise SystemExit("Existing binding names are not safely inheritable")
           patch = {
               "bindings": [
-                  {"name": name, "type": "inherit", "version_id": active_version}
+                  {"name": name, "type": "inherit", "version_id": "latest"}
                   for name in names
               ],
               "annotations": {
@@ -643,8 +656,15 @@ jobs:
           before = json.load(open(before_path, encoding="utf-8"))
           expected = [b for b in before if b.get("name") != binding_name]
           after = json.load(open(after_path, encoding="utf-8"))["result"]["bindings"]
-          if expected != after:
+          if sorted(b.get("name") for b in expected) != sorted(b.get("name") for b in after):
               raise SystemExit("Rollback modified an existing non-identity binding")
+          expected_by_name = {b.get("name"): b for b in expected}
+          for binding in after:
+              version_id = binding.get("version_id", "latest")
+              inherit_path = binding.get("type") == "inherit" and version_id == "latest"
+              concrete_path = binding == expected_by_name.get(binding.get("name"))
+              if not (inherit_path or concrete_path):
+                  raise SystemExit("Rollback existing binding neither inherit/latest nor identical to pre-rollback state")
           PY
 
           jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/rollback-domains-after-safe.json"

@@ -25,12 +25,25 @@ def test_binding_gate_inherits_existing_bindings_instead_of_reconstructing_them(
     source = GATE.read_text(encoding="utf-8")
 
     assert '"type": "inherit"' in source
-    assert '"version_id": active_version' in source
+    assert '"version_id": "latest"' in source
+    assert '"version_id": active_version' not in source
     assert '"name": binding_name' in source
     assert '"type": "service"' in source
     assert '"service": identity_worker' in source
     assert "SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO" in source
     assert "Existing Worker bindings changed during identity binding patch" in source
+
+
+def test_binding_gate_observes_binding_shape_and_allows_inherit_or_concrete_readback():
+    source = GATE.read_text(encoding="utf-8")
+
+    assert "B62_BINDINGS_SHAPE_OBSERVATION" in source
+    assert 'has_version_id: has("version_id")' in source
+    assert "neither inherit/latest nor identical to pre-patch state" in source
+    assert "neither inherit/latest nor identical to pre-rollback state" in source
+    assert "before_by_name" in source
+    assert "expected_by_name" in source
+    assert "PAYLOAD_INHERIT_VERSION_ID_LATEST=YES" in source
 
 
 def test_binding_gate_requires_latest_active_version_and_preserves_source_and_public_topology():
