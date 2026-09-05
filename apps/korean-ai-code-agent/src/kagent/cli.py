@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 from .core import AgentBoundaryError, AgentSession, redact_secrets
+from .p01_run_flow import run_p01_task
 
 
 def yes(prompt: str) -> bool:
@@ -123,15 +124,25 @@ def parser() -> argparse.ArgumentParser:
     for name in ("plan", "run"):
         cmd = sub.add_parser(name)
         cmd.add_argument("task", help="한국어 작업 설명")
+    p01 = sub.add_parser(
+        "p01-run",
+        help="P01 Engine 오케스트레이션으로 작업을 실행합니다 (설정 필수 · demo 폴백 없음)",
+    )
+    p01.add_argument("task", help="한국어 작업 설명")
+    p01.add_argument("--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID")
     return p
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, adapter=None) -> int:
     args = parser().parse_args(argv)
     task = getattr(args, "task", None)
     if not task:
         parser().print_help()
         return 0
+    if args.mode == "p01-run":
+        return run_p01_task(
+            Path(args.repository), task, adapter=adapter, run_id=args.run_id
+        )
     try:
         session = AgentSession.open(Path(args.repository), task, args.route)
         if args.mode == "plan":
