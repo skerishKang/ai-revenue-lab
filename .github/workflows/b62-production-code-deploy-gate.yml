@@ -164,12 +164,12 @@ jobs:
           echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
 
           jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
-            '[.result.bindings[] | select(.name == $name)] | length == 1 and
-             ([.result.bindings[] | select(.name == $name)][0] | .type == "service" and .service == $service)' "${settings}" >/dev/null
+            '[.result.bindings[] | select(.name == $name)] as $b |
+             ($b | length) == 1 and $b[0].type == "service" and $b[0].service == $service' "${settings}" >/dev/null
           echo "IDENTITY_BINDING=PRESENT_EXPECTED"
           jq -e --arg name "B14_SERVICE" --arg service "${B14_WORKER}" \
-            '[.result.bindings[] | select(.name == $name)] | length == 1 and
-             ([.result.bindings[] | select(.name == $name)][0] | .service == $service)' "${settings}" >/dev/null
+            '[.result.bindings[] | select(.name == $name)] as $b |
+             ($b | length) == 1 and $b[0].service == $service' "${settings}" >/dev/null
           jq -e '[.result.bindings[] | select(.type == "d1" and .name == "PADIEM_CHAT_DB")] | length == 1' "${settings}" >/dev/null
           jq -e '[.result.bindings[] | select(.type == "assets" and .name == "ASSETS")] | length == 1' "${settings}" >/dev/null
           jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null
