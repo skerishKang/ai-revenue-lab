@@ -47,6 +47,13 @@ ENV_ENGINE_CREDENTIAL = "P01_ENGINE_CREDENTIAL"
 # fixed margin so a stalled connection fails closed instead of hanging the CLI.
 TRANSPORT_TIMEOUT_SECONDS = 90.0
 
+# Bounded response read. Matches the ingress worker's own response ceiling so
+# the direct engine path never accepts a larger body than the canonical
+# server-to-server path.
+MAX_ENGINE_RESPONSE_BYTES = 1024 * 1024
+
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
 
 def _misconfigured(message: str) -> P01AdapterError:
     return P01AdapterError("p01_engine_misconfigured", message)
@@ -68,6 +75,11 @@ def _validated_base_url(value: object, source: str) -> str:
     ):
         raise _misconfigured(
             f"{source} must be an absolute http(s) URL without credentials, query, or fragment."
+        )
+    if parsed.scheme == "http" and (parsed.hostname or "").lower() not in _LOOPBACK_HOSTS:
+        raise _misconfigured(
+            f"{source} may use http:// only for a loopback dev instance "
+            "(127.0.0.1, localhost, or ::1); use https:// for any other host."
         )
     return normalized
 
@@ -131,22 +143,33 @@ class UrllibEngineTransport:
         request = urllib.request.Request(url, data=body, headers=headers, method=method)
         try:
             with urllib.request.urlopen(request, timeout=self._timeout) as response:
-                return EngineTransportResponse(
-                    status=int(response.status),
-                    body=response.read(),
-                    headers=dict(response.headers),
+                return self._bounded_response(
+                    int(response.status),
+                    response.read(MAX_ENGINE_RESPONSE_BYTES + 1),
+                    dict(response.headers),
                 )
         except urllib.error.HTTPError as exc:
-            return EngineTransportResponse(
-                status=int(exc.code),
-                body=exc.read(),
-                headers=dict(exc.headers or {}),
+            return self._bounded_response(
+                int(exc.code),
+                exc.read(MAX_ENGINE_RESPONSE_BYTES + 1),
+                dict(exc.headers or {}),
             )
         except (urllib.error.URLError, TimeoutError, OSError):
             raise P01AdapterError(
                 "p01_engine_unreachable",
                 "P01 Engine endpoint could not be reached.",
             ) from None
+
+    @staticmethod
+    def _bounded_response(
+        status: int, body: bytes, headers: dict[str, str]
+    ) -> EngineTransportResponse:
+        if len(body) > MAX_ENGINE_RESPONSE_BYTES:
+            raise P01AdapterError(
+                "p01_engine_response_too_large",
+                "P01 Engine response exceeds the bounded read size.",
+            )
+        return EngineTransportResponse(status=status, body=body, headers=headers)
 
 
 def p01_config_from_environment(
