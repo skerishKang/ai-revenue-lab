@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from app.attachments import MAX_IMAGE_BYTES, parse_attachments
+from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
@@ -62,7 +63,10 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         )
     assert response.status_code == 200
     assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
-    assert seen["body"]["messages"] == [{"role": "user", "content": "안녕"}]
+    system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
+    assert len(system_messages) == 1
+    assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+    assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
     assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
     assert seen["body"]["business14"]["allow_external_fallback"] is False
