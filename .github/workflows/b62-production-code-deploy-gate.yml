@@ -358,9 +358,12 @@ jobs:
           after_key = key(after)
           added = [entry for entry in after_key if entry not in before_key]
           removed = [entry for entry in before_key if entry not in after_key]
+          expected_entry = ("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)
           assert removed == [], f"bindings removed by deploy: {removed}"
-          assert added == [("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)], \
+          assert set(added) <= {expected_entry}, \
               f"unexpected binding delta: added={added}"
+          assert expected_entry in after_key, \
+              "PADIEM_CHAT_PUBLIC_BASE_URL missing or drifted after deploy"
 
           identity = [b for b in after if b.get("name") == binding_name]
           assert len(identity) == 1 and identity[0].get("type") == "service"
@@ -371,6 +374,12 @@ jobs:
           print("BINDINGS_PRESERVED_EXACTLY=PASS")
           print("SECRET_BINDINGS_PRESERVED=PASS")
           print("PUBLIC_BASE_URL_SET=PASS")
+          public_base_url_state = (
+              "already_expected"
+              if expected_entry in before_key
+              else "injected"
+          )
+          print(f"PADIEM_CHAT_PUBLIC_BASE_URL_STATE={public_base_url_state}")
           PY
 
           detail="${RUNNER_TEMP}/b62-version-after.json"
