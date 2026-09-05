@@ -214,28 +214,31 @@ def require_document_reference(value: object) -> str:
     return value
 
 
-def resolve_and_normalize(
-    resolver: TrustedDocumentResolver,
-    att_ref: object,
-    *,
-    app_id: str,
-    subject_id: str,
-    tenant_id: str,
+def normalize_resolved_document(
+    raw: bytes,
+    meta: ResolvedDocumentMeta,
 ) -> NormalizedDocument:
-    """Bridge trusted bytes into the canonical Core ``NormalizedDocument``.
+    """Normalize already-resolved trusted bytes into the canonical Core document.
 
     Semantic dispatch is the Core allow-lists only: text/* and JSON go through
     ``normalize_text_document`` after a private UTF-8 decode; PDF/DOCX/PPTX/
-    XLSX go through ``extract_binary_document``. A failed resolve or decode
-    raises — it never produces a degraded document.
+    XLSX go through ``extract_binary_document``. A failed decode raises — it
+    never produces a degraded document. Callers must have completed the
+    fail-closed resolve (scope + integrity) before handing bytes over.
     """
 
-    raw, meta = resolver.resolve(
-        att_ref,
-        app_id=app_id,
-        subject_id=subject_id,
-        tenant_id=tenant_id,
-    )
+    if not isinstance(raw, bytes):
+        raise DocumentResolutionError(
+            "decode_failed",
+            "Document payload must be bytes before normalization.",
+            status_code=503,
+        )
+    if not isinstance(meta, ResolvedDocumentMeta):
+        raise DocumentResolutionError(
+            "integrity_mismatch",
+            "Document metadata must be a ResolvedDocumentMeta before normalization.",
+            status_code=503,
+        )
     if meta.media_type in TEXT_DOCUMENT_MEDIA:
         try:
             text = raw.decode("utf-8")
@@ -251,6 +254,30 @@ def resolve_and_normalize(
         "unsupported_media_type",
         "Document media type is not supported for normalization.",
     )
+
+
+def resolve_and_normalize(
+    resolver: TrustedDocumentResolver,
+    att_ref: object,
+    *,
+    app_id: str,
+    subject_id: str,
+    tenant_id: str,
+) -> NormalizedDocument:
+    """Bridge trusted bytes into the canonical Core ``NormalizedDocument``.
+
+    Thin wrapper: one fail-closed resolve followed by the shared
+    ``normalize_resolved_document`` dispatch. A failed resolve or decode
+    raises — it never produces a degraded document.
+    """
+
+    raw, meta = resolver.resolve(
+        att_ref,
+        app_id=app_id,
+        subject_id=subject_id,
+        tenant_id=tenant_id,
+    )
+    return normalize_resolved_document(raw, meta)
 
 
 @dataclass(frozen=True, slots=True)

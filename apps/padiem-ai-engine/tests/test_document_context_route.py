@@ -196,7 +196,7 @@ def test_a_trusted_scope_and_valid_reference_return_bounded_projection() -> None
     assert retained.storage_locator == f"evidence://{DOC_REF}"
     assert port.stored == [evidence_id]
     assert authority.calls == [(CALLER_ID, CALLER_SECRET)]
-    assert [call[1] for call in resolver.calls] == [SCOPE, SCOPE]
+    assert [call[1] for call in resolver.calls] == [SCOPE]
     assert "document_ref" not in json.dumps(body)
 
 
@@ -594,9 +594,9 @@ def test_injected_documents_service_serves_trusted_caller(
         assert _body(response)["ok"] is True
         assert authority.calls[-1] == (CALLER_ID, CALLER_SECRET)
         assert len(port.stored) == 1
-        # One successful through-line = two resolver.resolve calls (bridge
-        # double-resolve known debt, explicitly NOT fixed in S4).
-        assert len(resolver.calls) == 2
+        # One successful through-line = one resolver.resolve call (S4b
+        # single-resolve; the S4 double-resolve debt is now closed).
+        assert len(resolver.calls) == 1
 
         anonymous = _fetch(
             identity,
@@ -611,7 +611,7 @@ def test_injected_documents_service_serves_trusted_caller(
         assert anonymous.status == 401
         assert _body(anonymous)["error"]["code"] == "service_authentication_failed"
         assert port.stored == [port.stored[0]]
-        assert len(resolver.calls) == 2
+        assert len(resolver.calls) == 1
     finally:
         identity.Default.engine_services_factory = staticmethod(real_factory)
 

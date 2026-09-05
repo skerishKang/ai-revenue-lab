@@ -24,8 +24,8 @@ from app.document_evidence_projection import EvidenceStorageProjection
 from app.trusted_document_resolver import (
     ResolvedDocumentMeta,
     TrustedDocumentResolver,
+    normalize_resolved_document,
     require_document_reference,
-    resolve_and_normalize,
 )
 
 
@@ -78,25 +78,20 @@ def att_to_context_evidence(
 ) -> tuple[ContextWindowProjection, EvidenceStorageProjection]:
     """Run the S3 through-line: reference -> document -> both projections.
 
-    Resolution/normalization reuse the S2 bridge verbatim. When an evidence
-    storage port is supplied the projection is retained and its minted id is
-    the storage handle; the synthetic ``evidence://`` token itself is opaque
-    engine state and never a caller input.
+    Resolution happens exactly once; normalization reuses the S2 dispatch
+    (``normalize_resolved_document``) on the freshly resolved bytes. When an
+    evidence storage port is supplied the projection is retained and its
+    minted id is the storage handle; the synthetic ``evidence://`` token
+    itself is opaque engine state and never a caller input.
     """
 
-    document = resolve_and_normalize(
-        resolver,
+    raw, meta = resolver.resolve(
         att_ref,
         app_id=app_id,
         subject_id=subject_id,
         tenant_id=tenant_id,
     )
-    _, meta = resolver.resolve(
-        att_ref,
-        app_id=app_id,
-        subject_id=subject_id,
-        tenant_id=tenant_id,
-    )
+    document = normalize_resolved_document(raw, meta)
     context_projection = project_to_context(
         document,
         max_text_chars=context_max_text_chars,
