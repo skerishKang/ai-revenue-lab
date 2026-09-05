@@ -98,7 +98,7 @@ jobs:
 
           assert "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN" in workflow
           assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in workflow
-          assert workflow.count("environment: production") == 2
+          assert workflow.count("environment: " + "production") == 2
           assert 'test "${GITHUB_REF}" = "refs/heads/main"' in workflow
           assert "PREMUTATION_EXACT_MAIN_SHA=PASS" in workflow
           assert "if: failure()" in workflow
