@@ -1,10 +1,11 @@
 """Cloudflare Worker entrypoint with identity-bound Engine composition.
 
 All existing transport/auth/streaming behavior remains in ``worker.py``. This
-canonical composition root adds the E5 trusted multimodal reference route while
-preserving the explicit named service bundle introduced by #1792. The route is
-source-wired but remains fail-closed until a trusted attachment resolver is
-injected by a later Production activation gate.
+canonical composition root adds the E5 trusted multimodal reference route and
+the E5B trusted document context route while preserving the explicit named
+service bundle introduced by #1792. Both routes are source-wired but remain
+fail-closed until their trusted resolver/evidence authorities are injected by
+a later Production activation gate.
 """
 
 from __future__ import annotations
@@ -31,7 +32,9 @@ from app.cloudflare_transport import (
     CloudflareB14ServiceBindingTransport,
 )
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
+from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
+from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MultimodalAttachmentEngineService,
@@ -152,7 +155,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
 
 
 class Default(legacy_worker.Default):
-    """Canonical Worker entrypoint with one additional E5 source route.
+    """Canonical Worker entrypoint with one additional E5/E5B source route.
 
     Existing routes remain inherited unchanged. The multimodal route repeats
     only the same body-read/service-auth boundary before invoking its named
@@ -164,6 +167,8 @@ class Default(legacy_worker.Default):
 
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
+        if path == DOCUMENT_CONTEXT_PATH:
+            return await self._fetch_document_context(request, path)
         if path != MULTIMODAL_EXECUTE_PATH:
             return await super().fetch(request)
 
@@ -212,5 +217,66 @@ class Default(legacy_worker.Default):
             path=path,
             content_type=content_type,
             body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_document_context(self, request: Any, path: str) -> Any:
+        """E5B trusted document context route: source-wired, fail-closed.
+
+        The wire carries only an ``att_*`` reference, so the shared body-app
+        authenticator cannot bind it; caller credential verification and the
+        server-owned scope triple are the injected scope authority's job. The
+        canonical composition leaves the whole service uninjected until the
+        Production activation gate provides that authority plus the resolver
+        and evidence port, so every request fails closed before any port is
+        reachable. No storage endpoint may be named by the caller here.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        caller_id = (
+            headers.get(CALLER_ID_HEADER) if headers is not None else None
+        )
+        credential = (
+            headers.get(CALLER_CREDENTIAL_HEADER)
+            if headers is not None
+            else None
+        )
+
+        body = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                body = str(text).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(
+                        status_code=400,
+                        body={
+                            "ok": False,
+                            "error": {
+                                "code": "invalid_request",
+                                "message": "Request body could not be read.",
+                                "retryable": False,
+                                "metadata": None,
+                            },
+                        },
+                    )
+                )
+
+        services = self.engine_services_factory(self.env)
+        if services.documents is None:
+            return legacy_worker._error_response(
+                "document_context_unavailable",
+                "Trusted document context service is unavailable.",
+                503,
+            )
+        result = await services.documents.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+            caller_id=caller_id if isinstance(caller_id, str) else "",
+            credential=credential if isinstance(credential, str) else "",
         )
         return legacy_worker._json_response(result)
