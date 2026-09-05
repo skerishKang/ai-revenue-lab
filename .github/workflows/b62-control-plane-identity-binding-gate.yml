@@ -124,6 +124,9 @@ jobs:
           assert "neither inherit/latest nor identical to pre-rollback state" in gate
           assert "before_by_name" in gate
           assert "expected_by_name" in gate
+          assert "LATEST_VERSION_PROPAGATION_RETRY=OK" in gate
+          assert '"${latest}" = "${active}"' in gate
+          assert ".result.items[0].id // empty" in gate
           print("B62_IDENTITY_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")
           print("SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
@@ -417,9 +420,17 @@ jobs:
           done
           test "${ready}" = yes
 
-          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
-          latest="$(jq -r '.result.items[0].id' "${versions}")"
-          test "${active}" = "${latest}"
+          latest=""
+          for _ in $(seq 1 4); do
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+            latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+            if [ "${latest}" = "${active}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${latest}" = "${active}"
+          echo "LATEST_VERSION_PROPAGATION_RETRY=OK"
 
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
@@ -639,13 +650,21 @@ jobs:
           subdomain="${RUNNER_TEMP}/rollback-subdomain-after.json"
           detail="${RUNNER_TEMP}/rollback-version-after.json"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
-          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
 
-          latest="$(jq -r '.result.items[0].id' "${versions}")"
-          test "${active}" = "${latest}"
+          latest=""
+          for _ in $(seq 1 4); do
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+            latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+            if [ "${latest}" = "${active}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${latest}" = "${active}"
+          echo "LATEST_VERSION_PROPAGATION_RETRY=OK"
           jq -e --arg etag "${BEFORE_ETAG}" '.result.resources.script.etag == $etag' "${detail}" >/dev/null
           jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
 

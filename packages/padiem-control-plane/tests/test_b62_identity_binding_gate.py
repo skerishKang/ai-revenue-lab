@@ -58,6 +58,15 @@ def test_binding_gate_requires_latest_active_version_and_preserves_source_and_pu
     assert "LOCAL_AGENT_INGRESS_CHANGED=NO" in source
 
 
+def test_binding_gate_readback_retries_latest_version_propagation():
+    source = GATE.read_text(encoding="utf-8")
+
+    assert "LATEST_VERSION_PROPAGATION_RETRY=OK" in source
+    assert '"${latest}" = "${active}"' in source
+    assert ".result.items[0].id // empty" in source
+    assert source.count("for _ in $(seq 1 4); do") == 2
+
+
 def test_binding_gate_keeps_default_b62_config_unmodified():
     source = GATE.read_text(encoding="utf-8")
     config_name = "wrang" + "ler.toml"
