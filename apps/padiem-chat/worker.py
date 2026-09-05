@@ -11,7 +11,7 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
-import httpx
+from app import httpx_compat as httpx
 from workers import Request, Response, WorkerEntrypoint
 
 from app.config import ConfigError

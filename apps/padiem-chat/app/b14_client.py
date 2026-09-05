@@ -4,7 +4,7 @@ from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-import httpx
+from . import httpx_compat as httpx
 
 from padiem_ai_core import (
     AgentProfile,
