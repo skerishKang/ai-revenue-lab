@@ -21,15 +21,25 @@ A separate rule applies when the work contains a **new art direction or material
 3. **Web Developer** — authorized implementation, implementation self-check, Draft PR/report.
 4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required.
 
-One actor may perform several non-independent stages, but:
+One actor may perform several non-independent stages. The same actor must not
+claim both implementation and independent Local Validation for the same
+revision when independent Local Validation is required.
+
+Canonical machine-readable form of that invariant:
+
+```text
+ONE_ACTOR_MAY_PERFORM_MULTIPLE_NON_INDEPENDENT_STAGES
+BUT_IMPLEMENTATION_AND_INDEPENDENT_LOCAL_VALIDATION
+MUST_NOT_BE_CLAIMED_BY_THE_SAME_ACTOR_FOR_THE_SAME_REVISION
+```
+
+Equivalent short form:
 
 ```text
 IMPLEMENTATION_ACTOR
 !=
 INDEPENDENT_LOCAL_VALIDATOR
 ```
-
-for the same revision when independent validation is required.
 
 ## 3. Product-evidence model
 
