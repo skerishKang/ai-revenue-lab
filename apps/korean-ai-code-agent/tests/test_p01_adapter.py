@@ -3,9 +3,14 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import unittest
 
-from padiem_ai_core.b14_execution import B14RouteMetadata
+from padiem_ai_core.b14_execution import (
+    B14RouteMetadata,
+    B14RoutingOptions,
+    _OPTIMIZE_FOR,
+    _TASK_TYPES,
+)
 from padiem_ai_core.contracts import RunMetadata, RunStatus
-from padiem_ai_core.execution_runtime import ExecutionResult
+from padiem_ai_core.execution_runtime import ExecutionResult, _normalize_model_policy
 from padiem_ai_core.orchestration import OrchestrationResult
 from padiem_ai_core.orchestration_events import (
     OrchestrationEventKind,
@@ -16,6 +21,7 @@ from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import (
     P01_AGENT_ID,
     P01_APP_ID,
+    _agent_profile,
     ClawOrchestrationProjector,
     P01AdapterError,
     P01CoreOrchestrationAdapter,
@@ -366,3 +372,35 @@ class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ClawP01ProfileContractTests(unittest.TestCase):
+    """The Claw P01 profile must satisfy the Core routing contract.
+
+    Core validates ``task_type`` and ``optimize_for`` only when the B14 routing
+    options are built. A profile carrying an unsupported value therefore fails
+    at execution time, before any provider/model call, and the failure looks
+    like a routing error rather than a product-profile bug. These tests pin the
+    profile to the Core-owned enums so the drift cannot return.
+    """
+
+    def test_profile_routing_values_are_accepted_by_core(self) -> None:
+        profile = _agent_profile()
+        routing = B14RoutingOptions(
+            task_type=profile.task_type,
+            optimize_for=profile.optimize_for,
+        )
+        self.assertEqual(routing.task_type, "coding")
+        self.assertEqual(routing.optimize_for, "balanced")
+
+    def test_profile_normalizes_into_core_model_policy(self) -> None:
+        model, _temperature, routing = _normalize_model_policy(_agent_profile())
+        self.assertEqual(model, "b14/auto")
+        self.assertIn(routing.task_type, _TASK_TYPES)
+        self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
+
+    def test_profile_does_not_pin_provider_model_or_credentials(self) -> None:
+        profile = _agent_profile()
+        self.assertEqual(profile.model_policy, {})
+        self.assertEqual(profile.allowed_tools, ())
+        self.assertEqual(profile.required_capabilities, ())
