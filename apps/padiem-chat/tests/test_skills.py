@@ -5,7 +5,7 @@ from types import MappingProxyType
 import httpx
 import pytest
 
-from app.b14_client import B14Client
+from app.b14_client import B14Client, PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
@@ -90,8 +90,11 @@ async def test_skill_maps_routing_hints_without_response_shaping(skill_id, task_
     assert body["business14"]["allow_external_fallback"] is False
     assert body["business14"]["max_attempts"] == 1
     assert body["business14"]["required_capabilities"] == ["chat"]
-    assert body["messages"] == USER_MESSAGES
-    assert sum(1 for item in body["messages"] if item["role"] == "system") == 0
+    system_messages = [item for item in body["messages"] if item["role"] == "system"]
+    assert len(system_messages) == 1
+    assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+    assert body["messages"][-1] == USER_MESSAGES[0]
+    assert sum(1 for item in body["messages"] if item["role"] == "system") == 1
     assert result["skill"] == {"id": skill.id, "title": skill.title}
     assert result["route"]["model"] == DEFAULT_B14_MODEL_ID
 

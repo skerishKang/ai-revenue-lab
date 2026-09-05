@@ -5,6 +5,7 @@ import json
 import httpx
 import pytest
 
+from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import HIGH_B14_MODEL_ID, LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID
@@ -111,7 +112,11 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
             assert response.status_code == 200
             assert seen[-1]["model"] == expected_model
             assert seen[-1]["messages"][-1] == {"role": "user", "content": "테스트 질문"}
-            assert sum(1 for item in seen[-1]["messages"] if item["role"] == "system") == 0
+            system_messages = [
+                item for item in seen[-1]["messages"] if item["role"] == "system"
+            ]
+            assert len(system_messages) == 1
+            assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
 
 
 @pytest.mark.asyncio

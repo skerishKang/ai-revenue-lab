@@ -34,7 +34,7 @@ def test_three_product_tier_identities_remain_known_and_pro_is_default():
 
     assert DEFAULT_CHAT_PROFILE == "medium"
     assert LOW_B14_MODEL_ID == "kilo/poolside-laguna-s-2.1-free"
-    assert MEDIUM_B14_MODEL_ID == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert MEDIUM_B14_MODEL_ID == "kilo/minimax-minimax-m3-free"
     assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
     assert "hy3" not in HIGH_B14_MODEL_ID

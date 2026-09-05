@@ -177,7 +177,7 @@ def test_start_uses_engine_owned_client_and_persists_exact_server_request() -> N
             user_id="usr_0123456789abcdef0123456789abcdef",
             messages=[{"role": "user", "content": "질문"}],
             skill=skill,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id=None,
         )
@@ -186,7 +186,7 @@ def test_start_uses_engine_owned_client_and_persists_exact_server_request() -> N
     request = client.orchestrate_request
     assert request["subject_id"] == "usr_0123456789abcdef0123456789abcdef"
     assert request["agent"]["model_policy"] == {
-        "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        "model": "kilo/minimax-minimax-m3-free"
     }
     assert request["messages"] == [{"role": "user", "content": "질문"}]
     assert request["execution_context"] == {"trace_id": request["trace_id"]}
@@ -206,7 +206,7 @@ def test_resume_uses_server_snapshot_and_server_minted_decision_evidence() -> No
             user_id="usr_0123456789abcdef0123456789abcdef",
             messages=[{"role": "user", "content": "질문"}],
             skill=skill,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id="chat_0123456789abcdef0123456789abcdef",
         )
@@ -248,7 +248,7 @@ def test_cross_user_continuation_is_rejected_before_engine_resume() -> None:
             user_id="usr_0123456789abcdef0123456789abcdef",
             messages=[{"role": "user", "content": "질문"}],
             skill=skill,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id=None,
         )
