@@ -151,8 +151,9 @@ of truth (as of this commit):
   the precise non-executing auth-failure signal (status 401 with
   `error.code === "service_authentication_failed"`); 403/413/429/5xx, timeouts,
   and malformed/oversized bodies never trigger a retry
-- `apps/padiem-ai-engine/ingress/test/worker.test.mjs:588-652` - tests pinning
-  the seam
+- `apps/padiem-ai-engine/ingress/test/worker.test.mjs:323-652` - tests N1-N21
+  pinning the seam (NEXT-first, single bounded retry, no-fallback cases,
+  attempt ceiling, byte-identical replay)
 
 The seam is ingress-client-side only: the engine still trusts exactly one
 credential per caller at any moment; the ingress absorbs the transition by
