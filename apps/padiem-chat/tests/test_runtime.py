@@ -6,7 +6,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.b14_client import B14Client, ChatRuntimeError
+from app.b14_client import B14Client, ChatRuntimeError, PADIEM_IDENTITY_INSTRUCTION
 from app.config import ConfigError, Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
@@ -16,7 +16,7 @@ from app.usage_gate import InMemoryUsageCounterStore
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 QUOTA_SALT = "b62-runtime-test-quota-salt-not-a-real-secret-0001"
 ACTIVE_MODEL = DEFAULT_B14_MODEL_ID
-ACTIVE_PROVIDER = "Kilo Gateway / NVIDIA"
+ACTIVE_PROVIDER = "Kilo Gateway / MiniMax"
 
 
 def success_payload():
@@ -93,8 +93,10 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
     assert seen["body"]["model"] == ACTIVE_MODEL
     assert get_skill("auto").system_instruction is None
     assert get_skill("auto").max_tokens is None
-    assert seen["body"]["messages"] == USER_MESSAGES
-    assert sum(1 for item in seen["body"]["messages"] if item["role"] == "system") == 0
+    system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
+    assert len(system_messages) == 1
+    assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+    assert seen["body"]["messages"][-1] == USER_MESSAGES[0]
     assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"] == {
         "task_type": "general",

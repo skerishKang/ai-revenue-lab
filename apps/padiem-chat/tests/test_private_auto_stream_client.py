@@ -22,7 +22,7 @@ MANUAL_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 REQUEST_MODEL = DEFAULT_B14_MODEL_ID
 OBSERVED_MODEL = MEDIUM_B14_MODEL_ID
-OBSERVED_PROVIDER = "Kilo Gateway / NVIDIA"
+OBSERVED_PROVIDER = "Kilo Gateway / MiniMax"
 
 
 class ChunkStream(httpx.AsyncByteStream):
@@ -59,7 +59,7 @@ def _frame(content: str) -> bytes:
             "route_mode": "manual",
             "selected_provider": OBSERVED_PROVIDER,
             "selected_model": OBSERVED_MODEL,
-            "selected_upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+            "selected_upstream_model": "minimax/minimax-m3:free",
             "selected_route_id": f"platform:{OBSERVED_MODEL}",
             "reason_codes": ["manual_selection", "external_fallback_disabled"],
             "fallback_used": False,
@@ -90,7 +90,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
     async def scenario():
         seen_url = None
         seen = None
-        upstream = ChunkStream([_frame("Nemotron 토큰"), b"data: [DONE]\n\n"])
+        upstream = ChunkStream([_frame("MiniMax 토큰"), b"data: [DONE]\n\n"])
 
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal seen_url, seen
@@ -129,7 +129,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
         assert seen["messages"][0]["role"] == "system"
         assert "PROJECT CONTEXT" in seen["messages"][0]["content"]
 
-        assert events[0].delta_content == "Nemotron 토큰"
+        assert events[0].delta_content == "MiniMax 토큰"
         assert events[0].done is False
         assert not hasattr(events[0], "route")
         assert not hasattr(events[0], "model")

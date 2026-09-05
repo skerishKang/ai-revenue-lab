@@ -10,7 +10,7 @@ AUTO_B14_MODEL_ID = "b14/auto"
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
 LOW_B14_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
-MEDIUM_B14_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+MEDIUM_B14_MODEL_ID = "kilo/minimax-minimax-m3-free"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
 # Compatibility name retained for consumers that reason in low/medium/high
 # profiles. High currently names the Max product tier but is deliberately not
@@ -21,7 +21,7 @@ PADIEM_PLUS = "Padiem Plus"
 PADIEM_PRO = "Padiem Pro"
 PADIEM_MAX = "Padiem Max"
 
-# Compatibility alias retained for the first Kilo/Nemotron test lane.
+# Compatibility alias retained for the Kilo free test lane.
 KILO_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
 
 # Historical sentinel retained for older adapters/tests that import it. It is
@@ -46,7 +46,7 @@ EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
 # Current source posture after bounded activation/benchmark evidence:
 #
 #   Padiem Plus -> Kilo-hosted Poolside Laguna S 2.1 free
-#   Padiem Pro  -> Kilo-hosted NVIDIA Nemotron 3 Ultra free (default)
+#   Padiem Pro  -> Kilo-hosted MiniMax M3 free (default, general answers)
 #   Padiem Max  -> HOLD (Hy3 is inactive after HTTP 404; no replacement is
 #                  auto-promoted from volatile free availability)
 #

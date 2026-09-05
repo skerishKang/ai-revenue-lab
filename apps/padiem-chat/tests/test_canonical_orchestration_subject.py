@@ -135,7 +135,7 @@ def _start(bridge):
             user_id=PRODUCT_USER,
             messages=[{"role": "user", "content": "질문"}],
             skill=get_task_mode("auto"),
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id="chat_0123456789abcdef0123456789abcdef",
         )

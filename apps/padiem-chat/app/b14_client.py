@@ -29,6 +29,15 @@ from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
 
+# Product identity policy. Padiem Chat is a general Korean-first assistant;
+# upstream model/provider identities are not part of the user-facing product.
+# The instruction is a branding policy, not an answer-style or length cap.
+PADIEM_IDENTITY_INSTRUCTION = (
+    "당신은 파디엠(Padiem)이 제공하는 AI 어시스턴트입니다. "
+    "자신의 모델 이름, 제조사, 버전, 아키텍처를 밝히지 마세요. "
+    "모델이나 제조사를 묻는 질문에는 '파디엠이 제공하는 AI 어시스턴트입니다'라고만 답하세요."
+)
+
 
 class B14ServiceTransport(Protocol):
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]: ...
@@ -166,11 +175,17 @@ def _agent_profile(
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
+    skill_instruction = skill.system_instruction
+    if skill_instruction:
+        system_instruction = f"{PADIEM_IDENTITY_INSTRUCTION} {skill_instruction}"
+    else:
+        system_instruction = PADIEM_IDENTITY_INSTRUCTION
+
     return AgentProfile(
         id=f"b62-{skill.id}",
         title=skill.title,
         description=skill.short_description or skill.title,
-        system_instruction=skill.system_instruction,
+        system_instruction=system_instruction,
         task_type=skill.task_type,
         optimize_for=skill.optimize_for,
         max_tokens=skill.max_tokens,
