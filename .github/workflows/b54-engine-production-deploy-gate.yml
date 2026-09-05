@@ -1,0 +1,94 @@
+name: B54 Engine Production Deploy Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to deploy'
+        required: true
+      confirmation:
+        description: 'Type DEPLOY_B54_ENGINE_FROM_EXACT_MAIN to authorize the deploy'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production-engine:
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Sync engine worker bundle
+        working-directory: apps/padiem-ai-engine
+        run: uv run pywrangler sync --force
+
+      - name: Deploy engine to production
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          uv run pywrangler deploy
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
+          test "$CODE" = '200'
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler@4 rollback --message "B54 engine production rollback (owner-authorized gate)"
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
