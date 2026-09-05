@@ -313,3 +313,53 @@ python -m pytest -q packages/padiem-ai-core
 # PR 본문 계약 리포트 (비차단)
 PR_BODY="$(gh pr view 1900 --json body --jq .body)" python .github/scripts/pr_contract_guard.py
 ```
+
+---
+
+## 7. Addendum (2026-09-05) — 외부 모델 세션이 계약 없이 코드를 만든 사건
+
+감사 당일, 외부 모델(Codex) 세션 하나가 짧게 투입되어 **저장소 밖**
+(`C:/Users/limone/Documents/ChatGPT/BI/`)에서 Padiem Claw MVP를 작업했다.
+그 체크아웃의 `main`은 다른 진행 중 작업과 **미해결 충돌** 상태였다.
+
+### 판정
+
+```text
+FINDING  = SALVAGED   → #1910 (재현 우선 계약 이슈)
+DIFF     = NOT_ADOPTED
+SESSION  = TERMINATED_BY_OWNER
+```
+
+채택하지 않은 근거 — 산출물이 **어느 리비전에도 귀속되지 않는다.**
+충돌이 미해결된 트리에서 나온 diff는 어떤 줄이 어떤 작업의 것인지 구분할 수 없다.
+
+```text
+apps/korean-ai-code-agent/src/kagent/cli.py          +12 / -1   제품 소스, 계약 없음
+apps/korean-ai-code-agent/src/kagent/local_review.py +209       신규 기능, 계약·테스트 없음
+PADIEM_CLAW_MVP_WORK_ORDER.md                        +35        저장소 밖
+```
+
+### 왜 이게 이 감사에 속하는가
+
+`AGENTS.md`의 체인이 감사 가능한 이유는 모든 리비전에 계약과 증거가 붙기 때문이다.
+계약 없는 외부 세션은 **리비전에 귀속시킬 수 없는 출력**을 만든다 — 보고된 결함이
+맞든 틀리든, 실패 모드는 이 저장소의 증거 규칙이 막으려 한 것과 동일하다.
+
+### 규칙 (#1911로 등록)
+
+```text
+EXTERNAL_MODEL_SESSION_WITHOUT_ISSUE_CONTRACT = NOT_ADOPTABLE
+EXTERNAL_MODEL_SESSION_OUTSIDE_REPOSITORY     = NOT_ADOPTABLE
+EXTERNAL_MODEL_SESSION_ON_CONFLICTED_TREE     = NOT_ADOPTABLE
+```
+
+외부 모델은 **탐색용**으로는 자유롭게 쓴다. 그러나 그 출력이 저장소에 들어오려면
+상시 구현자와 **동일한 조건**을 만족해야 한다:
+계약 이슈 선행 → 클린 브랜치 → CI가 붙은 PR과 exact-head 보고.
+모델이 다르거나 빨라도 기준은 내려가지 않는다.
+
+### 부수 관찰
+
+외부 개발 정책(`EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md`)은 **외부 저장소/프로젝트**를
+다루며, "외부 모델이 이 저장소의 코드를 잠깐 만지는 경우"는 다루지 않는다.
+이번 사건은 그 공백으로 들어갔다. 정책 보완은 owner/Web CTO 결정 사항으로 남긴다.
