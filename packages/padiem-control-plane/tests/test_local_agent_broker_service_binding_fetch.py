@@ -256,3 +256,39 @@ def test_state_private_do_failure_is_generic_503() -> None:
 
     assert response.status == 503
     assert _decoded(response)["error"]["code"] == "local_agent_http_dependency_unavailable"
+
+
+class _JsDict(dict):
+    """Analog of workers-py JsDict: RPC'd dicts deserialize to a dict subclass."""
+
+
+def _jsdict(value):
+    if isinstance(value, dict):
+        return _JsDict({key: _jsdict(item) for key, item in value.items()})
+    if isinstance(value, list):
+        return [_jsdict(item) for item in value]
+    return value
+
+
+def test_state_private_fetch_accepts_dict_subclass_rpc_result() -> None:
+    plain = {
+        "status": 401,
+        "headers": {"cache-control": "no-store", "content-type": "application/json"},
+        "body": {
+            "ok": False,
+            "error": {
+                "code": "local_agent_http_auth_required",
+                "message": "authenticated Local Agent broker access is required",
+            },
+        },
+    }
+    result = _jsdict(plain)
+    assert type(result) is _JsDict and isinstance(result, dict)
+    assert type(result["headers"]) is _JsDict and isinstance(result["headers"], dict)
+    assert type(result["body"]) is _JsDict and isinstance(result["body"], dict)
+
+    stub = _StateStub(result=result)
+    response = asyncio.run(state.Default(_StateEnv(stub)).fetch(_Request()))
+
+    assert response.status == 401
+    assert _decoded(response)["error"]["code"] == "local_agent_http_auth_required"
