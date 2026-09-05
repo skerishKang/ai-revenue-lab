@@ -41,6 +41,14 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "OrchestrationResult",
         }
     ),
+    "apps/korean-ai-code-agent/src/kagent/p01_orchestration_client.py": frozenset(
+        {
+            "OrchestrationError",
+            "OrchestrationRequest",
+            "OrchestrationResult",
+            "orchestration_result_from_public",
+        }
+    ),
     "apps/korean-ai-code-agent/src/kagent/p01_resume.py": frozenset(
         {
             "ApprovalOutcome",
