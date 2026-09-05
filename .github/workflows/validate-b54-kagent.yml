@@ -39,6 +39,7 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check -e "../../packages/padiem-ai-core[tools]"
           python -m pip install --disable-pip-version-check -e "../../packages/padiem-control-plane"
+          python -m pip install --disable-pip-version-check -e "../../apps/padiem-ai-engine/clients/python"
 
       - name: Compile source and tests
         working-directory: apps/korean-ai-code-agent
