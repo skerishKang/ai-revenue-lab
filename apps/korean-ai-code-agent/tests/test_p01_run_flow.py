@@ -17,6 +17,7 @@ from kagent.p01_run_flow import (
     ENV_ENGINE_BASE_URL,
     ENV_ENGINE_CALLER_ID,
     ENV_ENGINE_CREDENTIAL,
+    MAX_ENGINE_RESPONSE_BYTES,
     P01EngineRuntimeConfig,
     UrllibEngineTransport,
     build_p01_orchestration_adapter,
@@ -45,8 +46,10 @@ class _FakeHttpResponse:
         self._body = body
         self.headers: dict[str, str] = {}
 
-    def read(self) -> bytes:
-        return self._body
+    def read(self, size: int = -1) -> bytes:
+        if size is None or size < 0:
+            return self._body
+        return self._body[:size]
 
     def __enter__(self) -> "_FakeHttpResponse":
         return self
@@ -86,6 +89,33 @@ class P01EngineRuntimeConfigTests(unittest.TestCase):
                 caller_id="b54-kagent",
                 credential=_FAKE_CREDENTIAL,
             )
+
+    def test_http_scheme_is_rejected_for_non_loopback_hosts(self) -> None:
+        for host in ("engine.example.test", "10.0.0.5", "192.168.0.2", "mybox.lan"):
+            with self.assertRaises(P01AdapterError) as ctx:
+                P01EngineRuntimeConfig(
+                    base_url=f"http://{host}:8787",
+                    caller_id="b54-kagent",
+                    credential=_FAKE_CREDENTIAL,
+                )
+            self.assertEqual(ctx.exception.code, "p01_engine_misconfigured")
+
+    def test_http_scheme_is_allowed_for_loopback_hosts(self) -> None:
+        for host in ("127.0.0.1:8787", "localhost", "Localhost:8787", "[::1]:8787"):
+            config = P01EngineRuntimeConfig(
+                base_url=f"http://{host}",
+                caller_id="b54-kagent",
+                credential=_FAKE_CREDENTIAL,
+            )
+            self.assertTrue(config.base_url.startswith("http://"))
+
+    def test_https_scheme_is_allowed_for_any_host(self) -> None:
+        config = P01EngineRuntimeConfig(
+            base_url="https://127.0.0.1:8787",
+            caller_id="b54-kagent",
+            credential=_FAKE_CREDENTIAL,
+        )
+        self.assertEqual(config.base_url, "https://127.0.0.1:8787")
 
     def test_short_credential_is_rejected_without_leaking_value(self) -> None:
         secret = "sh0rt-credential-value"
@@ -173,6 +203,56 @@ class UrllibEngineTransportTests(unittest.TestCase):
             )
         self.assertEqual(response.status, 429)
         self.assertEqual(response.body, b'{"ok": false}')
+
+    def test_oversized_success_body_fails_closed(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        huge = _FakeHttpResponse(200, b"x" * (MAX_ENGINE_RESPONSE_BYTES + 1))
+        with mock.patch("urllib.request.urlopen", return_value=huge):
+            with self.assertRaises(P01AdapterError) as ctx:
+                asyncio.run(
+                    transport.request(
+                        method="POST",
+                        url="https://padiem-ai-engine.internal/internal/v1/orchestrate",
+                        headers={},
+                        body=b"{}",
+                    )
+                )
+        self.assertEqual(ctx.exception.code, "p01_engine_response_too_large")
+
+    def test_oversized_error_body_fails_closed(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        error = urllib.error.HTTPError(
+            "https://engine.example.test/internal/v1/orchestrate",
+            500,
+            "Server Error",
+            {},  # type: ignore[arg-type]
+            io.BytesIO(b"x" * (MAX_ENGINE_RESPONSE_BYTES + 1)),
+        )
+        with mock.patch("urllib.request.urlopen", side_effect=error):
+            with self.assertRaises(P01AdapterError) as ctx:
+                asyncio.run(
+                    transport.request(
+                        method="POST",
+                        url="https://padiem-ai-engine.internal/internal/v1/orchestrate",
+                        headers={},
+                        body=b"{}",
+                    )
+                )
+        self.assertEqual(ctx.exception.code, "p01_engine_response_too_large")
+
+    def test_body_at_size_limit_is_accepted(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        exact = _FakeHttpResponse(200, b"x" * MAX_ENGINE_RESPONSE_BYTES)
+        with mock.patch("urllib.request.urlopen", return_value=exact):
+            response = asyncio.run(
+                transport.request(
+                    method="POST",
+                    url="https://padiem-ai-engine.internal/internal/v1/orchestrate",
+                    headers={},
+                    body=b"{}",
+                )
+            )
+        self.assertEqual(len(response.body), MAX_ENGINE_RESPONSE_BYTES)
 
     def test_connection_failure_fails_closed_as_unreachable(self) -> None:
         transport = UrllibEngineTransport("https://engine.example.test")
