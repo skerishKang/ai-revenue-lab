@@ -74,10 +74,10 @@ async def handle_private_device_fetch(request, stub_factory) -> Response:
         return _error(503, "local_agent_http_dependency_unavailable", "Local Agent broker dependency is unavailable")
 
     if (
-        type(result) is not dict
+        not isinstance(result, dict)
         or type(result.get("status")) is not int
-        or type(result.get("headers")) is not dict
-        or type(result.get("body")) is not dict
+        or not isinstance(result.get("headers"), dict)
+        or not isinstance(result.get("body"), dict)
         or not 100 <= result["status"] <= 599
     ):
         return _error(503, "local_agent_http_dependency_unavailable", "Local Agent broker dependency is unavailable")
