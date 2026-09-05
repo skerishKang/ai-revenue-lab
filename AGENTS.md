@@ -13,8 +13,8 @@ Canonical operating documents:
 ## Roles
 
 1. **User / Product Owner** — product goals, priorities, material UX/business decisions, merge/Production authority when the work contract requires owner authorization.
-2. **Web CTO** — work contract, architecture/safety boundary, acceptance criteria, current-remote audit, independent final review.
-3. **Web Developer** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report.
+2. **Web CTO / CENTRAL** — work contract, architecture/safety boundary, acceptance criteria, current-remote audit, independent final review. Arena web sessions may serve as a CENTRAL delegate per their assigned scope; their verdicts follow the same SHA-bound rules below.
+3. **Web Developer / Implementation Worker** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report. Today this role is normally executed by the **local model** on the owner's machine; the name in every contract should stay role-based, not tool-based.
 4. **Local Validator** — exact-head execution in the required real environment when independent local/browser/OS/hardware validation is required.
 
 One actor may perform multiple **non-independent** stages. The same actor must not claim both implementation and **independent Local Validation** for the same revision.
@@ -76,6 +76,10 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - A validator who modifies product source has created a new implementation revision; that run is not independent validation of the new revision.
 - Wrong-project Preview or deployment output is defect evidence, not product acceptance evidence.
 - `READY`, `CONDITIONALLY_READY`, and `NOT_READY` are Web CTO technical/review verdicts, not automatic merge commands.
+- A CENTRAL technical verdict must be recorded as a PR review or comment pinned to the exact head SHA before merge. A verdict is void the moment the head moves (incident: 2026-09-05, PR #1902).
+- Merge-consumption gate: whoever merges — owner, delegated worker, or any session — re-reads the PR head immediately before merging and requires identity with the latest recorded verdict head. Any mismatch forbids the merge and requires re-review. Owner-delegated merges are additionally single-purpose and head-pinned inside the delegating work order.
+- One PR = one workstream lane. Cross-lane content requires per-lane acceptance recorded on the PR. Lane ownership and live holds are tracked in the coordination issue (currently #1907).
+- Reviewed PRs land on `main` as a single squash commit; rebase-merge or merge-commit paths must not be used for content carrying a CENTRAL verdict.
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 

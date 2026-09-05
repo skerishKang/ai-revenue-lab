@@ -41,6 +41,23 @@ IMPLEMENTATION_ACTOR
 INDEPENDENT_LOCAL_VALIDATOR
 ```
 
+## 2.1 Verdict and merge-chain recording (added 2026-09-05)
+
+- A CENTRAL technical verdict (`READY` / `CONDITIONALLY_READY` / `NOT_READY`)
+  is recorded as a PR review or comment pinned to the exact head SHA before
+  merge. A moved head voids the verdict.
+- Merge-consumption gate: immediately before any merge, the merging actor —
+  owner, delegated worker, or any web/local session — re-reads `headRefOid`
+  and requires identity with the latest recorded verdict head. Any mismatch
+  forbids the merge and requires re-review.
+- One PR serves one workstream lane; cross-lane content requires per-lane
+  acceptance recorded on the PR (lane registry: coordination issue #1907).
+- Reviewed PRs merge via squash only, so every review verdict maps to one
+  auditable `main` commit.
+- An owner-delegated merge (developer performs the merge click) is valid only
+  when the delegation is single-purpose, names the exact head SHA, and the
+  conditions are re-verified at execution time.
+
 ## 3. Product-evidence model
 
 Possible evidence targets include:
