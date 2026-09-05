@@ -1,0 +1,560 @@
+name: B62 Production Code Deploy Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-production-code-deploy-gate.yml"
+      - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - "apps/padiem-chat/tests/test_b62_production_deploy_config.py"
+      - "apps/padiem-chat/wrangler.toml"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "B62 production code deploy gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - deploy_production_code
+          - rollback_production_code
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+      previous_version_id:
+        description: "Recorded previous production version id (rollback mode)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-production-code-deploy-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  IDENTITY_WORKER: padiem-control-plane-identity
+  IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
+  B14_WORKER: ai-revenue-korean-ai-platform
+  B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Repository wrangler config must stay mock-only
+        shell: bash
+        run: python .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml
+
+      - name: Gate source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
+          generator = Path(".github/scripts/b62_cloudflare_production_deploy_config.py").read_text(encoding="utf-8")
+
+          assert "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN" in workflow
+          assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in workflow
+          assert workflow.count("environment: " + "production") == 2
+          assert 'test "${GITHUB_REF}" = "refs/heads/main"' in workflow
+          assert "PREMUTATION_EXACT_MAIN_SHA=PASS" in workflow
+          assert "if: failure()" in workflow
+          assert 'B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED' in workflow
+          assert '"percentage": 100' in workflow
+          assert "authentication_required" in workflow
+          assert "connector_ticket_origin_rejected" in workflow
+          assert "B62_PRODUCTION_SMOKE=PASS" in workflow
+          assert "PRODUCTION_MUTATION=0" in workflow
+          assert "PADIEM_CHAT_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev" in workflow or \
+              "B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev" in workflow
+
+          assert "unsupported live binding type" in generator
+          assert "SECRET_VALUES_READ=0" in generator
+          assert "SECRET_VALUES_EMITTED=0" in generator
+          assert "duplicate binding names" in generator
+          assert "drift" in generator
+          assert "runtime mode is mock" in generator
+          assert "tomllib" in generator
+          print("B62_PRODUCTION_CODE_GATE_SOURCE=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    outputs:
+      active_version: ${{ steps.audit.outputs.active_version }}
+      public_base_url_state: ${{ steps.audit.outputs.public_base_url_state }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Read-only deployed state audit
+        id: audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+
+          settings="${RUNNER_TEMP}/b62-settings-readonly.json"
+          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+
+          deployments="${RUNNER_TEMP}/b62-deployments-readonly.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          test -n "${active}" && test "${active}" != "null"
+
+          versions="${RUNNER_TEMP}/b62-versions-readonly.json"
+          curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
+          latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+          test "${latest}" = "${active}"
+          echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
+          echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
+
+          jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
+            '[.result.bindings[] | select(.name == $name)] as $b |
+             ($b | length) == 1 and $b[0].type == "service" and $b[0].service == $service' "${settings}" >/dev/null
+          echo "IDENTITY_BINDING=PRESENT_EXPECTED"
+          jq -e --arg name "B14_SERVICE" --arg service "${B14_WORKER}" \
+            '[.result.bindings[] | select(.name == $name)] as $b |
+             ($b | length) == 1 and $b[0].service == $service' "${settings}" >/dev/null
+          jq -e '[.result.bindings[] | select(.type == "d1" and .name == "PADIEM_CHAT_DB")] | length == 1' "${settings}" >/dev/null
+          jq -e '[.result.bindings[] | select(.type == "assets" and .name == "ASSETS")] | length == 1' "${settings}" >/dev/null
+          jq -e --arg name "${IDENTITY_BINDING}" '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null
+
+          public_state="$(python - "${settings}" "${B62_PUBLIC_BASE_URL}" <<'PY'
+          import json
+          import sys
+
+          bindings = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"]
+          current = [b.get("text") for b in bindings if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"]
+          if not current:
+              print("absent")
+          elif current == [sys.argv[2]]:
+              print("expected")
+          else:
+              print("drift")
+          PY
+          )"
+          echo "public_base_url_state=${public_state}" >> "${GITHUB_OUTPUT}"
+          echo "PADIEM_CHAT_PUBLIC_BASE_URL_STATE=${public_state}"
+          test "${public_state}" != "drift"
+
+          subdomain="${RUNNER_TEMP}/b62-subdomain-readonly.json"
+          curl -fsS "${auth[@]}" "${api}/subdomain" -o "${subdomain}"
+          jq -e '.success == true and .result.enabled == true' "${subdomain}" >/dev/null
+          echo "B62_PUBLIC_ORIGIN=WORKERS_DEV"
+
+          echo "B62_CODE_DEPLOY_READONLY=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  deploy-production-code:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'deploy_production_code' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      READONLY_ACTIVE_VERSION: ${{ needs.cloudflare-readonly.outputs.active_version }}
+      PUBLIC_BASE_URL_STATE: ${{ needs.cloudflare-readonly.outputs.public_base_url_state }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Require explicit production code deploy authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN"
+          test -n "${READONLY_ACTIVE_VERSION}"
+          if [ "${PUBLIC_BASE_URL_STATE}" = "drift" ]; then
+            echo "Refusing deploy while PADIEM_CHAT_PUBLIC_BASE_URL drifts from the expected origin." >&2
+            exit 1
+          fi
+          echo "B62_PRODUCTION_CODE_DEPLOY_AUTHORIZATION=PASS"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Snapshot live settings immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          settings="${RUNNER_TEMP}/b62-settings-before.json"
+          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          jq -e '.success == true' "${settings}" >/dev/null
+          deployments="${RUNNER_TEMP}/b62-deployments-before.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          test "${active}" = "${READONLY_ACTIVE_VERSION}"
+          echo "PREMUTATION_ACTIVE_VERSION_STABLE=PASS"
+          detail="${RUNNER_TEMP}/b62-version-before.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${detail}"
+          etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
+          {
+            echo "PREVIOUS_VERSION_ID=${active}"
+            echo "PREVIOUS_SCRIPT_ETAG=${etag_before}"
+          } >> "${GITHUB_ENV}"
+
+      - name: Generate exact production config from live settings
+        shell: bash
+        run: |
+          set -euo pipefail
+          generated="apps/padiem-chat/wrangler.production.generated.toml"
+          test ! -e "${generated}"
+          python .github/scripts/b62_cloudflare_production_deploy_config.py \
+            --settings "${RUNNER_TEMP}/b62-settings-before.json" \
+            --repo-config apps/padiem-chat/wrangler.toml \
+            --public-base-url "${B62_PUBLIC_BASE_URL}" \
+            --output "${generated}"
+          echo "B62_PRODUCTION_CONFIG_GENERATED=VERIFIED"
+
+      - name: Package production bundle without deploying
+        working-directory: apps/padiem-chat
+        shell: bash
+        run: |
+          set -euo pipefail
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+            --config wrangler.production.generated.toml \
+            --dry-run --outdir "${RUNNER_TEMP}/b62-production-dry-run"
+          test -d "${RUNNER_TEMP}/b62-production-dry-run"
+          echo "PYTHON_WORKER_PACKAGING_PREFLIGHT=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Deploy production code preserving the full binding set
+        working-directory: apps/padiem-chat
+        shell: bash
+        run: |
+          set -euo pipefail
+          generated="wrangler.production.generated.toml"
+          trap 'rm -f "${generated}"' EXIT
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+            --config "${generated}" \
+            --strict \
+            --tag "git-${TARGET_SHA}" \
+            --message "B62 production code ${TARGET_SHA}"
+          rm -f "${generated}"
+          echo "B62_PRODUCTION_CODE_DEPLOY=SUCCESS"
+          echo "PRODUCTION_MUTATION=1"
+
+      - name: Read back exact post-deploy binding and variable state
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          for attempt in $(seq 1 12); do
+            deployments="${RUNNER_TEMP}/b62-deployments-after.json"
+            curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+            active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+            versions="${RUNNER_TEMP}/b62-versions-after.json"
+            curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
+            latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+            if [ -n "${latest}" ] && [ "${latest}" = "${active}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${latest}" = "${active}"
+          test "${active}" != "${PREVIOUS_VERSION_ID}"
+          echo "NEW_VERSION_ACTIVE=PASS"
+          echo "DEPLOYED_VERSION_ID=${active}" >> "${GITHUB_ENV}"
+
+          settings="${RUNNER_TEMP}/b62-settings-after.json"
+          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          python - "${RUNNER_TEMP}/b62-settings-before.json" "${settings}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${B62_PUBLIC_BASE_URL}" <<'PY'
+          import json
+          import sys
+
+          before = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"]
+          after = json.load(open(sys.argv[2], encoding="utf-8"))["result"]["bindings"]
+          binding_name, identity_worker, public_url = sys.argv[3:]
+
+          def key(bindings):
+              return sorted(
+                  (b.get("type"), b.get("name"), b.get("service") or b.get("id") or b.get("text") or "")
+                  for b in bindings
+              )
+
+          before_key = key(before)
+          after_key = key(after)
+          added = [entry for entry in after_key if entry not in before_key]
+          removed = [entry for entry in before_key if entry not in after_key]
+          assert removed == [], f"bindings removed by deploy: {removed}"
+          assert added == [("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)], \
+              f"unexpected binding delta: added={added}"
+
+          identity = [b for b in after if b.get("name") == binding_name]
+          assert len(identity) == 1 and identity[0].get("type") == "service"
+          assert identity[0].get("service") == identity_worker
+          secrets_before = sorted(b["name"] for b in before if b.get("type") == "secret_text")
+          secrets_after = sorted(b["name"] for b in after if b.get("type") == "secret_text")
+          assert secrets_before == secrets_after and "PADIEM_CHAT_QUOTA_SALT" in secrets_after
+          print("BINDINGS_PRESERVED_EXACTLY=PASS")
+          print("SECRET_BINDINGS_PRESERVED=PASS")
+          print("PUBLIC_BASE_URL_SET=PASS")
+          PY
+
+          detail="${RUNNER_TEMP}/b62-version-after.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${detail}"
+          etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
+          test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"
+          echo "SCRIPT_ETAG_CHANGED=PASS"
+
+          subdomain="${RUNNER_TEMP}/b62-subdomain-after.json"
+          curl -fsS "${auth[@]}" "${api}/subdomain" -o "${subdomain}"
+          jq -e '.success == true and .result.enabled == true' "${subdomain}" >/dev/null
+          echo "B62_PUBLIC_ORIGIN_STILL_ENABLED=PASS"
+
+      - name: Production smoke — connector ticket edge contract (Scenario A)
+        shell: bash
+        run: |
+          set -euo pipefail
+          headers_same="${RUNNER_TEMP}/b62-smoke-same-headers.txt"
+          body_same="${RUNNER_TEMP}/b62-smoke-same-body.json"
+          headers_evil="${RUNNER_TEMP}/b62-smoke-evil-headers.txt"
+          body_evil="${RUNNER_TEMP}/b62-smoke-evil-body.json"
+
+          health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${B62_PUBLIC_BASE_URL}/health")"
+          test "${health_status}" = "200"
+          echo "HEALTH_STATUS=${health_status}"
+
+          logout_status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST -H "Origin: ${B62_PUBLIC_BASE_URL}" "${B62_PUBLIC_BASE_URL}/api/auth/logout")"
+          test "${logout_status}" = "200"
+          echo "LOGOUT_STATUS=${logout_status}"
+
+          same_status="$(curl -sS -D "${headers_same}" -o "${body_same}" -w '%{http_code}' \
+            -X POST -H "Origin: ${B62_PUBLIC_BASE_URL}" -H "Content-Type: application/json" \
+            -d '{"connector_id":"gmail"}' "${B62_PUBLIC_BASE_URL}/api/connectors/google/ticket")"
+          echo "TICKET_SAME_ORIGIN_STATUS=${same_status}"
+          test "${same_status}" = "401"
+          jq -e '.error.code == "authentication_required"' "${body_same}" >/dev/null
+          grep -qi 'cache-control: no-store' "${headers_same}"
+
+          evil_status="$(curl -sS -D "${headers_evil}" -o "${body_evil}" -w '%{http_code}' \
+            -X POST -H "Origin: https://evil.example.test" -H "Content-Type: application/json" \
+            -d '{"connector_id":"gmail"}' "${B62_PUBLIC_BASE_URL}/api/connectors/google/ticket")"
+          echo "TICKET_CROSS_ORIGIN_STATUS=${evil_status}"
+          test "${evil_status}" = "403"
+          jq -e '.error.code == "connector_ticket_origin_rejected"' "${body_evil}" >/dev/null
+
+          if grep -q 'connect_ticket' "${body_same}" "${body_evil}"; then
+            echo "Ticket material must never appear on unauthenticated responses." >&2
+            exit 1
+          fi
+          echo "B62_PRODUCTION_SMOKE=PASS"
+          echo "SCENARIO_A1=401_AUTHENTICATION_REQUIRED"
+          echo "SCENARIO_A2=403_ORIGIN_REJECTED"
+
+      - name: Auto-rollback to recorded version on any failed step
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${PREVIOUS_VERSION_ID:-}" ]; then
+            echo "No recorded previous version; manual rollback required." >&2
+            exit 1
+          fi
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
+            -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
+            -o "${RUNNER_TEMP}/b62-auto-rollback.json"
+          for attempt in $(seq 1 12); do
+            deployments="${RUNNER_TEMP}/b62-auto-rollback-state.json"
+            curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+            active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+            if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${active}" = "${PREVIOUS_VERSION_ID}"
+          health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${B62_PUBLIC_BASE_URL}/health")"
+          test "${health_status}" = "200"
+          echo "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED"
+          echo "AUTO_ROLLBACK_HEALTH_STATUS=${health_status}"
+
+      - name: Publish bounded deploy evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B62 production code deploy"
+            echo
+            echo "- exact SHA: \`${TARGET_SHA}\`"
+            echo "- previous version: \`${PREVIOUS_VERSION_ID:-unknown}\`"
+            echo "- deployed version: \`${DEPLOYED_VERSION_ID:-none}\`"
+            echo "- public origin: \`${B62_PUBLIC_BASE_URL}\`"
+            echo "- secret values printed: never"
+            echo "- auto-rollback armed on any failed step: yes"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  rollback-production-code:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'rollback_production_code' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PREVIOUS_VERSION_ID: ${{ inputs.previous_version_id }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Require explicit rollback authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION"
+          test -n "${PREVIOUS_VERSION_ID}"
+          echo "B62_PRODUCTION_CODE_ROLLBACK_AUTHORIZATION=PASS"
+
+      - name: Locate recorded version in history
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          found=0
+          for page in 1 2 3 4; do
+            versions="${RUNNER_TEMP}/b62-versions-page-${page}.json"
+            curl -fsS "${auth[@]}" "${api}/versions?page=${page}&per_page=25" -o "${versions}"
+            if jq -e --arg id "${PREVIOUS_VERSION_ID}" '.result.items[] | select(.id == $id)' "${versions}" >/dev/null; then
+              found=1
+              break
+            fi
+          done
+          test "${found}" = "1"
+          detail="${RUNNER_TEMP}/b62-rollback-target.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${PREVIOUS_VERSION_ID}" -o "${detail}"
+          etag="$(jq -er '.result.resources.script.etag' "${detail}")"
+          echo "ROLLBACK_TARGET_ETAG=${etag}" >> "${GITHUB_ENV}"
+          echo "B62_ROLLBACK_TARGET_FOUND=PASS"
+
+      - name: Roll out recorded version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
+            -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
+            -o "${RUNNER_TEMP}/b62-rollback-deploy.json"
+          for attempt in $(seq 1 12); do
+            deployments="${RUNNER_TEMP}/b62-rollback-state.json"
+            curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+            active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+            if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${active}" = "${PREVIOUS_VERSION_ID}"
+          echo "B62_PRODUCTION_CODE_ROLLBACK=SUCCESS"
+          echo "PRODUCTION_MUTATION=1"
+
+      - name: Read back rollback exactness and health
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          detail="${RUNNER_TEMP}/b62-rollback-readback.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${PREVIOUS_VERSION_ID}" -o "${detail}"
+          etag="$(jq -er '.result.resources.script.etag' "${detail}")"
+          test "${etag}" = "${ROLLBACK_TARGET_ETAG}"
+          health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${B62_PUBLIC_BASE_URL}/health")"
+          test "${health_status}" = "200"
+          echo "B62_ROLLBACK_ETAG_MATCH=PASS"
+          echo "ROLLBACK_HEALTH_STATUS=${health_status}"
+
+      - name: Publish bounded rollback evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B62 production code rollback"
+            echo
+            echo "- rolled-back version: \`${PREVIOUS_VERSION_ID}\`"
+            echo "- public origin: \`${B62_PUBLIC_BASE_URL}\`"
+            echo "- secret values printed: never"
+          } >> "${GITHUB_STEP_SUMMARY}"
