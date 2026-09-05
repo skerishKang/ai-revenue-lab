@@ -268,3 +268,98 @@ def test_required_capability_free_excludes_every_paid_entry():
         assert m.input_price_usd_per_1m == 0.0
         assert m.output_price_usd_per_1m == 0.0
         assert "free" in m.capabilities
+
+
+def test_free_first_default_routing_selects_evidenced_free_models_only():
+    """Default auto routing (allow_paid=False) selects only evidenced-free models."""
+    for opt in ["balanced", "cost", "latency", "korean"]:
+        decision = resolve_auto_route(optimize_for=opt)
+        selected = get_catalog_by_id(decision.selected_model)
+        assert selected is not None
+        assert "free" in selected.capabilities
+        assert selected.price_is_known is True
+        assert selected.input_price_usd_per_1m == 0.0
+        assert selected.output_price_usd_per_1m == 0.0
+        assert "free_first:default" in decision.reason_codes
+        for fallback in decision.eligible_fallback:
+            fb_model = get_catalog_by_id(fallback["model_id"])
+            assert "free" in fb_model.capabilities
+            assert fb_model.price_is_known is True
+            assert fb_model.input_price_usd_per_1m == 0.0
+            assert fb_model.output_price_usd_per_1m == 0.0
+
+
+def test_paid_models_unreachable_by_default_without_explicit_opt_in():
+    """Paid models appear in excluded_candidates with reason paid_or_unknown_price_not_allowed."""
+    decision = resolve_auto_route(optimize_for="balanced")
+    excluded_reasons = {item["model_id"]: item["reason"] for item in decision.excluded_candidates}
+    assert excluded_reasons.get("google/gemini-2.5-flash") == "paid_or_unknown_price_not_allowed"
+    assert excluded_reasons.get("anthropic/claude-sonnet-4.5") == "paid_or_unknown_price_not_allowed"
+    assert excluded_reasons.get("deepseek/deepseek-chat") == "paid_or_unknown_price_not_allowed"
+    assert excluded_reasons.get("mistralai/mistral-small-3.2-24b-instruct") == "paid_or_unknown_price_not_allowed"
+
+
+def test_unknown_price_models_never_selected_by_default():
+    """Unknown-price models (e.g. agnes-ai) are never selected by default even with secret present."""
+    decision = resolve_auto_route(optimize_for="balanced")
+    assert decision.selected_model != "agnes-ai/agnes-2.5-flash"
+    assert "agnes-ai/agnes-2.5-flash" not in [item["model_id"] for item in decision.eligible_fallback]
+
+
+def test_explicit_allow_paid_enables_paid_models_and_records_opt_in():
+    """When allow_paid=True is provided, paid models become eligible and reason_codes records free_first:opt_in."""
+    decision = resolve_auto_route(
+        task_type="coding",
+        optimize_for="korean",
+        allow_paid=True,
+    )
+    assert "free_first:opt_in" in decision.reason_codes
+    # With korean optimize_for and allow_paid, gemini-2.5-flash (score 5) can win over stealth/ox-alpha (score 4)
+    # or stealth (score 4, free) depending on policy, but paid models are in pool
+    all_pool = [decision.selected_model] + [item["model_id"] for item in decision.eligible_fallback]
+    assert any(m in all_pool for m in ["google/gemini-2.5-flash", "anthropic/claude-sonnet-4.5"])
+
+
+def test_gateway_resolve_endpoint_honors_allow_paid(client):
+    """The /api/pilot/router/resolve endpoint passes allow_paid option properly."""
+    # Default (no allow_paid) -> free-first default
+    resp_default = client.post(
+        "/api/pilot/router/resolve",
+        json={
+            "model": "b14/auto",
+            "messages": [{"role": "user", "content": "hi"}],
+            "business14": {"task_type": "coding"},
+        },
+    )
+    assert resp_default.status_code == 200
+    data_default = resp_default.json()
+    assert data_default["selected_model"] == "stealth/ox-alpha"
+    assert "free_first:default" in data_default["reason_codes"]
+
+    # Explicit allow_paid=True -> free_first:opt_in
+    resp_opt_in = client.post(
+        "/api/pilot/router/resolve",
+        json={
+            "model": "b14/auto",
+            "messages": [{"role": "user", "content": "hi"}],
+            "business14": {"task_type": "coding", "allow_paid": True},
+        },
+    )
+    assert resp_opt_in.status_code == 200
+    data_opt_in = resp_opt_in.json()
+    assert "free_first:opt_in" in data_opt_in["reason_codes"]
+
+
+def test_gateway_allow_paid_must_be_boolean_422(client):
+    """business14.allow_paid with non-boolean value returns 422."""
+    resp = client.post(
+        "/api/pilot/router/resolve",
+        json={
+            "model": "b14/auto",
+            "messages": [{"role": "user", "content": "hi"}],
+            "business14": {"allow_paid": "yes"},
+        },
+    )
+    assert resp.status_code == 422
+    assert "business14.allow_paid must be a boolean" in resp.json()["error"]["message"]
+

@@ -7,8 +7,8 @@ contract and reconstructs the response through the Core-owned public parser
 is rejected fail-closed here, before Claw can project it: a silently dropped
 approval pause or plan would let a paused run be reported as completed.
 
-Claw never pins a provider, model, fallback order, or credential through this
-port; the conservative B54 agent profile is the only accepted request shape.
+Claw pins only the owner-approved free model ('stealth/ox-alpha') through this
+port; any other provider, model, fallback order, or credential fails closed.
 """
 
 from __future__ import annotations
@@ -24,6 +24,8 @@ from padiem_ai_core import (
 from padiem_ai_engine_client import PadiemAiEngineClientError
 
 from .p01_adapter import P01AdapterError
+
+APPROVED_FREE_MODEL = "stealth/ox-alpha"
 
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.
@@ -107,8 +109,12 @@ class P01EngineOrchestrationClient:
 
         execution = request.execution_request
         agent = execution.agent
+        valid_model_policy = (
+            not agent.model_policy
+            or agent.model_policy == {"model": APPROVED_FREE_MODEL}
+        )
         if (
-            agent.model_policy
+            not valid_model_policy
             or agent.allowed_tools
             or agent.context_policy
             or agent.output_contract
@@ -128,7 +134,7 @@ class P01EngineOrchestrationClient:
                 "optimize_for": agent.optimize_for,
                 "max_tokens": agent.max_tokens,
                 "required_capabilities": list(agent.required_capabilities),
-                "model_policy": {},
+                "model_policy": dict(agent.model_policy),
             },
             "messages": [dict(message) for message in execution.messages],
             "trace_id": execution.trace_id,

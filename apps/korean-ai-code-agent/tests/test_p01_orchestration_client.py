@@ -145,7 +145,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
         self.assertEqual(transport.requests[0]["url"], "https://padiem-ai-engine.internal/internal/v1/orchestrate")
 
-    def test_outgoing_payload_pins_no_provider_model_or_credential(self) -> None:
+    def test_outgoing_payload_pins_approved_free_model_only(self) -> None:
         _, request = _build_request()
         transport = _ok_transport(_public_result(request))
 
@@ -159,13 +159,40 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {})
+        self.assertEqual(payload["agent"]["model_policy"], {"model": "stealth/ox-alpha"})
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())
         self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
         self.assertEqual(sent["headers"]["X-Padiem-Engine-Credential"], _FAKE_CREDENTIAL)
         self.assertEqual(sent["headers"]["X-Padiem-Engine-Caller"], "b54-kagent")
+
+    def test_unapproved_model_policy_is_refused_before_transport(self) -> None:
+        _, request = _build_request()
+        bad_agent = replace(
+            request.execution_request.agent,
+            model_policy={"model": "google/gemini-2.5-flash"},
+        )
+        bad_execution = replace(request.execution_request, agent=bad_agent)
+        bad_request = replace(request, execution_request=bad_execution)
+        transport = _ok_transport(_public_result(request))
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, bad_request)
+        self.assertEqual(ctx.exception.code, "p01_authority_pinning")
+        self.assertEqual(transport.requests, [])
+
+    def test_empty_model_policy_is_accepted_for_back_compat(self) -> None:
+        _, request = _build_request()
+        empty_agent = replace(request.execution_request.agent, model_policy={})
+        empty_execution = replace(request.execution_request, agent=empty_agent)
+        empty_request = replace(request, execution_request=empty_execution)
+        transport = _ok_transport(_public_result(empty_request))
+
+        self.run_port(transport, empty_request)
+        sent = transport.requests[0]
+        payload = json.loads(sent["body"].decode("utf-8"))
+        self.assertEqual(payload["agent"]["model_policy"], {})
 
     def test_unknown_result_field_fails_closed(self) -> None:
         _, request = _build_request()

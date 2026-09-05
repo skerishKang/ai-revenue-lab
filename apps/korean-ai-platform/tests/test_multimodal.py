@@ -89,7 +89,8 @@ def test_valid_multimodal_auto_route_selects_image_capable_model(client, monkeyp
     selected = get_catalog_by_id(body["business14"]["selected_model"])
     assert selected is not None
     assert "image" in selected.capabilities
-    assert body["business14"]["selected_model"] == "google/gemini-2.5-flash"
+    # Under free-first default (Issue #1928), stealth/ox-alpha ($0/$0, image-capable) is selected
+    assert body["business14"]["selected_model"] == "stealth/ox-alpha"
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
     assert outbound[0]["content"][0] == {"type": "text", "text": "이 이미지를 설명해줘"}
