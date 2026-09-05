@@ -91,8 +91,12 @@ def _agent_profile() -> AgentProfile:
         title="Padiem Claw",
         description="B54 repository task execution consumer",
         system_instruction=None,
-        task_type="code",
-        optimize_for="quality",
+        # Core is the only authority for these two enums (see
+        # padiem_ai_core.b14_execution.B14RoutingOptions). Values outside the
+        # Core sets are rejected while the B14 routing options are built, i.e.
+        # before any provider/model request is made.
+        task_type="coding",
+        optimize_for="balanced",
         max_tokens=None,
         allowed_tools=(),
         required_capabilities=(),
