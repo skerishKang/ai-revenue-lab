@@ -12,6 +12,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import re
+from types import MappingProxyType
 import uuid
 from typing import Any, Callable
 
@@ -76,6 +77,7 @@ from .orchestration_events import (
     OrchestrationEvent,
     OrchestrationEventError,
     OrchestrationEventKind,
+    orchestration_event_from_public,
     public_orchestration_event,
 )
 from .retrieval import RetrievedItem
@@ -213,6 +215,471 @@ class OrchestrationResult:
                 "transitions": [t.to_public_dict() for t in self.state_transitions],
             },
         }
+
+
+# ---------------------------------------------------------------------------
+# Public-dict reconstruction (Core-owned parsers, #1916)
+# ---------------------------------------------------------------------------
+
+_RESULT_PUBLIC_KEYS = frozenset({
+    "execution",
+    "context",
+    "app_id",
+    "plan",
+    "activated_skill",
+    "resolved_tool_ids",
+    "evidence",
+    "events",
+    "approval_pause",
+    "continuation_state",
+    "continuation_ref",
+    "state_machine",
+})
+
+_EXECUTION_PUBLIC_KEYS = frozenset({"answer", "route", "metadata"})
+_CONTEXT_PUBLIC_KEYS = frozenset({"trace_id", "timeout_seconds", "idempotency_present"})
+_EVIDENCE_PUBLIC_KEYS = frozenset({"claim_count", "source_count", "assessments", "citations"})
+_STATE_MACHINE_PUBLIC_KEYS = frozenset({"current_state", "transitions"})
+_TRANSITION_PUBLIC_KEYS = frozenset({
+    "sequence",
+    "from_state",
+    "to_state",
+    "reason",
+    "timestamp",
+    "attempt_number",
+    "metadata",
+})
+_ROUTE_PUBLIC_KEYS = frozenset({
+    "request_id",
+    "route_mode",
+    "selected_provider",
+    "selected_model",
+    "selected_upstream_model",
+    "selected_route_id",
+    "actual_response_model",
+    "reason_codes",
+    "fallback_used",
+    "attempt_count",
+    "route_evidence_status",
+    "estimated_krw",
+})
+_USAGE_PUBLIC_KEYS = frozenset({"input_tokens", "output_tokens", "total_tokens"})
+_TOOL_EVENT_PUBLIC_KEYS = frozenset({"tool_id", "status", "duration_ms", "error_class"})
+_RUN_METADATA_PUBLIC_KEYS = frozenset({
+    "trace_id",
+    "app_id",
+    "agent_id",
+    "session_id",
+    "status",
+    "provider",
+    "model",
+    "duration_ms",
+    "usage",
+    "tool_events",
+    "error_class",
+})
+
+
+def _result_mapping(value: Any, *, name: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be an object")
+    return value
+
+
+def _result_unknown_keys(value: Mapping[str, Any], *, allowed: frozenset[str], name: str) -> None:
+    unknown = sorted(str(key) for key in value if key not in allowed)
+    if unknown:
+        raise OrchestrationError("unsupported_result_field", f"{name} contains unsupported fields")
+
+
+def _result_sequence(value: Any, *, name: str) -> tuple[Any, ...]:
+    if isinstance(value, (str, bytes, bytearray)) or not isinstance(value, (list, tuple)):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be an array")
+    return tuple(value)
+
+
+def _result_optional_str(value: Any, *, name: str) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be a string or null")
+    return value
+
+
+def _result_required_str(value: Any, *, name: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise OrchestrationError("invalid_result_payload", f"{name} must be a non-empty string")
+    return value
+
+
+def _result_optional_int(value: Any, *, name: str) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be an integer or null")
+    return value
+
+
+def _result_required_int(value: Any, *, name: str, minimum: int = 0) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
+        raise OrchestrationError("invalid_result_payload", f"{name} must be an integer >= {minimum}")
+    return value
+
+
+def _result_optional_float(value: Any, *, name: str) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be numeric or null")
+    return float(value)
+
+
+def _result_optional_bool(value: Any, *, name: str) -> bool | None:
+    if value is None:
+        return None
+    if not isinstance(value, bool):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be a boolean or null")
+    return value
+
+
+def _result_str_tuple(value: Any, *, name: str) -> tuple[str, ...]:
+    items = _result_sequence(value, name=name)
+    for item in items:
+        if not isinstance(item, str) or not item:
+            raise OrchestrationError("invalid_result_payload", f"{name} must contain non-empty strings")
+    return items
+
+
+def _result_enum(value: Any, enum_cls: Any, *, name: str, code: str) -> Any:
+    if not isinstance(value, str):
+        raise OrchestrationError("invalid_result_payload", f"{name} must be a string")
+    try:
+        return enum_cls(value)
+    except ValueError as exc:
+        raise OrchestrationError(code, f"{name} is not supported") from exc
+
+
+def usage_metadata_from_public(payload: Any) -> UsageMetadata:
+    """Reconstruct `UsageMetadata` from its public-dict wire shape."""
+
+    block = _result_mapping(payload, name="usage")
+    _result_unknown_keys(block, allowed=_USAGE_PUBLIC_KEYS, name="usage")
+    try:
+        return UsageMetadata(
+            input_tokens=_result_optional_int(block.get("input_tokens"), name="usage.input_tokens"),
+            output_tokens=_result_optional_int(block.get("output_tokens"), name="usage.output_tokens"),
+            total_tokens=_result_optional_int(block.get("total_tokens"), name="usage.total_tokens"),
+        )
+    except OrchestrationError:
+        raise
+    except ValueError as exc:
+        raise OrchestrationError("invalid_result_usage", "usage block is not a valid usage record") from exc
+
+
+def tool_event_from_public(payload: Any) -> ToolEvent:
+    """Reconstruct `ToolEvent` from its public-dict wire shape."""
+
+    block = _result_mapping(payload, name="tool_event")
+    _result_unknown_keys(block, allowed=_TOOL_EVENT_PUBLIC_KEYS, name="tool_event")
+    status = _result_enum(block.get("status"), RunStatus, name="tool_event.status", code="unsupported_result_status")
+    raw_error_class = block.get("error_class")
+    error_class = (
+        None
+        if raw_error_class is None
+        else _result_enum(raw_error_class, ErrorClass, name="tool_event.error_class", code="unsupported_result_error_class")
+    )
+    try:
+        return ToolEvent(
+            tool_id=_result_required_str(block.get("tool_id"), name="tool_event.tool_id"),
+            status=status,
+            duration_ms=_result_optional_int(block.get("duration_ms"), name="tool_event.duration_ms"),
+            error_class=error_class,
+        )
+    except OrchestrationError:
+        raise
+    except ValueError as exc:
+        raise OrchestrationError("invalid_result_tool_event", "tool_event block is not a valid tool event") from exc
+
+
+def run_metadata_from_public(payload: Any) -> RunMetadata:
+    """Reconstruct `RunMetadata` from its public-dict wire shape."""
+
+    block = _result_mapping(payload, name="metadata")
+    _result_unknown_keys(block, allowed=_RUN_METADATA_PUBLIC_KEYS, name="metadata")
+    status = _result_enum(block.get("status"), RunStatus, name="metadata.status", code="unsupported_result_status")
+    raw_error_class = block.get("error_class")
+    error_class = (
+        None
+        if raw_error_class is None
+        else _result_enum(raw_error_class, ErrorClass, name="metadata.error_class", code="unsupported_result_error_class")
+    )
+    tool_events = tuple(
+        tool_event_from_public(item) for item in _result_sequence(block.get("tool_events", ()), name="metadata.tool_events")
+    )
+    try:
+        return RunMetadata(
+            trace_id=_result_required_str(block.get("trace_id"), name="metadata.trace_id"),
+            app_id=_result_required_str(block.get("app_id"), name="metadata.app_id"),
+            agent_id=_result_required_str(block.get("agent_id"), name="metadata.agent_id"),
+            status=status,
+            session_id=_result_optional_str(block.get("session_id"), name="metadata.session_id"),
+            provider=_result_optional_str(block.get("provider"), name="metadata.provider"),
+            model=_result_optional_str(block.get("model"), name="metadata.model"),
+            duration_ms=_result_optional_int(block.get("duration_ms"), name="metadata.duration_ms"),
+            usage=usage_metadata_from_public(block.get("usage", {})),
+            tool_events=tool_events,
+            error_class=error_class,
+        )
+    except OrchestrationError:
+        raise
+    except ValueError as exc:
+        raise OrchestrationError("invalid_result_metadata", "metadata block is not a valid run metadata record") from exc
+
+
+def route_metadata_from_public(payload: Any) -> B14RouteMetadata:
+    """Reconstruct `B14RouteMetadata` from its public-dict wire shape."""
+
+    block = _result_mapping(payload, name="route")
+    _result_unknown_keys(block, allowed=_ROUTE_PUBLIC_KEYS, name="route")
+    return B14RouteMetadata(
+        request_id=_result_optional_str(block.get("request_id"), name="route.request_id"),
+        route_mode=_result_optional_str(block.get("route_mode"), name="route.route_mode"),
+        selected_provider=_result_optional_str(block.get("selected_provider"), name="route.selected_provider"),
+        selected_model=_result_optional_str(block.get("selected_model"), name="route.selected_model"),
+        selected_upstream_model=_result_optional_str(
+            block.get("selected_upstream_model"), name="route.selected_upstream_model"
+        ),
+        selected_route_id=_result_optional_str(block.get("selected_route_id"), name="route.selected_route_id"),
+        actual_response_model=_result_optional_str(
+            block.get("actual_response_model"), name="route.actual_response_model"
+        ),
+        reason_codes=_result_str_tuple(block.get("reason_codes", ()), name="route.reason_codes"),
+        fallback_used=_result_optional_bool(block.get("fallback_used"), name="route.fallback_used"),
+        attempt_count=_result_optional_int(block.get("attempt_count"), name="route.attempt_count"),
+        route_evidence_status=_result_optional_str(
+            block.get("route_evidence_status"), name="route.route_evidence_status"
+        ),
+        estimated_krw=_result_optional_float(block.get("estimated_krw"), name="route.estimated_krw"),
+    )
+
+
+def execution_result_from_public(payload: Any) -> ExecutionResult:
+    """Reconstruct `ExecutionResult` from its public-dict wire shape."""
+
+    block = _result_mapping(payload, name="execution")
+    _result_unknown_keys(block, allowed=_EXECUTION_PUBLIC_KEYS, name="execution")
+    answer = block.get("answer")
+    if not isinstance(answer, str):
+        raise OrchestrationError("invalid_result_payload", "execution.answer must be a string")
+    try:
+        return ExecutionResult(
+            answer=answer,
+            route=route_metadata_from_public(block.get("route", {})),
+            metadata=run_metadata_from_public(block.get("metadata")),
+        )
+    except OrchestrationError:
+        raise
+    except ValueError as exc:
+        raise OrchestrationError("invalid_result_execution", "execution block is not a valid execution result") from exc
+
+
+def execution_transition_from_public(payload: Any) -> ExecutionTransition:
+    """Reconstruct `ExecutionTransition` from its public-dict wire shape."""
+
+    block = _result_mapping(payload, name="transition")
+    _result_unknown_keys(block, allowed=_TRANSITION_PUBLIC_KEYS, name="transition")
+    raw_metadata = block.get("metadata", {})
+    if raw_metadata is None:
+        raw_metadata = {}
+    metadata_block = _result_mapping(raw_metadata, name="transition.metadata")
+    metadata: dict[str, Any] = {}
+    for key, value in metadata_block.items():
+        if not isinstance(key, str) or not key:
+            raise OrchestrationError("invalid_result_payload", "transition.metadata keys must be non-empty strings")
+        if value is not None and not isinstance(value, (str, int, float, bool)):
+            raise OrchestrationError("invalid_result_payload", "transition.metadata values must be scalars or null")
+        metadata[key] = value
+    try:
+        return ExecutionTransition(
+            sequence=_result_required_int(
+                block.get("sequence"), name="transition.sequence", minimum=1
+            ),
+            from_state=_result_enum(
+                block.get("from_state"), ExecutionState, name="transition.from_state", code="unsupported_result_state"
+            ),
+            to_state=_result_enum(
+                block.get("to_state"), ExecutionState, name="transition.to_state", code="unsupported_result_state"
+            ),
+            reason=_result_required_str(block.get("reason"), name="transition.reason"),
+            timestamp_iso=_result_required_str(block.get("timestamp"), name="transition.timestamp"),
+            attempt_number=_result_required_int(
+                block.get("attempt_number", 1), name="transition.attempt_number", minimum=1
+            ),
+            metadata=MappingProxyType(metadata),
+        )
+    except OrchestrationError:
+        raise
+    except ExecutionStateMachineError as exc:
+        raise OrchestrationError("invalid_result_transition", "transition block is not a valid state transition") from exc
+
+
+def orchestration_result_from_public(payload: Mapping[str, Any]) -> OrchestrationResult:
+    """Reconstruct an `OrchestrationResult` from its public-dict wire shape.
+
+    Core owns `OrchestrationResult`, so Core owns reconstruction. A consumer that
+    hand-rolls a partial parser turns any wire-shape change into silently missing
+    lifecycle evidence, which is how a run that paused for approval can be
+    reported as completed. This parser is therefore closed-shape and fail-closed.
+
+    Accepted subset. Every field the public projection carries is reconstructed
+    into its Core value type; unknown keys are rejected rather than skipped.
+
+    Rejected subset (fail-closed, never silently dropped). The public projection
+    is deliberately lossy for these fields, so reconstructing them would produce
+    a value that lies about what the run actually did:
+
+    * ``plan`` / ``activated_skill`` - the projection does not carry the fields
+      required to rebuild `AgentPlan` or `ActivatedSkillProfile`.
+    * ``evidence`` - the projection carries only claim/source counts plus
+      assessments and citations; the `EvidenceGraph` itself is not on the wire,
+      so a non-empty evidence block is refused instead of collapsed to ``None``.
+    * ``approval_pause`` - `ApprovalPause.to_public_dict()` omits
+      ``invocation_sha256`` and ``plan_id``, so a pause cannot be rebuilt and
+      cannot be resumed safely through this projection.
+    * ``continuation_state`` / ``continuation_ref`` - continuation identity is
+      issued by the Engine control plane, not by Core, and is not reconstructible.
+    * ``context.idempotency_present`` - the projection publishes only the boolean,
+      never the key, so replay identity cannot be carried back.
+
+    ``subject_id`` is intentionally absent from `to_public_dict()` (see
+    ``tests/test_orchestration_subject_projection.py``); the parser therefore
+    always yields ``None`` for it. Callers that need subject identity must not
+    round-trip it through the public projection.
+    """
+
+    if not isinstance(payload, Mapping):
+        raise OrchestrationError(
+            "invalid_result_payload",
+            "orchestration result payload must be a mapping",
+        )
+    _result_unknown_keys(payload, allowed=_RESULT_PUBLIC_KEYS, name="orchestration result")
+
+    app_id = _safe_id("app_id", _result_required_str(payload.get("app_id"), name="app_id"))
+
+    # execution -----------------------------------------------------------
+    execution_result = execution_result_from_public(payload.get("execution"))
+
+    # context --------------------------------------------------------------
+    context_block = _result_mapping(payload.get("context"), name="context")
+    _result_unknown_keys(context_block, allowed=_CONTEXT_PUBLIC_KEYS, name="context")
+    idempotency_present = context_block.get("idempotency_present")
+    if not isinstance(idempotency_present, bool):
+        raise OrchestrationError(
+            "invalid_result_payload",
+            "context.idempotency_present must be a boolean",
+        )
+    if idempotency_present:
+        raise OrchestrationError(
+            "unsupported_result_idempotency",
+            "orchestration result was produced under an idempotency key that the public projection cannot carry",
+        )
+    try:
+        context = ExecutionContext(
+            trace_id=_result_required_str(context_block.get("trace_id"), name="context.trace_id"),
+            timeout_seconds=_result_optional_float(
+                context_block.get("timeout_seconds"), name="context.timeout_seconds"
+            ),
+        )
+    except OrchestrationError:
+        raise
+    except ValueError as exc:
+        raise OrchestrationError("invalid_result_context", "context block is not a valid execution context") from exc
+
+    # plan / skill (not reconstructible) -----------------------------------
+    if payload.get("plan") is not None:
+        raise OrchestrationError(
+            "unsupported_result_plan",
+            "orchestration result carries an agent plan that the public projection cannot reconstruct",
+        )
+    if payload.get("activated_skill") is not None:
+        raise OrchestrationError(
+            "unsupported_result_skill",
+            "orchestration result carries an activated skill that the public projection cannot reconstruct",
+        )
+
+    resolved_tool_ids = _result_str_tuple(
+        payload.get("resolved_tool_ids", ()), name="resolved_tool_ids"
+    )
+
+    # evidence (lossy by design) -------------------------------------------
+    evidence_block = _result_mapping(payload.get("evidence", {}), name="evidence")
+    _result_unknown_keys(evidence_block, allowed=_EVIDENCE_PUBLIC_KEYS, name="evidence")
+    claim_count = _result_required_int(evidence_block.get("claim_count", 0), name="evidence.claim_count")
+    source_count = _result_required_int(evidence_block.get("source_count", 0), name="evidence.source_count")
+    assessments = _result_sequence(evidence_block.get("assessments", ()), name="evidence.assessments")
+    citations = _result_sequence(evidence_block.get("citations", ()), name="evidence.citations")
+    if claim_count or source_count or assessments or citations:
+        raise OrchestrationError(
+            "unsupported_result_evidence",
+            "orchestration result carries evidence that the public projection cannot reconstruct",
+        )
+
+    # events ---------------------------------------------------------------
+    events: list[OrchestrationEvent] = []
+    for item in _result_sequence(payload.get("events", ()), name="events"):
+        try:
+            events.append(orchestration_event_from_public(item))
+        except OrchestrationEventError as exc:
+            raise OrchestrationError("invalid_result_event", "orchestration result event is not a valid event") from exc
+
+    # approval / continuation (not reconstructible) ------------------------
+    if payload.get("approval_pause") is not None:
+        raise OrchestrationError(
+            "unsupported_result_approval_pause",
+            "orchestration result carries an approval pause that the public projection cannot reconstruct",
+        )
+    if payload.get("continuation_state") is not None:
+        raise OrchestrationError(
+            "unsupported_result_continuation_state",
+            "orchestration result carries a continuation state that the public projection cannot reconstruct",
+        )
+    if payload.get("continuation_ref") is not None:
+        raise OrchestrationError(
+            "unsupported_result_continuation_ref",
+            "orchestration result carries a continuation reference that the public projection cannot reconstruct",
+        )
+
+    # state machine --------------------------------------------------------
+    state_machine_block = _result_mapping(payload.get("state_machine", {}), name="state_machine")
+    _result_unknown_keys(state_machine_block, allowed=_STATE_MACHINE_PUBLIC_KEYS, name="state_machine")
+    raw_state = state_machine_block.get("current_state")
+    execution_state = (
+        None
+        if raw_state is None
+        else _result_enum(raw_state, ExecutionState, name="state_machine.current_state", code="unsupported_result_state")
+    )
+    transitions = tuple(
+        execution_transition_from_public(item)
+        for item in _result_sequence(state_machine_block.get("transitions", ()), name="state_machine.transitions")
+    )
+
+    return OrchestrationResult(
+        execution_result=execution_result,
+        context=context,
+        app_id=app_id,
+        subject_id=None,
+        plan=None,
+        activated_skill=None,
+        resolved_tool_ids=resolved_tool_ids,
+        evidence_graph=None,
+        claim_assessments=(),
+        grounded_citations=(),
+        events=tuple(events),
+        approval_pause=None,
+        continuation_state=None,
+        state_transitions=transitions,
+        execution_state=execution_state,
+    )
 
 
 @dataclass(frozen=True, slots=True)
