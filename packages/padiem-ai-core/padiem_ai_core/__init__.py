@@ -363,6 +363,13 @@ from .orchestration import (
     OrchestrationResult,
     OrchestrationResumeRequest,
     OrchestrationRunner,
+    execution_result_from_public,
+    execution_transition_from_public,
+    orchestration_result_from_public,
+    route_metadata_from_public,
+    run_metadata_from_public,
+    tool_event_from_public,
+    usage_metadata_from_public,
 )
 
 _TOOL_RUNTIME_EXPORTS = frozenset(
@@ -710,6 +717,13 @@ __all__ = [
     "OrchestrationResult",
     "OrchestrationResumeRequest",
     "OrchestrationRunner",
+    "execution_result_from_public",
+    "execution_transition_from_public",
+    "orchestration_result_from_public",
+    "route_metadata_from_public",
+    "run_metadata_from_public",
+    "tool_event_from_public",
+    "usage_metadata_from_public",
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",
     "ToolAuthorizationContext",
