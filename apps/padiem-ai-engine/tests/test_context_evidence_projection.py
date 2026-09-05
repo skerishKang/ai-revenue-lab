@@ -53,7 +53,7 @@ PINNED_SHA256 = {
     CORE_PACKAGE / "document_semantics.py": "b74628623ebaeddd3caab4be317562d204b798e945088e990830c1ee270fa8f5",
     CORE_TESTS / "test_document_semantics.py": "cf21bd3999348d1d34b18fbb9863a6fe8ec93840f6990bdbf52eeb79fce7c8f5",
     CORE_TESTS / "test_document_normalization.py": "5c7e9166fb2ffd015a307da4a7e653acf24c10e44684f3e8df2d70122660b9ff",
-    ENGINE_APP / "trusted_document_resolver.py": "aba9daa8ed134d8475cc65061a4c5903e29d72cdda31638a47535d350cb80b8b",
+    ENGINE_APP / "trusted_document_resolver.py": "9a66046ff3eac06df1327841c4c2448e687fc72c0c57997e9b25a4bd01d142a9",
 }
 
 REF = "att_s3doc000000000b"
