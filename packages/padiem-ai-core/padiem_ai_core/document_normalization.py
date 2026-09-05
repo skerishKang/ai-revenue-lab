@@ -7,8 +7,20 @@ from typing import Any
 from xml.etree import ElementTree
 from zipfile import BadZipFile, ZipFile
 
+from .document_semantics import (
+    DOCUMENT_CONTENT_TRUST_CLASS,
+    MAX_DOCUMENT_SEGMENTS,
+    MAX_SEGMENT_TEXT_CHARS,
+    DocumentKind,
+    DocumentSegment,
+    DocumentNormalizationError,
+    ExtractionStatus,
+    document_kind_for_media,
+    normalize_document_warnings,
+)
+
 MAX_DOCUMENT_NAME_CHARS = 120
-MAX_DOCUMENT_CHARS = 40_000
+MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
 MAX_PDF_PAGES = 80
@@ -35,20 +47,94 @@ BINARY_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
 }
 
 
-class DocumentNormalizationError(ValueError):
-    def __init__(self, code: str, safe_message: str) -> None:
-        self.code = code
-        self.safe_message = safe_message
-        super().__init__(safe_message)
+# ``DocumentNormalizationError`` is defined in ``document_semantics`` and re-exported
+# here so both import paths keep resolving to one error type.
 
 
 @dataclass(frozen=True, slots=True)
 class NormalizedDocument:
+    """The single canonical normalized-document object in Core.
+
+    Semantic fields (``status``, ``segments``, ``warnings``) are additive and
+    backward compatible: every field above was already consumed by products.
+    Raw body text never appears in ``repr`` or in the public projection. A
+    failed or rejected extraction is always an exception, never an instance.
+    """
+
     name: str
     media_type: str
     text: str = field(repr=False)
     byte_size: int = 0
     source_kind: str = "text"
+    status: ExtractionStatus = ExtractionStatus.COMPLETE
+    segments: tuple[DocumentSegment, ...] = field(default=(), repr=False)
+    warnings: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, ExtractionStatus):
+            raise DocumentNormalizationError(
+                "invalid_document_status",
+                "Document status must be a supported extraction status.",
+            )
+        if not self.segments and self.text:
+            object.__setattr__(
+                self,
+                "segments",
+                (DocumentSegment(text=self.text, order=0),),
+            )
+        if not isinstance(self.segments, tuple):
+            object.__setattr__(self, "segments", tuple(self.segments))
+        if any(not isinstance(item, DocumentSegment) for item in self.segments):
+            raise DocumentNormalizationError(
+                "invalid_document_segments",
+                "Document segments must contain DocumentSegment values.",
+            )
+        if len(self.segments) > MAX_DOCUMENT_SEGMENTS:
+            raise DocumentNormalizationError(
+                "document_segment_limit",
+                "Document segments exceed the bounded count.",
+            )
+        if sum(item.char_count for item in self.segments) > MAX_DOCUMENT_CHARS:
+            raise DocumentNormalizationError(
+                "document_segment_budget",
+                "Document segments exceed the bounded character budget.",
+            )
+        orders = tuple(item.order for item in self.segments)
+        if len(set(orders)) != len(orders):
+            raise DocumentNormalizationError(
+                "duplicate_segment_order",
+                "Document segment orders must be unique.",
+            )
+        object.__setattr__(self, "warnings", normalize_document_warnings(self.warnings))
+        if self.status is ExtractionStatus.TRUNCATED and not self.warnings:
+            raise DocumentNormalizationError(
+                "truncation_requires_warning",
+                "A truncated document must carry at least one warning identifier.",
+            )
+
+    @property
+    def kind(self) -> DocumentKind | None:
+        """Canonical content kind derived from the validated media identity."""
+
+        return document_kind_for_media(self.media_type)
+
+    @property
+    def segment_count(self) -> int:
+        return len(self.segments)
+
+    @property
+    def text_chars(self) -> int:
+        return len(self.text)
+
+    @property
+    def truncated(self) -> bool:
+        return self.status is ExtractionStatus.TRUNCATED
+
+    @property
+    def content_trust_class(self) -> str:
+        """Core-fixed classification; can never be set by callers."""
+
+        return DOCUMENT_CONTENT_TRUST_CLASS
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
