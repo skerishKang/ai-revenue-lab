@@ -34,13 +34,15 @@ def test_binding_gate_inherits_existing_bindings_instead_of_reconstructing_them(
     assert "Existing Worker bindings changed during identity binding patch" in source
 
 
-def test_binding_gate_observes_binding_shape_and_verifies_inherit_latest_readback():
+def test_binding_gate_observes_binding_shape_and_allows_inherit_or_concrete_readback():
     source = GATE.read_text(encoding="utf-8")
 
     assert "B62_BINDINGS_SHAPE_OBSERVATION" in source
     assert 'has_version_id: has("version_id")' in source
-    assert "Existing Worker bindings not inherit/latest after identity binding patch" in source
-    assert "Rollback existing bindings not inherit/latest after identity binding removal" in source
+    assert "neither inherit/latest nor identical to pre-patch state" in source
+    assert "neither inherit/latest nor identical to pre-rollback state" in source
+    assert "before_by_name" in source
+    assert "expected_by_name" in source
     assert "PAYLOAD_INHERIT_VERSION_ID_LATEST=YES" in source
 
 
