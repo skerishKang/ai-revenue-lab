@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.agent_skill_service import AgentSkillEngineService
+from app.document_context_service import DocumentContextEngineService
 from app.memory_service import MemoryRetrievalEngineService
 from app.multimodal_attachment_service import MultimodalAttachmentEngineService
 from app.orchestration_service import OrchestrationEngineService
@@ -24,9 +25,10 @@ from app.web_research_service import WebResearchEngineService
 class EngineServices:
     """One explicit service per Engine route family, addressed by name.
 
-    Agent/Skill and multimodal attachment projection are optional source seams
-    until their trusted Production authority is activated. Absence means
-    fail-closed/unavailable, never an alternate runtime or storage fallback.
+    Agent/Skill, multimodal attachment projection and the trusted document
+    context route are optional source seams until their trusted Production
+    authority is activated. Absence means fail-closed/unavailable, never an
+    alternate runtime or storage fallback.
     """
 
     completed: EngineService
@@ -36,6 +38,7 @@ class EngineServices:
     memory: MemoryRetrievalEngineService
     agent_skill: AgentSkillEngineService | None = None
     multimodal: MultimodalAttachmentEngineService | None = None
+    documents: DocumentContextEngineService | None = None
 
     def __post_init__(self) -> None:
         for name in ("completed", "streaming", "orchestration", "research", "memory"):
@@ -49,3 +52,7 @@ class EngineServices:
             self.multimodal, MultimodalAttachmentEngineService
         ):
             raise ValueError("engine service 'multimodal' must be MultimodalAttachmentEngineService or None")
+        if self.documents is not None and not isinstance(
+            self.documents, DocumentContextEngineService
+        ):
+            raise ValueError("engine service 'documents' must be DocumentContextEngineService or None")
