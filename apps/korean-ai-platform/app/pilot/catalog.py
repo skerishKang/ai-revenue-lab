@@ -33,6 +33,11 @@ OpenRouter Free Models Router itself. The request body sends exactly
 ``"model": "openrouter/free"``; the concrete free model OpenRouter picks
 is returned in the response ``model`` field and preserved separately as
 ``actual_response_model`` metadata.
+
+Kilo Code Provision & Free Coding Route
+---------------------------------------
+``stealth/ox-alpha`` carries the Kilo Code provision / OpenRouter free coding
+route with evidenced $0/$0 pricing, coding, image, long-context, and free capabilities.
 """
 
 from __future__ import annotations
@@ -265,6 +270,16 @@ def ensure_free_tag_requires_known_zero_price(model: CatalogModel) -> None:
         )
 
 
+def is_evidenced_free(model: CatalogModel) -> bool:
+    """Return True if the model carries the 'free' capability tag and evidenced 0/0 pricing."""
+    return (
+        "free" in model.capabilities
+        and model.price_is_known
+        and model.input_price_usd_per_1m == 0.0
+        and model.output_price_usd_per_1m == 0.0
+    )
+
+
 for _catalog_model in CATALOG_MODELS:
     ensure_free_tag_requires_known_zero_price(_catalog_model)
 
@@ -364,13 +379,25 @@ def select_by_optimize(
     """
     key_fns = {
         "cost": lambda m: (
+            0 if is_evidenced_free(m) else 1,
             *_configured_cost_ranking_key(m),
             m.sort_order,
             m.model_id,
         ),
-        "latency": lambda m: (m.latency_ms, m.sort_order, m.model_id),
-        "korean": lambda m: (-m.korean_score, m.sort_order, m.model_id),
+        "latency": lambda m: (
+            0 if is_evidenced_free(m) else 1,
+            m.latency_ms,
+            m.sort_order,
+            m.model_id,
+        ),
+        "korean": lambda m: (
+            0 if is_evidenced_free(m) else 1,
+            -m.korean_score,
+            m.sort_order,
+            m.model_id,
+        ),
         "balanced": lambda m: (
+            0 if is_evidenced_free(m) else 1,
             -m.korean_score,
             *_configured_cost_ranking_key(m),
             m.latency_ms,
@@ -383,7 +410,7 @@ def select_by_optimize(
 
     if task_type == "korean" and optimize_for != "korean":
         inner = base_key
-        base_key = lambda m: (-m.korean_score, *inner(m))  # noqa: E731
+        base_key = lambda m: (0 if is_evidenced_free(m) else 1, -m.korean_score, *inner(m))  # noqa: E731
 
     order = list(provider_order or [])
     if order:

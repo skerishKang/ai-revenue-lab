@@ -62,6 +62,7 @@ _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
+    "allow_paid",
 })
 _B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -253,6 +254,12 @@ def _validate_b14_options(raw: Any) -> dict:
         if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1 or ma > 5:
             raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
         opts["max_attempts"] = ma
+
+    ap = raw.get("allow_paid")
+    if ap is not None:
+        if not isinstance(ap, bool):
+            raise _InvalidBody("business14.allow_paid must be a boolean")
+        opts["allow_paid"] = ap
 
     return opts
 

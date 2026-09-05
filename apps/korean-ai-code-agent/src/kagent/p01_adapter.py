@@ -81,8 +81,8 @@ def _trace_id_for(run: ClawRun) -> str:
 def _agent_profile() -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
-    The profile intentionally leaves model policy empty so the existing Core/B14
-    defaults remain authoritative. Product/client task input cannot pin a
+    Claw directly connects to the owner-approved evidenced-free model
+    'stealth/ox-alpha'. Product/client task input cannot pin an arbitrary
     Provider, model, fallback order, or credential through this adapter.
     """
 
@@ -101,7 +101,7 @@ def _agent_profile() -> AgentProfile:
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={},
+        model_policy={"model": "stealth/ox-alpha"},
         max_steps=1,
         output_contract={},
     )

@@ -134,7 +134,7 @@ class P01RequestFactoryTests(unittest.TestCase):
         self.assertEqual(run.status, ClawRunStatus.PREPARING)
         self.assertEqual(bundle.orchestration_request.app_id, P01_APP_ID)
         self.assertEqual(bundle.execution_request.agent.id, P01_AGENT_ID)
-        self.assertEqual(dict(bundle.execution_request.agent.model_policy), {})
+        self.assertEqual(dict(bundle.execution_request.agent.model_policy), {"model": "stealth/ox-alpha"})
         self.assertEqual(bundle.execution_request.messages[0]["role"], "user")
         self.assertIn("provider=caller-model", bundle.execution_request.messages[0]["content"])
         self.assertNotIn("caller-model", str(dict(bundle.execution_request.agent.model_policy)))
@@ -395,12 +395,12 @@ class ClawP01ProfileContractTests(unittest.TestCase):
 
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
-        self.assertEqual(model, "b14/auto")
+        self.assertEqual(model, "stealth/ox-alpha")
         self.assertIn(routing.task_type, _TASK_TYPES)
         self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
 
-    def test_profile_does_not_pin_provider_model_or_credentials(self) -> None:
+    def test_profile_pins_approved_free_model_only(self) -> None:
         profile = _agent_profile()
-        self.assertEqual(profile.model_policy, {})
+        self.assertEqual(profile.model_policy, {"model": "stealth/ox-alpha"})
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())

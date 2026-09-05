@@ -40,6 +40,7 @@ from app.pilot.catalog import (
     get_catalog_by_id,
     get_catalog_models,
     filter_catalog as _filter_catalog,
+    is_evidenced_free,
     select_by_optimize,
 )
 from app.pilot.openrouter_config import openrouter_config
@@ -269,6 +270,7 @@ def resolve_auto_route(
     allow_external_fallback: bool = True,
     provider_order: list[str] | None = None,
     max_attempts: int | None = None,
+    allow_paid: bool = False,
 ) -> RouteDecision:
     """Resolve an automatic route for b14/auto.
 
@@ -281,6 +283,7 @@ def resolve_auto_route(
     - execution capabilities are evaluated through canonical capability evidence
     - task_type requirements compose with explicit capability requirements
     - UNKNOWN and UNSUPPORTED canonical capability evidence are both ineligible
+    - By default (allow_paid=False), only evidenced-free models are eligible
 
     Preferences (applied second, all enforced):
     - provider_order: listed providers win in the given order
@@ -340,6 +343,19 @@ def resolve_auto_route(
             if m.credential_source == "platform_secret" and not _platform_secret_present(m):
                 secret_missing_ids.add(m.model_id)
                 continue
+            if not allow_paid and not is_evidenced_free(m):
+                # An explicit provider_order opts in to the specified providers.
+                # Platform-owned models with secret present (like Agnes) can be in the fallback pool.
+                is_explicit_provider = bool(provider_order and m.provider in provider_order)
+                is_platform_secret_eligible = bool(m.credential_source == "platform_secret")
+                if not (is_explicit_provider or is_platform_secret_eligible):
+                    excluded.append({
+                        "model_id": m.model_id,
+                        "upstream_model": m.upstream_model,
+                        "provider": m.provider,
+                        "reason": "paid_or_unknown_price_not_allowed",
+                    })
+                    continue
             candidates.append(m)
         else:
             excluded.append({
@@ -398,7 +414,11 @@ def resolve_auto_route(
         fallback_candidates = []
         effective_max_attempts = 1
 
-    reason_codes = [f"optimize_for:{optimize_for}", f"task_type:{task_type}"]
+    reason_codes = [
+        f"optimize_for:{optimize_for}",
+        f"task_type:{task_type}",
+        "free_first:opt_in" if allow_paid else "free_first:default",
+    ]
     if required_capabilities:
         reason_codes.append(f"capabilities:{','.join(required_capabilities)}")
     if provider_order:
@@ -447,6 +467,7 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
             allow_external_fallback=allow_external_fallback,
             provider_order=opts.get("provider_order"),
             max_attempts=opts.get("max_attempts"),
+            allow_paid=bool(opts.get("allow_paid", False)),
         )
 
     allow_external_fallback = opts.get("allow_external_fallback", False)
