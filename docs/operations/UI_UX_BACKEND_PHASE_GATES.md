@@ -6,7 +6,20 @@
 
 ## 1. Decision
 
-UI/visual, UX, backend/runtime, security, deployment and business evidence remain separate dimensions. There is no mandatory repository-wide `UI → UX → backend` ceremony.
+UI/visual, UX, backend/runtime, security, deployment and business evidence remain separate dimensions. There is no mandatory repository-wide `UI → UX → backend` ceremony; a Business may start from whichever evidence slice answers the current product question, so this is not a mandatory sequential ceremony.
+
+Corresponding product-evidence stages include:
+
+```text
+PRODUCT_FRAMED
+COMPETITIVE_DEMO
+INVESTOR_DEMO
+MVP_VERTICAL_SLICE
+SERVICE_LED_PILOT
+RUNTIME_PILOT
+COMMERCIAL_HARDENING
+OPERATING_PRODUCT
+```
 
 However, **a new art direction or material visual redesign has its own mandatory internal sequence** because broad visual implementation is expensive to undo:
 
