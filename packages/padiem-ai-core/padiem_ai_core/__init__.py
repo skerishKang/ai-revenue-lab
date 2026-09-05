@@ -354,6 +354,7 @@ from .orchestration_events import (
     OrchestrationEvent,
     OrchestrationEventError,
     OrchestrationEventKind,
+    orchestration_event_from_public,
     public_orchestration_event,
 )
 from .orchestration import (
@@ -702,6 +703,7 @@ __all__ = [
     "OrchestrationEvent",
     "OrchestrationEventError",
     "OrchestrationEventKind",
+    "orchestration_event_from_public",
     "public_orchestration_event",
     "OrchestrationError",
     "OrchestrationRequest",
