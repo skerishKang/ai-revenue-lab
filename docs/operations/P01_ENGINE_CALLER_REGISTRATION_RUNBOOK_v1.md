@@ -137,14 +137,39 @@ Rollback = `npx wrangler secret delete PADIEM_ENGINE_CALLER_REGISTRY_V1`
 
 ### A6. If the legacy plaintext secret is not recoverable
 
-Use the existing zero-downtime rotation seam instead of A5 ordering:
+The legacy caller credential has a real zero-downtime rotation seam. Note it
+lives in the **ingress worker (JavaScript)**, not the Python engine code -
+`rg PADIEM_ENGINE_CALLER_SECRET_NEXT apps/padiem-ai-engine` finds it. Source
+of truth (as of this commit):
+
+- `apps/padiem-ai-engine/ingress/worker.mjs:22` - `PADIEM_ENGINE_CALLER_SECRET_NEXT` env constant
+- `apps/padiem-ai-engine/ingress/worker.mjs:193-211` - seam behavior: NEXT is
+  presented first when set; CURRENT is presented at most once, only as a retry
+- `apps/padiem-ai-engine/ingress/worker.mjs:5-8` - hard attempt ceiling:
+  initial attempt + exactly one retry (`MAX_ENGINE_ATTEMPTS = 2`), never looped
+- `apps/padiem-ai-engine/ingress/worker.mjs:116-125` - the retry fires ONLY on
+  the precise non-executing auth-failure signal (status 401 with
+  `error.code === "service_authentication_failed"`); 403/413/429/5xx, timeouts,
+  and malformed/oversized bodies never trigger a retry
+- `apps/padiem-ai-engine/ingress/test/worker.test.mjs:588-652` - tests pinning
+  the seam
+
+The seam is ingress-client-side only: the engine still trusts exactly one
+credential per caller at any moment; the ingress absorbs the transition by
+trying both of its own secrets. Steps (do NOT reorder; the window between
+steps 2 and 3 is the only migration state):
+
 1. Generate a new secret S2 for the legacy caller.
 2. On the ingress worker: `npx wrangler secret put PADIEM_ENGINE_CALLER_SECRET_NEXT`
-   (value S2). Ingress tries NEXT first and retries CURRENT once on the exact
-   auth-failure signal, so traffic continues while the engine still trusts the
-   old trio.
-3. Apply A5 with the legacy entry using S2.
-4. After a clean soak, retire CURRENT per the ingress rotation policy.
+   (value S2). Until step 3 lands, every request pays one extra Engine
+   round-trip (NEXT attempt -> 401 -> CURRENT retry).
+3. Apply A5 with the registry payload carrying the legacy entry's credential as S2.
+   The ingress first attempt now succeeds and the retry path goes unused.
+4. After a clean soak, converge the ingress on S2 as CURRENT:
+   `npx wrangler secret put PADIEM_ENGINE_CALLER_SECRET` (value S2), then
+   `npx wrangler secret delete PADIEM_ENGINE_CALLER_SECRET_NEXT`.
+   Never delete the ingress CURRENT before step 3 has landed - every ingress
+   request would then fail with `service_authentication_failed`.
 
 ## Procedure B — configure the owner PC (values live only in the PC)
 
