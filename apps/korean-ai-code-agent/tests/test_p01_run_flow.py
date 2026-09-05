@@ -19,6 +19,7 @@ from kagent.p01_run_flow import (
     ENV_ENGINE_CREDENTIAL,
     MAX_ENGINE_RESPONSE_BYTES,
     P01EngineRuntimeConfig,
+    TRANSPORT_USER_AGENT,
     UrllibEngineTransport,
     build_p01_orchestration_adapter,
     p01_adapter_from_environment,
@@ -270,6 +271,46 @@ class UrllibEngineTransportTests(unittest.TestCase):
                     )
                 )
         self.assertEqual(ctx.exception.code, "p01_engine_unreachable")
+
+    def test_transport_sends_product_user_agent(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        captured: dict = {}
+
+        def fake_urlopen(request, timeout=None):
+            captured["headers"] = dict(request.headers)
+            return _FakeHttpResponse(200, b"{}")
+
+        with mock.patch("urllib.request.urlopen", fake_urlopen):
+            asyncio.run(
+                transport.request(
+                    method="POST",
+                    url="https://padiem-ai-engine.internal/internal/v1/orchestrate",
+                    headers={"Content-Type": "application/json"},
+                    body=b"{}",
+                )
+            )
+        sent = {key.lower(): value for key, value in captured["headers"].items()}
+        self.assertEqual(sent["user-agent"], TRANSPORT_USER_AGENT)
+
+    def test_transport_respects_explicit_user_agent(self) -> None:
+        transport = UrllibEngineTransport("https://engine.example.test")
+        captured: dict = {}
+
+        def fake_urlopen(request, timeout=None):
+            captured["headers"] = dict(request.headers)
+            return _FakeHttpResponse(200, b"{}")
+
+        with mock.patch("urllib.request.urlopen", fake_urlopen):
+            asyncio.run(
+                transport.request(
+                    method="POST",
+                    url="https://padiem-ai-engine.internal/internal/v1/orchestrate",
+                    headers={"User-Agent": "custom-agent/9", "Content-Type": "application/json"},
+                    body=b"{}",
+                )
+            )
+        sent = {key.lower(): value for key, value in captured["headers"].items()}
+        self.assertEqual(sent["user-agent"], "custom-agent/9")
 
 
 class P01CliRunFlowTests(unittest.TestCase):

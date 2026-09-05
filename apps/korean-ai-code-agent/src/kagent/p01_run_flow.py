@@ -52,6 +52,11 @@ TRANSPORT_TIMEOUT_SECONDS = 90.0
 # server-to-server path.
 MAX_ENGINE_RESPONSE_BYTES = 1024 * 1024
 
+# Cloudflare edge bot protection blocks the default Python-urllib signature
+# (error 1010) before the Engine's own caller authentication ever runs. A
+# first-party product transport must identify itself.
+TRANSPORT_USER_AGENT = 'PadiemClaw/1.0 (kagent; B54)'
+
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 
 
@@ -140,6 +145,8 @@ class UrllibEngineTransport:
     def _request_sync(
         self, method: str, url: str, headers: dict[str, str], body: bytes | None
     ) -> EngineTransportResponse:
+        if not any(str(name).lower() == "user-agent" for name in headers):
+            headers = {**headers, "User-Agent": TRANSPORT_USER_AGENT}
         request = urllib.request.Request(url, data=body, headers=headers, method=method)
         try:
             with urllib.request.urlopen(request, timeout=self._timeout) as response:
