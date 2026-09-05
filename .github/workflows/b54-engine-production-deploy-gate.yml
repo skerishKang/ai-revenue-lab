@@ -44,6 +44,10 @@ jobs:
         with:
           version: '0.12.5'
 
+      - name: Resolve engine environment with dev tools
+        working-directory: apps/padiem-ai-engine
+        run: uv sync --extra dev
+
       - name: Sync engine worker bundle
         working-directory: apps/padiem-ai-engine
         run: uv run pywrangler sync --force
