@@ -229,14 +229,14 @@ class RepositoryReviewFlowTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_happy_path_chunks_small_files_into_one_request_and_aggregates(
+    def test_happy_path_splits_small_files_across_bounded_chunks_and_aggregates(
         self,
     ) -> None:
         adapter = ScriptedAdapter(
             answers=[
                 "app.py 리뷰.\n위험: MEDIUM — 테스트 부족.\n"
-                "util.py 리뷰.\n위험: LOW — 단순 함수.\n"
-                "README 리뷰.\n위험: LOW — 문서 수준."
+                "util.py 리뷰.\n위험: LOW — 단순 함수.\n",
+                "README 리뷰.\n위험: LOW — 문서 수준.",
             ]
         )
         outcome = run_review(self.repo, ["src/*.py", "README.md"], adapter)
@@ -249,9 +249,9 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         self.assertEqual(outcome.skipped, ())
         self.assertEqual(outcome.truncated, ())
         self.assertEqual(outcome.p01_run_id, _COMPLETED_RUN_ID)
-        self.assertEqual(outcome.p01_event_count, 3)
-        self.assertEqual(len(outcome.p01_runs), 1)
-        self.assertEqual(len(adapter.runs), 1)
+        self.assertEqual(outcome.p01_event_count, 6)
+        self.assertEqual(len(outcome.p01_runs), 2)
+        self.assertEqual(len(adapter.runs), 2)
         self.assertTrue(
             all(run.status is ClawRunStatus.COMPLETED for run in adapter.runs)
         )
@@ -271,13 +271,12 @@ class RepositoryReviewFlowTests(unittest.TestCase):
     def test_small_files_share_one_chunk_request(self) -> None:
         _write(self.repo, "tiny/a.py", "x = 1\n")
         _write(self.repo, "tiny/b.py", "y = 2\n")
-        _write(self.repo, "tiny/c.py", "z = 3\n")
         adapter = StubAdapter()
         run_review(self.repo, ["tiny/*.py"], adapter)
 
         self.assertEqual(len(adapter.runs), 1)
         self.assertIn("a.py", adapter.runs[0].intent.task)
-        self.assertIn("c.py", adapter.runs[0].intent.task)
+        self.assertIn("b.py", adapter.runs[0].intent.task)
 
     def test_many_small_files_are_split_into_bounded_chunks(self) -> None:
         for index in range(5):
@@ -285,13 +284,13 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         adapter = StubAdapter()
         outcome = run_review(self.repo, ["many/*.py"], adapter)
 
-        self.assertEqual(len(adapter.runs), 2)
+        self.assertEqual(len(adapter.runs), 3)
         self.assertLessEqual(len(outcome.reviewed), 5)
         self.assertEqual(len(outcome.reviewed), 5)
-        self.assertEqual(MAX_REVIEW_FILES_PER_CHUNK, 3)
+        self.assertEqual(MAX_REVIEW_FILES_PER_CHUNK, 2)
 
     def test_single_large_file_is_forced_into_budget_sized_parts(self) -> None:
-        content = "line\n" * 2_500  # ~12,500 chars
+        content = "a" * 12_500  # no newlines → deterministic size on all platforms
         _write(self.repo, "big.py", content)
         adapter = StubAdapter()
         outcome = run_review(self.repo, ["big.py"], adapter)
@@ -340,7 +339,7 @@ class RepositoryReviewFlowTests(unittest.TestCase):
 
         self.assertEqual([part.rel_path for part in chunks[0]], ["a.py"])
         self.assertEqual([part.rel_path for part in chunks[-1]], ["b.py"])
-        self.assertEqual(len(chunks), 5)
+        self.assertEqual(len(chunks), 7)
         self.assertTrue(
             all(
                 [part.rel_path for part in chunk] == ["big.py"]
@@ -446,54 +445,80 @@ class RepositoryReviewFlowTests(unittest.TestCase):
 
     def test_one_file_failure_does_not_fail_whole_run(self) -> None:
         _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
-        _write(self.repo, "src/fail.py", "def boom():\n    return 3\n")
+        _write(self.repo, "src/pass.py", "def okay():\n    return 3\n")
+        _write(self.repo, "src/fail.py", "def boom():\n    return 4\n")
         adapter = ScriptedAdapter(
             answers=["src/app.py 리뷰 정상.\n위험: LOW — 문제 없음."],
-            fail_at=2,
+            fail_at=3,
         )
         outcome = run_review(
             self.repo,
-            ["src/app.py", "src/util.py", "src/extra.py", "src/fail.py"],
+            [
+                "src/app.py",
+                "src/util.py",
+                "src/extra.py",
+                "src/pass.py",
+                "src/fail.py",
+            ],
             adapter,
         )
 
         self.assertEqual(
             outcome.failed, (("src/fail.py", "p01_engine_request_failed"),)
         )
-        self.assertEqual(len(outcome.sections), 1)
+        self.assertEqual(len(outcome.sections), 2)
         self.assertEqual(
             outcome.reviewed,
-            ("src/app.py", "src/util.py", "src/extra.py", "src/fail.py"),
+            (
+                "src/app.py",
+                "src/util.py",
+                "src/extra.py",
+                "src/pass.py",
+                "src/fail.py",
+            ),
         )
         report = outcome.report_text()
         self.assertIn("실패: src/fail.py — p01_engine_request_failed", report)
         self.assertIn("src/fail.py — 리뷰 요청 실패", report)
-        self.assertIn("### src/app.py, src/util.py, src/extra.py", report)
+        self.assertIn("### src/app.py, src/util.py", report)
         code = run_review_command(
             self.repo,
-            ["src/app.py", "src/util.py", "src/extra.py", "src/fail.py"],
+            [
+                "src/app.py",
+                "src/util.py",
+                "src/extra.py",
+                "src/pass.py",
+                "src/fail.py",
+            ],
             adapter=ScriptedAdapter(
                 answers=["정상"],
-                fail_at=2,
+                fail_at=3,
             ),
         )
         self.assertEqual(code, 0)
 
     def test_one_file_failed_status_does_not_fail_whole_run(self) -> None:
         _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
-        _write(self.repo, "src/fail.py", "def boom():\n    return 3\n")
+        _write(self.repo, "src/pass.py", "def okay():\n    return 3\n")
+        _write(self.repo, "src/fail.py", "def boom():\n    return 4\n")
         adapter = ScriptedAdapter(
             answers=["src/app.py 리뷰 정상.\n위험: LOW — 문제 없음."],
-            failed_outcome_at=2,
+            failed_outcome_at=3,
         )
         outcome = run_review(
             self.repo,
-            ["src/app.py", "src/util.py", "src/extra.py", "src/fail.py"],
+            [
+                "src/app.py",
+                "src/util.py",
+                "src/extra.py",
+                "src/pass.py",
+                "src/fail.py",
+            ],
             adapter,
         )
 
         self.assertEqual(outcome.failed, (("src/fail.py", "failed"),))
-        self.assertEqual(len(outcome.sections), 1)
+        self.assertEqual(len(outcome.sections), 2)
 
     def test_contract_error_on_over_bound_task_is_isolated_without_traceback(
         self,
