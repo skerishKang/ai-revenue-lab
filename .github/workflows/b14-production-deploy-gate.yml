@@ -108,12 +108,24 @@ jobs:
           else:
               deployments = payload.get("deployments") or []
           assert deployments, "deployments list returned no deployments"
-          latest = deployments[0]
-          version_id = (latest.get("version") or {}).get("id")
-          assert version_id == expected, (
-              f"latest deployment version {version_id!r} != deployed version {expected!r}"
+          # Real wrangler 4.129 shape (measured): bare list, oldest-first,
+          # each entry carries versions: [{version_id, percentage}]. Find the
+          # expected version wherever it lives instead of assuming entry
+          # order or key layout.
+          match = None
+          for entry in deployments:
+              if not isinstance(entry, dict):
+                  continue
+              for v in entry.get("versions") or []:
+                  if isinstance(v, dict) and v.get("version_id") == expected:
+                      match = v
+                      break
+              if match is not None:
+                  break
+          assert match is not None, (
+              f"deployed version {expected!r} not found in deployments list"
           )
-          percentage = ((latest.get("strategy") or {}).get("percentage"))
+          percentage = match.get("percentage")
           assert percentage == 100, f"new version is serving {percentage!r}%, expected 100"
           print("POST_DEPLOY_VERSION_AT_100=PASS")
           PY

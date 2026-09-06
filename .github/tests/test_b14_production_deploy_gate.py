@@ -132,29 +132,58 @@ def _run_version_check(tmp_path, payload, expected: str) -> subprocess.Completed
 
 def test_version_check_accepts_wrangler_list_shape(tmp_path) -> None:
     # Regression (post-#1961 first dispatch): wrangler deployments list --json
-    # returns a bare LIST, not {"deployments": [...]}. The first gated deploy
-    # crashed the verification step with AttributeError on payload.get.
+    # returns a bare LIST, oldest-first, and each entry carries
+    # versions: [{version_id, percentage}] - measured on wrangler 4.129.
     payload = [
         {
-            "version": {"id": "e1d672e7-0000-0000-0000-000000000000"},
-            "strategy": {"percentage": 100},
+            "id": "7977047f-c42f-4ee2-9a8d-b8cfac39ef35",
+            "source": "wrangler",
+            "strategy": "percentage",
+            "versions": [
+                {"version_id": "26a82829-ac8a-4f8d-8de6-1d413c18a7a1", "percentage": 100}
+            ],
+            "created_on": "2026-09-03T04:51:05.028663Z",
         },
         {
-            "version": {"id": "older-version"},
-            "strategy": {"percentage": 0},
+            "id": "aabbccdd-0000-1111-2222-333344445555",
+            "source": "wrangler",
+            "strategy": "percentage",
+            "versions": [
+                {"version_id": "065fe361-9e94-4e56-8025-3b372cca3459", "percentage": 100}
+            ],
+            "created_on": "2026-09-06T09:13:00.000000Z",
         },
     ]
-    result = _run_version_check(tmp_path, payload, "e1d672e7-0000-0000-0000-000000000000")
+    result = _run_version_check(tmp_path, payload, "065fe361-9e94-4e56-8025-3b372cca3459")
     assert result.returncode == 0, result.stderr
     assert "POST_DEPLOY_VERSION_AT_100=PASS" in result.stdout
+
+
+def test_version_check_rejects_wrong_version(tmp_path) -> None:
+    payload = [
+        {
+            "id": "7977047f-c42f-4ee2-9a8d-b8cfac39ef35",
+            "source": "wrangler",
+            "strategy": "percentage",
+            "versions": [
+                {"version_id": "26a82829-ac8a-4f8d-8de6-1d413c18a7a1", "percentage": 100}
+            ],
+            "created_on": "2026-09-03T04:51:05.028663Z",
+        }
+    ]
+    result = _run_version_check(tmp_path, payload, "ffffffff-0000-0000-0000-000000000000")
+    assert result.returncode != 0
+    assert "not found in deployments list" in result.stderr
 
 
 def test_version_check_accepts_object_shape(tmp_path) -> None:
     payload = {
         "deployments": [
             {
-                "version": {"id": "abc123"},
-                "strategy": {"percentage": 100},
+                "id": "7977047f-c42f-4ee2-9a8d-b8cfac39ef35",
+                "versions": [
+                    {"version_id": "abc123", "percentage": 100}
+                ],
             }
         ]
     }
@@ -166,14 +195,20 @@ def test_version_check_accepts_object_shape(tmp_path) -> None:
 def test_version_check_still_fails_on_version_mismatch_or_partial_rollout(tmp_path) -> None:
     mismatch = _run_version_check(
         tmp_path,
-        [{"version": {"id": "other"}, "strategy": {"percentage": 100}}],
+        [{
+            "id": "d1",
+            "versions": [{"version_id": "other", "percentage": 100}],
+        }],
         "expected-id",
     )
     assert mismatch.returncode != 0
 
     not_full = _run_version_check(
         tmp_path,
-        [{"version": {"id": "expected-id"}, "strategy": {"percentage": 50}}],
+        [{
+            "id": "d2",
+            "versions": [{"version_id": "expected-id", "percentage": 50}],
+        }],
         "expected-id",
     )
     assert not_full.returncode != 0
