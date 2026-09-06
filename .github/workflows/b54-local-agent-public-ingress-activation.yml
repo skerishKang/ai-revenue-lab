@@ -314,14 +314,10 @@ jobs:
           jq -e --arg version "${EXPECTED_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${edge_deployments}" >/dev/null
 
           if [ "${DOMAIN_STATE}" = "absent" ]; then
-            python - <<'PY'
-            import socket
-            try:
-                socket.getaddrinfo("local-agent.padiem.net", 443, type=socket.SOCK_STREAM)
-            except socket.gaierror:
-                raise SystemExit(0)
-            raise SystemExit("Refusing activation: hostname began resolving before mutation")
-            PY
+            if getent ahosts "local-agent.padiem.net" >/dev/null 2>&1; then
+              echo "Refusing activation: hostname began resolving before mutation" >&2
+              exit 1
+            fi
           fi
           echo "IMMEDIATE_PREMUTATION_BASELINE=PASS"
 

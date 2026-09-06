@@ -86,6 +86,18 @@ def test_activation_gate_rechecks_versions_and_boundary_before_mutation() -> Non
     assert "DURABLE_OBJECT_MUTATION=NO" in source
 
 
+def test_activation_gate_pre_mutation_dns_recheck_is_not_a_broken_heredoc() -> None:
+    source = _source()
+    start = source.index("Fail-closed recheck immediately before mutation")
+    end = source.index("Attach exact Custom Domain to existing edge Worker if absent")
+    block = source[start:end]
+    assert "IMMEDIATE_PREMUTATION_BASELINE=PASS" in block
+    assert "<<'PY'" not in block, "heredoc inside an indented if never terminates after YAML indent-stripping"
+    assert "<<-PY" not in block
+    assert "getent ahosts" in block
+    assert "Refusing activation: hostname began resolving before mutation" in block
+
+
 def test_activation_gate_runs_405_404_401_public_acceptance() -> None:
     source = _source()
     assert "GET_SESSION_405 405 GET /session '' local_agent_http_post_required" in source
