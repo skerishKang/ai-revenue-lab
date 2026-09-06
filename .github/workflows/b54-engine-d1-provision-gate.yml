@@ -61,14 +61,18 @@ jobs:
           if [ -n "$DB_ID" ]; then
             echo "D1_CREATE=SKIPPED_ALREADY_EXISTS"
           else
-            npx --yes wrangler@4 d1 create padiem-engine > /tmp/d1-create.txt
+            npx --yes wrangler@4 d1 create padiem-engine
+            # Do not parse create output (shape varies by wrangler version:
+            # {"d1_databases":[{...}]} or a TOML snippet). Re-query the
+            # authoritative list instead.
+            npx --yes wrangler@4 d1 list --json > /tmp/d1-list-after-create.json
             DB_ID=$(python3 - <<'PY'
-          import json, re
-          text = open('/tmp/d1-create.txt').read()
-          m = re.search(r'\{.*\}', text, re.DOTALL)
-          print(json.loads(m.group(0))['database_id'])
+          import json
+          rows = json.load(open('/tmp/d1-list-after-create.json'))
+          hit = [r for r in rows if r.get('name') == 'padiem-engine']
+          print(hit[0]['uuid'] if hit else '')
           PY
-          )
+            )
             test -n "$DB_ID"
             echo "D1_CREATE=PASS"
           fi

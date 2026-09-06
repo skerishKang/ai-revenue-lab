@@ -70,6 +70,12 @@ def test_create_step_is_idempotent() -> None:
     assert "padiem-engine" in text
     assert "D1_CREATE=SKIPPED_ALREADY_EXISTS" in text
     assert "d1 create padiem-engine" in text
+    # Regression (CTO review #2019): create output shape varies by wrangler
+    # version ({"d1_databases":[...]} or TOML snippet) — never parse it;
+    # re-query d1 list for the uuid instead.
+    assert "d1-create.txt" not in text
+    assert "database_id'" not in text.replace('"database_id"', "")
+    assert "d1-list-after-create.json" in text
 
 
 def test_migrations_applied_verbatim_without_binding_or_toml_edit() -> None:
