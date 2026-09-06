@@ -21,6 +21,7 @@ from padiem_ai_engine_client import (
     PadiemAiEngineClient,
 )
 
+from kagent import review_flow as review_flow_module
 from kagent.cli import main, parser
 from kagent.contracts import ClawRunStatus, ExecutionMode, RunProjection
 from kagent.draft_flow import (
@@ -37,7 +38,11 @@ from kagent.p01_adapter import (
     P01AdapterError,
 )
 from kagent.p01_run_flow import p01_adapter_from_environment
-from kagent.review_flow import run_review_command
+from kagent.review_flow import (
+    FLOW_PACING_SECONDS,
+    FLOW_RETRY_WAIT_SECONDS,
+    run_review_command,
+)
 
 _FAKE_CREDENTIAL = "b54-draft-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "draft_run_001"
@@ -187,6 +192,14 @@ class DraftFlowTests(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.repo = Path(self._tmp.name)
         self.input_file = _write(self.repo, "context.md", _QUOTE_CONTEXT)
+        self.sleep_calls: list[float] = []
+        sleeper = mock.patch.object(
+            review_flow_module,
+            "_sleep",
+            side_effect=lambda seconds: self.sleep_calls.append(seconds),
+        )
+        sleeper.start()
+        self.addCleanup(sleeper.stop)
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
@@ -202,6 +215,7 @@ class DraftFlowTests(unittest.TestCase):
         self.assertEqual(outcome.p01_event_count, 6)
         self.assertEqual(outcome.projection.status, ClawRunStatus.COMPLETED)
         self.assertEqual(len(adapter.runs), 2)
+        self.assertEqual(self.sleep_calls, [FLOW_PACING_SECONDS])
 
         extraction = adapter.runs[0].intent.task
         self.assertIn("거래 맥락 추출", extraction)
@@ -302,6 +316,33 @@ class DraftFlowTests(unittest.TestCase):
             adapter=RaisingAdapter(),
         )
         self.assertEqual(code, 2)
+
+    def test_retryable_phase_failure_retries_once_after_wait(self) -> None:
+        class RetryThenSucceedAdapter(StubAdapter):
+            def __init__(self, answers=None):
+                super().__init__(answers=answers)
+                self.attempts = 0
+
+            async def execute(self, run):
+                self.attempts += 1
+                if self.attempts == 1:
+                    raise P01AdapterError(
+                        "p01_engine_request_failed", "엔진 요청 실패"
+                    )
+                return await super().execute(run)
+
+        adapter = RetryThenSucceedAdapter(
+            answers=[_EXTRACTION_OUTPUT, "초안 완료"]
+        )
+        outcome = run_draft(self.repo, "context.md", "견적서", adapter)
+
+        self.assertEqual(adapter.attempts, 3)
+        self.assertEqual(len(adapter.runs), 2)
+        self.assertEqual(outcome.projection.status, ClawRunStatus.COMPLETED)
+        self.assertEqual(
+            self.sleep_calls,
+            [FLOW_RETRY_WAIT_SECONDS, FLOW_PACING_SECONDS],
+        )
 
     def test_invalid_doc_type_raises_draft_type_invalid(self) -> None:
         with self.assertRaises(DraftFlowError) as ctx:
