@@ -277,9 +277,6 @@ def test_capability_states_match_routed_truth() -> None:
         "web_search",
         "web_fetch",
         "deep_research",
-        # E9 A3: Tool Runtime is Production-activated (owner-authorized bounded
-        # dispatch on main 1f6220d5; see E9_ACTIVATION_PLAN.md).
-        "tool_runtime",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
@@ -289,6 +286,10 @@ def test_capability_states_match_routed_truth() -> None:
         "file_document_multimodal",
         "tenant_entitlement_usage_admission",
         "idempotency",
+        # E9 A3: reverted to DEFERRED per CTO audit 2026-09-06 — the Production
+        # composition injects no tool binding resolver, so the AVAILABLE claim
+        # was not production truth (WO-2 gate must pass before re-activation).
+        "tool_runtime",
     ):
         assert state_of[capability_id] is CapabilityState.DEFERRED
     for capability_id in ("public_browser_api", "provider_selection"):

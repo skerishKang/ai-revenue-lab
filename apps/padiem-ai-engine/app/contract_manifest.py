@@ -171,9 +171,11 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("web_search_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("web_fetch_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("deep_research_projection", EngineFeatureState.AVAILABLE),
-            # E9 A3 (#1746): Tool Runtime projection follows the owner-authorized
-            # bounded activation dispatch on main 1f6220d5 (see E9_ACTIVATION_PLAN.md).
-            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.AVAILABLE),
+            # E9 A3 (#1746): reverted to DEFERRED per CTO audit 2026-09-06 —
+            # the Production composition injects no tool binding resolver, so
+            # the earlier AVAILABLE claim was not production truth. Re-activation
+            # requires the WO-2 composition conformance gate + real resolver.
+            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),

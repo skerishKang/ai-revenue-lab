@@ -308,3 +308,24 @@ conformance:         test_capability_states_match_routed_truth updated; 86/86 pa
 Rollback: `wrangler rollback` restores the previous Engine deployment (SHA
 `8d4db98c13b2b23378536d3b2e5270bb3b457f06`); a source revert PR is the normal
 recovery path per `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
+### §13 amendment — truthful disposition correction (CTO audit 2026-09-06)
+
+Post-activation audit (CTO independent verification, 2026-09-06) proved the
+Production composition (`worker_identity.py`) composes
+`ToolExecutionEngineService(tool_binding_resolver=None)` on both composition
+paths, so every Production tool request fails closed with 503
+`tool_runtime_unavailable`. The §13 probe evidence was produced against a
+test-constructed service with a fake resolver, not the Production composition.
+The manifest AVAILABLE claim was therefore not production truth and violated
+`SOURCE_PRESENT != AVAILABLE` / `FALSE_AVAILABLE_MANIFEST_ENTRIES = 0`.
+
+```text
+FINAL_DISPOSITION = REVERTED_TO_DEFERRED (reason: production composition fail-closed, CTO audit 2026-09-06)
+MANIFEST_STATE_AFTER_CORRECTION = tool_runtime DEFERRED / tool_runtime_projection DEFERRED
+REACTIVATION_PRECONDITIONS = real tool binding resolver wired in the Production
+  composition + WO-2 production composition conformance gate passing + separately
+  authorized activation PR with exact-SHA dispatch evidence
+PRIOR_RECORD = preserved above unmodified; this amendment supersedes FINAL_DISPOSITION only
+```
+
