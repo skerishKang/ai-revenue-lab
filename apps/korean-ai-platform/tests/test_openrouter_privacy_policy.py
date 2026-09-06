@@ -15,8 +15,51 @@ from app.pilot.schemas import ChatMessage, PilotChatRequest
 
 
 GEMINI = "google/gemini-2.5-flash"
+FREE_ROUTE_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 PRIVACY_POLICY = {"data_collection": "deny", "zdr": True}
+FREE_ROUTE_POLICY = {"max_price": {"prompt": 0, "completion": 0}}
+
+
+@pytest.fixture(autouse=True)
+def _gemini_catalog_entry(monkeypatch):
+    """Reinstall the deleted Gemini route for this policy contract.
+
+    Decision #1933 removed Gemini from the single-route Kilo Gateway catalog,
+    but its P5-approved hard privacy policy stays pinned in production code.
+    These tests restore the historical entry so the policy assertions stay
+    genuinely validated.
+    """
+    import app.pilot.catalog as cat
+    from app.pilot.catalog import CatalogModel
+
+    original_models = cat.CATALOG_MODELS
+    original_by_id = cat.CATALOG_BY_ID
+    gemini = CatalogModel(
+        model_id=GEMINI,
+        upstream_model=GEMINI,
+        display_name="Google: Gemini 2.5 Flash",
+        provider="Google",
+        provider_type="external",
+        input_price_usd_per_1m=0.30,
+        output_price_usd_per_1m=2.50,
+        currency="usd",
+        context_window=1048576,
+        korean_score=5,
+        latency_ms=750,
+        capabilities=frozenset({"chat", "image", "long_context", "coding"}),
+        region="외부",
+        sort_order=10,
+        credential_source="openrouter",
+        platform_provider_id="",
+    )
+    cat.CATALOG_MODELS = [*original_models, gemini]
+    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
+    try:
+        yield
+    finally:
+        cat.CATALOG_MODELS = original_models
+        cat.CATALOG_BY_ID = original_by_id
 
 
 def _enable_fixture_live_mode(monkeypatch) -> None:
@@ -80,9 +123,7 @@ def _stream_bytes(model: str) -> bytes:
 
 def test_provider_policy_is_exact_and_does_not_spread_to_other_paid_models():
     assert build_openrouter_provider_policy(GEMINI) == PRIVACY_POLICY
-    assert build_openrouter_provider_policy("openrouter/free") == {
-        "max_price": {"prompt": 0, "completion": 0}
-    }
+    assert build_openrouter_provider_policy(FREE_ROUTE_MODEL) == FREE_ROUTE_POLICY
     assert build_openrouter_provider_policy("deepseek/deepseek-chat") is None
 
 

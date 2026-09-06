@@ -12,7 +12,8 @@ from app.pilot.openrouter_config import openrouter_config as orcfg
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
-MODEL = "openrouter/free"
+MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+MODEL_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
 LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"
 
 
@@ -33,7 +34,10 @@ class _ChunkStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture(autouse=True)
-def _reset_openrouter_config():
+def _reset_openrouter_config(monkeypatch):
+    monkeypatch.delenv("KILO_API_KEY", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
         "api_key": orcfg.api_key,
         "provider_mode": orcfg.provider_mode,
@@ -206,7 +210,8 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
     [
         (401, 401, "upstream_auth_failed"),
         (403, 401, "upstream_auth_failed"),
-        (429, 429, "upstream_rate_limited"),
+        # The Kilo Gateway route reports its own quota code for 429.
+        (429, 429, "kilo_free_rate_limited"),
         (500, 502, "upstream_server_error"),
         (400, 502, "malformed_upstream_response"),
         (422, 502, "upstream_client_error"),
@@ -286,8 +291,14 @@ def test_post_start_unexpected_error_is_generic_and_secret_free():
     assert stream.closed is True
 
 
-def test_live_preview_sends_key_upstream_but_never_returns_it():
-    secret = "unit-live-secret-abcdef1234567890"
+def test_live_preview_keyless_route_sends_no_key(monkeypatch):
+    """Keyless Kilo route: no Authorization header, no key leakage.
+
+    The Kilo provider spec is CredentialSource.NONE, so the legacy
+    OpenRouter key plane is never forwarded to it.
+    """
+    stale_key = "unit-live-secret-abcdef1234567890"
+    monkeypatch.setenv("KILO_API_KEY", stale_key)
     seen_authorization = None
     stream = _ChunkStream(_valid_sse_chunks("안전한 청크"))
 
@@ -296,34 +307,45 @@ def test_live_preview_sends_key_upstream_but_never_returns_it():
         seen_authorization = request.headers.get("authorization")
         body = json.loads(request.content)
         assert body["stream"] is True
-        assert body["model"] == MODEL
+        assert body["model"] == MODEL_UPSTREAM
         return httpx.Response(200, stream=stream)
 
     orcfg.provider_mode = "live"
-    orcfg.api_key = secret
+    orcfg.api_key = stale_key  # must stay on the OpenRouter plane
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
     assert response.status_code == 200
-    assert seen_authorization == f"Bearer {secret}"
-    assert secret not in response.text
+    assert seen_authorization is None
+    assert stale_key not in response.text
     assert "안전한 청크" in response.text
     assert "data: [DONE]" in response.text
 
 
-def test_live_preview_missing_key_fails_before_network():
+def test_live_preview_missing_key_is_anonymous_with_zero_key_material():
+    """Keyless Kilo route: a missing key is not an error.
+
+    Decision #1933 removed every secret-backed route, so the contract is
+    "zero key material": exactly one anonymous call, no Authorization
+    header, nothing returned to the client. The secret-required
+    fail-closed path stays covered by
+    test_platform_provider_credential_plane.py (Agnes).
+    """
     calls = 0
+    seen_authorization = None
 
     async def handler(request: httpx.Request) -> httpx.Response:
-        nonlocal calls
+        nonlocal calls, seen_authorization
         calls += 1
-        return httpx.Response(200, content=b"data: [DONE]\n\n")
+        seen_authorization = request.headers.get("authorization")
+        return httpx.Response(200, stream=_ChunkStream(_valid_sse_chunks("익명 청크")))
 
     orcfg.provider_mode = "live"
     orcfg.api_key = ""
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "pilot_not_configured"
-    assert calls == 0
+    assert response.status_code == 200
+    assert calls == 1
+    assert seen_authorization is None
+    assert "data: [DONE]" in response.text

@@ -25,6 +25,7 @@ from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
 from app.pilot.gateway import _validate_body
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.openrouter_stream import stream_openrouter_chat_completions
+from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
 from app.pilot.streaming_router import RouterStreamEvent, stream_routed_chat_completions
 
@@ -37,6 +38,7 @@ _AUTO_STREAM_PREVIEW_PATH = "/v1/chat/completions/auto-stream-preview"
 _PRESTART_ERRORS: dict[str, tuple[int, str]] = {
     "upstream_auth_failed": (401, "Provider 인증에 실패했습니다."),
     "upstream_rate_limited": (429, "Provider rate limit에 도달했습니다. 잠시 후 다시 시도하십시오."),
+    "kilo_free_rate_limited": (429, "Kilo Gateway 무료 티어 rate limit(200 req/hour)에 도달했습니다. 잠시 후 다시 시도하십시오."),
     "upstream_timeout": (504, "Provider 요청 시간이 초과되었습니다. 나중에 다시 시도하십시오."),
     "upstream_server_error": (502, "Provider 서버 오류가 발생했습니다. 나중에 다시 시도하십시오."),
     "upstream_client_error": (502, "Provider가 요청을 거부했습니다."),
@@ -103,8 +105,8 @@ def _validate_auto_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDe
     decision = rcore.resolve_route("b14/auto", body.get("business14", {}))
     if decision.route_mode != "auto":
         raise InvalidRequest("Auto streaming preview could not resolve an automatic route.")
-    if decision.credential_source == "platform_secret":
-        raise StreamNotSupported()
+    if decision.credential_source == "platform_secret" and not decision.platform_provider_id:
+        raise InvalidRequest("platform_secret route missing provider binding.")
     return body, decision
 
 
@@ -342,6 +344,12 @@ async def pilot_auto_stream_preview(request: Request):
             raise InvalidRequest("Invalid streaming transport configuration.")
 
         def stream_call(**kwargs: Any):
+            if decision.credential_source == "platform_secret":
+                return stream_platform_chat_completions(
+                    platform_provider_id=decision.platform_provider_id,
+                    transport=transport,
+                    **kwargs,
+                )
             return stream_openrouter_chat_completions(**kwargs, transport=transport)
 
         iterator = stream_routed_chat_completions(

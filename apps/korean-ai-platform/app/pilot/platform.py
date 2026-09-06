@@ -36,6 +36,7 @@ from app.pilot.errors import (
     UpstreamServerError,
     UpstreamTimeout,
 )
+from app.pilot.openrouter_config import openrouter_config
 from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -96,6 +97,22 @@ def _require_spec(platform_provider_id: str) -> PlatformProviderSpec:
     return spec
 
 
+def _provider_mode() -> str:
+    """Resolve the platform adapter provider mode.
+
+    An explicitly-set ``B14_PROVIDER_MODE`` environment variable wins (tests and
+    deployment scripts override it at runtime); otherwise the shared
+    ``openrouter_config`` singleton is authoritative so mock/live switches made
+    through the config object also apply to platform-owned routes.
+    """
+    import os
+
+    raw = os.environ.get("B14_PROVIDER_MODE", "").strip().lower()
+    if raw in ("mock", "live"):
+        return raw
+    return openrouter_config.provider_mode
+
+
 def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     """Build the fixed Provider auth boundary without credential widening."""
     headers = {"Content-Type": "application/json"}
@@ -151,13 +168,9 @@ async def call_platform_chat_completions(
     upstream calls. Live mode applies the Provider spec's credential contract:
     server-owned secret or explicitly keyless.
     """
-    import os
-
     spec = _require_spec(platform_provider_id)
 
-    provider_mode = os.environ.get("B14_PROVIDER_MODE", "mock").strip().lower()
-    if provider_mode not in ("mock", "live"):
-        provider_mode = "mock"
+    provider_mode = _provider_mode()
 
     if provider_mode == "mock":
         logger.info(
@@ -277,9 +290,7 @@ async def stream_platform_chat_completions(
 
     spec = _require_spec(platform_provider_id)
 
-    provider_mode = os.environ.get("B14_PROVIDER_MODE", "mock").strip().lower()
-    if provider_mode not in ("mock", "live"):
-        provider_mode = "mock"
+    provider_mode = _provider_mode()
 
     if provider_mode == "mock":
         for event in (

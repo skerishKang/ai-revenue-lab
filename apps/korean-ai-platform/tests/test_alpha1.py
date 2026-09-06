@@ -26,6 +26,7 @@ from app.pilot.catalog import (
 from app.pilot.openrouter_config import OpenRouterConfig, ALLOWED_OPENROUTER_HOSTS
 from app.pilot.openrouter import call_openrouter_chat_completions, build_mock_metadata
 from app.pilot import router_core as rcore
+from app.pilot import platform as plat
 from app.pilot.router_core import (
     RouteDecision,
     resolve_manual_route,
@@ -35,6 +36,10 @@ from app.pilot.router_core import (
 )
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamTimeout
 from app.pilot.openrouter_config import openrouter_config as orcfg
+
+KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+KILO_PROVIDER = "Kilo Gateway / NVIDIA"
 
 
 @pytest.fixture()
@@ -48,8 +53,16 @@ def client(app):
 
 
 @pytest.fixture(autouse=True)
-def _reset_config():
-    """Reset OpenRouter config + pilot settings between tests."""
+def _reset_config(monkeypatch):
+    """Reset OpenRouter config + pilot settings between tests.
+
+    The single catalog route is a ``platform_secret`` Kilo route, so the
+    platform credential plane must be isolated too: ambient KILO_API_KEY and
+    B14_PROVIDER_MODE overrides are cleared so fail-closed tests observe the
+    documented keyless/mock defaults.
+    """
+    monkeypatch.delenv("KILO_API_KEY", raising=False)
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
         "api_key": orcfg.api_key,
         "provider_mode": orcfg.provider_mode,
@@ -89,6 +102,93 @@ def _reset_config():
 def _set_live(key: str = "sk-or-v1-real-key-1234567890abcdef") -> None:
     orcfg.api_key = key
     orcfg.provider_mode = "live"
+
+
+# The catalog holds a single Kilo Gateway route under decision #1933. Tests that
+# exercise multi-candidate semantics (fallback, provider_order, capability
+# diversity) install one synthetic second route so those contracts stay
+# genuinely validated instead of silently collapsing to a single candidate.
+SECONDARY_MODEL_ID = "test/secondary-free"
+SECONDARY_UPSTREAM_MODEL = "test/secondary-free"
+SECONDARY_PROVIDER = "Test Secondary Provider"
+
+
+def _secondary_catalog_model(
+    model_id: str = SECONDARY_MODEL_ID,
+    upstream_model: str = SECONDARY_UPSTREAM_MODEL,
+    provider: str = SECONDARY_PROVIDER,
+) -> CatalogModel:
+    return CatalogModel(
+        model_id=model_id,
+        upstream_model=upstream_model,
+        display_name="Secondary Free (test only)",
+        provider=provider,
+        provider_type="platform",
+        input_price_usd_per_1m=0.0,
+        output_price_usd_per_1m=0.0,
+        currency="usd",
+        context_window=1_000_000,
+        korean_score=4,
+        latency_ms=1500,
+        capabilities=frozenset({"chat", "coding", "free"}),
+        region="외부",
+        sort_order=20,
+        credential_source="platform_secret",
+        platform_provider_id="kilo",
+        source="kilo_official_gateway_models",
+        source_checked_at="2026-09-06",
+    )
+
+
+@pytest.fixture
+def two_model_catalog(monkeypatch):
+    """Install the real Kilo route plus one synthetic second route."""
+    import app.pilot.catalog as cat
+
+    original_models = cat.CATALOG_MODELS
+    original_by_id = cat.CATALOG_BY_ID
+    extra = _secondary_catalog_model()
+    cat.CATALOG_MODELS = [*original_models, extra]
+    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
+    try:
+        yield extra
+    finally:
+        cat.CATALOG_MODELS = original_models
+        cat.CATALOG_BY_ID = original_by_id
+
+
+async def _ok_platform_response(upstream_model: str) -> dict:
+    return {
+        "id": "cmpl-test",
+        "object": "chat.completion",
+        "model": upstream_model,
+        "choices": [
+            {
+                "index": 0,
+                "message": {"role": "assistant", "content": "OK"},
+                "finish_reason": "stop",
+            }
+        ],
+        "usage": {"prompt_tokens": 5, "completion_tokens": 10, "total_tokens": 15},
+        "_live": True,
+        "_requested_upstream_model": upstream_model,
+        "_actual_response_model": upstream_model,
+    }
+
+
+@pytest.fixture
+def patch_platform_call(monkeypatch):
+    """Patch the platform adapter call the alpha gateway actually dispatches.
+
+    The single catalog route is a ``platform_secret`` route, so the gateway
+    calls ``plat.call_platform_chat_completions`` (not the OpenRouter adapter).
+    Tests must patch the adapter the gateway really invokes, otherwise a live
+    test would perform a real upstream call.
+    """
+    def _patch(fake) -> None:
+        monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
+
+    return _patch
 
 
 # ============================================================================
@@ -183,7 +283,7 @@ class TestKeyIsolation:
 class TestKeyRedaction:
     def test_mock_response_has_no_key(self):
         _set_live()
-        resp = build_mock_metadata("b14req_test", "google/gemini-2.5-flash", "google/gemini-2.5-flash", "Google")
+        resp = build_mock_metadata("b14req_test", "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "Google")
         assert "sk-or-v1" not in json.dumps(resp)
 
     def test_error_response_no_key(self, client):
@@ -206,14 +306,16 @@ class TestKeyRedaction:
 
 class TestManualRoute:
     def test_manual_route_known_model(self):
-        d = resolve_manual_route("google/gemini-2.5-flash")
+        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         assert d.route_mode == "manual"
-        assert d.selected_model == "google/gemini-2.5-flash"
-        assert d.selected_upstream_model == "google/gemini-2.5-flash"
-        assert d.selected_provider == "Google"
+        assert d.selected_model == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert d.selected_upstream_model == KILO_UPSTREAM
+        assert d.selected_provider == KILO_PROVIDER
         assert "manual_selection" in d.reason_codes
         assert "external_fallback_disabled" in d.reason_codes
-        assert d.credential_available is False  # mock mode
+        # Keyless platform route: the Kilo free tier is anonymous, so no
+        # stored secret is required and the route is always credential-ready.
+        assert d.credential_available is True
 
     def test_manual_route_unknown_model_no_safe_route(self):
         with pytest.raises(NoSafeRoute) as exc_info:
@@ -222,24 +324,24 @@ class TestManualRoute:
         assert exc_info.value.upstream_called is False
 
     def test_manual_route_no_upstream_call(self):
-        d = resolve_manual_route("deepseek/deepseek-chat")
+        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         assert d.evidence_status == "resolved_not_called"
 
     def test_manual_route_no_fallback_by_default(self):
-        d = resolve_manual_route("google/gemini-2.5-flash")
+        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
         assert d.max_attempts == 1
         assert "external_fallback_disabled" in d.reason_codes
 
-    def test_manual_route_explicit_fallback_enabled(self):
-        d = resolve_manual_route("google/gemini-2.5-flash", allow_external_fallback=True)
+    def test_manual_route_explicit_fallback_enabled(self, two_model_catalog):
+        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free", allow_external_fallback=True)
         assert d.fallback_allowed is True
         assert len(d.eligible_fallback) > 0
 
     def test_manual_route_id_is_candidate_specific(self):
-        d = resolve_manual_route("google/gemini-2.5-flash")
-        assert d.selected_route_id == "openrouter:google/gemini-2.5-flash"
+        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        assert d.selected_route_id == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
 
 # ============================================================================
@@ -315,22 +417,24 @@ class TestAutoRoute:
         assert data["route_mode"] == "auto"
         assert data["selected_model"] in {m.model_id for m in CATALOG_MODELS}
         assert data["evidence_status"] == "resolved_not_called"
-        assert data["selected_route_id"].startswith("openrouter:")
-        assert data["credential_available"] is False
+        assert data["selected_route_id"].startswith("platform:")
+        # Single keyless Kilo route: always credential-ready, never fails
+        # closed on a missing platform secret.
+        assert data["credential_available"] is True
 
     def test_resolve_manual_model(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "google/gemini-2.5-flash",
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 "messages": [{"role": "user", "content": "hi"}],
             },
         )
         assert resp.status_code == 200
         data = resp.json()
         assert data["route_mode"] == "manual"
-        assert data["selected_model"] == "google/gemini-2.5-flash"
-        assert data["selected_route_id"] == "openrouter:google/gemini-2.5-flash"
+        assert data["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
@@ -378,7 +482,7 @@ class TestFallbackLogic:
 
 
 class TestFallbackExecution:
-    def test_429_fallback_uses_second_candidate(self, client):
+    def test_429_fallback_uses_second_candidate(self, client, two_model_catalog):
         """Auto route: first candidate 429 → fallback to second."""
         calls = []
 
@@ -399,10 +503,10 @@ class TestFallbackExecution:
         # In live mode, first candidate fails 429, second succeeds
         _set_live()
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         seq = [429, 200]
         transport = make_transport(seq)
-        orv.call_openrouter_chat_completions = make_async(seq)
+        plat.call_platform_chat_completions = make_async(seq)
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
@@ -413,7 +517,7 @@ class TestFallbackExecution:
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         data = resp.json()
@@ -429,7 +533,7 @@ def make_async(status_seq):
     """
     shared_calls = []
 
-    async def _patched(messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+    async def _patched(model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
         async def handler(request):
             import json as _json
             shared_calls.append(_json.loads(request.read()))
@@ -453,26 +557,64 @@ def make_async(status_seq):
 
 
 class TestLiveFailClosed:
-    def test_missing_key_live_fails_closed(self, client):
-        """Live mode without key → error, no upstream call."""
+    def _install_keyless_live_probe(self, monkeypatch):
+        """Patch the platform adapter to capture the outbound live request.
+
+        Decision #1933 makes the keyless Kilo Gateway route the single
+        catalog route, so live mode without a key is allowed by contract.
+        The security property under test becomes: no Authorization header
+        is emitted and no key is leaked into the response. The adapter is
+        patched to a MockTransport so the test never touches the network.
+        """
+        original = plat.call_platform_chat_completions
+        captured = {}
+
+        def handler(request):
+            captured["authorization"] = request.headers.get("authorization")
+            captured["body"] = json.loads(request.read())
+            return httpx.Response(200, json=_ok_upstream_json(KILO_UPSTREAM))
+
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id,
+                      messages, temperature=0.2, max_tokens=300, transport=None):
+            return await original(
+                model_id=model_id,
+                upstream_model=upstream_model,
+                provider=provider,
+                platform_provider_id=platform_provider_id,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                transport=httpx.MockTransport(handler),
+            )
+
+        monkeypatch.setattr(plat, "call_platform_chat_completions", fake)
+        return captured
+
+    def test_missing_key_live_allows_keyless_route(self, client, monkeypatch):
+        """Live mode, no key: the keyless Kilo route is allowed and key-free."""
         orcfg.provider_mode = "live"
         orcfg.api_key = ""
+        captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code in (401, 503)
-        body = resp.text
-        assert "sk-or-v1" not in body
+        assert resp.status_code == 200
+        assert captured["authorization"] is None
+        assert "sk-or-v1" not in resp.text
 
-    def test_placeholder_key_live_fails_closed(self, client):
+    def test_placeholder_key_live_not_forwarded(self, client, monkeypatch):
+        """A stale OpenRouter placeholder key is never forwarded to Kilo."""
         orcfg.provider_mode = "live"
         orcfg.api_key = "sk-your-key-here"
+        captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code in (401, 503)
+        assert resp.status_code == 200
+        assert captured["authorization"] is None
+        assert "sk-your-key-here" not in resp.text
 
 
 # ============================================================================
@@ -483,7 +625,7 @@ class TestMockMode:
     def test_mock_mode_returns_mock_response(self, client):
         resp = client.post(
             "/api/pilot/v1/chat/completions",
-            json={"model": "google/gemini-2.5-flash", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -538,8 +680,8 @@ class TestLiveAdapter:
             messages=[{"role": "user", "content": "hi"}],
             temperature=0.2,
             max_tokens=32,
-            model_id="google/gemini-2.5-flash",
-            upstream_model="google/gemini-2.5-flash",
+            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             provider="Google",
             transport=httpx.MockTransport(fake_upstream),
         )
@@ -556,8 +698,8 @@ class TestLiveAdapter:
             await call_openrouter_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(fake_bad),
             )
@@ -572,8 +714,8 @@ class TestLiveAdapter:
             await call_openrouter_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(fake_401),
             )
@@ -587,8 +729,8 @@ class TestLiveAdapter:
             await call_openrouter_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(fake_timeout),
             )
@@ -603,8 +745,8 @@ class TestLiveAdapter:
             await call_openrouter_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(fake_429),
             )
@@ -619,8 +761,8 @@ class TestLiveAdapter:
             await call_openrouter_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(fake_500),
             )
@@ -633,8 +775,8 @@ class TestLiveAdapter:
             await call_openrouter_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(lambda r: httpx.Response(200, json={})),
             )
@@ -646,7 +788,7 @@ class TestLiveAdapter:
 
 class TestCostEstimate:
     def test_price_known_estimate(self):
-        cm = get_catalog_by_id("google/gemini-2.5-flash")
+        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         assert cm.price_is_known
         expected = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
@@ -654,7 +796,7 @@ class TestCostEstimate:
         assert usd == pytest.approx(expected, rel=1e-9)
 
     def test_free_route_known_zero_estimate(self):
-        cm = get_catalog_by_id("openrouter/free")
+        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         assert cm.price_is_known
         assert cm.input_price_usd_per_1m == 0.0
         assert cm.output_price_usd_per_1m == 0.0
@@ -676,7 +818,7 @@ class TestCostEstimate:
         assert cm.estimate_cost_krw(1000, 500) is None
 
     def test_krw_uses_configured_rate(self):
-        cm = get_catalog_by_id("google/gemini-2.5-flash")
+        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         expected_usd = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         krw = cm.estimate_cost_krw(1_000_000, 1_000_000)
         assert krw is not None
@@ -685,13 +827,13 @@ class TestCostEstimate:
     def test_live_response_has_estimate(self):
         _set_live()
         from app.pilot.openrouter import build_live_metadata
-        cm = get_catalog_by_id("google/gemini-2.5-flash")
+        cm = get_catalog_by_id(KILO_MODEL)
         expected_usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
         meta = build_live_metadata(
             request_id="b14req_test",
-            model_id="google/gemini-2.5-flash",
-            upstream_model="google/gemini-2.5-flash",
-            provider="Google",
+            model_id=KILO_MODEL,
+            upstream_model=KILO_UPSTREAM,
+            provider=KILO_PROVIDER,
             latency_ms=100,
             prompt_tokens=1_000_000,
             completion_tokens=1_000_000,
@@ -699,15 +841,15 @@ class TestCostEstimate:
         )
         assert meta["estimated_usd"] == pytest.approx(expected_usd, rel=1e-9)
         assert meta["estimated_krw"] == pytest.approx(expected_usd * 1380, rel=1e-9)
-        assert meta["cost_basis"] == "configured_snapshot"
+        assert meta["cost_basis"] == "known_free"  # $0/$0 snapshot is the free basis
 
     def test_free_route_live_metadata_known_free(self):
         _set_live()
         from app.pilot.openrouter import build_live_metadata
         meta = build_live_metadata(
             request_id="b14req_test",
-            model_id="openrouter/free",
-            upstream_model="openrouter/free",
+            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             provider="OpenRouter (free router)",
             latency_ms=100,
             prompt_tokens=1000,
@@ -792,7 +934,7 @@ class TestEndpoints:
         assert len(catalog) >= len(CATALOG_MODELS)  # includes b14/auto
         ids = {m["id"] for m in catalog}
         assert "b14/auto" in ids
-        assert "google/gemini-2.5-flash" in ids
+        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" in ids
 
     def test_legacy_models_still_work(self, client):
         from app.pilot.config import pilot_settings
@@ -818,16 +960,15 @@ class TestEndpoints:
 class TestCatalog:
     def test_catalog_minimum_models(self):
         ids = {m.model_id for m in CATALOG_MODELS}
-        assert "openrouter/free" in ids
-        assert any("gemini" in i for i in ids)
-        assert any("deepseek" in i or "qwen" in i or "mistral" in i for i in ids)
-        assert any("claude" in i or "gpt" in i for i in ids)
+        # Decision #1933 pins a single-route Kilo Gateway catalog; the
+        # deleted multi-provider entries are exercised by two_model_catalog.
+        assert ids == {KILO_MODEL}
 
     def test_all_catalog_models_enabled(self):
         assert all(m.enabled for m in CATALOG_MODELS)
 
     def test_catalog_by_id_lookup(self):
-        assert get_catalog_by_id("google/gemini-2.5-flash") is not None
+        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is not None
         assert get_catalog_by_id("nonexistent") is None
 
     def test_filter_by_capability(self):
@@ -836,7 +977,7 @@ class TestCatalog:
 
     def test_select_by_optimize_cost_first_free(self):
         sorted_models = select_by_optimize(CATALOG_MODELS, "cost", True)
-        assert sorted_models[0].model_id == "openrouter/free"
+        assert sorted_models[0].model_id == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
     def test_select_by_optimize_korean_high_score(self):
         sorted_models = select_by_optimize(CATALOG_MODELS, "korean", True)
@@ -924,7 +1065,7 @@ class TestKoreanUIJourney:
     def test_workspace_page_catalog_options(self, client):
         resp = client.get("/workspace")
         assert "b14/auto" in resp.text
-        assert "google/gemini-2.5-flash" in resp.text
+        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" in resp.text
 
     def test_start_js_loaded(self, client):
         resp = client.get("/workspace")
@@ -1007,19 +1148,19 @@ class TestNoExternalNetwork:
     def test_mock_mode_zero_external_requests(self, client):
         """Mock mode must make zero upstream HTTP calls (verified via mock transport)."""
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
         async def spy(*args, **kwargs):
             calls.append(kwargs.get("transport"))
             return await original(*args, **kwargs)
-        orv.call_openrouter_chat_completions = spy
+        plat.call_platform_chat_completions = spy
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
         assert resp.status_code == 200
         # In mock mode, no transport is passed (mock short-circuits before transport)
         assert all(t is None for t in calls), "mock mode should not use transport"
@@ -1114,16 +1255,16 @@ def _ok_upstream_json(model: str) -> dict:
 
 class TestFreeRouterExactRoute:
     def test_free_router_catalog_exact_upstream_id(self):
-        cm = get_catalog_by_id("openrouter/free")
+        cm = get_catalog_by_id(KILO_MODEL)
         assert cm is not None
-        assert cm.model_id == "openrouter/free"
-        assert cm.upstream_model == "openrouter/free"
+        assert cm.model_id == KILO_MODEL
+        assert cm.upstream_model == KILO_UPSTREAM
 
     @pytest.mark.asyncio
     async def test_free_router_request_body_exact_and_actual_model_preserved(self):
         _set_live()
         captured = []
-        concrete_free_model = "mistralai/mistral-small-3.2-24b-instruct:free"
+        concrete_free_model = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
         async def handler(request):
             captured.append(json.loads(request.read()))
@@ -1133,13 +1274,13 @@ class TestFreeRouterExactRoute:
             messages=[{"role": "user", "content": "안녕"}],
             temperature=0.2,
             max_tokens=16,
-            model_id="openrouter/free",
-            upstream_model="openrouter/free",
+            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             provider="OpenRouter (free router)",
             transport=httpx.MockTransport(handler),
         )
-        assert captured[0]["model"] == "openrouter/free"
-        assert result["_requested_upstream_model"] == "openrouter/free"
+        assert captured[0]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert result["_requested_upstream_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
         assert result["_actual_response_model"] == concrete_free_model
         assert result["model"] == concrete_free_model
 
@@ -1151,22 +1292,20 @@ class TestCatalogSourceContract:
         summaries = list_catalog_summaries()
         assert summaries
         for s in summaries:
-            assert s["source"] == CATALOG_SOURCE
+            assert s["source"] == "kilo_official_gateway_models"
             assert s["snapshot_state"] == "configured_snapshot"
             assert s["source_checked_at"]
             assert "upstream_model" in s
             assert "price_is_known" in s
 
-    def test_gemini_deepseek_price_snapshot(self):
-        gemini = get_catalog_by_id("google/gemini-2.5-flash")
-        assert gemini.input_price_usd_per_1m == pytest.approx(0.30)
-        assert gemini.output_price_usd_per_1m == pytest.approx(2.50)
-        assert gemini.context_window == 1048576
-
-        deepseek = get_catalog_by_id("deepseek/deepseek-chat")
-        assert deepseek.input_price_usd_per_1m == pytest.approx(0.2574)
-        assert deepseek.output_price_usd_per_1m == pytest.approx(1.0287)
-        assert deepseek.context_window == 163840
+    def test_kilo_route_price_snapshot(self):
+        """The single catalog route pins the $0/$0 free-tier snapshot."""
+        cm = get_catalog_by_id(KILO_MODEL)
+        assert cm.input_price_usd_per_1m == pytest.approx(0.0)
+        assert cm.output_price_usd_per_1m == pytest.approx(0.0)
+        assert cm.price_is_known is True
+        assert cm.context_window == 1_000_000
+        assert "free" in cm.capabilities
 
 
 class TestFallbackFailClosed:
@@ -1188,8 +1327,8 @@ class TestFallbackFailClosed:
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2,
                 max_tokens=16,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(handler),
             )
@@ -1199,14 +1338,14 @@ class TestFallbackFailClosed:
     def test_unknown_exception_no_fallback_in_gateway(self, client):
         _set_live()
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             raise ValueError("unexpected")
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
@@ -1217,7 +1356,7 @@ class TestFallbackFailClosed:
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 500
         data = resp.json()
@@ -1228,14 +1367,14 @@ class TestFallbackFailClosed:
 
 
 class TestFallbackActualEvidence:
-    def test_fallback_metadata_describes_actual_success_candidate(self, client):
+    def test_fallback_metadata_describes_actual_success_candidate(self, client, two_model_catalog):
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import UpstreamRateLimited
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -1254,7 +1393,7 @@ class TestFallbackActualEvidence:
                 "_actual_response_model": upstream_model,
             }
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
@@ -1265,7 +1404,7 @@ class TestFallbackActualEvidence:
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         assert len(calls) == 2
@@ -1279,7 +1418,7 @@ class TestFallbackActualEvidence:
         assert biz14["selected_upstream_model"] == actual["upstream_model"]
         assert biz14["actual_response_model"] == actual["upstream_model"]
         assert data["model"] == actual["upstream_model"]
-        assert biz14["selected_route_id"] == f"openrouter:{actual['model_id']}"
+        assert biz14["selected_route_id"] == f"platform:{actual['model_id']}"
         assert biz14["attempt_evidence"][0]["outcome"] == "error"
         assert biz14["attempt_evidence"][0]["error_code"] == "upstream_rate_limited"
         assert biz14["attempt_evidence"][1]["outcome"] == "success"
@@ -1306,14 +1445,14 @@ class TestOptionEnforcement:
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import UpstreamRateLimited
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             raise UpstreamRateLimited()
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
@@ -1324,28 +1463,34 @@ class TestOptionEnforcement:
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 429
         assert resp.json()["error"]["code"] == "upstream_rate_limited"
         assert len(calls) == 1
 
-    def test_provider_order_changes_selection(self):
-        d = resolve_auto_route(optimize_for="cost", provider_order=["Anthropic"])
-        assert d.selected_provider == "Anthropic"
-        assert any(rc.startswith("provider_order:") for rc in d.reason_codes)
+    def test_provider_order_changes_selection(self, two_model_catalog):
+        default_pick = resolve_auto_route(optimize_for="cost")
+        assert default_pick.selected_provider == KILO_PROVIDER
 
-    def test_provider_order_api(self, client):
+        ordered = resolve_auto_route(optimize_for="cost", provider_order=[SECONDARY_PROVIDER])
+        assert ordered.selected_provider == SECONDARY_PROVIDER
+        assert ordered.selected_model == SECONDARY_MODEL_ID
+        assert any(rc.startswith("provider_order:") for rc in ordered.reason_codes)
+
+    def test_provider_order_api(self, client, two_model_catalog):
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
                 "model": "b14/auto",
                 "messages": [{"role": "user", "content": "hi"}],
-                "business14": {"optimize_for": "cost", "provider_order": ["Anthropic"]},
+                "business14": {"optimize_for": "cost", "provider_order": [SECONDARY_PROVIDER]},
             },
         )
         assert resp.status_code == 200
-        assert resp.json()["selected_provider"] == "Anthropic"
+        body = resp.json()
+        assert body["selected_provider"] == SECONDARY_PROVIDER
+        assert body["selected_model"] == SECONDARY_MODEL_ID
 
     def test_provider_order_invalid_type_422(self, client):
         resp = client.post(
@@ -1365,7 +1510,8 @@ class TestOptionEnforcement:
 
         document = resolve_auto_route(task_type="document")
         document_model = get_catalog_by_id(document.selected_model)
-        assert "long_context" in document_model.capabilities
+        assert "chat" in document_model.capabilities
+        assert document.selected_model == KILO_MODEL
 
     def test_task_type_invalid_422(self, client):
         resp = client.post(
@@ -1419,8 +1565,8 @@ class TestStreamedResponseLimit:
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2,
                 max_tokens=16,
-                model_id="google/gemini-2.5-flash",
-                upstream_model="google/gemini-2.5-flash",
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 provider="Google",
                 transport=httpx.MockTransport(handler),
             )
@@ -1500,7 +1646,7 @@ class TestManualRouteDefaultFallback:
         """manual model, no business14 → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "google/gemini-2.5-flash", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -1508,14 +1654,14 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
-        assert data["selected_route_id"] == "openrouter:google/gemini-2.5-flash"
+        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
     def test_manual_model_empty_business14_resolve(self, client):
         """manual model, empty business14 → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "deepseek/deepseek-chat",
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {},
             },
@@ -1525,14 +1671,14 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
-        assert data["selected_route_id"] == "openrouter:deepseek/deepseek-chat"
+        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
     def test_manual_model_explicit_false_resolve(self, client):
         """manual model, allow_external_fallback=false → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "google/gemini-2.5-flash",
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"allow_external_fallback": False},
             },
@@ -1543,12 +1689,12 @@ class TestManualRouteDefaultFallback:
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
 
-    def test_manual_model_explicit_true_resolve(self, client):
+    def test_manual_model_explicit_true_resolve(self, client, two_model_catalog):
         """manual model, allow_external_fallback=true → fallback candidates populated."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "google/gemini-2.5-flash",
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"allow_external_fallback": True},
             },
@@ -1558,16 +1704,16 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is True
         assert len(data["eligible_fallback"]) > 0
         assert data["max_attempts"] > 1
-        assert data["selected_route_id"] == "openrouter:google/gemini-2.5-flash"
+        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
     def test_manual_model_no_business14_chat_one_attempt(self, client):
         """manual model, no business14 → only 1 upstream call, no fallback."""
         _set_live()
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             return {
                 "id": "cmpl-test", "object": "chat.completion",
@@ -1578,14 +1724,14 @@ class TestManualRouteDefaultFallback:
                 "_actual_response_model": upstream_model,
             }
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "google/gemini-2.5-flash", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
@@ -1594,15 +1740,15 @@ class TestManualRouteDefaultFallback:
         assert biz14["fallback_used"] is False
         assert len(calls) == 1
 
-    def test_manual_model_explicit_true_429_fallback(self, client):
+    def test_manual_model_explicit_true_429_fallback(self, client, two_model_catalog):
         """manual model, allow_external_fallback=true → 429 allows fallback to second candidate."""
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import UpstreamRateLimited
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -1615,18 +1761,18 @@ class TestManualRouteDefaultFallback:
                 "_actual_response_model": upstream_model,
             }
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "google/gemini-2.5-flash",
+                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
@@ -1641,25 +1787,25 @@ class TestManualRouteDefaultFallback:
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import UpstreamAuthFailed
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             raise UpstreamAuthFailed()
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "google/gemini-2.5-flash",
+                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 401
         assert resp.json()["error"]["code"] == "upstream_auth_failed"
@@ -1671,25 +1817,25 @@ class TestManualRouteDefaultFallback:
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import UpstreamClientError
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             raise UpstreamClientError(404)
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "google/gemini-2.5-flash",
+                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 502
         assert resp.json()["error"]["code"] == "upstream_client_error"
@@ -1701,25 +1847,25 @@ class TestManualRouteDefaultFallback:
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import MalformedUpstreamResponse
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             raise MalformedUpstreamResponse()
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "google/gemini-2.5-flash",
+                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 502
         assert resp.json()["error"]["code"] == "malformed_upstream_response"
@@ -1730,25 +1876,25 @@ class TestManualRouteDefaultFallback:
         """manual model, allow_external_fallback=true → unknown error NO fallback."""
         _set_live()
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append(model_id)
             raise ValueError("unexpected internal failure")
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "google/gemini-2.5-flash",
+                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 500
         assert resp.json()["error"]["code"] == "internal_error"
@@ -1772,25 +1918,25 @@ class TestActualRouteId:
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert data["selected_route_id"].startswith("openrouter:")
-        assert data["selected_route_id"] == f"openrouter:{data['selected_model']}"
+        assert data["selected_route_id"].startswith("platform:")
+        assert data["selected_route_id"] == f"platform:{data['selected_model']}"
 
     def test_manual_resolve_route_id(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "deepseek/deepseek-chat", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert data["selected_route_id"] == "openrouter:deepseek/deepseek-chat"
+        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
     def test_primary_success_route_id(self, client):
         """Primary candidate success: selected_route_id = primary candidate route_id."""
         _set_live()
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             return {
                 "id": "cmpl-pk", "object": "chat.completion",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}],
@@ -1800,29 +1946,29 @@ class TestActualRouteId:
                 "_actual_response_model": upstream_model,
             }
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
-        assert biz14["selected_route_id"] == f"openrouter:{biz14['selected_model']}"
+        assert biz14["selected_route_id"] == f"platform:{biz14['selected_model']}"
         assert not biz14["fallback_used"]
 
-    def test_fallback_success_route_id_differs_from_primary(self, client):
+    def test_fallback_success_route_id_differs_from_primary(self, client, two_model_catalog):
         """Fallback success: selected_route_id = actual fallback success candidate route_id."""
         _set_live()
         from app.pilot import openrouter as orv
         from app.pilot.errors import UpstreamRateLimited
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
         calls = []
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             calls.append({"model_id": model_id, "upstream_model": upstream_model, "provider": provider})
             if len(calls) == 1:
                 raise UpstreamRateLimited()
@@ -1835,7 +1981,7 @@ class TestActualRouteId:
                 "_actual_response_model": upstream_model,
             }
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
@@ -1846,12 +1992,12 @@ class TestActualRouteId:
                 },
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
-        primary_route_id = f"openrouter:{calls[0]['model_id']}"
-        fallback_route_id = f"openrouter:{calls[1]['model_id']}"
+        primary_route_id = f"platform:{calls[0]['model_id']}"
+        fallback_route_id = f"platform:{calls[1]['model_id']}"
         assert biz14["selected_route_id"] == fallback_route_id
         assert biz14["selected_route_id"] != primary_route_id
         assert biz14["selected_model"] == calls[1]["model_id"]
@@ -1864,9 +2010,9 @@ class TestActualRouteId:
         _set_live()
         secret = "sk-or-v1-super-secret-key-12345"
         from app.pilot import openrouter as orv
-        original = orv.call_openrouter_chat_completions
+        original = plat.call_platform_chat_completions
 
-        async def fake(*, messages, temperature, max_tokens, model_id, upstream_model, provider, transport=None):
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
             assert secret not in model_id
             assert secret not in upstream_model
             return {
@@ -1878,14 +2024,14 @@ class TestActualRouteId:
                 "_actual_response_model": upstream_model,
             }
 
-        orv.call_openrouter_chat_completions = fake
+        plat.call_platform_chat_completions = fake
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
-            orv.call_openrouter_chat_completions = original
+            plat.call_platform_chat_completions = original
 
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
@@ -1893,7 +2039,7 @@ class TestActualRouteId:
         assert secret not in route_id
         assert "http" not in route_id
         assert "@" not in route_id
-        assert route_id.startswith("openrouter:")
+        assert route_id.startswith("platform:")
 
 
 # ============================================================================
