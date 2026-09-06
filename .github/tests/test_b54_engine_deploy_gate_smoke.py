@@ -100,3 +100,9 @@ def test_smoke_script_final_line_contract() -> None:
     assert "BLOCKER_7=PASS" in source
     assert "REAL_PROVIDER_CALLS=" in source
     assert "SKIPPED_MISSING_SECRET" in source
+
+
+def test_smoke_script_sends_explicit_user_agent() -> None:
+    # 원인: Cloudflare BIC가 Python-urllib UA를 403/1010으로 차단, run 34049550618
+    smoke_source = SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert '"User-Agent"' in smoke_source

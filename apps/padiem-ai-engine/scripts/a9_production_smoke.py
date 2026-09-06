@@ -76,6 +76,7 @@ def _require_env() -> bool:
 
 def _identity_headers() -> dict[str, str]:
     return {
+        "User-Agent": "padiem-a9-smoke/1.0 (+github-actions)",
         "x-padiem-engine-caller": CALLER_ID,
         "x-padiem-engine-credential": CALLER_SECRET,
         "Content-Type": "application/json",
