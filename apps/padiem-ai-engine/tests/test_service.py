@@ -381,6 +381,8 @@ def test_deferred_idempotency_not_reported_available():
 
     manifest = current_engine_contract_manifest()
     assert manifest.feature_state("idempotency_replay").value != "available"
+    # #1964 wires the fail-closed replay route; the feature posture stays
+    # DEFERRED until the #1235 production activation blockers are proven.
     assert manifest.feature_state("execution_idempotency_replay_completed").value != "available"
 
 

@@ -13,6 +13,7 @@ from dataclasses import dataclass
 
 from app.agent_skill_service import AgentSkillEngineService
 from app.document_context_service import DocumentContextEngineService
+from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.memory_service import MemoryRetrievalEngineService
 from app.multimodal_attachment_service import MultimodalAttachmentEngineService
 from app.orchestration_service import OrchestrationEngineService
@@ -41,6 +42,9 @@ class EngineServices:
     multimodal: MultimodalAttachmentEngineService | None = None
     documents: DocumentContextEngineService | None = None
     tool_execution: ToolExecutionEngineService | None = None
+    # #1964 source slice: replay stays fail-closed until the trusted durable
+    # idempotency adapter is explicitly composed.
+    idempotency_replay: IdempotencyReplayEngineService | None = None
 
     def __post_init__(self) -> None:
         for name in ("completed", "streaming", "orchestration", "research", "memory"):
@@ -69,4 +73,10 @@ class EngineServices:
         ):
             raise ValueError(
                 "engine service 'tool_execution' must be ToolExecutionEngineService or None"
+            )
+        if self.idempotency_replay is not None and not isinstance(
+            self.idempotency_replay, IdempotencyReplayEngineService
+        ):
+            raise ValueError(
+                "engine service 'idempotency_replay' must be IdempotencyReplayEngineService or None"
             )
