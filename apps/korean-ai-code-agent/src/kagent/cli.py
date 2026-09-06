@@ -7,6 +7,7 @@ import sys
 
 from .core import AgentBoundaryError, AgentSession, redact_secrets
 from .draft_flow import DRAFT_DOC_TYPES, run_draft_command
+from .order_flow import run_order_command
 from .p01_run_flow import run_p01_task
 from .review_flow import run_review_command
 
@@ -164,6 +165,24 @@ def parser() -> argparse.ArgumentParser:
     draft.add_argument(
         "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
     )
+    order = sub.add_parser(
+        "order",
+        help="승인된 견적서를 발주서/판매오더 초안으로 전환합니다 "
+        "(설정 필수 · demo 폴백 없음 · --accept 필수)",
+    )
+    order.add_argument("quote", help="승인된 견적서 보고서(마크다운) 파일 경로")
+    order.add_argument(
+        "--accept",
+        dest="accept",
+        action="store_true",
+        help="견적서 승인을 선언합니다 (없으면 order_not_accepted로 실패)",
+    )
+    order.add_argument(
+        "--out", dest="out", default=None, help="마크다운 초안을 기록할 파일 경로"
+    )
+    order.add_argument(
+        "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
+    )
     return p
 
 
@@ -182,6 +201,15 @@ def main(argv: list[str] | None = None, *, adapter=None) -> int:
             Path(args.repository),
             args.input,
             args.doc_type,
+            adapter=adapter,
+            run_id=args.run_id,
+            out_path=Path(args.out) if args.out else None,
+        )
+    if args.mode == "order":
+        return run_order_command(
+            Path(args.repository),
+            args.quote,
+            accept=args.accept,
             adapter=adapter,
             run_id=args.run_id,
             out_path=Path(args.out) if args.out else None,
