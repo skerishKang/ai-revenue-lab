@@ -43,6 +43,8 @@ from padiem_ai_core import (
     request_fingerprint,
 )
 from padiem_ai_core.agent_approval import tool_invocation_digest
+from padiem_ai_core.contracts import ErrorClass
+from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
@@ -144,6 +146,55 @@ def _execution_request_fingerprint(*, app_id: str, request: ExecutionRequest) ->
             "messages": [message for message in request.messages],
         }
     )
+
+
+# ---------------------------------------------------------------------------
+# B14 (model-service) execution failure mapping (#1932, Slice C)
+# ---------------------------------------------------------------------------
+# Core delivers B14 model-execution failures as ExecutionRuntimeError. These
+# must surface to callers as 4xx model-level errors (preserving the safe code
+# and retryable flag) instead of being swallowed by the generic
+# engine_internal_error 500 path. Genuine engine-internal failures
+# (ErrorClass.INTERNAL_ERROR with non-upstream codes such as
+# execution_failed / invalid_execution_result) stay 500 so real engine faults
+# remain visible. No upstream response body is forwarded: only the safe code,
+# status, and message are emitted.
+
+_B14_MODEL_ERROR_CLASSES = frozenset(
+    {
+        ErrorClass.PROVIDER_TIMEOUT,
+        ErrorClass.PROVIDER_RATE_LIMIT,
+        ErrorClass.AUTH_ERROR,
+        ErrorClass.PROVIDER_BAD_RESPONSE,
+        ErrorClass.INPUT_ERROR,
+    }
+)
+
+
+def _is_b14_model_error(exc: ExecutionRuntimeError) -> bool:
+    """True when exc is a B14/model-service execution failure (not engine-internal)."""
+    if exc.metadata.error_class in _B14_MODEL_ERROR_CLASSES:
+        return True
+    # 5xx upstream (upstream_server_error / upstream_unavailable) is mapped to
+    # ErrorClass.INTERNAL_ERROR by Core but is still a B14-origin model failure.
+    return exc.code.startswith("upstream_")
+
+
+def _b14_model_error_status(exc: ExecutionRuntimeError) -> int:
+    """Map a B14 model-execution failure to a 4xx model-level status code."""
+    error_class = exc.metadata.error_class
+    if error_class == ErrorClass.PROVIDER_RATE_LIMIT:
+        return 429
+    if error_class == ErrorClass.AUTH_ERROR:
+        return 403
+    if error_class == ErrorClass.PROVIDER_TIMEOUT:
+        return 429
+    if error_class == ErrorClass.PROVIDER_BAD_RESPONSE:
+        return 422
+    if error_class == ErrorClass.INPUT_ERROR:
+        return 400
+    # INTERNAL_ERROR bucket reached via the upstream_ prefix (5xx upstream).
+    return 429
 
 
 class OrchestrationEngineService:
@@ -575,6 +626,15 @@ class OrchestrationEngineService:
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
         except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except ExecutionRuntimeError as exc:
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
         except Exception:
             return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
         try:
@@ -787,6 +847,23 @@ class OrchestrationEngineService:
                 return _service_error(exc.code, exc.safe_message, status_code=403)
             status_code = 409 if exc.code in {"continuation_expired", "approval_denied", "continuation_identity_mismatch"} else 422
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        except ExecutionRuntimeError as exc:
+            try:
+                await self._release_claim(
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError as release_exc:
+                return _service_error(release_exc.code, release_exc.safe_message, status_code=release_exc.status_code)
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Orchestration resumption failed.", status_code=500)
         except asyncio.CancelledError:
             try:
                 await self._release_claim(
@@ -918,6 +995,24 @@ class OrchestrationEngineService:
             except ServiceContractError:
                 pass
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except ExecutionRuntimeError as exc:
+            try:
+                await self._continuation_call(
+                    "release_cancel",
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError:
+                pass
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Cancellation failed.", status_code=500)
         except Exception:
             try:
                 await self._continuation_call(
