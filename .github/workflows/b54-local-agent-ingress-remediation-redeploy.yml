@@ -44,8 +44,8 @@ env:
   PUBLIC_HOSTNAME: local-agent.padiem.net
   STATE_CONFIG: wrangler.local-agent-broker.jsonc
   EDGE_CONFIG: wrangler.local-agent-broker-edge.jsonc
-  EXPECTED_PRE_FIX_STATE_VERSION: 8de403cd-b6c9-4280-a673-1e3fa4bea203
-  EXPECTED_PRE_FIX_EDGE_VERSION: 7bf165c0-f320-4bb4-8410-1d516fa4960a
+  EXPECTED_PRE_FIX_STATE_VERSION: a2b9d708-8cc2-4994-bc52-bb6e72eef944
+  EXPECTED_PRE_FIX_EDGE_VERSION: b870d30b-1d47-401d-97c9-7a52425f8299
   TARGET_SHA: ${{ inputs.target_sha }}
 
 jobs:
@@ -113,6 +113,11 @@ jobs:
           assert "CANONICAL_DEVICE_HTTP_SERVICE_REUSED = True" in bridge_source
           assert "SECOND_DEVICE_AUTHORITY = False" in bridge_source
           assert "ADMIN_RPC_HTTP_EXPOSED = False" in bridge_source
+          assert "not isinstance(result, dict)" in bridge_source
+          assert 'not isinstance(result.get("headers"), dict)' in bridge_source
+          assert 'not isinstance(result.get("body"), dict)' in bridge_source
+          assert 'type(result.get("status")) is not int' in bridge_source
+          assert "type(result) is not dict" not in bridge_source
           print("REMEDIATION_SOURCE_CONTRACT=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
