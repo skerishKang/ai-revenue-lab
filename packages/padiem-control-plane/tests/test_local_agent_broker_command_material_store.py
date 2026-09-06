@@ -514,3 +514,66 @@ def test_m2i_truth_flags_preserve_security_nonclaims() -> None:
     assert worker.PRODUCTION_SECRET_BOUND is False
     assert worker.PRODUCTION_MUTATION is False
     assert worker.PRODUCTION_READY is False
+
+
+class _JsDict(dict):
+    """Mirror of the dict-subclass (opik JsDict) the RPC boundary returns."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+def _resolve_payload(command: dict, *, request_ref: str, at: datetime) -> _JsDict:
+    return _JsDict(
+        {
+            "request_ref": request_ref,
+            "session_id": "session.material.1",
+            "binding_ref": command["binding_ref"],
+            "command_id": command["command_id"],
+            "request_fingerprint": command["request_fingerprint"],
+            "server_requested_at": at.isoformat(),
+        }
+    )
+
+
+def test_store_command_material_accepts_jsdict_wire_from_rpc_boundary() -> None:
+    storage, _env, durable, command = _prepare_command()
+    wire = _JsDict(_wire(command))
+    assert type(wire) is _JsDict
+
+    stored = asyncio.run(durable.store_command_material(wire))
+
+    assert stored["stored"] is True
+    assert _material_count(storage) == 1
+
+
+def test_store_command_material_jsdict_still_enforces_key_set() -> None:
+    storage, _env, durable, command = _prepare_command()
+    wire = _JsDict(_wire(command))
+    del wire["material"]
+
+    with pytest.raises(ValueError):
+        asyncio.run(durable.store_command_material(wire))
+    assert _material_count(storage) == 0
+
+
+def test_resolve_command_material_accepts_jsdict_payload_from_rpc_boundary() -> None:
+    storage, _env, durable, command = _prepare_command()
+    durable.material_store.store(_wire(command))
+    payload = _resolve_payload(command, request_ref="material-request.jsdict.1", at=BASE + timedelta(seconds=3))
+
+    resolved = asyncio.run(durable.resolve_command_material(payload))
+
+    assert resolved["ok"] is True
+    assert resolved["material"]["command_id"] == command["command_id"]
+    assert _material_count(storage) == 1
+
+
+def test_resolve_command_material_jsdict_still_enforces_key_set() -> None:
+    storage, _env, durable, command = _prepare_command()
+    payload = _resolve_payload(command, request_ref="material-request.jsdict.2", at=BASE + timedelta(seconds=3))
+    del payload["session_id"]
+
+    with pytest.raises(ValueError):
+        asyncio.run(durable.resolve_command_material(payload))
+    assert _material_count(storage) == 0

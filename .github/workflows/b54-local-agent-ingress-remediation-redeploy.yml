@@ -105,6 +105,8 @@ jobs:
           edge_source = (root / "local_agent_broker_edge_worker.py").read_text(encoding="utf-8")
           state_source = (root / "local_agent_broker_worker.py").read_text(encoding="utf-8")
           bridge_source = (root / "local_agent_broker_private_http_bridge.py").read_text(encoding="utf-8")
+          device_source = (root / "local_agent_broker_device_http.py").read_text(encoding="utf-8")
+          material_source = (root / "local_agent_broker_material_store.py").read_text(encoding="utf-8")
           assert 'EDGE_TO_STATE_DEVICE_TRANSPORT = "service_binding_fetch"' in edge_source
           assert "LOCAL_AGENT_BROKER_SERVICE.fetch(" in edge_source
           assert "BOUNDED_BODY = True" in edge_source
@@ -118,6 +120,10 @@ jobs:
           assert 'not isinstance(result.get("body"), dict)' in bridge_source
           assert 'type(result.get("status")) is not int' in bridge_source
           assert "type(result) is" + " not dict" not in bridge_source
+          assert "not isinstance(value, dict)" in device_source
+          assert "type(value) is" + " not dict" not in device_source
+          assert "not isinstance(value, dict)" in material_source
+          assert "type(value) is" + " not dict" not in material_source
           print("REMEDIATION_SOURCE_CONTRACT=PASS")
           print("PRODUCTION_MUTATION=0")
           PY

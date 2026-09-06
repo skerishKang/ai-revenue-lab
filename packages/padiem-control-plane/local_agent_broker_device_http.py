@@ -20,7 +20,7 @@ _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
 
 
 def _closed_mapping(value: Any, keys: frozenset[str], label: str) -> dict[str, Any]:
-    if type(value) is not dict or frozenset(value) != keys:
+    if not isinstance(value, dict) or frozenset(value) != keys:
         raise ValueError(f"{label} schema mismatch")
     return value
 

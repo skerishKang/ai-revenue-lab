@@ -106,3 +106,11 @@ def test_source_contract_requires_jsdict_fix_and_rejects_strict_dict_check() -> 
     assert 'not isinstance(result.get("body"), dict)' in source
     assert 'type(result.get("status")) is not int' in source
     assert "type(result) is" + " not dict" not in source
+    assert "not isinstance(value, dict)" in source
+    assert "type(value) is" + " not dict" not in source
+    assert "material_source" in source
+    assert 'material_source = (root / "local_agent_broker_material_store.py")' in source
+    assert source.count('assert "not isinstance(value, dict)" in device_source') == 1
+    assert source.count('assert "not isinstance(value, dict)" in material_source') == 1
+    assert source.count('assert "type(value) is" + " not dict" not in device_source') == 1
+    assert source.count('assert "type(value) is" + " not dict" not in material_source') == 1
