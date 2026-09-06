@@ -72,6 +72,54 @@ jobs:
           grep -q 'orchestration_run' /tmp/health.json
           echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
 
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
+      CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
   rollback-production-engine:
     if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
     runs-on: ubuntu-latest

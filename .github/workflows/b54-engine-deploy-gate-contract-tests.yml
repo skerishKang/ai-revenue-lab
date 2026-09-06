@@ -1,0 +1,44 @@
+name: B54 Engine Deploy Gate Contract Tests
+
+# WO-8 PR-B — CI for the deploy gate's smoke-idempotency job contract. The
+# gate workflow stays dispatch-only, so its static contract tests run here on
+# pull requests that touch the gate, the smoke script, or these tests. This
+# workflow never deploys and never calls production: it only parses YAML and
+# runs pytest.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-production-deploy-gate.yml"
+      - ".github/workflows/b54-engine-deploy-gate-contract-tests.yml"
+      - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
+      - "apps/padiem-ai-engine/scripts/a9_production_smoke.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate-contract-tests:
+    name: Gate contract (parse only, no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --quiet pyyaml pytest
+
+      - name: Run gate contract tests
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py
+
+      - name: Record no deploy performed
+        run: |
+          echo 'B54_DEPLOY_GATE_CONTRACT_TESTS=PASS'
+          echo 'B54_ENGINE_DEPLOYED=0'

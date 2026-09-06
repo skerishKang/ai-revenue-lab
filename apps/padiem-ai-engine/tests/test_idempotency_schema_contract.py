@@ -52,12 +52,18 @@ def test_runtime_adapter_does_not_provision_schema() -> None:
     assert "DROP TABLE" not in adapter
 
 
-def test_schema_contract_does_not_mutate_worker_binding_config() -> None:
+def test_schema_contract_matches_production_binding_config() -> None:
+    """WO-8 PR-B inversion: the provisioned D1 database must be bound in Production.
+
+    Pre-PR-B this test asserted absence (fail-closed slice); the #1235 A9
+    activation PR-B now binds the provisioned database, so this test asserts
+    the exact binding + database identity instead.
+    """
     wrangler = _text(WRANGLER)
 
-    assert "B14_SERVICE" in wrangler
-    assert "ENGINE_IDEMPOTENCY" not in wrangler
-    assert "[[d1_databases]]" not in wrangler
+    assert 'binding = "ENGINE_IDEMPOTENCY"' in wrangler
+    assert "[[d1_databases]]" in wrangler
+    assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in wrangler
 
 
 def test_schema_contract_is_engine_scoped_not_b14_or_b62() -> None:
