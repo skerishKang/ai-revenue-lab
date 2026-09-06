@@ -1,0 +1,106 @@
+name: B54 Local Agent DNS Residue Cleanup (one-off)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_hostname:
+        description: "Exact public hostname; must be local-agent.padiem.net"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact one-off cleanup confirmation phrase"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  ZONE_NAME: padiem.net
+  EDGE_WORKER: padiem-local-agent-broker-edge
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require exact hostname and one-off confirmation
+        shell: bash
+        env:
+          TARGET_HOSTNAME: ${{ inputs.target_hostname }}
+        run: |
+          set -euo pipefail
+          test "${TARGET_HOSTNAME}" = "local-agent.padiem.net"
+          test "${{ inputs.confirmation }}" = "DELETE_LOCAL_AGENT_DNS_RESIDUE"
+          echo "CLEANUP_AUTHORIZATION=PASS"
+
+      - name: Locate and delete only the Worker-type DNS residue
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TARGET_HOSTNAME: ${{ inputs.target_hostname }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          zone="${RUNNER_TEMP}/zone.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}" -o "${zone}"
+          jq -e '.success == true and (.result | length) == 1' "${zone}" >/dev/null
+          zone_id="$(jq -r '.result[0].id' "${zone}")"
+          test -n "${zone_id}"
+
+          records="${RUNNER_TEMP}/records.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?name=${TARGET_HOSTNAME}&per_page=100" -o "${records}"
+          jq -e '.success == true' "${records}" >/dev/null
+
+          worker_count="$(jq '[.result[] | select(.type == "Worker")] | length' "${records}")"
+          echo "WORKER_TYPE_RECORD_COUNT=${worker_count}"
+
+          if [ "${worker_count}" -eq 0 ]; then
+            echo "DNS_RESIDUE=ALREADY_CLEAN"
+            echo "DELETE_SKIPPED=YES"
+            exit 0
+          fi
+          if [ "${worker_count}" -gt 1 ]; then
+            echo "Refusing: multiple Worker-type records for hostname." >&2
+            exit 1
+          fi
+
+          jq -e --arg edge "${EDGE_WORKER}" '.result[] | select(.type == "Worker") | .content == $edge' "${records}" >/dev/null
+          record_id="$(jq -r '.result[] | select(.type == "Worker") | .id' "${records}")"
+          test -n "${record_id}"
+          record_type="$(jq -r '.result[] | select(.type == "Worker") | .type' "${records}")"
+          record_content="$(jq -r '.result[] | select(.type == "Worker") | .content' "${records}")"
+          echo "RECORD_ID=${record_id}"
+          echo "RECORD_TYPE=${record_type}"
+          echo "RECORD_CONTENT=${record_content}"
+          echo "DELETE_TARGET=local-agent.padiem.net Worker -> ${EDGE_WORKER}"
+
+          response="${RUNNER_TEMP}/delete.json"
+          code="$(curl -sS -o "${response}" -w '%{http_code}' -X DELETE "${auth[@]}" "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${record_id}" || true)"
+          echo "DELETE_HTTP_CODE=${code}"
+          test "${code}" = "200"
+          jq -e --arg id "${record_id}" '.success == true and .result.id == $id' "${response}" >/dev/null
+          echo "DNS_RESIDUE_DELETED=YES"
+          echo "DELETE_SKIPPED=NO"
+
+      - name: Verify public DNS no longer resolves the hostname
+        shell: bash
+        env:
+          TARGET_HOSTNAME: ${{ inputs.target_hostname }}
+        run: |
+          set -euo pipefail
+          nx=no
+          for _ in $(seq 1 24); do
+            body="${RUNNER_TEMP}/doh.json"
+            code="$(curl -sS -o "${body}" -w '%{http_code}' -H 'accept: application/dns-json' "https://cloudflare-dns.com/dns-query?name=${TARGET_HOSTNAME}&type=A" 2>/dev/null || true)"
+            rcode="$(jq -r '.Status // 0' "${body}" 2>/dev/null || echo 0)"
+            if [ "${code}" = "200" ] && [ "${rcode}" = "3" ]; then
+              nx=yes
+              break
+            fi
+            sleep 10
+          done
+          test "${nx}" = "yes"
+          echo "DNS_NXDOMAIN=YES"
