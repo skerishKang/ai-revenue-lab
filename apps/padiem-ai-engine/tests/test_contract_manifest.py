@@ -89,9 +89,6 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "approval_continuation",
         "execution_idempotency_replay_completed",
         "execution_idempotency_replay_streaming",
-        "web_search_projection",
-        "web_fetch_projection",
-        "deep_research_projection",
         "tool_runtime_projection",
         "skill_runtime_projection",
         "agent_runtime_projection",
@@ -153,9 +150,6 @@ def test_wrong_major_fails_closed() -> None:
 def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
     for feature_id in (
         "approval_continuation",
-        "web_search_projection",
-        "web_fetch_projection",
-        "deep_research_projection",
         "memory_rag_projection",
         "agent_runtime_projection",
         "skill_runtime_projection",

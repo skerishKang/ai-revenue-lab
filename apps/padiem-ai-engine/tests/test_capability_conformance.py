@@ -271,13 +271,15 @@ def test_capability_states_match_routed_truth() -> None:
         "orchestration",
         "multi_caller_identity",
         "evidence_citations",
+        # E9 A1: Web/Research family is Production-activated (owner-authorized
+        # bounded dispatch on main ed18a2a8; see E9_ACTIVATION_PLAN.md).
+        "web_search",
+        "web_fetch",
+        "deep_research",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
         "continuation/approval",
-        "web_search",
-        "web_fetch",
-        "deep_research",
         "tool_runtime",
         "memory_rag",
         "agent_skill_runtime",
