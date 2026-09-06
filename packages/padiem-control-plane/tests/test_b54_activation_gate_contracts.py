@@ -112,6 +112,25 @@ def test_activation_gate_rollback_preserves_durable_state_and_versions() -> None
     assert "/workers/domains/${DOMAIN_ID}" in source
 
 
+def test_activation_gate_dispatch_jobs_checkout_repo() -> None:
+    source = _source()
+    expected = {
+        "preflight-verification": "activate-public-ingress",
+        "activate-public-ingress": "rollback-remove-custom-domain",
+        "rollback-remove-custom-domain": None,
+    }
+    for job, next_job in expected.items():
+        start = source.index(f"  {job}:\n")
+        if next_job:
+            end = source.index(f"\n  {next_job}:\n")
+        else:
+            end = len(source)
+        block = source[start:end]
+        assert "actions/checkout@v4" in block, f"{job} missing actions/checkout"
+        assert "ref: ${{ env.TARGET_SHA }}" in block, f"{job} checkout must pin TARGET_SHA"
+        assert "git rev-parse" in block, f"{job} expected to run git commands"
+
+
 def test_activation_gate_never_deletes_workers_or_durable_storage() -> None:
     source = _source()
     assert source.count("-X DELETE") == 1
