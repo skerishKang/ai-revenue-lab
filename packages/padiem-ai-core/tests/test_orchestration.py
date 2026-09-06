@@ -172,6 +172,36 @@ async def test_agent_only_run_emits_no_tool_events() -> None:
     assert OrchestrationEventKind.EVIDENCE_ATTACHED not in event_kinds
 
 
+async def test_event_sink_delivers_events_in_emission_order() -> None:
+    runtime = FakeRuntime("sink answer")
+    received: list[OrchestrationEvent] = []
+    runner = OrchestrationRunner(runtime=runtime, event_sink=received.append)
+
+    agent = make_agent_profile()
+    ctx = make_context("trace_sink")
+    req = OrchestrationRequest(
+        execution_request=ExecutionRequest(
+            agent=agent,
+            messages=({"role": "user", "content": "hello world"},),
+            trace_id="trace_sink",
+        ),
+        context=ctx,
+        app_id="b62",
+    )
+
+    result = await runner.run(req)
+    # The sink observes the exact same events, in the same order, as the result log.
+    assert [e.kind for e in received] == [e.kind for e in result.events]
+    assert [e.sequence for e in received] == list(range(1, len(received) + 1))
+    assert received[-1].kind == OrchestrationEventKind.RUN_COMPLETED
+
+
+async def test_event_sink_invalid_callable_fails_closed() -> None:
+    with pytest.raises(OrchestrationError) as exc_info:
+        OrchestrationRunner(runtime=FakeRuntime(), event_sink=object())  # type: ignore[arg-type]
+    assert exc_info.value.code == "invalid_event_sink"
+
+
 async def test_agent_with_real_tool_events_emits_tool_lifecycle() -> None:
     tool_events = (
         ToolEvent(tool_id="calculator", status=RunStatus.COMPLETED, duration_ms=42),

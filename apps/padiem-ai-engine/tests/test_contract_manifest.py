@@ -14,7 +14,12 @@ from app.contract_manifest import (
     current_engine_contract_manifest,
     require_compatible_engine_contract,
 )
-from app.orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
+from app.orchestration_service import (
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
+)
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
@@ -35,6 +40,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", ORCHESTRATE_PATH),
         ("POST", ORCHESTRATE_RESUME_PATH),
         ("POST", ORCHESTRATE_CANCEL_PATH),
+        ("POST", ORCHESTRATION_STREAM_PATH),
         ("POST", RESEARCH_PATH),
         ("POST", MEMORY_PATH),
         ("POST", MEMORY_WRITE_PATH),
@@ -52,6 +58,7 @@ def test_orchestration_and_research_routes_declared_by_manifest() -> None:
     assert ("POST", ORCHESTRATE_PATH) in endpoints
     assert ("POST", ORCHESTRATE_RESUME_PATH) in endpoints
     assert ("POST", ORCHESTRATE_CANCEL_PATH) in endpoints
+    assert ("POST", ORCHESTRATION_STREAM_PATH) in endpoints
     assert ("POST", RESEARCH_PATH) in endpoints
     assert ("POST", MEMORY_PATH) in endpoints
     assert ("POST", MEMORY_WRITE_PATH) in endpoints
@@ -72,6 +79,7 @@ def test_current_completed_streaming_and_orchestration_features_are_available() 
         "orchestration_run",
         "orchestration_resume",
         "orchestration_cancel",
+        "orchestration_stream",
     ):
         assert manifest.feature_state(feature_id) is EngineFeatureState.AVAILABLE
 

@@ -26,8 +26,10 @@ from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
     InMemoryContinuationStore,
     OrchestrationEngineService,
+    PreparedOrchestrationStream,
 )
 from app.service import ServiceContractError, ServiceResponse
 from padiem_ai_core import OrchestrationRunner
@@ -379,23 +381,140 @@ async def test_orchestrate_http_routing() -> None:
     assert resp_404.status_code == 404
 
 
-async def test_orchestrate_stream_route_is_explicitly_deferred_not_routed() -> None:
+async def _collect_orchestration_stream_lines(service: OrchestrationEngineService, raw_body: bytes) -> list[dict]:
+    prepared = await service.prepare_stream(
+        method="POST",
+        path=ORCHESTRATION_STREAM_PATH,
+        content_type="application/json",
+        body=raw_body,
+    )
+    assert isinstance(prepared, PreparedOrchestrationStream)
+    return [json.loads(line) async for line in service.iter_ndjson(prepared)]
+
+
+async def test_orchestrate_stream_emits_lifecycle_events_and_result() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(answer="streamed answer"),
+        b14_service_bound=True,
+    )
+    raw_body = json.dumps(make_valid_payload()).encode("utf-8")
+    lines = await _collect_orchestration_stream_lines(service, raw_body)
+
+    # Lifecycle event lines: RUN_STARTED -> CONTEXT_PREPARED -> RUN_COMPLETED
+    event_lines = [line for line in lines if "event" in line]
+    assert [line["event"]["kind"] for line in event_lines] == [
+        "run_started",
+        "context_prepared",
+        "run_completed",
+    ]
+    assert all(line["ok"] is True for line in event_lines)
+    sequences = [line["event"]["sequence"] for line in event_lines]
+    assert sequences == list(range(1, len(sequences) + 1))
+    assert len({line["event"]["run_id"] for line in event_lines}) == 1
+    assert all(line["event"]["trace_id"] == "tr_orch_test" for line in event_lines)
+
+    # Terminal result line mirrors the non-stream orchestration body.
+    result_line = lines[-1]
+    assert "event" not in result_line
+    assert result_line["ok"] is True
+    assert result_line["orchestration"]["execution"]["answer"] == "streamed answer"
+
+
+async def test_orchestrate_stream_emits_error_line_when_run_fails() -> None:
     service = OrchestrationEngineService(
         runtime_factory=lambda app_id: MockEngineRuntime(),
         b14_service_bound=True,
     )
-    raw_body = json.dumps(make_valid_payload()).encode("utf-8")
+    payload = make_valid_payload()
+    payload["require_evidence"] = True
+    raw_body = json.dumps(payload).encode("utf-8")
+    lines = await _collect_orchestration_stream_lines(service, raw_body)
 
-    response = await service.handle(
+    # Lifecycle events stream until the failure, then a terminal error line.
+    assert lines[-1]["ok"] is False
+    assert lines[-1]["error"]["code"] == "required_evidence_missing"
+    assert "run_failed" in [line.get("event", {}).get("kind") for line in lines]
+
+
+async def test_orchestrate_stream_rejects_method_not_allowed() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    response = await service.prepare_stream(
+        method="GET",
+        path=ORCHESTRATION_STREAM_PATH,
+        content_type="application/json",
+        body=b"{}",
+    )
+    assert isinstance(response, ServiceResponse)
+    assert response.status_code == 405
+    assert response.body["error"]["code"] == "method_not_allowed"
+
+
+async def test_orchestrate_stream_rejects_non_json_content_type() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    response = await service.prepare_stream(
         method="POST",
-        path="/internal/v1/orchestrate/stream",
+        path=ORCHESTRATION_STREAM_PATH,
+        content_type="text/plain",
+        body=b"{}",
+    )
+    assert isinstance(response, ServiceResponse)
+    assert response.status_code == 415
+    assert response.body["error"]["code"] == "unsupported_media_type"
+
+
+async def test_orchestrate_stream_rejects_invalid_json() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    response = await service.prepare_stream(
+        method="POST",
+        path=ORCHESTRATION_STREAM_PATH,
+        content_type="application/json",
+        body=b"{not-json",
+    )
+    assert isinstance(response, ServiceResponse)
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "invalid_json"
+
+
+async def test_orchestrate_stream_rejects_unknown_path() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=True,
+    )
+    response = await service.prepare_stream(
+        method="POST",
+        path="/internal/v1/orchestrate/streamx",
+        content_type="application/json",
+        body=b"{}",
+    )
+    assert isinstance(response, ServiceResponse)
+    assert response.status_code == 404
+    assert response.body["error"]["code"] == "not_found"
+
+
+async def test_orchestrate_stream_fails_closed_when_b14_unbound() -> None:
+    service = OrchestrationEngineService(
+        runtime_factory=lambda app_id: MockEngineRuntime(),
+        b14_service_bound=False,
+    )
+    raw_body = json.dumps(make_valid_payload()).encode("utf-8")
+    response = await service.prepare_stream(
+        method="POST",
+        path=ORCHESTRATION_STREAM_PATH,
         content_type="application/json",
         body=raw_body,
     )
-
-    assert response.status_code == 404
-    assert response.body["ok"] is False
-    assert response.body["error"]["code"] == "not_found"
+    assert isinstance(response, ServiceResponse)
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "b14_service_unavailable"
 
 
 # ==============================================================================

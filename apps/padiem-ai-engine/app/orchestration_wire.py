@@ -28,6 +28,7 @@ from app.service import ServiceContractError
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
+ORCHESTRATION_STREAM_PATH = "/internal/v1/orchestrate/stream"
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")

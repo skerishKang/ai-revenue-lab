@@ -72,6 +72,7 @@ from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
     OrchestrationEngineService,
 )
 from app.service import EXECUTE_PATH, EngineService, ServiceResponse
@@ -303,6 +304,7 @@ def test_manifest_routes_match_route_constants() -> None:
             ORCHESTRATE_PATH,
             ORCHESTRATE_RESUME_PATH,
             ORCHESTRATE_CANCEL_PATH,
+            ORCHESTRATION_STREAM_PATH,
         ),
         "continuation/approval": (ORCHESTRATE_RESUME_PATH,),
         "multi_caller_identity": (),

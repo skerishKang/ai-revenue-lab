@@ -7,7 +7,7 @@ resumption, and cancellation over the internal Engine transport.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Mapping
+from collections.abc import AsyncIterator, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import inspect
@@ -75,6 +75,7 @@ from app.orchestration_wire import (  # noqa: E402
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
     ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATION_STREAM_PATH,
     _SAFE_ID_RE,
     _IDENTIFIER_RE,
     _AGENT_ID_RE,
@@ -136,6 +137,43 @@ class ApprovalDecisionVerifier(Protocol):
 
 
 _DEFAULT_CONTINUATION_STORE = InMemoryContinuationStore()
+
+# ---------------------------------------------------------------------------
+# Orchestration NDJSON stream (#1962)
+# ---------------------------------------------------------------------------
+ORCHESTRATION_NDJSON_CONTENT_TYPE = "application/x-ndjson; charset=utf-8"
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedOrchestrationStream:
+    """A primed orchestration run whose lifecycle events stream as NDJSON.
+
+    Mirrors ``PreparedStream`` in ``app.streaming_service``: all wire
+    validation happens before HTTP 200 commits and the first lifecycle event
+    (or an immediate run failure) is resolved during preparation.
+    """
+
+    first_event: OrchestrationEvent
+    queue: asyncio.Queue[OrchestrationEvent]
+    task: asyncio.Task[OrchestrationResult]
+    app_id: str
+    request_fingerprint_value: str | None = None
+
+
+def _encode_line(payload: dict[str, Any]) -> str:
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+
+
+def _stream_event_line(event: OrchestrationEvent) -> str:
+    return _encode_line({"ok": True, "event": event.to_public_dict()})
+
+
+def _stream_result_line(orchestration_body: dict[str, Any]) -> str:
+    return _encode_line({"ok": True, "orchestration": orchestration_body})
+
+
+def _stream_error_line(response: ServiceResponse) -> str:
+    return _encode_line(dict(response.body))
 
 
 def _execution_request_fingerprint(*, app_id: str, request: ExecutionRequest) -> str:
@@ -543,8 +581,48 @@ class OrchestrationEngineService:
                 raise
         return body
 
-    async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
-        """Execute an orchestration request through OrchestrationRunner."""
+    @staticmethod
+    def _orchestration_run_error_response(exc: BaseException) -> ServiceResponse | None:
+        """Map a run-time orchestration failure to the bounded error envelope.
+
+        Shared by the JSON orchestrate route and the NDJSON stream so both
+        surface byte-identical error codes and retryability.
+        """
+        if isinstance(exc, IdempotencyConflictError):
+            return _service_error(
+                "idempotency_conflict",
+                "Idempotency key is already bound to a different execution request.",
+                status_code=409,
+            )
+        if isinstance(exc, OrchestrationError):
+            if exc.code in {"authorization_denied", "missing_approval_authorization", "capability_missing"}:
+                return _service_error(exc.code, exc.safe_message, status_code=403)
+            status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
+            return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        if isinstance(exc, EngineToolProjectionError):
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        if isinstance(exc, ExecutionRuntimeError):
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
+        return None
+
+    def _orchestrate_request_from_payload(
+        self,
+        payload: Any,
+    ) -> tuple[str, OrchestrationRequest, ExecutionRequest, str] | ServiceResponse:
+        """Validate untrusted wire input and build a bounded OrchestrationRequest.
+
+        Returns either the built request with its logical fingerprint, or a
+        ServiceResponse describing the contract failure. Shared by the JSON
+        orchestrate route and the NDJSON orchestration stream route so both
+        enforce the identical wire contract.
+        """
         if not self._b14_service_bound:
             return _service_error(
                 "b14_service_unavailable",
@@ -609,39 +687,31 @@ class OrchestrationEngineService:
         except (TypeError, ValueError, OverflowError):
             return _service_error("invalid_request", "Orchestration request fields are invalid.", status_code=400)
 
+        return app_id, orch_req, exec_req, _execution_request_fingerprint(app_id=app_id, request=exec_req)
+
+    async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
+        """Execute an orchestration request through OrchestrationRunner."""
+        built = self._orchestrate_request_from_payload(payload)
+        if isinstance(built, ServiceResponse):
+            return built
+        app_id, orch_req, exec_req, request_fingerprint_value = built
+
         try:
             runtime = self._runtime_factory(app_id)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.run(orch_req)
-        except IdempotencyConflictError:
-            return _service_error(
-                "idempotency_conflict",
-                "Idempotency key is already bound to a different execution request.",
-                status_code=409,
-            )
-        except OrchestrationError as exc:
-            if exc.code in {"authorization_denied", "missing_approval_authorization", "capability_missing"}:
-                return _service_error(exc.code, exc.safe_message, status_code=403)
-            status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
-            return _service_error(exc.code, exc.safe_message, status_code=status_code)
-        except EngineToolProjectionError as exc:
-            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
-        except ExecutionRuntimeError as exc:
-            if _is_b14_model_error(exc):
-                return _service_error(
-                    exc.code,
-                    exc.safe_message,
-                    status_code=_b14_model_error_status(exc),
-                    retryable=exc.retryable,
-                )
-            return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
+        except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
+            response = self._orchestration_run_error_response(exc)
+            if response is not None:
+                return response
+            raise
         except Exception:
             return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
         try:
             orchestration_body = await self._orchestration_body(
                 result,
                 app_id=app_id,
-                request_fingerprint_value=_execution_request_fingerprint(app_id=app_id, request=exec_req),
+                request_fingerprint_value=request_fingerprint_value,
             )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
@@ -1049,6 +1119,170 @@ class OrchestrationEngineService:
                 "events": [e.to_public_dict() for e in events],
             },
         )
+
+    async def prepare_stream(
+        self,
+        *,
+        method: str,
+        path: str,
+        content_type: str | None = None,
+        body: bytes = b"",
+    ) -> PreparedOrchestrationStream | ServiceResponse:
+        """Validate and prime an orchestration stream before HTTP 200 commits.
+
+        Mirrors the NDJSON streaming contract used by ``StreamingEngineService``:
+        every wire validation runs here so route-level failures surface as
+        normal JSON error responses, and the first lifecycle event (or an
+        immediate run failure) is awaited before the caller starts writing.
+        """
+
+        normalized_method = method.upper() if isinstance(method, str) else ""
+        if path != ORCHESTRATION_STREAM_PATH:
+            return _service_error("not_found", "Orchestration route not found.", status_code=404)
+        if normalized_method != "POST":
+            return _service_error("method_not_allowed", "Method not allowed.", status_code=405)
+        if not isinstance(content_type, str) or content_type.split(";", 1)[0].strip().lower() != "application/json":
+            return _service_error("unsupported_media_type", "Content-Type must be application/json.", status_code=415)
+        if not isinstance(body, (bytes, bytearray, memoryview)):
+            return _service_error("invalid_request", "Request body is invalid.", status_code=400)
+        raw = bytes(body)
+        if len(raw) > MAX_REQUEST_BODY_BYTES:
+            return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return _service_error("invalid_json", "Request body must contain valid UTF-8 JSON.", status_code=400)
+
+        built = self._orchestrate_request_from_payload(payload)
+        if isinstance(built, ServiceResponse):
+            return built
+        app_id, orch_req, _exec_req, request_fingerprint_value = built
+
+        # The synchronous sink receives events in emission order (Core's emit
+        # closures deliver synchronously); an unbounded asyncio.Queue never
+        # suspends on put_nowait, so ordering and liveness are preserved.
+        queue: asyncio.Queue[OrchestrationEvent] = asyncio.Queue()
+        runner = OrchestrationRunner(
+            runtime=self._runtime_factory(app_id),
+            idempotency=self._idempotency_adapter,
+            event_sink=queue.put_nowait,
+        )
+        task = asyncio.create_task(runner.run(orch_req))
+        first_event_task = asyncio.ensure_future(queue.get())
+        done, _pending = await asyncio.wait(
+            {first_event_task, task},
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        if task in done and first_event_task in done:
+            # The queue consumer observed the first event in the same turn the
+            # run completed; that observed event is the first visible
+            # lifecycle event and any remaining queued events stream after it.
+            return PreparedOrchestrationStream(
+                first_event=first_event_task.result(),
+                queue=queue,
+                task=task,
+                app_id=app_id,
+                request_fingerprint_value=request_fingerprint_value,
+            )
+        if task in done:
+            if first_event_task not in done:
+                first_event_task.cancel()
+                try:
+                    await first_event_task
+                except (asyncio.CancelledError, Exception):
+                    pass
+            # A run can complete (or fail) in the same event-loop turn that
+            # produces its first event, before the queue consumer ever runs.
+            # A populated queue is a valid stream: the first queued event is
+            # the first visible lifecycle event and the task result/exception
+            # settles in iter_ndjson exactly like a slow run.
+            if not queue.empty():
+                return PreparedOrchestrationStream(
+                    first_event=queue.get_nowait(),
+                    queue=queue,
+                    task=task,
+                    app_id=app_id,
+                    request_fingerprint_value=request_fingerprint_value,
+                )
+            try:
+                await task
+            except asyncio.CancelledError:
+                raise
+            except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
+                response = self._orchestration_run_error_response(exc)
+                if response is not None:
+                    return response
+                return _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            except Exception:
+                return _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            # A run that ends before its first lifecycle event violates the
+            # orchestration event contract: the RUN_STARTED event is always
+            # emitted synchronously at the start of a valid run.
+            return _service_error(
+                "malformed_upstream",
+                "Orchestration run ended before producing a lifecycle event.",
+                status_code=502,
+            )
+        return PreparedOrchestrationStream(
+            first_event=first_event_task.result(),
+            queue=queue,
+            task=task,
+            app_id=app_id,
+            request_fingerprint_value=request_fingerprint_value,
+        )
+
+    async def iter_ndjson(self, prepared: PreparedOrchestrationStream) -> AsyncIterator[str]:
+        """Emit one public orchestration event per line, then the settled result line.
+
+        The terminal NDJSON line carries the same orchestration body as the
+        non-stream ``/internal/v1/orchestrate`` route (including a
+        ``continuation_ref`` when the run paused for approval), so stream and
+        non-stream consumers settle on identical semantics.
+        """
+
+        if not isinstance(prepared, PreparedOrchestrationStream):
+            raise ValueError("prepared must be PreparedOrchestrationStream")
+        try:
+            yield _stream_event_line(prepared.first_event)
+            while not prepared.task.done():
+                event_task = asyncio.ensure_future(prepared.queue.get())
+                done, _pending = await asyncio.wait(
+                    {event_task, prepared.task},
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                if event_task in done:
+                    yield _stream_event_line(event_task.result())
+                if prepared.task in done and event_task not in done:
+                    event_task.cancel()
+            while not prepared.queue.empty():
+                yield _stream_event_line(prepared.queue.get_nowait())
+            result = prepared.task.result()
+            orchestration_body = await self._orchestration_body(
+                result,
+                app_id=prepared.app_id,
+                request_fingerprint_value=prepared.request_fingerprint_value,
+            )
+            yield _stream_result_line(orchestration_body)
+        except asyncio.CancelledError:
+            raise
+        except ServiceContractError as exc:
+            yield _stream_error_line(_service_error(exc.code, exc.safe_message, status_code=exc.status_code))
+        except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
+            response = self._orchestration_run_error_response(exc)
+            if response is None:
+                response = _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            yield _stream_error_line(response)
+        except Exception:
+            yield _stream_error_line(
+                _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            )
+        finally:
+            if not prepared.task.done():
+                prepared.task.cancel()
+                try:
+                    await prepared.task
+                except (asyncio.CancelledError, Exception):
+                    pass
 
     async def handle(
         self,
