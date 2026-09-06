@@ -44,14 +44,32 @@ jobs:
           test -n "${CLOUDFLARE_API_TOKEN}"
           auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
 
+          token_verify="${RUNNER_TEMP}/token-verify.json"
+          tv_code="$(curl -sS -o "${token_verify}" -w '%{http_code}' "${auth[@]}" "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)"
+          echo "TOKEN_VERIFY_HTTP_CODE=${tv_code}"
+          jq -e '.success == true' "${token_verify}" >/dev/null || { cat "${token_verify}"; exit 1; }
+
           zone="${RUNNER_TEMP}/zone.json"
-          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}" -o "${zone}"
+          zone_code="$(curl -sS -o "${zone}" -w '%{http_code}' "${auth[@]}" "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}" || true)"
+          echo "ZONE_LOOKUP_HTTP_CODE=${zone_code}"
+          if [ "${zone_code}" != "200" ]; then
+            echo "ZONE_LOOKUP_FAILED" >&2
+            jq -c '.errors // .' "${zone}" >&2 2>/dev/null || cat "${zone}" >&2
+            exit 1
+          fi
           jq -e '.success == true and (.result | length) == 1' "${zone}" >/dev/null
           zone_id="$(jq -r '.result[0].id' "${zone}")"
           test -n "${zone_id}"
+          echo "ZONE_ID=${zone_id}"
 
           records="${RUNNER_TEMP}/records.json"
-          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?name=${TARGET_HOSTNAME}&per_page=100" -o "${records}"
+          rec_code="$(curl -sS -o "${records}" -w '%{http_code}' "${auth[@]}" "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?name=${TARGET_HOSTNAME}&per_page=100" || true)"
+          echo "RECORDS_LOOKUP_HTTP_CODE=${rec_code}"
+          if [ "${rec_code}" != "200" ]; then
+            echo "RECORDS_LOOKUP_FAILED" >&2
+            jq -c '.errors // .' "${records}" >&2 2>/dev/null || cat "${records}" >&2
+            exit 1
+          fi
           jq -e '.success == true' "${records}" >/dev/null
 
           worker_count="$(jq '[.result[] | select(.type == "Worker")] | length' "${records}")"
@@ -80,7 +98,11 @@ jobs:
           response="${RUNNER_TEMP}/delete.json"
           code="$(curl -sS -o "${response}" -w '%{http_code}' -X DELETE "${auth[@]}" "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records/${record_id}" || true)"
           echo "DELETE_HTTP_CODE=${code}"
-          test "${code}" = "200"
+          if [ "${code}" != "200" ]; then
+            echo "DELETE_FAILED" >&2
+            jq -c '.errors // .' "${response}" >&2 2>/dev/null || cat "${response}" >&2
+            exit 1
+          fi
           jq -e --arg id "${record_id}" '.success == true and .result.id == $id' "${response}" >/dev/null
           echo "DNS_RESIDUE_DELETED=YES"
           echo "DELETE_SKIPPED=NO"
