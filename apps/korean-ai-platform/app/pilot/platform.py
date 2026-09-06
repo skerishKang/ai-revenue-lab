@@ -30,12 +30,14 @@ from app.pilot.errors import (
     MalformedUpstreamResponse,
     PilotNotConfigured,
     UpstreamAuthFailed,
+    UpstreamBusyRateLimited,
     UpstreamClientError,
     UpstreamRateLimited,
     UpstreamResponseTooLarge,
     UpstreamServerError,
     UpstreamTimeout,
 )
+from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
 from app.pilot.platform_secrets import (
@@ -135,12 +137,22 @@ def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     )
 
 
-def _raise_upstream_error(status: int, provider_id: str = "") -> None:
+def _raise_upstream_error(
+    status: int, provider_id: str = "", body_text: str = ""
+) -> None:
     if status in (401, 403):
         raise UpstreamAuthFailed()
     if status == 429:
         if provider_id == "kilo":
             raise KiloFreeRateLimited()
+        # #2003 SenseNova normalization: the gateway answers capacity
+        # pressure with 429 rate_limit_error "Server is busy" (measured
+        # 2026-09-06). Unlike an hourly quota this is transient, so it maps
+        # to the retryable busy class (UpstreamTimeout-equivalent:
+        # retryable=True, 429) and #1988's same-route retry absorbs it.
+        # The engine keeps seeing a retryable upstream_* code (#1947 path).
+        if provider_id == "sensenova" and is_transient_busy_429(body_text):
+            raise UpstreamBusyRateLimited()
         raise UpstreamRateLimited()
     if status == 400:
         raise MalformedUpstreamResponse()
@@ -223,7 +235,9 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
-        _raise_upstream_error(response.status_code, platform_provider_id)
+        _raise_upstream_error(
+            response.status_code, platform_provider_id, response.text
+        )
 
     try:
         response_data = response.json()
@@ -347,7 +361,12 @@ async def stream_platform_chat_completions(
                 follow_redirects=False,
             ) as response:
                 if response.status_code < 200 or response.status_code >= 300:
-                    _raise_upstream_error(response.status_code, platform_provider_id)
+                    # Read the small error body so provider-specific 429
+                    # normalization (#2003) can inspect it.
+                    error_body = (await response.aread()).decode("utf-8", "replace")
+                    _raise_upstream_error(
+                        response.status_code, platform_provider_id, error_body
+                    )
 
                 async for chunk in response.aiter_bytes():
                     total_bytes += len(chunk)
@@ -505,6 +524,8 @@ register_platform_provider(
 
 from app.pilot.poolside_provider import register_poolside_provider
 from app.pilot.kilo_provider import register_kilo_provider
+from app.pilot.sensenova_provider import register_sensenova_provider
 
 register_poolside_provider()
 register_kilo_provider()
+register_sensenova_provider()

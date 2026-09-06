@@ -107,6 +107,23 @@ class KiloFreeRateLimited(PilotError):
         self.retryable = True
 
 
+class UpstreamBusyRateLimited(PilotError):
+    """Transient capacity-pressure 429 (SenseNova "Server is busy", #2003).
+
+    Unlike an hourly quota this is retryable immediately: it is the
+    UpstreamTimeout-equivalent class for the #1988 same-route retry, so a
+    busy answer is absorbed by a short-backoff retry instead of surfacing.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="upstream_rate_limited_busy",
+            message="Provider가 일시적으로 바쁩니다. 즉시 재시도합니다.",
+            status_code=429,
+        )
+        self.retryable = True
+
+
 
 class UpstreamTimeout(PilotError):
     def __init__(self) -> None:

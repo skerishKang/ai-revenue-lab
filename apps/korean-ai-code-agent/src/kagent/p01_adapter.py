@@ -81,8 +81,9 @@ def _trace_id_for(run: ClawRun) -> str:
 def _agent_profile() -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
-    Claw directly connects to the owner-approved evidenced-free model
-    'stealth/ox-alpha'. Product/client task input cannot pin an arbitrary
+    Claw directly connects to the owner-approved pinned model
+    'sensenova/sensenova-6.8-flash-lite' (#2003, owner-provisioned key).
+    Product/client task input cannot pin an arbitrary
     Provider, model, fallback order, or credential through this adapter.
     """
 
@@ -101,7 +102,7 @@ def _agent_profile() -> AgentProfile:
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+        model_policy={"model": "sensenova/sensenova-6.8-flash-lite"},
         max_steps=1,
         output_contract={},
     )

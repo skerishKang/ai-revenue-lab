@@ -38,6 +38,7 @@ _AUTO_STREAM_PREVIEW_PATH = "/v1/chat/completions/auto-stream-preview"
 _PRESTART_ERRORS: dict[str, tuple[int, str]] = {
     "upstream_auth_failed": (401, "Provider 인증에 실패했습니다."),
     "upstream_rate_limited": (429, "Provider rate limit에 도달했습니다. 잠시 후 다시 시도하십시오."),
+    "upstream_rate_limited_busy": (429, "Provider가 일시적으로 바쁩니다. 잠시 후 다시 시도하십시오."),
     "kilo_free_rate_limited": (429, "Kilo Gateway 무료 티어 rate limit(200 req/hour)에 도달했습니다. 잠시 후 다시 시도하십시오."),
     "upstream_timeout": (504, "Provider 요청 시간이 초과되었습니다. 나중에 다시 시도하십시오."),
     "upstream_server_error": (502, "Provider 서버 오류가 발생했습니다. 나중에 다시 시도하십시오."),

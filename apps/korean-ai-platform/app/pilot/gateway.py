@@ -66,12 +66,13 @@ _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
 _UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
 # Retryable transport classes retried on the SAME route once no fallback
-# candidate remains. 429-style rate limits are deliberately excluded: they
-# mean "retry later" (Kilo free is an hourly quota) and the existing
-# cross-candidate fallback path already handles them.
+# candidate remains. Hourly-quota 429s are excluded (Kilo free is an hourly
+# quota); the SenseNova transient-busy 429 (#2003) IS included — it is
+# capacity pressure with UpstreamTimeout-equivalent semantics.
 _SAME_ROUTE_RETRYABLE_CODES = frozenset({
     "upstream_timeout",
     "upstream_server_error",
+    "upstream_rate_limited_busy",
 })
 
 logger = logging.getLogger("korean-ai-platform.pilot")
