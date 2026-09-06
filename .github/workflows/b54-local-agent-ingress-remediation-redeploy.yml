@@ -117,7 +117,7 @@ jobs:
           assert 'not isinstance(result.get("headers"), dict)' in bridge_source
           assert 'not isinstance(result.get("body"), dict)' in bridge_source
           assert 'type(result.get("status")) is not int' in bridge_source
-          assert "type(result) is not dict" not in bridge_source
+          assert "type(result) is" + " not dict" not in bridge_source
           print("REMEDIATION_SOURCE_CONTRACT=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
