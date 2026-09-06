@@ -196,7 +196,9 @@ def _build_review_prompt(repository: str, files: list[tuple[str, str]]) -> str:
         "각 파일을 리뷰하고 한국어로 구조화된 보고서를 작성하세요:\n"
         "- 파일별 핵심 관찰\n"
         "- 버그 · 보안 · 품질 위험\n"
-        "- 우선순위 있는 개선 제안"
+        "- 우선순위 있는 개선 제안\n"
+        "출력 길이 가이드: 각 파일 핵심 관찰은 2-3문장, "
+        "전체 보고서는 800자 이내로 간결하게 작성하세요."
     )
     return "\n".join(sections)
 

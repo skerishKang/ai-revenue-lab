@@ -170,6 +170,14 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         self.assertIn("## 리뷰 결과", report)
         self.assertIn("리뷰 완료", report)
 
+    def test_review_prompt_includes_bounded_length_guidance(self) -> None:
+        adapter = StubAdapter()
+        run_review(self.repo, ["src/app.py"], adapter)
+
+        task = adapter.runs[0].intent.task
+        self.assertIn("2-3문장", task)
+        self.assertIn("800자 이내", task)
+
     def test_review_prompt_carries_file_contents_in_task(self) -> None:
         adapter = StubAdapter()
         run_review(self.repo, ["src/app.py"], adapter)
