@@ -7,6 +7,7 @@ import sys
 
 from .core import AgentBoundaryError, AgentSession, redact_secrets
 from .p01_run_flow import run_p01_task
+from .review_flow import run_review_command
 
 
 def yes(prompt: str) -> bool:
@@ -130,11 +131,32 @@ def parser() -> argparse.ArgumentParser:
     )
     p01.add_argument("task", help="한국어 작업 설명")
     p01.add_argument("--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID")
+    review = sub.add_parser(
+        "review",
+        help="저장소 파일들을 P01 Engine으로 리뷰합니다 (설정 필수 · demo 폴백 없음)",
+    )
+    review.add_argument(
+        "targets", nargs="+", help="리뷰 대상 파일 또는 glob 패턴"
+    )
+    review.add_argument(
+        "--out", dest="out", default=None, help="마크다운 보고서를 기록할 파일 경로"
+    )
+    review.add_argument(
+        "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
+    )
     return p
 
 
 def main(argv: list[str] | None = None, *, adapter=None) -> int:
     args = parser().parse_args(argv)
+    if args.mode == "review":
+        return run_review_command(
+            Path(args.repository),
+            args.targets,
+            adapter=adapter,
+            run_id=args.run_id,
+            out_path=Path(args.out) if args.out else None,
+        )
     task = getattr(args, "task", None)
     if not task:
         parser().print_help()
