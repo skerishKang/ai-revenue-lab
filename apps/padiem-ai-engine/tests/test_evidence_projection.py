@@ -512,10 +512,12 @@ def test_projection_sources_are_product_neutral(module: str) -> None:
         assert forbidden not in source
 
 
-def test_manifest_web_projection_is_production_activated() -> None:
-    # E9 A1 (#1744): Web/Research projection features were Production-activated
-    # by the owner-authorized bounded dispatch on main ed18a2a8.
+def test_manifest_web_projection_is_truthfully_deferred() -> None:
+    # E9 A1 (#1744): the earlier bounded dispatch flipped these AVAILABLE, but
+    # wrangler.toml has no [vars]/keep_vars (owner decision D2, WO-7), so the
+    # web provider var cannot survive a deploy and the Production composition
+    # fails closed 503 web_tools_off. The manifest must not claim AVAILABLE.
     manifest = current_engine_contract_manifest()
-    assert manifest.feature_state("web_search_projection").value == "available"
-    assert manifest.feature_state("web_fetch_projection").value == "available"
-    assert manifest.feature_state("deep_research_projection").value == "available"
+    assert manifest.feature_state("web_search_projection").value == "deferred"
+    assert manifest.feature_state("web_fetch_projection").value == "deferred"
+    assert manifest.feature_state("deep_research_projection").value == "deferred"

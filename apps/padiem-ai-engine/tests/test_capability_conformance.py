@@ -272,11 +272,6 @@ def test_capability_states_match_routed_truth() -> None:
         "orchestration",
         "multi_caller_identity",
         "evidence_citations",
-        # E9 A1: Web/Research family is Production-activated (owner-authorized
-        # bounded dispatch on main ed18a2a8; see E9_ACTIVATION_PLAN.md).
-        "web_search",
-        "web_fetch",
-        "deep_research",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
@@ -290,6 +285,12 @@ def test_capability_states_match_routed_truth() -> None:
         # composition injects no tool binding resolver, so the AVAILABLE claim
         # was not production truth (WO-2 gate must pass before re-activation).
         "tool_runtime",
+        # E9 A1: reverted to DEFERRED per owner decision D2 (WO-7) — wrangler.toml
+        # has no [vars]/keep_vars, so the web provider var cannot survive a deploy
+        # and the composition fails closed 503 web_tools_off (not production truth).
+        "web_search",
+        "web_fetch",
+        "deep_research",
     ):
         assert state_of[capability_id] is CapabilityState.DEFERRED
     for capability_id in ("public_browser_api", "provider_selection"):

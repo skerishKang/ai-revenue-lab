@@ -173,9 +173,12 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
             # E9 A1 (#1744): Web/Research projection features follow the owner-authorized
             # bounded activation dispatch on main ed18a2a8 (see E9_ACTIVATION_PLAN.md).
-            EngineFeatureContract("web_search_projection", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("web_fetch_projection", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("deep_research_projection", EngineFeatureState.AVAILABLE),
+            # WO-7 (owner decision D2, 2026-09-06): reverted to DEFERRED —
+            # no live web provider var can exist (wrangler.toml has no [vars]
+            # / keep_vars), so the composition fails closed 503 web_tools_off.
+            EngineFeatureContract("web_search_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("web_fetch_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("deep_research_projection", EngineFeatureState.DEFERRED),
             # E9 A3 (#1746): reverted to DEFERRED per CTO audit 2026-09-06 —
             # the Production composition injects no tool binding resolver, so
             # the earlier AVAILABLE claim was not production truth. Re-activation
