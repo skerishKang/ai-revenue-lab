@@ -62,6 +62,12 @@ ENGINE_FIRECRAWL_API_KEY_ENV = "PADIEM_ENGINE_FIRECRAWL_API_KEY"
 ENGINE_DAUM_REST_API_KEY_ENV = "PADIEM_ENGINE_DAUM_REST_API_KEY"
 ENGINE_DAUM_SEARCH_SORT_ENV = "PADIEM_ENGINE_DAUM_SEARCH_SORT"
 ENGINE_WEB_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_WEB_TIMEOUT_SECONDS"
+# #1990: the B14 transport timeout must cover B14's full retry chain
+# (#1988: 45s hard cap + ~1.5s backoff overhead). Default 50s = 45s retry
+# cap + 5s margin; the engine orchestration budget is 60s, leaving 10s.
+# Core enforces the 1-60s bound on B14ExecutionConfig.timeout_seconds.
+ENGINE_B14_TIMEOUT_SECONDS_ENV = "PADIEM_ENGINE_B14_TIMEOUT_SECONDS"
+B14_TIMEOUT_DEFAULT_SECONDS = 50.0
 
 
 def _binding_value(env: Any, name: str) -> Any | None:
@@ -77,6 +83,17 @@ def _env_text(env: Any, name: str) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _b14_timeout_seconds_for_env(env: Any) -> float:
+    """B14 transport timeout (seconds), env-tunable via a plain Worker var.
+
+    Default 50.0 (#1990). Values outside Core's 1-60 bound fail closed in
+    B14ExecutionConfig itself; this helper only parses, never clamps.
+    """
+
+    raw = _env_text(env, ENGINE_B14_TIMEOUT_SECONDS_ENV)
+    return B14_TIMEOUT_DEFAULT_SECONDS if raw is None else float(raw)
 
 
 def _web_runtime_config_for_env(env: Any) -> WebRuntimeConfig:
@@ -239,7 +256,10 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         binding=binding,
         request_factory=Request,
     )
-    config = B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN)
+    config = B14ExecutionConfig(
+        base_url=B14_INTERNAL_ORIGIN,
+        timeout_seconds=_b14_timeout_seconds_for_env(env),
+    )
     b14_client = B14ExecutionClient(config, transport=transport)
     b14_stream_client = B14StreamingClient(config, transport=transport)
     idempotency_adapter = _idempotency_adapter_for_env(env)
