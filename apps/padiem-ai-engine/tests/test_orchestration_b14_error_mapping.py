@@ -21,17 +21,19 @@ import json
 import httpx
 import pytest
 
-from padiem_ai_core import (
+from padiem_ai_core.b14_execution import (
     B14ChatRequest,
     B14ExecutionClient,
     B14ExecutionConfig,
     B14ExecutionError,
+)
+from padiem_ai_core.contracts import (
     ErrorClass,
-    ExecutionRuntimeError,
-    OrchestrationRunner,
     RunMetadata,
     RunStatus,
 )
+from padiem_ai_core.orchestration import OrchestrationRunner
+from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from app.orchestration_service import OrchestrationEngineService
 from app.service import ServiceResponse
 
