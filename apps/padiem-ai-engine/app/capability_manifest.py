@@ -447,13 +447,17 @@ def current_capability_manifest() -> CapabilityManifest:
                     stream_final_parity="pass",
                 ),
             ),
-            # E9 A3 (#1746): tool_runtime became AVAILABLE by owner-authorized
-            # bounded Production activation dispatch on main 1f6220d5 (gate
-            # evidence recorded in docs/operations/E9_ACTIVATION_PLAN.md;
-            # rollback anchor preserved in app/tool_runtime_activation.py).
+            # E9 A3 (#1746): the earlier bounded activation dispatch (main
+            # 1f6220d5) flipped this entry AVAILABLE, but the Production
+            # composition (worker_identity.py) injects no tool binding
+            # resolver, so every request fails closed 503
+            # tool_runtime_unavailable. Reverted to DEFERRED per CTO audit
+            # 2026-09-06 (SOURCE_PRESENT != AVAILABLE); re-activation requires
+            # the WO-2 production composition conformance gate plus a real
+            # tool binding resolver in a separately authorized activation PR.
             CapabilityDeclaration(
                 id="tool_runtime",
-                state=CapabilityState.AVAILABLE,
+                state=CapabilityState.DEFERRED,
                 routes=(TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH),
                 scope=_row(
                     tenant_scope="bounded",
