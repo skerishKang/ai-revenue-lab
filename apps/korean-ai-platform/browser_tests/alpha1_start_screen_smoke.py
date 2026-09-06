@@ -19,6 +19,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.request
 from typing import Any
@@ -35,6 +36,8 @@ BASE_URL = "http://127.0.0.1:8765"
 PORT = 8765
 
 CHAT_ENDPOINT = "/api/pilot/v1/chat/completions"
+
+_SERVER_LOG: Any = None
 
 
 def _fail(msg: str) -> None:
@@ -54,20 +57,29 @@ def _check_chromium_available() -> None:
 
 
 def start_server() -> subprocess.Popen[bytes]:
+    global _SERVER_LOG
     env = os.environ.copy()
     env["B14_PROVIDER_MODE"] = "mock"
     env["OPENROUTER_API_KEY"] = ""
+    # Drain server logs to a file, never to unread PIPEs: uvicorn writes an
+    # access-log line per request, an undrained pipe fills after ~50 requests,
+    # and the blocked server then times out the mobile phase's first goto.
+    log_path = os.path.join(tempfile.gettempdir(), f"b14-smoke-server-{os.getpid()}.log")
+    log = open(log_path, "a+", encoding="utf-8")
+    _SERVER_LOG = log
     proc = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", str(PORT)],
         cwd=APP_ROOT,
         env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=log,
+        stderr=subprocess.STDOUT,
     )
     for _ in range(120):
         if proc.poll() is not None:
-            out, err = proc.communicate()
-            raise RuntimeError(f"Server failed: {err.decode()[:1000]}")
+            log.flush()
+            log.seek(0)
+            tail = log.read()[-1000:]
+            raise RuntimeError(f"Server failed: {tail or log_path}")
         try:
             urllib.request.urlopen(f"{BASE_URL}/workspace", timeout=1)
             return proc
@@ -83,6 +95,9 @@ def stop_server(proc: subprocess.Popen[bytes]) -> None:
     except ProcessLookupError:
         pass
     proc.wait()
+    if _SERVER_LOG is not None:
+        _SERVER_LOG.close()
+
 
 
 def _capture_requests(page: Any) -> list[dict]:
@@ -267,7 +282,7 @@ def run_desktop(p: Any) -> dict:
     def s16():
         biz = chat_responses[-1].get("business14", {})
         route_id = biz.get("selected_route_id", "")
-        assert route_id.startswith("openrouter:"), f"selected_route_id invalid: {route_id!r}"
+        assert route_id.startswith("platform:"), f"selected_route_id invalid: {route_id!r}"
         assert "@" not in route_id and "http" not in route_id
     _step("16. selected route ID confirmed", s16, results)
 
@@ -299,9 +314,9 @@ def run_desktop(p: Any) -> dict:
 
     # ── 20. Manual model selection ──
     def s20():
-        page.locator("#start_model").select_option("google/gemini-2.5-flash")
+        page.locator("#start_model").select_option("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
         page.wait_for_timeout(200)
-        assert page.locator("#start_model").input_value() == "google/gemini-2.5-flash"
+        assert page.locator("#start_model").input_value() == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
         radio = page.locator('input[name="start_route_mode"][value="manual"]')
         radio.check()
         page.wait_for_timeout(200)
@@ -336,7 +351,7 @@ def run_desktop(p: Any) -> dict:
         page.wait_for_timeout(1500)
         assert len(chat_responses) > before, "no second chat/completions network response"
         biz = chat_responses[-1].get("business14", {})
-        assert biz.get("selected_model") == "google/gemini-2.5-flash", (
+        assert biz.get("selected_model") == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", (
             f"expected manual model, got {biz.get('selected_model')}"
         )
         assert biz.get("fallback_allowed") is True, "fallback_allowed should be true when checkbox ON"
