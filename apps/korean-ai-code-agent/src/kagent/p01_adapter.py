@@ -101,7 +101,7 @@ def _agent_profile() -> AgentProfile:
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={"model": "stealth/ox-alpha"},
+        model_policy={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
         max_steps=1,
         output_contract={},
     )

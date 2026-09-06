@@ -41,7 +41,9 @@ def test_provider_readiness_mock_without_agnes_secret_is_not_ready(monkeypatch):
     assert kilo["route_ready"] is False
 
 
-def test_provider_readiness_live_with_agnes_secret_is_ready(monkeypatch):
+def test_provider_readiness_live_with_agnes_secret_is_ready(
+    monkeypatch, agnes_catalog_entry
+):
     secret = "agnes-health-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("AGNES_API_KEY", secret)

@@ -1,43 +1,21 @@
-"""Model catalog for Business 14 Alpha on OpenRouter.
+"""Model catalog for Business 14.
 
-Defines a curated set of OpenRouter models with pricing, capabilities,
-and Korean-language suitability metadata for the Router Core.
+Defines the single Kilo Gateway free route model under owner decision #1933.
 
 Source of truth
 ---------------
-Model IDs, display names, context lengths, and per-token prices are a
-**configured snapshot** taken from the public OpenRouter Models API
-(`GET https://openrouter.ai/api/v1/models`) at
-`CATALOG_SOURCE_CHECKED_AT`. Prices are snapshot metadata, NOT a live
-invoice — actual billing is between the owner and OpenRouter. A price of
-``0.0`` means "known free at snapshot time"; ``None`` means "unknown".
-
-The CLI entry point `python -m app.pilot.catalog validate-model-catalog`
-re-checks the snapshot against the live Models API and reports availability
-and price drift.
+The entire legacy OpenRouter catalog has been wiped per owner decision #1933.
+Business 14 connects exclusively to the Kilo Gateway free route:
+- Model ID: ``kilo/nvidia-nemotron-3-ultra-550b-a55b-free``
+- Upstream: ``nvidia/nemotron-3-ultra-550b-a55b:free``
+- Provider: Kilo Gateway / NVIDIA
+- Price: $0 / $0 (evidenced free)
+- Rate Limit: 200 requests/hour (fails closed with 429 when exhausted)
 
 Authentication
 --------------
-Models API의 현재 인증 요구는 upstream 정책에 따르며,
-키 없이 anonymous 검사를 시도할 수 있으나 성공을 보장하지 않는다.
-If OPENROUTER_API_KEY is set, the Authorization Bearer header is used.
-If no key is present, an anonymous request is attempted.
-HTTP 401/403 is reported as `authentication_required`, not `network_skipped`.
-Network errors are reported as `network_skipped`.
-The catalog is only `checked=true` when the live check succeeds.
-
-Free Models Router
-------------------
-``openrouter/free`` maps to upstream model ``openrouter/free`` — the
-OpenRouter Free Models Router itself. The request body sends exactly
-``"model": "openrouter/free"``; the concrete free model OpenRouter picks
-is returned in the response ``model`` field and preserved separately as
-``actual_response_model`` metadata.
-
-Kilo Code Provision & Free Coding Route
----------------------------------------
-``stealth/ox-alpha`` carries the Kilo Code provision / OpenRouter free coding
-route with evidenced $0/$0 pricing, coding, image, long-context, and free capabilities.
+Authentication follows the platform_secret slot (KILO_API_KEY). If unset,
+anonymous requests are permitted for the free tier per Kilo Gateway policy.
 """
 
 from __future__ import annotations
@@ -57,14 +35,14 @@ _KRW_PER_USD_CONFIGURED = 1380.0
 CATALOG_SOURCE = "openrouter_models_api"
 CATALOG_SOURCE_URL = "https://openrouter.ai/api/v1/models"
 CATALOG_SOURCE_CHECKED_AT = "2026-08-02T09:55:02Z"
-OX_ALPHA_SOURCE_CHECKED_AT = "2026-08-26"
+KILO_SOURCE_CHECKED_AT = "2026-09-06"
 SNAPSHOT_STATE_CONFIGURED = "configured_snapshot"
 
 TASK_TYPE_REQUIRED_CAPABILITIES: dict[str, frozenset] = {
     "general": frozenset({"chat"}),
     "korean": frozenset({"chat"}),
     "coding": frozenset({"chat", "coding"}),
-    "document": frozenset({"chat", "long_context"}),
+    "document": frozenset({"chat"}),
     "batch": frozenset({"chat"}),
 }
 
@@ -86,10 +64,10 @@ class CatalogModel:
     region: str = "외부"
     sort_order: int = 0
     enabled: bool = True
-    credential_source: str = "openrouter"
-    platform_provider_id: str = ""
-    source: str = CATALOG_SOURCE
-    source_checked_at: str = CATALOG_SOURCE_CHECKED_AT
+    credential_source: str = "platform_secret"
+    platform_provider_id: str = "kilo"
+    source: str = "kilo_official_gateway_models"
+    source_checked_at: str = KILO_SOURCE_CHECKED_AT
     snapshot_state: str = SNAPSHOT_STATE_CONFIGURED
 
     @property
@@ -136,121 +114,29 @@ class CatalogModel:
         return round(usd * _KRW_PER_USD_CONFIGURED, 1)
 
 
+# Single provider & route under owner decision #1933: Kilo Gateway free route.
+# Rate limit: 200 requests/hour. Fails closed with 429 when exhausted.
 CATALOG_MODELS: list[CatalogModel] = [
     CatalogModel(
-        model_id="stealth/ox-alpha",
-        upstream_model="stealth/ox-alpha",
-        display_name="Ox Alpha",
-        provider="Stealth",
-        provider_type="external",
+        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        display_name="Kilo: NVIDIA Nemotron 3 Ultra (free)",
+        provider="Kilo Gateway / NVIDIA",
+        provider_type="platform",
         input_price_usd_per_1m=0.0,
         output_price_usd_per_1m=0.0,
-        currency="usd",
-        context_window=1048576,
-        korean_score=4,
-        latency_ms=2000,
-        capabilities=frozenset({"chat", "image", "long_context", "coding", "free"}),
-        region="외부",
-        sort_order=60,
-        source_checked_at=OX_ALPHA_SOURCE_CHECKED_AT,
-    ),
-    CatalogModel(
-        model_id="openrouter/free",
-        upstream_model="openrouter/free",
-        display_name="Free Models Router (무료 라우터)",
-        provider="OpenRouter (free router)",
-        provider_type="external",
-        input_price_usd_per_1m=0.0,
-        output_price_usd_per_1m=0.0,
-        currency="usd",
-        context_window=200000,
-        korean_score=3,
-        latency_ms=700,
-        capabilities=frozenset({"chat", "free"}),
-        region="외부",
-        sort_order=50,
-    ),
-    CatalogModel(
-        model_id="google/gemini-2.5-flash",
-        upstream_model="google/gemini-2.5-flash",
-        display_name="Google: Gemini 2.5 Flash",
-        provider="Google",
-        provider_type="external",
-        input_price_usd_per_1m=0.30,
-        output_price_usd_per_1m=2.50,
-        currency="usd",
-        context_window=1048576,
-        korean_score=5,
-        latency_ms=750,
-        capabilities=frozenset({"chat", "image", "long_context", "coding"}),
-        region="외부",
-        sort_order=10,
-    ),
-    CatalogModel(
-        model_id="deepseek/deepseek-chat",
-        upstream_model="deepseek/deepseek-chat",
-        display_name="DeepSeek: DeepSeek V3",
-        provider="DeepSeek",
-        provider_type="external",
-        input_price_usd_per_1m=0.2574,
-        output_price_usd_per_1m=1.0287,
-        currency="usd",
-        context_window=163840,
-        korean_score=3,
-        latency_ms=500,
-        capabilities=frozenset({"chat", "coding"}),
-        region="외부",
-        sort_order=30,
-    ),
-    CatalogModel(
-        model_id="mistralai/mistral-small-3.2-24b-instruct",
-        upstream_model="mistralai/mistral-small-3.2-24b-instruct",
-        display_name="Mistral: Mistral Small 3.2 24B",
-        provider="Mistral",
-        provider_type="external",
-        input_price_usd_per_1m=0.075,
-        output_price_usd_per_1m=0.20,
-        currency="usd",
-        context_window=256000,
-        korean_score=3,
-        latency_ms=450,
-        capabilities=frozenset({"chat", "long_context"}),
-        region="외부",
-        sort_order=35,
-    ),
-    CatalogModel(
-        model_id="anthropic/claude-sonnet-4.5",
-        upstream_model="anthropic/claude-sonnet-4.5",
-        display_name="Anthropic: Claude Sonnet 4.5",
-        provider="Anthropic",
-        provider_type="external",
-        input_price_usd_per_1m=3.00,
-        output_price_usd_per_1m=15.00,
         currency="usd",
         context_window=1000000,
-        korean_score=5,
-        latency_ms=1100,
-        capabilities=frozenset({"chat", "coding", "long_context"}),
-        region="외부",
-        sort_order=5,
-    ),
-    CatalogModel(
-        model_id="agnes-ai/agnes-2.5-flash",
-        upstream_model="agnes-2.5-flash",
-        display_name="Agnes AI: Agnes 2.5 Flash",
-        provider="Agnes AI",
-        provider_type="platform",
-        input_price_usd_per_1m=None,
-        output_price_usd_per_1m=None,
-        currency="usd",
-        context_window=200000,
         korean_score=4,
-        latency_ms=900,
-        capabilities=frozenset({"chat"}),
+        latency_ms=1500,
+        capabilities=frozenset({"chat", "coding", "free"}),
         region="외부",
-        sort_order=70,
+        sort_order=10,
         credential_source="platform_secret",
-        platform_provider_id="agnes-ai",
+        platform_provider_id="kilo",
+        source="kilo_official_gateway_models",
+        source_checked_at=KILO_SOURCE_CHECKED_AT,
+        snapshot_state=SNAPSHOT_STATE_CONFIGURED,
     ),
 ]
 

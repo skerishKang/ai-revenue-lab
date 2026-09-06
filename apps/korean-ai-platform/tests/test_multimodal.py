@@ -66,7 +66,9 @@ def test_text_chat_contract_remains_backward_compatible(client):
     assert response.json()["business14"]["selected_model"]
 
 
-def test_valid_multimodal_auto_route_selects_image_capable_model(client, monkeypatch):
+def test_valid_multimodal_auto_route_selects_image_capable_model(
+    client, monkeypatch, ox_alpha_catalog_entry):
+
     from app.pilot import openrouter as orv
 
     captured = {}
@@ -160,7 +162,7 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     monkeypatch.setattr(orv, "call_openrouter_chat_completions", should_not_call)
     response = post_image(
         client,
-        model="openrouter/free",
+        model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         business14={"allow_external_fallback": True},
     )
     assert response.status_code == 503
@@ -201,7 +203,7 @@ async def test_live_openrouter_body_preserves_validated_multimodal_array():
             200,
             json={
                 "id": "live-test",
-                "model": "google/gemini-2.5-flash",
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
@@ -214,11 +216,11 @@ async def test_live_openrouter_body_preserves_validated_multimodal_array():
         messages=messages,
         temperature=0.2,
         max_tokens=100,
-        model_id="google/gemini-2.5-flash",
-        upstream_model="google/gemini-2.5-flash",
+        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         provider="Google",
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
-    assert captured["json"]["model"] == "google/gemini-2.5-flash"
+    assert captured["json"]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"

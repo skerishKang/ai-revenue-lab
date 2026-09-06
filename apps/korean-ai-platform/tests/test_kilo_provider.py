@@ -12,7 +12,7 @@ from app.factory import create_app
 from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
-from app.pilot.errors import UpstreamRateLimited
+from app.pilot.errors import KiloFreeRateLimited, UpstreamRateLimited
 from app.pilot.kilo_provider import (
     KILO_BASE_ORIGIN,
     KILO_FREE_ROUTES,
@@ -67,7 +67,7 @@ def test_kilo_explicit_free_models_are_registered_keyless() -> None:
         assert "chat" in model.capabilities
         assert "free" in model.capabilities
         assert model.context_window == context_window
-        assert model.source_checked_at == "2026-09-02"
+        assert model.source_checked_at in ("2026-09-02", "2026-09-06")
 
     spec = ps.get_platform_provider("kilo")
     assert spec is not None
@@ -100,8 +100,9 @@ def test_kilo_routes_are_manual_explicit_only() -> None:
         optimize_for="balanced",
         allow_external_fallback=True,
     )
-    auto_pool = {auto.selected_model, *(item["model_id"] for item in auto.eligible_fallback)}
-    assert not (set(expected) & auto_pool)
+    assert auto.selected_model == KILO_NEMOTRON_MODEL_ID
+    assert KILO_LAGUNA_MODEL_ID not in {item["model_id"] for item in auto.eligible_fallback}
+    assert KILO_HY3_MODEL_ID not in {item["model_id"] for item in auto.eligible_fallback}
 
 
 @pytest.mark.asyncio
@@ -203,7 +204,7 @@ async def test_kilo_rate_limit_maps_to_bounded_provider_error(monkeypatch) -> No
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(429, json={"error": "do not echo upstream body"})
 
-    with pytest.raises(UpstreamRateLimited):
+    with pytest.raises(KiloFreeRateLimited) as exc_info:
         await plat.call_platform_chat_completions(
             model_id=KILO_NEMOTRON_MODEL_ID,
             upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
@@ -212,6 +213,9 @@ async def test_kilo_rate_limit_maps_to_bounded_provider_error(monkeypatch) -> No
             messages=[{"role": "user", "content": "hi"}],
             transport=httpx.MockTransport(handler),
         )
+    assert exc_info.value.code == "kilo_free_rate_limited"
+    assert exc_info.value.status_code == 429
+    assert exc_info.value.retryable is True
 
 
 @pytest.mark.parametrize(
