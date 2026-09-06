@@ -234,24 +234,42 @@ async def test_orchestration_run_composition_reaches_b14_authority() -> None:
 
 
 @pytest.mark.asyncio
-async def test_tool_runtime_composition_must_not_fail_closed() -> None:
-    """AVAILABLE tool_runtime must be composed with a real binding resolver.
+async def test_tool_runtime_tracks_manifest_state() -> None:
+    """tool_runtime must match its manifest state at the composition seam.
 
-    Negative control: on pre-WO-1 main the manifest claims AVAILABLE while the
-    Production composition injects ``tool_binding_resolver=None``, so this
-    probe returns 503 ``tool_runtime_unavailable`` and fails — exactly the
-    false-AVAILABLE defect the CTO audit found (F1).
+    Negative control history: on pre-WO-1 main the manifest claimed AVAILABLE
+    while the Production composition injected ``tool_binding_resolver=None``,
+    so this probe returned 503 ``tool_runtime_unavailable`` — exactly the
+    false-AVAILABLE defect the CTO audit found (F1). After the WO-1 revert the
+    capability is DEFERRED, so the composition MUST fail closed; when a future
+    activation PR flips the manifest back to AVAILABLE it must also wire a
+    real resolver, and the assertion below flips with the manifest.
     """
-    compose = _load_composition()
-    services = compose(_StubEnv())
+    from app.capability_manifest import CapabilityState, current_capability_manifest
     from app.tool_projection import TOOL_EXECUTE_PATH
 
+    compose = _load_composition()
+    services = compose(_StubEnv())
     assert services.tool_execution is not None
     response = await _call(services.tool_execution, path=TOOL_EXECUTE_PATH, payload=_tool_payload())
-    assert not _is_fail_closed(response), (
-        "tool_runtime is manifest-AVAILABLE but the Production composition "
-        f"fails closed: {response.status_code} {response.body}"
-    )
+
+    manifest_state = None
+    for declaration in current_capability_manifest().capabilities:
+        if declaration.id == "tool_runtime":
+            manifest_state = declaration.state
+            break
+    assert manifest_state is not None
+
+    if manifest_state is CapabilityState.AVAILABLE:
+        assert not _is_fail_closed(response), (
+            "tool_runtime is manifest-AVAILABLE but the Production composition "
+            f"fails closed: {response.status_code} {response.body}"
+        )
+    else:
+        assert _is_fail_closed(response), (
+            "tool_runtime is manifest-DEFERRED but the Production composition "
+            f"did not fail closed: {response.status_code} {response.body}"
+        )
 
 
 @pytest.mark.asyncio
