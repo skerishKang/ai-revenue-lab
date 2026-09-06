@@ -276,11 +276,13 @@ def test_capability_states_match_routed_truth() -> None:
         "web_search",
         "web_fetch",
         "deep_research",
+        # E9 A3: Tool Runtime is Production-activated (owner-authorized bounded
+        # dispatch on main 1f6220d5; see E9_ACTIVATION_PLAN.md).
+        "tool_runtime",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
         "continuation/approval",
-        "tool_runtime",
         "memory_rag",
         "agent_skill_runtime",
         "file_document_multimodal",

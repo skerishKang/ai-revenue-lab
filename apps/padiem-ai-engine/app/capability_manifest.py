@@ -445,12 +445,13 @@ def current_capability_manifest() -> CapabilityManifest:
                     stream_final_parity="pass",
                 ),
             ),
-            # E9 A3 (#1746): tool_runtime stays DEFERRED until the owner-authorized
-            # activation dispatch completes. The activation gate records readiness
-            # only; see app/tool_runtime_activation.py (PENDING_PRODUCTION_AUTHORIZATION).
+            # E9 A3 (#1746): tool_runtime became AVAILABLE by owner-authorized
+            # bounded Production activation dispatch on main 1f6220d5 (gate
+            # evidence recorded in docs/operations/E9_ACTIVATION_PLAN.md;
+            # rollback anchor preserved in app/tool_runtime_activation.py).
             CapabilityDeclaration(
                 id="tool_runtime",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH),
                 scope=_row(
                     tenant_scope="bounded",
