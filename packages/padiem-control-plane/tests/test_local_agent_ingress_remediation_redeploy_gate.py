@@ -28,8 +28,8 @@ def test_gate_is_manual_only_for_production_mutation() -> None:
 
 def test_gate_pins_exact_pre_fix_production_versions_and_topology() -> None:
     source = _source()
-    assert "8de403cd-b6c9-4280-a673-1e3fa4bea203" in source
-    assert "7bf165c0-f320-4bb4-8410-1d516fa4960a" in source
+    assert "a2b9d708-8cc2-4994-bc52-bb6e72eef944" in source
+    assert "b870d30b-1d47-401d-97c9-7a52425f8299" in source
     assert "local-agent.padiem.net" in source
     assert "padiem-local-agent-broker-state" in source
     assert "padiem-local-agent-broker-edge" in source
@@ -97,3 +97,12 @@ def test_source_contract_requires_fetch_transport_without_new_authority() -> Non
     assert "SECOND_DEVICE_AUTHORITY = False" in source
     assert "ADMIN_RPC_HTTP_EXPOSED = False" in source
     assert "REMEDIATION_SOURCE_CONTRACT=PASS" in source
+
+
+def test_source_contract_requires_jsdict_fix_and_rejects_strict_dict_check() -> None:
+    source = _source()
+    assert "not isinstance(result, dict)" in source
+    assert 'not isinstance(result.get("headers"), dict)' in source
+    assert 'not isinstance(result.get("body"), dict)' in source
+    assert 'type(result.get("status")) is not int' in source
+    assert "type(result) is" + " not dict" not in source
