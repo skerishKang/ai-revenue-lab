@@ -1,0 +1,120 @@
+name: B54 Engine D1 Provision Gate
+
+# WO-8 PR-A (#1621 / #1753 E9 A9) — provisions the Cloudflare D1 database
+# `padiem-engine` and applies the idempotency/continuation migrations.
+# Dispatch-only by contract: an ordinary pull request can never trigger it.
+# This workflow does NOT edit wrangler.toml and does NOT deploy the worker.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to provision from'
+        required: true
+      confirmation:
+        description: 'Type PROVISION_B54_ENGINE_D1 to authorize provisioning'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  provision-d1:
+    if: github.event.inputs.confirmation == 'PROVISION_B54_ENGINE_D1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Create or reuse D1 database (idempotent)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 list --json > /tmp/d1-list.json
+          DB_ID=$(python3 - <<'PY'
+          import json
+          rows = json.load(open('/tmp/d1-list.json'))
+          hit = [r for r in rows if r.get('name') == 'padiem-engine']
+          print(hit[0]['uuid'] if hit else '')
+          PY
+          )
+          if [ -n "$DB_ID" ]; then
+            echo "D1_CREATE=SKIPPED_ALREADY_EXISTS"
+          else
+            npx --yes wrangler@4 d1 create padiem-engine > /tmp/d1-create.txt
+            DB_ID=$(python3 - <<'PY'
+          import json, re
+          text = open('/tmp/d1-create.txt').read()
+          m = re.search(r'\{.*\}', text, re.DOTALL)
+          print(json.loads(m.group(0))['database_id'])
+          PY
+          )
+            test -n "$DB_ID"
+            echo "D1_CREATE=PASS"
+          fi
+          # database UUID is an identifier, not a secret — logging it is required evidence.
+          echo "D1_DATABASE_ID=$DB_ID"
+          echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
+
+      - name: Apply migrations 0001 + 0002 to remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # Binding-resolved migration apply needs a wrangler.toml d1_databases
+          # entry; PR-A must not touch wrangler.toml (the ENGINE_IDEMPOTENCY
+          # binding lands in PR-B), so the two migration files are applied
+          # verbatim via d1 execute --file. Both are
+          # CREATE TABLE IF NOT EXISTS — idempotent by construction.
+          npx --yes wrangler@4 d1 execute padiem-engine --remote \
+            --file=apps/padiem-ai-engine/migrations/0001_engine_idempotency.sql
+          npx --yes wrangler@4 d1 execute padiem-engine --remote \
+            --file=apps/padiem-ai-engine/migrations/0002_engine_continuations.sql
+          echo 'D1_MIGRATIONS=0001,0002'
+
+      - name: Assert schema tables exist
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
+            --command "SELECT name FROM sqlite_master WHERE type='table'" > /tmp/d1-tables.json
+          python3 - <<'PY'
+          import json
+          rows = json.load(open('/tmp/d1-tables.json'))
+          results = rows[0]['results'] if isinstance(rows, list) and rows and 'results' in rows[0] else rows
+          names = {r['name'] for r in results}
+          for required in ('padiem_engine_idempotency', 'padiem_engine_continuations'):
+              assert required in names, f'missing table: {required} (have {sorted(names)})'
+          print('D1_TABLES_ASSERT=PASS')
+          PY
+
+      - name: Final evidence
+        run: |
+          echo 'D1_PROVISION=PASS'
+          echo "D1_DATABASE_ID=$DB_ID"
+          echo 'D1_MIGRATIONS=0001,0002'
+          echo 'WORKER_DEPLOYED=0'
+          echo 'WRANGLER_TOML_MODIFIED=0'
