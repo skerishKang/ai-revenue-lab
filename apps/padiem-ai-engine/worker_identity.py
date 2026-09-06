@@ -123,7 +123,10 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         binding=binding,
         request_factory=Request,
     )
-    config = B14ExecutionConfig(base_url=B14_INTERNAL_ORIGIN)
+    config = B14ExecutionConfig(
+        base_url=B14_INTERNAL_ORIGIN,
+        timeout_seconds=legacy_worker._b14_timeout_seconds_for_env(env),
+    )
     b14_client = B14ExecutionClient(config, transport=transport)
     b14_stream_client = B14StreamingClient(config, transport=transport)
     continuation_store = _continuation_store_for_env(env)
