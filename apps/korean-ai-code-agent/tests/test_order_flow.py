@@ -36,6 +36,7 @@ from kagent.p01_adapter import (
     ClawOrchestrationOutcome,
     P01AdapterError,
 )
+from kagent.p01_orchestration_client import OWNER_APPROVED_PINNED_MODEL
 from kagent.p01_run_flow import p01_adapter_from_environment
 
 _FAKE_CREDENTIAL = "b54-order-credential-" + ("0" * 28)
@@ -445,7 +446,7 @@ class OrderFlowTests(unittest.TestCase):
         payload = json.loads(sent["body"].decode("utf-8"))
         self.assertEqual(
             payload["agent"]["model_policy"],
-            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+            {"model": OWNER_APPROVED_PINNED_MODEL},
         )
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
