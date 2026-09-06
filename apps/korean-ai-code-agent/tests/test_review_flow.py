@@ -26,11 +26,13 @@ from kagent.p01_adapter import (
     P01_AGENT_ID,
     P01_APP_ID,
     ClawOrchestrationOutcome,
+    P01AdapterError,
 )
 from kagent.p01_run_flow import p01_adapter_from_environment
 from kagent.review_flow import (
     MAX_REVIEW_FILE_BYTES,
     MAX_REVIEW_FILES,
+    MAX_REVIEW_FILES_PER_CHUNK,
     ReviewFlowError,
     ReviewOutcome,
     run_review,
@@ -40,6 +42,19 @@ from kagent.review_flow import (
 _FAKE_CREDENTIAL = "b54-review-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "review_run_001"
 _ENGINE_BASE_URL = "https://padiem-ai-engine.internal"
+_TRUNCATION_MARKER = "(생성 창 초과로 잘림)"
+
+_TRUNCATED_ANSWER = (
+    "리뷰 관찰: 함수 분리가 부족하고 중복 코드가 존재하며 "
+    "유닛 테스트가 없어서 회귀 위험이 크고 오류 처리가 누락되어 있습니다 "
+    "보안 검토가 필요하며 의존성 갱신도 이루어지지 않았습니다 "
+    "또한 상태 관리가 전역 변수로 되어 있어 동시성 문제가 발생할 수 있고 "
+    "로깅 구조가 일관되지 않으며 성능 최적화 여지도 있고 문서화가 미흡합니다"
+)
+_COMPLETE_ANSWER = (
+    "함수 분리가 부족하지만 현재 동작은 정상입니다.\n"
+    "위험: LOW — 소규모 개선 제안만 존재합니다."
+)
 
 
 class CorrelatedTransport:
@@ -130,6 +145,61 @@ class StubAdapter:
         )
 
 
+class ScriptedAdapter:
+    """Per-request scripted adapter for aggregation/failure/truncation tests.
+
+    ``fail_at`` raises a ``P01AdapterError`` on that 1-based run;
+    ``failed_outcome_at`` returns a FAILED (non-exception) outcome instead.
+    """
+
+    def __init__(
+        self,
+        answers: list[str] | None = None,
+        *,
+        fail_at: int | None = None,
+        failed_outcome_at: int | None = None,
+    ) -> None:
+        self.answers = list(answers or [])
+        self.fail_at = fail_at
+        self.failed_outcome_at = failed_outcome_at
+        self.runs = []
+
+    async def execute(self, run):
+        self.runs.append(run)
+        run.transition(ClawRunStatus.PREPARING, summary="리뷰 실행 준비")
+        run.transition(ClawRunStatus.RUNNING, summary="리뷰 실행")
+        index = len(self.runs)
+        if self.fail_at == index:
+            run.transition(ClawRunStatus.FAILED, summary="엔진 요청 실패")
+            raise P01AdapterError("p01_engine_request_failed", "엔진 요청 실패")
+        if self.failed_outcome_at == index:
+            run.transition(ClawRunStatus.FAILED, summary="실행 실패")
+            return ClawOrchestrationOutcome(
+                projection=RunProjection(
+                    run_id=run.run_id,
+                    task_id=run.intent.task_id,
+                    status=ClawRunStatus.FAILED,
+                    execution_mode=ExecutionMode.LOCAL,
+                ),
+                answer=None,
+                p01_run_id=_COMPLETED_RUN_ID,
+                p01_event_count=2,
+            )
+        run.transition(ClawRunStatus.COMPLETED, summary="리뷰 완료")
+        answer = self.answers.pop(0) if self.answers else "리뷰 완료"
+        return ClawOrchestrationOutcome(
+            projection=RunProjection(
+                run_id=run.run_id,
+                task_id=run.intent.task_id,
+                status=ClawRunStatus.COMPLETED,
+                execution_mode=ExecutionMode.LOCAL,
+            ),
+            answer=answer,
+            p01_run_id=_COMPLETED_RUN_ID,
+            p01_event_count=3,
+        )
+
+
 def _write(repo: Path, name: str, content: bytes | str) -> Path:
     path = repo / name
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -153,22 +223,66 @@ class RepositoryReviewFlowTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_happy_path_collects_files_and_returns_report(self) -> None:
-        adapter = StubAdapter()
+    def test_happy_path_chunks_small_files_into_one_request_and_aggregates(
+        self,
+    ) -> None:
+        adapter = ScriptedAdapter(
+            answers=[
+                "app.py 리뷰.\n위험: MEDIUM — 테스트 부족.\n"
+                "util.py 리뷰.\n위험: LOW — 단순 함수.\n"
+                "README 리뷰.\n위험: LOW — 문서 수준."
+            ]
+        )
         outcome = run_review(self.repo, ["src/*.py", "README.md"], adapter)
 
         self.assertIsInstance(outcome, ReviewOutcome)
-        self.assertEqual(outcome.reviewed, ("src/app.py", "src/util.py", "README.md"))
+        self.assertEqual(
+            outcome.reviewed, ("src/app.py", "src/util.py", "README.md")
+        )
+        self.assertEqual(outcome.failed, ())
         self.assertEqual(outcome.skipped, ())
+        self.assertEqual(outcome.truncated, ())
         self.assertEqual(outcome.p01_run_id, _COMPLETED_RUN_ID)
         self.assertEqual(outcome.p01_event_count, 3)
-        self.assertEqual(outcome.projection.status, ClawRunStatus.COMPLETED)
+        self.assertEqual(len(outcome.p01_runs), 1)
         self.assertEqual(len(adapter.runs), 1)
-        self.assertEqual(adapter.runs[0].status, ClawRunStatus.COMPLETED)
+        self.assertTrue(
+            all(run.status is ClawRunStatus.COMPLETED for run in adapter.runs)
+        )
+        self.assertEqual(
+            [run.run_id for run in adapter.runs],
+            [run_id for run_id, _, _ in outcome.p01_runs],
+        )
         report = outcome.report_text()
-        self.assertIn("src/app.py", report)
         self.assertIn("## 리뷰 결과", report)
-        self.assertIn("리뷰 완료", report)
+        self.assertIn("src/app.py", report)
+        self.assertIn("src/util.py", report)
+        self.assertIn("README.md", report)
+        self.assertIn("## 통합 위험 목록", report)
+        self.assertIn("MEDIUM", report)
+        self.assertIn("LOW", report)
+
+    def test_small_files_share_one_chunk_request(self) -> None:
+        _write(self.repo, "tiny/a.py", "x = 1\n")
+        _write(self.repo, "tiny/b.py", "y = 2\n")
+        _write(self.repo, "tiny/c.py", "z = 3\n")
+        adapter = StubAdapter()
+        run_review(self.repo, ["tiny/*.py"], adapter)
+
+        self.assertEqual(len(adapter.runs), 1)
+        self.assertIn("a.py", adapter.runs[0].intent.task)
+        self.assertIn("c.py", adapter.runs[0].intent.task)
+
+    def test_many_small_files_are_split_into_bounded_chunks(self) -> None:
+        for index in range(5):
+            _write(self.repo, f"many/f{index}.py", f"v{index} = {index}\n")
+        adapter = StubAdapter()
+        outcome = run_review(self.repo, ["many/*.py"], adapter)
+
+        self.assertEqual(len(adapter.runs), 2)
+        self.assertLessEqual(len(outcome.reviewed), 5)
+        self.assertEqual(len(outcome.reviewed), 5)
+        self.assertEqual(MAX_REVIEW_FILES_PER_CHUNK, 3)
 
     def test_review_prompt_includes_bounded_length_guidance(self) -> None:
         adapter = StubAdapter()
@@ -176,7 +290,7 @@ class RepositoryReviewFlowTests(unittest.TestCase):
 
         task = adapter.runs[0].intent.task
         self.assertIn("2-3문장", task)
-        self.assertIn("800자 이내", task)
+        self.assertIn("400자 이내", task)
 
     def test_review_prompt_carries_file_contents_in_task(self) -> None:
         adapter = StubAdapter()
@@ -235,6 +349,95 @@ class RepositoryReviewFlowTests(unittest.TestCase):
             run_review(self.repo, ["assets/logo.bin"], StubAdapter())
         self.assertEqual(ctx.exception.code, "review_target_missing")
 
+    def test_one_file_failure_does_not_fail_whole_run(self) -> None:
+        _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
+        _write(self.repo, "src/fail.py", "def boom():\n    return 3\n")
+        adapter = ScriptedAdapter(
+            answers=["src/app.py 리뷰 정상.\n위험: LOW — 문제 없음."],
+            fail_at=2,
+        )
+        outcome = run_review(
+            self.repo,
+            ["src/app.py", "src/util.py", "src/extra.py", "src/fail.py"],
+            adapter,
+        )
+
+        self.assertEqual(
+            outcome.failed, (("src/fail.py", "p01_engine_request_failed"),)
+        )
+        self.assertEqual(len(outcome.sections), 1)
+        self.assertEqual(
+            outcome.reviewed,
+            ("src/app.py", "src/util.py", "src/extra.py", "src/fail.py"),
+        )
+        report = outcome.report_text()
+        self.assertIn("실패: src/fail.py — p01_engine_request_failed", report)
+        self.assertIn("src/fail.py — 리뷰 요청 실패", report)
+        self.assertIn("### src/app.py, src/util.py, src/extra.py", report)
+        code = run_review_command(
+            self.repo,
+            ["src/app.py", "src/util.py", "src/extra.py", "src/fail.py"],
+            adapter=ScriptedAdapter(
+                answers=["정상"],
+                fail_at=2,
+            ),
+        )
+        self.assertEqual(code, 0)
+
+    def test_one_file_failed_status_does_not_fail_whole_run(self) -> None:
+        _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
+        _write(self.repo, "src/fail.py", "def boom():\n    return 3\n")
+        adapter = ScriptedAdapter(
+            answers=["src/app.py 리뷰 정상.\n위험: LOW — 문제 없음."],
+            failed_outcome_at=2,
+        )
+        outcome = run_review(
+            self.repo,
+            ["src/app.py", "src/util.py", "src/extra.py", "src/fail.py"],
+            adapter,
+        )
+
+        self.assertEqual(outcome.failed, (("src/fail.py", "failed"),))
+        self.assertEqual(len(outcome.sections), 1)
+
+    def test_truncated_answer_is_marked_not_hidden(self) -> None:
+        adapter = ScriptedAdapter(answers=[_TRUNCATED_ANSWER])
+        outcome = run_review(self.repo, ["src/app.py"], adapter)
+
+        self.assertEqual(outcome.truncated, ("src/app.py",))
+        self.assertIn(_TRUNCATION_MARKER, outcome.report_text())
+        section_text = outcome.sections[0][1]
+        self.assertTrue(section_text.endswith(_TRUNCATION_MARKER))
+
+    def test_complete_answer_is_not_marked_truncated(self) -> None:
+        adapter = ScriptedAdapter(answers=[_COMPLETE_ANSWER])
+        outcome = run_review(self.repo, ["src/app.py"], adapter)
+
+        self.assertEqual(outcome.truncated, ())
+        self.assertNotIn(_TRUNCATION_MARKER, outcome.report_text())
+
+    def test_aggregate_risk_list_extracts_risk_lines(self) -> None:
+        _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
+        _write(self.repo, "src/next.py", "def nxt():\n    return 3\n")
+        adapter = ScriptedAdapter(
+            answers=[
+                "app.py 리뷰.\n위험: HIGH — 민감정보 로깅.",
+                "next.py 리뷰.\n위험: MEDIUM — 예외 삼킴.",
+            ]
+        )
+        outcome = run_review(
+            self.repo,
+            ["src/app.py", "src/util.py", "src/extra.py", "src/next.py"],
+            adapter,
+        )
+
+        report = outcome.report_text()
+        risk_section = report.split("## 통합 위험 목록", 1)[1]
+        self.assertIn("HIGH", risk_section)
+        self.assertIn("MEDIUM", risk_section)
+        self.assertIn("민감정보 로깅", risk_section)
+        self.assertIn("예외 삼킴", risk_section)
+
     def test_run_review_command_writes_markdown_out_path(self) -> None:
         out = self.repo / "out" / "report.md"
         code = run_review_command(
@@ -272,6 +475,8 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         self.assertIn("src/app.py", captured)
 
     def test_end_to_end_through_real_adapter_and_fake_transport(self) -> None:
+        _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
+        _write(self.repo, "src/last.py", "def last():\n    return 3\n")
         transport = CorrelatedTransport()
         adapter = p01_adapter_from_environment(
             {
@@ -284,26 +489,38 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         out = self.repo / "e2e.md"
         code = run_review_command(
             self.repo,
-            ["src/*.py"],
+            ["src/app.py", "src/util.py", "src/extra.py", "src/last.py"],
             adapter=adapter,
             out_path=out,
         )
         self.assertEqual(code, 0)
         self.assertTrue(out.exists())
-        self.assertIn("리뷰 완료: 저장소에 심각한 버그는 없습니다.", out.read_text(encoding="utf-8"))
-        self.assertEqual(len(transport.requests), 1)
-        sent = transport.requests[0]
-        self.assertEqual(sent["url"], f"{_ENGINE_BASE_URL}/internal/v1/orchestrate")
-        payload = json.loads(sent["body"].decode("utf-8"))
-        self.assertEqual(
-            payload["agent"]["model_policy"],
-            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+        self.assertIn(
+            "리뷰 완료: 저장소에 심각한 버그는 없습니다.", out.read_text(encoding="utf-8")
         )
-        self.assertNotIn("provider", json.dumps(payload).lower())
-        self.assertNotIn("credential", payload["agent"])
-        self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
-        self.assertEqual(sent["headers"]["X-Padiem-Engine-Credential"], _FAKE_CREDENTIAL)
-        self.assertIn("src/app.py", payload["messages"][0]["content"])
+        self.assertEqual(len(transport.requests), 2)
+        for sent in transport.requests:
+            self.assertEqual(sent["url"], f"{_ENGINE_BASE_URL}/internal/v1/orchestrate")
+            payload = json.loads(sent["body"].decode("utf-8"))
+            self.assertEqual(
+                payload["agent"]["model_policy"],
+                {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+            )
+            self.assertNotIn("provider", json.dumps(payload).lower())
+            self.assertNotIn("credential", payload["agent"])
+            self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
+            self.assertEqual(
+                sent["headers"]["X-Padiem-Engine-Credential"], _FAKE_CREDENTIAL
+            )
+        first_content = json.loads(
+            transport.requests[0]["body"].decode("utf-8")
+        )["messages"][0]["content"]
+        second_content = json.loads(
+            transport.requests[1]["body"].decode("utf-8")
+        )["messages"][0]["content"]
+        self.assertIn("src/app.py", first_content)
+        self.assertIn("src/util.py", first_content)
+        self.assertIn("src/last.py", second_content)
 
 
 if __name__ == "__main__":

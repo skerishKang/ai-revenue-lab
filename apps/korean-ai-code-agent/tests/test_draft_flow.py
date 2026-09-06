@@ -34,6 +34,7 @@ from kagent.p01_adapter import (
     P01_AGENT_ID,
     P01_APP_ID,
     ClawOrchestrationOutcome,
+    P01AdapterError,
 )
 from kagent.p01_run_flow import p01_adapter_from_environment
 from kagent.review_flow import run_review_command
@@ -49,14 +50,41 @@ _QUOTE_CONTEXT = (
     "납기: 다음 달 말\n"
 )
 
+_EXTRACTION_OUTPUT = (
+    "거래처: ㈜한빛상사\n"
+    "공급자: 입력 필요\n"
+    "품목:\n"
+    "- 품명: 산업용 팬 | 수량: 3 | 단가: 500000\n"
+    "- 품명: 제어기 | 수량: 1 | 단가: 입력 필요\n"
+    "조건:\n"
+    "- 납기: 다음 달 말\n"
+    "- 지불조건: 입력 필요\n"
+)
+
+_EXTRACTION_FULL_TOTALS = (
+    "거래처: ㈜한빛상사\n"
+    "공급자: ㈜청운기계\n"
+    "품목:\n"
+    "- 품명: 산업용 팬 | 수량: 3 | 단가: 500,000\n"
+    "- 품명: 제어기 | 수량: 1 | 단가: 200000\n"
+    "조건:\n"
+    "- 납기: 다음 달 말\n"
+    "- 지불조건: 발송 후 30일\n"
+)
+
 _ANTI_HALLUCINATION_PHRASES = ("절대 추측해 생성하지", "입력 필요")
 
 
 class StubAdapter:
-    """Duck-typed adapter surface for validation-only draft tests."""
+    """Duck-typed adapter surface for validation-only draft tests.
 
-    def __init__(self, answer: str = "초안 완료") -> None:
+    ``answers`` are consumed one per phase request in order; ``answer`` is the
+    fallback for any remaining phase.
+    """
+
+    def __init__(self, answer: str = "초안 완료", answers: list[str] | None = None) -> None:
         self.answer = answer
+        self.answers = list(answers or [])
         self.runs = []
 
     async def execute(self, run):
@@ -64,6 +92,7 @@ class StubAdapter:
         run.transition(ClawRunStatus.PREPARING, summary="초안 실행 준비")
         run.transition(ClawRunStatus.RUNNING, summary="초안 실행")
         run.transition(ClawRunStatus.COMPLETED, summary="초안 완료")
+        reply = self.answers.pop(0) if self.answers else self.answer
         return ClawOrchestrationOutcome(
             projection=RunProjection(
                 run_id=run.run_id,
@@ -71,7 +100,7 @@ class StubAdapter:
                 status=ClawRunStatus.COMPLETED,
                 execution_mode=ExecutionMode.LOCAL,
             ),
-            answer=self.answer,
+            answer=reply,
             p01_run_id=_COMPLETED_RUN_ID,
             p01_event_count=3,
         )
@@ -81,8 +110,9 @@ class CorrelatedTransport:
     """Network-free transport answering with a public result correlated to the
     outgoing request, so the real adapter's correlation checks pass."""
 
-    def __init__(self, answer: str = "견적서 초안 완료") -> None:
+    def __init__(self, answer: str = "견적서 초안 완료", answers: list[str] | None = None) -> None:
         self.answer = answer
+        self.answers = list(answers or [])
         self.requests: list[dict] = []
 
     async def request(self, *, method, url, headers, body):
@@ -113,9 +143,10 @@ class CorrelatedTransport:
                 start=1,
             )
         )
+        reply = self.answers.pop(0) if self.answers else self.answer
         result = OrchestrationResult(
             execution_result=ExecutionResult(
-                answer=self.answer,
+                answer=reply,
                 route=B14RouteMetadata(),
                 metadata=RunMetadata(
                     trace_id=trace_id,
@@ -160,44 +191,117 @@ class DraftFlowTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_happy_path_quote_prompt_has_sections_and_anti_hallucination_rule(self) -> None:
-        adapter = StubAdapter()
+    def test_happy_path_two_phase_prompts_and_anti_hallucination(self) -> None:
+        adapter = StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"])
         outcome = run_draft(self.repo, "context.md", "견적서", adapter)
 
         self.assertIsInstance(outcome, DraftOutcome)
         self.assertEqual(outcome.doc_type, "견적서")
         self.assertEqual(outcome.input_path, "context.md")
         self.assertEqual(outcome.p01_run_id, _COMPLETED_RUN_ID)
-        self.assertEqual(outcome.p01_event_count, 3)
+        self.assertEqual(outcome.p01_event_count, 6)
         self.assertEqual(outcome.projection.status, ClawRunStatus.COMPLETED)
-        task = adapter.runs[0].intent.task
-        self.assertIn("견적서", task)
-        for section in ("공급받는 자", "공급자", "품목 · 수량 · 단가", "합계", "조건"):
-            self.assertIn(section, task)
-        for phrase in _ANTI_HALLUCINATION_PHRASES:
-            self.assertIn(phrase, task)
-        self.assertIn("발송", task)
-        self.assertIn("DRAFT", task)
+        self.assertEqual(len(adapter.runs), 2)
 
-    def test_happy_path_order_prompt_has_sections(self) -> None:
-        adapter = StubAdapter()
+        extraction = adapter.runs[0].intent.task
+        self.assertIn("거래 맥락 추출", extraction)
+        self.assertIn("한빛상사", extraction)
+        self.assertIn("산업용 팬", extraction)
+        for phrase in _ANTI_HALLUCINATION_PHRASES:
+            self.assertIn(phrase, extraction)
+        self.assertIn("발송", extraction)
+
+        render = adapter.runs[1].intent.task
+        self.assertIn("DRAFT", render)
+        self.assertIn("산출표", render)
+        self.assertIn("합계", render)
+        for section in ("공급받는 자", "공급자", "품목 · 수량 · 단가", "조건"):
+            self.assertIn(section, render)
+        for phrase in _ANTI_HALLUCINATION_PHRASES:
+            self.assertIn(phrase, render)
+
+    def test_happy_path_order_document_sections_in_render_prompt(self) -> None:
+        adapter = StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"])
         outcome = run_draft(self.repo, "context.md", "발주서", adapter)
 
         self.assertEqual(outcome.doc_type, "발주서")
-        task = adapter.runs[0].intent.task
+        render = adapter.runs[1].intent.task
         for section in ("발주자", "공급처", "품목 · 수량 · 납기", "특이조건"):
-            self.assertIn(section, task)
+            self.assertIn(section, render)
         for phrase in _ANTI_HALLUCINATION_PHRASES:
-            self.assertIn(phrase, task)
+            self.assertIn(phrase, render)
 
     def test_prompt_carries_input_context_and_no_hardcoded_values(self) -> None:
-        adapter = StubAdapter()
+        adapter = StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"])
         run_draft(self.repo, "context.md", "견적서", adapter)
 
-        task = adapter.runs[0].intent.task
-        self.assertIn("한빛상사", task)
-        self.assertIn("산업용 팬", task)
-        self.assertNotIn(_FAKE_CREDENTIAL, task)
+        for run in adapter.runs:
+            self.assertIn("한빛상사", run.intent.task)
+            self.assertIn("산업용 팬", run.intent.task)
+            self.assertNotIn(_FAKE_CREDENTIAL, run.intent.task)
+
+    def test_flow_computes_deterministic_total_and_injects_table(self) -> None:
+        adapter = StubAdapter(answers=[_EXTRACTION_FULL_TOTALS, "초안 완료"])
+        outcome = run_draft(self.repo, "context.md", "견적서", adapter)
+
+        self.assertEqual(outcome.total, "1700000")
+        self.assertEqual(
+            outcome.items,
+            (
+                ("산업용 팬", "3", "500000", "1500000"),
+                ("제어기", "1", "200000", "200000"),
+            ),
+        )
+        render = adapter.runs[1].intent.task
+        self.assertIn("1500000", render)
+        self.assertIn("1700000", render)
+        report = outcome.report_text()
+        self.assertIn("1500000", report)
+        self.assertIn("1700000", report)
+
+    def test_input_needed_propagates_into_computed_table(self) -> None:
+        adapter = StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"])
+        outcome = run_draft(self.repo, "context.md", "견적서", adapter)
+
+        self.assertEqual(
+            outcome.items,
+            (
+                ("산업용 팬", "3", "500000", "1500000"),
+                ("제어기", "1", "입력 필요", "입력 필요"),
+            ),
+        )
+        self.assertTrue(outcome.total.startswith("입력 필요"))
+        render = adapter.runs[1].intent.task
+        self.assertIn("입력 필요", render)
+        report = outcome.report_text()
+        self.assertIn("입력 필요", report)
+        self.assertIn("1500000", report)
+
+    def test_unparseable_extraction_fails_closed(self) -> None:
+        adapter = StubAdapter(answers=["형식 없는 텍스트만 있습니다.", "무관"])
+        with self.assertRaises(DraftFlowError) as ctx:
+            run_draft(self.repo, "context.md", "견적서", adapter)
+        self.assertEqual(ctx.exception.code, "draft_extraction_invalid")
+
+    def test_empty_phase1_answer_fails_closed(self) -> None:
+        adapter = StubAdapter(answers=[""])
+        with self.assertRaises(DraftFlowError) as ctx:
+            run_draft(self.repo, "context.md", "견적서", adapter)
+        self.assertEqual(ctx.exception.code, "draft_extraction_failed")
+
+    def test_phase_request_failure_fails_closed(self) -> None:
+        class RaisingAdapter(StubAdapter):
+            async def execute(self, run):
+                self.runs.append(run)
+                raise P01AdapterError("p01_engine_request_failed", "엔진 요청 실패")
+
+        code = run_draft_command(
+            self.repo,
+            "context.md",
+            "견적서",
+            adapter=RaisingAdapter(),
+        )
+        self.assertEqual(code, 2)
 
     def test_invalid_doc_type_raises_draft_type_invalid(self) -> None:
         with self.assertRaises(DraftFlowError) as ctx:
@@ -254,7 +358,7 @@ class DraftFlowTests(unittest.TestCase):
             self.repo,
             "context.md",
             "견적서",
-            adapter=StubAdapter(),
+            adapter=StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"]),
             out_path=out,
         )
         self.assertEqual(code, 0)
@@ -262,19 +366,24 @@ class DraftFlowTests(unittest.TestCase):
         self.assertIn("# 문서 초안 보고서", text)
         self.assertIn("## 견적서 초안 (DRAFT)", text)
         self.assertIn("초안 완료", text)
+        self.assertIn("## 산출 근거 (플로우 계산)", text)
 
-    def test_run_draft_command_prints_status_line_marker(self) -> None:
+    def test_run_draft_command_prints_status_line_marker_two_phases(self) -> None:
         sink = io.StringIO()
         with mock.patch("sys.stdout", sink):
             code = run_draft_command(
-                self.repo, "context.md", "견적서", adapter=StubAdapter()
+                self.repo,
+                "context.md",
+                "견적서",
+                adapter=StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"]),
             )
         self.assertEqual(code, 0)
         captured = sink.getvalue()
         self.assertIn("DRAFT run=", captured)
         self.assertIn("status=completed", captured)
+        self.assertIn("requests=2", captured)
         self.assertIn(f"p01_run={_COMPLETED_RUN_ID}", captured)
-        self.assertIn("events=3", captured)
+        self.assertIn("events=6", captured)
 
     def test_review_command_status_line_parity(self) -> None:
         _write(self.repo, "src/app.py", "def main():\n    pass\n")
@@ -311,12 +420,17 @@ class DraftFlowTests(unittest.TestCase):
     def test_cli_main_runs_draft_with_adapter(self) -> None:
         code = main(
             [str(self.repo), "draft", "context.md", "--doc-type", "견적서"],
-            adapter=StubAdapter(),
+            adapter=StubAdapter(answers=[_EXTRACTION_OUTPUT, "초안 완료"]),
         )
         self.assertEqual(code, 0)
 
     def test_end_to_end_through_real_adapter_and_fake_transport(self) -> None:
-        transport = CorrelatedTransport(answer="견적서 초안 완료: 거래 맥락에 근거했습니다.")
+        transport = CorrelatedTransport(
+            answers=[
+                _EXTRACTION_FULL_TOTALS,
+                "견적서 초안 완료: 거래 맥락에 근거했습니다.",
+            ]
+        )
         adapter = p01_adapter_from_environment(
             {
                 "P01_ENGINE_BASE_URL": _ENGINE_BASE_URL,
@@ -338,24 +452,35 @@ class DraftFlowTests(unittest.TestCase):
         self.assertIn(
             "견적서 초안 완료: 거래 맥락에 근거했습니다.", out.read_text(encoding="utf-8")
         )
-        self.assertEqual(len(transport.requests), 1)
-        sent = transport.requests[0]
-        self.assertEqual(sent["url"], f"{_ENGINE_BASE_URL}/internal/v1/orchestrate")
-        payload = json.loads(sent["body"].decode("utf-8"))
-        self.assertEqual(
-            payload["agent"]["model_policy"],
-            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
-        )
-        self.assertNotIn("provider", json.dumps(payload).lower())
-        self.assertNotIn("credential", payload["agent"])
-        self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
-        self.assertEqual(sent["headers"]["X-Padiem-Engine-Credential"], _FAKE_CREDENTIAL)
-        content = payload["messages"][0]["content"]
-        self.assertIn("한빛상사", content)
+        self.assertEqual(len(transport.requests), 2)
+        for sent in transport.requests:
+            self.assertEqual(sent["url"], f"{_ENGINE_BASE_URL}/internal/v1/orchestrate")
+            payload = json.loads(sent["body"].decode("utf-8"))
+            self.assertEqual(
+                payload["agent"]["model_policy"],
+                {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+            )
+            self.assertNotIn("provider", json.dumps(payload).lower())
+            self.assertNotIn("credential", payload["agent"])
+            self.assertNotIn(_FAKE_CREDENTIAL, sent["body"].decode("utf-8"))
+            self.assertEqual(
+                sent["headers"]["X-Padiem-Engine-Credential"], _FAKE_CREDENTIAL
+            )
+        first_content = json.loads(
+            transport.requests[0]["body"].decode("utf-8")
+        )["messages"][0]["content"]
+        second_content = json.loads(
+            transport.requests[1]["body"].decode("utf-8")
+        )["messages"][0]["content"]
+        self.assertIn("거래 맥락 추출", first_content)
+        self.assertIn("한빛상사", first_content)
         for phrase in _ANTI_HALLUCINATION_PHRASES:
-            self.assertIn(phrase, content)
+            self.assertIn(phrase, first_content)
+        self.assertIn("산출표", second_content)
+        self.assertIn("1700000", second_content)
+        for phrase in _ANTI_HALLUCINATION_PHRASES:
+            self.assertIn(phrase, second_content)
 
 
 if __name__ == "__main__":
     unittest.main()
-
