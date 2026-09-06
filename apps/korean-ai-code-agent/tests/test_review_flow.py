@@ -649,7 +649,7 @@ class RepositoryReviewFlowTests(unittest.TestCase):
             payload = json.loads(sent["body"].decode("utf-8"))
             self.assertEqual(
                 payload["agent"]["model_policy"],
-                {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+                {"model": "sensenova/sensenova-6.8-flash-lite"},
             )
             self.assertNotIn("provider", json.dumps(payload).lower())
             self.assertNotIn("credential", payload["agent"])

@@ -25,7 +25,11 @@ from padiem_ai_engine_client import PadiemAiEngineClientError
 
 from .p01_adapter import P01AdapterError
 
-APPROVED_FREE_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+# Owner-approved pinned model (#2003): the single model the P01 wire accepts.
+# Switched from the Kilo free route to the owner-provisioned SenseNova direct
+# route after the measured Kilo 502/504 episodes. The allowlist stays
+# exactly-one-model; any other model_policy is refused as authority pinning.
+OWNER_APPROVED_PINNED_MODEL = "sensenova/sensenova-6.8-flash-lite"
 
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.
@@ -111,7 +115,7 @@ class P01EngineOrchestrationClient:
         agent = execution.agent
         valid_model_policy = (
             not agent.model_policy
-            or agent.model_policy == {"model": APPROVED_FREE_MODEL}
+            or agent.model_policy == {"model": OWNER_APPROVED_PINNED_MODEL}
         )
         if (
             not valid_model_policy
