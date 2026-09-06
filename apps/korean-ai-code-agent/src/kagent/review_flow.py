@@ -8,10 +8,16 @@ a structured Korean report.
 generations. The flow now issues ONE orchestration request per file (or per
 small chunk of up to ``MAX_REVIEW_FILES_PER_CHUNK`` files, bounded in total
 characters) and assembles the final report LOCALLY: header, per-file sections,
-and an aggregate risk list. A failed per-file request marks that section
-failed-with-code and continues — a partial report is still valuable. Answers
-that look truncated (no terminal punctuation near the historical cut length)
-are marked ``"(생성 창 초과로 잘림)"`` visibly instead of being hidden.
+and an aggregate risk list. A file larger than the per-chunk budget is
+forced-sliced into ``MAX_REVIEW_CHUNK_CHARS``-sized parts (each its own
+request, labeled ``(파트 i/n)``), so no assembled task can exceed the
+``ClawRun`` task bound and the whole file stays covered. A failed per-file
+request marks that section failed-with-code and continues — a partial report
+is still valuable. A ``ContractError``/``ValueError`` (e.g. an over-bound
+task) is isolated the same way as ``review_task_too_large`` without exposing a
+raw traceback. Answers that look truncated (no terminal punctuation near the
+historical cut length) are marked ``"(생성 창 초과로 잘림)"`` visibly instead
+of being hidden.
 
 This module only consumes the existing P01 adapter surface
 (``P01CoreOrchestrationAdapter`` / ``P01RequestFactory`` / pinned agent
@@ -28,13 +34,14 @@ import asyncio
 from collections.abc import Mapping
 from dataclasses import dataclass
 import glob
+from math import ceil
 import os
 from pathlib import Path
 import re
 import sys
 import uuid
 
-from .contracts import ClawRunStatus, ExecutionMode, RunProjection
+from .contracts import ClawRunStatus, ContractError, ExecutionMode, RunProjection
 from .core import redact_secrets
 from .p01_adapter import (
     ClawOrchestrationOutcome,
@@ -49,12 +56,30 @@ MAX_REVIEW_TOTAL_BYTES = 1024 * 1024
 MAX_REVIEW_FILES_PER_CHUNK = 3
 MAX_REVIEW_CHUNK_CHARS = 8_000
 
+_REVIEW_TASK_TOO_LARGE = "review_task_too_large"
 _TRUNCATION_MARKER = "(생성 창 초과로 잘림)"
 _TERMINAL_CHARS = frozenset(".!?)]」』】\"'`")
 _MIN_TRUNCATION_SUSPECT_CHARS = 120
 _RISK_LINE = re.compile(r"^\s*위험\s*:\s*(.+)$", re.MULTILINE)
 
 _GLOB_META = frozenset("*?[")
+
+
+@dataclass(frozen=True, slots=True)
+class _ReviewPart:
+    """One file segment carried by a single review request.
+
+    ``part_label`` is empty for a whole file and ``" (파트 i/n)"`` for a slice
+    of a file that exceeded the per-chunk character budget.
+    """
+
+    rel_path: str
+    content: str
+    part_label: str = ""
+
+    @property
+    def display_name(self) -> str:
+        return f"{self.rel_path}{self.part_label}"
 
 
 class ReviewFlowError(P01AdapterError):
@@ -245,18 +270,39 @@ def _collect_review_files(
 
 def _chunk_review_files(
     reviewed: list[tuple[str, str]],
-) -> list[list[tuple[str, str]]]:
+) -> list[list[_ReviewPart]]:
     """Group reviewed files into bounded per-request chunks.
 
     A chunk holds at most ``MAX_REVIEW_FILES_PER_CHUNK`` files and at most
     ``MAX_REVIEW_CHUNK_CHARS`` total content characters, so every orchestration
-    request stays inside one free-window-sized unit.
+    request stays inside one free-window-sized unit. A single file larger than
+    the per-chunk budget is forced-sliced into budget-sized parts, each of
+    which becomes its own chunk — the whole file stays fully covered across
+    requests and the assembled task never exceeds the ``ClawRun`` task bound.
     """
-    chunks: list[list[tuple[str, str]]] = []
-    current: list[tuple[str, str]] = []
+    chunks: list[list[_ReviewPart]] = []
+    current: list[_ReviewPart] = []
     current_chars = 0
-    for item in reviewed:
-        size = len(item[1])
+    for rel_path, content in reviewed:
+        size = len(content)
+        if size > MAX_REVIEW_CHUNK_CHARS:
+            if current:
+                chunks.append(current)
+                current = []
+                current_chars = 0
+            part_count = ceil(size / MAX_REVIEW_CHUNK_CHARS)
+            for part_index in range(part_count):
+                start = part_index * MAX_REVIEW_CHUNK_CHARS
+                chunks.append(
+                    [
+                        _ReviewPart(
+                            rel_path,
+                            content[start : start + MAX_REVIEW_CHUNK_CHARS],
+                            f" (파트 {part_index + 1}/{part_count})",
+                        )
+                    ]
+                )
+            continue
         if current and (
             len(current) >= MAX_REVIEW_FILES_PER_CHUNK
             or current_chars + size > MAX_REVIEW_CHUNK_CHARS
@@ -264,19 +310,21 @@ def _chunk_review_files(
             chunks.append(current)
             current = []
             current_chars = 0
-        current.append(item)
+        current.append(_ReviewPart(rel_path, content))
         current_chars += size
     if current:
         chunks.append(current)
     return chunks
 
 
-def _build_review_prompt(repository: str, files: list[tuple[str, str]]) -> str:
+def _build_review_prompt(repository: str, files: list[_ReviewPart]) -> str:
     sections = [
         f"# 저장소 리뷰 요청\n\n저장소: {repository}\n리뷰 대상 파일 {len(files)}개:\n"
     ]
-    for index, (rel_path, content) in enumerate(files, start=1):
-        sections.append(f"## 파일 {index}: {rel_path}\n```\n{content}\n```\n")
+    for index, part in enumerate(files, start=1):
+        sections.append(
+            f"## 파일 {index}: {part.display_name}\n```\n{part.content}\n```\n"
+        )
     sections.append(
         "각 파일을 리뷰하고 한국어로 구조화된 파일별 리뷰 섹션을 작성하세요:\n"
         "- 파일별 핵심 관찰 (2-3문장)\n"
@@ -355,25 +403,29 @@ def run_review(
             outcome = asyncio.run(
                 _execute_review(str(root), prompt, adapter, run_id=chunk_run_id)
             )
+        except (ContractError, ValueError):
+            for part in chunk:
+                failed.append((part.rel_path, _REVIEW_TASK_TOO_LARGE))
+            continue
         except P01AdapterError as exc:
-            for rel, _ in chunk:
-                failed.append((rel, exc.code))
+            for part in chunk:
+                failed.append((part.rel_path, exc.code))
             continue
         if (
             outcome.projection.status is not ClawRunStatus.COMPLETED
             or not outcome.answer
         ):
-            for rel, _ in chunk:
-                failed.append((rel, outcome.projection.status.value))
+            for part in chunk:
+                failed.append((part.rel_path, outcome.projection.status.value))
             continue
         p01_runs.append(
             (outcome.projection.run_id, outcome.p01_run_id, outcome.p01_event_count)
         )
         section_text = outcome.answer
         if _looks_truncated(section_text):
-            truncated.extend(rel for rel, _ in chunk)
+            truncated.extend(part.rel_path for part in chunk)
             section_text = f"{section_text.rstrip()}\n\n{_TRUNCATION_MARKER}"
-        label = ", ".join(rel for rel, _ in chunk)
+        label = ", ".join(part.display_name for part in chunk)
         sections.append((label, section_text))
 
     suffix = flow_run_id[4:] if flow_run_id.startswith("run_") else flow_run_id
