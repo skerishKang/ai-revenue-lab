@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import io
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -243,6 +245,23 @@ class RepositoryReviewFlowTests(unittest.TestCase):
             self.repo, ["src/app.py"], environ={}
         )
         self.assertEqual(code, 2)
+
+    def test_command_prints_utf8_report_even_with_ansi_codepage_stdout(self) -> None:
+        sink = io.BytesIO()
+        original = sys.stdout
+        wrapper = io.TextIOWrapper(sink, encoding="cp1252")
+        sys.stdout = wrapper
+        try:
+            code = run_review_command(
+                self.repo, ["src/app.py"], adapter=StubAdapter()
+            )
+            wrapper.flush()
+        finally:
+            sys.stdout = original
+        self.assertEqual(code, 0)
+        captured = sink.getvalue().decode("utf-8")
+        self.assertIn("## 리뷰 결과", captured)
+        self.assertIn("src/app.py", captured)
 
     def test_end_to_end_through_real_adapter_and_fake_transport(self) -> None:
         transport = CorrelatedTransport()

@@ -252,6 +252,20 @@ def run_review(
     return result
 
 
+def _force_utf8_stdio() -> None:
+    """Make report printing independent of the host console codepage.
+
+    Windows CI defaults ``sys.stdout``/``sys.stderr`` to the ANSI codepage
+    (e.g. cp1252), which cannot encode the Korean report. Reconfigure both to
+    UTF-8 so ``print`` never fails with ``UnicodeEncodeError``.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError, OSError):
+            pass
+
+
 def run_review_command(
     repository: Path,
     targets: list[str],
@@ -261,6 +275,7 @@ def run_review_command(
     run_id: str | None = None,
     out_path: Path | None = None,
 ) -> int:
+    _force_utf8_stdio()
     try:
         active = (
             adapter if adapter is not None else p01_adapter_from_environment(environ)
