@@ -32,7 +32,7 @@ def digest(value: Any, field_name: str) -> str:
 
 
 def closed_mapping(value: Any, keys: frozenset[str], label: str) -> dict[str, Any]:
-    if type(value) is not dict or frozenset(value) != keys:
+    if not isinstance(value, dict) or frozenset(value) != keys:
         raise ValueError(f"{label} schema mismatch")
     return value
 
