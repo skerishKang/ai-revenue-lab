@@ -13,7 +13,6 @@ from __future__ import annotations
 from typing import Any
 from urllib.parse import urlparse
 
-import worker as legacy_worker
 from padiem_ai_core import (
     B14ExecutionClient,
     B14ExecutionConfig,
@@ -26,6 +25,7 @@ from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRunti
 from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
+import worker as legacy_worker
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
@@ -39,15 +39,25 @@ from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MultimodalAttachmentEngineService,
 )
-from app.orchestration_idempotency_service import CanonicalIdempotencyOrchestrationEngineService
+from app.orchestration_idempotency_service import (
+    CanonicalIdempotencyOrchestrationEngineService,
+)
 from app.service import EngineService, ServiceResponse
 from app.streaming_service import StreamingEngineService
+from app.tool_execution_service import ToolExecutionEngineService
+from app.tool_projection import (
+    TOOL_CANCEL_PATH,
+    TOOL_EXECUTE_PATH,
+    TOOL_RESUME_PATH,
+)
 from app.web_research_service import WebResearchEngineService
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
 
 
-def _continuation_store_for_env(env: Any) -> CloudflareD1IdentityBoundContinuationStore | None:
+def _continuation_store_for_env(
+    env: Any,
+) -> CloudflareD1IdentityBoundContinuationStore | None:
     """Resolve the explicit durable continuation authority; never fake Production state."""
     binding = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
     if binding is None:
@@ -83,8 +93,12 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             RuntimeError("unreachable without B14 service binding")
         )
         return EngineServices(
-            completed=EngineService(runtime_factory=unavailable, b14_service_bound=False),
-            streaming=StreamingEngineService(runtime_factory=unavailable, b14_service_bound=False),
+            completed=EngineService(
+                runtime_factory=unavailable, b14_service_bound=False
+            ),
+            streaming=StreamingEngineService(
+                runtime_factory=unavailable, b14_service_bound=False
+            ),
             orchestration=CanonicalIdempotencyOrchestrationEngineService(
                 runtime_factory=unavailable,
                 b14_service_bound=False,
@@ -99,6 +113,10 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 runtime_factory=unavailable,
                 attachment_resolver=None,
             ),
+            # E7 tool execution/continuation remains a source seam: no trusted
+            # tool registry or continuation authority is injected, so every
+            # request fails closed as `tool_runtime_unavailable`.
+            tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -151,6 +169,10 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             # app/tenant/subject scope is a later Production activation gate.
             attachment_resolver=None,
         ),
+        # E7 tool execution/continuation remains a source seam: no trusted
+        # tool registry or continuation authority is injected, so every
+        # request fails closed as `tool_runtime_unavailable`.
+        tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
     )
 
 
@@ -169,9 +191,19 @@ class Default(legacy_worker.Default):
         path = urlparse(str(request.url)).path
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
-        if path != MULTIMODAL_EXECUTE_PATH:
-            return await super().fetch(request)
+        if path == MULTIMODAL_EXECUTE_PATH:
+            return await self._fetch_multimodal(request, path)
+        if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
+            return await self._fetch_tool(request, path)
+        return await super().fetch(request)
 
+    async def _fetch_multimodal(self, request: Any, path: str) -> Any:
+        """E5A trusted multimodal reference route: source-wired, fail-closed.
+
+        This repeats only the same body-read/service-auth boundary before
+        invoking its named service; no storage resolver or alternate
+        authentication mechanism lives here.
+        """
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
@@ -220,6 +252,62 @@ class Default(legacy_worker.Default):
         )
         return legacy_worker._json_response(result)
 
+    async def _fetch_tool(self, request: Any, path: str) -> Any:
+        """E7 tool execution/continuation route: source-wired, fail-closed.
+
+        The canonical composition leaves the whole service uninjected with any
+        trusted tool registry or continuation authority until a later
+        Production activation gate, so every request fails closed before any
+        tool handler can run.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                body = str(text).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(
+                        status_code=400,
+                        body={
+                            "ok": False,
+                            "error": {
+                                "code": "invalid_request",
+                                "message": "Request body could not be read.",
+                                "retryable": False,
+                                "metadata": None,
+                            },
+                        },
+                    )
+                )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = self.engine_services_factory(self.env)
+        if services.tool_execution is None:
+            return legacy_worker._error_response(
+                "tool_runtime_unavailable",
+                "The Engine Tool runtime is not provisioned for this deployment.",
+                503,
+            )
+        result = await services.tool_execution.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)
+
     async def _fetch_document_context(self, request: Any, path: str) -> Any:
         """E5B trusted document context route: source-wired, fail-closed.
 
@@ -234,13 +322,9 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        caller_id = (
-            headers.get(CALLER_ID_HEADER) if headers is not None else None
-        )
+        caller_id = headers.get(CALLER_ID_HEADER) if headers is not None else None
         credential = (
-            headers.get(CALLER_CREDENTIAL_HEADER)
-            if headers is not None
-            else None
+            headers.get(CALLER_CREDENTIAL_HEADER) if headers is not None else None
         )
 
         body = b""

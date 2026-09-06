@@ -18,6 +18,7 @@ from app.multimodal_attachment_service import MultimodalAttachmentEngineService
 from app.orchestration_service import OrchestrationEngineService
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
+from app.tool_execution_service import ToolExecutionEngineService
 from app.web_research_service import WebResearchEngineService
 
 
@@ -39,6 +40,7 @@ class EngineServices:
     agent_skill: AgentSkillEngineService | None = None
     multimodal: MultimodalAttachmentEngineService | None = None
     documents: DocumentContextEngineService | None = None
+    tool_execution: ToolExecutionEngineService | None = None
 
     def __post_init__(self) -> None:
         for name in ("completed", "streaming", "orchestration", "research", "memory"):
@@ -47,12 +49,24 @@ class EngineServices:
         if self.agent_skill is not None and not isinstance(
             self.agent_skill, AgentSkillEngineService
         ):
-            raise ValueError("engine service 'agent_skill' must be AgentSkillEngineService or None")
+            raise ValueError(
+                "engine service 'agent_skill' must be AgentSkillEngineService or None"
+            )
         if self.multimodal is not None and not isinstance(
             self.multimodal, MultimodalAttachmentEngineService
         ):
-            raise ValueError("engine service 'multimodal' must be MultimodalAttachmentEngineService or None")
+            raise ValueError(
+                "engine service 'multimodal' must be MultimodalAttachmentEngineService or None"
+            )
         if self.documents is not None and not isinstance(
             self.documents, DocumentContextEngineService
         ):
-            raise ValueError("engine service 'documents' must be DocumentContextEngineService or None")
+            raise ValueError(
+                "engine service 'documents' must be DocumentContextEngineService or None"
+            )
+        if self.tool_execution is not None and not isinstance(
+            self.tool_execution, ToolExecutionEngineService
+        ):
+            raise ValueError(
+                "engine service 'tool_execution' must be ToolExecutionEngineService or None"
+            )
