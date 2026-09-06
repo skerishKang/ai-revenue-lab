@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 from .core import AgentBoundaryError, AgentSession, redact_secrets
+from .draft_flow import DRAFT_DOC_TYPES, run_draft_command
 from .p01_run_flow import run_p01_task
 from .review_flow import run_review_command
 
@@ -144,6 +145,25 @@ def parser() -> argparse.ArgumentParser:
     review.add_argument(
         "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
     )
+    draft = sub.add_parser(
+        "draft",
+        help="입력 파일에서 거래 맥락을 추출해 견적서/발주서 초안을 생성합니다 "
+        "(설정 필수 · demo 폴백 없음)",
+    )
+    draft.add_argument("input", help="거래 맥락이 담긴 입력 파일 경로")
+    draft.add_argument(
+        "--doc-type",
+        dest="doc_type",
+        required=True,
+        choices=list(DRAFT_DOC_TYPES),
+        help="생성할 문서 유형 (견적서 | 발주서)",
+    )
+    draft.add_argument(
+        "--out", dest="out", default=None, help="마크다운 초안을 기록할 파일 경로"
+    )
+    draft.add_argument(
+        "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
+    )
     return p
 
 
@@ -153,6 +173,15 @@ def main(argv: list[str] | None = None, *, adapter=None) -> int:
         return run_review_command(
             Path(args.repository),
             args.targets,
+            adapter=adapter,
+            run_id=args.run_id,
+            out_path=Path(args.out) if args.out else None,
+        )
+    if args.mode == "draft":
+        return run_draft_command(
+            Path(args.repository),
+            args.input,
+            args.doc_type,
             adapter=adapter,
             run_id=args.run_id,
             out_path=Path(args.out) if args.out else None,

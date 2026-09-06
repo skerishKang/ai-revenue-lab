@@ -295,6 +295,11 @@ def run_review_command(
             file=sys.stderr,
         )
         return 2
+    print(
+        f"REVIEW run={outcome.projection.run_id} "
+        f"status={outcome.projection.status.value} "
+        f"p01_run={outcome.p01_run_id} events={outcome.p01_event_count}"
+    )
     print(outcome.report_text())
     return 0 if outcome.projection.status is ClawRunStatus.COMPLETED else 1
 
