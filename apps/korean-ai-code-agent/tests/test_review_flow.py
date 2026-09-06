@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
+from math import ceil
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.contracts import RunMetadata, RunStatus
@@ -21,6 +24,7 @@ from padiem_ai_engine_client import (
     PadiemAiEngineClient,
 )
 
+from kagent import review_flow as review_flow_module
 from kagent.contracts import ClawRunStatus, ExecutionMode, RunProjection
 from kagent.p01_adapter import (
     P01_AGENT_ID,
@@ -30,11 +34,13 @@ from kagent.p01_adapter import (
 )
 from kagent.p01_run_flow import p01_adapter_from_environment
 from kagent.review_flow import (
+    MAX_REVIEW_CHUNK_CHARS,
     MAX_REVIEW_FILE_BYTES,
     MAX_REVIEW_FILES,
     MAX_REVIEW_FILES_PER_CHUNK,
     ReviewFlowError,
     ReviewOutcome,
+    _chunk_review_files,
     run_review,
     run_review_command,
 )
@@ -284,6 +290,95 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         self.assertEqual(len(outcome.reviewed), 5)
         self.assertEqual(MAX_REVIEW_FILES_PER_CHUNK, 3)
 
+    def test_single_large_file_is_forced_into_budget_sized_parts(self) -> None:
+        content = "line\n" * 2_500  # ~12,500 chars
+        _write(self.repo, "big.py", content)
+        adapter = StubAdapter()
+        outcome = run_review(self.repo, ["big.py"], adapter)
+
+        expected_parts = ceil(len(content) / MAX_REVIEW_CHUNK_CHARS)
+        self.assertEqual(outcome.reviewed, ("big.py",))
+        self.assertEqual(outcome.failed, ())
+        self.assertEqual(outcome.skipped, ())
+        self.assertEqual(len(adapter.runs), expected_parts)
+        self.assertEqual(len(outcome.sections), expected_parts)
+        for run in adapter.runs:
+            task = run.intent.task
+            self.assertLessEqual(len(task), 12_000)
+            self.assertIn("big.py (파트", task)
+            self.assertIn("400자 이내", task)
+        report = outcome.report_text()
+        self.assertIn("(파트 1/", report)
+        self.assertIn(f"(파트 {expected_parts}/{expected_parts})", report)
+
+    def test_sliced_parts_cover_the_whole_file(self) -> None:
+        content = "abcdefgh" * 1_500  # exactly 12,000 chars
+        chunks = _chunk_review_files([("big.py", content)])
+
+        part_count = ceil(len(content) / MAX_REVIEW_CHUNK_CHARS)
+        self.assertEqual(len(chunks), part_count)
+        rebuilt: list[str] = []
+        for index, chunk in enumerate(chunks, start=1):
+            self.assertEqual(len(chunk), 1)
+            part = chunk[0]
+            self.assertEqual(part.rel_path, "big.py")
+            self.assertEqual(part.display_name, f"big.py (파트 {index}/{part_count})")
+            rebuilt.append(part.content)
+            self.assertLessEqual(
+                sum(len(part.content) for part in chunk), MAX_REVIEW_CHUNK_CHARS
+            )
+            self.assertLessEqual(len(chunk), MAX_REVIEW_FILES_PER_CHUNK)
+        self.assertEqual("".join(rebuilt), content)
+
+    def test_large_file_between_small_files_keeps_small_chunks_intact(self) -> None:
+        reviewed = [
+            ("a.py", "x" * 100),
+            ("big.py", "y" * 17_000),
+            ("b.py", "z" * 100),
+        ]
+        chunks = _chunk_review_files(reviewed)
+
+        self.assertEqual([part.rel_path for part in chunks[0]], ["a.py"])
+        self.assertEqual([part.rel_path for part in chunks[-1]], ["b.py"])
+        self.assertEqual(len(chunks), 5)
+        self.assertTrue(
+            all(
+                [part.rel_path for part in chunk] == ["big.py"]
+                for chunk in chunks[1:-1]
+            )
+        )
+        self.assertTrue(
+            all(
+                "파트" in chunk[0].part_label for chunk in chunks[1:-1]
+            )
+        )
+
+    def test_guard_all_chunk_tasks_stay_within_task_bound_real_readme(self) -> None:
+        readme = Path(__file__).resolve().parents[3] / "README.md"
+        if not readme.is_file():
+            self.skipTest("repo root README.md not available")
+        readme_text = readme.read_text(encoding="utf-8")
+        self.assertGreater(len(readme_text), MAX_REVIEW_CHUNK_CHARS)
+        _write(self.repo, "README.md", readme_text)
+        for index in range(3):
+            _write(
+                self.repo,
+                f"src/source_{index}.py",
+                f"# module {index}\n" + ("x" * 5_900),
+            )
+        adapter = StubAdapter()
+        outcome = run_review(
+            self.repo,
+            ["README.md", "src/source_0.py", "src/source_1.py", "src/source_2.py"],
+            adapter,
+        )
+
+        self.assertEqual(outcome.failed, ())
+        self.assertEqual(len(outcome.reviewed), 4)
+        self.assertGreater(len(adapter.runs), 1)
+        for run in adapter.runs:
+            self.assertLessEqual(len(run.intent.task), 12_000)
+
     def test_review_prompt_includes_bounded_length_guidance(self) -> None:
         adapter = StubAdapter()
         run_review(self.repo, ["src/app.py"], adapter)
@@ -399,6 +494,31 @@ class RepositoryReviewFlowTests(unittest.TestCase):
 
         self.assertEqual(outcome.failed, (("src/fail.py", "failed"),))
         self.assertEqual(len(outcome.sections), 1)
+
+    def test_contract_error_on_over_bound_task_is_isolated_without_traceback(
+        self,
+    ) -> None:
+        _write(self.repo, "big.txt", "y" * 15_000)
+        stderr_sink = io.StringIO()
+        with (
+            mock.patch.object(review_flow_module, "MAX_REVIEW_CHUNK_CHARS", 100_000),
+            redirect_stderr(stderr_sink),
+            redirect_stdout(io.StringIO()),
+        ):
+            outcome = run_review(self.repo, ["big.txt"], StubAdapter())
+            code = run_review_command(
+                self.repo, ["big.txt"], adapter=StubAdapter()
+            )
+
+        self.assertEqual(
+            outcome.failed, (("big.txt", "review_task_too_large"),)
+        )
+        self.assertEqual(outcome.sections, ())
+        self.assertEqual(outcome.p01_runs, ())
+        self.assertEqual(outcome.reviewed, ("big.txt",))
+        self.assertEqual(code, 0)
+        self.assertNotIn("Traceback", stderr_sink.getvalue())
+        self.assertIn("실패: big.txt — review_task_too_large", outcome.report_text())
 
     def test_truncated_answer_is_marked_not_hidden(self) -> None:
         adapter = ScriptedAdapter(answers=[_TRUNCATED_ANSWER])
