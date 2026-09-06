@@ -118,6 +118,20 @@ class _StubEnv:
         self.PADIEM_ENGINE_WEB_PROVIDER = "mock"
 
 
+class _ProductionShapedEnv:
+    """Cloudflare env shaped like actual Production (owner decision D2).
+
+    B14 service binding present, but NO ``PADIEM_ENGINE_WEB_PROVIDER`` var:
+    wrangler.toml has no ``[vars]`` and no ``keep_vars``, so dashboard-set
+    vars are dropped on every deploy and the only truthful production shape
+    is provider-less. The composition must read that state and wire Core's
+    ``OffWebProvider`` (fail-closed 503 ``web_tools_off``).
+    """
+
+    def __init__(self) -> None:
+        self.B14_SERVICE = _StubB14Binding()
+
+
 def _load_composition():
     saved = {
         name: sys.modules.get(name)
@@ -273,17 +287,87 @@ async def test_tool_runtime_tracks_manifest_state() -> None:
 
 
 @pytest.mark.asyncio
-async def test_web_research_composition_must_not_fail_closed() -> None:
-    """AVAILABLE web projections must be composed with a real web provider."""
-    compose = _load_composition()
-    services = compose(_StubEnv())
+async def test_web_research_composition_tracks_manifest_state() -> None:
+    """Web research projections must match their manifest state at the seam.
+
+    #1991 review follow-up (WO-8 PR-B): this probe previously hardcoded the
+    not-fail-closed assertion. It now reads the manifest the same way the
+    ``tool_runtime`` probe does and probes the seam with the env shape that
+    matches each state:
+
+    - AVAILABLE: the composition must wire the env-declared provider (A1's
+      authority seam, ``PADIEM_ENGINE_WEB_PROVIDER``) — not Core's fail-closed
+      ``OffWebProvider`` — and the public route must not answer fail-closed.
+    - DEFERRED: Production must fail closed. The production-shaped env is the
+      one WITHOUT a provider var — wrangler.toml carries no ``[vars]`` and no
+      ``keep_vars`` (owner decision D2, 2026-09-06), so every deploy drops
+      dashboard vars and no provider can exist in Production. The composition
+      must therefore read that state and wire Core's ``OffWebProvider``.
+
+    Measured limitation of the route probe: the research service runs the B14
+    planner BEFORE the web provider, so with the sentinel B14 binding both env
+    shapes answer bounded 502 ``upstream_unavailable`` and the response alone
+    cannot observe the provider gate. The composition seam is the observable
+    where the OFF gate is distinguishable, so this probe inspects the composed
+    provider (same depth as the ``_b14_service_bound`` probes in this module)
+    and drives it through its PUBLIC ``search()`` interface. The three ids
+    were flipped together (E9 A1, #1744) and must stay in one state — a split
+    would demand an explicit family decision here.
+    """
+    from padiem_ai_core.web_runtime import OffWebProvider, WebRuntimeError
+
+    from app.capability_manifest import CapabilityState, current_capability_manifest
     from app.web_research_service import RESEARCH_PATH
 
-    response = await _call(services.research, path=RESEARCH_PATH, payload=_research_payload())
-    assert not _is_fail_closed(response), (
-        "web_search/web_fetch/deep_research are manifest-AVAILABLE but the "
-        f"Production composition fails closed: {response.status_code} {response.body}"
+    compose = _load_composition()
+
+    family_states = {
+        declaration.state
+        for declaration in current_capability_manifest().capabilities
+        if declaration.id in {"web_search", "web_fetch", "deep_research"}
+    }
+    assert family_states, "web research family ids missing from the capability manifest"
+    assert len(family_states) == 1, (
+        "web_search/web_fetch/deep_research must share one manifest state, "
+        f"found {sorted(state.value for state in family_states)}"
     )
+    manifest_state = family_states.pop()
+
+    if manifest_state is CapabilityState.AVAILABLE:
+        services = compose(_StubEnv())
+    else:
+        services = compose(_ProductionShapedEnv())
+
+    runtime = services.research._research_runtime_factory("composition-probe")
+    provider = runtime._web_provider
+
+    if manifest_state is CapabilityState.AVAILABLE:
+        assert not isinstance(provider, OffWebProvider), (
+            "web_search/web_fetch/deep_research are manifest-AVAILABLE but the "
+            "Production composition wired the fail-closed OFF provider"
+        )
+        response = await _call(services.research, path=RESEARCH_PATH, payload=_research_payload())
+        assert not _is_fail_closed(response), (
+            "web_search/web_fetch/deep_research are manifest-AVAILABLE but the "
+            f"Production composition fails closed: {response.status_code} {response.body}"
+        )
+    else:
+        assert isinstance(provider, OffWebProvider), (
+            "web_search/web_fetch/deep_research are manifest-DEFERRED but the "
+            f"Production composition wired a non-OFF provider: {type(provider).__name__}"
+        )
+        try:
+            await provider.search("composition probe")
+        except WebRuntimeError as exc:
+            assert exc.code == "web_tools_off", (
+                f"OFF provider failed with unexpected code {exc.code!r}"
+            )
+            assert exc.status_code == 503
+        else:  # pragma: no cover - OffWebProvider must never answer
+            raise AssertionError(
+                "web research is manifest-DEFERRED but the composed OFF provider "
+                "answered a search without failing closed"
+            )
 
 
 # --- DEFERRED capabilities must fail closed ---------------------------------

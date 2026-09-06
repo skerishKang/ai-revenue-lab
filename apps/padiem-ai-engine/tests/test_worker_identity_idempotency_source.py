@@ -16,9 +16,11 @@ def test_identity_worker_injects_existing_optional_idempotency_adapter() -> None
     assert "CanonicalIdempotencyOrchestrationEngineService(" in source
 
 
-def test_source_wiring_does_not_activate_production_binding() -> None:
+def test_source_wiring_activates_durable_production_binding() -> None:
+    """WO-8 PR-B inversion: entrypoint unchanged, durable binding now active."""
     wrangler_source = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
 
     assert 'main = "worker_identity.py"' in wrangler_source
-    assert 'binding = "ENGINE_IDEMPOTENCY"' not in wrangler_source
-    assert "[[d1_databases]]" not in wrangler_source
+    assert 'binding = "ENGINE_IDEMPOTENCY"' in wrangler_source
+    assert "[[d1_databases]]" in wrangler_source
+    assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in wrangler_source

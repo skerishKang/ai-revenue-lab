@@ -268,7 +268,13 @@ def test_d1_identity_bound_store_issue_claim_release_commit_and_cancel():
     asyncio.run(scenario())
 
 
-def test_active_worker_wires_explicit_durable_continuation_without_production_binding_mutation():
+def test_active_worker_wires_explicit_durable_continuation_with_production_binding():
+    """WO-8 PR-B inversion: the durable continuation authority is bound in Production.
+
+    Pre-PR-B this test asserted absence; the provisioned database is now bound
+    as ENGINE_CONTINUATION, so this asserts the exact binding + database id.
+    The no-process-local-store guarantee is unchanged (InMemory stays banned).
+    """
     root = Path(__file__).resolve().parents[1]
     worker_source = (root / "worker_identity.py").read_text(encoding="utf-8")
     adapter_source = (root / "app" / "continuation_d1.py").read_text(encoding="utf-8")
@@ -281,4 +287,5 @@ def test_active_worker_wires_explicit_durable_continuation_without_production_bi
     assert "approval_decision_verifier=" in worker_source
     assert "InMemory" not in worker_source
     assert "CREATE TABLE" not in adapter_source.upper()
-    assert "ENGINE_CONTINUATION" not in wrangler_source
+    assert 'binding = "ENGINE_CONTINUATION"' in wrangler_source
+    assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in wrangler_source
