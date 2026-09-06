@@ -11,9 +11,13 @@ and that deploy.sh itself remains syntactically valid (bash -n).
 
 from __future__ import annotations
 
+import json
+import os
 import re
 import shutil
 import subprocess
+import sys
+import textwrap
 from pathlib import Path
 
 import yaml
@@ -100,6 +104,79 @@ def test_rollback_job_is_separately_confirmed() -> None:
     assert rollback["environment"] == "production"
     text = _workflow_text()
     assert "npx wrangler@4 rollback" in text
+
+
+def _embedded_version_check_script() -> str:
+    """Extract the python heredoc that validates deployments list output."""
+    text = _workflow_text()
+    match = re.search(
+        r"python3 - \"\$VERSION_ID\" <<'PY'\n(.*?)\n\s*PY\n",
+        text,
+        re.DOTALL,
+    )
+    assert match, "version-check heredoc not found in gate workflow"
+    return textwrap.dedent(match.group(1))
+
+
+def _run_version_check(tmp_path, payload, expected: str) -> subprocess.CompletedProcess:
+    script = _embedded_version_check_script()
+    json_file = tmp_path / "deployments.json"
+    json_file.write_text(json.dumps(payload), encoding="utf-8")
+    return subprocess.run(
+        [sys.executable, "-c", script, expected],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "B14_DEPLOYMENTS_JSON": str(json_file)},
+    )
+
+
+def test_version_check_accepts_wrangler_list_shape(tmp_path) -> None:
+    # Regression (post-#1961 first dispatch): wrangler deployments list --json
+    # returns a bare LIST, not {"deployments": [...]}. The first gated deploy
+    # crashed the verification step with AttributeError on payload.get.
+    payload = [
+        {
+            "version": {"id": "e1d672e7-0000-0000-0000-000000000000"},
+            "strategy": {"percentage": 100},
+        },
+        {
+            "version": {"id": "older-version"},
+            "strategy": {"percentage": 0},
+        },
+    ]
+    result = _run_version_check(tmp_path, payload, "e1d672e7-0000-0000-0000-000000000000")
+    assert result.returncode == 0, result.stderr
+    assert "POST_DEPLOY_VERSION_AT_100=PASS" in result.stdout
+
+
+def test_version_check_accepts_object_shape(tmp_path) -> None:
+    payload = {
+        "deployments": [
+            {
+                "version": {"id": "abc123"},
+                "strategy": {"percentage": 100},
+            }
+        ]
+    }
+    result = _run_version_check(tmp_path, payload, "abc123")
+    assert result.returncode == 0, result.stderr
+    assert "POST_DEPLOY_VERSION_AT_100=PASS" in result.stdout
+
+
+def test_version_check_still_fails_on_version_mismatch_or_partial_rollout(tmp_path) -> None:
+    mismatch = _run_version_check(
+        tmp_path,
+        [{"version": {"id": "other"}, "strategy": {"percentage": 100}}],
+        "expected-id",
+    )
+    assert mismatch.returncode != 0
+
+    not_full = _run_version_check(
+        tmp_path,
+        [{"version": {"id": "expected-id"}, "strategy": {"percentage": 50}}],
+        "expected-id",
+    )
+    assert not_full.returncode != 0
 
 
 def test_deploy_sh_is_syntactically_valid() -> None:
