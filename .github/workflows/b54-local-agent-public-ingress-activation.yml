@@ -147,6 +147,13 @@ jobs:
       domain_state: ${{ steps.inspect.outputs.domain_state }}
       domain_id: ${{ steps.inspect.outputs.domain_id }}
     steps:
+      - name: Checkout exact dispatch SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Verify exact target hostname input
         shell: bash
         env:
@@ -247,6 +254,13 @@ jobs:
     timeout-minutes: 20
     environment: production
     steps:
+      - name: Checkout exact dispatch SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Require explicit owner activation authorization and exact main
         shell: bash
         env:
@@ -430,6 +444,13 @@ jobs:
     timeout-minutes: 15
     environment: production
     steps:
+      - name: Checkout exact dispatch SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Require explicit rollback authorization and exact main
         shell: bash
         env:
