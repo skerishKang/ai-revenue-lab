@@ -16,6 +16,7 @@ from .agent_skill_service import (
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
 )
+from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 from .orchestration_service import (
@@ -148,6 +149,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             # E5A completed one-image source route. Trusted storage resolution is
             # intentionally not Production-wired yet, so capability stays DEFERRED.
             EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
+            # #1964 source slice: the replay route is declared but the feature
+            # stays DEFERRED until the #1235 production activation blockers are
+            # proven in a separately authorized change (BLOCKER_10).
+            EngineEndpointContract(IDEMPOTENCY_COMPLETED_REPLAY_PATH, "POST", "application/json"),
         ),
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),

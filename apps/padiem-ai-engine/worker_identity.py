@@ -34,6 +34,7 @@ from app.cloudflare_transport import (
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
+from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
@@ -176,6 +177,11 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         # tool registry or continuation authority is injected, so every
         # request fails closed as `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
+        # #1964 source slice: replay composes only the same trusted durable
+        # adapter as execution; without it the route fails closed (503).
+        idempotency_replay=IdempotencyReplayEngineService(
+            idempotency_adapter=idempotency_adapter,
+        ),
     )
 
 

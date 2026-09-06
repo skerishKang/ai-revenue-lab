@@ -20,6 +20,7 @@ from app.orchestration_service import (
     ORCHESTRATE_RESUME_PATH,
     ORCHESTRATION_STREAM_PATH,
 )
+from app.idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
@@ -48,6 +49,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
         ("POST", MULTIMODAL_EXECUTE_PATH),
+        ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH),
     ]
 
 
@@ -65,6 +67,8 @@ def test_orchestration_and_research_routes_declared_by_manifest() -> None:
     assert ("POST", AGENT_SKILL_RUN_PATH) in endpoints
     assert ("POST", AGENT_SKILL_RESUME_PATH) in endpoints
     assert ("POST", AGENT_SKILL_CANCEL_PATH) in endpoints
+    # #1964 source slice: replay route declared, feature stays DEFERRED.
+    assert ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH) in endpoints
 
 
 def test_current_completed_streaming_and_orchestration_features_are_available() -> None:

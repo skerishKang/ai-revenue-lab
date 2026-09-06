@@ -184,6 +184,36 @@ class CloudflareD1IdempotencyAdapter:
         )
         return True
 
+    async def read_completed(
+        self,
+        *,
+        app_id: str,
+        idempotency_key: str,
+        request_fingerprint: str,
+    ) -> Mapping[str, Any] | None:
+        """Read-only completed-result replay probe (no side effects, no INSERT).
+
+        This is the single public read surface for replay consumers. It mirrors
+        Core's ``begin()`` authority semantics exactly: a completed result is
+        only ever returned to the caller that can reproduce the original
+        request's ``request_fingerprint``. A fingerprint mismatch, a
+        non-``completed`` state, or a missing result payload all read as
+        ``None`` — replay never re-executes and never widens authority.
+        """
+        record = await self._record(app_id=app_id, idempotency_key=idempotency_key)
+        if record is None:
+            return None
+        if record.get("request_fingerprint") != request_fingerprint:
+            return None
+        if record.get("state") != "completed":
+            return None
+        if not record.get("result_json"):
+            return None
+        try:
+            return dict(json.loads(str(record["result_json"])))
+        except (TypeError, ValueError):
+            return None
+
     async def begin(
         self,
         *,

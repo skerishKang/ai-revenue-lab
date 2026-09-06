@@ -35,6 +35,10 @@ from app.cloudflare_transport import (
 )
 from app.engine_composition import EngineServices
 from app.idempotency_binding import CloudflareD1IdempotencyAdapter
+from app.idempotency_replay_service import (
+    IDEMPOTENCY_COMPLETED_REPLAY_PATH,
+    IdempotencyReplayEngineService,
+)
 from app.identity_enforcement import authenticate_request
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH, MemoryRetrievalEngineService
 from app.orchestration_service import (
@@ -305,6 +309,11 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             binding_resolver=None,
             idempotency_adapter=idempotency_adapter,
         ),
+        # #1964 source slice: replay composes only the same trusted durable
+        # adapter as execution; without it the route fails closed (503).
+        idempotency_replay=IdempotencyReplayEngineService(
+            idempotency_adapter=idempotency_adapter,
+        ),
     )
 
 
@@ -408,6 +417,9 @@ class Default(WorkerEntrypoint):
             ORCHESTRATE_CANCEL_PATH,
             ORCHESTRATION_STREAM_PATH,
         }
+        idempotency_paths = {
+            IDEMPOTENCY_COMPLETED_REPLAY_PATH,
+        }
         agent_skill_paths = {
             AGENT_SKILL_RUN_PATH,
             AGENT_SKILL_RESUME_PATH,
@@ -420,7 +432,7 @@ class Default(WorkerEntrypoint):
             RESEARCH_PATH,
             MEMORY_PATH,
             MEMORY_WRITE_PATH,
-        } | orchestration_paths | agent_skill_paths
+        } | orchestration_paths | agent_skill_paths | idempotency_paths
         if path not in allowed_paths:
             result = ServiceResponse(
                 status_code=404,
@@ -456,6 +468,23 @@ class Default(WorkerEntrypoint):
 
         if path in orchestration_paths:
             result = await services.orchestration.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
+
+        if path in idempotency_paths:
+            # services.idempotency_replay is None only in the unbound
+            # composition; replay itself still fails closed inside the service.
+            if services.idempotency_replay is None:
+                return _error_response(
+                    "idempotency_unavailable",
+                    "Trusted durable idempotency authority is unavailable.",
+                    503,
+                )
+            result = await services.idempotency_replay.handle(
                 method=method,
                 path=path,
                 content_type=content_type,
