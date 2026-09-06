@@ -28,11 +28,9 @@ from padiem_ai_core import (
     ApprovalRequirement,
     BoundedAgentDefinition,
     CompiledAgentProfile,
-    ErrorClass,
     ExecutionContext,
     ExecutionRequest,
     ExecutionResult,
-    ExecutionRuntimeError,
     IdempotencyConflictError,
     OrchestrationError,
     OrchestrationEvent,
@@ -45,6 +43,8 @@ from padiem_ai_core import (
     request_fingerprint,
 )
 from padiem_ai_core.agent_approval import tool_invocation_digest
+from padiem_ai_core.contracts import ErrorClass
+from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
