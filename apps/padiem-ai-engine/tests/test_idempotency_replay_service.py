@@ -3,6 +3,16 @@
 These tests lock the governance boundary: the replay service reuses the exact
 trusted durable adapter records that Core's contextual execution writes, never
 re-executes, never fabricates results, and fails closed without the adapter.
+
+CTO review conditions locked here:
+
+- R1: replay is NOT lookup. The caller must present the original request's
+  ``request_fingerprint``; a mismatched (or merely different) fingerprint is
+  indistinguishable from "not found" and never discloses the cached result.
+- R2: the service consumes only the adapter's public ``read_completed`` read
+  surface (never private adapter methods).
+- R4: the wire field is the Core-native ``idempotency_key``.
+
 The manifest feature stays DEFERRED (blockers document #1235).
 """
 
@@ -26,9 +36,18 @@ from app.idempotency_replay_service import (
     IdempotencyReplayEngineService,
 )
 
+_FP = "f" * 64
 
-def _replay_payload(execution_id: str = "exec_1", app_id: str = "b62") -> bytes:
-    return json.dumps({"app_id": app_id, "execution_id": execution_id}).encode("utf-8")
+
+def _replay_payload(
+    idempotency_key: str = "exec_1",
+    app_id: str = "b62",
+    request_fingerprint: str | None = _FP,
+) -> bytes:
+    payload: dict[str, str] = {"app_id": app_id, "idempotency_key": idempotency_key}
+    if request_fingerprint is not None:
+        payload["request_fingerprint"] = request_fingerprint
+    return json.dumps(payload).encode("utf-8")
 
 
 async def _complete_via_adapter(
@@ -36,10 +55,11 @@ async def _complete_via_adapter(
     *,
     app_id: str = "b62",
     idempotency_key: str = "exec_1",
+    request_fingerprint: str = _FP,
     answer: str = "cached answer",
 ) -> None:
     reservation = await adapter.begin(
-        app_id=app_id, idempotency_key=idempotency_key, request_fingerprint="f" * 64
+        app_id=app_id, idempotency_key=idempotency_key, request_fingerprint=request_fingerprint
     )
     assert reservation is None
     result = ExecutionResult(
@@ -55,7 +75,7 @@ async def _complete_via_adapter(
     await adapter.complete(
         app_id=app_id,
         idempotency_key=idempotency_key,
-        request_fingerprint="f" * 64,
+        request_fingerprint=request_fingerprint,
         result=result.to_public_dict(),
     )
 
@@ -88,7 +108,7 @@ async def test_replay_requires_post_json_and_known_path() -> None:
 
 
 @pytest.mark.asyncio
-async def test_replay_validates_body_and_execution_id() -> None:
+async def test_replay_validates_body_and_idempotency_key() -> None:
     service = IdempotencyReplayEngineService(idempotency_adapter=None)
 
     invalid_json = await service.handle(
@@ -100,21 +120,64 @@ async def test_replay_validates_body_and_execution_id() -> None:
     assert invalid_json.status_code == 400
     assert invalid_json.body["error"]["code"] == "invalid_json"
 
-    missing_execution_id = await service.handle(
+    missing_key = await service.handle(
         method="POST",
         path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
         content_type="application/json",
-        body=json.dumps({"app_id": "b62"}).encode("utf-8"),
+        body=json.dumps({"app_id": "b62", "request_fingerprint": _FP}).encode("utf-8"),
     )
-    assert missing_execution_id.status_code == 400
+    assert missing_key.status_code == 400
 
-    unsafe_execution_id = await service.handle(
+    unsafe_key = await service.handle(
         method="POST",
         path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
         content_type="application/json",
-        body=_replay_payload(execution_id="../escape"),
+        body=_replay_payload(idempotency_key="../escape"),
     )
-    assert unsafe_execution_id.status_code == 400
+    assert unsafe_key.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_replay_requires_matching_request_fingerprint() -> None:
+    """R1: replay is not lookup — the fingerprint is mandatory wire input."""
+    service = IdempotencyReplayEngineService(idempotency_adapter=None)
+
+    missing_fingerprint = await service.handle(
+        method="POST",
+        path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
+        content_type="application/json",
+        body=json.dumps({"app_id": "b62", "idempotency_key": "exec_1"}).encode("utf-8"),
+    )
+    assert missing_fingerprint.status_code == 400
+
+    for malformed in ("", "abc", "F" * 64, "g" * 64, _FP + "0", "a" * 63 + "G"):
+        response = await service.handle(
+            method="POST",
+            path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
+            content_type="application/json",
+            body=_replay_payload(request_fingerprint=malformed),
+        )
+        assert response.status_code == 400, malformed
+
+
+@pytest.mark.asyncio
+async def test_replay_fingerprint_mismatch_never_discloses_result() -> None:
+    """R1: a different fingerprint is indistinguishable from 'not found'."""
+    db = FakeD1()
+    adapter = CloudflareD1IdempotencyAdapter(db)
+    await _complete_via_adapter(adapter, request_fingerprint=_FP)
+    service = IdempotencyReplayEngineService(idempotency_adapter=adapter)
+
+    mismatched = await service.handle(
+        method="POST",
+        path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
+        content_type="application/json",
+        body=_replay_payload(request_fingerprint="a" * 64),
+    )
+    assert mismatched.status_code == 200
+    assert mismatched.body["replayed"] is False
+    assert mismatched.body["reason"] == "completed_execution_not_found"
+    assert "result" not in mismatched.body
 
 
 @pytest.mark.asyncio
@@ -147,13 +210,13 @@ async def test_replay_returns_completed_result_from_durable_record() -> None:
     assert response.status_code == 200
     assert response.body["ok"] is True
     assert response.body["replayed"] is True
-    assert response.body["execution_id"] == "exec_1"
+    assert response.body["idempotency_key"] == "exec_1"
     assert response.body["result"]["answer"] == "cached answer"
     assert response.body["result"]["metadata"]["status"] == "completed"
 
 
 @pytest.mark.asyncio
-async def test_unknown_execution_id_reports_not_replayed_without_error() -> None:
+async def test_unknown_idempotency_key_reports_not_replayed_without_error() -> None:
     db = FakeD1()
     adapter = CloudflareD1IdempotencyAdapter(db)
     service = IdempotencyReplayEngineService(idempotency_adapter=adapter)
@@ -162,7 +225,7 @@ async def test_unknown_execution_id_reports_not_replayed_without_error() -> None
         method="POST",
         path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
         content_type="application/json",
-        body=_replay_payload(execution_id="exec_missing"),
+        body=_replay_payload(idempotency_key="exec_missing"),
     )
     assert response.status_code == 200
     assert response.body["replayed"] is False
@@ -173,8 +236,8 @@ async def test_unknown_execution_id_reports_not_replayed_without_error() -> None
 async def test_reserved_or_aborted_records_are_never_replayed() -> None:
     db = FakeD1()
     adapter = CloudflareD1IdempotencyAdapter(db)
-    await adapter.begin(app_id="b62", idempotency_key="exec_reserved", request_fingerprint="f" * 64)
-    await adapter.begin(app_id="b62", idempotency_key="exec_abort_me", request_fingerprint="f" * 64)
+    await adapter.begin(app_id="b62", idempotency_key="exec_reserved", request_fingerprint=_FP)
+    await adapter.begin(app_id="b62", idempotency_key="exec_abort_me", request_fingerprint=_FP)
     await adapter.abort(app_id="b62", idempotency_key="exec_abort_me", reason="test")
     service = IdempotencyReplayEngineService(idempotency_adapter=adapter)
 
@@ -182,7 +245,7 @@ async def test_reserved_or_aborted_records_are_never_replayed() -> None:
         method="POST",
         path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
         content_type="application/json",
-        body=_replay_payload(execution_id="exec_reserved"),
+        body=_replay_payload(idempotency_key="exec_reserved"),
     )
     assert reserved.status_code == 200
     assert reserved.body["replayed"] is False
@@ -191,7 +254,7 @@ async def test_reserved_or_aborted_records_are_never_replayed() -> None:
         method="POST",
         path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
         content_type="application/json",
-        body=_replay_payload(execution_id="exec_abort_me"),
+        body=_replay_payload(idempotency_key="exec_abort_me"),
     )
     assert aborted.status_code == 200
     assert aborted.body["replayed"] is False
@@ -208,7 +271,7 @@ async def test_app_scope_is_not_crossed() -> None:
         method="POST",
         path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
         content_type="application/json",
-        body=_replay_payload(execution_id="exec_scope", app_id="b63"),
+        body=_replay_payload(idempotency_key="exec_scope", app_id="b63"),
     )
     assert cross_app.status_code == 200
     assert cross_app.body["replayed"] is False
@@ -229,6 +292,85 @@ async def test_replay_never_mutates_durable_records() -> None:
         body=_replay_payload(),
     )
     assert db.records[("b62", "exec_1")] == before
+
+
+@pytest.mark.asyncio
+async def test_replay_uses_only_public_read_surface() -> None:
+    """R2: the service must go through the public read_completed method."""
+    db = FakeD1()
+    adapter = CloudflareD1IdempotencyAdapter(db)
+    await _complete_via_adapter(adapter)
+    service = IdempotencyReplayEngineService(idempotency_adapter=adapter)
+    assert hasattr(type(service._idempotency_adapter), "read_completed")
+
+    # The replay probe itself must never attempt a write (INSERT/UPDATE/DELETE).
+    # Statements issued by the begin/complete SETUP are excluded from the check.
+    setup_statement_count = len(db.sql)
+    await service.handle(
+        method="POST",
+        path=IDEMPOTENCY_COMPLETED_REPLAY_PATH,
+        content_type="application/json",
+        body=_replay_payload(),
+    )
+    assert all(
+        sql.startswith("SELECT") for sql in db.sql[setup_statement_count:]
+    )
+
+
+@pytest.mark.asyncio
+async def test_adapter_read_completed_mirrors_begin_authority_semantics() -> None:
+    """R2 direct: the public read surface is fingerprint-bound and read-only."""
+    db = FakeD1()
+    adapter = CloudflareD1IdempotencyAdapter(db)
+
+    # A reservation still in flight is never replayable.
+    await adapter.begin(app_id="b62", idempotency_key="exec_reserved", request_fingerprint=_FP)
+    assert (
+        await adapter.read_completed(
+            app_id="b62", idempotency_key="exec_reserved", request_fingerprint=_FP
+        )
+        is None
+    )
+
+    # No record yet for the completed key.
+    assert (
+        await adapter.read_completed(
+            app_id="b62", idempotency_key="exec_1", request_fingerprint=_FP
+        )
+        is None
+    )
+
+    await _complete_via_adapter(adapter)
+
+    # Matching fingerprint reads the completed public result.
+    completed = await adapter.read_completed(
+        app_id="b62", idempotency_key="exec_1", request_fingerprint=_FP
+    )
+    assert isinstance(completed, dict)
+    assert completed["answer"] == "cached answer"
+
+    # Wrong fingerprint reads as None — never discloses the cached result.
+    assert (
+        await adapter.read_completed(
+            app_id="b62", idempotency_key="exec_1", request_fingerprint="a" * 64
+        )
+        is None
+    )
+    # Cross-app scope reads as None.
+    assert (
+        await adapter.read_completed(
+            app_id="b63", idempotency_key="exec_1", request_fingerprint=_FP
+        )
+        is None
+    )
+    # Read-only: the begin/complete setup wrote, but read_completed itself
+    # must have issued only SELECT statements.
+    completed_setup = next(
+        i for i, sql in enumerate(db.sql) if sql.startswith("UPDATE")
+    )
+    assert all(
+        sql.startswith("SELECT") for sql in db.sql[completed_setup + 1 :]
+    )
 
 
 def test_manifest_endpoint_declared_but_feature_stays_deferred() -> None:

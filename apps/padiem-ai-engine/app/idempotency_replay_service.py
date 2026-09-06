@@ -3,11 +3,19 @@
 #1964 source slice (governance-compliant, no manifest activation). A trusted
 durable ``CloudflareD1IdempotencyAdapter`` is the only replay authority: the
 service reuses the exact records written by Core's contextual execution path
-(``app_id`` + ``context.idempotency_key`` with state ``completed``). Absence of
-the adapter is fail-closed — the service never installs a process-local store
-and never re-executes or fabricates a result. The Engine contract manifest
-keeps ``execution_idempotency_replay_completed`` DEFERRED until the #1235
-Production activation blockers are proven in a separately authorized change.
+(``app_id`` + ``context.idempotency_key`` with state ``completed``).
+
+Replay is NOT lookup (CTO review R1): the caller must present the original
+request's ``request_fingerprint`` (the exact authority Core's ``begin()``
+requires before it will hand back a completed result). Without it, a caller
+who merely knows an ``idempotency_key`` could read another request's result
+inside the same app scope — that authority widening is fail-closed here.
+
+Absence of the adapter is fail-closed — the service never installs a
+process-local store and never re-executes or fabricates a result. The Engine
+contract manifest keeps ``execution_idempotency_replay_completed`` DEFERRED
+until the #1235 Production activation blockers are proven in a separately
+authorized change.
 """
 
 from __future__ import annotations
@@ -27,6 +35,7 @@ IDEMPOTENCY_COMPLETED_REPLAY_PATH = "/internal/v1/idempotency/completed/replay"
 
 _STATE_COMPLETED = "completed"
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
+_REQUEST_FINGERPRINT_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class IdempotencyReplayEngineService:
@@ -84,11 +93,20 @@ class IdempotencyReplayEngineService:
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return _service_error("invalid_request", "app_id must be a non-empty string.", status_code=400)
-        execution_id = payload.get("execution_id")
-        if not isinstance(execution_id, str) or not _IDENTIFIER_RE.fullmatch(execution_id):
+        idempotency_key = payload.get("idempotency_key")
+        if not isinstance(idempotency_key, str) or not _IDENTIFIER_RE.fullmatch(idempotency_key):
             return _service_error(
                 "invalid_request",
-                "execution_id must be a bounded safe identifier.",
+                "idempotency_key must be a bounded safe identifier.",
+                status_code=400,
+            )
+        request_fingerprint = payload.get("request_fingerprint")
+        if not isinstance(request_fingerprint, str) or not _REQUEST_FINGERPRINT_RE.fullmatch(
+            request_fingerprint
+        ):
+            return _service_error(
+                "invalid_request",
+                "request_fingerprint must be the original request's 64-character lowercase hex digest.",
                 status_code=400,
             )
 
@@ -102,7 +120,8 @@ class IdempotencyReplayEngineService:
         try:
             replay_body = await self._replay_payload(
                 app_id=app_id,
-                execution_id=execution_id,
+                idempotency_key=idempotency_key,
+                request_fingerprint=request_fingerprint,
             )
         except Exception:
             return _service_error(
@@ -116,47 +135,32 @@ class IdempotencyReplayEngineService:
         self,
         *,
         app_id: str,
-        execution_id: str,
+        idempotency_key: str,
+        request_fingerprint: str,
     ) -> dict[str, Any]:
         assert self._idempotency_adapter is not None
         # The durable record is keyed by the exact pair Core's contextual
-        # execution writes (app_id, context.idempotency_key) with
-        # request_fingerprint bound at begin/complete time. Replay proves
-        # identity for the same app scope; it never grants new authority and
-        # never re-executes.
-        public = await self._completed_public_result(
-            app_id=app_id, idempotency_key=execution_id
+        # execution writes (app_id, context.idempotency_key) and is bound to a
+        # request_fingerprint at begin/complete time. Replay reuses Core's
+        # authority semantics (CTO review R1): the adapter's public read
+        # surface returns the completed result ONLY when the presented
+        # fingerprint matches the one bound to the record. Replay never grants
+        # new authority and never re-executes.
+        public = await self._idempotency_adapter.read_completed(
+            app_id=app_id,
+            idempotency_key=idempotency_key,
+            request_fingerprint=request_fingerprint,
         )
         if public is None:
             return {
                 "ok": True,
                 "replayed": False,
-                "execution_id": execution_id,
+                "idempotency_key": idempotency_key,
                 "reason": "completed_execution_not_found",
             }
         return {
             "ok": True,
             "replayed": True,
-            "execution_id": execution_id,
+            "idempotency_key": idempotency_key,
             "result": public,
         }
-
-    async def _completed_public_result(
-        self, *, app_id: str, idempotency_key: str
-    ) -> dict[str, Any] | None:
-        assert self._idempotency_adapter is not None
-        record = await self._idempotency_adapter._record(
-            app_id=app_id, idempotency_key=idempotency_key
-        )
-        if record is None:
-            return None
-        if record.get("state") != _STATE_COMPLETED:
-            # A reservation still in flight is never replayable and never
-            # treated as a completed result.
-            return None
-        if not record.get("result_json"):
-            return None
-        try:
-            return dict(json.loads(str(record["result_json"])))
-        except (TypeError, ValueError):
-            return None
