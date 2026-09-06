@@ -20,6 +20,49 @@ from app.pilot.catalog import get_catalog_by_id
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamAuthFailed
 from app.pilot.router_core import resolve_auto_route, resolve_manual_route
 
+# Decision #1933 removed the Agnes route from the single-route Kilo Gateway
+# catalog. The platform-owned credential plane it exercises (#917/#921) is still
+# production code, so these tests reinstall the historical entry to keep the
+# credential contracts genuinely validated rather than silently passing.
+def _agnes_catalog_model():
+    from app.pilot.catalog import CatalogModel
+
+    return CatalogModel(
+        model_id="agnes-ai/agnes-2.5-flash",
+        upstream_model="agnes-2.5-flash",
+        display_name="Agnes AI: Agnes 2.5 Flash",
+        provider="Agnes AI",
+        provider_type="platform",
+        input_price_usd_per_1m=None,
+        output_price_usd_per_1m=None,
+        currency="usd",
+        context_window=200000,
+        korean_score=4,
+        latency_ms=900,
+        capabilities=frozenset({"chat"}),
+        region="외부",
+        sort_order=70,
+        credential_source="platform_secret",
+        platform_provider_id="agnes-ai",
+    )
+
+
+@pytest.fixture(autouse=True)
+def _agnes_catalog_route(monkeypatch):
+    import app.pilot.catalog as cat
+
+    original_models = cat.CATALOG_MODELS
+    original_by_id = cat.CATALOG_BY_ID
+    extra = _agnes_catalog_model()
+    cat.CATALOG_MODELS = [*original_models, extra]
+    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
+    try:
+        yield extra
+    finally:
+        cat.CATALOG_MODELS = original_models
+        cat.CATALOG_BY_ID = original_by_id
+
+
 _SYNTH_AGNES_KEY = "ags_live_abcdefghijklmnopqrstuvwxyz1234"
 _SYNTH_ALT_KEY = "alt_live_zyxwvutsrqponmlkjihgfedcba5678"
 
@@ -520,14 +563,14 @@ def test_stream_preview_agnes_platform_secret_fails_closed_when_secret_missing(m
 
 def test_stream_preview_openrouter_route_still_streams(monkeypatch):
     """OpenRouter manual route (credential_source=openrouter) still streams via
-    stream-preview; the openrouter/free catalog model resolves and does not
+    stream-preview; the kilo/nvidia-nemotron-3-ultra-550b-a55b-free catalog model resolves and does not
     raise StreamNotSupported for a non-platform route."""
     monkeypatch.delenv("AGNES_API_KEY", raising=False)
     client = TestClient(create_app())
     response = client.post(
         _STREAM_URL,
         json={
-            "model": "openrouter/free",
+            "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             "stream": True,
             "messages": [{"role": "user", "content": "hi"}],
         },

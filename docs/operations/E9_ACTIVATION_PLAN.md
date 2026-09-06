@@ -92,7 +92,42 @@ Rationale:
   activation → synthetic probe → parity → rollback proof) before harder,
   stateful capabilities (A3/A4/A6/A9) are attempted.
 
-## 5. Rollback anchors (audit at plan creation)
+## 5. A3 Tool Runtime activation prep (#1746)
+
+Second activation target (preparation complete, owner authorization pending).
+
+Rationale:
+
+- `tool_runtime` (`TOOL_EXECUTE_PATH`/`TOOL_RESUME_PATH`/`TOOL_CANCEL_PATH`) is
+  already implemented in `apps/padiem-ai-engine/app/tool_execution_service.py`
+  and reuses the real Core `ToolRuntime`; only Production activation is missing.
+- Rollback surface is bounded: no durable object/queue migration is required and
+  the approval/continuation path is already server-authority gated by Core.
+- Reference consumers: **B62 Padiem Chat** and **B54 Padiem Claw** share this
+  Engine capability; the parity probe is structural and imports no product code.
+
+Readiness record (no Production mutation authorized):
+
+```text
+ACTIVATION_GATE_MODULE = apps/padiem-ai-engine/app/tool_runtime_activation.py
+ACTIVATION_GATE_TESTS  = apps/padiem-ai-engine/tests/test_tool_runtime_activation.py
+CONFIRMATION_TOKEN     = ACTIVATE_ENGINE_A3_TOOL_RUNTIME
+CURRENT_DEPLOYED_VERSION = 26288341 (deploy run 33980178544)
+ROLLBACK_VERSION       = 8d4db98c (previous successful deploy run 33970133859)
+CONFIG_BINDING_DIFF    = none
+SECRET_NAME_DIFF       = none (names only)
+SYNTHETIC_PROBES       = tool_execute / tool_resume / tool_cancel
+REFERENCE_CONSUMERS    = b62-padiem-chat, b54-padiem-claw
+REAL_PROVIDER_CALLS    = 0
+REAL_USER_DATA         = 0
+FINAL_DISPOSITION      = PENDING_PRODUCTION_AUTHORIZATION
+```
+
+The manifest entry for `tool_runtime` remains `DEFERRED` (comment records
+`PENDING_PRODUCTION_AUTHORIZATION`) until a separate owner-authorized dispatch
+runs the gate, proves parity, and completes the bounded cutover.
+
+## 6. Rollback anchors (audit at plan creation)
 
 Audited from the B54 Engine Production Deploy Gate workflow and its run history.
 
@@ -111,7 +146,7 @@ Re-deploy/rollback gate reference: re-pin of expected pre-fix state is tracked i
 `b54-local-agent-ingress-remediation-redeploy.yml` (#1942) and is engine-adjacent;
 it does not authorize engine Production mutation by itself.
 
-## 6. Required evidence per activation (A1 first)
+## 7. Required evidence per activation (A1 first)
 
 ```text
 CURRENT_MAIN
@@ -136,7 +171,7 @@ FINAL_DISPOSITION
 Secret values are never published. `REAL_USER_DATA` stays 0 until separately
 approved.
 
-## 7. Product migration rule
+## 8. Product migration rule
 
 Product-local generic AI paths may be removed only after the shared Engine
 capability is proven for that product:
@@ -162,7 +197,7 @@ B62 Padiem Chat broad standalone regression/reference consumer
 B54 Padiem Claw included where shared Engine capabilities apply (no Claw-specific sandbox/computer authority moves)
 ```
 
-## 8. Global safety invariants
+## 9. Global safety invariants
 
 ```text
 BIG_BANG_CUTOVER = NO
@@ -175,7 +210,7 @@ EXACT_HEAD_REQUIRED = YES
 MANIFEST_AVAILABLE_BEFORE_EVIDENCE = NO
 ```
 
-## 9. Program completion criteria
+## 10. Program completion criteria
 
 ```text
 ALL_ACCEPTED_ENGINE_CAPABILITIES_HAVE_ACTIVATION_DISPOSITION = YES
@@ -186,12 +221,13 @@ FALSE_AVAILABLE_MANIFEST_ENTRIES = 0
 CROSS_PRODUCT_AUTHORITY_BOUNDARIES = PRESERVED
 ```
 
-## 10. Status
+## 11. Status
 
 - [ ] A0 disposition recorded (AVAILABLE per manifest, no activation needed)
-- [ ] A1 activation (rollback anchor + controlled activation + probes) — next
+- [x] A1 activation gate merged (#1949) — owner-authorized dispatch pending
 - [ ] A2 disposition recorded (AVAILABLE per manifest, no activation needed)
-- [ ] A3-A6, A7, A9 activation dispositions
+- [x] A3 activation prep merged — gate + tests + rollback anchor; owner-authorized dispatch pending
+- [ ] A4-A6, A7, A9 activation dispositions
 - [ ] `E9_ACTIVATION_PLAN.md` reviewed and merged
 
 Refs #1743 #1698 #1744 #1745 #1746 #1748 #1749 #1750 #1751 #1752 #1621

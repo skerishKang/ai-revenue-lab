@@ -45,12 +45,21 @@ def _reset_config():
     openrouter_config.base_url = saved["base_url"]
 
 
+KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+# The live Models API response is keyed by the upstream id, not the catalog id.
+KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+
+
 def _models_payload() -> dict:
-    """Build a plausible Models API response payload covering catalog entries."""
+    """Plausible Models API response: the catalog route plus synthetic others.
+
+    Only entries whose id is in the catalog participate in drift checks;
+    the synthetic ids keep the response shape realistic.
+    """
     return {
         "data": [
             {
-                "id": "openrouter/free",
+                "id": KILO_UPSTREAM,
                 "pricing": {"prompt": "0", "completion": "0"},
             },
             {
@@ -89,7 +98,7 @@ class TestCatalogAnonymous200:
         result = fetch_live_models(transport=transport)
         assert result["ok"] is True
         assert "models_by_id" in result
-        assert "google/gemini-2.5-flash" in result["models_by_id"]
+        assert KILO_UPSTREAM in result["models_by_id"]
 
 
 class TestCatalogAnonymous401403:
@@ -182,8 +191,8 @@ class TestCatalogNetworkSkipped:
 class TestCatalogPriceDrift:
     def test_price_drift_detected(self):
         payload = _models_payload()
-        # gemini snapshot is 0.30/2.50; live is 0.40/3.00 -> drift
-        payload["data"][1]["pricing"] = {"prompt": "0.0000004", "completion": "0.000003"}
+        # Kilo snapshot is 0/0; a non-zero live price is drift.
+        payload["data"][0]["pricing"] = {"prompt": "0.0000004", "completion": "0.000003"}
 
         def handler(request):
             return httpx.Response(200, json=payload)
@@ -192,10 +201,11 @@ class TestCatalogPriceDrift:
         result = validate_catalog_ids_live(transport=transport)
         assert result["checked"] is True
         drift_models = {d["model_id"] for d in result["price_drift"]}
-        assert "google/gemini-2.5-flash" in drift_models
+        assert KILO_MODEL in drift_models
 
     def test_no_drift_when_prices_match(self):
         payload = _models_payload()
+        # The Kilo route is left at its configured 0/0 snapshot.
         payload["data"][1]["pricing"] = {"prompt": "0.0000003", "completion": "0.0000025"}
 
         def handler(request):
@@ -204,15 +214,16 @@ class TestCatalogPriceDrift:
         transport = httpx.MockTransport(handler)
         result = validate_catalog_ids_live(transport=transport)
         assert result["checked"] is True
-        assert all(d["model_id"] != "google/gemini-2.5-flash" for d in result["price_drift"])
+        assert all(d["model_id"] != KILO_MODEL for d in result["price_drift"])
 
 
 class TestCatalogUnavailableModel:
     def test_unavailable_model_detected(self):
+        # The catalog route is absent from the live response.
         payload = {
             "data": [
-                {"id": "openrouter/free", "pricing": {"prompt": "0", "completion": "0"}},
                 {"id": "google/gemini-2.5-flash", "pricing": {"prompt": "0.0000003", "completion": "0.0000025"}},
+                {"id": "deepseek/deepseek-chat", "pricing": {"prompt": "0.0000002574", "completion": "0.0000010287"}},
             ]
         }
 
@@ -222,11 +233,12 @@ class TestCatalogUnavailableModel:
         transport = httpx.MockTransport(handler)
         result = validate_catalog_ids_live(transport=transport)
         assert result["checked"] is True
-        assert "deepseek/deepseek-chat" in result["unavailable"]
+        assert KILO_MODEL in result["unavailable"]
 
 
 class TestCatalogSourceMetadata:
     def test_source_metadata_present(self):
         assert CATALOG_SOURCE == "openrouter_models_api"
         assert CATALOG_SOURCE_URL == "https://openrouter.ai/api/v1/models"
-        assert len(CATALOG_MODELS) >= 5
+        # Decision #1933 pins a single-route Kilo Gateway catalog.
+        assert len(CATALOG_MODELS) == 1

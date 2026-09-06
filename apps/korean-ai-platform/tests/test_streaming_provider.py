@@ -62,7 +62,7 @@ def _set_live() -> str:
     return key
 
 
-async def _collect(*, transport=None, model_id="openrouter/free", upstream_model="openrouter/free"):
+async def _collect(*, transport=None, model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free", upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free"):
     return [
         event
         async for event in stream_openrouter_chat_completions(
@@ -110,10 +110,10 @@ async def test_live_stream_parses_fragmented_lf_crlf_usage_done_and_free_policy(
         payload = (
             b": keepalive\r\n\r\n"
             b"event: message\r\nid: ignored\r\n"
-            b'data: {"id":"stream-1","model":"openrouter/free","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"openrouter/free","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
-            b'data: {"id":"stream-1","model":"openrouter/free","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"openrouter/free","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
+            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
+            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
+            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
+            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
             b"data: [DONE]\r\n\r\n"
             b"data: this-must-not-be-read\n\n"
         )
@@ -135,7 +135,7 @@ async def test_live_stream_parses_fragmented_lf_crlf_usage_done_and_free_policy(
 
     assert captured["authorization"] == f"Bearer {key}"
     assert captured["body"]["stream"] is True
-    assert captured["body"]["model"] == "openrouter/free"
+    assert captured["body"]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
     assert captured["body"]["provider"] == {
         "max_price": {"prompt": 0, "completion": 0}
     }
