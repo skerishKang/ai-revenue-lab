@@ -414,21 +414,25 @@ def current_capability_manifest() -> CapabilityManifest:
                 routes=(),
                 scope=_row(),
             ),
+            # E9 A1 (#1744): web_search/web_fetch/deep_research became AVAILABLE
+            # by owner-authorized bounded Production activation dispatch on main
+            # ed18a2a8 (gate evidence recorded in docs/operations/E9_ACTIVATION_PLAN.md;
+            # rollback anchor preserved in app/web_research_activation.py).
             CapabilityDeclaration(
                 id="web_search",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(RESEARCH_PATH,),
                 scope=_row(b14_provider_authority="preserved"),
             ),
             CapabilityDeclaration(
                 id="web_fetch",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(RESEARCH_PATH,),
                 scope=_row(b14_provider_authority="preserved"),
             ),
             CapabilityDeclaration(
                 id="deep_research",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(RESEARCH_PATH,),
                 scope=_row(b14_provider_authority="preserved"),
             ),

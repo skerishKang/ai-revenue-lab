@@ -158,9 +158,11 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("web_search_projection", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("web_fetch_projection", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("deep_research_projection", EngineFeatureState.DEFERRED),
+            # E9 A1 (#1744): Web/Research projection features follow the owner-authorized
+            # bounded activation dispatch on main ed18a2a8 (see E9_ACTIVATION_PLAN.md).
+            EngineFeatureContract("web_search_projection", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("web_fetch_projection", EngineFeatureState.AVAILABLE),
+            EngineFeatureContract("deep_research_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
