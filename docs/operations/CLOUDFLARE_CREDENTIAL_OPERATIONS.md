@@ -4,10 +4,12 @@
 
 | Field | Value |
 |-------|-------|
-| GitHub secret | `CLOUDFLARE_API_TOKEN` |
+| GitHub secret | `CLOUDFLARE_API_TOKEN` (GitHub production environment) |
+| Cloudflare token name | `ai-revenue-lab-pages` |
 | Type | Wrangler OAuth access token (temporary) |
 | Last verified | Run `30581067392` (2026-07-30) |
 | Status | Temporary recovery credential |
+| D1 scope | Added Account > D1 > Edit 2026-09-06 (needed by `b54-engine-d1-provision-gate.yml`) |
 
 ## Risk
 
@@ -15,6 +17,7 @@
 - It cannot auto-renew in GitHub Actions
 - Token expiry is unknown
 - A dedicated Cloudflare CI API token with `pages:write` scope is recommended
+- Scope limits (verified 2026-09-06): the token as originally provisioned had no D1 permission — `wrangler d1 list` failed with `Authentication error [code: 10000]` on `/accounts/{account}/d1/database`. Account > D1 > Edit was added. DNS write, Secrets Store, subdomain toggling, and D1 were all outside the original scope.
 
 ## Weekly audit
 
