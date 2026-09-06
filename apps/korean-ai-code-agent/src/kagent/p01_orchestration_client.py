@@ -25,7 +25,7 @@ from padiem_ai_engine_client import PadiemAiEngineClientError
 
 from .p01_adapter import P01AdapterError
 
-APPROVED_FREE_MODEL = "stealth/ox-alpha"
+APPROVED_FREE_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.

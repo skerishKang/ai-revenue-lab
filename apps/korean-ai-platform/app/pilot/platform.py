@@ -26,6 +26,7 @@ from typing import Any
 import httpx
 
 from app.pilot.errors import (
+    KiloFreeRateLimited,
     MalformedUpstreamResponse,
     PilotNotConfigured,
     UpstreamAuthFailed,
@@ -103,6 +104,9 @@ def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     if spec.credential_source == CredentialSource.PLATFORM_SECRET:
         secret = resolve_secret(spec)
         if not secret:
+            if spec.provider_id == "kilo":
+                # Kilo Gateway free tier supports anonymous requests when KILO_API_KEY is unset
+                return headers
             raise PilotNotConfigured(
                 f"Provider '{spec.provider_id}' secret is not configured "
                 f"(binding {spec.credential_binding_name})."
@@ -114,10 +118,12 @@ def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     )
 
 
-def _raise_upstream_error(status: int) -> None:
+def _raise_upstream_error(status: int, provider_id: str = "") -> None:
     if status in (401, 403):
         raise UpstreamAuthFailed()
     if status == 429:
+        if provider_id == "kilo":
+            raise KiloFreeRateLimited()
         raise UpstreamRateLimited()
     if status == 400:
         raise MalformedUpstreamResponse()
@@ -204,13 +210,7 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
-        if response.status_code in (401, 403):
-            raise UpstreamAuthFailed()
-        if response.status_code == 429:
-            raise UpstreamRateLimited()
-        if 300 <= response.status_code < 400:
-            raise UpstreamClientError(response.status_code)
-        raise UpstreamServerError()
+        _raise_upstream_error(response.status_code, platform_provider_id)
 
     try:
         response_data = response.json()
@@ -336,7 +336,7 @@ async def stream_platform_chat_completions(
                 follow_redirects=False,
             ) as response:
                 if response.status_code < 200 or response.status_code >= 300:
-                    _raise_upstream_error(response.status_code)
+                    _raise_upstream_error(response.status_code, platform_provider_id)
 
                 async for chunk in response.aiter_bytes():
                     total_bytes += len(chunk)

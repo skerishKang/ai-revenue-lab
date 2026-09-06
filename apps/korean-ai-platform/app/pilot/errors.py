@@ -92,6 +92,22 @@ class UpstreamRateLimited(PilotError):
         )
 
 
+class KiloFreeRateLimited(PilotError):
+    """Kilo Gateway free tier rate limit reached (200 requests/hour). Fails closed."""
+
+    def __init__(
+        self,
+        message: str = "Kilo Gateway free tier rate limit reached (200 req/hour). Please retry later.",
+    ) -> None:
+        super().__init__(
+            code="kilo_free_rate_limited",
+            message=message,
+            status_code=429,
+        )
+        self.retryable = True
+
+
+
 class UpstreamTimeout(PilotError):
     def __init__(self) -> None:
         super().__init__(
