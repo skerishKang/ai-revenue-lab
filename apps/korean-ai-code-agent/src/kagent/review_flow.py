@@ -33,12 +33,14 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Mapping
 from dataclasses import dataclass
+from functools import partial
 import glob
 from math import ceil
 import os
 from pathlib import Path
 import re
 import sys
+import time
 import uuid
 
 from .contracts import ClawRunStatus, ContractError, ExecutionMode, RunProjection
@@ -55,6 +57,19 @@ MAX_REVIEW_FILE_BYTES = 200 * 1024
 MAX_REVIEW_TOTAL_BYTES = 1024 * 1024
 MAX_REVIEW_FILES_PER_CHUNK = 2
 MAX_REVIEW_CHUNK_CHARS = 3_500
+
+# #1994 follow-up: the SenseNova free route answers a fresh 429-busy under
+# back-to-back orchestration requests, and the B14 internal retry backoff
+# (0.5/1.0s) is shorter than the measured recovery window. The flows therefore
+# pace orchestration requests FLOW_PACING_SECONDS apart and, on a retryable
+# engine failure (429-busy origin, reported as p01_engine_request_failed),
+# wait FLOW_RETRY_WAIT_SECONDS and retry once — FLOW_MAX_REQUEST_ATTEMPTS
+# attempts in total — before recording the request as failed (review) or
+# failing closed (draft).
+FLOW_PACING_SECONDS = 5.0
+FLOW_RETRY_WAIT_SECONDS = 10.0
+FLOW_MAX_REQUEST_ATTEMPTS = 2
+_RETRYABLE_ENGINE_FAILURE_CODES = frozenset({"p01_engine_request_failed"})
 
 _REVIEW_TASK_TOO_LARGE = "review_task_too_large"
 _TRUNCATION_MARKER = "(생성 창 초과로 잘림)"
@@ -363,6 +378,40 @@ async def _execute_review(
     return await adapter.execute(run)
 
 
+def _sleep(seconds: float) -> None:
+    time.sleep(seconds)
+
+
+def _run_orchestration_request(
+    execute,
+    *,
+    run_id: str,
+    pacing_seconds: float | None,
+    retryable_codes: frozenset[str],
+    retry_wait_seconds: float,
+    max_attempts: int,
+) -> ClawOrchestrationOutcome:
+    """Run one orchestration request with flow-level pacing and one retry.
+
+    ``execute`` is a callable taking ``run_id`` as a keyword and returning an
+    awaitable ``ClawOrchestrationOutcome`` (callers bind the repository, task,
+    and adapter). ``pacing_seconds`` (when not None) is waited before the first
+    attempt; on a retryable ``P01AdapterError`` the request waits
+    ``retry_wait_seconds`` and is retried up to ``max_attempts`` times in
+    total. Any other failure raises immediately.
+    """
+    if pacing_seconds is not None:
+        _sleep(pacing_seconds)
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return asyncio.run(execute(run_id=run_id))
+        except P01AdapterError as exc:
+            if exc.code in retryable_codes and attempt < max_attempts:
+                _sleep(retry_wait_seconds)
+                continue
+            raise
+
+
 def run_review(
     repository: Path,
     targets: list[str],
@@ -400,8 +449,13 @@ def run_review(
         chunk_run_id = f"{flow_run_id}_{index}"
         prompt = _build_review_prompt(str(root), chunk)
         try:
-            outcome = asyncio.run(
-                _execute_review(str(root), prompt, adapter, run_id=chunk_run_id)
+            outcome = _run_orchestration_request(
+                partial(_execute_review, str(root), prompt, adapter),
+                run_id=chunk_run_id,
+                pacing_seconds=FLOW_PACING_SECONDS if index > 1 else None,
+                retryable_codes=_RETRYABLE_ENGINE_FAILURE_CODES,
+                retry_wait_seconds=FLOW_RETRY_WAIT_SECONDS,
+                max_attempts=FLOW_MAX_REQUEST_ATTEMPTS,
             )
         except (ContractError, ValueError):
             for part in chunk:
@@ -506,6 +560,9 @@ def run_review_command(
 
 
 __all__ = [
+    "FLOW_MAX_REQUEST_ATTEMPTS",
+    "FLOW_PACING_SECONDS",
+    "FLOW_RETRY_WAIT_SECONDS",
     "MAX_REVIEW_CHUNK_CHARS",
     "MAX_REVIEW_FILE_BYTES",
     "MAX_REVIEW_FILES",

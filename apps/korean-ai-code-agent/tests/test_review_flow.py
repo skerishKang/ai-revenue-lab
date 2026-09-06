@@ -34,6 +34,8 @@ from kagent.p01_adapter import (
 )
 from kagent.p01_run_flow import p01_adapter_from_environment
 from kagent.review_flow import (
+    FLOW_PACING_SECONDS,
+    FLOW_RETRY_WAIT_SECONDS,
     MAX_REVIEW_CHUNK_CHARS,
     MAX_REVIEW_FILE_BYTES,
     MAX_REVIEW_FILES,
@@ -155,7 +157,9 @@ class ScriptedAdapter:
     """Per-request scripted adapter for aggregation/failure/truncation tests.
 
     ``fail_at`` raises a ``P01AdapterError`` on that 1-based run;
-    ``failed_outcome_at`` returns a FAILED (non-exception) outcome instead.
+    ``fail_every_from`` raises on that run and every later one (so a flow
+    retry of the same request also fails); ``failed_outcome_at`` returns a
+    FAILED (non-exception) outcome instead.
     """
 
     def __init__(
@@ -164,10 +168,12 @@ class ScriptedAdapter:
         *,
         fail_at: int | None = None,
         failed_outcome_at: int | None = None,
+        fail_every_from: int | None = None,
     ) -> None:
         self.answers = list(answers or [])
         self.fail_at = fail_at
         self.failed_outcome_at = failed_outcome_at
+        self.fail_every_from = fail_every_from
         self.runs = []
 
     async def execute(self, run):
@@ -175,7 +181,9 @@ class ScriptedAdapter:
         run.transition(ClawRunStatus.PREPARING, summary="리뷰 실행 준비")
         run.transition(ClawRunStatus.RUNNING, summary="리뷰 실행")
         index = len(self.runs)
-        if self.fail_at == index:
+        if self.fail_at == index or (
+            self.fail_every_from is not None and index >= self.fail_every_from
+        ):
             run.transition(ClawRunStatus.FAILED, summary="엔진 요청 실패")
             raise P01AdapterError("p01_engine_request_failed", "엔진 요청 실패")
         if self.failed_outcome_at == index:
@@ -225,6 +233,14 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         _write(self.repo, "README.md", "# 예제 저장소\n")
         _write(self.repo, "assets/logo.bin", b"\x00\x01\x02\x89PNG\r\n")
         _write(self.repo, "assets/euckr.txt", "한글".encode("euc-kr"))
+        self.sleep_calls: list[float] = []
+        sleeper = mock.patch.object(
+            review_flow_module,
+            "_sleep",
+            side_effect=lambda seconds: self.sleep_calls.append(seconds),
+        )
+        sleeper.start()
+        self.addCleanup(sleeper.stop)
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
@@ -449,7 +465,7 @@ class RepositoryReviewFlowTests(unittest.TestCase):
         _write(self.repo, "src/fail.py", "def boom():\n    return 4\n")
         adapter = ScriptedAdapter(
             answers=["src/app.py 리뷰 정상.\n위험: LOW — 문제 없음."],
-            fail_at=3,
+            fail_every_from=3,
         )
         outcome = run_review(
             self.repo,
@@ -492,7 +508,7 @@ class RepositoryReviewFlowTests(unittest.TestCase):
             ],
             adapter=ScriptedAdapter(
                 answers=["정상"],
-                fail_at=3,
+                fail_every_from=3,
             ),
         )
         self.assertEqual(code, 0)
@@ -519,6 +535,35 @@ class RepositoryReviewFlowTests(unittest.TestCase):
 
         self.assertEqual(outcome.failed, (("src/fail.py", "failed"),))
         self.assertEqual(len(outcome.sections), 2)
+
+    def test_requests_are_paced_between_orchestration_requests(self) -> None:
+        _write(self.repo, "src/extra.py", "def extra():\n    return 2\n")
+        adapter = StubAdapter()
+        outcome = run_review(self.repo, ["src/*.py", "README.md"], adapter)
+
+        self.assertEqual(len(adapter.runs), 2)
+        self.assertEqual(outcome.failed, ())
+        self.assertEqual(self.sleep_calls, [FLOW_PACING_SECONDS])
+
+    def test_retryable_engine_failure_retries_once_after_wait(self) -> None:
+        adapter = ScriptedAdapter(fail_at=1)
+        outcome = run_review(self.repo, ["src/app.py"], adapter)
+
+        self.assertEqual(len(adapter.runs), 2)
+        self.assertEqual(outcome.failed, ())
+        self.assertEqual(len(outcome.sections), 1)
+        self.assertEqual(self.sleep_calls, [FLOW_RETRY_WAIT_SECONDS])
+
+    def test_retryable_failure_exhausted_is_recorded_as_failed(self) -> None:
+        adapter = ScriptedAdapter(fail_every_from=1)
+        outcome = run_review(self.repo, ["src/app.py"], adapter)
+
+        self.assertEqual(len(adapter.runs), 2)
+        self.assertEqual(
+            outcome.failed, (("src/app.py", "p01_engine_request_failed"),)
+        )
+        self.assertEqual(outcome.sections, ())
+        self.assertEqual(self.sleep_calls, [FLOW_RETRY_WAIT_SECONDS])
 
     def test_contract_error_on_over_bound_task_is_isolated_without_traceback(
         self,

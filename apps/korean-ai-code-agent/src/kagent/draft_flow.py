@@ -32,6 +32,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Mapping
 from dataclasses import dataclass
+from functools import partial
 import os
 from pathlib import Path
 import re
@@ -46,7 +47,14 @@ from .p01_adapter import (
     P01CoreOrchestrationAdapter,
 )
 from .p01_run_flow import create_claw_run, p01_adapter_from_environment
-from .review_flow import _force_utf8_stdio
+from .review_flow import (
+    FLOW_MAX_REQUEST_ATTEMPTS,
+    FLOW_PACING_SECONDS,
+    FLOW_RETRY_WAIT_SECONDS,
+    _RETRYABLE_ENGINE_FAILURE_CODES,
+    _force_utf8_stdio,
+    _run_orchestration_request,
+)
 
 MAX_DRAFT_INPUT_BYTES = 200 * 1024
 
@@ -413,8 +421,13 @@ def run_draft(
     )
 
     phase1_prompt = _build_extraction_prompt(str(root), rel_input, validated_type, content)
-    phase1 = asyncio.run(
-        _execute_draft(str(root), phase1_prompt, adapter, run_id=f"{flow_run_id}_1")
+    phase1 = _run_orchestration_request(
+        partial(_execute_draft, str(root), phase1_prompt, adapter),
+        run_id=f"{flow_run_id}_1",
+        pacing_seconds=None,
+        retryable_codes=_RETRYABLE_ENGINE_FAILURE_CODES,
+        retry_wait_seconds=FLOW_RETRY_WAIT_SECONDS,
+        max_attempts=FLOW_MAX_REQUEST_ATTEMPTS,
     )
     if (
         phase1.projection.status is not ClawRunStatus.COMPLETED
@@ -430,8 +443,13 @@ def run_draft(
     phase2_prompt = _build_render_prompt(
         str(root), rel_input, validated_type, fields, items, total
     )
-    phase2 = asyncio.run(
-        _execute_draft(str(root), phase2_prompt, adapter, run_id=f"{flow_run_id}_2")
+    phase2 = _run_orchestration_request(
+        partial(_execute_draft, str(root), phase2_prompt, adapter),
+        run_id=f"{flow_run_id}_2",
+        pacing_seconds=FLOW_PACING_SECONDS,
+        retryable_codes=_RETRYABLE_ENGINE_FAILURE_CODES,
+        retry_wait_seconds=FLOW_RETRY_WAIT_SECONDS,
+        max_attempts=FLOW_MAX_REQUEST_ATTEMPTS,
     )
     if phase2.projection.status is not ClawRunStatus.COMPLETED or not phase2.answer:
         raise DraftFlowError(
