@@ -94,21 +94,28 @@ jobs:
           npx wrangler@4 deployments list --json > /tmp/b14-deployments.json
           python3 - "$VERSION_ID" <<'PY'
           import json
+          import os
           import sys
 
           expected = sys.argv[1]
-          with open('/tmp/b14-deployments.json', encoding='utf-8') as fh:
+          path = os.environ.get("B14_DEPLOYMENTS_JSON", "/tmp/b14-deployments.json")
+          with open(path, encoding="utf-8") as fh:
               payload = json.load(fh)
-          deployments = payload.get('deployments') or []
-          assert deployments, 'deployments list returned no deployments'
+          # wrangler deployments list --json returns a bare LIST of deployments;
+          # tolerate the {"deployments": [...]} object shape as well.
+          if isinstance(payload, list):
+              deployments = payload
+          else:
+              deployments = payload.get("deployments") or []
+          assert deployments, "deployments list returned no deployments"
           latest = deployments[0]
-          version_id = (latest.get('version') or {}).get('id')
+          version_id = (latest.get("version") or {}).get("id")
           assert version_id == expected, (
-              f'latest deployment version {version_id!r} != deployed version {expected!r}'
+              f"latest deployment version {version_id!r} != deployed version {expected!r}"
           )
-          percentage = ((latest.get('strategy') or {}).get('percentage'))
-          assert percentage == 100, f'new version is serving {percentage!r}%, expected 100'
-          print('POST_DEPLOY_VERSION_AT_100=PASS')
+          percentage = ((latest.get("strategy") or {}).get("percentage"))
+          assert percentage == 100, f"new version is serving {percentage!r}%, expected 100"
+          print("POST_DEPLOY_VERSION_AT_100=PASS")
           PY
 
           # (b) Engine health must report the B14 service binding present.
