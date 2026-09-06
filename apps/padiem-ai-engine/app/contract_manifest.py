@@ -18,7 +18,12 @@ from .agent_skill_service import (
 )
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
-from .orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
+from .orchestration_service import (
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
+)
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
 from .web_research_service import RESEARCH_PATH
@@ -133,6 +138,7 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(ORCHESTRATE_PATH, "POST", "application/json"),
             EngineEndpointContract(ORCHESTRATE_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(ORCHESTRATE_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(ORCHESTRATION_STREAM_PATH, "POST", "application/x-ndjson"),
             EngineEndpointContract(RESEARCH_PATH, "POST", "application/json"),
             EngineEndpointContract(MEMORY_PATH, "POST", "application/json"),
             EngineEndpointContract(MEMORY_WRITE_PATH, "POST", "application/json"),
@@ -153,7 +159,9 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("orchestration_run", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_resume", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_cancel", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("orchestration_stream", EngineFeatureState.DEFERRED),
+            # #1962: orchestration_stream became AVAILABLE with the NDJSON
+            # orchestration lifecycle stream route (POST /internal/v1/orchestrate/stream).
+            EngineFeatureContract("orchestration_stream", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("idempotency_replay", EngineFeatureState.DEFERRED),
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),

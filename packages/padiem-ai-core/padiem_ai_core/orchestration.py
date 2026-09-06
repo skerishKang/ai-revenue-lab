@@ -736,11 +736,26 @@ class OrchestrationRunner:
         *,
         runtime: Any,
         idempotency: IdempotencyAdapter | None = None,
+        event_sink: Callable[[OrchestrationEvent], Any] | None = None,
     ) -> None:
         if not hasattr(runtime, "run") or not callable(getattr(runtime, "run", None)):
             raise OrchestrationError("invalid_runtime", "runtime must provide a callable run method")
+        if event_sink is not None and not callable(event_sink):
+            raise OrchestrationError("invalid_event_sink", "event_sink must be callable")
         self._runtime = runtime
         self._idempotency = idempotency
+        self._event_sink = event_sink
+
+    def _deliver_event(self, evt: OrchestrationEvent) -> None:
+        """Deliver one emitted event to the optional synchronous event sink.
+
+        The sink is invoked synchronously in emission order so a streaming
+        consumer observes the exact lifecycle timeline without reordering. A
+        sink failure surfaces as a run failure rather than silent event loss.
+        """
+        if self._event_sink is None:
+            return
+        self._event_sink(evt)
 
     async def run(self, request: OrchestrationRequest) -> OrchestrationResult:
         if not isinstance(request, OrchestrationRequest):
@@ -772,6 +787,7 @@ class OrchestrationRunner:
                 metadata=metadata or {},
             )
             events.append(evt)
+            self._deliver_event(evt)
             seq += 1
             if kind in (OrchestrationEventKind.RUN_COMPLETED, OrchestrationEventKind.RUN_FAILED, OrchestrationEventKind.RUN_CANCELLED):
                 terminated = True
@@ -1250,6 +1266,7 @@ class OrchestrationRunner:
                 metadata=meta or {},
             )
             events.append(evt)
+            self._deliver_event(evt)
             seq += 1
             if kind in (OrchestrationEventKind.RUN_COMPLETED, OrchestrationEventKind.RUN_FAILED, OrchestrationEventKind.RUN_CANCELLED):
                 terminated = True

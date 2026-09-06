@@ -364,13 +364,16 @@ async def test_b14_binding_state_is_truthful() -> None:
     assert h_unbound.body["b14_service_bound"] is False
 
 
-def test_implemented_but_blocked_orchestration_not_available():
-    # Orchestration stream is not routed at Worker boundary → must not be AVAILABLE
+def test_orchestration_stream_available_when_routed():
+    # orchestration_stream is routed at the Worker boundary as NDJSON (#1962)
+    # → the manifest and health posture must agree it is AVAILABLE.
     from app.contract_manifest import current_engine_contract_manifest
 
     manifest = current_engine_contract_manifest()
-    assert manifest.feature_state("orchestration_stream").value != "available"
-    assert manifest.feature_state("orchestration_stream").value in ("deferred", "unavailable")
+    assert manifest.feature_state("orchestration_stream").value == "available"
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = svc.health()
+    assert health.body["capabilities"]["orchestration_stream"] == "available"
 
 
 def test_deferred_idempotency_not_reported_available():
@@ -381,14 +384,15 @@ def test_deferred_idempotency_not_reported_available():
     assert manifest.feature_state("execution_idempotency_replay_completed").value != "available"
 
 
-def test_unrouted_orchestration_stream_not_available():
+def test_unrouted_deferred_features_not_reported_available():
     from app.contract_manifest import current_engine_contract_manifest
 
     manifest = current_engine_contract_manifest()
-    assert manifest.feature_state("orchestration_stream").value in ("deferred", "unavailable")
+    assert manifest.feature_state("orchestration_stream").value == "available"
     svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
     health = svc.health()
-    assert health.body["capabilities"]["orchestration_stream"] in ("deferred", "unavailable")
+    # Routed orchestration stream is advertised; unactivated idempotency stays deferred.
+    assert health.body["capabilities"]["orchestration_stream"] == "available"
     assert health.body["capabilities"]["idempotency_replay"] in ("deferred", "unavailable")
 
 

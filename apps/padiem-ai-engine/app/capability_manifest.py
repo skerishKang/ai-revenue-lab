@@ -43,6 +43,7 @@ from .orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
 )
 from .service import EXECUTE_PATH
 from .streaming_service import STREAM_PATH
@@ -391,6 +392,7 @@ def current_capability_manifest() -> CapabilityManifest:
                     ORCHESTRATE_PATH,
                     ORCHESTRATE_RESUME_PATH,
                     ORCHESTRATE_CANCEL_PATH,
+                    ORCHESTRATION_STREAM_PATH,
                 ),
                 scope=_row(
                     tenant_scope="bounded",

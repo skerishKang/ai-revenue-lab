@@ -41,7 +41,9 @@ from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
     OrchestrationEngineService,
+    PreparedOrchestrationStream,
 )
 from app.service import EngineService, HEALTH_PATH, ServiceResponse
 from app.service_identity import ServiceIdentityError
@@ -287,8 +289,8 @@ def _engine_services_for_env(env: Any) -> EngineServices:
 
 
 def _ndjson_response(
-    service: StreamingEngineService,
-    prepared: PreparedStream,
+    service: StreamingEngineService | OrchestrationEngineService,
+    prepared: PreparedStream | PreparedOrchestrationStream,
 ) -> Response:
     """Expose one Core event per pull through a Worker ReadableStream."""
 
@@ -384,6 +386,7 @@ class Default(WorkerEntrypoint):
             ORCHESTRATE_PATH,
             ORCHESTRATE_RESUME_PATH,
             ORCHESTRATE_CANCEL_PATH,
+            ORCHESTRATION_STREAM_PATH,
         }
         agent_skill_paths = {
             AGENT_SKILL_RUN_PATH,
@@ -419,6 +422,17 @@ class Default(WorkerEntrypoint):
                 return auth_error
 
         services = self.engine_services_factory(self.env)
+
+        if path == ORCHESTRATION_STREAM_PATH:
+            prepared = await services.orchestration.prepare_stream(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            if isinstance(prepared, ServiceResponse):
+                return _json_response(prepared)
+            return _ndjson_response(services.orchestration, prepared)
 
         if path in orchestration_paths:
             result = await services.orchestration.handle(
