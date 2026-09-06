@@ -416,25 +416,33 @@ def current_capability_manifest() -> CapabilityManifest:
                 routes=(),
                 scope=_row(),
             ),
-            # E9 A1 (#1744): web_search/web_fetch/deep_research became AVAILABLE
-            # by owner-authorized bounded Production activation dispatch on main
-            # ed18a2a8 (gate evidence recorded in docs/operations/E9_ACTIVATION_PLAN.md;
-            # rollback anchor preserved in app/web_research_activation.py).
+            # E9 A1 (#1744): web_search/web_fetch/deep_research were flipped
+            # AVAILABLE by owner-authorized bounded Production activation
+            # dispatch on main ed18a2a8. Owner decision D2 (2026-09-06, WO-7)
+            # reverts them to DEFERRED: `wrangler.toml` has no [vars] and no
+            # `keep_vars`, so every deploy drops dashboard vars and
+            # PADIEM_ENGINE_WEB_PROVIDER cannot be live — the composition
+            # (`create_web_provider` with no configured provider) fails closed
+            # 503 web_tools_off. Original record preserved in
+            # docs/operations/E9_ACTIVATION_PLAN.md §12; rollback anchor in
+            # app/web_research_activation.py. Re-activation requires a real
+            # provider var/secret in a separate activation PR (E9 gate +
+            # WO-2 composition conformance).
             CapabilityDeclaration(
                 id="web_search",
-                state=CapabilityState.AVAILABLE,
+                state=CapabilityState.DEFERRED,
                 routes=(RESEARCH_PATH,),
                 scope=_row(b14_provider_authority="preserved"),
             ),
             CapabilityDeclaration(
                 id="web_fetch",
-                state=CapabilityState.AVAILABLE,
+                state=CapabilityState.DEFERRED,
                 routes=(RESEARCH_PATH,),
                 scope=_row(b14_provider_authority="preserved"),
             ),
             CapabilityDeclaration(
                 id="deep_research",
-                state=CapabilityState.AVAILABLE,
+                state=CapabilityState.DEFERRED,
                 routes=(RESEARCH_PATH,),
                 scope=_row(b14_provider_authority="preserved"),
             ),

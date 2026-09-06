@@ -37,9 +37,9 @@ origin/main `e7453cfd` (family `padiem-ai-engine`, major 1, version 1.0).
 | Unit | Capability id | Manifest state | Routes | Notes |
 |---|---|---|---|---|
 | A0 | `multi_caller_identity` | `AVAILABLE` | () | caller identity bounded; no dedicated route |
-| A1 | `web_search` | `AVAILABLE` | `RESEARCH_PATH` | Production-activated (bounded dispatch, see §12) |
-| A1 | `web_fetch` | `AVAILABLE` | `RESEARCH_PATH` | Production-activated (bounded dispatch, see §12) |
-| A1 | `deep_research` | `AVAILABLE` | `RESEARCH_PATH` | Production-activated (bounded dispatch, see §12) |
+| A1 | `web_search` | `DEFERRED` | `RESEARCH_PATH` | REVERTED_TO_DEFERRED per §12 amendment (WO-7, owner decision D2) |
+| A1 | `web_fetch` | `DEFERRED` | `RESEARCH_PATH` | REVERTED_TO_DEFERRED per §12 amendment (WO-7, owner decision D2) |
+| A1 | `deep_research` | `DEFERRED` | `RESEARCH_PATH` | REVERTED_TO_DEFERRED per §12 amendment (WO-7, owner decision D2) |
 | A2 | `evidence_citations` | `AVAILABLE` | EXECUTE, STREAM, RESEARCH | already on bounded B14 authority |
 | A3 | `tool_runtime` | `AVAILABLE` | TOOL_EXECUTE/RESUME/CANCEL | Production-activated (bounded dispatch, see §13) |
 | A4 | `memory_rag` | `DEFERRED` | MEMORY, MEMORY_WRITE | tenant-bounded, not Production activated |
@@ -63,7 +63,7 @@ Notes:
 | Unit | Issue | Disposition now |
 |---|---|---|
 | A0 multi-caller identity | #1698 | already `AVAILABLE` in manifest — no activation needed; record as verified |
-| A1 Web / Research | #1744 | **ACTIVATED** — owner-authorized bounded Production dispatch (§12) |
+| A1 Web / Research | #1744 | **REVERTED_TO_DEFERRED** — §12 amendment (WO-7, owner decision D2, 2026-09-06) |
 | A2 Evidence / Citation | #1745 | already `AVAILABLE` — record as verified |
 | A3 Tool Runtime | #1746 | **ACTIVATED** — owner-authorized bounded Production dispatch (§13) |
 | A4 Memory / RAG | #1748 | `DEFERRED` — pending |
@@ -226,6 +226,7 @@ CROSS_PRODUCT_AUTHORITY_BOUNDARIES = PRESERVED
 - [x] A0 disposition recorded (AVAILABLE per manifest, no activation needed)
 - [x] A1 activation gate merged (#1949) — owner-authorized dispatch pending
 - [x] A1 bounded Production activation dispatched and manifest flipped to `AVAILABLE` (§12)
+- [x] A1 REVERTED_TO_DEFERRED — §12 amendment (WO-7, owner decision D2, 2026-09-06): no live provider var possible; composition fails closed 503 web_tools_off
 - [x] A2 disposition recorded (AVAILABLE per manifest, no activation needed)
 - [x] A3 activation prep merged — gate + tests + rollback anchor; owner-authorized dispatch pending
 - [x] A3 bounded Production activation dispatched and manifest flipped to `AVAILABLE` (§13)
@@ -270,6 +271,23 @@ conformance:         test_capability_states_match_routed_truth updated; 101/101 
 Rollback: `wrangler rollback` restores the previous Engine deployment (SHA
 `8d4db98c13b2b23378536d3b2e5270bb3b457f06`); a source revert PR is the normal
 recovery path per `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
+### §12 amendment — FINAL_DISPOSITION superseded: REVERTED_TO_DEFERRED (WO-7, 2026-09-06)
+
+The `FINAL_DISPOSITION = ACTIVATED` recorded above is superseded by owner
+decision D2 (CTO decision ledger 2026-09-06, work order WO-7). The §12
+dispatch's own evidence already showed `CONFIG_BINDING_DIFF = none` and
+`SECRET_NAME_DIFF = none` — no provider configuration was ever added — and
+`wrangler.toml` carries no `[vars]` and no `keep_vars`, so every deploy drops
+dashboard-level vars and `PADIEM_ENGINE_WEB_PROVIDER` cannot be live. The
+Production composition therefore fails closed (`503 web_tools_off`), and the
+manifest AVAILABLE claim was not production truth. The A1 production probe
+(WO-3) is waived by the same decision. No product caller invokes `/research`
+(0 consumers), so the revert has no product impact. The entries return to
+`DEFERRED` (capability + contract projections); the original §12 record above
+is preserved for audit. Re-activation requires a real provider var/secret in a
+separate activation PR passing the E9 gate and the WO-2 production composition
+conformance test.
 
 ## 13. A3 bounded Production activation dispatch (owner-authorized)
 
