@@ -41,7 +41,7 @@ origin/main `e7453cfd` (family `padiem-ai-engine`, major 1, version 1.0).
 | A1 | `web_fetch` | `AVAILABLE` | `RESEARCH_PATH` | Production-activated (bounded dispatch, see §12) |
 | A1 | `deep_research` | `AVAILABLE` | `RESEARCH_PATH` | Production-activated (bounded dispatch, see §12) |
 | A2 | `evidence_citations` | `AVAILABLE` | EXECUTE, STREAM, RESEARCH | already on bounded B14 authority |
-| A3 | `tool_runtime` | `DEFERRED` | TOOL_EXECUTE/RESUME/CANCEL | tenant-bounded, not Production activated |
+| A3 | `tool_runtime` | `AVAILABLE` | TOOL_EXECUTE/RESUME/CANCEL | Production-activated (bounded dispatch, see §13) |
 | A4 | `memory_rag` | `DEFERRED` | MEMORY, MEMORY_WRITE | tenant-bounded, not Production activated |
 | A5 | `agent_skill_runtime` | `DEFERRED` | AGENT_SKILL_RUN/RESUME/CANCEL | not Production activated |
 | A6 | `file_document_multimodal` | `DEFERRED` | MULTIMODAL_EXECUTE, DOCUMENT_CONTEXT | tenant-bounded |
@@ -65,7 +65,7 @@ Notes:
 | A0 multi-caller identity | #1698 | already `AVAILABLE` in manifest — no activation needed; record as verified |
 | A1 Web / Research | #1744 | **ACTIVATED** — owner-authorized bounded Production dispatch (§12) |
 | A2 Evidence / Citation | #1745 | already `AVAILABLE` — record as verified |
-| A3 Tool Runtime | #1746 | `DEFERRED` — pending |
+| A3 Tool Runtime | #1746 | **ACTIVATED** — owner-authorized bounded Production dispatch (§13) |
 | A4 Memory / RAG | #1748 | `DEFERRED` — pending |
 | A5 Agent / Skill | #1749 | `DEFERRED` — pending |
 | A6 File / Multimodal | #1750 | `DEFERRED` — pending |
@@ -228,6 +228,7 @@ CROSS_PRODUCT_AUTHORITY_BOUNDARIES = PRESERVED
 - [x] A1 bounded Production activation dispatched and manifest flipped to `AVAILABLE` (§12)
 - [x] A2 disposition recorded (AVAILABLE per manifest, no activation needed)
 - [x] A3 activation prep merged — gate + tests + rollback anchor; owner-authorized dispatch pending
+- [x] A3 bounded Production activation dispatched and manifest flipped to `AVAILABLE` (§13)
 - [ ] A4-A6, A7, A9 activation dispositions
 - [ ] `E9_ACTIVATION_PLAN.md` reviewed and merged
 
@@ -264,6 +265,44 @@ Manifest/contract state after the dispatch:
 capability_manifest: web_search AVAILABLE, web_fetch AVAILABLE, deep_research AVAILABLE
 contract_manifest:   web_search_projection AVAILABLE, web_fetch_projection AVAILABLE, deep_research_projection AVAILABLE
 conformance:         test_capability_states_match_routed_truth updated; 101/101 pass in affected files
+```
+
+Rollback: `wrangler rollback` restores the previous Engine deployment (SHA
+`8d4db98c13b2b23378536d3b2e5270bb3b457f06`); a source revert PR is the normal
+recovery path per `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`.
+
+## 13. A3 bounded Production activation dispatch (owner-authorized)
+
+Owner authorized A3 Tool Runtime Production (`#1746`). The bounded dispatch
+ran the activation gate on the exact current main, proved synthetic and parity
+probes through the real Core ``ToolRuntime``, flipped the manifest entries
+`DEFERRED -> AVAILABLE` atomically with the conformance/contract updates, and
+records the secret-free evidence below.
+
+```text
+ACTIVATION_GATE_MODULE = apps/padiem-ai-engine/app/tool_runtime_activation.py
+CONFIRMATION_TOKEN     = ACTIVATE_ENGINE_A3_TOOL_RUNTIME
+CURRENT_MAIN           = 1f6220d59adc73518e13a8bfddecc9380d8354d9
+ACCEPTED_SOURCE_HEAD   = 1457f201c27b21efdc86c38110048de825f53d82
+DEPLOYMENT_TARGET      = Cloudflare Workers (padiem-ai-engine)
+CURRENT_DEPLOYED_VERSION = 26288341021f9b2ceaa45b9f587d571af63a07bf
+ROLLBACK_VERSION       = 8d4db98c13b2b23378536d3b2e5270bb3b457f06
+CONFIG_BINDING_DIFF    = none
+SECRET_NAME_DIFF       = none (names only)
+SYNTHETIC_PROBES       = execute / resume / cancel — all ok (real Core ToolRuntime)
+REFERENCE_CONSUMERS    = b62-padiem-chat, b54-padiem-claw — parity ok, wire authority rejected
+REAL_PROVIDER_CALLS    = 0
+REAL_USER_DATA         = 0
+MUTATION_SCOPE         = A3 Tool Runtime activation only
+FINAL_DISPOSITION      = ACTIVATED (manifest AVAILABLE on current main)
+```
+
+Manifest/contract state after the dispatch:
+
+```text
+capability_manifest: tool_runtime AVAILABLE
+contract_manifest:   tool_runtime_projection AVAILABLE
+conformance:         test_capability_states_match_routed_truth updated; 86/86 pass in affected files
 ```
 
 Rollback: `wrangler rollback` restores the previous Engine deployment (SHA

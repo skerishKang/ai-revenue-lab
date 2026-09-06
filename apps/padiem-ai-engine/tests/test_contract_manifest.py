@@ -89,7 +89,6 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "approval_continuation",
         "execution_idempotency_replay_completed",
         "execution_idempotency_replay_streaming",
-        "tool_runtime_projection",
         "skill_runtime_projection",
         "agent_runtime_projection",
         "memory_rag_projection",
@@ -112,7 +111,6 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
         assert ("POST", path) in endpoints
     assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
-    assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
 
 

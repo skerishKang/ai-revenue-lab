@@ -163,7 +163,9 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("web_search_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("web_fetch_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("deep_research_projection", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
+            # E9 A3 (#1746): Tool Runtime projection follows the owner-authorized
+            # bounded activation dispatch on main 1f6220d5 (see E9_ACTIVATION_PLAN.md).
+            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
