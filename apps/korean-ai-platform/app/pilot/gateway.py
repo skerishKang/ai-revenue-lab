@@ -10,6 +10,7 @@ Supports multi-provider registry and legacy single-provider fallback.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 import uuid
@@ -29,6 +30,7 @@ from app.pilot.errors import (
     PilotError,
     StreamNotSupported,
     ToolsNotSupported,
+    UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
 from app.pilot.registry import get_registry
@@ -44,6 +46,33 @@ from app.pilot import provider as prv
 from app.pilot import openrouter as orv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
+
+# ---------------------------------------------------------------------------
+# Bounded same-route retry for retryable upstream failures (#1982)
+#
+# Measured defect: the direct Kilo free route intermittently returns 504
+# (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
+# to attempt once and give up despite the failure being retryable.
+#
+# Budget: the engine's orchestration budget is 60s. The whole B14 attempt
+# chain (initial + retries + backoffs) is capped at 45s wall time via a
+# per-attempt deadline, leaving >=15s of headroom for engine overhead.
+#   worst typical case: 3 attempts x ~10s (Kilo 504) + 0.5s + 1.0s backoff
+#                     = ~31.5s <= 45s
+#   pathological case : each attempt is hard-capped at the remaining budget
+#                     by asyncio.timeout, so total <= 45s by construction.
+# ---------------------------------------------------------------------------
+_UPSTREAM_RETRY_MAX_RETRIES = 2
+_UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
+_UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
+# Retryable transport classes retried on the SAME route once no fallback
+# candidate remains. 429-style rate limits are deliberately excluded: they
+# mean "retry later" (Kilo free is an hourly quota) and the existing
+# cross-candidate fallback path already handles them.
+_SAME_ROUTE_RETRYABLE_CODES = frozenset({
+    "upstream_timeout",
+    "upstream_server_error",
+})
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
@@ -542,6 +571,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     max_attempts = decision.max_attempts
 
     start_time = time.monotonic()
+    deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
     attempt_count = 0
     fallback_used = False
     last_error: PilotError | None = None
@@ -558,106 +588,164 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         }
     ] + fallback_candidates
 
+    async def _invoke_upstream(current: dict[str, str]) -> dict[str, Any]:
+        if decision.credential_source == "platform_secret":
+            return await plat.call_platform_chat_completions(
+                model_id=current["model_id"],
+                upstream_model=current["upstream_model"],
+                provider=current["provider"],
+                platform_provider_id=decision.platform_provider_id,
+                messages=body["messages"],
+                temperature=body.get("temperature"),
+                max_tokens=body.get("max_tokens"),
+            )
+        if cfg.is_mock:
+            return await orv.call_openrouter_chat_completions(
+                messages=body["messages"],
+                temperature=body.get("temperature"),
+                max_tokens=body.get("max_tokens"),
+                model_id=current["model_id"],
+                upstream_model=current["upstream_model"],
+                provider=current["provider"],
+            )
+        if not cfg.has_key:
+            raise PilotNotConfigured(
+                "LIVE 모드에서는 OPENROUTER_API_KEY가 필요합니다. "
+                ".env 파일에 키를 설정하거나 B14_PROVIDER_MODE=mock로 전환하십시오."
+            )
+        return await orv.call_openrouter_chat_completions(
+            messages=body["messages"],
+            temperature=body.get("temperature"),
+            max_tokens=body.get("max_tokens"),
+            model_id=current["model_id"],
+            upstream_model=current["upstream_model"],
+            provider=current["provider"],
+        )
+
+    budget_exhausted = False
     for idx in range(min(max_attempts, len(candidates))):
-        attempt_count = idx + 1
+        if budget_exhausted:
+            break
         current = candidates[idx]
 
-        if attempt_count > 1:
+        if idx > 0:
             fallback_used = True
             logger.info(
                 "alpha_fallback attempt=%d model=%s",
-                attempt_count,
+                idx + 1,
                 current["model_id"],
             )
 
-        try:
-            if decision.credential_source == "platform_secret":
-                response_data = await plat.call_platform_chat_completions(
-                    model_id=current["model_id"],
-                    upstream_model=current["upstream_model"],
-                    provider=current["provider"],
-                    platform_provider_id=decision.platform_provider_id,
-                    messages=body["messages"],
-                    temperature=body.get("temperature"),
-                    max_tokens=body.get("max_tokens"),
+        retry_index = 0
+        succeeded = False
+        unexpected_internal = False
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                budget_exhausted = True
+                if last_error is None:
+                    last_error = UpstreamTimeout()
+                break
+
+            attempt_count += 1
+            try:
+                async with asyncio.timeout(remaining):
+                    response_data = await _invoke_upstream(current)
+            except TimeoutError as exc:
+                # asyncio.timeout hard ceiling fired (adapter timeout did not).
+                timeout_error = UpstreamTimeout()
+                timeout_error.__cause__ = exc
+                error: PilotError = timeout_error
+            except PilotError as exc:
+                error = exc
+            except Exception as exc:
+                logger.error(
+                    "alpha_unexpected_error request_id=%s model=%s error=%s",
+                    request_id,
+                    current["model_id"],
+                    redact_sensitive(str(exc)),
                 )
-            elif cfg.is_mock:
-                response_data = await orv.call_openrouter_chat_completions(
-                    messages=body["messages"],
-                    temperature=body.get("temperature"),
-                    max_tokens=body.get("max_tokens"),
-                    model_id=current["model_id"],
-                    upstream_model=current["upstream_model"],
-                    provider=current["provider"],
+                attempt_evidence.append({
+                    "attempt": attempt_count,
+                    "model_id": current["model_id"],
+                    "upstream_model": current["upstream_model"],
+                    "provider": current["provider"],
+                    "route_id": current["route_id"],
+                    "outcome": "error",
+                    "error_code": "internal_error",
+                    "retry_index": retry_index,
+                    "actual_response_model": None,
+                })
+                last_error = PilotError(
+                    code="internal_error",
+                    message="요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                    status_code=500,
                 )
+                unexpected_internal = True
+                error = None
             else:
-                if not cfg.has_key:
-                    raise PilotNotConfigured(
-                        "LIVE 모드에서는 OPENROUTER_API_KEY가 필요합니다. "
-                        ".env 파일에 키를 설정하거나 B14_PROVIDER_MODE=mock로 전환하십시오."
-                    )
-                response_data = await orv.call_openrouter_chat_completions(
-                    messages=body["messages"],
-                    temperature=body.get("temperature"),
-                    max_tokens=body.get("max_tokens"),
-                    model_id=current["model_id"],
-                    upstream_model=current["upstream_model"],
-                    provider=current["provider"],
-                )
-        except PilotError as e:
-            last_error = e
-            attempt_evidence.append({
-                "attempt": attempt_count,
-                "model_id": current["model_id"],
-                "upstream_model": current["upstream_model"],
-                "provider": current["provider"],
-                "route_id": current["route_id"],
-                "outcome": "error",
-                "error_code": e.code,
-                "actual_response_model": None,
-            })
-            if not rcore.is_error_fallback_allowed(e.code):
-                break
-            if attempt_count >= max_attempts or idx >= len(candidates) - 1:
-                break
-            continue
-        except Exception as e:
-            logger.error(
-                "alpha_unexpected_error request_id=%s model=%s error=%s",
-                request_id,
-                current["model_id"],
-                redact_sensitive(str(e)),
-            )
-            attempt_evidence.append({
-                "attempt": attempt_count,
-                "model_id": current["model_id"],
-                "upstream_model": current["upstream_model"],
-                "provider": current["provider"],
-                "route_id": current["route_id"],
-                "outcome": "error",
-                "error_code": "internal_error",
-                "actual_response_model": None,
-            })
-            last_error = PilotError(
-                code="internal_error",
-                message="요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
-                status_code=500,
-            )
-            break
+                actual_model = response_data.get("_actual_response_model")
+                attempt_evidence.append({
+                    "attempt": attempt_count,
+                    "model_id": current["model_id"],
+                    "upstream_model": current["upstream_model"],
+                    "provider": current["provider"],
+                    "route_id": current["route_id"],
+                    "outcome": "success",
+                    "error_code": None,
+                    "retry_index": retry_index,
+                    "actual_response_model": actual_model,
+                })
+                success_candidate = current
+                succeeded = True
+                error = None
 
-        actual_model = response_data.get("_actual_response_model")
-        attempt_evidence.append({
-            "attempt": attempt_count,
-            "model_id": current["model_id"],
-            "upstream_model": current["upstream_model"],
-            "provider": current["provider"],
-            "route_id": current["route_id"],
-            "outcome": "success",
-            "error_code": None,
-            "actual_response_model": actual_model,
-        })
-        success_candidate = current
-        break
+            if unexpected_internal or succeeded:
+                break
+            assert error is not None
+
+            last_error = error
+            attempt_evidence.append({
+                "attempt": attempt_count,
+                "model_id": current["model_id"],
+                "upstream_model": current["upstream_model"],
+                "provider": current["provider"],
+                "route_id": current["route_id"],
+                "outcome": "error",
+                "error_code": error.code,
+                "retry_index": retry_index,
+                "actual_response_model": None,
+            })
+
+            # Same-route bounded retry for retryable transport failures
+            # (#1982). Non-retryable classes (auth, bad request) never reach
+            # a retry: they are not in _SAME_ROUTE_RETRYABLE_CODES and the
+            # fallback-prohibited check below breaks on the first attempt.
+            if (
+                error.code in _SAME_ROUTE_RETRYABLE_CODES
+                and retry_index < _UPSTREAM_RETRY_MAX_RETRIES
+            ):
+                backoff = _UPSTREAM_RETRY_BACKOFF_SECONDS[
+                    min(retry_index, len(_UPSTREAM_RETRY_BACKOFF_SECONDS) - 1)
+                ]
+                if deadline - time.monotonic() > backoff:
+                    retry_index += 1
+                    decision.reason_codes.append(f"upstream_retry:{retry_index}")
+                    logger.info(
+                        "alpha_upstream_retry request_id=%s attempt=%d code=%s backoff_s=%.1f",
+                        request_id,
+                        retry_index,
+                        error.code,
+                        backoff,
+                    )
+                    await asyncio.sleep(backoff)
+                    continue
+
+            if not rcore.is_error_fallback_allowed(error.code):
+                break
+            if idx + 1 >= max_attempts or idx >= len(candidates) - 1:
+                break
+            break  # -> next fallback candidate
 
     latency_ms = int((time.monotonic() - start_time) * 1000)
 
@@ -679,6 +767,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                         "request_id": request_id,
                         "attempt_count": attempt_count,
                         "fallback_used": fallback_used,
+                        "reason_codes": decision.reason_codes,
                         "attempt_evidence": attempt_evidence,
                     }
                 },
