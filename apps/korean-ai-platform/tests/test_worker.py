@@ -81,11 +81,14 @@ class TestWranglerConfig:
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
             assert word.lower() not in content.lower()
-        # The binding name/resource identity is intentionally present; no
-        # secret value or API credential is embedded in this config.
-        assert 'type = "secrets_store_secret"' in content
-        assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-        assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in content
+        # #1961: the vestigial Poolside Secrets Store binding is retired. The
+        # store item no longer exists and its authorization check (Cloudflare
+        # 10021) blocked every gated deploy. No unsafe bindings may return
+        # without a fresh owner decision.
+        assert "[[unsafe.bindings]]" not in content
+        assert 'type = "secrets_store_secret"' not in content
+        assert "store_id" not in content
+        assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' not in content
 
 
 class TestEnvBridge:
