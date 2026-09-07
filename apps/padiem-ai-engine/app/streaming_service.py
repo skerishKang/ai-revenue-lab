@@ -7,7 +7,7 @@ and serializes only Core public events as NDJSON.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable, Mapping
 from dataclasses import dataclass
 import json
 from typing import Any, Protocol
@@ -18,6 +18,9 @@ from padiem_ai_core import (
     ExecutionRuntimeError,
     StreamingExecutionEvent,
 )
+from padiem_ai_core.contextual_execution import prepare_execution
+from padiem_ai_core.execution_context import IdempotencyConflictError
+from padiem_ai_core.execution_runtime import ExecutionResult
 
 from app.evidence_projection import project_terminal_evidence
 from app.service import (
@@ -43,12 +46,24 @@ StreamingRuntimeFactory = Callable[[str], StreamingRunner]
 
 
 @dataclass(frozen=True, slots=True)
+class StreamIdempotencyBinding:
+    """Bounded idempotency reservation context for an active streaming run."""
+
+    adapter: Any
+    app_id: str
+    idempotency_key: str
+    request_fingerprint: str
+
+
+@dataclass(frozen=True, slots=True)
 class PreparedStream:
     """A primed Core stream whose first visible event is already validated."""
 
     first_event: StreamingExecutionEvent
     iterator: AsyncIterator[StreamingExecutionEvent]
     context: ExecutionContext | None = None
+    replayed: bool = False
+    idempotency: StreamIdempotencyBinding | None = None
 
 
 def _runtime_error_response(exc: ExecutionRuntimeError) -> ServiceResponse:
@@ -77,19 +92,20 @@ def _encode_line(payload: dict[str, Any]) -> str:
     ) + "\n"
 
 
-def _event_line(event: StreamingExecutionEvent) -> str:
+def _event_line(event: StreamingExecutionEvent, *, replayed: bool = False) -> str:
     # #1745 parity chokepoint: the settling terminal event line is extended with
     # the same canonical Engine evidence projection used by execute and research.
     # Core's streaming contract carries no grounded evidence, so today this adds
     # nothing and stream output is byte-identical; when Core settles evidence on
     # a terminal event, stream converges with non-stream automatically instead
     # of forking a second streaming evidence protocol.
-    return _encode_line(
-        {
-            "ok": True,
-            "event": {**event.to_public_dict(), **project_terminal_evidence(event)},
-        }
-    )
+    payload: dict[str, Any] = {
+        "ok": True,
+        "event": {**event.to_public_dict(), **project_terminal_evidence(event)},
+    }
+    if replayed:
+        payload["replayed"] = True
+    return _encode_line(payload)
 
 
 def _error_line(response: ServiceResponse) -> str:
@@ -108,6 +124,11 @@ async def _close_iterator(iterator: Any | None) -> None:
         pass
 
 
+async def _empty_iterator() -> AsyncIterator[StreamingExecutionEvent]:
+    if False:
+        yield  # type: ignore[unreachable]
+
+
 class StreamingEngineService:
     """Prepare and serialize one internal completed-answer streaming run."""
 
@@ -116,11 +137,13 @@ class StreamingEngineService:
         *,
         runtime_factory: StreamingRuntimeFactory,
         b14_service_bound: bool,
+        idempotency_adapter: Any | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
         self._runtime_factory = runtime_factory
         self._b14_service_bound = bool(b14_service_bound)
+        self._idempotency_adapter = idempotency_adapter
 
     async def prepare(
         self,
@@ -187,14 +210,67 @@ class StreamingEngineService:
                 status_code=exc.status_code,
             )
 
-        # Stream replay cannot yet be proven safe by the product-owned
-        # idempotency adapter contract. Never silently execute a keyed stream
-        # twice; require a completed-run adapter in a future slice instead.
+        idempotency_binding: StreamIdempotencyBinding | None = None
         if context is not None and context.idempotency_key is not None:
-            return _service_error(
-                "stream_idempotency_unavailable",
-                "Streaming idempotency requires a product-owned replay adapter.",
-                status_code=422,
+            if self._idempotency_adapter is None:
+                return _service_error(
+                    "stream_idempotency_unavailable",
+                    "Streaming idempotency requires a product-owned replay adapter.",
+                    status_code=422,
+                )
+
+            try:
+                prep = prepare_execution(
+                    context=context,
+                    app_id=app_id,
+                    payload=payload,
+                )
+                replay = await self._idempotency_adapter.begin(
+                    app_id=app_id,
+                    idempotency_key=context.idempotency_key,
+                    request_fingerprint=prep.request_fingerprint,
+                )
+            except IdempotencyConflictError:
+                return _service_error(
+                    "idempotency_conflict",
+                    "Idempotency key is already bound to a different execution request.",
+                    status_code=409,
+                )
+            except Exception:
+                return _service_error(
+                    "idempotency_unavailable",
+                    "Trusted durable idempotency authority is unavailable.",
+                    status_code=503,
+                )
+
+            if replay is not None:
+                if not isinstance(replay, ExecutionResult):
+                    return _service_error(
+                        "idempotency_conflict",
+                        "Idempotency key returned invalid replay.",
+                        status_code=409,
+                    )
+                replay_event = StreamingExecutionEvent(
+                    delta_content=None,
+                    answer=replay.answer,
+                    finish_reason="stop",
+                    route=replay.route,
+                    metadata=replay.metadata,
+                    done=True,
+                )
+                return PreparedStream(
+                    first_event=replay_event,
+                    iterator=_empty_iterator(),
+                    context=context,
+                    replayed=True,
+                    idempotency=None,
+                )
+
+            idempotency_binding = StreamIdempotencyBinding(
+                adapter=self._idempotency_adapter,
+                app_id=app_id,
+                idempotency_key=context.idempotency_key,
+                request_fingerprint=prep.request_fingerprint,
             )
 
         iterator: AsyncIterator[StreamingExecutionEvent] | None = None
@@ -204,6 +280,11 @@ class StreamingEngineService:
             first_event = await anext(iterator)
             if not isinstance(first_event, StreamingExecutionEvent):
                 await _close_iterator(iterator)
+                if idempotency_binding is not None:
+                    await idempotency_binding.adapter.abort(
+                        app_id=idempotency_binding.app_id,
+                        idempotency_key=idempotency_binding.idempotency_key,
+                    )
                 return _service_error(
                     "invalid_stream_event",
                     "Padiem AI Engine returned an invalid streaming event.",
@@ -213,9 +294,16 @@ class StreamingEngineService:
                 first_event=first_event,
                 iterator=iterator,
                 context=context,
+                replayed=False,
+                idempotency=idempotency_binding,
             )
         except StopAsyncIteration:
             await _close_iterator(iterator)
+            if idempotency_binding is not None:
+                await idempotency_binding.adapter.abort(
+                    app_id=idempotency_binding.app_id,
+                    idempotency_key=idempotency_binding.idempotency_key,
+                )
             return _service_error(
                 "malformed_upstream",
                 "Model streaming execution ended before producing an event.",
@@ -223,9 +311,19 @@ class StreamingEngineService:
             )
         except ExecutionRuntimeError as exc:
             await _close_iterator(iterator)
+            if idempotency_binding is not None:
+                await idempotency_binding.adapter.abort(
+                    app_id=idempotency_binding.app_id,
+                    idempotency_key=idempotency_binding.idempotency_key,
+                )
             return _runtime_error_response(exc)
         except Exception:
             await _close_iterator(iterator)
+            if idempotency_binding is not None:
+                await idempotency_binding.adapter.abort(
+                    app_id=idempotency_binding.app_id,
+                    idempotency_key=idempotency_binding.idempotency_key,
+                )
             return _internal_error_response()
 
     async def iter_ndjson(self, prepared: PreparedStream) -> AsyncIterator[str]:
@@ -235,16 +333,60 @@ class StreamingEngineService:
             raise ValueError("prepared must be PreparedStream")
 
         iterator = prepared.iterator
+        idempotency = prepared.idempotency
+        completed = False
+        last_answer: str | None = None
+        last_route = prepared.first_event.route
+        last_metadata = prepared.first_event.metadata
+        accumulated_deltas: list[str] = []
+
         try:
-            yield _event_line(prepared.first_event)
+            yield _event_line(prepared.first_event, replayed=prepared.replayed)
             if prepared.first_event.done:
+                completed = True
+                if idempotency is not None:
+                    answer = prepared.first_event.answer or "".join(accumulated_deltas)
+                    res = ExecutionResult(
+                        answer=answer,
+                        route=prepared.first_event.route,
+                        metadata=prepared.first_event.metadata,
+                    )
+                    await idempotency.adapter.complete(
+                        app_id=idempotency.app_id,
+                        idempotency_key=idempotency.idempotency_key,
+                        request_fingerprint=idempotency.request_fingerprint,
+                        result=res.to_public_dict(),
+                    )
                 return
+
+            if prepared.first_event.delta_content:
+                accumulated_deltas.append(prepared.first_event.delta_content)
 
             async for event in iterator:
                 if not isinstance(event, StreamingExecutionEvent):
                     raise RuntimeError("invalid private stream event")
+                last_route = event.route
+                last_metadata = event.metadata
+                if event.delta_content:
+                    accumulated_deltas.append(event.delta_content)
+                if event.done:
+                    last_answer = event.answer
                 yield _event_line(event)
                 if event.done:
+                    completed = True
+                    if idempotency is not None:
+                        answer = last_answer or "".join(accumulated_deltas)
+                        res = ExecutionResult(
+                            answer=answer,
+                            route=last_route,
+                            metadata=last_metadata,
+                        )
+                        await idempotency.adapter.complete(
+                            app_id=idempotency.app_id,
+                            idempotency_key=idempotency.idempotency_key,
+                            request_fingerprint=idempotency.request_fingerprint,
+                            result=res.to_public_dict(),
+                        )
                     return
         except ExecutionRuntimeError as exc:
             yield _error_line(_runtime_error_response(exc))
@@ -252,3 +394,11 @@ class StreamingEngineService:
             yield _error_line(_internal_error_response())
         finally:
             await _close_iterator(iterator)
+            if idempotency is not None and not completed:
+                try:
+                    await idempotency.adapter.abort(
+                        app_id=idempotency.app_id,
+                        idempotency_key=idempotency.idempotency_key,
+                    )
+                except Exception:
+                    pass

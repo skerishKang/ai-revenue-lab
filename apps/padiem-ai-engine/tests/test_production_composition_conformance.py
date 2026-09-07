@@ -255,6 +255,18 @@ async def test_streaming_run_composition_reaches_b14_authority() -> None:
     compose = _load_composition()
     services = await compose(_StubEnv())
     assert services.streaming._b14_service_bound is True
+    # #2025: production composition injects idempotency adapter into streaming service
+    from app.idempotency_binding import CloudflareD1IdempotencyAdapter
+
+    env_with_idempotency = _StubEnv()
+    env_with_idempotency.ENGINE_IDEMPOTENCY = types.SimpleNamespace(
+        prepare=lambda sql: types.SimpleNamespace(bind=lambda *args: None)
+    )
+    services_with_idempotency = await compose(env_with_idempotency)
+    assert isinstance(
+        services_with_idempotency.streaming._idempotency_adapter,
+        CloudflareD1IdempotencyAdapter,
+    )
 
 
 @pytest.mark.asyncio
@@ -431,11 +443,11 @@ async def test_multimodal_composition_fails_closed_without_resolver() -> None:
 @pytest.mark.asyncio
 async def test_agent_skill_composition_fails_closed_without_binding() -> None:
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     from app.agent_skill_wire import AGENT_SKILL_RUN_PATH
 
     assert services.agent_skill is not None
-    unbound_services = compose(types.SimpleNamespace())
+    unbound_services = await compose(types.SimpleNamespace())
     assert unbound_services.agent_skill is not None
 
     response = await _call(
