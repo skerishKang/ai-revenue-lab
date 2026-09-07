@@ -40,8 +40,8 @@
 
   window.ARL_MANIFEST = [
     // ═══ 1–4 ═══
-    identity({ n:1, s:"personal-edition", t:"Personal Edition", k:"퍼스널 에디션", a:NA.CANONICAL, l:"private_preview", st:"review", p:100, su:"https://ai-revenue-final-review-b01.pages.dev/", w:"apps/personal-edition/" }),
-    identity({ n:2, s:"living-travel", t:"Living Travel", k:"리빙 트래블", a:NA.CANONICAL, l:"private_preview", st:"running", p:35, su:"https://ai-revenue-final-review-b02.pages.dev/", w:"apps/living-travel/" }),
+    identity({ n:1, s:"personal-edition", t:"Personal Edition", k:"퍼스널 에디션", a:NA.CANONICAL, l:"private_preview", st:"review", p:100, su:"https://ai-revenue-personal-edition.pages.dev/", w:"apps/personal-edition/" }),
+    identity({ n:2, s:"living-travel", t:"Living Travel", k:"리빙 트래블", a:NA.CANONICAL, l:"private_preview", st:"running", p:35, su:"https://ai-revenue-living-travel.pages.dev/", w:"apps/living-travel/" }),
     identity({ n:3, s:"living-fiction", t:"Living Fiction", k:"리빙 픽션", a:NA.CANONICAL, l:"external_implementation", st:"external", p:32, pc:"expanded-successor", bk:"external-parallel", sn:"External / Parallel Track", sk:"외부·병렬 작업" }),
     identity({ n:4, s:"living-learning", t:"Living Learning", k:"리빙 러닝", a:NA.CANONICAL, l:"private_preview", st:"running", p:30, su:"https://ai-revenue-final-review-b04.pages.dev/", w:"apps/living-learning/" }),
     // ═══ 5–12 ═══

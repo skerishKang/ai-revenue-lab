@@ -68,18 +68,19 @@ body.lt-v2 img { display: block; max-width: 100%; }
 .lt-primary:hover,.lt-primary:focus-visible { transform:translateY(-2px); background:#f07d47; }
 .lt-secondary { display:inline-flex; align-items:center; min-height:44px; padding:.55rem 0; color:inherit; text-decoration:none; border-bottom:1px solid currentColor; font-size:.78rem; font-weight:750; }
 
-.lt-route-stage { position:relative; min-height:100%; padding:7.5rem clamp(1.2rem,4vw,4rem) 3rem; border-left:1px solid var(--lt-line-dark); }
-.lt-route-stage::before { content:"BUSAN 35.1796°N / 129.0756°E"; position:absolute; right:1.2rem; top:50%; writing-mode:vertical-rl; font-size:.63rem; letter-spacing:.16em; opacity:.42; }
-.lt-map-orbit { position:absolute; inset:17% 10% 12% 8%; border:1px solid rgba(255,255,255,.13); border-radius:50% 44% 56% 43%; transform:rotate(-9deg); }
+.lt-route-stage { position:relative; min-height:100%; padding:7.5rem clamp(1.2rem,4vw,4rem) 3rem; border-left:1px solid var(--lt-line-dark); background:url("images/busan-hero.webp") center/cover no-repeat; }
+.lt-route-stage::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(160deg,rgba(8,16,19,.74),rgba(8,16,19,.4) 55%,rgba(8,16,19,.7)); pointer-events:none; }
+.lt-route-stage::before { content:"BUSAN 35.1796°N / 129.0756°E"; position:absolute; z-index:2; right:1.2rem; top:50%; writing-mode:vertical-rl; font-size:.63rem; letter-spacing:.16em; opacity:.42; }
+.lt-map-orbit { display:none; position:absolute; inset:17% 10% 12% 8%; border:1px solid rgba(255,255,255,.13); border-radius:50% 44% 56% 43%; transform:rotate(-9deg); }
 .lt-map-orbit::before,.lt-map-orbit::after { content:""; position:absolute; border:1px solid rgba(255,255,255,.11); border-radius:50%; }
 .lt-map-orbit::before { inset:13% -8% 8% 12%; }
 .lt-map-orbit::after { inset:-8% 19% 25% -5%; }
-.lt-route-line { position:absolute; left:20%; top:20%; width:58%; height:60%; border-left:2px solid var(--lt-sun); border-bottom:2px solid var(--lt-sun); border-radius:0 0 0 48%; transform:rotate(19deg); filter:drop-shadow(0 0 10px rgba(229,110,59,.3)); }
-.lt-route-dot { position:absolute; width:12px; height:12px; border-radius:50%; background:var(--lt-lime); box-shadow:0 0 0 7px rgba(199,212,166,.12); }
+.lt-route-line { display:none; position:absolute; left:20%; top:20%; width:58%; height:60%; border-left:2px solid var(--lt-sun); border-bottom:2px solid var(--lt-sun); border-radius:0 0 0 48%; transform:rotate(19deg); filter:drop-shadow(0 0 10px rgba(229,110,59,.3)); }
+.lt-route-dot { display:none; position:absolute; width:12px; height:12px; border-radius:50%; background:var(--lt-lime); box-shadow:0 0 0 7px rgba(199,212,166,.12); }
 .lt-route-dot--1 { left:26%; top:26%; }.lt-route-dot--2{left:46%;top:48%;}.lt-route-dot--3{left:68%;top:70%;}
-.lt-place-label { position:absolute; padding:.38rem .5rem; border:1px solid var(--lt-line-dark); background:rgba(8,16,19,.55); backdrop-filter:blur(7px); font-size:.68rem; letter-spacing:.04em; }
+.lt-place-label { position:absolute; z-index:2; padding:.38rem .5rem; border:1px solid var(--lt-line-dark); background:rgba(8,16,19,.55); backdrop-filter:blur(7px); font-size:.68rem; letter-spacing:.04em; }
 .lt-place-label--1 {left:14%;top:21%;}.lt-place-label--2{left:42%;top:42%;}.lt-place-label--3{left:64%;top:66%;}
-.lt-route-meta { position:absolute; left:10%; right:14%; bottom:7%; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--lt-line-dark); border:1px solid var(--lt-line-dark); }
+.lt-route-meta { position:absolute; z-index:2; left:10%; right:14%; bottom:7%; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--lt-line-dark); border:1px solid var(--lt-line-dark); }
 .lt-route-meta div { padding:.9rem; background:rgba(9,19,22,.8); }
 .lt-route-meta strong { display:block; margin-bottom:.25rem; color:var(--lt-white); font-size:.86rem; }
 .lt-route-meta span { color:rgba(255,253,248,.58); font-size:.66rem; text-transform:uppercase; letter-spacing:.1em; }
