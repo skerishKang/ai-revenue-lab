@@ -50,7 +50,7 @@ from app.multimodal_attachment_service import (
 from app.orchestration_idempotency_service import (
     CanonicalIdempotencyOrchestrationEngineService,
 )
-from app.service import EngineService, ServiceResponse
+from app.service import EngineService, ServiceContractError, ServiceResponse
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
@@ -103,12 +103,26 @@ async def _tool_binding_resolver_for_env(env: Any):
 
     Reads the three Worker secrets and the ENGINE_CONNECTOR_GRANTS D1 binding
     from the deployment env. If any piece is missing the factory returns None,
-    keeping the canonical composition fail-closed.
+    keeping the canonical composition fail-closed. A grant store outage
+    (``ServiceContractError`` from ``_gmail_grants_for_env``) is NOT treated as
+    \"grant missed\": the port and binding are present, so every app_id gets a
+    resolver that surfaces the same 503 ``connector_grants_unavailable`` instead
+    of a silent fail-closed misread.
     """
     port = _gmail_port_for_env(env)
     if port is None:
         return None
-    grants = await _gmail_grants_for_env(env)
+    try:
+        grants = await _gmail_grants_for_env(env)
+    except ServiceContractError as exc:
+        # `except ... as exc` clears `exc` when the block ends, so the closure
+        # must capture the value through a persistent local name.
+        grant_error = exc
+
+        def unavailable(_app_id: str) -> None:
+            raise grant_error
+
+        return unavailable
     if not grants:
         return None
     return build_tool_binding_resolver(gmail_port=port, grants=grants)
@@ -137,8 +151,14 @@ async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
     try:
         store = CloudflareD1ConnectorGrantStore(binding)
         return await store.load_gmail_grants()
+    except ServiceContractError:
+        raise
     except Exception:
-        return {}
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
 
 
 async def _engine_services_for_env(env: Any) -> EngineServices:

@@ -182,6 +182,12 @@ class ToolExecutionEngineService:
             )
         try:
             binding = self._tool_binding_resolver(app_id)
+        except ServiceContractError:
+            # A resolver may surface a deployment-contract failure (e.g. a
+            # connector grant store outage as 503 connector_grants_unavailable).
+            # Let that distinct code/status reach the caller instead of being
+            # flattened into the generic tool_runtime_unavailable posture.
+            raise
         except Exception as exc:
             raise EngineToolProjectionError(
                 "tool_runtime_unavailable",

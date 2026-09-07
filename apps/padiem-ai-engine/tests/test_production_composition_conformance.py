@@ -50,6 +50,7 @@ _FAIL_CLOSED_CODES = frozenset(
         "document_resolver_unavailable",
         "idempotency_unavailable",
         "b14_service_unavailable",
+        "connector_grants_unavailable",
     }
 )
 
@@ -114,9 +115,24 @@ class _StubEnv:
     capabilities are DEFERRED and must fail closed.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, **extra: Any) -> None:
         self.B14_SERVICE = _StubB14Binding()
         self.PADIEM_ENGINE_WEB_PROVIDER = "mock"
+        for name, value in extra.items():
+            setattr(self, name, value)
+
+
+class _FailingGrantsBinding:
+    """D1-like connector-grant binding whose ``prepare()`` always fails.
+
+    Simulates a grant store outage: the port (three Worker secrets) and the
+    ENGINE_CONNECTOR_GRANTS binding exist, but storage cannot be read. The
+    composition must NOT collapse this into a \"grant missed\" fail-closed
+    misread; it must surface 503 ``connector_grants_unavailable``.
+    """
+
+    def prepare(self, _sql: str) -> Any:
+        raise RuntimeError("d1 grant store unavailable")
 
 
 class _ProductionShapedEnv:
@@ -440,3 +456,40 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     # PR-C activation gate: the resolver is wired through env-derived
     # secrets + D1 grant references. No static truth flag remains.
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
+
+
+@pytest.mark.asyncio
+async def test_grant_store_failure_surfaces_503_connector_grants_unavailable() -> None:
+    """A grant store outage is NOT a \"grant missed\".
+
+    When the three Worker secrets and the ENGINE_CONNECTOR_GRANTS binding are
+    present but storage fails, every TOOL_EXECUTE_PATH request must answer
+    503 ``connector_grants_unavailable`` — distinct from the fail-closed
+    ``tool_runtime_unavailable`` posture used when the port/binding are simply
+    absent.
+    """
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(
+            **{
+                # Env names come from the stubbed canonical composition module
+                # (the same workers-stub surface _load_composition installs);
+                # importing worker_identity directly would hit the real
+                # ``workers`` package, which needs the Cloudflare ``js`` runtime.
+                "ENGINE_GOOGLE_OAUTH_CLIENT_ID": "client_1",
+                "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET": "secret_1",
+                "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN": "refresh_1",
+                "ENGINE_CONNECTOR_GRANTS": _FailingGrantsBinding(),
+            }
+        )
+    )
+    assert services.tool_execution is not None
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_tool_payload(),
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "connector_grants_unavailable"
