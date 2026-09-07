@@ -13,7 +13,19 @@
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "설정", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "언어", "done": "완료",
       "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Files", "nav-alerts": "알림", "nav-tasks": "작업", "workspace-menu": "워크스페이스 메뉴",
-      "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트", "claw-status": "준비 중 — 지금은 초안을 만들지 않습니다",
+      "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트",
+      "claw-status": "수동 인입 미리보기 셸 — 백엔드 경로, 저장소, 커넥터, 발송 기능은 아직 연결되지 않았습니다.",
+      "claw-form-aria": "수동 인입 양식", "claw-actions-aria": "Claw 작업 선택", "claw-card-hint": "양식 작업으로 설정",
+      "claw-field-channel": "원문 채널", "claw-field-action": "초안 작업", "claw-field-sender": "보낸 사람/거래처 힌트", "claw-field-request": "요청 원문 붙여넣기",
+      "claw-sender-placeholder": "선택 입력: 고객사, 공급사, 발신자명", "claw-request-placeholder": "카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요.",
+      "claw-btn-generate": "초안 만들기", "claw-result-title": "미리보기 결과", "claw-preview-empty": "요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.",
+      "claw-preview-notice": "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.",
+      "claw-opt-quote": "견적서 초안", "claw-opt-order": "발주서 초안", "claw-opt-reply": "답장 초안", "claw-opt-summary": "요청사항 정리",
+      "claw-ctrl-md-title": "Markdown 다운로드", "claw-ctrl-md-note": "백엔드 연결 전까지 비활성화",
+      "claw-ctrl-docx-title": "DOCX 다운로드", "claw-ctrl-docx-note": "백엔드 연결 전까지 비활성화",
+      "claw-ctrl-mem-title": "메모리 저장 후보", "claw-ctrl-mem-note": "사용자 승인 필요 / 준비 중",
+      "claw-ctrl-email-title": "이메일 발송", "claw-ctrl-email-note": "사용자 승인 필요 / 준비 중",
+      "claw-ctrl-share-title": "공유 링크", "claw-ctrl-share-note": "저장소 연결 후 가능",
       "claw-quote": "견적서 초안", "claw-order": "발주서 초안", "claw-reply": "답장 초안", "claw-requests": "요청사항 정리", "claw-cta-note": "각 카드는 준비 중입니다. 실행은 이후 버전에서 연결됩니다.",
       "connectors-kicker": "CONNECTORS", "connectors-title": "Connectors", "connectors-note": "커넥터는 아직 연결되지 않았습니다. 연결 예정입니다.",
       "skills-kicker": "SKILLS", "skills-title": "Skills", "skills-note": "스킬은 준비 중입니다. 지금은 목록만 표시됩니다.",
@@ -44,7 +56,19 @@
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "Settings", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "Language", "done": "Done",
       "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Files", "nav-alerts": "Alerts", "nav-tasks": "Tasks", "workspace-menu": "Workspace menu",
-      "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "Paste requests received via KakaoTalk, text, or email to prepare quote, order, and reply drafts — a work agent", "claw-status": "In preparation — drafts are not generated yet",
+      "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "Paste requests received via KakaoTalk, text, or email to prepare quote, order, and reply drafts — a work agent",
+      "claw-status": "Manual intake preview shell — backend route, storage, connectors, and sending actions are not connected yet.",
+      "claw-form-aria": "Manual intake form", "claw-actions-aria": "Select Claw action", "claw-card-hint": "Set form action",
+      "claw-field-channel": "Source channel", "claw-field-action": "Draft action", "claw-field-sender": "Sender hint", "claw-field-request": "Paste request text",
+      "claw-sender-placeholder": "Optional: customer, vendor, sender name", "claw-request-placeholder": "Paste a KakaoTalk, SMS, email, Telegram, Discord, or other business request here.",
+      "claw-btn-generate": "Create preview draft", "claw-result-title": "Preview result", "claw-preview-empty": "Paste request text before creating a preview.",
+      "claw-preview-notice": "Client-side preview only. This draft is not stored and is lost on refresh.",
+      "claw-opt-quote": "Quote draft", "claw-opt-order": "Order draft", "claw-opt-reply": "Reply draft", "claw-opt-summary": "Request summary",
+      "claw-ctrl-md-title": "Markdown download", "claw-ctrl-md-note": "Disabled until backend wiring",
+      "claw-ctrl-docx-title": "DOCX download", "claw-ctrl-docx-note": "Disabled until backend wiring",
+      "claw-ctrl-mem-title": "Memory save proposal", "claw-ctrl-mem-note": "Approval-gated / coming soon",
+      "claw-ctrl-email-title": "Email send", "claw-ctrl-email-note": "User approval required / coming soon",
+      "claw-ctrl-share-title": "Share link", "claw-ctrl-share-note": "Available only after storage connection",
       "claw-quote": "Quote draft", "claw-order": "Order draft", "claw-reply": "Reply draft", "claw-requests": "Request summary", "claw-cta-note": "Each card is in preparation. Actions will be connected in a later version.",
       "connectors-kicker": "CONNECTORS", "connectors-title": "Connectors", "connectors-note": "Connectors are not connected yet. Coming soon.",
       "skills-kicker": "SKILLS", "skills-title": "Skills", "skills-note": "Skills are in preparation. Only the list is shown for now.",
@@ -209,6 +233,10 @@
     if (projectName) projectName.placeholder = text("project-name-placeholder", lang);
     const projectInstructions = document.getElementById("projectInstructionsInput");
     if (projectInstructions) projectInstructions.placeholder = text("project-instructions-placeholder", lang);
+    const clawSender = document.getElementById("clawSender");
+    if (clawSender) clawSender.placeholder = text("claw-sender-placeholder", lang);
+    const clawRequestText = document.getElementById("clawRequestText");
+    if (clawRequestText) clawRequestText.placeholder = text("claw-request-placeholder", lang);
     const instructionLabel = document.querySelector("label[for='projectInstructionsInput']");
     if (instructionLabel) {
       const optional = instructionLabel.querySelector("span") || document.createElement("span");
@@ -221,7 +249,8 @@
       ["#projectCreateButton", "aria-label", "create-project-aria"], [".sidebar-bottom", "aria-label", "account-settings"], ["#mobileMenu", "aria-label", "open-menu"], [".model-pill", "aria-label", "mode"], ["#settingsCloseButton", "aria-label", "settings-close"],
       ["#themePicker", "aria-label", "theme-picker"], ["#languagePicker", "aria-label", "language-picker"], [".starter-grid", "aria-label", "starter-grid"], [".composer-wrap", "aria-label", "composer"], ["#attachmentThumb", "alt", "attachment-preview-alt"],
       ["#removeAttachment", "aria-label", "attachment-remove"], [".composer-tools .tool-button:nth-of-type(2)", "title", "web-unavailable-title"], ["#deepResearchButton", "title", "research-unavailable-title"], ["#cancelStreamButton", "aria-label", "cancel-answer"], ["#sendButton", "aria-label", "send"],
-      ["#projectDialogClose", "aria-label", "project-close"], ["#savedOutputClose", "aria-label", "saved-output-close"], ["#savedOutputContent", "aria-label", "saved-output-content"]
+      ["#projectDialogClose", "aria-label", "project-close"], ["#savedOutputClose", "aria-label", "saved-output-close"], ["#savedOutputContent", "aria-label", "saved-output-content"],
+      ["#clawManualForm", "aria-label", "claw-form-aria"], [".claw-actions-grid", "aria-label", "claw-actions-aria"]
     ].forEach(([selector, attribute, key]) => setAttribute(selector, attribute, key, lang));
     const messageLabel = document.querySelector("label[for='messageInput']");
     if (messageLabel) messageLabel.textContent = text("message-input-label", lang);

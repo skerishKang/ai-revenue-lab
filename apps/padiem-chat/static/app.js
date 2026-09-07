@@ -1143,6 +1143,102 @@
     if (!selectedAttachment) setNote(idleNote());
   });
 
+  // Claw manual intake dialog & client-side preview wiring
+  const clawNavButton = document.getElementById("clawNavButton");
+  const clawDialog = document.getElementById("clawDialog");
+  const clawDialogClose = document.getElementById("clawDialogClose");
+  const clawManualForm = document.getElementById("clawManualForm");
+  const clawChannel = document.getElementById("clawChannel");
+  const clawAction = document.getElementById("clawAction");
+  const clawSender = document.getElementById("clawSender");
+  const clawRequestText = document.getElementById("clawRequestText");
+  const clawResultPreview = document.getElementById("clawResultPreview");
+
+  function openClawDialog() {
+    if (!clawDialog) return;
+    if (typeof clawDialog.showModal === "function") {
+      clawDialog.showModal();
+    } else {
+      clawDialog.setAttribute("open", "");
+    }
+    if (clawNavButton) clawNavButton.setAttribute("aria-expanded", "true");
+    if (clawRequestText) clawRequestText.focus();
+  }
+
+  function closeClawDialog() {
+    if (!clawDialog) return;
+    if (clawDialog.open && typeof clawDialog.close === "function") {
+      clawDialog.close();
+    } else {
+      clawDialog.removeAttribute("open");
+    }
+    if (clawNavButton) {
+      clawNavButton.setAttribute("aria-expanded", "false");
+      clawNavButton.focus();
+    }
+  }
+
+  if (clawNavButton) clawNavButton.addEventListener("click", openClawDialog);
+  if (clawDialogClose) clawDialogClose.addEventListener("click", closeClawDialog);
+  if (clawDialog) {
+    clawDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeClawDialog();
+    });
+    clawDialog.addEventListener("close", () => {
+      if (clawNavButton) clawNavButton.setAttribute("aria-expanded", "false");
+    });
+    clawDialog.querySelectorAll(".capability-card[data-claw-action]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const action = card.dataset.clawAction;
+        if (clawAction && action) clawAction.value = action;
+        if (clawRequestText) clawRequestText.focus();
+      });
+    });
+  }
+
+  if (clawManualForm) {
+    clawManualForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const body = (clawRequestText?.value || "").trim();
+      const isEn = document.documentElement.lang === "en";
+      if (!body) {
+        if (clawResultPreview) {
+          clawResultPreview.textContent = isEn
+            ? "Paste request text before creating a preview."
+            : "요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.";
+        }
+        if (clawRequestText) clawRequestText.focus();
+        return;
+      }
+      const channelText = clawChannel?.options[clawChannel.selectedIndex]?.textContent || clawChannel?.value || "-";
+      const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || clawAction?.value || "-";
+      const senderText = (clawSender?.value || "").trim() || "-";
+      const clipped = body.length > 900 ? `${body.slice(0, 900)}…` : body;
+
+      const notice = isEn
+        ? "Client-side preview only. This draft is not stored and is lost on refresh."
+        : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
+      const channelLabel = isEn ? "Channel" : "채널";
+      const actionLabel = isEn ? "Action" : "작업";
+      const senderLabel = isEn ? "Sender hint" : "발신자 힌트";
+      const sourceLabel = isEn ? "Source text" : "요청 원문";
+
+      if (clawResultPreview) {
+        clawResultPreview.textContent = [
+          notice,
+          "",
+          `${channelLabel}: ${channelText}`,
+          `${actionLabel}: ${actionText}`,
+          `${senderLabel}: ${senderText}`,
+          "",
+          `${sourceLabel}:`,
+          clipped,
+        ].join("\n");
+      }
+    });
+  }
+
   setNote(idleNote());
   renderProjectState();
   updateComposer();

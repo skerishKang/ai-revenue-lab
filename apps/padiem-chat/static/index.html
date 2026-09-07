@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="./padiem-themes.css" />
   <link rel="stylesheet" href="./sidebar-utility.css" />
   <link rel="stylesheet" href="./capability-nav.css" />
+  <link rel="stylesheet" href="./claw-manual-intake.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -36,7 +37,7 @@
         <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span></button>
         <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
         <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span>저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
-        <button class="side-item" id="clawNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="clawDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
+        <button class="side-item" id="clawNavButton" type="button" aria-haspopup="dialog" aria-controls="clawDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
@@ -106,19 +107,78 @@
           <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
         </form>
       </dialog>
-      <dialog class="capability-dialog" id="clawDialog" aria-labelledby="clawDialogTitle">
+      <dialog class="capability-dialog" id="clawDialog" aria-labelledby="clawDialogTitle" data-manual-intake-shell="true">
         <div class="capability-dialog-header">
           <div><p class="capability-kicker" data-locale-key="claw-kicker">PADIEM CLAW</p><h2 class="capability-title" id="clawDialogTitle" data-locale-key="claw-title">Padiem Claw</h2></div>
           <button class="capability-close" id="clawDialogClose" type="button" aria-label="닫기">×</button>
         </div>
         <p class="capability-tagline" data-locale-key="claw-tagline">카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트</p>
-        <p class="capability-status" data-locale-key="claw-status">준비 중 — 지금은 초안을 만들지 않습니다</p>
-        <div class="capability-grid" aria-label="Claw 준비 중 기능">
-          <button type="button" class="capability-card" id="clawQuoteCard" disabled aria-disabled="true"><strong data-locale-key="claw-quote">견적서 초안</strong><small data-locale-key="claw-cta-note">각 카드는 준비 중입니다. 실행은 이후 버전에서 연결됩니다.</small></button>
-          <button type="button" class="capability-card" id="clawOrderCard" disabled aria-disabled="true"><strong data-locale-key="claw-order">발주서 초안</strong><small data-locale-key="claw-cta-note">각 카드는 준비 중입니다. 실행은 이후 버전에서 연결됩니다.</small></button>
-          <button type="button" class="capability-card" id="clawReplyCard" disabled aria-disabled="true"><strong data-locale-key="claw-reply">답장 초안</strong><small data-locale-key="claw-cta-note">각 카드는 준비 중입니다. 실행은 이후 버전에서 연결됩니다.</small></button>
-          <button type="button" class="capability-card" id="clawRequestsCard" disabled aria-disabled="true"><strong data-locale-key="claw-requests">요청사항 정리</strong><small data-locale-key="claw-cta-note">각 카드는 준비 중입니다. 실행은 이후 버전에서 연결됩니다.</small></button>
-        </div>
+        <p class="capability-status" data-locale-key="claw-status">수동 인입 미리보기 셸 — 백엔드 경로, 저장소, 커넥터, 발송 기능은 아직 연결되지 않았습니다.</p>
+        <form class="claw-manual-form" id="clawManualForm" aria-label="수동 인입 양식">
+          <div class="capability-grid claw-actions-grid" aria-label="Claw 작업 선택">
+            <button type="button" class="capability-card" id="clawQuoteCard" data-claw-action="quote"><strong data-locale-key="claw-quote">견적서 초안</strong><small data-locale-key="claw-card-hint">양식 작업을 견적서 초안으로 설정</small></button>
+            <button type="button" class="capability-card" id="clawOrderCard" data-claw-action="order"><strong data-locale-key="claw-order">발주서 초안</strong><small data-locale-key="claw-card-hint">양식 작업을 발주서 초안으로 설정</small></button>
+            <button type="button" class="capability-card" id="clawReplyCard" data-claw-action="reply"><strong data-locale-key="claw-reply">답장 초안</strong><small data-locale-key="claw-card-hint">양식 작업을 답장 초안으로 설정</small></button>
+            <button type="button" class="capability-card" id="clawRequestsCard" data-claw-action="summary"><strong data-locale-key="claw-requests">요청사항 정리</strong><small data-locale-key="claw-card-hint">양식 작업을 요청사항 정리로 설정</small></button>
+          </div>
+          <div class="claw-field-row">
+            <label class="claw-field">
+              <span data-locale-key="claw-field-channel">원문 채널</span>
+              <select id="clawChannel">
+                <option value="kakao">KakaoTalk</option>
+                <option value="sms">SMS</option>
+                <option value="email">Email</option>
+                <option value="telegram">Telegram</option>
+                <option value="discord">Discord</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label class="claw-field">
+              <span data-locale-key="claw-field-action">초안 작업</span>
+              <select id="clawAction">
+                <option value="quote" data-locale-key="claw-opt-quote">견적서 초안</option>
+                <option value="order" data-locale-key="claw-opt-order">발주서 초안</option>
+                <option value="reply" data-locale-key="claw-opt-reply">답장 초안</option>
+                <option value="summary" data-locale-key="claw-opt-summary">요청사항 정리</option>
+              </select>
+            </label>
+          </div>
+          <label class="claw-field">
+            <span data-locale-key="claw-field-sender">보낸 사람/거래처 힌트</span>
+            <input type="text" id="clawSender" maxlength="120" autocomplete="off" placeholder="선택 입력: 고객사, 공급사, 발신자명" />
+          </label>
+          <label class="claw-field">
+            <span data-locale-key="claw-field-request">요청 원문 붙여넣기</span>
+            <textarea id="clawRequestText" rows="7" maxlength="4000" autocomplete="off" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
+          </label>
+          <button type="submit" class="claw-generate-button" id="clawGenerateBtn" data-locale-key="claw-btn-generate">초안 만들기</button>
+          <section class="claw-result-area" id="clawResultArea" aria-live="polite">
+            <strong data-locale-key="claw-result-title">미리보기 결과</strong>
+            <pre id="clawResultPreview" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</pre>
+          </section>
+          <div class="claw-disabled-controls">
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
+              <small data-locale-key="claw-ctrl-md-note">백엔드 연결 전까지 비활성화</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
+              <small data-locale-key="claw-ctrl-docx-note">백엔드 연결 전까지 비활성화</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
+              <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
+              <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
+              <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
+            </button>
+          </div>
+        </form>
       </dialog>
       <dialog class="capability-dialog" id="connectorsDialog" aria-labelledby="connectorsDialogTitle">
         <div class="capability-dialog-header">

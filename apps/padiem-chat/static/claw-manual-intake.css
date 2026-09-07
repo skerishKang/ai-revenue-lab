@@ -1,0 +1,120 @@
+/* claw-manual-intake.css — Claw manual intake client-side form styles */
+
+.claw-manual-form {
+  display: grid;
+  gap: 16px;
+  padding: 16px 20px 24px;
+}
+
+.claw-actions-grid {
+  margin-bottom: 4px;
+}
+
+.claw-actions-grid .capability-card {
+  cursor: pointer;
+  text-align: left;
+}
+
+.claw-field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.claw-field {
+  display: grid;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted, #9aa4b2);
+}
+
+.claw-field input,
+.claw-field select,
+.claw-field textarea {
+  width: 100%;
+  border: 1px solid var(--line, rgba(148, 163, 184, 0.28));
+  border-radius: 12px;
+  background: var(--card-bg, rgba(15, 23, 42, 0.72));
+  color: var(--ink, inherit);
+  padding: 10px 12px;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.claw-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.claw-generate-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #07111f;
+  background: linear-gradient(135deg, #f8fafc, #c7d2fe);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: opacity 0.15s ease;
+}
+
+.claw-generate-button:hover {
+  opacity: 0.92;
+}
+
+.claw-result-area {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line, rgba(148, 163, 184, 0.2));
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--card-bg, rgba(15, 23, 42, 0.46));
+}
+
+.claw-result-area pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink, #e5e7eb);
+}
+
+.claw-disabled-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.claw-disabled-control {
+  text-align: left;
+  border: 1px solid var(--line, rgba(148, 163, 184, 0.16));
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--card-bg, rgba(148, 163, 184, 0.08));
+  color: var(--text-muted, #94a3b8);
+  font: inherit;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.claw-disabled-control strong {
+  display: block;
+  font-size: 0.88rem;
+}
+
+.claw-disabled-control small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 720px) {
+  .claw-field-row,
+  .claw-disabled-controls {
+    grid-template-columns: 1fr;
+  }
+}
