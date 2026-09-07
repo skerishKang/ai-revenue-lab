@@ -21,7 +21,7 @@ on:
         description: 'Exact main SHA to deploy'
         required: true
       confirmation:
-        description: 'Type DEPLOY_B14_FROM_EXACT_MAIN to authorize the deploy'
+        description: 'Type DEPLOY_B14_FROM_EXACT_MAIN to deploy, ROLLBACK_B14_TO_PREVIOUS_VERSION to roll back, or RETIRE_B14_SECRET_OPENROUTER_API_KEY for the #1933 S2-c one-shot dead-secret removal'
         required: true
 
 permissions:
@@ -157,6 +157,48 @@ jobs:
           PY
 
           echo 'B14_PRODUCTION_DEPLOY_SMOKE=PASS'
+
+  # #1933 S2-c: one-shot removal of the dead Worker secret OPENROUTER_API_KEY.
+  # After S2-b no code path reads this key; the value is inert. Separate
+  # confirmation token: deploying or rolling back never removes a secret.
+  # wrangler secret delete is a Workers-secret API call - it does not create
+  # or shift a serving version, so this job cannot change deployed code.
+  retire-openrouter-secret:
+    if: github.event.inputs.confirmation == 'RETIRE_B14_SECRET_OPENROUTER_API_KEY'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Retire dead OPENROUTER_API_KEY secret
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx wrangler@4 secret list --json > /tmp/b14-secrets-before.json
+          if ! grep -q '"OPENROUTER_API_KEY"' /tmp/b14-secrets-before.json; then
+            echo 'SECRET_ALREADY_ABSENT'
+            exit 0
+          fi
+          npx wrangler@4 secret delete OPENROUTER_API_KEY --force
+          npx wrangler@4 secret list --json > /tmp/b14-secrets-after.json
+          if grep -q '"OPENROUTER_API_KEY"' /tmp/b14-secrets-after.json; then
+            echo 'B14_SECRET_RETIREMENT_VERIFICATION_FAILED' >&2
+            exit 1
+          fi
+          echo 'B14_SECRET_RETIRED=OPENROUTER_API_KEY'
 
   rollback-production-b14:
     if: github.event.inputs.confirmation == 'ROLLBACK_B14_TO_PREVIOUS_VERSION'

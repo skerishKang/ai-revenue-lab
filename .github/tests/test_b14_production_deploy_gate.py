@@ -106,6 +106,25 @@ def test_rollback_job_is_separately_confirmed() -> None:
     assert "npx wrangler@4 rollback" in text
 
 
+def test_retire_secret_job_is_separately_confirmed_and_idempotent() -> None:
+    # #1933 S2-c: dead-secret removal needs its own confirmation token, must
+    # be a no-op when the secret is already gone, and must verify after state.
+    wf = _workflow()
+    retire = wf["jobs"]["retire-openrouter-secret"]
+    assert retire["if"] == (
+        "github.event.inputs.confirmation == 'RETIRE_B14_SECRET_OPENROUTER_API_KEY'"
+    )
+    assert retire["environment"] == "production"
+    text = _workflow_text()
+    assert "npx wrangler@4 secret delete OPENROUTER_API_KEY --force" in text
+    assert "SECRET_ALREADY_ABSENT" in text
+    assert "B14_SECRET_RETIRED=OPENROUTER_API_KEY" in text
+    assert "b14-secrets-after.json" in text
+    # The removal must never be bundled into the deploy job's condition.
+    deploy = wf["jobs"]["deploy-production-b14"]
+    assert "RETIRE" not in deploy["if"]
+
+
 def _embedded_version_check_script() -> str:
     """Extract the python heredoc that validates deployments list output."""
     text = _workflow_text()
