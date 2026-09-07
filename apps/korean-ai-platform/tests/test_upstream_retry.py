@@ -50,7 +50,8 @@ def _ok_response(upstream_model: str) -> dict:
 
 @pytest.fixture()
 def client():
-    return TestClient(create_app())
+    with TestClient(create_app()) as test_client:
+        yield test_client
 
 
 @pytest.fixture()

@@ -19,7 +19,8 @@ from app.pilot.sensenova_provider import SENSENOVA_MODEL_ID
 
 @pytest.fixture()
 def client():
-    return TestClient(create_app())
+    with TestClient(create_app()) as test_client:
+        yield test_client
 
 
 def _registered_routes(client) -> list[dict]:

@@ -40,4 +40,10 @@ filterwarnings = [
     "ignore:Using .httpx. with .starlette.testclient",
     "ignore:Setting per-request cookies",
     "ignore:The `route` decorator is deprecated:DeprecationWarning",
+    # TestClient/anyio portal and asyncio Proactor/Selector self-pipe sockets are
+    # closed by GC at nondeterministic points; under PYTHONWARNINGS=error their
+    # ResourceWarnings surface inside an unrelated later test. Narrowly scoped to
+    # the resource types; product code performs no real network I/O in tests.
+    "ignore:unclosed <socket.socket:ResourceWarning",
+    "ignore:unclosed event loop:ResourceWarning",
 ]

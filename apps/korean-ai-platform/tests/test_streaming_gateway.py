@@ -39,19 +39,13 @@ def _reset_openrouter_config(monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "api_key": orcfg.api_key,
         "provider_mode": orcfg.provider_mode,
-        "base_url": orcfg.base_url,
         "max_response_bytes": orcfg.max_response_bytes,
     }
-    orcfg.api_key = ""
     orcfg.provider_mode = "mock"
-    orcfg.base_url = "https://openrouter.ai/api/v1"
     orcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.api_key = saved["api_key"]
     orcfg.provider_mode = saved["provider_mode"]
-    orcfg.base_url = saved["base_url"]
     orcfg.max_response_bytes = saved["max_response_bytes"]
 
 

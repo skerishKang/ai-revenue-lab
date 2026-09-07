@@ -38,7 +38,8 @@ SENSENOVA_SECRET = "fake-sensenova-key-for-tests-0123456789"
 
 @pytest.fixture()
 def client():
-    return TestClient(create_app())
+    with TestClient(create_app()) as test_client:
+        yield test_client
 
 
 def _completion_json(model: str = SENSENOVA_UPSTREAM_MODEL) -> dict:

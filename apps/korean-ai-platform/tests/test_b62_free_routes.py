@@ -13,20 +13,15 @@ from app.pilot.catalog import (
     get_catalog_by_id,
 )
 from app.pilot.errors import NoSafeRoute
-from app.pilot.openrouter import call_openrouter_chat_completions
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.router_core import resolve_auto_route
 
 
 @pytest.fixture(autouse=True)
 def _restore_openrouter_config():
-    saved_key = openrouter_config.api_key
     saved_mode = openrouter_config.provider_mode
-    saved_url = openrouter_config.base_url
     yield
-    openrouter_config.api_key = saved_key
     openrouter_config.provider_mode = saved_mode
-    openrouter_config.base_url = saved_url
 
 
 def test_kilo_nemotron_catalog_snapshot_is_approved_free_route():

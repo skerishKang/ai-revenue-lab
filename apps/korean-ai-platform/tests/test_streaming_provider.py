@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 import httpx
 import pytest
@@ -8,19 +9,21 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.errors import (
+    KiloFreeRateLimited,
     MalformedUpstreamResponse,
-    PilotNotConfigured,
     UpstreamAuthFailed,
     UpstreamClientError,
-    UpstreamRateLimited,
     UpstreamResponseTooLarge,
     UpstreamServerError,
 )
 from app.pilot.openrouter_config import openrouter_config as orcfg
-from app.pilot.openrouter_stream import (
-    OpenRouterStreamEvent,
-    stream_openrouter_chat_completions,
-)
+from app.pilot.openrouter_stream import OpenRouterStreamEvent
+from app.pilot import platform as plat
+
+KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+KILO_PROVIDER = "Kilo Gateway / NVIDIA"
+KILO_CHAT_URL = "https://api.kilo.ai/api/gateway/chat/completions"
 
 
 class FragmentedStream(httpx.AsyncByteStream):
@@ -37,41 +40,36 @@ class FragmentedStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture(autouse=True)
-def _reset_openrouter_config():
+def _reset_platform_mode(monkeypatch):
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "api_key": orcfg.api_key,
         "provider_mode": orcfg.provider_mode,
-        "base_url": orcfg.base_url,
         "max_response_bytes": orcfg.max_response_bytes,
     }
-    orcfg.api_key = ""
     orcfg.provider_mode = "mock"
-    orcfg.base_url = "https://openrouter.ai/api/v1"
     orcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.api_key = saved["api_key"]
     orcfg.provider_mode = saved["provider_mode"]
-    orcfg.base_url = saved["base_url"]
     orcfg.max_response_bytes = saved["max_response_bytes"]
 
 
-def _set_live() -> str:
-    key = "sk-or-v1-stream-secret-1234567890abcdef"
-    orcfg.api_key = key
+def _set_live() -> None:
+    # Kilo Gateway free tier is keyless: live mode needs no secret (#1933 S2).
+    os.environ.pop("B14_PROVIDER_MODE", None)
     orcfg.provider_mode = "live"
-    return key
 
 
-async def _collect(*, transport=None, model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free", upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free"):
+async def _collect(*, transport=None, model_id=KILO_MODEL, upstream_model=KILO_UPSTREAM):
     return [
         event
-        async for event in stream_openrouter_chat_completions(
+        async for event in plat.stream_platform_chat_completions(
             messages=[{"role": "user", "content": "안녕하세요"}],
             temperature=0.2,
             max_tokens=64,
             model_id=model_id,
             upstream_model=upstream_model,
-            provider="OpenRouter",
+            provider=KILO_PROVIDER,
+            platform_provider_id="kilo",
             transport=transport,
         )
     ]
@@ -99,21 +97,22 @@ async def test_mock_stream_is_deterministic_and_zero_network():
 
 
 @pytest.mark.asyncio
-async def test_live_stream_parses_fragmented_lf_crlf_usage_done_and_free_policy():
-    key = _set_live()
+async def test_live_stream_parses_fragmented_lf_crlf_usage_done():
+    _set_live()
     captured = {}
     stream = FragmentedStream([])
 
     async def handler(request):
-        captured["authorization"] = request.headers.get("Authorization")
+        captured["url"] = str(request.url)
+        captured["authorization"] = request.headers.get("authorization")
         captured["body"] = json.loads(request.content)
         payload = (
             b": keepalive\r\n\r\n"
             b"event: message\r\nid: ignored\r\n"
-            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
-            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"kilo/nvidia-nemotron-3-ultra-550b-a55b-free","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
+            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
+            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
+            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
+            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
             b"data: [DONE]\r\n\r\n"
             b"data: this-must-not-be-read\n\n"
         )
@@ -133,12 +132,11 @@ async def test_live_stream_parses_fragmented_lf_crlf_usage_done_and_free_policy(
 
     events = await _collect(transport=httpx.MockTransport(handler))
 
-    assert captured["authorization"] == f"Bearer {key}"
+    assert captured["url"] == KILO_CHAT_URL
+    assert captured["authorization"] is None
     assert captured["body"]["stream"] is True
-    assert captured["body"]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-    assert captured["body"]["provider"] == {
-        "max_price": {"prompt": 0, "completion": 0}
-    }
+    assert captured["body"]["model"] == KILO_UPSTREAM
+    assert "provider" not in captured["body"]
     assert [event.delta_content for event in events[:2]] == ["안", "녕"]
     assert events[2].finish_reason == "stop"
     assert events[3].usage is not None
@@ -146,7 +144,6 @@ async def test_live_stream_parses_fragmented_lf_crlf_usage_done_and_free_policy(
     assert events[4].done is True
     assert len(events) == 5
     assert stream.closed is True
-    assert key not in repr(events)
 
 
 @pytest.mark.asyncio
@@ -198,9 +195,9 @@ async def test_malformed_utf8_fails_closed():
 
 
 @pytest.mark.asyncio
-async def test_stream_byte_cap_aborts_before_unbounded_buffering():
+async def test_stream_byte_cap_aborts_before_unbounded_buffering(monkeypatch):
     _set_live()
-    orcfg.max_response_bytes = 48
+    monkeypatch.setattr(plat, "MAX_RESPONSE_BYTES", 48)
     stream = FragmentedStream([b"x" * 32, b"y" * 32])
 
     async def handler(request):
@@ -218,7 +215,7 @@ async def test_stream_byte_cap_aborts_before_unbounded_buffering():
     [
         (401, UpstreamAuthFailed),
         (403, UpstreamAuthFailed),
-        (429, UpstreamRateLimited),
+        (429, KiloFreeRateLimited),
         (500, UpstreamServerError),
         (503, UpstreamServerError),
         (400, MalformedUpstreamResponse),
@@ -246,7 +243,7 @@ async def test_redirect_is_not_followed():
         calls += 1
         return httpx.Response(
             302,
-            headers={"location": "https://openrouter.ai/api/v1/redirected"},
+            headers={"location": "https://api.kilo.ai/api/gateway/redirected"},
         )
 
     with pytest.raises(UpstreamClientError):
@@ -255,35 +252,48 @@ async def test_redirect_is_not_followed():
 
 
 @pytest.mark.asyncio
-async def test_live_missing_key_fails_before_network():
-    orcfg.provider_mode = "live"
-    orcfg.api_key = ""
-    calls = 0
+async def test_live_keyless_streams_without_key():
+    # Kilo free tier is explicitly keyless: live without a key streams (#1933 S2).
+    _set_live()
+    seen = {}
 
     async def handler(request):
-        nonlocal calls
-        calls += 1
-        raise AssertionError("missing key must fail before network")
+        seen["authorization"] = request.headers.get("authorization")
+        seen["url"] = str(request.url)
+        payload = (
+            b'data: {"id":"s1","model":"nvidia/nemotron-3-ultra-550b-a55b:free",'
+            b'"choices":[{"delta":{"content":"ok"},"finish_reason":null}]}\n\n'
+            b"data: [DONE]\n\n"
+        )
+        return httpx.Response(200, stream=FragmentedStream([payload]))
 
-    with pytest.raises(PilotNotConfigured):
-        await _collect(transport=httpx.MockTransport(handler))
-    assert calls == 0
+    events = await _collect(transport=httpx.MockTransport(handler))
+    assert seen["authorization"] is None
+    assert seen["url"] == KILO_CHAT_URL
+    assert events[0].delta_content == "ok"
+    assert events[-1].done is True
 
 
 @pytest.mark.asyncio
-async def test_invalid_openrouter_base_url_fails_before_network():
+async def test_platform_origin_is_fixed_and_ignores_openrouter_base_url():
+    # The platform adapter never reads openrouter_config.base_url: even an evil
+    # value cannot steer the fixed Kilo origin (OpenRouter retired, #1933 S2).
     _set_live()
     orcfg.base_url = "https://openrouter.ai.evil.example/api/v1"
-    calls = 0
+    seen = {}
 
     async def handler(request):
-        nonlocal calls
-        calls += 1
-        raise AssertionError("invalid host must fail before network")
+        seen["url"] = str(request.url)
+        payload = (
+            b'data: {"id":"s1","model":"nvidia/nemotron-3-ultra-550b-a55b:free",'
+            b'"choices":[{"delta":{"content":"ok"},"finish_reason":null}]}\n\n'
+            b"data: [DONE]\n\n"
+        )
+        return httpx.Response(200, stream=FragmentedStream([payload]))
 
-    with pytest.raises(PilotNotConfigured):
-        await _collect(transport=httpx.MockTransport(handler))
-    assert calls == 0
+    events = await _collect(transport=httpx.MockTransport(handler))
+    assert seen["url"] == KILO_CHAT_URL
+    assert events[-1].done is True
 
 
 def test_public_gateway_still_rejects_stream_true():

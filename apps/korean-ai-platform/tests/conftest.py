@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import warnings
 
+import pytest
+
 # Suppress known third-party deprecation warnings BEFORE importing TestClient.
 # These are upstream library warnings that our test suite does not control.
 # When running with -W error::Warning (or conftest simplefilter), these
@@ -9,8 +11,25 @@ import warnings
 warnings.filterwarnings("ignore", message=r"Using .httpx. with .starlette.testclient")
 warnings.filterwarnings("ignore", message=r"Setting per-request cookies")
 warnings.filterwarnings("ignore", message=r"The `route` decorator is deprecated")
+warnings.filterwarnings("ignore", message=r"unclosed <socket.socket", category=ResourceWarning)
+warnings.filterwarnings("ignore", message=r"unclosed event loop", category=ResourceWarning)
+# Starlette's TestClient portal creates a per-test asyncio event loop whose GC
+# disposal can arrive one test late under PYTHONWARNINGS=error. When pytest's
+# unraisableException hook wraps such a ResourceWarning it is re-emitted as
+# PytestUnraisableExceptionWarning, so the ResourceWarning filters above do not
+# match. These two patterns are the only observed leaks: socket pairs and the
+# asyncio loop __del__ warning from test-infra lifecycles, not product code.
+warnings.filterwarnings(
+    "ignore",
+    message=r"Exception ignored in: <socket\.socket",
+    category=pytest.PytestUnraisableExceptionWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"Exception ignored in: <function BaseEventLoop\.__del__",
+    category=pytest.PytestUnraisableExceptionWarning,
+)
 
-import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
@@ -23,7 +42,8 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return TestClient(app)
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 # ---------------------------------------------------------------------------

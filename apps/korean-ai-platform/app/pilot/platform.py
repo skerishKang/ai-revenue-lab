@@ -511,17 +511,6 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
 # ---------------------------------------------------------------------------
 # Provider onboarding — generic, one registration per Provider.
 # ---------------------------------------------------------------------------
-register_platform_provider(
-    PlatformProviderSpec(
-        provider_id="agnes-ai",
-        credential_source=CredentialSource.PLATFORM_SECRET,
-        credential_binding_name="AGNES_API_KEY",
-        base_origin="https://apihub.agnes-ai.com/v1",
-        allowed_hosts=("apihub.agnes-ai.com",),
-        enabled=True,
-    )
-)
-
 from app.pilot.poolside_provider import register_poolside_provider
 from app.pilot.kilo_provider import register_kilo_provider
 from app.pilot.sensenova_provider import register_sensenova_provider

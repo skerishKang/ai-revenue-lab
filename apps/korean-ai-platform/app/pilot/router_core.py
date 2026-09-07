@@ -132,10 +132,12 @@ def _new_request_id() -> str:
 
 
 def _check_credentials() -> tuple[bool, str]:
-    """Check whether credentials are available for live mode."""
+    """Check whether a usable credential source exists for live mode (#1933 S2)."""
+    from app.pilot.platform_secrets import live_ready
+
+    if live_ready():
+        return True, NoKeyReason.KEY_AVAILABLE.value
     if openrouter_config.is_live:
-        if openrouter_config.has_key:
-            return True, NoKeyReason.KEY_AVAILABLE.value
         return False, NoKeyReason.LIVE_MODE_REQUIRES_KEY.value
     # mock mode
     return False, NoKeyReason.NO_KEY_SET.value
