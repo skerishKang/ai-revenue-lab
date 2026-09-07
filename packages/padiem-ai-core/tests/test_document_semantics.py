@@ -140,6 +140,7 @@ def test_binary_docx_path_preserved_through_canonical_object() -> None:
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             DocumentKind.XLSX,
         ),
+        ("application/hwp+zip", DocumentKind.HWPX),
     ],
 )
 def test_kind_mapping_covers_all_supported_media(media_type: str, expected: DocumentKind) -> None:
@@ -154,7 +155,7 @@ def test_kind_property_on_canonical_documents() -> None:
     assert docx.kind is DocumentKind.DOCX
 
 
-def test_no_hwp_or_hwpx_kind() -> None:
+def test_legacy_hwp_has_no_kind_but_hwpx_does() -> None:
     assert {kind.value for kind in DocumentKind} == {
         "text",
         "markdown",
@@ -164,7 +165,24 @@ def test_no_hwp_or_hwpx_kind() -> None:
         "docx",
         "pptx",
         "xlsx",
+        "hwpx",
     }
+    assert document_kind_for_media("application/x-hwp") is None
+
+
+def test_hwpx_document_kind_round_trip() -> None:
+    section = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+        'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">'
+        "<hp:p><hp:runs><hp:t>hwpx body</hp:t></hp:runs></hp:p>"
+        "</hs:sec>"
+    ).encode()
+    document = extract_binary_document(
+        name="note.hwpx", media_type="application/hwp+zip", payload=_zip_bytes({"Contents/section1.xml": section})
+    )
+    assert document.text == "hwpx body"
+    assert document.kind is DocumentKind.HWPX
 
 
 # E. content trust fixed by Core
