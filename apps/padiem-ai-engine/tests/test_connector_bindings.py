@@ -9,7 +9,11 @@ fail-closed for everything else).
 from __future__ import annotations
 
 import asyncio
+import importlib
 import json
+import sys
+import types
+from typing import Any
 
 import pytest
 
@@ -27,6 +31,76 @@ from app.tool_projection import (
     TOOL_EXECUTE_PATH,
     TrustedToolAuthority,
 )
+
+
+# --- composition seam: load worker_identity with stubbed workers module ----
+
+
+class _StubBindingResponse:
+    def __init__(self, body: bytes = b"{}") -> None:
+        self.status = 200
+        self.headers = {"get": lambda _name: "application/json"}
+        self.body = body
+
+
+class _StubB14Binding:
+    async def fetch(self, _js_object: Any) -> _StubBindingResponse:
+        return _StubBindingResponse(body=b'{"sentinel": true}')
+
+
+class _FakeResponse:
+    def __init__(self, body: Any = None, status: int = 200, headers: Any = None) -> None:
+        self.body = body
+        self.status = status
+        self.headers = headers or {}
+
+
+class _FakeWorkerEntrypoint:
+    def __init__(self, ctx: Any = None, env: Any = None) -> None:
+        self.ctx = ctx
+        self.env = env
+
+
+def _workers_stub() -> types.ModuleType:
+    module = types.ModuleType("workers")
+    module.Request = lambda *args, **kwargs: None  # type: ignore[attr-defined]
+    module.Response = _FakeResponse  # type: ignore[attr-defined]
+    module.WorkerEntrypoint = _FakeWorkerEntrypoint  # type: ignore[attr-defined]
+    return module
+
+
+class _BoundEnv:
+    def __init__(self) -> None:
+        self.B14_SERVICE = _StubB14Binding()
+        self.PADIEM_ENGINE_WEB_PROVIDER = "mock"
+
+
+def _load_worker_identity(monkeypatch, fake_resolver):
+    """Reload worker_identity with a stubbed ``workers`` module and a
+    monkeypatched ``_tool_binding_resolver_for_env`` that returns
+    ``fake_resolver`` (or None to simulate the unbound branch)."""
+    saved = {
+        name: sys.modules.get(name)
+        for name in ("workers", "worker", "worker_identity")
+    }
+    sys.modules["workers"] = _workers_stub()
+    for name in ("worker", "worker_identity"):
+        sys.modules.pop(name, None)
+    identity = importlib.import_module("worker_identity")
+    monkeypatch.setattr(
+        identity,
+        "_tool_binding_resolver_for_env",
+        lambda _env: fake_resolver,
+    )
+    return identity, saved
+
+
+def _restore(saved: dict) -> None:
+    for name, module in saved.items():
+        if module is None:
+            sys.modules.pop(name, None)
+        else:
+            sys.modules[name] = module
 
 
 class FakeGmailPort:
@@ -338,3 +412,83 @@ def test_execution_service_fails_closed_when_resolver_is_none() -> None:
 
 def test_port_bound_in_production_is_false_until_pr_c() -> None:
     assert GMAIL_PORT_BOUND_IN_PRODUCTION is False
+
+
+# --- production composition seam: injected resolver runs gmail -------------
+
+
+def test_composition_seam_runs_gmail_when_resolver_is_injected(monkeypatch) -> None:
+    """With a real Gmail port + grant resolver monkeypatched into
+    ``_tool_binding_resolver_for_env``, the canonical Production composition
+    must drive a 200 gmail response through ``services.tool_execution``. With
+    the resolver returning None (the PR-B default), every request still
+    fails closed at the same seam — never auto-activating.
+    """
+    port = FakeGmailPort(
+        response={
+            "messages": [
+                {"id": "msg_1", "threadId": "thread_1"},
+            ]
+        }
+    )
+    grant = _grant(binding_ref="bind:seam", actor_ref="actor:seam")
+    resolver = build_tool_binding_resolver(
+        gmail_port=port, grants={GMAIL_REFERENCE_APP_ID: grant}
+    )
+    identity, saved = _load_worker_identity(monkeypatch, fake_resolver=resolver)
+    try:
+        services = identity._engine_services_for_env(_BoundEnv())
+        # Resolver must have been wired into both the tool execution service
+        # AND the canonical orchestration service.
+        assert services.tool_execution is not None
+        assert (
+            services.tool_execution._tool_binding_resolver is resolver  # type: ignore[attr-defined]
+        )
+        assert (
+            services.orchestration._tool_binding_resolver is resolver  # type: ignore[attr-defined]
+        )
+        response = run(
+            services.tool_execution.handle(
+                method="POST",
+                path=TOOL_EXECUTE_PATH,
+                content_type="application/json",
+                body=_execute_payload(
+                    "tool:google:gmail.search_messages@1", {"query": "seam"}
+                ),
+            )
+        )
+        assert response.status_code == 200
+        body = response.body
+        assert body["ok"] is True
+        assert body["tool"]["agent_id"] == GMAIL_MAIL_READER_AGENT_ID
+        assert body["tool"]["canonical_tool_id"] == "tool:google:gmail.search_messages@1"
+        output = body["tool"]["output"]
+        assert output["result_count"] == 1
+        rendered = json.dumps(body, ensure_ascii=False, sort_keys=True)
+        assert "bind:seam" not in rendered
+        assert "actor:seam" not in rendered
+        assert len(port.calls) == 1
+    finally:
+        _restore(saved)
+
+
+def test_composition_seam_fails_closed_when_resolver_returns_none(
+    monkeypatch,
+) -> None:
+    identity, saved = _load_worker_identity(monkeypatch, fake_resolver=None)
+    try:
+        services = identity._engine_services_for_env(_BoundEnv())
+        response = run(
+            services.tool_execution.handle(
+                method="POST",
+                path=TOOL_EXECUTE_PATH,
+                content_type="application/json",
+                body=_execute_payload(
+                    "tool:google:gmail.search_messages@1", {"query": "seam"}
+                ),
+            )
+        )
+        assert response.status_code == 503
+        assert response.body["error"]["code"] == "tool_runtime_unavailable"
+    finally:
+        _restore(saved)
