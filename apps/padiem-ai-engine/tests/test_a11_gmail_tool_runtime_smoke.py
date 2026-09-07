@@ -134,13 +134,17 @@ def test_oversized_argument_exceeds_the_core_ceiling_but_not_the_body_ceiling() 
 # --- step behaviour ---------------------------------------------------------
 
 
-def test_s1_records_route_unavailable_without_failing(capsys: pytest.CaptureFixture[str]) -> None:
+def test_s1_fails_when_the_deployed_build_returns_404(capsys: pytest.CaptureFixture[str]) -> None:
+    # ACT-2 removed the route-not-wired DEFERRED tolerance: with the routes
+    # admitted in source, a 404 is a stale-deploy contradiction and must FAIL.
+    failures: list[str] = []
     with patch.object(smoke, "_request", return_value=(404, _error("not_found"))), patch.object(
-        smoke, "_failures", []
+        smoke, "_failures", failures
     ):
         verdict = smoke.s1_canonical_gmail_probe()
     assert verdict == smoke.ROUTE_UNAVAILABLE
-    assert smoke._failures == []
+    assert len(failures) == 1
+    assert "predates route admission" in failures[0]
     assert "ROUTE_UNAVAILABLE" in capsys.readouterr().out
 
 
@@ -230,14 +234,15 @@ def _run_main(responses: list[tuple[int, object]]) -> int:
         return smoke.main()
 
 
-def test_main_defers_honestly_when_route_is_not_wired(capsys: pytest.CaptureFixture[str]) -> None:
+def test_main_fails_instead_of_deferring_when_the_route_is_not_wired(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     rc = _run_main([(200, HEALTH_OK), (404, _error("not_found"))])
-    assert rc == 0
-    out = capsys.readouterr().out
-    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
-    assert "REASON=ROUTE_NOT_WIRED" in out
-    assert "ROUTE_AVAILABLE=0" in out
-    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" not in out
+    assert rc == 1
+    captured = capsys.readouterr()
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL" in captured.err
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" not in captured.out
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" not in captured.out
 
 
 def test_main_defers_honestly_when_runtime_is_unbound(capsys: pytest.CaptureFixture[str]) -> None:
@@ -254,6 +259,7 @@ def test_main_defers_honestly_when_runtime_is_unbound(capsys: pytest.CaptureFixt
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
     assert "REASON=TOOL_RUNTIME_UNAVAILABLE" in out
     assert "ROUTE_AVAILABLE=1" in out
+    assert "ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING" in out
 
 
 def test_main_passes_when_the_tool_contract_is_live(capsys: pytest.CaptureFixture[str]) -> None:
@@ -341,7 +347,7 @@ def _start_loopback(
     return f"http://127.0.0.1:{server.server_address[1]}", requests, _stop
 
 
-def test_end_to_end_route_not_wired_over_real_urllib(capsys: pytest.CaptureFixture[str]) -> None:
+def test_end_to_end_route_not_wired_fails_over_real_urllib(capsys: pytest.CaptureFixture[str]) -> None:
     base_url, requests, stop = _start_loopback(
         [(200, HEALTH_OK), (404, _error("not_found"))]
     )
@@ -355,11 +361,11 @@ def test_end_to_end_route_not_wired_over_real_urllib(capsys: pytest.CaptureFixtu
     finally:
         stop()
 
-    assert rc == 0
-    out = capsys.readouterr().out
-    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
-    assert "REASON=ROUTE_NOT_WIRED" in out
-    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" not in out
+    assert rc == 1
+    captured = capsys.readouterr()
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL" in captured.err
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" not in captured.out
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" not in captured.out
 
     assert [str(item["path"]) for item in requests] == [
         "/internal/v1/health",
@@ -417,6 +423,14 @@ def test_end_to_end_pass_over_real_urllib(capsys: pytest.CaptureFixture[str]) ->
 
 
 # --- source-level safety contract -------------------------------------------
+
+
+def test_route_not_wired_deferred_tolerance_is_removed_in_act2() -> None:
+    # ACT-2 closure condition (issue #2010): the temporary DEFERRED allowance
+    # must not survive route activation as a potential fake PASS.
+    source = SMOKE_PATH.read_text(encoding="utf-8")
+    assert "REASON=ROUTE_NOT_WIRED" not in source
+    assert "ACTIVATION=NOT_WIRED" not in source
 
 
 def test_script_accepts_no_credential_arguments() -> None:
