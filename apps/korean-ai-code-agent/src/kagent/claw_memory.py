@@ -24,7 +24,7 @@ OAuth, no provider calls, no automatic outbound actions, no billing.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 import hashlib
@@ -861,4 +861,3 @@ class InMemoryClawMemoryStore(ClawMemoryStore):
         if record is None or record.workspace_id != workspace_id:
             raise ClawMemoryError(f"{label} not found in workspace")
         return record
-from datetime import timezone
