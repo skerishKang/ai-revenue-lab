@@ -21,6 +21,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "b54-engine-production-deploy-gate.yml"
 SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a9_production_smoke.py"
+A10_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a10_continuation_production_smoke.py"
 
 
 def _workflow_text() -> str:
@@ -78,6 +79,43 @@ def test_smoke_job_runs_the_a9_script_and_requires_the_pass_line() -> None:
     assert "a9_production_smoke.py" in smoke_block
     assert "A9_SMOKE=PASS" in smoke_block
     assert SMOKE_SCRIPT.is_file(), "smoke script must exist in the repo"
+
+
+def test_smoke_job_runs_the_a10_script_and_requires_the_pass_line() -> None:
+    # WO-9 PR-A (#1966): A10 continuation fail-closed smoke runs in the same
+    # smoke-idempotency job, right after A9, and the job requires its PASS line.
+    text = _workflow_text()
+    smoke_block = text.split("smoke-idempotency:", 1)[1].split("rollback-production-engine:", 1)[0]
+    assert "a10_continuation_production_smoke.py" in smoke_block
+    assert "A10_CONTINUATION_SMOKE=PASS" in smoke_block
+    assert A10_SMOKE_SCRIPT.is_file(), "a10 smoke script must exist in the repo"
+
+
+def test_a10_smoke_script_fail_closed_contract() -> None:
+    """The A10 script's fail-closed verdicts must be present in its source."""
+    source = A10_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert "A10_CONTINUATION_SMOKE=PASS" in source
+    assert "ROWS_WRITTEN=0" in source
+    assert "REAL_PROVIDER_CALLS=0" in source
+    assert "SKIPPED_MISSING_SECRET" in source
+    assert "STORE_BOUND=PASS" in source
+
+
+def test_a10_smoke_script_sends_no_mutating_material() -> None:
+    # A10 is a read-only fail-closed probe: its minimal bodies ({app_id,
+    # continuation_ref} only) must never carry orchestration input, trusted
+    # verification material, or a caller-supplied plan. The forbidden wire
+    # fields must not even appear in the script source.
+    a10_source = A10_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert "idempotency_key" not in a10_source
+    assert "decision" not in a10_source
+
+
+def test_a10_smoke_script_sends_explicit_user_agent() -> None:
+    # 원인: Cloudflare BIC가 Python-urllib UA를 403/1010으로 차단 (a9와 동일 사유).
+    a10_source = A10_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert '"User-Agent"' in a10_source
+    assert "padiem-a10-smoke/1.0" in a10_source
 
 
 def test_deploy_and_rollback_jobs_unchanged_in_shape() -> None:
