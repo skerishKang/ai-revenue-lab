@@ -63,3 +63,29 @@ def test_consolidation_plan_document_exists_and_contains_required_sections() -> 
     assert not re.search(r"(?<![a-zA-Z0-9_-])pps/korean-ai-code-agent", content), (
         "Plan doc contains corrupted pps/ path without leading a"
     )
+
+    # Check for dangling backticks or malformed code fences
+    lines = content.splitlines()
+    non_empty_lines = [line.strip() for line in lines if line.strip()]
+    assert non_empty_lines, "Plan doc must not be empty"
+    last_line = non_empty_lines[-1]
+    assert last_line != "`", "Plan doc must not end with a dangling single backtick"
+    assert not last_line.startswith("`") or last_line.startswith("```"), (
+        f"Plan doc ending line has malformed backtick: {last_line}"
+    )
+
+    # Markdown fence parity check: all code fences must properly open and close
+    fence_matches = [line.strip() for line in lines if line.strip().startswith("```")]
+    assert len(fence_matches) % 2 == 0, (
+        f"Unbalanced markdown code fences (count: {len(fence_matches)}): {fence_matches}"
+    )
+
+    # Verify no dangling single-backtick-only lines anywhere in the document
+    for idx, line in enumerate(lines, 1):
+        stripped = line.strip()
+        assert stripped != "`", f"Dangling single backtick on line {idx}: {line}"
+        assert stripped != "``", f"Dangling double backtick on line {idx}: {line}"
+        assert not re.match(r"^`[a-zA-Z0-9_-]+$", stripped), (
+            f"Malformed fence opening on line {idx}: {line}"
+        )
+

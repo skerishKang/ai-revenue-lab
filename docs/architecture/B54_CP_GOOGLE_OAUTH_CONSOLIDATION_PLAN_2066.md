@@ -132,4 +132,3 @@ If any migration phase encounters incompatibilities:
 1. **Architecture Conformance Tests**: .github/tests/test_b54_cp_google_oauth_consolidation_plan_2066.py and .github/tests/test_b54_claw_control_plane_oauth_boundary_1908.py.
 2. **Zero Provider / Zero Network Enforcement**: All tests assert standard mocks and zero external HTTP calls.
 3. **Static AST Analysis**: Ensure Control Plane files do not import local process modules and Claw does not import ticket-signing authorities.
-`
