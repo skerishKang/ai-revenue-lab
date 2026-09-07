@@ -352,7 +352,7 @@ def _catalog_summary_dicts() -> list[dict]:
         result.append({
             "id": m["model_id"],
             "name": m["name"],
-            "provider_id": model.platform_provider_id if model else "kilo",
+            "provider_id": model.platform_provider_id if model else "unknown",
             "provider_name": m["provider"],
             "pilot_available": True,
             "input_krw_per_1k": None,
@@ -366,8 +366,8 @@ def _catalog_summary_dicts() -> list[dict]:
     result.insert(0, {
         "id": "b14/auto",
         "name": "Business 14 자동 선택",
-        "provider_id": "kilo",
-        "provider_name": "Kilo Gateway",
+        "provider_id": "b14",
+        "provider_name": "B14 Router",
         "pilot_available": True,
         "input_krw_per_1k": None,
         "output_krw_per_1k": None,

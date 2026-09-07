@@ -189,3 +189,11 @@ def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
     assert models.status_code == 200
     assert "openrouter" not in health.text.lower()
     assert "openrouter" not in models.text.lower()
+
+
+def test_catalog_auto_lane_is_b14_router_not_a_provider(client):
+    catalog = client.get("/api/pilot/models").json()["catalog"]
+    auto = next(entry for entry in catalog if entry["id"] == "b14/auto")
+
+    assert auto["provider_id"] == "b14"
+    assert auto["provider_name"] == "B14 Router"
