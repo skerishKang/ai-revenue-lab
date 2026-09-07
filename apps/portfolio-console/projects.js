@@ -278,7 +278,7 @@ window.ARL_PROJECTS = [
     repositoryLabel: "skerishKang/ai-revenue-lab",
     repositoryUrl: "https://github.com/skerishKang/ai-revenue-lab",
     workspace: "apps/personal-video-archive/",
-    pageUrl: "https://feat-personal-video-archive.ai-revenue-personal-video-archive.pages.dev",
+    pageUrl: "https://ai-revenue-personal-video-archive.pages.dev/",
     stage: "review",
     developmentMode: "needs-improvement",
     progressBasis: "완료 작업 수 / 전체 마일스톤 작업 수",
