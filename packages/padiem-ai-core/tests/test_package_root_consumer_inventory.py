@@ -202,6 +202,23 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "StreamingExecutionRuntime",
         }
     ),
+    "apps/padiem-ai-engine/app/connector_bindings.py": frozenset(
+        {
+            "AgentExecutionBudget",
+            "BoundedAgentDefinition",
+            "GMAIL_CANONICAL_TOOL_IDS",
+            "GMAIL_CONNECTOR_ID",
+            "GmailReadPort",
+            "ToolAuthorizationContext",
+            "ToolRegistrySnapshot",
+            "ToolResourcePolicy",
+            "ToolRuntime",
+            "ToolRuntimeBinding",
+            "TrustedAgentRuntimePolicy",
+            "compile_agent_profile",
+            "gmail_read_tool_specs",
+        }
+    ),
     "apps/padiem-chat/app/b14_client.py": frozenset(
         {
             "AgentProfile",
