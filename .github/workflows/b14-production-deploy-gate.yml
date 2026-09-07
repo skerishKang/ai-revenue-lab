@@ -187,14 +187,15 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          npx wrangler@4 secret list --json > /tmp/b14-secrets-before.json
-          if ! grep -q '"OPENROUTER_API_KEY"' /tmp/b14-secrets-before.json; then
+          npx wrangler@4 secret list --format json > /tmp/b14-secrets-before.json
+          python3 -c "import json; d=json.load(open('/tmp/b14-secrets-before.json')); assert isinstance(d,list) and d, 'EMPTY_OR_INVALID_SECRET_LIST'; print('SECRETS_BEFORE=' + ','.join(sorted(x['name'] for x in d)))"
+          if ! python3 -c "import json,sys; d=json.load(open('/tmp/b14-secrets-before.json')); sys.exit(0 if any(x.get('name')=='OPENROUTER_API_KEY' for x in d) else 1)"; then
             echo 'SECRET_ALREADY_ABSENT'
             exit 0
           fi
           npx wrangler@4 secret delete OPENROUTER_API_KEY --force
-          npx wrangler@4 secret list --json > /tmp/b14-secrets-after.json
-          if grep -q '"OPENROUTER_API_KEY"' /tmp/b14-secrets-after.json; then
+          npx wrangler@4 secret list --format json > /tmp/b14-secrets-after.json
+          if python3 -c "import json,sys; d=json.load(open('/tmp/b14-secrets-after.json')); sys.exit(0 if any(x.get('name')=='OPENROUTER_API_KEY' for x in d) else 1)"; then
             echo 'B14_SECRET_RETIREMENT_VERIFICATION_FAILED' >&2
             exit 1
           fi
