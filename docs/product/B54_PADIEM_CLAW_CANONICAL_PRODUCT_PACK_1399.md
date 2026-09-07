@@ -1,6 +1,6 @@
 # B54 Padiem Claw Canonical Product Docs & MVP Operations Pack (#1399)
 
-- Status: CANONICAL / REVIEWED
+- Status: CANDIDATE CANONICAL PACK / CTO REVIEW PENDING
 - Milestone: B54 Padiem Claw MVP State & Operations Index
 - Scope: Product boundary, current implemented capabilities, placeholders, safety non-claims, roadmap, and operator status
 - Code/Runtime/Production Mutation: NONE (Documentation & Operations Pack Only)
@@ -70,11 +70,13 @@ E --> F ["Phase 5: Managed Provider Sandboxes <br/> (#1405 Cloud M1 Acceptance G
 ```
 
 1. **#2075 UI Manual-Intake Shell (Freebuff)**:
-   - Connects the chat shell input area to the connectorless ManualIntakeRouter.
-   - Allows users to paste Kakao/SMS/Email/chat text directly into the UI and download generated `.md` / `.docx` artifacts.
+   - Client-side UI preview shell only.
+   - No backend route in #2075.
+   - Download controls are visible but disabled/placeholder until backend wiring.
 2. **#2057 Claw Memory, Tasks, and Alerts**:
-   - Replaces in-memory proposal mocks with durable workspace-scoped persistence.
-   - Enforces user confirmation gates before memory updates become permanent.
+   - Defines/contracts memory/task/alert layer first.
+   - Current slice is in-memory/contracts only.
+   - Durable persistence remains later behind workspace/storage authority.
 3. **#2010 ACT-2 Connector Route & Binding Activation (Kilo)**:
    - Activates secure connector route bindings and grant evaluation without compromising AI-core boundaries.
 4. **Storage, Share Links, and Outbox Gating**:
@@ -89,7 +91,7 @@ E --> F ["Phase 5: Managed Provider Sandboxes <br/> (#1405 Cloud M1 Acceptance G
 
 | Area | Component | Target Role | Local Worktree / Ref | Current Operating Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **Docs & Arch** | Canonical Product Pack (#1399) | Operator / CTO | docs/architecture/ & docs/product/ | **REVIEWED / CANONICAL** |
+| **Docs & Arch** | Canonical Product Pack (#1399) | Operator / CTO | docs/architecture/ & docs/product/ | **CANDIDATE / CTO REVIEW PENDING** |
 | **Chat Shell UI** | Padiem Chat Shell (#2062, #2075) | Freebuff / Web Dev | apps/padiem-chat/static/** | **IN PROGRESS (#2075)** |
 | **Intake Flow** | Manual Intake Router (#2056) | Gemini / Web Dev | apps/korean-ai-code-agent/src/kagent/manual_intake.py | **MERGED (#2072)** |
 | **Doc Export** | OOXML Exporter (#2016) | Gemini / Web Dev | apps/korean-ai-code-agent/src/kagent/document_export.py | **MERGED (#2070)** |
