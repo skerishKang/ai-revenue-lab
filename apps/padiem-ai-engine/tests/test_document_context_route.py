@@ -226,7 +226,7 @@ def test_b_canonical_composition_leaves_documents_seam_uninjected(
     _legacy, identity = identity_modules
 
     for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
-        services = identity._engine_services_for_env(env)
+        services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services, EngineServices)
         assert services.documents is None
         with pytest.raises(ValueError, match="'documents'"):
@@ -576,7 +576,10 @@ def test_injected_documents_service_serves_trusted_caller(
     real_factory = identity.Default.engine_services_factory
 
     def spying_factory(env: Any) -> Any:
-        return dataclasses.replace(real_factory(env), documents=service)
+        async def _spying():
+            return dataclasses.replace(await real_factory(env), documents=service)
+
+        return _spying()
 
     identity.Default.engine_services_factory = staticmethod(spying_factory)
     try:
@@ -661,7 +664,7 @@ def test_legacy_worker_is_not_widened_by_e5b(identity_modules) -> None:
     assert "DOCUMENT_CONTEXT_PATH" not in legacy_source
     assert "DocumentContextEngineService" not in legacy_source
     assert "document_context" not in legacy_source
-    assert legacy._engine_services_for_env(_identity_env()).documents is None
+    assert asyncio.run(legacy._engine_services_for_env(_identity_env())).documents is None
 
 
 def test_document_route_is_not_a_public_or_browser_surface(

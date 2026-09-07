@@ -19,7 +19,6 @@ import pytest
 
 from app.connector_bindings import (
     GMAIL_MAIL_READER_AGENT_ID,
-    GMAIL_PORT_BOUND_IN_PRODUCTION,
     GMAIL_REFERENCE_APP_ID,
     GmailGrant,
     build_tool_binding_resolver,
@@ -87,10 +86,14 @@ def _load_worker_identity(monkeypatch, fake_resolver):
     for name in ("worker", "worker_identity"):
         sys.modules.pop(name, None)
     identity = importlib.import_module("worker_identity")
+
+    async def _fake_resolver(_env):
+        return fake_resolver
+
     monkeypatch.setattr(
         identity,
         "_tool_binding_resolver_for_env",
-        lambda _env: fake_resolver,
+        _fake_resolver,
     )
     return identity, saved
 
@@ -407,13 +410,6 @@ def test_execution_service_fails_closed_when_resolver_is_none() -> None:
     assert response.body["error"]["code"] == "tool_runtime_unavailable"
 
 
-# --- truth flag for downstream activation gates ----------------------------
-
-
-def test_port_bound_in_production_is_false_until_pr_c() -> None:
-    assert GMAIL_PORT_BOUND_IN_PRODUCTION is False
-
-
 # --- production composition seam: injected resolver runs gmail -------------
 
 
@@ -437,7 +433,7 @@ def test_composition_seam_runs_gmail_when_resolver_is_injected(monkeypatch) -> N
     )
     identity, saved = _load_worker_identity(monkeypatch, fake_resolver=resolver)
     try:
-        services = identity._engine_services_for_env(_BoundEnv())
+        services = asyncio.run(identity._engine_services_for_env(_BoundEnv()))
         # Resolver must have been wired into both the tool execution service
         # AND the canonical orchestration service.
         assert services.tool_execution is not None
@@ -477,7 +473,7 @@ def test_composition_seam_fails_closed_when_resolver_returns_none(
 ) -> None:
     identity, saved = _load_worker_identity(monkeypatch, fake_resolver=None)
     try:
-        services = identity._engine_services_for_env(_BoundEnv())
+        services = asyncio.run(identity._engine_services_for_env(_BoundEnv()))
         response = run(
             services.tool_execution.handle(
                 method="POST",

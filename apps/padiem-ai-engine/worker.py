@@ -223,7 +223,7 @@ def _memory_service_for_env(env: Any) -> MemoryRetrievalEngineService:
     return MemoryRetrievalEngineService(bindings={}, write_bindings={})
 
 
-def _engine_services_for_env(env: Any) -> EngineServices:
+async def _engine_services_for_env(env: Any) -> EngineServices:
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable_factory = lambda app_id: (_ for _ in ()).throw(  # noqa: E731
@@ -453,7 +453,7 @@ class Default(WorkerEntrypoint):
             if auth_error is not None:
                 return auth_error
 
-        services = self.engine_services_factory(self.env)
+        services = await self.engine_services_factory(self.env)
 
         if path == ORCHESTRATION_STREAM_PATH:
             prepared = await services.orchestration.prepare_stream(

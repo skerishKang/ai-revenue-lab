@@ -204,7 +204,7 @@ def test_legacy_worker_is_not_widened_by_e5a(identity_modules) -> None:
     assert "MultimodalAttachmentEngineService" not in legacy_source
     assert "MULTIMODAL_EXECUTE_PATH" not in legacy_source
 
-    assert legacy._engine_services_for_env(_identity_env()).multimodal is None
+    assert asyncio.run(legacy._engine_services_for_env(_identity_env())).multimodal is None
 
 
 def test_canonical_composition_wires_multimodal_service_without_resolver(
@@ -217,7 +217,7 @@ def test_canonical_composition_wires_multimodal_service_without_resolver(
     _legacy, identity = identity_modules
 
     for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
-        services = identity._engine_services_for_env(env)
+        services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services.multimodal, MultimodalAttachmentEngineService)
         assert services.multimodal._attachment_resolver is None
 
@@ -234,7 +234,10 @@ def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
     _legacy, identity = identity_modules
 
     def forbidden_composition(env: Any) -> Any:
-        raise AssertionError("attachment composition reached before service identity")
+        async def _forbidden():
+            raise AssertionError("attachment composition reached before service identity")
+
+        return _forbidden()
 
     saved = identity.Default.engine_services_factory
     identity.Default.engine_services_factory = staticmethod(forbidden_composition)
@@ -268,17 +271,20 @@ def test_valid_ref_fails_closed_through_canonical_fetch(
     real_factory = identity.Default.engine_services_factory
 
     def spying_factory(composition_env: Any) -> Any:
-        services = real_factory(composition_env)
-        assert services.multimodal is not None
-        assert services.multimodal._attachment_resolver is None
-        original = services.multimodal._runtime_factory
+        async def _spying():
+            services = await real_factory(composition_env)
+            assert services.multimodal is not None
+            assert services.multimodal._attachment_resolver is None
+            original = services.multimodal._runtime_factory
 
-        def counting_runtime_factory(app_id: str) -> Any:
-            runtime_calls.append(app_id)
-            return original(app_id)
+            def counting_runtime_factory(app_id: str) -> Any:
+                runtime_calls.append(app_id)
+                return original(app_id)
 
-        services.multimodal._runtime_factory = counting_runtime_factory
-        return services
+            services.multimodal._runtime_factory = counting_runtime_factory
+            return services
+
+        return _spying()
 
     identity.Default.engine_services_factory = staticmethod(spying_factory)
     try:
