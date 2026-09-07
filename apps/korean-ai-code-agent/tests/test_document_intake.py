@@ -6,43 +6,41 @@ from pathlib import Path
 import unittest
 import zipfile
 
+try:
+    from pypdf import PdfWriter
+    from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+except ModuleNotFoundError:  # pypdf is provided by the workspace documents extra.
+    PdfWriter = None
+    DecodedStreamObject = DictionaryObject = NameObject = None
+
 from kagent.document_intake import HWPX_NOTE, intake_document
 from kagent.draft_flow import DraftFlowError, _read_draft_input
 from kagent.review_flow import _collect_review_files
 
 
-def _minimal_pdf(text: str = "Hello Padiem Document") -> bytes:
-    objects = [
-        b"<< /Type /Catalog /Pages 2 0 R >>",
-        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-        (
-            b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
-            b"/Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>"
-        ),
-        None,
-        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-    ]
-    content = ("BT /F1 12 Tf 72 720 Td (" + text + ") Tj ET").encode("ascii")
-    objects[3] = (
-        b"<< /Length " + str(len(content)).encode("ascii") + b" >>\nstream\n" + content + b"\nendstream"
+def _minimal_pdf(text: str = "Hello Padiem Document") -> bytes | None:
+    if PdfWriter is None:
+        return None
+    writer = PdfWriter()
+    page = writer.add_blank_page(width=320, height=180)
+    font = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Font"),
+            NameObject("/Subtype"): NameObject("/Type1"),
+            NameObject("/BaseFont"): NameObject("/Helvetica"),
+        }
     )
-    out = bytearray(b"%PDF-1.4\n")
-    offsets: list[int] = []
-    for index, obj in enumerate(objects, start=1):
-        offsets.append(len(out))
-        out += f"{index} 0 obj\n".encode("ascii")
-        out += obj
-        out += b"\nendobj\n"
-    xref_offset = len(out)
-    out += f"xref\n0 {len(objects) + 1}\n".encode("ascii")
-    out += b"0000000000 65535 f \n"
-    for offset in offsets:
-        out += f"{offset:010d} 00000 n \n".encode("ascii")
-    out += (
-        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\n"
-        f"startxref\n{xref_offset}\n%%EOF\n"
-    ).encode("ascii")
-    return bytes(out)
+    font_ref = writer._add_object(font)
+    page[NameObject("/Resources")] = DictionaryObject(
+        {NameObject("/Font"): DictionaryObject({NameObject("/F1"): font_ref})}
+    )
+    content = DecodedStreamObject()
+    escaped = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+    content.set_data(f"BT /F1 14 Tf 36 90 Td ({escaped}) Tj ET".encode("ascii"))
+    page[NameObject("/Contents")] = writer._add_object(content)
+    output = io.BytesIO()
+    writer.write(output)
+    return output.getvalue()
 
 
 def _minimal_docx(text: str = "Hello Docx Document") -> bytes:
@@ -76,6 +74,8 @@ def _write(repo: Path, name: str, content: bytes | str) -> Path:
 
 class DocumentIntakeTests(unittest.TestCase):
     def test_pdf_fixture_extracts_text_via_core(self) -> None:
+        if PdfWriter is None:
+            self.skipTest("pypdf is provided by the workspace documents extra")
         result = intake_document("plan.pdf", _minimal_pdf())
         self.assertIsNotNone(result)
         self.assertEqual(result.text, "Hello Padiem Document")
@@ -114,6 +114,8 @@ class ReviewIntakeTests(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_collect_routes_pdf_and_hwpx_and_keeps_utf8(self) -> None:
+        if PdfWriter is None:
+            self.skipTest("pypdf is provided by the workspace documents extra")
         _write(self.repo, "docs/plan.pdf", _minimal_pdf())
         _write(self.repo, "docs/note.hwpx", b"\x00\x01")
         _write(self.repo, "docs/context.md", "# 컨텍스트\n")
