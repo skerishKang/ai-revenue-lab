@@ -385,7 +385,7 @@ def _catalog_summary_dicts() -> list[dict]:
 
 @router.route("/health", methods=["GET"])
 async def pilot_health(request: Request):
-    """Pilot health check. Includes Alpha (OpenRouter) and BYOK status."""
+    """Pilot health check. Includes Alpha (platform catalog) and BYOK status."""
     state = resolve_configuration()
 
     b14_info = {
@@ -971,8 +971,9 @@ async def pilot_chat_completions(
     """Execute a chat completion with routing.
 
     Supports two modes:
-    - Alpha (Business 14 catalog): uses OpenRouter adapter with mock/live mode.
-      Key read from OPENROUTER_API_KEY env var. Supports b14/auto.
+    - Alpha (Business 14 catalog): uses the platform provider adapter with
+      mock/live mode (keyless Kilo Gateway free route; OpenRouter retired).
+      Supports b14/auto.
     - BYOK (legacy): uses X-Business14-Provider-Key header. Uses registry/legacy routing.
     """
     request_id = f"b14req_{uuid.uuid4().hex[:12]}"

@@ -1,10 +1,11 @@
 """Generic platform-owned multi-provider credential plane for Business 14.
 
 This module defines the credential-source contract shared by every
-platform-owned upstream Provider. The first concrete registration is Agnes AI
-(see ``app/pilot/platform.py``), but this module is intentionally Provider-agnostic:
-any Provider is onboarded one at a time through :func:`register_platform_provider`
-with its own credential boundary and a fixed upstream origin.
+platform-owned upstream Provider. Concrete registrations live in
+``app/pilot/platform.py`` (Kilo, Poolside, SenseNova), but this module is
+intentionally Provider-agnostic: any Provider is onboarded one at a time
+through :func:`register_platform_provider` with its own credential boundary
+and a fixed upstream origin.
 
 Credential sources
 -------------------

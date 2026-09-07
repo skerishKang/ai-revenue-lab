@@ -180,10 +180,12 @@ The script starts a mock-mode server, then verifies:
 - [Phase 3 Security Contract](docs/PHASE3_SESSION_SECURITY_CONTRACT.md)
 - [Phase 3 Workspace Runbook](docs/PHASE3_WORKSPACE_RUNBOOK.md)
 
-## Alpha 1 — Owner-Tryable OpenRouter Gateway
+## Alpha 1 — Owner-Tryable Platform Gateway (Kilo Gateway)
 
-Business 14 Alpha 1 lets an owner run the app locally with their own OpenRouter
-API key, send Korean questions, and receive real model responses.
+Business 14 Alpha connects to the platform-owned Kilo Gateway free route
+(keyless, #1933 S2). An owner can run the app locally, send Korean questions,
+and receive real model responses without any API key. The legacy OpenRouter
+call path is retired.
 
 ### Quick Start
 
@@ -193,9 +195,10 @@ cd apps/korean-ai-platform
 # 1. Copy the example environment
 cp .env.example .env
 
-# 2. Edit .env — set your OpenRouter key and switch to live mode
+# 2. (Optional) Edit .env — switch to live mode; the keyless Kilo route needs no key
 #    B14_PROVIDER_MODE=live
-#    OPENROUTER_API_KEY=sk-or-v1-...
+#    # platform-owned Provider secrets (only if those routes are provisioned):
+#    # PADIEM_SENSENOVA_API_KEY=...
 
 # 3. Start with the documented command.
 #    app.main loads .env itself before creating the application; mock mode needs no key.
@@ -210,8 +213,7 @@ prompt input, model selection, optimization options, and route preview.
 | Command | Description |
 |---------|-------------|
 | `python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000` | Documented owner start command; `app.main` loads working-directory `.env` with no optional `python-dotenv` dependency. |
-| `python3 -m app.pilot.catalog validate-model-catalog` | Check the configured catalog snapshot against the OpenRouter Models API (anonymous access is attempted; upstream may require authentication) |
-| `python3 -m app.pilot.smoke_live` | Run a single live smoke test with `openrouter/free` (only when a real key is present); without a key it prints `LIVE_SMOKE_READY_NOT_EXECUTED` and makes zero chat API calls |
+| `python3 -m app.pilot.catalog validate-model-catalog` | Legacy snapshot check against the OpenRouter Models API for historical catalog entries (the routed catalog itself is now the Kilo Gateway snapshot; anonymous access is attempted; upstream may require authentication) |
 
 ### Mock Mode
 
@@ -222,21 +224,31 @@ prompt input, model selection, optimization options, and route preview.
 
 ### Live Mode
 
-- Requires `OPENROUTER_API_KEY` in environment or `.env`
+- The single catalog route is the Kilo Gateway free tier — **keyless**
+  (anonymous requests allowed by Kilo policy, subject to the gateway's
+  hourly free-tier rate limit; 429 surfaces as `kilo_free_rate_limited`)
 - `B14_PROVIDER_MODE=live`
-- Makes real POST /chat/completions calls to `https://openrouter.ai/api/v1`
-- API key is read from server env var only — never sent to browser, never logged
+- Makes real `POST /chat/completions` calls to the fixed origin
+  `https://api.kilo.ai/api/gateway`
+- Platform-owned Provider secrets (SenseNova/Poolside) are read from their
+  own server env bindings only — never sent to browser, never logged
 - Responses labeled "실제 Provider 응답"
 
 ### Security Boundary
 
-- `OPENROUTER_API_KEY` is **only** read from server-side environment variables
-- API key is **never** transmitted to the browser
-- API key is **never** included in logs, exceptions, or responses
-- API key is **never** passed as a query parameter
-- Authorization is via `Authorization: Bearer` header only
+- Provider secrets are **only** read from server-side environment variables
+  (each platform-owned Provider has its own binding name)
+- Secrets are **never** transmitted to the browser
+- Secrets are **never** included in logs, exceptions, or responses
+- Secrets are **never** passed as a query parameter
+- Authorization is via `Authorization: Bearer` header only; the keyless Kilo
+  route sends no Authorization header at all
+- Upstream origins are fixed per Provider spec; callers cannot supply any URL
 - Redirects are disabled (`follow_redirects=False`)
-- Exact host allow-list: `openrouter.ai` only
+- Exact host allow-list per Provider (`api.kilo.ai`, `token.sensenova.ai`,
+  `inference.poolside.ai`)
+- Non-platform (OpenRouter) routes fail closed with `invalid_request` before
+  any network call (#1933 S2)
 - Explicit connect/read/write/pool timeout bounds applied (10s/30s/10s/10s; no implicit total timeout)
 - Success responses are streamed and aborted as soon as the 1 MB body cap is exceeded
 - Upstream error body truncated to 500 characters
@@ -266,11 +278,11 @@ The chat completions response includes bounded `business14` metadata:
 ```json
 {
   "route_mode": "auto",
-  "selected_provider": "Google",
-  "selected_model": "google/gemini-2.5-flash",
-  "selected_upstream_model": "google/gemini-2.5-flash",
-  "actual_response_model": "google/gemini-2.5-flash",
-  "selected_route_id": "openrouter:google/gemini-2.5-flash",
+  "selected_provider": "Kilo Gateway / NVIDIA",
+  "selected_model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+  "selected_upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "actual_response_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "selected_route_id": "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
   "reason_codes": ["optimize_for:balanced", "capabilities:chat"],
   "fallback_allowed": true,
   "fallback_used": false,
@@ -278,12 +290,12 @@ The chat completions response includes bounded `business14` metadata:
   "attempt_evidence": [
     {
       "attempt": 1,
-      "model_id": "google/gemini-2.5-flash",
-      "upstream_model": "google/gemini-2.5-flash",
-      "provider": "Google",
+      "model_id": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+      "upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "provider": "Kilo Gateway / NVIDIA",
       "outcome": "success",
       "error_code": null,
-      "actual_response_model": "google/gemini-2.5-flash"
+      "actual_response_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
     }
   ],
   "route_evidence_status": "mock_no_upstream_call",
@@ -300,42 +312,29 @@ The chat completions response includes bounded `business14` metadata:
 
 ### Catalog
 
-The Alpha catalog is a **configured snapshot** taken from the public
-OpenRouter Models API (`GET https://openrouter.ai/api/v1/models`).
-
-Models API의 현재 인증 요구는 upstream 정책에 따르며,
-키 없이 anonymous 검사를 시도할 수 있으나 성공을 보장하지 않는다.
-If OPENROUTER_API_KEY is set, the Authorization Bearer header is used.
-HTTP 401/403 is reported as `authentication_required`; network errors
-are reported as `network_skipped`. The catalog is only `checked=true`
-when the live check succeeds.
+The routed catalog is a **configured snapshot** of the Kilo Gateway official
+free-tier models (`kilo_official_gateway_models`), pinned by owner decision
+#1933 to a single auto-eligible route. The retired OpenRouter catalog is no
+longer routable; non-platform (OpenRouter) routes fail closed with
+`invalid_request` before any network call.
 
 Prices are snapshot metadata, not a live invoice.
 
 | Model ID | Provider | Notes |
 |----------|----------|-------|
-| `openrouter/free` | OpenRouter (free router) | Sends exactly `"model": "openrouter/free"`; actual free model preserved in `actual_response_model` |
-| `google/gemini-2.5-flash` | Google | Snapshot-priced paid model |
-| `deepseek/deepseek-chat` | DeepSeek | Snapshot-priced paid model |
-| `mistralai/mistral-small-3.2-24b-instruct` | Mistral | Snapshot-priced paid model |
-| `anthropic/claude-sonnet-4.5` | Anthropic | Snapshot-priced paid model |
+| `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | Kilo Gateway / NVIDIA | Keyless free tier; $0/$0 snapshot; 200 req/hour limit fails closed as `kilo_free_rate_limited`; upstream `nvidia/nemotron-3-ultra-550b-a55b:free` preserved in `actual_response_model` |
 
-Model IDs and snapshot prices are checked against the live OpenRouter Models API via:
-
-```bash
-python3 -m app.pilot.catalog validate-model-catalog
-```
-
-This command attempts the Models API with no key first unless a key is configured.
-Upstream authentication requirements may change; HTTP 401/403 is reported as
-`authentication_required`. Without network access it reports `NETWORK_SKIPPED`
-and the catalog remains a configured snapshot.
+A legacy `python3 -m app.pilot.catalog validate-model-catalog` command still
+exists to check historical catalog IDs against the OpenRouter Models API;
+it is a snapshot-checking utility only and does **not** add OpenRouter to
+routing. HTTP 401/403 is reported as `authentication_required`. Without
+network access it reports `NETWORK_SKIPPED` and the catalog remains a
+configured snapshot.
 
 ### Limitations
 
-- **No payment processing** — actual billing is between the user and OpenRouter
+- **No payment processing** — actual billing is between the owner and the Provider account
 - **No platform credits** — no prepaid wallet or credit system
-- **No persistent key vault** — key is read from env var per deployment
+- **No persistent key vault** — keyless routes need no key; platform-owned Provider secrets are read from env vars per deployment
 - **No merge/deploy** — this is an owner-tryable Alpha, not a production release
-- Catalog model IDs and prices are a configured snapshot; use
-  `validate-model-catalog` to check them against the live OpenRouter Models API
+- Catalog model IDs and prices are a configured snapshot of the Kilo Gateway free tier
