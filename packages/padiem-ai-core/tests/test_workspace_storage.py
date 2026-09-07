@@ -1,4 +1,4 @@
-﻿"""Tests for Workspace Storage boundary contracts and helpers (#2055)."""
+"""Tests for Workspace Storage boundary contracts and helpers (#2055)."""
 
 from __future__ import annotations
 
@@ -63,17 +63,19 @@ def test_workspace_id_with_colon_is_rejected() -> None:
     assert exc.value.code == "invalid_workspace_id"
 
 
-def test_korean_display_file_name_is_allowed() -> None:
+def test_korean_display_file_name_is_allowed_on_object() -> None:
     # Korean display filenames for Padiem Claw (견적서.docx, 발주서.hwpx)
     korean_names = ["견적서.docx", "발주서.hwpx", "보고서_최종본_2026.pdf"]
-    for k_name in korean_names:
+    for idx, k_name in enumerate(korean_names):
+        safe_storage_name = f"doc_{idx}.bin"
         key = format_canonical_object_key(
             workspace_id="ws-123",
             kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
             entity_id="doc-456",
-            file_name=k_name,
+            storage_file_name=safe_storage_name,
         )
-        assert key == f"workspaces/ws-123/claw/documents/doc-456/{k_name}"
+        assert key == f"workspaces/ws-123/claw/documents/doc-456/{safe_storage_name}"
+        assert k_name not in key
 
         obj = WorkspaceStorageObject(
             workspace_id="ws-123",
@@ -86,14 +88,28 @@ def test_korean_display_file_name_is_allowed() -> None:
         assert obj.file_name == k_name
 
 
+def test_korean_display_file_name_rejected_as_storage_file_name() -> None:
+    # Raw non-ASCII / Unicode display names are rejected as storage object-key segments
+    with pytest.raises(WorkspaceStorageError) as exc:
+        format_canonical_object_key(
+            workspace_id="ws-123",
+            kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
+            entity_id="doc-456",
+            storage_file_name="견적서.docx",
+        )
+    assert exc.value.code == "invalid_object_key"
+
+
 def test_file_name_with_path_separator_is_rejected() -> None:
     for sep_name in ["sub/file.docx", "folder\\file.hwpx", "/etc/file.txt", "file/"]:
         with pytest.raises(WorkspaceStorageError) as exc:
-            format_canonical_object_key(
+            WorkspaceStorageObject(
                 workspace_id="ws-123",
-                kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
-                entity_id="doc-456",
+                object_key="workspaces/ws-123/claw/documents/doc-456/file.docx",
                 file_name=sep_name,
+                content_type="text/plain",
+                size_bytes=100,
+                kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
             )
         assert exc.value.code == "invalid_file_name"
 
@@ -101,11 +117,13 @@ def test_file_name_with_path_separator_is_rejected() -> None:
 def test_file_name_with_traversal_is_rejected() -> None:
     for bad_name in ["..", "../file.docx", "..\\file.hwpx", "normal..name"]:
         with pytest.raises(WorkspaceStorageError) as exc:
-            format_canonical_object_key(
+            WorkspaceStorageObject(
                 workspace_id="ws-123",
-                kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
-                entity_id="doc-456",
+                object_key="workspaces/ws-123/claw/documents/doc-456/file.docx",
                 file_name=bad_name,
+                content_type="text/plain",
+                size_bytes=100,
+                kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
             )
         assert exc.value.code == "invalid_file_name"
 
@@ -115,7 +133,7 @@ def test_format_canonical_object_keys() -> None:
         workspace_id="ws-123",
         kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
         entity_id="doc-456",
-        file_name="report.pdf",
+        storage_file_name="report.pdf",
     )
     assert doc_key == "workspaces/ws-123/claw/documents/doc-456/report.pdf"
 
@@ -123,7 +141,7 @@ def test_format_canonical_object_keys() -> None:
         workspace_id="ws-123",
         kind=WorkspaceStorageObjectKind.CLAW_UPLOAD,
         entity_id="up-789",
-        file_name="data.xlsx",
+        storage_file_name="data.xlsx",
     )
     assert upload_key == "workspaces/ws-123/claw/uploads/up-789/data.xlsx"
 
@@ -131,7 +149,7 @@ def test_format_canonical_object_keys() -> None:
         workspace_id="ws-123",
         kind=WorkspaceStorageObjectKind.CHAT_FILE,
         entity_id="file-101",
-        file_name="image.png",
+        storage_file_name="image.png",
     )
     assert chat_key == "workspaces/ws-123/chat/files/file-101/image.png"
 
@@ -139,7 +157,7 @@ def test_format_canonical_object_keys() -> None:
         workspace_id="ws-123",
         kind=WorkspaceStorageObjectKind.EXPORT_ARTIFACT,
         entity_id="exp-202",
-        file_name="archive.zip",
+        storage_file_name="archive.zip",
     )
     assert export_key == "workspaces/ws-123/exports/exp-202/archive.zip"
 
@@ -156,6 +174,10 @@ def test_format_canonical_object_keys() -> None:
         "workspaces/ws-1//empty_segment.txt",
         "workspaces/ws-1/./cur.txt",
         "workspaces/ws-1/../other_ws/file.txt",
+        "workspaces/ws-1/claw/has space/file.txt",
+        "workspaces/ws-1/claw/has?query/file.txt",
+        "workspaces/ws-1/claw/has#fragment/file.txt",
+        "workspaces/ws-1/claw/has%20encoded/file.txt",
     ],
 )
 def test_traversal_and_invalid_object_keys_rejected(traversal_key: str) -> None:

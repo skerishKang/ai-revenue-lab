@@ -1,4 +1,4 @@
-﻿"""Workspace storage boundary contracts and validation helpers (#2055).
+"""Workspace storage boundary contracts and validation helpers (#2055).
 
 Provides immutable value contracts, canonical object key formatting,
 path traversal sanitization, quota checks, and share link validation
@@ -126,7 +126,7 @@ def _validate_object_key(object_key: str) -> str:
             "object_key contains empty segments or path traversal sequences.",
         )
     for seg in segments:
-        if "/" in seg or "\\" in seg or ".." in seg or any(unicodedata.category(c).startswith("C") for c in seg):
+        if not _SAFE_SEGMENT_RE.fullmatch(seg):
             raise WorkspaceStorageError(
                 "invalid_object_key",
                 f"object_key segment {seg!r} contains invalid characters.",
@@ -311,25 +311,34 @@ def format_canonical_object_key(
     workspace_id: str,
     kind: WorkspaceStorageObjectKind,
     entity_id: str,
-    file_name: str,
+    storage_file_name: str,
 ) -> str:
-    """Format a canonical object key within the workspace isolation boundary."""
+    """Format a canonical object key within the workspace isolation boundary.
+
+    storage_file_name must be a safe storage segment matching _SAFE_SEGMENT_RE
+    (ASCII alphanumeric, dot, underscore, hyphen), keeping raw display file names
+    outside the storage object key.
+    """
     _validate_workspace_id(workspace_id)
-    _validate_file_name(file_name)
     if not isinstance(entity_id, str) or not _SAFE_SEGMENT_RE.fullmatch(entity_id):
         raise WorkspaceStorageError(
             "invalid_object_key",
             "entity_id must be a safe identifier segment.",
         )
+    if not isinstance(storage_file_name, str) or not _SAFE_SEGMENT_RE.fullmatch(storage_file_name):
+        raise WorkspaceStorageError(
+            "invalid_object_key",
+            "storage_file_name must be a safe storage segment matching standard alphanumeric/dot/underscore/hyphen rules.",
+        )
 
     if kind == WorkspaceStorageObjectKind.CLAW_DOCUMENT:
-        path = f"workspaces/{workspace_id}/claw/documents/{entity_id}/{file_name}"
+        path = f"workspaces/{workspace_id}/claw/documents/{entity_id}/{storage_file_name}"
     elif kind == WorkspaceStorageObjectKind.CLAW_UPLOAD:
-        path = f"workspaces/{workspace_id}/claw/uploads/{entity_id}/{file_name}"
+        path = f"workspaces/{workspace_id}/claw/uploads/{entity_id}/{storage_file_name}"
     elif kind == WorkspaceStorageObjectKind.CHAT_FILE:
-        path = f"workspaces/{workspace_id}/chat/files/{entity_id}/{file_name}"
+        path = f"workspaces/{workspace_id}/chat/files/{entity_id}/{storage_file_name}"
     elif kind == WorkspaceStorageObjectKind.EXPORT_ARTIFACT:
-        path = f"workspaces/{workspace_id}/exports/{entity_id}/{file_name}"
+        path = f"workspaces/{workspace_id}/exports/{entity_id}/{storage_file_name}"
     else:
         raise WorkspaceStorageError("invalid_object_key", f"Unsupported object kind: {kind}")
 
