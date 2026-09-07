@@ -411,6 +411,32 @@ async def test_multimodal_composition_fails_closed_without_resolver() -> None:
     )
 
 
+@pytest.mark.asyncio
+async def test_agent_skill_composition_fails_closed_without_binding() -> None:
+    compose = _load_composition()
+    services = compose(_StubEnv())
+    from app.agent_skill_wire import AGENT_SKILL_RUN_PATH
+
+    assert services.agent_skill is not None
+    unbound_services = compose(types.SimpleNamespace())
+    assert unbound_services.agent_skill is not None
+
+    response = await _call(
+        services.agent_skill,
+        path=AGENT_SKILL_RUN_PATH,
+        payload=json.dumps(
+            {
+                "app_id": "b62",
+                "agent_id": "agent:acme:assistant@1",
+                "messages": [{"role": "user", "content": "composition probe"}],
+            }
+        ).encode("utf-8"),
+    )
+    assert response.status_code == 503
+    assert response.body.get("error", {}).get("code") == "agent_skill_runtime_unavailable"
+    assert _is_fail_closed(response)
+
+
 # --- WO-10 PR-B composition seam source assertion --------------------------
 
 

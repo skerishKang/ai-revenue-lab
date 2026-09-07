@@ -26,6 +26,7 @@ from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
 import worker as legacy_worker
+from app.agent_skill_service import AgentSkillEngineService
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
@@ -146,6 +147,11 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             tool_execution=ToolExecutionEngineService(
                 tool_binding_resolver=_tool_binding_resolver_for_env(env)
             ),
+            # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
+            agent_skill=AgentSkillEngineService(
+                runtime_factory=unavailable,
+                binding_resolver=None,
+            ),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -213,6 +219,14 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         # adapter as execution; without it the route fails closed (503).
         idempotency_replay=IdempotencyReplayEngineService(
             idempotency_adapter=idempotency_adapter,
+        ),
+        # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
+        agent_skill=AgentSkillEngineService(
+            runtime_factory=runtime_factory,
+            binding_resolver=None,
+            idempotency_adapter=idempotency_adapter,
+            approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
+            continuation_store=continuation_store,
         ),
     )
 
