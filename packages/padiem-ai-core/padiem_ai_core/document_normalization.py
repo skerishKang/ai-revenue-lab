@@ -44,6 +44,10 @@ BINARY_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": frozenset({".docx"}),
     "application/vnd.openxmlformats-officedocument.presentationml.presentation": frozenset({".pptx"}),
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": frozenset({".xlsx"}),
+    # LEGACY_HWP_DECISION=UNSUPPORTED: legacy .hwp is an OLE2 compound binary, not a zip
+    # container, so no bounded pure-stdlib parser is realistic in this slice; application/x-hwp
+    # stays outside every allow-list and fails closed. HWPX below is the OOXML-style zip path.
+    "application/hwp+zip": frozenset({".hwpx"}),
 }
 
 
@@ -330,6 +334,55 @@ def extract_pptx_text(payload: bytes) -> str:
     return text
 
 
+def _hwpx_section_index(name: str) -> int | None:
+    path = PurePosixPath(name)
+    if path.parent.as_posix() != "Contents" or not name.endswith(".xml"):
+        return None
+    digits = path.stem.removeprefix("section")
+    return int(digits) if digits.isdigit() else None
+
+
+def extract_hwpx_text(payload: bytes) -> str:
+    validate_ooxml_archive(payload)
+    try:
+        with ZipFile(BytesIO(payload)) as archive:
+            names = archive.namelist()
+            if "mimetype" in names:
+                declared = archive.read("mimetype").decode("utf-8", "replace").strip()
+                if declared != "application/hwp+zip":
+                    raise DocumentNormalizationError(
+                        "hwpx_mimetype_mismatch",
+                        "HWPX mimetype entry does not match the declared media type.",
+                    )
+            located = [(index, name) for name in names if (index := _hwpx_section_index(name)) is not None]
+            if not located:
+                raise DocumentNormalizationError("hwpx_missing_part", "HWPX is missing Contents/section<N>.xml parts.")
+            sections: list[str] = []
+            for _, section_name in sorted(located):
+                root = _parse_xml(archive.read(section_name))
+                paragraphs: list[str] = []
+                for paragraph in root.iter():
+                    if _local_name(paragraph) != "p":
+                        continue
+                    if any(node is not paragraph and _local_name(node) == "p" for node in paragraph.iter()):
+                        continue
+                    pieces = [node.text or "" for node in paragraph.iter() if _local_name(node) == "t"]
+                    value = "".join(pieces)
+                    if value:
+                        _append_bounded(paragraphs, value)
+                section = "\n".join(paragraphs).strip()
+                if section:
+                    _append_bounded(sections, section)
+    except DocumentNormalizationError:
+        raise
+    except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
+        raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+    text = "\n".join(sections).strip()
+    if not text:
+        raise DocumentNormalizationError("hwpx_empty", "HWPX contains no readable text.")
+    return text
+
+
 def _extract_pdf_text(payload: bytes) -> str:
     if not payload.startswith(b"%PDF-"):
         raise DocumentNormalizationError("pdf_magic_mismatch", "PDF magic does not match the declared media type.")
@@ -426,6 +479,8 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         text = extract_pptx_text(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         text = _extract_xlsx_text(binary)
+    elif safe_media == "application/hwp+zip":
+        text = extract_hwpx_text(binary)
     else:  # pragma: no cover - guarded by media validation
         raise DocumentNormalizationError("unsupported_binary_media_type", "Unsupported binary document media type.")
 

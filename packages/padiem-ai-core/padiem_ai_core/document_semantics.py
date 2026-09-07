@@ -98,6 +98,7 @@ class DocumentKind(str, Enum):
     DOCX = "docx"
     PPTX = "pptx"
     XLSX = "xlsx"
+    HWPX = "hwpx"
 
 
 class ExtractionStatus(str, Enum):
@@ -151,6 +152,7 @@ _MEDIA_TYPE_BY_KIND: dict[DocumentKind, str] = {
     DocumentKind.XLSX: (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ),
+    DocumentKind.HWPX: "application/hwp+zip",
 }
 
 KIND_BY_MEDIA_TYPE: dict[str, DocumentKind] = {

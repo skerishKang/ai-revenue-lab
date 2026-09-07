@@ -28,6 +28,7 @@ from padiem_ai_core.document_normalization import (
     DocumentNormalizationError,
     extract_binary_document,
     extract_docx_text,
+    extract_hwpx_text,
     extract_pptx_text,
     normalize_text_document,
     validate_document_identity,
@@ -38,6 +39,7 @@ PDF_MIME = "application/pdf"
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 PPTX_MIME = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+HWPX_MIME = "application/hwp+zip"
 
 
 def _zip_bytes(entries: dict[str, bytes]) -> bytes:
@@ -75,6 +77,16 @@ def _pptx_xml(*parts: str) -> bytes:
         '<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" '
         'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
         f"<p:cSld><p:spTree><p:sp><p:txBody><a:p>{body}</a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>"
+    ).encode()
+
+
+def _hwpx_section_xml(*paragraphs: str) -> bytes:
+    body = "".join(f"<hp:p><hp:runs><hp:t>{text}</hp:t></hp:runs></hp:p>" for text in paragraphs)
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+        'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">'
+        f"{body}</hs:sec>"
     ).encode()
 
 
@@ -203,7 +215,7 @@ def test_text_rejects_nul_controls_and_character_overflow_without_echo() -> None
 def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -> None:
     name, media = validate_document_identity(name="sample.pdf", media_type=PDF_MIME, source_kind="binary")
     assert (name, media) == ("sample.pdf", PDF_MIME)
-    assert set(BINARY_DOCUMENT_MEDIA) == {PDF_MIME, DOCX_MIME, PPTX_MIME, XLSX_MIME}
+    assert set(BINARY_DOCUMENT_MEDIA) == {PDF_MIME, DOCX_MIME, PPTX_MIME, XLSX_MIME, HWPX_MIME}
     with pytest.raises(DocumentNormalizationError) as mismatch:
         validate_document_identity(name="sample.docx", media_type=PDF_MIME, source_kind="binary")
     assert mismatch.value.code == "media_extension_mismatch"
@@ -256,6 +268,85 @@ def test_docx_preserves_paragraphs_and_pptx_preserves_slide_order() -> None:
     )
     presentation = extract_binary_document(name="slides.pptx", media_type=PPTX_MIME, payload=pptx)
     assert presentation.text == "slide one\nslide two\nsecond line"
+
+
+def test_hwpx_round_trip_orders_sections_numerically() -> None:
+    payload = _zip_bytes(
+        {
+            "mimetype": b"application/hwp+zip",
+            "Contents/section2.xml": _hwpx_section_xml("second section", "second body"),
+            "Contents/section10.xml": _hwpx_section_xml("tenth section"),
+            "Contents/section1.xml": _hwpx_section_xml("first section"),
+        }
+    )
+    document = extract_binary_document(name="report.hwpx", media_type=HWPX_MIME, payload=payload)
+    assert document.text == "first section\nsecond section\nsecond body\ntenth section"
+    assert document.source_kind == "binary"
+    assert document.byte_size == len(payload)
+    assert "text" not in document.to_public_dict()
+
+
+def test_hwpx_captures_table_cell_paragraphs_without_duplication() -> None:
+    section = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+        'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">'
+        "<hp:p><hp:runs><hp:t>intro</hp:t></hp:runs></hp:p>"
+        "<hp:p><hp:tbl><hp:tr>"
+        "<hp:tc><hp:p><hp:runs><hp:t>cell-a</hp:t></hp:runs></hp:p></hp:tc>"
+        "<hp:tc><hp:p><hp:runs><hp:t>cell-b</hp:t></hp:runs></hp:p></hp:tc>"
+        "</hp:tr></hp:tbl></hp:p>"
+        "</hs:sec>"
+    ).encode()
+    payload = _zip_bytes({"Contents/section1.xml": section})
+    document = extract_binary_document(name="table.hwpx", media_type=HWPX_MIME, payload=payload)
+    assert document.text == "intro\ncell-a\ncell-b"
+
+
+def test_hwpx_missing_part_empty_and_mimetype_fail_closed() -> None:
+    with pytest.raises(DocumentNormalizationError) as missing:
+        extract_hwpx_text(_zip_bytes({"mimetype": b"application/hwp+zip"}))
+    assert missing.value.code == "hwpx_missing_part"
+
+    with pytest.raises(DocumentNormalizationError) as empty:
+        extract_hwpx_text(_zip_bytes({"Contents/section1.xml": _hwpx_section_xml()}))
+    assert empty.value.code == "hwpx_empty"
+
+    with pytest.raises(DocumentNormalizationError) as mismatch:
+        extract_hwpx_text(
+            _zip_bytes(
+                {
+                    "mimetype": b"application/zip",
+                    "Contents/section1.xml": _hwpx_section_xml("safe"),
+                }
+            )
+        )
+    assert mismatch.value.code == "hwpx_mimetype_mismatch"
+
+    without_mimetype = _zip_bytes({"Contents/section1.xml": _hwpx_section_xml("safe")})
+    assert extract_hwpx_text(without_mimetype) == "safe"
+
+
+def test_hwpx_encrypted_archive_fails_closed_and_legacy_hwp_stays_unsupported() -> None:
+    encrypted = _mark_first_entry_encrypted(
+        _zip_bytes(
+            {
+                "mimetype": b"application/hwp+zip",
+                "Contents/section1.xml": _hwpx_section_xml("safe"),
+            }
+        )
+    )
+    with pytest.raises(DocumentNormalizationError) as locked:
+        extract_hwpx_text(encrypted)
+    assert locked.value.code == "ooxml_encrypted"
+
+    with pytest.raises(DocumentNormalizationError) as legacy:
+        extract_binary_document(name="legacy.hwp", media_type="application/x-hwp", payload=b"\xd0\xcf\x11\xe0fake")
+    assert legacy.value.code == "unsupported_binary_media_type"
+
+    with pytest.raises(DocumentNormalizationError) as extension:
+        extract_binary_document(name="notes.txt", media_type=HWPX_MIME, payload=b"PK\x03\x04")
+    assert extension.value.code == "media_extension_mismatch"
 
 
 def test_ooxml_malformed_missing_dtd_encryption_and_paths_fail_closed() -> None:
