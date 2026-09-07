@@ -1,4 +1,4 @@
-"""OpenRouter adapter configuration for Business 14 Alpha (pruned).
+"""B14 runtime mode/timeout configuration.
 
 Only the provider_mode, is_live, is_mock, build_http_timeout, max_response_bytes
 fields and redacted_summary() are retained. All secret-backed and URL-backed
@@ -12,8 +12,8 @@ from app.pilot.redaction import redact_sensitive
 _PROVIDER_MODES = frozenset({"mock", "live"})
 
 
-class OpenRouterConfig:
-    """Configuration for the OpenRouter provider adapter (pruned)."""
+class B14RuntimeConfig:
+    """B14 runtime mode/timeout config."""
 
     def __init__(self) -> None:
         import os
@@ -47,4 +47,4 @@ class OpenRouterConfig:
         return f"mode={self.provider_mode} max_response_bytes={self.max_response_bytes}"
 
 
-openrouter_config = OpenRouterConfig()
+runtime_config = B14RuntimeConfig()

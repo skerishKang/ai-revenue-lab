@@ -139,11 +139,11 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
             },
         )
 
-    from app.pilot.openrouter_config import openrouter_config as orcfg
+    from app.pilot.b14_runtime_config import runtime_config as rcfg
 
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
-    monkeypatch.setattr(orcfg, "provider_mode", "live")
-    monkeypatch.setattr(orcfg, "api_key", "")
+    monkeypatch.setattr(rcfg, "provider_mode", "live")
+    monkeypatch.setattr(rcfg, "api_key", "")
     result = await plat.call_platform_chat_completions(
         model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",

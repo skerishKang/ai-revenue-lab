@@ -28,7 +28,7 @@ from app.pilot.errors import (
     UnsupportedModel,
 )
 from app.pilot.gateway import _validate_body
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.openrouter_stream import (
     OpenRouterStreamEvent,
     OpenRouterStreamUsage,
@@ -143,10 +143,10 @@ def _route_metadata(
         "fallback_allowed": False,
         "fallback_used": False,
         "attempt_count": 1,
-        "provider_mode": openrouter_config.provider_mode,
+        "provider_mode": runtime_config.provider_mode,
         "route_evidence_status": (
             "mock_no_upstream_call"
-            if openrouter_config.is_mock
+            if runtime_config.is_mock
             else "live_streaming_preview"
         ),
     }

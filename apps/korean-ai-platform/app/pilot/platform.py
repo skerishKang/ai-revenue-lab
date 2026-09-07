@@ -38,7 +38,7 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -104,7 +104,7 @@ def _provider_mode() -> str:
 
     An explicitly-set ``B14_PROVIDER_MODE`` environment variable wins (tests and
     deployment scripts override it at runtime); otherwise the shared
-    ``openrouter_config`` singleton is authoritative so mock/live switches made
+    ``runtime_config`` singleton is authoritative so mock/live switches made
     through the config object also apply to platform-owned routes.
     """
     import os
@@ -112,7 +112,7 @@ def _provider_mode() -> str:
     raw = os.environ.get("B14_PROVIDER_MODE", "").strip().lower()
     if raw in ("mock", "live"):
         return raw
-    return openrouter_config.provider_mode
+    return runtime_config.provider_mode
 
 
 def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:

@@ -21,7 +21,7 @@ from app.pilot.catalog import (
     select_by_optimize,
     filter_catalog,
 )
-from app.pilot.openrouter_config import OpenRouterConfig
+from app.pilot.b14_runtime_config import B14RuntimeConfig
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.router_core import (
@@ -32,7 +32,7 @@ from app.pilot.router_core import (
     is_error_fallback_allowed,
 )
 from app.pilot.errors import NoSafeRoute, PilotNotConfigured, UpstreamTimeout
-from app.pilot.openrouter_config import openrouter_config as orcfg
+from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
@@ -62,7 +62,7 @@ def _reset_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "provider_mode": orcfg.provider_mode,
+        "provider_mode": rcfg.provider_mode,
     }
     from app.pilot.config import pilot_settings
     saved_pilot = {
@@ -72,11 +72,11 @@ def _reset_config(monkeypatch):
         "pilot_provider_id": pilot_settings.pilot_provider_id,
         "pilot_upstream_model": pilot_settings.pilot_upstream_model,
     }
-    orcfg.provider_mode = "mock"
+    rcfg.provider_mode = "mock"
     from app.pilot.registry import reset_registry
     reset_registry()
     yield
-    orcfg.provider_mode = saved["provider_mode"]
+    rcfg.provider_mode = saved["provider_mode"]
     pilot_settings.pilot_base_url = saved_pilot["pilot_base_url"]
     pilot_settings.pilot_model_id = saved_pilot["pilot_model_id"]
     pilot_settings.provider_registry_json = saved_pilot["provider_registry_json"]
@@ -86,7 +86,7 @@ def _reset_config(monkeypatch):
 
 
 def _set_live(key: str = "sk-or-v1-real-key-1234567890abcdef") -> None:
-    orcfg.provider_mode = "live"
+    rcfg.provider_mode = "live"
 
 
 # The catalog holds a single Kilo Gateway route under decision #1933. Tests that
@@ -183,7 +183,7 @@ def patch_platform_call(monkeypatch):
 class TestKeyIsolation:
     def test_key_not_in_redacted_summary(self):
         _set_live("sk-or-v1-very-secret-key-abcdef1234567890")
-        summary = orcfg.redacted_summary()
+        summary = rcfg.redacted_summary()
         assert "sk-or-v1-very-secret-key" not in summary
         assert "abcdef1234567890" not in summary
 
@@ -467,8 +467,8 @@ class TestLiveFailClosed:
 
     def test_missing_key_live_allows_keyless_route(self, client, monkeypatch):
         """Live mode, no key: the keyless Kilo route is allowed and key-free."""
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -480,8 +480,8 @@ class TestLiveFailClosed:
 
     def test_placeholder_key_live_not_forwarded(self, client, monkeypatch):
         """A stale OpenRouter placeholder key is never forwarded to Kilo."""
-        orcfg.provider_mode = "live"
-        orcfg.api_key = "sk-your-key-here"
+        rcfg.provider_mode = "live"
+        rcfg.api_key = "sk-your-key-here"
         captured = self._install_keyless_live_probe(monkeypatch)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -522,7 +522,7 @@ class TestMockMode:
     def test_mock_mode_zero_upstream(self, client):
         """Mock mode must never reach an upstream transport."""
         _set_live()  # live key present
-        orcfg.provider_mode = "mock"  # but mode is mock
+        rcfg.provider_mode = "mock"  # but mode is mock
         # Mock mode should NOT use live transport — verify no auth error
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -541,8 +541,8 @@ class TestLiveAdapter:
     @pytest.mark.asyncio
     async def test_live_call_success_usage_propagates(self):
         # Keyless Kilo Gateway route: no Authorization header, fixed origin.
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         async def fake_upstream(request):
             assert str(request.url) == "https://api.kilo.ai/api/gateway/chat/completions"
             assert request.headers.get("authorization") is None
@@ -570,8 +570,8 @@ class TestLiveAdapter:
 
     @pytest.mark.asyncio
     async def test_live_call_malformed_json(self):
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         from app.pilot.errors import MalformedUpstreamResponse
         async def fake_bad(request):
             return httpx.Response(200, text="not-json{{{")
@@ -588,8 +588,8 @@ class TestLiveAdapter:
 
     @pytest.mark.asyncio
     async def test_live_call_401(self):
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         from app.pilot.errors import UpstreamAuthFailed
         async def fake_401(request):
             return httpx.Response(401, json={"error": {"message": "unauthorized"}})
@@ -606,8 +606,8 @@ class TestLiveAdapter:
 
     @pytest.mark.asyncio
     async def test_live_call_timeout(self):
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         async def fake_timeout(request):
             raise httpx.TimeoutException("timed out")
         with pytest.raises(UpstreamTimeout):
@@ -623,8 +623,8 @@ class TestLiveAdapter:
 
     @pytest.mark.asyncio
     async def test_live_call_429(self):
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         from app.pilot.errors import KiloFreeRateLimited
         async def fake_429(request):
             return httpx.Response(429, json={"error": {"message": "slow down"}})
@@ -641,8 +641,8 @@ class TestLiveAdapter:
 
     @pytest.mark.asyncio
     async def test_live_call_500(self):
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         from app.pilot.errors import UpstreamServerError
         async def fake_500(request):
             return httpx.Response(500, json={"error": {"message": "oops"}})
@@ -660,8 +660,8 @@ class TestLiveAdapter:
     @pytest.mark.asyncio
     async def test_live_call_no_key(self):
         # Kilo free tier is keyless: live without a key is allowed (#1933 S2).
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         async def fake_ok(request):
             assert request.headers.get("authorization") is None
             return httpx.Response(200, json={
@@ -1103,10 +1103,10 @@ class TestResponseLimits:
         assert MalformedUpstreamResponse().code == "malformed_upstream_response"
 
     def test_oversized_body_limit_configured(self):
-        assert orcfg.max_response_bytes == 1024 * 1024
+        assert rcfg.max_response_bytes == 1024 * 1024
 
     def test_timeout_bounds_configured(self):
-        timeout = orcfg.build_http_timeout()
+        timeout = rcfg.build_http_timeout()
         assert timeout.connect <= 10
         assert timeout.read <= 30
         assert timeout.write <= 10
@@ -1433,8 +1433,8 @@ class TestStreamedResponseLimit:
     @pytest.mark.asyncio
     async def test_oversize_response_aborts_before_full_body(self):
         # Platform streaming enforces MAX_RESPONSE_BYTES without buffering.
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
         from app.pilot.errors import UpstreamResponseTooLarge
 
         chunk = b"x" * (512 * 1024)
@@ -1962,8 +1962,8 @@ class TestKeylessLiveSmoke:
         import asyncio
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
         monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-        orcfg.provider_mode = "live"
-        orcfg.api_key = ""
+        rcfg.provider_mode = "live"
+        rcfg.api_key = ""
 
         async def handler(request):
             assert request.headers.get("authorization") is None

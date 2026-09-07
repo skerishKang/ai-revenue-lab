@@ -23,7 +23,7 @@ from starlette.routing import Router
 
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
 from app.pilot.gateway import _validate_body
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
 from app.pilot.streaming_router import RouterStreamEvent, stream_routed_chat_completions
@@ -140,7 +140,7 @@ def _route_metadata(
         "provider_mode": decision.provider_mode,
         "route_evidence_status": (
             "mock_no_upstream_call"
-            if openrouter_config.is_mock
+            if runtime_config.is_mock
             else "live_streaming_router_preview"
         ),
     }

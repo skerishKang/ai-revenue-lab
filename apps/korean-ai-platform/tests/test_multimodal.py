@@ -10,7 +10,7 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.multimodal_contract import MAX_IMAGE_BYTES, validate_image_data_url
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"phase8"
@@ -31,10 +31,10 @@ def multimodal_content(url: str | None = None):
 
 @pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
-    old_mode = openrouter_config.provider_mode
-    openrouter_config.provider_mode = "mock"
+    old_mode = runtime_config.provider_mode
+    runtime_config.provider_mode = "mock"
     yield
-    openrouter_config.provider_mode = old_mode
+    runtime_config.provider_mode = old_mode
 
 
 @pytest.fixture()
@@ -247,7 +247,7 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
             },
         )
 
-    openrouter_config.provider_mode = "live"
+    runtime_config.provider_mode = "live"
     messages = [{"role": "user", "content": multimodal_content()}]
     result = await plat.call_platform_chat_completions(
         messages=messages,

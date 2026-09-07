@@ -7,7 +7,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.openrouter_config import openrouter_config as orcfg
+from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
@@ -34,19 +34,19 @@ class _ChunkStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture(autouse=True)
-def _reset_openrouter_config(monkeypatch):
+def _reset_runtime_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "provider_mode": orcfg.provider_mode,
-        "max_response_bytes": orcfg.max_response_bytes,
+        "provider_mode": rcfg.provider_mode,
+        "max_response_bytes": rcfg.max_response_bytes,
     }
-    orcfg.provider_mode = "mock"
-    orcfg.max_response_bytes = 1024 * 1024
+    rcfg.provider_mode = "mock"
+    rcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.provider_mode = saved["provider_mode"]
-    orcfg.max_response_bytes = saved["max_response_bytes"]
+    rcfg.provider_mode = saved["provider_mode"]
+    rcfg.max_response_bytes = saved["max_response_bytes"]
 
 
 def _payload(**overrides):
@@ -171,8 +171,8 @@ def test_auto_or_fallback_streaming_is_rejected_before_network(payload_update):
         calls += 1
         return httpx.Response(200, content=b"data: [DONE]\n\n")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(**payload_update))
 
@@ -189,8 +189,8 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
         calls += 1
         return httpx.Response(200, content=b"data: [DONE]\n\n")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(model="legacy-provider-model"))
 
@@ -219,8 +219,8 @@ def test_pre_start_upstream_errors_keep_json_http_status(
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(upstream_status, content=b"bounded error")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -233,8 +233,8 @@ def test_malformed_first_event_fails_before_sse_200():
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, content=b"data: not-json\n\n")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -250,8 +250,8 @@ def test_post_start_pilot_error_emits_bounded_error_event_without_done():
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, stream=stream)
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -272,8 +272,8 @@ def test_post_start_unexpected_error_is_generic_and_secret_free():
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, stream=stream)
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -304,8 +304,8 @@ def test_live_preview_keyless_route_sends_no_key(monkeypatch):
         assert body["model"] == MODEL_UPSTREAM
         return httpx.Response(200, stream=stream)
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = stale_key  # must stay on the OpenRouter plane
+    rcfg.provider_mode = "live"
+    rcfg.api_key = stale_key  # must stay on the OpenRouter plane
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 
@@ -334,8 +334,8 @@ def test_live_preview_missing_key_is_anonymous_with_zero_key_material():
         seen_authorization = request.headers.get("authorization")
         return httpx.Response(200, stream=_ChunkStream(_valid_sse_chunks("익명 청크")))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = ""
+    rcfg.provider_mode = "live"
+    rcfg.api_key = ""
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload())
 

@@ -37,15 +37,15 @@ def _reset_pilot_config(monkeypatch):
     # B14_PROVIDER_MODE=live (#1933 S2). Force mock so legacy BYOK
     # not_configured assertions stay isolated from B14 mode leaks.
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
-    from app.pilot.openrouter_config import openrouter_config as orcfg
+    from app.pilot.b14_runtime_config import runtime_config as rcfg
 
-    saved_mode = orcfg.provider_mode
-    orcfg.provider_mode = "mock"
+    saved_mode = rcfg.provider_mode
+    rcfg.provider_mode = "mock"
     yield
     pilot_settings.pilot_base_url = saved["base_url"]
     pilot_settings.pilot_model_id = saved["model_id"]
     pilot_settings.provider_registry_json = saved["registry_json"]
-    orcfg.provider_mode = saved_mode
+    rcfg.provider_mode = saved_mode
 
 
 def _configure_pilot():
