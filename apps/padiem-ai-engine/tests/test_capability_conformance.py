@@ -272,6 +272,8 @@ def test_capability_states_match_routed_truth() -> None:
         "orchestration",
         "multi_caller_identity",
         "evidence_citations",
+        # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0
+        "idempotency",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
@@ -280,7 +282,6 @@ def test_capability_states_match_routed_truth() -> None:
         "agent_skill_runtime",
         "file_document_multimodal",
         "tenant_entitlement_usage_admission",
-        "idempotency",
         # E9 A3: reverted to DEFERRED per CTO audit 2026-09-06 — the Production
         # composition injects no tool binding resolver, so the AVAILABLE claim
         # was not production truth (WO-2 gate must pass before re-activation).

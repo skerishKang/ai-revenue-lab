@@ -7,7 +7,7 @@ allowed_app_ids=["b54-padiem-claw"]). Standard library only.
 Steps:
   S0  GET  /internal/v1/health                    -> 200, 15 endpoints,
       "/internal/v1/idempotency/completed/replay" advertised, capabilities
-      idempotency_replay == "deferred" (replay activation is PR-C scope).
+      idempotency_replay == "available" (activated by WO-8 PR-C).
   S1  POST /internal/v1/orchestrate (pinned model, max_steps=1, idempotency
       key a9-smoke-<RUN_ID>-1)                    -> 200, ONE real provider call.
   S2  Same payload, same key                      -> 200 served from durable
@@ -191,12 +191,12 @@ def s0_health() -> None:
     if not isinstance(capabilities, dict):
         _fail("S0", "health capabilities missing", body)
         return
-    if capabilities.get("idempotency_replay") != "deferred":
+    if capabilities.get("idempotency_replay") != "available":
         _fail(
             "S0",
-            f"capabilities.idempotency_replay={capabilities.get('idempotency_replay')!r} != 'deferred' (PR-C not merged)",
+            f"capabilities.idempotency_replay={capabilities.get('idempotency_replay')!r} != 'available' (PR-C not deployed)",
         )
-    print("[S0] health OK: 15 endpoints, replay advertised, idempotency_replay=deferred")
+    print("[S0] health OK: 15 endpoints, replay advertised, idempotency_replay=available")
 
 
 def s1_first_run(payload: dict[str, Any]) -> tuple[dict[str, Any], str | None, int]:

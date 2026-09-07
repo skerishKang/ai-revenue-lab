@@ -373,15 +373,19 @@ async def test_adapter_read_completed_mirrors_begin_authority_semantics() -> Non
     )
 
 
-def test_manifest_endpoint_declared_but_feature_stays_deferred() -> None:
+def test_manifest_endpoint_declared_and_feature_activated_after_production_evidence() -> None:
     manifest = current_engine_contract_manifest()
     endpoints = {(item.method, item.path) for item in manifest.endpoints}
 
     assert ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH) in endpoints
-    # Governance: #1235 blockers document forbids the AVAILABLE transition
-    # before production activation blockers are proven in a separate PR.
+    # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0.
     assert (
         manifest.feature_state("execution_idempotency_replay_completed")
+        is EngineFeatureState.AVAILABLE
+    )
+    # Streaming replay stays DEFERRED until the keyed-stream adapter exists.
+    assert (
+        manifest.feature_state("execution_idempotency_replay_streaming")
         is EngineFeatureState.DEFERRED
     )
 
