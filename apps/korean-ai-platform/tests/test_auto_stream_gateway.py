@@ -7,7 +7,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.openrouter_config import openrouter_config as orcfg
+from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 
 AUTO_STREAM_URL = "/api/pilot/v1/chat/completions/auto-stream-preview"
@@ -108,19 +108,19 @@ class _ChunkStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture(autouse=True)
-def _reset_openrouter_config(monkeypatch):
+def _reset_runtime_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "provider_mode": orcfg.provider_mode,
-        "max_response_bytes": orcfg.max_response_bytes,
+        "provider_mode": rcfg.provider_mode,
+        "max_response_bytes": rcfg.max_response_bytes,
     }
-    orcfg.provider_mode = "mock"
-    orcfg.max_response_bytes = 1024 * 1024
+    rcfg.provider_mode = "mock"
+    rcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.provider_mode = saved["provider_mode"]
-    orcfg.max_response_bytes = saved["max_response_bytes"]
+    rcfg.provider_mode = saved["provider_mode"]
+    rcfg.max_response_bytes = saved["max_response_bytes"]
 
 
 def _payload(**overrides):
@@ -143,7 +143,7 @@ def _payload(**overrides):
 def _client(transport: httpx.AsyncBaseTransport | None = None) -> TestClient:
     app = create_app()
     if transport is not None:
-        app.state.openrouter_stream_transport = transport
+        app.state.stream_transport = transport
     return TestClient(app)
 
 
@@ -292,8 +292,8 @@ def test_free_hard_filter_never_calls_paid_catalog_candidate(three_route_catalog
         assert model == SECONDARY_UPSTREAM
         return httpx.Response(200, stream=_success_stream(model, "무료 fallback"))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
@@ -318,8 +318,8 @@ def test_metadata_only_before_content_does_not_make_empty_stream_successful():
             stream=_ChunkStream([_usage_frame(model), b"data: [DONE]\n\n"]),
         )
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(
         AUTO_STREAM_URL,
         json=_payload(business14={
@@ -351,8 +351,8 @@ def test_usage_metadata_is_buffered_then_emitted_before_first_visible_content():
             ),
         )
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(
         AUTO_STREAM_URL,
         json=_payload(business14={
@@ -395,8 +395,8 @@ def test_nonretryable_pre_token_errors_stay_json_before_sse_start(
         calls += 1
         return httpx.Response(upstream_status, content=b"secret-ish upstream body")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == expected_status
@@ -430,8 +430,8 @@ def test_retryable_errors_exhaust_resolved_free_candidates_before_json_failure(
         calls.append(model)
         return httpx.Response(upstream_status, content=b"bounded")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == expected_status
@@ -454,8 +454,8 @@ def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done
             ),
         )
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
@@ -485,8 +485,8 @@ def test_live_keyless_route_sends_no_authorization_and_leaks_nothing(monkeypatch
         model = json.loads(request.content)["model"]
         return httpx.Response(200, stream=_success_stream(model, "안전한 응답"))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = stale_key  # legacy OpenRouter plane must stay isolated
+    rcfg.provider_mode = "live"
+    rcfg.api_key = stale_key  # legacy OpenRouter plane must stay isolated
     response = _client(httpx.MockTransport(handler)).post(
         AUTO_STREAM_URL,
         json=_payload(business14={
@@ -522,8 +522,8 @@ def test_live_missing_key_is_anonymous_with_no_authorization_header():
         model = json.loads(request.content)["model"]
         return httpx.Response(200, stream=_success_stream(model, "익명 응답"))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = ""
+    rcfg.provider_mode = "live"
+    rcfg.api_key = ""
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200

@@ -172,9 +172,9 @@ def live_ready() -> bool:
     is configured, or (b) a keyless (``none``) platform Provider route is
     registered (e.g. the anonymous Kilo route). Never exposes values.
     """
-    from app.pilot.openrouter_config import openrouter_config
+    from app.pilot.b14_runtime_config import runtime_config
 
-    if not openrouter_config.is_live:
+    if not runtime_config.is_live:
         return False
     if any_platform_secret_present():
         return True

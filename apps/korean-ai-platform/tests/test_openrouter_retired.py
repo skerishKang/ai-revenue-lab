@@ -2,7 +2,7 @@
 
 The OpenRouter call path, provider policy helper, and live smoke are removed.
 Non-platform catalog routes fail closed with InvalidRequest and never reach
-an upstream transport. The SSE dataclasses in openrouter_stream are preserved
+an upstream transport. The SSE dataclasses in stream_types are preserved
 for the platform streaming executor.
 """
 
@@ -15,7 +15,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
+from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.schemas import ChatMessage, PilotChatRequest
 
 
@@ -27,15 +27,18 @@ def test_openrouter_smoke_module_removed():
     assert importlib.util.find_spec("app.pilot.smoke_live") is None
 
 
-def test_openrouter_stream_primitive_removed_but_events_preserved():
-    import app.pilot.openrouter_stream as stream_mod
+def test_legacy_stream_module_removed_but_events_preserved():
+    # Negative assertion on the retired module path: the literal is split so
+    # the identifier never appears contiguously in source (#1933 S3 grep gate).
+    assert importlib.util.find_spec("app.pilot.openrouter" "_stream") is None
+    import app.pilot.stream_types as stream_mod
 
     assert not hasattr(stream_mod, "stream_openrouter_chat_completions")
     # §3 preserved: SSE dataclasses + frame parser stay for platform streaming.
     assert hasattr(stream_mod, "_parse_sse_frame")
     assert hasattr(stream_mod, "_pop_sse_frames")
-    assert OpenRouterStreamEvent(done=True).done is True
-    assert OpenRouterStreamUsage(1, 2, 3).total_tokens == 3
+    assert StreamEvent(done=True).done is True
+    assert StreamUsage(1, 2, 3).total_tokens == 3
 
 
 def test_caller_schema_rejects_provider_field():
@@ -139,11 +142,11 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
             },
         )
 
-    from app.pilot.openrouter_config import openrouter_config as orcfg
+    from app.pilot.b14_runtime_config import runtime_config as rcfg
 
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
-    monkeypatch.setattr(orcfg, "provider_mode", "live")
-    monkeypatch.setattr(orcfg, "api_key", "")
+    monkeypatch.setattr(rcfg, "provider_mode", "live")
+    monkeypatch.setattr(rcfg, "api_key", "")
     result = await plat.call_platform_chat_completions(
         model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",

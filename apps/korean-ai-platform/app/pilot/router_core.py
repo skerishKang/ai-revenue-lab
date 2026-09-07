@@ -43,7 +43,7 @@ from app.pilot.catalog import (
     is_evidenced_free,
     select_by_optimize,
 )
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.errors import NoSafeRoute
 
 
@@ -137,7 +137,7 @@ def _check_credentials() -> tuple[bool, str]:
 
     if live_ready():
         return True, NoKeyReason.KEY_AVAILABLE.value
-    if openrouter_config.is_live:
+    if runtime_config.is_live:
         return False, NoKeyReason.LIVE_MODE_REQUIRES_KEY.value
     # mock mode
     return False, NoKeyReason.NO_KEY_SET.value
@@ -258,7 +258,7 @@ def resolve_manual_route(
         credential_status=cred_status,
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
-        provider_mode=openrouter_config.provider_mode,
+        provider_mode=runtime_config.provider_mode,
         max_attempts=1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
@@ -443,7 +443,7 @@ def resolve_auto_route(
         credential_status=cred_status,
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
-        provider_mode=openrouter_config.provider_mode,
+        provider_mode=runtime_config.provider_mode,
         max_attempts=effective_max_attempts,
         credential_source=cred_source,
         platform_provider_id=plat_pid,

@@ -125,11 +125,11 @@ def _apply_env_once(overrides: dict[str, str]) -> None:
         "B14_PROVIDER_MODE": "provider_mode",
     }
 
-    from app.pilot.openrouter_config import openrouter_config
+    from app.pilot.b14_runtime_config import runtime_config
     for env_key, attr in _B14_MAP.items():
         value = overrides.get(env_key)
         if value is not None:
-            setattr(openrouter_config, attr, value)
+            setattr(runtime_config, attr, value)
 
     _MAP = {
         "BUSINESS14_PROVIDER_REGISTRY_JSON": "provider_registry_json",

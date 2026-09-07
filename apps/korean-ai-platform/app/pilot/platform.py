@@ -38,8 +38,8 @@ from app.pilot.errors import (
     UpstreamTimeout,
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
-from app.pilot.openrouter_config import openrouter_config
-from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
+from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
@@ -104,7 +104,7 @@ def _provider_mode() -> str:
 
     An explicitly-set ``B14_PROVIDER_MODE`` environment variable wins (tests and
     deployment scripts override it at runtime); otherwise the shared
-    ``openrouter_config`` singleton is authoritative so mock/live switches made
+    ``runtime_config`` singleton is authoritative so mock/live switches made
     through the config object also apply to platform-owned routes.
     """
     import os
@@ -112,7 +112,7 @@ def _provider_mode() -> str:
     raw = os.environ.get("B14_PROVIDER_MODE", "").strip().lower()
     if raw in ("mock", "live"):
         return raw
-    return openrouter_config.provider_mode
+    return runtime_config.provider_mode
 
 
 def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
@@ -297,7 +297,7 @@ async def stream_platform_chat_completions(
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
 
-    Yields :class:`OpenRouterStreamEvent` for compatibility with the Router
+    Yields :class:`StreamEvent` for compatibility with the Router
     streaming executor. Same secret/keyless boundary as completed JSON.
     """
     import os
@@ -308,18 +308,18 @@ async def stream_platform_chat_completions(
 
     if provider_mode == "mock":
         for event in (
-            OpenRouterStreamEvent(
+            StreamEvent(
                 response_id="b14mock_stream",
                 model=upstream_model,
                 delta_content="이것은 Mock 스트리밍 응답입니다. 실제 Provider 호출 없음.",
             ),
-            OpenRouterStreamEvent(
+            StreamEvent(
                 response_id="b14mock_stream",
                 model=upstream_model,
                 finish_reason="stop",
-                usage=OpenRouterStreamUsage(0, 0, 0),
+                usage=StreamUsage(0, 0, 0),
             ),
-            OpenRouterStreamEvent(done=True),
+            StreamEvent(done=True),
         ):
             yield event
         return
@@ -419,7 +419,7 @@ def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
         rest = rest[index + len(separator):]
 
 
-def _usage_from_payload(raw: Any) -> OpenRouterStreamUsage | None:
+def _usage_from_payload(raw: Any) -> StreamUsage | None:
     if raw is None:
         return None
     if not isinstance(raw, dict):
@@ -432,10 +432,10 @@ def _usage_from_payload(raw: Any) -> OpenRouterStreamUsage | None:
         ):
             raise MalformedUpstreamResponse()
         values[name] = value
-    return OpenRouterStreamUsage(**values)
+    return StreamUsage(**values)
 
 
-def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
+def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     try:
         text = frame.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -457,7 +457,7 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
 
     data = "\n".join(data_lines).strip()
     if data == "[DONE]":
-        return OpenRouterStreamEvent(done=True)
+        return StreamEvent(done=True)
     if not data:
         raise MalformedUpstreamResponse()
 
@@ -499,7 +499,7 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
     elif usage is None:
         raise MalformedUpstreamResponse()
 
-    return OpenRouterStreamEvent(
+    return StreamEvent(
         response_id=response_id,
         model=model,
         delta_content=delta_content,

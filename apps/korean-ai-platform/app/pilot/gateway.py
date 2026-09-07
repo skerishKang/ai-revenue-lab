@@ -39,7 +39,7 @@ from app.pilot.routing import (
     resolve_route,
 )
 from app.pilot.schemas import PilotChatRequest
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.catalog import (
     CATALOG_BY_ID,
     CATALOG_MODELS,
@@ -389,7 +389,7 @@ async def pilot_health(request: Request):
     state = resolve_configuration()
 
     b14_info = {
-        "provider_mode": openrouter_config.provider_mode,
+        "provider_mode": runtime_config.provider_mode,
         "has_key": any_platform_secret_present(),
         "catalog_models": len(list_catalog_summaries()),
         "providers": [
@@ -418,7 +418,7 @@ async def pilot_health(request: Request):
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
         resp = _registry_invalid_response()
-        resp.headers["business14-provider-mode"] = openrouter_config.provider_mode
+        resp.headers["business14-provider-mode"] = runtime_config.provider_mode
         return resp
 
     if state == PilotConfigurationState.LEGACY:
@@ -561,7 +561,7 @@ async def pilot_router_resolve(
                     "request_id": request_id,
                     "reason_code": e.reason_code,
                     "upstream_called": e.upstream_called,
-                    "provider_mode": openrouter_config.provider_mode,
+                    "provider_mode": runtime_config.provider_mode,
                 }
             },
         )
@@ -676,7 +676,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
       (after any fallback), never the primary decision candidate
     - Unknown exceptions fail closed (no fallback)
     """
-    from app.pilot.openrouter_config import openrouter_config as cfg
+    from app.pilot.b14_runtime_config import runtime_config as cfg
 
     model_id = body["model"]
     b14_opts = body.get("business14", {})
@@ -1053,7 +1053,7 @@ async def pilot_chat_completions(
                     "request_id": request_id,
                     "reason_code": e.reason_code,
                     "upstream_called": e.upstream_called,
-                    "provider_mode": openrouter_config.provider_mode,
+                    "provider_mode": runtime_config.provider_mode,
                 }
             },
         )

@@ -16,8 +16,8 @@ from app.pilot.errors import (
     UpstreamResponseTooLarge,
     UpstreamServerError,
 )
-from app.pilot.openrouter_config import openrouter_config as orcfg
-from app.pilot.openrouter_stream import OpenRouterStreamEvent
+from app.pilot.b14_runtime_config import runtime_config as rcfg
+from app.pilot.stream_types import StreamEvent
 from app.pilot import platform as plat
 
 KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
@@ -43,20 +43,20 @@ class FragmentedStream(httpx.AsyncByteStream):
 def _reset_platform_mode(monkeypatch):
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "provider_mode": orcfg.provider_mode,
-        "max_response_bytes": orcfg.max_response_bytes,
+        "provider_mode": rcfg.provider_mode,
+        "max_response_bytes": rcfg.max_response_bytes,
     }
-    orcfg.provider_mode = "mock"
-    orcfg.max_response_bytes = 1024 * 1024
+    rcfg.provider_mode = "mock"
+    rcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.provider_mode = saved["provider_mode"]
-    orcfg.max_response_bytes = saved["max_response_bytes"]
+    rcfg.provider_mode = saved["provider_mode"]
+    rcfg.max_response_bytes = saved["max_response_bytes"]
 
 
 def _set_live() -> None:
     # Kilo Gateway free tier is keyless: live mode needs no secret (#1933 S2).
     os.environ.pop("B14_PROVIDER_MODE", None)
-    orcfg.provider_mode = "live"
+    rcfg.provider_mode = "live"
 
 
 async def _collect(*, transport=None, model_id=KILO_MODEL, upstream_model=KILO_UPSTREAM):
@@ -89,7 +89,7 @@ async def test_mock_stream_is_deterministic_and_zero_network():
 
     assert calls == 0
     assert first == second
-    assert first[-1] == OpenRouterStreamEvent(done=True)
+    assert first[-1] == StreamEvent(done=True)
     assert first[0].delta_content is not None
     assert "Mock" in first[0].delta_content
     assert first[1].usage is not None
@@ -276,10 +276,10 @@ async def test_live_keyless_streams_without_key():
 
 @pytest.mark.asyncio
 async def test_platform_origin_is_fixed_and_ignores_openrouter_base_url():
-    # The platform adapter never reads openrouter_config.base_url: even an evil
+    # The platform adapter never reads runtime_config.base_url: even an evil
     # value cannot steer the fixed Kilo origin (OpenRouter retired, #1933 S2).
     _set_live()
-    orcfg.base_url = "https://openrouter.ai.evil.example/api/v1"
+    rcfg.base_url = "https://openrouter.ai.evil.example/api/v1"
     seen = {}
 
     async def handler(request):

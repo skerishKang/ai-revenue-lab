@@ -16,7 +16,7 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.catalog import CATALOG_BY_ID, list_catalog_summaries
 from app.pilot.config import pilot_settings
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.registry import reset_registry
 
 PLATFORM_SECRET_ENV_KEYS = (
@@ -35,8 +35,8 @@ def client():
 
 @pytest.fixture(autouse=True)
 def _reset_runtime_state(monkeypatch):
-    saved_openrouter = {
-        "provider_mode": openrouter_config.provider_mode,
+    saved_runtime = {
+        "provider_mode": runtime_config.provider_mode,
     }
     saved_pilot = {
         "pilot_base_url": pilot_settings.pilot_base_url,
@@ -48,7 +48,7 @@ def _reset_runtime_state(monkeypatch):
 
     for key in PLATFORM_SECRET_ENV_KEYS:
         monkeypatch.delenv(key, raising=False)
-    openrouter_config.provider_mode = "mock"
+    runtime_config.provider_mode = "mock"
     pilot_settings.pilot_base_url = ""
     pilot_settings.pilot_model_id = ""
     pilot_settings.pilot_upstream_model = ""
@@ -57,7 +57,7 @@ def _reset_runtime_state(monkeypatch):
 
     yield
 
-    openrouter_config.provider_mode = saved_openrouter["provider_mode"]
+    runtime_config.provider_mode = saved_runtime["provider_mode"]
     pilot_settings.pilot_base_url = saved_pilot["pilot_base_url"]
     pilot_settings.pilot_model_id = saved_pilot["pilot_model_id"]
     pilot_settings.pilot_provider_id = saved_pilot["pilot_provider_id"]
@@ -67,7 +67,7 @@ def _reset_runtime_state(monkeypatch):
 
 
 def _set_live() -> None:
-    openrouter_config.provider_mode = "live"
+    runtime_config.provider_mode = "live"
 
 
 def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
@@ -123,7 +123,7 @@ def test_placeholder_platform_secret_is_filtered(client, monkeypatch):
 
 
 def test_mock_mode_is_never_promoted_by_platform_secret(client, monkeypatch):
-    openrouter_config.provider_mode = "mock"
+    runtime_config.provider_mode = "mock"
     monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-sensenova-health-proof-1234567890")
 
     data = client.get("/api/pilot/health").json()

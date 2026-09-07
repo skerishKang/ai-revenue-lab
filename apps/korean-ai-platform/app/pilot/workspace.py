@@ -27,7 +27,7 @@ from app.factory import render_template
 from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, get_pilot_model_count
 from app.pilot.locale import PLATFORM_SITE_NAME, gettext, locale_from_request, set_locale_cookie, Locale
 from app.pilot.routing import resolve_configuration, PilotConfigurationState
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform_secrets import any_platform_secret_present
 from app.pilot.catalog import list_catalog_summaries
 
@@ -69,7 +69,7 @@ async def workspace_page(request: Request):
         "lang": locale.value,
         "errorCode": None,
         "maxTokens": 512,
-        "b14ProviderMode": openrouter_config.provider_mode,
+        "b14ProviderMode": runtime_config.provider_mode,
         "b14HasKey": any_platform_secret_present(),
         "b14SiteName": PLATFORM_SITE_NAME,
         "b14CatalogModels": list_catalog_summaries(),
@@ -87,7 +87,7 @@ async def workspace_page(request: Request):
         ctx["pilot_model_count"] = 0
         ctx["pilot_models_json"] = "[]"
         ctx["workspace_config"] = config
-        ctx["b14_provider_mode"] = openrouter_config.provider_mode
+        ctx["b14_provider_mode"] = runtime_config.provider_mode
         ctx["b14_has_key"] = any_platform_secret_present()
         ctx["b14_site_name"] = PLATFORM_SITE_NAME
         ctx["b14_catalog_models"] = list_catalog_summaries()
@@ -108,7 +108,7 @@ async def workspace_page(request: Request):
         ctx["pilot_model_count"] = 0
         ctx["pilot_models_json"] = "[]"
         ctx["workspace_config"] = config
-        ctx["b14_provider_mode"] = openrouter_config.provider_mode
+        ctx["b14_provider_mode"] = runtime_config.provider_mode
         ctx["b14_has_key"] = any_platform_secret_present()
         ctx["b14_site_name"] = PLATFORM_SITE_NAME
         ctx["b14_catalog_models"] = list_catalog_summaries()
@@ -132,7 +132,7 @@ async def workspace_page(request: Request):
     ctx["pilot_model_count"] = model_count
     ctx["pilot_models_json"] = json.dumps(models, ensure_ascii=False)
     ctx["workspace_config"] = config
-    ctx["b14_provider_mode"] = openrouter_config.provider_mode
+    ctx["b14_provider_mode"] = runtime_config.provider_mode
     ctx["b14_has_key"] = any_platform_secret_present()
     ctx["b14_site_name"] = PLATFORM_SITE_NAME
     ctx["b14_catalog_models"] = list_catalog_summaries()

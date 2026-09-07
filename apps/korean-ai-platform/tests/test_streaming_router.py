@@ -16,7 +16,7 @@ from app.pilot.errors import (
     UpstreamServerError,
     UpstreamTimeout,
 )
-from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
+from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.router_core import RouteDecision
 from app.pilot.streaming_router import stream_routed_chat_completions
 
@@ -81,15 +81,15 @@ async def _collect(decision: RouteDecision, stream_call):
 
 def _success_stream(*, model: str = "stealth/ox-alpha"):
     async def iterator():
-        yield OpenRouterStreamEvent(response_id="r1", model=model, delta_content="안")
-        yield OpenRouterStreamEvent(response_id="r1", model=model, delta_content="녕")
-        yield OpenRouterStreamEvent(
+        yield StreamEvent(response_id="r1", model=model, delta_content="안")
+        yield StreamEvent(response_id="r1", model=model, delta_content="녕")
+        yield StreamEvent(
             response_id="r1",
             model=model,
             finish_reason="stop",
-            usage=OpenRouterStreamUsage(3, 2, 5),
+            usage=StreamUsage(3, 2, 5),
         )
-        yield OpenRouterStreamEvent(done=True)
+        yield StreamEvent(done=True)
 
     return iterator()
 
@@ -116,15 +116,15 @@ async def test_primary_first_visible_content_commits_route():
 @pytest.mark.asyncio
 async def test_metadata_and_usage_before_content_do_not_commit():
     async def stream():
-        yield OpenRouterStreamEvent(
+        yield StreamEvent(
             response_id="r1",
             model="stealth/ox-alpha",
-            usage=OpenRouterStreamUsage(prompt_tokens=3),
+            usage=StreamUsage(prompt_tokens=3),
         )
-        yield OpenRouterStreamEvent(
+        yield StreamEvent(
             response_id="r1", model="stealth/ox-alpha", delta_content="첫 토큰"
         )
-        yield OpenRouterStreamEvent(done=True)
+        yield StreamEvent(done=True)
 
     events = await _collect(_decision(), lambda **kwargs: stream())
 
@@ -147,10 +147,10 @@ async def test_429_before_content_uses_only_resolved_fallback():
         async def stream():
             if model == "stealth/ox-alpha":
                 raise UpstreamRateLimited()
-            yield OpenRouterStreamEvent(
+            yield StreamEvent(
                 response_id="r2", model="openrouter/free", delta_content="fallback"
             )
-            yield OpenRouterStreamEvent(done=True)
+            yield StreamEvent(done=True)
 
         return stream()
 
@@ -177,8 +177,8 @@ async def test_retryable_precontent_failure_allows_bounded_fallback(error):
         async def stream():
             if len(calls) == 1:
                 raise error
-            yield OpenRouterStreamEvent(model="openrouter/free", delta_content="ok")
-            yield OpenRouterStreamEvent(done=True)
+            yield StreamEvent(model="openrouter/free", delta_content="ok")
+            yield StreamEvent(done=True)
 
         return stream()
 
@@ -225,7 +225,7 @@ async def test_failure_after_first_content_is_terminal_and_never_falls_back():
         calls.append(kwargs["model_id"])
 
         async def stream():
-            yield OpenRouterStreamEvent(model="stealth/ox-alpha", delta_content="부분 응답")
+            yield StreamEvent(model="stealth/ox-alpha", delta_content="부분 응답")
             raise UpstreamRateLimited()
 
         return stream()
@@ -304,8 +304,8 @@ async def test_free_only_decision_cannot_widen_to_excluded_paid_catalog_model():
         async def stream():
             if model == "stealth/ox-alpha":
                 raise UpstreamRateLimited()
-            yield OpenRouterStreamEvent(model="openrouter/free", delta_content="free fallback")
-            yield OpenRouterStreamEvent(done=True)
+            yield StreamEvent(model="openrouter/free", delta_content="free fallback")
+            yield StreamEvent(done=True)
 
         return stream()
 
@@ -323,12 +323,12 @@ async def test_actual_route_evidence_follows_attempt_that_emits_content():
         async def stream():
             if model == "stealth/ox-alpha":
                 raise UpstreamTimeout()
-            yield OpenRouterStreamEvent(
+            yield StreamEvent(
                 response_id="r-free",
                 model="meta-llama/llama-free-concrete",
                 delta_content="응답",
             )
-            yield OpenRouterStreamEvent(done=True)
+            yield StreamEvent(done=True)
 
         return stream()
 
@@ -347,7 +347,7 @@ async def test_consumer_close_closes_active_provider_iterator():
 
     async def provider_stream():
         try:
-            yield OpenRouterStreamEvent(model="stealth/ox-alpha", delta_content="first")
+            yield StreamEvent(model="stealth/ox-alpha", delta_content="first")
             await asyncio.sleep(3600)
         finally:
             closed.set()
@@ -393,12 +393,12 @@ async def test_stream_finishing_without_visible_content_is_terminal_not_fallback
         calls.append(kwargs["model_id"])
 
         async def stream():
-            yield OpenRouterStreamEvent(
+            yield StreamEvent(
                 model="stealth/ox-alpha",
                 finish_reason="stop",
-                usage=OpenRouterStreamUsage(2, 0, 2),
+                usage=StreamUsage(2, 0, 2),
             )
-            yield OpenRouterStreamEvent(done=True)
+            yield StreamEvent(done=True)
 
         return stream()
 

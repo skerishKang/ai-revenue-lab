@@ -1,4 +1,4 @@
-"""Internal OpenRouter SSE streaming primitive for Business 14.
+"""Internal SSE streaming primitive for Business 14.
 
 This module does not expose streaming through the public Pilot gateway. The
 existing gateway continues to reject ``stream=true`` until Router Core,
@@ -13,17 +13,11 @@ from dataclasses import dataclass
 import json
 from typing import Any
 
-from app.pilot.errors import (
-    MalformedUpstreamResponse,
-    UpstreamAuthFailed,
-    UpstreamClientError,
-    UpstreamRateLimited,
-    UpstreamServerError,
-)
+from app.pilot.errors import MalformedUpstreamResponse
 
 
 @dataclass(frozen=True, slots=True)
-class OpenRouterStreamUsage:
+class StreamUsage:
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     total_tokens: int | None = None
@@ -38,12 +32,12 @@ class OpenRouterStreamUsage:
 
 
 @dataclass(frozen=True, slots=True)
-class OpenRouterStreamEvent:
+class StreamEvent:
     response_id: str | None = None
     model: str | None = None
     delta_content: str | None = None
     finish_reason: str | None = None
-    usage: OpenRouterStreamUsage | None = None
+    usage: StreamUsage | None = None
     done: bool = False
 
     def __post_init__(self) -> None:
@@ -51,8 +45,8 @@ class OpenRouterStreamEvent:
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
-        if self.usage is not None and not isinstance(self.usage, OpenRouterStreamUsage):
-            raise ValueError("usage must be OpenRouterStreamUsage or None")
+        if self.usage is not None and not isinstance(self.usage, StreamUsage):
+            raise ValueError("usage must be StreamUsage or None")
         if not isinstance(self.done, bool):
             raise ValueError("done must be a boolean")
         if self.done and (
@@ -61,21 +55,6 @@ class OpenRouterStreamEvent:
             or self.usage is not None
         ):
             raise ValueError("done event must not contain delta, finish reason, or usage")
-
-
-def _raise_upstream_error(status: int) -> None:
-    """Mirror the existing non-streaming OpenRouter adapter error contract."""
-    if status in (401, 403):
-        raise UpstreamAuthFailed()
-    if status == 429:
-        raise UpstreamRateLimited()
-    if status == 400:
-        raise MalformedUpstreamResponse()
-    if 500 <= status < 600:
-        raise UpstreamServerError()
-    if 300 <= status < 500:
-        raise UpstreamClientError(status)
-    raise MalformedUpstreamResponse()
 
 
 def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
@@ -95,7 +74,7 @@ def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
         rest = rest[index + len(separator) :]
 
 
-def _usage_from_payload(raw: Any) -> OpenRouterStreamUsage | None:
+def _usage_from_payload(raw: Any) -> StreamUsage | None:
     if raw is None:
         return None
     if not isinstance(raw, dict):
@@ -108,10 +87,10 @@ def _usage_from_payload(raw: Any) -> OpenRouterStreamUsage | None:
         ):
             raise MalformedUpstreamResponse()
         values[name] = value
-    return OpenRouterStreamUsage(**values)
+    return StreamUsage(**values)
 
 
-def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
+def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     try:
         text = frame.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -135,7 +114,7 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
 
     data = "\n".join(data_lines).strip()
     if data == "[DONE]":
-        return OpenRouterStreamEvent(done=True)
+        return StreamEvent(done=True)
     if not data:
         raise MalformedUpstreamResponse()
 
@@ -177,7 +156,7 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
     elif usage is None:
         raise MalformedUpstreamResponse()
 
-    return OpenRouterStreamEvent(
+    return StreamEvent(
         response_id=response_id,
         model=model,
         delta_content=delta_content,
@@ -186,19 +165,19 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
     )
 
 
-def _mock_events(upstream_model: str) -> tuple[OpenRouterStreamEvent, ...]:
+def _mock_events(upstream_model: str) -> tuple[StreamEvent, ...]:
     response_id = "b14mock_stream"
     return (
-        OpenRouterStreamEvent(
+        StreamEvent(
             response_id=response_id,
             model=upstream_model,
             delta_content="이것은 Mock 스트리밍 응답입니다. 실제 Provider 호출 없음.",
         ),
-        OpenRouterStreamEvent(
+        StreamEvent(
             response_id=response_id,
             model=upstream_model,
             finish_reason="stop",
-            usage=OpenRouterStreamUsage(0, 0, 0),
+            usage=StreamUsage(0, 0, 0),
         ),
-        OpenRouterStreamEvent(done=True),
+        StreamEvent(done=True),
     )

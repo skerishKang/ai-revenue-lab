@@ -60,7 +60,6 @@ def start_server() -> subprocess.Popen[bytes]:
     global _SERVER_LOG
     env = os.environ.copy()
     env["B14_PROVIDER_MODE"] = "mock"
-    env["OPENROUTER_API_KEY"] = ""
     # Drain server logs to a file, never to unread PIPEs: uvicorn writes an
     # access-log line per request, an undrained pipe fills after ~50 requests,
     # and the blocked server then times out the mobile phase's first goto.
