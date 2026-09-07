@@ -734,16 +734,30 @@ def _port_get(
     query: dict[str, str],
     max_response_bytes: int,
 ) -> dict[str, Any]:
-    return port.get_json(
-        binding_ref=binding_ref,
-        actor_ref=actor_ref,
-        required_scopes=(GMAIL_READONLY_SCOPE,),
-        base_url=GMAIL_BASE_URL,
-        path=path,
-        query=dict(query),
-        timeout_seconds=REQUEST_TIMEOUT_SECONDS,
-        max_response_bytes=max_response_bytes,
-    )
+    def _call() -> dict[str, Any]:
+        return port.get_json(
+            binding_ref=binding_ref,
+            actor_ref=actor_ref,
+            required_scopes=(GMAIL_READONLY_SCOPE,),
+            base_url=GMAIL_BASE_URL,
+            path=path,
+            query=dict(query),
+            timeout_seconds=REQUEST_TIMEOUT_SECONDS,
+            max_response_bytes=max_response_bytes,
+        )
+
+    try:
+        return _call()
+    except Exception:
+        # The trusted port boundary is the only place that may surface
+        # diagnostics; Core must not propagate its exception message, the
+        # cause chain, or the implicit context chain. Port-side logging /
+        # redaction is the port implementer's responsibility and is handled
+        # in PR-B. Save the error outside the except handler so neither
+        # __cause__ nor __context__ carry the port's internals.
+        sanitized = GmailContractError("The Gmail provider port failed.")
+
+    raise sanitized
 
 
 def build_gmail_read_handlers(

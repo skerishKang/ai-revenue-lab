@@ -462,6 +462,53 @@ def test_runtime_wraps_malformed_provider_output_as_execution_failure() -> None:
     assert ACTOR_REF not in error_text
 
 
+def test_port_failure_is_wrapped_and_never_leaks_refs() -> None:
+    class LeakyPort(FakeGmailPort):
+        def get_json(self, **kwargs):
+            self.calls.append(kwargs)
+            raise RuntimeError(
+                f"boom bind:SECRET123 actor:XYZ required={kwargs.get('required_scopes')}"
+            )
+
+    binding_ref = "bind:SECRET123"
+    actor_ref = "actor:XYZ"
+    handlers = build_gmail_read_handlers(
+        LeakyPort(), binding_ref=binding_ref, actor_ref=actor_ref
+    )
+    for tool_id, arguments in (
+        (GMAIL_SEARCH_MESSAGES_TOOL_ID, {"query": "report"}),
+        (GMAIL_GET_MESSAGE_TOOL_ID, {"messageId": "msg_1"}),
+        (GMAIL_GET_THREAD_TOOL_ID, {"threadId": "thread_1"}),
+    ):
+        with pytest.raises(GmailContractError) as exc_info:
+            run(handlers[tool_id](arguments))
+        text = str(exc_info.value)
+        assert "SECRET123" not in text
+        assert "actor:XYZ" not in text
+        assert "bind:SECRET123" not in text
+        assert exc_info.value.__cause__ is None
+        assert exc_info.value.__context__ is None
+
+    runtime = ToolRuntime()
+    port = LeakyPort()
+    port.responses.append({})
+    register_gmail_read_tools(runtime, port, binding_ref=binding_ref, actor_ref=actor_ref)
+    invocation = ToolInvocation(GMAIL_SEARCH_MESSAGES_TOOL_ID, {"query": "report"})
+    agent = gmail_profile(GMAIL_SEARCH_MESSAGES_TOOL_ID)
+    with pytest.raises(ToolRuntimeError) as info:
+        run(
+            runtime.execute(
+                invocation,
+                agent,
+                gmail_auth(scopes=(GMAIL_READONLY_AUTH_SCOPE,)),
+            )
+        )
+    assert info.value.code == "tool_execution_failed"
+    runtime_text = f"{info.value.code} {info.value}"
+    assert "SECRET123" not in runtime_text
+    assert "actor:XYZ" not in runtime_text
+
+
 def test_output_never_leaks_binding_or_actor_refs() -> None:
     port = FakeGmailPort()
     port.responses.append({"messages": [{"id": "msg_1", "threadId": "thread_1"}]})
