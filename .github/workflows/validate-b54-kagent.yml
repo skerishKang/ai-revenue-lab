@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -e "../../packages/padiem-ai-core[tools]"
+          python -m pip install --disable-pip-version-check -e "../../packages/padiem-ai-core[tools,documents]"
           python -m pip install --disable-pip-version-check -e "../../packages/padiem-control-plane"
           python -m pip install --disable-pip-version-check -e "../../apps/padiem-ai-engine/clients/python"
 
