@@ -78,7 +78,9 @@ class HttpxGmailReadPort(GmailReadPort):
         )
         status = 0
         body = b""
-        async with httpx.AsyncClient(transport=self._transport) as client:
+        async with httpx.AsyncClient(
+            transport=self._transport, follow_redirects=False
+        ) as client:
             async with client.stream(
                 "POST",
                 GOOGLE_TOKEN_URL,
@@ -93,7 +95,7 @@ class HttpxGmailReadPort(GmailReadPort):
                         raise ValueError("provider_token_response_too_large")
                 body = bytes(chunks)
         if status != 200:
-            raise ValueError("provider_http_200")
+            raise ValueError(f"provider_token_http_{status}")
         try:
             payload = json.loads(body.decode("utf-8"))
         except (ValueError, UnicodeDecodeError) as exc:
@@ -135,7 +137,7 @@ class HttpxGmailReadPort(GmailReadPort):
         timeout_seconds: int,
     ) -> dict[str, Any]:
         async with httpx.AsyncClient(
-            transport=self._transport, timeout=timeout_seconds
+            transport=self._transport, timeout=timeout_seconds, follow_redirects=False
         ) as client:
             async with client.stream(
                 "GET",

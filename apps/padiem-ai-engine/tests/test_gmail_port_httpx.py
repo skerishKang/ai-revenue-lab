@@ -297,4 +297,60 @@ def test_refresh_non_200_mapped() -> None:
             path="/users/me/messages", query={}, timeout_seconds=30,
             max_response_bytes=1_000_000,
         ))
-    assert str(exc_info.value) == "provider_http_200"
+    assert str(exc_info.value) == "provider_token_http_400"
+
+
+def test_provider_redirect_not_followed() -> None:
+    """A 3xx from the Gmail provider must never forward the Bearer token.
+
+    With ``follow_redirects=False`` the 302 (Location: evil.example) is
+    reported as ``provider_http_302`` and no second request is issued, so the
+    Authorization header can never be replayed to another host.
+    """
+    calls: list = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(str(request.url))
+        if request.url.host == "oauth2.googleapis.com":
+            return TOKEN_RESPONSE
+        return httpx.Response(302, headers={"Location": "https://evil.example/"})
+
+    port = HttpxGmailReadPort(**PORT_KWARGS, transport=httpx.MockTransport(handler))
+    with pytest.raises(ValueError) as exc_info:
+        _run(port.get_json(
+            binding_ref="bind:1", actor_ref="actor:1",
+            required_scopes=(GMAIL_READONLY_SCOPE,), base_url=GMAIL_BASE_URL,
+            path="/users/me/messages", query={}, timeout_seconds=30,
+            max_response_bytes=1_000_000,
+        ))
+    assert str(exc_info.value) == "provider_http_302"
+    # Exactly one token refresh + one provider GET; the provider 302 was not
+    # followed to evil.example.
+    assert len(calls) == 2
+    assert all("evil.example" not in url for url in calls)
+
+
+def test_token_redirect_not_followed() -> None:
+    """A 3xx from the token endpoint is a distinct ``provider_token_http_302``.
+
+    The redirect must not be followed (the client secret/refresh token POST is
+    never replayed elsewhere) and the handler is called exactly once.
+    """
+    calls: list = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(str(request.url))
+        return httpx.Response(302, headers={"Location": "https://evil.example/"})
+
+    port = HttpxGmailReadPort(**PORT_KWARGS, transport=httpx.MockTransport(handler))
+    with pytest.raises(ValueError) as exc_info:
+        _run(port.get_json(
+            binding_ref="bind:1", actor_ref="actor:1",
+            required_scopes=(GMAIL_READONLY_SCOPE,), base_url=GMAIL_BASE_URL,
+            path="/users/me/messages", query={}, timeout_seconds=30,
+            max_response_bytes=1_000_000,
+        ))
+    assert str(exc_info.value) == "provider_token_http_302"
+    # Only the token request happened; the 302 was not followed.
+    assert len(calls) == 1
+    assert "evil.example" not in calls[0]
