@@ -86,8 +86,14 @@
 
 ## 7. EVIDENCE
 
-- A10 실행 URL: (게이트 실행 후 기입 —
-  `A10_CONTINUATION_SMOKE=PASS ... BLOCKER_C1=OPEN`)
-- A9 실행 URL: (동일 게이트 실행의 A9 PASS 라인)
+- 게이트 실행 (main `554d678ec300151d09557d7fdf2bb14acafaf9a1` = WO-9 PR-A 머지 후 첫 main,
+  2026-09-07, conclusion=success):
+  https://github.com/skerishKang/ai-revenue-lab/actions/runs/34085054608
+- A10 PASS 라인 원문 (Production 게이트 로그):
+  `A10_CONTINUATION_SMOKE=PASS REAL_PROVIDER_CALLS=0 ROWS_WRITTEN=0 STORE_BOUND=PASS FAIL_CLOSED_RESUME=PASS FAIL_CLOSED_CANCEL=PASS CROSS_APP=PASS BLOCKER_C1=OPEN`
+- A9 PASS 라인 원문 (동일 게이트 실행):
+  `A9_SMOKE=PASS REAL_PROVIDER_CALLS=1 ROWS_WRITTEN=1 BLOCKER_4=PASS BLOCKER_5=PASS BLOCKER_6=PASS BLOCKER_7=PASS`
+- 배포/스모크 게이트 표식: `B54_ENGINE_PRODUCTION_DEPLOY=PASS`,
+  `B54_ENGINE_PRODUCTION_SMOKE=PASS`
 - 계약 테스트: `.github/tests/test_b54_engine_deploy_gate_smoke.py`
   (gate-contract CI, 정적 파싱만 수행, Production 호출 없음)
