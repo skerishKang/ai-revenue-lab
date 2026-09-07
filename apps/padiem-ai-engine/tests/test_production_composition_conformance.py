@@ -409,3 +409,34 @@ async def test_multimodal_composition_fails_closed_without_resolver() -> None:
         "multimodal_completed_run is manifest-DEFERRED but the Production "
         f"composition did not fail closed: {response.status_code} {response.body}"
     )
+
+
+# --- WO-10 PR-B composition seam source assertion --------------------------
+
+
+def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
+    """Production composition must inject the resolver from
+    ``_tool_binding_resolver_for_env`` and remain fail-closed until PR-C
+    activates the OAuth port + grant store. The only ``tool_binding_resolver=None``
+    literal in worker_identity.py may live in the unbound branch
+    (no B14 service binding). The deployment-truth flag in
+    connector_bindings is False until PR-C.
+    """
+    from pathlib import Path
+
+    from app.connector_bindings import GMAIL_PORT_BOUND_IN_PRODUCTION
+
+    engine_root = Path(__file__).resolve().parents[1]
+    source = (engine_root / "worker_identity.py").read_text(encoding="utf-8")
+    assert "_tool_binding_resolver_for_env" in source
+    assert "build_tool_binding_resolver(gmail_port=None, grants={})" in source
+    assert "tool_binding_resolver=_tool_binding_resolver_for_env(env)" in source
+    # Only the unbound branch may carry a literal ``tool_binding_resolver=None``.
+    # The two ``ToolExecutionEngineService(tool_binding_resolver=...)``
+    # occurrences at the composition seam are kwargs; the orchestrator
+    # parameter is also passed by name. No service constructor anywhere
+    # in the bound branch may still pass ``None`` literally.
+    assert source.count("ToolExecutionEngineService(tool_binding_resolver=None)") == 0
+    assert "CanonicalIdempotencyOrchestrationEngineService(" in source
+    # Truth flag must remain False until PR-C.
+    assert GMAIL_PORT_BOUND_IN_PRODUCTION is False

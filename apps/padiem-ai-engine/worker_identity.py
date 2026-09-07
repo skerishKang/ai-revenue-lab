@@ -31,6 +31,10 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.connector_bindings import (
+    GMAIL_PORT_BOUND_IN_PRODUCTION,
+    build_tool_binding_resolver,
+)
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
@@ -87,6 +91,27 @@ def _research_service_for_env(
     )
 
 
+def _tool_binding_resolver_for_env(env: Any):
+    """Compose the Engine Gmail tool binding resolver (WO-10 PR-B seam).
+
+    PR-B: no Production Gmail port or grant store exists yet
+    (``GMAIL_PORT_BOUND_IN_PRODUCTION is False``). The factory therefore
+    returns ``None`` for every request, so the canonical composition stays
+    fail-closed exactly as the WO-1 source seam did — every
+    ``tool_runtime`` / orchestration tool call continues to answer
+    ``tool_runtime_unavailable`` (503) before any port is reached.
+
+    PR-C will replace the ``None`` port with the deployment-owned OAuth port
+    and a D1-backed grant store behind a separately authorized activation.
+    The composition seam is already in place; the activation gate is the
+    only thing missing.
+    """
+    del env  # unused in PR-B; the seam signature is stable for PR-C.
+    if not GMAIL_PORT_BOUND_IN_PRODUCTION:
+        return None
+    return build_tool_binding_resolver(gmail_port=None, grants={})
+
+
 def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     if binding is None:
@@ -114,10 +139,13 @@ def _engine_services_for_env(env: Any) -> EngineServices:
                 runtime_factory=unavailable,
                 attachment_resolver=None,
             ),
-            # E7 tool execution/continuation remains a source seam: no trusted
-            # tool registry or continuation authority is injected, so every
-            # request fails closed as `tool_runtime_unavailable`.
-            tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
+            # E7 tool execution/continuation remains a source seam: the
+            # resolver factory below returns None until a real port and grant
+            # store are bound (PR-C). With no port/grant every request still
+            # fails closed as `tool_runtime_unavailable` exactly as before.
+            tool_execution=ToolExecutionEngineService(
+                tool_binding_resolver=_tool_binding_resolver_for_env(env)
+            ),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -160,6 +188,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
+            tool_binding_resolver=_tool_binding_resolver_for_env(env),
         ),
         research=_research_service_for_env(
             env,
@@ -173,10 +202,13 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             # app/tenant/subject scope is a later Production activation gate.
             attachment_resolver=None,
         ),
-        # E7 tool execution/continuation remains a source seam: no trusted
-        # tool registry or continuation authority is injected, so every
-        # request fails closed as `tool_runtime_unavailable`.
-        tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
+        # E7 tool execution/continuation remains a source seam: the
+        # resolver factory below returns None until a real port and grant
+        # store are bound (PR-C). With no port/grant every request still
+        # fails closed as `tool_runtime_unavailable` exactly as before.
+        tool_execution=ToolExecutionEngineService(
+            tool_binding_resolver=_tool_binding_resolver_for_env(env)
+        ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).
         idempotency_replay=IdempotencyReplayEngineService(

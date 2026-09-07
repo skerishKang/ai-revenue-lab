@@ -51,6 +51,8 @@
 
 ## 4. BLOCKER_C1_NO_PRODUCTION_PAUSE_PRODUCER=OPEN
 
+WO-10 PR-B: production composition now injects tool_binding_resolver from connector_bindings; resolver is None until a Gmail port/grant store is bound (PR-C). BLOCKER_C1 stays OPEN.
+
 측정 근거:
 
 - `apps/padiem-ai-engine/worker_identity.py:120,179` —
