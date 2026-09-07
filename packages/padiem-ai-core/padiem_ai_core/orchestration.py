@@ -663,6 +663,15 @@ def orchestration_result_from_public(payload: Mapping[str, Any]) -> Orchestratio
         for item in _result_sequence(state_machine_block.get("transitions", ()), name="state_machine.transitions")
     )
 
+    # truncated lifecycle (fail-closed, #1916): a run that claims the terminal
+    # completed state without carrying any events is a truncated or forged
+    # projection, so it is rejected rather than reconstructed.
+    if execution_state is ExecutionState.COMPLETED and not events:
+        raise OrchestrationError(
+            "invalid_result_event_set",
+            "orchestration result claims a completed run but its event set is empty",
+        )
+
     return OrchestrationResult(
         execution_result=execution_result,
         context=context,
