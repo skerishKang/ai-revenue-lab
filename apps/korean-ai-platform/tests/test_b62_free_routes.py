@@ -148,8 +148,10 @@ def test_free_first_default_routing_selects_evidenced_free_models_only():
         assert decision.eligible_fallback == []
 
 
-def test_gateway_resolve_endpoint_honors_allow_paid(client):
-    """The /api/pilot/router/resolve endpoint passes allow_paid option properly."""
+def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, monkeypatch):
+    """D14 (#2044): /api/pilot/router/resolve b14/auto ignores allow_paid (fixed chain)."""
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     resp_default = client.post(
         "/api/pilot/router/resolve",
         json={
@@ -161,9 +163,9 @@ def test_gateway_resolve_endpoint_honors_allow_paid(client):
     assert resp_default.status_code == 200
     data_default = resp_default.json()
     assert data_default["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-    assert "free_first:default" in data_default["reason_codes"]
+    assert "routing_policy:fixed_chain_v1" in data_default["reason_codes"]
 
-    # Explicit allow_paid=True -> free_first:opt_in
+    # Explicit allow_paid=True changes nothing: same chain head, recorded as ignored.
     resp_opt_in = client.post(
         "/api/pilot/router/resolve",
         json={
@@ -174,7 +176,11 @@ def test_gateway_resolve_endpoint_honors_allow_paid(client):
     )
     assert resp_opt_in.status_code == 200
     data_opt_in = resp_opt_in.json()
-    assert "free_first:opt_in" in data_opt_in["reason_codes"]
+    assert data_opt_in["selected_model"] == data_default["selected_model"]
+    assert any(
+        rc.startswith("ignored_options:") and "allow_paid" in rc
+        for rc in data_opt_in["reason_codes"]
+    )
 
 
 def test_gateway_allow_paid_must_be_boolean_422(client):

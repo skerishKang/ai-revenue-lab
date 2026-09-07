@@ -7,18 +7,21 @@ Manual:
   - Specific catalog model ID → single upstream call
   - No provider switching unless explicit
 
-Automatic:
+Automatic (D14, #2044):
   - model = "b14/auto"
-  - Selects best model from catalog based on optimize_for, task_type,
-    required_capabilities, allow_external_fallback, provider_order, max_attempts
-  - Hard constraints applied before preferences
-  - Deterministic result
+  - Resolves through the owner-designated fixed chain in
+    app.pilot.routing_policy (ROUTING_POLICY_ID = "fixed_chain_v1").
+    No scorer is consulted; task_type / required_capabilities /
+    optimize_for / provider_order / allow_paid are accepted but ignored
+    (recorded as ignored_options in reason_codes).
+  - allow_external_fallback=False → one attempt; max_attempts bounds the
+    chain walk (capped at the chain length).
   - Fallback on: timeout, transport failure, HTTP 429, HTTP 5xx
   - No fallback on: HTTP 400/401/403/404/409/422/any other 4xx,
     malformed request, malformed upstream response, missing key,
     unsupported feature, oversize response, unknown exceptions
 
-Option enforcement (every accepted option changes the result):
+Legacy scorer options (kept for the resolve_auto_route library only):
   - allow_external_fallback=False → no fallback candidates, one attempt
   - provider_order → deterministic provider priority in candidate sorting
   - task_type → hard capability filter (+ korean scoring boost)
@@ -276,6 +279,12 @@ def resolve_auto_route(
 ) -> RouteDecision:
     """Resolve an automatic route for b14/auto.
 
+    NOTE (D14, #2044): the live ``b14/auto`` lane no longer calls this
+    scorer; it resolves through ``app.pilot.routing_policy`` (fixed_chain_v1).
+    This function is retained as the deterministic scorer library surface
+    (capability filtering and optimize_for ranking) and is exercised directly
+    by scorer unit tests only.
+
     Uses canonical capability evidence to deterministically select the best model.
     Does NOT make upstream calls.
 
@@ -453,7 +462,8 @@ def resolve_auto_route(
 def resolve_route(model_id: str, business14_options: dict[str, Any] | None = None) -> RouteDecision:
     """Resolve any route (manual or auto) without making upstream calls.
 
-    - If model_id == "b14/auto": use automatic routing
+    - If model_id == "b14/auto": use the owner-designated fixed chain
+      (app.pilot.routing_policy, D14 #2044)
     - Otherwise: use manual routing with the specific model_id
 
     Returns RouteDecision. Raises NoSafeRoute if routing fails.
@@ -461,15 +471,15 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
     opts = business14_options or {}
 
     if model_id.strip() == "b14/auto":
+        # D14 (#2044): owner-designated fixed chain, no scorer. Imported
+        # lazily because routing_policy depends on this module's types.
+        from app.pilot.routing_policy import resolve_chain_route
+
         allow_external_fallback = opts.get("allow_external_fallback", True)
-        return resolve_auto_route(
-            task_type=opts.get("task_type", "general"),
-            required_capabilities=opts.get("required_capabilities") or ["chat"],
-            optimize_for=opts.get("optimize_for", "balanced"),
+        return resolve_chain_route(
             allow_external_fallback=allow_external_fallback,
-            provider_order=opts.get("provider_order"),
             max_attempts=opts.get("max_attempts"),
-            allow_paid=bool(opts.get("allow_paid", False)),
+            requested_options=opts,
         )
 
     allow_external_fallback = opts.get("allow_external_fallback", False)
@@ -477,16 +487,6 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
         model_id,
         allow_external_fallback=allow_external_fallback,
     )
-
-
-# Error classes for fallback logic
-class RoutingError(Exception):
-    """Raised when routing cannot be completed."""
-
-    def __init__(self, code: str, message: str) -> None:
-        self.code = code
-        self.message = message
-        super().__init__(message)
 
 
 # Fallback-allowable error codes:

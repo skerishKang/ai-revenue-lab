@@ -297,8 +297,10 @@ class TestAutoRoute:
             resolve_auto_route(required_capabilities=["impossible_capability_xyz"])
         assert exc_info.value.upstream_called is False
 
-    def test_auto_route_no_safe_route_zero_upstream(self, client):
-        """No-safe-route must return 503 with zero upstream calls."""
+    def test_auto_route_unknown_capability_is_ignored(self, client, monkeypatch):
+        """D14 (#2044): capability options no longer filter b14/auto; they are ignored."""
+        monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={
@@ -307,10 +309,14 @@ class TestAutoRoute:
                 "business14": {"required_capabilities": ["not-a-real-capability"]},
             },
         )
-        assert resp.status_code == 503
-        data = resp.json()
-        assert data["error"]["code"] == "no_safe_route"
-        assert data["error"]["upstream_called"] is False
+        assert resp.status_code == 200
+        biz14 = resp.json()["business14"]
+        assert biz14["routing_policy"] == "fixed_chain_v1"
+        assert biz14["selected_model"] == KILO_MODEL
+        assert any(
+            rc.startswith("ignored_options:") and "required_capabilities" in rc
+            for rc in biz14["reason_codes"]
+        )
 
     def test_resolve_endpoint_no_upstream(self, client):
         resp = client.post(
@@ -391,15 +397,17 @@ class TestFallbackLogic:
 
 
 class TestFallbackExecution:
-    def test_429_fallback_uses_second_candidate(self, client, two_model_catalog):
-        """Auto route: first candidate 429 → fallback to second."""
+    def test_429_fallback_uses_second_candidate(self, client, monkeypatch):
+        """Auto route: first chain position 429 → fallback to second (D14 fixed chain)."""
         from app.pilot.errors import UpstreamRateLimited
         _set_live()
+        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
+        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
         original = plat.call_platform_chat_completions
         calls = []
 
         async def fake(*, model_id, upstream_model, provider, platform_provider_id, messages, temperature=0.2, max_tokens=300, transport=None):
-            calls.append(model_id)
+            calls.append({"model_id": model_id, "platform_provider_id": platform_provider_id})
             if len(calls) == 1:
                 raise UpstreamRateLimited()
             return {
@@ -419,7 +427,7 @@ class TestFallbackExecution:
                 json={
                     "model": "b14/auto",
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"optimize_for": "balanced", "max_attempts": 3},
+                    "business14": {"max_attempts": 3},
                 },
             )
         finally:
@@ -428,7 +436,16 @@ class TestFallbackExecution:
         assert resp.status_code == 200
         data = resp.json()
         assert data["business14"]["fallback_used"] is True
-        assert data["business14"]["attempt_count"] >= 2
+        assert data["business14"]["attempt_count"] == 2
+        # Chain head is SenseNova; the fallback answer comes from Kilo, each
+        # attempt using its own candidate's provider binding.
+        assert calls[0] == {
+            "model_id": "sensenova/sensenova-6.8-flash-lite",
+            "platform_provider_id": "sensenova",
+        }
+        assert data["business14"]["selected_model"] == KILO_MODEL
+        assert calls[1]["platform_provider_id"] == "kilo"
+        assert data["business14"]["routing_policy"] == "fixed_chain_v1"
 
 
 class TestLiveFailClosed:
@@ -508,7 +525,9 @@ class TestMockMode:
         assert data["business14"]["route_evidence_status"] == "mock_no_upstream_call"
         assert data["choices"][0]["message"]["content"].startswith("이것은 Mock 응답")
 
-    def test_mock_mode_auto_model(self, client):
+    def test_mock_mode_auto_model(self, client, monkeypatch):
+        monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
@@ -518,6 +537,10 @@ class TestMockMode:
         assert data["business14"]["provider_mode"] == "mock"
         assert data["business14"]["route_mode"] == "auto"
         assert "selected_model" in data["business14"]
+        # D14 (#2044): mock auto resolves the fixed chain head (no secrets →
+        # keyless Kilo) and reports the routing policy.
+        assert data["business14"]["routing_policy"] == "fixed_chain_v1"
+        assert data["business14"]["selected_model"] == KILO_MODEL
 
     def test_mock_mode_zero_upstream(self, client):
         """Mock mode must never reach an upstream transport."""
@@ -1261,8 +1284,10 @@ class TestFallbackFailClosed:
 
 
 class TestFallbackActualEvidence:
-    def test_fallback_metadata_describes_actual_success_candidate(self, client, two_model_catalog):
+    def test_fallback_metadata_describes_actual_success_candidate(self, client, monkeypatch):
         _set_live()
+        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
+        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions
         calls = []
@@ -1293,7 +1318,7 @@ class TestFallbackActualEvidence:
                 json={
                     "model": "b14/auto",
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"optimize_for": "cost", "max_attempts": 3},
+                    "business14": {"max_attempts": 3},
                 },
             )
         finally:
@@ -1371,7 +1396,10 @@ class TestOptionEnforcement:
         assert ordered.selected_model == SECONDARY_MODEL_ID
         assert any(rc.startswith("provider_order:") for rc in ordered.reason_codes)
 
-    def test_provider_order_api(self, client, two_model_catalog):
+    def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
+        """D14 (#2044): provider_order is accepted but does not change b14/auto."""
+        monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+        monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
@@ -1382,8 +1410,11 @@ class TestOptionEnforcement:
         )
         assert resp.status_code == 200
         body = resp.json()
-        assert body["selected_provider"] == SECONDARY_PROVIDER
-        assert body["selected_model"] == SECONDARY_MODEL_ID
+        assert body["selected_model"] == KILO_MODEL
+        assert any(
+            rc.startswith("ignored_options:") and "provider_order" in rc
+            for rc in body["reason_codes"]
+        )
 
     def test_provider_order_invalid_type_422(self, client):
         resp = client.post(
@@ -1863,9 +1894,11 @@ class TestActualRouteId:
         assert biz14["selected_route_id"] == f"platform:{biz14['selected_model']}"
         assert not biz14["fallback_used"]
 
-    def test_fallback_success_route_id_differs_from_primary(self, client, two_model_catalog):
+    def test_fallback_success_route_id_differs_from_primary(self, client, monkeypatch):
         """Fallback success: selected_route_id = actual fallback success candidate route_id."""
         _set_live()
+        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
+        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
         pass  # OpenRouter retired (#1933 S2): platform adapter is patched directly
         from app.pilot.errors import UpstreamRateLimited
         original = plat.call_platform_chat_completions
@@ -1891,7 +1924,7 @@ class TestActualRouteId:
                 json={
                     "model": "b14/auto",
                     "messages": [{"role": "user", "content": "hi"}],
-                    "business14": {"optimize_for": "cost", "max_attempts": 3},
+                    "business14": {"max_attempts": 3},
                 },
             )
         finally:
