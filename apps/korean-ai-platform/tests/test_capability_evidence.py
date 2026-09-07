@@ -52,7 +52,7 @@ def test_requirement_evaluation_distinguishes_unknown_from_unsupported() -> None
                 capability=ModelCapability.TOOL_CALLING,
                 support=CapabilitySupport.UNSUPPORTED,
                 evidence_kind=CapabilityEvidenceKind.UPSTREAM_REPORTED,
-                evidence_ref="upstream:openrouter:model-capabilities",
+                evidence_ref="upstream:kilo:model-capabilities",
                 observed_at="2026-08-30T15:00:00Z",
             ),
         ),

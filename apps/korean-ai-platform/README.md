@@ -213,7 +213,6 @@ prompt input, model selection, optimization options, and route preview.
 | Command | Description |
 |---------|-------------|
 | `python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000` | Documented owner start command; `app.main` loads working-directory `.env` with no optional `python-dotenv` dependency. |
-| `python3 -m app.pilot.catalog validate-model-catalog` | Legacy snapshot check against the OpenRouter Models API for historical catalog entries (the routed catalog itself is now the Kilo Gateway snapshot; anonymous access is attempted; upstream may require authentication) |
 
 ### Mock Mode
 
@@ -323,13 +322,6 @@ Prices are snapshot metadata, not a live invoice.
 | Model ID | Provider | Notes |
 |----------|----------|-------|
 | `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | Kilo Gateway / NVIDIA | Keyless free tier; $0/$0 snapshot; 200 req/hour limit fails closed as `kilo_free_rate_limited`; upstream `nvidia/nemotron-3-ultra-550b-a55b:free` preserved in `actual_response_model` |
-
-A legacy `python3 -m app.pilot.catalog validate-model-catalog` command still
-exists to check historical catalog IDs against the OpenRouter Models API;
-it is a snapshot-checking utility only and does **not** add OpenRouter to
-routing. HTTP 401/403 is reported as `authentication_required`. Without
-network access it reports `NETWORK_SKIPPED` and the catalog remains a
-configured snapshot.
 
 ### Limitations
 
