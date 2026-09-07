@@ -193,7 +193,7 @@ jobs:
             echo 'SECRET_ALREADY_ABSENT'
             exit 0
           fi
-          npx wrangler@4 secret delete OPENROUTER_API_KEY --force
+          npx wrangler@4 secret delete OPENROUTER_API_KEY
           npx wrangler@4 secret list --format json > /tmp/b14-secrets-after.json
           if python3 -c "import json,sys; d=json.load(open('/tmp/b14-secrets-after.json')); sys.exit(0 if any(x.get('name')=='OPENROUTER_API_KEY' for x in d) else 1)"; then
             echo 'B14_SECRET_RETIREMENT_VERIFICATION_FAILED' >&2

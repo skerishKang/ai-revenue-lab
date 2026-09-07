@@ -116,7 +116,10 @@ def test_retire_secret_job_is_separately_confirmed_and_idempotent() -> None:
     )
     assert retire["environment"] == "production"
     text = _workflow_text()
-    assert "npx wrangler@4 secret delete OPENROUTER_API_KEY --force" in text
+    assert "npx wrangler@4 secret delete OPENROUTER_API_KEY" in text
+    # wrangler 4 secret delete has no --force flag (run 34088852828 proved
+    # "Unknown argument: force"); CI non-TTY skips the confirm prompt.
+    assert "secret delete OPENROUTER_API_KEY --force" not in text
     assert "SECRET_ALREADY_ABSENT" in text
     assert "B14_SECRET_RETIRED=OPENROUTER_API_KEY" in text
     assert "b14-secrets-after.json" in text
