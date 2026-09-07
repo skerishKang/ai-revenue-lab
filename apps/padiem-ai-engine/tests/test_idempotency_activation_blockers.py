@@ -20,8 +20,7 @@ def test_idempotency_manifest_activated_after_production_evidence() -> None:
 
     assert manifest.feature_state("idempotency_replay") is EngineFeatureState.AVAILABLE
     assert manifest.feature_state("execution_idempotency_replay_completed") is EngineFeatureState.AVAILABLE
-    # Streaming replay stays DEFERRED: streaming_service rejects keyed streams
-    # with 422 stream_idempotency_unavailable — the adapter is not wired (SOURCE_PRESENT != AVAILABLE).
+    # Streaming replay stays DEFERRED: adapter wired; manifest flip gated on streaming production smoke.
     assert manifest.feature_state("execution_idempotency_replay_streaming") is EngineFeatureState.DEFERRED
 
 

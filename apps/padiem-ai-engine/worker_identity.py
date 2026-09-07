@@ -236,6 +236,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         streaming=StreamingEngineService(
             runtime_factory=streaming_runtime_factory,
             b14_service_bound=True,
+            idempotency_adapter=idempotency_adapter,
         ),
         orchestration=CanonicalIdempotencyOrchestrationEngineService(
             runtime_factory=runtime_factory,
