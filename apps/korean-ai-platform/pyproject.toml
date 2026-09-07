@@ -46,7 +46,4 @@ filterwarnings = [
     # the resource types; product code performs no real network I/O in tests.
     "ignore:unclosed <socket.socket:ResourceWarning",
     "ignore:unclosed event loop:ResourceWarning",
-    # pytest's unraisable hook re-wraps the above as PytestUnraisableExceptionWarning.
-    # The ini message field cannot contain ':', so scoping is category-only.
-    "ignore:Exception ignored in:pytest.PytestUnraisableExceptionWarning",
 ]
