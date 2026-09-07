@@ -41,6 +41,7 @@ import uuid
 
 from .contracts import ClawRunStatus, ExecutionMode, RunProjection
 from .core import redact_secrets
+from .document_intake import intake_document
 from .p01_adapter import (
     ClawOrchestrationOutcome,
     P01AdapterError,
@@ -199,6 +200,19 @@ def _read_draft_input(path: Path) -> str:
         raise DraftFlowError(
             "draft_input_missing",
             f"초안 입력 파일을 읽을 수 없습니다: {path}",
+        )
+    intake = intake_document(path.name, data)
+    if intake is not None:
+        if intake.text is not None:
+            if not intake.text.strip():
+                raise DraftFlowError(
+                    "draft_input_invalid",
+                    f"문서에서 추출된 텍스트가 없습니다: {path}",
+                )
+            return intake.text
+        raise DraftFlowError(
+            "draft_input_invalid",
+            f"문서 변환 실패: {path} — {intake.note or '지원되지 않는 문서'}",
         )
     if b"\x00" in data:
         raise DraftFlowError(
