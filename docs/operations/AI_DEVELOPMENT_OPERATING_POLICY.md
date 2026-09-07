@@ -18,8 +18,8 @@ A separate rule applies when the work contains a **new art direction or material
 
 1. **User / Product Owner** — product goal, priorities, material product/business decisions, explicit owner visual acceptance where applicable.
 2. **Web CTO** — current remote audit, work contract, architecture/safety boundaries, visual/evidence gates, final technical review.
-3. **Web Developer** — authorized implementation, implementation self-check, Draft PR/report.
-4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required.
+3. **Implementation Worker (local model)** — authorized implementation, implementation self-check, Draft PR/report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
+4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required, executed by an actor distinct from the Implementation Worker.
 
 One actor may perform several non-independent stages. The same actor must not
 claim both implementation and independent Local Validation for the same
@@ -132,7 +132,7 @@ The Web CTO:
 
 These statuses never manufacture owner approval or commercial approval.
 
-## 8. Web Developer responsibilities
+## 8. Implementation Worker (local model) responsibilities
 
 The developer:
 
@@ -252,6 +252,25 @@ For focused changes inside a stable design system, the live Production owner-rev
 For a new art direction/material redesign, follow `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`: anchor and archetype proof precede broad expansion/whole-product live review.
 
 After authorized merge, verify the configured Git-connected Production against the resulting main/release revision.
+
+### Verdict record requirement
+
+Before merge, the Web CTO (CENTRAL) must post the filled `CTO_FINAL_REVIEW` checklist as a PR review or PR comment containing the exact head SHA and per-item checklist results (precedent: PR #1900 procedure, work order 2026-09-05). Prose-only assertions of a final-review verdict are not an auditable record.
+
+### Terminal states for "independent gate pending"
+
+"independent gate pending" is not a mergeable state. Before merge the PR must record one of:
+
+- a link to a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or
+- `NOT_REQUIRED` with an explicit reason.
+
+### Owner-delegated merges
+
+A merge may be executed by the Implementation Worker only under explicit owner delegation. Delegation must be:
+
+- single-purpose (one named PR/revision),
+- head-SHA-pinned (invalidated by any new commit),
+- condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 
 ## 17. Historical records
 
