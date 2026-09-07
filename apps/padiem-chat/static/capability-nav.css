@@ -1,0 +1,108 @@
+/* capability-nav.css — placeholder for Claw / Connectors / Skills dialog shell */
+
+.capability-dialog {
+  border: none;
+  border-radius: 18px;
+  padding: 0;
+  max-width: 520px;
+  width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+  background: var(--panel, #fff);
+  color: var(--ink, #1a1a2e);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.capability-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.capability-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 0;
+}
+
+.capability-kicker {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin: 0 0 2px;
+}
+
+.capability-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.capability-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.capability-close:hover {
+  opacity: 1;
+}
+
+.capability-tagline {
+  padding: 8px 20px 0;
+  font-size: 13px;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.capability-status {
+  padding: 4px 20px 0;
+  font-size: 12px;
+  opacity: 0.5;
+  margin: 0;
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.capability-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  background: var(--card-bg, #fafafa);
+  text-align: left;
+  cursor: default;
+  font: inherit;
+  color: inherit;
+}
+
+.capability-card[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.capability-card strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.capability-card small {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.capability-soon {
+  font-size: 11px;
+  opacity: 0.5;
+}
