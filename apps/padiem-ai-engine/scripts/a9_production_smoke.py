@@ -215,21 +215,24 @@ def s1_first_run(payload: dict[str, Any]) -> tuple[dict[str, Any], str | None, i
     return body, fingerprint, 1
 
 
+def _execution_identity(run_body: dict[str, Any]) -> str | None:
+    """Wire contract (measured, run 34050390878): route is a SIBLING of metadata
+    under execution — orchestration.execution.route.request_id."""
+    execution = ((run_body.get("orchestration") or {}).get("execution") or {})
+    route = execution.get("route") or {}
+    return route.get("request_id")
+
+
 def s2_replay_no_reexecution(payload: dict[str, Any], s1_body: dict[str, Any]) -> bool:
     status, body = _request(method="POST", path=ORCHESTRATE_PATH, body=payload)
     if status != 200 or not isinstance(body, dict) or body.get("ok") is not True:
         _fail("S2", f"replay status {status} != 200 or ok != true", body)
         return False
 
-    def _execution_identity(run_body: dict[str, Any]) -> str | None:
-        metadata = ((run_body.get("orchestration") or {}).get("execution") or {}).get("metadata") or {}
-        route = metadata.get("route") or {}
-        return route.get("request_id")
-
     s1_identity = _execution_identity(s1_body)
     s2_identity = _execution_identity(body)
     if not s1_identity or not s2_identity:
-        _fail("S2", "route.request_id missing from execution metadata", {"s1": s1_body, "s2": body})
+        _fail("S2", "execution.route.request_id missing", {"s1": s1_body, "s2": body})
         return False
     if s1_identity != s2_identity:
         _fail("S2", f"execution identity changed across replay: {s1_identity} != {s2_identity}")

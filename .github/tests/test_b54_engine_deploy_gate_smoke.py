@@ -106,3 +106,28 @@ def test_smoke_script_sends_explicit_user_agent() -> None:
     # 원인: Cloudflare BIC가 Python-urllib UA를 403/1010으로 차단, run 34049550618
     smoke_source = SMOKE_SCRIPT.read_text(encoding="utf-8")
     assert '"User-Agent"' in smoke_source
+
+
+def test_smoke_script_reads_route_identity_from_execution_route() -> None:
+    # 회귀: run 34050390878 — 스크립트가 execution.metadata.route.request_id를
+    # 읽어 S2가 FAIL. 실제 wire는 execution.route.request_id (metadata는 형제).
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("a9_production_smoke", SMOKE_SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    # 최소 fixture: run 34050390878 [S2] RAW의 실제 응답 모양.
+    run_body = {
+        "ok": True,
+        "orchestration": {
+            "execution": {
+                "answer": "OK",
+                "route": {"request_id": "b14req_ec37a6ce00c0", "route_mode": "manual"},
+                "metadata": {"trace_id": "a9-smoke-34050390878", "status": "completed"},
+            },
+        },
+    }
+    assert module._execution_identity(run_body) == "b14req_ec37a6ce00c0"
+    # 이전 경로(metadata 아래 route)에는 아무것도 없다 — 형제 구조임을 고정.
+    assert run_body["orchestration"]["execution"]["metadata"].get("route") is None
