@@ -80,7 +80,7 @@ jobs:
           echo "D1_DATABASE_ID=$DB_ID"
           echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
 
-      - name: Apply migrations 0001 + 0002 to remote
+      - name: Apply migrations 0001 + 0002 + 0003 to remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -88,14 +88,16 @@ jobs:
           set -euo pipefail
           # Binding-resolved migration apply needs a wrangler.toml d1_databases
           # entry; PR-A must not touch wrangler.toml (the ENGINE_IDEMPOTENCY
-          # binding lands in PR-B), so the two migration files are applied
-          # verbatim via d1 execute --file. Both are
+          # binding lands in PR-B), so the migration files are applied
+          # verbatim via d1 execute --file. All are
           # CREATE TABLE IF NOT EXISTS — idempotent by construction.
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0001_engine_idempotency.sql
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0002_engine_continuations.sql
-          echo 'D1_MIGRATIONS=0001,0002'
+          npx --yes wrangler@4 d1 execute padiem-engine --remote \
+            --file=apps/padiem-ai-engine/migrations/0003_engine_connector_grants.sql
+          echo 'D1_MIGRATIONS=0001,0002,0003'
 
       - name: Assert schema tables exist
         env:
@@ -110,7 +112,11 @@ jobs:
           rows = json.load(open('/tmp/d1-tables.json'))
           results = rows[0]['results'] if isinstance(rows, list) and rows and 'results' in rows[0] else rows
           names = {r['name'] for r in results}
-          for required in ('padiem_engine_idempotency', 'padiem_engine_continuations'):
+          for required in (
+              'padiem_engine_idempotency',
+              'padiem_engine_continuations',
+              'padiem_engine_connector_grants',
+          ):
               assert required in names, f'missing table: {required} (have {sorted(names)})'
           print('D1_TABLES_ASSERT=PASS')
           PY
@@ -119,6 +125,6 @@ jobs:
         run: |
           echo 'D1_PROVISION=PASS'
           echo "D1_DATABASE_ID=$DB_ID"
-          echo 'D1_MIGRATIONS=0001,0002'
+          echo 'D1_MIGRATIONS=0001,0002,0003'
           echo 'WORKER_DEPLOYED=0'
           echo 'WRANGLER_TOML_MODIFIED=0'

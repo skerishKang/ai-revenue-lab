@@ -146,7 +146,7 @@ def test_both_entrypoints_compose_full_named_bundle_never_tuples(identity_module
     unbound_env = _identity_env()
 
     for factory in (legacy._engine_services_for_env, identity._engine_services_for_env):
-        services = factory(unbound_env)
+        services = asyncio.run(factory(unbound_env))
         assert isinstance(services, EngineServices)
         assert not isinstance(services, tuple)
         assert isinstance(services.completed, EngineService)
@@ -156,8 +156,8 @@ def test_both_entrypoints_compose_full_named_bundle_never_tuples(identity_module
         assert services.memory.bound_app_ids == ()
         assert services.memory.write_bound_app_ids == ()
 
-    legacy_services = legacy._engine_services_for_env(unbound_env)
-    identity_services = identity._engine_services_for_env(unbound_env)
+    legacy_services = asyncio.run(legacy._engine_services_for_env(unbound_env))
+    identity_services = asyncio.run(identity._engine_services_for_env(unbound_env))
     from app.orchestration_service import OrchestrationEngineService
 
     assert isinstance(legacy_services.orchestration, OrchestrationEngineService)
@@ -168,7 +168,7 @@ def test_both_entrypoints_compose_full_named_bundle_never_tuples(identity_module
         identity_services.orchestration, CanonicalIdempotencyOrchestrationEngineService
     )
 
-    bound_services = identity._engine_services_for_env(_identity_env(B14_SERVICE=object()))
+    bound_services = asyncio.run(identity._engine_services_for_env(_identity_env(B14_SERVICE=object())))
     assert isinstance(
         bound_services.orchestration, CanonicalIdempotencyOrchestrationEngineService
     )
@@ -273,9 +273,13 @@ def test_memory_route_serves_from_bound_service_in_canonical_entrypoint(identity
         }
     )
     env = _identity_env()
-    base = identity._engine_services_for_env(env)
+    base = asyncio.run(identity._engine_services_for_env(env))
     entry = _entry(identity, env)
-    entry.engine_services_factory = lambda _env: replace(base, memory=memory)
+
+    async def _memory_factory(_env):
+        return replace(base, memory=memory)
+
+    entry.engine_services_factory = staticmethod(_memory_factory)
 
     body = json.dumps(
         {
@@ -360,9 +364,13 @@ def test_memory_write_route_serves_from_bound_write_service_in_canonical_entrypo
     assert memory.write_bound_app_ids == (ALLOWED_APP,)
 
     env = _identity_env()
-    base = identity._engine_services_for_env(env)
+    base = asyncio.run(identity._engine_services_for_env(env))
     entry = _entry(identity, env)
-    entry.engine_services_factory = lambda _env: replace(base, memory=memory)
+
+    async def _memory_factory(_env):
+        return replace(base, memory=memory)
+
+    entry.engine_services_factory = staticmethod(_memory_factory)
 
     body = json.dumps(
         {

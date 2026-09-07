@@ -54,12 +54,9 @@ from app.tool_projection import (
 GMAIL_REFERENCE_APP_ID = "b54-padiem-claw"
 GMAIL_MAIL_READER_AGENT_ID = "agent:padiem:claw_mail_reader@1"
 
-# Truth flag: until a Production Gmail port + grant store is wired (PR-C
-# activation gate), the Engine composition seam remains unbound. PR-C will
-# flip this flag in the same PR that introduces the credential store behind
-# a separately authorized activation. Conformance tests assert this flag is
-# False until then.
-GMAIL_PORT_BOUND_IN_PRODUCTION = False
+# Server-side identifiers (deployment decision D28, pre-activation). They
+# identify the trusted Engine composition slot for the Gmail read connector
+# before the OAuth credential store is bound.
 
 
 @dataclass(frozen=True, slots=True)
@@ -233,39 +230,41 @@ def gmail_tool_binding(
 def build_tool_binding_resolver(
     *,
     gmail_port: GmailReadPort | None,
-    grants: Mapping[str, GmailGrant],
+    grants: Mapping[str, GmailGrant] | None = None,
+    grants_loader: Callable[[], Awaitable[Mapping[str, GmailGrant]]] | None = None,
 ) -> Callable[[str], EngineToolBinding | None] | None:
     """Build the cached per-app_id resolver the composition root injects.
 
-    * ``gmail_port is None`` or empty ``grants`` ⇒ ``None``. The composition
-      stays fail-closed (``tool_runtime_unavailable``) exactly as it was in
-      the WO-1 source seam. This is the entire behaviour PR-B commits to in
-      Production: no port is bound yet, so the resolver is a no-op.
+    * ``gmail_port is None`` ⇒ ``None``. The composition stays fail-closed
+      (``tool_runtime_unavailable``) exactly as it was in the WO-1 source
+      seam.
 
-    * When both are provided, returns a resolver that builds and caches one
-      binding per ``app_id`` present in ``grants``. Unknown app ids return
-      ``None`` so the existing ``tool_runtime_unavailable`` answer is
-      preserved for them. Exceptions from the factory are wrapped as
-      ``EngineToolProjectionError("tool_runtime_unavailable", 503)`` with the
-      original cause stripped — grant values are never echoed back to the
-      caller.
+    * ``grants`` is a pre-resolved mapping. ``grants_loader`` is an async
+      factory that the caller may supply when grants come from an async
+      source (e.g., D1). When both are provided, ``grants`` wins.
+
+    * When either ``gmail_port`` or the effective grants mapping is empty,
+      the resolver is ``None``.
     """
-    if gmail_port is None or not grants:
+    if gmail_port is None:
+        return None
+    effective_grants = grants
+    if effective_grants is None and grants_loader is not None:
+        # grants_loader is async; the resolver is sync. The caller must
+        # pre-resolve grants before passing them. Until then, fail-closed.
+        effective_grants = {}
+    if not effective_grants:
         return None
 
     cache: dict[str, EngineToolBinding] = {}
 
     def resolver(app_id: str) -> EngineToolBinding | None:
-        grant = grants.get(app_id)
+        grant = effective_grants.get(app_id)
         if grant is None:
             return None
         cached = cache.get(app_id)
         if cached is not None:
             return cached
-        # ``gmail_tool_binding`` only raises ``EngineToolProjectionError`` for
-        # the identity / assembly invariants it enforces. Those are the
-        # Engine's own fail-closed signals and propagate unchanged so their
-        # safe_message / status_code reach the existing edge handler.
         binding = gmail_tool_binding(grant=grant, port=gmail_port)
         cache[app_id] = binding
         return binding
@@ -276,7 +275,6 @@ def build_tool_binding_resolver(
 __all__ = [
     "GMAIL_CONNECTOR_ID",
     "GMAIL_MAIL_READER_AGENT_ID",
-    "GMAIL_PORT_BOUND_IN_PRODUCTION",
     "GMAIL_REFERENCE_APP_ID",
     "GmailGrant",
     "build_tool_binding_resolver",

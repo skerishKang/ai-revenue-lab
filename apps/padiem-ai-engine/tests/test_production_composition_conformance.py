@@ -30,6 +30,7 @@ Negative control (CTO WO-2): on pre-WO-1 main this test fails on the
 
 from __future__ import annotations
 
+import asyncio
 import importlib
 import json
 import sys
@@ -49,6 +50,7 @@ _FAIL_CLOSED_CODES = frozenset(
         "document_resolver_unavailable",
         "idempotency_unavailable",
         "b14_service_unavailable",
+        "connector_grants_unavailable",
     }
 )
 
@@ -113,9 +115,24 @@ class _StubEnv:
     capabilities are DEFERRED and must fail closed.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, **extra: Any) -> None:
         self.B14_SERVICE = _StubB14Binding()
         self.PADIEM_ENGINE_WEB_PROVIDER = "mock"
+        for name, value in extra.items():
+            setattr(self, name, value)
+
+
+class _FailingGrantsBinding:
+    """D1-like connector-grant binding whose ``prepare()`` always fails.
+
+    Simulates a grant store outage: the port (three Worker secrets) and the
+    ENGINE_CONNECTOR_GRANTS binding exist, but storage cannot be read. The
+    composition must NOT collapse this into a \"grant missed\" fail-closed
+    misread; it must surface 503 ``connector_grants_unavailable``.
+    """
+
+    def prepare(self, _sql: str) -> Any:
+        raise RuntimeError("d1 grant store unavailable")
 
 
 class _ProductionShapedEnv:
@@ -227,7 +244,7 @@ def _is_fail_closed(response: Any) -> bool:
 @pytest.mark.asyncio
 async def test_completed_run_composition_reaches_b14_authority() -> None:
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     # The composition must have built a real runtime factory against the B14
     # binding; a fail-closed unbound service cannot advertise completed_run.
     assert services.completed._b14_service_bound is True
@@ -236,14 +253,14 @@ async def test_completed_run_composition_reaches_b14_authority() -> None:
 @pytest.mark.asyncio
 async def test_streaming_run_composition_reaches_b14_authority() -> None:
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     assert services.streaming._b14_service_bound is True
 
 
 @pytest.mark.asyncio
 async def test_orchestration_run_composition_reaches_b14_authority() -> None:
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     assert services.orchestration._b14_service_bound is True
 
 
@@ -263,7 +280,7 @@ async def test_tool_runtime_tracks_manifest_state() -> None:
     from app.tool_projection import TOOL_EXECUTE_PATH
 
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     assert services.tool_execution is not None
     response = await _call(services.tool_execution, path=TOOL_EXECUTE_PATH, payload=_tool_payload())
 
@@ -334,9 +351,9 @@ async def test_web_research_composition_tracks_manifest_state() -> None:
     manifest_state = family_states.pop()
 
     if manifest_state is CapabilityState.AVAILABLE:
-        services = compose(_StubEnv())
+        services = await compose(_StubEnv())
     else:
-        services = compose(_ProductionShapedEnv())
+        services = await compose(_ProductionShapedEnv())
 
     runtime = services.research._research_runtime_factory("composition-probe")
     provider = runtime._web_provider
@@ -376,7 +393,7 @@ async def test_web_research_composition_tracks_manifest_state() -> None:
 @pytest.mark.asyncio
 async def test_memory_rag_composition_fails_closed() -> None:
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     from app.memory_service import MEMORY_PATH
 
     response = await _call(services.memory, path=MEMORY_PATH, payload=_memory_payload())
@@ -389,7 +406,7 @@ async def test_memory_rag_composition_fails_closed() -> None:
 @pytest.mark.asyncio
 async def test_multimodal_composition_fails_closed_without_resolver() -> None:
     compose = _load_composition()
-    services = compose(_StubEnv())
+    services = await compose(_StubEnv())
     from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 
     assert services.multimodal is not None
@@ -442,21 +459,19 @@ async def test_agent_skill_composition_fails_closed_without_binding() -> None:
 
 def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     """Production composition must inject the resolver from
-    ``_tool_binding_resolver_for_env`` and remain fail-closed until PR-C
-    activates the OAuth port + grant store. The only ``tool_binding_resolver=None``
-    literal in worker_identity.py may live in the unbound branch
-    (no B14 service binding). The deployment-truth flag in
-    connector_bindings is False until PR-C.
+    ``_tool_binding_resolver_for_env`` and remain fail-closed until the
+    OAuth port + grant store are provisioned (PR-C activation gate). The
+    only ``tool_binding_resolver=None`` literal in worker_identity.py may
+    live in the unbound branch (no B14 service binding).
     """
     from pathlib import Path
-
-    from app.connector_bindings import GMAIL_PORT_BOUND_IN_PRODUCTION
 
     engine_root = Path(__file__).resolve().parents[1]
     source = (engine_root / "worker_identity.py").read_text(encoding="utf-8")
     assert "_tool_binding_resolver_for_env" in source
-    assert "build_tool_binding_resolver(gmail_port=None, grants={})" in source
-    assert "tool_binding_resolver=_tool_binding_resolver_for_env(env)" in source
+    assert "build_tool_binding_resolver(gmail_port=None, grants={})" not in source
+    assert "tool_binding_resolver=_tool_binding_resolver_for_env(env)" not in source
+    assert "tool_binding_resolver=await _tool_binding_resolver_for_env(env)" in source
     # Only the unbound branch may carry a literal ``tool_binding_resolver=None``.
     # The two ``ToolExecutionEngineService(tool_binding_resolver=...)``
     # occurrences at the composition seam are kwargs; the orchestrator
@@ -464,5 +479,43 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     # in the bound branch may still pass ``None`` literally.
     assert source.count("ToolExecutionEngineService(tool_binding_resolver=None)") == 0
     assert "CanonicalIdempotencyOrchestrationEngineService(" in source
-    # Truth flag must remain False until PR-C.
-    assert GMAIL_PORT_BOUND_IN_PRODUCTION is False
+    # PR-C activation gate: the resolver is wired through env-derived
+    # secrets + D1 grant references. No static truth flag remains.
+    assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
+
+
+@pytest.mark.asyncio
+async def test_grant_store_failure_surfaces_503_connector_grants_unavailable() -> None:
+    """A grant store outage is NOT a \"grant missed\".
+
+    When the three Worker secrets and the ENGINE_CONNECTOR_GRANTS binding are
+    present but storage fails, every TOOL_EXECUTE_PATH request must answer
+    503 ``connector_grants_unavailable`` — distinct from the fail-closed
+    ``tool_runtime_unavailable`` posture used when the port/binding are simply
+    absent.
+    """
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(
+            **{
+                # Env names come from the stubbed canonical composition module
+                # (the same workers-stub surface _load_composition installs);
+                # importing worker_identity directly would hit the real
+                # ``workers`` package, which needs the Cloudflare ``js`` runtime.
+                "ENGINE_GOOGLE_OAUTH_CLIENT_ID": "client_1",
+                "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET": "secret_1",
+                "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN": "refresh_1",
+                "ENGINE_CONNECTOR_GRANTS": _FailingGrantsBinding(),
+            }
+        )
+    )
+    assert services.tool_execution is not None
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_tool_payload(),
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "connector_grants_unavailable"

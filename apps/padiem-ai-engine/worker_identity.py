@@ -10,6 +10,8 @@ a later Production activation gate.
 
 from __future__ import annotations
 
+import asyncio
+
 from typing import Any
 from urllib.parse import urlparse
 
@@ -33,10 +35,11 @@ from app.cloudflare_transport import (
     CloudflareB14ServiceBindingTransport,
 )
 from app.connector_bindings import (
-    GMAIL_PORT_BOUND_IN_PRODUCTION,
     build_tool_binding_resolver,
 )
+from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
+from app.gmail_port_httpx import HttpxGmailReadPort
 from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
@@ -48,7 +51,7 @@ from app.multimodal_attachment_service import (
 from app.orchestration_idempotency_service import (
     CanonicalIdempotencyOrchestrationEngineService,
 )
-from app.service import EngineService, ServiceResponse
+from app.service import EngineService, ServiceContractError, ServiceResponse
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
@@ -59,6 +62,10 @@ from app.tool_projection import (
 from app.web_research_service import WebResearchEngineService
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
+ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
+ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
+ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
+ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 
 
 def _continuation_store_for_env(
@@ -92,28 +99,70 @@ def _research_service_for_env(
     )
 
 
-def _tool_binding_resolver_for_env(env: Any):
-    """Compose the Engine Gmail tool binding resolver (WO-10 PR-B seam).
+async def _tool_binding_resolver_for_env(env: Any):
+    """Compose the Engine Gmail tool binding resolver (WO-10 PR-C activation).
 
-    PR-B: no Production Gmail port or grant store exists yet
-    (``GMAIL_PORT_BOUND_IN_PRODUCTION is False``). The factory therefore
-    returns ``None`` for every request, so the canonical composition stays
-    fail-closed exactly as the WO-1 source seam did — every
-    ``tool_runtime`` / orchestration tool call continues to answer
-    ``tool_runtime_unavailable`` (503) before any port is reached.
-
-    PR-C will replace the ``None`` port with the deployment-owned OAuth port
-    and a D1-backed grant store behind a separately authorized activation.
-    The composition seam is already in place; the activation gate is the
-    only thing missing.
+    Reads the three Worker secrets and the ENGINE_CONNECTOR_GRANTS D1 binding
+    from the deployment env. If any piece is missing the factory returns None,
+    keeping the canonical composition fail-closed. A grant store outage
+    (``ServiceContractError`` from ``_gmail_grants_for_env``) is NOT treated as
+    \"grant missed\": the port and binding are present, so every app_id gets a
+    resolver that surfaces the same 503 ``connector_grants_unavailable`` instead
+    of a silent fail-closed misread.
     """
-    del env  # unused in PR-B; the seam signature is stable for PR-C.
-    if not GMAIL_PORT_BOUND_IN_PRODUCTION:
+    port = _gmail_port_for_env(env)
+    if port is None:
         return None
-    return build_tool_binding_resolver(gmail_port=None, grants={})
+    try:
+        grants = await _gmail_grants_for_env(env)
+    except ServiceContractError as exc:
+        # `except ... as exc` clears `exc` when the block ends, so the closure
+        # must capture the value through a persistent local name.
+        grant_error = exc
+
+        def unavailable(_app_id: str) -> None:
+            raise grant_error
+
+        return unavailable
+    if not grants:
+        return None
+    return build_tool_binding_resolver(gmail_port=port, grants=grants)
 
 
-def _engine_services_for_env(env: Any) -> EngineServices:
+def _gmail_port_for_env(env: Any) -> HttpxGmailReadPort | None:
+    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
+    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
+    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
+    if not client_id or not client_secret or not refresh_token:
+        return None
+    try:
+        return HttpxGmailReadPort(
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+        )
+    except Exception:
+        return None
+
+
+async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_gmail_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+async def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
@@ -145,7 +194,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             # store are bound (PR-C). With no port/grant every request still
             # fails closed as `tool_runtime_unavailable` exactly as before.
             tool_execution=ToolExecutionEngineService(
-                tool_binding_resolver=_tool_binding_resolver_for_env(env)
+                tool_binding_resolver=await _tool_binding_resolver_for_env(env)
             ),
             # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
             agent_skill=AgentSkillEngineService(
@@ -194,7 +243,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
-            tool_binding_resolver=_tool_binding_resolver_for_env(env),
+            tool_binding_resolver=await _tool_binding_resolver_for_env(env),
         ),
         research=_research_service_for_env(
             env,
@@ -213,7 +262,7 @@ def _engine_services_for_env(env: Any) -> EngineServices:
         # store are bound (PR-C). With no port/grant every request still
         # fails closed as `tool_runtime_unavailable` exactly as before.
         tool_execution=ToolExecutionEngineService(
-            tool_binding_resolver=_tool_binding_resolver_for_env(env)
+            tool_binding_resolver=await _tool_binding_resolver_for_env(env)
         ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).
@@ -292,7 +341,7 @@ class Default(legacy_worker.Default):
         if auth_error is not None:
             return auth_error
 
-        services = self.engine_services_factory(self.env)
+        services = await self.engine_services_factory(self.env)
         if services.multimodal is None:
             return legacy_worker._error_response(
                 "attachment_resolver_unavailable",
@@ -348,7 +397,7 @@ class Default(legacy_worker.Default):
         if auth_error is not None:
             return auth_error
 
-        services = self.engine_services_factory(self.env)
+        services = await self.engine_services_factory(self.env)
         if services.tool_execution is None:
             return legacy_worker._error_response(
                 "tool_runtime_unavailable",
@@ -403,7 +452,7 @@ class Default(legacy_worker.Default):
                     )
                 )
 
-        services = self.engine_services_factory(self.env)
+        services = await self.engine_services_factory(self.env)
         if services.documents is None:
             return legacy_worker._error_response(
                 "document_context_unavailable",

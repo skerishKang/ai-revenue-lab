@@ -22,3 +22,12 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 binding = "ENGINE_CONTINUATION"
 database_name = "padiem-engine"
 database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# WO-10 PR-C2 (D28): OAuth connector grant references only.
+# Same provisioned database as ENGINE_IDEMPOTENCY/ENGINE_CONTINUATION.
+# Schema 0003 applied by the D1 provision gate. Credential material is
+# never stored here; the three OAuth secrets come from Worker secrets.
+[[d1_databases]]
+binding = "ENGINE_CONNECTOR_GRANTS"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
