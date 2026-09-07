@@ -44,7 +44,7 @@ def test_both_bindings_share_the_single_provisioned_database() -> None:
     source = _wrangler_text()
 
     blocks = [block for block in source.split("[[d1_databases]]")[1:] if block.strip()]
-    assert len(blocks) == 2, f"expected exactly 2 d1_databases blocks, found {len(blocks)}"
+    assert len(blocks) == 3, f"expected exactly 3 d1_databases blocks, found {len(blocks)}"
 
     ids = []
     for block in blocks:
@@ -57,9 +57,18 @@ def test_both_bindings_share_the_single_provisioned_database() -> None:
         binding = fields.get("binding", "")
         database_id = fields.get("database_id", "")
         ids.append(database_id)
-        assert binding in {"ENGINE_IDEMPOTENCY", "ENGINE_CONTINUATION"}
+        assert binding in {"ENGINE_IDEMPOTENCY", "ENGINE_CONTINUATION", "ENGINE_CONNECTOR_GRANTS"}
         assert database_id == EXPECTED_DATABASE_ID
-    assert len(set(ids)) == 1, "both bindings must reference the same database_id"
+    assert len(set(ids)) == 1, "all bindings must reference the same database_id"
+
+
+def test_connector_grants_binding_points_at_provisioned_d1() -> None:
+    source = _wrangler_text()
+
+    assert '[[d1_databases]]' in source
+    assert 'binding = "ENGINE_CONNECTOR_GRANTS"' in source
+    assert f'database_name = "{EXPECTED_DATABASE_NAME}"' in source
+    assert f'database_id = "{EXPECTED_DATABASE_ID}"' in source
 
 
 def test_binding_config_does_not_change_entrypoint_or_app_surface() -> None:
@@ -67,6 +76,6 @@ def test_binding_config_does_not_change_entrypoint_or_app_surface() -> None:
 
     assert 'main = "worker_identity.py"' in source
     assert 'binding = "B14_SERVICE"' in source
-    assert source.count("[[d1_databases]]") == 2
+    assert source.count("[[d1_databases]]") == 3
     assert "experimental" not in source.lower()
     assert "InMemory" not in source
