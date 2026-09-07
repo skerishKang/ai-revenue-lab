@@ -131,6 +131,17 @@ jobs:
           grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
           grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
 
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        env:
+          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
+          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          grep -q 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log
+          grep 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log | tail -1
+
   rollback-production-engine:
     if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
     runs-on: ubuntu-latest
