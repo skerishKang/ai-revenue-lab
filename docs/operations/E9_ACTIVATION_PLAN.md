@@ -48,7 +48,7 @@ origin/main `e7453cfd` (family `padiem-ai-engine`, major 1, version 1.0).
 | A7 | `tenant_entitlement_usage_admission` | `DEFERRED` | () | E7 adapter source exists (`tenant_auth.py`); trusted authority not wired |
 | A8 | cross-product manifest/conformance | `COMPLETED` (ledger) | n/a | manifest + conformance suite merged via #1944; conformance gate in CI |
 | A9 | `idempotency` | `DEFERRED` | ORCHESTRATE_PATH | existing #1621 durable idempotency activation |
-| — | `continuation/approval` | `DEFERRED` | ORCHESTRATE_RESUME_PATH | tracked, not in A0-A9 set |
+| — | `continuation/approval` | `DEFERRED` | ORCHESTRATE_RESUME_PATH | DEFERRED — BLOCKER_C1, see P01_ENGINE_APPROVAL_CONTINUATION_ACTIVATION_v1.md |
 | — | `public_browser_api`, `provider_selection` | `UNAVAILABLE` | () | not offered by this contract version |
 
 Notes:

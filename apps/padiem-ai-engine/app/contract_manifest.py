@@ -169,6 +169,7 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("orchestration_stream", EngineFeatureState.AVAILABLE),
             # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0
             EngineFeatureContract("idempotency_replay", EngineFeatureState.AVAILABLE),
+            # WO-9: source+D1 store bound in Production; stays DEFERRED — BLOCKER_C1 (no production pause producer until A3/#2010). See P01_ENGINE_APPROVAL_CONTINUATION_ACTIVATION_v1.md
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
             EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
