@@ -47,7 +47,7 @@ from app.pilot.catalog import (
     select_by_optimize,
 )
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.errors import NoSafeRoute
+from app.pilot.errors import NoSafeRoute, RoutingError
 
 
 class RouteMode(str, enum.Enum):
@@ -61,12 +61,6 @@ class EvidenceStatus(str, enum.Enum):
     LIVE_VERIFIED = "live_verified"
     RESOLVED_NOT_CALLED = "resolved_not_called"
     LIVE_FAILED = "live_failed"
-
-
-class NoKeyReason(str, enum.Enum):
-    LIVE_MODE_REQUIRES_KEY = "live_mode_requires_key"
-    NO_KEY_SET = "no_key_set"
-    KEY_AVAILABLE = "key_available"
 
 
 @dataclass(frozen=True)
@@ -126,7 +120,7 @@ class RouteDecision:
     request_id: str
     provider_mode: str
     max_attempts: int
-    credential_source: str = ""  # platform_secret | openrouter | request_byok | none
+    credential_source: str = ""  # platform_secret (OpenRouter retired, D14 #2044)
     platform_provider_id: str = ""
 
 
@@ -134,24 +128,13 @@ def _new_request_id() -> str:
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
 
-def _check_credentials() -> tuple[bool, str]:
-    """Check whether a usable credential source exists for live mode (#1933 S2)."""
-    from app.pilot.platform_secrets import live_ready
-
-    if live_ready():
-        return True, NoKeyReason.KEY_AVAILABLE.value
-    if runtime_config.is_live:
-        return False, NoKeyReason.LIVE_MODE_REQUIRES_KEY.value
-    # mock mode
-    return False, NoKeyReason.NO_KEY_SET.value
-
-
 def _credential_status_for(cm) -> tuple[bool, str, str, str]:
     """Resolve credential availability/status for a catalog model.
 
     Returns ``(available, status, source, platform_provider_id)``.
-    ``platform_secret`` models read their own Provider binding; missing secret
-    fails closed. Everything else defers to the OpenRouter adapter config.
+    Every routable model is a platform route (``platform_secret`` marker with
+    its own Provider binding); any other credential source is a retired
+    configuration and fails closed (D14 #2044: the OpenRouter adapter is gone).
     """
     if cm.credential_source == "platform_secret":
         from app.pilot import platform_secrets as ps
@@ -164,8 +147,13 @@ def _credential_status_for(cm) -> tuple[bool, str, str, str]:
             "platform_secret",
             cm.platform_provider_id or "",
         )
-    ok, status = _check_credentials()
-    return ok, status, "openrouter", ""
+    raise RoutingError(
+        code="unsupported_credential_source",
+        message=(
+            f"model '{cm.model_id}' uses retired credential source "
+            f"'{cm.credential_source}'."
+        ),
+    )
 
 
 def _platform_secret_present(cm) -> bool:
@@ -219,10 +207,7 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
-    route_id = (
-        f"platform:{cm.model_id}" if cred_source == "platform_secret"
-        else f"openrouter:{cm.model_id}"
-    )
+    route_id = f"platform:{cm.model_id}"
 
     fallback_candidates: list[dict[str, str]] = []
     if allow_external_fallback:
@@ -232,11 +217,7 @@ def resolve_manual_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
-                "route_id": (
-                    f"platform:{m.model_id}"
-                    if m.credential_source == "platform_secret"
-                    else f"openrouter:{m.model_id}"
-                ),
+                "route_id": f"platform:{m.model_id}",
                 "reason": "catalog_alternative",
             }
             for m in all_models
@@ -400,10 +381,7 @@ def resolve_auto_route(
     )
     selected = sorted_candidates[0]
     cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(selected)
-    route_id = (
-        f"platform:{selected.model_id}" if cred_source == "platform_secret"
-        else f"openrouter:{selected.model_id}"
-    )
+    route_id = f"platform:{selected.model_id}"
 
     if allow_external_fallback:
         fallback_candidates = [
@@ -411,11 +389,7 @@ def resolve_auto_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
-                "route_id": (
-                    f"platform:{m.model_id}"
-                    if m.credential_source == "platform_secret"
-                    else f"openrouter:{m.model_id}"
-                ),
+                "route_id": f"platform:{m.model_id}",
                 "reason": "auto_fallback_candidate",
             }
             for m in sorted_candidates[1:]

@@ -218,6 +218,22 @@ def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
     assert "openrouter" not in models.text.lower()
 
 
+def test_health_reports_fixed_chain_routing_policy(client):
+    """D14 (#2044): health pins the owner-designated b14/auto chain."""
+    _set_live()
+
+    data = client.get("/api/pilot/health").json()
+
+    policy = data["business14"]["routing_policy"]
+    assert policy["id"] == "fixed_chain_v1"
+    assert policy["chain"] == [
+        "sensenova/sensenova-6.8-flash-lite",
+        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/minimax-minimax-m3-free",
+        "poolside/laguna-s-2.1",
+    ]
+
+
 def test_catalog_auto_lane_is_b14_router_not_a_provider(client):
     catalog = client.get("/api/pilot/models").json()["catalog"]
     auto = next(entry for entry in catalog if entry["id"] == "b14/auto")

@@ -1,8 +1,9 @@
-"""OpenRouter retirement contract (#1933 S2-b).
+"""OpenRouter retirement contract (#1933 S2-b, D14 #2044 commit 2).
 
 The OpenRouter call path, provider policy helper, and live smoke are removed.
-Non-platform catalog routes fail closed with InvalidRequest and never reach
-an upstream transport. The SSE dataclasses in stream_types are preserved
+Non-platform catalog routes fail closed at resolve time with
+RoutingError(unsupported_credential_source) and never reach an upstream
+transport. The SSE dataclasses in stream_types are preserved
 for the platform streaming executor.
 """
 
@@ -90,6 +91,7 @@ def retired_openrouter_route(monkeypatch):
 
 
 def test_non_platform_route_fails_closed_before_network(retired_openrouter_route):
+    """Retired credential sources fail closed at resolve time (D14 #2044)."""
     client = TestClient(create_app())
     resp = client.post(
         "/api/pilot/v1/chat/completions",
@@ -98,10 +100,9 @@ def test_non_platform_route_fails_closed_before_network(retired_openrouter_route
             "messages": [{"role": "user", "content": "hi"}],
         },
     )
-    assert resp.status_code == 400
+    assert resp.status_code == 500
     body = resp.json()
-    assert body["error"]["code"] == "invalid_request"
-    assert "OpenRouter retired" in body["error"]["message"]
+    assert body["error"]["code"] == "unsupported_credential_source"
 
 
 def test_stream_preview_rejects_non_platform_route(retired_openrouter_route):
@@ -114,8 +115,8 @@ def test_stream_preview_rejects_non_platform_route(retired_openrouter_route):
             "messages": [{"role": "user", "content": "hi"}],
         },
     )
-    assert resp.status_code == 400
-    assert resp.json()["error"]["code"] == "invalid_request"
+    assert resp.status_code == 500
+    assert resp.json()["error"]["code"] == "unsupported_credential_source"
 
 
 @pytest.mark.asyncio

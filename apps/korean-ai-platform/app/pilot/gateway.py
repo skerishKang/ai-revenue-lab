@@ -56,7 +56,7 @@ from app.pilot.platform_secrets import (
 from app.pilot import provider as prv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
-from app.pilot.routing_policy import ROUTING_POLICY_ID
+from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 
 # ---------------------------------------------------------------------------
 # Bounded same-route retry for retryable upstream failures (#1982)
@@ -393,6 +393,10 @@ async def pilot_health(request: Request):
         "provider_mode": runtime_config.provider_mode,
         "has_key": any_platform_secret_present(),
         "catalog_models": len(list_catalog_summaries()),
+        "routing_policy": {
+            "id": ROUTING_POLICY_ID,
+            "chain": list(B14_AUTO_CHAIN),
+        },
         "providers": [
             {
                 "id": spec.provider_id,
@@ -702,7 +706,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "model_id": fc["model_id"],
             "upstream_model": fc["upstream_model"],
             "provider": fc["provider"],
-            "route_id": fc.get("route_id", f"openrouter:{fc['model_id']}"),
+            "route_id": fc["route_id"],
             "platform_provider_id": fc.get("platform_provider_id", ""),
         }
         for fc in decision.eligible_fallback

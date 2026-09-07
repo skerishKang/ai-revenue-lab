@@ -1844,8 +1844,8 @@ class TestManualRouteDefaultFallback:
 class TestActualRouteId:
     """selected_route_id must be the actual candidate's route ID, never a random ID."""
 
-    def test_resolve_route_id_is_openrouter_prefixed(self, client):
-        """Resolve endpoint must return openrouter:<model_id> route IDs."""
+    def test_resolve_route_id_is_platform_prefixed(self, client):
+        """Resolve endpoint must return platform:<model_id> route IDs (D14 #2044)."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
