@@ -41,6 +41,7 @@ import uuid
 
 from .contracts import ClawRunStatus, ExecutionMode, RunProjection
 from .core import redact_secrets
+from .document_export import export_outcome_to_file
 from .document_intake import intake_document
 from .p01_adapter import (
     ClawOrchestrationOutcome,
@@ -416,6 +417,7 @@ def run_draft(
     *,
     run_id: str | None = None,
     out_path: Path | None = None,
+    doc_format: str = "md",
 ) -> DraftOutcome:
     if not repository.exists() or not repository.is_dir():
         raise DraftFlowError(
@@ -496,8 +498,23 @@ def run_draft(
         out_path=out_path,
     )
     if out_path is not None:
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(result.report_text(), encoding="utf-8")
+        metadata = [
+            ("저장소", result.repository),
+            ("문서 유형", result.doc_type),
+            ("입력 파일", result.input_path),
+            ("P01 실행", f"{len(result.p01_runs)}건 · 상태: {result.projection.status.value}"),
+        ]
+        export_outcome_to_file(
+            out_path=out_path,
+            file_format=doc_format or "md",
+            title="문서 초안 보고서",
+            metadata_fields=metadata,
+            section_title=f"{result.doc_type} 초안 (DRAFT)",
+            body_text=result.answer if result.answer else "(초안 결과 없음)",
+            items=result.items,
+            total=result.total,
+            markdown_fallback_text=result.report_text(),
+        )
     return result
 
 
@@ -510,6 +527,7 @@ def run_draft_command(
     environ: Mapping[str, str] | None = None,
     run_id: str | None = None,
     out_path: Path | None = None,
+    doc_format: str = "md",
 ) -> int:
     _force_utf8_stdio()
     try:
@@ -523,6 +541,7 @@ def run_draft_command(
             active,
             run_id=run_id,
             out_path=out_path,
+            doc_format=doc_format,
         )
     except P01AdapterError as exc:
         print(

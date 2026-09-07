@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 from .core import AgentBoundaryError, AgentSession, redact_secrets
+from .document_export import SUPPORTED_DOCUMENT_FORMATS
 from .draft_flow import DRAFT_DOC_TYPES, run_draft_command
 from .order_flow import run_order_command
 from .p01_run_flow import run_p01_task
@@ -160,7 +161,14 @@ def parser() -> argparse.ArgumentParser:
         help="생성할 문서 유형 (견적서 | 발주서)",
     )
     draft.add_argument(
-        "--out", dest="out", default=None, help="마크다운 초안을 기록할 파일 경로"
+        "--out", dest="out", default=None, help="초안을 기록할 파일 경로"
+    )
+    draft.add_argument(
+        "--format",
+        dest="doc_format",
+        default="md",
+        choices=list(SUPPORTED_DOCUMENT_FORMATS),
+        help="출력 문서 포맷 (md | docx | hwpx; 기본값: md)",
     )
     draft.add_argument(
         "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
@@ -178,7 +186,14 @@ def parser() -> argparse.ArgumentParser:
         help="견적서 승인을 선언합니다 (없으면 order_not_accepted로 실패)",
     )
     order.add_argument(
-        "--out", dest="out", default=None, help="마크다운 초안을 기록할 파일 경로"
+        "--out", dest="out", default=None, help="초안을 기록할 파일 경로"
+    )
+    order.add_argument(
+        "--format",
+        dest="doc_format",
+        default="md",
+        choices=list(SUPPORTED_DOCUMENT_FORMATS),
+        help="출력 문서 포맷 (md | docx | hwpx; 기본값: md)",
     )
     order.add_argument(
         "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
@@ -204,6 +219,7 @@ def main(argv: list[str] | None = None, *, adapter=None) -> int:
             adapter=adapter,
             run_id=args.run_id,
             out_path=Path(args.out) if args.out else None,
+            doc_format=getattr(args, "doc_format", "md"),
         )
     if args.mode == "order":
         return run_order_command(
@@ -213,6 +229,7 @@ def main(argv: list[str] | None = None, *, adapter=None) -> int:
             adapter=adapter,
             run_id=args.run_id,
             out_path=Path(args.out) if args.out else None,
+            doc_format=getattr(args, "doc_format", "md"),
         )
     task = getattr(args, "task", None)
     if not task:
