@@ -45,6 +45,7 @@ import uuid
 
 from .contracts import ClawRunStatus, ContractError, ExecutionMode, RunProjection
 from .core import redact_secrets
+from .document_intake import intake_document
 from .p01_adapter import (
     ClawOrchestrationOutcome,
     P01AdapterError,
@@ -271,6 +272,13 @@ def _collect_review_files(
                 "review_target_missing",
                 f"리뷰 대상 파일을 읽을 수 없습니다: {rel}",
             )
+        intake = intake_document(rel, data)
+        if intake is not None:
+            if intake.text is not None:
+                reviewed.append((rel, intake.text))
+            else:
+                skipped.append((rel, intake.note or "문서 변환 실패 — 건너뜀"))
+            continue
         if b"\x00" in data:
             skipped.append((rel, "바이너리 파일 — 건너뜀"))
             continue
