@@ -22,6 +22,8 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "b54-engine-production-deploy-gate.yml"
 SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a9_production_smoke.py"
 A10_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a10_continuation_production_smoke.py"
+A11_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a11_gmail_tool_runtime_smoke.py"
+A12_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a12_stream_replay_production_smoke.py"
 
 
 def _workflow_text() -> str:
@@ -116,6 +118,64 @@ def test_a10_smoke_script_sends_explicit_user_agent() -> None:
     a10_source = A10_SMOKE_SCRIPT.read_text(encoding="utf-8")
     assert '"User-Agent"' in a10_source
     assert "padiem-a10-smoke/1.0" in a10_source
+
+
+def test_smoke_job_runs_the_a11_script_and_requires_its_verdict() -> None:
+    # WO-10 ACT-1 (#2010): A11 runs in the same smoke-idempotency job, between
+    # A10 and A12. The step requires an explicit verdict line. DEFERRED is an
+    # honest, non-blocking record (route not wired / runtime unbound / tool not
+    # authorized); FAIL is a hard gate failure. PASS is never faked.
+    text = _workflow_text()
+    smoke_block = text.split("smoke-idempotency:", 1)[1].split("rollback-production-engine:", 1)[0]
+    assert "a11_gmail_tool_runtime_smoke.py" in smoke_block
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)" in smoke_block
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL" in smoke_block
+    assert A11_SMOKE_SCRIPT.is_file(), "a11 smoke script must exist in the repo"
+
+
+def test_smoke_job_runs_a9_a10_a11_a12_in_deterministic_order() -> None:
+    # Static order contract: A9 -> A10 -> A11 -> A12 inside smoke-idempotency.
+    wf = _workflow()
+    steps = wf["jobs"]["smoke-idempotency"]["steps"]
+    names = [str(step.get("name", "")) for step in steps]
+    order = [
+        "Run A9 production idempotency smoke",
+        "Run A10 continuation fail-closed smoke",
+        "Run A11 Gmail tool_runtime smoke",
+        "Run A12 streaming idempotency replay smoke",
+    ]
+    positions = [names.index(name) for name in order]
+    assert positions == sorted(positions)
+    assert A10_SMOKE_SCRIPT.is_file() and A12_SMOKE_SCRIPT.is_file()
+
+
+def test_a11_smoke_script_verdict_contract() -> None:
+    source = A11_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" in source
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in source
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL" in source
+    assert "SKIPPED_MISSING_SECRET" in source
+    assert "REAL_PROVIDER_CALLS=0" in source
+    assert "ROWS_WRITTEN=0" in source
+    assert "D1_MUTATION=0" in source
+
+
+def test_a11_smoke_script_accepts_no_credential_material() -> None:
+    # No OAuth token, refresh token, client secret or credential value may be
+    # accepted: the script takes no CLI arguments at all.
+    source = A11_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert "argparse" not in source
+    assert "sys.argv" not in source
+    for forbidden in ("refresh_token", "client_secret", "access_token", "client_id", "oauth", "OAuth"):
+        assert forbidden not in source
+
+
+def test_a11_smoke_script_sends_explicit_user_agent() -> None:
+    # Same reason as a9/a10: Cloudflare BIC blocks the Python-urllib UA.
+    source = A11_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert '"User-Agent"' in source
+    assert "padiem-a11-smoke/1.0" in source
+    assert "x-padiem-engine-caller" in source
 
 
 def test_deploy_and_rollback_jobs_unchanged_in_shape() -> None:
