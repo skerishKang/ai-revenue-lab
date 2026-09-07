@@ -161,8 +161,10 @@ jobs:
   # #1933 S2-c: one-shot removal of the dead Worker secret OPENROUTER_API_KEY.
   # After S2-b no code path reads this key; the value is inert. Separate
   # confirmation token: deploying or rolling back never removes a secret.
-  # wrangler secret delete is a Workers-secret API call - it does not create
-  # or shift a serving version, so this job cannot change deployed code.
+  # wrangler secret delete creates a NEW Worker version (same code as the
+  # currently served version, minus the secret) and deploys it immediately
+  # (developers.cloudflare.com/workers/wrangler/commands/workers/#secret).
+  # Therefore this job must verify serving health afterwards.
   retire-openrouter-secret:
     if: github.event.inputs.confirmation == 'RETIRE_B14_SECRET_OPENROUTER_API_KEY'
     runs-on: ubuntu-latest
@@ -200,6 +202,14 @@ jobs:
             exit 1
           fi
           echo 'B14_SECRET_RETIRED=OPENROUTER_API_KEY'
+
+      - name: Verify serving health after secret retirement
+        run: |
+          set -euo pipefail; sleep 15
+          CODE=$(curl -s -A "b14-gate/1.0" -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/health')
+          test "$CODE" = '200'
+          python3 -c "import json;d=json.load(open('/tmp/health.json'));assert d.get('mode')=='b14-live',d.get('mode');assert d.get('configured_providers')==3,d.get('configured_providers');r=d.get('registered_routes');n=len(r) if isinstance(r,list) else r;assert n==6,n;print('B14_POST_RETIRE_HEALTH=PASS mode=b14-live providers=3 routes=6')"
+          npx wrangler@4 deployments list 2>/dev/null | head -20 || true
 
   rollback-production-b14:
     if: github.event.inputs.confirmation == 'ROLLBACK_B14_TO_PREVIOUS_VERSION'

@@ -129,6 +129,13 @@ def test_retire_secret_job_is_separately_confirmed_and_idempotent() -> None:
     assert "secret list --json" not in text
     assert "EMPTY_OR_INVALID_SECRET_LIST" in text
     assert "SECRETS_BEFORE=" in text
+    # CTO #2042 review: secret delete creates and immediately deploys a new
+    # Worker version, so the job must verify post-retire serving health; the
+    # old "cannot change deployed code" claim was false and must stay out.
+    assert "deploys it immediately" in text
+    assert "B14_POST_RETIRE_HEALTH=PASS" in text
+    assert "cannot change deployed code" not in text
+    assert "does not create or shift a serving version" not in text
     # The removal must never be bundled into the deploy job's condition.
     deploy = wf["jobs"]["deploy-production-b14"]
     assert "RETIRE" not in deploy["if"]
