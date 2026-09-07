@@ -66,10 +66,51 @@ def test_text_chat_contract_remains_backward_compatible(client):
     assert response.json()["business14"]["selected_model"]
 
 
-def test_valid_multimodal_auto_route_selects_image_capable_model(
-    client, monkeypatch, ox_alpha_catalog_entry):
+def _platform_image_catalog_model():
+    from app.pilot.catalog import CatalogModel
 
-    from app.pilot import openrouter as orv
+    return CatalogModel(
+        model_id="test/platform-image-free",
+        upstream_model="test/platform-image-free",
+        display_name="Test Platform Image (test only)",
+        provider="Test Platform",
+        provider_type="platform",
+        input_price_usd_per_1m=0.0,
+        output_price_usd_per_1m=0.0,
+        currency="usd",
+        context_window=1_000_000,
+        korean_score=4,
+        latency_ms=1500,
+        capabilities=frozenset({"chat", "image", "coding", "free"}),
+        region="외부",
+        sort_order=5,
+        credential_source="platform_secret",
+        platform_provider_id="kilo",
+        source="kilo_official_gateway_models",
+        source_checked_at="2026-09-06",
+    )
+
+
+@pytest.fixture()
+def platform_image_catalog_entry(monkeypatch):
+    import app.pilot.catalog as cat
+
+    original_models = cat.CATALOG_MODELS
+    original_by_id = cat.CATALOG_BY_ID
+    extra = _platform_image_catalog_model()
+    cat.CATALOG_MODELS = [*original_models, extra]
+    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
+    try:
+        yield extra
+    finally:
+        cat.CATALOG_MODELS = original_models
+        cat.CATALOG_BY_ID = original_by_id
+
+
+def test_valid_multimodal_auto_route_selects_image_capable_model(
+    client, monkeypatch, platform_image_catalog_entry):
+
+    from app.pilot import platform as plat
 
     captured = {}
 
@@ -84,15 +125,15 @@ def test_valid_multimodal_auto_route_selects_image_capable_model(
             "_actual_response_model": kwargs["upstream_model"],
         }
 
-    monkeypatch.setattr(orv, "call_openrouter_chat_completions", fake_call)
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fake_call)
     response = post_image(client, business14={"required_capabilities": ["chat"]})
     assert response.status_code == 200
     body = response.json()
     selected = get_catalog_by_id(body["business14"]["selected_model"])
     assert selected is not None
     assert "image" in selected.capabilities
-    # Under free-first default (Issue #1928), stealth/ox-alpha ($0/$0, image-capable) is selected
-    assert body["business14"]["selected_model"] == "stealth/ox-alpha"
+    # Platform image-capable route is selected (OpenRouter retired, #1933 S2).
+    assert body["business14"]["selected_model"] == "test/platform-image-free"
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
     assert outbound[0]["content"][0] == {"type": "text", "text": "이 이미지를 설명해줘"}
@@ -150,16 +191,16 @@ def test_decoded_image_over_4_mib_rejected_without_network():
 
 
 def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch):
-    from app.pilot import openrouter as orv
+    from app.pilot import platform as plat
 
     calls = 0
 
     async def should_not_call(**kwargs):
         nonlocal calls
         calls += 1
-        raise AssertionError("OpenRouter must not be called")
+        raise AssertionError("platform adapter must not be called")
 
-    monkeypatch.setattr(orv, "call_openrouter_chat_completions", should_not_call)
+    monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
     response = post_image(
         client,
         model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
@@ -173,7 +214,7 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
 
 
 def test_no_image_capable_auto_candidate_fails_before_upstream(client, monkeypatch):
-    from app.pilot import openrouter as orv
+    from app.pilot import platform as plat
     from app.pilot import router_core as rcore
 
     calls = 0
@@ -181,9 +222,9 @@ def test_no_image_capable_auto_candidate_fails_before_upstream(client, monkeypat
     async def should_not_call(**kwargs):
         nonlocal calls
         calls += 1
-        raise AssertionError("OpenRouter must not be called")
+        raise AssertionError("platform adapter must not be called")
 
-    monkeypatch.setattr(orv, "call_openrouter_chat_completions", should_not_call)
+    monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
     monkeypatch.setattr(rcore, "_filter_catalog", lambda **kwargs: [])
     response = post_image(client)
     assert response.status_code == 503
@@ -192,35 +233,38 @@ def test_no_image_capable_auto_candidate_fails_before_upstream(client, monkeypat
 
 
 @pytest.mark.asyncio
-async def test_live_openrouter_body_preserves_validated_multimodal_array():
-    from app.pilot import openrouter as orv
+async def test_live_platform_body_preserves_validated_multimodal_array():
+    from app.pilot import platform as plat
 
     captured = {}
 
     async def handler(request: httpx.Request) -> httpx.Response:
         captured["json"] = json.loads(request.content)
+        assert request.headers.get("authorization") is None
         return httpx.Response(
             200,
             json={
                 "id": "live-test",
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
         )
 
     openrouter_config.provider_mode = "live"
-    openrouter_config.api_key = "phase8-fixture-nonsecret-value"
+    openrouter_config.api_key = ""
     messages = [{"role": "user", "content": multimodal_content()}]
-    result = await orv.call_openrouter_chat_completions(
+    result = await plat.call_platform_chat_completions(
         messages=messages,
         temperature=0.2,
         max_tokens=100,
         model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        provider="Google",
+        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        provider="Kilo Gateway / NVIDIA",
+        platform_provider_id="kilo",
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
-    assert captured["json"]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert captured["json"]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert "provider" not in captured["json"]
