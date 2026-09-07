@@ -329,3 +329,21 @@ async def test_parser_does_not_mutate_the_wire_payload() -> None:
     orchestration_result_from_public(payload)
 
     assert payload == snapshot
+
+
+async def test_completed_run_with_empty_events_is_rejected_as_truncated() -> None:
+    payload = await _public_result()
+    payload["events"] = []
+
+    with pytest.raises(OrchestrationError) as caught:
+        orchestration_result_from_public(payload)
+    assert caught.value.code == "invalid_result_event_set"
+
+
+async def test_completed_run_with_missing_events_key_is_rejected_as_truncated() -> None:
+    payload = await _public_result()
+    del payload["events"]
+
+    with pytest.raises(OrchestrationError) as caught:
+        orchestration_result_from_public(payload)
+    assert caught.value.code == "invalid_result_event_set"
