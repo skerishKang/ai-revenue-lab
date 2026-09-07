@@ -135,6 +135,17 @@ class SandboxLeaseSecurityPolicy:
 SandboxProviderAcceptanceGate = SandboxProviderConformanceGate
 VerifiedDiffEvidenceContract = VerifiedDiffEvidence
 
+from .sandbox_conformance_harness import (
+    ConformanceStatus,
+    SandboxProviderConformanceCase,
+    SandboxProviderConformanceHarness,
+    SandboxProviderConformanceReport,
+    SandboxProviderConformanceResult,
+    validate_lease_request_against_cloud_m1_policy,
+    validate_provider_capabilities_against_cloud_m1_policy,
+    validate_verified_diff_evidence,
+)
+
 __all__ = [
     "SandboxNetworkPolicy",
     "SandboxResourceLimits",
@@ -151,4 +162,13 @@ __all__ = [
     "REAL_SANDBOX_PROVIDER_SELECTED",
     "REAL_SANDBOX_PROVIDER_CALLS",
     "PRODUCTION_SANDBOX_CLAIM",
+    "ConformanceStatus",
+    "SandboxProviderConformanceCase",
+    "SandboxProviderConformanceHarness",
+    "SandboxProviderConformanceReport",
+    "SandboxProviderConformanceResult",
+    "validate_lease_request_against_cloud_m1_policy",
+    "validate_provider_capabilities_against_cloud_m1_policy",
+    "validate_verified_diff_evidence",
 ]
+
