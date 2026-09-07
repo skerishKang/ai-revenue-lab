@@ -16,13 +16,14 @@ import base64
 import binascii
 from dataclasses import dataclass
 import hashlib
+import inspect
 import json
 import re
 from email.header import decode_header, make_header
 from email.utils import getaddresses, parseaddr
 from enum import Enum
 from html.parser import HTMLParser
-from typing import Any, Protocol
+from typing import Any, Awaitable, Protocol
 from urllib.parse import quote
 
 from .connector_registry import ConnectorDescriptor
@@ -79,7 +80,8 @@ class GmailReadPort(Protocol):
     Callers pass only connector binding + actor refs and the exact readonly
     scope requirement. Implementations resolve/refresh credentials outside
     model/task state, verify the required scope, enforce the response byte
-    bound, and return decoded provider JSON. Core never implements this port.
+    bound, and return decoded provider JSON. Implementations may be sync or
+    async; Core awaits when needed. Core never implements this port.
     """
 
     def get_json(
@@ -93,7 +95,7 @@ class GmailReadPort(Protocol):
         query: dict[str, str],
         timeout_seconds: int,
         max_response_bytes: int,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         ...
 
 
@@ -725,7 +727,7 @@ def _bounded_envelope(envelope: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _port_get(
+async def _port_get(
     port: GmailReadPort,
     *,
     binding_ref: str,
@@ -734,7 +736,7 @@ def _port_get(
     query: dict[str, str],
     max_response_bytes: int,
 ) -> dict[str, Any]:
-    def _call() -> dict[str, Any]:
+    def _call() -> dict[str, Any] | Awaitable[dict[str, Any]]:
         return port.get_json(
             binding_ref=binding_ref,
             actor_ref=actor_ref,
@@ -747,7 +749,9 @@ def _port_get(
         )
 
     try:
-        return _call()
+        result = _call()
+        if inspect.isawaitable(result):
+            result = await result
     except Exception:
         # The trusted port boundary is the only place that may surface
         # diagnostics; Core must not propagate its exception message, the
@@ -756,6 +760,10 @@ def _port_get(
         # in PR-B. Save the error outside the except handler so neither
         # __cause__ nor __context__ carry the port's internals.
         sanitized = GmailContractError("The Gmail provider port failed.")
+    else:
+        if not isinstance(result, dict):
+            raise GmailContractError("The Gmail provider port returned an invalid body.")
+        return result
 
     raise sanitized
 
@@ -776,7 +784,7 @@ def build_gmail_read_handlers(
         query = _string_arg(dict(arguments), "query", limit=MAX_SEARCH_QUERY_CHARS)
         if not query:
             raise GmailContractError("A Gmail search needs a query.")
-        body = _port_get(
+        body = await _port_get(
             port,
             binding_ref=binding_ref,
             actor_ref=actor_ref,
@@ -818,7 +826,7 @@ def build_gmail_read_handlers(
         message_id = _string_arg(dict(arguments), "messageId")
         if not message_id:
             raise GmailContractError("A Gmail message id is needed.")
-        body = _port_get(
+        body = await _port_get(
             port,
             binding_ref=binding_ref,
             actor_ref=actor_ref,
@@ -844,7 +852,7 @@ def build_gmail_read_handlers(
         thread_id = _string_arg(dict(arguments), "threadId")
         if not thread_id:
             raise GmailContractError("A Gmail thread id is needed.")
-        body = _port_get(
+        body = await _port_get(
             port,
             binding_ref=binding_ref,
             actor_ref=actor_ref,

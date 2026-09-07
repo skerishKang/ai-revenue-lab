@@ -538,3 +538,100 @@ def test_bounded_envelope_replaces_oversized_output_with_digest() -> None:
         replacement, ensure_ascii=False, sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
     assert len(encoded_envelope) <= MAX_TOOL_OUTPUT_BYTES
+
+
+class FakeAsyncGmailPort:
+    """Async GmailReadPort: get_json returns a coroutine (Workers-style HTTP)."""
+
+    def __init__(self) -> None:
+        self.responses: list[dict] = []
+        self.calls: list[dict] = []
+
+    async def get_json(self, **kwargs):
+        self.calls.append(kwargs)
+        return self.responses.pop(0)
+
+
+def async_gmail_handlers(port: FakeAsyncGmailPort) -> dict:
+    return build_gmail_read_handlers(port, binding_ref=BINDING_REF, actor_ref=ACTOR_REF)
+
+
+def test_async_port_search_matches_sync_projection() -> None:
+    port = FakeAsyncGmailPort()
+    port.responses.append({"messages": [{"id": "msg_1", "threadId": "thread_1"}]})
+    rendered = run(
+        async_gmail_handlers(port)[GMAIL_SEARCH_MESSAGES_TOOL_ID](
+            {"query": "newer_than:1d from:supplier@example.com"}
+        )
+    )
+    assert rendered["result_status"] == "OK"
+    assert rendered["messages"] == [{"message_id": "msg_1", "thread_id": "thread_1"}]
+    call = port.calls[0]
+    assert call["base_url"] == GMAIL_BASE_URL
+    assert call["path"] == "/users/me/messages"
+    assert call["required_scopes"] == (GMAIL_READONLY_SCOPE,)
+    assert "token" not in call
+    assert "authorization" not in call
+
+
+def test_async_port_get_message_projects_provider_body() -> None:
+    port = FakeAsyncGmailPort()
+    port.responses.append(message())
+    rendered = run(
+        async_gmail_handlers(port)[GMAIL_GET_MESSAGE_TOOL_ID]({"messageId": "msg_1"})
+    )
+    assert rendered["result_status"] == "OK"
+    assert rendered["operation"] == "messages.get"
+    assert rendered["projection"]["message_id"] == "msg_1"
+    assert port.calls[0]["path"].endswith("/messages/msg_1")
+
+
+def test_async_port_get_thread_projects_provider_body() -> None:
+    port = FakeAsyncGmailPort()
+    port.responses.append({"id": "thread_1", "messages": [message()]})
+    rendered = run(
+        async_gmail_handlers(port)[GMAIL_GET_THREAD_TOOL_ID]({"threadId": "thread_1"})
+    )
+    assert rendered["result_status"] == "OK"
+    assert rendered["operation"] == "threads.get"
+    assert port.calls[0]["path"].endswith("/threads/thread_1")
+
+
+def test_async_port_failure_is_sanitized_without_leaking_refs() -> None:
+    class LeakyAsyncPort(FakeAsyncGmailPort):
+        async def get_json(self, **kwargs):
+            self.calls.append(kwargs)
+            raise RuntimeError(f"boom bind:SECRET123 actor:XYZ {kwargs.get('required_scopes')}")
+
+    binding_ref = "bind:SECRET123"
+    actor_ref = "actor:XYZ"
+    handlers = build_gmail_read_handlers(
+        LeakyAsyncPort(), binding_ref=binding_ref, actor_ref=actor_ref
+    )
+    with pytest.raises(GmailContractError) as exc_info:
+        run(handlers[GMAIL_SEARCH_MESSAGES_TOOL_ID]({"query": "report"}))
+    text = str(exc_info.value)
+    assert "SECRET123" not in text
+    assert "actor:XYZ" not in text
+    assert "bind:SECRET123" not in text
+    assert exc_info.value.__cause__ is None
+    assert exc_info.value.__context__ is None
+
+
+@pytest.mark.parametrize("invalid_body", [["not", "a", "dict"], "string", 7, None])
+def test_non_dict_port_body_is_invalid_body_contract_error(invalid_body) -> None:
+    class InvalidSyncPort(FakeGmailPort):
+        def get_json(self, **kwargs):
+            self.calls.append(kwargs)
+            return invalid_body
+
+    class InvalidAsyncPort(FakeAsyncGmailPort):
+        async def get_json(self, **kwargs):
+            self.calls.append(kwargs)
+            return invalid_body
+
+    for port in (InvalidSyncPort(), InvalidAsyncPort()):
+        handlers = build_gmail_read_handlers(port, binding_ref=BINDING_REF, actor_ref=ACTOR_REF)
+        with pytest.raises(GmailContractError) as exc_info:
+            run(handlers[GMAIL_SEARCH_MESSAGES_TOOL_ID]({"query": "report"}))
+        assert str(exc_info.value) == "The Gmail provider port returned an invalid body."
