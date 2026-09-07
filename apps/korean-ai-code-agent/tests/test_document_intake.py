@@ -6,8 +6,12 @@ from pathlib import Path
 import unittest
 import zipfile
 
-from pypdf import PdfWriter
-from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+try:
+    from pypdf import PdfWriter
+    from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+except ModuleNotFoundError:
+    PdfWriter = None
+    DecodedStreamObject = DictionaryObject = NameObject = None
 
 from kagent.document_intake import LEGACY_HWP_NOTE, intake_document
 from kagent.draft_flow import DraftFlowError, _read_draft_input
@@ -111,6 +115,8 @@ def _write(repo: Path, name: str, content: bytes | str) -> Path:
 
 class DocumentIntakeTests(unittest.TestCase):
     def test_pdf_fixture_extracts_text_via_core(self) -> None:
+        if PdfWriter is None:
+            self.skipTest("pypdf is provided by the workspace documents extra")
         result = intake_document("plan.pdf", _minimal_pdf())
         self.assertIsNotNone(result)
         self.assertEqual(result.text, "Hello Padiem Document")
@@ -170,6 +176,8 @@ class ReviewIntakeTests(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_collect_routes_pdf_and_hwpx_and_keeps_utf8(self) -> None:
+        if PdfWriter is None:
+            self.skipTest("pypdf is provided by the workspace documents extra")
         _write(self.repo, "docs/plan.pdf", _minimal_pdf())
         _write(self.repo, "docs/note.hwpx", _minimal_hwpx("견적서", "합계 1,000원"))
         _write(self.repo, "docs/legacy.hwp", b"\xd0\xcf\x11\xe0binary")
