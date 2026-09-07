@@ -167,9 +167,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             # #1962: orchestration_stream became AVAILABLE with the NDJSON
             # orchestration lifecycle stream route (POST /internal/v1/orchestrate/stream).
             EngineFeatureContract("orchestration_stream", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("idempotency_replay", EngineFeatureState.DEFERRED),
+            # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0
+            EngineFeatureContract("idempotency_replay", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
             # E9 A1 (#1744): Web/Research projection features follow the owner-authorized
             # bounded activation dispatch on main ed18a2a8 (see E9_ACTIVATION_PLAN.md).

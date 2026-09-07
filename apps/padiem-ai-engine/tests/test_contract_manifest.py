@@ -99,7 +99,6 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
 
     for feature_id in (
         "approval_continuation",
-        "execution_idempotency_replay_completed",
         "execution_idempotency_replay_streaming",
         "skill_runtime_projection",
         "agent_runtime_projection",

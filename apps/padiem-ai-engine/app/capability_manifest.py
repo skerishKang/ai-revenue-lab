@@ -507,9 +507,10 @@ def current_capability_manifest() -> CapabilityManifest:
                 routes=(),
                 scope=_row(tenant_scope="bounded"),
             ),
+            # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0
             CapabilityDeclaration(
                 id="idempotency",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(ORCHESTRATE_PATH,),
                 scope=_row(
                     tenant_scope="bounded",
