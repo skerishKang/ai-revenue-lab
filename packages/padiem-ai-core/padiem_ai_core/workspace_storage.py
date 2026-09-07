@@ -14,9 +14,10 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 import re
+import unicodedata
 from typing import Mapping
 
-_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+# Workspace IDs and object-key path segments use the safe segment policy (no colons)
 _SAFE_SEGMENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 _URL_LIKE_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://")
 
@@ -58,30 +59,41 @@ class WorkspaceStorageError(ValueError):
 
 
 def _validate_workspace_id(workspace_id: str) -> str:
-    if not isinstance(workspace_id, str) or not _SAFE_ID_RE.fullmatch(workspace_id):
+    if not isinstance(workspace_id, str) or not _SAFE_SEGMENT_RE.fullmatch(workspace_id):
         raise WorkspaceStorageError(
             "invalid_workspace_id",
-            "workspace_id must be a non-empty safe identifier without whitespace or special characters.",
+            "workspace_id must be a non-empty safe identifier segment without colons, whitespace, or special characters.",
         )
     return workspace_id
 
 
 def _validate_file_name(file_name: str) -> str:
+    """Validate display file name.
+
+    Allows Unicode display names (e.g. Korean: 견적서.docx, 발주서.hwpx),
+    while rejecting path separators, traversal sequences, control characters,
+    and blank names.
+    """
     if not isinstance(file_name, str) or not file_name.strip():
         raise WorkspaceStorageError(
             "invalid_file_name",
             "file_name must be a non-empty string.",
         )
-    # Disallow path separators, path traversal, control chars
     if "/" in file_name or "\\" in file_name or ".." in file_name:
         raise WorkspaceStorageError(
             "invalid_file_name",
             "file_name cannot contain path separators or traversal sequences.",
         )
-    if not _SAFE_SEGMENT_RE.fullmatch(file_name):
+    # Reject control characters or path-traversal relative names
+    if any(unicodedata.category(c).startswith("C") for c in file_name):
         raise WorkspaceStorageError(
             "invalid_file_name",
-            "file_name must be a safe filename with standard alphanumeric, dot, underscore, or hyphen characters.",
+            "file_name cannot contain control characters.",
+        )
+    if file_name.strip() in {".", ".."}:
+        raise WorkspaceStorageError(
+            "invalid_file_name",
+            "file_name cannot be a directory navigation token.",
         )
     return file_name
 
@@ -114,7 +126,7 @@ def _validate_object_key(object_key: str) -> str:
             "object_key contains empty segments or path traversal sequences.",
         )
     for seg in segments:
-        if not _SAFE_SEGMENT_RE.fullmatch(seg):
+        if "/" in seg or "\\" in seg or ".." in seg or any(unicodedata.category(c).startswith("C") for c in seg):
             raise WorkspaceStorageError(
                 "invalid_object_key",
                 f"object_key segment {seg!r} contains invalid characters.",
@@ -285,6 +297,14 @@ class WorkspaceShareLink:
                 "expires_at must be a valid datetime instance.",
             )
 
+        # Enforce workspace isolation on WorkspaceShareLink
+        expected_prefix = f"workspaces/{self.workspace_id}/"
+        if not self.object_key.startswith(expected_prefix):
+            raise WorkspaceStorageError(
+                "invalid_object_key",
+                f"share link object_key must begin with {expected_prefix!r} for workspace isolation.",
+            )
+
 
 def format_canonical_object_key(
     *,
@@ -356,7 +376,6 @@ def validate_share_link(
         )
 
     reference_time = now or datetime.now(timezone.utc)
-    # Ensure reference_time is timezone-aware if expires_at is timezone-aware
     expires_at = share_link.expires_at
     if expires_at.tzinfo is not None and reference_time.tzinfo is None:
         reference_time = reference_time.replace(tzinfo=timezone.utc)

@@ -48,6 +48,68 @@ def test_default_tier_quotas() -> None:
     assert exc.value.code == "invalid_workspace_id"
 
 
+def test_workspace_id_uses_object_key_safe_segment_policy() -> None:
+    # Valid alphanumeric, dash, dot, underscore segments
+    valid_ids = ["ws-1", "workspace_100", "ws.prod.1", "WS123"]
+    for valid_id in valid_ids:
+        quota = WorkspaceStorageQuota.default_for_tier(valid_id, WorkspaceStoragePlanTier.FREE)
+        assert quota.workspace_id == valid_id
+
+
+def test_workspace_id_with_colon_is_rejected() -> None:
+    # Colon is explicitly rejected to match object key path segment safety
+    with pytest.raises(WorkspaceStorageError) as exc:
+        WorkspaceStorageQuota.default_for_tier("ws:tenant:1", WorkspaceStoragePlanTier.FREE)
+    assert exc.value.code == "invalid_workspace_id"
+
+
+def test_korean_display_file_name_is_allowed() -> None:
+    # Korean display filenames for Padiem Claw (견적서.docx, 발주서.hwpx)
+    korean_names = ["견적서.docx", "발주서.hwpx", "보고서_최종본_2026.pdf"]
+    for k_name in korean_names:
+        key = format_canonical_object_key(
+            workspace_id="ws-123",
+            kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
+            entity_id="doc-456",
+            file_name=k_name,
+        )
+        assert key == f"workspaces/ws-123/claw/documents/doc-456/{k_name}"
+
+        obj = WorkspaceStorageObject(
+            workspace_id="ws-123",
+            object_key=key,
+            file_name=k_name,
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            size_bytes=2048,
+            kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
+        )
+        assert obj.file_name == k_name
+
+
+def test_file_name_with_path_separator_is_rejected() -> None:
+    for sep_name in ["sub/file.docx", "folder\\file.hwpx", "/etc/file.txt", "file/"]:
+        with pytest.raises(WorkspaceStorageError) as exc:
+            format_canonical_object_key(
+                workspace_id="ws-123",
+                kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
+                entity_id="doc-456",
+                file_name=sep_name,
+            )
+        assert exc.value.code == "invalid_file_name"
+
+
+def test_file_name_with_traversal_is_rejected() -> None:
+    for bad_name in ["..", "../file.docx", "..\\file.hwpx", "normal..name"]:
+        with pytest.raises(WorkspaceStorageError) as exc:
+            format_canonical_object_key(
+                workspace_id="ws-123",
+                kind=WorkspaceStorageObjectKind.CLAW_DOCUMENT,
+                entity_id="doc-456",
+                file_name=bad_name,
+            )
+        assert exc.value.code == "invalid_file_name"
+
+
 def test_format_canonical_object_keys() -> None:
     doc_key = format_canonical_object_key(
         workspace_id="ws-123",
@@ -239,6 +301,20 @@ def test_share_link_expiry_and_revocation() -> None:
     with pytest.raises(WorkspaceStorageError) as exc_rev:
         validate_share_link(revoked_link, now=now)
     assert exc_rev.value.code == "share_link_revoked"
+
+
+def test_share_link_rejects_cross_workspace_object_key() -> None:
+    now = datetime(2026, 9, 7, 12, 0, 0, tzinfo=timezone.utc)
+    future = now + timedelta(days=2)
+
+    with pytest.raises(WorkspaceStorageError) as exc:
+        WorkspaceShareLink(
+            workspace_id="ws-alpha",
+            object_key="workspaces/ws-beta/claw/documents/doc-1/file.txt",
+            expires_at=future,
+            revoked=False,
+        )
+    assert exc.value.code == "invalid_object_key"
 
 
 def test_unsupported_storage_backend_rejected() -> None:
