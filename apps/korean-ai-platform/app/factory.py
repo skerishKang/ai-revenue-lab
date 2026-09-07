@@ -69,8 +69,9 @@ def _build_jinja_env() -> Environment:
     env.globals["pilot_configured"] = pilot_settings.configured
 
     from app.pilot.openrouter_config import openrouter_config
+    from app.pilot.platform_secrets import any_platform_secret_present
     env.globals["b14_provider_mode"] = openrouter_config.provider_mode
-    env.globals["b14_has_key"] = openrouter_config.has_key
+    env.globals["b14_has_key"] = any_platform_secret_present()
     env.globals["b14_site_name"] = openrouter_config.site_name
 
     return env

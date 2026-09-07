@@ -28,6 +28,7 @@ from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, ge
 from app.pilot.locale import gettext, locale_from_request, set_locale_cookie, Locale
 from app.pilot.routing import resolve_configuration, PilotConfigurationState
 from app.pilot.openrouter_config import openrouter_config
+from app.pilot.platform_secrets import any_platform_secret_present
 from app.pilot.catalog import list_catalog_summaries
 
 logger = logging.getLogger("korean-ai-platform.pilot")
@@ -69,7 +70,7 @@ async def workspace_page(request: Request):
         "errorCode": None,
         "maxTokens": 512,
         "b14ProviderMode": openrouter_config.provider_mode,
-        "b14HasKey": openrouter_config.has_key,
+        "b14HasKey": any_platform_secret_present(),
         "b14SiteName": openrouter_config.site_name,
         "b14CatalogModels": list_catalog_summaries(),
         "b14AutoModelId": "b14/auto",
@@ -79,7 +80,7 @@ async def workspace_page(request: Request):
     if state == PilotConfigurationState.INVALID_REGISTRY:
         config["errorCode"] = "registry_invalid"
         config["pilotConfigured"] = False
-        config["b14HasKey"] = openrouter_config.has_key
+        config["b14HasKey"] = any_platform_secret_present()
         ctx["pilot_configured"] = False
         ctx["pilot_models"] = []
         ctx["pilot_provider_count"] = 0
@@ -87,7 +88,7 @@ async def workspace_page(request: Request):
         ctx["pilot_models_json"] = "[]"
         ctx["workspace_config"] = config
         ctx["b14_provider_mode"] = openrouter_config.provider_mode
-        ctx["b14_has_key"] = openrouter_config.has_key
+        ctx["b14_has_key"] = any_platform_secret_present()
         ctx["b14_site_name"] = openrouter_config.site_name
         ctx["b14_catalog_models"] = list_catalog_summaries()
         ctx["error"] = {
@@ -108,7 +109,7 @@ async def workspace_page(request: Request):
         ctx["pilot_models_json"] = "[]"
         ctx["workspace_config"] = config
         ctx["b14_provider_mode"] = openrouter_config.provider_mode
-        ctx["b14_has_key"] = openrouter_config.has_key
+        ctx["b14_has_key"] = any_platform_secret_present()
         ctx["b14_site_name"] = openrouter_config.site_name
         ctx["b14_catalog_models"] = list_catalog_summaries()
         ctx["error"] = None
@@ -132,7 +133,7 @@ async def workspace_page(request: Request):
     ctx["pilot_models_json"] = json.dumps(models, ensure_ascii=False)
     ctx["workspace_config"] = config
     ctx["b14_provider_mode"] = openrouter_config.provider_mode
-    ctx["b14_has_key"] = openrouter_config.has_key
+    ctx["b14_has_key"] = any_platform_secret_present()
     ctx["b14_site_name"] = openrouter_config.site_name
     ctx["b14_catalog_models"] = list_catalog_summaries()
     ctx["error"] = None

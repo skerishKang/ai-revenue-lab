@@ -149,6 +149,40 @@ def is_secret_present(spec: PlatformProviderSpec) -> bool:
     return bool(resolve_secret(spec))
 
 
+def any_platform_secret_present() -> bool:
+    """Return whether any platform_secret Provider has a resolved secret.
+
+    Keyless (``none``) and per-request (``request_byok``) Providers never count:
+    this answers "does the platform own at least one live credential?" used by
+    the health/workspace surface (#1933 S2). Secret values are never exposed.
+    """
+    for spec in _PLATFORM_PROVIDERS.values():
+        if spec.credential_source == CredentialSource.PLATFORM_SECRET:
+            if bool(resolve_secret(spec)):
+                return True
+    return False
+
+
+def live_ready() -> bool:
+    """Return whether the gateway is live and has a usable credential source.
+
+    Live readiness no longer depends on the OpenRouter key (#1933 S2): it is
+    satisfied when provider mode is live AND either (a) a platform-owned secret
+    is configured, or (b) a keyless (``none``) platform Provider route is
+    registered (e.g. the anonymous Kilo route). Never exposes values.
+    """
+    from app.pilot.openrouter_config import openrouter_config
+
+    if not openrouter_config.is_live:
+        return False
+    if any_platform_secret_present():
+        return True
+    for spec in _PLATFORM_PROVIDERS.values():
+        if spec.credential_source == CredentialSource.NONE:
+            return True
+    return False
+
+
 def _validate_origin(origin: str, allowed_hosts: tuple[str, ...]) -> None:
     """Validate a fixed Provider origin (SSRF + host allow-list)."""
     parsed = urlparse(origin)

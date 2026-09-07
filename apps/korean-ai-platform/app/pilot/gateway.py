@@ -48,7 +48,12 @@ from app.pilot.catalog import (
     is_evidenced_free,
     list_catalog_summaries,
 )
-from app.pilot.platform_secrets import list_platform_providers, resolve_secret
+from app.pilot.platform_secrets import (
+    any_platform_secret_present,
+    list_platform_providers,
+    live_ready,
+    resolve_secret,
+)
 from app.pilot import provider as prv
 from app.pilot import openrouter as orv
 from app.pilot import router_core as rcore
@@ -387,7 +392,7 @@ async def pilot_health(request: Request):
 
     b14_info = {
         "provider_mode": openrouter_config.provider_mode,
-        "has_key": openrouter_config.has_key,
+        "has_key": any_platform_secret_present(),
         "catalog_models": len(list_catalog_summaries()),
         "providers": [
             {
@@ -427,7 +432,7 @@ async def pilot_health(request: Request):
             "business14": b14_info,
         })
 
-    if openrouter_config.is_live and openrouter_config.has_key:
+    if live_ready():
         return JSONResponse({
             "status": "ok",
             "mode": "b14-live",

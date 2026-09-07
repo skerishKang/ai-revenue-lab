@@ -1618,16 +1618,19 @@ class TestOwnerEnvWorkflow:
         assert "python3 -m uvicorn app.main:app --env-file .env" not in text
         assert "app.main` loads working-directory `.env`" in text
 
-    def test_secret_not_exposed_when_key_configured(self, client):
-        secret = "sk-or-v1-super-secret-abcdef1234567890"
-        _set_live(secret)
+    def test_secret_not_exposed_when_key_configured(self, client, monkeypatch):
+        openrouter_secret = "sk-or-v1-super-secret-abcdef1234567890"
+        platform_secret = "sk-sensenova-super-secret-abcdef1234567890"
+        _set_live(openrouter_secret)
+        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
         resp = client.get("/api/pilot/health")
         assert resp.status_code == 200
         assert resp.json()["business14"]["has_key"] is True
         for path in ("/api/pilot/health", "/api/pilot/models", "/workspace"):
             page = client.get(path)
             assert page.status_code == 200
-            assert secret not in page.text
+            assert openrouter_secret not in page.text
+            assert platform_secret not in page.text
 
 
 # ============================================================================
