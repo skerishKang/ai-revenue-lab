@@ -25,7 +25,7 @@ from starlette.responses import Response
 
 from app.factory import render_template
 from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, get_pilot_model_count
-from app.pilot.locale import gettext, locale_from_request, set_locale_cookie, Locale
+from app.pilot.locale import PLATFORM_SITE_NAME, gettext, locale_from_request, set_locale_cookie, Locale
 from app.pilot.routing import resolve_configuration, PilotConfigurationState
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.platform_secrets import any_platform_secret_present
@@ -71,7 +71,7 @@ async def workspace_page(request: Request):
         "maxTokens": 512,
         "b14ProviderMode": openrouter_config.provider_mode,
         "b14HasKey": any_platform_secret_present(),
-        "b14SiteName": openrouter_config.site_name,
+        "b14SiteName": PLATFORM_SITE_NAME,
         "b14CatalogModels": list_catalog_summaries(),
         "b14AutoModelId": "b14/auto",
     }
@@ -89,7 +89,7 @@ async def workspace_page(request: Request):
         ctx["workspace_config"] = config
         ctx["b14_provider_mode"] = openrouter_config.provider_mode
         ctx["b14_has_key"] = any_platform_secret_present()
-        ctx["b14_site_name"] = openrouter_config.site_name
+        ctx["b14_site_name"] = PLATFORM_SITE_NAME
         ctx["b14_catalog_models"] = list_catalog_summaries()
         ctx["error"] = {
             "code": "registry_invalid",
@@ -110,7 +110,7 @@ async def workspace_page(request: Request):
         ctx["workspace_config"] = config
         ctx["b14_provider_mode"] = openrouter_config.provider_mode
         ctx["b14_has_key"] = any_platform_secret_present()
-        ctx["b14_site_name"] = openrouter_config.site_name
+        ctx["b14_site_name"] = PLATFORM_SITE_NAME
         ctx["b14_catalog_models"] = list_catalog_summaries()
         ctx["error"] = None
         resp = render_template(request, "workspace.html", ctx)
@@ -134,7 +134,7 @@ async def workspace_page(request: Request):
     ctx["workspace_config"] = config
     ctx["b14_provider_mode"] = openrouter_config.provider_mode
     ctx["b14_has_key"] = any_platform_secret_present()
-    ctx["b14_site_name"] = openrouter_config.site_name
+    ctx["b14_site_name"] = PLATFORM_SITE_NAME
     ctx["b14_catalog_models"] = list_catalog_summaries()
     ctx["error"] = None
 

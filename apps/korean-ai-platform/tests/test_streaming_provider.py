@@ -43,26 +43,19 @@ class FragmentedStream(httpx.AsyncByteStream):
 def _reset_platform_mode(monkeypatch):
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "api_key": orcfg.api_key,
         "provider_mode": orcfg.provider_mode,
-        "base_url": orcfg.base_url,
         "max_response_bytes": orcfg.max_response_bytes,
     }
-    orcfg.api_key = ""
     orcfg.provider_mode = "mock"
-    orcfg.base_url = "https://openrouter.ai/api/v1"
     orcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.api_key = saved["api_key"]
     orcfg.provider_mode = saved["provider_mode"]
-    orcfg.base_url = saved["base_url"]
     orcfg.max_response_bytes = saved["max_response_bytes"]
 
 
 def _set_live() -> None:
     # Kilo Gateway free tier is keyless: live mode needs no secret (#1933 S2).
     os.environ.pop("B14_PROVIDER_MODE", None)
-    orcfg.api_key = ""
     orcfg.provider_mode = "live"
 
 

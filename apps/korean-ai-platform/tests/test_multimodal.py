@@ -32,19 +32,15 @@ def multimodal_content(url: str | None = None):
 @pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
     old_mode = openrouter_config.provider_mode
-    old_key = openrouter_config.api_key
-    old_base = openrouter_config.base_url
     openrouter_config.provider_mode = "mock"
-    openrouter_config.api_key = ""
     yield
     openrouter_config.provider_mode = old_mode
-    openrouter_config.api_key = old_key
-    openrouter_config.base_url = old_base
 
 
 @pytest.fixture()
 def client():
-    return TestClient(create_app())
+    with TestClient(create_app()) as test_client:
+        yield test_client
 
 
 def post_image(client, *, model="b14/auto", content=None, business14=None):
@@ -252,7 +248,6 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
         )
 
     openrouter_config.provider_mode = "live"
-    openrouter_config.api_key = ""
     messages = [{"role": "user", "content": multimodal_content()}]
     result = await plat.call_platform_chat_completions(
         messages=messages,

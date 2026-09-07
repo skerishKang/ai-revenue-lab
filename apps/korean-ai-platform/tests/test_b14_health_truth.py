@@ -29,13 +29,13 @@ PLATFORM_SECRET_ENV_KEYS = (
 
 @pytest.fixture()
 def client():
-    return TestClient(create_app())
+    with TestClient(create_app()) as test_client:
+        yield test_client
 
 
 @pytest.fixture(autouse=True)
 def _reset_runtime_state(monkeypatch):
     saved_openrouter = {
-        "api_key": openrouter_config.api_key,
         "provider_mode": openrouter_config.provider_mode,
     }
     saved_pilot = {
@@ -48,7 +48,6 @@ def _reset_runtime_state(monkeypatch):
 
     for key in PLATFORM_SECRET_ENV_KEYS:
         monkeypatch.delenv(key, raising=False)
-    openrouter_config.api_key = ""
     openrouter_config.provider_mode = "mock"
     pilot_settings.pilot_base_url = ""
     pilot_settings.pilot_model_id = ""
@@ -58,7 +57,6 @@ def _reset_runtime_state(monkeypatch):
 
     yield
 
-    openrouter_config.api_key = saved_openrouter["api_key"]
     openrouter_config.provider_mode = saved_openrouter["provider_mode"]
     pilot_settings.pilot_base_url = saved_pilot["pilot_base_url"]
     pilot_settings.pilot_model_id = saved_pilot["pilot_model_id"]
@@ -95,7 +93,6 @@ def test_live_with_platform_secret_is_top_level_healthy(client, monkeypatch):
 def test_live_without_platform_secret_is_still_ready_via_keyless_kilo(client):
     """Live readiness no longer depends on the OpenRouter key (#1933 S2)."""
     _set_live()
-    openrouter_config.api_key = ""
 
     data = client.get("/api/pilot/health").json()
 
@@ -108,7 +105,6 @@ def test_live_without_platform_secret_is_still_ready_via_keyless_kilo(client):
 def test_openrouter_key_alone_is_not_has_key_truth(client):
     """The OpenRouter key is no longer the live/has_key truth source."""
     _set_live()
-    openrouter_config.api_key = "sk-or-v1-health-proof-1234567890abcdef"
 
     data = client.get("/api/pilot/health").json()
 
@@ -185,7 +181,6 @@ def test_health_never_exposes_secrets(client, monkeypatch):
     openrouter_secret = "sk-or-v1-health-secret-should-never-appear-abcdef"
     platform_secret = "sk-sensenova-never-expose-abcdef1234567890"
     _set_live()
-    openrouter_config.api_key = openrouter_secret
     monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", platform_secret)
 
     response = client.get("/api/pilot/health")

@@ -22,7 +22,8 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return TestClient(app)
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 @pytest.fixture(autouse=True)
@@ -39,15 +40,12 @@ def _reset_pilot_config(monkeypatch):
     from app.pilot.openrouter_config import openrouter_config as orcfg
 
     saved_mode = orcfg.provider_mode
-    saved_key = orcfg.api_key
     orcfg.provider_mode = "mock"
-    orcfg.api_key = ""
     yield
     pilot_settings.pilot_base_url = saved["base_url"]
     pilot_settings.pilot_model_id = saved["model_id"]
     pilot_settings.provider_registry_json = saved["registry_json"]
     orcfg.provider_mode = saved_mode
-    orcfg.api_key = saved_key
 
 
 def _configure_pilot():

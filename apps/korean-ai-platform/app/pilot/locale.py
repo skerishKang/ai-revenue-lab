@@ -20,6 +20,9 @@ class Locale(str, Enum):
     EN = "en"
 
 
+PLATFORM_SITE_NAME = "Business 14 Korean AI Gateway"
+
+
 # Korean-first translation table.
 # English fallback to Korean is done by gettext() returning the key's Korean
 # value when English translation is absent.

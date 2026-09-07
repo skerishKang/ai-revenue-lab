@@ -15,15 +15,13 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.catalog import (
     CATALOG_MODELS,
-    CATALOG_SOURCE,
-    CATALOG_SOURCE_URL,
     CatalogModel,
     get_catalog_by_id,
     list_catalog_summaries,
     select_by_optimize,
     filter_catalog,
 )
-from app.pilot.openrouter_config import OpenRouterConfig, ALLOWED_OPENROUTER_HOSTS
+from app.pilot.openrouter_config import OpenRouterConfig
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.router_core import (
@@ -48,7 +46,8 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return TestClient(app)
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 @pytest.fixture(autouse=True)
@@ -63,11 +62,7 @@ def _reset_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "api_key": orcfg.api_key,
         "provider_mode": orcfg.provider_mode,
-        "base_url": orcfg.base_url,
-        "site_url": orcfg.site_url,
-        "site_name": orcfg.site_name,
     }
     from app.pilot.config import pilot_settings
     saved_pilot = {
@@ -77,19 +72,11 @@ def _reset_config(monkeypatch):
         "pilot_provider_id": pilot_settings.pilot_provider_id,
         "pilot_upstream_model": pilot_settings.pilot_upstream_model,
     }
-    orcfg.api_key = ""
     orcfg.provider_mode = "mock"
-    orcfg.base_url = "https://openrouter.ai/api/v1"
-    orcfg.site_url = ""
-    orcfg.site_name = "Business 14 Korean AI Gateway"
     from app.pilot.registry import reset_registry
     reset_registry()
     yield
-    orcfg.api_key = saved["api_key"]
     orcfg.provider_mode = saved["provider_mode"]
-    orcfg.base_url = saved["base_url"]
-    orcfg.site_url = saved["site_url"]
-    orcfg.site_name = saved["site_name"]
     pilot_settings.pilot_base_url = saved_pilot["pilot_base_url"]
     pilot_settings.pilot_model_id = saved_pilot["pilot_model_id"]
     pilot_settings.provider_registry_json = saved_pilot["provider_registry_json"]
@@ -99,7 +86,6 @@ def _reset_config(monkeypatch):
 
 
 def _set_live(key: str = "sk-or-v1-real-key-1234567890abcdef") -> None:
-    orcfg.api_key = key
     orcfg.provider_mode = "live"
 
 
@@ -191,92 +177,15 @@ def patch_platform_call(monkeypatch):
 
 
 # ============================================================================
-# Host allow-list / URL validation
-# ============================================================================
-
-class TestHostAllowlist:
-    def test_openrouter_host_allowed(self):
-        cfg = OpenRouterConfig()
-        cfg.validate_base_url("https://openrouter.ai/api/v1")
-
-    def test_openrouter_host_trailing_dot_allowed(self):
-        cfg = OpenRouterConfig()
-        cfg.validate_base_url("https://openrouter.ai./api/v1")
-
-    def test_allowlist_contains_openrouter(self):
-        assert "openrouter.ai" in ALLOWED_OPENROUTER_HOSTS
-
-    @pytest.mark.parametrize("bad_url", [
-        "https://evil.com/api/v1",
-        "https://openrouter.ai.evil.com/api/v1",
-        "https://evil-openrouter.ai/api/v1",
-        "https://notopenrouter.ai/api/v1",
-        "https://openrouter.ai.attacker.com/api/v1",
-        "http://openrouter.ai/api/v1",  # not https
-        "https://localhost:8000/api/v1",
-        "https://127.0.0.1/api/v1",
-        "https://10.0.0.1/api/v1",
-        "https://169.254.169.254/latest/meta-data/",
-        "https://user:pass@openrouter.ai/api/v1",
-    ])
-    def test_arbitrary_urls_rejected(self, bad_url):
-        cfg = OpenRouterConfig()
-        with pytest.raises(ValueError):
-            cfg.validate_base_url(bad_url)
-
-    def test_query_param_key_forbidden(self):
-        """Base URL must not include key as query parameter."""
-        cfg = OpenRouterConfig()
-        with pytest.raises(ValueError):
-            cfg.validate_base_url("https://openrouter.ai/api/v1?key=sk-or-v1-abc")
-
-
-# ============================================================================
 # Key isolation / redaction
 # ============================================================================
 
 class TestKeyIsolation:
-    def test_has_key_true_with_real_key(self):
-        _set_live()
-        assert orcfg.has_key is True
-
-    def test_has_key_false_empty(self):
-        orcfg.api_key = ""
-        assert orcfg.has_key is False
-
-    @pytest.mark.parametrize("bad_key", [
-        "sk-your-key-here",
-        "your-api-key",
-        "test-key",
-        "demo-key",
-        "placeholder",
-        "abc",  # too short
-    ])
-    def test_placeholder_key_not_valid(self, bad_key):
-        orcfg.api_key = bad_key
-        assert orcfg.has_key is False
-
     def test_key_not_in_redacted_summary(self):
         _set_live("sk-or-v1-very-secret-key-abcdef1234567890")
         summary = orcfg.redacted_summary()
         assert "sk-or-v1-very-secret-key" not in summary
         assert "abcdef1234567890" not in summary
-
-    def test_safe_headers_no_query_param(self):
-        _set_live()
-        headers = orcfg.safe_headers()
-        assert headers.get("Authorization", "").startswith("Bearer ")
-        # Key must be in Authorization only, not in any URL
-        assert "sk-or-v1" not in str(orcfg.base_url)
-
-    def test_site_headers_are_not_secrets(self):
-        _set_live()
-        orcfg.site_url = "https://example.org"
-        orcfg.site_name = "Business 14 Korean AI Gateway"
-        headers = orcfg.safe_headers()
-        assert headers.get("HTTP-Referer") == "https://example.org"
-        assert headers.get("X-OpenRouter-Title") == "Business 14 Korean AI Gateway"
-        assert "sk-or-v1" not in headers.get("HTTP-Referer", "")
 
 
 class TestKeyRedaction:
@@ -1195,18 +1104,13 @@ class TestResponseLimits:
 
     def test_oversized_body_limit_configured(self):
         assert orcfg.max_response_bytes == 1024 * 1024
-        assert orcfg.max_error_body_chars == 500
 
     def test_timeout_bounds_configured(self):
-        assert orcfg.connect_timeout_seconds <= 10
-        assert orcfg.read_timeout_seconds <= 30
-        assert orcfg.write_timeout_seconds <= 10
-        assert orcfg.pool_timeout_seconds <= 10
         timeout = orcfg.build_http_timeout()
-        assert timeout.connect == orcfg.connect_timeout_seconds
-        assert timeout.read == orcfg.read_timeout_seconds
-        assert timeout.write == orcfg.write_timeout_seconds
-        assert timeout.pool == orcfg.pool_timeout_seconds
+        assert timeout.connect <= 10
+        assert timeout.read <= 30
+        assert timeout.write <= 10
+        assert timeout.pool <= 10
 
 
 # ============================================================================
@@ -1279,8 +1183,6 @@ class TestFreeRouterExactRoute:
 
 class TestCatalogSourceContract:
     def test_catalog_source_metadata(self):
-        assert CATALOG_SOURCE == "openrouter_models_api"
-        assert CATALOG_SOURCE_URL == "https://openrouter.ai/api/v1/models"
         summaries = list_catalog_summaries()
         assert summaries
         for s in summaries:

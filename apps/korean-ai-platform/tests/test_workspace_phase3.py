@@ -32,7 +32,8 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return TestClient(app)
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 @pytest.fixture(autouse=True)
