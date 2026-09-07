@@ -41,7 +41,14 @@ from app.pilot.routing import (
 )
 from app.pilot.schemas import PilotChatRequest
 from app.pilot.openrouter_config import openrouter_config
-from app.pilot.catalog import get_catalog_by_id, list_catalog_summaries
+from app.pilot.catalog import (
+    CATALOG_BY_ID,
+    CATALOG_MODELS,
+    get_catalog_by_id,
+    is_evidenced_free,
+    list_catalog_summaries,
+)
+from app.pilot.platform_secrets import list_platform_providers, resolve_secret
 from app.pilot import provider as prv
 from app.pilot import openrouter as orv
 from app.pilot import router_core as rcore
@@ -301,19 +308,56 @@ def _is_alpha_model(model_id: str) -> bool:
     return get_catalog_by_id(model_id) is not None
 
 
+def _providers_with_registered_routes() -> list:
+    """Return registered platform providers that own at least one CATALOG_BY_ID route."""
+    provider_ids = {
+        model.platform_provider_id
+        for model in CATALOG_BY_ID.values()
+        if model.enabled and model.provider_type == "platform"
+    }
+    return [
+        spec for spec in list_platform_providers()
+        if spec.provider_id in provider_ids
+    ]
+
+
+def _registered_route_dicts() -> list[dict]:
+    """Return the exact-ID route registry surface without prices or secrets.
+
+    ``public`` marks the CATALOG_MODELS auto lane, ``explicit_only`` the
+    manual-pin lane, ``auto_eligible`` the free public lane.
+    """
+    public_ids = {model.model_id for model in CATALOG_MODELS}
+    entries = []
+    for model in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id):
+        is_public = model.model_id in public_ids
+        is_free = is_evidenced_free(model)
+        entries.append({
+            "id": model.model_id,
+            "provider_id": model.platform_provider_id,
+            "upstream_model": model.upstream_model,
+            "free": is_free,
+            "public": is_public,
+            "explicit_only": not is_public,
+            "auto_eligible": is_public and is_free,
+        })
+    return entries
+
+
 def _catalog_summary_dicts() -> list[dict]:
     """Return catalog models as display dicts with extra Alpha fields."""
     result = []
     for m in list_catalog_summaries():
+        model = get_catalog_by_id(m["model_id"])
         result.append({
             "id": m["model_id"],
             "name": m["name"],
-            "provider_id": "openrouter",
+            "provider_id": model.platform_provider_id if model else "kilo",
             "provider_name": m["provider"],
             "pilot_available": True,
             "input_krw_per_1k": None,
             "output_krw_per_1k": None,
-            "tags": ["alpha", "openrouter"] + list(m["capabilities"]),
+            "tags": ["alpha"] + list(m["capabilities"]),
             "input_price_usd_per_1m": m["input_price_usd_per_1m"],
             "output_price_usd_per_1m": m["output_price_usd_per_1m"],
             "korean_score": m["korean_score"],
@@ -322,12 +366,12 @@ def _catalog_summary_dicts() -> list[dict]:
     result.insert(0, {
         "id": "b14/auto",
         "name": "Business 14 자동 선택",
-        "provider_id": "openrouter",
-        "provider_name": "OpenRouter",
+        "provider_id": "kilo",
+        "provider_name": "Kilo Gateway",
         "pilot_available": True,
         "input_krw_per_1k": None,
         "output_krw_per_1k": None,
-        "tags": ["alpha", "openrouter", "auto"],
+        "tags": ["alpha", "auto"],
         "input_price_usd_per_1m": 0,
         "output_price_usd_per_1m": 0,
         "korean_score": 0,
@@ -344,9 +388,18 @@ async def pilot_health(request: Request):
     b14_info = {
         "provider_mode": openrouter_config.provider_mode,
         "has_key": openrouter_config.has_key,
-        "base_url_host": openrouter_config.base_url,
-        "site_name": openrouter_config.site_name,
         "catalog_models": len(list_catalog_summaries()),
+        "providers": [
+            {
+                "id": spec.provider_id,
+                "registered": True,
+                "has_key": bool(resolve_secret(spec)),
+            }
+            for spec in sorted(
+                _providers_with_registered_routes(),
+                key=lambda item: item.provider_id,
+            )
+        ],
     }
 
     if state == PilotConfigurationState.VALID_REGISTRY:
@@ -377,9 +430,10 @@ async def pilot_health(request: Request):
     if openrouter_config.is_live and openrouter_config.has_key:
         return JSONResponse({
             "status": "ok",
-            "mode": "business14-openrouter-live",
-            "configured_providers": 1,
+            "mode": "b14-live",
+            "configured_providers": len(_providers_with_registered_routes()),
             "configured_models": len(list_catalog_summaries()),
+            "registered_routes": len(CATALOG_BY_ID),
             "business14": b14_info,
         })
 
@@ -404,6 +458,7 @@ async def pilot_models(request: Request):
             "configured": True,
             "mode": "multi-provider",
             "catalog": _catalog_summary_dicts(),
+            "registered_routes": _registered_route_dicts(),
         })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
@@ -428,12 +483,14 @@ async def pilot_models(request: Request):
             "configured": True,
             "mode": "single-provider",
             "catalog": _catalog_summary_dicts(),
+            "registered_routes": _registered_route_dicts(),
         })
 
     return JSONResponse({
         "models": [],
         "configured": False,
         "catalog": _catalog_summary_dicts(),
+        "registered_routes": _registered_route_dicts(),
     })
 
 

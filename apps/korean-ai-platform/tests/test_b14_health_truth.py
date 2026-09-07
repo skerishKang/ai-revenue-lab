@@ -1,4 +1,4 @@
-"""Network-free health truth regressions for Business 14 OpenRouter runtime."""
+"""Network-free health truth regressions for the Business 14 runtime (#1933 S1)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.catalog import list_catalog_summaries
+from app.pilot.catalog import CATALOG_BY_ID, list_catalog_summaries
 from app.pilot.config import pilot_settings
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.registry import reset_registry
@@ -58,7 +58,7 @@ def _set_openrouter_live(key: str = "sk-or-v1-health-proof-1234567890abcdef") ->
     openrouter_config.api_key = key
 
 
-def test_openrouter_live_with_valid_key_is_top_level_healthy(client):
+def test_live_with_valid_key_is_top_level_healthy(client):
     _set_openrouter_live()
 
     response = client.get("/api/pilot/health")
@@ -66,12 +66,15 @@ def test_openrouter_live_with_valid_key_is_top_level_healthy(client):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
-    assert data["mode"] == "business14-openrouter-live"
-    assert data["configured_providers"] == 1
+    assert data["mode"] == "b14-live"
+    assert data["configured_providers"] == 3
     assert data["configured_models"] == len(list_catalog_summaries())
+    assert data["registered_routes"] == len(CATALOG_BY_ID)
     assert data["business14"]["provider_mode"] == "live"
     assert data["business14"]["has_key"] is True
     assert data["business14"]["catalog_models"] == len(list_catalog_summaries())
+    assert "base_url_host" not in data["business14"]
+    assert "site_name" not in data["business14"]
 
 
 def test_openrouter_live_missing_key_is_not_execution_ready(client):
@@ -159,3 +162,30 @@ def test_health_never_exposes_openrouter_key(client):
     assert response.status_code == 200
     assert secret not in response.text
     assert "Authorization" not in response.text
+
+
+def test_business14_providers_reflect_registered_route_owners(client):
+    _set_openrouter_live()
+
+    data = client.get("/api/pilot/health").json()
+
+    providers = data["business14"]["providers"]
+    assert [p["id"] for p in providers] == ["kilo", "poolside", "sensenova"]
+    for entry in providers:
+        assert set(entry.keys()) == {"id", "registered", "has_key"}
+        assert entry["registered"] is True
+        assert isinstance(entry["has_key"], bool)
+    kilo = next(p for p in providers if p["id"] == "kilo")
+    assert kilo["has_key"] is False
+
+
+def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
+    _set_openrouter_live()
+
+    health = client.get("/api/pilot/health")
+    models = client.get("/api/pilot/models")
+
+    assert health.status_code == 200
+    assert models.status_code == 200
+    assert "openrouter" not in health.text.lower()
+    assert "openrouter" not in models.text.lower()
