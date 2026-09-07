@@ -181,7 +181,7 @@ def _has_glob_meta(value: str) -> bool:
 
 def _glob_candidates(repository: Path, target: str) -> list[Path]:
     pattern = target if os.path.isabs(target) else str(repository / target)
-    return [Path(item) for item in glob.glob(pattern, recursive=True)]
+    return [Path(item) for item in sorted(glob.glob(pattern, recursive=True))]
 
 
 def _resolve_review_files(repository: Path, targets: list[str]) -> list[Path]:
