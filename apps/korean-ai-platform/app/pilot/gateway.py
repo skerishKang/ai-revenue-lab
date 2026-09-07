@@ -56,6 +56,7 @@ from app.pilot.platform_secrets import (
 from app.pilot import provider as prv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
+from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 
 # ---------------------------------------------------------------------------
 # Bounded same-route retry for retryable upstream failures (#1982)
@@ -392,6 +393,10 @@ async def pilot_health(request: Request):
         "provider_mode": runtime_config.provider_mode,
         "has_key": any_platform_secret_present(),
         "catalog_models": len(list_catalog_summaries()),
+        "routing_policy": {
+            "id": ROUTING_POLICY_ID,
+            "chain": list(B14_AUTO_CHAIN),
+        },
         "providers": [
             {
                 "id": spec.provider_id,
@@ -598,6 +603,7 @@ def _build_b14_mock_metadata(
     model_id: str,
     upstream_model: str,
     provider: str,
+    routing_policy: str | None = None,
 ) -> dict[str, Any]:
     """Build Business 14 metadata for a mock response."""
     return {
@@ -616,6 +622,7 @@ def _build_b14_mock_metadata(
         "attempt_count": 1,
         "fallback_used": False,
         "evidence_status": "mock_no_upstream_call",
+        "routing_policy": routing_policy,
     }
 
 
@@ -631,6 +638,7 @@ def _build_b14_live_metadata(
     attempt_count: int = 1,
     fallback_used: bool = False,
     actual_response_model: str | None = None,
+    routing_policy: str | None = None,
 ) -> dict[str, Any]:
     """Build Business 14 metadata for a live response.
 
@@ -663,6 +671,7 @@ def _build_b14_live_metadata(
         "attempt_count": attempt_count,
         "fallback_used": fallback_used,
         "evidence_status": "live_verified",
+        "routing_policy": routing_policy,
     }
 
 
@@ -697,7 +706,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "model_id": fc["model_id"],
             "upstream_model": fc["upstream_model"],
             "provider": fc["provider"],
-            "route_id": fc.get("route_id", f"openrouter:{fc['model_id']}"),
+            "route_id": fc["route_id"],
+            "platform_provider_id": fc.get("platform_provider_id", ""),
         }
         for fc in decision.eligible_fallback
     ] if decision.fallback_allowed else []
@@ -719,6 +729,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "upstream_model": candidate.upstream_model,
             "provider": candidate.provider,
             "route_id": candidate.route_id,
+            "platform_provider_id": decision.platform_provider_id,
         }
     ] + fallback_candidates
 
@@ -728,7 +739,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 model_id=current["model_id"],
                 upstream_model=current["upstream_model"],
                 provider=current["provider"],
-                platform_provider_id=decision.platform_provider_id,
+                platform_provider_id=current.get("platform_provider_id") or decision.platform_provider_id,
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
@@ -754,6 +765,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         retry_index = 0
         succeeded = False
         unexpected_internal = False
+        advance_to_next_candidate = False
         while True:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -860,7 +872,19 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 break
             if idx + 1 >= max_attempts or idx >= len(candidates) - 1:
                 break
+            advance_to_next_candidate = True
             break  # -> next fallback candidate
+
+        if succeeded or unexpected_internal:
+            # Success ends the chain walk; an unknown exception fails closed
+            # with no fallback (never advance on either path).
+            break
+        if not advance_to_next_candidate:
+            # Non-fallback-allowed errors and exhausted attempts stop the
+            # walk: reaching the next candidate requires an explicit advance
+            # decision above (D14 #2044: multi-candidate chains made the old
+            # fall-through walk every remaining candidate).
+            break
 
     latency_ms = int((time.monotonic() - start_time) * 1000)
 
@@ -900,6 +924,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             model_id=success_candidate["model_id"],
             upstream_model=success_candidate["upstream_model"],
             provider=success_candidate["provider"],
+            routing_policy=ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         )
     else:
         usage = response_data.get("usage") or {}
@@ -918,6 +943,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             attempt_count=attempt_count,
             fallback_used=fallback_used,
             actual_response_model=actual_response_model,
+            routing_policy=ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         )
 
     usage = response_data.get("usage") or {}

@@ -246,8 +246,9 @@ prompt input, model selection, optimization options, and route preview.
 - Redirects are disabled (`follow_redirects=False`)
 - Exact host allow-list per Provider (`api.kilo.ai`, `token.sensenova.ai`,
   `inference.poolside.ai`)
-- Non-platform (OpenRouter) routes fail closed with `invalid_request` before
-  any network call (#1933 S2)
+- Non-platform (retired credential source) routes fail closed with
+  `unsupported_credential_source` at resolve time, before any network call
+  (#1933 S2, D14 #2044)
 - Explicit connect/read/write/pool timeout bounds applied (10s/30s/10s/10s; no implicit total timeout)
 - Success responses are streamed and aborted as soon as the 1 MB body cap is exceeded
 - Upstream error body truncated to 500 characters
@@ -256,18 +257,32 @@ prompt input, model selection, optimization options, and route preview.
 ### Router Core
 
 - **Manual**: specific catalog model ID → single upstream call
-- **Automatic**: `model: "b14/auto"` → deterministic selection by `optimize_for`
-  (balanced / cost / latency / korean)
-- **Fallback**: retries only on transport failure, timeout, HTTP 429, HTTP 5xx (up to `max_attempts`, default 3)
+- **Automatic**: `model: "b14/auto"` → owner-designated fixed chain, no scorer
+  (`routing_policy: fixed_chain_v1`, D14 #2044):
+  1. `sensenova/sensenova-6.8-flash-lite`
+  2. `kilo/nvidia-nemotron-3-ultra-550b-a55b-free`
+  3. `kilo/minimax-minimax-m3-free` (provisional until the Kilo benchmark)
+  4. `poolside/laguna-s-2.1` (spare)
+- Scorer-era options (`task_type`, `required_capabilities`, `optimize_for`,
+  `provider_order`, `allow_paid`) remain accepted but are ignored; their names
+  are recorded in `reason_codes` as `ignored_options:...`.
+  `allow_external_fallback` and `max_attempts` (cap: chain length 4) still
+  bound the attempt count.
+- **Fallback**: advances to the next chain position only on transport failure,
+  timeout, HTTP 429, HTTP 5xx
 - **No fallback**: HTTP 400/401/403/404/409/422/any other 4xx, malformed request, malformed upstream response, oversize response, missing key, unsupported feature, unknown exceptions
-- **No-safe-route**: returns `NO_SAFE_ROUTE` with zero upstream calls
+- **No-safe-route**: fixed chain has no position with a usable credential
+  (secret-missing positions are reported as `provider_secret_missing`) →
+  `no_safe_route` with zero upstream calls
 - Resolve endpoint (`POST /api/pilot/router/resolve`) performs no upstream calls
+- Health (`GET /api/pilot/health`) reports the chain under
+  `business14.routing_policy` (`{id, chain}`)
 
 ### API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/pilot/health` | Health check (includes B14 provider mode + key availability) |
+| GET | `/api/pilot/health` | Health check (includes B14 provider mode + key availability + routing policy) |
 | GET | `/api/pilot/models` | Catalog models + existing BYOK models |
 | POST | `/api/pilot/router/resolve` | Resolve route without upstream calls |
 | POST | `/api/pilot/v1/chat/completions` | Chat completions (mock or live depending on mode) |
@@ -282,7 +297,8 @@ The chat completions response includes bounded `business14` metadata:
   "selected_upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
   "actual_response_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
   "selected_route_id": "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-  "reason_codes": ["optimize_for:balanced", "capabilities:chat"],
+  "reason_codes": ["routing_policy:fixed_chain_v1", "chain_position:1", "selected:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"],
+  "routing_policy": "fixed_chain_v1",
   "fallback_allowed": true,
   "fallback_used": false,
   "attempt_count": 1,
@@ -311,17 +327,20 @@ The chat completions response includes bounded `business14` metadata:
 
 ### Catalog
 
-The routed catalog is a **configured snapshot** of the Kilo Gateway official
-free-tier models (`kilo_official_gateway_models`), pinned by owner decision
-#1933 to a single auto-eligible route. The retired OpenRouter catalog is no
-longer routable; non-platform (OpenRouter) routes fail closed with
-`invalid_request` before any network call.
+The routed catalog is a **configured snapshot** of platform Provider routes.
+`b14/auto` resolves through the owner-designated fixed chain (D14 #2044), not
+through catalog scoring. The retired OpenRouter catalog is no longer routable;
+non-platform routes fail closed with `unsupported_credential_source` at
+resolve time.
 
 Prices are snapshot metadata, not a live invoice.
 
 | Model ID | Provider | Notes |
 |----------|----------|-------|
-| `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | Kilo Gateway / NVIDIA | Keyless free tier; $0/$0 snapshot; 200 req/hour limit fails closed as `kilo_free_rate_limited`; upstream `nvidia/nemotron-3-ultra-550b-a55b:free` preserved in `actual_response_model` |
+| `sensenova/sensenova-6.8-flash-lite` | SenseNova | Owner plan; chain position 1 (Kilo budget ~200 req/h is why SenseNova leads) |
+| `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | Kilo Gateway / NVIDIA | Keyless free tier; $0/$0 snapshot; 200 req/hour limit fails closed as `kilo_free_rate_limited`; upstream `nvidia/nemotron-3-ultra-550b-a55b:free` preserved in `actual_response_model`; chain position 2 |
+| `kilo/minimax-minimax-m3-free` | Kilo Gateway / MiniMax | Keyless free tier; chain position 3 (provisional until the Kilo benchmark) |
+| `poolside/laguna-s-2.1` | Poolside | Chain position 4 (spare) |
 
 ### Limitations
 

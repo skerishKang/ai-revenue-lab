@@ -8,7 +8,6 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.catalog import get_catalog_by_id
 from app.pilot.multimodal_contract import MAX_IMAGE_BYTES, validate_image_data_url
 from app.pilot.b14_runtime_config import runtime_config
 
@@ -62,52 +61,15 @@ def test_text_chat_contract_remains_backward_compatible(client):
     assert response.json()["business14"]["selected_model"]
 
 
-def _platform_image_catalog_model():
-    from app.pilot.catalog import CatalogModel
-
-    return CatalogModel(
-        model_id="test/platform-image-free",
-        upstream_model="test/platform-image-free",
-        display_name="Test Platform Image (test only)",
-        provider="Test Platform",
-        provider_type="platform",
-        input_price_usd_per_1m=0.0,
-        output_price_usd_per_1m=0.0,
-        currency="usd",
-        context_window=1_000_000,
-        korean_score=4,
-        latency_ms=1500,
-        capabilities=frozenset({"chat", "image", "coding", "free"}),
-        region="외부",
-        sort_order=5,
-        credential_source="platform_secret",
-        platform_provider_id="kilo",
-        source="kilo_official_gateway_models",
-        source_checked_at="2026-09-06",
-    )
-
-
-@pytest.fixture()
-def platform_image_catalog_entry(monkeypatch):
-    import app.pilot.catalog as cat
-
-    original_models = cat.CATALOG_MODELS
-    original_by_id = cat.CATALOG_BY_ID
-    extra = _platform_image_catalog_model()
-    cat.CATALOG_MODELS = [*original_models, extra]
-    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
-    try:
-        yield extra
-    finally:
-        cat.CATALOG_MODELS = original_models
-        cat.CATALOG_BY_ID = original_by_id
-
-
-def test_valid_multimodal_auto_route_selects_image_capable_model(
-    client, monkeypatch, platform_image_catalog_entry):
+def test_valid_multimodal_auto_route_uses_fixed_chain_head(
+    client, monkeypatch):
 
     from app.pilot import platform as plat
 
+    # D14 (#2044): b14/auto no longer filters by image capability; the fixed
+    # chain head answers and the validated multimodal array passes through.
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     captured = {}
 
     async def fake_call(**kwargs):
@@ -125,11 +87,8 @@ def test_valid_multimodal_auto_route_selects_image_capable_model(
     response = post_image(client, business14={"required_capabilities": ["chat"]})
     assert response.status_code == 200
     body = response.json()
-    selected = get_catalog_by_id(body["business14"]["selected_model"])
-    assert selected is not None
-    assert "image" in selected.capabilities
-    # Platform image-capable route is selected (OpenRouter retired, #1933 S2).
-    assert body["business14"]["selected_model"] == "test/platform-image-free"
+    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert body["business14"]["routing_policy"] == "fixed_chain_v1"
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
     assert outbound[0]["content"][0] == {"type": "text", "text": "이 이미지를 설명해줘"}
@@ -209,23 +168,18 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     assert calls == 0
 
 
-def test_no_image_capable_auto_candidate_fails_before_upstream(client, monkeypatch):
-    from app.pilot import platform as plat
+def test_auto_route_ignores_capability_filter_hook(client, monkeypatch):
+    """D14 (#2044): the scorer capability filter is dead for b14/auto."""
     from app.pilot import router_core as rcore
 
-    calls = 0
-
-    async def should_not_call(**kwargs):
-        nonlocal calls
-        calls += 1
-        raise AssertionError("platform adapter must not be called")
-
-    monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     monkeypatch.setattr(rcore, "_filter_catalog", lambda **kwargs: [])
     response = post_image(client)
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "no_safe_route"
-    assert calls == 0
+    assert response.status_code == 200
+    body = response.json()
+    assert body["business14"]["routing_policy"] == "fixed_chain_v1"
+    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
 
 @pytest.mark.asyncio

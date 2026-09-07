@@ -247,3 +247,17 @@ class NoSafeRoute(PilotError):
         )
         self.reason_code = reason_code
         self.upstream_called = upstream_called
+
+
+class RoutingError(PilotError):
+    """Raised when the routing policy configuration itself is invalid.
+
+    D14 (#2044): a fixed-chain model that is not registered or disabled in the
+    catalog is a deployment defect, not a caller mistake, so it fails closed
+    with HTTP 500 and a stable ``routing_policy_invalid`` code.
+    """
+
+    def __init__(self, code: str = "routing_policy_invalid", message: str = "") -> None:
+        if not message:
+            message = "라우팅 정책 설정이 올바르지 않습니다."
+        super().__init__(code=code, message=message, status_code=500)

@@ -22,7 +22,9 @@ from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Router
 
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
+from app.pilot.catalog import get_catalog_by_id
 from app.pilot.gateway import _validate_body
+from app.pilot.routing_policy import ROUTING_POLICY_ID
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
@@ -133,6 +135,7 @@ def _route_metadata(
         "actual_response_model": event.actual_response_model,
         "selected_route_id": event.selected_route_id,
         "reason_codes": list(event.reason_codes),
+        "routing_policy": ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         "fallback_allowed": decision.fallback_allowed,
         "fallback_used": event.fallback_used,
         "attempt_count": event.attempt,
@@ -345,8 +348,12 @@ async def pilot_auto_stream_preview(request: Request):
 
         def stream_call(**kwargs: Any):
             if decision.credential_source == "platform_secret":
+                # D14 (#2044): the fixed chain spans providers, so resolve the
+                # binding per attempt candidate instead of reusing the primary's.
+                cm = get_catalog_by_id(str(kwargs.get("model_id", "")))
+                provider_id = (cm.platform_provider_id if cm else "") or decision.platform_provider_id
                 return stream_platform_chat_completions(
-                    platform_provider_id=decision.platform_provider_id,
+                    platform_provider_id=provider_id,
                     transport=transport,
                     **kwargs,
                 )

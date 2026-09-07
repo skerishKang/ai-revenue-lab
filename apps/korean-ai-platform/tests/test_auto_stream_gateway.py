@@ -16,79 +16,6 @@ CHAT_URL = "/api/pilot/v1/chat/completions"
 LIVE_DUMMY_KEY = "unit-live-key-auto-stream-abcdef1234567890"
 KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
-SECONDARY_MODEL_ID = "test/secondary-free"
-SECONDARY_UPSTREAM = "test/secondary-free"
-PAID_MODEL_ID = "test/paid-4k"
-PAID_UPSTREAM = "test/paid-4k"
-
-
-def _secondary_free_model():
-    """Synthetic free route (openrouter adapter path) for fallback tests."""
-    from app.pilot.catalog import CatalogModel
-
-    return CatalogModel(
-        model_id=SECONDARY_MODEL_ID,
-        upstream_model=SECONDARY_UPSTREAM,
-        display_name="Secondary Free (test only)",
-        provider="Test Secondary Provider",
-        provider_type="external",
-        input_price_usd_per_1m=0.0,
-        output_price_usd_per_1m=0.0,
-        currency="usd",
-        context_window=1_000_000,
-        korean_score=3,
-        latency_ms=2000,
-        capabilities=frozenset({"chat", "free"}),
-        region="외부",
-        sort_order=30,
-        credential_source="openrouter",
-        platform_provider_id="",
-    )
-
-
-def _paid_catalog_model():
-    """Synthetic paid route used to prove the free hard filter never calls it."""
-    from app.pilot.catalog import CatalogModel
-
-    return CatalogModel(
-        model_id=PAID_MODEL_ID,
-        upstream_model=PAID_UPSTREAM,
-        display_name="Paid 4k (test only)",
-        provider="Test Paid Provider",
-        provider_type="external",
-        input_price_usd_per_1m=3.00,
-        output_price_usd_per_1m=15.00,
-        currency="usd",
-        context_window=200_000,
-        korean_score=5,
-        latency_ms=1100,
-        capabilities=frozenset({"chat"}),
-        region="외부",
-        sort_order=5,
-        credential_source="openrouter",
-        platform_provider_id="",
-    )
-
-
-@pytest.fixture
-def three_route_catalog(monkeypatch):
-    """Real Kilo route + one synthetic free route + one synthetic paid route.
-
-    Decision #1933 leaves a single real catalog route, so these tests install
-    synthetic routes to keep fallback / free-filter contracts genuinely
-    validated instead of silently collapsing to one candidate.
-    """
-    import app.pilot.catalog as cat
-
-    original_models = cat.CATALOG_MODELS
-    original_by_id = cat.CATALOG_BY_ID
-    cat.CATALOG_MODELS = [*original_models, _secondary_free_model(), _paid_catalog_model()]
-    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
-    try:
-        yield
-    finally:
-        cat.CATALOG_MODELS = original_models
-        cat.CATALOG_BY_ID = original_by_id
 
 
 class _ChunkStream(httpx.AsyncByteStream):
@@ -220,7 +147,9 @@ def _json_data_frames(text: str) -> list[dict]:
     return out
 
 
-def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata():
+def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata(monkeypatch):
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     response = _client().post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
@@ -237,7 +166,10 @@ def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata():
     assert meta["attempt_count"] == 1
     assert meta["committed"] is True
     assert meta["provider_mode"] == "mock"
-    assert "capabilities:free" in meta["reason_codes"]
+    # D14 (#2044): scorer reason codes are gone; the fixed chain reports its policy.
+    assert meta["routing_policy"] == "fixed_chain_v1"
+    assert "routing_policy:fixed_chain_v1" in meta["reason_codes"]
+    assert any(rc.startswith("ignored_options:") for rc in meta["reason_codes"])
     assert meta["route_evidence_status"] == "mock_no_upstream_call"
 
 
@@ -276,7 +208,25 @@ def test_canonical_endpoint_still_rejects_stream_true_for_b14_auto():
     assert response.json()["error"]["code"] == "stream_not_supported"
 
 
-def test_free_hard_filter_never_calls_paid_catalog_candidate(three_route_catalog):
+SENSENOVA_MODEL_ID = "sensenova/sensenova-6.8-flash-lite"
+SENSENOVA_UPSTREAM = "sensenova-6.8-flash-lite"
+SENSENOVA_KEY = "sk-chain-unit-sensenova-0123456789"
+POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
+
+
+def _chain_secrets(monkeypatch):
+    """Opt the deterministic fixed chain into all four positions."""
+    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", SENSENOVA_KEY)
+    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
+
+
+def test_fixed_chain_advances_on_retryable_stream_error(monkeypatch):
+    """D14 (#2044): a retryable pre-content error advances the fixed chain.
+
+    The scorer-era free/paid filter is gone: the chain itself is the
+    candidate pool, and each attempt uses its own provider binding.
+    """
+    _chain_secrets(monkeypatch)
     calls: list[str] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -284,29 +234,26 @@ def test_free_hard_filter_never_calls_paid_catalog_candidate(three_route_catalog
         model = body["model"]
         calls.append(model)
         assert body["stream"] is True
-        if model == KILO_UPSTREAM:
-            # 5xx keeps the fallback path under test: the Kilo free-tier 429
-            # (kilo_free_rate_limited) is terminal by contract and never
-            # advances to another candidate.
+        if model == SENSENOVA_UPSTREAM:
             return httpx.Response(500, content=b"bounded")
-        assert model == SECONDARY_UPSTREAM
-        return httpx.Response(200, stream=_success_stream(model, "무료 fallback"))
+        assert model == KILO_UPSTREAM
+        return httpx.Response(200, stream=_success_stream(model, "체인 fallback"))
 
     rcfg.provider_mode = "live"
     rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
-    assert calls == [KILO_UPSTREAM, SECONDARY_UPSTREAM]
-    assert PAID_UPSTREAM not in calls
+    assert calls == [SENSENOVA_UPSTREAM, KILO_UPSTREAM]
     frames = _json_data_frames(response.text)
     visible = next(frame for frame in frames if frame["choices"] and frame["choices"][0]["delta"].get("content"))
     meta = visible["business14"]
-    assert meta["selected_model"] == SECONDARY_MODEL_ID
+    assert meta["selected_model"] == KILO_MODEL
     assert meta["fallback_used"] is True
     assert meta["attempt_count"] == 2
     assert meta["committed"] is True
-    assert "capabilities:free" in meta["reason_codes"]
+    assert meta["routing_policy"] == "fixed_chain_v1"
+    assert "routing_policy:fixed_chain_v1" in meta["reason_codes"]
 
 
 def test_metadata_only_before_content_does_not_make_empty_stream_successful():
@@ -409,15 +356,16 @@ def test_nonretryable_pre_token_errors_stay_json_before_sse_start(
 @pytest.mark.parametrize(
     ("upstream_status", "expected_status", "expected_code", "expected_calls"),
     [
-        # Kilo free-tier quota is terminal: it never advances to another
-        # candidate. Its declared 429 status is preserved by the endpoint.
-        (429, 429, "kilo_free_rate_limited", [KILO_UPSTREAM]),
-        # Any other retryable transport error exhausts the resolved pool.
-        (500, 502, "upstream_server_error", [KILO_UPSTREAM, SECONDARY_UPSTREAM]),
+        # SenseNova 429 (plain quota) falls back to Kilo; the Kilo free-tier
+        # quota is terminal by contract and never advances further. Its
+        # declared 429 status is preserved by the endpoint.
+        (429, 429, "kilo_free_rate_limited", [SENSENOVA_UPSTREAM, KILO_UPSTREAM]),
+        # Any other retryable transport error exhausts the max_attempts bound.
+        (500, 502, "upstream_server_error", [SENSENOVA_UPSTREAM, KILO_UPSTREAM]),
     ],
 )
 def test_retryable_errors_exhaust_resolved_free_candidates_before_json_failure(
-    three_route_catalog,
+    monkeypatch,
     upstream_status: int,
     expected_status: int,
     expected_code: str,
@@ -430,6 +378,7 @@ def test_retryable_errors_exhaust_resolved_free_candidates_before_json_failure(
         calls.append(model)
         return httpx.Response(upstream_status, content=b"bounded")
 
+    _chain_secrets(monkeypatch)
     rcfg.provider_mode = "live"
     rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
