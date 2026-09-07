@@ -1,4 +1,4 @@
-"""WO-10 ACT-1 A11 Gmail tool_runtime production smoke (#2010).
+"""WO-10 A11 Gmail tool_runtime production smoke (#2010, ACT-2 hardened).
 
 Runs against the PRODUCTION Engine (default https://engine.padiem.net) with the
 product-owned smoke caller credential (PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET or
@@ -41,14 +41,17 @@ Steps
 
 Honest classification
 ---------------------
-  ROUTE_UNAVAILABLE   404 not_found            route absent from allowed_paths
-                                               (activation not yet wired)
+  ROUTE_UNAVAILABLE   404 not_found            route absent from the deployed
+                                               build — FAIL: the Tool routes are
+                                               wired in Engine source since
+                                               ACT-2, so a 404 can only mean a
+                                               stale deploy (never DEFERRED)
   RUNTIME_UNAVAILABLE 503 tool_runtime_unavailable / connector_grants_unavailable
   TOOL_NOT_ALLOWED    403 tool_not_registered / tool_agent_not_bound /
-                          tool_authorization_mismatch / tool_not_allowed /
-                          tool_agent_mismatch / tool_owner_mismatch /
-                          tool_auth_scope_missing /
-                          tool_external_authorization_required
+                           tool_authorization_mismatch / tool_not_allowed /
+                           tool_agent_mismatch / tool_owner_mismatch /
+                           tool_auth_scope_missing /
+                           tool_external_authorization_required
   TOOL_CONTRACT_LIVE  400 tool_arguments_too_large / invalid_tool_arguments
   INVALID_REQUEST     4xx invalid_request / invalid_tool_request / ...
   UPSTREAM_UNEXPECTED other 5xx
@@ -62,9 +65,12 @@ Verdicts
   A11_GMAIL_TOOL_RUNTIME_SMOKE=SKIPPED_MISSING_SECRET     (exit 1)
   A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL                       (exit 1)
 
-DEFERRED is NOT a fake PASS: it is the honest, machine-readable record that
-production has not reached the activation state yet (route not wired, runtime
-unbound, or tool/agent not authorized). It never blocks the deploy gate. FAIL
+DEFERRED is NOT a fake PASS: since the ACT-2 route activation it is the honest,
+machine-readable record that the route is admitted but production has not
+reached the credential/authorization state yet (runtime unbound, or tool/agent
+not authorized). It never blocks the deploy gate. The former route-not-wired
+DEFERRED tolerance was removed in ACT-2: with the routes wired in source, a
+404 is contradictory production behaviour and FAILs. FAIL
 is reserved for contradictory or unexpected production behaviour and does fail
 the gate.
 """
@@ -246,8 +252,9 @@ def s0_health() -> None:
     endpoints = body.get("endpoints") or []
     paths = {str(e.get("path")) for e in endpoints if isinstance(e, dict)}
     advertised = TOOL_EXECUTE_PATH in paths
-    # Recorded, never asserted: tool_runtime is DEFERRED until the ACT-2
-    # activation PR, and the route is intentionally absent from allowed_paths.
+    # Recorded, never asserted: the capability manifest stays DEFERRED until
+    # the D43 credential/authorization gate, and the route is admitted in
+    # source regardless of whether health advertises it.
     print(f"[S0] health OK: capabilities.tool_runtime={capability!r} {TOOL_EXECUTE_PATH}_advertised={advertised}")
 
 
@@ -262,8 +269,20 @@ def s1_canonical_gmail_probe() -> str:
             "Gmail tool registered — provider never called"
         )
         return verdict
-    if verdict in (ROUTE_UNAVAILABLE, RUNTIME_UNAVAILABLE, TOOL_NOT_ALLOWED):
-        print(f"[S1] activation incomplete, recorded honestly as {verdict}")
+    if verdict == ROUTE_UNAVAILABLE:
+        # ACT-2 removed the ACT-1 DEFERRED tolerance: the Tool routes are
+        # admitted in Engine source, so a 404 can only mean the deployed
+        # build predates route admission. A stale deploy is a gate failure.
+        _fail(
+            "S1",
+            "404 not_found — the Tool routes are wired in Engine source since "
+            "ACT-2; a 404 means the deployed build predates route admission",
+            body,
+        )
+        return verdict
+    if verdict in (RUNTIME_UNAVAILABLE, TOOL_NOT_ALLOWED):
+        print(f"[S1] route admitted, credential/authorization activation incomplete, "
+              f"recorded honestly as {verdict}")
         return verdict
     if verdict == UNEXPECTED and 200 <= status < 300:
         _fail("S1", f"tool executed (status {status}) — a smoke probe must never reach the provider", body)
@@ -329,17 +348,18 @@ def main() -> int:
         )
         return 0
 
-    if s1_verdict == ROUTE_UNAVAILABLE:
-        reason = "ROUTE_NOT_WIRED"
-    elif s1_verdict == RUNTIME_UNAVAILABLE:
+    if s1_verdict == RUNTIME_UNAVAILABLE:
         reason = "TOOL_RUNTIME_UNAVAILABLE"
     else:
         reason = "TOOL_NOT_ALLOWED"
 
+    # Reaching this line means the route was admitted (a 404 FAILs in S1), so
+    # the DEFERRED record always carries ROUTE_WIRED=1: only the credential /
+    # authorization activation state is deferred.
     print(
         f"A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON={reason} "
         f"ROUTE_AVAILABLE={1 if route_available else 0} "
-        f"ACTIVATION=NOT_WIRED {ZERO_SIDE_EFFECT_TOKENS} "
+        f"ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING {ZERO_SIDE_EFFECT_TOKENS} "
         f"CLASSIFICATION={s1_verdict}"
     )
     return 0

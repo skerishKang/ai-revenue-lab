@@ -57,6 +57,12 @@ from app.streaming_service import (
     PreparedStream,
     StreamingEngineService,
 )
+from app.tool_execution_service import ToolExecutionEngineService
+from app.tool_projection import (
+    TOOL_CANCEL_PATH,
+    TOOL_EXECUTE_PATH,
+    TOOL_RESUME_PATH,
+)
 from app.web_research_service import RESEARCH_PATH, WebResearchEngineService
 
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
@@ -254,6 +260,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 runtime_factory=unavailable_factory,
                 binding_resolver=None,
             ),
+            # ACT-2 route admission: the Tool routes are wired, but this
+            # composition carries an explicitly unconfigured resolver (no
+            # trusted Gmail port or grant store here). Every request fails
+            # closed as 503 `tool_runtime_unavailable` with zero provider
+            # calls; the canonical entrypoint composes the real resolver.
+            tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -314,6 +326,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         idempotency_replay=IdempotencyReplayEngineService(
             idempotency_adapter=idempotency_adapter,
         ),
+        # Same explicit unconfigured-resolver slot as the unbound branch:
+        # B14 binding presence never implies a Gmail tool authority.
+        tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
     )
 
 
@@ -425,6 +440,11 @@ class Default(WorkerEntrypoint):
             AGENT_SKILL_RESUME_PATH,
             AGENT_SKILL_CANCEL_PATH,
         }
+        tool_paths = {
+            TOOL_EXECUTE_PATH,
+            TOOL_RESUME_PATH,
+            TOOL_CANCEL_PATH,
+        }
         allowed_paths = {
             HEALTH_PATH,
             STREAM_PATH,
@@ -432,7 +452,7 @@ class Default(WorkerEntrypoint):
             RESEARCH_PATH,
             MEMORY_PATH,
             MEMORY_WRITE_PATH,
-        } | orchestration_paths | agent_skill_paths | idempotency_paths
+        } | orchestration_paths | agent_skill_paths | idempotency_paths | tool_paths
         if path not in allowed_paths:
             result = ServiceResponse(
                 status_code=404,
@@ -500,6 +520,25 @@ class Default(WorkerEntrypoint):
                     503,
                 )
             result = await services.agent_skill.handle(
+                method=method,
+                path=path,
+                content_type=content_type,
+                body=body,
+            )
+            return _json_response(result)
+
+        if path in tool_paths:
+            # ACT-2 route admission. The shared composition always carries an
+            # explicitly unconfigured resolver, so the service itself answers
+            # 503 `tool_runtime_unavailable`; this guard covers a foreign
+            # composition shape with the same machine-readable fail-closed.
+            if services.tool_execution is None:
+                return _error_response(
+                    "tool_runtime_unavailable",
+                    "The Engine Tool runtime is not provisioned for this deployment.",
+                    503,
+                )
+            result = await services.tool_execution.handle(
                 method=method,
                 path=path,
                 content_type=content_type,
