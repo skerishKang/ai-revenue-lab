@@ -17,10 +17,7 @@ from app.pilot.errors import (
     UpstreamServerError,
 )
 from app.pilot.openrouter_config import openrouter_config as orcfg
-from app.pilot.openrouter_stream import (
-    OpenRouterStreamEvent,
-    stream_openrouter_chat_completions,
-)
+from app.pilot.openrouter_stream import OpenRouterStreamEvent
 
 
 class FragmentedStream(httpx.AsyncByteStream):

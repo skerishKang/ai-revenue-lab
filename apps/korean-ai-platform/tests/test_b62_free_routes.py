@@ -13,7 +13,6 @@ from app.pilot.catalog import (
     get_catalog_by_id,
 )
 from app.pilot.errors import NoSafeRoute
-from app.pilot.openrouter import call_openrouter_chat_completions
 from app.pilot.openrouter_config import openrouter_config
 from app.pilot.router_core import resolve_auto_route
 

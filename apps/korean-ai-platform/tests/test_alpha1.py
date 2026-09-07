@@ -24,7 +24,6 @@ from app.pilot.catalog import (
     filter_catalog,
 )
 from app.pilot.openrouter_config import OpenRouterConfig, ALLOWED_OPENROUTER_HOSTS
-from app.pilot.openrouter import call_openrouter_chat_completions, build_mock_metadata
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.router_core import (

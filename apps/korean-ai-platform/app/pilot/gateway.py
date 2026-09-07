@@ -25,7 +25,6 @@ from app.pilot.errors import (
     InvalidRequest,
     MissingProviderKey,
     NoSafeRoute,
-    PilotNotConfigured,
     PlaceholderKeyRejected,
     PilotError,
     StreamNotSupported,
@@ -55,7 +54,6 @@ from app.pilot.platform_secrets import (
     resolve_secret,
 )
 from app.pilot import provider as prv
-from app.pilot import openrouter as orv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 
@@ -595,12 +593,85 @@ async def pilot_router_resolve(
         )
 
 
+def _build_b14_mock_metadata(
+    request_id: str,
+    model_id: str,
+    upstream_model: str,
+    provider: str,
+) -> dict[str, Any]:
+    """Build Business 14 metadata for a mock response."""
+    return {
+        "provider_mode": "mock",
+        "mode": "mock",
+        "provider": provider,
+        "model_route": model_id,
+        "upstream_model": upstream_model,
+        "actual_response_model": upstream_model,
+        "latency_ms": 0,
+        "request_id": request_id,
+        "estimated_usd": None,
+        "estimated_krw": None,
+        "cost_basis": "unknown",
+        "route_mode": "manual",
+        "attempt_count": 1,
+        "fallback_used": False,
+        "evidence_status": "mock_no_upstream_call",
+    }
+
+
+def _build_b14_live_metadata(
+    request_id: str,
+    model_id: str,
+    upstream_model: str,
+    provider: str,
+    latency_ms: int,
+    prompt_tokens: int | None,
+    completion_tokens: int | None,
+    total_tokens: int | None,
+    attempt_count: int = 1,
+    fallback_used: bool = False,
+    actual_response_model: str | None = None,
+) -> dict[str, Any]:
+    """Build Business 14 metadata for a live response.
+
+    All arguments must describe the candidate that ACTUALLY answered
+    (after any fallback), never the primary candidate.
+    """
+    cm = get_catalog_by_id(model_id)
+    estimated_usd = None
+    estimated_krw = None
+    cost_basis = "unknown"
+    if cm and prompt_tokens is not None and completion_tokens is not None:
+        estimated_usd = cm.estimate_cost_usd(prompt_tokens, completion_tokens)
+        estimated_krw = cm.estimate_cost_krw(prompt_tokens, completion_tokens)
+        if cm.price_is_known:
+            cost_basis = "known_free" if estimated_usd == 0.0 else "configured_snapshot"
+
+    return {
+        "provider_mode": "live",
+        "mode": "live",
+        "provider": provider,
+        "model_route": model_id,
+        "upstream_model": upstream_model,
+        "actual_response_model": actual_response_model,
+        "latency_ms": latency_ms,
+        "request_id": request_id,
+        "estimated_usd": estimated_usd,
+        "estimated_krw": estimated_krw,
+        "cost_basis": cost_basis,
+        "route_mode": "auto" if model_id == "b14/auto" else "manual",
+        "attempt_count": attempt_count,
+        "fallback_used": fallback_used,
+        "evidence_status": "live_verified",
+    }
+
+
 async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
-    """Handle a chat completions request in Alpha (OpenRouter catalog) mode.
+    """Handle a chat completions request in Alpha (platform catalog) mode.
 
     - Detects mock vs live mode from B14_PROVIDER_MODE
     - In mock mode: returns canned response, zero upstream calls
-    - In live mode: calls OpenRouter with fallback logic
+    - In live mode: calls the platform provider with fallback logic
     - Response metadata describes the candidate that ACTUALLY answered
       (after any fallback), never the primary decision candidate
     - Unknown exceptions fail closed (no fallback)
@@ -662,27 +733,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
             )
-        if cfg.is_mock:
-            return await orv.call_openrouter_chat_completions(
-                messages=body["messages"],
-                temperature=body.get("temperature"),
-                max_tokens=body.get("max_tokens"),
-                model_id=current["model_id"],
-                upstream_model=current["upstream_model"],
-                provider=current["provider"],
-            )
-        if not cfg.has_key:
-            raise PilotNotConfigured(
-                "LIVE 모드에서는 OPENROUTER_API_KEY가 필요합니다. "
-                ".env 파일에 키를 설정하거나 B14_PROVIDER_MODE=mock로 전환하십시오."
-            )
-        return await orv.call_openrouter_chat_completions(
-            messages=body["messages"],
-            temperature=body.get("temperature"),
-            max_tokens=body.get("max_tokens"),
-            model_id=current["model_id"],
-            upstream_model=current["upstream_model"],
-            provider=current["provider"],
+        raise InvalidRequest(
+            "non-platform route is not routable (OpenRouter retired, #1933 S2)"
         )
 
     budget_exhausted = False
@@ -843,7 +895,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
 
     actual_response_model = response_data.get("_actual_response_model")
     if cfg.is_mock:
-        biz14 = orv.build_mock_metadata(
+        biz14 = _build_b14_mock_metadata(
             request_id=request_id,
             model_id=success_candidate["model_id"],
             upstream_model=success_candidate["upstream_model"],
@@ -854,7 +906,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
         pt = usage.get("prompt_tokens")
         ct = usage.get("completion_tokens")
         tt = usage.get("total_tokens")
-        biz14 = orv.build_live_metadata(
+        biz14 = _build_b14_live_metadata(
             request_id=request_id,
             model_id=success_candidate["model_id"],
             upstream_model=success_candidate["upstream_model"],

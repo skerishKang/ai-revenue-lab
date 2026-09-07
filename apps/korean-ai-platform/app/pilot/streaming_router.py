@@ -30,7 +30,6 @@ from app.pilot.errors import (
 from app.pilot.openrouter_stream import (
     OpenRouterStreamEvent,
     OpenRouterStreamUsage,
-    stream_openrouter_chat_completions,
 )
 from app.pilot.router_core import RouteDecision
 
@@ -187,7 +186,7 @@ async def stream_routed_chat_completions(
     messages: Sequence[Mapping[str, str]],
     temperature: float | None,
     max_tokens: int | None,
-    stream_call: StreamCall = stream_openrouter_chat_completions,
+    stream_call: StreamCall,
 ) -> AsyncIterator[RouterStreamEvent]:
     """Execute one resolved route with bounded pre-content fallback semantics."""
     if not isinstance(decision, RouteDecision):

@@ -5,12 +5,7 @@ import json
 import httpx
 import pytest
 
-from app.pilot.openrouter import (
-    build_openrouter_provider_policy,
-    call_openrouter_chat_completions,
-)
 from app.pilot.openrouter_config import openrouter_config
-from app.pilot.openrouter_stream import stream_openrouter_chat_completions
 from app.pilot.schemas import ChatMessage, PilotChatRequest
 
 

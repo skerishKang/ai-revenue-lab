@@ -9,25 +9,17 @@ The primitive owns only one upstream attempt. It never performs fallback.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 from dataclasses import dataclass
 import json
 from typing import Any
 
-import httpx
-
 from app.pilot.errors import (
     MalformedUpstreamResponse,
-    PilotNotConfigured,
     UpstreamAuthFailed,
     UpstreamClientError,
     UpstreamRateLimited,
-    UpstreamResponseTooLarge,
     UpstreamServerError,
-    UpstreamTimeout,
 )
-from app.pilot.openrouter import MAX_RESPONSE_BYTES, build_openrouter_provider_policy
-from app.pilot.openrouter_config import openrouter_config
 
 
 @dataclass(frozen=True, slots=True)
@@ -210,106 +202,3 @@ def _mock_events(upstream_model: str) -> tuple[OpenRouterStreamEvent, ...]:
         ),
         OpenRouterStreamEvent(done=True),
     )
-
-
-async def stream_openrouter_chat_completions(
-    messages: list[dict[str, str]],
-    temperature: float | None,
-    max_tokens: int | None,
-    model_id: str,
-    upstream_model: str,
-    provider: str,
-    transport: httpx.AsyncBaseTransport | None = None,
-) -> AsyncIterator[OpenRouterStreamEvent]:
-    """Yield normalized events for one OpenRouter streaming attempt.
-
-    The function never performs route selection or fallback. All normal tests
-    use MockTransport; live network access remains opt-in and outside CI.
-    """
-    del provider  # Provider identity belongs to the later Router/Gateway layer.
-
-    if openrouter_config.is_mock:
-        for event in _mock_events(upstream_model):
-            yield event
-        return
-
-    if not openrouter_config.has_key:
-        raise PilotNotConfigured(
-            "OPENROUTER_API_KEY is not set. Set B14_PROVIDER_MODE=mock for mock mode, "
-            "or provide a real key for live mode."
-        )
-
-    try:
-        openrouter_config.validate_base_url()
-    except ValueError as exc:
-        raise PilotNotConfigured(f"OpenRouter base URL validation failed: {exc}") from exc
-
-    chat_url = f"{openrouter_config.base_url.rstrip('/')}/chat/completions"
-    body: dict[str, Any] = {
-        "model": upstream_model,
-        "messages": messages,
-        "stream": True,
-    }
-    if temperature is not None:
-        body["temperature"] = float(temperature)
-    if max_tokens is not None:
-        body["max_tokens"] = int(max_tokens)
-
-    provider_policy = build_openrouter_provider_policy(model_id)
-    if provider_policy is not None:
-        body["provider"] = provider_policy
-
-    client_kwargs: dict[str, Any] = {
-        "timeout": openrouter_config.build_http_timeout(),
-    }
-    if transport is not None:
-        client_kwargs["transport"] = transport
-
-    configured_cap = openrouter_config.max_response_bytes
-    if isinstance(configured_cap, bool) or not isinstance(configured_cap, int) or configured_cap <= 0:
-        raise PilotNotConfigured("OpenRouter response byte limit must be a positive integer.")
-    max_response_bytes = min(MAX_RESPONSE_BYTES, configured_cap)
-
-    saw_done = False
-    buffer = b""
-    total_bytes = 0
-    try:
-        async with httpx.AsyncClient(**client_kwargs) as client:
-            async with client.stream(
-                "POST",
-                chat_url,
-                headers=openrouter_config.safe_headers(),
-                json=body,
-                follow_redirects=False,
-            ) as response:
-                if response.status_code < 200 or response.status_code >= 300:
-                    _raise_upstream_error(response.status_code)
-
-                async for chunk in response.aiter_bytes():
-                    total_bytes += len(chunk)
-                    if total_bytes > max_response_bytes:
-                        raise UpstreamResponseTooLarge(max_response_bytes)
-                    buffer += chunk
-                    frames, buffer = _pop_sse_frames(buffer)
-                    for frame in frames:
-                        event = _parse_sse_frame(frame)
-                        if event is None:
-                            continue
-                        yield event
-                        if event.done:
-                            saw_done = True
-                            return
-
-                if buffer.strip():
-                    event = _parse_sse_frame(buffer)
-                    if event is not None:
-                        yield event
-                        if event.done:
-                            saw_done = True
-    except httpx.TimeoutException as exc:
-        raise UpstreamTimeout() from exc
-    except httpx.RequestError as exc:
-        raise UpstreamServerError() from exc
-
-    if not saw_done:
-        raise MalformedUpstreamResponse()

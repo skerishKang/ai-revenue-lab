@@ -24,7 +24,6 @@ from starlette.routing import Router
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
 from app.pilot.gateway import _validate_body
 from app.pilot.openrouter_config import openrouter_config
-from app.pilot.openrouter_stream import stream_openrouter_chat_completions
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
 from app.pilot.streaming_router import RouterStreamEvent, stream_routed_chat_completions
@@ -351,7 +350,9 @@ async def pilot_auto_stream_preview(request: Request):
                     transport=transport,
                     **kwargs,
                 )
-            return stream_openrouter_chat_completions(**kwargs, transport=transport)
+            raise InvalidRequest(
+                "non-platform route is not routable (OpenRouter retired, #1933 S2)"
+            )
 
         iterator = stream_routed_chat_completions(
             decision=decision,

@@ -32,7 +32,6 @@ from app.pilot.openrouter_config import openrouter_config
 from app.pilot.openrouter_stream import (
     OpenRouterStreamEvent,
     OpenRouterStreamUsage,
-    stream_openrouter_chat_completions,
 )
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
@@ -279,7 +278,7 @@ async def _stream_body(
 
 @router.route(_STREAM_PREVIEW_PATH, methods=["POST"])
 async def pilot_stream_preview(request: Request):
-    """Preview one manual, non-fallback OpenRouter route as SSE."""
+    """Preview one manual, non-fallback platform route as SSE."""
     request_id = _request_id()
     iterator: AsyncIterator[OpenRouterStreamEvent] | None = None
 
@@ -311,14 +310,8 @@ async def pilot_stream_preview(request: Request):
                 transport=transport,
             )
         else:
-            iterator = stream_openrouter_chat_completions(
-                messages=body["messages"],
-                temperature=body.get("temperature"),
-                max_tokens=body.get("max_tokens"),
-                model_id=decision.selected_model,
-                upstream_model=decision.selected_upstream_model,
-                provider=decision.selected_provider,
-                transport=transport,
+            raise InvalidRequest(
+                "non-platform route is not routable (OpenRouter retired, #1933 S2)"
             )
 
         # Prime before StreamingResponse commits HTTP 200. Any provider error
