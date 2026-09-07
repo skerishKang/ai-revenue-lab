@@ -17,7 +17,7 @@ from app.pilot.errors import (
     UpstreamServerError,
 )
 from app.pilot.b14_runtime_config import runtime_config as rcfg
-from app.pilot.openrouter_stream import OpenRouterStreamEvent
+from app.pilot.stream_types import StreamEvent
 from app.pilot import platform as plat
 
 KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
@@ -89,7 +89,7 @@ async def test_mock_stream_is_deterministic_and_zero_network():
 
     assert calls == 0
     assert first == second
-    assert first[-1] == OpenRouterStreamEvent(done=True)
+    assert first[-1] == StreamEvent(done=True)
     assert first[0].delta_content is not None
     assert "Mock" in first[0].delta_content
     assert first[1].usage is not None

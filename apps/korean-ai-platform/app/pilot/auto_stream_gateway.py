@@ -339,7 +339,7 @@ async def pilot_auto_stream_preview(request: Request):
 
         body, decision = _validate_auto_preview_body(raw)
 
-        transport = getattr(request.app.state, "openrouter_stream_transport", None)
+        transport = getattr(request.app.state, "stream_transport", None)
         if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
             raise InvalidRequest("Invalid streaming transport configuration.")
 

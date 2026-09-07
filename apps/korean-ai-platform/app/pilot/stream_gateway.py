@@ -29,9 +29,9 @@ from app.pilot.errors import (
 )
 from app.pilot.gateway import _validate_body
 from app.pilot.b14_runtime_config import runtime_config
-from app.pilot.openrouter_stream import (
-    OpenRouterStreamEvent,
-    OpenRouterStreamUsage,
+from app.pilot.stream_types import (
+    StreamEvent,
+    StreamUsage,
 )
 from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
@@ -120,7 +120,7 @@ def _validate_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDecisio
     return body, decision
 
 
-def _usage_dict(usage: OpenRouterStreamUsage) -> dict[str, int | None]:
+def _usage_dict(usage: StreamUsage) -> dict[str, int | None]:
     return {
         "prompt_tokens": usage.prompt_tokens,
         "completion_tokens": usage.completion_tokens,
@@ -162,7 +162,7 @@ def _encode_data_frame(payload: dict[str, Any]) -> bytes:
 
 
 def _encode_event(
-    event: OpenRouterStreamEvent,
+    event: StreamEvent,
     *,
     request_id: str,
     decision: rcore.RouteDecision,
@@ -223,15 +223,15 @@ def _encode_stream_error(
     return f"event: error\ndata: {encoded}\n\n".encode("utf-8")
 
 
-async def _close_iterator(iterator: AsyncIterator[OpenRouterStreamEvent]) -> None:
+async def _close_iterator(iterator: AsyncIterator[StreamEvent]) -> None:
     close = getattr(iterator, "aclose", None)
     if close is not None:
         await close()
 
 
 async def _stream_body(
-    iterator: AsyncIterator[OpenRouterStreamEvent],
-    first_event: OpenRouterStreamEvent,
+    iterator: AsyncIterator[StreamEvent],
+    first_event: StreamEvent,
     *,
     request_id: str,
     decision: rcore.RouteDecision,
@@ -280,7 +280,7 @@ async def _stream_body(
 async def pilot_stream_preview(request: Request):
     """Preview one manual, non-fallback platform route as SSE."""
     request_id = _request_id()
-    iterator: AsyncIterator[OpenRouterStreamEvent] | None = None
+    iterator: AsyncIterator[StreamEvent] | None = None
 
     try:
         try:
@@ -292,7 +292,7 @@ async def pilot_stream_preview(request: Request):
 
         # Tests may inject MockTransport through app.state. Production has no
         # injected transport and therefore uses the provider's normal client.
-        transport = getattr(request.app.state, "openrouter_stream_transport", None)
+        transport = getattr(request.app.state, "stream_transport", None)
         if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
             raise InvalidRequest("Invalid streaming transport configuration.")
 

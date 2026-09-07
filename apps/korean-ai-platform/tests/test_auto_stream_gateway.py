@@ -143,7 +143,7 @@ def _payload(**overrides):
 def _client(transport: httpx.AsyncBaseTransport | None = None) -> TestClient:
     app = create_app()
     if transport is not None:
-        app.state.openrouter_stream_transport = transport
+        app.state.stream_transport = transport
     return TestClient(app)
 
 

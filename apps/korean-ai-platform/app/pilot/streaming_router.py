@@ -27,14 +27,14 @@ from app.pilot.errors import (
     UpstreamServerError,
     UpstreamTimeout,
 )
-from app.pilot.openrouter_stream import (
-    OpenRouterStreamEvent,
-    OpenRouterStreamUsage,
+from app.pilot.stream_types import (
+    StreamEvent,
+    StreamUsage,
 )
 from app.pilot.router_core import RouteDecision
 
 
-StreamCall = Callable[..., AsyncIterator[OpenRouterStreamEvent]]
+StreamCall = Callable[..., AsyncIterator[StreamEvent]]
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,7 +66,7 @@ class RouterStreamEvent:
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
     delta_content: str | None = None
     finish_reason: str | None = None
-    usage: OpenRouterStreamUsage | None = None
+    usage: StreamUsage | None = None
     actual_response_model: str | None = None
     done: bool = False
     committed: bool = False
@@ -98,8 +98,8 @@ class RouterStreamEvent:
             value = getattr(self, name)
             if value is not None and not isinstance(value, str):
                 raise ValueError(f"{name} must be a string or None")
-        if self.usage is not None and not isinstance(self.usage, OpenRouterStreamUsage):
-            raise ValueError("usage must be OpenRouterStreamUsage or None")
+        if self.usage is not None and not isinstance(self.usage, StreamUsage):
+            raise ValueError("usage must be StreamUsage or None")
         if self.error_code is not None and not self.done:
             raise ValueError("terminal streaming errors must set done=True")
 
@@ -144,12 +144,12 @@ def _router_event(
     decision: RouteDecision,
     candidate: StreamingRouteCandidate,
     attempt: int,
-    provider_event: OpenRouterStreamEvent | None = None,
+    provider_event: StreamEvent | None = None,
     committed: bool,
     done: bool | None = None,
     error_code: str | None = None,
 ) -> RouterStreamEvent:
-    provider_event = provider_event or OpenRouterStreamEvent()
+    provider_event = provider_event or StreamEvent()
     return RouterStreamEvent(
         request_id=decision.request_id,
         route_mode=decision.route_mode,
@@ -209,7 +209,7 @@ async def stream_routed_chat_completions(
             upstream_model=candidate.upstream_model,
             provider=candidate.provider,
         )
-        buffered: list[OpenRouterStreamEvent] = []
+        buffered: list[StreamEvent] = []
         saw_done = False
         try:
             async for provider_event in iterator:
