@@ -48,11 +48,12 @@ CORE_PACKAGE = REPO_ROOT / "packages" / "padiem-ai-core" / "padiem_ai_core"
 CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 
 # Canary hashes pinned at the S1/S2 merge revisions (main @ 2afd3264, S2 @ 9162e18).
+# Canary hashes re-pinned at #2012 HWPX Core change (PR #2033).
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "2f0620895ecec53a895f9496a46965ca1cbe3536b896ce2e8dc0d076d1fe4934",
-    CORE_PACKAGE / "document_semantics.py": "b74628623ebaeddd3caab4be317562d204b798e945088e990830c1ee270fa8f5",
-    CORE_TESTS / "test_document_semantics.py": "cf21bd3999348d1d34b18fbb9863a6fe8ec93840f6990bdbf52eeb79fce7c8f5",
-    CORE_TESTS / "test_document_normalization.py": "5c7e9166fb2ffd015a307da4a7e653acf24c10e44684f3e8df2d70122660b9ff",
+    CORE_PACKAGE / "document_normalization.py": "8adced481c112814aa2a7391f2d949fb0c4077a9ff7261490af4cc846957a854",
+    CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
+    CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
+    CORE_TESTS / "test_document_normalization.py": "6d3b2973da19f77565b8702f1bb2003df0425783cd3f25aa9f86c0af0e22c6da",
     ENGINE_APP / "trusted_document_resolver.py": "9a66046ff3eac06df1327841c4c2448e687fc72c0c57997e9b25a4bd01d142a9",
 }
 
