@@ -10,6 +10,7 @@ from .document_export import SUPPORTED_DOCUMENT_FORMATS
 from .draft_flow import DRAFT_DOC_TYPES, run_draft_command
 from .order_flow import run_order_command
 from .p01_run_flow import run_p01_task
+from .registered_document_skills import run_skill_catalogue_command
 from .review_flow import run_review_command
 
 
@@ -198,6 +199,28 @@ def parser() -> argparse.ArgumentParser:
     order.add_argument(
         "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
     )
+    skill = sub.add_parser(
+        "skill",
+        help="등록된 견적서/발주서 스킬 카탈로그를 조회합니다 (#2014 · 엔진 호출 없음)",
+    )
+    skill_actions = skill.add_subparsers(dest="skill_action")
+    skill_actions.add_parser("list", help="등록된 스킬 카탈로그를 출력합니다")
+    skill_show = skill_actions.add_parser("show", help="스킬 정의 하나를 출력합니다")
+    skill_show.add_argument("skill_id", help="예: skill:kagent.b54:customer-quote-draft@1")
+    skill_intake = skill_actions.add_parser(
+        "intake",
+        help="자유 서술 요청 텍스트를 스킬 입력 계약으로 해석합니다 (엔진 호출 없음)",
+    )
+    skill_intake.add_argument(
+        "request", help="자유 서술 요청 텍스트 (예: \"대성에 발주서 작성해줘\")"
+    )
+    skill_intake.add_argument(
+        "--doc-type",
+        dest="skill_doc_type",
+        default=None,
+        choices=list(DRAFT_DOC_TYPES),
+        help="문서 유형을 직접 지정합니다 (생략 시 요청 텍스트에서 확정)",
+    )
     return p
 
 
@@ -230,6 +253,13 @@ def main(argv: list[str] | None = None, *, adapter=None) -> int:
             run_id=args.run_id,
             out_path=Path(args.out) if args.out else None,
             doc_format=getattr(args, "doc_format", "md"),
+        )
+    if args.mode == "skill":
+        return run_skill_catalogue_command(
+            action=getattr(args, "skill_action", None),
+            skill_id=getattr(args, "skill_id", None),
+            request_text=getattr(args, "request", None),
+            doc_type=getattr(args, "skill_doc_type", None),
         )
     task = getattr(args, "task", None)
     if not task:

@@ -64,6 +64,7 @@ def payload() -> dict:
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 2048,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "Hello engine"}],
         "session_id": "session_identity",

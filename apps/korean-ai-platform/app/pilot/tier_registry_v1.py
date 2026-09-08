@@ -208,32 +208,40 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PRO,
         routes=(
             TierRoute(
-                route_id="pro.kilo-minimax-m3-free.v1",
-                status=RouteStatus.EXECUTABLE,
-                model_family="minimax-m3",
-                provider_id="kilo",
-                model_id="kilo/minimax-minimax-m3-free",
-                upstream_model="minimax/minimax-m3:free",
-                credential_mode=CredentialMode.ANONYMOUS,
-                evidence=(
-                    "app/pilot/kilo_provider.py KILO_MINIMAX_M3_MODEL_ID (#956 explicit-only "
-                    "free route); current Padiem Chat Pro default "
-                    "apps/padiem-chat/app/model_policy.py (read-only reference)"
-                ),
-            ),
-            TierRoute(
                 route_id="pro.kilo-nemotron-3-ultra-free.v1",
-                status=RouteStatus.CANDIDATE_DATA_ONLY,
+                status=RouteStatus.EXECUTABLE,
                 model_family="nemotron-3-ultra",
                 provider_id="kilo",
                 model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
                 credential_mode=CredentialMode.ANONYMOUS,
-                hold_reason=(
-                    "kept as Pro candidate data only; free availability is a dated snapshot "
-                    "and promotion requires an explicit owner selection"
+                evidence=(
+                    "app/pilot/kilo_provider.py KILO_NEMOTRON_MODEL_ID (#956 registration; "
+                    "still listed on the 2026-09-08 Kilo Gateway model list); active Padiem "
+                    "Chat default/Pro route apps/padiem-chat/app/model_policy.py "
+                    "MEDIUM_B14_MODEL_ID (#2096 repair, read-only reference); fixed_chain_v1 "
+                    "position 2 (#2097)"
                 ),
-                evidence="app/pilot/kilo_provider.py KILO_NEMOTRON_MODEL_ID (#956)",
+            ),
+            TierRoute(
+                route_id="pro.kilo-minimax-m3-free.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="minimax-m3",
+                provider_id="kilo",
+                model_id="kilo/minimax-minimax-m3-free",
+                upstream_model="minimax/minimax-m3:free",
+                credential_mode=CredentialMode.ANONYMOUS,
+                hold_reason=(
+                    "RETIRED: Kilo Gateway removed minimax/minimax-m3:free from its free "
+                    "model list (verified 2026-09-08, #2094). The lane was unregistered "
+                    "from the executable B14 catalog and from fixed_chain_v1 in #2097 and "
+                    "must never be re-promoted without a fresh owner selection and "
+                    "gateway-list evidence. Historical #1442 candidate record only."
+                ),
+                evidence=(
+                    "app/pilot/kilo_provider.py RETIRED_KILO_FREE_MODEL_IDS (#2094/#2097); "
+                    "apps/padiem-chat/app/model_policy.py RETIRED_B14_MODEL_IDS (#2096)"
+                ),
             ),
         ),
     ),

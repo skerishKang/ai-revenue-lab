@@ -61,6 +61,7 @@ def payload(**context):
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 100,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "hello"}],
     }

@@ -118,10 +118,20 @@
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  function setNavActive() {
+    const state = shell.dataset.state;
+    const workspace = document.getElementById("clawWorkspace");
+    if (workspace) workspace.hidden = state !== "claw";
+    const chatNav = document.getElementById("newChatButton");
+    const clawNav = document.getElementById("clawNavButton");
+    if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
+    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" ? "page" : "false");
+  }
   function showConversation() {
     emptyState.hidden = true;
     messageList.hidden = false;
     shell.dataset.state = "chat";
+    setNavActive();
   }
   function addUserMessage(text, attachment) {
     const fragment = document.getElementById("userMessageTemplate").content.cloneNode(true);
@@ -570,6 +580,7 @@
     messageList.hidden = true;
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    setNavActive();
     input.value = "";
     renderProjectState();
     updateComposer();
@@ -1143,58 +1154,46 @@
     if (!selectedAttachment) setNote(idleNote());
   });
 
-  // Claw manual intake dialog & client-side preview wiring
+  // Claw first-class workspace & client-side preview wiring
   const clawNavButton = document.getElementById("clawNavButton");
-  const clawDialog = document.getElementById("clawDialog");
-  const clawDialogClose = document.getElementById("clawDialogClose");
+  const clawWorkspace = document.getElementById("clawWorkspace");
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
   const clawSender = document.getElementById("clawSender");
   const clawRequestText = document.getElementById("clawRequestText");
   const clawResultPreview = document.getElementById("clawResultPreview");
+  const clawResultCard = document.getElementById("clawResultCard");
+  const clawResultEmpty = document.getElementById("clawResultEmpty");
+  const clawResultKind = document.getElementById("clawResultKind");
 
-  function openClawDialog() {
-    if (!clawDialog) return;
-    if (typeof clawDialog.showModal === "function") {
-      clawDialog.showModal();
-    } else {
-      clawDialog.setAttribute("open", "");
-    }
-    if (clawNavButton) clawNavButton.setAttribute("aria-expanded", "true");
+  function openClawWorkspace() {
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    setNavActive();
     if (clawRequestText) clawRequestText.focus();
+    closeSidebar();
   }
 
-  function closeClawDialog() {
-    if (!clawDialog) return;
-    if (clawDialog.open && typeof clawDialog.close === "function") {
-      clawDialog.close();
-    } else {
-      clawDialog.removeAttribute("open");
-    }
-    if (clawNavButton) {
-      clawNavButton.setAttribute("aria-expanded", "false");
-      clawNavButton.focus();
-    }
-  }
-
-  if (clawNavButton) clawNavButton.addEventListener("click", openClawDialog);
-  if (clawDialogClose) clawDialogClose.addEventListener("click", closeClawDialog);
-  if (clawDialog) {
-    clawDialog.addEventListener("cancel", (event) => {
-      event.preventDefault();
-      closeClawDialog();
-    });
-    clawDialog.addEventListener("close", () => {
-      if (clawNavButton) clawNavButton.setAttribute("aria-expanded", "false");
-    });
-    clawDialog.querySelectorAll(".capability-card[data-claw-action]").forEach((card) => {
-      card.addEventListener("click", () => {
-        const action = card.dataset.clawAction;
+  if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  if (clawWorkspace) {
+    clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const action = chip.dataset.clawAction;
         if (clawAction && action) clawAction.value = action;
+        clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((other) => {
+          other.setAttribute("aria-pressed", other === chip ? "true" : "false");
+        });
         if (clawRequestText) clawRequestText.focus();
       });
     });
+  }
+  setNavActive();
+
+  function revealClawCard(kindText) {
+    if (clawResultEmpty) clawResultEmpty.hidden = true;
+    if (clawResultCard) clawResultCard.hidden = false;
+    if (clawResultKind) clawResultKind.textContent = kindText || "";
   }
 
   if (clawManualForm) {
@@ -1203,8 +1202,10 @@
       const body = (clawRequestText?.value || "").trim();
       const isEn = document.documentElement.lang === "en";
       if (!body) {
-        if (clawResultPreview) {
-          clawResultPreview.textContent = isEn
+        if (clawResultCard) clawResultCard.hidden = true;
+        if (clawResultEmpty) {
+          clawResultEmpty.hidden = false;
+          clawResultEmpty.textContent = isEn
             ? "Paste request text before creating a preview."
             : "요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.";
         }
@@ -1226,6 +1227,7 @@
         const actionLabel = isEn ? "Action" : "작업";
         const senderLabel = isEn ? "Sender hint" : "발신자 힌트";
         const sourceLabel = isEn ? "Source text" : "요청 원문";
+        revealClawCard(actionText);
         if (clawResultPreview) {
           clawResultPreview.textContent = [
             notice,
@@ -1264,11 +1266,9 @@
           return;
         }
         const preview = data.preview;
-        const headerNotice = isEn
-          ? `[Claw Preview] ${preview.title}\nNotice: Read-only preview. Not saved or sent.`
-          : `[Claw 미리보기] ${preview.title}\n안내: 읽기 전용 미리보기입니다. 저장되거나 발송되지 않습니다.`;
+        revealClawCard(preview.title);
         if (clawResultPreview) {
-          clawResultPreview.textContent = `${headerNotice}\n\n${preview.result_text}`;
+          clawResultPreview.textContent = preview.result_text;
         }
       } catch {
         renderFallback();

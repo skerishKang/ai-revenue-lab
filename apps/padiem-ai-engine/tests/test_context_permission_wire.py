@@ -48,6 +48,7 @@ def valid_payload() -> dict:
             "task_type": "reading",
             "optimize_for": "korean",
             "max_tokens": 512,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "지금 읽은 범위에서 설명해줘"}],
         "trace_id": "trace-ctx-1",
