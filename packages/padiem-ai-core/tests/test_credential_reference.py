@@ -52,6 +52,22 @@ CURRENT_ENGINE_BINDINGS = (
     "PADIEM_ENGINE_DAUM_REST_API_KEY",
 )
 
+# Generated/vendored directories that may appear inside the consuming lanes
+# during CI (uv virtualenvs, pywrangler vendoring, caches) are not lane source.
+LANE_SCAN_SKIP_PARTS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "dist",
+    "build",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".tmp",
+    "python_modules",
+}
+
 REJECTED_BINDINGS = (
     "",
     "A",
@@ -403,14 +419,15 @@ def test_no_declared_binding_violates_the_shared_minimum_length() -> None:
 # E. scope guards: this module changes no lane and no runtime behavior
 def test_consuming_lane_sources_are_unmodified_by_this_contract() -> None:
     """The contract lives only in Core; no lane source references it yet."""
+    lane_roots = (
+        REPO_ROOT / "apps",
+        REPO_ROOT / "packages" / "padiem-control-plane",
+    )
     references = [
         str(path.relative_to(REPO_ROOT))
-        for path in REPO_ROOT.rglob("*.py")
-        if "__pycache__" not in path.parts
-        and path != MODULE_PATH
-        and path != PACKAGE_DIR / "__init__.py"
+        for lane_root in lane_roots
+        for path in lane_root.rglob("*.py")
+        if not any(part in LANE_SCAN_SKIP_PARTS for part in path.parts)
         and "credential_reference" in path.read_text(encoding="utf-8")
     ]
-    assert not any(
-        path.startswith(("apps/", "packages/padiem-control-plane")) for path in references
-    )
+    assert not references
