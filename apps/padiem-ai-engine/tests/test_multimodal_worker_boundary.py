@@ -8,6 +8,7 @@ browser/public surface.
 from __future__ import annotations
 
 import asyncio
+import ast
 import importlib
 import json
 import sys
@@ -138,6 +139,24 @@ def _multimodal_payload() -> bytes:
     ).encode("utf-8")
 
 
+class _FakeD1Statement:
+    """D1-shaped statement that must never be exercised without trusted scope."""
+
+    def bind(self, *_params: Any) -> "_FakeD1Statement":
+        return self
+
+    async def first(self) -> None:
+        raise AssertionError("no D1 read may occur without a trusted scope")
+
+    async def run(self) -> None:
+        raise AssertionError("no D1 write may occur without a trusted scope")
+
+
+class _FakeD1Binding:
+    def prepare(self, _sql: str) -> _FakeD1Statement:
+        return _FakeD1Statement()
+
+
 @pytest.mark.parametrize(
     ("path", "expected_code"),
     [
@@ -247,22 +266,8 @@ def test_bound_image_store_composes_but_still_fails_closed_without_scope_authori
 
     from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 
-    class _Statement:
-        def bind(self, *_params: Any) -> "_Statement":
-            return self
-
-        async def first(self) -> None:
-            raise AssertionError("no D1 read may occur without a trusted scope")
-
-        async def run(self) -> None:
-            raise AssertionError("no D1 write may occur without a trusted scope")
-
-    class _Binding:
-        def prepare(self, _sql: str) -> _Statement:
-            return _Statement()
-
     _legacy, identity = identity_modules
-    env = _identity_env(ENGINE_IMAGE_STORE=_Binding())
+    env = _identity_env(ENGINE_IMAGE_STORE=_FakeD1Binding())
     services = asyncio.run(identity._engine_services_for_env(env))
     store = services.multimodal._image_byte_store
 
@@ -298,6 +303,66 @@ def test_bound_image_store_composes_but_still_fails_closed_without_scope_authori
     assert response.status == 503
     assert _body(response)["error"]["code"] == "attachment_resolver_unavailable"
     assert runtime_calls == []
+
+
+def test_malformed_image_store_binding_composes_no_store(identity_modules) -> None:
+    """A present-but-unusable binding yields no store; it never fakes one."""
+
+    _legacy, identity = identity_modules
+    for malformed in (object(), "", 0, {"binding": "ENGINE_IMAGE_STORE"}, [], b"d1"):
+        services = asyncio.run(
+            identity._engine_services_for_env(
+                _identity_env(ENGINE_IMAGE_STORE=malformed)
+            )
+        )
+        assert services.multimodal._image_byte_store is None, repr(malformed)
+        assert services.multimodal_streaming._image_byte_store is None, repr(malformed)
+
+
+def test_connector_grants_binding_is_never_the_attachment_store(
+    identity_modules,
+) -> None:
+    """#2181 correction: the grants D1 store must not be borrowed for bytes."""
+
+    from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
+
+    _legacy, identity = identity_modules
+    services = asyncio.run(
+        identity._engine_services_for_env(
+            _identity_env(ENGINE_CONNECTOR_GRANTS=_FakeD1Binding())
+        )
+    )
+    assert services.multimodal._image_byte_store is None
+    assert services.multimodal_streaming._image_byte_store is None
+    assert not isinstance(services.multimodal._image_byte_store, CloudflareD1ConnectorGrantStore)
+
+    identity_source = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
+    tree = ast.parse(identity_source)
+    factory = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_image_byte_store_for_env"
+    )
+    factory_source = ast.get_source_segment(identity_source, factory) or ""
+    assert "ENGINE_IMAGE_STORE" in factory_source
+    assert "CONNECTOR_GRANTS" not in factory_source
+    assert "ScopedImageByteStore" in factory_source
+    assert "CloudflareD1ImageByteStore" in factory_source
+
+
+def test_execute_and_stream_share_the_same_authority_composition(
+    identity_modules,
+) -> None:
+    """One store object and one authority seam serve both multimodal routes."""
+
+    _legacy, identity = identity_modules
+    env = _identity_env(ENGINE_IMAGE_STORE=_FakeD1Binding())
+    services = asyncio.run(identity._engine_services_for_env(env))
+
+    assert services.multimodal._image_byte_store is services.multimodal_streaming._image_byte_store
+    assert services.multimodal._scope_authority is services.multimodal_streaming._scope_authority
+    assert services.multimodal._image_byte_store is not None
+    assert services.multimodal._scope_authority is None
 
 
 def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
