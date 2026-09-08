@@ -18,6 +18,17 @@ def client() -> TestClient:
     return TestClient(app)
 
 
+def test_kagent_dependency_available() -> None:
+    import pathlib
+    import kagent
+    from app.main import app as main_app
+
+    assert main_app is not None
+    assert hasattr(kagent, "__file__") and kagent.__file__ is not None
+    kagent_path = pathlib.Path(kagent.__file__).resolve()
+    assert "kagent" in str(kagent_path)
+
+
 def test_claw_manual_intake_preview_success_quote(client: TestClient) -> None:
     payload = {
         "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
