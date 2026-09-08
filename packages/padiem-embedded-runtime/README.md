@@ -1,15 +1,18 @@
-# padiem-embedded-runtime (IP-SIDECAR S5 attachment input presentation)
+# padiem-embedded-runtime (IP-SIDECAR S6 approval presentation)
 
 Shared, browser-safe embedded shell boundary for host products. S2 delivered
 the package-level runtime contract plus one repository-local reference host;
 S3 added the reusable host-context bridge, public bootstrap/session
 projection, version-compatibility and integration diagnostics, and host-safe
 fail-over; S4 added public-safe evidence/citation presentation primitives;
-S5 adds browser-safe attachment input presentation (bounded selection
+S5 added browser-safe attachment input presentation (bounded selection
 metadata, deterministic upload-lifecycle states, opaque server-issued
-`att_*` ref display tokens). No Engine transport, no provider calls, no
-browser network fetch, no File/Blob byte reads, no ref minting, no secrets,
-no product semantics.
+`att_*` ref display tokens); S6 adds display-only approval/action-confirmation
+presentation (bounded proposal projections, staged confirmation intents,
+host-driven approval states, opaque upstream reference tokens). No Engine
+transport, no provider calls, no browser network fetch, no File/Blob byte
+reads, no ref minting, no approval verification or authority minting, no
+action execution, no secrets, no product semantics.
 
 ## Layout
 
@@ -26,6 +29,7 @@ packages/padiem-embedded-runtime/
     bridge.py                # S3 untrusted-context -> projection + fail-safe pipeline
     evidence.py              # S4 public-safe evidence/citation presentation (bounded, deterministic)
     attachment_input.py      # S5 bounded selection/lifecycle/opaque att_* ref presentation
+    approval_presentation.py # S6 display-only proposal/intent/state/reference projection
   reference_host/            # repository-local demo host (fixture-driven, no I/O)
   fixtures/                  # deterministic demo fixtures (JSON)
   tests/                     # focused unittest contract tests (stdlib only)
@@ -70,6 +74,24 @@ packages/padiem-embedded-runtime/
   with product adapters, byte/media authority stays with Engine.
 - `LIFECYCLE_PRESENTATION_NEVER_BREAKS_HOST=YES` — malformed lifecycle input
   degrades to a safe `idle`/`INVALID_HOST_INPUT` view, never an exception.
+- `APPROVAL_AUTHORITY_MINTING=NO` · `APPROVAL_TOKEN_MINTING=NO` — the sidecar
+  projects upstream approval proposals/states for display only; requirement
+  evaluation, decision verification, expiry/scope enforcement, and
+  authority/evidence issuance belong to Core/Engine/P01.
+- `DIRECT_ACTION_EXECUTION=NO` — confirmation intents (`approve`/`reject`/
+  `confirm`/`cancel`) are staged for host handoff; staging performs no
+  execution, transport, or handoff itself.
+- `APPROVAL_PROPOSAL_FIELDS_ALLOWLISTED=YES` — only bounded
+  `proposal_id`/`tool_id`/`requirement`/`summary` pass; raw Tool
+  args/results, diffs, URLs, paths, markup, and secret-shaped values fail the
+  item; presentation is order-preserving, deduplicated, capped, and never
+  raises.
+- `APPROVAL_STATE_HOST_DRIVEN=YES` — only allowlisted states/reason codes
+  display; the sidecar never owns a clock or decides expiry; malformed state
+  degrades to `unavailable`/`INVALID_HOST_INPUT`.
+- `UPSTREAM_REFERENCE_DISPLAY_ONLY=YES` — identifier-shaped public refs
+  render as opaque non-executable tokens; URL-shaped refs are rejected
+  without retaining the raw value.
 
 ## Run tests
 

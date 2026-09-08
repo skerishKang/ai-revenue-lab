@@ -1,12 +1,26 @@
-"""IP-SIDECAR — Padiem Embedded AI Runtime (S5 attachment input presentation).
+"""IP-SIDECAR — Padiem Embedded AI Runtime (S6 approval presentation).
 
 Public, browser-safe boundary only. No Engine transport, no provider calls,
 no browser network fetch, no File/Blob byte reads, no ref minting, no
+approval verification or authority minting, no action execution, no
 secrets, no product semantics.
 """
 
 from __future__ import annotations
 
+from .approval_presentation import (
+    ApprovalProposal,
+    ApprovalStatePresentation,
+    ConfirmationIntentPresentation,
+    PresentedProposal,
+    ProposalPresentation,
+    PublicReferenceDisplay,
+    normalize_approval_proposal,
+    present_approval_proposals,
+    present_approval_state,
+    present_confirmation_intent,
+    present_public_reference,
+)
 from .attachment_input import (
     AttachmentRefPresentation,
     PresentedSelection,
@@ -36,11 +50,14 @@ from .host_context import HostContextEnvelope, envelop_host_context
 from .lifecycle import EmbeddedShell, HostSafeResult
 
 __all__ = [
+    "ApprovalProposal",
+    "ApprovalStatePresentation",
     "AttachmentRefPresentation",
     "BootstrapConfig",
     "BridgeOutcome",
     "CitationPresentation",
     "CitationRef",
+    "ConfirmationIntentPresentation",
     "DeterministicFakeEnginePort",
     "EmbeddedShell",
     "EnginePort",
@@ -48,8 +65,11 @@ __all__ = [
     "HostSafeResult",
     "IntegrationDiagnostics",
     "PresentedCitation",
+    "PresentedProposal",
     "PresentedSelection",
+    "ProposalPresentation",
     "PublicEvent",
+    "PublicReferenceDisplay",
     "SessionProjection",
     "SelectionDescriptor",
     "SelectionPresentation",
@@ -60,11 +80,16 @@ __all__ = [
     "check_contract_compatibility",
     "envelop_host_context",
     "intake_host_payload",
+    "normalize_approval_proposal",
     "normalize_citation",
     "normalize_selection",
     "parse_bootstrap_config",
+    "present_approval_proposals",
+    "present_approval_state",
     "present_attachment_ref",
     "present_citations",
+    "present_confirmation_intent",
+    "present_public_reference",
     "present_selections",
     "present_upload_lifecycle",
     "project_event",
