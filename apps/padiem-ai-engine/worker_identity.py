@@ -23,7 +23,10 @@ from padiem_ai_core import (
     StreamingExecutionRuntime,
 )
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
-from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRuntime
+from padiem_ai_core.multimodal_execution_runtime import (
+    MultimodalExecutionRuntime,
+    MultimodalStreamingExecutionRuntime,
+)
 from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
@@ -46,7 +49,9 @@ from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
+    MULTIMODAL_STREAM_PATH,
     MultimodalAttachmentEngineService,
+    MultimodalStreamingEngineService,
 )
 from app.orchestration_idempotency_service import (
     CanonicalIdempotencyOrchestrationEngineService,
@@ -189,6 +194,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 runtime_factory=unavailable,
                 attachment_resolver=None,
             ),
+            multimodal_streaming=MultimodalStreamingEngineService(
+                runtime_factory=unavailable,
+                attachment_resolver=None,
+            ),
             # E7 tool execution/continuation remains a source seam: the
             # resolver factory below returns None until a real port and grant
             # store are bound (PR-C). With no port/grant every request still
@@ -228,6 +237,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     def multimodal_runtime_factory(app_id: str) -> MultimodalExecutionRuntime:
         return MultimodalExecutionRuntime(app_id=app_id, b14_client=b14_client)
 
+    def multimodal_streaming_runtime_factory(app_id: str) -> MultimodalStreamingExecutionRuntime:
+        return MultimodalStreamingExecutionRuntime(
+            app_id=app_id,
+            b14_stream_client=b14_stream_client,
+        )
+
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -256,6 +271,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             runtime_factory=multimodal_runtime_factory,
             # E5A source seam only. A deployment-owned resolver that proves
             # app/tenant/subject scope is a later Production activation gate.
+            attachment_resolver=None,
+        ),
+        multimodal_streaming=MultimodalStreamingEngineService(
+            runtime_factory=multimodal_streaming_runtime_factory,
             attachment_resolver=None,
         ),
         # E7 tool execution/continuation remains a source seam: the
@@ -298,6 +317,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
             return await self._fetch_multimodal(request, path)
+        if path == MULTIMODAL_STREAM_PATH:
+            return await self._fetch_multimodal_stream(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
@@ -356,6 +377,38 @@ class Default(legacy_worker.Default):
             body=body,
         )
         return legacy_worker._json_response(result)
+
+    async def _fetch_multimodal_stream(self, request: Any, path: str) -> Any:
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        body = b""
+        if method.upper() == "POST":
+            try:
+                body = str(await request.text()).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(status_code=400, body={"ok": False, "error": {
+                        "code": "invalid_request", "message": "Request body could not be read.",
+                        "retryable": False, "metadata": None,
+                    }})
+                )
+        auth_error = legacy_worker._authenticate_non_health_request(self.env, headers, body)
+        if auth_error is not None:
+            return auth_error
+        services = await self.engine_services_factory(self.env)
+        if services.multimodal_streaming is None:
+            return legacy_worker._error_response(
+                "multimodal_streaming_unavailable",
+                "Multimodal streaming service is unavailable.",
+                503,
+            )
+        prepared = await services.multimodal_streaming.prepare(
+            method=method, path=path, content_type=content_type, body=body
+        )
+        if isinstance(prepared, ServiceResponse):
+            return legacy_worker._json_response(prepared)
+        return legacy_worker._ndjson_response(services.multimodal_streaming, prepared)
 
     async def _fetch_tool(self, request: Any, path: str) -> Any:
         """E7 tool execution/continuation route: source-wired, fail-closed.

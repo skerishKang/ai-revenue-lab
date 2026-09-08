@@ -92,6 +92,7 @@ from .execution_runtime import (
 from .multimodal_execution_runtime import (
     MultimodalExecutionRequest,
     MultimodalExecutionRuntime,
+    MultimodalStreamingExecutionRuntime,
 )
 from .streaming_runtime import (
     B14StreamExecutor,

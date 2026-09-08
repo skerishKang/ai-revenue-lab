@@ -37,8 +37,11 @@ from app.attachment_authority import (
 )
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
+    MULTIMODAL_STREAM_PATH,
     MultimodalAttachmentEngineService,
+    MultimodalStreamingEngineService,
 )
+from app.service import ServiceResponse
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 APP_ID = "b62"
@@ -215,6 +218,31 @@ def serialized(response: Any) -> str:
     return json.dumps(response.body, ensure_ascii=False)
 
 
+def streaming_service_with(
+    resolver: InMemoryTrustedAttachmentResolver | None,
+    runtime: Any,
+) -> MultimodalStreamingEngineService:
+    return MultimodalStreamingEngineService(
+        runtime_factory=lambda _app_id: runtime,
+        attachment_resolver=resolver,
+    )
+
+
+class FakeStreamingRuntime:
+    def __init__(self, events: list[Any]) -> None:
+        self.events = events
+        self.requests: list[Any] = []
+
+    def stream(self, request: Any):
+        self.requests.append(request)
+
+        async def _events():
+            for event in self.events:
+                yield event
+
+        return _events()
+
+
 # --- reference-only authority -------------------------------------------------
 
 
@@ -239,6 +267,201 @@ async def test_trusted_opaque_reference_resolves_and_projects_provenance_only() 
         "byte_size": len(PNG_BYTES),
         "provenance_id": PROVENANCE_ID,
     }
+
+
+async def test_multimodal_stream_reuses_public_event_shape_and_single_terminal_event() -> None:
+    from padiem_ai_core import B14RouteMetadata, RunMetadata, RunStatus, StreamingExecutionEvent, UsageMetadata
+
+    route = B14RouteMetadata(selected_provider="core", selected_model="core/model")
+    runtime = FakeStreamingRuntime(
+        [
+            StreamingExecutionEvent(
+                delta_content="부분",
+                answer=None,
+                finish_reason=None,
+                route=route,
+                metadata=RunMetadata(
+                    trace_id="trace-mm-1750",
+                    app_id=APP_ID,
+                    agent_id="image-agent",
+                    session_id="session-mm-1750",
+                    status=RunStatus.MODEL_RUNNING,
+                    usage=UsageMetadata(),
+                ),
+            ),
+            StreamingExecutionEvent(
+                delta_content=None,
+                answer="부분 답변",
+                finish_reason="stop",
+                route=route,
+                metadata=RunMetadata(
+                    trace_id="trace-mm-1750",
+                    app_id=APP_ID,
+                    agent_id="image-agent",
+                    session_id="session-mm-1750",
+                    status=RunStatus.COMPLETED,
+                    usage=UsageMetadata(total_tokens=2),
+                ),
+                done=True,
+            ),
+        ]
+    )
+    service = streaming_service_with(
+        InMemoryTrustedAttachmentResolver(attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)}),
+        runtime,
+    )
+
+    prepared = await service.prepare(
+        method="POST",
+        path=MULTIMODAL_STREAM_PATH,
+        content_type="application/json",
+        body=json.dumps(valid_payload()).encode(),
+    )
+
+    assert hasattr(prepared, "first_event")
+    lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
+    assert [line["event"]["done"] for line in lines] == [False, True]
+    assert sum(line.get("event", {}).get("done") is True for line in lines) == 1
+    assert lines[-1]["event"]["answer"] == "부분 답변"
+    assert runtime.requests[0].messages[-1]["content"][1]["type"] == "image_url"
+    assert "provider-x" not in json.dumps(lines)
+
+
+async def test_multimodal_stream_rejects_unsupported_media_before_runtime() -> None:
+    runtime = FakeStreamingRuntime([])
+    service = streaming_service_with(
+        InMemoryTrustedAttachmentResolver(
+            attachments={ATTACHMENT_REF: ("image/gif", b"GIF89a-not-supported")}
+        ),
+        runtime,
+    )
+
+    prepared = await service.prepare(
+        method="POST",
+        path=MULTIMODAL_STREAM_PATH,
+        content_type="application/json",
+        body=json.dumps(valid_payload()).encode(),
+    )
+
+    assert prepared.status_code == 400
+    assert prepared.body["error"]["code"] == "invalid_multimodal_input"
+    assert runtime.requests == []
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "content_type", "body", "status", "code"),
+    [
+        ("GET", MULTIMODAL_STREAM_PATH, "application/json", b"{}", 405, "method_not_allowed"),
+        (
+            "POST",
+            MULTIMODAL_EXECUTE_PATH,
+            "application/json",
+            b"{}",
+            404,
+            "not_found",
+        ),
+        ("POST", MULTIMODAL_STREAM_PATH, "text/plain", b"{}", 415, "unsupported_media_type"),
+        ("POST", MULTIMODAL_STREAM_PATH, "application/json", b"{", 400, "invalid_json"),
+        ("POST", MULTIMODAL_STREAM_PATH, "application/json", b"[]", 400, "invalid_request"),
+        (
+            "POST",
+            MULTIMODAL_STREAM_PATH,
+            "application/json",
+            json.dumps({**valid_payload(), "attachment_url": "https://evil/x.png"}).encode(),
+            400,
+            "invalid_request",
+        ),
+        (
+            "POST",
+            MULTIMODAL_STREAM_PATH,
+            "application/json",
+            json.dumps({"app_id": APP_ID}).encode(),
+            400,
+            "invalid_request",
+        ),
+        (
+            "POST",
+            MULTIMODAL_STREAM_PATH,
+            "application/json",
+            b"x" * (128 * 1024 + 1),
+            413,
+            "request_too_large",
+        ),
+    ],
+    ids=[
+        "method_not_allowed",
+        "wrong_path",
+        "unsupported_media_type",
+        "invalid_json",
+        "non_object_body",
+        "unknown_field",
+        "missing_required",
+        "request_too_large",
+    ],
+)
+async def test_multimodal_stream_envelope_fails_closed_before_runtime(
+    method: str,
+    path: str,
+    content_type: str,
+    body: bytes,
+    status: int,
+    code: str,
+) -> None:
+    runtime = FakeStreamingRuntime([])
+    service = streaming_service_with(InMemoryTrustedAttachmentResolver(), runtime)
+
+    prepared = await service.prepare(
+        method=method, path=path, content_type=content_type, body=body
+    )
+
+    assert isinstance(prepared, ServiceResponse)
+    assert prepared.status_code == status
+    assert prepared.body["error"]["code"] == code
+    assert runtime.requests == []
+
+
+async def test_multimodal_stream_preserves_runtime_error_shape() -> None:
+    from padiem_ai_core import ErrorClass
+    from padiem_ai_core.execution_runtime import ExecutionRuntimeError
+
+    failure = ExecutionRuntimeError(
+        "upstream_timeout",
+        "Model streaming execution timed out.",
+        metadata=RunMetadata(
+            trace_id="trace-mm-1750",
+            app_id=APP_ID,
+            agent_id="image-agent",
+            session_id="session-mm-1750",
+            status=RunStatus.TIMEOUT,
+            error_class=ErrorClass.PROVIDER_TIMEOUT,
+        ),
+        retryable=True,
+    )
+
+    class FailingStreamingRuntime:
+        def stream(self, request: Any):
+            async def _events():
+                raise failure
+                yield
+
+            return _events()
+
+    service = streaming_service_with(InMemoryTrustedAttachmentResolver(), FailingStreamingRuntime())
+
+    prepared = await service.prepare(
+        method="POST",
+        path=MULTIMODAL_STREAM_PATH,
+        content_type="application/json",
+        body=json.dumps(valid_payload()).encode(),
+    )
+
+    assert isinstance(prepared, ServiceResponse)
+    assert prepared.status_code == 504
+    error = prepared.body["error"]
+    assert error["code"] == "upstream_timeout"
+    assert error["retryable"] is True
+    assert error["metadata"]["status"] == "timeout"
+    assert error["metadata"]["error_class"] == "provider_timeout"
 
 
 @pytest.mark.parametrize(

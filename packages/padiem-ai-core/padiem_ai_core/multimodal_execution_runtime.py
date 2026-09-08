@@ -7,7 +7,7 @@ from typing import Any
 
 from .b14_execution import B14ExecutionError, B14ExecutionResult
 from .b14_multimodal import B14MultimodalChatRequest, _normalize_messages as _normalize_b14_messages
-from .contracts import AgentProfile, ErrorClass, RunStatus
+from .contracts import AgentProfile, ErrorClass, RunMetadata, RunStatus
 from .execution_runtime import (
     MAX_EXECUTION_MESSAGES,
     ExecutionResult,
@@ -20,6 +20,7 @@ from .execution_runtime import (
     _safe_identifier,
     _safe_message_for_b14,
 )
+from .streaming_runtime import StreamingExecutionRuntime
 
 
 def _normalize_multimodal_messages(
@@ -216,3 +217,43 @@ class MultimodalExecutionRuntime(ExecutionRuntime):
             route=result.route,
             metadata=metadata,
         )
+
+
+class MultimodalStreamingExecutionRuntime(StreamingExecutionRuntime):
+    """Streaming facade using Core's existing streaming event state machine."""
+
+    async def stream(self, request: MultimodalExecutionRequest) -> Any:
+        if not isinstance(request, MultimodalExecutionRequest):
+            raise ValueError("request must be MultimodalExecutionRequest")
+        try:
+            system_instruction = _compose_system_instruction(request)
+            model, temperature, routing = _normalize_model_policy(request.agent)
+            messages = request.messages
+            if system_instruction is not None:
+                messages = ({"role": "system", "content": system_instruction}, *messages)
+            b14_request = B14MultimodalChatRequest(
+                messages=messages,
+                model=model,
+                temperature=temperature,
+                max_tokens=request.agent.max_tokens,
+                routing=routing,
+            )
+        except ValueError:
+            raise ExecutionRuntimeError(
+                "invalid_execution_request",
+                "Execution request or agent model policy is invalid.",
+                metadata=RunMetadata(
+                    trace_id=request.trace_id or "multimodal-stream",
+                    app_id=self.app_id,
+                    agent_id=request.agent.id,
+                    session_id=request.session_id,
+                    status=RunStatus.REJECTED,
+                    error_class=ErrorClass.INPUT_ERROR,
+                ),
+            ) from None
+        iterator = self._stream_b14_request(request, b14_request)
+        try:
+            async for event in iterator:
+                yield event
+        finally:
+            await iterator.aclose()

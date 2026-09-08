@@ -179,12 +179,9 @@ class StreamingExecutionRuntime:
             retryable=retryable,
         )
 
-    async def stream(
-        self, request: ExecutionRequest
+    async def _stream_b14_request(
+        self, request: Any, b14_request: B14ChatRequest
     ) -> AsyncIterator[StreamingExecutionEvent]:
-        if not isinstance(request, ExecutionRequest):
-            raise ValueError("request must be ExecutionRequest")
-
         started_at = self._clock()
         trace_id = request.trace_id or f"run_{uuid.uuid4().hex[:24]}"
 
@@ -201,36 +198,6 @@ class StreamingExecutionRuntime:
                 "Model-native tool execution is not available in the current B14 contract.",
                 metadata=metadata,
             )
-
-        try:
-            system_instruction = _compose_system_instruction(request)
-            model, temperature, routing = _normalize_model_policy(request.agent)
-            messages = request.messages
-            if system_instruction is not None:
-                messages = (
-                    {"role": "system", "content": system_instruction},
-                    *messages,
-                )
-            b14_request = B14ChatRequest(
-                messages=messages,
-                model=model,
-                temperature=temperature,
-                max_tokens=request.agent.max_tokens,
-                routing=routing,
-            )
-        except ValueError:
-            metadata = self._metadata(
-                request=request,
-                trace_id=trace_id,
-                status=RunStatus.REJECTED,
-                started_at=started_at,
-                error_class=ErrorClass.INPUT_ERROR,
-            )
-            raise ExecutionRuntimeError(
-                "invalid_execution_request",
-                "Execution request or agent model policy is invalid.",
-                metadata=metadata,
-            ) from None
 
         try:
             iterator = (
@@ -390,3 +357,42 @@ class StreamingExecutionRuntime:
             aclose = getattr(iterator, "aclose", None)
             if callable(aclose):
                 await aclose()
+
+    async def stream(
+        self, request: ExecutionRequest
+    ) -> AsyncIterator[StreamingExecutionEvent]:
+        if not isinstance(request, ExecutionRequest):
+            raise ValueError("request must be ExecutionRequest")
+
+        try:
+            system_instruction = _compose_system_instruction(request)
+            model, temperature, routing = _normalize_model_policy(request.agent)
+            messages = request.messages
+            if system_instruction is not None:
+                messages = ({"role": "system", "content": system_instruction}, *messages)
+            b14_request = B14ChatRequest(
+                messages=messages,
+                model=model,
+                temperature=temperature,
+                max_tokens=request.agent.max_tokens,
+                routing=routing,
+            )
+        except ValueError:
+            raise ExecutionRuntimeError(
+                "invalid_execution_request",
+                "Execution request or agent model policy is invalid.",
+                metadata=RunMetadata(
+                    trace_id=request.trace_id or "stream",
+                    app_id=self._app_id,
+                    agent_id=request.agent.id,
+                    session_id=request.session_id,
+                    status=RunStatus.REJECTED,
+                    error_class=ErrorClass.INPUT_ERROR,
+                ),
+            ) from None
+        iterator = self._stream_b14_request(request, b14_request)
+        try:
+            async for event in iterator:
+                yield event
+        finally:
+            await iterator.aclose()

@@ -15,6 +15,7 @@ from typing import Any
 
 from padiem_ai_core.execution_runtime import ExecutionResult, ExecutionRuntimeError
 from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRequest
+from padiem_ai_core.streaming_runtime import StreamingExecutionEvent
 
 from app.attachment_authority import (
     EngineAttachmentAuthorityError,
@@ -30,8 +31,10 @@ from app.service import (
     _status_for_runtime_error,
     build_execution_request,
 )
+from app.streaming_service import PreparedStream, StreamingEngineService
 
 MULTIMODAL_EXECUTE_PATH = "/internal/v1/multimodal/execute"
+MULTIMODAL_STREAM_PATH = "/internal/v1/multimodal/stream"
 
 # E5A is deliberately reference-only. Inline bytes/data URLs, paths, storage
 # endpoints and remote URLs are not accepted by this wire.
@@ -270,3 +273,87 @@ class MultimodalAttachmentEngineService:
                 status_code=400,
             )
         return await self.execute_payload(payload)
+
+
+class MultimodalStreamingEngineService(MultimodalAttachmentEngineService):
+    """Reference-only multimodal input adapter over the shared stream service."""
+
+    def __init__(self, *, runtime_factory: Callable[[str], Any], attachment_resolver: TrustedAttachmentResolver | None = None) -> None:
+        super().__init__(runtime_factory=runtime_factory, attachment_resolver=attachment_resolver)
+        self._streaming = StreamingEngineService(
+            runtime_factory=runtime_factory,
+            b14_service_bound=True,
+        )
+
+    async def prepare(
+        self,
+        *,
+        method: str,
+        path: str,
+        content_type: str | None = None,
+        body: bytes = b"",
+    ) -> PreparedStream | ServiceResponse:
+        normalized_method = method.upper() if isinstance(method, str) else ""
+        if path != MULTIMODAL_STREAM_PATH:
+            return _service_error("not_found", "Internal Engine route not found.", status_code=404)
+        if normalized_method != "POST":
+            return _service_error("method_not_allowed", "Method not allowed.", status_code=405)
+        if not isinstance(content_type, str) or content_type.split(";", 1)[0].strip().lower() != "application/json":
+            return _service_error("unsupported_media_type", "Content-Type must be application/json.", status_code=415)
+        if not isinstance(body, (bytes, bytearray, memoryview)):
+            return _service_error("invalid_request", "Request body is invalid.", status_code=400)
+        raw = bytes(body)
+        if len(raw) > MAX_REQUEST_BODY_BYTES:
+            return _service_error("request_too_large", "Request body exceeds the internal Engine safety limit.", status_code=413)
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return _service_error("invalid_json", "Request body must contain valid UTF-8 JSON.", status_code=400)
+        if not isinstance(payload, Mapping):
+            return _service_error("invalid_request", "Request body must be an object.", status_code=400)
+
+        data = dict(payload)
+        unknown = set(data) - _ALLOWED
+        if unknown or _REQUIRED - set(data):
+            return _service_error("invalid_request", "Multimodal request shape is invalid.", status_code=400)
+        try:
+            attachment_ref = require_opaque_attachment_ref(data.get("attachment_ref"))
+            base_payload = {key: value for key, value in data.items() if key != "attachment_ref"}
+            app_id, text_request, context = build_execution_request(base_payload)
+            if context is not None:
+                return _service_error("invalid_request", "Multimodal streaming does not support execution context.", status_code=400)
+            attachment = await self._resolve(app_id=app_id, attachment_ref=attachment_ref)
+            request = MultimodalExecutionRequest(
+                agent=text_request.agent,
+                messages=self._multimodal_messages(text_request.messages, attachment),
+                session_id=text_request.session_id,
+                additional_system_context=text_request.additional_system_context,
+                trace_id=text_request.trace_id,
+            )
+            runtime = self._runtime_factory(app_id)
+            iterator = runtime.stream(request)
+            first_event = await anext(iterator)
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineAttachmentAuthorityError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except ExecutionRuntimeError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=_status_for_runtime_error(exc), retryable=exc.retryable, metadata=exc.metadata.to_public_dict())
+        except (TypeError, ValueError, OverflowError):
+            return _service_error("invalid_multimodal_input", "Multimodal input is not valid for bounded streaming execution.", status_code=400)
+        except StopAsyncIteration:
+            return _service_error("malformed_upstream", "Model streaming execution ended before producing an event.", status_code=502)
+        except Exception:
+            return _service_error("engine_internal_error", "Multimodal streaming execution failed.", status_code=500)
+
+        if not isinstance(first_event, StreamingExecutionEvent):
+            return _service_error("invalid_stream_event", "Padiem AI Engine returned an invalid streaming event.", status_code=502)
+        return PreparedStream(first_event=first_event, iterator=iterator)
+
+    async def iter_ndjson(self, prepared: PreparedStream):
+        iterator = self._streaming.iter_ndjson(prepared)
+        try:
+            async for line in iterator:
+                yield line
+        finally:
+            await iterator.aclose()
