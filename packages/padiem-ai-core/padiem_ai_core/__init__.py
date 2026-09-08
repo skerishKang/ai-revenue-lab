@@ -118,6 +118,12 @@ from .contextual_execution import (
     PreparedExecution,
     prepare_execution,
 )
+from .credential_reference import (
+    CREDENTIAL_BINDING_PATTERN,
+    CredentialReferenceError,
+    RAW_SECRET_IN_CONTRACT,
+    validate_credential_binding_name,
+)
 from .retrieval import (
     MAX_RETRIEVAL_NAMESPACES,
     MAX_RETRIEVAL_RESULTS,
@@ -462,6 +468,10 @@ __all__ = [
     "ToolSideEffect",
     "ToolSpec",
     "UsageMetadata",
+    "CREDENTIAL_BINDING_PATTERN",
+    "CredentialReferenceError",
+    "RAW_SECRET_IN_CONTRACT",
+    "validate_credential_binding_name",
     "FIRECRAWL_ORIGIN",
     "MAX_PROVIDER_RESPONSE_BYTES",
     "MAX_QUERY_CHARS",
