@@ -11,6 +11,25 @@ PRIMARY_COMMERCIAL_PRODUCT = B53 Padiem Sidecar
 STATUS = proposed (registry/boundary S1 only; no runtime implementation)
 ```
 
+## S2 runtime contract (non-production)
+
+S2 lands the minimal package-level contract at
+`packages/padiem-embedded-runtime/` (stdlib-only, no I/O):
+
+- browser-safe bootstrap/config contract (bounded non-secret metadata);
+- shell lifecycle `closed -> opening -> open -> closing -> closed` plus
+  `disabled` fail-safe;
+- host-context envelope (untrusted by default, never authority);
+- public-safe event projection primitives (allowlisted types, bounded text);
+- abstract Engine port + deterministic fake (tests/demo only, no transport);
+- repository-local reference host demo driven by a deterministic fixture;
+- focused unittest contract tests (20 tests, stdlib only).
+
+Run: `cd packages/padiem-embedded-runtime && python -m unittest discover -s tests -t .`
+
+S2 performs no Engine connectivity, provider calls, OAuth, product
+migration, or deployment. Real Engine transport remains a later slice.
+
 ## Role
 
 Reusable, browser-safe embedded shell/context/event/presentation/bootstrap
