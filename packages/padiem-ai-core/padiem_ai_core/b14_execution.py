@@ -253,7 +253,10 @@ class B14RoutingOptions:
 @dataclass(frozen=True, slots=True)
 class B14ChatRequest:
     messages: tuple[Mapping[str, Any], ...]
-    model: str = "b14/auto"
+    # #2101: `model` is required. The old `b14/auto` default let an omitted
+    # route silently widen into Router auto execution. Explicit generic auto
+    # requests remain valid by passing model="b14/auto".
+    model: str
     temperature: float = 0.2
     max_tokens: int | None = None
     routing: B14RoutingOptions = field(default_factory=B14RoutingOptions)

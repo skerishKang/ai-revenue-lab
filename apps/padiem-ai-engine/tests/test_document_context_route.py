@@ -638,6 +638,7 @@ def test_document_route_does_not_widen_existing_routes(identity_modules) -> None
                         "task_type": "general",
                         "optimize_for": "balanced",
                         "max_tokens": 256,
+                        "model_policy": {"model": "test/route"},
                     },
                     "messages": [{"role": "user", "content": "What is in this image?"}],
                     "attachment_ref": "att_F1xture-Ref_000123",
