@@ -108,6 +108,8 @@ cd apps/korean-ai-platform
 python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
+`app.main` loads working-directory `.env` before creating the application; the documented owner-startup contract intentionally does not use `--env-file .env`.
+
 Useful local surfaces may include the workspace and pilot APIs exposed by the current application. Always verify endpoint availability against current source/tests rather than historical phase docs.
 
 ## Security boundary
