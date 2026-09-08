@@ -1,9 +1,10 @@
-"""IP-SIDECAR — Padiem Embedded AI Runtime (S6 approval presentation).
+"""IP-SIDECAR — Padiem Embedded AI Runtime (S7 streaming lifecycle presentation).
 
 Public, browser-safe boundary only. No Engine transport, no provider calls,
 no browser network fetch, no File/Blob byte reads, no ref minting, no
-approval verification or authority minting, no action execution, no
-secrets, no product semantics.
+approval verification or authority minting, no action execution, no retry
+execution or cancellation, no clock authority, no secrets, no product
+semantics.
 """
 
 from __future__ import annotations
@@ -48,6 +49,15 @@ from .evidence import (
 )
 from .host_context import HostContextEnvelope, envelop_host_context
 from .lifecycle import EmbeddedShell, HostSafeResult
+from .streaming_lifecycle import (
+    PublicErrorPresentation,
+    RetryAffordancePresentation,
+    StreamFeedGuard,
+    StreamLifecyclePresentation,
+    present_public_error,
+    present_retry_affordance,
+    present_stream_lifecycle,
+)
 
 __all__ = [
     "ApprovalProposal",
@@ -68,12 +78,16 @@ __all__ = [
     "PresentedProposal",
     "PresentedSelection",
     "ProposalPresentation",
+    "PublicErrorPresentation",
     "PublicEvent",
     "PublicReferenceDisplay",
+    "RetryAffordancePresentation",
     "SessionProjection",
     "SelectionDescriptor",
     "SelectionPresentation",
     "SidecarContractError",
+    "StreamFeedGuard",
+    "StreamLifecyclePresentation",
     "UploadLifecyclePresentation",
     "VersionCompatibility",
     "build_diagnostics",
@@ -89,8 +103,11 @@ __all__ = [
     "present_attachment_ref",
     "present_citations",
     "present_confirmation_intent",
+    "present_public_error",
     "present_public_reference",
+    "present_retry_affordance",
     "present_selections",
+    "present_stream_lifecycle",
     "present_upload_lifecycle",
     "project_event",
 ]
