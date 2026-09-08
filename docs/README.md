@@ -31,7 +31,7 @@ Audit trail:
 ```text
 Product / Business domain + UX
         │
-        ├─ optional IP-SIDECAR embedded presentation/runtime
+        ├─ optional IP-SIDECAR embedded shell/context/event/runtime primitives
         │
         ▼
 IP-ENGINE · cross-runtime trusted service boundary
@@ -51,16 +51,19 @@ IP-CONTROL = cross-cutting identity / tenant / entitlement / usage / audit
 
 Same-runtime consumers may use IP-CORE directly only when explicitly accepted by architecture. Products must not recreate a generic Provider/model router or competing shared AI policy engine.
 
+Current IP-SIDECAR state is explicit: `packages/padiem-embedded-runtime/` contains the S2 minimal runtime contract, but real Engine transport, live Provider execution and Production activation are not present.
+
 ## 3. Current component/product documentation
 
 ```text
 packages/padiem-ai-core/README.md          -> IP-CORE
 apps/padiem-ai-engine/README.md            -> IP-ENGINE
 packages/padiem-control-plane/README.md    -> IP-CONTROL
+packages/padiem-embedded-runtime/README.md -> IP-SIDECAR S2 source contract
 apps/korean-ai-platform/README.md           -> B14 Router/Provider execution
 apps/padiem-chat/README.md                  -> B62 Padiem Chat
 apps/korean-ai-code-agent/README.md         -> B54 Padiem Claw
-docs/internal-platform/sidecar/README.md    -> IP-SIDECAR proposed runtime
+docs/internal-platform/sidecar/README.md    -> IP-SIDECAR ownership/readiness authority
 ```
 
 Product READMEs describe product behavior and integration. They do not override central platform ownership.
@@ -83,10 +86,12 @@ Owns reader UX, locator grammar/order, reading progress, knowledge ceiling, anno
 
 ```text
 B53 Padiem Sidecar = commercial product / packaging / onboarding / customer journey
-IP-SIDECAR         = proposed reusable embedded presentation/runtime layer
+IP-SIDECAR         = reusable embedded runtime primitives
+SOURCE              = packages/padiem-embedded-runtime/
+S2 CONTRACT         = source-present / non-production
 ```
 
-These identities must not be collapsed.
+These identities must not be collapsed. S2 source presence does not imply Engine connectivity or Production activation.
 
 ### B14 · Korean AI Platform
 
@@ -144,7 +149,7 @@ Do not delete historical evidence merely because current terminology changed.
 
 ## 8. Readiness rule
 
-Across Core, Engine, Control Plane, products and B14:
+Across Core, Engine, Control Plane, Sidecar, products and B14:
 
 ```text
 SOURCE_PRESENT
