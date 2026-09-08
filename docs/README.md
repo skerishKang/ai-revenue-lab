@@ -49,17 +49,18 @@ IP-CONTROL = cross-cutting identity / tenant / entitlement / usage / audit
 
 Same-runtime consumers may use IP-CORE directly only when architecture explicitly permits it. Products must not create a second generic Provider/model router or shared AI policy engine.
 
-## Current component authority
+## Current component and product authority
 
 ```text
-packages/padiem-ai-core/README.md          -> IP-CORE
-apps/padiem-ai-engine/README.md            -> IP-ENGINE
-packages/padiem-control-plane/README.md    -> IP-CONTROL
-packages/padiem-embedded-runtime/README.md -> IP-SIDECAR S2 source contract
-apps/korean-ai-platform/README.md           -> B14 execution platform
-apps/padiem-chat/README.md                  -> B62 Padiem Chat
-apps/korean-ai-code-agent/README.md         -> B54 Padiem Claw
-docs/internal-platform/sidecar/README.md    -> IP-SIDECAR ownership/readiness
+packages/padiem-ai-core/README.md           -> IP-CORE
+apps/padiem-ai-engine/README.md             -> IP-ENGINE
+packages/padiem-control-plane/README.md     -> IP-CONTROL
+packages/padiem-embedded-runtime/README.md  -> IP-SIDECAR S2 source contract
+docs/internal-platform/sidecar/README.md     -> IP-SIDECAR ownership/readiness
+docs/products/padiem-sidecar/README.md       -> B53 Padiem Sidecar commercial product authority
+apps/korean-ai-platform/README.md            -> B14 execution platform
+apps/padiem-chat/README.md                   -> B62 Padiem Chat
+apps/korean-ai-code-agent/README.md          -> B54 Padiem Claw
 ```
 
 ## Product boundary locks
@@ -67,7 +68,8 @@ docs/internal-platform/sidecar/README.md    -> IP-SIDECAR ownership/readiness
 - **B62 Padiem Chat** owns chat UX, conversations, Projects, attachments, Saved Outputs and product modes. Generic Tool/Skill/Agent/Memory/Evidence semantics remain IP-CORE-owned.
 - **B54 Padiem Claw** owns task/run/repository/workspace/GitHub product flow. `P01` is historical terminology for the shared Core lineage; current canonical identity is `IP-CORE`.
 - **B61 StoryMemory** owns reader/domain semantics including locator grammar, progress, knowledge ceiling and spoiler/no-future behavior. Generic retrieval/permission/evidence remains IP-CORE-owned.
-- **B53 Padiem Sidecar** is the commercial product. **IP-SIDECAR** is the reusable embedded runtime layer; the two identities must not be collapsed.
+- **B53 Padiem Sidecar** is the commercial product whose product charter, requirements, architecture, operations, security and commercialization documents live under `docs/products/padiem-sidecar/`.
+- **IP-SIDECAR** is the reusable embedded runtime layer consumed by B53 and future approved hosts. B53 and IP-SIDECAR are distinct authorities.
 - **B14 Korean AI Platform** owns Provider/model registry, inference credentials, executable route validation/selection and actual model execution.
 
 ## IP-SIDECAR current state
