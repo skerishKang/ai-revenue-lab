@@ -25,6 +25,7 @@ CALLER_ID = "e5-boundary-caller"
 CALLER_SECRET = "e5-boundary-secret-0123456789abcdef-0123456789abcdef"
 ALLOWED_APP = "b62"
 MULTIMODAL_PATH = "/internal/v1/multimodal/execute"
+MULTIMODAL_STREAM_PATH = "/internal/v1/multimodal/stream"
 VALID_REF = "att_F1xture-Ref_000123"
 
 
@@ -206,6 +207,9 @@ def test_legacy_worker_is_not_widened_by_e5a(identity_modules) -> None:
     assert "MULTIMODAL_EXECUTE_PATH" not in legacy_source
 
     assert asyncio.run(legacy._engine_services_for_env(_identity_env())).multimodal is None
+    assert (
+        asyncio.run(legacy._engine_services_for_env(_identity_env())).multimodal_streaming is None
+    )
 
 
 def test_canonical_composition_wires_multimodal_service_without_resolver(
@@ -213,7 +217,10 @@ def test_canonical_composition_wires_multimodal_service_without_resolver(
 ) -> None:
     """Production composition has no trusted resolver in either composition shape."""
 
-    from app.multimodal_attachment_service import MultimodalAttachmentEngineService
+    from app.multimodal_attachment_service import (
+        MultimodalAttachmentEngineService,
+        MultimodalStreamingEngineService,
+    )
 
     _legacy, identity = identity_modules
 
@@ -221,6 +228,8 @@ def test_canonical_composition_wires_multimodal_service_without_resolver(
         services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services.multimodal, MultimodalAttachmentEngineService)
         assert services.multimodal._attachment_resolver is None
+        assert isinstance(services.multimodal_streaming, MultimodalStreamingEngineService)
+        assert services.multimodal_streaming._attachment_resolver is None
 
 
 def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
@@ -247,6 +256,38 @@ def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
             identity,
             _identity_env(),
             _Request(MULTIMODAL_PATH, body=_multimodal_payload(), authenticated=False),
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(saved)
+
+    assert response.status == 401
+    assert _body(response)["error"]["code"] == "service_authentication_failed"
+
+
+def test_multimodal_stream_request_is_rejected_before_any_composition_or_resolution(
+    identity_modules,
+) -> None:
+    """The stream route shares the execute route's auth gate and error shape.
+
+    Reaching ``engine_services_factory`` at all would mean an unauthenticated
+    caller touched attachment resolution or streaming composition.
+    """
+
+    _legacy, identity = identity_modules
+
+    def forbidden_composition(env: Any) -> Any:
+        async def _forbidden():
+            raise AssertionError("stream composition reached before service identity")
+
+        return _forbidden()
+
+    saved = identity.Default.engine_services_factory
+    identity.Default.engine_services_factory = staticmethod(forbidden_composition)
+    try:
+        response = _fetch(
+            identity,
+            _identity_env(),
+            _Request(MULTIMODAL_STREAM_PATH, body=_multimodal_payload(), authenticated=False),
         )
     finally:
         identity.Default.engine_services_factory = staticmethod(saved)
@@ -291,6 +332,57 @@ def test_valid_ref_fails_closed_through_canonical_fetch(
     try:
         response = _fetch(
             identity, env, _Request(MULTIMODAL_PATH, body=_multimodal_payload())
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(real_factory)
+
+    assert response.status == 503
+    payload = _body(response)
+    assert payload["ok"] is False
+    assert payload["error"]["code"] == "attachment_resolver_unavailable"
+    assert runtime_calls == []
+    serialized = str(response.body)
+    assert VALID_REF not in serialized
+    assert "data:" not in serialized
+
+
+@pytest.mark.parametrize("b14_bound", [False, True])
+def test_valid_ref_stream_fails_closed_through_canonical_fetch(
+    identity_modules, b14_bound: bool
+) -> None:
+    """A valid opaque ref on the stream route still fails closed before execution.
+
+    The streaming runtime factory is instrumented to count invocations: zero
+    calls plus the bounded 503 prove no resolver, storage or Core/B14 streaming
+    fallback is reachable through the canonical fetch.
+    """
+
+    _legacy, identity = identity_modules
+    env = _identity_env(**({"B14_SERVICE": object()} if b14_bound else {}))
+    runtime_calls: list[str] = []
+
+    real_factory = identity.Default.engine_services_factory
+
+    def spying_factory(composition_env: Any) -> Any:
+        async def _spying():
+            services = await real_factory(composition_env)
+            assert services.multimodal_streaming is not None
+            assert services.multimodal_streaming._attachment_resolver is None
+            original = services.multimodal_streaming._runtime_factory
+
+            def counting_runtime_factory(app_id: str) -> Any:
+                runtime_calls.append(app_id)
+                return original(app_id)
+
+            services.multimodal_streaming._runtime_factory = counting_runtime_factory
+            return services
+
+        return _spying()
+
+    identity.Default.engine_services_factory = staticmethod(spying_factory)
+    try:
+        response = _fetch(
+            identity, env, _Request(MULTIMODAL_STREAM_PATH, body=_multimodal_payload())
         )
     finally:
         identity.Default.engine_services_factory = staticmethod(real_factory)
