@@ -325,7 +325,7 @@ async def test_b14_failure_after_retrieval_does_not_return_success_evidence_enve
         )
     assert response.status_code == 502
     body = response.json()
-    assert body["error"]["code"] == "upstream_error"
+    assert body["error"]["code"] == "provider_server_error"
     assert "private" not in json.dumps(body)
     assert "answer_status" not in body
     assert "evidence" not in body

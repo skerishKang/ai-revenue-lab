@@ -51,7 +51,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_default_pro_reaches_service_binding_with_exact_minimax():
+def test_live_completed_default_pro_reaches_service_binding_with_exact_default_route():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -77,7 +77,7 @@ def test_live_completed_default_pro_reaches_service_binding_with_exact_minimax()
         assert (
             DEFAULT_B14_MODEL_ID
             == MEDIUM_B14_MODEL_ID
-            == "kilo/minimax-minimax-m3-free"
+            == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
         )
         assert calls == 1
         assert store.refunds == []

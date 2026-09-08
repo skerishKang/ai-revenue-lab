@@ -9,6 +9,13 @@ Free availability is volatile. These registrations are dated snapshots, remain
 explicit/manual-only, and are never inserted into ``b14/auto``. No API key is
 stored or required for these routes. The fixed Kilo Gateway origin and upstream
 model IDs are server-owned metadata; callers cannot replace either value.
+
+Re-check on 2026-09-08 against the public Gateway model list (#2094):
+``minimax/minimax-m3:free`` and ``tencent/hy3:free`` are no longer offered.
+Both lanes are retired (see RETIRED_KILO_FREE_MODEL_IDS). Their catalog
+entries remain registered only because the owner-designated ``fixed_chain_v1``
+fallback (D14, #2044) pins the minimax entry; they must never back a product
+default route, and any chat-side use is blocked by the B62 model policy.
 """
 
 from __future__ import annotations
@@ -39,6 +46,17 @@ KILO_HY3_MODEL_ID = "kilo/tencent-hy3-free"
 KILO_HY3_UPSTREAM_MODEL = "tencent/hy3:free"
 KILO_MINIMAX_M3_MODEL_ID = "kilo/minimax-minimax-m3-free"
 KILO_MINIMAX_M3_UPSTREAM_MODEL = "minimax/minimax-m3:free"
+
+# Free lanes observed as removed from the public Kilo Gateway model list on
+# 2026-09-08 (#2094). Retired lanes are excluded from every executable
+# product/default route; only the owner-pinned fixed_chain_v1 fallback still
+# references the minimax entry until D14 refreshes the chain.
+RETIRED_KILO_FREE_MODEL_IDS = frozenset(
+    {
+        KILO_MINIMAX_M3_MODEL_ID,
+        KILO_HY3_MODEL_ID,
+    }
+)
 
 # Backwards-compatible names used by the first Provider 03 tests/consumers.
 KILO_MODEL_ID = KILO_NEMOTRON_MODEL_ID

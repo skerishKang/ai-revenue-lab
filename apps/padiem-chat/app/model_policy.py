@@ -10,8 +10,20 @@ AUTO_B14_MODEL_ID = "b14/auto"
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
 LOW_B14_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
-MEDIUM_B14_MODEL_ID = "kilo/minimax-minimax-m3-free"
+MEDIUM_B14_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
+
+# Kilo Gateway free lanes that are no longer offered upstream. Re-checked
+# against the public Gateway model list on 2026-09-08: neither
+# ``minimax/minimax-m3:free`` nor ``tencent/hy3:free`` is listed anymore, so
+# both product routes are retired and must never back an executable tier.
+# (#2094: the stale minimax default caused every Pro/default chat failure.)
+RETIRED_B14_MODEL_IDS = frozenset(
+    {
+        "kilo/minimax-minimax-m3-free",
+        "kilo/tencent-hy3-free",
+    }
+)
 # Compatibility name retained for consumers that reason in low/medium/high
 # profiles. High currently names the Max product tier but is deliberately not
 # an executable B14 route until #1397 approves a replacement.
@@ -46,7 +58,9 @@ EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
 # Current source posture after bounded activation/benchmark evidence:
 #
 #   Padiem Plus -> Kilo-hosted Poolside Laguna S 2.1 free
-#   Padiem Pro  -> Kilo-hosted MiniMax M3 free (default, general answers)
+#   Padiem Pro  -> Kilo-hosted NVIDIA Nemotron 3 Ultra free (default, general
+#                  answers; remapped from the retired MiniMax M3 free lane in
+#                  #2094 after Kilo removed minimax/minimax-m3:free)
 #   Padiem Max  -> HOLD (Hy3 is inactive after HTTP 404; no replacement is
 #                  auto-promoted from volatile free availability)
 #

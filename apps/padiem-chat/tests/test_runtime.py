@@ -179,7 +179,7 @@ async def test_unknown_model_alias_fails_before_any_b14_call():
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("status", "code", "client_status"),
-    [(429, "upstream_busy", 503), (500, "upstream_error", 502)],
+    [(429, "upstream_busy", 503), (500, "provider_server_error", 502)],
 )
 async def test_b14_http_errors_are_friendly(status, code, client_status):
     async def handler(request):
