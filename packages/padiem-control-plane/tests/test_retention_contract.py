@@ -28,6 +28,7 @@ from padiem_control_plane.retention_contract import (
     RetentionDataClass,
     RetentionDecision,
     RetentionPolicy,
+    RetentionPurpose,
     build_deletion_receipt,
     evaluate_deletion_eligibility,
     validate_legal_hold,
@@ -47,7 +48,8 @@ NOW = datetime(2026, 9, 8, 10, 0, tzinfo=timezone.utc)
 
 def _policy(**overrides) -> RetentionPolicy:
     values = dict(
-        data_class=RetentionDataClass.SESSION,
+        data_class=RetentionDataClass.INBOUND_MESSAGE_BODY,
+        purpose=RetentionPurpose.SERVICE_DELIVERY,
         ttl_seconds=86_400,
         owner="control_plane_server",
         policy_version="retention_v1",
@@ -97,6 +99,21 @@ class TestRetentionPolicy:
         for dc in RetentionDataClass:
             p = _policy(data_class=dc)
             assert p.data_class is dc
+
+    def test_all_purposes_accepted(self) -> None:
+        for purpose in RetentionPurpose:
+            p = _policy(purpose=purpose)
+            assert p.purpose is purpose
+
+    def test_non_enum_purpose_rejected(self) -> None:
+        with pytest.raises(ControlPlaneContractError, match="purpose"):
+            _policy(purpose="custom_arbitrary_purpose")  # type: ignore[arg-type]
+
+    def test_purpose_is_server_owned(self) -> None:
+        """Purpose is a bounded enum; model/client cannot supply arbitrary values."""
+        p = _policy(purpose=RetentionPurpose.REGULATORY_COMPLIANCE)
+        assert isinstance(p.purpose, RetentionPurpose)
+        assert p.purpose is RetentionPurpose.REGULATORY_COMPLIANCE
 
     def test_ttl_zero_rejected(self) -> None:
         with pytest.raises(ControlPlaneContractError, match="ttl_seconds"):
@@ -382,7 +399,7 @@ class TestBuildDeletionReceipt:
             deleted_at=NOW,
             content_bytes=b"test",
         )
-        assert receipt.policy_ref == "session:retention_v1"
+        assert receipt.policy_ref == "inbound_message_body:service_delivery:retention_v1"
         assert not isinstance(receipt.policy_ref, RetentionPolicy)
 
     def test_receipt_fails_on_active_result(self) -> None:
@@ -582,8 +599,19 @@ class TestEnumCompleteness:
 
     def test_retention_data_class_values(self) -> None:
         assert set(RetentionDataClass) == {
-            RetentionDataClass.SESSION,
-            RetentionDataClass.COMMAND,
-            RetentionDataClass.IDENTITY,
-            RetentionDataClass.USAGE,
+            RetentionDataClass.INBOUND_MESSAGE_BODY,
+            RetentionDataClass.SOURCE_DOCUMENT,
+            RetentionDataClass.EXTRACTED_CANDIDATE,
+            RetentionDataClass.BUSINESS_RECORD,
+            RetentionDataClass.RENDERED_ARTIFACT,
+            RetentionDataClass.PRODUCT_EVIDENCE_PROJECTION,
+            RetentionDataClass.PILOT_AGGREGATE,
+        }
+
+    def test_retention_purpose_values(self) -> None:
+        assert set(RetentionPurpose) == {
+            RetentionPurpose.SERVICE_DELIVERY,
+            RetentionPurpose.REGULATORY_COMPLIANCE,
+            RetentionPurpose.AUDIT_EVIDENCE,
+            RetentionPurpose.LEGAL_PRESERVATION,
         }

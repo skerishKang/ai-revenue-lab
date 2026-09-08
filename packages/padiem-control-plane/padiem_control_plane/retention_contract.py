@@ -63,12 +63,32 @@ class RetentionDecision(str, Enum):
 
 
 class RetentionDataClass(str, Enum):
-    """Categories of retained data with distinct TTL requirements."""
+    """Initial data classes from issue #1570.
 
-    SESSION = "session"
-    COMMAND = "command"
-    IDENTITY = "identity"
-    USAGE = "usage"
+    Each class represents a distinct kind of live data whose retention
+    TTL must be defined before that data is imported.
+    """
+
+    INBOUND_MESSAGE_BODY = "inbound_message_body"
+    SOURCE_DOCUMENT = "source_document"
+    EXTRACTED_CANDIDATE = "extracted_candidate"
+    BUSINESS_RECORD = "business_record"
+    RENDERED_ARTIFACT = "rendered_artifact"
+    PRODUCT_EVIDENCE_PROJECTION = "product_evidence_projection"
+    PILOT_AGGREGATE = "pilot_aggregate"
+
+
+class RetentionPurpose(str, Enum):
+    """Bounded server-owned reason for retaining a data class.
+
+    Model/client callers must never supply or override this value;
+    the Control Plane determines purpose at policy-authoring time.
+    """
+
+    SERVICE_DELIVERY = "service_delivery"
+    REGULATORY_COMPLIANCE = "regulatory_compliance"
+    AUDIT_EVIDENCE = "audit_evidence"
+    LEGAL_PRESERVATION = "legal_preservation"
 
 
 # ---------------------------------------------------------------------------
@@ -78,13 +98,16 @@ class RetentionDataClass(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class RetentionPolicy:
-    """A server-owned retention TTL for a specific data class.
+    """A server-owned retention TTL for a specific data class and purpose.
 
     ``owner`` must be a server-actor identifier; model/client/partner
-    identifiers are rejected at construction time.
+    identifiers are rejected at construction time.  ``purpose`` is a
+    bounded server-owned enum; model/client callers must never supply
+    or override it.
     """
 
     data_class: RetentionDataClass
+    purpose: RetentionPurpose
     ttl_seconds: int
     owner: str
     policy_version: str
@@ -94,6 +117,11 @@ class RetentionPolicy:
             raise ControlPlaneContractError(
                 "invalid_retention_policy",
                 "data_class must be a RetentionDataClass member",
+            )
+        if not isinstance(self.purpose, RetentionPurpose):
+            raise ControlPlaneContractError(
+                "invalid_retention_policy",
+                "purpose must be a RetentionPurpose member",
             )
         if (
             isinstance(self.ttl_seconds, bool)
@@ -354,7 +382,7 @@ def build_deletion_receipt(
         deletion_id=deletion_id,
         resource_ref=eligibility.resource_ref,
         resource_type=eligibility.resource_type,
-        policy_ref=f"{eligibility.policy.data_class.value}:{eligibility.policy.policy_version}",
+        policy_ref=f"{eligibility.policy.data_class.value}:{eligibility.policy.purpose.value}:{eligibility.policy.policy_version}",
         legal_hold_ref=result.active_hold_ref,
         deleted_at=deleted_at,
         content_sha256=hashlib.sha256(content_bytes).hexdigest(),
