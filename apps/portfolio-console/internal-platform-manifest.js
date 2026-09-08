@@ -91,7 +91,7 @@
       authorityDoc: "docs/internal-platform/sidecar/README.md",
       authorityDocUrl: "https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/internal-platform/sidecar/README.md",
       businessNumber: null,
-      status: "proposed",
+      status: "runtime-contract",
       runtime: "Reusable embedded shell/context/event/presentation/bootstrap primitives",
       roleKo: "호스트 제품에 내장되는 재사용 AI 표면의 계약과 실행 기본 요소",
       roleEn: "Contracts and bootstrap primitives for reusable AI surfaces embedded in host products",

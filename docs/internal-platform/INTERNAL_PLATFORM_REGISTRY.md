@@ -100,7 +100,7 @@ REPOSITORY = skerishKang/ai-revenue-lab
 PROPOSED_SOURCE = packages/padiem-embedded-runtime/
 SOURCE_DIRECTORY_CREATED = NO
 BUSINESS_NUMBER = NONE
-RUNTIME_CLASS = reusable embedded shell/context/event/presentation/bootstrap primitives (proposed)
+RUNTIME_CLASS = reusable embedded shell/context/event/presentation/bootstrap primitives (runtime contract S2; non-production, no Engine transport)
 PRIMARY_COMMERCIAL_PRODUCT = B53 Padiem Sidecar
 CURRENT_PLATFORM_WORK = #1739 registry and boundary establishment (S1)
 ```

@@ -1,0 +1,31 @@
+name: IP-SIDECAR Runtime Contract
+
+on:
+  pull_request:
+    paths:
+      - 'packages/padiem-embedded-runtime/**'
+      - '.github/workflows/ip-sidecar-runtime-contract.yml'
+  push:
+    paths:
+      - 'packages/padiem-embedded-runtime/**'
+      - '.github/workflows/ip-sidecar-runtime-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: IP-SIDECAR runtime contract (stdlib unittest)
+        working-directory: packages/padiem-embedded-runtime
+        run: python -m unittest discover -s tests -t .

@@ -1,0 +1,19 @@
+{
+  "bootstrap": {
+    "host_id": "demo-host-01",
+    "shell_version": "0.1.0",
+    "locale": "ko",
+    "features": ["context-panel", "event-feed"],
+    "host_name": "S2 reference host"
+  },
+  "host_context": {
+    "theme": "dark",
+    "surface": "panel",
+    "role": "admin",
+    "tenant_id": "tenant-9"
+  },
+  "notice_text": "Embedded panel ready for host demo-host-01",
+  "fake_engine": {
+    "notice.render": {"ok": true}
+  }
+}
