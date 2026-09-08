@@ -10,25 +10,46 @@ CANONICAL_CODE_PATH = apps/korean-ai-code-agent/**
 NEW_BUSINESS_NUMBER = NO
 ```
 
-`Padiem Agent`는 일반명/제품군 설명으로 사용한다. 사용자에게 노출되는 대표 실행형 제품명은 `Padiem Claw`다.
+`Padiem Agent` is the product-family/category description. The representative user-facing execution product is `Padiem Claw`.
 
 ## Authority order
 
-1. merged GitHub source and reviewed Markdown
-2. accepted GitHub architecture/product issues
-3. exact-head PR code + CI evidence
-4. Drive Google Docs mirror
-5. HTML overview/landing copy
+1. current merged GitHub source and accepted product contracts under `apps/korean-ai-code-agent/**`;
+2. repository-wide Padiem AI cross-layer architecture: `../../../docs/architecture/PADIEM_AI_VERTICAL_STACK.md`;
+3. current reviewed B54 product/architecture/security/operations Markdown;
+4. accepted GitHub product/architecture issues and exact-head PR/CI evidence;
+5. Drive Google Docs mirrors;
+6. HTML overview/landing copy;
+7. historical/dated snapshots and superseded working artifacts.
 
-Draft PR이나 working branch는 미래 계약 후보이지 main보다 높은 권위가 아니다.
+A B54 document may specialize Claw product behavior, but it cannot move generic AI semantics, cross-runtime transport, provider/model routing, or canonical account/entitlement authority away from the owning shared layer.
+
+Draft PRs and working branches are candidate future contracts, not higher authority than current merged source/main.
+
+## Shared-platform boundary
+
+```text
+B54 Padiem Claw
+  -> Product Adapter
+  -> IP-ENGINE for cross-runtime shared execution
+  -> IP-CORE shared AI semantics
+  -> B14 Router Platform
+  -> Provider / Model
+
+IP-CONTROL = cross-cutting identity/workspace/entitlement/usage/audit authority
+```
+
+A same-runtime/local path may use accepted Core library contracts directly where explicitly designed. That does not grant B54 generic Agent/Tool/Connector/Memory or provider-routing authority.
 
 ## B65 correction
 
-과거 Drive에 생성된 `B65_PADIEM_AGENT`와 charter는 초기 working artifact였으며 canonical business assignment가 아니다. B54 제품 결정을 발견한 뒤 B65 신설 방침은 철회되었다. 해당 자료는 삭제하지 않고 `SUPERSEDED` evidence로 보존한다.
+The former Drive artifact `B65_PADIEM_AGENT` and its charter were early working artifacts, not a canonical Business assignment. After the existing B54 product authority was identified, the B65 creation direction was withdrawn. Preserve those materials as `SUPERSEDED` evidence rather than current authority.
 
 ## Change policy
 
-- 제품 경계 변경: Issue → branch → reviewed PR.
-- P01/B14/B62/Control Plane 권위 변경: 각 owner plane의 별도 Issue/PR.
-- 문서와 코드가 충돌하면 코드/merged contract를 우선하고 문서를 reconciliation한다.
-- secret, credential, provider key, raw private reasoning은 문서/HTML/evidence에 기록하지 않는다.
+- B54 product-boundary change: Issue/work order -> bounded branch -> reviewed PR.
+- Cross-layer architecture change: update/review the owning shared-layer authority and `PADIEM_AI_VERTICAL_STACK.md` as required.
+- IP-CORE / IP-ENGINE / B14 / IP-CONTROL authority changes belong to those owner layers, not a Claw-only task.
+- If documentation and merged source conflict, classify whether the conflict is product behavior, shared architecture, runtime availability or historical evidence; reconcile the owning current document rather than averaging contradictory text.
+- secret, credential, provider key, raw private reasoning or private customer data must not appear in documentation/HTML/evidence.
+- `SOURCE_PRESENT`, `DEPLOYED`, `PRODUCTION_ACTIVE` and `LIVE_VERIFIED` are distinct states.
