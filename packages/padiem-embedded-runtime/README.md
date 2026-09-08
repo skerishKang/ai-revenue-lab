@@ -1,4 +1,4 @@
-# padiem-embedded-runtime (IP-SIDECAR S6 approval presentation)
+# padiem-embedded-runtime (IP-SIDECAR S7 streaming lifecycle presentation)
 
 Shared, browser-safe embedded shell boundary for host products. S2 delivered
 the package-level runtime contract plus one repository-local reference host;
@@ -7,12 +7,16 @@ projection, version-compatibility and integration diagnostics, and host-safe
 fail-over; S4 added public-safe evidence/citation presentation primitives;
 S5 added browser-safe attachment input presentation (bounded selection
 metadata, deterministic upload-lifecycle states, opaque server-issued
-`att_*` ref display tokens); S6 adds display-only approval/action-confirmation
+`att_*` ref display tokens); S6 added display-only approval/action-confirmation
 presentation (bounded proposal projections, staged confirmation intents,
-host-driven approval states, opaque upstream reference tokens). No Engine
-transport, no provider calls, no browser network fetch, no File/Blob byte
-reads, no ref minting, no approval verification or authority minting, no
-action execution, no secrets, no product semantics.
+host-driven approval states, opaque upstream reference tokens); S7 adds
+display-only streaming lifecycle, public-safe error, and retry-affordance
+presentation (allowlisted #1490 event vocabulary projection, duplicate-tolerant
+feed ordering, bounded reason-coded error views, state-permitted retry/
+reconnect/cancel staging). No Engine transport, no provider calls, no browser
+network fetch, no File/Blob byte reads, no ref minting, no approval
+verification or authority minting, no action execution, no retry execution,
+no backoff timer, no clock authority, no secrets, no product semantics.
 
 ## Layout
 
@@ -30,6 +34,7 @@ packages/padiem-embedded-runtime/
     evidence.py              # S4 public-safe evidence/citation presentation (bounded, deterministic)
     attachment_input.py      # S5 bounded selection/lifecycle/opaque att_* ref presentation
     approval_presentation.py # S6 display-only proposal/intent/state/reference projection
+    streaming_lifecycle.py   # S7 display-only stream event/feed/error/retry projection
   reference_host/            # repository-local demo host (fixture-driven, no I/O)
   fixtures/                  # deterministic demo fixtures (JSON)
   tests/                     # focused unittest contract tests (stdlib only)
@@ -92,6 +97,26 @@ packages/padiem-embedded-runtime/
 - `UPSTREAM_REFERENCE_DISPLAY_ONLY=YES` — identifier-shaped public refs
   render as opaque non-executable tokens; URL-shaped refs are rejected
   without retaining the raw value.
+- `STREAM_EVENT_VOCABULARY_ALLOWLISTED=YES` — only the promoted #1490 public
+  event kinds and execution-machine run states project; unknown kinds,
+  raw-payload fields, and malformed identifiers/sequences degrade to
+  `unavailable`/`INVALID_HOST_INPUT`, never an exception. Issuing and
+  sequencing authority stays with Core/Engine; this is display-only.
+- `FEED_ORDERING_DISPLAY_ONLY=YES` — duplicate replays are display-idempotent,
+  backward/same-sequence-different-event/stream-switch input degrades to
+  `unavailable`/`OUT_OF_ORDER_REPLAY` without advancing, and forward jumps
+  pass through unmodified; the guard never fabricates continuity or
+  re-implements canonical stream sequencing.
+- `PUBLIC_ERROR_VIEW_BOUND_NO_RAW=YES` — error views carry only allowlisted
+  public reason codes plus bounded display text; provider bodies, stack
+  traces, URLs, diffs, and secret-shaped summaries are rejected without
+  retention or echo.
+- `RETRY_EXECUTION=NO · AUTOMATIC_BACKOFF=NO` — retry/reconnect/cancel are
+  staged as host-handoff affordances only, and only when the projected public
+  state permits; the sidecar never executes, transports, schedules, or loops
+  them.
+- `CLOCK_AUTHORITY=NO` — no timeouts, expiry, or backoff timing is owned or
+  derived here; run states are projected upstream facts.
 
 ## Run tests
 
