@@ -15,6 +15,7 @@ from padiem_embedded_runtime.bridge import intake_host_payload
 from padiem_embedded_runtime.engine_port import DeterministicFakeEnginePort, EnginePort
 from padiem_embedded_runtime.errors import SidecarContractError
 from padiem_embedded_runtime.events import project_event
+from padiem_embedded_runtime.evidence import present_citations
 from padiem_embedded_runtime.host_context import envelop_host_context
 from padiem_embedded_runtime.lifecycle import EmbeddedShell
 
@@ -161,4 +162,28 @@ def run_bridge_journey(fixture: Mapping[str, object]) -> dict[str, object]:
         "host_primary_journey": "unbroken",
     }
 
+    return {"paths": paths, "host_primary_journey": "unbroken"}
+
+
+def run_citation_journey(fixture: Mapping[str, object]) -> dict[str, object]:
+    """Drive the S4 evidence/citation presentation over deterministic paths.
+
+    Uses only fixture data. Each path projects one citation list and returns
+    the public-safe presentation view, proving normal (ordered/dedup/labels),
+    empty, and degraded (malformed-dropped) states without ever raising to the
+    host or retaining raw provider/tool/terminal material.
+    """
+    if not isinstance(fixture, Mapping):
+        raise SidecarContractError("citation fixture must be a mapping")
+    normal = fixture.get("citations_normal")
+    empty = fixture.get("citations_empty")
+    degraded = fixture.get("citations_degraded")
+    for name, value in (("citations_normal", normal), ("citations_empty", empty), ("citations_degraded", degraded)):
+        if not isinstance(value, list):
+            raise SidecarContractError(f"citation fixture needs a {name} list")
+
+    paths: dict[str, object] = {}
+    for name, items in (("normal", normal), ("empty", empty), ("degraded", degraded)):
+        presentation = present_citations(items)
+        paths[name] = presentation.to_public_dict()
     return {"paths": paths, "host_primary_journey": "unbroken"}
