@@ -6,7 +6,7 @@ OWNER = repository documentation governance
 SCOPE = completion record for Padiem AI documentation unification
 PR = #2127
 PRODUCTION_MUTATION = NO
-LATEST_MAIN_RECONCILED = e6e5bf77e2e17e8a0b96c2b1245bd62a8703de20
+LATEST_MAIN_RECONCILED = a8e678400fad88236250114af8fd1894cc3a0656
 ```
 
 ## Result
@@ -25,9 +25,16 @@ IP-CONTROL = cross-cutting identity / tenant / entitlement / usage / audit
              + neutral cross-product declarations
 ```
 
-B53 Padiem Sidecar remains the commercial product and primary commercial consumer of IP-SIDECAR. IP-SIDECAR is the reusable embedded runtime layer.
+B53 Padiem Sidecar remains the commercial product and primary commercial consumer of IP-SIDECAR. IP-SIDECAR remains the reusable embedded runtime layer.
 
-The documentation pass was re-synchronized after `main` advanced with #2135, so current authority reflects the actual S2 package at `packages/padiem-embedded-runtime/` rather than the earlier S1-only proposed state.
+The documentation pass was merge-forwarded twice as `main` advanced during reconciliation:
+
+```text
+#2135 -> IP-SIDECAR S2 minimal runtime contract at packages/padiem-embedded-runtime/
+#1734 -> B53 Padiem Sidecar commercial product documentation, registry test, CI and portfolio identity
+```
+
+Both already-merged main changes are preserved. PR #2127 changes documentation authority relative to the reconciled main; it does not introduce those runtime/product source changes itself.
 
 ## Completion checklist
 
@@ -43,13 +50,15 @@ The documentation pass was re-synchronized after `main` advanced with #2135, so 
 [COMPLETE] B14 Router Platform vs product-profile distinction
 [COMPLETE] StoryMemory/Bible domain-vs-shared retrieval boundary
 [COMPLETE] B53 Sidecar vs IP-SIDECAR identity split
+[COMPLETE] B53 product authority linked to docs/products/padiem-sidecar/
 [COMPLETE] IP-SIDECAR S2 source-present / non-production state after #2135
+[COMPLETE] B53 Padiem Sidecar consolidation from #1734 preserved
 [COMPLETE] Claw current terminology aligned to IP-CORE
 [COMPLETE] Core current README removes historical route authority wording
 [COMPLETE] legacy terminology map
 [COMPLETE] historical Core/Claw snapshots retained
 [COMPLETE] pre-unification capability registry retained by immutable audit-commit pointer
-[COMPLETE] latest main Sidecar S2 package/workflow/manifest preserved during merge-forward
+[COMPLETE] latest main Sidecar runtime/product workflow and registry changes preserved during merge-forward
 ```
 
 ## Historical evidence
@@ -66,8 +75,6 @@ docs/history/2026-09-02/PADIEM_CLAW_README.snapshot.md
   -> preserved Claw README snapshot
 ```
 
-The pointer avoids copying a large stale runtime-status table into the current documentation tree while keeping the exact historical content immutable and addressable in Git history.
-
 ## Current authority set
 
 ```text
@@ -83,22 +90,36 @@ docs/governance/DOCUMENTATION_AUTHORITY_MODEL.md
 docs/governance/LEGACY_AI_TERMINOLOGY_MAP.md
 ```
 
-Component/product documentation:
+Component/product authorities:
 
 ```text
 packages/padiem-ai-core/README.md
 apps/padiem-ai-engine/README.md
 packages/padiem-control-plane/README.md
 packages/padiem-embedded-runtime/README.md
+docs/products/padiem-sidecar/README.md
 apps/korean-ai-platform/README.md
 apps/padiem-chat/README.md
 apps/korean-ai-code-agent/README.md
 ```
 
-## IP-SIDECAR current state
+## Sidecar authority split
 
 ```text
-SOURCE = packages/padiem-embedded-runtime/
+B53 Padiem Sidecar
+= commercial product
+= docs/products/padiem-sidecar/**
+= onboarding / packaging / host integration / operations / security / commercialization
+
+IP-SIDECAR
+= reusable embedded runtime primitives
+= packages/padiem-embedded-runtime/
+= docs/internal-platform/sidecar/README.md
+```
+
+Current IP-SIDECAR runtime readiness:
+
+```text
 SOURCE_PRESENT = YES
 S2_MINIMAL_RUNTIME_CONTRACT = LANDED
 ENGINE_CONNECTIVITY = NO
@@ -126,12 +147,13 @@ product behavior                -> product README / product contract
 shared semantic behavior        -> IP-CORE docs
 cross-runtime projection        -> IP-ENGINE docs / manifest
 embedded shell/runtime state    -> IP-SIDECAR docs / package contract
+B53 commercial product state    -> docs/products/padiem-sidecar/**
 identity/entitlement/usage      -> IP-CONTROL docs/contracts
 provider/model execution        -> B14 docs/source
 historical point-in-time state  -> dated evidence or immutable Git revision
 ```
 
-## Non-actions of PR #2127 relative to current main
+## Non-actions of PR #2127 relative to reconciled main
 
 ```text
 RUNTIME_SOURCE_CHANGE = 0
@@ -144,4 +166,4 @@ PRODUCTION_MUTATION = 0
 HISTORICAL_EVIDENCE_DELETION = 0
 ```
 
-The Sidecar S2 runtime/workflow changes came from already-merged `main` (#2135) and were preserved during branch synchronization; they are not introduced by this documentation reconciliation PR.
+The Sidecar S2 runtime/workflow changes (#2135) and B53 Sidecar product consolidation (#1734) were already merged into `main` and were preserved during branch synchronization; they are not introduced by this documentation reconciliation PR.
