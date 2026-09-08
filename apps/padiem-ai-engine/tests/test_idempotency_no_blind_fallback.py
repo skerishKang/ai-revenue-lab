@@ -69,6 +69,7 @@ def _payload(idempotency_key: str = "idem_fail_safe") -> dict:
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 2048,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "Hello engine"}],
         "trace_id": "tr_idem_failure",
@@ -115,11 +116,19 @@ async def test_complete_adapter_failure_returns_safe_error_without_rerun() -> No
     assert runtime.call_count == 1
 
 
-def test_no_blind_fallback_slice_does_not_mutate_production_config() -> None:
+def test_no_blind_fallback_slice_matches_production_binding_config() -> None:
+    """WO-8 PR-B inversion: no-fallback still holds WITH the durable binding present.
+
+    Pre-PR-B this test asserted absence; the binding is now active, so this
+    asserts the exact binding + provisioned database identity. The no-blind-
+    fallback guarantee is unchanged: the Worker never substitutes an in-memory
+    store when the durable adapter is missing — it fails closed.
+    """
     from pathlib import Path
 
     engine_root = Path(__file__).resolve().parents[1]
     wrangler_source = (engine_root / "wrangler.toml").read_text(encoding="utf-8")
 
-    assert "ENGINE_IDEMPOTENCY" not in wrangler_source
-    assert "[[d1_databases]]" not in wrangler_source
+    assert 'binding = "ENGINE_IDEMPOTENCY"' in wrangler_source
+    assert "[[d1_databases]]" in wrangler_source
+    assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in wrangler_source

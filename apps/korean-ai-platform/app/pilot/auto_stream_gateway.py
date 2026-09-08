@@ -22,9 +22,11 @@ from starlette.responses import JSONResponse, StreamingResponse
 from starlette.routing import Router
 
 from app.pilot.errors import InvalidRequest, PilotError, StreamNotSupported
+from app.pilot.catalog import get_catalog_by_id
 from app.pilot.gateway import _validate_body
-from app.pilot.openrouter_config import openrouter_config
-from app.pilot.openrouter_stream import stream_openrouter_chat_completions
+from app.pilot.routing_policy import ROUTING_POLICY_ID
+from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.platform import stream_platform_chat_completions
 from app.pilot import router_core as rcore
 from app.pilot.streaming_router import RouterStreamEvent, stream_routed_chat_completions
 
@@ -37,6 +39,8 @@ _AUTO_STREAM_PREVIEW_PATH = "/v1/chat/completions/auto-stream-preview"
 _PRESTART_ERRORS: dict[str, tuple[int, str]] = {
     "upstream_auth_failed": (401, "Provider 인증에 실패했습니다."),
     "upstream_rate_limited": (429, "Provider rate limit에 도달했습니다. 잠시 후 다시 시도하십시오."),
+    "upstream_rate_limited_busy": (429, "Provider가 일시적으로 바쁩니다. 잠시 후 다시 시도하십시오."),
+    "kilo_free_rate_limited": (429, "Kilo Gateway 무료 티어 rate limit(200 req/hour)에 도달했습니다. 잠시 후 다시 시도하십시오."),
     "upstream_timeout": (504, "Provider 요청 시간이 초과되었습니다. 나중에 다시 시도하십시오."),
     "upstream_server_error": (502, "Provider 서버 오류가 발생했습니다. 나중에 다시 시도하십시오."),
     "upstream_client_error": (502, "Provider가 요청을 거부했습니다."),
@@ -103,8 +107,8 @@ def _validate_auto_preview_body(raw: Any) -> tuple[dict[str, Any], rcore.RouteDe
     decision = rcore.resolve_route("b14/auto", body.get("business14", {}))
     if decision.route_mode != "auto":
         raise InvalidRequest("Auto streaming preview could not resolve an automatic route.")
-    if decision.credential_source == "platform_secret":
-        raise StreamNotSupported()
+    if decision.credential_source == "platform_secret" and not decision.platform_provider_id:
+        raise InvalidRequest("platform_secret route missing provider binding.")
     return body, decision
 
 
@@ -131,6 +135,7 @@ def _route_metadata(
         "actual_response_model": event.actual_response_model,
         "selected_route_id": event.selected_route_id,
         "reason_codes": list(event.reason_codes),
+        "routing_policy": ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         "fallback_allowed": decision.fallback_allowed,
         "fallback_used": event.fallback_used,
         "attempt_count": event.attempt,
@@ -138,7 +143,7 @@ def _route_metadata(
         "provider_mode": decision.provider_mode,
         "route_evidence_status": (
             "mock_no_upstream_call"
-            if openrouter_config.is_mock
+            if runtime_config.is_mock
             else "live_streaming_router_preview"
         ),
     }
@@ -337,12 +342,24 @@ async def pilot_auto_stream_preview(request: Request):
 
         body, decision = _validate_auto_preview_body(raw)
 
-        transport = getattr(request.app.state, "openrouter_stream_transport", None)
+        transport = getattr(request.app.state, "stream_transport", None)
         if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
             raise InvalidRequest("Invalid streaming transport configuration.")
 
         def stream_call(**kwargs: Any):
-            return stream_openrouter_chat_completions(**kwargs, transport=transport)
+            if decision.credential_source == "platform_secret":
+                # D14 (#2044): the fixed chain spans providers, so resolve the
+                # binding per attempt candidate instead of reusing the primary's.
+                cm = get_catalog_by_id(str(kwargs.get("model_id", "")))
+                provider_id = (cm.platform_provider_id if cm else "") or decision.platform_provider_id
+                return stream_platform_chat_completions(
+                    platform_provider_id=provider_id,
+                    transport=transport,
+                    **kwargs,
+                )
+            raise InvalidRequest(
+                "non-platform route is not routable (OpenRouter retired, #1933 S2)"
+            )
 
         iterator = stream_routed_chat_completions(
             decision=decision,

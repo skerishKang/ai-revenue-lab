@@ -92,6 +92,39 @@ class UpstreamRateLimited(PilotError):
         )
 
 
+class KiloFreeRateLimited(PilotError):
+    """Kilo Gateway free tier rate limit reached (200 requests/hour). Fails closed."""
+
+    def __init__(
+        self,
+        message: str = "Kilo Gateway free tier rate limit reached (200 req/hour). Please retry later.",
+    ) -> None:
+        super().__init__(
+            code="kilo_free_rate_limited",
+            message=message,
+            status_code=429,
+        )
+        self.retryable = True
+
+
+class UpstreamBusyRateLimited(PilotError):
+    """Transient capacity-pressure 429 (SenseNova "Server is busy", #2003).
+
+    Unlike an hourly quota this is retryable immediately: it is the
+    UpstreamTimeout-equivalent class for the #1988 same-route retry, so a
+    busy answer is absorbed by a short-backoff retry instead of surfacing.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(
+            code="upstream_rate_limited_busy",
+            message="Provider가 일시적으로 바쁩니다. 즉시 재시도합니다.",
+            status_code=429,
+        )
+        self.retryable = True
+
+
+
 class UpstreamTimeout(PilotError):
     def __init__(self) -> None:
         super().__init__(
@@ -214,3 +247,17 @@ class NoSafeRoute(PilotError):
         )
         self.reason_code = reason_code
         self.upstream_called = upstream_called
+
+
+class RoutingError(PilotError):
+    """Raised when the routing policy configuration itself is invalid.
+
+    D14 (#2044): a fixed-chain model that is not registered or disabled in the
+    catalog is a deployment defect, not a caller mistake, so it fails closed
+    with HTTP 500 and a stable ``routing_policy_invalid`` code.
+    """
+
+    def __init__(self, code: str = "routing_policy_invalid", message: str = "") -> None:
+        if not message:
+            message = "라우팅 정책 설정이 올바르지 않습니다."
+        super().__init__(code=code, message=message, status_code=500)

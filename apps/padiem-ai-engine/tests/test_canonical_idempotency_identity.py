@@ -115,7 +115,7 @@ def _payload() -> dict:
             "optimize_for": "balanced",
             "max_tokens": 2048,
             "required_capabilities": ["chat"],
-            "model_policy": {"mode": "balanced"},
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "Hello engine"}],
         "session_id": "session:canonical_1",
@@ -179,7 +179,7 @@ async def test_same_key_rejects_material_logical_execution_changes_before_rerun(
         lambda value: value.__setitem__("additional_system_context", "Project beta context"),
         lambda value: value["agent"].__setitem__("system_instruction", "Execute a different policy"),
         lambda value: value["agent"].__setitem__("required_capabilities", ["chat", "tools"]),
-        lambda value: value["agent"].__setitem__("model_policy", {"mode": "deep"}),
+        lambda value: value["agent"].__setitem__("model_policy", {"model": "test/route-deep"}),
         lambda value: value["execution_context"].__setitem__("timeout_seconds", 20.0),
         lambda value: value.__setitem__(
             "agent_plan",

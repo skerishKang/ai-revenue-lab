@@ -18,6 +18,7 @@ dev = [
   "pytest-asyncio>=0.24,<1",
   "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
+  "jsonschema>=4.23,<5",
 ]
 
 [tool.pywrangler]

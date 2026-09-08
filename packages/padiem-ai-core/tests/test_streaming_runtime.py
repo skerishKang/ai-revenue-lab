@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 
 import pytest
 
@@ -34,7 +35,7 @@ def agent(**overrides) -> AgentProfile:
         "optimize_for": "korean",
         "max_tokens": 700,
         "required_capabilities": ("free",),
-        "model_policy": {},
+        "model_policy": {"model": "b14/auto"},
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -197,6 +198,63 @@ def test_invalid_model_policy_fails_before_stream_dispatch() -> None:
 
     assert info.value.code == "invalid_execution_request"
     assert info.value.metadata.status is RunStatus.REJECTED
+
+
+@pytest.mark.parametrize("policy", [{}, {"temperature": 0.2}, {"model": None}])
+def test_omitted_model_fails_closed_before_stream_dispatch(policy) -> None:
+    client = FakeStreamClient(complete_events())
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(collect(runtime, request(agent(model_policy=policy))))
+
+    assert info.value.code == "invalid_execution_request"
+    assert info.value.metadata.error_class is ErrorClass.INPUT_ERROR
+    assert client.dispatches == []
+    assert client.dispatches == []
+
+
+def test_invalid_request_without_trace_id_generates_run_trace_rejection_metadata() -> None:
+    client = FakeStreamClient(complete_events())
+    ticks = iter([100.0, 100.25])
+    runtime = StreamingExecutionRuntime(
+        app_id="test-app", b14_stream_client=client, clock=lambda: next(ticks)
+    )
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(
+            collect(
+                runtime,
+                request(trace_id=None, agent=agent(model_policy={"provider": "not-core"})),
+            )
+        )
+
+    metadata = info.value.metadata
+    assert info.value.code == "invalid_execution_request"
+    assert metadata.status is RunStatus.REJECTED
+    assert metadata.error_class is ErrorClass.INPUT_ERROR
+    assert re.fullmatch(r"run_[0-9a-f]{24}", metadata.trace_id)
+    assert metadata.duration_ms == 250
+    assert metadata.app_id == "test-app"
+    assert metadata.agent_id == "general-agent"
+    assert metadata.session_id == "session-stream-1"
+    assert metadata.usage == UsageMetadata()
+    assert client.dispatches == []
+    assert client.closed == 0
+
+
+def test_invalid_request_keeps_explicit_trace_id_in_rejection_metadata() -> None:
+    client = FakeStreamClient(complete_events())
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(collect(runtime, request(agent=agent(model_policy={"provider": "not-core"}))))
+
+    metadata = info.value.metadata
+    assert metadata.trace_id == "trace-stream-1"
+    assert metadata.status is RunStatus.REJECTED
+    assert metadata.error_class is ErrorClass.INPUT_ERROR
+    assert metadata.duration_ms == 0
     assert client.dispatches == []
 
 

@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="./padiem-cinematic-workspace.css" />
   <link rel="stylesheet" href="./padiem-themes.css" />
   <link rel="stylesheet" href="./sidebar-utility.css" />
+  <link rel="stylesheet" href="./capability-nav.css" />
+  <link rel="stylesheet" href="./claw-manual-intake.css" />
+  <link rel="stylesheet" href="./claw-workspace.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -30,12 +33,19 @@
         <button class="mobile-close" id="mobileClose" aria-label="메뉴 닫기">×</button>
         <a class="brand" href="./" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
       </div>
-      <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
       <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>새 채팅</span></button>
       <nav class="side-nav" aria-label="채팅 메뉴">
-        <button class="side-item" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span><span class="mini-badge">준비 중</span></button>
-        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge" id="projectsBadge">로그인 후</span></button>
+        <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span></button>
+        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
         <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span>저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
+        <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
+        <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
+      </nav>
+      <nav class="side-nav" id="workspaceNav" aria-label="워크스페이스 메뉴">
+        <button class="side-item" id="filesNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="nav-files">Files</span></button>
+        <button class="side-item" id="alertsNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">◐</span><span data-locale-key="nav-alerts">Alerts</span></button>
+        <button class="side-item" id="tasksNavButton" type="button" disabled aria-disabled="true"><span class="side-icon" aria-hidden="true">☑</span><span data-locale-key="nav-tasks">Tasks</span></button>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
@@ -55,18 +65,13 @@
         <div id="outputsList"></div>
         <p class="history-empty" id="outputsEmpty" hidden>저장한 답변이 없습니다.</p>
       </section>
-      <section class="recent-section" aria-labelledby="recentTitle">
-        <h2 id="recentTitle">추천 질문</h2>
-        <button class="recent-item" type="button" data-prompt="AI를 아주 쉽게 설명해줘" data-skill="explain">AI를 쉽게 설명해줘</button>
-        <button class="recent-item" type="button" data-prompt="3박 4일 제주도 가족 여행 계획을 짜줘" data-skill="plan">제주도 여행 계획</button>
-        <button class="recent-item" type="button" data-prompt="오늘 저녁 메뉴를 세 가지 추천해줘" data-skill="brainstorm">저녁 메뉴 추천</button>
-      </section>
       <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>편하게 질문해 보세요</span></div>
-      <div class="sidebar-bottom" aria-label="계정 및 설정">
+      <div class="sidebar-bottom" aria-label="서비스, 계정 및 설정">
+        <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
           <span class="account-name" id="accountName" hidden></span>
-          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="로그인 기능이 설정되지 않았습니다">로그인</button>
+          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="Google 계정으로 로그인" hidden>로그인</button>
         </div>
       </div>
     </aside>
@@ -103,6 +108,122 @@
           <div class="settings-footer"><button class="settings-done" type="submit" value="done" data-locale-key="done">완료</button></div>
         </form>
       </dialog>
+      <dialog class="capability-dialog" id="connectorsDialog" aria-labelledby="connectorsDialogTitle">
+        <div class="capability-dialog-header">
+          <div><p class="capability-kicker" data-locale-key="connectors-kicker">CONNECTORS</p><h2 class="capability-title" id="connectorsDialogTitle" data-locale-key="connectors-title">Connectors</h2></div>
+          <button class="capability-close" id="connectorsDialogClose" type="button" aria-label="닫기">×</button>
+        </div>
+        <p class="capability-tagline" data-locale-key="connectors-note">커넥터는 아직 연결되지 않았습니다. 연결 예정입니다.</p>
+        <div class="capability-grid" aria-label="연결 예정 커넥터">
+          <div class="capability-card" data-connector="google-drive"><strong>Google Drive</strong><span class="capability-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="gmail"><strong>Gmail</strong><span class="capability-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="discord"><strong>Discord</strong><span class="capability-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="telegram"><strong>Telegram</strong><span class="capability-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="slack"><strong>Slack</strong><span class="capability-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="kakao-business"><strong>Kakao Business</strong><span class="capability-soon">준비 중</span></div>
+        </div>
+      </dialog>
+      <dialog class="capability-dialog" id="skillsDialog" aria-labelledby="skillsDialogTitle">
+        <div class="capability-dialog-header">
+          <div><p class="capability-kicker" data-locale-key="skills-kicker">SKILLS</p><h2 class="capability-title" id="skillsDialogTitle" data-locale-key="skills-title">Skills</h2></div>
+          <button class="capability-close" id="skillsDialogClose" type="button" aria-label="닫기">×</button>
+        </div>
+        <p class="capability-tagline" data-locale-key="skills-note">스킬은 준비 중입니다. 지금은 목록만 표시됩니다.</p>
+        <div class="capability-grid" aria-label="준비 중 스킬">
+          <div class="capability-card"><strong data-locale-key="skill-quote">견적서 만들기</strong></div>
+          <div class="capability-card"><strong data-locale-key="skill-order">발주서 만들기</strong></div>
+          <div class="capability-card"><strong data-locale-key="skill-reply">답장 초안 만들기</strong></div>
+          <div class="capability-card"><strong data-locale-key="skill-requests">요청사항 정리</strong></div>
+          <div class="capability-card"><strong data-locale-key="skill-extract">거래처/품목 추출</strong></div>
+          <div class="capability-card"><strong data-locale-key="skill-custom">사용자 정의 스킬 만들기</strong><span class="capability-soon">준비 중</span></div>
+        </div>
+      </dialog>
+      <section class="claw-workspace" id="clawWorkspace" aria-labelledby="clawWorkspaceTitle" hidden>
+        <header class="claw-workspace-header">
+          <div class="claw-workspace-identity">
+            <p class="claw-workspace-kicker" data-locale-key="claw-kicker">PADIEM CLAW</p>
+            <h2 class="claw-workspace-title" id="clawWorkspaceTitle" data-locale-key="claw-title">Padiem Claw</h2>
+          </div>
+          <p class="claw-workspace-chip" data-locale-key="claw-mode-chip">미리보기 · 읽기 전용</p>
+        </header>
+        <p class="claw-workspace-tagline" data-locale-key="claw-tagline">카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트</p>
+        <form class="claw-intake" id="clawManualForm" aria-label="수동 인입 양식">
+          <label class="claw-intake-hero">
+            <span class="claw-intake-label" data-locale-key="claw-field-request">요청 원문 붙여넣기</span>
+            <textarea id="clawRequestText" rows="5" maxlength="4000" autocomplete="off" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
+          </label>
+          <div class="claw-chips" role="group" aria-label="Claw 작업 선택">
+            <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="false"><span data-locale-key="claw-chip-quote">견적서</span></button>
+            <button type="button" class="claw-chip" id="clawOrderCard" data-claw-action="order" aria-pressed="false"><span data-locale-key="claw-chip-order">발주서</span></button>
+            <button type="button" class="claw-chip" id="clawReplyCard" data-claw-action="reply" aria-pressed="false"><span data-locale-key="claw-chip-reply">답장</span></button>
+            <button type="button" class="claw-chip" id="clawRequestsCard" data-claw-action="summary" aria-pressed="false"><span data-locale-key="claw-chip-summary">요청 정리</span></button>
+          </div>
+          <details class="claw-meta">
+            <summary data-locale-key="claw-meta-summary">출처 · 거래처 (선택)</summary>
+            <div class="claw-meta-fields">
+              <label class="claw-field">
+                <span data-locale-key="claw-field-channel">원문 채널</span>
+                <select id="clawChannel">
+                  <option value="kakao">KakaoTalk</option>
+                  <option value="sms">SMS</option>
+                  <option value="email">Email</option>
+                  <option value="telegram">Telegram</option>
+                  <option value="discord">Discord</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              <label class="claw-field">
+                <span data-locale-key="claw-field-sender">보낸 사람/거래처 힌트</span>
+                <input type="text" id="clawSender" maxlength="120" autocomplete="off" placeholder="선택 입력: 고객사, 공급사, 발신자명" />
+              </label>
+            </div>
+          </details>
+          <select id="clawAction" class="claw-action-carrier" aria-hidden="true" tabindex="-1">
+            <option value="quote" data-locale-key="claw-opt-quote">견적서 초안</option>
+            <option value="order" data-locale-key="claw-opt-order">발주서 초안</option>
+            <option value="reply" data-locale-key="claw-opt-reply">답장 초안</option>
+            <option value="summary" data-locale-key="claw-opt-summary">요청사항 정리</option>
+          </select>
+          <button type="submit" class="claw-generate-button" id="clawGenerateBtn" data-locale-key="claw-btn-generate">초안 만들기</button>
+        </form>
+        <section class="claw-result" id="clawResultArea" aria-live="polite">
+          <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
+          <article class="claw-result-card" id="clawResultCard" hidden>
+            <div class="claw-result-card-head">
+              <span class="claw-result-kind" id="clawResultKind"></span>
+              <span class="claw-result-badge" data-locale-key="claw-result-badge">미리보기</span>
+            </div>
+            <pre id="clawResultPreview" class="claw-result-body"></pre>
+            <div class="claw-result-actions">
+              <button type="button" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">▤</span><span data-locale-key="claw-result-open">문서 열기</span></button>
+              <button type="button" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">↓</span><span data-locale-key="claw-result-docx">DOCX 다운로드</span></button>
+            </div>
+            <p class="claw-result-note" data-locale-key="claw-result-note">백엔드 연결 전까지 미리보기 텍스트만 표시됩니다.</p>
+          </article>
+        </section>
+        <div class="claw-disabled-controls" aria-label="준비 중인 기능">
+          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+            <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
+            <small data-locale-key="claw-ctrl-md-note">백엔드 연결 전까지 비활성화</small>
+          </button>
+          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+            <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
+            <small data-locale-key="claw-ctrl-docx-note">백엔드 연결 전까지 비활성화</small>
+          </button>
+          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+            <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
+            <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
+          </button>
+          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+            <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
+            <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
+          </button>
+          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+            <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
+            <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
+          </button>
+        </div>
+      </section>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
@@ -111,8 +232,8 @@
           <div class="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
             <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>TXT·Markdown·CSV·JSON·PDF·DOCX·PPTX·XLSX</small></span></button>
-            <button type="button" class="starter" disabled aria-disabled="true"><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
+            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
+            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
         <div class="message-list" id="messageList" hidden></div>
@@ -138,16 +259,16 @@
           <textarea id="messageInput" rows="1" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
-              <input id="attachmentFileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp,text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,.pdf,.docx,.pptx,.xlsx" hidden />
-              <button type="button" class="tool-button" id="attachmentButton" title="사진 또는 TXT, Markdown, CSV, JSON, PDF, DOCX, PPTX, XLSX 문서 한 개를 첨부합니다"><span aria-hidden="true">＋</span><span>파일</span></button>
-              <button type="button" class="tool-button" disabled aria-disabled="true" title="웹 검색은 준비 중입니다"><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
-              <button type="button" class="tool-button" id="deepResearchButton" disabled aria-disabled="true" aria-pressed="false" title="심층 리서치는 현재 사용할 수 없습니다"><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
+              <input id="attachmentFileInput" type="file" hidden />
+              <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
+              <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
+              <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
             </div>
             <button class="cancel-stream-button" id="cancelStreamButton" type="button" aria-label="답변 생성 취소" hidden>취소</button>
             <button class="send-button" id="sendButton" type="submit" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">사진과 TXT·Markdown·CSV·JSON·PDF·DOCX·PPTX·XLSX 문서 한 개를 첨부할 수 있습니다.</p>
+        <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>
       </section>
     </main>
   </div>
@@ -172,7 +293,7 @@
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
         <p class="project-files-empty" id="projectFilesEmpty" hidden>저장된 프로젝트 파일이 없습니다.</p>
-        <p class="project-files-note">프로젝트 파일 저장 기능에서는 PDF·DOCX는 아직 지원하지 않습니다. PPTX·XLSX를 포함한 PDF·Office 문서는 아직 지원하지 않습니다.</p>
+        <p class="project-files-note">프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다. Composer 첨부와 달리 PDF·DOCX·PPTX·XLSX는 저장하지 않습니다.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
@@ -205,12 +326,14 @@
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label>답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
+  <script src="./attachment-capabilities.js"></script>
   <script src="./locale.js"></script>
   <script src="./document-binary.js"></script>
   <script src="./chat-transport.js"></script>
   <script src="./conversation-state.js"></script>
   <script src="./message-lifecycle.js"></script>
   <script src="./app.js"></script>
+  <script src="./product-capabilities.js"></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>
   <script src="./rich-response.js"></script>

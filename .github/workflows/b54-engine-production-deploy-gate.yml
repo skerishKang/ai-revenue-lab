@@ -1,0 +1,194 @@
+name: B54 Engine Production Deploy Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to deploy'
+        required: true
+      confirmation:
+        description: 'Type DEPLOY_B54_ENGINE_FROM_EXACT_MAIN to authorize the deploy'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production-engine:
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Resolve engine environment with dev tools
+        working-directory: apps/padiem-ai-engine
+        run: uv sync --extra dev
+
+      - name: Sync engine worker bundle
+        working-directory: apps/padiem-ai-engine
+        run: uv run pywrangler sync --force
+
+      - name: Deploy engine to production
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          uv run pywrangler deploy
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
+          test "$CODE" = '200'
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
+      CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        env:
+          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
+          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        env:
+          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
+          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        env:
+          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
+          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          grep -q 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log
+          grep 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log | tail -1
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler@4 rollback --message "B54 engine production rollback (owner-authorized gate)"
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'

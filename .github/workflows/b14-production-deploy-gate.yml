@@ -1,0 +1,237 @@
+name: B14 Production Deploy Gate
+
+# #1955 — exact-SHA production deploy gate for Business 14
+# (ai-revenue-korean-ai-platform). Follows the engine gate pattern
+# (#1923/#1924, b54-engine-production-deploy-gate.yml).
+#
+# Dispatch-only by contract: an ordinary pull request can never trigger a
+# production mutation. The deploy step runs the repository's canonical
+# pipeline (apps/korean-ai-platform/deploy.sh) as the single source of
+# truth; no build steps are duplicated here.
+#
+# Retirement note: Cloudflare Workers Builds previously auto-deployed the
+# watched branch. After the first gated deploy the owner must pause /
+# disconnect Workers Builds for this worker so the retired auto-deploy can
+# never overwrite a gated deploy.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to deploy'
+        required: true
+      confirmation:
+        description: 'Type DEPLOY_B14_FROM_EXACT_MAIN to deploy, ROLLBACK_B14_TO_PREVIOUS_VERSION to roll back, or RETIRE_B14_SECRET_OPENROUTER_API_KEY for the #1933 S2-c one-shot dead-secret removal'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b14-production-deploy-gate
+  cancel-in-progress: false
+
+jobs:
+  deploy-production-b14:
+    if: github.event.inputs.confirmation == 'DEPLOY_B14_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Set up Node.js (for npx wrangler inside deploy.sh)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Deploy B14 via canonical pipeline (deploy.sh)
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          bash ./deploy.sh 2>&1 | tee /tmp/b14-deploy.log
+          echo 'B14_CANONICAL_PIPELINE_DEPLOY=PASS'
+
+      - name: Post-deploy verification (version 100% + engine binding + Kilo catalog marker)
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          sleep 15
+
+          # (a) The deploy step must have emitted a Current Version ID, and
+          # wrangler deployments list must show that exact version serving 100%.
+          VERSION_ID="$(grep -oE 'Current Version ID:\s*[0-9a-fA-F-]+' /tmp/b14-deploy.log | tail -n 1 | awk '{print $NF}')"
+          test -n "$VERSION_ID"
+          echo "DEPLOY_CURRENT_VERSION_ID=${VERSION_ID}"
+          npx wrangler@4 deployments list --json > /tmp/b14-deployments.json
+          python3 - "$VERSION_ID" <<'PY'
+          import json
+          import os
+          import sys
+
+          expected = sys.argv[1]
+          path = os.environ.get("B14_DEPLOYMENTS_JSON", "/tmp/b14-deployments.json")
+          with open(path, encoding="utf-8") as fh:
+              payload = json.load(fh)
+          # wrangler deployments list --json returns a bare LIST of deployments;
+          # tolerate the {"deployments": [...]} object shape as well.
+          if isinstance(payload, list):
+              deployments = payload
+          else:
+              deployments = payload.get("deployments") or []
+          assert deployments, "deployments list returned no deployments"
+          # Real wrangler 4.129 shape (measured): bare list, oldest-first,
+          # each entry carries versions: [{version_id, percentage}]. Find the
+          # expected version wherever it lives instead of assuming entry
+          # order or key layout.
+          match = None
+          for entry in deployments:
+              if not isinstance(entry, dict):
+                  continue
+              for v in entry.get("versions") or []:
+                  if isinstance(v, dict) and v.get("version_id") == expected:
+                      match = v
+                      break
+              if match is not None:
+                  break
+          assert match is not None, (
+              f"deployed version {expected!r} not found in deployments list"
+          )
+          percentage = match.get("percentage")
+          assert percentage == 100, f"new version is serving {percentage!r}%, expected 100"
+          print("POST_DEPLOY_VERSION_AT_100=PASS")
+          PY
+
+          # (b) Engine health must report the B14 service binding present.
+          CODE=$(curl -s -o /tmp/engine-health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
+          test "$CODE" = '200'
+          grep -q '"b14_service_bound":true' /tmp/engine-health.json
+          echo 'ENGINE_B14_BOUND_SMOKE=PASS'
+
+          # (c) Catalog liveness marker: the deployed B14 catalog must expose a
+          # Kilo Gateway route (the first gated deploy carries #1952). Mechanism:
+          # the already-CI-read workers.dev pilot models endpoint (same target
+          # the b62 preflight uses); no new public surface is introduced.
+          curl -s --max-time 20 \
+            'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/models' \
+            -o /tmp/b14-models.json
+          python3 - <<'PY'
+          import json
+
+          with open('/tmp/b14-models.json', encoding='utf-8') as fh:
+              payload = json.load(fh)
+          catalog = payload.get('catalog') or []
+          ids = [str(entry.get('id', '')) for entry in catalog]
+          assert any(mid.startswith('kilo/') for mid in ids), (
+              f'deployed B14 catalog has no Kilo route entry: {ids!r}'
+          )
+          print('B14_KILO_CATALOG_MARKER=PASS')
+          PY
+
+          echo 'B14_PRODUCTION_DEPLOY_SMOKE=PASS'
+
+  # #1933 S2-c: one-shot removal of the dead Worker secret OPENROUTER_API_KEY.
+  # After S2-b no code path reads this key; the value is inert. Separate
+  # confirmation token: deploying or rolling back never removes a secret.
+  # wrangler secret delete creates a NEW Worker version (same code as the
+  # currently served version, minus the secret) and deploys it immediately
+  # (developers.cloudflare.com/workers/wrangler/commands/workers/#secret).
+  # Therefore this job must verify serving health afterwards.
+  retire-openrouter-secret:
+    if: github.event.inputs.confirmation == 'RETIRE_B14_SECRET_OPENROUTER_API_KEY'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Retire dead OPENROUTER_API_KEY secret
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx wrangler@4 secret list --format json > /tmp/b14-secrets-before.json
+          python3 -c "import json; d=json.load(open('/tmp/b14-secrets-before.json')); assert isinstance(d,list) and d, 'EMPTY_OR_INVALID_SECRET_LIST'; print('SECRETS_BEFORE=' + ','.join(sorted(x['name'] for x in d)))"
+          if ! python3 -c "import json,sys; d=json.load(open('/tmp/b14-secrets-before.json')); sys.exit(0 if any(x.get('name')=='OPENROUTER_API_KEY' for x in d) else 1)"; then
+            echo 'SECRET_ALREADY_ABSENT'
+            exit 0
+          fi
+          npx wrangler@4 secret delete OPENROUTER_API_KEY
+          npx wrangler@4 secret list --format json > /tmp/b14-secrets-after.json
+          if python3 -c "import json,sys; d=json.load(open('/tmp/b14-secrets-after.json')); sys.exit(0 if any(x.get('name')=='OPENROUTER_API_KEY' for x in d) else 1)"; then
+            echo 'B14_SECRET_RETIREMENT_VERIFICATION_FAILED' >&2
+            exit 1
+          fi
+          echo 'B14_SECRET_RETIRED=OPENROUTER_API_KEY'
+
+      - name: Verify serving health after secret retirement
+        run: |
+          set -euo pipefail; sleep 15
+          CODE=$(curl -s -A "b14-gate/1.0" -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/pilot/health')
+          test "$CODE" = '200'
+          python3 -c "import json;d=json.load(open('/tmp/health.json'));assert d.get('mode')=='b14-live',d.get('mode');assert d.get('configured_providers')==3,d.get('configured_providers');r=d.get('registered_routes');n=len(r) if isinstance(r,list) else r;assert n==6,n;print('B14_POST_RETIRE_HEALTH=PASS mode=b14-live providers=3 routes=6')"
+          npx wrangler@4 deployments list 2>/dev/null | head -20 || true
+
+  rollback-production-b14:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B14_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Rollback B14 worker to previous version
+        working-directory: apps/korean-ai-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler@4 rollback --message "B14 production rollback (owner-authorized gate)"
+          echo 'B14_PRODUCTION_ROLLBACK=PASS'

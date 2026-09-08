@@ -1,4 +1,4 @@
-/* B62 #1422/#1423/#1424/#1425/#1427 — shared conversation/composer grid.
+/* B62 #1422/#1423/#1424/#1425/#1427/#1887 — shared conversation/composer grid.
  *
  * The fixed composer is the canonical outer horizontal baseline. The
  * conversation reuses that lane. A bounded inner gutter keeps the P avatar/meta
@@ -74,18 +74,20 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   max-width: min(660px, 88%) !important;
 }
 
-/* Wide desktop: reuse the accepted composer geometry exactly. */
+/* Large desktop: active chat becomes content-first while the home composition
+ * remains untouched. Preserve a bounded portrait lane, but stop spending 32vw
+ * on negative space once a conversation is active. */
 @media (min-width: 1440px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
-    --padiem-chat-lane-offset: calc(clamp(48px, 4vw, 72px) + 16px);
+    --padiem-chat-lane-offset: clamp(36px, 3vw, 56px);
     --padiem-chat-lane-width: min(
-      1168px,
+      1080px,
       calc(
         100vw
         - var(--workspace-rail, 252px)
-        - clamp(48px, 4vw, 72px)
-        - clamp(360px, 32vw, 560px)
-        - 80px
+        - clamp(36px, 3vw, 56px)
+        - clamp(300px, 24vw, 430px)
+        - 48px
       )
     );
   }

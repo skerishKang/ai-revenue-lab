@@ -1,5 +1,7 @@
 # Local handoff — Agnes AI first B14 provider candidate
 
+> **RETIRED** (#1933 S2-b, 2026-09-07): The Agnes route is no longer registered in production code or the catalog. This document is preserved as a historical handoff record. The generic platform-owned credential plane and the platform adapter contract described below remain live code; they are exercised in tests under `tests/test_platform_provider_credential_plane.py` via a synthetic platform_secret provider, and in `tests/test_platform_provider_readiness.py` via SenseNova.
+
 Repository: `skerishKang/ai-revenue-lab`
 
 Primary issue: `#917`

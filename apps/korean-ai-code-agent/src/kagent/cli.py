@@ -6,6 +6,12 @@ import subprocess
 import sys
 
 from .core import AgentBoundaryError, AgentSession, redact_secrets
+from .document_export import SUPPORTED_DOCUMENT_FORMATS
+from .draft_flow import DRAFT_DOC_TYPES, run_draft_command
+from .order_flow import run_order_command
+from .p01_run_flow import run_p01_task
+from .registered_document_skills import run_skill_catalogue_command
+from .review_flow import run_review_command
 
 
 def yes(prompt: str) -> bool:
@@ -123,15 +129,146 @@ def parser() -> argparse.ArgumentParser:
     for name in ("plan", "run"):
         cmd = sub.add_parser(name)
         cmd.add_argument("task", help="한국어 작업 설명")
+    p01 = sub.add_parser(
+        "p01-run",
+        help="P01 Engine 오케스트레이션으로 작업을 실행합니다 (설정 필수 · demo 폴백 없음)",
+    )
+    p01.add_argument("task", help="한국어 작업 설명")
+    p01.add_argument("--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID")
+    review = sub.add_parser(
+        "review",
+        help="저장소 파일들을 P01 Engine으로 리뷰합니다 (설정 필수 · demo 폴백 없음)",
+    )
+    review.add_argument(
+        "targets", nargs="+", help="리뷰 대상 파일 또는 glob 패턴"
+    )
+    review.add_argument(
+        "--out", dest="out", default=None, help="마크다운 보고서를 기록할 파일 경로"
+    )
+    review.add_argument(
+        "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
+    )
+    draft = sub.add_parser(
+        "draft",
+        help="입력 파일에서 거래 맥락을 추출해 견적서/발주서 초안을 생성합니다 "
+        "(설정 필수 · demo 폴백 없음)",
+    )
+    draft.add_argument("input", help="거래 맥락이 담긴 입력 파일 경로")
+    draft.add_argument(
+        "--doc-type",
+        dest="doc_type",
+        required=True,
+        choices=list(DRAFT_DOC_TYPES),
+        help="생성할 문서 유형 (견적서 | 발주서)",
+    )
+    draft.add_argument(
+        "--out", dest="out", default=None, help="초안을 기록할 파일 경로"
+    )
+    draft.add_argument(
+        "--format",
+        dest="doc_format",
+        default="md",
+        choices=list(SUPPORTED_DOCUMENT_FORMATS),
+        help="출력 문서 포맷 (md | docx | hwpx; 기본값: md)",
+    )
+    draft.add_argument(
+        "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
+    )
+    order = sub.add_parser(
+        "order",
+        help="승인된 견적서를 발주서/판매오더 초안으로 전환합니다 "
+        "(설정 필수 · demo 폴백 없음 · --accept 필수)",
+    )
+    order.add_argument("quote", help="승인된 견적서 보고서(마크다운) 파일 경로")
+    order.add_argument(
+        "--accept",
+        dest="accept",
+        action="store_true",
+        help="견적서 승인을 선언합니다 (없으면 order_not_accepted로 실패)",
+    )
+    order.add_argument(
+        "--out", dest="out", default=None, help="초안을 기록할 파일 경로"
+    )
+    order.add_argument(
+        "--format",
+        dest="doc_format",
+        default="md",
+        choices=list(SUPPORTED_DOCUMENT_FORMATS),
+        help="출력 문서 포맷 (md | docx | hwpx; 기본값: md)",
+    )
+    order.add_argument(
+        "--run-id", dest="run_id", default=None, help="run_ 접두어의 실행 ID"
+    )
+    skill = sub.add_parser(
+        "skill",
+        help="등록된 견적서/발주서 스킬 카탈로그를 조회합니다 (#2014 · 엔진 호출 없음)",
+    )
+    skill_actions = skill.add_subparsers(dest="skill_action")
+    skill_actions.add_parser("list", help="등록된 스킬 카탈로그를 출력합니다")
+    skill_show = skill_actions.add_parser("show", help="스킬 정의 하나를 출력합니다")
+    skill_show.add_argument("skill_id", help="예: skill:kagent.b54:customer-quote-draft@1")
+    skill_intake = skill_actions.add_parser(
+        "intake",
+        help="자유 서술 요청 텍스트를 스킬 입력 계약으로 해석합니다 (엔진 호출 없음)",
+    )
+    skill_intake.add_argument(
+        "request", help="자유 서술 요청 텍스트 (예: \"대성에 발주서 작성해줘\")"
+    )
+    skill_intake.add_argument(
+        "--doc-type",
+        dest="skill_doc_type",
+        default=None,
+        choices=list(DRAFT_DOC_TYPES),
+        help="문서 유형을 직접 지정합니다 (생략 시 요청 텍스트에서 확정)",
+    )
     return p
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, adapter=None) -> int:
     args = parser().parse_args(argv)
+    if args.mode == "review":
+        return run_review_command(
+            Path(args.repository),
+            args.targets,
+            adapter=adapter,
+            run_id=args.run_id,
+            out_path=Path(args.out) if args.out else None,
+        )
+    if args.mode == "draft":
+        return run_draft_command(
+            Path(args.repository),
+            args.input,
+            args.doc_type,
+            adapter=adapter,
+            run_id=args.run_id,
+            out_path=Path(args.out) if args.out else None,
+            doc_format=getattr(args, "doc_format", "md"),
+        )
+    if args.mode == "order":
+        return run_order_command(
+            Path(args.repository),
+            args.quote,
+            accept=args.accept,
+            adapter=adapter,
+            run_id=args.run_id,
+            out_path=Path(args.out) if args.out else None,
+            doc_format=getattr(args, "doc_format", "md"),
+        )
+    if args.mode == "skill":
+        return run_skill_catalogue_command(
+            action=getattr(args, "skill_action", None),
+            skill_id=getattr(args, "skill_id", None),
+            request_text=getattr(args, "request", None),
+            doc_type=getattr(args, "skill_doc_type", None),
+        )
     task = getattr(args, "task", None)
     if not task:
         parser().print_help()
         return 0
+    if args.mode == "p01-run":
+        return run_p01_task(
+            Path(args.repository), task, adapter=adapter, run_id=args.run_id
+        )
     try:
         session = AgentSession.open(Path(args.repository), task, args.route)
         if args.mode == "plan":

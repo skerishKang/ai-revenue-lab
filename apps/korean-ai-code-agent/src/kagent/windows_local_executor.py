@@ -84,6 +84,15 @@ def command_request_fingerprint(request: LocalCommandRequest) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _require_request_not_future(request: LocalCommandRequest, *, now: datetime) -> None:
+    if not isinstance(request, LocalCommandRequest):
+        raise ContractError("request must be LocalCommandRequest")
+    now = _aware(now, "now")
+    requested_at = _aware(request.requested_at, "requested_at")
+    if requested_at > now:
+        raise ContractError("command request cannot be future-dated")
+
+
 @dataclass(frozen=True, slots=True)
 class WindowsExecutableProfile:
     profile_ref: str
@@ -386,6 +395,7 @@ class WindowsSubprocessLocalAgentRuntime:
         if os.name != "nt":
             raise ContractError("real Local Agent subprocess execution is Windows-only in M1")
         now = _aware(now, "now")
+        _require_request_not_future(request, now=now)
         profile, cwd = self._validate_request(request)
         grant = self._authorization.authorize(request=request, profile=profile, now=now)
         if not isinstance(grant, TrustedWindowsExecutionGrant):

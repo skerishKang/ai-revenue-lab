@@ -1,0 +1,27 @@
+/* claw-manual-intake.css — shared field primitives for the Claw workspace.
+ * The workspace layout, result card, chips, and disabled group now live in
+ * claw-workspace.css (#2114 ACT-1). This file keeps only the labelled field
+ * control used inside the source/counterparty disclosure, sized to avoid the
+ * iOS focus auto-zoom (>=16px).
+ */
+
+.claw-field {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-muted, #5b6672);
+}
+
+.claw-field input,
+.claw-field select {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+  color: var(--ink, #111a22);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 16px; /* >=16px: prevents iOS focus auto-zoom */
+}

@@ -11,10 +11,12 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
-import httpx
+from app import httpx_compat as httpx
 from workers import Request, Response, WorkerEntrypoint
 
 from app.config import ConfigError
+from app.control_plane_identity_shadow import D1IdentityShadowStore
+from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
@@ -26,6 +28,7 @@ from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
+    IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
@@ -90,15 +93,26 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 
     @staticmethod
     def _to_bytes(value: Any) -> bytes:
+        # A Service Binding ReadableStream hands back one already-delivered
+        # chunk at a time. In workerd that chunk is a JS typed array (Uint8Array)
+        # surfaced to Python as a proxy object, not a native bytes/bytearray, and
+        # it does not carry a ``to_bytes()`` method. Convert the single chunk to
+        # bytes without ever buffering the whole stream, and fail closed on shapes
+        # we cannot interpret.
         if value is None:
             return b""
         if isinstance(value, bytes):
             return value
-        if isinstance(value, bytearray):
+        if isinstance(value, (bytearray, memoryview)):
             return bytes(value)
-        if isinstance(value, memoryview):
-            return value.tobytes()
 
+        # Buffer protocol (JS typed arrays expose this through the proxy).
+        try:
+            return memoryview(value).tobytes()
+        except (TypeError, ValueError):
+            pass
+
+        # Explicit byte materialiser (kept for adapters/tests that expose it).
         to_bytes = getattr(value, "to_bytes", None)
         if callable(to_bytes):
             try:
@@ -107,14 +121,20 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
                 raise httpx.ReadError(
                     "Business 14 Service Binding returned unreadable stream bytes."
                 ) from exc
-            if isinstance(converted, bytes):
-                return converted
+            if isinstance(converted, (bytes, bytearray, memoryview)):
+                return bytes(converted)
             try:
                 return bytes(converted)
             except Exception as exc:
                 raise httpx.ReadError(
                     "Business 14 Service Binding returned unreadable stream bytes."
                 ) from exc
+
+        # Integer-iterable proxy (a Uint8Array yields 0..255 per element).
+        try:
+            return bytes(value)
+        except (TypeError, ValueError):
+            pass
 
         raise httpx.ReadError(
             "Business 14 Service Binding returned an unsupported stream chunk."
@@ -135,7 +155,7 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
             raise
         except Exception as exc:
             raise httpx.ReadError(
-                "Business 14 Service Binding stream read failed."
+                "Business 14 Service Binding stream read failed.",
             ) from exc
 
     async def aclose(self) -> None:
@@ -152,8 +172,6 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
                 if callable(cancel):
                     await cancel()
         except Exception:
-            # Closing is best-effort; never replace the bounded Core error with
-            # raw Service Binding/FFI close details.
             pass
         finally:
             release_lock = getattr(reader, "releaseLock", None)
@@ -230,9 +248,17 @@ class Default(WorkerEntrypoint):
                 settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
+                identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
+
                 history_store = D1HistoryStore(db_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
                 saved_output_store = D1SavedOutputStore(db_binding) if db_binding is not None else None
+                identity_shadow_store = D1IdentityShadowStore(db_binding) if db_binding is not None else None
+                identity_authority = (
+                    CloudflareControlPlaneIdentityAuthority(identity_binding)
+                    if identity_binding is not None
+                    else None
+                )
                 base_usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
                 usage_store = (
                     DispatchAwareUsageCounterStore(base_usage_store)
@@ -250,6 +276,8 @@ class Default(WorkerEntrypoint):
                     else None
                 )
                 _worker_app = create_app(settings=settings, history_store=history_store)
+                _worker_app.state.control_plane_identity_authority = identity_authority
+                _worker_app.state.identity_shadow_store = identity_shadow_store
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
@@ -265,6 +293,7 @@ class Default(WorkerEntrypoint):
                     _worker_app.state.web_provider,
                 )
                 _worker_app.state.b14_service_bound = b14_binding is not None
+                _worker_app.state.identity_authority_service_bound = identity_binding is not None
                 install_orchestration_routes(
                     _worker_app,
                     build_orchestration_bridge(

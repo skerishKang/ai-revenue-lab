@@ -51,7 +51,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_default_pro_reaches_service_binding_with_exact_nemotron():
+def test_live_completed_default_pro_reaches_service_binding_with_exact_default_route():
     async def scenario():
         store = ReservationStore()
         await reserve(store)

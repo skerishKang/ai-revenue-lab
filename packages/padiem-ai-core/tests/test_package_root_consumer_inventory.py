@@ -41,6 +41,14 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "OrchestrationResult",
         }
     ),
+    "apps/korean-ai-code-agent/src/kagent/p01_orchestration_client.py": frozenset(
+        {
+            "OrchestrationError",
+            "OrchestrationRequest",
+            "OrchestrationResult",
+            "orchestration_result_from_public",
+        }
+    ),
     "apps/korean-ai-code-agent/src/kagent/p01_resume.py": frozenset(
         {
             "ApprovalOutcome",
@@ -83,6 +91,19 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "ExecutionContext",
             "ExecutionRequest",
             "request_fingerprint",
+        }
+    ),
+    "apps/padiem-ai-engine/app/evidence_projection.py": frozenset(
+        {
+            "AcceptedVerification",
+            "Evidence",
+            "EvidenceGraph",
+            "ExecutionResult",
+            "GroundedResearchResult",
+            "GroundedSynthesisResult",
+            "OrchestrationResult",
+            "StreamingExecutionEvent",
+            "project_grounded_citations",
         }
     ),
     "apps/padiem-ai-engine/app/execution_admission_service.py": frozenset(
@@ -179,6 +200,23 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "B14StreamingClient",
             "ExecutionRuntime",
             "StreamingExecutionRuntime",
+        }
+    ),
+    "apps/padiem-ai-engine/app/connector_bindings.py": frozenset(
+        {
+            "AgentExecutionBudget",
+            "BoundedAgentDefinition",
+            "GMAIL_CANONICAL_TOOL_IDS",
+            "GMAIL_CONNECTOR_ID",
+            "GmailReadPort",
+            "ToolAuthorizationContext",
+            "ToolRegistrySnapshot",
+            "ToolResourcePolicy",
+            "ToolRuntime",
+            "ToolRuntimeBinding",
+            "TrustedAgentRuntimePolicy",
+            "compile_agent_profile",
+            "gmail_read_tool_specs",
         }
     ),
     "apps/padiem-chat/app/b14_client.py": frozenset(

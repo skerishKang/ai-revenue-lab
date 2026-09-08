@@ -26,16 +26,20 @@ from typing import Any
 import httpx
 
 from app.pilot.errors import (
+    KiloFreeRateLimited,
     MalformedUpstreamResponse,
     PilotNotConfigured,
     UpstreamAuthFailed,
+    UpstreamBusyRateLimited,
     UpstreamClientError,
     UpstreamRateLimited,
     UpstreamResponseTooLarge,
     UpstreamServerError,
     UpstreamTimeout,
 )
-from app.pilot.openrouter_stream import OpenRouterStreamEvent, OpenRouterStreamUsage
+from app.pilot.sensenova_provider import is_transient_busy_429
+from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
@@ -95,6 +99,22 @@ def _require_spec(platform_provider_id: str) -> PlatformProviderSpec:
     return spec
 
 
+def _provider_mode() -> str:
+    """Resolve the platform adapter provider mode.
+
+    An explicitly-set ``B14_PROVIDER_MODE`` environment variable wins (tests and
+    deployment scripts override it at runtime); otherwise the shared
+    ``runtime_config`` singleton is authoritative so mock/live switches made
+    through the config object also apply to platform-owned routes.
+    """
+    import os
+
+    raw = os.environ.get("B14_PROVIDER_MODE", "").strip().lower()
+    if raw in ("mock", "live"):
+        return raw
+    return runtime_config.provider_mode
+
+
 def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     """Build the fixed Provider auth boundary without credential widening."""
     headers = {"Content-Type": "application/json"}
@@ -103,6 +123,9 @@ def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     if spec.credential_source == CredentialSource.PLATFORM_SECRET:
         secret = resolve_secret(spec)
         if not secret:
+            if spec.provider_id == "kilo":
+                # Kilo Gateway free tier supports anonymous requests when KILO_API_KEY is unset
+                return headers
             raise PilotNotConfigured(
                 f"Provider '{spec.provider_id}' secret is not configured "
                 f"(binding {spec.credential_binding_name})."
@@ -114,10 +137,22 @@ def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     )
 
 
-def _raise_upstream_error(status: int) -> None:
+def _raise_upstream_error(
+    status: int, provider_id: str = "", body_text: str = ""
+) -> None:
     if status in (401, 403):
         raise UpstreamAuthFailed()
     if status == 429:
+        if provider_id == "kilo":
+            raise KiloFreeRateLimited()
+        # #2003 SenseNova normalization: the gateway answers capacity
+        # pressure with 429 rate_limit_error "Server is busy" (measured
+        # 2026-09-06). Unlike an hourly quota this is transient, so it maps
+        # to the retryable busy class (UpstreamTimeout-equivalent:
+        # retryable=True, 429) and #1988's same-route retry absorbs it.
+        # The engine keeps seeing a retryable upstream_* code (#1947 path).
+        if provider_id == "sensenova" and is_transient_busy_429(body_text):
+            raise UpstreamBusyRateLimited()
         raise UpstreamRateLimited()
     if status == 400:
         raise MalformedUpstreamResponse()
@@ -145,13 +180,9 @@ async def call_platform_chat_completions(
     upstream calls. Live mode applies the Provider spec's credential contract:
     server-owned secret or explicitly keyless.
     """
-    import os
-
     spec = _require_spec(platform_provider_id)
 
-    provider_mode = os.environ.get("B14_PROVIDER_MODE", "mock").strip().lower()
-    if provider_mode not in ("mock", "live"):
-        provider_mode = "mock"
+    provider_mode = _provider_mode()
 
     if provider_mode == "mock":
         logger.info(
@@ -204,13 +235,9 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
-        if response.status_code in (401, 403):
-            raise UpstreamAuthFailed()
-        if response.status_code == 429:
-            raise UpstreamRateLimited()
-        if 300 <= response.status_code < 400:
-            raise UpstreamClientError(response.status_code)
-        raise UpstreamServerError()
+        _raise_upstream_error(
+            response.status_code, platform_provider_id, response.text
+        )
 
     try:
         response_data = response.json()
@@ -270,31 +297,29 @@ async def stream_platform_chat_completions(
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
 
-    Yields :class:`OpenRouterStreamEvent` for compatibility with the Router
+    Yields :class:`StreamEvent` for compatibility with the Router
     streaming executor. Same secret/keyless boundary as completed JSON.
     """
     import os
 
     spec = _require_spec(platform_provider_id)
 
-    provider_mode = os.environ.get("B14_PROVIDER_MODE", "mock").strip().lower()
-    if provider_mode not in ("mock", "live"):
-        provider_mode = "mock"
+    provider_mode = _provider_mode()
 
     if provider_mode == "mock":
         for event in (
-            OpenRouterStreamEvent(
+            StreamEvent(
                 response_id="b14mock_stream",
                 model=upstream_model,
                 delta_content="이것은 Mock 스트리밍 응답입니다. 실제 Provider 호출 없음.",
             ),
-            OpenRouterStreamEvent(
+            StreamEvent(
                 response_id="b14mock_stream",
                 model=upstream_model,
                 finish_reason="stop",
-                usage=OpenRouterStreamUsage(0, 0, 0),
+                usage=StreamUsage(0, 0, 0),
             ),
-            OpenRouterStreamEvent(done=True),
+            StreamEvent(done=True),
         ):
             yield event
         return
@@ -336,7 +361,12 @@ async def stream_platform_chat_completions(
                 follow_redirects=False,
             ) as response:
                 if response.status_code < 200 or response.status_code >= 300:
-                    _raise_upstream_error(response.status_code)
+                    # Read the small error body so provider-specific 429
+                    # normalization (#2003) can inspect it.
+                    error_body = (await response.aread()).decode("utf-8", "replace")
+                    _raise_upstream_error(
+                        response.status_code, platform_provider_id, error_body
+                    )
 
                 async for chunk in response.aiter_bytes():
                     total_bytes += len(chunk)
@@ -389,7 +419,7 @@ def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
         rest = rest[index + len(separator):]
 
 
-def _usage_from_payload(raw: Any) -> OpenRouterStreamUsage | None:
+def _usage_from_payload(raw: Any) -> StreamUsage | None:
     if raw is None:
         return None
     if not isinstance(raw, dict):
@@ -402,10 +432,10 @@ def _usage_from_payload(raw: Any) -> OpenRouterStreamUsage | None:
         ):
             raise MalformedUpstreamResponse()
         values[name] = value
-    return OpenRouterStreamUsage(**values)
+    return StreamUsage(**values)
 
 
-def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
+def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     try:
         text = frame.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -427,7 +457,7 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
 
     data = "\n".join(data_lines).strip()
     if data == "[DONE]":
-        return OpenRouterStreamEvent(done=True)
+        return StreamEvent(done=True)
     if not data:
         raise MalformedUpstreamResponse()
 
@@ -469,7 +499,7 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
     elif usage is None:
         raise MalformedUpstreamResponse()
 
-    return OpenRouterStreamEvent(
+    return StreamEvent(
         response_id=response_id,
         model=model,
         delta_content=delta_content,
@@ -481,19 +511,10 @@ def _parse_sse_frame(frame: bytes) -> OpenRouterStreamEvent | None:
 # ---------------------------------------------------------------------------
 # Provider onboarding — generic, one registration per Provider.
 # ---------------------------------------------------------------------------
-register_platform_provider(
-    PlatformProviderSpec(
-        provider_id="agnes-ai",
-        credential_source=CredentialSource.PLATFORM_SECRET,
-        credential_binding_name="AGNES_API_KEY",
-        base_origin="https://apihub.agnes-ai.com/v1",
-        allowed_hosts=("apihub.agnes-ai.com",),
-        enabled=True,
-    )
-)
-
 from app.pilot.poolside_provider import register_poolside_provider
 from app.pilot.kilo_provider import register_kilo_provider
+from app.pilot.sensenova_provider import register_sensenova_provider
 
 register_poolside_provider()
 register_kilo_provider()
+register_sensenova_provider()

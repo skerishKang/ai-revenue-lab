@@ -22,20 +22,30 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return TestClient(app)
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 @pytest.fixture(autouse=True)
-def _reset_pilot_config():
+def _reset_pilot_config(monkeypatch):
     saved = {
         "base_url": pilot_settings.pilot_base_url,
         "model_id": pilot_settings.pilot_model_id,
         "registry_json": pilot_settings.provider_registry_json,
     }
+    # B14 gateway is live-ready via the keyless Kilo route whenever
+    # B14_PROVIDER_MODE=live (#1933 S2). Force mock so legacy BYOK
+    # not_configured assertions stay isolated from B14 mode leaks.
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
+    from app.pilot.b14_runtime_config import runtime_config as rcfg
+
+    saved_mode = rcfg.provider_mode
+    rcfg.provider_mode = "mock"
     yield
     pilot_settings.pilot_base_url = saved["base_url"]
     pilot_settings.pilot_model_id = saved["model_id"]
     pilot_settings.provider_registry_json = saved["registry_json"]
+    rcfg.provider_mode = saved_mode
 
 
 def _configure_pilot():

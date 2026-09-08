@@ -177,7 +177,7 @@ def test_start_uses_engine_owned_client_and_persists_exact_server_request() -> N
             user_id="usr_0123456789abcdef0123456789abcdef",
             messages=[{"role": "user", "content": "질문"}],
             skill=skill,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id=None,
         )
@@ -186,7 +186,7 @@ def test_start_uses_engine_owned_client_and_persists_exact_server_request() -> N
     request = client.orchestrate_request
     assert request["subject_id"] == "usr_0123456789abcdef0123456789abcdef"
     assert request["agent"]["model_policy"] == {
-        "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        "model": "kilo/minimax-minimax-m3-free"
     }
     assert request["messages"] == [{"role": "user", "content": "질문"}]
     assert request["execution_context"] == {"trace_id": request["trace_id"]}
@@ -206,7 +206,7 @@ def test_resume_uses_server_snapshot_and_server_minted_decision_evidence() -> No
             user_id="usr_0123456789abcdef0123456789abcdef",
             messages=[{"role": "user", "content": "질문"}],
             skill=skill,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id="chat_0123456789abcdef0123456789abcdef",
         )
@@ -248,7 +248,7 @@ def test_cross_user_continuation_is_rejected_before_engine_resume() -> None:
             user_id="usr_0123456789abcdef0123456789abcdef",
             messages=[{"role": "user", "content": "질문"}],
             skill=skill,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id="kilo/minimax-minimax-m3-free",
             user_text="질문",
             conversation_id=None,
         )
@@ -315,15 +315,19 @@ def test_worker_and_schema_keep_activation_fail_closed() -> None:
 
 
 def test_browser_transport_never_calls_engine_internal_routes_directly() -> None:
-    source = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    transport = (APP_ROOT / "static" / "chat-transport.js").read_text(encoding="utf-8")
+    lifecycle = (APP_ROOT / "static" / "message-lifecycle.js").read_text(encoding="utf-8")
 
-    assert '"/api/orchestration/status"' in source
-    assert '"/api/orchestration"' in source
-    assert '"/api/orchestration/resume"' in source
-    assert '"/api/orchestration/cancel"' in source
-    assert "/internal/v1/" not in source
-    assert "authority_ref" not in source
-    assert "evidence_ref" not in source
-    assert "decision_id" not in source
-    assert "requiresTrustedDecision" not in source
-    assert "PadiemChatOrchestrationUI.render" in source
+    assert '"/api/orchestration/status"' in transport
+    assert '"/api/orchestration"' in transport
+    assert '"/api/orchestration/resume"' in transport
+    assert '"/api/orchestration/cancel"' in transport
+    assert "/internal/v1/" not in transport
+    assert "authority_ref" not in transport
+    assert "evidence_ref" not in transport
+    assert "decision_id" not in transport
+    assert "requiresTrustedDecision" not in transport
+    assert "PadiemChatOrchestrationUI.render" not in transport
+    assert "document." not in transport
+    assert "PadiemChatOrchestrationController" in lifecycle
+    assert "orchestrationUi.render" in lifecycle

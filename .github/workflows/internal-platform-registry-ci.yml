@@ -1,0 +1,88 @@
+name: Internal Platform Registry CI
+
+on:
+  pull_request:
+    paths:
+      - 'docs/internal-platform/**'
+      - 'apps/portfolio-console/internal-platform-*.js'
+      - 'apps/portfolio-console/internal-platform.css'
+      - 'apps/portfolio-console/businesses.js'
+      - 'apps/portfolio-console/package.json'
+      - 'apps/portfolio-console/package-lock.json'
+      - 'apps/portfolio-console/tests/internal-platform-registry.test.js'
+      - 'apps/portfolio-console/tests/internal-platform.spec.js'
+      - '.github/workflows/internal-platform-registry-ci.yml'
+  push:
+    paths:
+      - 'docs/internal-platform/**'
+      - 'apps/portfolio-console/internal-platform-*.js'
+      - 'apps/portfolio-console/internal-platform.css'
+      - 'apps/portfolio-console/businesses.js'
+      - 'apps/portfolio-console/package.json'
+      - 'apps/portfolio-console/package-lock.json'
+      - 'apps/portfolio-console/tests/internal-platform-registry.test.js'
+      - 'apps/portfolio-console/tests/internal-platform.spec.js'
+      - '.github/workflows/internal-platform-registry-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  internal-platform-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript syntax
+        working-directory: apps/portfolio-console
+        run: |
+          node --check internal-platform-manifest.js
+          node --check internal-platform-console.js
+          node --check businesses.js
+          node --check tests/internal-platform.spec.js
+
+      - name: Internal Platform registry contract
+        working-directory: apps/portfolio-console
+        run: node tests/internal-platform-registry.test.js
+
+      - name: Diff whitespace gate
+        run: |
+          BASE="$(git merge-base origin/main HEAD)"
+          git diff --check "${BASE}"..HEAD
+
+  internal-platform-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/portfolio-console/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/portfolio-console
+        run: npm ci
+
+      - name: Install Chromium
+        working-directory: apps/portfolio-console
+        run: npx playwright install --with-deps chromium
+
+      - name: Focused Internal Platform browser contract
+        working-directory: apps/portfolio-console
+        env:
+          ARL_PLAIN_STATIC_SERVER: '1'
+        run: npx playwright test tests/internal-platform.spec.js --project=chromium-desktop

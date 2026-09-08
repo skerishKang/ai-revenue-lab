@@ -27,20 +27,30 @@ def test_search_assets_are_additive_and_ordered():
     _, html, _, _, _ = sources()
     assert '<link rel="stylesheet" href="./search-sources.css" />' in html
     app_index = html.index('<script src="./app.js"></script>')
+    capability_index = html.index('<script src="./product-capabilities.js"></script>')
     search_index = html.index('<script src="./search-sources.js"></script>')
     rich_index = html.index('<script src="./rich-response.js"></script>')
     outputs_index = html.index('<script src="./outputs.js"></script>')
-    assert app_index < search_index < rich_index < outputs_index
+    assert app_index < capability_index < search_index < rich_index < outputs_index
 
 
-def test_web_and_research_start_fail_closed_and_are_health_gated():
+def test_web_and_research_start_hidden_and_are_capability_gated():
     _, html, js, _, _ = sources()
-    assert "웹 검색 · 준비 중" in html
-    assert 'id="deepResearchButton" disabled' in html
-    assert 'nativeFetch("/health"' in js
-    assert 'data.web_tools_ready === true' in js
-    assert 'data.deep_research_ready === true' in js
-    assert 'deepResearchButton.disabled = researchUnavailable' in js
+    assert 'id="webSearchStarterButton"' in html and 'id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden' in html
+    assert 'id="webSearchButton"' in html and 'hidden><span aria-hidden="true">⌕</span><span>웹 검색</span>' in html
+    assert 'id="deepResearchButton"' in html and 'hidden><span aria-hidden="true">✦</span><span>심층 리서치</span>' in html
+    assert 'document.getElementById("webSearchButton")' in js
+    assert 'document.getElementById("webSearchStarterButton")' in js
+    assert 'textContent.includes("웹 검색")' not in js
+    assert 'textContent.includes("웹에서 찾아줘")' not in js
+    assert 'webSearchButton.hidden = !webReady;' in js
+    assert 'webSearchStarter.hidden = !webReady;' in js
+    assert 'deepResearchButton.hidden = !researchReady;' in js
+    assert 'const webBusy = webReady && busy;' in js
+    assert 'const researchBusy = researchReady && busy;' in js
+    assert 'webSearchButton.disabled = webBusy;' in js
+    assert 'deepResearchButton.disabled = researchBusy;' in js
+    assert 'window.addEventListener("padiem:capabilitychange"' in js
     assert 'setAttribute("aria-pressed"' in js
     assert 'setActiveTool("web_search"' in js
     assert 'setActiveTool("deep_research"' in js

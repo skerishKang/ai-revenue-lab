@@ -179,8 +179,13 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
 
     # User and wide assistant/error surfaces recover the right-side inner
     # gutter and terminate at the same composer/conversation outer boundary.
+    # #2093-5: the user bubble now carries an explicit right inset
+    # (padding-right: max(12px, env(safe-area-inset-right)) on .user-message),
+    # so it terminates 12px (+1px conversation border) inside the boundary.
     _assert_close(_right(user_message), _right(conversation), name=f"{name} user outer right")
-    _assert_close(_right(user_bubble), _right(conversation), name=f"{name} user bubble right")
+    user_bubble_inset = round(_right(conversation) - _right(user_bubble), 2)
+    if user_bubble_inset < 12 or user_bubble_inset > 14:
+        raise AssertionError(f"{name} user bubble right inset out of range: {user_bubble_inset}")
     _assert_close(_right(rich_surface), _right(conversation), name=f"{name} rich answer right")
     _assert_close(_right(error_surface), _right(conversation), name=f"{name} error card right")
 

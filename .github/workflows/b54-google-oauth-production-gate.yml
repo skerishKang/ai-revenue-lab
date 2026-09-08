@@ -1,0 +1,803 @@
+name: B54 Google OAuth Production Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-google-oauth-production-gate.yml"
+      - "packages/padiem-control-plane/google_oauth_*.py"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/wrangler.google-oauth.jsonc"
+      - "packages/padiem-control-plane/wrangler.google-oauth-edge.jsonc"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
+      - "apps/padiem-chat/app/control_plane_identity_worker.py"
+      - "apps/padiem-chat/app/connector_ticket_routes.py"
+      - "apps/padiem-chat/worker.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Google OAuth Production gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activate_private_workers
+          - activate_custom_domain
+          - rollback_custom_domain
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase; required only for activation/rollback"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-google-oauth-production-gate
+  cancel-in-progress: false
+
+env:
+  PUBLIC_HOSTNAME: oauth.padiem.net
+  ZONE_NAME: padiem.net
+  CALLBACK_PATH: /v1/google/callback
+  IDENTITY_WORKER: padiem-control-plane-identity
+  OAUTH_STATE_WORKER: padiem-google-oauth-state
+  OAUTH_EDGE_WORKER: padiem-google-oauth-edge
+  B62_WORKER: padiem-chat
+  IDENTITY_CONFIG: wrangler.identity-authority.jsonc
+  OAUTH_STATE_CONFIG: wrangler.google-oauth.jsonc
+  OAUTH_EDGE_CONFIG: wrangler.google-oauth-edge.jsonc
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+      - name: Validate closed Google OAuth source boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("packages/padiem-control-plane")
+          identity = json.loads((root / "wrangler.identity-authority.jsonc").read_text(encoding="utf-8"))
+          state = json.loads((root / "wrangler.google-oauth.jsonc").read_text(encoding="utf-8"))
+          edge = json.loads((root / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+
+          assert identity["name"] == "padiem-control-plane-identity"
+          assert identity["workers_dev"] is False and identity["preview_urls"] is False
+          assert identity["observability"]["enabled"] is False
+          assert "route" not in identity and "routes" not in identity
+          assert identity["secrets"]["required"] == [
+              "CONTROL_PLANE_IDENTITY_LOOKUP_KEY",
+              "GOOGLE_CONNECT_TICKET_KEY",
+          ]
+
+          assert state["name"] == "padiem-google-oauth-state"
+          assert state["workers_dev"] is False and state["preview_urls"] is False
+          assert state["observability"]["enabled"] is False
+          assert "route" not in state and "routes" not in state
+          assert state["secrets"]["required"] == [
+              "GOOGLE_CONNECT_TICKET_KEY",
+              "GOOGLE_OAUTH_SEAL_KEY",
+              "GOOGLE_OAUTH_CLIENT_SECRET",
+          ]
+
+          assert edge["name"] == "padiem-google-oauth-edge"
+          assert edge["workers_dev"] is False and edge["preview_urls"] is False
+          assert edge["observability"]["enabled"] is False
+          assert "route" not in edge and "routes" not in edge
+          assert edge["services"] == [{
+              "binding": "GOOGLE_OAUTH_SERVICE",
+              "service": "padiem-google-oauth-state",
+          }]
+
+          edge_source = (root / "google_oauth_edge_worker.py").read_text(encoding="utf-8")
+          assert 'CONNECT_PATH = "/v1/google/connect"' in edge_source
+          assert 'CALLBACK_PATH = "/v1/google/callback"' in edge_source
+          assert "access-control-allow-credentials" not in edge_source
+          assert "CREDENTIALLED_CORS = False" in edge_source
+          assert "STRICT_BOOLEAN_RPC_STATUS = True" in edge_source
+          assert "LOCAL_AGENT_ROUTE_OVERLAP = False" in edge_source
+          assert "RAW_CONNECT_TICKET_LOGGED = False" in edge_source
+          assert "RAW_AUTHORIZATION_CODE_LOGGED = False" in edge_source
+          assert "RAW_REFRESH_TOKEN_RETURNED = False" in edge_source
+
+          state_source = (root / "google_oauth_worker.py").read_text(encoding="utf-8")
+          assert "PUBLIC_FETCH = False" in state_source
+          assert "PRODUCTION_RANDOM_SOURCE_HARDENED = True" in state_source
+          assert "LOCAL_AGENT_INGRESS_CHANGED = False" in state_source
+
+          identity_source = (root / "identity_authority_worker.py").read_text(encoding="utf-8")
+          assert "PUBLIC_FETCH = False" in identity_source
+
+          b62_config = Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
+          assert "IDENTITY_AUTHORITY_SERVICE" not in b62_config
+          b62_worker = Path("apps/padiem-chat/worker.py").read_text(encoding="utf-8")
+          assert "IDENTITY_AUTHORITY_SERVICE" in b62_worker
+
+          combined = "\n".join([
+              json.dumps(identity, sort_keys=True),
+              json.dumps(state, sort_keys=True),
+              json.dumps(edge, sort_keys=True),
+          ])
+          assert "oauth.padiem.net" not in combined
+          assert "GOOGLE_OAUTH_CLIENT_ID" not in combined
+          assert "GOOGLE_OAUTH_REDIRECT_URI" not in combined
+          assert "GOOGLE_OAUTH_ALLOWED_ORIGIN" not in combined
+
+          print("SOURCE_OAUTH_PRIVATE_BOUNDARY=PASS")
+          print("LOCAL_AGENT_INGRESS_CHANGED=NO")
+          print("B62_DEFAULT_PRODUCTION_BINDING=NOT_CONFIGURED")
+          print("PUBLIC_HOSTNAME_CONFIGURED_IN_WORKER_SOURCE=NO")
+          print("GOOGLE_CLIENT_SECRET_COMMITTED=NO")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Dry-run package identity and Google OAuth Workers
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          secret_file="${RUNNER_TEMP}/google-oauth-gate-dry-run-secrets.env"
+          trap 'rm -f "${temp_config}" "${secret_file}"' EXIT
+          test ! -e "${temp_config}"
+
+          python - <<'PY' > "${secret_file}"
+          import base64
+          import os
+          def b64url(n):
+              return base64.urlsafe_b64encode(os.urandom(n)).decode().rstrip("=")
+          print("CONTROL_PLANE_IDENTITY_LOOKUP_KEY=" + b64url(32))
+          print("GOOGLE_CONNECT_TICKET_KEY=" + b64url(32))
+          print("GOOGLE_OAUTH_SEAL_KEY=" + b64url(32))
+          print("GOOGLE_OAUTH_CLIENT_SECRET=ci-only-placeholder-not-production")
+          PY
+          chmod 600 "${secret_file}"
+
+          cp "${IDENTITY_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/oauth-identity-dry-run"
+          rm -f "${temp_config}"
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          source = json.loads(Path("wrangler.google-oauth.jsonc").read_text(encoding="utf-8"))
+          source.setdefault("vars", {})["GOOGLE_OAUTH_CLIENT_ID"] = "ci-client.apps.googleusercontent.com"
+          source["vars"]["GOOGLE_OAUTH_REDIRECT_URI"] = "https://oauth.padiem.net/v1/google/callback"
+          Path("wrangler.jsonc").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/oauth-state-dry-run"
+          rm -f "${temp_config}"
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          source = json.loads(Path("wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+          source["vars"] = {"GOOGLE_OAUTH_ALLOWED_ORIGIN": "https://chat.example.invalid"}
+          Path("wrangler.jsonc").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --dry-run --outdir "${RUNNER_TEMP}/oauth-edge-dry-run"
+          rm -f "${temp_config}"
+
+          test -d "${RUNNER_TEMP}/oauth-identity-dry-run"
+          test -d "${RUNNER_TEMP}/oauth-state-dry-run"
+          test -d "${RUNNER_TEMP}/oauth-edge-dry-run"
+          echo "GOOGLE_OAUTH_WORKER_PACKAGING_PREFLIGHT=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      candidate_domain_state: ${{ steps.inspect.outputs.candidate_domain_state }}
+      candidate_domain_id: ${{ steps.inspect.outputs.candidate_domain_id }}
+      identity_worker_state: ${{ steps.inspect.outputs.identity_worker_state }}
+      oauth_state_worker_state: ${{ steps.inspect.outputs.oauth_state_worker_state }}
+      oauth_edge_worker_state: ${{ steps.inspect.outputs.oauth_edge_worker_state }}
+      b62_identity_binding_state: ${{ steps.inspect.outputs.b62_identity_binding_state }}
+    steps:
+      - name: Read-only Cloudflare collision and topology audit
+        id: inspect
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains}"
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
+
+          domain_count="$(jq --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length' "${domains}")"
+          if [ "${domain_count}" -eq 0 ]; then
+            echo "candidate_domain_state=absent" >> "${GITHUB_OUTPUT}"
+            echo "candidate_domain_id=" >> "${GITHUB_OUTPUT}"
+            echo "CANDIDATE_CUSTOM_DOMAIN=ABSENT"
+          elif [ "${domain_count}" -eq 1 ]; then
+            jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${OAUTH_EDGE_WORKER}" '.result[] | select(.hostname == $host) | .service == $edge' "${domains}" >/dev/null
+            domain_id="$(jq -r --arg host "${PUBLIC_HOSTNAME}" '.result[] | select(.hostname == $host) | .id' "${domains}")"
+            test -n "${domain_id}"
+            echo "candidate_domain_state=present_edge" >> "${GITHUB_OUTPUT}"
+            echo "candidate_domain_id=${domain_id}" >> "${GITHUB_OUTPUT}"
+            echo "CANDIDATE_CUSTOM_DOMAIN=PRESENT_EXPECTED_EDGE"
+          else
+            echo "Refusing ambiguous OAuth Custom Domain state" >&2
+            exit 1
+          fi
+
+          zones="${RUNNER_TEMP}/zones.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
+            -o "${zones}"
+          jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
+          zone_id="$(jq -r '.result[0].id' "${zones}")"
+          test -n "${zone_id}"
+
+          routes="${RUNNER_TEMP}/routes.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
+            -o "${routes}"
+          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+          python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
+          import json
+          import sys
+          routes_path, host = sys.argv[1:]
+          data = json.load(open(routes_path, encoding="utf-8"))
+          suspicious = []
+          for row in data.get("result", []):
+              pattern = str(row.get("pattern", ""))
+              if host in pattern or "*.padiem.net" in pattern or "*padiem.net" in pattern:
+                  suspicious.append(pattern)
+          if suspicious:
+              raise SystemExit("Refusing candidate hostname: overlapping Worker route exists")
+          print("WORKER_ROUTE_COLLISION=NO")
+          PY
+
+          inspect_worker() {
+            worker="$1"
+            output_name="$2"
+            settings="${RUNNER_TEMP}/${worker}-settings.json"
+            code="$(curl -sS -o "${settings}" -w '%{http_code}' "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" || true)"
+            if [ "${code}" = "404" ]; then
+              echo "${output_name}=absent" >> "${GITHUB_OUTPUT}"
+              return 0
+            fi
+            test "${code}" = "200"
+            jq -e '.success == true' "${settings}" >/dev/null
+            subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
+            deployments="${RUNNER_TEMP}/${worker}-deployments.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${subdomain}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${deployments}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            echo "${output_name}=present" >> "${GITHUB_OUTPUT}"
+          }
+
+          inspect_worker "${IDENTITY_WORKER}" "identity_worker_state"
+          inspect_worker "${OAUTH_STATE_WORKER}" "oauth_state_worker_state"
+          inspect_worker "${OAUTH_EDGE_WORKER}" "oauth_edge_worker_state"
+
+          edge_settings="${RUNNER_TEMP}/${OAUTH_EDGE_WORKER}-settings.json"
+          if [ -f "${edge_settings}" ]; then
+            jq -e --arg state "${OAUTH_STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${edge_settings}" >/dev/null
+          fi
+
+          b62_settings="${RUNNER_TEMP}/b62-settings.json"
+          b62_code="$(curl -sS -o "${b62_settings}" -w '%{http_code}' "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" || true)"
+          test "${b62_code}" = "200"
+          jq -e '.success == true' "${b62_settings}" >/dev/null
+          b62_binding_count="$(jq --arg identity "${IDENTITY_WORKER}" '[.result.bindings[]? | select(.name == "IDENTITY_AUTHORITY_SERVICE" and .service == $identity)] | length' "${b62_settings}")"
+          if [ "${b62_binding_count}" -eq 1 ]; then
+            echo "b62_identity_binding_state=present_expected" >> "${GITHUB_OUTPUT}"
+            echo "B62_IDENTITY_SERVICE_BINDING=PRESENT_EXPECTED"
+          else
+            echo "b62_identity_binding_state=absent" >> "${GITHUB_OUTPUT}"
+            echo "B62_IDENTITY_SERVICE_BINDING=ABSENT"
+          fi
+
+          if [ "${domain_count}" -eq 0 ]; then
+            if python - "${PUBLIC_HOSTNAME}" <<'PY'
+          import socket
+          import sys
+          host = sys.argv[1]
+          try:
+              socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+          except socket.gaierror:
+              raise SystemExit(1)
+          raise SystemExit(0)
+          PY
+            then
+              echo "Refusing candidate hostname: public DNS already resolves without expected Custom Domain" >&2
+              exit 1
+            else
+              echo "PUBLIC_DNS=NXDOMAIN_OR_UNRESOLVED"
+            fi
+          fi
+
+          echo "OAUTH_HOST_COLLISION_AUDITED=YES"
+          echo "PRIVATE_WORKER_CUSTOM_DOMAIN=NO"
+          echo "CLOUDFLARE_READONLY=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  activate-private-workers:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_private_workers' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Require explicit private Worker activation authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          IDENTITY_LOOKUP_KEY: ${{ secrets.CONTROL_PLANE_IDENTITY_LOOKUP_KEY }}
+          CONNECT_TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+          OAUTH_SEAL_KEY: ${{ secrets.GOOGLE_OAUTH_SEAL_KEY }}
+          OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          OAUTH_ALLOWED_ORIGIN: ${{ secrets.GOOGLE_OAUTH_ALLOWED_ORIGIN }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ACTIVATE_PADIEM_GOOGLE_OAUTH_PRIVATE_WORKERS_OAUTH_PADIEM_NET"
+          for name in IDENTITY_LOOKUP_KEY CONNECT_TICKET_KEY OAUTH_SEAL_KEY OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET OAUTH_ALLOWED_ORIGIN; do
+            test -n "${!name}"
+          done
+          python - <<'PY'
+          import base64
+          import os
+          from urllib.parse import urlparse
+
+          def require_key(name):
+              value = os.environ[name]
+              padding = "=" * (-len(value) % 4)
+              raw = base64.urlsafe_b64decode(value + padding)
+              if len(raw) != 32:
+                  raise SystemExit(f"{name} must decode to exactly 32 bytes")
+
+          require_key("CONNECT_TICKET_KEY")
+          require_key("OAUTH_SEAL_KEY")
+          require_key("IDENTITY_LOOKUP_KEY")
+          origin = os.environ["OAUTH_ALLOWED_ORIGIN"]
+          parsed = urlparse(origin)
+          if parsed.scheme != "https" or not parsed.hostname or parsed.path not in ("", "/") or parsed.query or parsed.fragment:
+              raise SystemExit("GOOGLE_OAUTH_ALLOWED_ORIGIN must be one exact HTTPS origin")
+          if parsed.hostname == "oauth.padiem.net":
+              raise SystemExit("OAuth edge cannot be its own browser authority origin")
+          client_id = os.environ["OAUTH_CLIENT_ID"]
+          if len(client_id) > 512 or not client_id.endswith(".apps.googleusercontent.com"):
+              raise SystemExit("Google OAuth client id shape is not reviewed")
+          PY
+          echo "PRIVATE_WORKER_ACTIVATION_AUTHORIZATION=PASS"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before first mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "PREMUTATION_EXACT_MAIN=PASS"
+
+      - name: Require Custom Domain still absent before private Worker deployment
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          domains="${RUNNER_TEMP}/domains-premutation.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length == 0' "${domains}" >/dev/null
+          echo "PUBLIC_INGRESS_PREMUTATION=ABSENT"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Deploy canonical identity authority Worker first
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          IDENTITY_LOOKUP_KEY: ${{ secrets.CONTROL_PLANE_IDENTITY_LOOKUP_KEY }}
+          CONNECT_TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/identity-production-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          printf 'CONTROL_PLANE_IDENTITY_LOOKUP_KEY=%s\nGOOGLE_CONNECT_TICKET_KEY=%s\n' "${IDENTITY_LOOKUP_KEY}" "${CONNECT_TICKET_KEY}" > "${secret_file}"
+          chmod 600 "${secret_file}"
+          cp "${IDENTITY_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 Google identity authority ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "IDENTITY_WORKER_DEPLOY=SUCCESS"
+
+      - name: Reconfirm exact main before OAuth state mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+
+      - name: Deploy private Google OAuth state Worker second
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CONNECT_TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+          OAUTH_SEAL_KEY: ${{ secrets.GOOGLE_OAUTH_SEAL_KEY }}
+          OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/oauth-state-production-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          printf 'GOOGLE_CONNECT_TICKET_KEY=%s\nGOOGLE_OAUTH_SEAL_KEY=%s\nGOOGLE_OAUTH_CLIENT_SECRET=%s\n' "${CONNECT_TICKET_KEY}" "${OAUTH_SEAL_KEY}" "${OAUTH_CLIENT_SECRET}" > "${secret_file}"
+          chmod 600 "${secret_file}"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          source = json.loads(Path("wrangler.google-oauth.jsonc").read_text(encoding="utf-8"))
+          source.setdefault("vars", {})["GOOGLE_OAUTH_CLIENT_ID"] = os.environ["OAUTH_CLIENT_ID"]
+          source["vars"]["GOOGLE_OAUTH_REDIRECT_URI"] = "https://oauth.padiem.net/v1/google/callback"
+          Path("wrangler.jsonc").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 Google OAuth state ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "OAUTH_STATE_WORKER_DEPLOY=SUCCESS"
+
+      - name: Reconfirm exact main before OAuth edge mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+
+      - name: Deploy private Google OAuth edge Worker third
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OAUTH_ALLOWED_ORIGIN: ${{ secrets.GOOGLE_OAUTH_ALLOWED_ORIGIN }}
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          source = json.loads(Path("wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+          source["vars"] = {"GOOGLE_OAUTH_ALLOWED_ORIGIN": os.environ["OAUTH_ALLOWED_ORIGIN"]}
+          Path("wrangler.jsonc").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --strict --tag "git-${TARGET_SHA}" --message "B54 Google OAuth edge ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "OAUTH_EDGE_WORKER_DEPLOY=SUCCESS"
+
+      - name: Read back private topology and preserve zero public ingress
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains-after-private.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length == 0' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
+
+          for worker in "${IDENTITY_WORKER}" "${OAUTH_STATE_WORKER}" "${OAUTH_EDGE_WORKER}"; do
+            sub="${RUNNER_TEMP}/${worker}-sub-after.json"
+            dep="${RUNNER_TEMP}/${worker}-dep-after.json"
+            settings="${RUNNER_TEMP}/${worker}-settings-after.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
+          done
+
+          jq -e --arg state "${OAUTH_STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${RUNNER_TEMP}/${OAUTH_EDGE_WORKER}-settings-after.json" >/dev/null
+          jq -e '.result.bindings | any(.name == "GOOGLE_OAUTH_CLIENT_SECRET")' "${RUNNER_TEMP}/${OAUTH_STATE_WORKER}-settings-after.json" >/dev/null
+          jq -e '.result.bindings | any(.name == "GOOGLE_OAUTH_SEAL_KEY")' "${RUNNER_TEMP}/${OAUTH_STATE_WORKER}-settings-after.json" >/dev/null
+          jq -e '.result.bindings | any(.name == "GOOGLE_CONNECT_TICKET_KEY")' "${RUNNER_TEMP}/${OAUTH_STATE_WORKER}-settings-after.json" >/dev/null
+          jq -e '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY_LOOKUP_KEY")' "${RUNNER_TEMP}/${IDENTITY_WORKER}-settings-after.json" >/dev/null
+          jq -e '.result.bindings | any(.name == "GOOGLE_CONNECT_TICKET_KEY")' "${RUNNER_TEMP}/${IDENTITY_WORKER}-settings-after.json" >/dev/null
+
+          echo "PRIVATE_WORKERS_DEPLOYED=YES"
+          echo "PUBLIC_OAUTH_CUSTOM_DOMAIN=NO"
+          echo "B62_BINDING_MUTATION=NO"
+          echo "LOCAL_AGENT_INGRESS_CHANGED=NO"
+
+  activate-custom-domain:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_custom_domain' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Require explicit public OAuth ingress authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          DOMAIN_STATE: ${{ needs.cloudflare-readonly.outputs.candidate_domain_state }}
+          IDENTITY_STATE: ${{ needs.cloudflare-readonly.outputs.identity_worker_state }}
+          OAUTH_STATE: ${{ needs.cloudflare-readonly.outputs.oauth_state_worker_state }}
+          OAUTH_EDGE_STATE: ${{ needs.cloudflare-readonly.outputs.oauth_edge_worker_state }}
+          B62_BINDING: ${{ needs.cloudflare-readonly.outputs.b62_identity_binding_state }}
+          OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          OAUTH_ALLOWED_ORIGIN: ${{ secrets.GOOGLE_OAUTH_ALLOWED_ORIGIN }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ACTIVATE_PADIEM_GOOGLE_OAUTH_PUBLIC_INGRESS_OAUTH_PADIEM_NET"
+          test "${DOMAIN_STATE}" = "absent"
+          test "${IDENTITY_STATE}" = "present"
+          test "${OAUTH_STATE}" = "present"
+          test "${OAUTH_EDGE_STATE}" = "present"
+          test "${B62_BINDING}" = "present_expected"
+          test -n "${OAUTH_CLIENT_ID}"
+          test -n "${OAUTH_CLIENT_SECRET}"
+          test -n "${OAUTH_ALLOWED_ORIGIN}"
+          echo "PUBLIC_OAUTH_INGRESS_AUTHORIZATION=PASS"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Fail-closed recheck immediately before Custom Domain attach
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains-premutation.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length == 0' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
+
+          edge_settings="${RUNNER_TEMP}/oauth-edge-settings-premutation.json"
+          b62_settings="${RUNNER_TEMP}/b62-settings-premutation.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OAUTH_EDGE_WORKER}/settings" -o "${edge_settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${b62_settings}"
+          jq -e --arg state "${OAUTH_STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${edge_settings}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" '.result.bindings | any(.name == "IDENTITY_AUTHORITY_SERVICE" and .service == $identity)' "${b62_settings}" >/dev/null
+
+          python - <<'PY'
+          import socket
+          try:
+              socket.getaddrinfo("oauth.padiem.net", 443, type=socket.SOCK_STREAM)
+          except socket.gaierror:
+              raise SystemExit(0)
+          raise SystemExit("Refusing activation: OAuth hostname began resolving before mutation")
+          PY
+          echo "IMMEDIATE_PREMUTATION_OAUTH_BOUNDARY=PASS"
+
+      - name: Attach exact OAuth Custom Domain to edge Worker
+        id: attach
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/attach-domain.json"
+          payload="$(jq -nc --arg hostname "${PUBLIC_HOSTNAME}" --arg service "${OAUTH_EDGE_WORKER}" --arg zone_name "${ZONE_NAME}" '{hostname:$hostname,service:$service,zone_name:$zone_name}')"
+          curl -fsS -X PUT \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "${payload}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${response}"
+          jq -e --arg hostname "${PUBLIC_HOSTNAME}" --arg service "${OAUTH_EDGE_WORKER}" '.success == true and .result.hostname == $hostname and .result.service == $service' "${response}" >/dev/null
+          domain_id="$(jq -r '.result.id' "${response}")"
+          test -n "${domain_id}"
+          echo "domain_id=${domain_id}" >> "${GITHUB_OUTPUT}"
+          echo "OAUTH_CUSTOM_DOMAIN_ATTACH=SUCCESS"
+          echo "WORKER_REDEPLOY=NO"
+
+      - name: Read back public boundary and bounded unauthenticated HTTPS smoke
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          ready=no
+          for _ in $(seq 1 60); do
+            domains="${RUNNER_TEMP}/domains-after.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+            count="$(jq --arg host "${PUBLIC_HOSTNAME}" --arg edge "${OAUTH_EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length' "${domains}")"
+            if [ "${count}" -eq 1 ]; then ready=yes; break; fi
+            sleep 2
+          done
+          test "${ready}" = yes
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
+
+          smoke=no
+          for _ in $(seq 1 60); do
+            body="${RUNNER_TEMP}/oauth-smoke.json"
+            code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${body}" -w '%{http_code}' "https://${PUBLIC_HOSTNAME}/not-a-google-route" || true)"
+            if [ "${code}" = "404" ] && jq -e '.ok == false and .error.code == "google_oauth_route_not_found"' "${body}" >/dev/null 2>&1; then
+              smoke=yes
+              break
+            fi
+            sleep 5
+          done
+          test "${smoke}" = yes
+
+          connect_body="${RUNNER_TEMP}/connect-get.json"
+          connect_code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${connect_body}" -w '%{http_code}' "https://${PUBLIC_HOSTNAME}/v1/google/connect")"
+          test "${connect_code}" = "405"
+          jq -e '.ok == false and .error.code == "google_oauth_connect_post_required"' "${connect_body}" >/dev/null
+
+          callback_body="${RUNNER_TEMP}/callback-empty.json"
+          callback_code="$(curl -sS --connect-timeout 5 --max-time 10 -o "${callback_body}" -w '%{http_code}' "https://${PUBLIC_HOSTNAME}/v1/google/callback")"
+          test "${callback_code}" = "400"
+          jq -e '.ok == false and .error.code == "google_oauth_callback_invalid"' "${callback_body}" >/dev/null
+
+          echo "PUBLIC_OAUTH_CUSTOM_DOMAIN_READBACK=PASS"
+          echo "PUBLIC_OAUTH_BOUNDARY_SMOKE=PASS"
+          echo "LIVE_GMAIL_CANARY=NO"
+          echo "LIVE_DRIVE_CANARY=NO"
+
+  rollback-custom-domain:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'rollback_custom_domain' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Require explicit OAuth Custom Domain rollback authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          DOMAIN_STATE: ${{ needs.cloudflare-readonly.outputs.candidate_domain_state }}
+          DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ROLLBACK_PADIEM_GOOGLE_OAUTH_PUBLIC_INGRESS_OAUTH_PADIEM_NET"
+          test "${DOMAIN_STATE}" = "present_edge"
+          test -n "${DOMAIN_ID}"
+          echo "OAUTH_CUSTOM_DOMAIN_ROLLBACK_AUTHORIZATION=PASS"
+
+      - name: Reconfirm exact current main before rollback mutation
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          main="${RUNNER_TEMP}/main.json"
+          curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/branches/main" -o "${main}"
+          jq -e --arg sha "${TARGET_SHA}" '.commit.sha == $sha' "${main}" >/dev/null
+          echo "PREROLLBACK_EXACT_MAIN=PASS"
+
+      - name: Detach OAuth Custom Domain only
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/delete-domain.json"
+          curl -fsS -X DELETE \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains/${DOMAIN_ID}" \
+            -o "${response}"
+          jq -e '.success == true' "${response}" >/dev/null
+          echo "OAUTH_CUSTOM_DOMAIN_ROLLBACK=SUCCESS"
+          echo "WORKER_DELETE=NO"
+          echo "DURABLE_OBJECT_DELETE=NO"
+
+      - name: Read back zero public OAuth ingress after rollback
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          domains="${RUNNER_TEMP}/domains-after-rollback.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" '[.result[] | select(.hostname == $host)] | length == 0' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${OAUTH_STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains}" >/dev/null
+          echo "PUBLIC_OAUTH_CUSTOM_DOMAIN=ABSENT"
+          echo "PRIVATE_WORKERS_PRESERVED=YES"
+          echo "PRODUCTION_MUTATION_SCOPE=CUSTOM_DOMAIN_ONLY"

@@ -45,13 +45,9 @@ _ENV_KEYS = frozenset({
     "BUSINESS14_PILOT_PROVIDER_ID",
     "BUSINESS14_PILOT_UPSTREAM_MODEL",
     "BUSINESS14_PILOT_TIMEOUT_SECONDS",
-    "OPENROUTER_API_KEY",
-    "AGNES_API_KEY",
     "PADIEM_POOLSIDE_API_KEY",
+    "PADIEM_SENSENOVA_API_KEY",
     "B14_PROVIDER_MODE",
-    "B14_OPENROUTER_BASE_URL",
-    "B14_SITE_URL",
-    "B14_SITE_NAME",
 })
 
 _SECURITY_HEADERS = {
@@ -126,18 +122,14 @@ def _apply_env_once(overrides: dict[str, str]) -> None:
     from app.pilot.config import pilot_settings
 
     _B14_MAP = {
-        "OPENROUTER_API_KEY": "api_key",
         "B14_PROVIDER_MODE": "provider_mode",
-        "B14_OPENROUTER_BASE_URL": "base_url",
-        "B14_SITE_URL": "site_url",
-        "B14_SITE_NAME": "site_name",
     }
 
-    from app.pilot.openrouter_config import openrouter_config
+    from app.pilot.b14_runtime_config import runtime_config
     for env_key, attr in _B14_MAP.items():
         value = overrides.get(env_key)
         if value is not None:
-            setattr(openrouter_config, attr, value)
+            setattr(runtime_config, attr, value)
 
     _MAP = {
         "BUSINESS14_PROVIDER_REGISTRY_JSON": "provider_registry_json",

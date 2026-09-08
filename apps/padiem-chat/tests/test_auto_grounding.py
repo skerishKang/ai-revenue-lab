@@ -6,6 +6,7 @@ import httpx
 import pytest
 
 from app.auto_grounding import AutoGroundingService
+from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.evidence import Evidence
 from app.grounding import GroundedChatService
@@ -167,7 +168,9 @@ async def test_stable_concept_does_not_over_search() -> None:
     assert "evidence" not in body
     assert provider.search_calls == []
     assert len(seen) == 1
-    assert seen[0]["messages"] == STABLE
+    assert seen[0]["messages"][0]["role"] == "system"
+    assert PADIEM_IDENTITY_INSTRUCTION in seen[0]["messages"][0]["content"]
+    assert seen[0]["messages"][1:] == STABLE
     assert "max_tokens" not in seen[0]
 
 

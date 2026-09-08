@@ -9,6 +9,13 @@ Free availability is volatile. These registrations are dated snapshots, remain
 explicit/manual-only, and are never inserted into ``b14/auto``. No API key is
 stored or required for these routes. The fixed Kilo Gateway origin and upstream
 model IDs are server-owned metadata; callers cannot replace either value.
+
+Re-check on 2026-09-08 against the public Gateway model list (#2094):
+``minimax/minimax-m3:free`` and ``tencent/hy3:free`` are no longer offered.
+Both lanes are retired (see RETIRED_KILO_FREE_MODEL_IDS) and are NOT
+registered in the catalog: explicit manual/auto resolution fails closed with
+``unsupported_model``. The IDs and upstream models below are retained purely
+as retirement metadata for contract tests and operator documentation.
 """
 
 from __future__ import annotations
@@ -35,10 +42,24 @@ KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 KILO_LAGUNA_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
 KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
+
+# Retired lane identifiers kept as retirement metadata only. They are never
+# registered in the catalog; #2097 removed them from KILO_FREE_ROUTES and from
+# the fixed_chain_v1 fallback.
 KILO_HY3_MODEL_ID = "kilo/tencent-hy3-free"
 KILO_HY3_UPSTREAM_MODEL = "tencent/hy3:free"
 KILO_MINIMAX_M3_MODEL_ID = "kilo/minimax-minimax-m3-free"
 KILO_MINIMAX_M3_UPSTREAM_MODEL = "minimax/minimax-m3:free"
+
+# Free lanes observed as removed from the public Kilo Gateway model list on
+# 2026-09-08 (#2094). Retired lanes are unregistered and must never appear in
+# any executable route lane (chain, catalog, or product tier).
+RETIRED_KILO_FREE_MODEL_IDS = frozenset(
+    {
+        KILO_MINIMAX_M3_MODEL_ID,
+        KILO_HY3_MODEL_ID,
+    }
+)
 
 # Backwards-compatible names used by the first Provider 03 tests/consumers.
 KILO_MODEL_ID = KILO_NEMOTRON_MODEL_ID
@@ -71,22 +92,6 @@ KILO_FREE_ROUTES = (
         provider="Kilo Gateway / Poolside",
         context_window=262_144,
         sort_order=91,
-    ),
-    _KiloFreeRoute(
-        model_id=KILO_HY3_MODEL_ID,
-        upstream_model=KILO_HY3_UPSTREAM_MODEL,
-        display_name="Kilo: Tencent Hy3 (free)",
-        provider="Kilo Gateway / Tencent",
-        context_window=262_144,
-        sort_order=92,
-    ),
-    _KiloFreeRoute(
-        model_id=KILO_MINIMAX_M3_MODEL_ID,
-        upstream_model=KILO_MINIMAX_M3_UPSTREAM_MODEL,
-        display_name="Kilo: MiniMax M3 (free)",
-        provider="Kilo Gateway / MiniMax",
-        context_window=1_048_576,
-        sort_order=93,
     ),
 )
 

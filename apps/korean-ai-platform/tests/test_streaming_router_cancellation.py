@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from app.pilot.openrouter_stream import OpenRouterStreamEvent
+from app.pilot.stream_types import StreamEvent
 from app.pilot.router_core import RouteDecision
 from app.pilot.streaming_router import stream_routed_chat_completions
 
@@ -38,7 +38,7 @@ async def test_task_cancellation_propagates_and_closes_provider_iterator():
         try:
             entered.set()
             await asyncio.sleep(3600)
-            yield OpenRouterStreamEvent(delta_content="unreachable")
+            yield StreamEvent(delta_content="unreachable")
         finally:
             closed.set()
 

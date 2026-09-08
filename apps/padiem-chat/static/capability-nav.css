@@ -1,0 +1,154 @@
+/* capability-nav.css — placeholder for Claw / Connectors / Skills dialog shell */
+
+/* ── Issue A: Claw discoverability ────────────────────────────────────── */
+#clawNavButton {
+  position: relative;
+  font-weight: 700;
+  color: var(--accent-strong, #2f6f99);
+  border: 1px solid rgba(121, 188, 231, .28);
+  background: rgba(121, 188, 231, .10);
+}
+#clawNavButton::after {
+  content: "업무";
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(47, 111, 153, .18);
+  color: var(--accent-strong, #2f6f99);
+}
+
+html[data-theme="padiem-glass"] #clawNavButton {
+  color: rgba(255, 255, 255, .96);
+  border-color: rgba(121, 188, 231, .38);
+  background: rgba(121, 188, 231, .16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+html[data-theme="padiem-glass"] #clawNavButton::after {
+  background: rgba(121, 188, 231, .24);
+  color: rgba(255, 255, 255, .92);
+}
+
+.capability-dialog {
+  border: none;
+  border-radius: 18px;
+  padding: 0;
+  max-width: 520px;
+  width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+  background: var(--panel, #fff);
+  color: var(--ink, #1a1a2e);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+#clawDialog {
+  max-width: 600px;
+}
+
+/* ── Issue C: Claw modal readability ──────────────────────────────────── */
+/* Deepen the backdrop — was rgba(0,0,0,0.35), now with blur */
+.capability-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* On Padiem Glass, --panel resolves to rgba(235,239,242,.46) — far too
+   transparent. Override #clawDialog to a near-solid frosted surface. */
+html[data-theme="padiem-glass"] #clawDialog {
+  background: rgba(246, 249, 251, .97);
+  color: #17212a;
+  box-shadow: 0 16px 56px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, .72);
+}
+
+.capability-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 0;
+}
+
+.capability-kicker {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin: 0 0 2px;
+}
+
+.capability-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.capability-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.capability-close:hover {
+  opacity: 1;
+}
+
+.capability-tagline {
+  padding: 8px 20px 0;
+  font-size: 13px;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.capability-status {
+  padding: 4px 20px 0;
+  font-size: 12px;
+  opacity: 0.5;
+  margin: 0;
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.capability-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  background: var(--card-bg, #fafafa);
+  text-align: left;
+  cursor: default;
+  font: inherit;
+  color: inherit;
+}
+
+.capability-card[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.capability-card strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.capability-card small {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.capability-soon {
+  font-size: 11px;
+  opacity: 0.5;
+}

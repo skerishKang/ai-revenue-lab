@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "padiem-google-oauth-edge",
+  "main": "google_oauth_edge_worker.py",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": ["python_workers", "disable_python_external_sdk"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "services": [
+    {
+      "binding": "GOOGLE_OAUTH_SERVICE",
+      "service": "padiem-google-oauth-state"
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}

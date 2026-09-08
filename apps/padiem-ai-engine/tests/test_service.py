@@ -364,32 +364,39 @@ async def test_b14_binding_state_is_truthful() -> None:
     assert h_unbound.body["b14_service_bound"] is False
 
 
-def test_implemented_but_blocked_orchestration_not_available():
-    # Orchestration stream is not routed at Worker boundary → must not be AVAILABLE
+def test_orchestration_stream_available_when_routed():
+    # orchestration_stream is routed at the Worker boundary as NDJSON (#1962)
+    # → the manifest and health posture must agree it is AVAILABLE.
     from app.contract_manifest import current_engine_contract_manifest
 
     manifest = current_engine_contract_manifest()
-    assert manifest.feature_state("orchestration_stream").value != "available"
-    assert manifest.feature_state("orchestration_stream").value in ("deferred", "unavailable")
-
-
-def test_deferred_idempotency_not_reported_available():
-    from app.contract_manifest import current_engine_contract_manifest
-
-    manifest = current_engine_contract_manifest()
-    assert manifest.feature_state("idempotency_replay").value != "available"
-    assert manifest.feature_state("execution_idempotency_replay_completed").value != "available"
-
-
-def test_unrouted_orchestration_stream_not_available():
-    from app.contract_manifest import current_engine_contract_manifest
-
-    manifest = current_engine_contract_manifest()
-    assert manifest.feature_state("orchestration_stream").value in ("deferred", "unavailable")
+    assert manifest.feature_state("orchestration_stream").value == "available"
     svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
     health = svc.health()
-    assert health.body["capabilities"]["orchestration_stream"] in ("deferred", "unavailable")
-    assert health.body["capabilities"]["idempotency_replay"] in ("deferred", "unavailable")
+    assert health.body["capabilities"]["orchestration_stream"] == "available"
+
+
+def test_activated_idempotency_reported_available():
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0.
+    assert manifest.feature_state("idempotency_replay").value == "available"
+    assert manifest.feature_state("execution_idempotency_replay_completed").value == "available"
+    # Streaming replay stays non-available: the stream adapter is unwired.
+    assert manifest.feature_state("execution_idempotency_replay_streaming").value != "available"
+
+
+def test_unrouted_deferred_features_not_reported_available():
+    from app.contract_manifest import current_engine_contract_manifest
+
+    manifest = current_engine_contract_manifest()
+    assert manifest.feature_state("orchestration_stream").value == "available"
+    svc = EngineService(runtime_factory=lambda app_id: FakeRuntime(value=result()), b14_service_bound=True)
+    health = svc.health()
+    # Routed orchestration stream and activated idempotency replay are advertised.
+    assert health.body["capabilities"]["orchestration_stream"] == "available"
+    assert health.body["capabilities"]["idempotency_replay"] == "available"
 
 
 @pytest.mark.asyncio

@@ -57,6 +57,10 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
     env = os.environ.copy()
     env.pop("B14_PROVIDER_MODE", None)
     env.pop("OPENROUTER_API_KEY", None)
+    env.pop("KILO_API_KEY", None)
+    env.pop("AGNES_API_KEY", None)
+    env.pop("PADIEM_POOLSIDE_API_KEY", None)
+    env.pop("PADIEM_SENSENOVA_API_KEY", None)
     env.pop("PYTHONWARNINGS", None)
     existing_pythonpath = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = (
@@ -114,12 +118,19 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
         assert payload["business14"]["has_key"] is False
     finally:
         if process.poll() is None:
-            process.terminate()
-            try:
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait(timeout=5)
+            if os.name == "nt":
+                subprocess.run(
+                    ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+                    capture_output=True,
+                )
+            else:
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=5)
+            process.wait(timeout=5)
         if process.stdout is not None:
             output += process.stdout.read()
             process.stdout.close()
