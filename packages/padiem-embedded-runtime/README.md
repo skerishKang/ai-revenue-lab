@@ -1,10 +1,13 @@
-# padiem-embedded-runtime (IP-SIDECAR S3 host-context bridge)
+# padiem-embedded-runtime (IP-SIDECAR S4 evidence/citation presentation)
 
 Shared, browser-safe embedded shell boundary for host products. S2 delivered
 the package-level runtime contract plus one repository-local reference host;
-S3 adds the reusable host-context bridge, public bootstrap/session projection,
-version-compatibility and integration diagnostics, and host-safe fail-over.
-No Engine transport, no provider calls, no secrets, no product semantics.
+S3 added the reusable host-context bridge, public bootstrap/session
+projection, version-compatibility and integration diagnostics, and host-safe
+fail-over; S4 adds public-safe evidence/citation presentation primitives
+(bounded normalization, deterministic order/dedup/reference labels, host-safe
+empty/degraded states). No Engine transport, no provider calls, no browser
+network fetch, no secrets, no product semantics.
 
 ## Layout
 
@@ -19,6 +22,7 @@ packages/padiem-embedded-runtime/
     compatibility.py         # S3 runtime/host contract version check (no raise)
     diagnostics.py           # S3 public-safe status/reason-code diagnostics
     bridge.py                # S3 untrusted-context -> projection + fail-safe pipeline
+    evidence.py              # S4 public-safe evidence/citation presentation (bounded, deterministic)
   reference_host/            # repository-local demo host (fixture-driven, no I/O)
   fixtures/                  # deterministic demo fixtures (JSON)
   tests/                     # focused unittest contract tests (stdlib only)
@@ -42,6 +46,14 @@ packages/padiem-embedded-runtime/
 - `BRIDGE_NEVER_BREAKS_HOST=YES` — every invalid/incompatible intake returns
   a host-safe outcome (degraded or disabled), never an error to the host.
 - `REAL_ENGINE_TRANSPORT=NO` — `EnginePort` stays abstract/fake-only in S3.
+- `EVIDENCE_INPUT_TRUSTED_BY_DEFAULT=NO` — citation fields are allowlisted;
+  unknown fields and non-public-looking values fail the item.
+- `CITATION_PRESENTATION_DETERMINISTIC=YES` — stable order, dedup on
+  `(source_id, locator)`, and `[1]..[n]` labels; repeat runs are identical.
+- `CITATION_DEGRADED_NEVER_RAISES=YES` — malformed/oversize input yields an
+  `empty`/`degraded` host-safe presentation, never an exception to the host.
+- `HTML_OR_NETWORK_EXECUTION=NO` — no HTML rendering, no URL fetch, no
+  arbitrary link execution; markup-shaped values are rejected.
 
 ## Run tests
 
