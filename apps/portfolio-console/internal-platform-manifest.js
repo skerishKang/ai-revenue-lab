@@ -55,12 +55,9 @@
       doesNotOwn: ["Product domain semantics", "Core generic AI semantics", "B14 provider routing", "Product credentials"],
       dependencies: ["IP-CORE", "B14 Korean AI Platform"],
       consumers: ["B61 StoryMemory", "LoveBud Scout — runtime activation pending"],
-      currentWorkKo: "#1698 독립 제품용 multi-caller service identity registry",
-      currentWorkEn: "#1698 multi-caller service identity registry for independent products",
-      currentIssue: {
-        label: "#1698",
-        url: "https://github.com/skerishKang/ai-revenue-lab/issues/1698"
-      }
+      currentWorkKo: "공유 엔진 전송·서비스 경계 유지",
+      currentWorkEn: "Maintain reusable engine transport and service boundaries",
+      currentIssue: null
     },
     {
       id: "IP-CONTROL",

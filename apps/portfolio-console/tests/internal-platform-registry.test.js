@@ -25,8 +25,8 @@ const byId = Object.fromEntries(Array.from(platforms, (item) => [item.id, item])
 assert.equal(byId['IP-CORE'].sourcePath, 'packages/padiem-ai-core/');
 assert.equal(byId['IP-ENGINE'].sourcePath, 'apps/padiem-ai-engine/');
 assert.equal(byId['IP-CONTROL'].sourcePath, 'packages/padiem-control-plane/');
-assert.equal(byId['IP-ENGINE'].currentIssue.label, '#1698');
-assert.match(byId['IP-ENGINE'].currentWorkEn, /multi-caller service identity registry/i);
+assert.equal(byId['IP-ENGINE'].currentIssue, null);
+assert.match(byId['IP-ENGINE'].currentWorkEn, /engine transport and service boundaries/i);
 assert.ok(byId['IP-ENGINE'].dependencies.includes('IP-CORE'));
 assert.ok(byId['IP-CORE'].dependencies.includes('B14 Korean AI Platform'));
 

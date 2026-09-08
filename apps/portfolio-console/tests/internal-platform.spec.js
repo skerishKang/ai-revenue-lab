@@ -61,8 +61,9 @@ test.describe('Internal Platform view', () => {
     await expect(page.locator('#ip-dialog-title')).toHaveText('IP-ENGINE · Padiem AI Engine');
     await expect(page.locator('#ip-dialog-body')).toContainText('Business 번호 없음');
     await expect(page.locator('#ip-dialog-body')).toContainText('apps/padiem-ai-engine/');
-    await expect(page.locator('#ip-dialog-body')).toContainText('#1698');
-    await expect(page.locator('#ip-dialog-body a[href="https://github.com/skerishKang/ai-revenue-lab/issues/1698"]')).toBeVisible();
+    await expect(page.locator('#ip-dialog-body')).toContainText('공유 엔진 전송·서비스 경계 유지');
+    await expect(page.locator('#ip-dialog-body')).not.toContainText('#1698');
+    await expect(page.locator('#ip-dialog-body a[href="https://github.com/skerishKang/ai-revenue-lab/issues/1698"]')).toHaveCount(0);
 
     await page.locator('#ip-dialog-close-btn').click();
     await expect(dialog).not.toBeVisible();
