@@ -3,38 +3,26 @@
 ```text
 DOC_STATUS = CANONICAL_CAPABILITY_OWNERSHIP
 OWNER = Padiem platform architecture
-SCOPE = stable ownership of reusable AI capabilities across products and shared platform layers
+SCOPE = stable ownership of reusable AI capabilities
 LAST_VERIFIED = 2026-09-08
-SUPERSEDES = 2026-09-01 runtime-status-oriented registry snapshot
 ```
 
-This registry answers **who owns a capability**. It intentionally does not act as a live dashboard for exact runtime availability, deployment, Provider readiness or open-PR status.
+This registry answers **who owns a capability**. It is intentionally not a live dashboard for deployment, Provider readiness, exact route IDs, open PRs or Production activation.
 
-Canonical architecture:
+## Canonical ownership rule
 
 ```text
 PRODUCTS OWN DOMAIN + UX.
+IP-SIDECAR OWNS REUSABLE EMBEDDED SHELL/CONTEXT/EVENT PRIMITIVES.
 IP-CORE OWNS REUSABLE AI SEMANTICS.
 IP-ENGINE OWNS CROSS-RUNTIME SERVICE PROJECTION.
 B14 OWNS PROVIDER/MODEL EXECUTION.
 IP-CONTROL OWNS IDENTITY / TENANT / ENTITLEMENT / USAGE / AUDIT TRUTH.
-IP-SIDECAR OWNS REUSABLE EMBEDDED SHELL/CONTEXT/EVENT/PRESENTATION PRIMITIVES.
 ```
 
-Current IP-SIDECAR source state is `packages/padiem-embedded-runtime/` with the S2 minimal runtime contract landed. That source presence does not imply real Engine transport, live Provider execution or Production activation.
+## Required classification
 
-Related authority:
-
-- `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
-- `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
-- `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
-- `docs/internal-platform/sidecar/README.md`
-- `docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`
-- `docs/governance/DOCUMENTATION_AUTHORITY_MODEL.md`
-
-## 1. Required classification
-
-Every new AI capability or issue must be classified before implementation:
+Every new AI capability should be classified before implementation:
 
 ```text
 REUSE_CORE
@@ -49,65 +37,51 @@ DO_NOT_SHARE
 
 If two layers appear to own the same generic policy, implementation stops until ownership is resolved.
 
-## 2. Stable layer ownership
+## Stable layer ownership
 
-| Layer | Canonical identity | Owns | Must not become |
-|---|---|---|---|
-| Product / Business | B61/B62/B54/B53/etc. | domain semantics, UX, product persistence, product adapter, product-local admission/presentation | generic AI runtime policy, generic Provider router |
-| Embedded runtime | IP-SIDECAR | reusable shell lifecycle, host bridge, browser-safe bootstrap/context/event/presentation primitives | product domain model, Core semantics, Engine auth/transport, B14 routing/credentials |
-| Service boundary | IP-ENGINE | trusted cross-runtime API/service projection of accepted Core semantics | competing Core policy engine, product UX, Provider router |
-| Shared semantics | IP-CORE | execution, grounding, permission, retrieval/memory, Evidence, Tool, Skill, Agent, orchestration semantics | product domain schema/UI, Provider catalog/credentials |
-| Execution plane | B14 Korean AI Platform | Provider/model registry, inference credentials, executable route validation/selection, upstream execution, execution-level retry/fallback policy | product memory/domain state, product UX, Control Plane identity truth |
-| Cross-cutting authority | IP-CONTROL | identity, canonical subject/tenant, entitlement, usage/credits/subscription/audit, neutral cross-product declarations | Provider/model execution, product conversation state |
-| External | Provider / Model | upstream model capability | Padiem product policy |
+| Layer | Owns | Must not own |
+|---|---|---|
+| Product / Business | domain semantics, UX, product persistence, product adapters, product-local admission/presentation | generic AI runtime policy, generic Provider router |
+| IP-SIDECAR | reusable embedded shell lifecycle, browser-safe bootstrap, host-context envelope, public-safe event projection, host adapter integration contract | product domain meaning, Core semantics, Engine service identity/transport, B14 routing/credentials |
+| IP-ENGINE | trusted cross-runtime service/API projection of accepted Core semantics | competing Core policy engine, product UX, Provider routing |
+| IP-CORE | reusable execution, grounding, permission, retrieval/memory, Evidence, Tool, Skill, Agent and orchestration semantics | product-domain schema/UI, Provider catalog/credentials |
+| B14 Korean AI Platform | Provider/model registry, inference credentials, executable route validation/selection, Provider adapters and actual execution | product memory/domain state, Control Plane identity truth |
+| IP-CONTROL | canonical identity/subject/tenant, entitlement, usage/credits/subscription/audit and neutral cross-product declarations | Provider/model execution, product conversation state |
 
-## 3. IP-CORE capability families
+## IP-CORE capability families
 
-The following reusable capability families are IP-CORE-owned when generic across products:
+Generic reusable semantics belong to Core, including:
 
-| Capability family | Ownership rule |
-|---|---|
-| Execution contracts/runtime | Core normalizes product-neutral request/result/context semantics; B14 executes models |
-| Streaming/multimodal facade | Core owns normalized shared semantics; product owns attachment/presentation policy; B14 owns Provider execution |
-| Search/grounding/research | Core owns generic decision/preparation/evidence assembly; product owns task/domain context and presentation |
-| Context permission / knowledge boundary | Core enforces generic allowed/filtered semantics; product computes/narrows domain-specific boundary values |
-| Retrieval / Memory / RAG | Core owns generic authorization, receipt, ranking and context semantics; product/storage adapter owns persistence and domain locators |
-| Evidence / citation / verification | Core owns generic evidence graph, verification and claim semantics; product owns rendering/domain citations |
-| Tool / Connector | Core owns generic specs, authorization, registry/lifecycle semantics; product supplies bounded adapters/handlers |
-| Skill | Core owns reusable Skill identity/version/activation/runtime semantics; product presets such as B62 TaskModes remain product-owned |
-| Agent | Core owns reusable planning, profile, approval, delegation, recovery and events |
-| Orchestration | Core owns reusable orchestration semantics/events; Engine projects accepted cross-runtime service contracts |
-| Execution context | Core owns trace/timeout/cancellation/idempotency semantics; durable adapters remain separately composed |
+- completed/streaming/multimodal execution contracts;
+- search decision, grounding, research and source-quality semantics;
+- context permission and knowledge-boundary enforcement;
+- retrieval, Memory/RAG authorization/ranking/receipt semantics;
+- Evidence/citation/verification/claim assessment;
+- Tool/Connector registry, authorization and lifecycle semantics;
+- reusable Skill identity/version/activation semantics;
+- reusable Agent planning, approval, delegation, recovery and event semantics;
+- orchestration and execution-context semantics.
 
-Runtime availability of an individual module must be verified from current source, manifests and product composition rather than inferred from this registry.
+Products may provide bounded domain adapters and presentation but must not fork generic policy.
 
-## 4. IP-ENGINE capability ownership
+## IP-ENGINE ownership
 
-IP-ENGINE owns cross-runtime projection only. Typical responsibilities include:
+IP-ENGINE owns cross-runtime projection: trusted caller identity, Service Binding/API transport, execute/stream/orchestration projection, wire normalization, capability manifests and truthful health reporting.
 
-- trusted caller/service identity boundary;
-- completed/streaming execution service projection;
-- orchestration run/resume/cancel projection where the manifest marks it available;
-- wire projection of Core execution context and events;
-- truthful health/contract-manifest reporting.
+It does not select Providers/models and does not own browser/product UX.
 
-IP-ENGINE must not select Providers/models, own browser/public product UX, or create a second semantic policy layer.
+## B14 ownership
 
-## 5. B14 capability ownership
-
-B14 owns:
+B14 owns Provider/model execution authority:
 
 - Provider/model catalog and registry;
-- inference Provider credentials and trusted binding references;
-- executable route validation and selection;
+- inference credentials and trusted binding references;
+- executable route validation/selection;
 - Provider adapters/upstream transport;
-- actual completed/streaming/multimodal model execution;
-- route metadata and execution-level availability/cost/latency observations;
-- versioned generic routing/fallback/retry capability where explicitly enabled.
+- completed/streaming/multimodal model execution;
+- route metadata and execution-level retry/fallback policy where explicitly enabled.
 
-Current Padiem Routing Profile v1 is explicit-route policy, not a permanent ban on future B14 generic autorouting.
-
-Current shared product declaration is:
+Current Padiem product declarations are explicit:
 
 ```text
 Padiem Plus = Laguna
@@ -117,71 +91,59 @@ USER_VISIBLE_AUTO = NO
 SILENT_FALLBACK = NO
 ```
 
-Exact route IDs and executability are verified from current Control Plane declaration + B14 catalog/source, not from historical issue text.
+Exact IDs and executability are volatile and must be checked against current Control Plane declaration and B14 source.
 
-## 6. IP-CONTROL capability ownership
+## IP-CONTROL ownership
 
-IP-CONTROL owns neutral cross-product authority such as:
+IP-CONTROL owns neutral cross-product authority such as canonical subject/tenant, entitlement/subscription/credit, usage and audit contracts plus accepted shared declarations. It is not a second Provider router.
 
-- canonical subject/identity mapping;
-- tenant/account authority;
-- entitlement/subscription/credit/usage/audit truth;
-- neutral shared product declarations such as the Padiem tier mapping.
-
-It does not perform model execution and is not a second Provider router.
-
-## 7. Product ownership locks
+## Product ownership locks
 
 ### B62 · Padiem Chat
 
-Owns general chat UX, conversations/history, Projects, attachments, Saved Outputs, TaskModes/profile presentation and product context adapters. It must not duplicate generic Tool/Skill/Agent/Memory/Evidence semantics or Provider routing.
+Owns chat UX, conversations/history, Projects, attachments, Saved Outputs, TaskModes/profile presentation and product context adapters. Generic Tool/Skill/Agent/Memory/Evidence semantics and Provider routing remain outside B62.
 
 ### B54 · Padiem Claw
 
-Owns task/run/repository/workspace/GitHub product semantics. It consumes IP-CORE Agent/Tool/Skill/approval/recovery/orchestration semantics, IP-ENGINE cross-runtime projection and B14 execution.
+Owns task/run/repository/workspace/GitHub product semantics. Shared Agent/Tool/Skill/approval/recovery/orchestration semantics belong to IP-CORE; cross-runtime projection belongs to IP-ENGINE; model execution belongs to B14.
 
-Legacy `P01` references mean the former shared-Core identifier; current canonical name is `IP-CORE`.
-
-### B61 · StoryMemory / Bible-classic-work domain
+### B61 · StoryMemory
 
 Owns reader UX, locator grammar/order, reading progress, knowledge ceiling, annotations and spoiler/no-future semantics. Generic retrieval/permission/context/evidence remains IP-CORE-owned.
 
 ### B53 · Padiem Sidecar
 
-Owns the commercial embedded-AI product: packaging, onboarding, installation/customer journey and product-specific adapters. `B53 Padiem Sidecar` is not the same identity as `IP-SIDECAR`.
+Owns the commercial embedded-AI product: packaging, onboarding, installation/customer journey and product-specific adapters. It is distinct from `IP-SIDECAR`.
 
 ```text
 IP-SIDECAR SOURCE = packages/padiem-embedded-runtime/
+SOURCE_PRESENT = YES
 S2_MINIMAL_RUNTIME_CONTRACT = LANDED
 ENGINE_CONNECTIVITY = NO
 LIVE_PROVIDER_EXECUTION = NO
 PRODUCTION_ACTIVE = NO
 ```
 
-## 8. Terminology and history rule
+## Terminology and history
 
 Historical documents may contain:
 
 ```text
-P01                    -> legacy shared Core identifier; current = IP-CORE
-LOW / MEDIUM / HIGH     -> historical B62 profile terminology; not current Plus/Pro/Max route authority
-b14/auto                -> historical/compatibility identifier; not ordinary Padiem Profile v1 route
-phase-specific provider/model lists -> evidence for that phase only
+P01                -> legacy shared Core identifier; current = IP-CORE
+LOW/MEDIUM/HIGH    -> historical B62 profile terminology; not current route authority
+b14/auto            -> historical/compatibility identifier; not ordinary Padiem Profile v1 route
 ```
 
-See `docs/governance/LEGACY_AI_TERMINOLOGY_MAP.md`.
-
-The exact pre-unification 2026-09-01 registry, including detailed runtime-status rows, is preserved at:
+The exact pre-unification 2026-09-01 registry remains immutable in Git history at:
 
 ```text
-docs/history/2026-09-01/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.audit.md
+COMMIT = f9ff7f81602138daa674811b9650bb7ffc86cf97
+PATH = docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md
 ```
 
-That snapshot remains valuable evidence but does not override this canonical stable-ownership registry.
+`docs/history/2026-09-01/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.audit.md` is the stable historical pointer to that revision. The old point-in-time status inventory does not override this canonical ownership registry.
 
-## 9. Readiness rule
-
-Across every layer:
+## Readiness rule
 
 ```text
 SOURCE_PRESENT
@@ -192,4 +154,4 @@ SOURCE_PRESENT
 != PRODUCTION_ACCEPTED
 ```
 
-Current operational status must be verified from current source, manifests, exact deployment evidence and product-specific runbooks. This registry owns architecture boundaries, not volatile deployment truth.
+Operational state must be verified from current source, manifests and deployment evidence. This registry owns stable architecture boundaries, not volatile runtime truth.
