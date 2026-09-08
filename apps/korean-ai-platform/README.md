@@ -1,351 +1,177 @@
 # Korean AI Platform — Business 14
 
-## Overview
+## Current authority
 
-Business 14는 한국 시장에서 여러 국내·해외 AI Provider와 모델을 하나의 인터페이스로 이용할 수 있도록 만드는 한국형 AI Provider 플랫폼이다.
+Business 14 (**B14**) is Padiem's **general AI Router Platform**: a Korean-first provider/model execution layer that can register multiple providers and models, validate executable routes, bind credentials safely, dispatch requests, normalize provider behavior, and evolve toward capability/cost/latency/availability-aware routing.
 
-이 프로젝트의 출발점은 한국 사용자·기업·기관이 사용할 수 있는 독립적인 한국 중심 AI Provider 계층이 부족하다는 문제다. 따라서 제품의 기준 시장과 기본 사용자 경험은 한국이며, 해외 Provider 연동은 한국 사용자가 더 쉽게 활용하기 위한 수단으로 다룬다.
+The current production-oriented product work is narrower than the full platform mission:
 
-### Product and Language Policy
-
-- 1차 목표 시장: 대한민국
-- 제품 문구와 UX의 원본 언어: 한국어(`ko-KR`)
-- 모든 Business 14 Phase와 화면의 기본 UI 언어: 한국어
-- 최초 접속, 저장된 locale 없음, 잘못된 locale 값: 한국어로 fallback
-- 영어: 사용자가 명시적으로 선택할 수 있는 보조 locale
-- 신규 기능, 용어, 도움말, 검증 오류, 정책·보안·비용 설명: 한국어를 먼저 완성
-- 영어 번역이 없는 문구: 한국어로 fallback
-- 모든 신규 문구의 한·영 동시 완성은 기본 개발·병합 조건이 아님
-- API 필드명, 코드 예제, Provider·모델 고유명 등 기술 표준은 영어를 유지할 수 있으나 사용자 설명과 기본 탐색은 한국어
-- Korea-first 정책은 개인 사용 편의가 아니라 Business 14 전체의 제품시장 결정
-
-정식 전체 정책: [Business 14 Product Language Policy](docs/BUSINESS14_LANGUAGE_POLICY.md)
-
-### Phase 0: AI API Provider Mock Demo
-
-- 8-model catalog (GPT-4o, Claude, Gemini, HyperCLOVA X, Kanana, VARCO LLM, Ko-Open 32B, Llama-Ko 70B)
-- Model detail, playground, API keys demo, docs, usage, pricing
-- Korean-language UI with routing modes (cheapest, fastest, korean-first, domestic-first)
-
-### Phase 1: BYOK Gateway Pilot
-
-- Single-provider OpenAI-compatible BYOK gateway
-- Request-scoped provider key forwarding (keys never stored or logged)
-- Server-configured endpoint allowlist with SSRF protection
-- Non-streaming chat completions with validation and redaction
-
-### Phase 2: Multi-Provider BYOK Model Routing Pilot
-
-- Server-configured multi-provider registry via `BUSINESS14_PROVIDER_REGISTRY_JSON`
-- Deterministic model-to-provider routing (one model → one provider)
-- Key isolation across providers (Provider A key never sent to Provider B)
-- Aggregated model catalog from all registered providers
-- Multi-provider health and model listing API
-- Legacy Phase 1 single-provider compatibility (when registry is not set)
-- Korean-first product copy; English localization expansion is deferred unless required for the pilot
-
-## Environment Variables
-
-### Phase 1 Legacy (single provider)
-
-```bash
-BUSINESS14_PILOT_PROVIDER_ID=my-provider
-BUSINESS14_PILOT_BASE_URL=https://api.provider.example.com/v1
-BUSINESS14_PILOT_MODEL_ID=my-model
-BUSINESS14_PILOT_UPSTREAM_MODEL=upstream-model-name
-BUSINESS14_PILOT_TIMEOUT_SECONDS=30
+```text
+B14 = General AI Router Platform
+Padiem Routing Profile v1 = first product/customer-specific routing profile
 ```
 
-### Phase 2 Multi-Provider Registry
+Padiem has already selected the routes it wants for the current MVP. Therefore Padiem Profile v1 does not require a generic automatic best-model router to be active.
 
-```bash
-BUSINESS14_PROVIDER_REGISTRY_JSON='[
-  {
-    "provider_id": "provider-a",
-    "display_name": "Provider A",
-    "base_url": "https://api.provider-a.example.com",
-    "timeout_seconds": 30,
-    "models": [
-      {
-        "model_id": "model-a-v1",
-        "upstream_model": "upstream-a",
-        "display_name": "Model A",
-        "enabled": true
-      }
-    ]
-  }
-]'
+```text
+Padiem Plus = kilo/poolside-laguna-s-2.1-free
+Padiem Pro  = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+Padiem Max  = HOLD
+
+PADIEM_PROFILE_V1_AUTO_ROUTING = NO
+PADIEM_USER_VISIBLE_AUTO = NO
+PADIEM_SILENT_FALLBACK = NO
+
+B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 ```
 
-**Note:** When `BUSINESS14_PROVIDER_REGISTRY_JSON` is set and valid, multi-provider mode is used. Legacy env vars are ignored when registry is set. Invalid registry JSON causes a `registry_invalid` error — no silent fallback to legacy mode.
+**Important:** the Padiem v1 explicit-route policy is a customer/profile decision, not a permanent B14-wide prohibition on automatic routing. B14's long-term roadmap still includes route scoring/selection, capability-aware routing, cost/latency/availability optimization, bounded fallback/retry, BYOK, direct/OpenAI-compatible provider connections, and additional customer/product routing profiles.
 
-### Phase 3: Korean-First Session Workspace Pilot
+Canonical current charter: [B14 Router Platform & Padiem Routing Profile](docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md).
 
-- `GET /workspace` — Korean-first browser chat workspace
-- Korean default UI; explicit English switch via `?lang=en` or cookie
-- Accept-Language is ignored; missing/empty/invalid locale → Korean
-- Multi-turn conversation in browser JS memory (no server persistence)
-- Provider API key via password input + Apply button (key held in JS memory only)
-- Key input value cleared immediately after capture
-- Model change resets key and conversation (no cross-provider key/message leakage)
-- `POST /api/pilot/v1/chat/completions` directly (no separate workspace proxy endpoint)
-- Phase 2 multi-provider registry for model selection
-- Estimated cost: always `확인 불가` (unknown) — actual billing by the connected Provider
-- XSS-safe config injection via `application/json` script element
-- `innerHTML` not used; `textContent` and `replaceChildren` for content rendering
-- Page reload or tab close clears key and conversation
+## Authority boundaries
 
-## API Endpoints
+```text
+Padiem product/profile declaration
+  -> shared product_tier_routes contract
+  -> B14 catalog/executability validation
+  -> provider/model dispatch
+  -> normalized response/error/evidence
+```
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/pilot/health` | Provider configuration summary |
-| GET | `/api/pilot/models` | Aggregated model catalog |
-| POST | `/api/pilot/v1/chat/completions` | BYOK chat completions |
-| GET | `/workspace` | Korean-first session workspace UI |
+- Shared Padiem tier declaration: `packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py`
+- B14 provider/model execution authority: `apps/korean-ai-platform/app/pilot/**`
+- Chat/Claw consume the Padiem profile; they must not become provider/model route authorities.
+- A declared route that is retired, unregistered, unavailable, or lacks required credential readiness must fail closed.
+- Raw provider credentials must never appear in product-facing route contracts, browser state, logs, or committed documentation.
 
-### Key Delivery
+## Current route state
 
-- Provider key is sent via `X-Business14-Provider-Key` request header
-- Keys are never persisted, logged, or returned in responses
-- Each request uses a single model; the key is forwarded to the mapped provider only
-- Workspace: key is captured via Apply button, held in JS memory, not stored in cookies/DOM/localStorage
+| Padiem tier | Route | Status |
+|---|---|---|
+| Plus | `kilo/poolside-laguna-s-2.1-free` | explicit / executable when B14 catalog permits |
+| Pro | `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | explicit / executable when B14 catalog permits |
+| Max | `padiem-profile/max-hold` | HOLD / non-executable |
 
-## Cost
+Retired historical routes such as MiniMax M3 and Tencent HY3 must not re-enter the executable catalog or a Padiem tier through stale documentation, fallback, or compatibility defaults.
 
-BYOK has no Business 14 billing. Actual usage costs depend on the connected provider's contract. Pilot response metadata shows `estimated_krw: null` (unknown). Workspace displays `확인 불가` (cannot be determined).
+## Router Platform roadmap
 
-## Security Boundary
+B14's general platform remains free to evolve beyond the current Padiem profile. Valid future platform work includes:
 
-- Provider endpoints are server-configured only (no user-submitted URLs)
-- Redirects disabled, timeouts enforced, URL credential rejection
-- Secret redaction on all log output
-- Request ID tracking for all errors
-- No streaming, tool calling, or image input support
-- Workspace: key in JS memory only, cleared on reload/tab-close/model-change
-- Workspace: XSS-safe rendering (textContent, replaceChildren, no innerHTML)
-- Workspace: config injected via `application/json` script element (not `|safe`)
+- manual provider/model selection;
+- product/customer-specific routing profiles;
+- generic automatic route selection;
+- capability-aware routing;
+- cost/latency/availability-aware optimization;
+- bounded and policy-controlled fallback/retry;
+- provider portfolio management;
+- BYOK and platform-managed credential references;
+- OpenAI-compatible and direct provider adapters;
+- route evidence, usage and cost observation;
+- operator/admin route management;
+- additional Korean/domestic/local/self-hosted model access where commercially and technically justified.
+
+Future auto-routing must be explicit, versioned, observable, policy-bounded, and distinguishable from profile-specific explicit routing. An omitted product model must not silently become `b14/auto`.
+
+## Korean-first product policy
+
+- Primary market: Korea.
+- Canonical/default product locale: Korean (`ko-KR`).
+- English is an explicit secondary locale where provided.
+- Provider/model/API identifiers may remain standard English; user-facing explanations default to Korean.
+
+See [Business 14 Product Language Policy](docs/BUSINESS14_LANGUAGE_POLICY.md).
+
+## Historical phase documents
+
+The repository contains Phase 0–3 charters/runbooks from B14's earlier product-development stages. They are retained as **historical design and implementation evidence**. They do not override the current charter or current executable catalog.
+
+Historical lineage includes:
+
+- Phase 0 Korean AI API Provider concept/demo
+- Phase 1 single-provider BYOK Gateway pilot
+- Phase 2 multi-provider registry/routing pilot
+- Phase 3 Korean-first session workspace pilot
+- provider-specific research/handoff notes
+
+When a historical document contains an old model list, old chain, old credential assumption, or old route policy, treat it as evidence of that phase only. Current route/executability truth comes from current source + the current B14/Padiem charter.
+
+## Runtime modes
+
+B14 retains deterministic mock/testing support and live provider execution paths implemented by current source.
+
+Typical local start:
+
+```bash
+cd apps/korean-ai-platform
+python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Useful local surfaces may include the workspace and pilot APIs exposed by the current application. Always verify endpoint availability against current source/tests rather than historical phase docs.
+
+## Security boundary
+
+- Provider origins/endpoints are server-controlled and validated.
+- Redirect/timeout/response-size policies fail closed.
+- Provider secrets remain server-side and are never returned to the browser.
+- Credential values are never committed.
+- Product route declarations contain identities/references, not secret values.
+- Unknown, retired, disabled, or unsupported routes fail closed.
+- Production mapping/deployment changes require their own accepted gate.
+- A credential being available does not itself authorize a route selection.
+- A route being selected does not itself authorize silent fallback.
 
 ## Testing
+
+Primary B14 suite:
 
 ```bash
 cd apps/korean-ai-platform
 python -m pytest -q
 ```
 
-All tests use `httpx.MockTransport` — no external network calls.
+Run the repository's current targeted/integration/browser suites appropriate to the changed slice. Tests that use deterministic transports do not prove live provider availability; live evidence is tracked separately and must use synthetic/non-sensitive inputs unless explicitly authorized otherwise.
 
-### Browser Tests
+## Production/release rule
 
-Browser tests use Playwright to verify the Start screen and user journeys
-in a real Chromium browser (desktop 1440×1000 and mobile 390×844).
+Source merge and Production activation are separate events.
 
-#### Setup
+A B14 Production release must use the repository-owned exact-SHA deployment gate and verify the current `main` SHA before mutation. Production claims require post-deploy version/readback and bounded first-party smoke evidence. See issue #1955 and the current repository workflow for the authoritative release contract.
 
-1. Install Python dependencies (including Playwright):
-   ```bash
-   uv sync --group dev --frozen
-   ```
+## Documentation index
 
-2. Install the Chromium browser binary (separate from Python deps):
-   ```bash
-   uv run playwright install chromium
-   ```
+### Current authority
 
-   > **Note:** If `playwright install chromium` fails, the browser tests
-   > cannot run and must NOT be marked as PASS.
-
-#### Run
-
-```bash
-uv run python browser_tests/alpha1_start_screen_smoke.py
-```
-
-The script starts a mock-mode server, then verifies:
-- Start screen renders correctly (prompt, model select, send button)
-- Desktop and mobile layouts (no horizontal overflow)
-- Navigation journeys (workspace → model/price/pricing/usage/developer → back)
-- Mock chat flow (prompt input, Enter submit, response verification)
-- Console/page errors, failed local assets, and external requests are zero
-
-## Documentation
-
+- [B14 Router Platform & Padiem Routing Profile](docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md)
 - [Business 14 Product Language Policy](docs/BUSINESS14_LANGUAGE_POLICY.md)
-- [API Provider Phase 0 Charter](docs/API_PROVIDER_PHASE0_CHARTER.md)
 - [Business 14 Decision Log](docs/BUSINESS14_DECISION_LOG.md)
-- [Phase 2 Charter](docs/PHASE2_MULTI_PROVIDER_CHARTER.md)
+
+### Historical phase evidence
+
+- [API Provider Phase 0 Charter](docs/API_PROVIDER_PHASE0_CHARTER.md)
+- [Phase 1 BYOK Gateway Charter](docs/PHASE1_BYOK_GATEWAY_CHARTER.md)
+- [Phase 1 Pilot Runbook](docs/PHASE1_PILOT_RUNBOOK.md)
+- [Phase 1 Security Boundary](docs/PHASE1_SECURITY_BOUNDARY.md)
+- [Phase 2 Multi-Provider Charter](docs/PHASE2_MULTI_PROVIDER_CHARTER.md)
 - [Phase 2 Routing Contract](docs/PHASE2_ROUTING_CONTRACT.md)
 - [Phase 2 Pilot Runbook](docs/PHASE2_PILOT_RUNBOOK.md)
-- [Phase 3 Charter](docs/PHASE3_SESSION_WORKSPACE_CHARTER.md)
-- [Phase 3 Security Contract](docs/PHASE3_SESSION_SECURITY_CONTRACT.md)
+- [Phase 3 Session Workspace Charter](docs/PHASE3_SESSION_WORKSPACE_CHARTER.md)
+- [Phase 3 Session Security Contract](docs/PHASE3_SESSION_SECURITY_CONTRACT.md)
 - [Phase 3 Workspace Runbook](docs/PHASE3_WORKSPACE_RUNBOOK.md)
+- [Cloudflare Worker Deployment notes](docs/CLOUDFLARE_WORKER_DEPLOYMENT.md)
+- `docs/providers/**` provider research/handoff evidence
 
-## Alpha 1 — Owner-Tryable Platform Gateway (Kilo Gateway)
+## Current issue map
 
-Business 14 Alpha connects to the platform-owned Kilo Gateway free route
-(keyless, #1933 S2). An owner can run the app locally, send Korean questions,
-and receive real model responses without any API key. The legacy OpenRouter
-call path is retired.
+- #2085 — canonical B14/Padiem product objective and current profile
+- #2099 — Padiem routing-profile source of truth (completed)
+- #2100 — shared Padiem tier declaration consumption by Chat/Claw
+- #2101 — remove implicit `b14/auto` defaults from Padiem-facing execution contracts while preserving future generic autorouter capability
+- #2102 — Padiem Max route evidence/selection
+- #2103 — generic B14 BYOK/credential policy + Padiem boundary
+- #2104 — evidence backfill for the current Padiem Pro Nemotron route
+- #2107 — future Padiem operator/provider-model console
+- #1955 — exact-SHA B14 Production deployment gate
 
-### Quick Start
-
-```bash
-cd apps/korean-ai-platform
-
-# 1. Copy the example environment
-cp .env.example .env
-
-# 2. (Optional) Edit .env — switch to live mode; the keyless Kilo route needs no key
-#    B14_PROVIDER_MODE=live
-#    # platform-owned Provider secrets (only if those routes are provisioned):
-#    # PADIEM_SENSENOVA_API_KEY=...
-
-# 3. Start with the documented command.
-#    app.main loads .env itself before creating the application; mock mode needs no key.
-python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
-```
-
-Visit `http://localhost:8000/workspace` — the Start screen shows the
-prompt input, model selection, optimization options, and route preview.
-
-### Run Commands
-
-| Command | Description |
-|---------|-------------|
-| `python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000` | Documented owner start command; `app.main` loads working-directory `.env` with no optional `python-dotenv` dependency. |
-
-### Mock Mode
-
-- No API key required
-- `B14_PROVIDER_MODE=mock` (default if unset)
-- Returns canned responses labeled "모의 응답 · 실제 Provider 호출 없음"
-- Zero upstream HTTP calls
-
-### Live Mode
-
-- The single catalog route is the Kilo Gateway free tier — **keyless**
-  (anonymous requests allowed by Kilo policy, subject to the gateway's
-  hourly free-tier rate limit; 429 surfaces as `kilo_free_rate_limited`)
-- `B14_PROVIDER_MODE=live`
-- Makes real `POST /chat/completions` calls to the fixed origin
-  `https://api.kilo.ai/api/gateway`
-- Platform-owned Provider secrets (SenseNova/Poolside) are read from their
-  own server env bindings only — never sent to browser, never logged
-- Responses labeled "실제 Provider 응답"
-
-### Security Boundary
-
-- Provider secrets are **only** read from server-side environment variables
-  (each platform-owned Provider has its own binding name)
-- Secrets are **never** transmitted to the browser
-- Secrets are **never** included in logs, exceptions, or responses
-- Secrets are **never** passed as a query parameter
-- Authorization is via `Authorization: Bearer` header only; the keyless Kilo
-  route sends no Authorization header at all
-- Upstream origins are fixed per Provider spec; callers cannot supply any URL
-- Redirects are disabled (`follow_redirects=False`)
-- Exact host allow-list per Provider (`api.kilo.ai`, `token.sensenova.ai`,
-  `inference.poolside.ai`)
-- Non-platform (retired credential source) routes fail closed with
-  `unsupported_credential_source` at resolve time, before any network call
-  (#1933 S2, D14 #2044)
-- Explicit connect/read/write/pool timeout bounds applied (10s/30s/10s/10s; no implicit total timeout)
-- Success responses are streamed and aborted as soon as the 1 MB body cap is exceeded
-- Upstream error body truncated to 500 characters
-- `.env` is in `.gitignore`; `.env.example` has empty values only
-
-### Router Core
-
-- **Manual**: specific catalog model ID → single upstream call
-- **Automatic**: `model: "b14/auto"` → owner-designated fixed chain, no scorer
-  (`routing_policy: fixed_chain_v1`, D14 #2044):
-  1. `sensenova/sensenova-6.8-flash-lite`
-  2. `kilo/nvidia-nemotron-3-ultra-550b-a55b-free`
-  3. `kilo/minimax-minimax-m3-free` (provisional until the Kilo benchmark)
-  4. `poolside/laguna-s-2.1` (spare)
-- Scorer-era options (`task_type`, `required_capabilities`, `optimize_for`,
-  `provider_order`, `allow_paid`) remain accepted but are ignored; their names
-  are recorded in `reason_codes` as `ignored_options:...`.
-  `allow_external_fallback` and `max_attempts` (cap: chain length 4) still
-  bound the attempt count.
-- **Fallback**: advances to the next chain position only on transport failure,
-  timeout, HTTP 429, HTTP 5xx
-- **No fallback**: HTTP 400/401/403/404/409/422/any other 4xx, malformed request, malformed upstream response, oversize response, missing key, unsupported feature, unknown exceptions
-- **No-safe-route**: fixed chain has no position with a usable credential
-  (secret-missing positions are reported as `provider_secret_missing`) →
-  `no_safe_route` with zero upstream calls
-- Resolve endpoint (`POST /api/pilot/router/resolve`) performs no upstream calls
-- Health (`GET /api/pilot/health`) reports the chain under
-  `business14.routing_policy` (`{id, chain}`)
-
-### API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/pilot/health` | Health check (includes B14 provider mode + key availability + routing policy) |
-| GET | `/api/pilot/models` | Catalog models + existing BYOK models |
-| POST | `/api/pilot/router/resolve` | Resolve route without upstream calls |
-| POST | `/api/pilot/v1/chat/completions` | Chat completions (mock or live depending on mode) |
-
-The chat completions response includes bounded `business14` metadata:
-
-```json
-{
-  "route_mode": "auto",
-  "selected_provider": "Kilo Gateway / NVIDIA",
-  "selected_model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-  "selected_upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "actual_response_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "selected_route_id": "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-  "reason_codes": ["routing_policy:fixed_chain_v1", "chain_position:1", "selected:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"],
-  "routing_policy": "fixed_chain_v1",
-  "fallback_allowed": true,
-  "fallback_used": false,
-  "attempt_count": 1,
-  "attempt_evidence": [
-    {
-      "attempt": 1,
-      "model_id": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-      "upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
-      "provider": "Kilo Gateway / NVIDIA",
-      "outcome": "success",
-      "error_code": null,
-      "actual_response_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
-    }
-  ],
-  "route_evidence_status": "mock_no_upstream_call",
-  "prompt_tokens": 0,
-  "completion_tokens": 0,
-  "total_tokens": 0,
-  "estimated_usd": null,
-  "estimated_krw": null,
-  "cost_basis": "unknown",
-  "request_id": "b14req_...",
-  "provider_mode": "mock"
-}
-```
-
-### Catalog
-
-The routed catalog is a **configured snapshot** of platform Provider routes.
-`b14/auto` resolves through the owner-designated fixed chain (D14 #2044), not
-through catalog scoring. The retired OpenRouter catalog is no longer routable;
-non-platform routes fail closed with `unsupported_credential_source` at
-resolve time.
-
-Prices are snapshot metadata, not a live invoice.
-
-| Model ID | Provider | Notes |
-|----------|----------|-------|
-| `sensenova/sensenova-6.8-flash-lite` | SenseNova | Owner plan; chain position 1 (Kilo budget ~200 req/h is why SenseNova leads) |
-| `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | Kilo Gateway / NVIDIA | Keyless free tier; $0/$0 snapshot; 200 req/hour limit fails closed as `kilo_free_rate_limited`; upstream `nvidia/nemotron-3-ultra-550b-a55b:free` preserved in `actual_response_model`; chain position 2 |
-| `kilo/minimax-minimax-m3-free` | Kilo Gateway / MiniMax | Keyless free tier; chain position 3 (provisional until the Kilo benchmark) |
-| `poolside/laguna-s-2.1` | Poolside | Chain position 4 (spare) |
-
-### Limitations
-
-- **No payment processing** — actual billing is between the owner and the Provider account
-- **No platform credits** — no prepaid wallet or credit system
-- **No persistent key vault** — keyless routes need no key; platform-owned Provider secrets are read from env vars per deployment
-- **No merge/deploy** — this is an owner-tryable Alpha, not a production release
-- Catalog model IDs and prices are a configured snapshot of the Kilo Gateway free tier
+The current business rule is simple: **finish reliable explicit Padiem route connectivity now; preserve and develop B14 as the general AI Router Platform over the long term.**
