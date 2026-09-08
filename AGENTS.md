@@ -9,6 +9,7 @@ Canonical operating documents:
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
 - `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
+- `docs/governance/B05_DANJION_BOUNDARY.md` — B05 is lineage-only; product work routes to DanjiOn.
 
 ## Roles
 
@@ -80,6 +81,7 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
+- For any B05 request, read `docs/governance/B05_DANJION_BOUNDARY.md` first. Do not create or modify a standalone B05 product surface; route product work to `skerishKang/02-danji-on` unless the user explicitly requests historical/portfolio metadata maintenance only.
 
 ## Required templates
 
