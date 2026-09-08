@@ -42,10 +42,40 @@ class FakeJSBytes:
         return self.data
 
 
+class FakeJSTypedArray:
+    """Production-shaped workerd chunk: a JS Uint8Array proxy.
+
+    It is NOT Python ``bytes``, has NO ``to_bytes()`` method, and is not a
+    native memoryview — it only exposes integer iteration + ``len``/indexing,
+    exactly how a typed-array proxy reaches the Python adapter. The old
+    adapter fell through every branch and failed the whole stream with a
+    generic error; this shape must decode to incremental bytes.
+    """
+
+    def __init__(self, data: bytes):
+        self._data = data
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def __getitem__(self, index: int) -> int:
+        return self._data[index]
+
+    def __iter__(self):
+        return iter(self._data)
+
+
 class FakeReader:
-    def __init__(self, chunks: list[bytes], *, gate_at_read: int | None = None):
+    def __init__(
+        self,
+        chunks: list[bytes],
+        *,
+        gate_at_read: int | None = None,
+        value_factory: Any = FakeJSBytes,
+    ):
         self.chunks = list(chunks)
         self.gate_at_read = gate_at_read
+        self.value_factory = value_factory
         self.read_count = 0
         self.cancel_count = 0
         self.release_count = 0
@@ -61,7 +91,7 @@ class FakeReader:
         index = self.read_count - 1
         if index >= len(self.chunks):
             return SimpleNamespace(done=True, value=None)
-        return SimpleNamespace(done=False, value=FakeJSBytes(self.chunks[index]))
+        return SimpleNamespace(done=False, value=self.value_factory(self.chunks[index]))
 
     async def cancel(self):
         self.cancel_count += 1
@@ -385,6 +415,84 @@ def test_service_binding_stream_core_byte_cap_still_closes_upstream():
         assert reader.release_count == 1
 
     asyncio.run(scenario())
+
+
+def test_service_binding_stream_decodes_production_shaped_typed_array_chunks():
+    # A workerd Uint8Array proxy (integer-iterable, no to_bytes()) must decode
+    # incrementally across first + multiple chunks and reach done=true.
+    raw = _sse(_chunk_payload(content="실시간")) + _sse(_chunk_payload(content=" 토큰")) + b"data: [DONE]\n\n"
+    chunks = [raw[:5], raw[5:40], raw[40:]]
+    reader = FakeReader(chunks, value_factory=FakeJSTypedArray)
+    body = FakeBody(reader)
+    binding = FakeBinding(FakeResponse(200, body))
+
+    events = asyncio.run(_collect(_client(binding)))
+
+    assert [event.delta_content for event in events if event.delta_content] == ["실시간", " 토큰"]
+    assert events[-1].done is True
+    assert body.get_reader_count == 1
+    assert reader.cancel_count == 1
+    assert reader.release_count == 1
+
+
+def test_service_binding_stream_typed_array_first_event_streams_before_final_chunk():
+    # Prove the typed-array path is incremental (no full buffering): the first
+    # event is delivered while the reader is still blocked on the next read.
+    async def scenario():
+        reader = FakeReader(
+            [_sse(_chunk_payload(content="첫 토큰")), b"data: [DONE]\n\n"],
+            gate_at_read=2,
+            value_factory=FakeJSTypedArray,
+        )
+        binding = FakeBinding(FakeResponse(200, FakeBody(reader)))
+        stream = _client(binding).stream(_request())
+
+        first = await anext(stream)
+        assert first.delta_content == "첫 토큰"
+        assert first.done is False
+
+        done_task = asyncio.create_task(anext(stream))
+        await asyncio.wait_for(reader.read_blocked.wait(), timeout=1)
+        assert done_task.done() is False
+        reader.allow_read.set()
+        done = await asyncio.wait_for(done_task, timeout=1)
+        assert done.done is True
+
+    asyncio.run(scenario())
+
+
+def test_service_binding_stream_unsupported_chunk_fails_closed_specifically():
+    # A chunk that is not bytes/memoryview, has no to_bytes(), and is not
+    # integer-iterable must fail closed with the specific adapter error rather
+    # than hanging or silently buffering.
+    stream_type, _ = _load_worker_streaming_types()
+
+    class UnsupportedChunk:
+        pass
+
+    class UnsupportedReader:
+        async def read(self):
+            return SimpleNamespace(done=False, value=UnsupportedChunk())
+
+        async def cancel(self):
+            pass
+
+        def releaseLock(self):
+            pass
+
+    class UnsupportedBody:
+        def getReader(self):
+            return UnsupportedReader()
+
+    byte_stream = stream_type(UnsupportedBody())
+    with pytest.raises(httpx.ReadError) as info:
+        async def _drain():
+            async for _ in byte_stream:
+                pass
+
+        asyncio.run(_drain())
+
+    assert "unsupported stream chunk" in str(info.value)
 
 
 def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_response():
