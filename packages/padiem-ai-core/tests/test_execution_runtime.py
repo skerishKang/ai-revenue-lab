@@ -47,7 +47,7 @@ def agent(**overrides) -> AgentProfile:
         "optimize_for": "korean",
         "max_tokens": 700,
         "required_capabilities": ("free",),
-        "model_policy": {},
+        "model_policy": {"model": "test/route"},
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -147,10 +147,25 @@ def test_agent_policy_maps_to_b14_without_core_provider_selection() -> None:
     }
 
 
-def test_default_model_is_b14_auto() -> None:
+@pytest.mark.parametrize("policy", [{}, {"temperature": 0.2}, {"model": None}])
+def test_omitted_model_policy_fails_closed_before_b14(policy) -> None:
     executor = FakeExecutor()
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
-    run(runtime.run(request()))
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(runtime.run(request(agent(model_policy=policy))))
+
+    assert info.value.code == "invalid_execution_request"
+    assert info.value.metadata.status is RunStatus.REJECTED
+    assert info.value.metadata.error_class is ErrorClass.INPUT_ERROR
+    assert executor.calls == []
+
+
+def test_explicit_generic_auto_route_is_still_accepted() -> None:
+    executor = FakeExecutor()
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+    profile = agent(model_policy={"model": "b14/auto"})
+    run(runtime.run(request(profile)))
     assert executor.calls[0].model == "b14/auto"
 
 
