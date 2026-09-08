@@ -225,25 +225,20 @@ def test_parity_with_b14_tier_registry_active_routes() -> None:
     )
 
 
-def _chat_literal(name: str) -> str:
-    source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
-    match = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-    assert match, f"{name} literal not found in chat model_policy source"
-    return match.group(1)
+def test_parity_with_chat_model_policy_derivation() -> None:
+    """#2099 STEP-2: Chat derives tier routes from this contract.
 
-def test_parity_with_chat_model_policy_literals() -> None:
-    executables = _executables()
-    assert _chat_literal("LOW_B14_MODEL_ID") == executables[ProductTierLabel.PLUS].model_id
-    assert _chat_literal("MEDIUM_B14_MODEL_ID") == executables[ProductTierLabel.PRO].model_id
-    assert _chat_literal("MAX_HOLD_MODEL_ID") == MAX_HOLD_MODEL_ID
-
+    Locks the derivation itself and forbids literal regressions that would
+    re-create the duplicated source of truth #2099 exists to remove.
+    """
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
-    block = re.search(
-        r"RETIRED_B14_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert block, "chat RETIRED_B14_MODEL_IDS block not found"
-    chat_retired = set(re.findall(r'"([^"]+)"', block.group(1)))
-    assert chat_retired == set(RETIRED_PRODUCT_MODEL_IDS)
+    assert "from padiem_control_plane.product_tier_routes import (" in source
+    assert "LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)" in source
+    assert "MEDIUM_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PRO)" in source
+    assert "MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID" in source
+    assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
+    assert '"kilo/' not in source
+    assert "'kilo/" not in source
 
 
 def test_parity_with_b14_kilo_catalog_and_retirement() -> None:
