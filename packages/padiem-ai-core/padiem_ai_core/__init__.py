@@ -452,6 +452,15 @@ from .adapter_configuration_gate import (
     required_adapters_for,
 )
 
+from .cancellation_barrier import (
+    TEARDOWN_TRANSITION,
+    CancellationBarrier,
+    CancellationBarrierError,
+    CancellationBarrierState,
+    CancellationProjection,
+    is_terminal_barrier_state,
+)
+
 __all__ = [
     "AgentPlanExecutor",
     "PlanBackedStepDriver",
@@ -471,6 +480,12 @@ __all__ = [
     "LiveCapability",
     "evaluate_capability_gate",
     "required_adapters_for",
+    "TEARDOWN_TRANSITION",
+    "CancellationBarrier",
+    "CancellationBarrierError",
+    "CancellationBarrierState",
+    "CancellationProjection",
+    "is_terminal_barrier_state",
 
     "AgentProfile",
     "ApprovalPolicy",
