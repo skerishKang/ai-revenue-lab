@@ -212,10 +212,10 @@ def test_legacy_worker_is_not_widened_by_e5a(identity_modules) -> None:
     )
 
 
-def test_canonical_composition_wires_multimodal_service_without_resolver(
+def test_canonical_composition_wires_multimodal_service_without_authorities(
     identity_modules,
 ) -> None:
-    """Production composition has no trusted resolver in either composition shape."""
+    """Production composition has no trusted attachment authority in either shape."""
 
     from app.multimodal_attachment_service import (
         MultimodalAttachmentEngineService,
@@ -227,9 +227,77 @@ def test_canonical_composition_wires_multimodal_service_without_resolver(
     for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
         services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services.multimodal, MultimodalAttachmentEngineService)
-        assert services.multimodal._attachment_resolver is None
+        assert services.multimodal._image_byte_store is None
+        assert services.multimodal._scope_authority is None
         assert isinstance(services.multimodal_streaming, MultimodalStreamingEngineService)
-        assert services.multimodal_streaming._attachment_resolver is None
+        assert services.multimodal_streaming._image_byte_store is None
+        assert services.multimodal_streaming._scope_authority is None
+
+
+def test_bound_image_store_composes_but_still_fails_closed_without_scope_authority(
+    identity_modules,
+) -> None:
+    """#2182 S5: a bound ``ENGINE_IMAGE_STORE`` reaches the service; the missing
+    Control Plane scope authority still fails the route closed.
+
+    The store is composed for real, so this proves the binding seam works. The
+    scope triple cannot be server-minted yet, so no resolver is built, no D1
+    query runs and no Core/B14 execution is reached.
+    """
+
+    from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
+
+    class _Statement:
+        def bind(self, *_params: Any) -> "_Statement":
+            return self
+
+        async def first(self) -> None:
+            raise AssertionError("no D1 read may occur without a trusted scope")
+
+        async def run(self) -> None:
+            raise AssertionError("no D1 write may occur without a trusted scope")
+
+    class _Binding:
+        def prepare(self, _sql: str) -> _Statement:
+            return _Statement()
+
+    _legacy, identity = identity_modules
+    env = _identity_env(ENGINE_IMAGE_STORE=_Binding())
+    services = asyncio.run(identity._engine_services_for_env(env))
+    store = services.multimodal._image_byte_store
+
+    assert isinstance(store, ScopedImageByteStore)
+    assert isinstance(store._port, CloudflareD1ImageByteStore)
+    assert services.multimodal._scope_authority is None
+    assert services.multimodal_streaming._scope_authority is None
+
+    runtime_calls: list[str] = []
+    original = services.multimodal._runtime_factory
+
+    def counting_runtime_factory(app_id: str) -> Any:
+        runtime_calls.append(app_id)
+        return original(app_id)
+
+    services.multimodal._runtime_factory = counting_runtime_factory
+
+    def bound_factory(_env: Any) -> Any:
+        async def _ready():
+            return services
+
+        return _ready()
+
+    saved = identity.Default.engine_services_factory
+    identity.Default.engine_services_factory = staticmethod(bound_factory)
+    try:
+        response = _fetch(
+            identity, env, _Request(MULTIMODAL_PATH, body=_multimodal_payload())
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(saved)
+
+    assert response.status == 503
+    assert _body(response)["error"]["code"] == "attachment_resolver_unavailable"
+    assert runtime_calls == []
 
 
 def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
@@ -316,7 +384,8 @@ def test_valid_ref_fails_closed_through_canonical_fetch(
         async def _spying():
             services = await real_factory(composition_env)
             assert services.multimodal is not None
-            assert services.multimodal._attachment_resolver is None
+            assert services.multimodal._image_byte_store is None
+            assert services.multimodal._scope_authority is None
             original = services.multimodal._runtime_factory
 
             def counting_runtime_factory(app_id: str) -> Any:
@@ -367,7 +436,8 @@ def test_valid_ref_stream_fails_closed_through_canonical_fetch(
         async def _spying():
             services = await real_factory(composition_env)
             assert services.multimodal_streaming is not None
-            assert services.multimodal_streaming._attachment_resolver is None
+            assert services.multimodal_streaming._image_byte_store is None
+            assert services.multimodal_streaming._scope_authority is None
             original = services.multimodal_streaming._runtime_factory
 
             def counting_runtime_factory(app_id: str) -> Any:
