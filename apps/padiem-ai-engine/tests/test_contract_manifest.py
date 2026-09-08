@@ -22,7 +22,7 @@ from app.orchestration_service import (
 )
 from app.idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
-from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
+from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH, MULTIMODAL_STREAM_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
 from app.web_research_service import RESEARCH_PATH
@@ -49,6 +49,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
         ("POST", MULTIMODAL_EXECUTE_PATH),
+        ("POST", MULTIMODAL_STREAM_PATH),
         ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH),
     ]
 
@@ -130,6 +131,7 @@ def test_multimodal_route_is_declared_but_capabilities_stay_deferred() -> None:
     endpoints = {(item.method, item.path) for item in manifest.endpoints}
 
     assert ("POST", MULTIMODAL_EXECUTE_PATH) in endpoints
+    assert ("POST", MULTIMODAL_STREAM_PATH) in endpoints
     assert manifest.feature_state("multimodal_completed_run") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("multimodal_streaming_run") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED

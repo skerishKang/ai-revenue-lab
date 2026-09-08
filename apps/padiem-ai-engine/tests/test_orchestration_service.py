@@ -65,6 +65,7 @@ def make_valid_payload(app_id: str = "b62") -> dict:
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 2048,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "Hello engine"}],
         "trace_id": "tr_orch_test",

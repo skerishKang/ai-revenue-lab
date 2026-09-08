@@ -1,165 +1,196 @@
 # Padiem AI Adoption Playbook
 
-```text
-DOC_STATUS = CANONICAL_PLAYBOOK
-OWNER = Padiem platform architecture
-SCOPE = how a product adopts shared AI capabilities without duplicating platform layers
-LAST_VERIFIED = 2026-09-08
-SUPERSEDES = ad-hoc product-specific ownership decisions where they conflict
-```
+Purpose: give every Business/product a repeatable path for adding AI without rebuilding generic runtime, transport, or provider infrastructure.
 
-## 1. Start with the product boundary
+## 1. Default decision sequence
 
-새 AI 기능을 만들기 전에 먼저 제품이 소유할 부분을 적습니다.
+Before writing AI code for a Business, classify the requested capability.
 
 ```text
-PRODUCT_DOMAIN_STATE = ...
-PRODUCT_UX = ...
-PRODUCT_PERSISTENCE = ...
-PRODUCT_ADAPTER = ...
+PRODUCT_ADAPTER
+REUSE_CORE
+EXTEND_CORE
+ENGINE_TRANSPORT
+CONTROL_PLANE
+B14_EXECUTION
+DO_NOT_SHARE
 ```
 
-그 다음 generic AI 의미론을 제품 내부에서 새로 만들지 않고 아래 분류를 적용합니다.
+### PRODUCT_ADAPTER
+Keep domain meaning in the product.
 
-## 2. Classification
+Examples:
+- fan/artist/member semantics;
+- StoryMemory locator/book semantics;
+- product-specific output presentation;
+- product-specific save/persistence behavior.
 
-| Classification | Use when | Canonical owner |
-|---|---|---|
-| `REUSE_CORE` | 이미 존재하는 공용 AI semantics를 사용할 수 있음 | IP-CORE |
-| `EXTEND_CORE` | 두 제품 이상에 재사용 가능한 generic semantic이 실제로 빠져 있음 | IP-CORE |
-| `ENGINE_TRANSPORT` | Core semantic은 있으나 cross-runtime exposure가 없음 | IP-ENGINE |
-| `B14_EXECUTION` | Provider/model/catalog/route/credential/upstream execution 문제 | B14 |
-| `CONTROL_PLANE` | identity/tenant/entitlement/usage/audit 또는 neutral declaration 문제 | IP-CONTROL |
-| `PRODUCT_ADAPTER` | domain state를 shared contract로 투영하거나 UI로 표시 | Product/Business |
-| `IP_SIDECAR` | 여러 host 제품이 재사용할 embedded shell/host bridge 문제 | IP-SIDECAR after formal activation |
-| `DO_NOT_SHARE` | 제품 고유 의미/UX로 남겨야 함 | Product/Business |
+### REUSE_CORE
+Use an existing IP-CORE capability when the need is generic AI runtime semantics.
 
-## 3. Default architecture
+Examples include the existing Core execution, Evidence, grounding, retrieval/memory, Web, Tool, streaming, context-permission, and orchestration foundations.
 
-Cross-runtime 제품의 기본값:
+### EXTEND_CORE
+Extend IP-CORE only when a proven reusable generic gap exists and more than one product could reasonably benefit from the capability.
+
+Do not extend Core merely to encode one Business's domain vocabulary.
+
+### ENGINE_TRANSPORT
+Use IP-ENGINE for cross-runtime/service-boundary needs:
+
+- Service Binding transport;
+- trusted first-party caller identity;
+- execute/stream/orchestration wire boundaries;
+- hosting Core for external/cross-runtime product adapters.
+
+### CONTROL_PLANE
+Use or extend IP-CONTROL for reusable platform control/policy contracts when that state is not product-local authorization.
+
+### B14_EXECUTION
+Provider/model selection, routing, fallback/retry policy, provider adapters, and provider credentials remain B14 authority.
+
+### DO_NOT_SHARE
+Keep genuinely product-specific implementation in the product instead of creating a premature shared abstraction.
+
+## 2. Default topology for cross-runtime products
 
 ```text
-Product
- -> Product Adapter
- -> IP-ENGINE
- -> IP-CORE
- -> B14
- -> Provider/Model
+Business/Product UI
+        |
+        v
+same-origin server Product adapter
+        |
+        v
+IP-ENGINE
+        |
+        v
+IP-CORE
+        |
+        v
+B14 Korean AI Platform
+        |
+        v
+Provider/model
 ```
 
-Same-runtime/library 통합은 architecture가 허용하는 경우에만:
+Hard defaults:
 
 ```text
-Product
- -> Product Adapter
- -> IP-CORE
- -> B14
+PRODUCT_DIRECT_PROVIDER = NO
+PRODUCT_PROVIDER_SECRET = NO
+PRODUCT_DIRECT_B14 = NO unless explicitly governed as a B14 client boundary
+EXTERNAL_PRODUCT_DIRECT_CORE = NO
+GENERIC_CORE_SEMANTICS_DUPLICATED_IN_PRODUCT = NO
 ```
 
-Embedded surface는 IP-SIDECAR가 실제 등록/구현된 경우:
+## 3. Same-runtime/library exception
+
+Some products inside `ai-revenue-lab` may be approved to consume `packages/padiem-ai-core` as an in-process package rather than crossing the Engine Worker boundary.
+
+That is an architecture choice, not a shortcut. It must still preserve:
+
+- Core ownership of generic AI semantics;
+- B14 ownership of provider/model routing;
+- product ownership of domain semantics;
+- no provider secret in browser/product static assets.
+
+External repositories and independent Cloudflare products should default to IP-ENGINE.
+
+## 4. New Business AI integration checklist
+
+### A. Product contract
+
+Define:
+
+- user intent;
+- product-owned domain fields;
+- bounded input/output contract;
+- explicit persistence/save behavior;
+- product-specific safety/presentation behavior.
+
+### B. Reuse audit
+
+Check `IP-CORE` before implementing:
+
+- execution;
+- Evidence/grounding;
+- Web/research;
+- retrieval/memory;
+- Tool runtime;
+- streaming;
+- context permission;
+- orchestration.
+
+If the capability already exists, reuse it.
+
+### C. Transport audit
+
+For a cross-runtime product, identify:
+
+- IP-ENGINE Service Binding or approved ingress path;
+- independent caller identity;
+- independent high-entropy credential;
+- allowed application ID;
+- fail-closed behavior when binding/credential is absent.
+
+Never copy another product's credential.
+
+### D. B14 execution audit
+
+Confirm the product does not own:
+
+- provider API keys;
+- provider base URLs;
+- model selection tables;
+- provider fallback;
+- provider retry policy.
+
+### E. Verification
+
+Prove in order:
+
+1. zero-network/fake contract tests;
+2. Engine/Core/B14 boundary tests;
+3. preview/staging identity and binding;
+4. one bounded private runtime canary when authorized;
+5. product output parity;
+6. rollback evidence;
+7. only then Production activation.
+
+## 5. Cross-product reusability gate
+
+Before adding a generic-looking feature to a Business, ask:
 
 ```text
-Host/Product
- -> Adapter
- -> IP-SIDECAR
- -> IP-ENGINE
- -> IP-CORE
- -> B14
+COULD_ANOTHER_PADIEM_PRODUCT_USE_THIS = YES / NO
+COULD_B61_USE_THIS = YES / NO
+COULD_B62_USE_THIS = YES / NO
 ```
 
-## 4. Decision questions
+If YES and the capability is not a thin Product adapter, adjudicate IP-CORE/IP-ENGINE/IP-CONTROL ownership before burying it in the first consumer.
 
-다음 순서로 판단합니다.
-
-1. 이 기능은 사용자/도메인 의미인가? → Product.
-2. 여러 제품에 동일한 의미로 재사용 가능한 AI semantics인가? → 기존 Core 검색 후 REUSE/EXTEND.
-3. Core에는 있는데 다른 runtime에서 호출해야 하는가? → Engine projection.
-4. Provider/model/route/credential 문제인가? → B14.
-5. identity/tenant/entitlement/usage/audit 또는 neutral cross-product declaration인가? → Control Plane.
-6. 웹사이트 안의 공용 embedded shell/host bridge인가? → IP-SIDECAR 후보.
-7. 위 어느 것도 아니면 제품에 남기고 성급하게 공유 계층으로 올리지 않습니다.
-
-## 5. Required pre-implementation note
-
-AI 관련 이슈/PR에는 최소한 다음을 기록합니다.
+## 6. Example — LoveBud Scout
 
 ```text
-CAPABILITY_OWNER = PRODUCT | IP-CORE | IP-ENGINE | IP-CONTROL | IP-SIDECAR | B14
-CAPABILITY_CLASS = REUSE_CORE | EXTEND_CORE | ENGINE_TRANSPORT | B14_EXECUTION | CONTROL_PLANE | PRODUCT_ADAPTER | IP_SIDECAR | DO_NOT_SHARE
-REUSE_AUDIT = <existing files/issues/contracts checked>
-OVERLAP_WITH = <existing owner or NONE>
-CONTRACT_IMPACT = NONE | BACKWARD_COMPATIBLE | BREAKING
-PRODUCT_SPECIFIC_SEMANTICS_IN_CORE = 0
-GENERIC_CORE_DUPLICATION_IN_PRODUCT = 0
-PROVIDER_ROUTING_DUPLICATION = 0
+LoveBud fan-domain intent/output = PRODUCT_ADAPTER
+completed AI execution = IP-ENGINE -> IP-CORE -> B14
+provider/model routing = B14_EXECUTION
+future generic web/research projection = IP-ENGINE + existing IP-CORE Web/Research
+LoveTree save semantics = PRODUCT_ADAPTER
 ```
 
-## 6. Examples
+LoveBud therefore does not duplicate Core Web Runtime, provider routing, or another product's Engine credential.
 
-### Padiem Chat
+## 7. Platform discoverability
 
-- composer/sidebar/history/Projects/Saved Outputs → `PRODUCT_ADAPTER` / `DO_NOT_SHARE`
-- execution/grounding/evidence → `REUSE_CORE`
-- orchestration cross-runtime bridge → `ENGINE_TRANSPORT`
-- Plus/Pro/Max declaration → `CONTROL_PLANE`
-- actual model executability → `B14_EXECUTION`
+Use the Portfolio Console `Internal Platform` view or `INTERNAL_PLATFORM_REGISTRY.md` to locate the component before starting a new architecture lane.
 
-### Padiem Claw
-
-- repository task/run/GitHub workflow → product
-- reusable Agent/Tool/Skill/approval/recovery semantics → Core
-- cross-runtime agent/orchestration projection → Engine
-- model execution → B14
-
-### StoryMemory / Bible
-
-- Bible/classic-work locator grammar, progress, knowledge ceiling, annotations, spoiler UX → `DO_NOT_SHARE` / product domain
-- generic retrieval permission/evidence/context gating → `REUSE_CORE`
-- cross-runtime execution → Engine
-- model invocation → B14
-
-### Padiem Sidecar
-
-- commercial onboarding/pricing/install journey → B53 product
-- generic panel/shell/host event bridge → IP-SIDECAR candidate
-- reasoning/Tool/Memory/Agent semantics → Core, not Sidecar
-- cross-runtime execution → Engine
-- Provider/model → B14
-
-## 7. Anti-patterns
-
-다음은 금지합니다.
+Canonical prefixes for new shared-platform work:
 
 ```text
-Product-specific model router
-Product-owned raw Provider secrets
-Engine-owned competing AI policy
-Core-owned product locator/domain schema
-B14 directly reading product memory/domain DB
-Sidecar iframe shortcut that turns Chat into the architecture
-Control Plane becoming a model execution gateway without explicit redesign
-Source-present == Production-active claims
+[IP-CORE]
+[IP-ENGINE]
+[IP-CONTROL]
 ```
 
-## 8. Promotion rule
-
-두 제품에 비슷한 코드가 있다는 이유만으로 공용화하지 않습니다. Generic contract가 실제로 동일하고, 제품별 의미를 제거한 뒤에도 독립적으로 설명 가능한 경우에만 shared layer로 승격합니다.
-
-승격 전 확인:
-
-- second-consumer evidence
-- compatibility contract
-- failure/security semantics
-- owner and lifecycle
-- test/conformance path
-- rollback/migration impact
-
-## 9. Documentation rule
-
-새 기능이 소유권 경계를 바꾸면 구현 PR과 함께 다음 중 관련 문서를 갱신합니다.
-
-- `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
-- `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
-- `docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`
-
-단순 구현 상태 변화는 중앙 topology 문서를 자주 수정하지 않고 component README/manifest와 현재 source를 갱신합니다.
+Refs #1707.

@@ -1,70 +1,92 @@
-# IP-SIDECAR · Padiem Embedded AI Runtime
+# IP-SIDECAR — Padiem Embedded AI Runtime
 
 ```text
-DOC_STATUS = PROPOSED_COMPONENT_GUIDE
-PLATFORM_ID = IP-SIDECAR
+INTERNAL_PLATFORM_ID = IP-SIDECAR
 CANONICAL_NAME = Padiem Embedded AI Runtime
-COMMERCIAL_PRODUCT = B53 Padiem Sidecar
-SOURCE_AUTHORITY = NOT ACTIVATED BY THIS DOCUMENT
-LAST_VERIFIED = 2026-09-08
+REPOSITORY = skerishKang/ai-revenue-lab
+PROPOSED_SOURCE = packages/padiem-embedded-runtime/
+SOURCE_DIRECTORY_CREATED = NO
+BUSINESS_NUMBER = NONE
+PRIMARY_COMMERCIAL_PRODUCT = B53 Padiem Sidecar
+STATUS = proposed (registry/boundary S1 only; no runtime implementation)
 ```
 
-IP-SIDECAR는 여러 first-party 제품과 외부 host에 재사용할 수 있는 **embedded AI presentation/runtime layer 후보**입니다. B53 Padiem Sidecar와 구분합니다.
+## Role
 
-## Distinction
+Reusable, browser-safe embedded shell/context/event/presentation/bootstrap
+primitives for AI surfaces that live inside host products.
+
+## Ownership boundary
 
 ```text
-B53 Padiem Sidecar
-= commercial product, packaging, customer onboarding, install journey, pricing
+Host/Product Adapter
+  -> IP-SIDECAR (embedded shell/context/event/presentation/bootstrap only)
+  -> IP-ENGINE (service identity/transport)
+  -> IP-CORE (shared AI contracts and runtimes)
+  -> B14 (provider/model/routing authority)
+  -> Provider / model
 
-IP-SIDECAR
-= reusable panel/shell + host bridge + browser-safe AI runtime presentation
+Control Plane = canonical identity/tenant/entitlement/usage/billing/audit authority
 ```
 
-## Target topology
+IP-SIDECAR owns reusable embedded primitives only. It must not own
+product-domain semantics, Engine service identity/transport, Core AI
+semantics, B14 provider routing/credentials, Control Plane authority, or
+browser-visible secrets.
+
+## Relationship to B53
+
+B53 Padiem Sidecar (`reference/business-53-embedded-ai-sdk-v1/`, Business
+registry `n:53`) owns commercial/product/embed UX. IP-SIDECAR owns the
+reusable embedded runtime primitives B53 and future hosts build on. B53
+remains a numbered Business; it is the primary commercial consumer, not the
+owner, of IP-SIDECAR.
+
+## Overlap audit (S1, read-only; no product mutated)
+
+Bounded extraction candidates only — reference links, no source changes:
+
+- B30 Civic AI Navigator (`n:30`, external/proposed) — host-side AI surface
+  consumer candidate. No local runtime to extract from.
+- B61 StoryMemory (`n:61`, active) — embedded-surface consumer candidate via
+  the existing IP-ENGINE identity authority. No ownership claimed.
+- LoveBud (`skerishKang/LoveBud`, external implementation) — host-surface
+  consumer candidate. External repository; reference only, never mutated.
+- B62 Padiem Chat (`apps/padiem-chat/`) — chat/product surfaces stay
+  product-local. IP-SIDECAR claims no ownership over B62 UI or routes.
+- B54 Padiem Claw (`apps/korean-ai-code-agent/`) — agent runtime stays
+  product-local. IP-SIDECAR claims no ownership over B54 runtime.
+
+## Reuse rule (do not duplicate)
+
+IP-SIDECAR is a downstream consumer of the Engine completion program #1743.
+Generic capabilities must be reused from their canonical owners, never
+duplicated in IP-SIDECAR:
+
+- Web/Research #1744, Evidence/Citation #1745, Tool Runtime #1746,
+  Memory/RAG #1748, Agent/Skill #1749, File/Multimodal #1750,
+  Tenant/Entitlement/Usage #1751, final capability conformance #1752.
+
+## Canonical source-path decision (S1)
 
 ```text
-Host website/app
- -> Business/Customer Adapter
- -> B53 product layer when applicable
- -> IP-SIDECAR
- -> IP-ENGINE
- -> IP-CORE
- -> B14
- -> Provider/Model
+PROPOSED_SOURCE_PATH = packages/padiem-embedded-runtime/
+PATH_CONFLICT_AUDIT = PASS
+SOURCE_DIRECTORY_CREATED = NO
 ```
 
-## Target reusable ownership
+Repository-wide audit found no existing shared-runtime path owning
+browser-safe embedded primitives (zero `sidecar` paths; B53 holds only a
+reference pack; Engine owns transport; Core owns AI semantics). The path
+above is reserved by this document only; runtime language/binding and
+scaffolding are deferred to a later implementation slice.
 
-- right-side drawer/panel, inline/mobile shell primitives
-- host-context bridge
-- bounded host ↔ AI event bridge
-- public non-secret bootstrap/version projection
-- streaming lifecycle presentation
-- Evidence/citation presentation primitives
-- action proposal/confirmation presentation primitives
-- branding/theme token application
-- integration health/compatibility diagnostics
-- host-safe disable/failure behavior
+## Start here
 
-## Explicit non-ownership
+- Platform registry: `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
+- Console manifest: `apps/portfolio-console/internal-platform-manifest.js`
+- Adoption playbook: `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
 
-- product/customer domain semantics
-- generic Tool/Skill/Agent/Memory/reasoning semantics
-- Engine trusted machine/service auth
-- Provider/model routing and secrets
-- Control Plane tenant/entitlement/usage authority
-- Claw task/run/sandbox semantics
-- StoryMemory locator/progress/spoiler semantics
+Canonical Issue prefix for new work: `[IP-SIDECAR]`.
 
-## Current status rule
-
-Issue-level architecture has defined the intended identity and boundary, but this document does not claim a live source/runtime/Production activation. Until formal registry/source/runtime evidence exists:
-
-```text
-IP_SIDECAR_STATUS = PROPOSED
-LIVE_RUNTIME_CLAIM = NO
-PRODUCTION_CLAIM = NO
-```
-
-First-party candidates discussed in current architecture include B30 / 400 AI Finder, B61 / StoryMemory and B23 / LoveBud. Adoption requires a bounded product adapter and must not move each product's domain model into IP-SIDECAR.
+Refs #1739.

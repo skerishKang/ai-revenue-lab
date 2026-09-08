@@ -1,51 +1,40 @@
-# IP-CORE · Padiem AI Core
+# IP-CORE — Padiem AI Core
 
 ```text
-DOC_STATUS = CANONICAL_COMPONENT_GUIDE
-PLATFORM_ID = IP-CORE
-SOURCE = packages/padiem-ai-core/**
-LAST_VERIFIED = 2026-09-08
+INTERNAL_PLATFORM_ID = IP-CORE
+CANONICAL_NAME = Padiem AI Core
+REPOSITORY = skerishKang/ai-revenue-lab
+SOURCE = packages/padiem-ai-core/
+LOCAL_WORKTREE_REFERENCE = E:\padiem-ai-core
+BUSINESS_NUMBER = NONE
 ```
 
-Padiem AI Core는 제품 중립적인 **공용 AI 의미론과 계약**을 소유합니다.
+## Role
 
-## Owns
+Shared product-neutral AI contracts and runtimes.
 
-- normalized execution and streaming semantics
-- bounded multimodal execution contracts
-- Evidence / grounding / source quality
-- Context Permission / Knowledge Boundary
-- retrieval and Memory/RAG semantics
-- Tool / Connector authorization contracts
-- Skill package/registry/activation semantics
-- Agent planning/approval/delegation/recovery semantics
-- orchestration and adapter conformance
-- bounded shared error/metadata behavior
+Use IP-CORE when a capability is generic AI execution semantics rather than one product's domain behavior.
 
-## Does not own
+Current capability families include execution, Evidence/grounding, streaming, Tool, Web/research foundations, retrieval/memory, context permissions, and orchestration contracts/runtimes.
 
-- 제품 UX 또는 제품 도메인 상태
-- StoryMemory Bible/classic-work locator grammar
-- Chat conversation/history/Projects
-- Claw repository/task/GitHub product workflow
-- Provider/model catalog, inference credentials or a second router
-- cross-runtime network/service identity boundary
+## Boundary
 
-## Dependency direction
+IP-CORE does not own:
 
-```text
-Product adapter
- -> IP-CORE
- -> B14 execution boundary
-```
+- product-specific semantics or UI;
+- product persistence policy;
+- cross-runtime Cloudflare service identity;
+- provider/model selection or provider credentials.
 
-Cross-runtime exposure is owned by IP-ENGINE.
+Provider/model execution authority remains B14 Korean AI Platform. Cross-runtime access is normally mediated by IP-ENGINE.
 
-## Current detailed source documentation
+## Start here
 
-See `packages/padiem-ai-core/README.md` for module-level capability details and tests. That README is the component implementation guide; the platform ownership boundary is defined by:
+- Source: `packages/padiem-ai-core/`
+- Boundary authority: `packages/padiem-ai-core/BOUNDARY.md`
+- Platform registry: `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
+- Adoption playbook: `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
 
-- `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
-- `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
+Canonical Issue prefix for new work: `[IP-CORE]`.
 
-Source presence does not imply Production activation or an Engine projection.
+Refs #1707.

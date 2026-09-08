@@ -310,7 +310,10 @@ class WebResearchEngineService:
                 max_tokens=240,
                 allowed_tools=(),
                 required_capabilities=(),
-                model_policy={},
+                # #2101: the Engine-owned planner stays on the Router-owned
+                # fixed `b14/auto` chain, but the route is now declared
+                # explicitly. Core no longer synthesizes it when omitted.
+                model_policy={"model": "b14/auto"},
                 max_steps=1,
             )
             planner_result = await execution_runtime.run(

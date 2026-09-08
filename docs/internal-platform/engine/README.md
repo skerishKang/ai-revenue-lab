@@ -1,59 +1,47 @@
-# IP-ENGINE · Padiem AI Engine
+# IP-ENGINE — Padiem AI Engine
 
 ```text
-DOC_STATUS = CANONICAL_COMPONENT_GUIDE
-PLATFORM_ID = IP-ENGINE
-SOURCE = apps/padiem-ai-engine/**
-LAST_VERIFIED = 2026-09-08
+INTERNAL_PLATFORM_ID = IP-ENGINE
+CANONICAL_NAME = Padiem AI Engine
+REPOSITORY = skerishKang/ai-revenue-lab
+SOURCE = apps/padiem-ai-engine/
+WORKER = padiem-ai-engine
+BUSINESS_NUMBER = NONE
 ```
 
-Padiem AI Engine은 IP-CORE의 공용 의미론을 다른 runtime/product가 안전하게 사용할 수 있도록 노출하는 **trusted cross-runtime service boundary**입니다.
+## Role
 
-## Owns
+Cross-runtime AI service boundary around Padiem AI Core.
 
-- first-party caller/service identity boundary
-- internal wire/service projection
-- cross-runtime execution and streaming surfaces
-- orchestration/service continuation projection where the current manifest marks it available
-- capability/contract manifest and truthful availability reporting
-- transport-level request/response projection and safe failure boundary
+IP-ENGINE owns internal execution transport, Service Binding hosting, trusted first-party caller identity/authentication, and the runtime projection required for independent products to consume shared Core capabilities without owning Provider infrastructure.
 
-## Does not own
+## Boundary
 
-- Core의 generic AI semantics
-- 제품 UX/domain state
-- Provider/model catalog or inference credentials
-- B14 route selection authority
-- Control Plane's canonical identity/tenant/entitlement truth
+IP-ENGINE does not own:
 
-## Canonical flow
+- product/domain semantics;
+- generic Core AI semantics that already belong to IP-CORE;
+- Provider/model routing or credentials;
+- browser-visible secrets.
+
+## Current work
 
 ```text
-Product / Adapter
- -> IP-ENGINE
- -> IP-CORE
- -> B14
- -> Provider / Model
+#1698
+[IP-ENGINE] multi-caller service identity registry
 ```
 
-## Availability rule
+This platform prerequisite preserves the existing B61 StoryMemory identity while allowing LoveBud and future products to use independent caller identities and credentials.
 
-Engine source contains multiple services/projections. A module existing in `apps/padiem-ai-engine/app/**` does not by itself prove that the corresponding route/binding is active.
+## Start here
 
-```text
-SOURCE_PRESENT != MANIFEST_AVAILABLE != BINDING_READY != PRODUCTION_ACTIVE
-```
+- Source: `apps/padiem-ai-engine/`
+- Worker entry: `apps/padiem-ai-engine/worker.py`
+- Deployment config: `apps/padiem-ai-engine/wrangler.toml`
+- Identity boundary: `apps/padiem-ai-engine/app/identity_enforcement.py`
+- Platform registry: `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
+- Adoption playbook: `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
 
-For exact current capability status, inspect the merged Engine capability/contract manifest and composition code. Historical issue/architecture tables are evidence snapshots, not live availability registries.
+Canonical Issue prefix for new work: `[IP-ENGINE]`.
 
-## Source entrypoints
-
-- `apps/padiem-ai-engine/app/**` — service/runtime composition and projections
-- `apps/padiem-ai-engine/worker.py` — Worker composition entrypoint
-- `apps/padiem-ai-engine/worker_identity.py` — trusted caller/service identity boundary
-- `apps/padiem-ai-engine/tests/**` — contract and behavior evidence
-
-Central ownership authority:
-
-- `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
-- `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
+Refs #1707 #1698.

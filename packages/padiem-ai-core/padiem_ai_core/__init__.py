@@ -92,6 +92,7 @@ from .execution_runtime import (
 from .multimodal_execution_runtime import (
     MultimodalExecutionRequest,
     MultimodalExecutionRuntime,
+    MultimodalStreamingExecutionRuntime,
 )
 from .streaming_runtime import (
     B14StreamExecutor,
@@ -440,17 +441,51 @@ from .adapter_conformance import (
     ConformanceVerdict,
 )
 
+from .adapter_configuration_gate import (
+    AdapterConfigurationGateError,
+    AdapterProbe,
+    AdapterProbeState,
+    CapabilityGateResult,
+    ExternalAdapterKind,
+    LiveCapability,
+    evaluate_capability_gate,
+    required_adapters_for,
+)
+
+from .cancellation_barrier import (
+    TEARDOWN_TRANSITION,
+    CancellationBarrier,
+    CancellationBarrierError,
+    CancellationBarrierState,
+    CancellationProjection,
+    is_terminal_barrier_state,
+)
+
 __all__ = [
     "AgentPlanExecutor",
     "PlanBackedStepDriver",
     "AdapterCategory",
+    "AdapterConfigurationGateError",
     "AdapterConformanceCase",
     "AdapterConformanceReport",
     "AdapterConformanceResult",
     "AdapterConformanceSuite",
     "AdapterContractViolation",
+    "AdapterProbe",
+    "AdapterProbeState",
+    "CapabilityGateResult",
     "ConformanceDimension",
     "ConformanceVerdict",
+    "ExternalAdapterKind",
+    "LiveCapability",
+    "evaluate_capability_gate",
+    "required_adapters_for",
+    "TEARDOWN_TRANSITION",
+    "CancellationBarrier",
+    "CancellationBarrierError",
+    "CancellationBarrierState",
+    "CancellationProjection",
+    "is_terminal_barrier_state",
 
     "AgentProfile",
     "ApprovalPolicy",

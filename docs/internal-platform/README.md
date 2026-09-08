@@ -1,74 +1,82 @@
 # Padiem Internal Platform
 
-```text
-DOC_STATUS = CANONICAL
-OWNER = Padiem platform architecture
-SCOPE = shared non-Business platform components and their relationships
-LAST_VERIFIED = 2026-09-08
-SUPERSEDES = ad-hoc internal-platform descriptions in issue threads
-```
+Status: canonical management layer for shared Padiem platform components.
 
-Padiem의 공용 AI 기술 계층은 Business 번호와 분리된 **Internal Platform**으로 관리합니다.
+This directory exists so shared AI infrastructure can be found, governed, and reused without pretending that an internal platform component is a numbered Business.
 
-## Canonical IDs
+## Canonical component IDs
 
-```text
-IP-CORE     = Padiem AI Core
-IP-ENGINE   = Padiem AI Engine
-IP-CONTROL  = Padiem Control Plane
-IP-SIDECAR  = Padiem Embedded AI Runtime   [PROPOSED / activation separately gated]
-```
+| Internal Platform ID | Canonical name | Source authority | Business number |
+|---|---|---|---|
+| `IP-CORE` | Padiem AI Core | `packages/padiem-ai-core/` | NONE |
+| `IP-ENGINE` | Padiem AI Engine | `apps/padiem-ai-engine/` | NONE |
+| `IP-CONTROL` | Padiem Control Plane | `packages/padiem-control-plane/` | NONE |
+| `IP-SIDECAR` | Padiem Embedded AI Runtime | `packages/padiem-embedded-runtime/` (reserved, S1) | NONE |
 
-B14 Korean AI Platform은 Internal Platform ID가 아니라 **Business 14**이며, Provider/model 실행 권위를 소유합니다.
+These IDs are management identifiers only. They do not alter source paths, package names, Worker names, Business numbering, or deployment identities.
 
-## Default composition
+## Why this layer exists
+
+AI Revenue Lab contains many numbered Businesses and external products that use AI. Shared capabilities must therefore be easier to discover than ad-hoc repository searches and historical Issue-number archaeology.
+
+The Internal Platform layer provides one place to answer:
+
+- where a shared capability lives;
+- which component owns it;
+- which products consume it;
+- which platform dependency it has;
+- which current Issue/PR is changing it;
+- whether a new Business should reuse Core, extend Core, use Engine transport, or keep logic product-local.
+
+## Default AI integration topology
 
 ```text
 Product / Business adapter
-        │
-        ▼
-IP-ENGINE
-        │
-        ▼
-IP-CORE
-        │
-        ▼
-B14
-        │
-        ▼
-Provider / Model
+        |
+        v
+IP-SIDECAR — reusable browser-safe embedded primitives (where the host embeds AI)
+        |
+        v
+IP-ENGINE — cross-runtime service identity / transport
+        |
+        v
+IP-CORE — shared AI contracts and runtimes
+        |
+        v
+B14 Korean AI Platform — provider/model/routing authority
+        |
+        v
+Provider / model
 ```
 
-`IP-CONTROL`은 identity, tenant, entitlement, usage, credits/subscription, audit 및 중립적 cross-product declaration을 담당하는 cross-cutting authority입니다.
+For same-runtime/library consumers inside an approved architecture, direct package reuse of `IP-CORE` may be appropriate. Cross-runtime or external products should use `IP-ENGINE` rather than reimplementing transport, service identity, or provider access.
 
-Embedded AI 제품은 필요할 때 다음 구조를 사용합니다.
+## Business vs Internal Platform
 
-```text
-Host
-  -> Product/Customer Adapter
-  -> B53 Padiem Sidecar product layer
-  -> IP-SIDECAR
-  -> IP-ENGINE
-  -> IP-CORE
-  -> B14
-```
+The canonical Business registry remains `docs/portfolio/BUSINESS_REGISTRY.md`.
+
+Internal Platform components are deliberately not assigned B-numbers. B14 remains a numbered Business because it is the Korean AI execution platform and the provider/model/routing authority. Internal Platform records reference B14 as a dependency where appropriate.
 
 ## Documents
 
-- [`INTERNAL_PLATFORM_REGISTRY.md`](INTERNAL_PLATFORM_REGISTRY.md) — ID, source, ownership, lifecycle
-- [`AI_ADOPTION_PLAYBOOK.md`](AI_ADOPTION_PLAYBOOK.md) — 제품이 AI 기능을 붙일 때의 기본 결정 절차
-- [`core/README.md`](core/README.md) — IP-CORE component guide
-- [`engine/README.md`](engine/README.md) — IP-ENGINE component guide
-- [`control-plane/README.md`](control-plane/README.md) — IP-CONTROL component guide
-- [`sidecar/README.md`](sidecar/README.md) — IP-SIDECAR proposed boundary
-- [`../architecture/PADIEM_AI_VERTICAL_STACK.md`](../architecture/PADIEM_AI_VERTICAL_STACK.md) — 전체 수직 계층
+- `INTERNAL_PLATFORM_REGISTRY.md` — authoritative Internal Platform catalog.
+- `AI_ADOPTION_PLAYBOOK.md` — default reuse path for adding AI to a Business or product.
+- `core/README.md` — IP-CORE locator and ownership summary.
+- `engine/README.md` — IP-ENGINE locator and ownership summary.
+- `control-plane/README.md` — IP-CONTROL locator and ownership summary.
+- `sidecar/README.md` — IP-SIDECAR locator, ownership boundary, and overlap audit (S1).
 
-## Rules
+## Governance rule
 
-1. Internal Platform ID를 Business 번호 registry에 넣지 않습니다.
-2. 제품/Business는 domain semantics와 UX를 소유하고, 공용 AI 의미론을 복제하지 않습니다.
-3. Provider/model catalog, inference credentials, exact execution은 B14에 남깁니다.
-4. cross-runtime 소비는 IP-ENGINE을 기본 경계로 사용합니다.
-5. same-runtime/library direct Core reuse는 명시적으로 허용된 경우만 사용합니다.
-6. source 존재는 Production activation을 의미하지 않습니다.
-7. IP-SIDECAR는 formal registration/source/runtime activation이 별도 증거로 확인되기 전까지 proposed 상태로 취급합니다.
+When a new generic capability is discovered, ask in order:
+
+1. Is it product-specific? Keep it in the product adapter.
+2. Is it a reusable browser-safe embedded shell/context/event/presentation primitive? Use `IP-SIDECAR`.
+3. Is it reusable AI runtime semantics? Reuse or extend `IP-CORE`.
+4. Is it cross-runtime service transport, identity, or execution hosting? Use or extend `IP-ENGINE`.
+5. Is it platform policy/control-plane state? Adjudicate `IP-CONTROL` ownership.
+6. Is it provider/model/routing/credential authority? Keep it under B14.
+
+Do not create a second copy of a generic capability in a Business merely because the Business is the first consumer to need it.
+
+Refs #1707 #1739.
