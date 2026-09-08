@@ -162,5 +162,3 @@ def run_bridge_journey(fixture: Mapping[str, object]) -> dict[str, object]:
     }
 
     return {"paths": paths, "host_primary_journey": "unbroken"}
-
-
