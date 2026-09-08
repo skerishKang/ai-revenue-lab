@@ -30,7 +30,12 @@ from app.attachment_byte_store import (  # noqa: E402
     ScopedImageByteStore,
     StoredImageRecord,
 )
-from padiem_ai_core import b14_multimodal  # noqa: E402
+from padiem_ai_core.b14_multimodal import (  # noqa: E402
+    MAX_B14_IMAGE_BYTES as CORE_MAX_B14_IMAGE_BYTES,
+)
+from padiem_ai_core.b14_multimodal import (  # noqa: E402
+    _ALLOWED_IMAGE_MEDIA_TYPES as CORE_ALLOWED_IMAGE_MEDIA_TYPES,
+)
 
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"pixeldata" * 8
 JPEG_BYTES = b"\xff\xd8\xff" + b"jpegdata" * 8
@@ -541,8 +546,8 @@ def test_record_repr_and_public_fields_carry_no_payload() -> None:
 
 
 def test_constants_match_core_authority_without_drift() -> None:
-    assert SUPPORTED_IMAGE_MEDIA_TYPES == b14_multimodal._ALLOWED_IMAGE_MEDIA_TYPES
-    assert MAX_STORED_IMAGE_BYTES is b14_multimodal.MAX_B14_IMAGE_BYTES
+    assert SUPPORTED_IMAGE_MEDIA_TYPES == CORE_ALLOWED_IMAGE_MEDIA_TYPES
+    assert MAX_STORED_IMAGE_BYTES is CORE_MAX_B14_IMAGE_BYTES
     from app import attachment_authority, attachment_byte_store
 
     assert attachment_byte_store._SAFE_ID_RE.pattern == attachment_authority._SAFE_ID_RE.pattern
