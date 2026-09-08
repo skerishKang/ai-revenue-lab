@@ -177,3 +177,64 @@ This is a Korea-market product decision, not a temporary single-user convenience
 Canonical policy document:
 
 `docs/BUSINESS14_LANGUAGE_POLICY.md`
+
+## 2026-09-08 — General Router Platform preserved; Padiem Routing Profile v1 becomes the first concrete profile
+
+A final review of current B14 implementation, Padiem model-policy work, and the accumulated B14 issue backlog found a terminology risk: the current Padiem delivery had begun to look like a global decision to eliminate automatic routing from B14.
+
+That interpretation is rejected.
+
+Canonical B14 identity is:
+
+```text
+B14 = General AI Router Platform
+```
+
+The platform remains responsible for provider/model registry and execution and may evolve to support:
+
+- manual route selection;
+- customer/product-specific routing profiles;
+- capability-aware selection;
+- cost/latency/availability-aware optimization;
+- explicit generic automatic route selection;
+- bounded policy-controlled fallback/retry;
+- BYOK and platform-managed credential references;
+- multiple provider families and execution adapters;
+- route evidence, usage/cost observation, and operator controls.
+
+The current Padiem work is classified as the first concrete product/customer profile on that platform:
+
+```text
+Padiem Routing Profile v1
+Plus = kilo/poolside-laguna-s-2.1-free
+Pro  = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+Max  = HOLD / padiem-profile/max-hold
+```
+
+Padiem v1 has already selected its target routes. Therefore the current product policy is:
+
+```text
+PADIEM_PROFILE_V1_AUTO_ROUTING = NO
+PADIEM_USER_VISIBLE_AUTO = NO
+PADIEM_SILENT_FALLBACK = NO
+B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
+```
+
+The distinction is deliberate: Padiem must not silently enter an automatic route because a model field is missing or a selected provider fails, while B14 retains the right to implement a future explicit, versioned generic autorouter and to expose it to later profiles when requested.
+
+Source-of-truth ownership is also clarified:
+
+```text
+Padiem product/profile declaration
+-> packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
+-> B14 catalog/retirement/capability/credential-readiness validation
+-> provider/model dispatch
+```
+
+The shared profile contract declares product intent; B14 remains final execution/executability authority. Chat and Claw are consumers and must not own duplicate provider/model routing truth.
+
+Historical Phase 0–3 and provider documents are preserved as development evidence. They may contain model lists, chain policies, or credential assumptions that were correct for their phase but are no longer current. They do not override current source or the canonical current charter:
+
+`docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md`
+
+Related authority: #2085, completed #2099, and follow-ups #2100–#2104, #2107, and #1955.
