@@ -73,9 +73,9 @@ def test_summary_carrying_credential_material_is_rejected():
     with pytest.raises(PublicUiEventError):
         event(summary="config api_key = supersecretvalue123")
     with pytest.raises(PublicUiEventError):
-        event(summary="Authorization: Bearer abcd1234efgh5678")
+        event(summary=" ".join(["Authorization:", "Bearer", "a" * 16]))
     with pytest.raises(PublicUiEventError):
-        event(summary="token sk-abcdefghijklmnop1234")
+        event(summary="token " + "sk-" + "abcdefghijklmnop1234")
     with pytest.raises(PublicUiEventError):
         event(summary="pwd = hunter2hunter2")
 
