@@ -1,13 +1,15 @@
-# padiem-embedded-runtime (IP-SIDECAR S4 evidence/citation presentation)
+# padiem-embedded-runtime (IP-SIDECAR S5 attachment input presentation)
 
 Shared, browser-safe embedded shell boundary for host products. S2 delivered
 the package-level runtime contract plus one repository-local reference host;
 S3 added the reusable host-context bridge, public bootstrap/session
 projection, version-compatibility and integration diagnostics, and host-safe
-fail-over; S4 adds public-safe evidence/citation presentation primitives
-(bounded normalization, deterministic order/dedup/reference labels, host-safe
-empty/degraded states). No Engine transport, no provider calls, no browser
-network fetch, no secrets, no product semantics.
+fail-over; S4 added public-safe evidence/citation presentation primitives;
+S5 adds browser-safe attachment input presentation (bounded selection
+metadata, deterministic upload-lifecycle states, opaque server-issued
+`att_*` ref display tokens). No Engine transport, no provider calls, no
+browser network fetch, no File/Blob byte reads, no ref minting, no secrets,
+no product semantics.
 
 ## Layout
 
@@ -23,6 +25,7 @@ packages/padiem-embedded-runtime/
     diagnostics.py           # S3 public-safe status/reason-code diagnostics
     bridge.py                # S3 untrusted-context -> projection + fail-safe pipeline
     evidence.py              # S4 public-safe evidence/citation presentation (bounded, deterministic)
+    attachment_input.py      # S5 bounded selection/lifecycle/opaque att_* ref presentation
   reference_host/            # repository-local demo host (fixture-driven, no I/O)
   fixtures/                  # deterministic demo fixtures (JSON)
   tests/                     # focused unittest contract tests (stdlib only)
@@ -54,6 +57,19 @@ packages/padiem-embedded-runtime/
   `empty`/`degraded` host-safe presentation, never an exception to the host.
 - `HTML_OR_NETWORK_EXECUTION=NO` — no HTML rendering, no URL fetch, no
   arbitrary link execution; markup-shaped values are rejected.
+- `ATTACHMENT_INPUT_TRUSTED_BY_DEFAULT=NO` — selection fields are
+  allowlisted (`name`/`media_type`/`byte_size`); path/URL/markup/secret-shaped
+  values fail the item; local paths and storage locators can never pass.
+- `FILE_BLOB_BYTE_READ=NO · DOM_INPUT_OWNERSHIP=NO` — the sidecar projects
+  host-supplied bounded metadata only; it never reads bytes or owns a picker.
+- `ATTACHMENT_REF_MINTING=NO` — `att_*` refs are grammar-validated display
+  tokens issued by the Engine attachment authority; URL/path-shaped refs are
+  rejected without retaining the raw value.
+- `SHARED_BOUNDS_ARE_HINTS_NOT_AUTHORITY=YES` — jpeg/png/webp and the 4 MiB
+  image bound surface as validation hints; product acceptance policy stays
+  with product adapters, byte/media authority stays with Engine.
+- `LIFECYCLE_PRESENTATION_NEVER_BREAKS_HOST=YES` — malformed lifecycle input
+  degrades to a safe `idle`/`INVALID_HOST_INPUT` view, never an exception.
 
 ## Run tests
 

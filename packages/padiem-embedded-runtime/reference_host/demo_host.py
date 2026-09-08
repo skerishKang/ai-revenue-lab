@@ -1,7 +1,8 @@
-"""Repository-local reference host for IP-SIDECAR (S2 demo, non-production).
+"""Repository-local reference host for IP-SIDECAR (S2-S5 demos, non-production).
 
-Drives one deterministic journey — mount, open, context projection, notice,
-close, disable — using only fixture data and an injected Engine port
+Drives deterministic journeys — mount, open, context projection, notice,
+close, disable, bridge intake, citation presentation, and attachment input
+presentation — using only fixture data and an injected Engine port
 (normally :class:`DeterministicFakeEnginePort`). Performs no I/O, no
 network, and never touches real products.
 """
@@ -10,6 +11,11 @@ from __future__ import annotations
 
 from typing import Mapping
 
+from padiem_embedded_runtime.attachment_input import (
+    present_attachment_ref,
+    present_selections,
+    present_upload_lifecycle,
+)
 from padiem_embedded_runtime.bootstrap import parse_bootstrap_config
 from padiem_embedded_runtime.bridge import intake_host_payload
 from padiem_embedded_runtime.engine_port import DeterministicFakeEnginePort, EnginePort
@@ -186,4 +192,53 @@ def run_citation_journey(fixture: Mapping[str, object]) -> dict[str, object]:
     for name, items in (("normal", normal), ("empty", empty), ("degraded", degraded)):
         presentation = present_citations(items)
         paths[name] = presentation.to_public_dict()
+    return {"paths": paths, "host_primary_journey": "unbroken"}
+
+
+def run_attachment_journey(fixture: Mapping[str, object]) -> dict[str, object]:
+    """Drive the S5 attachment input presentation over deterministic paths.
+
+    Uses only fixture data. Projects normal/empty/degraded selection lists,
+    the full host-driven lifecycle flow plus one malformed lifecycle, and a
+    valid vs. URL-shaped opaque ref. Nothing here reads bytes, owns DOM,
+    mints refs, or touches network/storage.
+    """
+    if not isinstance(fixture, Mapping):
+        raise SidecarContractError("attachment fixture must be a mapping")
+    selections_normal = fixture.get("selections_normal")
+    selections_empty = fixture.get("selections_empty")
+    selections_degraded = fixture.get("selections_degraded")
+    lifecycle_flow = fixture.get("lifecycle_flow")
+    lifecycle_malformed = fixture.get("lifecycle_malformed")
+    ref_valid = fixture.get("ref_valid")
+    ref_invalid = fixture.get("ref_invalid")
+    for name, value in (
+        ("selections_normal", selections_normal),
+        ("selections_empty", selections_empty),
+        ("selections_degraded", selections_degraded),
+        ("lifecycle_flow", lifecycle_flow),
+    ):
+        if not isinstance(value, list):
+            raise SidecarContractError(f"attachment fixture needs a {name} list")
+    if not isinstance(lifecycle_malformed, Mapping):
+        raise SidecarContractError("attachment fixture needs a lifecycle_malformed mapping")
+    if not isinstance(ref_valid, str) or not isinstance(ref_invalid, str):
+        raise SidecarContractError("attachment fixture needs ref_valid and ref_invalid strings")
+
+    paths: dict[str, object] = {}
+    for name, items in (
+        ("selections_normal", selections_normal),
+        ("selections_empty", selections_empty),
+        ("selections_degraded", selections_degraded),
+    ):
+        paths[name] = present_selections(items).to_public_dict()
+
+    paths["lifecycle_flow"] = [
+        present_upload_lifecycle(step).to_public_dict()
+        for step in lifecycle_flow
+        if isinstance(step, Mapping)
+    ]
+    paths["lifecycle_malformed"] = present_upload_lifecycle(lifecycle_malformed).to_public_dict()
+    paths["ref_valid"] = present_attachment_ref(ref_valid).to_public_dict()
+    paths["ref_invalid"] = present_attachment_ref(ref_invalid).to_public_dict()
     return {"paths": paths, "host_primary_journey": "unbroken"}
