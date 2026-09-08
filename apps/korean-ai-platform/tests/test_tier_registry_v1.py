@@ -246,6 +246,16 @@ def test_existing_b14_auto_runtime_untouched() -> None:
         source = (APP_DIR / "app" / "pilot" / name).read_text(encoding="utf-8")
         assert "tier_registry" not in source, f"{name} must not be wired to the new registry"
 
+    probe = subprocess.run(
+        ["git", "cat-file", "-e", f"{ACT1_BASE}^{{commit}}"],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        timeout=60,
+    )
+    if probe.returncode != 0:
+        pytest.skip("ACT-1 base commit not available (shallow CI checkout)")
+
     result = subprocess.run(
         ["git", "diff", "--name-only", ACT1_BASE, "HEAD"],
         capture_output=True,
