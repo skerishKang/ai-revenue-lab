@@ -33,9 +33,14 @@ from app.pilot.tier_registry_v1 import (
     get_tier,
     validate_tier_registry,
 )
+from app.pilot.catalog import get_catalog_by_id
+from app.pilot.kilo_provider import RETIRED_KILO_FREE_MODEL_IDS
 
 APP_DIR = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = APP_DIR / "app" / "pilot" / "tier_registry_v1.py"
+CHAT_MODEL_POLICY_PATH = (
+    Path(__file__).resolve().parents[3] / "apps" / "padiem-chat" / "app" / "model_policy.py"
+)
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ACT1_BASE = "eec57fe863b9cc9038039dcc33e4ecc7b135ed30"
 # #2097 re-baseline: the scope lock must pin the #2088/#2091 branch range to
@@ -92,6 +97,48 @@ def test_executable_routes_have_explicit_provider_and_model() -> None:
     assert active_route_for(TierLabel.PRO) is not None
     assert active_route_for(TierLabel.MAX) is None
 
+def _chat_policy_source_literal(name: str) -> str:
+    """Read-only scan of the Chat product-policy source (no cross-app import)."""
+    source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
+    match = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
+    assert match, f"{name} string literal not found in chat model_policy source"
+    return match.group(1)
+
+def test_executable_registry_routes_exist_in_b14_catalog() -> None:
+    """#2085 ACT-1 drift guard: registry may certify only registered B14 lanes."""
+    for tier, route in all_routes():
+        if route.status is RouteStatus.EXECUTABLE:
+            assert get_catalog_by_id(route.model_id) is not None, (
+                f"{tier.value}: executable registry route {route.model_id!r} "
+                "is not registered in the B14 catalog"
+            )
+
+def test_no_executable_registry_route_is_retired() -> None:
+    for tier, route in all_routes():
+        if route.status is RouteStatus.EXECUTABLE:
+            assert route.model_id not in RETIRED_KILO_FREE_MODEL_IDS, (
+                f"{tier.value}: retired lane {route.model_id!r} must never be executable"
+            )
+
+def test_plus_pro_registry_routes_match_chat_product_policy_literals() -> None:
+    assert active_route_for(TierLabel.PLUS).model_id == _chat_policy_source_literal(
+        "LOW_B14_MODEL_ID"
+    )
+    assert active_route_for(TierLabel.PRO).model_id == _chat_policy_source_literal(
+        "MEDIUM_B14_MODEL_ID"
+    )
+
+def test_retired_minimax_pro_lane_is_data_only_and_documented() -> None:
+    minimax_routes = [
+        route
+        for _, route in all_routes()
+        if route.model_id == "kilo/minimax-minimax-m3-free"
+    ]
+    assert minimax_routes
+    for route in minimax_routes:
+        assert route.status is RouteStatus.HOLD_AS_DATA_ONLY
+        assert route.hold_reason and "RETIRED" in route.hold_reason
+        assert "auto" not in route.route_id.lower()
 
 def test_no_silent_fallback_anywhere() -> None:
     for tier in TIER_REGISTRY:
