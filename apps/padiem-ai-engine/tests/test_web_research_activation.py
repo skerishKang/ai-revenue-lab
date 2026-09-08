@@ -54,6 +54,7 @@ def _agent() -> dict[str, object]:
         "task_type": "general",
         "optimize_for": "balanced",
         "max_tokens": 400,
+        "model_policy": {"model": "test/route"},
     }
 
 

@@ -106,7 +106,7 @@ def _payload() -> dict:
             "optimize_for": "balanced",
             "max_tokens": 2048,
             "required_capabilities": ["chat"],
-            "model_policy": {"mode": "balanced"},
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "Run admitted work"}],
         "session_id": "session:admission_1",
