@@ -5,14 +5,13 @@ DOC_STATUS = EVIDENCE_SNAPSHOT
 OWNER = repository documentation governance
 SCOPE = completion record for Padiem AI documentation unification
 PR = #2127
-MUTATION_SCOPE = documentation reconciliation relative to current main
 PRODUCTION_MUTATION = NO
 LATEST_MAIN_RECONCILED = e6e5bf77e2e17e8a0b96c2b1245bd62a8703de20
 ```
 
 ## Result
 
-The Padiem AI documentation authority has been reconciled around one stable vertical architecture:
+The Padiem AI documentation authority is reconciled around one stable vertical architecture:
 
 ```text
 Product / Business adapter
@@ -24,53 +23,52 @@ Product / Business adapter
 
 IP-CONTROL = cross-cutting identity / tenant / entitlement / usage / audit
              + neutral cross-product declarations
-
-IP-SIDECAR = reusable embedded AI runtime primitives
-             S2 minimal runtime contract source-present / non-production
-B53 Padiem Sidecar = separate commercial product and primary commercial consumer
 ```
 
-The documentation pass was re-synchronized after `main` advanced with #2135. The resulting authority therefore reflects the actual S2 package at `packages/padiem-embedded-runtime/` rather than the earlier S1-only proposed state.
+B53 Padiem Sidecar remains the commercial product and primary commercial consumer of IP-SIDECAR. IP-SIDECAR is the reusable embedded runtime layer.
+
+The documentation pass was re-synchronized after `main` advanced with #2135, so current authority reflects the actual S2 package at `packages/padiem-embedded-runtime/` rather than the earlier S1-only proposed state.
 
 ## Completion checklist
 
 ```text
 [COMPLETE] central documentation entrypoint
 [COMPLETE] canonical vertical-stack architecture
+[COMPLETE] stable capability ownership registry
 [COMPLETE] Internal Platform registry for IP-CORE/IP-ENGINE/IP-CONTROL/IP-SIDECAR
 [COMPLETE] AI adoption/classification playbook
-[COMPLETE] product consumer matrix for Chat/Claw/StoryMemory/Sidecar and other consumers
-[COMPLETE] Engine top-level README
-[COMPLETE] Control Plane top-level README
+[COMPLETE] product consumer matrix
+[COMPLETE] Engine and Control Plane top-level READMEs
 [COMPLETE] Padiem Chat Plus/Pro/Max documentation reconciliation
-[COMPLETE] B14 Router Platform vs Padiem Routing Profile distinction
+[COMPLETE] B14 Router Platform vs product-profile distinction
 [COMPLETE] StoryMemory/Bible domain-vs-shared retrieval boundary
 [COMPLETE] B53 Sidecar vs IP-SIDECAR identity split
-[COMPLETE] IP-SIDECAR S2 source-present / non-production state reconciled after #2135
-[COMPLETE] Capability Ownership Registry converted from volatile status inventory to stable ownership authority
-[COMPLETE] Claw current README converted from legacy P01 terminology to IP-CORE terminology
-[COMPLETE] Core current README removes historical LOW/MEDIUM/HIGH route authority wording
-[COMPLETE] legacy terminology map established
-[COMPLETE] pre-unification Core/Claw/Capability Registry documents preserved as historical snapshots
-[COMPLETE] root/apps documentation points to current authority and historical snapshots are subordinate
-[COMPLETE] latest main Sidecar S2 package/workflow/manifest preserved while documentation was rebased forward
+[COMPLETE] IP-SIDECAR S2 source-present / non-production state after #2135
+[COMPLETE] Claw current terminology aligned to IP-CORE
+[COMPLETE] Core current README removes historical route authority wording
+[COMPLETE] legacy terminology map
+[COMPLETE] historical Core/Claw snapshots retained
+[COMPLETE] pre-unification capability registry retained by immutable audit-commit pointer
+[COMPLETE] latest main Sidecar S2 package/workflow/manifest preserved during merge-forward
 ```
 
-## Preserved historical snapshots
-
-The following pre-unification documents are retained without deleting their historical detail:
+## Historical evidence
 
 ```text
 docs/history/2026-09-01/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.audit.md
+  -> pointer to exact pre-unification registry at
+     f9ff7f81602138daa674811b9650bb7ffc86cf97
+
 docs/history/2026-09-01/PADIEM_AI_CORE_README.snapshot.md
+  -> preserved Core README snapshot
+
 docs/history/2026-09-02/PADIEM_CLAW_README.snapshot.md
+  -> preserved Claw README snapshot
 ```
 
-These files are evidence snapshots. Their legacy identifiers and point-in-time runtime status do not override current canonical documents.
+The pointer avoids copying a large stale runtime-status table into the current documentation tree while keeping the exact historical content immutable and addressable in Git history.
 
 ## Current authority set
-
-Start with:
 
 ```text
 docs/README.md
@@ -85,7 +83,7 @@ docs/governance/DOCUMENTATION_AUTHORITY_MODEL.md
 docs/governance/LEGACY_AI_TERMINOLOGY_MAP.md
 ```
 
-Component/product current documentation:
+Component/product documentation:
 
 ```text
 packages/padiem-ai-core/README.md
@@ -97,10 +95,10 @@ apps/padiem-chat/README.md
 apps/korean-ai-code-agent/README.md
 ```
 
-## Current Sidecar readiness rule
+## IP-SIDECAR current state
 
 ```text
-IP-SIDECAR SOURCE = packages/padiem-embedded-runtime/
+SOURCE = packages/padiem-embedded-runtime/
 SOURCE_PRESENT = YES
 S2_MINIMAL_RUNTIME_CONTRACT = LANDED
 ENGINE_CONNECTIVITY = NO
@@ -108,9 +106,7 @@ LIVE_PROVIDER_EXECUTION = NO
 PRODUCTION_ACTIVE = NO
 ```
 
-The S2 package contains bounded browser-safe embedded runtime primitives and deterministic tests/reference-host support. It does not prove a live Engine binding or model/provider path.
-
-## Current route-document rule
+## Current product tier wording
 
 ```text
 Padiem Plus = Laguna
@@ -120,11 +116,9 @@ USER_VISIBLE_AUTO = NO
 SILENT_FALLBACK = NO
 ```
 
-Exact IDs and executable status are not duplicated as permanent architecture truth; verify current Control Plane declaration and B14 catalog/source.
+Exact route IDs/executability remain volatile and must be checked against current Control Plane declaration and B14 source.
 
-## Documentation maintenance rule
-
-Future changes must update the document owned by the changed authority rather than copying the same volatile fact into multiple READMEs.
+## Maintenance rule
 
 ```text
 stable architecture / ownership -> canonical architecture + registries
@@ -134,10 +128,8 @@ cross-runtime projection        -> IP-ENGINE docs / manifest
 embedded shell/runtime state    -> IP-SIDECAR docs / package contract
 identity/entitlement/usage      -> IP-CONTROL docs/contracts
 provider/model execution        -> B14 docs/source
-historical point-in-time state  -> dated evidence snapshot
+historical point-in-time state  -> dated evidence or immutable Git revision
 ```
-
-A dated issue/PR/audit document may retain old terminology, but it must not be treated as current architecture merely because the file remains in the repository.
 
 ## Non-actions of PR #2127 relative to current main
 
@@ -152,4 +144,4 @@ PRODUCTION_MUTATION = 0
 HISTORICAL_EVIDENCE_DELETION = 0
 ```
 
-The Sidecar S2 runtime/workflow changes came from already-merged main (#2135) and were preserved during branch synchronization; they are not introduced by this documentation reconciliation PR.
+The Sidecar S2 runtime/workflow changes came from already-merged `main` (#2135) and were preserved during branch synchronization; they are not introduced by this documentation reconciliation PR.
