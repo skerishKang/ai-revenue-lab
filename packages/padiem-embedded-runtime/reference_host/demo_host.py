@@ -1,16 +1,22 @@
-"""Repository-local reference host for IP-SIDECAR (S2-S5 demos, non-production).
+"""Repository-local reference host for IP-SIDECAR (S2-S6 demos, non-production).
 
 Drives deterministic journeys — mount, open, context projection, notice,
-close, disable, bridge intake, citation presentation, and attachment input
-presentation — using only fixture data and an injected Engine port
-(normally :class:`DeterministicFakeEnginePort`). Performs no I/O, no
-network, and never touches real products.
+close, disable, bridge intake, citation presentation, attachment input
+presentation, and approval presentation — using only fixture data and an
+injected Engine port (normally :class:`DeterministicFakeEnginePort`).
+Performs no I/O, no network, and never touches real products.
 """
 
 from __future__ import annotations
 
 from typing import Mapping
 
+from padiem_embedded_runtime.approval_presentation import (
+    present_approval_proposals,
+    present_approval_state,
+    present_confirmation_intent,
+    present_public_reference,
+)
 from padiem_embedded_runtime.attachment_input import (
     present_attachment_ref,
     present_selections,
@@ -241,4 +247,66 @@ def run_attachment_journey(fixture: Mapping[str, object]) -> dict[str, object]:
     paths["lifecycle_malformed"] = present_upload_lifecycle(lifecycle_malformed).to_public_dict()
     paths["ref_valid"] = present_attachment_ref(ref_valid).to_public_dict()
     paths["ref_invalid"] = present_attachment_ref(ref_invalid).to_public_dict()
+    return {"paths": paths, "host_primary_journey": "unbroken"}
+
+
+def run_approval_journey(fixture: Mapping[str, object]) -> dict[str, object]:
+    """Drive the S6 approval presentation over deterministic paths.
+
+    Uses only fixture data. Projects normal/empty/degraded proposal lists,
+    the staged confirmation-intent flow plus one invalid intent, the
+    host-driven approval state flow plus one malformed state, and a valid vs
+    URL-shaped upstream reference. Nothing here verifies decisions, mints
+    authority, executes actions, or touches network/storage.
+    """
+    if not isinstance(fixture, Mapping):
+        raise SidecarContractError("approval fixture must be a mapping")
+    proposals_normal = fixture.get("proposals_normal")
+    proposals_empty = fixture.get("proposals_empty")
+    proposals_degraded = fixture.get("proposals_degraded")
+    intent_flow = fixture.get("intent_flow")
+    intent_malformed = fixture.get("intent_malformed")
+    state_flow = fixture.get("state_flow")
+    state_malformed = fixture.get("state_malformed")
+    reference_valid = fixture.get("reference_valid")
+    reference_invalid = fixture.get("reference_invalid")
+    for name, value in (
+        ("proposals_normal", proposals_normal),
+        ("proposals_empty", proposals_empty),
+        ("proposals_degraded", proposals_degraded),
+        ("intent_flow", intent_flow),
+        ("state_flow", state_flow),
+    ):
+        if not isinstance(value, list):
+            raise SidecarContractError(f"approval fixture needs a {name} list")
+    for name, value in (("intent_malformed", intent_malformed), ("state_malformed", state_malformed)):
+        if not isinstance(value, Mapping):
+            raise SidecarContractError(f"approval fixture needs a {name} mapping")
+    if not isinstance(reference_valid, str) or not isinstance(reference_invalid, str):
+        raise SidecarContractError("approval fixture needs reference strings")
+
+    paths: dict[str, object] = {}
+    for name, items in (
+        ("proposals_normal", proposals_normal),
+        ("proposals_empty", proposals_empty),
+        ("proposals_degraded", proposals_degraded),
+    ):
+        paths[name] = present_approval_proposals(items).to_public_dict()
+
+    paths["intent_flow"] = [
+        present_confirmation_intent(step).to_public_dict()
+        for step in intent_flow
+        if isinstance(step, Mapping)
+    ]
+    paths["intent_malformed"] = present_confirmation_intent(intent_malformed).to_public_dict()
+
+    paths["state_flow"] = [
+        present_approval_state(step).to_public_dict()
+        for step in state_flow
+        if isinstance(step, Mapping)
+    ]
+    paths["state_malformed"] = present_approval_state(state_malformed).to_public_dict()
+
+    paths["reference_valid"] = present_public_reference(reference_valid).to_public_dict()
+    paths["reference_invalid"] = present_public_reference(reference_invalid).to_public_dict()
     return {"paths": paths, "host_primary_journey": "unbroken"}
