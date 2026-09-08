@@ -93,15 +93,26 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 
     @staticmethod
     def _to_bytes(value: Any) -> bytes:
+        # A Service Binding ReadableStream hands back one already-delivered
+        # chunk at a time. In workerd that chunk is a JS typed array (Uint8Array)
+        # surfaced to Python as a proxy object, not a native bytes/bytearray, and
+        # it does not carry a ``to_bytes()`` method. Convert the single chunk to
+        # bytes without ever buffering the whole stream, and fail closed on shapes
+        # we cannot interpret.
         if value is None:
             return b""
         if isinstance(value, bytes):
             return value
-        if isinstance(value, bytearray):
+        if isinstance(value, (bytearray, memoryview)):
             return bytes(value)
-        if isinstance(value, memoryview):
-            return value.tobytes()
 
+        # Buffer protocol (JS typed arrays expose this through the proxy).
+        try:
+            return memoryview(value).tobytes()
+        except (TypeError, ValueError):
+            pass
+
+        # Explicit byte materialiser (kept for adapters/tests that expose it).
         to_bytes = getattr(value, "to_bytes", None)
         if callable(to_bytes):
             try:
@@ -110,14 +121,20 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
                 raise httpx.ReadError(
                     "Business 14 Service Binding returned unreadable stream bytes."
                 ) from exc
-            if isinstance(converted, bytes):
-                return converted
+            if isinstance(converted, (bytes, bytearray, memoryview)):
+                return bytes(converted)
             try:
                 return bytes(converted)
             except Exception as exc:
                 raise httpx.ReadError(
                     "Business 14 Service Binding returned unreadable stream bytes."
                 ) from exc
+
+        # Integer-iterable proxy (a Uint8Array yields 0..255 per element).
+        try:
+            return bytes(value)
+        except (TypeError, ValueError):
+            pass
 
         raise httpx.ReadError(
             "Business 14 Service Binding returned an unsupported stream chunk."
