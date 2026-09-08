@@ -16,6 +16,7 @@ Padiem은 하나의 거대한 AI 애플리케이션이 아니라, **공용 AI �
 
 ```text
 PRODUCTS OWN DOMAIN + UX.
+IP-SIDECAR OWNS REUSABLE EMBEDDED SHELL/CONTEXT/EVENT PRIMITIVES.
 IP-CORE OWNS REUSABLE AI SEMANTICS.
 IP-ENGINE OWNS CROSS-RUNTIME SERVICE PROJECTION.
 B14 OWNS MODEL/PROVIDER EXECUTION.
@@ -61,7 +62,8 @@ Business / Customer Adapter
 B53 Padiem Sidecar product layer
         │
         ▼
-IP-SIDECAR · Padiem Embedded AI Runtime   [PROPOSED / separately registered]
+IP-SIDECAR · Padiem Embedded AI Runtime
+S2 minimal runtime contract source-present / non-production
         │
         ▼
 IP-ENGINE
@@ -79,9 +81,9 @@ Provider / Model
 `B53 Padiem Sidecar`와 `IP-SIDECAR`는 같은 것이 아닙니다.
 
 - **B53**: 상업 제품, 설치/온보딩/패키징/고객 여정
-- **IP-SIDECAR**: 여러 제품이 재사용할 수 있는 embedded AI shell/runtime 후보
+- **IP-SIDECAR**: 여러 제품이 재사용할 수 있는 embedded shell/context/event/bootstrap runtime primitives
 
-IP-SIDECAR의 formal registry/source activation은 별도 승인 상태를 따라야 하며, 이 문서만으로 live runtime을 주장하지 않습니다.
+현재 `packages/padiem-embedded-runtime/`에 S2 minimal runtime contract가 존재합니다. 다만 이것은 **source-present / non-production** 상태이며 real Engine transport, live Provider execution, OAuth, Production deployment를 제공하지 않습니다. Source presence를 Production activation으로 해석해서는 안 됩니다.
 
 ### 2.3 Control Plane is cross-cutting
 
@@ -104,7 +106,7 @@ Control Plane은 모델 실행 스택의 한 단계라기보다 모든 계층에
 | Layer | Canonical ID / product | Owns | Must not own |
 |---|---|---|---|
 | Product/Business | B61/B62/B54/etc. | UX, domain state, product persistence, product adapter, presentation | generic AI runtime semantics, Provider credentials, generic model router |
-| Embedded shell | IP-SIDECAR (proposed) | reusable panel/shell, host-context bridge, browser-safe stream/event presentation | product domain meaning, Core semantics, Engine machine auth, B14 routing |
+| Embedded shell | IP-SIDECAR | reusable shell lifecycle, browser-safe bootstrap, host-context envelope, public-safe event projection, host adapter integration contract | product domain meaning, Core semantics, Engine machine auth/transport, B14 routing/credentials |
 | Service boundary | IP-ENGINE | trusted caller/service boundary, wire projection, cross-runtime execution/orchestration exposure | product UX, generic semantic authority, Provider/model routing |
 | Shared semantics | IP-CORE | execution, evidence, grounding, permission, retrieval/memory semantics, Tool/Skill/Agent/orchestration contracts | product domain schema, product UI, Provider catalog/credentials |
 | Execution plane | B14 | Provider/model registry, exact route validation/selection, inference credentials, upstream execution, execution-level retry/fallback policy | product memory/domain state, product UX, Control Plane identity truth |
@@ -194,7 +196,17 @@ The accepted public conformance record is `PADIEM_AI_RETRIEVAL_CONSUMER_CONFORMA
 
 ### B53 · Padiem Sidecar
 
-B53 is the commercial embedded-AI product. It does not own generic Core/Engine/B14 semantics. Reusable embedded shell/runtime primitives belong to the proposed IP-SIDECAR layer once formally registered/implemented.
+B53 is the commercial embedded-AI product. It does not own generic Core/Engine/B14 semantics. Reusable embedded shell/context/event/bootstrap primitives belong to IP-SIDECAR.
+
+Current shared-runtime state:
+
+```text
+SOURCE = packages/padiem-embedded-runtime/
+S2_MINIMAL_RUNTIME_CONTRACT = LANDED
+ENGINE_CONNECTIVITY = NO
+LIVE_PROVIDER_EXECUTION = NO
+PRODUCTION_ACTIVE = NO
+```
 
 ### Other products
 
@@ -224,6 +236,7 @@ Credential type matters.
 - inference Provider/model credentials: **B14 trusted execution boundary**
 - identity/tenant/connector authorization metadata: **Control Plane or trusted connector runtime according to that connector contract**
 - Core web/tool connector server credentials may exist inside the trusted runtime that owns that capability, but never transfer model-routing authority to Core
+- IP-SIDECAR bootstrap/context must remain browser-safe and must not carry raw secrets
 - browser/product state must not contain raw Provider secrets
 
 A product may carry a credential binding/reference identifier only when the relevant shared contract permits it; it does not own the secret value.
@@ -240,7 +253,9 @@ SOURCE_PRESENT
 != PRODUCTION_ACTIVE
 ```
 
-Documentation must therefore avoid phrases such as "live" or "available" solely because a class, endpoint or UI control exists on `main`.
+Documentation must therefore avoid phrases such as "live" or "available" solely because a class, endpoint, package or UI control exists on `main`.
+
+For IP-SIDECAR specifically, S2 currently proves source/contract presence only; it does not prove Engine transport or Production activation.
 
 ## 9. Current canonical references
 
@@ -248,10 +263,12 @@ Documentation must therefore avoid phrases such as "live" or "available" solely 
 - `docs/internal-platform/README.md`
 - `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
 - `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
+- `docs/internal-platform/sidecar/README.md`
 - `docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`
-- `docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md` — detailed capability inventory/audit; runtime status rows are snapshot-oriented
+- `docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md`
 - `docs/architecture/PADIEM_AI_RETRIEVAL_CONSUMER_CONFORMANCE_v1.md`
 - `packages/padiem-ai-core/README.md`
+- `packages/padiem-embedded-runtime/README.md`
 - `apps/korean-ai-platform/README.md`
 - `apps/padiem-chat/README.md`
 - `apps/korean-ai-code-agent/README.md`
