@@ -36,6 +36,7 @@ def test_multimodal_request_is_b14_request_compatible_and_round_trips(media_type
             {"role": "system", "content": "system"},
             {"role": "user", "content": content(media_type, data)},
         ),
+        model="test/route",
         routing=B14RoutingOptions(required_capabilities=("free", "image")),
     )
     assert isinstance(request, B14ChatRequest)
@@ -48,7 +49,7 @@ def test_multimodal_request_is_b14_request_compatible_and_round_trips(media_type
 def test_multimodal_request_is_copy_and_freeze_safe() -> None:
     parts = content()
     messages = [{"role": "user", "content": parts}]
-    request = B14MultimodalChatRequest(messages=messages)
+    request = B14MultimodalChatRequest(messages=messages, model="test/route")
     parts[0]["text"] = "mutated"
     parts[1]["image_url"]["url"] = "mutated"
     messages.clear()
@@ -61,7 +62,10 @@ def test_multimodal_request_is_copy_and_freeze_safe() -> None:
 @pytest.mark.parametrize("role", ["system", "assistant"])
 def test_multimodal_rejected_for_non_user_roles(role) -> None:
     with pytest.raises(ValueError, match="only user messages"):
-        B14MultimodalChatRequest(messages=({"role": role, "content": content()},))
+        B14MultimodalChatRequest(
+            messages=({"role": role, "content": content()},),
+            model="test/route",
+        )
 
 
 @pytest.mark.parametrize(
@@ -85,7 +89,10 @@ def test_multimodal_rejected_for_non_user_roles(role) -> None:
 )
 def test_invalid_multimodal_shapes_fail_closed(parts) -> None:
     with pytest.raises(ValueError):
-        B14MultimodalChatRequest(messages=({"role": "user", "content": parts},))
+        B14MultimodalChatRequest(
+            messages=({"role": "user", "content": parts},),
+            model="test/route",
+        )
 
 
 @pytest.mark.parametrize(
@@ -108,7 +115,8 @@ def test_remote_unsupported_bad_base64_and_magic_mismatch_rejected_without_echo(
                         {"type": "image_url", "image_url": {"url": url}},
                     ],
                 },
-            )
+            ),
+            model="test/route",
         )
     assert url not in str(info.value)
 
@@ -118,13 +126,14 @@ def test_image_over_4_mib_rejected_without_echo() -> None:
     url = data_url("image/png", oversized)
     with pytest.raises(ValueError, match="4 MiB") as info:
         B14MultimodalChatRequest(
-            messages=({"role": "user", "content": content("image/png", oversized)},)
+            messages=({"role": "user", "content": content("image/png", oversized)},),
+            model="test/route",
         )
     assert url not in str(info.value)
 
 
 def test_text_only_behavior_remains_equal_to_base_request() -> None:
     messages = ({"role": "user", "content": " hello "},)
-    base = B14ChatRequest(messages=messages)
-    extended = B14MultimodalChatRequest(messages=messages)
+    base = B14ChatRequest(messages=messages, model="test/route")
+    extended = B14MultimodalChatRequest(messages=messages, model="test/route")
     assert extended.to_payload() == base.to_payload()

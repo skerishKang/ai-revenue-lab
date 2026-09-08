@@ -116,6 +116,7 @@ def execute_payload() -> dict:
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 256,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "hello"}],
         "session_id": "session-1",

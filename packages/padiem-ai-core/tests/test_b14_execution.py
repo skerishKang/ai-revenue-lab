@@ -57,6 +57,7 @@ def request_fixture() -> B14ChatRequest:
             {"role": "system", "content": "Answer clearly."},
             {"role": "user", "content": "안녕하세요"},
         ),
+        model="b14/auto",
         max_tokens=700,
         routing=B14RoutingOptions(
             task_type="general",
@@ -160,8 +161,16 @@ def test_routing_options_fail_closed_before_network(kwargs, match: str) -> None:
         B14RoutingOptions(**kwargs)
 
 
-def test_request_defaults_to_auto_and_does_not_add_stream_or_tools() -> None:
-    request = B14ChatRequest(messages=({"role": "user", "content": " hello "},))
+def test_request_requires_an_explicit_model() -> None:
+    with pytest.raises(TypeError):
+        B14ChatRequest(messages=({"role": "user", "content": "hello"},))
+
+
+def test_explicit_request_does_not_add_stream_or_tools() -> None:
+    request = B14ChatRequest(
+        messages=({"role": "user", "content": " hello "},),
+        model="b14/auto",
+    )
     payload = request.to_payload()
     assert payload == {
         "model": "b14/auto",
@@ -175,7 +184,7 @@ def test_request_defaults_to_auto_and_does_not_add_stream_or_tools() -> None:
 
 def test_request_copies_messages_and_is_not_affected_by_caller_mutation() -> None:
     messages = [{"role": "user", "content": "original"}]
-    request = B14ChatRequest(messages=messages)  # type: ignore[arg-type]
+    request = B14ChatRequest(messages=messages, model="test/route")  # type: ignore[arg-type]
     messages[0]["content"] = "mutated"
     messages.append({"role": "assistant", "content": "extra"})
     assert request.to_payload()["messages"] == [{"role": "user", "content": "original"}]
@@ -195,7 +204,7 @@ def test_request_copies_messages_and_is_not_affected_by_caller_mutation() -> Non
 )
 def test_request_rejects_obvious_invalid_messages(messages) -> None:
     with pytest.raises(ValueError):
-        B14ChatRequest(messages=messages)  # type: ignore[arg-type]
+        B14ChatRequest(messages=messages, model="test/route")  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -211,8 +220,10 @@ def test_request_rejects_obvious_invalid_messages(messages) -> None:
     ],
 )
 def test_request_rejects_invalid_request_fields(kwargs) -> None:
+    fields: dict[str, object] = {"model": "test/route"}
+    fields.update(kwargs)
     with pytest.raises(ValueError):
-        B14ChatRequest(messages=({"role": "user", "content": "x"},), **kwargs)
+        B14ChatRequest(messages=({"role": "user", "content": "x"},), **fields)
 
 
 def test_client_uses_exact_endpoint_payload_and_no_provider_credentials() -> None:
@@ -498,7 +509,9 @@ def test_missing_or_invalid_optional_metadata_remains_unknown_not_fabricated() -
         B14ExecutionClient(
             B14ExecutionConfig(base_url="https://b14.example"),
             httpx.MockTransport(handler),
-        ).execute(B14ChatRequest(messages=({"role": "user", "content": "x"},)))
+        ).execute(
+            B14ChatRequest(messages=({"role": "user", "content": "x"},), model="test/route")
+        )
     )
     assert result.answer == "ok"
     assert result.route.request_id is None
@@ -519,7 +532,9 @@ def test_missing_business14_and_usage_metadata_is_valid() -> None:
         B14ExecutionClient(
             B14ExecutionConfig(base_url="https://b14.example"),
             httpx.MockTransport(handler),
-        ).execute(B14ChatRequest(messages=({"role": "user", "content": "x"},)))
+        ).execute(
+            B14ChatRequest(messages=({"role": "user", "content": "x"},), model="test/route")
+        )
     )
     assert result.route.request_id is None
     assert result.route.selected_provider is None

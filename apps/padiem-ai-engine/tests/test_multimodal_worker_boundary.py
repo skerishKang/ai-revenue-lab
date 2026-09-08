@@ -129,6 +129,7 @@ def _multimodal_payload() -> bytes:
                 "task_type": "general",
                 "optimize_for": "balanced",
                 "max_tokens": 256,
+                "model_policy": {"model": "test/route"},
             },
             "messages": [{"role": "user", "content": "What is in this image?"}],
             "attachment_ref": VALID_REF,
