@@ -11,7 +11,7 @@ This directory exists so shared AI infrastructure can be found, governed, and re
 | `IP-CORE` | Padiem AI Core | `packages/padiem-ai-core/` | NONE |
 | `IP-ENGINE` | Padiem AI Engine | `apps/padiem-ai-engine/` | NONE |
 | `IP-CONTROL` | Padiem Control Plane | `packages/padiem-control-plane/` | NONE |
-| `IP-SIDECAR` | Padiem Embedded AI Runtime | `packages/padiem-embedded-runtime/` (reserved, S1) | NONE |
+| `IP-SIDECAR` | Padiem Embedded AI Runtime | `packages/padiem-embedded-runtime/` (runtime contract S2; non-production) | NONE |
 
 These IDs are management identifiers only. They do not alter source paths, package names, Worker names, Business numbering, or deployment identities.
 
