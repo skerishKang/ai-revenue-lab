@@ -1,0 +1,68 @@
+{
+  "bootstrap": {
+    "contract_version": "1.0",
+    "host_id": "b53-ref-host",
+    "shell_version": "1.0.0",
+    "locale": "ko",
+    "features": ["event-feed"],
+    "host_name": "B53 Reference Host"
+  },
+  "context_valid": {
+    "page": "settlement-dashboard",
+    "workspace_label": "정산 워크스페이스",
+    "tenant_id": "must-be-dropped",
+    "role": "must-be-dropped"
+  },
+  "context_malformed": {
+    "page": "settlement-dashboard",
+    "count": 3
+  },
+  "streaming_flow": [
+    {"kind": "run_status_changed", "run_status": "created", "stream_id": "stream-1", "run_id": "run-1", "event_id": "evt-1", "sequence": 0, "summary": "run created"},
+    {"kind": "run_status_changed", "run_status": "running", "stream_id": "stream-1", "run_id": "run-1", "event_id": "evt-2", "sequence": 1, "summary": "run running"},
+    {"kind": "run_status_changed", "run_status": "running", "stream_id": "stream-1", "run_id": "run-1", "event_id": "evt-2", "sequence": 1, "summary": "run running"},
+    {"kind": "artifact_ready", "stream_id": "stream-1", "run_id": "run-1", "event_id": "evt-0", "sequence": 0, "summary": "stale replay"},
+    {"kind": "user_visible_error", "run_status": "failed", "stream_id": "stream-1", "run_id": "run-1", "event_id": "evt-9", "sequence": 9, "summary": "run failed"}
+  ],
+  "streaming_malformed": {"kind": "not_a_real_kind"},
+  "error_flow": [
+    {"reason_code": "RUN_FAILED", "run_id": "run-1", "summary": "run failed"},
+    {"reason_code": "RAW_PROVIDER_BODY"}
+  ],
+  "affordance_flow": [
+    {"affordance": "retry", "run_id": "run-1", "run_status": "failed"},
+    {"affordance": "cancel", "run_id": "run-1", "run_status": "completed"}
+  ],
+  "citations_normal": [
+    {"source_id": "doc-settle-1", "title": "정산 기준 안내", "locator": "section-2"},
+    {"source_id": "doc-tax-2", "title": "세율 표"}
+  ],
+  "citations_degraded": [
+    {"source_id": "doc-ok", "title": "ok"},
+    {"source_id": "bad id", "title": "x"},
+    "raw-string"
+  ],
+  "selections_normal": [
+    {"name": "report.pdf", "media_type": "application/pdf", "byte_size": 20480},
+    {"name": "photo.png", "media_type": "image/png", "byte_size": 5242880}
+  ],
+  "selections_degraded": [
+    {"name": "notes.txt", "media_type": "text/plain", "byte_size": 1024},
+    {"name": "C:\\path\\evil", "media_type": "text/plain", "byte_size": 10},
+    {"name": "big.bin", "media_type": "application/octet-stream", "byte_size": 300000000}
+  ],
+  "attachment_ref_valid": "att_Zm9vYmFyMTIzNDU2Nzg5MDEy",
+  "attachment_ref_invalid": "https://files.example.com/a.png",
+  "approval_proposals_normal": [
+    {"proposal_id": "prop-1", "tool_id": "tool.settlement.apply", "requirement": "user-confirmation", "summary": "Apply settlement update"}
+  ],
+  "approval_intent_flow": [
+    {"intent": "approve", "proposal_id": "prop-1"},
+    {"intent": "force-approve", "proposal_id": "prop-1"}
+  ],
+  "approval_state_flow": [
+    {"state": "pending"},
+    {"state": "expired", "reason_code": "AUTHORITY_TIMEOUT"}
+  ],
+  "approval_state_malformed": {"state": "auto_approved"}
+}
