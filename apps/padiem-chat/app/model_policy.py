@@ -2,6 +2,32 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from padiem_control_plane.product_tier_routes import (
+    RETIRED_PRODUCT_MODEL_IDS,
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
+from padiem_control_plane.product_tier_routes import (
+    MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
+)
+
+# #2099 STEP-2: the Plus/Pro/Max route IDs are no longer literals owned here.
+# They are derived from the neutral shared declaration contract
+# (padiem_control_plane.product_tier_routes), which Chat and — from #2100 —
+# Claw consume as their single product-side source of truth. Business 14's
+# catalog remains the final execution authority: a contract route that B14
+# unregisters fails closed at dispatch time.
+
+def _contract_route_id(label: ProductTierLabel) -> str:
+    try:
+        route = active_route_for(label)
+    except ProductTierRoutesError as exc:  # fail closed before any dispatch
+        raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
+    if route is None or not route.model_id:
+        raise RuntimeError(f"product tier route contract has no executable route for {label.value}")
+    return route.model_id
+
 
 DEFAULT_CHAT_PROFILE = "medium"
 AUTO_B14_MODEL_ID = "b14/auto"
@@ -9,21 +35,17 @@ AUTO_B14_MODEL_ID = "b14/auto"
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
-LOW_B14_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
-MEDIUM_B14_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
+LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)
+MEDIUM_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PRO)
+MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
 
 # Kilo Gateway free lanes that are no longer offered upstream. Re-checked
 # against the public Gateway model list on 2026-09-08: neither
 # ``minimax/minimax-m3:free`` nor ``tencent/hy3:free`` is listed anymore, so
 # both product routes are retired and must never back an executable tier.
-# (#2094: the stale minimax default caused every Pro/default chat failure.)
-RETIRED_B14_MODEL_IDS = frozenset(
-    {
-        "kilo/minimax-minimax-m3-free",
-        "kilo/tencent-hy3-free",
-    }
-)
+# (#2094: the stale minimax default caused every Pro/default chat failure.
+# #2099 STEP-2: the set itself is declared once in the shared contract.)
+RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)
 # Compatibility name retained for consumers that reason in low/medium/high
 # profiles. High currently names the Max product tier but is deliberately not
 # an executable B14 route until #1397 approves a replacement.
@@ -55,12 +77,13 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
 }
 EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
 
-# Current source posture after bounded activation/benchmark evidence:
+# Current source posture after bounded activation/benchmark evidence (#2099
+# STEP-2: all route identities below are derived from the shared contract):
 #
 #   Padiem Plus -> Kilo-hosted Poolside Laguna S 2.1 free
 #   Padiem Pro  -> Kilo-hosted NVIDIA Nemotron 3 Ultra free (default, general
 #                  answers; remapped from the retired MiniMax M3 free lane in
-#                  #2094 after Kilo removed minimax/minimax-m3:free)
+#                  #2094/#2096 after Kilo removed minimax/minimax-m3:free)
 #   Padiem Max  -> HOLD (Hy3 is inactive after HTTP 404; no replacement is
 #                  auto-promoted from volatile free availability)
 #
