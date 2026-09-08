@@ -19,6 +19,7 @@ from app.model_policy import (
     PADIEM_PRO,
     PRODUCT_TIER_NAMES,
     PROFILE_MODEL_IDS,
+    RETIRED_B14_MODEL_IDS,
     UNASSIGNED_B14_MODEL_ID,
     ModelPolicyError,
     model_policy_is_executable,
@@ -34,7 +35,7 @@ def test_three_product_tier_identities_remain_known_and_pro_is_default():
 
     assert DEFAULT_CHAT_PROFILE == "medium"
     assert LOW_B14_MODEL_ID == "kilo/poolside-laguna-s-2.1-free"
-    assert MEDIUM_B14_MODEL_ID == "kilo/minimax-minimax-m3-free"
+    assert MEDIUM_B14_MODEL_ID == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
     assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
     assert "hy3" not in HIGH_B14_MODEL_ID
@@ -175,3 +176,31 @@ def test_tier_assignment_is_distinct_from_route_executability():
         assert MODEL_CAPABILITIES[model_id] == frozenset()
 
     assert AUTO_B14_MODEL_ID == "b14/auto"
+
+
+def test_executable_profile_routes_are_explicit_registered_and_not_retired():
+    """#2094 contract: no product tier may ever point at a retired free lane."""
+    assert RETIRED_B14_MODEL_IDS == frozenset(
+        {
+            "kilo/minimax-minimax-m3-free",
+            "kilo/tencent-hy3-free",
+        }
+    )
+
+    for executable_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
+        assert executable_id not in RETIRED_B14_MODEL_IDS
+
+    for profile_id in ("low", "medium"):
+        model_id = PROFILE_MODEL_IDS[profile_id]
+        assert model_policy_is_executable(model_id) is True
+        assert model_id not in RETIRED_B14_MODEL_IDS
+        assert model_id.startswith("kilo/")
+        assert model_id.count("/") == 1
+        assert model_id != AUTO_B14_MODEL_ID
+
+    assert PROFILE_MODEL_IDS["high"] == MAX_HOLD_MODEL_ID
+    assert model_policy_is_executable(MAX_HOLD_MODEL_ID) is False
+
+    assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
+    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
+    assert DEFAULT_B14_MODEL_ID not in RETIRED_B14_MODEL_IDS

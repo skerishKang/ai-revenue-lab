@@ -136,6 +136,24 @@ def _chat_error(code: str) -> ChatRuntimeError:
             "invalid_request",
             "AI 요청 형식을 확인할 수 없습니다.",
         )
+    if code == "upstream_auth_error":
+        return ChatRuntimeError(
+            502,
+            "provider_auth_error",
+            "AI 서비스 인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    if code == "upstream_request_error":
+        return ChatRuntimeError(
+            502,
+            "provider_route_error",
+            "현재 AI 모델이 요청을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        )
+    if code == "upstream_server_error":
+        return ChatRuntimeError(
+            502,
+            "provider_server_error",
+            "AI 모델 제공자 측에서 일시적 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+        )
     return ChatRuntimeError(
         502,
         "upstream_error",
