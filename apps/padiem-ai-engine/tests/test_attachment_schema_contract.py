@@ -90,10 +90,25 @@ def test_provision_gate_applies_0004_in_sequence() -> None:
     assert "'padiem_engine_attachment_images'" in gate
 
 
-def test_schema_slice_adds_no_worker_binding_or_wiring() -> None:
+def test_attachment_wiring_is_a_repo_owned_d1_binding_only() -> None:
+    """#2152 shipped the schema with zero wiring; #2182 S5 adds exactly one
+    repo-owned D1 binding. Nothing else about the attachment surface may be
+    declared in wrangler: no bucket, KV, var, secret or new Worker."""
+
     wrangler = _text(WRANGLER)
 
-    assert "ATTACHMENT" not in wrangler.upper()
+    assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
+    assert wrangler.count("[[d1_databases]]") == 4
+    assert wrangler.count('binding = "') == 5
+    for forbidden in (
+        "[[r2_buckets]]",
+        "[[kv_namespaces]]",
+        "[[vars]]",
+        "[[unsafe]]",
+        "ATTACHMENT_STORAGE",
+        "ATTACHMENT_SECRET",
+    ):
+        assert forbidden not in wrangler
     migration = _text(MIGRATION).lower()
     assert "insert" not in migration
     assert "select" not in migration

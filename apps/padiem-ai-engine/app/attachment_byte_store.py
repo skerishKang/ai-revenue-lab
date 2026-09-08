@@ -1,8 +1,9 @@
 """Canonical scoped image-byte store authority for Engine E5 (#2138).
 
-This module is the source-only durable byte store contract that the #2137
-deployment resolver will consume before any ``att_*`` multimodal activation
-(#1971/#1972). It mirrors the repository-native precedents exactly:
+This module is the durable scoped byte store contract that the #2137
+deployment resolver consumes (#2182 S5), still ahead of any ``att_*``
+multimodal activation (#1971/#1972). It mirrors the repository-native
+precedents exactly:
 
 - the D1-like adapter pattern of ``app/evidence_storage_d1.py`` and
   ``app/continuation_d1.py`` (constructor takes a trusted binding, async SQL
@@ -27,10 +28,12 @@ Authority rules enforced here:
   integrity; any mismatch fails closed and error messages never echo payload
   bytes, references or storage state.
 
-Source-only in S1: nothing in the composition root, worker code or
-``wrangler.toml`` imports or binds this module; production storage
-provisioning, resolver wiring and manifest activation are separate,
-explicitly gated later steps.
+Wired in #2182 S5: ``worker_identity.py`` composes ``ScopedImageByteStore`` over
+the repo-owned ``ENGINE_IMAGE_STORE`` D1 binding and hands it to the multimodal
+services. That wiring declares no storage of its own: production schema
+provisioning stays with the D1 provision gate, resolver construction stays
+per-request behind the trusted scope authority, and manifest activation remains
+a separate explicitly gated step.
 """
 
 from __future__ import annotations
@@ -223,9 +226,10 @@ class CloudflareD1ImageByteStore:
 
     Mirrors ``CloudflareD1EvidenceStoragePort``: the binding is deployment-
     owned, the schema is provisioned by the deployment owner (never by app
-    code), and payloads are stored base64-encoded in a bounded column. This
-    adapter is source-only: no composition root or wrangler binding imports
-    it in S1.
+    code), and payloads are stored base64-encoded in a bounded column. Since
+    #2182 S5 this adapter is composed only in ``worker_identity.py`` behind the
+    repo-owned ``ENGINE_IMAGE_STORE`` binding; app code never creates or mutates
+    schema.
     """
 
     def __init__(self, binding: Any) -> None:

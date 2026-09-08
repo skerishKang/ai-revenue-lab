@@ -384,15 +384,33 @@ class FakeRuntime:
         )
 
 
-def _service(resolver: ByteStoreTrustedAttachmentResolver) -> tuple[MultimodalAttachmentEngineService, FakeRuntime]:
+def _service(
+    store: ScopedImageByteStore | None,
+    authority: "FakeScopeAuthority | None" = None,
+) -> tuple[MultimodalAttachmentEngineService, FakeRuntime]:
     runtime = FakeRuntime()
     return (
         MultimodalAttachmentEngineService(
             runtime_factory=lambda app_id: runtime,
-            attachment_resolver=resolver,
+            image_byte_store=store,
+            scope_authority=FakeScopeAuthority() if authority is None else authority,
         ),
         runtime,
     )
+
+
+class FakeScopeAuthority:
+    """Test stand-in for the deployment-owned per-request scope authority."""
+
+    def __init__(self, scope: TrustedCallerScope = SCOPE) -> None:
+        self.scope = scope
+        self.calls: list[dict[str, str]] = []
+
+    async def scope_for_request(
+        self, *, app_id: str, auth_session_id: str
+    ) -> TrustedCallerScope:
+        self.calls.append({"app_id": app_id, "auth_session_id": auth_session_id})
+        return self.scope
 
 
 def _payload(ref: str, app_id: str = APP_ID) -> dict[str, Any]:
@@ -417,29 +435,88 @@ def _payload(ref: str, app_id: str = APP_ID) -> dict[str, Any]:
 
 
 def test_service_resolves_through_the_real_store_boundary() -> None:
-    store, _, resolver = _pair()
-    service, runtime = _service(resolver)
+    store, _, _ = _pair()
+    authority = FakeScopeAuthority()
+    service, runtime = _service(store, authority)
 
     async def scenario() -> None:
         record = await _admit(store)
         response = await service.execute_payload(_payload(record.attachment_ref))
         assert response.status_code == 200
         assert response.body["answer"] == "사진 답변"
-        assert response.body["attachment"] == {
-            "kind": "image",
-            "media_type": "image/png",
-            "byte_size": len(PNG_BYTES),
-            "provenance_id": FIXED_PROVENANCE,
-        }
+        assert authority.calls == [
+            {"app_id": APP_ID, "auth_session_id": "session-2137"}
+        ]
+        projected = response.body["attachment"]
+        assert projected["kind"] == "image"
+        assert projected["media_type"] == "image/png"
+        assert projected["byte_size"] == len(PNG_BYTES)
+        assert projected["provenance_id"].startswith("prov_")
         assert repr(PNG_BYTES) not in repr(response.body)
         assert runtime.requests and runtime.requests[0].messages
 
     asyncio.run(scenario())
 
 
+def test_service_builds_one_resolver_per_request() -> None:
+    store, _, _ = _pair()
+    authority = FakeScopeAuthority()
+    service, _ = _service(store, authority)
+
+    async def scenario() -> None:
+        record = await _admit(store)
+        provenance = []
+        for _ in range(2):
+            response = await service.execute_payload(_payload(record.attachment_ref))
+            assert response.status_code == 200
+            provenance.append(response.body["attachment"]["provenance_id"])
+        assert len(authority.calls) == 2, "scope must be minted per request"
+        assert provenance[0] != provenance[1], "no resolver may be cached across requests"
+
+    asyncio.run(scenario())
+
+
+def test_service_fails_closed_without_either_authority() -> None:
+    store, _, _ = _pair()
+
+    async def scenario() -> None:
+        record = await _admit(store)
+        no_store = MultimodalAttachmentEngineService(
+            runtime_factory=lambda app_id: FakeRuntime(),
+            image_byte_store=None,
+            scope_authority=FakeScopeAuthority(),
+        )
+        no_authority = MultimodalAttachmentEngineService(
+            runtime_factory=lambda app_id: FakeRuntime(),
+            image_byte_store=store,
+            scope_authority=None,
+        )
+        no_session = MultimodalAttachmentEngineService(
+            runtime_factory=lambda app_id: FakeRuntime(),
+            image_byte_store=store,
+            scope_authority=FakeScopeAuthority(),
+        )
+        results = [
+            await no_store.execute_payload(_payload(record.attachment_ref)),
+            await no_authority.execute_payload(_payload(record.attachment_ref)),
+            await no_session.execute_payload(
+                {
+                    k: v
+                    for k, v in _payload(record.attachment_ref).items()
+                    if k != "session_id"
+                }
+            ),
+        ]
+        for response in results:
+            assert response.status_code == 503
+            assert response.body["error"]["code"] == "attachment_resolver_unavailable"
+
+    asyncio.run(scenario())
+
+
 def test_service_maps_store_failures_to_authority_status_codes() -> None:
-    store, _, resolver = _pair()
-    service, _ = _service(resolver)
+    store, _, _ = _pair()
+    service, _ = _service(store)
 
     async def scenario() -> None:
         record = await _admit(store)
@@ -483,6 +560,35 @@ def test_errors_never_echo_payload_or_scope_values() -> None:
     asyncio.run(scenario())
 
 
+def test_resolver_is_wired_only_through_the_trusted_authority_seam() -> None:
+    """#2182 S5 inverted the S1 source-only guard: composition is real, but the
+    resolver is never caller-supplied and never built in the composition root."""
+
+    service_source = (APP_ROOT / "app" / "multimodal_attachment_service.py").read_text(
+        encoding="utf-8"
+    )
+    assert "from app.attachment_resolver import ByteStoreTrustedAttachmentResolver" in service_source
+    assert "attachment_resolver=" not in service_source
+    assert "CloudflareD1ImageByteStore" not in service_source
+
+    identity = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
+    assert "ENGINE_IMAGE_STORE" in identity
+    assert "CloudflareD1ImageByteStore" in identity
+    assert "ScopedImageByteStore" in identity
+    assert "AuthSessionScopeAuthority" in identity
+    assert "attachment_resolver=" not in identity
+    # The per-request resolver is the service's responsibility, not the
+    # composition root's: no resolver object is ever handed to a service.
+    assert "ByteStoreTrustedAttachmentResolver" not in identity
+
+    wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
+    assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
+    assert wrangler.count('database_id = "') == 4
+
+    store_source = (APP_ROOT / "app" / "attachment_byte_store.py").read_text(encoding="utf-8")
+    assert "CREATE TABLE" not in store_source.upper()
+
+
 def test_module_is_pure_and_declares_no_io_or_schema() -> None:
     source = (APP_ROOT / "app" / "attachment_resolver.py").read_text(encoding="utf-8")
     assert "CREATE TABLE" not in source.upper()
@@ -497,24 +603,3 @@ def test_module_is_pure_and_declares_no_io_or_schema() -> None:
         assert forbidden not in imported, forbidden
     assert "open(" not in source
     assert "environ" not in source
-
-
-def test_resolver_is_not_wired_into_production_composition() -> None:
-    for name in (
-        "engine_composition.py",
-        "multimodal_attachment_service.py",
-        "attachment_byte_store.py",
-        "attachment_authority.py",
-        "document_context_service.py",
-    ):
-        source = (APP_ROOT / "app" / name).read_text(encoding="utf-8")
-        assert "from app.attachment_resolver" not in source
-        assert "import attachment_resolver" not in source
-        assert "ByteStoreTrustedAttachmentResolver" not in source
-    identity_path = APP_ROOT / "worker_identity.py"
-    if identity_path.exists():
-        identity = identity_path.read_text(encoding="utf-8")
-        assert "from app.attachment_resolver" not in identity
-        assert "ByteStoreTrustedAttachmentResolver" not in identity
-    wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
-    assert "attachment" not in wrangler.lower()

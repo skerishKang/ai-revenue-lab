@@ -571,13 +571,26 @@ def test_module_is_pure_and_declares_no_schema_or_io() -> None:
     assert "open(" not in source
 
 
-def test_store_is_not_wired_into_production_composition() -> None:
-    for name in ("engine_composition.py", "document_context_service.py", "attachment_authority.py"):
+def test_store_is_wired_only_into_canonical_composition() -> None:
+    """#2182 S5: the byte store reaches Production through worker_identity only.
+
+    No app-layer service constructs or imports the storage adapter directly, and
+    the binding stays a repo-owned D1 declaration rather than a new surface.
+    """
+
+    for name in (
+        "engine_composition.py",
+        "document_context_service.py",
+        "attachment_authority.py",
+        "multimodal_attachment_service.py",
+    ):
         source = (APP_ROOT / "app" / name).read_text(encoding="utf-8")
         assert "attachment_byte_store" not in source
         assert "ScopedImageByteStore" not in source
-    identity_path = APP_ROOT / "worker_identity.py"
-    if identity_path.exists():
-        assert "attachment_byte_store" not in identity_path.read_text(encoding="utf-8")
+    identity = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
+    assert "from app.attachment_byte_store import" in identity
+    assert 'ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"' in identity
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
-    assert "attachment" not in wrangler.lower()
+    assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
+    assert "[[r2_buckets]]" not in wrangler
+    assert "[[kv_namespaces]]" not in wrangler

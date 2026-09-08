@@ -1,11 +1,13 @@
 """Focused network-free conformance tests for Engine E5A (#1750).
 
 The caller wire may carry only an opaque server-issued ``attachment_ref``. A
-test-only in-memory trusted resolver stands in for the deployment-owned storage
-authority; the existing Core ``MultimodalExecutionRequest`` /
-``MultimodalExecutionRuntime`` contracts remain the sole image/media/model
-execution authority. No provider, storage or filesystem network call may occur
-in this suite.
+test-only in-memory authority stands in for the two deployment-owned inputs the
+service composes per request (#2182 S5): the scoped image byte store and the
+per-request trusted caller scope authority. The real
+``ByteStoreTrustedAttachmentResolver`` is built by the service itself, and the
+existing Core ``MultimodalExecutionRequest`` / ``MultimodalExecutionRuntime``
+contracts remain the sole image/media/model execution authority. No provider,
+storage or filesystem network call may occur in this suite.
 """
 
 from __future__ import annotations
@@ -13,6 +15,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -35,6 +38,13 @@ from app.attachment_authority import (
     TrustedImageAttachment,
     require_opaque_attachment_ref,
 )
+from app.attachment_byte_store import (
+    MAX_STORED_IMAGE_BYTES,
+    SUPPORTED_IMAGE_MEDIA_TYPES,
+    ImageByteStoreError,
+    StoredImageRecord,
+)
+from app.document_context_service import TrustedCallerScope
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -45,6 +55,8 @@ from app.service import ServiceResponse
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 APP_ID = "b62"
+TENANT_ID = "tenant-e5a"
+SUBJECT_ID = "u-1750"
 ATTACHMENT_REF = "att_" + "e5a" * 5 + "01"
 PROVENANCE_ID = "prov_1750_0001"
 
@@ -136,8 +148,22 @@ class RuntimeFactory:
         return self.runtime
 
 
-class InMemoryTrustedAttachmentResolver:
-    """Test-only deployment authority. Never wired into Production composition."""
+class InMemoryTrustedAttachmentAuthority:
+    """Test-only stand-in for the two deployment-owned authority inputs (#2182 S5).
+
+    One object implements both the scoped store facade read surface
+    (``fetch_image``) and the per-request scope authority
+    (``scope_for_request``), so it composes exactly where Production composes
+    the D1 image byte store and the Control Plane-backed scope authority. The
+    service then builds the real ``ByteStoreTrustedAttachmentResolver`` per
+    request; no resolver object is ever injected here.
+
+    Private storage state stays inside this object and is never returned across
+    the Engine boundary. The canonical store rejects non-allowlisted media and
+    oversized records at admit time (proven in test_attachment_byte_store);
+    reaching the projection with either is a deliberate corrupt-record fault
+    injection that leaves media magic and byte ceilings with Core.
+    """
 
     def __init__(
         self,
@@ -159,48 +185,92 @@ class InMemoryTrustedAttachmentResolver:
         self._storage_locator = storage_locator
         self._storage_credential = storage_credential
         self.calls: list[dict[str, str]] = []
+        self.scope_calls: list[dict[str, str]] = []
 
-    async def resolve_image(self, *, app_id: str, attachment_ref: str) -> TrustedImageAttachment:
+    async def scope_for_request(
+        self, *, app_id: str, auth_session_id: str
+    ) -> TrustedCallerScope:
+        """Mint the trusted triple; request content never selects tenant/subject."""
+
+        self.scope_calls.append({"app_id": app_id, "auth_session_id": auth_session_id})
+        return TrustedCallerScope(
+            app_id=APP_ID, subject_id=SUBJECT_ID, tenant_id=TENANT_ID
+        )
+
+    async def fetch_image(
+        self,
+        *,
+        attachment_ref: str,
+        app_id: str,
+        tenant_id: str,
+        subject_id: str,
+    ) -> tuple[StoredImageRecord, bytes]:
         self.calls.append({"app_id": app_id, "attachment_ref": attachment_ref})
         if attachment_ref in self._unknown_refs:
-            raise EngineAttachmentAuthorityError(
-                "attachment_not_found",
-                "Attachment reference is unknown.",
-                status_code=404,
+            raise ImageByteStoreError(
+                "not_found", "Image attachment is not available.", status_code=404
             )
-        media_type, data = self._attachments.get(attachment_ref, ("image/png", PNG_BYTES))
         if attachment_ref in self._app_scope_denials:
-            return TrustedImageAttachment(
-                attachment_ref=attachment_ref,
-                app_id="another-app",
-                media_type=media_type,
-                data=data,
-                provenance_id=PROVENANCE_ID,
+            raise ImageByteStoreError(
+                "unauthorized",
+                "Image attachment scope does not match the caller.",
+                status_code=403,
             )
-        expires_at = (
-            datetime.now(timezone.utc) - timedelta(seconds=30)
-            if attachment_ref in self._expired_refs
-            else None
+        if attachment_ref in self._expired_refs:
+            raise ImageByteStoreError(
+                "attachment_expired",
+                "Image attachment has expired.",
+                status_code=410,
+            )
+        media_type, data = self._attachments.get(
+            attachment_ref, ("image/png", PNG_BYTES)
         )
-        return TrustedImageAttachment(
-            attachment_ref=APP_SCOPE_MISMATCH_REF if attachment_ref in self._return_wrong_ref else attachment_ref,
+        resolved_ref = (
+            APP_SCOPE_MISMATCH_REF
+            if attachment_ref in self._return_wrong_ref
+            else attachment_ref
+        )
+        if media_type not in SUPPORTED_IMAGE_MEDIA_TYPES:
+            # Corrupt-record fault injection: the real store refuses
+            # non-allowlisted media at admit time (proven in
+            # test_attachment_byte_store), so bypass __post_init__ to keep the
+            # media/magic authority decision with Core.
+            record = object.__new__(StoredImageRecord)
+            for name, value in {
+                "attachment_ref": resolved_ref,
+                "app_id": app_id,
+                "tenant_id": tenant_id,
+                "subject_id": subject_id,
+                "media_type": media_type,
+                "byte_size": len(data),
+                "created_at": datetime.now(timezone.utc),
+                "expires_at": None,
+                "terminal": False,
+            }.items():
+                object.__setattr__(record, name, value)
+            return record, data
+        record = StoredImageRecord(
+            attachment_ref=resolved_ref,
             app_id=app_id,
+            tenant_id=tenant_id,
+            subject_id=subject_id,
             media_type=media_type,
-            data=data,
-            provenance_id=PROVENANCE_ID,
-            expires_at=expires_at,
+            byte_size=min(len(data), MAX_STORED_IMAGE_BYTES),
+            created_at=datetime.now(timezone.utc),
         )
+        return record, data
 
 
 def service_with(
-    resolver: InMemoryTrustedAttachmentResolver | None,
+    authority: InMemoryTrustedAttachmentAuthority | None,
     runtime: FakeRuntime | None = None,
 ) -> tuple[MultimodalAttachmentEngineService, FakeRuntime, RuntimeFactory]:
     fake = runtime or FakeRuntime(result=execution_result())
     factory = RuntimeFactory(fake)
     service = MultimodalAttachmentEngineService(
         runtime_factory=factory,
-        attachment_resolver=resolver,
+        image_byte_store=authority,
+        scope_authority=authority,
     )
     return service, fake, factory
 
@@ -219,12 +289,13 @@ def serialized(response: Any) -> str:
 
 
 def streaming_service_with(
-    resolver: InMemoryTrustedAttachmentResolver | None,
+    authority: InMemoryTrustedAttachmentAuthority | None,
     runtime: Any,
 ) -> MultimodalStreamingEngineService:
     return MultimodalStreamingEngineService(
         runtime_factory=lambda _app_id: runtime,
-        attachment_resolver=resolver,
+        image_byte_store=authority,
+        scope_authority=authority,
     )
 
 
@@ -247,7 +318,7 @@ class FakeStreamingRuntime:
 
 
 async def test_trusted_opaque_reference_resolves_and_projects_provenance_only() -> None:
-    resolver = InMemoryTrustedAttachmentResolver(
+    resolver = InMemoryTrustedAttachmentAuthority(
         attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)}
     )
     service, runtime, factory = service_with(resolver)
@@ -257,15 +328,24 @@ async def test_trusted_opaque_reference_resolves_and_projects_provenance_only() 
     assert response.status_code == 200
     assert response.body["ok"] is True
     assert resolver.calls == [{"app_id": APP_ID, "attachment_ref": ATTACHMENT_REF}]
+    assert resolver.scope_calls == [
+        {"app_id": APP_ID, "auth_session_id": "session-mm-1750"}
+    ]
     assert factory.app_ids == [APP_ID]
     assert len(runtime.requests) == 1
     assert isinstance(runtime.requests[0], MultimodalExecutionRequest)
     attachment = response.body["attachment"]
+    # Provenance is minted per request by the composed resolver, never echoed
+    # from caller-supplied content.
+    provenance_id = attachment["provenance_id"]
+    assert isinstance(provenance_id, str)
+    assert provenance_id.startswith("prov_")
+    assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}", provenance_id[5:])
     assert attachment == {
         "kind": "image",
         "media_type": "image/png",
         "byte_size": len(PNG_BYTES),
-        "provenance_id": PROVENANCE_ID,
+        "provenance_id": provenance_id,
     }
 
 
@@ -307,7 +387,7 @@ async def test_multimodal_stream_reuses_public_event_shape_and_single_terminal_e
         ]
     )
     service = streaming_service_with(
-        InMemoryTrustedAttachmentResolver(attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)}),
+        InMemoryTrustedAttachmentAuthority(attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)}),
         runtime,
     )
 
@@ -330,7 +410,7 @@ async def test_multimodal_stream_reuses_public_event_shape_and_single_terminal_e
 async def test_multimodal_stream_rejects_unsupported_media_before_runtime() -> None:
     runtime = FakeStreamingRuntime([])
     service = streaming_service_with(
-        InMemoryTrustedAttachmentResolver(
+        InMemoryTrustedAttachmentAuthority(
             attachments={ATTACHMENT_REF: ("image/gif", b"GIF89a-not-supported")}
         ),
         runtime,
@@ -408,7 +488,7 @@ async def test_multimodal_stream_envelope_fails_closed_before_runtime(
     code: str,
 ) -> None:
     runtime = FakeStreamingRuntime([])
-    service = streaming_service_with(InMemoryTrustedAttachmentResolver(), runtime)
+    service = streaming_service_with(InMemoryTrustedAttachmentAuthority(), runtime)
 
     prepared = await service.prepare(
         method=method, path=path, content_type=content_type, body=body
@@ -446,7 +526,7 @@ async def test_multimodal_stream_preserves_runtime_error_shape() -> None:
 
             return _events()
 
-    service = streaming_service_with(InMemoryTrustedAttachmentResolver(), FailingStreamingRuntime())
+    service = streaming_service_with(InMemoryTrustedAttachmentAuthority(), FailingStreamingRuntime())
 
     prepared = await service.prepare(
         method="POST",
@@ -475,7 +555,7 @@ async def test_multimodal_stream_preserves_runtime_error_shape() -> None:
 async def test_valid_reference_reaches_core_multimodal_runtime(
     media_type: str, data: bytes
 ) -> None:
-    resolver = InMemoryTrustedAttachmentResolver(attachments={ATTACHMENT_REF: (media_type, data)})
+    resolver = InMemoryTrustedAttachmentAuthority(attachments={ATTACHMENT_REF: (media_type, data)})
     service, runtime, _factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload())
@@ -526,7 +606,7 @@ def test_opaque_reference_wire_shape_is_reference_only() -> None:
 async def test_caller_supplied_storage_authority_is_rejected_before_resolution(
     caller_authority: str,
 ) -> None:
-    resolver = InMemoryTrustedAttachmentResolver()
+    resolver = InMemoryTrustedAttachmentAuthority()
     service, runtime, factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload(ref=caller_authority))
@@ -550,7 +630,7 @@ async def test_caller_supplied_storage_authority_is_rejected_before_resolution(
     ],
 )
 async def test_inline_bytes_and_locator_fields_are_not_accepted(inline_field: str) -> None:
-    resolver = InMemoryTrustedAttachmentResolver()
+    resolver = InMemoryTrustedAttachmentAuthority()
     service, runtime, factory = service_with(resolver)
     payload = valid_payload()
     payload[inline_field] = UNTRUSTED_TEXT if inline_field in {"image_data", "attachment_data", "data_url"} else "s3://private/key"
@@ -574,7 +654,7 @@ async def test_missing_trusted_resolver_fails_closed() -> None:
 
 
 async def test_unknown_reference_fails_closed() -> None:
-    resolver = InMemoryTrustedAttachmentResolver(unknown_refs=(ATTACHMENT_REF,))
+    resolver = InMemoryTrustedAttachmentAuthority(unknown_refs=(ATTACHMENT_REF,))
     service, _runtime, factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload())
@@ -585,7 +665,7 @@ async def test_unknown_reference_fails_closed() -> None:
 
 
 async def test_expired_reference_fails_closed() -> None:
-    resolver = InMemoryTrustedAttachmentResolver(expired_refs=(ATTACHMENT_REF,))
+    resolver = InMemoryTrustedAttachmentAuthority(expired_refs=(ATTACHMENT_REF,))
     service, _runtime, factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload())
@@ -596,7 +676,7 @@ async def test_expired_reference_fails_closed() -> None:
 
 
 async def test_app_scope_mismatch_fails_closed() -> None:
-    resolver = InMemoryTrustedAttachmentResolver(app_scope_denials=(ATTACHMENT_REF,))
+    resolver = InMemoryTrustedAttachmentAuthority(app_scope_denials=(ATTACHMENT_REF,))
     service, _runtime, factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload())
@@ -607,7 +687,7 @@ async def test_app_scope_mismatch_fails_closed() -> None:
 
 
 async def test_returned_reference_identity_mismatch_fails_closed() -> None:
-    resolver = InMemoryTrustedAttachmentResolver(return_wrong_ref=(ATTACHMENT_REF,))
+    resolver = InMemoryTrustedAttachmentAuthority(return_wrong_ref=(ATTACHMENT_REF,))
     service, _runtime, factory = service_with(resolver)
 
     response = await service.execute_payload(valid_payload())
@@ -620,7 +700,7 @@ async def test_returned_reference_identity_mismatch_fails_closed() -> None:
 async def test_caller_cannot_select_subject_tenant_scope() -> None:
     """Subject/tenant scope is resolver-owned; the wire has no selector for it."""
 
-    resolver = InMemoryTrustedAttachmentResolver()
+    resolver = InMemoryTrustedAttachmentAuthority()
     service, _runtime, factory = service_with(resolver)
     payload = valid_payload()
     payload["tenant_id"] = "tenant-x"
@@ -634,12 +714,19 @@ async def test_caller_cannot_select_subject_tenant_scope() -> None:
     assert_no_runtime_call(factory)
 
 
-async def test_resolver_returning_non_contract_value_fails_closed() -> None:
-    class LeakyResolver:
-        async def resolve_image(self, *, app_id: str, attachment_ref: str) -> Any:
+async def test_store_returning_non_contract_record_fails_closed() -> None:
+    class CorruptStoreFacade:
+        async def scope_for_request(
+            self, *, app_id: str, auth_session_id: str
+        ) -> TrustedCallerScope:
+            return TrustedCallerScope(
+                app_id=APP_ID, subject_id=SUBJECT_ID, tenant_id=TENANT_ID
+            )
+
+        async def fetch_image(self, **_kwargs: Any) -> Any:
             return {
-                "attachment_ref": attachment_ref,
-                "app_id": app_id,
+                "attachment_ref": ATTACHMENT_REF,
+                "app_id": APP_ID,
                 "media_type": "image/png",
                 "data": PNG_BYTES,
                 "provenance_id": PROVENANCE_ID,
@@ -647,12 +734,14 @@ async def test_resolver_returning_non_contract_value_fails_closed() -> None:
                 "storage_credential": PRIVATE_STORAGE_CREDENTIAL,
             }
 
-    service, _runtime, factory = service_with(LeakyResolver())  # type: ignore[arg-type]
+    service, _runtime, factory = service_with(CorruptStoreFacade())  # type: ignore[arg-type]
 
     response = await service.execute_payload(valid_payload())
 
     assert response.status_code == 503
     assert error_code(response) == "attachment_resolver_unavailable"
+    assert PRIVATE_STORAGE_LOCATOR not in serialized(response)
+    assert PRIVATE_STORAGE_CREDENTIAL not in serialized(response)
     assert_no_runtime_call(factory)
 
 
@@ -662,7 +751,7 @@ async def test_resolver_returning_non_contract_value_fails_closed() -> None:
 async def test_core_image_size_bound_is_reused_not_duplicated() -> None:
     assert MAX_B14_IMAGE_BYTES == 4 * 1024 * 1024
     oversized = b"\x89PNG\r\n\x1a\n" + b"x" * (MAX_B14_IMAGE_BYTES)
-    resolver = InMemoryTrustedAttachmentResolver(
+    resolver = InMemoryTrustedAttachmentAuthority(
         attachments={ATTACHMENT_REF: ("image/png", oversized)}
     )
     service, _runtime, factory = service_with(resolver)
@@ -675,7 +764,7 @@ async def test_core_image_size_bound_is_reused_not_duplicated() -> None:
 
 
 async def test_core_media_magic_validation_is_reused() -> None:
-    resolver = InMemoryTrustedAttachmentResolver(
+    resolver = InMemoryTrustedAttachmentAuthority(
         attachments={ATTACHMENT_REF: ("image/png", UNTRUSTED_TEXT)}
     )
     service, _runtime, factory = service_with(resolver)
@@ -692,7 +781,7 @@ async def test_core_media_magic_validation_is_reused() -> None:
 
 @pytest.mark.parametrize("media_type", ["image/gif", "image/svg+xml", "application/pdf"])
 async def test_unsupported_media_is_safe_deterministic_error(media_type: str) -> None:
-    resolver = InMemoryTrustedAttachmentResolver(
+    resolver = InMemoryTrustedAttachmentAuthority(
         attachments={ATTACHMENT_REF: (media_type, PNG_BYTES)}
     )
     service, _runtime, factory = service_with(resolver)
@@ -713,7 +802,7 @@ async def test_unsupported_media_is_safe_deterministic_error(media_type: str) ->
 
 def test_public_response_projects_no_private_storage_or_binary_bytes() -> None:
     service, runtime, factory = service_with(
-        InMemoryTrustedAttachmentResolver(attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)})
+        InMemoryTrustedAttachmentAuthority(attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)})
     )
     response = asyncio.run(service.execute_payload(valid_payload()))
 
@@ -784,7 +873,7 @@ def test_conformance_performs_no_network_or_persistence(monkeypatch: pytest.Monk
     monkeypatch.setattr("httpx.Client.send", deny)
     monkeypatch.chdir(tmp_path)
 
-    resolver = InMemoryTrustedAttachmentResolver(
+    resolver = InMemoryTrustedAttachmentAuthority(
         attachments={ATTACHMENT_REF: ("image/png", PNG_BYTES)}
     )
     service, runtime, factory = service_with(resolver)
@@ -797,7 +886,7 @@ def test_conformance_performs_no_network_or_persistence(monkeypatch: pytest.Monk
 
 
 async def test_http_envelope_fails_closed_without_private_echo() -> None:
-    resolver = InMemoryTrustedAttachmentResolver()
+    resolver = InMemoryTrustedAttachmentAuthority()
     service, _runtime, _factory = service_with(resolver)
 
     response = await service.handle(

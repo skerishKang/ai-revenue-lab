@@ -1,9 +1,22 @@
 """Trusted one-image multimodal Engine projection for #1750 E5A.
 
 The caller supplies an opaque server-issued attachment reference plus ordinary
-text execution intent. A trusted resolver privately returns image bytes. Core's
-existing ``MultimodalExecutionRequest`` / ``MultimodalExecutionRuntime`` remain
-the sole image/media/model execution authority.
+text execution intent. Core's existing ``MultimodalExecutionRequest`` /
+``MultimodalExecutionRuntime`` remain the sole image/media/model execution
+authority.
+
+#2182 S5 replaces the injected resolver object with the two real authority
+inputs, so the resolver is never a caller-supplied object:
+
+* ``image_byte_store`` is the deployment-owned scoped byte store behind the
+  Engine D1 image-store binding;
+* ``scope_authority`` mints the per-request ``TrustedCallerScope`` triple from
+  the resolved Control Plane auth session (``app_id`` plus the request's opaque
+  ``session_id`` only; raw tenant/subject assertions are never read).
+
+A ``ByteStoreTrustedAttachmentResolver`` is then constructed **per request**
+bound to that single trusted scope, on both the execute and stream paths. When
+either authority input is absent the route fails closed exactly as before.
 """
 
 from __future__ import annotations
@@ -19,10 +32,12 @@ from padiem_ai_core.streaming_runtime import StreamingExecutionEvent
 
 from app.attachment_authority import (
     EngineAttachmentAuthorityError,
-    TrustedAttachmentResolver,
     TrustedImageAttachment,
     require_opaque_attachment_ref,
 )
+from app.attachment_resolver import ByteStoreTrustedAttachmentResolver
+from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.document_context_service import DocumentAuthorityError
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
     ServiceContractError,
@@ -51,26 +66,70 @@ class MultimodalAttachmentEngineService:
         self,
         *,
         runtime_factory: Callable[[str], Any],
-        attachment_resolver: TrustedAttachmentResolver | None = None,
+        image_byte_store: Any | None = None,
+        scope_authority: AuthSessionScopeAuthority | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
-        if attachment_resolver is not None and not callable(
-            getattr(attachment_resolver, "resolve_image", None)
+        if image_byte_store is not None and not callable(
+            getattr(image_byte_store, "fetch_image", None)
         ):
-            raise ValueError("attachment_resolver must expose async resolve_image")
+            raise ValueError("image_byte_store must expose async fetch_image")
+        if scope_authority is not None and not callable(
+            getattr(scope_authority, "scope_for_request", None)
+        ):
+            raise ValueError("scope_authority must expose async scope_for_request")
         self._runtime_factory = runtime_factory
-        self._attachment_resolver = attachment_resolver
+        self._image_byte_store = image_byte_store
+        self._scope_authority = scope_authority
 
-    async def _resolve(self, *, app_id: str, attachment_ref: str) -> TrustedImageAttachment:
-        if self._attachment_resolver is None:
+    async def _resolver(
+        self, *, app_id: str, auth_session_id: str | None
+    ) -> ByteStoreTrustedAttachmentResolver:
+        """Build one request-bound resolver over one server-minted scope."""
+
+        if self._image_byte_store is None or self._scope_authority is None:
             raise EngineAttachmentAuthorityError(
                 "attachment_resolver_unavailable",
                 "Trusted attachment resolver is unavailable.",
                 status_code=503,
             )
+        if not auth_session_id:
+            raise EngineAttachmentAuthorityError(
+                "attachment_resolver_unavailable",
+                "Trusted attachment scope requires an authenticated session.",
+                status_code=503,
+            )
         try:
-            resolved = await self._attachment_resolver.resolve_image(
+            scope = await self._scope_authority.scope_for_request(
+                app_id=app_id,
+                auth_session_id=auth_session_id,
+            )
+        except DocumentAuthorityError as exc:
+            raise EngineAttachmentAuthorityError(
+                exc.code, exc.safe_message, status_code=exc.status_code
+            ) from exc
+        except Exception as exc:
+            raise EngineAttachmentAuthorityError(
+                "attachment_resolver_unavailable",
+                "Trusted attachment scope could not be resolved.",
+                status_code=503,
+            ) from exc
+        return ByteStoreTrustedAttachmentResolver(
+            store=self._image_byte_store,
+            scope=scope,
+        )
+
+    async def _resolve(
+        self,
+        *,
+        app_id: str,
+        auth_session_id: str | None,
+        attachment_ref: str,
+    ) -> TrustedImageAttachment:
+        resolver = await self._resolver(app_id=app_id, auth_session_id=auth_session_id)
+        try:
+            resolved = await resolver.resolve_image(
                 app_id=app_id,
                 attachment_ref=attachment_ref,
             )
@@ -170,6 +229,7 @@ class MultimodalAttachmentEngineService:
             app_id, text_request, _ = build_execution_request(base_payload)
             attachment = await self._resolve(
                 app_id=app_id,
+                auth_session_id=text_request.session_id,
                 attachment_ref=attachment_ref,
             )
             request = MultimodalExecutionRequest(
@@ -278,8 +338,12 @@ class MultimodalAttachmentEngineService:
 class MultimodalStreamingEngineService(MultimodalAttachmentEngineService):
     """Reference-only multimodal input adapter over the shared stream service."""
 
-    def __init__(self, *, runtime_factory: Callable[[str], Any], attachment_resolver: TrustedAttachmentResolver | None = None) -> None:
-        super().__init__(runtime_factory=runtime_factory, attachment_resolver=attachment_resolver)
+    def __init__(self, *, runtime_factory: Callable[[str], Any], image_byte_store: Any | None = None, scope_authority: AuthSessionScopeAuthority | None = None) -> None:
+        super().__init__(
+            runtime_factory=runtime_factory,
+            image_byte_store=image_byte_store,
+            scope_authority=scope_authority,
+        )
         self._streaming = StreamingEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
@@ -322,7 +386,11 @@ class MultimodalStreamingEngineService(MultimodalAttachmentEngineService):
             app_id, text_request, context = build_execution_request(base_payload)
             if context is not None:
                 return _service_error("invalid_request", "Multimodal streaming does not support execution context.", status_code=400)
-            attachment = await self._resolve(app_id=app_id, attachment_ref=attachment_ref)
+            attachment = await self._resolve(
+                app_id=app_id,
+                auth_session_id=text_request.session_id,
+                attachment_ref=attachment_ref,
+            )
             request = MultimodalExecutionRequest(
                 agent=text_request.agent,
                 messages=self._multimodal_messages(text_request.messages, attachment),
