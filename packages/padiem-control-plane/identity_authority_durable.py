@@ -16,6 +16,13 @@ from padiem_control_plane.contracts import (
     ProductIdentityLink,
     SubjectType,
 )
+from padiem_control_plane.tenants import (
+    CanonicalTenant,
+    CanonicalTenantState,
+    ControlPlaneTenantError,
+    TenantMembership,
+    TenantMembershipState,
+)
 
 
 MAX_PROVIDER_SUBJECT_CHARS = 512
@@ -23,6 +30,7 @@ MAX_PRODUCT_USER_ID_CHARS = 256
 _KEY_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _ALLOWED_PROVIDERS = frozenset({"google"})
+SCHEMA_VERSION = 2
 
 
 def _utc(value: datetime, field_name: str) -> datetime:
@@ -201,11 +209,72 @@ class CloudflareCanonicalIdentityAuthorityStore:
             "session_id TEXT PRIMARY KEY, product_id TEXT NOT NULL, "
             "subject_type TEXT NOT NULL, subject_id TEXT NOT NULL, "
             "issued_at TEXT NOT NULL, expires_at TEXT NOT NULL, "
-            "state TEXT NOT NULL, revision INTEGER NOT NULL)"
+            "state TEXT NOT NULL, revision INTEGER NOT NULL, tenant_id TEXT)"
         )
         self._sql.exec(
             "CREATE INDEX IF NOT EXISTS idx_canonical_auth_session_subject "
             "ON canonical_auth_session(product_id, subject_id)"
+        )
+        self._sql.exec(
+            "CREATE TABLE IF NOT EXISTS canonical_tenant ("
+            "tenant_id TEXT PRIMARY KEY, state TEXT NOT NULL, created_at TEXT NOT NULL)"
+        )
+        self._sql.exec(
+            "CREATE TABLE IF NOT EXISTS canonical_tenant_membership ("
+            "tenant_id TEXT NOT NULL, canonical_subject_id TEXT NOT NULL, "
+            "state TEXT NOT NULL, created_at TEXT NOT NULL, "
+            "PRIMARY KEY(tenant_id, canonical_subject_id))"
+        )
+        self._sql.exec(
+            "CREATE INDEX IF NOT EXISTS idx_canonical_tenant_membership_subject "
+            "ON canonical_tenant_membership(canonical_subject_id)"
+        )
+        self._sql.exec(
+            "CREATE TABLE IF NOT EXISTS identity_authority_schema ("
+            "key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+        )
+        self._apply_migrations()
+
+    def _schema_version(self) -> int:
+        rows = _rows(
+            self._sql.exec(
+                "SELECT value FROM identity_authority_schema WHERE key='schema_version'"
+            )
+        )
+        if not rows:
+            return 0
+        try:
+            return int(str(rows[0]["value"]))
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "identity authority schema version is invalid",
+            ) from exc
+
+    def _apply_migrations(self) -> None:
+        """Explicit additive migration path for already-deployed stores.
+
+        Version 2 adds ``canonical_auth_session.tenant_id``. Legacy tables are
+        detected via PRAGMA and migrated with a single ADD COLUMN; existing
+        rows keep ``tenant_id=NULL`` (no fabricated backfill). The run is
+        idempotent and restart-safe: it is guarded by both the recorded
+        version and the actual column presence.
+        """
+        if self._schema_version() >= SCHEMA_VERSION:
+            return
+        columns = {
+            str(row.get("name"))
+            for row in _rows(self._sql.exec("PRAGMA table_info(canonical_auth_session)"))
+        }
+        if "tenant_id" not in columns:
+            self._sql.exec(
+                "ALTER TABLE canonical_auth_session ADD COLUMN tenant_id TEXT"
+            )
+        self._sql.exec(
+            "INSERT INTO identity_authority_schema (key, value) VALUES (?, ?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+            "schema_version",
+            str(SCHEMA_VERSION),
         )
 
     def _require_product(self, product_id: Any) -> str:
@@ -324,6 +393,176 @@ class CloudflareCanonicalIdentityAuthorityStore:
             state=link_state,
         )
 
+    def _tenant_from_row(self, row: dict[str, Any]) -> CanonicalTenant:
+        try:
+            return CanonicalTenant(
+                tenant_id=str(row["tenant_id"]),
+                state=CanonicalTenantState(str(row["state"])),
+                created_at=_parse_iso(row["created_at"], "created_at"),
+            )
+        except (ControlPlaneTenantError, KeyError, TypeError, ValueError) as exc:
+            if isinstance(exc, ControlPlaneContractError):
+                raise
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical tenant row is invalid",
+            ) from exc
+
+    def create_tenant(self, *, now: datetime) -> CanonicalTenant:
+        """Mint one canonical tenant. Tenant truth has no other source."""
+        observed_at = _utc(now, "now")
+        tenant_id = self._new_ref("tenant_", 16)
+        tenant = CanonicalTenant(
+            tenant_id=tenant_id,
+            state=CanonicalTenantState.ACTIVE,
+            created_at=observed_at,
+        )
+        self._sql.exec(
+            "INSERT INTO canonical_tenant (tenant_id, state, created_at) VALUES (?, ?, ?)",
+            tenant.tenant_id,
+            tenant.state.value,
+            _iso(observed_at),
+        )
+        return tenant
+
+    def get_tenant(self, *, tenant_id: str) -> CanonicalTenant:
+        rows = _rows(
+            self._sql.exec(
+                "SELECT tenant_id, state, created_at FROM canonical_tenant WHERE tenant_id=?",
+                self._require_tenant_id(tenant_id),
+            )
+        )
+        if not rows:
+            raise ControlPlaneContractError(
+                "canonical_tenant_not_found", "canonical tenant was not found"
+            )
+        return self._tenant_from_row(rows[0])
+
+    @staticmethod
+    def _require_tenant_id(value: Any) -> str:
+        try:
+            return TenantMembership(tenant_id=value, canonical_subject_id="sub_0").tenant_id
+        except ControlPlaneTenantError as exc:
+            raise ControlPlaneContractError(exc.code, exc.message) from exc
+
+    def assign_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership:
+        """Bind an existing canonical subject to an existing active tenant.
+
+        Re-assigning an active membership is idempotent; a revoked membership
+        is deterministically reactivated. Subjects and tenants must already
+        exist as canonical rows — nothing here accepts asserted identity.
+        """
+        observed_at = _utc(now, "now")
+        tenant = self.get_tenant(tenant_id=tenant_id)
+        if tenant.state is not CanonicalTenantState.ACTIVE:
+            raise ControlPlaneContractError(
+                "canonical_tenant_inactive", "canonical tenant is not active"
+            )
+        subject_rows = _rows(
+            self._sql.exec(
+                "SELECT canonical_subject_id FROM canonical_identity_subject "
+                "WHERE canonical_subject_id=?",
+                canonical_subject_id,
+            )
+        )
+        if not subject_rows:
+            raise ControlPlaneContractError(
+                "canonical_subject_not_found",
+                "membership requires an existing canonical subject",
+            )
+        try:
+            relation = TenantMembership(
+                tenant_id=tenant.tenant_id,
+                canonical_subject_id=str(subject_rows[0]["canonical_subject_id"]),
+                state=TenantMembershipState.ACTIVE,
+                created_at=observed_at,
+            )
+        except ControlPlaneTenantError as exc:
+            raise ControlPlaneContractError(exc.code, exc.message) from exc
+
+        def operation() -> str:
+            existing = _rows(
+                self._sql.exec(
+                    "SELECT state FROM canonical_tenant_membership "
+                    "WHERE tenant_id=? AND canonical_subject_id=?",
+                    relation.tenant_id,
+                    relation.canonical_subject_id,
+                )
+            )
+            if existing:
+                if str(existing[0]["state"]) != TenantMembershipState.ACTIVE.value:
+                    self._sql.exec(
+                        "UPDATE canonical_tenant_membership SET state=? "
+                        "WHERE tenant_id=? AND canonical_subject_id=?",
+                        TenantMembershipState.ACTIVE.value,
+                        relation.tenant_id,
+                        relation.canonical_subject_id,
+                    )
+                return str(existing[0]["state"])
+            self._sql.exec(
+                "INSERT INTO canonical_tenant_membership "
+                "(tenant_id, canonical_subject_id, state, created_at) VALUES (?, ?, ?, ?)",
+                relation.tenant_id,
+                relation.canonical_subject_id,
+                relation.state.value,
+                _iso(observed_at),
+            )
+            return TenantMembershipState.ACTIVE.value
+
+        self._storage.transactionSync(operation)
+        return relation
+
+    def revoke_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership:
+        _utc(now, "now")
+        tenant = self.get_tenant(tenant_id=tenant_id)
+        rows = _rows(
+            self._sql.exec(
+                "SELECT state FROM canonical_tenant_membership "
+                "WHERE tenant_id=? AND canonical_subject_id=?",
+                tenant.tenant_id,
+                canonical_subject_id,
+            )
+        )
+        if not rows:
+            raise ControlPlaneContractError(
+                "canonical_tenant_membership_not_found",
+                "canonical tenant membership was not found",
+            )
+        self._sql.exec(
+            "UPDATE canonical_tenant_membership SET state=? "
+            "WHERE tenant_id=? AND canonical_subject_id=?",
+            TenantMembershipState.INACTIVE.value,
+            tenant.tenant_id,
+            canonical_subject_id,
+        )
+        try:
+            return TenantMembership(
+                tenant_id=tenant.tenant_id,
+                canonical_subject_id=str(canonical_subject_id),
+                state=TenantMembershipState.INACTIVE,
+            )
+        except ControlPlaneTenantError as exc:
+            raise ControlPlaneContractError(exc.code, exc.message) from exc
+
+    def _active_membership_tenant_ids(self, canonical_subject_id: str) -> list[str]:
+        """Deterministic active-tenant view: active membership on an active tenant."""
+        rows = _rows(
+            self._sql.exec(
+                "SELECT m.tenant_id FROM canonical_tenant_membership m "
+                "JOIN canonical_tenant t ON t.tenant_id = m.tenant_id "
+                "WHERE m.canonical_subject_id=? "
+                "AND m.state=? AND t.state=? ORDER BY m.tenant_id",
+                canonical_subject_id,
+                TenantMembershipState.ACTIVE.value,
+                CanonicalTenantState.ACTIVE.value,
+            )
+        )
+        return sorted({str(row["tenant_id"]) for row in rows})
+
     def establish_auth_session(
         self,
         *,
@@ -365,6 +604,12 @@ class CloudflareCanonicalIdentityAuthorityStore:
             )
 
         session_id = self._new_ref("sess_", 16)
+        # Server-side tenant enrichment (#2176): exactly one active
+        # membership resolves to its tenant; zero or multiple resolve to
+        # None. The store never auto-selects an ambiguous tenant and never
+        # trusts a caller-asserted tenant value.
+        memberships = self._active_membership_tenant_ids(subject.subject_id)
+        tenant_id = memberships[0] if len(memberships) == 1 else None
         snapshot = AuthSessionSnapshot(
             session_id=session_id,
             product_id=product,
@@ -373,11 +618,12 @@ class CloudflareCanonicalIdentityAuthorityStore:
             expires_at=expires,
             state=AuthSessionState.ACTIVE,
             revision=1,
+            tenant_id=tenant_id,
         )
         self._sql.exec(
             "INSERT INTO canonical_auth_session "
-            "(session_id, product_id, subject_type, subject_id, issued_at, expires_at, state, revision) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "(session_id, product_id, subject_type, subject_id, issued_at, expires_at, state, revision, tenant_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             snapshot.session_id,
             snapshot.product_id,
             snapshot.subject.subject_type.value,
@@ -386,6 +632,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
             _iso(snapshot.expires_at),
             snapshot.state.value,
             snapshot.revision,
+            tenant_id,
         )
         return snapshot
 
@@ -397,7 +644,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
             )
         rows = _rows(
             self._sql.exec(
-                "SELECT session_id, product_id, subject_type, subject_id, issued_at, expires_at, state, revision "
+                "SELECT session_id, product_id, subject_type, subject_id, issued_at, expires_at, state, revision, tenant_id "
                 "FROM canonical_auth_session WHERE session_id=?",
                 session_id,
             )
@@ -414,6 +661,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
             )
         row = rows[0]
         try:
+            raw_tenant = row.get("tenant_id", None)
             return AuthSessionSnapshot(
                 session_id=str(row["session_id"]),
                 product_id=str(row["product_id"]),
@@ -425,6 +673,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 expires_at=_parse_iso(row["expires_at"], "expires_at"),
                 state=AuthSessionState(str(row["state"])),
                 revision=int(row["revision"]),
+                tenant_id=str(raw_tenant) if raw_tenant is not None else None,
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise ControlPlaneContractError(
@@ -441,4 +690,10 @@ class CloudflareCanonicalIdentityAuthorityStore:
             "product_shadow_authoritative": False,
             "allowed_product_id": self._allowed_product_id,
             "public_http": False,
+            "canonical_tenant_producer": True,
+            "tenant_membership_authority": True,
+            "auth_session_tenant_enrichment": True,
+            "request_asserted_tenant_authority": False,
+            "default_tenant": False,
+            "schema_version": SCHEMA_VERSION,
         }

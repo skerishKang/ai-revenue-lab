@@ -29,6 +29,10 @@ _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_aft
 _RESOLVE_KEYS = frozenset({"session_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
+_TENANT_CREATE_KEYS = frozenset()
+_TENANT_GET_KEYS = frozenset({"tenant_id"})
+_TENANT_MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id"})
+_TENANT_MEMBERSHIP_READ_KEYS = frozenset({"canonical_subject_id"})
 
 
 def _required_env(env: Any, name: str) -> str:
@@ -168,6 +172,54 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def create_tenant(self, payload: dict) -> dict:
+        try:
+            _closed(payload, _TENANT_CREATE_KEYS, "tenant-create RPC")
+            tenant = self._store.create_tenant(now=datetime.now().astimezone())
+            return {"ok": True, "tenant": tenant.to_public_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def get_tenant(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _TENANT_GET_KEYS, "tenant-get RPC")
+            tenant = self._store.get_tenant(tenant_id=wire["tenant_id"])
+            return {"ok": True, "tenant": tenant.to_public_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def assign_tenant_membership(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
+            membership = self._store.assign_tenant_membership(
+                tenant_id=wire["tenant_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "membership": membership.to_public_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def revoke_tenant_membership(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
+            membership = self._store.revoke_tenant_membership(
+                tenant_id=wire["tenant_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "membership": membership.to_public_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def resolve_active_memberships(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _TENANT_MEMBERSHIP_READ_KEYS, "tenant-membership read RPC")
+            tenant_ids = self._store._active_membership_tenant_ids(wire["canonical_subject_id"])
+            return {"ok": True, "tenant_ids": tenant_ids}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -192,6 +244,21 @@ class Default(WorkerEntrypoint):
 
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         return await self._stub().issue_google_connect_ticket(payload)
+
+    async def create_tenant(self, payload: dict) -> dict:
+        return await self._stub().create_tenant(payload)
+
+    async def get_tenant(self, payload: dict) -> dict:
+        return await self._stub().get_tenant(payload)
+
+    async def assign_tenant_membership(self, payload: dict) -> dict:
+        return await self._stub().assign_tenant_membership(payload)
+
+    async def revoke_tenant_membership(self, payload: dict) -> dict:
+        return await self._stub().revoke_tenant_membership(payload)
+
+    async def resolve_active_memberships(self, payload: dict) -> dict:
+        return await self._stub().resolve_active_memberships(payload)
 
     async def fetch(self, request):
         del request
