@@ -107,13 +107,19 @@ def test_provider_readiness_makes_no_upstream_provider_call(monkeypatch):
     assert response.json()["status"] == "ready"
 
 
-def test_agnes_provider_retired_from_readiness(monkeypatch):
+def test_agnes_legacy_binding_name_never_satisfies_reonboarded_provider(monkeypatch):
+    # #2133 re-onboards Agnes under PADIEM_AGNES_API_KEY. The #1933 S2-b
+    # retirement intent survives as an isolation contract: the legacy intake
+    # name AGNES_API_KEY must not satisfy readiness for anything.
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+    monkeypatch.setenv("AGNES_API_KEY", "legacy-name-1234567890abcdef")
+    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
 
     response = TestClient(create_app()).get("/api/pilot/provider-readiness")
 
     assert response.status_code == 200
-    ids = {p["provider_id"] for p in response.json()["providers"]}
-    assert "agnes-ai" not in ids
-    assert "kilo" in ids
+    providers = {p["provider_id"]: p for p in response.json()["providers"]}
+    assert "agnes-ai" in providers
+    assert "kilo" in providers
+    assert providers["agnes-ai"]["credential_ready"] is False
+    assert providers["agnes-ai"]["route_ready"] is False

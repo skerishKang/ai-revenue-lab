@@ -1,0 +1,15 @@
+{
+  "citations_normal": [
+    { "source_id": "doc-beta", "title": "Beta guide", "locator": "p12" },
+    { "source_id": "doc-alpha", "title": "Alpha spec", "locator": "s2.1" },
+    { "source_id": "doc-alpha", "title": "Alpha spec", "locator": "s2.1" },
+    { "source_id": "doc-alpha", "title": "Alpha spec" }
+  ],
+  "citations_empty": [],
+  "citations_degraded": [
+    { "source_id": "doc-ok", "title": "Keep me" },
+    { "source_id": "doc-bad", "title": "my api_key leaked" },
+    "not-a-mapping",
+    { "source_id": "doc-bad2", "extra": "unknown field" }
+  ]
+}

@@ -11,9 +11,11 @@ from __future__ import annotations
 from typing import Mapping
 
 from padiem_embedded_runtime.bootstrap import parse_bootstrap_config
+from padiem_embedded_runtime.bridge import intake_host_payload
 from padiem_embedded_runtime.engine_port import DeterministicFakeEnginePort, EnginePort
 from padiem_embedded_runtime.errors import SidecarContractError
 from padiem_embedded_runtime.events import project_event
+from padiem_embedded_runtime.evidence import present_citations
 from padiem_embedded_runtime.host_context import envelop_host_context
 from padiem_embedded_runtime.lifecycle import EmbeddedShell
 
@@ -90,3 +92,98 @@ def run_demo(fixture: Mapping[str, object], port: EnginePort | None = None) -> d
         "host_primary_journey": "unbroken",
         "steps": steps,
     }
+
+
+def run_bridge_journey(fixture: Mapping[str, object]) -> dict[str, object]:
+    """Drive the S3 host-context bridge over four deterministic paths.
+
+    Uses only fixture data and the injected/absent Engine port (never real
+    transport). Each path builds a fresh shell and returns the public-safe
+    bridge outcome plus the resulting shell state, proving normal,
+    incompatible-version, malformed-context, and disabled handling without
+    ever breaking the host primary journey.
+    """
+    if not isinstance(fixture, Mapping):
+        raise SidecarContractError("bridge fixture must be a mapping")
+    bootstrap_raw = fixture.get("bootstrap")
+    context_valid = fixture.get("context_valid")
+    context_malformed = fixture.get("context_malformed")
+    incompatible = fixture.get("incompatible_contract_version")
+    if not isinstance(bootstrap_raw, Mapping):
+        raise SidecarContractError("bridge fixture needs a bootstrap mapping")
+    if not isinstance(context_valid, Mapping) or not isinstance(context_malformed, Mapping):
+        raise SidecarContractError("bridge fixture needs valid and malformed context mappings")
+    if not isinstance(incompatible, str):
+        raise SidecarContractError("bridge fixture needs an incompatible_contract_version")
+
+    def fresh_shell() -> EmbeddedShell:
+        stripped = {k: v for k, v in bootstrap_raw.items() if k != "contract_version"}
+        return EmbeddedShell(parse_bootstrap_config(stripped))
+
+    paths: dict[str, object] = {}
+
+    normal_shell = fresh_shell()
+    normal = intake_host_payload(dict(bootstrap_raw), context_valid, normal_shell)
+    paths["normal"] = {
+        "status": normal.status,
+        "accepted": normal.accepted,
+        "shell_state": normal_shell.state,
+        "dropped_reserved_count": normal.diagnostics.dropped_reserved_count,
+    }
+
+    incompatible_shell = fresh_shell()
+    bad_version = dict(bootstrap_raw)
+    bad_version["contract_version"] = incompatible
+    incompatible_outcome = intake_host_payload(bad_version, context_valid, incompatible_shell)
+    paths["incompatible"] = {
+        "status": incompatible_outcome.status,
+        "reason_code": incompatible_outcome.diagnostics.reason_code,
+        "accepted": incompatible_outcome.accepted,
+        "shell_state": incompatible_shell.state,
+    }
+
+    malformed_shell = fresh_shell()
+    malformed_outcome = intake_host_payload(
+        dict(bootstrap_raw), context_malformed, malformed_shell
+    )
+    paths["malformed"] = {
+        "status": malformed_outcome.status,
+        "reason_code": malformed_outcome.diagnostics.reason_code,
+        "accepted": malformed_outcome.accepted,
+        "shell_state": malformed_shell.state,
+    }
+
+    disabled_shell = fresh_shell()
+    disabled_shell.disable("pre-disabled")
+    disabled_outcome = intake_host_payload(dict(bootstrap_raw), context_valid, disabled_shell)
+    paths["disabled"] = {
+        "status": disabled_outcome.status,
+        "shell_state": disabled_shell.state,
+        "host_primary_journey": "unbroken",
+    }
+
+    return {"paths": paths, "host_primary_journey": "unbroken"}
+
+
+def run_citation_journey(fixture: Mapping[str, object]) -> dict[str, object]:
+    """Drive the S4 evidence/citation presentation over deterministic paths.
+
+    Uses only fixture data. Each path projects one citation list and returns
+    the public-safe presentation view, proving normal (ordered/dedup/labels),
+    empty, and degraded (malformed-dropped) states without ever raising to the
+    host or retaining raw provider/tool/terminal material.
+    """
+    if not isinstance(fixture, Mapping):
+        raise SidecarContractError("citation fixture must be a mapping")
+    normal = fixture.get("citations_normal")
+    empty = fixture.get("citations_empty")
+    degraded = fixture.get("citations_degraded")
+    for name, value in (("citations_normal", normal), ("citations_empty", empty), ("citations_degraded", degraded)):
+        if not isinstance(value, list):
+            raise SidecarContractError(f"citation fixture needs a {name} list")
+
+    paths: dict[str, object] = {}
+    for name, items in (("normal", normal), ("empty", empty), ("degraded", degraded)):
+        presentation = present_citations(items)
+        paths[name] = presentation.to_public_dict()
+    return {"paths": paths, "host_primary_journey": "unbroken"}

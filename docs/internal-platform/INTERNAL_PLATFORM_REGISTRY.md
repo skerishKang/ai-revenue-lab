@@ -1,23 +1,12 @@
 # Padiem Internal Platform Registry
 
-Status: canonical after review/merge of Issue #1707.
+Status: canonical Internal Platform catalog.
 
-This registry is the authoritative catalog for shared Padiem platform components that are **not numbered Businesses**.
+This registry is the authoritative catalog for shared Padiem platform components that are **not numbered Businesses**. Business-number authority remains `docs/portfolio/BUSINESS_REGISTRY.md`.
 
 ## 1. Registry rules
 
-Every Internal Platform entry records:
-
-- stable `IP-*` identifier;
-- canonical name;
-- repository and source path;
-- runtime/deployment class where applicable;
-- owned responsibilities;
-- explicit non-ownership boundaries;
-- dependencies;
-- known consumers/integrations;
-- current platform work;
-- authority documents.
+Every Internal Platform entry records a stable `IP-*` identifier, canonical name, source path, runtime/deployment class where applicable, ownership and non-ownership boundaries, dependencies, consumers, current platform state, and authority documents.
 
 Internal Platform IDs must never collide with or masquerade as Business numbers.
 
@@ -35,17 +24,11 @@ RUNTIME_CLASS = shared Python package / AI runtime library
 AUTHORITY_DOC = packages/padiem-ai-core/BOUNDARY.md
 ```
 
-Owns shared, product-neutral AI contracts and runtime semantics, including the established execution, grounding, streaming, Tool, Web, Evidence, retrieval/memory, context-permission, and orchestration foundations present in the package.
+Owns shared, product-neutral AI contracts and runtime semantics, including established execution, grounding/evidence, streaming, Tool, Web/Research, retrieval/memory, context-permission and orchestration foundations.
 
-Does not own:
+Does not own product-domain semantics, provider/model selection policy, provider credentials, product-specific UI/persistence, or cross-runtime Cloudflare service identity.
 
-- LoveBud/B61/B62 or other product semantics;
-- provider/model selection policy;
-- provider credentials;
-- product-specific UI/persistence;
-- cross-runtime Cloudflare service identity.
-
-Primary dependency: B14 Korean AI Platform for provider/model execution authority.
+Primary execution dependency: B14 Korean AI Platform.
 
 ### IP-ENGINE — Padiem AI Engine
 
@@ -57,24 +40,13 @@ SOURCE = apps/padiem-ai-engine/
 BUSINESS_NUMBER = NONE
 RUNTIME_CLASS = Cloudflare Worker / internal service boundary
 WORKER = padiem-ai-engine
-CURRENT_PLATFORM_WORK = #1698 multi-caller service identity registry
 ```
 
-Owns the cross-runtime service boundary around Core, including internal execute/stream/orchestration transport surfaces, Service Binding hosting, first-party caller identity/authentication, and runtime composition exposed to trusted product adapters.
+Owns the cross-runtime service boundary around Core, including accepted execute/stream/orchestration transport surfaces, Service Binding hosting, first-party caller identity/authentication and runtime composition exposed to trusted product adapters.
 
-Does not own:
+Does not own product/fandom/book/chat semantics, Core generic AI semantics, B14 provider/model routing authority, or product credentials/browser-visible secrets.
 
-- product/fandom/book/chat semantics;
-- Core's generic AI semantics;
-- B14 provider/model routing authority;
-- product credentials or browser-visible secrets.
-
-Known integration authority includes B61 StoryMemory. LoveBud Scout has a merged Engine transport source integration and is awaiting independent runtime identity/binding activation after #1698.
-
-Dependencies:
-
-- `IP-CORE`;
-- B14 Korean AI Platform.
+Dependencies: `IP-CORE` and B14 Korean AI Platform.
 
 ### IP-CONTROL — Padiem Control Plane
 
@@ -84,12 +56,12 @@ CANONICAL_NAME = Padiem Control Plane
 REPOSITORY = skerishKang/ai-revenue-lab
 SOURCE = packages/padiem-control-plane/
 BUSINESS_NUMBER = NONE
-RUNTIME_CLASS = shared control-plane/policy package
+RUNTIME_CLASS = shared control-plane / policy package
 ```
 
-Owns reusable platform control-plane contracts and governance state that should not be buried in one product implementation.
+Owns reusable platform control-plane contracts and accepted governance state that should not be buried in one product implementation, including canonical identity/tenant/entitlement/usage/audit contracts where explicitly composed.
 
-It does not become the owner of product-local authorization, records, UI, or B14 provider credentials merely because it participates in platform policy.
+It does not become the owner of product-local authorization, records, UI, Core runtime semantics, Engine service identity or B14 provider credentials merely because it participates in platform policy.
 
 ### IP-SIDECAR — Padiem Embedded AI Runtime
 
@@ -97,35 +69,38 @@ It does not become the owner of product-local authorization, records, UI, or B14
 ID = IP-SIDECAR
 CANONICAL_NAME = Padiem Embedded AI Runtime
 REPOSITORY = skerishKang/ai-revenue-lab
-PROPOSED_SOURCE = packages/padiem-embedded-runtime/
-SOURCE_DIRECTORY_CREATED = NO
+SOURCE = packages/padiem-embedded-runtime/
+SOURCE_PRESENT = YES
+S2_MINIMAL_RUNTIME_CONTRACT = LANDED
 BUSINESS_NUMBER = NONE
-RUNTIME_CLASS = reusable embedded shell/context/event/presentation/bootstrap primitives (runtime contract S2; non-production, no Engine transport)
+RUNTIME_CLASS = reusable embedded shell/context/event/presentation/bootstrap primitives
+ENGINE_CONNECTIVITY = NO
+LIVE_PROVIDER_EXECUTION = NO
+PRODUCTION_ACTIVE = NO
 PRIMARY_COMMERCIAL_PRODUCT = B53 Padiem Sidecar
-CURRENT_PLATFORM_WORK = #1739 registry and boundary establishment (S1)
+AUTHORITY_DOC = docs/internal-platform/sidecar/README.md
 ```
 
-Owns reusable, browser-safe embedded primitives only: shell, context/event
-plumbing, presentation/bootstrap defaults, and the host adapter integration
-contract.
+Owns reusable browser-safe embedded primitives only: shell lifecycle, bounded bootstrap/config, host-context envelopes, public-safe event projection, presentation/bootstrap defaults and the host adapter integration contract.
 
-Does not own product-domain semantics, Engine service identity/transport,
-Core AI semantics, B14 provider routing/credentials, Control Plane
-identity/tenant/entitlement authority, or browser-visible secrets.
+Does not own product-domain semantics, Engine service identity/transport, Core AI semantics, B14 provider routing/credentials, Control Plane authority or browser-visible secrets.
 
-Ownership chain: Host/Product Adapter -> IP-SIDECAR -> IP-ENGINE ->
-IP-CORE -> B14 -> Provider/model, with Control Plane as the canonical
-identity/tenant/entitlement/usage/billing/audit authority.
+Ownership chain:
 
-B53 remains a numbered Business and is the primary commercial consumer, not
-the owner, of IP-SIDECAR. B30/B61/LoveBud host surfaces are bounded
-extraction candidates (reference only); B62 chat surfaces and
-B54 agent runtime stay product-local and are explicitly not claimed.
-Downstream consumer of Engine completion program #1743; generic
-capabilities (#1744, #1745, #1746, #1748, #1749, #1750, #1751, #1752) must be
-reused, never duplicated.
+```text
+Host/Product Adapter
+  -> IP-SIDECAR
+  -> IP-ENGINE
+  -> IP-CORE
+  -> B14
+  -> Provider / Model
 
-Authority: `docs/internal-platform/sidecar/README.md`. Refs #1739.
+IP-CONTROL = cross-cutting canonical identity / tenant / entitlement / usage / billing / audit authority
+```
+
+B53 remains a numbered Business and is the primary commercial consumer, not the owner, of IP-SIDECAR. The S2 package is source-present and testable but intentionally has no real Engine transport or Production activation yet.
+
+Refs #1739 #2135.
 
 ## 3. Execution dependency that remains a Business
 
@@ -145,10 +120,12 @@ Internal Platform records reference B14 where model execution is required. B14 r
 ## 4. Default product adoption path
 
 ```text
-Business/product domain intent
+Business / product domain intent
         |
         v
 Product adapter
+        |
+        +--> IP-SIDECAR when an embedded host surface needs reusable shell/context/event primitives
         |
         v
 IP-ENGINE           cross-runtime transport and service identity
@@ -157,13 +134,15 @@ IP-ENGINE           cross-runtime transport and service identity
 IP-CORE             reusable AI contracts/runtimes
         |
         v
-B14                 provider/model/routing authority
+B14                 provider/model/routing/execution authority
         |
         v
-Provider/model
+Provider / Model
+
+IP-CONTROL = cross-cutting accepted platform control authority
 ```
 
-A same-runtime package consumer may reuse IP-CORE directly when that architecture is explicitly accepted. External and cross-runtime products should not bypass IP-ENGINE merely for convenience.
+A same-runtime package consumer may reuse IP-CORE directly when that architecture is explicitly accepted. External and cross-runtime products should not bypass IP-ENGINE merely for convenience. IP-SIDECAR must not be used as a substitute for Engine or Core.
 
 ## 5. Current discovery shortcuts
 
@@ -172,6 +151,7 @@ A same-runtime package consumer may reuse IP-CORE directly when that architectur
 | Shared AI runtime capability | `IP-CORE` / `packages/padiem-ai-core/` |
 | Service Binding, caller identity, Engine wire | `IP-ENGINE` / `apps/padiem-ai-engine/` |
 | Platform control/policy contracts | `IP-CONTROL` / `packages/padiem-control-plane/` |
+| Embedded host shell/context/event primitives | `IP-SIDECAR` / `packages/padiem-embedded-runtime/` |
 | Provider/model/router behavior | B14 / `apps/korean-ai-platform/` |
 | Product-specific behavior | the product/Business workspace |
 
@@ -183,20 +163,22 @@ New platform Issues should prefer canonical prefixes:
 [IP-CORE] ...
 [IP-ENGINE] ...
 [IP-CONTROL] ...
+[IP-SIDECAR] ...
 ```
 
-Historical prefixes such as `[P01/Core]`, `[P01/Engine]`, `[Padiem AI Core]`, and `[Padiem AI Engine]` remain valid historical references but are aliases, not competing component identities.
+Historical prefixes such as `[P01/Core]`, `[P01/Engine]`, `[Padiem AI Core]` and `[Padiem AI Engine]` remain valid historical references but are aliases, not competing component identities.
 
-## 7. No source relocation
+## 7. Source-path governance
 
-This registry is a discoverability/governance layer. It does not authorize moving:
+This registry is a discoverability/governance layer. It does not authorize arbitrary relocation of established sources:
 
 ```text
 packages/padiem-ai-core/
 apps/padiem-ai-engine/
 packages/padiem-control-plane/
+packages/padiem-embedded-runtime/
 ```
 
-Existing build, import, CI, Worker, and deployment paths remain authoritative unless a separate migration is explicitly approved.
+Existing build, import, CI, Worker and deployment paths remain authoritative unless a separate migration is explicitly approved.
 
-Refs #1707 #1698.
+Refs #1707 #1698 #1739 #2135.

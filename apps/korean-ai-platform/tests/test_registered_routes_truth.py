@@ -65,7 +65,8 @@ def test_only_public_catalog_lane_is_auto_eligible(client):
     assert public[0]["provider_id"] == "kilo"
     assert public[0]["auto_eligible"] is True
     # #2097: minimax + hy3 retirement unregistered two explicit-only lanes.
-    assert len(explicit) == 3
+    # #2133: agnes-ai and b-ai add two manual-pin candidate lanes (5 total).
+    assert len(explicit) == 5
     assert all(not r["auto_eligible"] for r in explicit)
 
 

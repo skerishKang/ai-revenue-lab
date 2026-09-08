@@ -122,10 +122,36 @@ def _auto_pool(decision) -> set[str]:
     return pool
 
 
-def test_agnes_route_retired_from_production():
-    # Agnes provider and catalog entry are removed (#1933 S2-b).
-    assert ps.get_platform_provider("agnes-ai") is None
-    assert get_catalog_by_id("agnes-ai/agnes-2.5-flash") is None
+def test_agnes_route_reonboarded_as_manual_pin_candidate():
+    # #2133 owner decision (#2126 5584200820) re-onboards Agnes as an explicit
+    # candidate. The original #1933 S2-b retirement asserted absence; this
+    # contract now proves the replacement state: registered under the owner-
+    # approved binding name only, manual-pin only, and the legacy local name
+    # AGNES_API_KEY is no longer wired to anything.
+    #
+    # NOTE: the autouse _test_catalog_route fixture rebinds CATALOG_BY_ID to
+    # the public+test rows, so catalog exact-ID truth is asserted against the
+    # provider module's own (original) dict reference; the full exact-ID and
+    # public-surface contracts live in tests/test_agnes_provider.py.
+    spec = ps.get_platform_provider("agnes-ai")
+    assert spec is not None
+    assert spec.credential_binding_name == "PADIEM_AGNES_API_KEY"
+    assert spec.base_origin == "https://apihub.agnes-ai.com/v1"
+
+    from app.pilot.agnes_provider import CATALOG_BY_ID as _REAL_BY_ID
+
+    model = _REAL_BY_ID.get("agnes-ai/agnes-2.5-flash")
+    assert model is not None
+    assert model.platform_provider_id == "agnes-ai"
+
+    public_ids = {m.model_id for m in _test_catalog_route_model_list()}
+    assert "agnes-ai/agnes-2.5-flash" not in public_ids
+
+
+def _test_catalog_route_model_list():
+    import app.pilot.catalog as cat
+
+    return [m for m in cat.CATALOG_MODELS]
 
 
 # ---------------------------------------------------------------------------
