@@ -5,8 +5,13 @@ routing**. It resolves to a fixed chain, in exactly this order:
 
   1. ``sensenova/sensenova-6.8-flash-lite``
   2. ``kilo/nvidia-nemotron-3-ultra-550b-a55b-free``
-  3. ``kilo/minimax-minimax-m3-free``   (provisional until the Kilo benchmark)
-  4. ``poolside/laguna-s-2.1``          (spare)
+  3. ``poolside/laguna-s-2.1``          (spare)
+
+#2097 refresh (2026-09-08): the retired lane ``kilo/minimax-minimax-m3-free``
+was removed from the chain and unregistered from the catalog together with
+``kilo/tencent-hy3-free``; both return ``unsupported_model`` fail-closed now.
+The chain is a legacy internal compatibility path only and must never become a
+user-visible automatic selector (#2085 no-auto policy).
 
 SenseNova leads the chain because the Kilo free routes carry a ~200 req/hour
 budget. A chain position advances only on the existing fallback-allowed error
@@ -33,10 +38,7 @@ from typing import Any
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.catalog import CatalogModel, get_catalog_by_id
 from app.pilot.errors import NoSafeRoute, RoutingError
-from app.pilot.kilo_provider import (
-    KILO_MINIMAX_M3_MODEL_ID,
-    KILO_NEMOTRON_MODEL_ID,
-)
+from app.pilot.kilo_provider import KILO_NEMOTRON_MODEL_ID
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 from app.pilot.router_core import (
     EvidenceStatus,
@@ -53,7 +55,6 @@ ROUTING_POLICY_ID = "fixed_chain_v1"
 B14_AUTO_CHAIN: tuple[str, ...] = (
     SENSENOVA_MODEL_ID,
     KILO_NEMOTRON_MODEL_ID,
-    KILO_MINIMAX_M3_MODEL_ID,
     POOLSIDE_MODEL_ID,
 )
 

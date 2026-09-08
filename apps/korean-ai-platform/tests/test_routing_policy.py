@@ -14,10 +14,7 @@ import pytest
 from app.pilot import routing_policy as rp
 from app.pilot.b14_runtime_config import runtime_config as rcfg
 from app.pilot.errors import NoSafeRoute, RoutingError
-from app.pilot.kilo_provider import (
-    KILO_MINIMAX_M3_MODEL_ID,
-    KILO_NEMOTRON_MODEL_ID,
-)
+from app.pilot.kilo_provider import KILO_NEMOTRON_MODEL_ID
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 from app.pilot.router_core import resolve_route
 from app.pilot.sensenova_provider import SENSENOVA_MODEL_ID
@@ -49,7 +46,6 @@ def test_chain_order_is_owner_designated(monkeypatch):
     assert [m.model_id for m in rp.chain_models()] == [
         SENSENOVA_MODEL_ID,
         KILO_NEMOTRON_MODEL_ID,
-        KILO_MINIMAX_M3_MODEL_ID,
         POOLSIDE_MODEL_ID,
     ]
     assert rp.ROUTING_POLICY_ID == "fixed_chain_v1"
@@ -67,16 +63,14 @@ def test_full_chain_selects_sensenova_first(monkeypatch):
         f"selected:{SENSENOVA_MODEL_ID}",
     ]
     assert d.fallback_allowed is True
-    assert d.max_attempts == 4
+    assert d.max_attempts == 3
     assert [f["model_id"] for f in d.eligible_fallback] == [
         KILO_NEMOTRON_MODEL_ID,
-        KILO_MINIMAX_M3_MODEL_ID,
         POOLSIDE_MODEL_ID,
     ]
     assert all(f["reason"] == "fixed_chain_fallback" for f in d.eligible_fallback)
     assert all(f["route_id"] == f"platform:{f['model_id']}" for f in d.eligible_fallback)
     assert [f["platform_provider_id"] for f in d.eligible_fallback] == [
-        "kilo",
         "kilo",
         "poolside",
     ]
@@ -95,7 +89,6 @@ def test_missing_sensenova_secret_selects_kilo_and_excludes(monkeypatch):
     excluded = {e["model_id"]: e["reason"] for e in d.excluded_candidates}
     assert excluded[SENSENOVA_MODEL_ID] == "provider_secret_missing"
     assert [f["model_id"] for f in d.eligible_fallback] == [
-        KILO_MINIMAX_M3_MODEL_ID,
         POOLSIDE_MODEL_ID,
     ]
 
@@ -108,7 +101,7 @@ def test_no_secrets_selects_keyless_kilo_routes():
         SENSENOVA_MODEL_ID: "provider_secret_missing",
         POOLSIDE_MODEL_ID: "provider_secret_missing",
     }
-    assert [f["model_id"] for f in d.eligible_fallback] == [KILO_MINIMAX_M3_MODEL_ID]
+    assert [f["model_id"] for f in d.eligible_fallback] == []
 
 
 def test_allow_external_fallback_false_is_single_attempt(monkeypatch):
@@ -123,8 +116,8 @@ def test_allow_external_fallback_false_is_single_attempt(monkeypatch):
 def test_max_attempts_bounds_chain_walk(monkeypatch):
     _set_all_secrets(monkeypatch)
     assert rp.resolve_chain_route(max_attempts=2).max_attempts == 2
-    assert rp.resolve_chain_route(max_attempts=99).max_attempts == 4
-    assert rp.resolve_chain_route().max_attempts == 4
+    assert rp.resolve_chain_route(max_attempts=99).max_attempts == 3
+    assert rp.resolve_chain_route().max_attempts == 3
 
 
 def test_scorer_options_are_accepted_but_ignored(monkeypatch):
@@ -190,4 +183,4 @@ def test_resolve_endpoint_reports_fixed_chain(client, monkeypatch):
     assert body["selected_model"] == SENSENOVA_MODEL_ID
     assert body["selected_route_id"] == f"platform:{SENSENOVA_MODEL_ID}"
     assert "routing_policy:fixed_chain_v1" in body["reason_codes"]
-    assert body["max_attempts"] == 4
+    assert body["max_attempts"] == 3
