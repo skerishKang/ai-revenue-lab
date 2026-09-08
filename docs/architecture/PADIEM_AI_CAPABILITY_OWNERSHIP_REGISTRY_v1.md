@@ -18,14 +18,17 @@ IP-CORE OWNS REUSABLE AI SEMANTICS.
 IP-ENGINE OWNS CROSS-RUNTIME SERVICE PROJECTION.
 B14 OWNS PROVIDER/MODEL EXECUTION.
 IP-CONTROL OWNS IDENTITY / TENANT / ENTITLEMENT / USAGE / AUDIT TRUTH.
-IP-SIDECAR OWNS REUSABLE EMBEDDED PRESENTATION/RUNTIME PRIMITIVES WHEN FORMALLY ACTIVATED.
+IP-SIDECAR OWNS REUSABLE EMBEDDED SHELL/CONTEXT/EVENT/PRESENTATION PRIMITIVES.
 ```
+
+Current IP-SIDECAR source state is `packages/padiem-embedded-runtime/` with the S2 minimal runtime contract landed. That source presence does not imply real Engine transport, live Provider execution or Production activation.
 
 Related authority:
 
 - `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
 - `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
 - `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
+- `docs/internal-platform/sidecar/README.md`
 - `docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`
 - `docs/governance/DOCUMENTATION_AUTHORITY_MODEL.md`
 
@@ -51,7 +54,7 @@ If two layers appear to own the same generic policy, implementation stops until 
 | Layer | Canonical identity | Owns | Must not become |
 |---|---|---|---|
 | Product / Business | B61/B62/B54/B53/etc. | domain semantics, UX, product persistence, product adapter, product-local admission/presentation | generic AI runtime policy, generic Provider router |
-| Embedded runtime candidate | IP-SIDECAR | reusable drawer/panel/shell, host bridge, browser-safe lifecycle/evidence/action presentation | product domain model, Core reasoning, Engine auth, B14 routing |
+| Embedded runtime | IP-SIDECAR | reusable shell lifecycle, host bridge, browser-safe bootstrap/context/event/presentation primitives | product domain model, Core semantics, Engine auth/transport, B14 routing/credentials |
 | Service boundary | IP-ENGINE | trusted cross-runtime API/service projection of accepted Core semantics | competing Core policy engine, product UX, Provider router |
 | Shared semantics | IP-CORE | execution, grounding, permission, retrieval/memory, Evidence, Tool, Skill, Agent, orchestration semantics | product domain schema/UI, Provider catalog/credentials |
 | Execution plane | B14 Korean AI Platform | Provider/model registry, inference credentials, executable route validation/selection, upstream execution, execution-level retry/fallback policy | product memory/domain state, product UX, Control Plane identity truth |
@@ -146,6 +149,14 @@ Owns reader UX, locator grammar/order, reading progress, knowledge ceiling, anno
 ### B53 · Padiem Sidecar
 
 Owns the commercial embedded-AI product: packaging, onboarding, installation/customer journey and product-specific adapters. `B53 Padiem Sidecar` is not the same identity as `IP-SIDECAR`.
+
+```text
+IP-SIDECAR SOURCE = packages/padiem-embedded-runtime/
+S2_MINIMAL_RUNTIME_CONTRACT = LANDED
+ENGINE_CONNECTIVITY = NO
+LIVE_PROVIDER_EXECUTION = NO
+PRODUCTION_ACTIVE = NO
+```
 
 ## 8. Terminology and history rule
 
