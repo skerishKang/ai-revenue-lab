@@ -1,9 +1,10 @@
-"""Repository-local reference host for IP-SIDECAR (S2-S6 demos, non-production).
+"""Repository-local reference host for IP-SIDECAR (S2-S7 demos, non-production).
 
 Drives deterministic journeys — mount, open, context projection, notice,
 close, disable, bridge intake, citation presentation, attachment input
-presentation, and approval presentation — using only fixture data and an
-injected Engine port (normally :class:`DeterministicFakeEnginePort`).
+presentation, approval presentation, and streaming lifecycle/error/retry
+presentation — using only fixture data and an injected Engine port (normally
+:class:`DeterministicFakeEnginePort`).
 Performs no I/O, no network, and never touches real products.
 """
 
@@ -30,6 +31,12 @@ from padiem_embedded_runtime.events import project_event
 from padiem_embedded_runtime.evidence import present_citations
 from padiem_embedded_runtime.host_context import envelop_host_context
 from padiem_embedded_runtime.lifecycle import EmbeddedShell
+from padiem_embedded_runtime.streaming_lifecycle import (
+    StreamFeedGuard,
+    present_public_error,
+    present_retry_affordance,
+    present_stream_lifecycle,
+)
 
 
 def run_demo(fixture: Mapping[str, object], port: EnginePort | None = None) -> dict[str, object]:
@@ -309,4 +316,53 @@ def run_approval_journey(fixture: Mapping[str, object]) -> dict[str, object]:
 
     paths["reference_valid"] = present_public_reference(reference_valid).to_public_dict()
     paths["reference_invalid"] = present_public_reference(reference_invalid).to_public_dict()
+    return {"paths": paths, "host_primary_journey": "unbroken"}
+
+
+def run_streaming_journey(fixture: Mapping[str, object]) -> dict[str, object]:
+    """Drive the S7 streaming lifecycle/error/retry presentation over fixtures.
+
+    Projects a canonical public-event flow through a display-only feed guard
+    (fresh/duplicate/conflict ordering), a malformed event, allowlisted and
+    rejected public-safe error views, and the retry-affordance permission
+    matrix. Nothing here executes retries or cancellation, transports, owns a
+    clock, or decides execution truth.
+    """
+    if not isinstance(fixture, Mapping):
+        raise SidecarContractError("streaming fixture must be a mapping")
+    lifecycle_flow = fixture.get("lifecycle_flow")
+    lifecycle_malformed = fixture.get("lifecycle_malformed")
+    error_flow = fixture.get("error_flow")
+    affordance_flow = fixture.get("affordance_flow")
+    if not isinstance(lifecycle_flow, list):
+        raise SidecarContractError("streaming fixture needs a lifecycle_flow list")
+    if not isinstance(error_flow, list) or not isinstance(affordance_flow, list):
+        raise SidecarContractError("streaming fixture needs error/affordance lists")
+    if not isinstance(lifecycle_malformed, Mapping):
+        raise SidecarContractError("streaming fixture needs a lifecycle_malformed mapping")
+
+    paths: dict[str, object] = {}
+
+    guard = StreamFeedGuard()
+    feed: list[dict[str, object]] = []
+    for event in lifecycle_flow:
+        if not isinstance(event, Mapping):
+            continue
+        presentation = present_stream_lifecycle(event)
+        projected, ordering = guard.observe(presentation)
+        feed.append({"ordering": ordering, **projected.to_public_dict()})
+    paths["lifecycle_flow"] = feed
+
+    paths["lifecycle_malformed"] = present_stream_lifecycle(lifecycle_malformed).to_public_dict()
+
+    paths["error_flow"] = [
+        present_public_error(item).to_public_dict()
+        for item in error_flow
+        if isinstance(item, Mapping)
+    ]
+    paths["affordance_flow"] = [
+        present_retry_affordance(item).to_public_dict()
+        for item in affordance_flow
+        if isinstance(item, Mapping)
+    ]
     return {"paths": paths, "host_primary_journey": "unbroken"}

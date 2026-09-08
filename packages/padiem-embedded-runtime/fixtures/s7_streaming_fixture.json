@@ -1,0 +1,148 @@
+{
+  "lifecycle_flow": [
+    {
+      "kind": "run_status_changed",
+      "run_status": "created",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_01",
+      "sequence": 1,
+      "summary": "Run created"
+    },
+    {
+      "kind": "run_status_changed",
+      "run_status": "running",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_02",
+      "sequence": 2,
+      "summary": "Run is streaming"
+    },
+    {
+      "kind": "approval_required",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_03",
+      "subject_ref": "prop_2001",
+      "sequence": 3,
+      "summary": "Approval needed before sending"
+    },
+    {
+      "kind": "approval_resolved",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_04",
+      "subject_ref": "prop_2001",
+      "sequence": 4,
+      "summary": "Approval resolved"
+    },
+    {
+      "kind": "approval_resolved",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_04",
+      "subject_ref": "prop_2001",
+      "sequence": 4,
+      "summary": "Approval resolved"
+    },
+    {
+      "kind": "run_status_changed",
+      "run_status": "running",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_05",
+      "sequence": 3,
+      "summary": "Backward replay"
+    },
+    {
+      "kind": "human_takeover_required",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_06",
+      "sequence": 5,
+      "summary": "Human takeover requested"
+    },
+    {
+      "kind": "artifact_ready",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_07",
+      "subject_ref": "art_3001",
+      "sequence": 6,
+      "summary": "Draft artifact is ready"
+    },
+    {
+      "kind": "run_status_changed",
+      "run_status": "failed",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_08",
+      "sequence": 7,
+      "summary": "Run failed"
+    },
+    {
+      "kind": "run_status_changed",
+      "run_status": "completed",
+      "stream_id": "stm_s7_01",
+      "run_id": "run_s7_01",
+      "event_id": "evt_s7_09",
+      "sequence": 7,
+      "summary": "Same-sequence different-event replay"
+    }
+  ],
+  "lifecycle_malformed": {
+    "kind": "provider_raw_delta",
+    "sequence": 8,
+    "payload": "raw provider bytes"
+  },
+  "error_flow": [
+    {
+      "reason_code": "RUN_FAILED",
+      "run_id": "run_s7_01",
+      "summary": "The run stopped before finishing. You can retry."
+    },
+    {
+      "reason_code": "RUN_TIMED_OUT",
+      "run_id": "run_s7_01"
+    },
+    {
+      "reason_code": "RUN_CANCELLED"
+    },
+    {
+      "reason_code": "STREAM_INTERRUPTED",
+      "run_id": "run_s7_01",
+      "summary": "The live stream dropped. Reconnect to continue watching."
+    },
+    {
+      "reason_code": "UPSTREAM_UNAVAILABLE",
+      "summary": "The service is briefly unavailable. Try again shortly."
+    },
+    {
+      "reason_code": "PROVIDER_HTTP_500",
+      "summary": "upstream response body dump"
+    },
+    {
+      "reason_code": "RUN_FAILED",
+      "run_id": "run_s7_01",
+      "summary": "see https://leak.example/error/500"
+    },
+    {
+      "reason_code": "RUN_FAILED",
+      "run_id": "run s7 01"
+    },
+    {
+      "reason_code": "RUN_FAILED",
+      "traceback": "Traceback (most recent call last)"
+    }
+  ],
+  "affordance_flow": [
+    { "affordance": "retry", "run_id": "run_s7_01", "run_status": "failed" },
+    { "affordance": "reconnect", "run_id": "run_s7_01", "run_status": "timed_out" },
+    { "affordance": "cancel", "run_id": "run_s7_01", "run_status": "running" },
+    { "affordance": "retry", "run_id": "run_s7_01", "run_status": "running" },
+    { "affordance": "cancel", "run_id": "run_s7_01", "run_status": "completed" },
+    { "affordance": "force_execute", "run_id": "run_s7_01", "run_status": "failed" },
+    { "affordance": "retry", "run_id": "run s7 01", "run_status": "failed" },
+    { "affordance": "retry", "run_id": "run_s7_01", "run_status": "succeeded" }
+  ]
+}
