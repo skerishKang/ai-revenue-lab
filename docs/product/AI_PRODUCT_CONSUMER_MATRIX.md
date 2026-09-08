@@ -16,14 +16,14 @@ SUPERSEDES = fragmented product-to-platform relationship descriptions only
 |---|---|---|---|---|---|---|---|
 | **B62 Padiem Chat** | chat UX, conversations, Projects, attachments, Saved Outputs, product modes | not architectural owner | approved cross-runtime/orchestration path | execution, grounding, evidence and shared semantics | identity/approval/entitlement paths where composed; tier declaration consumer | actual model execution | standalone general AI front door |
 | **B54 Padiem Claw / KAgent** | task/run/workspace/repository/GitHub product flow | not owner | target/default cross-runtime agent/orchestration boundary | Agent/Tool/Skill/approval/recovery/orchestration reuse | identity/entitlement/usage/audit where integrated | model execution | current product docs must distinguish network-free preview from real activation |
-| **B61 StoryMemory** | Reader, locator grammar, progress, knowledge ceiling, spoiler/no-future semantics, annotations, product retrieval adapter | candidate consumer when formally activated | accepted cross-runtime AI path | retrieval permission, context boundary, evidence/execution semantics | account/entitlement authority where integrated | model execution | Bible/classic-work locator meaning stays in B61 |
-| **B53 Padiem Sidecar** | commercial product, onboarding, install UX, packaging/customer journey | primary commercial distribution relationship to proposed IP-SIDECAR | downstream execution boundary | downstream shared semantics | tenant/entitlement/usage/audit | model execution | B53 product != IP-SIDECAR runtime |
+| **B61 StoryMemory** | Reader, locator grammar, progress, knowledge ceiling, spoiler/no-future semantics, annotations, product retrieval adapter | candidate consumer of S2 embedded primitives when adopted | accepted cross-runtime AI path | retrieval permission, context boundary, evidence/execution semantics | account/entitlement authority where integrated | model execution | Bible/classic-work locator meaning stays in B61 |
+| **B53 Padiem Sidecar** | commercial product, onboarding, install UX, packaging/customer journey | **primary commercial consumer** of source-present S2 runtime contract | downstream execution boundary when implemented | downstream shared semantics | tenant/entitlement/usage/audit | model execution | B53 product != IP-SIDECAR runtime; S2 has no real Engine transport yet |
 | **B14 Korean AI Platform** | Korean-first platform workspace and B14 product UX | no | may be downstream execution dependency, not product adapter | consumes/aligns shared execution contracts where composed | neutral Padiem tier declarations may feed B14 validation | **owner** | Provider/model/router/credentials/execution authority |
 | **Living Learning** | learning-domain UX/state | not required by default | according to runtime composition | accepted selected Core consumer paths | as integrated | model execution | product semantics remain local |
-| **B30 / 400 AI Finder** | product search/domain UX | candidate first-party consumer | target downstream | target shared semantics | as integrated | model execution | IP-SIDECAR candidate from current architecture planning |
-| **B23 / LoveBud** | LoveBud product/domain UX | candidate first-party consumer | target downstream | target shared semantics | as integrated | model execution | IP-SIDECAR candidate; product domain remains external/local authority |
+| **B30 / 400 AI Finder** | product search/domain UX | candidate first-party consumer of S2 primitives | target downstream | target shared semantics | as integrated | model execution | adoption does not transfer product domain ownership |
+| **B23 / LoveBud** | LoveBud product/domain UX | candidate first-party consumer of S2 primitives | target downstream | target shared semantics | as integrated | model execution | external/local product domain authority remains local |
 
-`candidate` / `target`는 architecture reuse 후보라는 뜻이며 source/runtime/Production 활성화를 뜻하지 않습니다.
+`candidate` / `target`는 architecture reuse 후보라는 뜻이며 소비 제품의 source/runtime/Production 활성화를 뜻하지 않습니다. 반대로 IP-SIDECAR 자체는 현재 S2 package source가 존재하지만 Engine connectivity와 Production activation은 없습니다.
 
 ## B62 · Padiem Chat
 
@@ -98,11 +98,17 @@ The public conformance authority is `docs/architecture/PADIEM_AI_RETRIEVAL_CONSU
 These identities must never be collapsed in documentation.
 
 ```text
-B53 = commercial product
-IP-SIDECAR = reusable embedded runtime candidate
+B53 = commercial product / onboarding / packaging / customer journey
+
+IP-SIDECAR = reusable embedded runtime primitives
+SOURCE = packages/padiem-embedded-runtime/
+S2_MINIMAL_RUNTIME_CONTRACT = LANDED
+ENGINE_CONNECTIVITY = NO
+LIVE_PROVIDER_EXECUTION = NO
+PRODUCTION_ACTIVE = NO
 ```
 
-Product/customer-specific adapters remain outside IP-SIDECAR. Generic reasoning, Tool, Skill, Agent, Memory and Evidence semantics remain Core-owned.
+Product/customer-specific adapters remain outside IP-SIDECAR. Generic reasoning, Tool, Skill, Agent, Memory and Evidence semantics remain Core-owned. Provider/model execution remains B14-owned.
 
 ## B14 · execution authority
 
