@@ -17,14 +17,17 @@ vm.runInNewContext(manifestSource, context, { filename: manifestPath });
 
 const platforms = context.window.ARL_INTERNAL_PLATFORMS;
 assert.ok(Array.isArray(platforms), 'Internal Platform manifest must expose an array');
-assert.deepEqual(Array.from(platforms, (item) => item.id), ['IP-CORE', 'IP-ENGINE', 'IP-CONTROL']);
-assert.equal(new Set(Array.from(platforms, (item) => item.id)).size, 3, 'Internal Platform IDs must be unique');
+assert.deepEqual(Array.from(platforms, (item) => item.id), ['IP-CORE', 'IP-ENGINE', 'IP-CONTROL', 'IP-SIDECAR']);
+assert.equal(new Set(Array.from(platforms, (item) => item.id)).size, 4, 'Internal Platform IDs must be unique');
 assert.ok(platforms.every((item) => item.businessNumber === null), 'Internal Platform components must not claim Business numbers');
 
 const byId = Object.fromEntries(Array.from(platforms, (item) => [item.id, item]));
 assert.equal(byId['IP-CORE'].sourcePath, 'packages/padiem-ai-core/');
 assert.equal(byId['IP-ENGINE'].sourcePath, 'apps/padiem-ai-engine/');
 assert.equal(byId['IP-CONTROL'].sourcePath, 'packages/padiem-control-plane/');
+assert.equal(byId['IP-SIDECAR'].sourcePath, 'packages/padiem-embedded-runtime/');
+assert.equal(byId['IP-SIDECAR'].businessNumber, null);
+assert.equal(byId['IP-SIDECAR'].currentIssue.label, '#1739');
 assert.equal(byId['IP-ENGINE'].currentIssue, null);
 assert.match(byId['IP-ENGINE'].currentWorkEn, /engine transport and service boundaries/i);
 assert.ok(byId['IP-ENGINE'].dependencies.includes('IP-CORE'));
@@ -55,6 +58,7 @@ const playbook = fs.readFileSync(playbookPath, 'utf8');
 assert.match(registry, /IP-CORE/);
 assert.match(registry, /IP-ENGINE/);
 assert.match(registry, /IP-CONTROL/);
+assert.match(registry, /IP-SIDECAR/);
 assert.match(registry, /Business number/i);
 assert.match(playbook, /PRODUCT_ADAPTER/);
 assert.match(playbook, /REUSE_CORE/);

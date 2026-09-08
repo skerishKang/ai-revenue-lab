@@ -196,12 +196,13 @@ async def test_prepare_reuses_exact_completed_request_builder_and_streams_ndjson
         ("GET", "application/json", b"{}", 405, "method_not_allowed"),
         ("POST", "text/plain", b"{}", 415, "unsupported_media_type"),
         ("POST", "application/json", b"{", 400, "invalid_json"),
-        (
+        pytest.param(
             "POST",
             "application/json",
             b"x" * (MAX_REQUEST_BODY_BYTES + 1),
             413,
             "request_too_large",
+            id="request_too_large",
         ),
     ],
 )

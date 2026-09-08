@@ -15,7 +15,10 @@ from app.agent_skill_service import AgentSkillEngineService
 from app.document_context_service import DocumentContextEngineService
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.memory_service import MemoryRetrievalEngineService
-from app.multimodal_attachment_service import MultimodalAttachmentEngineService
+from app.multimodal_attachment_service import (
+    MultimodalAttachmentEngineService,
+    MultimodalStreamingEngineService,
+)
 from app.orchestration_service import OrchestrationEngineService
 from app.service import EngineService
 from app.streaming_service import StreamingEngineService
@@ -40,6 +43,7 @@ class EngineServices:
     memory: MemoryRetrievalEngineService
     agent_skill: AgentSkillEngineService | None = None
     multimodal: MultimodalAttachmentEngineService | None = None
+    multimodal_streaming: MultimodalStreamingEngineService | None = None
     documents: DocumentContextEngineService | None = None
     tool_execution: ToolExecutionEngineService | None = None
     # #1964 source slice: replay stays fail-closed until the trusted durable
@@ -61,6 +65,12 @@ class EngineServices:
         ):
             raise ValueError(
                 "engine service 'multimodal' must be MultimodalAttachmentEngineService or None"
+            )
+        if self.multimodal_streaming is not None and not isinstance(
+            self.multimodal_streaming, MultimodalStreamingEngineService
+        ):
+            raise ValueError(
+                "engine service 'multimodal_streaming' must be MultimodalStreamingEngineService or None"
             )
         if self.documents is not None and not isinstance(
             self.documents, DocumentContextEngineService

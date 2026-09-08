@@ -91,6 +91,42 @@ Owns reusable platform control-plane contracts and governance state that should 
 
 It does not become the owner of product-local authorization, records, UI, or B14 provider credentials merely because it participates in platform policy.
 
+### IP-SIDECAR — Padiem Embedded AI Runtime
+
+```text
+ID = IP-SIDECAR
+CANONICAL_NAME = Padiem Embedded AI Runtime
+REPOSITORY = skerishKang/ai-revenue-lab
+PROPOSED_SOURCE = packages/padiem-embedded-runtime/
+SOURCE_DIRECTORY_CREATED = NO
+BUSINESS_NUMBER = NONE
+RUNTIME_CLASS = reusable embedded shell/context/event/presentation/bootstrap primitives (runtime contract S2; non-production, no Engine transport)
+PRIMARY_COMMERCIAL_PRODUCT = B53 Padiem Sidecar
+CURRENT_PLATFORM_WORK = #1739 registry and boundary establishment (S1)
+```
+
+Owns reusable, browser-safe embedded primitives only: shell, context/event
+plumbing, presentation/bootstrap defaults, and the host adapter integration
+contract.
+
+Does not own product-domain semantics, Engine service identity/transport,
+Core AI semantics, B14 provider routing/credentials, Control Plane
+identity/tenant/entitlement authority, or browser-visible secrets.
+
+Ownership chain: Host/Product Adapter -> IP-SIDECAR -> IP-ENGINE ->
+IP-CORE -> B14 -> Provider/model, with Control Plane as the canonical
+identity/tenant/entitlement/usage/billing/audit authority.
+
+B53 remains a numbered Business and is the primary commercial consumer, not
+the owner, of IP-SIDECAR. B30/B61/LoveBud host surfaces are bounded
+extraction candidates (reference only); B62 chat surfaces and
+B54 agent runtime stay product-local and are explicitly not claimed.
+Downstream consumer of Engine completion program #1743; generic
+capabilities (#1744, #1745, #1746, #1748, #1749, #1750, #1751, #1752) must be
+reused, never duplicated.
+
+Authority: `docs/internal-platform/sidecar/README.md`. Refs #1739.
+
 ## 3. Execution dependency that remains a Business
 
 ### B14 — Korean AI Platform

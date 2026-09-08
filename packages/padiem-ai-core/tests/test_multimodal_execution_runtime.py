@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import re
 
 import pytest
 
@@ -12,11 +13,13 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionResult,
     B14RouteMetadata,
 )
+from padiem_ai_core.b14_streaming import B14StreamEvent
 from padiem_ai_core.contracts import AgentProfile, ErrorClass, RunStatus, UsageMetadata
 from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 from padiem_ai_core.multimodal_execution_runtime import (
     MultimodalExecutionRequest,
     MultimodalExecutionRuntime,
+    MultimodalStreamingExecutionRuntime,
 )
 
 PNG = b"\x89PNG\r\n\x1a\ncore-runtime"
@@ -240,3 +243,132 @@ def test_b14_errors_are_normalized_and_private_detail_is_redacted() -> None:
     assert info.value.metadata.status is RunStatus.TIMEOUT
     assert info.value.metadata.error_class is ErrorClass.PROVIDER_TIMEOUT
     assert "PRIVATE-UPSTREAM-DETAIL" not in json.dumps(info.value.to_public_dict())
+
+
+STREAM_ROUTE = B14RouteMetadata(
+    selected_provider="provider-x",
+    selected_model="selected-x",
+    actual_response_model="actual-x",
+)
+
+
+class FakeStreamExecutor:
+    def __init__(self, events=()):
+        self.events = tuple(events)
+        self.dispatches = []
+        self.closed = 0
+
+    async def _iterate(self):
+        try:
+            for event in self.events:
+                yield event
+        finally:
+            self.closed += 1
+
+    def stream_auto(self, request):
+        self.dispatches.append(("auto", request))
+        return self._iterate()
+
+    def stream(self, request):
+        self.dispatches.append(("manual", request))
+        return self._iterate()
+
+
+def stream_events():
+    return (
+        B14StreamEvent(delta_content="이미지", route=STREAM_ROUTE),
+        B14StreamEvent(delta_content="답변", route=STREAM_ROUTE),
+        B14StreamEvent(
+            finish_reason="stop",
+            usage=UsageMetadata(input_tokens=3, output_tokens=2, total_tokens=5),
+            route=STREAM_ROUTE,
+        ),
+        B14StreamEvent(route=STREAM_ROUTE, done=True),
+    )
+
+
+async def collect_stream(runtime, request):
+    return [event async for event in runtime.stream(request)]
+
+
+def streaming_runtime(client, clock=None):
+    return MultimodalStreamingExecutionRuntime(
+        app_id="test-app",
+        b14_stream_client=client,
+        **({"clock": clock} if clock is not None else {}),
+    )
+
+
+def test_multimodal_stream_invalid_policy_generates_run_trace_rejection_metadata() -> None:
+    client = FakeStreamExecutor(stream_events())
+    ticks = iter([100.0, 100.25])
+    runtime = streaming_runtime(client, clock=lambda: next(ticks))
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(
+            collect_stream(
+                runtime,
+                request(trace_id=None, agent=agent(model_policy={"provider": "not-core-owned"})),
+            )
+        )
+
+    metadata = info.value.metadata
+    assert info.value.code == "invalid_execution_request"
+    assert metadata.status is RunStatus.REJECTED
+    assert metadata.error_class is ErrorClass.INPUT_ERROR
+    assert re.fullmatch(r"run_[0-9a-f]{24}", metadata.trace_id)
+    assert metadata.duration_ms == 250
+    assert metadata.app_id == "test-app"
+    assert metadata.agent_id == "image-agent"
+    assert metadata.session_id == "session-mm-1"
+    assert metadata.usage == UsageMetadata()
+    assert client.dispatches == []
+    assert client.closed == 0
+
+
+def test_multimodal_stream_keeps_explicit_trace_id_in_rejection_metadata() -> None:
+    client = FakeStreamExecutor(stream_events())
+    runtime = streaming_runtime(client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(
+            collect_stream(
+                runtime,
+                request(agent=agent(model_policy={"provider": "not-core-owned"})),
+            )
+        )
+
+    metadata = info.value.metadata
+    assert metadata.trace_id == "trace-mm-1"
+    assert metadata.status is RunStatus.REJECTED
+    assert metadata.error_class is ErrorClass.INPUT_ERROR
+    assert client.dispatches == []
+
+
+def test_multimodal_stream_propagates_aclose_after_full_consumption() -> None:
+    client = FakeStreamExecutor(stream_events())
+    runtime = streaming_runtime(client)
+
+    events = run(collect_stream(runtime, request()))
+
+    assert [event.delta_content for event in events[:-1]] == ["이미지", "답변"]
+    assert events[-1].done is True
+    assert events[-1].answer == "이미지답변"
+    assert events[-1].metadata.status is RunStatus.COMPLETED
+    assert client.closed == 1
+
+
+def test_multimodal_stream_propagates_aclose_on_early_close() -> None:
+    client = FakeStreamExecutor(stream_events())
+    runtime = streaming_runtime(client)
+
+    async def first_then_close():
+        iterator = runtime.stream(request())
+        first = await iterator.__anext__()
+        await iterator.aclose()
+        return first
+
+    first = run(first_then_close())
+
+    assert first.delta_content == "이미지"
+    assert client.closed == 1
