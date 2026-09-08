@@ -1,0 +1,345 @@
+/* claw-workspace.css — Padiem Claw first-class workspace surface (#2114 ACT-1).
+ * Replaces the #clawDialog modal-as-primary pattern with an architecture-native
+ * data-state="claw" canvas inside the existing shell. Natural-language input is
+ * the hero; actions are optional override chips; results render as a compact card.
+ */
+
+/* ── Shell state visibility ───────────────────────────────────────────── */
+.claw-workspace {
+  display: none;
+}
+.app-shell[data-state="claw"] .claw-workspace {
+  display: flex;
+}
+.app-shell[data-state="claw"] .conversation,
+.app-shell[data-state="claw"] .composer-wrap {
+  display: none !important;
+}
+
+/* ── Workspace layout ─────────────────────────────────────────────────── */
+.claw-workspace {
+  flex: 1;
+  width: min(760px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: clamp(20px, 5vh, 48px) 0 96px;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.claw-workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-workspace-kicker {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent, #2f6f99);
+}
+.claw-workspace-title {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 800;
+  color: var(--ink, #111a22);
+}
+.claw-workspace-chip {
+  margin: 4px 0 0;
+  flex: 0 0 auto;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--text-muted, #5b6672);
+  background: rgba(121, 188, 231, 0.16);
+  border: 1px solid rgba(121, 188, 231, 0.28);
+}
+.claw-workspace-tagline {
+  margin: -6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted, #5b6672);
+}
+
+/* ── Intake (hero) ────────────────────────────────────────────────────── */
+.claw-intake {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.claw-intake-hero {
+  display: grid;
+  gap: 8px;
+}
+.claw-intake-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted, #5b6672);
+}
+.claw-intake-hero textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 148px;
+  padding: 16px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  border-radius: 16px;
+  background: var(--card-bg, #fff);
+  color: var(--ink, #111a22);
+  font-family: inherit;
+  font-size: 16px; /* >=16px: prevents iOS focus auto-zoom */
+  line-height: 1.55;
+  resize: vertical;
+}
+.claw-intake-hero textarea:focus {
+  outline: 2px solid var(--accent, #2f6f99);
+  outline-offset: 1px;
+}
+
+/* ── Optional override chips ──────────────────────────────────────────── */
+.claw-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.claw-chip {
+  min-height: 44px; /* touch target */
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  background: var(--card-bg, #fff);
+  color: var(--ink, #111a22);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-chip[aria-pressed="true"] {
+  background: var(--accent, #2f6f99);
+  border-color: var(--accent, #2f6f99);
+  color: #fff;
+}
+
+/* ── Collapsed source/counterparty disclosure ─────────────────────────── */
+.claw-meta {
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.18));
+  border-radius: 14px;
+  background: var(--card-bg, rgba(148, 163, 184, 0.06));
+  padding: 0 14px;
+}
+.claw-meta > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-muted, #5b6672);
+  list-style: none;
+}
+.claw-meta > summary::-webkit-details-marker {
+  display: none;
+}
+.claw-meta > summary::after {
+  content: "⌄";
+  margin-left: auto;
+}
+.claw-meta[open] > summary::after {
+  content: "⌃";
+}
+.claw-meta-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 4px 0 14px;
+}
+
+/* The action value carrier is driven by the chips, not shown directly. */
+.claw-action-carrier {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.claw-generate-button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 750;
+  font-size: 16px;
+  cursor: pointer;
+  color: #07111f;
+  background: linear-gradient(135deg, #f8fafc, #c7d2fe);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
+/* ── Result card ──────────────────────────────────────────────────────── */
+.claw-result {
+  display: grid;
+  gap: 10px;
+}
+.claw-result-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--text-muted, #5b6672);
+  text-align: center;
+}
+.claw-result-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.2));
+  border-radius: 16px;
+  background: var(--card-bg, #fff);
+  box-shadow: 0 8px 26px rgba(20, 29, 38, 0.08);
+}
+.claw-result-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.claw-result-kind {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink, #111a22);
+}
+.claw-result-badge {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted, #5b6672);
+  background: rgba(121, 188, 231, 0.18);
+}
+.claw-result-body {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink, #111a22);
+  max-height: 320px;
+  overflow: auto;
+}
+.claw-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.claw-result-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  background: var(--card-bg, #fff);
+  color: var(--ink, #111a22);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+}
+.claw-result-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.claw-result-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted, #5b6672);
+}
+
+/* ── Honest "coming soon" group ───────────────────────────────────────── */
+.claw-disabled-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.claw-disabled-control {
+  text-align: left;
+  border: 1px solid var(--line, rgba(148, 163, 184, 0.16));
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--card-bg, rgba(148, 163, 184, 0.08));
+  color: var(--text-muted, #94a3b8);
+  font: inherit;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.claw-disabled-control strong {
+  display: block;
+  font-size: 13px;
+}
+.claw-disabled-control small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* ── Sidebar active state: Chat vs Claw unmistakable ──────────────────── */
+#newChatButton[aria-current="page"],
+#clawNavButton[aria-current="page"] {
+  box-shadow: inset 3px 0 0 var(--accent, #2f6f99);
+}
+#clawNavButton[aria-current="page"] {
+  background: rgba(47, 111, 153, 0.22);
+  border-color: rgba(121, 188, 231, 0.5);
+}
+
+/* ── Glass theme: near-solid workspace surface, hero stays secondary ──── */
+html[data-theme="padiem-glass"] .claw-workspace-title,
+html[data-theme="padiem-glass"] .claw-intake-label,
+html[data-theme="padiem-glass"] .claw-result-kind,
+html[data-theme="padiem-glass"] .claw-result-body {
+  color: #111a22;
+}
+html[data-theme="padiem-glass"] .claw-intake-hero textarea,
+html[data-theme="padiem-glass"] .claw-chip,
+html[data-theme="padiem-glass"] .claw-result-card,
+html[data-theme="padiem-glass"] .claw-result-action {
+  background: rgba(247, 249, 251, 0.97);
+  color: #111a22;
+}
+html[data-theme="padiem-glass"] .claw-chip[aria-pressed="true"] {
+  background: #2f6f99;
+  color: #fff;
+}
+
+/* ── Mobile: single column, hero image minimized during active work ───── */
+@media (max-width: 720px) {
+  .claw-workspace {
+    width: calc(100% - 28px);
+    padding: 16px 0 40px;
+    gap: 14px;
+  }
+  .claw-meta-fields,
+  .claw-disabled-controls {
+    grid-template-columns: 1fr;
+  }
+  .claw-result-actions .claw-result-action {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .claw-intake-hero textarea {
+    min-height: 132px;
+  }
+  /* Decorative hero must not compete with input/output on mobile. */
+  html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before {
+    opacity: 0;
+  }
+}
