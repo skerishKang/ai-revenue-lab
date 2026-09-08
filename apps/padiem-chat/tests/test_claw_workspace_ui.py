@@ -81,6 +81,14 @@ def test_primary_touch_targets_are_at_least_44px() -> None:
     assert "min-height: 48px" in WORKSPACE_CSS  # generate button
 
 
+def test_workspace_preserves_single_h1_contract() -> None:
+    # The canonical accessibility QA uses a strict locator("h1"); the Claw
+    # workspace title must not introduce a second h1 alongside the home h1.
+    assert INDEX.count("<h1") == 1
+    assert 'class="claw-workspace-title" id="clawWorkspaceTitle"' in INDEX
+    assert 'aria-labelledby="clawWorkspaceTitle"' in INDEX
+
+
 def test_preview_endpoint_and_safe_dom_sinks_preserved() -> None:
     assert "/api/claw/manual-intake/preview" in APP
     assert "clawResultPreview.textContent =" in APP
