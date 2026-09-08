@@ -215,6 +215,7 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "BoundedAgentDefinition",
             "GMAIL_CANONICAL_TOOL_IDS",
             "GMAIL_CONNECTOR_ID",
+            "GmailReadPort",
             "ToolAuthorizationContext",
             "ToolRegistrySnapshot",
             "ToolResourcePolicy",

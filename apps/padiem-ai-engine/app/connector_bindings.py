@@ -27,6 +27,7 @@ from padiem_ai_core import (
     BoundedAgentDefinition,
     GMAIL_CANONICAL_TOOL_IDS,
     GMAIL_CONNECTOR_ID,
+    GmailReadPort,
     ToolAuthorizationContext,
     ToolRegistrySnapshot,
     ToolResourcePolicy,
