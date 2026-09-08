@@ -14,7 +14,7 @@ Deliver:
 
 ## S1 — Internal Platform registration
 
-Dependency: Internal Platform registry #1707 / PR #1713 merged and accepted.
+Dependency: Internal Platform registry S1 / Runtime contract S2 already merged.
 
 Add:
 

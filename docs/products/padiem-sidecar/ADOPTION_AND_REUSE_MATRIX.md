@@ -75,7 +75,7 @@ DO_NOT_SHARE
 1. Do not move working product code merely to satisfy architectural aesthetics.
 2. Extract only after a generic contract can be named and tested independently.
 3. Keep product-specific data models and user promises in adapters/products.
-4. Generic browser/UI/runtime primitives go to IP-SIDECAR after #1707/#1713 lands.
+4. Generic browser/UI/runtime primitives go to IP-SIDECAR (registered S1, runtime contract S2).
 5. AI semantics go to Core; transport to Engine; provider/model to B14; identity/billing truth to Control Plane.
 6. First migration target should be the smallest low-risk shared primitive, not a wholesale rewrite.
 

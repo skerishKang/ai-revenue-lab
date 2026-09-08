@@ -10,7 +10,7 @@ B53 succeeds only if it reuses the shared Padiem AI platform instead of becoming
 |---|---|
 | Sidecar commercial product/onboarding/admin | B53 |
 | Customer/Business domain semantics | Product/Customer Adapter |
-| Embedded panel/runtime primitives | IP-SIDECAR (planned) |
+| Embedded panel/runtime primitives | IP-SIDECAR (registered S1) |
 | Cross-runtime service auth/transport | IP-ENGINE |
 | Evidence/grounding/web/research/memory/tool/agent semantics | IP-CORE |
 | Provider/model/routing/fallback/credentials | B14 |

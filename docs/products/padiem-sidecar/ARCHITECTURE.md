@@ -54,7 +54,7 @@ Examples:
 
 ### IP-SIDECAR
 
-Planned generic embedded runtime. Owns reusable UI/runtime primitives, not customer domain semantics.
+Registered embedded runtime S1. Owns reusable UI/runtime primitives, not customer domain semantics.
 
 ### IP-ENGINE
 
