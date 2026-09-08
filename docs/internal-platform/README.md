@@ -11,6 +11,7 @@ This directory exists so shared AI infrastructure can be found, governed, and re
 | `IP-CORE` | Padiem AI Core | `packages/padiem-ai-core/` | NONE |
 | `IP-ENGINE` | Padiem AI Engine | `apps/padiem-ai-engine/` | NONE |
 | `IP-CONTROL` | Padiem Control Plane | `packages/padiem-control-plane/` | NONE |
+| `IP-SIDECAR` | Padiem Embedded AI Runtime | `packages/padiem-embedded-runtime/` (reserved, S1) | NONE |
 
 These IDs are management identifiers only. They do not alter source paths, package names, Worker names, Business numbering, or deployment identities.
 
@@ -31,6 +32,9 @@ The Internal Platform layer provides one place to answer:
 
 ```text
 Product / Business adapter
+        |
+        v
+IP-SIDECAR — reusable browser-safe embedded primitives (where the host embeds AI)
         |
         v
 IP-ENGINE — cross-runtime service identity / transport
@@ -60,17 +64,19 @@ Internal Platform components are deliberately not assigned B-numbers. B14 remain
 - `core/README.md` — IP-CORE locator and ownership summary.
 - `engine/README.md` — IP-ENGINE locator and ownership summary.
 - `control-plane/README.md` — IP-CONTROL locator and ownership summary.
+- `sidecar/README.md` — IP-SIDECAR locator, ownership boundary, and overlap audit (S1).
 
 ## Governance rule
 
 When a new generic capability is discovered, ask in order:
 
 1. Is it product-specific? Keep it in the product adapter.
-2. Is it reusable AI runtime semantics? Reuse or extend `IP-CORE`.
-3. Is it cross-runtime service transport, identity, or execution hosting? Use or extend `IP-ENGINE`.
-4. Is it platform policy/control-plane state? Adjudicate `IP-CONTROL` ownership.
-5. Is it provider/model/routing/credential authority? Keep it under B14.
+2. Is it a reusable browser-safe embedded shell/context/event/presentation primitive? Use `IP-SIDECAR`.
+3. Is it reusable AI runtime semantics? Reuse or extend `IP-CORE`.
+4. Is it cross-runtime service transport, identity, or execution hosting? Use or extend `IP-ENGINE`.
+5. Is it platform policy/control-plane state? Adjudicate `IP-CONTROL` ownership.
+6. Is it provider/model/routing/credential authority? Keep it under B14.
 
 Do not create a second copy of a generic capability in a Business merely because the Business is the first consumer to need it.
 
-Refs #1707.
+Refs #1707 #1739.

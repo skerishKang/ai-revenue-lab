@@ -80,6 +80,31 @@
       currentWorkKo: "공통 제어·정책 경계 유지",
       currentWorkEn: "Maintain reusable control-plane and policy boundaries",
       currentIssue: null
+    },
+    {
+      id: "IP-SIDECAR",
+      name: "Padiem Embedded AI Runtime",
+      koreanName: "파디엠 임베디드 AI 런타임",
+      repository: "skerishKang/ai-revenue-lab",
+      sourcePath: "packages/padiem-embedded-runtime/",
+      sourceUrl: "https://github.com/skerishKang/ai-revenue-lab/tree/main/packages/padiem-embedded-runtime",
+      authorityDoc: "docs/internal-platform/sidecar/README.md",
+      authorityDocUrl: "https://github.com/skerishKang/ai-revenue-lab/blob/main/docs/internal-platform/sidecar/README.md",
+      businessNumber: null,
+      status: "proposed",
+      runtime: "Reusable embedded shell/context/event/presentation/bootstrap primitives",
+      roleKo: "호스트 제품에 내장되는 재사용 AI 표면의 계약과 실행 기본 요소",
+      roleEn: "Contracts and bootstrap primitives for reusable AI surfaces embedded in host products",
+      owns: ["Embedded shell primitives", "Embedded context/event plumbing", "Embedded presentation/bootstrap defaults", "Host adapter integration contract"],
+      doesNotOwn: ["Product-domain semantics", "Engine service identity/transport", "Core AI semantics", "B14 provider routing/credentials", "Control Plane identity/tenant/entitlement authority", "Browser-visible secrets"],
+      dependencies: ["IP-ENGINE", "IP-CORE"],
+      consumers: ["B53 Padiem Sidecar — commercial host/product UX"],
+      currentWorkKo: "IP-SIDECAR 레지스트리·경계 S1 수립",
+      currentWorkEn: "IP-SIDECAR registry and boundary establishment (S1)",
+      currentIssue: {
+        label: "#1739",
+        url: "https://github.com/skerishKang/ai-revenue-lab/issues/1739"
+      }
     }
   ];
 

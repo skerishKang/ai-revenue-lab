@@ -30,15 +30,16 @@ test.describe('Internal Platform view', () => {
     await platformNav.click();
     await expect(page.locator('#view-platform')).toBeVisible();
     await expect(page.locator('#header-prefix')).toHaveText('내부 플랫폼 관리');
-    await expect(page.locator('#header-count')).toHaveText('IP 3');
+    await expect(page.locator('#header-count')).toHaveText('IP 4');
 
     const cards = page.locator('.ip-item');
-    await expect(cards).toHaveCount(3);
-    await expect(page.locator('.ip-id')).toHaveText(['IP-CORE', 'IP-ENGINE', 'IP-CONTROL']);
+    await expect(cards).toHaveCount(4);
+    await expect(page.locator('.ip-id')).toHaveText(['IP-CORE', 'IP-ENGINE', 'IP-CONTROL', 'IP-SIDECAR']);
     await expect(page.locator('.ip-source')).toHaveText([
       'packages/padiem-ai-core/',
       'apps/padiem-ai-engine/',
-      'packages/padiem-control-plane/'
+      'packages/padiem-control-plane/',
+      'packages/padiem-embedded-runtime/'
     ]);
 
     // The Business index remains a separate authority surface.
@@ -49,6 +50,7 @@ test.describe('Internal Platform view', () => {
     await expect(page.locator('#biz-list')).not.toContainText('IP-CORE');
     await expect(page.locator('#biz-list')).not.toContainText('IP-ENGINE');
     await expect(page.locator('#biz-list')).not.toContainText('IP-CONTROL');
+    await expect(page.locator('#biz-list')).not.toContainText('IP-SIDECAR');
 
     // Return to Internal Platform and prove current Engine work is directly discoverable.
     await platformNav.click();
@@ -65,6 +67,17 @@ test.describe('Internal Platform view', () => {
     await expect(page.locator('#ip-dialog-body')).not.toContainText('#1698');
     await expect(page.locator('#ip-dialog-body a[href="https://github.com/skerishKang/ai-revenue-lab/issues/1698"]')).toHaveCount(0);
 
+    await page.locator('#ip-dialog-close-btn').click();
+    await expect(dialog).not.toBeVisible();
+
+    // The registered IP-SIDECAR entry renders with its authorizing issue link.
+    const sidecarCard = page.locator('.ip-item[data-platform-id="IP-SIDECAR"]');
+    await expect(sidecarCard).toContainText('Padiem Embedded AI Runtime');
+    await sidecarCard.click();
+    await expect(dialog).toBeVisible();
+    await expect(page.locator('#ip-dialog-title')).toHaveText('IP-SIDECAR · Padiem Embedded AI Runtime');
+    await expect(page.locator('#ip-dialog-body')).toContainText('Business 번호 없음');
+    await expect(page.locator('#ip-dialog-body a[href="https://github.com/skerishKang/ai-revenue-lab/issues/1739"]')).toBeVisible();
     await page.locator('#ip-dialog-close-btn').click();
     await expect(dialog).not.toBeVisible();
 
