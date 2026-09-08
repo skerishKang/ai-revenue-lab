@@ -370,6 +370,12 @@ from .orchestration_events import (
     orchestration_event_from_public,
     public_orchestration_event,
 )
+from .public_ui_events import (
+    PublicUiEvent,
+    PublicUiEventError,
+    PublicUiEventKind,
+    PublicUiEventStream,
+)
 from .orchestration import (
     OrchestrationError,
     OrchestrationRequest,
@@ -754,6 +760,10 @@ __all__ = [
     "OrchestrationEventKind",
     "orchestration_event_from_public",
     "public_orchestration_event",
+    "PublicUiEvent",
+    "PublicUiEventError",
+    "PublicUiEventKind",
+    "PublicUiEventStream",
     "OrchestrationError",
     "OrchestrationRequest",
     "OrchestrationResult",
