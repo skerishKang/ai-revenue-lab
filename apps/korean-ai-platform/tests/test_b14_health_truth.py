@@ -229,7 +229,6 @@ def test_health_reports_fixed_chain_routing_policy(client):
     assert policy["chain"] == [
         "sensenova/sensenova-6.8-flash-lite",
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        "kilo/minimax-minimax-m3-free",
         "poolside/laguna-s-2.1",
     ]
 

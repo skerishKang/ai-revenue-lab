@@ -38,6 +38,11 @@ APP_DIR = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = APP_DIR / "app" / "pilot" / "tier_registry_v1.py"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ACT1_BASE = "eec57fe863b9cc9038039dcc33e4ecc7b135ed30"
+# #2097 re-baseline: the scope lock must pin the #2088/#2091 branch range to
+# its own merge commit. Comparing against a moving HEAD made this test fail on
+# every legitimate later merge to main (it was only passing in CI via the
+# shallow-checkout skip).
+ACT1_MERGED_INTO_MAIN = "909d0b908439bbf49da678ed8f209da8d0da658c"
 
 
 def all_routes() -> list[tuple[TierLabel, TierRoute]]:
@@ -246,18 +251,25 @@ def test_existing_b14_auto_runtime_untouched() -> None:
         source = (APP_DIR / "app" / "pilot" / name).read_text(encoding="utf-8")
         assert "tier_registry" not in source, f"{name} must not be wired to the new registry"
 
-    probe = subprocess.run(
-        ["git", "cat-file", "-e", f"{ACT1_BASE}^{{commit}}"],
-        capture_output=True,
-        text=True,
-        cwd=REPO_ROOT,
-        timeout=60,
-    )
-    if probe.returncode != 0:
-        pytest.skip("ACT-1 base commit not available (shallow CI checkout)")
+    for pinned in (ACT1_BASE, ACT1_MERGED_INTO_MAIN):
+        probe = subprocess.run(
+            ["git", "cat-file", "-e", f"{pinned}^{{commit}}"],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+            timeout=60,
+        )
+        if probe.returncode != 0:
+            pytest.skip("ACT-1 scope-lock commits not available (shallow CI checkout)")
 
     result = subprocess.run(
-        ["git", "diff", "--name-only", ACT1_BASE, "HEAD"],
+        [
+            "git",
+            "diff",
+            "--name-only",
+            ACT1_BASE,
+            ACT1_MERGED_INTO_MAIN,
+        ],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,

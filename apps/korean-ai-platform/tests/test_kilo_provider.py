@@ -17,9 +17,9 @@ from app.pilot.kilo_provider import (
     KILO_BASE_ORIGIN,
     KILO_FREE_ROUTES,
     KILO_HY3_MODEL_ID,
-    KILO_HY3_UPSTREAM_MODEL,
     KILO_LAGUNA_MODEL_ID,
     KILO_LAGUNA_UPSTREAM_MODEL,
+    KILO_MINIMAX_M3_MODEL_ID,
     KILO_MODEL_ID,
     KILO_NEMOTRON_MODEL_ID,
     KILO_NEMOTRON_UPSTREAM_MODEL,
@@ -51,9 +51,10 @@ def test_kilo_explicit_free_models_are_registered_keyless() -> None:
     expected = {
         KILO_NEMOTRON_MODEL_ID: (KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA", 1_000_000),
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside", 262_144),
-        KILO_HY3_MODEL_ID: (KILO_HY3_UPSTREAM_MODEL, "Kilo Gateway / Tencent", 262_144),
     }
-    assert len(KILO_FREE_ROUTES) == 4
+    # #2097: minimax + hy3 free lanes are retired/unregistered; only two live
+    # explicit free routes remain.
+    assert len(KILO_FREE_ROUTES) == 2
     assert KILO_MODEL_ID == KILO_NEMOTRON_MODEL_ID
     assert KILO_UPSTREAM_MODEL == KILO_NEMOTRON_UPSTREAM_MODEL
 
@@ -82,7 +83,6 @@ def test_kilo_routes_are_manual_explicit_only() -> None:
     expected = {
         KILO_NEMOTRON_MODEL_ID: (KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA"),
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside"),
-        KILO_HY3_MODEL_ID: (KILO_HY3_UPSTREAM_MODEL, "Kilo Gateway / Tencent"),
     }
     for model_id, (upstream_model, provider) in expected.items():
         decision = resolve_manual_route(model_id)
@@ -111,7 +111,6 @@ def test_kilo_routes_are_manual_explicit_only() -> None:
     [
         (KILO_NEMOTRON_MODEL_ID, KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA"),
         (KILO_LAGUNA_MODEL_ID, KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside"),
-        (KILO_HY3_MODEL_ID, KILO_HY3_UPSTREAM_MODEL, "Kilo Gateway / Tencent"),
     ],
 )
 async def test_kilo_completed_calls_send_no_authorization_header(
@@ -223,7 +222,6 @@ async def test_kilo_rate_limit_maps_to_bounded_provider_error(monkeypatch) -> No
     [
         (KILO_NEMOTRON_MODEL_ID, "Kilo Gateway / NVIDIA"),
         (KILO_LAGUNA_MODEL_ID, "Kilo Gateway / Poolside"),
-        (KILO_HY3_MODEL_ID, "Kilo Gateway / Tencent"),
     ],
 )
 def test_kilo_gateway_dispatches_without_caller_provider_key(
@@ -245,3 +243,24 @@ def test_kilo_gateway_dispatches_without_caller_provider_key(
     assert payload["business14"]["selected_model"] == model_id
     assert payload["business14"]["selected_provider"] == provider
     assert payload["business14"]["attempt_count"] == 1
+
+@pytest.mark.parametrize(
+    "retired_model_id",
+    [KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID],
+)
+def test_retired_kilo_lanes_fail_closed_as_unsupported(
+    monkeypatch,
+    retired_model_id: str,
+) -> None:
+    """#2097: unregistered retirement lanes must be rejected before any dispatch."""
+    monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/pilot/router/resolve",
+        json={
+            "model": retired_model_id,
+            "messages": [{"role": "user", "content": "hi"}],
+        },
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "unsupported_model"

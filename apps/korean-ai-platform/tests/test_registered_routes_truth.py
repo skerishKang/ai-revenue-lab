@@ -64,7 +64,8 @@ def test_only_public_catalog_lane_is_auto_eligible(client):
     assert public[0]["id"] == KILO_NEMOTRON_MODEL_ID
     assert public[0]["provider_id"] == "kilo"
     assert public[0]["auto_eligible"] is True
-    assert len(explicit) == 5
+    # #2097: minimax + hy3 retirement unregistered two explicit-only lanes.
+    assert len(explicit) == 3
     assert all(not r["auto_eligible"] for r in explicit)
 
 
@@ -73,7 +74,8 @@ def test_all_kilo_routes_are_free_and_only_public_is_auto_eligible(client):
         r for r in _registered_routes(client) if r["provider_id"] == "kilo"
     ]
 
-    assert len(kilo_routes) == 4
+    # #2097: two of the four original Kilo free lanes are retired/unregistered.
+    assert len(kilo_routes) == 2
     assert all(r["free"] is True for r in kilo_routes)
     assert sum(r["auto_eligible"] for r in kilo_routes) == 1
 
