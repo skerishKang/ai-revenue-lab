@@ -1,80 +1,99 @@
 # Business 54 · Padiem Claw / Korean AI Code Agent
 
-Business 54의 canonical source는 계속 `apps/korean-ai-code-agent/**`입니다. Phase 1 CLI/TUI vertical slice(#372, #376)를 보존하면서 Issue #1383에서 **Padiem Claw**를 working product identity로 사용해 cloud/background-ready 경계를 리팩터링합니다.
-
 ```text
+DOC_STATUS = CURRENT_PRODUCT
 BUSINESS_ID = B54
 CANONICAL_SOURCE = apps/korean-ai-code-agent/**
-WORKING_PRODUCT_NAME = Padiem Claw
-PACKAGE / CLI = korean-ai-code-agent / kagent
-NEW_BUSINESS_NUMBER = NO
-REAL_CLOUD_SANDBOX = NOT_CONFIGURED
+CANONICAL_PRODUCT_NAME = Padiem Claw
+PACKAGE_CLI = korean-ai-code-agent / kagent
+LAST_VERIFIED = 2026-09-08
 ```
 
-`Padiem Claw`는 현재 별도 B65나 별도 shared runtime이 아닙니다. 이 앱은 제품 task/run/workspace/GitHub 흐름을 소유하고, 공유 Agent/Tool/Skill/approval/recovery 의미론은 P01 Padiem AI Core를 소비하며, 모델/Provider 실행은 Business 14를 소비하는 방향입니다.
+Padiem Claw is Padiem's coding-agent product surface. It owns repository/task/run/workspace/GitHub product semantics and consumes shared Padiem AI platform capabilities instead of recreating them.
 
-## Architecture boundary
+Canonical platform references:
+
+- `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
+- `docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md`
+- `docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`
+- `docs/internal-platform/AI_ADOPTION_PLAYBOOK.md`
+- `docs/governance/LEGACY_AI_TERMINOLOGY_MAP.md`
+
+## Current architecture boundary
 
 ```text
-Padiem Chat / CLI / future first-party surface
+Padiem Claw product UX / CLI / future first-party surfaces
         │
         ▼
-ClawTaskIntent                B54 product contract
+B54 task / run / repository / workspace adapter
         │
         ▼
-ClawRun / RunProjection       B54 user-visible lifecycle
+IP-ENGINE · Padiem AI Engine
+cross-runtime trusted service boundary
         │
-        ├── local workspace   current foreground CLI
+        ▼
+IP-CORE · Padiem AI Core
+Agent / Tool / Skill / approval / recovery / orchestration semantics
         │
-        └── cloud request
-              │
-              ▼
-        SandboxLeasePort      resource boundary only
-              │
-              ▼
-        PREPARING             sandbox != agent execution
-              │
-              ▼
-        future trusted P01 orchestration adapter
-              │
-              ▼
-        Padiem AI Core
-              │
-              ▼
-        Business 14
-              │
-              ▼
-        Provider / model
+        ▼
+B14 · Korean AI Platform
+Provider / model routing and execution
+        │
+        ▼
+Provider / Model
+
+IP-CONTROL = identity / tenant / entitlement / usage / audit where integrated
 ```
 
-Ownership locks:
+`P01` is a legacy identifier for the shared Core concept. Current documentation uses **IP-CORE**. Historical documents may retain `P01` only as dated evidence.
 
-- **B54 / Claw**: task identity, repository/revision reference, product run projection, workspace/sandbox resource request, product-specific diff/test/review/GitHub workflow.
-- **P01 Core**: Agent planner/runtime, Tool/Connector authorization, reusable Skill execution, approval continuation, retry/recovery/delegation, Memory/RAG, Evidence/Verification and shared orchestration semantics.
-- **Business 14**: Provider/model registry, Provider credentials, route selection, fallback and actual model execution.
-- **Control Plane**: canonical identity, entitlement, usage/credits/subscription/audit when later integrated.
+## B54 owns
 
-B54 must consume these shared authorities rather than recreate them.
+- task identity and product-visible task intent;
+- repository and requested revision references;
+- product run/workspace lifecycle projection;
+- local workspace and sandbox resource requests;
+- product-specific diff/test/review/GitHub workflow;
+- CLI/TUI and future Claw-specific presentation;
+- product-local permission prompts and user-facing copy.
 
-## Phase 2 refactor
+## B54 must not own
 
-The former `AgentSession` was a practical Phase 1 façade but mixed session state, repository safety, Git probing, B14 mock logic, patch state and secret redaction. Phase 2 separates those responsibilities while preserving the existing CLI surface.
+- generic Agent planning/runtime semantics;
+- generic Tool or Connector authorization semantics;
+- reusable Skill package/runtime semantics;
+- generic approval/recovery/delegation/orchestration semantics;
+- Provider/model registry or inference credentials;
+- a product-local generic AI router;
+- canonical identity/tenant/entitlement/usage/audit truth.
+
+Those authorities remain with IP-CORE, IP-ENGINE, B14 and IP-CONTROL according to the vertical-stack contract.
+
+## Current source/runtime truth
+
+The repository contains a hardened Phase 1 CLI/TUI and later boundary refactors. Source presence does not prove live cloud-agent or provider activation.
 
 ```text
-kagent/security.py     output-secret redaction
-kagent/adapters.py     B14 consumer preview adapter; no routing authority
-kagent/contracts.py    immutable task/run/sandbox projection contracts
-kagent/runs.py         B54 product lifecycle state machine only
-kagent/sandbox.py      provider-neutral sandbox lease port + network-free fake
-kagent/preparation.py  cloud workspace preparation only; never starts an agent
-kagent/workspace.py    repository containment + read-only Git inspection
-kagent/patching.py     pure proposed-patch value object; no filesystem writes
-kagent/core.py         Phase 1 compatibility façade + composition root
+SOURCE_PRESENT
+!= ENGINE_BINDING_READY
+!= CORE_RUNTIME_COMPOSED
+!= PROVIDER_READY
+!= CLOUD_SANDBOX_READY
+!= PRODUCTION_ACTIVE
 ```
 
-`AgentSession` now remains primarily as a compatibility façade. Repository containment/Git reads, patch diff construction, B14 preview and redaction are separated behind dedicated components instead of accumulating future cloud/P01/GitHub logic in one class.
+The deterministic B14 preview adapter is test/architecture evidence only. It does not establish live Provider execution or model-routing authority inside B54.
 
-### Product run states
+A sandbox lease or prepared workspace is also not proof that an agent has started:
+
+```text
+SANDBOX_ALLOCATED
+!= AGENT_RUNNING
+```
+
+## Run lifecycle
+
+B54 may project a product lifecycle such as:
 
 ```text
 queued
@@ -84,157 +103,37 @@ queued
 → completed | failed | cancelled
 ```
 
-Only explicit transitions are accepted. `completed`, `failed`, and `cancelled` are terminal and cannot silently resume. This lifecycle is a product-facing container, not a replacement for P01 execution/recovery events.
+This is a product-facing lifecycle projection. Shared execution, approval, recovery and orchestration semantics remain IP-CORE-owned and cross-runtime projection remains IP-ENGINE-owned.
 
-### Cloud preparation safety
-
-A cloud task may request bounded resource metadata through `SandboxLeaseRequest`:
+## Safety defaults
 
 ```text
-execution_mode
-repository_ref
-requested_revision
-resource_class
-TTL
-network_policy
-writable_workspace
+repository read = allowed after repository selection
+file write       = explicit permission
+command execution = explicit permission + allowlist
+network          = off unless explicitly authorized by the accepted runtime contract
+git mutation     = off by default
+push/merge/deploy = not implied by product source
 ```
 
-There is intentionally **no user-supplied sandbox hostname/endpoint** and no Provider/model credential in these contracts. Default network policy is `off`; TTL is bounded to 60–3600 seconds. Wire-facing enum, integer and boolean fields are validated/coerced explicitly rather than relying only on Python type hints.
+Raw Provider credentials must never be present in browser/product state, product task contracts, logs or committed documentation.
 
-The default `UnconfiguredSandboxProvider` fails closed. The committed `DeterministicFakeSandboxProvider` is for network-free tests and architecture exercises only and is not a production sandbox claim.
+## Model/tier relationship
 
-Most importantly:
+Claw does not own Padiem Plus/Pro/Max route truth. Current shared Padiem tier declarations are owned by:
 
 ```text
-sandbox lease allocated
-!=
-agent is running
+packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
 ```
 
-A successful lease leaves a cloud run in `PREPARING`. A later trusted P01 adapter must establish actual orchestration before the B54 projection may advance to `RUNNING`.
+B14 remains final executability and actual Provider/model execution authority. Any B54 adapter may consume an accepted route/profile but must not redefine the route catalog.
 
-## Primary terminal UX — preserved
+## Historical detail
+
+The pre-unification README, including Phase 1/2 implementation detail and legacy `P01` terminology, is preserved without loss at:
 
 ```text
-terminal launch
-→ repository selection
-→ Korean task
-→ read-only inspection
-→ clean/dirty Git status report (read-only)
-→ bounded plan
-→ deterministic Business 14 mock-adapter evidence
-→ unified diff preview
-→ explicit write permission
-→ explicit allowlisted command permission
-→ review
-→ user apply / reject / revise
+docs/history/2026-09-02/PADIEM_CLAW_README.snapshot.md
 ```
 
-## Run
-
-Python 3.11+:
-
-```bash
-cd apps/korean-ai-code-agent
-python -m pip install -e .
-kagent --help
-kagent . plan "인증 흐름을 분석해줘"
-kagent . run "저장 버튼 오류를 찾아 테스트까지 고쳐줘"
-```
-
-The Phase 1 CLI still requires the task text to contain Korean. English code/file names may be mixed into the Korean task.
-
-The Business 14 adapter remains a **deterministic network-free preview contract**. It emits a stable request ID, normalized route marker, `resolved_not_called`, and `network_called=false`; it does not duplicate Provider selection, credentials, catalog, fallback or live model execution. Existing `AgentSession.business14_mock_response()` delegates to the separated adapter for compatibility.
-
-`AgentSession.task_intent(...)` can now project a foreground CLI session into `ClawTaskIntent`. The session's B14 `route` is deliberately excluded from that product task contract.
-
-## Permission defaults
-
-```text
-repository read: allowed after repository selection
-file write: ask
-command execution: ask
-network: off
-git mutation: off
-push / merge / deploy: absent
-```
-
-The patch preview remains deterministic and bounded. `PendingPatch` is a pure value object; actual filesystem writes remain behind `AgentSession.apply()` and still require explicit write permission. Before apply, KAgent verifies that the selected file still matches the previewed original text. If the file changed after preview, apply fails closed instead of overwriting another change.
-
-`RepositoryWorkspace` owns path containment and read-only repository inspection. Symbolic links are skipped during inspection, and any path resolving outside the selected root is rejected. Its Git probe runs only:
-
-```text
-git status --porcelain=v1 --untracked-files=all
-```
-
-It never runs `git add`, `reset`, `clean`, `checkout`, `commit`, `push`, `merge`, or deployment commands.
-
-## Allowed test commands
-
-Only these exact command shapes are accepted:
-
-```text
-python -m unittest
-python -m unittest discover
-python -m compileall .
-```
-
-Captured stdout/stderr is redacted before display for Bearer tokens, `sk-*` key shapes, and common `api_key` / `token` / `secret` / `password` assignments.
-
-## Tests
-
-```bash
-PYTHONPATH=src python -m unittest discover -s tests -v
-python -m compileall -q src tests
-```
-
-Committed tests cover the Phase 1 contracts plus Phase 2 boundaries:
-
-- CLI help, Korean task contract and read-only Plan mode;
-- repository-root and symlink-escape containment plus bounded inspection limits;
-- clean/dirty Git status using read-only Git commands;
-- deterministic network-free B14 preview compatibility;
-- denied/approved bounded writes and concurrent-change fail-closed behavior;
-- command allowlist, failing/passing test evidence and secret redaction;
-- `ClawTaskIntent`, `RunProjection`, sandbox request/lease validation and safe serialization;
-- malformed wire enum/type rejection and bounded scalar validation;
-- legal/illegal run transitions and terminal-state immutability;
-- approval-state projection and changed-file bounds;
-- sandbox network-off default, TTL bounds, lease expiry/release and cross-run isolation;
-- unconfigured cloud provider fail-closed behavior;
-- explicit proof that workspace preparation stops at `PREPARING` rather than claiming P01 agent execution;
-- Phase 1 `AgentSession` compatibility after workspace/patch/B14/security extraction.
-
-## Non-goals / hard boundaries
-
-- no new B65 or duplicate Padiem Agent product;
-- no browser coding workspace in this slice;
-- no Provider registry, model registry, credentials, billing or fallback duplication from Business 14;
-- no P01 Agent/Tool/Skill/approval/retry/recovery reimplementation;
-- no real model/API request in this slice;
-- no real cloud sandbox provider or VM/container provisioning;
-- no credential discovery or logging;
-- no arbitrary shell execution;
-- no automatic Git reset/clean/checkout/commit/push/merge;
-- no deployment;
-- no production sandbox claim.
-
-```text
-B54_CANONICAL
-PADIEM_CLAW_WORKING_IDENTITY
-CLI_TUI_COMPATIBILITY_PRESERVED
-TASK_RUN_SANDBOX_BOUNDARIES_SPLIT
-WORKSPACE_IO_BOUNDARY_SPLIT
-PATCH_VALUE_OBJECT_SPLIT
-P01_SEMANTICS_NOT_DUPLICATED
-B14_ROUTING_NOT_DUPLICATED
-B14_PREVIEW_NETWORK_FREE
-CLOUD_PROVIDER_FAIL_CLOSED
-SANDBOX_LEASE_IS_NOT_AGENT_EXECUTION
-WRITE_PERMISSION_REQUIRED
-COMMAND_ALLOWLIST_REQUIRED
-NETWORK_OFF_BY_DEFAULT
-GIT_MUTATION_OFF
-NO_PRODUCTION_SANDBOX_CLAIM
-```
+Use that file for historical implementation evidence only. For current architecture and ownership, this README plus the canonical platform documents above take precedence.
