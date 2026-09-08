@@ -2,8 +2,7 @@
   "use strict";
 
   const messageList = document.getElementById("messageList");
-  const messageInput = document.getElementById("messageInput");
-  if (!messageList || !messageInput) return;
+  if (!messageList) return;
 
   const HEADING_PATTERN = /^(#{1,4})\s+(.+)$/;
   const UNORDERED_PATTERN = /^\s*[-+*]\s+(.+)$/;
@@ -407,13 +406,16 @@
     return container;
   }
 
-  function canEnhanceAnswers() {
-    return messageInput.disabled !== true;
+  function lifecycleApi() {
+    return window.PadiemChatLifecycle || {
+      states: { COMPLETED: "completed" },
+      isCompleted() { return false; },
+    };
   }
 
   function enhanceAssistantMessage(article) {
-    if (!canEnhanceAnswers()) return;
     if (!(article instanceof Element) || article.dataset.richResponse === "true") return;
+    if (!lifecycleApi().isCompleted(article)) return;
     const content = article.querySelector(".assistant-content");
     if (!content || content.querySelector(".typing") || content.querySelector(".error-box")) return;
     const rawParagraph = Array.from(content.children).find((node) => node.tagName === "P");
@@ -432,17 +434,15 @@
   }
 
   function enhanceAllAnswers() {
-    if (!canEnhanceAnswers()) return;
     messageList.querySelectorAll(".assistant-message").forEach(enhanceAssistantMessage);
   }
 
-  const messageObserver = new MutationObserver(enhanceAllAnswers);
-  messageObserver.observe(messageList, { childList: true, subtree: true });
-
-  const lifecycleObserver = new MutationObserver(() => {
-    if (canEnhanceAnswers()) enhanceAllAnswers();
+  messageList.addEventListener("padiem:message-lifecycle", (event) => {
+    const api = lifecycleApi();
+    if (!event.detail || event.detail.state !== api.states.COMPLETED) return;
+    const article = event.target instanceof Element ? event.target.closest(".assistant-message") : null;
+    if (article) enhanceAssistantMessage(article);
   });
-  lifecycleObserver.observe(messageInput, { attributes: true, attributeFilter: ["disabled"] });
 
   enhanceAllAnswers();
 })();

@@ -2,11 +2,7 @@
 
 The existing Engine wire paths are already ``/internal/v1/*``. This module
 makes that compatibility surface explicit for first-party cross-runtime clients
-without creating a new public endpoint or changing request/response semantics.
-
-The manifest reports Engine/Core-facing capabilities only. It deliberately does
-not expose Provider/model inventory, credentials, B14 routing internals, account
-IDs, Cloudflare bindings, or product entitlement state.
+without creating a public endpoint or exposing Provider/storage authority.
 """
 
 from __future__ import annotations
@@ -15,9 +11,23 @@ from dataclasses import dataclass
 from enum import Enum
 import re
 
-from .orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
+from .agent_skill_service import (
+    AGENT_SKILL_CANCEL_PATH,
+    AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_PATH,
+)
+from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
+from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
+from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
+from .orchestration_service import (
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
+)
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
+from .web_research_service import RESEARCH_PATH
 
 ENGINE_CONTRACT_FAMILY = "padiem-ai-engine"
 ENGINE_CONTRACT_MAJOR = 1
@@ -129,6 +139,20 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(ORCHESTRATE_PATH, "POST", "application/json"),
             EngineEndpointContract(ORCHESTRATE_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(ORCHESTRATE_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(ORCHESTRATION_STREAM_PATH, "POST", "application/x-ndjson"),
+            EngineEndpointContract(RESEARCH_PATH, "POST", "application/json"),
+            EngineEndpointContract(MEMORY_PATH, "POST", "application/json"),
+            EngineEndpointContract(MEMORY_WRITE_PATH, "POST", "application/json"),
+            EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
+            EngineEndpointContract(AGENT_SKILL_RESUME_PATH, "POST", "application/json"),
+            EngineEndpointContract(AGENT_SKILL_CANCEL_PATH, "POST", "application/json"),
+            # E5A completed one-image source route. Trusted storage resolution is
+            # intentionally not Production-wired yet, so capability stays DEFERRED.
+            EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
+            # #1964 source slice: the replay route is declared but the feature
+            # stays DEFERRED until the #1235 production activation blockers are
+            # proven in a separately authorized change (BLOCKER_10).
+            EngineEndpointContract(IDEMPOTENCY_COMPLETED_REPLAY_PATH, "POST", "application/json"),
         ),
         features=(
             EngineFeatureContract("completed_run", EngineFeatureState.AVAILABLE),
@@ -140,15 +164,34 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("orchestration_run", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_resume", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("orchestration_cancel", EngineFeatureState.AVAILABLE),
-            EngineFeatureContract("orchestration_stream", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("idempotency_replay", EngineFeatureState.DEFERRED),
+            # #1962: orchestration_stream became AVAILABLE with the NDJSON
+            # orchestration lifecycle stream route (POST /internal/v1/orchestrate/stream).
+            EngineFeatureContract("orchestration_stream", EngineFeatureState.AVAILABLE),
+            # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0
+            EngineFeatureContract("idempotency_replay", EngineFeatureState.AVAILABLE),
+            # WO-9: source+D1 store bound in Production; stays DEFERRED — BLOCKER_C1 (no production pause producer until A3/#2010). See P01_ENGINE_APPROVAL_CONTINUATION_ACTIVATION_v1.md
             EngineFeatureContract("approval_continuation", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("execution_idempotency_replay_completed", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("execution_idempotency_replay_streaming", EngineFeatureState.DEFERRED),
+            # E9 A1 (#1744): Web/Research projection features follow the owner-authorized
+            # bounded activation dispatch on main ed18a2a8 (see E9_ACTIVATION_PLAN.md).
+            # WO-7 (owner decision D2, 2026-09-06): reverted to DEFERRED —
+            # no live web provider var can exist (wrangler.toml has no [vars]
+            # / keep_vars), so the composition fails closed 503 web_tools_off.
+            EngineFeatureContract("web_search_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("web_fetch_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("deep_research_projection", EngineFeatureState.DEFERRED),
+            # E9 A3 (#1746): reverted to DEFERRED per CTO audit 2026-09-06 —
+            # the Production composition injects no tool binding resolver, so
+            # the earlier AVAILABLE claim was not production truth. Re-activation
+            # requires the WO-2 composition conformance gate + real resolver.
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("multimodal_completed_run", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("multimodal_streaming_run", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("document_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("public_browser_api", EngineFeatureState.UNAVAILABLE),
             EngineFeatureContract("provider_selection", EngineFeatureState.UNAVAILABLE),
         ),
@@ -156,13 +199,6 @@ def current_engine_contract_manifest() -> EngineContractManifest:
 
 
 def engine_capability_posture() -> dict[str, str]:
-    """Single authoritative source for health/manifest capability posture.
-
-    Returns a bounded vocabulary map for the 8 posture fields required by #1237.
-    States are AVAILABLE only when the route/runtime is truly wired at the
-    Worker boundary; otherwise DEFERRED/UNAVAILABLE. This is the truth that both
-    health and manifest must report identically.
-    """
     manifest = current_engine_contract_manifest()
     wanted = (
         "completed_run",

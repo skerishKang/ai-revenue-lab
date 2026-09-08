@@ -22,6 +22,10 @@ from app.context_permission_wire import (
     parse_engine_context_permission,
     request_with_allowed_context_refs,
 )
+from app.evidence_projection import (
+    EngineEvidenceProjectionError,
+    project_terminal_evidence,
+)
 from app.execution_context_wire import parse_execution_context
 
 EXECUTE_PATH = "/internal/v1/execute"
@@ -101,10 +105,20 @@ def _required_capabilities(value: Any) -> tuple[str, ...]:
 
 def _model_policy(value: Any) -> dict[str, Any]:
     if value is None:
-        return {}
+        raise ServiceContractError(
+            "invalid_request",
+            "agent.model_policy.model is required; omitted routes never fall back to b14/auto.",
+        )
     if not isinstance(value, Mapping):
         raise ServiceContractError("invalid_request", "agent.model_policy must be an object.")
-    return dict(value)
+    out = dict(value)
+    model = out.get("model")
+    if not isinstance(model, str) or not model.strip():
+        raise ServiceContractError(
+            "invalid_request",
+            "agent.model_policy.model must be an explicit non-empty model route.",
+        )
+    return out
 
 
 def _execution_context(value: Any) -> ExecutionContext | None:
@@ -117,6 +131,9 @@ def _execution_context(value: Any) -> ExecutionContext | None:
 def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest, ExecutionContext | None]:
     data = _require_exact_object(payload, name="request", allowed=_TOP_LEVEL_ALLOWED, required=_TOP_LEVEL_REQUIRED)
     agent_data = _require_exact_object(data["agent"], name="agent", allowed=_AGENT_ALLOWED, required=_AGENT_REQUIRED)
+    # #2101: route admission is validated before the compatibility catch below so
+    # an omitted model surfaces the stable field-level message, not a generic one.
+    agent_model_policy = _model_policy(agent_data.get("model_policy"))
 
     app_id = data["app_id"]
     context = _execution_context(data.get("execution_context"))
@@ -136,7 +153,7 @@ def build_execution_request(payload: Any) -> tuple[str, ExecutionRequest, Execut
             max_tokens=agent_data["max_tokens"],
             allowed_tools=(),
             required_capabilities=_required_capabilities(agent_data.get("required_capabilities")),
-            model_policy=_model_policy(agent_data.get("model_policy")),
+            model_policy=agent_model_policy,
             max_steps=1,
         )
         request = ExecutionRequest(
@@ -284,9 +301,18 @@ class EngineService:
 
         if not isinstance(result, ExecutionResult):
             return _service_error("invalid_execution_result", "Padiem AI Engine returned an invalid execution result.", status_code=500)
+        # #1745 parity chokepoint: the completed-run terminal body shares the one
+        # canonical Engine evidence projection with stream and research. Core's
+        # ExecutionResult carries no grounded evidence, so nothing is projected;
+        # absence is normalized unavailable, never a fabricated verified-empty set.
+        try:
+            evidence_fields = project_terminal_evidence(result)
+        except EngineEvidenceProjectionError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=500)
         body: dict[str, Any] = {
             "ok": True,
             "answer": result.answer,
+            **evidence_fields,
             "route": result.route.to_public_dict(),
             "metadata": result.metadata.to_public_dict(),
         }

@@ -1,5 +1,10 @@
 import pytest
 
+from app.agent_skill_service import (
+    AGENT_SKILL_CANCEL_PATH,
+    AGENT_SKILL_RESUME_PATH,
+    AGENT_SKILL_RUN_PATH,
+)
 from app.contract_manifest import (
     ENGINE_CONTRACT_FAMILY,
     ENGINE_CONTRACT_MAJOR,
@@ -9,9 +14,18 @@ from app.contract_manifest import (
     current_engine_contract_manifest,
     require_compatible_engine_contract,
 )
-from app.orchestration_service import ORCHESTRATE_CANCEL_PATH, ORCHESTRATE_PATH, ORCHESTRATE_RESUME_PATH
+from app.orchestration_service import (
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATION_STREAM_PATH,
+)
+from app.idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
+from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
+from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
+from app.web_research_service import RESEARCH_PATH
 
 
 def test_manifest_matches_existing_internal_v1_routes() -> None:
@@ -27,16 +41,34 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", ORCHESTRATE_PATH),
         ("POST", ORCHESTRATE_RESUME_PATH),
         ("POST", ORCHESTRATE_CANCEL_PATH),
+        ("POST", ORCHESTRATION_STREAM_PATH),
+        ("POST", RESEARCH_PATH),
+        ("POST", MEMORY_PATH),
+        ("POST", MEMORY_WRITE_PATH),
+        ("POST", AGENT_SKILL_RUN_PATH),
+        ("POST", AGENT_SKILL_RESUME_PATH),
+        ("POST", AGENT_SKILL_CANCEL_PATH),
+        ("POST", MULTIMODAL_EXECUTE_PATH),
+        ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH),
     ]
 
 
-def test_orchestration_routes_declared_by_manifest() -> None:
+def test_orchestration_and_research_routes_declared_by_manifest() -> None:
     public = current_engine_contract_manifest().to_public_dict()
     endpoints = {(item["method"], item["path"]) for item in public["endpoints"]}
 
     assert ("POST", ORCHESTRATE_PATH) in endpoints
     assert ("POST", ORCHESTRATE_RESUME_PATH) in endpoints
     assert ("POST", ORCHESTRATE_CANCEL_PATH) in endpoints
+    assert ("POST", ORCHESTRATION_STREAM_PATH) in endpoints
+    assert ("POST", RESEARCH_PATH) in endpoints
+    assert ("POST", MEMORY_PATH) in endpoints
+    assert ("POST", MEMORY_WRITE_PATH) in endpoints
+    assert ("POST", AGENT_SKILL_RUN_PATH) in endpoints
+    assert ("POST", AGENT_SKILL_RESUME_PATH) in endpoints
+    assert ("POST", AGENT_SKILL_CANCEL_PATH) in endpoints
+    # #1964 source slice: replay route declared, feature stays DEFERRED.
+    assert ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH) in endpoints
 
 
 def test_current_completed_streaming_and_orchestration_features_are_available() -> None:
@@ -51,6 +83,7 @@ def test_current_completed_streaming_and_orchestration_features_are_available() 
         "orchestration_run",
         "orchestration_resume",
         "orchestration_cancel",
+        "orchestration_stream",
     ):
         assert manifest.feature_state(feature_id) is EngineFeatureState.AVAILABLE
 
@@ -66,14 +99,40 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
 
     for feature_id in (
         "approval_continuation",
-        "execution_idempotency_replay_completed",
         "execution_idempotency_replay_streaming",
-        "tool_runtime_projection",
         "skill_runtime_projection",
         "agent_runtime_projection",
         "memory_rag_projection",
+        "multimodal_completed_run",
+        "multimodal_streaming_run",
+        "document_projection",
     ):
         assert manifest.feature_state(feature_id) is EngineFeatureState.DEFERRED
+
+
+def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() -> None:
+    manifest = current_engine_contract_manifest()
+    endpoints = {(item.method, item.path) for item in manifest.endpoints}
+
+    for path in (
+        AGENT_SKILL_RUN_PATH,
+        AGENT_SKILL_RESUME_PATH,
+        AGENT_SKILL_CANCEL_PATH,
+    ):
+        assert ("POST", path) in endpoints
+    assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
+
+
+def test_multimodal_route_is_declared_but_capabilities_stay_deferred() -> None:
+    manifest = current_engine_contract_manifest()
+    endpoints = {(item.method, item.path) for item in manifest.endpoints}
+
+    assert ("POST", MULTIMODAL_EXECUTE_PATH) in endpoints
+    assert manifest.feature_state("multimodal_completed_run") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("multimodal_streaming_run") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
 
 
 def test_public_browser_api_and_provider_selection_are_unavailable() -> None:
@@ -101,6 +160,11 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
     for feature_id in (
         "approval_continuation",
         "memory_rag_projection",
+        "agent_runtime_projection",
+        "skill_runtime_projection",
+        "multimodal_completed_run",
+        "multimodal_streaming_run",
+        "document_projection",
         "public_browser_api",
         "provider_selection",
     ):

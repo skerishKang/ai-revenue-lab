@@ -34,7 +34,7 @@ def agent(**overrides) -> AgentProfile:
         "optimize_for": "korean",
         "max_tokens": 700,
         "required_capabilities": ("free",),
-        "model_policy": {},
+        "model_policy": {"model": "b14/auto"},
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -197,6 +197,19 @@ def test_invalid_model_policy_fails_before_stream_dispatch() -> None:
 
     assert info.value.code == "invalid_execution_request"
     assert info.value.metadata.status is RunStatus.REJECTED
+
+
+@pytest.mark.parametrize("policy", [{}, {"temperature": 0.2}, {"model": None}])
+def test_omitted_model_fails_closed_before_stream_dispatch(policy) -> None:
+    client = FakeStreamClient(complete_events())
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=client)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(collect(runtime, request(agent(model_policy=policy))))
+
+    assert info.value.code == "invalid_execution_request"
+    assert info.value.metadata.error_class is ErrorClass.INPUT_ERROR
+    assert client.dispatches == []
     assert client.dispatches == []
 
 

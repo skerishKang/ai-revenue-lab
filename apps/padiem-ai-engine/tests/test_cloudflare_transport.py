@@ -217,7 +217,7 @@ async def test_core_response_ceiling_remains_authoritative_over_binding_stream()
     )
 
     with pytest.raises(B14ExecutionError) as captured:
-        await client.execute(B14ChatRequest(messages=({"role": "user", "content": "hi"},)))
+        await client.execute(B14ChatRequest(messages=({"role": "user", "content": "hi"},), model="test/route"))
 
     assert captured.value.code == "upstream_response_too_large"
     assert len(binding.calls) == 1
@@ -234,7 +234,7 @@ async def test_core_normalizes_binding_429_without_public_fallback() -> None:
     )
 
     with pytest.raises(B14ExecutionError) as captured:
-        await client.execute(B14ChatRequest(messages=({"role": "user", "content": "hi"},)))
+        await client.execute(B14ChatRequest(messages=({"role": "user", "content": "hi"},), model="test/route"))
 
     assert captured.value.code == "upstream_rate_limited"
     assert captured.value.retryable is True
@@ -251,7 +251,7 @@ async def test_core_success_uses_observed_binding_response() -> None:
     )
 
     result = await client.execute(
-        B14ChatRequest(messages=({"role": "user", "content": "hi"},))
+        B14ChatRequest(messages=({"role": "user", "content": "hi"},), model="test/route")
     )
 
     assert result.answer == "hello from b14"

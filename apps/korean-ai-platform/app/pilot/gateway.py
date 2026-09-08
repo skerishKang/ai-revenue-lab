@@ -10,6 +10,7 @@ Supports multi-provider registry and legacy single-provider fallback.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 import uuid
@@ -24,11 +25,11 @@ from app.pilot.errors import (
     InvalidRequest,
     MissingProviderKey,
     NoSafeRoute,
-    PilotNotConfigured,
     PlaceholderKeyRejected,
     PilotError,
     StreamNotSupported,
     ToolsNotSupported,
+    UpstreamTimeout,
 )
 from app.pilot.redaction import redact_sensitive
 from app.pilot.registry import get_registry
@@ -38,12 +39,52 @@ from app.pilot.routing import (
     resolve_route,
 )
 from app.pilot.schemas import PilotChatRequest
-from app.pilot.openrouter_config import openrouter_config
-from app.pilot.catalog import get_catalog_by_id, list_catalog_summaries
+from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.catalog import (
+    CATALOG_BY_ID,
+    CATALOG_MODELS,
+    get_catalog_by_id,
+    is_evidenced_free,
+    list_catalog_summaries,
+)
+from app.pilot.platform_secrets import (
+    any_platform_secret_present,
+    list_platform_providers,
+    live_ready,
+    resolve_secret,
+)
 from app.pilot import provider as prv
-from app.pilot import openrouter as orv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
+from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
+
+# ---------------------------------------------------------------------------
+# Bounded same-route retry for retryable upstream failures (#1982)
+#
+# Measured defect: the direct Kilo free route intermittently returns 504
+# (Kilo Gateway's own ~10s limit on free models). Direct/manual routes used
+# to attempt once and give up despite the failure being retryable.
+#
+# Budget: the engine's orchestration budget is 60s. The whole B14 attempt
+# chain (initial + retries + backoffs) is capped at 45s wall time via a
+# per-attempt deadline, leaving >=15s of headroom for engine overhead.
+#   worst typical case: 3 attempts x ~10s (Kilo 504) + 0.5s + 1.0s backoff
+#                     = ~31.5s <= 45s
+#   pathological case : each attempt is hard-capped at the remaining budget
+#                     by asyncio.timeout, so total <= 45s by construction.
+# ---------------------------------------------------------------------------
+_UPSTREAM_RETRY_MAX_RETRIES = 2
+_UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
+_UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
+# Retryable transport classes retried on the SAME route once no fallback
+# candidate remains. Hourly-quota 429s are excluded (Kilo free is an hourly
+# quota); the SenseNova transient-busy 429 (#2003) IS included — it is
+# capacity pressure with UpstreamTimeout-equivalent semantics.
+_SAME_ROUTE_RETRYABLE_CODES = frozenset({
+    "upstream_timeout",
+    "upstream_server_error",
+    "upstream_rate_limited_busy",
+})
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
@@ -62,6 +103,7 @@ _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
+    "allow_paid",
 })
 _B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -254,6 +296,12 @@ def _validate_b14_options(raw: Any) -> dict:
             raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
         opts["max_attempts"] = ma
 
+    ap = raw.get("allow_paid")
+    if ap is not None:
+        if not isinstance(ap, bool):
+            raise _InvalidBody("business14.allow_paid must be a boolean")
+        opts["allow_paid"] = ap
+
     return opts
 
 
@@ -264,19 +312,56 @@ def _is_alpha_model(model_id: str) -> bool:
     return get_catalog_by_id(model_id) is not None
 
 
+def _providers_with_registered_routes() -> list:
+    """Return registered platform providers that own at least one CATALOG_BY_ID route."""
+    provider_ids = {
+        model.platform_provider_id
+        for model in CATALOG_BY_ID.values()
+        if model.enabled and model.provider_type == "platform"
+    }
+    return [
+        spec for spec in list_platform_providers()
+        if spec.provider_id in provider_ids
+    ]
+
+
+def _registered_route_dicts() -> list[dict]:
+    """Return the exact-ID route registry surface without prices or secrets.
+
+    ``public`` marks the CATALOG_MODELS auto lane, ``explicit_only`` the
+    manual-pin lane, ``auto_eligible`` the free public lane.
+    """
+    public_ids = {model.model_id for model in CATALOG_MODELS}
+    entries = []
+    for model in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id):
+        is_public = model.model_id in public_ids
+        is_free = is_evidenced_free(model)
+        entries.append({
+            "id": model.model_id,
+            "provider_id": model.platform_provider_id,
+            "upstream_model": model.upstream_model,
+            "free": is_free,
+            "public": is_public,
+            "explicit_only": not is_public,
+            "auto_eligible": is_public and is_free,
+        })
+    return entries
+
+
 def _catalog_summary_dicts() -> list[dict]:
     """Return catalog models as display dicts with extra Alpha fields."""
     result = []
     for m in list_catalog_summaries():
+        model = get_catalog_by_id(m["model_id"])
         result.append({
             "id": m["model_id"],
             "name": m["name"],
-            "provider_id": "openrouter",
+            "provider_id": model.platform_provider_id if model else "unknown",
             "provider_name": m["provider"],
             "pilot_available": True,
             "input_krw_per_1k": None,
             "output_krw_per_1k": None,
-            "tags": ["alpha", "openrouter"] + list(m["capabilities"]),
+            "tags": ["alpha"] + list(m["capabilities"]),
             "input_price_usd_per_1m": m["input_price_usd_per_1m"],
             "output_price_usd_per_1m": m["output_price_usd_per_1m"],
             "korean_score": m["korean_score"],
@@ -285,12 +370,12 @@ def _catalog_summary_dicts() -> list[dict]:
     result.insert(0, {
         "id": "b14/auto",
         "name": "Business 14 자동 선택",
-        "provider_id": "openrouter",
-        "provider_name": "OpenRouter",
+        "provider_id": "b14",
+        "provider_name": "B14 Router",
         "pilot_available": True,
         "input_krw_per_1k": None,
         "output_krw_per_1k": None,
-        "tags": ["alpha", "openrouter", "auto"],
+        "tags": ["alpha", "auto"],
         "input_price_usd_per_1m": 0,
         "output_price_usd_per_1m": 0,
         "korean_score": 0,
@@ -301,15 +386,28 @@ def _catalog_summary_dicts() -> list[dict]:
 
 @router.route("/health", methods=["GET"])
 async def pilot_health(request: Request):
-    """Pilot health check. Includes Alpha (OpenRouter) and BYOK status."""
+    """Pilot health check. Includes Alpha (platform catalog) and BYOK status."""
     state = resolve_configuration()
 
     b14_info = {
-        "provider_mode": openrouter_config.provider_mode,
-        "has_key": openrouter_config.has_key,
-        "base_url_host": openrouter_config.base_url,
-        "site_name": openrouter_config.site_name,
+        "provider_mode": runtime_config.provider_mode,
+        "has_key": any_platform_secret_present(),
         "catalog_models": len(list_catalog_summaries()),
+        "routing_policy": {
+            "id": ROUTING_POLICY_ID,
+            "chain": list(B14_AUTO_CHAIN),
+        },
+        "providers": [
+            {
+                "id": spec.provider_id,
+                "registered": True,
+                "has_key": bool(resolve_secret(spec)),
+            }
+            for spec in sorted(
+                _providers_with_registered_routes(),
+                key=lambda item: item.provider_id,
+            )
+        ],
     }
 
     if state == PilotConfigurationState.VALID_REGISTRY:
@@ -325,7 +423,7 @@ async def pilot_health(request: Request):
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
         resp = _registry_invalid_response()
-        resp.headers["business14-provider-mode"] = openrouter_config.provider_mode
+        resp.headers["business14-provider-mode"] = runtime_config.provider_mode
         return resp
 
     if state == PilotConfigurationState.LEGACY:
@@ -337,12 +435,13 @@ async def pilot_health(request: Request):
             "business14": b14_info,
         })
 
-    if openrouter_config.is_live and openrouter_config.has_key:
+    if live_ready():
         return JSONResponse({
             "status": "ok",
-            "mode": "business14-openrouter-live",
-            "configured_providers": 1,
+            "mode": "b14-live",
+            "configured_providers": len(_providers_with_registered_routes()),
             "configured_models": len(list_catalog_summaries()),
+            "registered_routes": len(CATALOG_BY_ID),
             "business14": b14_info,
         })
 
@@ -367,6 +466,7 @@ async def pilot_models(request: Request):
             "configured": True,
             "mode": "multi-provider",
             "catalog": _catalog_summary_dicts(),
+            "registered_routes": _registered_route_dicts(),
         })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
@@ -391,12 +491,14 @@ async def pilot_models(request: Request):
             "configured": True,
             "mode": "single-provider",
             "catalog": _catalog_summary_dicts(),
+            "registered_routes": _registered_route_dicts(),
         })
 
     return JSONResponse({
         "models": [],
         "configured": False,
         "catalog": _catalog_summary_dicts(),
+        "registered_routes": _registered_route_dicts(),
     })
 
 
@@ -464,7 +566,7 @@ async def pilot_router_resolve(
                     "request_id": request_id,
                     "reason_code": e.reason_code,
                     "upstream_called": e.upstream_called,
-                    "provider_mode": openrouter_config.provider_mode,
+                    "provider_mode": runtime_config.provider_mode,
                 }
             },
         )
@@ -496,17 +598,94 @@ async def pilot_router_resolve(
         )
 
 
+def _build_b14_mock_metadata(
+    request_id: str,
+    model_id: str,
+    upstream_model: str,
+    provider: str,
+    routing_policy: str | None = None,
+) -> dict[str, Any]:
+    """Build Business 14 metadata for a mock response."""
+    return {
+        "provider_mode": "mock",
+        "mode": "mock",
+        "provider": provider,
+        "model_route": model_id,
+        "upstream_model": upstream_model,
+        "actual_response_model": upstream_model,
+        "latency_ms": 0,
+        "request_id": request_id,
+        "estimated_usd": None,
+        "estimated_krw": None,
+        "cost_basis": "unknown",
+        "route_mode": "manual",
+        "attempt_count": 1,
+        "fallback_used": False,
+        "evidence_status": "mock_no_upstream_call",
+        "routing_policy": routing_policy,
+    }
+
+
+def _build_b14_live_metadata(
+    request_id: str,
+    model_id: str,
+    upstream_model: str,
+    provider: str,
+    latency_ms: int,
+    prompt_tokens: int | None,
+    completion_tokens: int | None,
+    total_tokens: int | None,
+    attempt_count: int = 1,
+    fallback_used: bool = False,
+    actual_response_model: str | None = None,
+    routing_policy: str | None = None,
+) -> dict[str, Any]:
+    """Build Business 14 metadata for a live response.
+
+    All arguments must describe the candidate that ACTUALLY answered
+    (after any fallback), never the primary candidate.
+    """
+    cm = get_catalog_by_id(model_id)
+    estimated_usd = None
+    estimated_krw = None
+    cost_basis = "unknown"
+    if cm and prompt_tokens is not None and completion_tokens is not None:
+        estimated_usd = cm.estimate_cost_usd(prompt_tokens, completion_tokens)
+        estimated_krw = cm.estimate_cost_krw(prompt_tokens, completion_tokens)
+        if cm.price_is_known:
+            cost_basis = "known_free" if estimated_usd == 0.0 else "configured_snapshot"
+
+    return {
+        "provider_mode": "live",
+        "mode": "live",
+        "provider": provider,
+        "model_route": model_id,
+        "upstream_model": upstream_model,
+        "actual_response_model": actual_response_model,
+        "latency_ms": latency_ms,
+        "request_id": request_id,
+        "estimated_usd": estimated_usd,
+        "estimated_krw": estimated_krw,
+        "cost_basis": cost_basis,
+        "route_mode": "auto" if model_id == "b14/auto" else "manual",
+        "attempt_count": attempt_count,
+        "fallback_used": fallback_used,
+        "evidence_status": "live_verified",
+        "routing_policy": routing_policy,
+    }
+
+
 async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
-    """Handle a chat completions request in Alpha (OpenRouter catalog) mode.
+    """Handle a chat completions request in Alpha (platform catalog) mode.
 
     - Detects mock vs live mode from B14_PROVIDER_MODE
     - In mock mode: returns canned response, zero upstream calls
-    - In live mode: calls OpenRouter with fallback logic
+    - In live mode: calls the platform provider with fallback logic
     - Response metadata describes the candidate that ACTUALLY answered
       (after any fallback), never the primary decision candidate
     - Unknown exceptions fail closed (no fallback)
     """
-    from app.pilot.openrouter_config import openrouter_config as cfg
+    from app.pilot.b14_runtime_config import runtime_config as cfg
 
     model_id = body["model"]
     b14_opts = body.get("business14", {})
@@ -527,7 +706,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "model_id": fc["model_id"],
             "upstream_model": fc["upstream_model"],
             "provider": fc["provider"],
-            "route_id": fc.get("route_id", f"openrouter:{fc['model_id']}"),
+            "route_id": fc["route_id"],
+            "platform_provider_id": fc.get("platform_provider_id", ""),
         }
         for fc in decision.eligible_fallback
     ] if decision.fallback_allowed else []
@@ -535,6 +715,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     max_attempts = decision.max_attempts
 
     start_time = time.monotonic()
+    deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
     attempt_count = 0
     fallback_used = False
     last_error: PilotError | None = None
@@ -548,109 +729,162 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             "upstream_model": candidate.upstream_model,
             "provider": candidate.provider,
             "route_id": candidate.route_id,
+            "platform_provider_id": decision.platform_provider_id,
         }
     ] + fallback_candidates
 
+    async def _invoke_upstream(current: dict[str, str]) -> dict[str, Any]:
+        if decision.credential_source == "platform_secret":
+            return await plat.call_platform_chat_completions(
+                model_id=current["model_id"],
+                upstream_model=current["upstream_model"],
+                provider=current["provider"],
+                platform_provider_id=current.get("platform_provider_id") or decision.platform_provider_id,
+                messages=body["messages"],
+                temperature=body.get("temperature"),
+                max_tokens=body.get("max_tokens"),
+            )
+        raise InvalidRequest(
+            "non-platform route is not routable (OpenRouter retired, #1933 S2)"
+        )
+
+    budget_exhausted = False
     for idx in range(min(max_attempts, len(candidates))):
-        attempt_count = idx + 1
+        if budget_exhausted:
+            break
         current = candidates[idx]
 
-        if attempt_count > 1:
+        if idx > 0:
             fallback_used = True
             logger.info(
                 "alpha_fallback attempt=%d model=%s",
-                attempt_count,
+                idx + 1,
                 current["model_id"],
             )
 
-        try:
-            if decision.credential_source == "platform_secret":
-                response_data = await plat.call_platform_chat_completions(
-                    model_id=current["model_id"],
-                    upstream_model=current["upstream_model"],
-                    provider=current["provider"],
-                    platform_provider_id=decision.platform_provider_id,
-                    messages=body["messages"],
-                    temperature=body.get("temperature"),
-                    max_tokens=body.get("max_tokens"),
+        retry_index = 0
+        succeeded = False
+        unexpected_internal = False
+        advance_to_next_candidate = False
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                budget_exhausted = True
+                if last_error is None:
+                    last_error = UpstreamTimeout()
+                break
+
+            attempt_count += 1
+            try:
+                async with asyncio.timeout(remaining):
+                    response_data = await _invoke_upstream(current)
+            except TimeoutError as exc:
+                # asyncio.timeout hard ceiling fired (adapter timeout did not).
+                timeout_error = UpstreamTimeout()
+                timeout_error.__cause__ = exc
+                error: PilotError = timeout_error
+            except PilotError as exc:
+                error = exc
+            except Exception as exc:
+                logger.error(
+                    "alpha_unexpected_error request_id=%s model=%s error=%s",
+                    request_id,
+                    current["model_id"],
+                    redact_sensitive(str(exc)),
                 )
-            elif cfg.is_mock:
-                response_data = await orv.call_openrouter_chat_completions(
-                    messages=body["messages"],
-                    temperature=body.get("temperature"),
-                    max_tokens=body.get("max_tokens"),
-                    model_id=current["model_id"],
-                    upstream_model=current["upstream_model"],
-                    provider=current["provider"],
+                attempt_evidence.append({
+                    "attempt": attempt_count,
+                    "model_id": current["model_id"],
+                    "upstream_model": current["upstream_model"],
+                    "provider": current["provider"],
+                    "route_id": current["route_id"],
+                    "outcome": "error",
+                    "error_code": "internal_error",
+                    "retry_index": retry_index,
+                    "actual_response_model": None,
+                })
+                last_error = PilotError(
+                    code="internal_error",
+                    message="요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                    status_code=500,
                 )
+                unexpected_internal = True
+                error = None
             else:
-                if not cfg.has_key:
-                    raise PilotNotConfigured(
-                        "LIVE 모드에서는 OPENROUTER_API_KEY가 필요합니다. "
-                        ".env 파일에 키를 설정하거나 B14_PROVIDER_MODE=mock로 전환하십시오."
-                    )
-                response_data = await orv.call_openrouter_chat_completions(
-                    messages=body["messages"],
-                    temperature=body.get("temperature"),
-                    max_tokens=body.get("max_tokens"),
-                    model_id=current["model_id"],
-                    upstream_model=current["upstream_model"],
-                    provider=current["provider"],
-                )
-        except PilotError as e:
-            last_error = e
-            attempt_evidence.append({
-                "attempt": attempt_count,
-                "model_id": current["model_id"],
-                "upstream_model": current["upstream_model"],
-                "provider": current["provider"],
-                "route_id": current["route_id"],
-                "outcome": "error",
-                "error_code": e.code,
-                "actual_response_model": None,
-            })
-            if not rcore.is_error_fallback_allowed(e.code):
-                break
-            if attempt_count >= max_attempts or idx >= len(candidates) - 1:
-                break
-            continue
-        except Exception as e:
-            logger.error(
-                "alpha_unexpected_error request_id=%s model=%s error=%s",
-                request_id,
-                current["model_id"],
-                redact_sensitive(str(e)),
-            )
-            attempt_evidence.append({
-                "attempt": attempt_count,
-                "model_id": current["model_id"],
-                "upstream_model": current["upstream_model"],
-                "provider": current["provider"],
-                "route_id": current["route_id"],
-                "outcome": "error",
-                "error_code": "internal_error",
-                "actual_response_model": None,
-            })
-            last_error = PilotError(
-                code="internal_error",
-                message="요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
-                status_code=500,
-            )
-            break
+                actual_model = response_data.get("_actual_response_model")
+                attempt_evidence.append({
+                    "attempt": attempt_count,
+                    "model_id": current["model_id"],
+                    "upstream_model": current["upstream_model"],
+                    "provider": current["provider"],
+                    "route_id": current["route_id"],
+                    "outcome": "success",
+                    "error_code": None,
+                    "retry_index": retry_index,
+                    "actual_response_model": actual_model,
+                })
+                success_candidate = current
+                succeeded = True
+                error = None
 
-        actual_model = response_data.get("_actual_response_model")
-        attempt_evidence.append({
-            "attempt": attempt_count,
-            "model_id": current["model_id"],
-            "upstream_model": current["upstream_model"],
-            "provider": current["provider"],
-            "route_id": current["route_id"],
-            "outcome": "success",
-            "error_code": None,
-            "actual_response_model": actual_model,
-        })
-        success_candidate = current
-        break
+            if unexpected_internal or succeeded:
+                break
+            assert error is not None
+
+            last_error = error
+            attempt_evidence.append({
+                "attempt": attempt_count,
+                "model_id": current["model_id"],
+                "upstream_model": current["upstream_model"],
+                "provider": current["provider"],
+                "route_id": current["route_id"],
+                "outcome": "error",
+                "error_code": error.code,
+                "retry_index": retry_index,
+                "actual_response_model": None,
+            })
+
+            # Same-route bounded retry for retryable transport failures
+            # (#1982). Non-retryable classes (auth, bad request) never reach
+            # a retry: they are not in _SAME_ROUTE_RETRYABLE_CODES and the
+            # fallback-prohibited check below breaks on the first attempt.
+            if (
+                error.code in _SAME_ROUTE_RETRYABLE_CODES
+                and retry_index < _UPSTREAM_RETRY_MAX_RETRIES
+            ):
+                backoff = _UPSTREAM_RETRY_BACKOFF_SECONDS[
+                    min(retry_index, len(_UPSTREAM_RETRY_BACKOFF_SECONDS) - 1)
+                ]
+                if deadline - time.monotonic() > backoff:
+                    retry_index += 1
+                    decision.reason_codes.append(f"upstream_retry:{retry_index}")
+                    logger.info(
+                        "alpha_upstream_retry request_id=%s attempt=%d code=%s backoff_s=%.1f",
+                        request_id,
+                        retry_index,
+                        error.code,
+                        backoff,
+                    )
+                    await asyncio.sleep(backoff)
+                    continue
+
+            if not rcore.is_error_fallback_allowed(error.code):
+                break
+            if idx + 1 >= max_attempts or idx >= len(candidates) - 1:
+                break
+            advance_to_next_candidate = True
+            break  # -> next fallback candidate
+
+        if succeeded or unexpected_internal:
+            # Success ends the chain walk; an unknown exception fails closed
+            # with no fallback (never advance on either path).
+            break
+        if not advance_to_next_candidate:
+            # Non-fallback-allowed errors and exhausted attempts stop the
+            # walk: reaching the next candidate requires an explicit advance
+            # decision above (D14 #2044: multi-candidate chains made the old
+            # fall-through walk every remaining candidate).
+            break
 
     latency_ms = int((time.monotonic() - start_time) * 1000)
 
@@ -672,6 +906,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                         "request_id": request_id,
                         "attempt_count": attempt_count,
                         "fallback_used": fallback_used,
+                        "reason_codes": decision.reason_codes,
                         "attempt_evidence": attempt_evidence,
                     }
                 },
@@ -684,18 +919,19 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
 
     actual_response_model = response_data.get("_actual_response_model")
     if cfg.is_mock:
-        biz14 = orv.build_mock_metadata(
+        biz14 = _build_b14_mock_metadata(
             request_id=request_id,
             model_id=success_candidate["model_id"],
             upstream_model=success_candidate["upstream_model"],
             provider=success_candidate["provider"],
+            routing_policy=ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         )
     else:
         usage = response_data.get("usage") or {}
         pt = usage.get("prompt_tokens")
         ct = usage.get("completion_tokens")
         tt = usage.get("total_tokens")
-        biz14 = orv.build_live_metadata(
+        biz14 = _build_b14_live_metadata(
             request_id=request_id,
             model_id=success_candidate["model_id"],
             upstream_model=success_candidate["upstream_model"],
@@ -707,6 +943,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
             attempt_count=attempt_count,
             fallback_used=fallback_used,
             actual_response_model=actual_response_model,
+            routing_policy=ROUTING_POLICY_ID if decision.route_mode == "auto" else None,
         )
 
     usage = response_data.get("usage") or {}
@@ -760,8 +997,9 @@ async def pilot_chat_completions(
     """Execute a chat completion with routing.
 
     Supports two modes:
-    - Alpha (Business 14 catalog): uses OpenRouter adapter with mock/live mode.
-      Key read from OPENROUTER_API_KEY env var. Supports b14/auto.
+    - Alpha (Business 14 catalog): uses the platform provider adapter with
+      mock/live mode (keyless Kilo Gateway free route; OpenRouter retired).
+      Supports b14/auto.
     - BYOK (legacy): uses X-Business14-Provider-Key header. Uses registry/legacy routing.
     """
     request_id = f"b14req_{uuid.uuid4().hex[:12]}"
@@ -841,7 +1079,7 @@ async def pilot_chat_completions(
                     "request_id": request_id,
                     "reason_code": e.reason_code,
                     "upstream_called": e.upstream_called,
-                    "provider_mode": openrouter_config.provider_mode,
+                    "provider_mode": runtime_config.provider_mode,
                 }
             },
         )

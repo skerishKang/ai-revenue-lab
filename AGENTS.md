@@ -14,7 +14,7 @@ Canonical operating documents:
 
 1. **User / Product Owner** — product goals, priorities, material UX/business decisions, merge/Production authority when the work contract requires owner authorization.
 2. **Web CTO** — work contract, architecture/safety boundary, acceptance criteria, current-remote audit, independent final review.
-3. **Web Developer** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report.
+3. **Implementation Worker (local model)** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
 4. **Local Validator** — exact-head execution in the required real environment when independent local/browser/OS/hardware validation is required.
 
 One actor may perform multiple **non-independent** stages. The same actor must not claim both implementation and **independent Local Validation** for the same revision.
@@ -25,7 +25,7 @@ BUT_IMPLEMENTATION_AND_INDEPENDENT_LOCAL_VALIDATION
 MUST_NOT_BE_CLAIMED_BY_THE_SAME_ACTOR_FOR_THE_SAME_REVISION
 ```
 
-If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending when the work contract requires it.
+If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending when the work contract requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
 
 ## Product-evidence stages are flexible
 
@@ -51,7 +51,7 @@ UI, UX, backend, live providers, local runtime, or service-led operations may st
 ```text
 User request / portfolio authority
 → Web CTO exact work contract
-→ Web Developer implementation
+→ Implementation Worker (local model) implementation
 → implementation self-check + configured CI
 → independent validation when required
 → Web CTO final review
@@ -76,6 +76,8 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - A validator who modifies product source has created a new implementation revision; that run is not independent validation of the new revision.
 - Wrong-project Preview or deployment output is defect evidence, not product acceptance evidence.
 - `READY`, `CONDITIONALLY_READY`, and `NOT_READY` are Web CTO technical/review verdicts, not automatic merge commands.
+- Before merge, the Web CTO posts the filled `CTO_FINAL_REVIEW` checklist as a PR review/comment containing the exact head SHA and per-item checklist results; prose-only verdict assertions are not an auditable record.
+- Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 

@@ -27,7 +27,7 @@
 
   var DOM = {};
   var _sentinels = {
-    no_key_live: "Live 모드에서는 OPENROUTER_API_KEY가 필요합니다. .env 파일에 키를 설정하십시오.",
+    no_key_live: "Live 모드에서 Provider 자격 증명이 필요합니다. platform-owned Provider 키 또는 keyless 라우트를 확인하십시오.",
     no_safe_route: "안전한 라우팅 경로를 찾을 수 없습니다.",
     mock_label: "모의 응답 · 실제 Provider 호출 없음",
     live_label: "실제 Provider 응답",
@@ -238,7 +238,7 @@
       DOM.selectedModel.textContent = cm ? cm.name : model;
     }
     if (DOM.selectedProvider) {
-      DOM.selectedProvider.textContent = cm ? cm.provider : "OpenRouter";
+      DOM.selectedProvider.textContent = cm ? cm.provider : "Padiem AI";
     }
     if (DOM.selectedReason) {
       DOM.selectedReason.textContent = state.activeRouteMode === "auto"

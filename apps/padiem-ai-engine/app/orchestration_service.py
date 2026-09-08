@@ -7,7 +7,7 @@ resumption, and cancellation over the internal Engine transport.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Mapping
+from collections.abc import AsyncIterator, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import inspect
@@ -42,8 +42,18 @@ from padiem_ai_core import (
     VerifiedApprovalDecision,
     request_fingerprint,
 )
+from padiem_ai_core.agent_approval import tool_invocation_digest
+from padiem_ai_core.contracts import ErrorClass
+from padiem_ai_core.execution_runtime import ExecutionRuntimeError
+from padiem_ai_core.tool_runtime import MAX_TOOL_ARGUMENT_BYTES, ToolInvocation
 
 from app.execution_context_wire import parse_execution_context
+from app.tool_projection import (
+    MAX_WIRE_TOOL_ARGUMENTS_BYTES,
+    EngineToolBinding,
+    EngineToolProjectionError,
+    json_size,
+)
 from app.service import (
     MAX_REQUEST_BODY_BYTES,
     ServiceContractError,
@@ -53,39 +63,50 @@ from app.service import (
     build_execution_request,
 )
 
-ORCHESTRATE_PATH = "/internal/v1/orchestrate"
-ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
-ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
-
-_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
-_IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
-_AGENT_ID_RE = re.compile(
-    r"^agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
+from app.orchestration_continuation import (
+    ContinuationRecord,
+    ContinuationStore,
+    InMemoryContinuationStore,
 )
 
-_MAX_ORCHESTRATION_RETRIES = 10
-_MAX_AGENT_STEP_RETRIES = 4
-_MAX_CANCEL_REASON_LEN = 256
-
-_EXEC_FIELDS = frozenset({
-    "app_id", "agent", "messages", "session_id", "additional_system_context",
-    "trace_id", "execution_context",
-})
-_ORCHESTRATION_OPTIONS = frozenset({
-    "agent_plan", "recovery_policy", "max_retries", "subject_id",
-    "require_evidence", "require_verification",
-})
-_ORCHESTRATION_RESUME_OPTIONS = frozenset({
-    "agent_plan", "recovery_policy", "max_retries", "subject_id",
-})
-_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS
-_RESUME_ALLOWED = (_EXEC_FIELDS | {"continuation_ref", "decision"}) | _ORCHESTRATION_RESUME_OPTIONS
-_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
-
-_AGENT_PLAN_ALLOWED = frozenset({"agent_id", "steps"})
-_PLAN_STEP_ALLOWED = frozenset({"step_id", "objective", "tool_id", "depends_on"})
-_RECOVERY_ALLOWED = frozenset({"retryable_driver_codes", "max_retries_per_step"})
-
+# Compatibility surface: the wire contract moved to app.orchestration_wire
+# in #1792 R2B-2; these re-exports preserve every existing import site.
+from app.orchestration_wire import (  # noqa: E402
+    ORCHESTRATE_PATH,
+    ORCHESTRATE_RESUME_PATH,
+    ORCHESTRATE_CANCEL_PATH,
+    ORCHESTRATION_STREAM_PATH,
+    _SAFE_ID_RE,
+    _IDENTIFIER_RE,
+    _AGENT_ID_RE,
+    _MAX_ORCHESTRATION_RETRIES,
+    _MAX_AGENT_STEP_RETRIES,
+    _MAX_CANCEL_REASON_LEN,
+    _EXEC_FIELDS,
+    _ORCHESTRATION_OPTIONS,
+    _ORCHESTRATION_RESUME_OPTIONS,
+    _ORCHESTRATE_ALLOWED,
+    _RESUME_ALLOWED,
+    _CANCEL_ALLOWED,
+    _AGENT_PLAN_ALLOWED,
+    _PLAN_STEP_ALLOWED,
+    _RECOVERY_ALLOWED,
+    ApprovalDecisionSubmission,
+    _parse_max_retries,
+    _parse_max_retries_per_step,
+    _parse_subject_id,
+    _require_strict_bool,
+    _parse_retryable_driver_codes,
+    _parse_plan_step,
+    _parse_agent_plan,
+    _parse_recovery_policy,
+    _parse_cancel_reason,
+    _parse_orchestration_options,
+    _parse_required_timestamp,
+    _required_text,
+    _parse_approval_decision_submission,
+    _parse_continuation_ref,
+)
 
 def _server_generated_trace_id() -> str:
     """Return a bounded opaque trace ID for a new logical orchestration run."""
@@ -115,412 +136,44 @@ class ApprovalDecisionVerifier(Protocol):
     ) -> VerifiedApprovalDecision | Awaitable[VerifiedApprovalDecision]: ...
 
 
-@dataclass(frozen=True, slots=True)
-class ApprovalDecisionSubmission:
-    """Untrusted wire data; never pass this type to Core resume()."""
-
-    decision_id: str
-    pause_id: str
-    outcome: ApprovalOutcome
-    authority_ref: str
-    evidence_ref: str
-    decided_at: datetime
-
-
-@dataclass(frozen=True, slots=True)
-class ContinuationRecord:
-    app_id: str
-    pause: ApprovalPause
-    continuation_ref: str
-    plan_id: str | None
-    idempotency_key: str | None = None
-    request_fingerprint: str | None = None
-    state: str = "active"
-    claim_token: str | None = None
-    cancel_reason: str | None = None
-    cancel_event_fingerprint: str | None = None
-
-
-class ContinuationStore(Protocol):
-    """Atomic continuation lifecycle adapter.
-
-    Durable implementations must make claim/commit/release/cancel CAS or
-    transactionally atomic across Worker/process boundaries.
-    """
-
-    def issue(
-        self,
-        *,
-        app_id: str,
-        pause: ApprovalPause,
-        plan_id: str | None,
-        idempotency_key: str | None = None,
-        request_fingerprint: str | None = None,
-    ) -> str: ...
-    def resolve(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
-    def claim(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
-    def commit(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None: ...
-    def release(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None: ...
-    def cancel(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord: ...
-
-    def claim_cancel(
-        self, *, app_id: str, continuation_ref: str, reason: str
-    ) -> ContinuationRecord: ...
-    def commit_cancel(
-        self, *, app_id: str, continuation_ref: str, claim_token: str
-    ) -> ContinuationRecord: ...
-    def release_cancel(
-        self, *, app_id: str, continuation_ref: str, claim_token: str
-    ) -> ContinuationRecord: ...
-
-
-class InMemoryContinuationStore:
-    """Process-local reference implementation of the durable CAS contract.
-
-    Production adapters must provide the same atomic transitions in durable
-    storage; this implementation is intentionally not a production authority.
-    """
-
-    def __init__(self) -> None:
-        self._records: dict[str, ContinuationRecord] = {}
-
-    @staticmethod
-    def _copy(record: ContinuationRecord, **changes: Any) -> ContinuationRecord:
-        values = {
-            "app_id": record.app_id,
-            "pause": record.pause,
-            "continuation_ref": record.continuation_ref,
-            "plan_id": record.plan_id,
-            "idempotency_key": record.idempotency_key,
-            "request_fingerprint": record.request_fingerprint,
-            "state": record.state,
-            "claim_token": record.claim_token,
-            "cancel_reason": record.cancel_reason,
-            "cancel_event_fingerprint": record.cancel_event_fingerprint,
-        }
-        values.update(changes)
-        return ContinuationRecord(**values)
-
-    def issue(
-        self,
-        *,
-        app_id: str,
-        pause: ApprovalPause,
-        plan_id: str | None,
-        idempotency_key: str | None = None,
-        request_fingerprint: str | None = None,
-    ) -> str:
-        ref = f"cont_{secrets.token_urlsafe(32)}"
-        self._records[ref] = ContinuationRecord(
-            app_id=app_id,
-            pause=pause,
-            continuation_ref=ref,
-            plan_id=plan_id,
-            idempotency_key=idempotency_key,
-            request_fingerprint=request_fingerprint,
-        )
-        return ref
-
-    def _get(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
-        record = self._records.get(continuation_ref)
-        if record is None or record.app_id != app_id:
-            raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
-        if record.state == "cancelled":
-            raise ServiceContractError("continuation_cancelled", "Continuation has been cancelled.", status_code=409)
-        if record.state == "consumed":
-            raise ServiceContractError("continuation_consumed", "Continuation has already been consumed.", status_code=409)
-        if record.state == "expired":
-            raise ServiceContractError("continuation_expired", "Continuation has expired.", status_code=409)
-        if record.state == "claimed":
-            raise ServiceContractError("continuation_claimed", "Continuation is already being resumed.", status_code=409)
-        if record.state == "cancelling":
-            raise ServiceContractError(
-                "continuation_cancel_in_progress", "Continuation is already being cancelled.", status_code=409
-            )
-        if record.pause.expires_at <= datetime.now(timezone.utc):
-            self._records[continuation_ref] = self._copy(record, state="expired", claim_token=None)
-            raise ServiceContractError("continuation_expired", "Continuation has expired.", status_code=409)
-        return record
-
-    def resolve(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
-        if not isinstance(continuation_ref, str) or not continuation_ref.startswith("cont_"):
-            raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
-        return self._get(app_id=app_id, continuation_ref=continuation_ref)
-
-    def claim(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
-        record = self._get(app_id=app_id, continuation_ref=continuation_ref)
-        claimed = self._copy(record, state="claimed", claim_token=f"claim_{secrets.token_urlsafe(24)}")
-        self._records[continuation_ref] = claimed
-        return claimed
-
-    def _claimed(self, *, app_id: str, continuation_ref: str, claim_token: str) -> ContinuationRecord:
-        record = self._records.get(continuation_ref)
-        if record is None or record.app_id != app_id:
-            raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
-        if record.state == "consumed":
-            raise ServiceContractError("continuation_consumed", "Continuation has already been consumed.", status_code=409)
-        if record.state != "claimed" or record.claim_token != claim_token:
-            raise ServiceContractError("continuation_claim_failed", "Continuation claim is no longer valid.", status_code=409)
-        return record
-
-    def commit(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None:
-        record = self._claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
-        self._records[continuation_ref] = self._copy(record, state="consumed", claim_token=None)
-
-    def release(self, *, app_id: str, continuation_ref: str, claim_token: str) -> None:
-        record = self._claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
-        state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
-        self._records[continuation_ref] = self._copy(record, state=state, claim_token=None)
-
-    def _cancel_claimed(
-        self, *, app_id: str, continuation_ref: str, claim_token: str
-    ) -> ContinuationRecord:
-        record = self._records.get(continuation_ref)
-        if record is None or record.app_id != app_id:
-            raise ServiceContractError("invalid_continuation", "Continuation reference is invalid.", status_code=409)
-        if record.state == "consumed":
-            raise ServiceContractError("continuation_consumed", "Continuation has already been consumed.", status_code=409)
-        if record.state != "cancelling" or record.claim_token != claim_token:
-            raise ServiceContractError(
-                "continuation_cancel_claim_failed", "Continuation cancel claim is no longer valid.", status_code=409
-            )
-        return record
-
-    def claim_cancel(self, *, app_id: str, continuation_ref: str, reason: str) -> ContinuationRecord:
-        record = self._get(app_id=app_id, continuation_ref=continuation_ref)
-        claimed = self._copy(
-            record,
-            state="cancelling",
-            claim_token=f"cancel_{secrets.token_urlsafe(24)}",
-            cancel_reason=reason,
-            cancel_event_fingerprint=None,
-        )
-        self._records[continuation_ref] = claimed
-        return claimed
-
-    def commit_cancel(self, *, app_id: str, continuation_ref: str, claim_token: str) -> ContinuationRecord:
-        record = self._cancel_claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
-        committed = self._copy(
-            record,
-            state="cancelled",
-            claim_token=None,
-            cancel_event_fingerprint=f"evt_{secrets.token_hex(8)}",
-        )
-        self._records[continuation_ref] = committed
-        return committed
-
-    def release_cancel(self, *, app_id: str, continuation_ref: str, claim_token: str) -> ContinuationRecord:
-        record = self._cancel_claimed(app_id=app_id, continuation_ref=continuation_ref, claim_token=claim_token)
-        state = "expired" if record.pause.expires_at <= datetime.now(timezone.utc) else "active"
-        released = self._copy(
-            record, state=state, claim_token=None, cancel_reason=None, cancel_event_fingerprint=None
-        )
-        self._records[continuation_ref] = released
-        return released
-
-    def cancel(self, *, app_id: str, continuation_ref: str) -> ContinuationRecord:
-        record = self._get(app_id=app_id, continuation_ref=continuation_ref)
-        cancelled = self._copy(record, state="cancelled", claim_token=None)
-        self._records[continuation_ref] = cancelled
-        return cancelled
-
-
 _DEFAULT_CONTINUATION_STORE = InMemoryContinuationStore()
 
-
-def _parse_max_retries(value: Any) -> int:
-    if value is None:
-        return 3
-    if isinstance(value, bool) or not isinstance(value, int):
-        raise ServiceContractError("invalid_max_retries", "max_retries must be an integer.")
-    if not 0 <= value <= _MAX_ORCHESTRATION_RETRIES:
-        raise ServiceContractError(
-            "invalid_max_retries",
-            f"max_retries must be between 0 and {_MAX_ORCHESTRATION_RETRIES}.",
-        )
-    return value
+# ---------------------------------------------------------------------------
+# Orchestration NDJSON stream (#1962)
+# ---------------------------------------------------------------------------
+ORCHESTRATION_NDJSON_CONTENT_TYPE = "application/x-ndjson; charset=utf-8"
 
 
-def _parse_max_retries_per_step(value: Any) -> int:
-    if value is None:
-        return 1
-    if isinstance(value, bool) or not isinstance(value, int):
-        raise ServiceContractError("invalid_recovery_policy", "max_retries_per_step must be an integer.")
-    if not 0 <= value <= _MAX_AGENT_STEP_RETRIES:
-        raise ServiceContractError(
-            "invalid_recovery_policy",
-            f"max_retries_per_step must be between 0 and {_MAX_AGENT_STEP_RETRIES}.",
-        )
-    return value
+@dataclass(frozen=True, slots=True)
+class PreparedOrchestrationStream:
+    """A primed orchestration run whose lifecycle events stream as NDJSON.
+
+    Mirrors ``PreparedStream`` in ``app.streaming_service``: all wire
+    validation happens before HTTP 200 commits and the first lifecycle event
+    (or an immediate run failure) is resolved during preparation.
+    """
+
+    first_event: OrchestrationEvent
+    queue: asyncio.Queue[OrchestrationEvent]
+    task: asyncio.Task[OrchestrationResult]
+    app_id: str
+    request_fingerprint_value: str | None = None
 
 
-def _parse_subject_id(value: Any) -> str | None:
-    if value is None:
-        return None
-    if not isinstance(value, str) or not _SAFE_ID_RE.fullmatch(value):
-        raise ServiceContractError("invalid_subject_id", "subject_id must be a bounded safe identifier.")
-    return value
+def _encode_line(payload: dict[str, Any]) -> str:
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
 
 
-def _require_strict_bool(value: Any, *, name: str) -> bool:
-    if value is None:
-        return False
-    if not isinstance(value, bool):
-        raise ServiceContractError(f"invalid_{name}", f"{name} must be a boolean.")
-    return value
+def _stream_event_line(event: OrchestrationEvent) -> str:
+    return _encode_line({"ok": True, "event": event.to_public_dict()})
 
 
-def _parse_retryable_driver_codes(value: Any) -> tuple[str, ...]:
-    if isinstance(value, (str, bytes)) or not isinstance(value, (list, tuple)):
-        raise ServiceContractError("invalid_recovery_policy", "retryable_driver_codes must be an array of strings.")
-    codes: list[str] = []
-    for code in tuple(value):
-        if not isinstance(code, str) or not _IDENTIFIER_RE.fullmatch(code):
-            raise ServiceContractError(
-                "invalid_recovery_policy",
-                "retryable_driver_codes must contain bounded safe identifiers.",
-            )
-        codes.append(code)
-    return tuple(codes)
+def _stream_result_line(orchestration_body: dict[str, Any]) -> str:
+    return _encode_line({"ok": True, "orchestration": orchestration_body})
 
 
-def _parse_plan_step(value: Any) -> AgentPlanStep:
-    if not isinstance(value, Mapping):
-        raise ServiceContractError("invalid_plan", "each plan step must be an object.")
-    data = dict(value)
-    unknown = set(data) - _PLAN_STEP_ALLOWED
-    if unknown:
-        raise ServiceContractError("invalid_plan", "plan step contains unsupported fields.")
-    step_id = data.get("step_id", "")
-    if not isinstance(step_id, str) or not _IDENTIFIER_RE.fullmatch(step_id):
-        raise ServiceContractError("invalid_plan", "plan step.step_id must be a bounded safe identifier.")
-    objective = data.get("objective", "")
-    if not isinstance(objective, str):
-        raise ServiceContractError("invalid_plan", "plan step.objective must be a string.")
-    raw_tool_id = data.get("tool_id", None)
-    tool_id: str | None = None
-    if raw_tool_id is not None:
-        if not isinstance(raw_tool_id, str) or not _IDENTIFIER_RE.fullmatch(raw_tool_id):
-            raise ServiceContractError("invalid_plan", "plan step.tool_id must be a bounded safe identifier or null.")
-        tool_id = raw_tool_id
-    raw_depends_on = data.get("depends_on", ())
-    if isinstance(raw_depends_on, (str, bytes)) or not isinstance(raw_depends_on, (list, tuple)):
-        raise ServiceContractError("invalid_plan", "plan step.depends_on must be an array of strings.")
-    depends_on: tuple[str, ...] = ()
-    for dep in raw_depends_on:
-        if not isinstance(dep, str) or not _IDENTIFIER_RE.fullmatch(dep):
-            raise ServiceContractError("invalid_plan", "plan step.depends_on must contain bounded safe identifiers.")
-        depends_on += (dep,)
-    return AgentPlanStep(
-        step_id=step_id,
-        objective=objective,
-        tool_id=tool_id,
-        depends_on=depends_on,
-    )
-
-
-def _parse_agent_plan(value: Any) -> AgentPlan | None:
-    if value is None:
-        return None
-    if not isinstance(value, Mapping):
-        raise ServiceContractError("invalid_plan", "agent_plan must be an object.")
-    data = dict(value)
-    unknown = set(data) - _AGENT_PLAN_ALLOWED
-    if unknown:
-        raise ServiceContractError("invalid_plan", "agent_plan contains unsupported fields.")
-    agent_id = data.get("agent_id")
-    if not isinstance(agent_id, str) or not _AGENT_ID_RE.fullmatch(agent_id):
-        raise ServiceContractError("invalid_plan", "agent_plan.agent_id must be a canonical versioned Agent id.")
-    raw_steps = data.get("steps", ())
-    if isinstance(raw_steps, (str, bytes)) or not isinstance(raw_steps, (list, tuple)):
-        raise ServiceContractError("invalid_plan", "agent_plan.steps must be an array.")
-    steps: list[AgentPlanStep] = [_parse_plan_step(step_item) for step_item in raw_steps]
-    return AgentPlan(agent_id=agent_id, steps=tuple(steps))
-
-
-def _parse_recovery_policy(value: Any) -> AgentRecoveryPolicy | None:
-    if value is None:
-        return None
-    if not isinstance(value, Mapping):
-        raise ServiceContractError("invalid_recovery_policy", "recovery_policy must be an object.")
-    data = dict(value)
-    unknown = set(data) - _RECOVERY_ALLOWED
-    if unknown:
-        raise ServiceContractError("invalid_recovery_policy", "recovery_policy contains unsupported fields.")
-    return AgentRecoveryPolicy(
-        retryable_driver_codes=_parse_retryable_driver_codes(data.get("retryable_driver_codes", ())),
-        max_retries_per_step=_parse_max_retries_per_step(data.get("max_retries_per_step", 1)),
-    )
-
-
-def _parse_cancel_reason(value: Any) -> str:
-    reason = value if value is not None else "user_cancelled"
-    if not isinstance(reason, str):
-        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a string.")
-    if not reason.strip():
-        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
-    if not (1 <= len(reason) <= _MAX_CANCEL_REASON_LEN):
-        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
-    return reason
-
-
-def _parse_orchestration_options(payload: Mapping[str, Any]) -> tuple[
-    AgentPlan | None, AgentRecoveryPolicy | None, int, str | None, bool, bool
-]:
-    plan = _parse_agent_plan(payload.get("agent_plan"))
-    rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
-    max_retries = _parse_max_retries(payload.get("max_retries", 3))
-    subject_id = _parse_subject_id(payload.get("subject_id"))
-    require_evidence = _require_strict_bool(payload.get("require_evidence"), name="require_evidence")
-    require_verification = _require_strict_bool(payload.get("require_verification"), name="require_verification")
-    return plan, rec_policy, max_retries, subject_id, require_evidence, require_verification
-
-
-def _parse_required_timestamp(data: Mapping[str, Any], name: str) -> datetime:
-    value = data.get(name)
-    if not isinstance(value, str) or not value:
-        raise ServiceContractError("invalid_trust_evidence", f"{name} must be explicit.")
-    try:
-        parsed = datetime.fromisoformat(value)
-    except (TypeError, ValueError):
-        raise ServiceContractError("invalid_trust_evidence", f"{name} must be a valid timestamp.") from None
-    if parsed.tzinfo is None or parsed.utcoffset() is None:
-        raise ServiceContractError("invalid_trust_evidence", f"{name} must be timezone-aware.")
-    return parsed
-
-
-def _required_text(data: Mapping[str, Any], name: str) -> str:
-    value = data.get(name)
-    if not isinstance(value, str) or not value.strip():
-        raise ServiceContractError("invalid_trust_evidence", f"{name} must be explicit.")
-    return value
-
-
-def _parse_approval_decision_submission(value: Any) -> ApprovalDecisionSubmission:
-    if not isinstance(value, Mapping):
-        raise ServiceContractError("invalid_decision", "decision must be an object.")
-    data = dict(value)
-    required = {"decision_id", "pause_id", "outcome", "authority_ref", "evidence_ref", "decided_at"}
-    if required - set(data):
-        raise ServiceContractError("invalid_decision", "decision is missing required fields.")
-    try:
-        outcome = ApprovalOutcome(data["outcome"])
-    except (TypeError, ValueError):
-        raise ServiceContractError("invalid_decision", "decision.outcome is invalid.") from None
-    return ApprovalDecisionSubmission(
-        decision_id=_required_text(data, "decision_id"),
-        pause_id=_required_text(data, "pause_id"),
-        outcome=outcome,
-        authority_ref=_required_text(data, "authority_ref"),
-        evidence_ref=_required_text(data, "evidence_ref"),
-        decided_at=_parse_required_timestamp(data, "decided_at"),
-    )
-
-
-def _parse_continuation_ref(value: Any) -> str:
-    if not isinstance(value, str) or not value.startswith("cont_") or len(value) > 128:
-        raise ServiceContractError("invalid_continuation", "continuation_ref is invalid.", status_code=409)
-    return value
+def _stream_error_line(response: ServiceResponse) -> str:
+    return _encode_line(dict(response.body))
 
 
 def _execution_request_fingerprint(*, app_id: str, request: ExecutionRequest) -> str:
@@ -531,6 +184,55 @@ def _execution_request_fingerprint(*, app_id: str, request: ExecutionRequest) ->
             "messages": [message for message in request.messages],
         }
     )
+
+
+# ---------------------------------------------------------------------------
+# B14 (model-service) execution failure mapping (#1932, Slice C)
+# ---------------------------------------------------------------------------
+# Core delivers B14 model-execution failures as ExecutionRuntimeError. These
+# must surface to callers as 4xx model-level errors (preserving the safe code
+# and retryable flag) instead of being swallowed by the generic
+# engine_internal_error 500 path. Genuine engine-internal failures
+# (ErrorClass.INTERNAL_ERROR with non-upstream codes such as
+# execution_failed / invalid_execution_result) stay 500 so real engine faults
+# remain visible. No upstream response body is forwarded: only the safe code,
+# status, and message are emitted.
+
+_B14_MODEL_ERROR_CLASSES = frozenset(
+    {
+        ErrorClass.PROVIDER_TIMEOUT,
+        ErrorClass.PROVIDER_RATE_LIMIT,
+        ErrorClass.AUTH_ERROR,
+        ErrorClass.PROVIDER_BAD_RESPONSE,
+        ErrorClass.INPUT_ERROR,
+    }
+)
+
+
+def _is_b14_model_error(exc: ExecutionRuntimeError) -> bool:
+    """True when exc is a B14/model-service execution failure (not engine-internal)."""
+    if exc.metadata.error_class in _B14_MODEL_ERROR_CLASSES:
+        return True
+    # 5xx upstream (upstream_server_error / upstream_unavailable) is mapped to
+    # ErrorClass.INTERNAL_ERROR by Core but is still a B14-origin model failure.
+    return exc.code.startswith("upstream_")
+
+
+def _b14_model_error_status(exc: ExecutionRuntimeError) -> int:
+    """Map a B14 model-execution failure to a 4xx model-level status code."""
+    error_class = exc.metadata.error_class
+    if error_class == ErrorClass.PROVIDER_RATE_LIMIT:
+        return 429
+    if error_class == ErrorClass.AUTH_ERROR:
+        return 403
+    if error_class == ErrorClass.PROVIDER_TIMEOUT:
+        return 429
+    if error_class == ErrorClass.PROVIDER_BAD_RESPONSE:
+        return 422
+    if error_class == ErrorClass.INPUT_ERROR:
+        return 400
+    # INTERNAL_ERROR bucket reached via the upstream_ prefix (5xx upstream).
+    return 429
 
 
 class OrchestrationEngineService:
@@ -544,9 +246,12 @@ class OrchestrationEngineService:
         idempotency_adapter: Any | None = None,
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
+        tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
+        if tool_binding_resolver is not None and not callable(tool_binding_resolver):
+            raise ValueError("tool_binding_resolver must be callable")
         if approval_decision_verifier is not None and not callable(getattr(approval_decision_verifier, "verify", None)):
             raise ValueError("approval_decision_verifier must provide verify()")
         if continuation_store is not None:
@@ -570,6 +275,166 @@ class OrchestrationEngineService:
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store or _DEFAULT_CONTINUATION_STORE
         self._continuation_store_is_explicit = continuation_store is not None
+        self._tool_binding_resolver = tool_binding_resolver
+
+    # ------------------------------------------------------------------
+    # Trusted tool-runtime attachment (#1746)
+    # ------------------------------------------------------------------
+
+    def _resolve_tool_binding(self, app_id: str) -> EngineToolBinding | None:
+        """Look up the server-provisioned binding; callers never supply one."""
+        if self._tool_binding_resolver is None:
+            return None
+        try:
+            binding = self._tool_binding_resolver(app_id)
+        except Exception as exc:
+            raise EngineToolProjectionError(
+                "tool_runtime_unavailable",
+                "The Engine Tool runtime binding resolver failed.",
+                status_code=503,
+            ) from exc
+        if binding is None:
+            return None
+        if binding.app_id != app_id:
+            raise EngineToolProjectionError(
+                "tool_runtime_unavailable",
+                "The Engine Tool runtime binding does not match this application.",
+                status_code=503,
+            )
+        return binding
+
+    @staticmethod
+    def _parse_tool_arguments(value: Any) -> dict[str, dict[str, Any]]:
+        """Parse untrusted per-step argument data; it never carries authority."""
+        if value is None:
+            return {}
+        if isinstance(value, (str, bytes, bytearray)) or not isinstance(value, Mapping):
+            raise ServiceContractError(
+                "invalid_tool_arguments",
+                "tool_arguments must be an object keyed by plan step id.",
+            )
+        if len(value) > 64:
+            raise ServiceContractError(
+                "invalid_tool_arguments",
+                "tool_arguments contains too many entries.",
+            )
+        parsed: dict[str, dict[str, Any]] = {}
+        total = 0
+        for key, item in value.items():
+            if not isinstance(key, str) or not _IDENTIFIER_RE.fullmatch(key):
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments keys must be bounded safe step identifiers.",
+                )
+            if isinstance(item, (str, bytes, bytearray)) or not isinstance(item, Mapping):
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments values must be objects.",
+                )
+            arguments = dict(item)
+            try:
+                size = json_size(arguments)
+            except EngineToolProjectionError:
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments must contain JSON-compatible values only.",
+                ) from None
+            if size > MAX_TOOL_ARGUMENT_BYTES:
+                raise ServiceContractError(
+                    "invalid_tool_arguments",
+                    "tool_arguments step entry exceeds the bounded argument size.",
+                )
+            total += size
+            parsed[key] = arguments
+        if total > MAX_WIRE_TOOL_ARGUMENTS_BYTES:
+            raise ServiceContractError(
+                "tool_arguments_too_large",
+                "tool_arguments exceed the bounded orchestration argument budget.",
+            )
+        return parsed
+
+    def _tool_request_kwargs(
+        self,
+        *,
+        app_id: str,
+        plan: AgentPlan | None,
+        raw_tool_arguments: Any,
+        resume: bool = False,
+    ) -> dict[str, Any]:
+        """Attach trusted tool authority to a Core request when provisioned.
+
+        Without a server binding, no tool authority is attached at all and a
+        plan can never execute tools; a caller cannot fabricate the fields.
+        """
+        if raw_tool_arguments is not None and plan is None:
+            raise ServiceContractError(
+                "tool_arguments_without_plan",
+                "tool_arguments requires an agent_plan.",
+            )
+        if plan is None:
+            return {}
+        binding = self._resolve_tool_binding(app_id)
+        if binding is None:
+            if raw_tool_arguments is not None:
+                raise ServiceContractError(
+                    "tool_runtime_unavailable",
+                    "Tool arguments require a provisioned trusted tool runtime binding.",
+                    status_code=503,
+                )
+            return {}
+        authority = binding.resolve_authority(plan.agent_id)
+        kwargs: dict[str, Any] = {
+            "agent_definition": authority.definition,
+            "compiled_agent_profile": authority.compiled,
+            "tool_authorization": authority.authorization,
+            "tool_runtime": binding.tool_runtime,
+            "tool_arguments": self._parse_tool_arguments(raw_tool_arguments),
+        }
+        if not resume:
+            # OrchestrationResumeRequest has no tool_registry / resource_policy
+            # fields; Core's resume executor drives tools through the runtime.
+            kwargs["tool_registry"] = binding.registry
+            kwargs["tool_resource_policy"] = binding.resource_policy
+        return kwargs
+
+    @staticmethod
+    def _assert_resumed_invocation_matches(
+        plan: AgentPlan,
+        pause: ApprovalPause,
+        tool_arguments: Mapping[str, Any],
+    ) -> None:
+        """Fail closed unless the paused invocation is resumed byte-identical."""
+        step_index = pause.step_index - 1
+        if not 0 <= step_index < len(plan.steps):
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed plan does not align with the paused step.",
+                status_code=409,
+            )
+        step = plan.steps[step_index]
+        if step.tool_id != pause.tool_id:
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed plan step does not match the paused tool.",
+                status_code=409,
+            )
+        arguments = dict(tool_arguments.get(step.step_id, {}) or {})
+        if not arguments and step.objective:
+            arguments["query"] = step.objective
+        try:
+            candidate = ToolInvocation(tool_id=step.tool_id, arguments=arguments)
+        except (TypeError, ValueError):
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed invocation does not satisfy the tool invocation contract.",
+                status_code=409,
+            ) from None
+        if tool_invocation_digest(candidate) != pause.invocation_sha256:
+            raise ServiceContractError(
+                "continuation_identity_mismatch",
+                "resumed invocation does not match the paused invocation.",
+                status_code=409,
+            )
 
     async def _continuation_call(self, method: str, **kwargs: Any) -> Any:
         try:
@@ -669,6 +534,10 @@ class OrchestrationEngineService:
         request_fingerprint_value: str | None = None,
     ) -> dict[str, Any]:
         body = result.to_public_dict()
+        # #1745: Core's OrchestrationResult.to_public_dict evidence block is
+        # forwarded unmodified. Orchestration reuses the same canonical Evidence
+        # model (Core citation authority behind app.evidence_projection) and the
+        # Engine never forks a second orchestration-specific evidence shape.
         pause = result.approval_pause
         if pause is not None:
             if self._approval_decision_verifier is None or not self._continuation_store_is_explicit:
@@ -712,8 +581,48 @@ class OrchestrationEngineService:
                 raise
         return body
 
-    async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
-        """Execute an orchestration request through OrchestrationRunner."""
+    @staticmethod
+    def _orchestration_run_error_response(exc: BaseException) -> ServiceResponse | None:
+        """Map a run-time orchestration failure to the bounded error envelope.
+
+        Shared by the JSON orchestrate route and the NDJSON stream so both
+        surface byte-identical error codes and retryability.
+        """
+        if isinstance(exc, IdempotencyConflictError):
+            return _service_error(
+                "idempotency_conflict",
+                "Idempotency key is already bound to a different execution request.",
+                status_code=409,
+            )
+        if isinstance(exc, OrchestrationError):
+            if exc.code in {"authorization_denied", "missing_approval_authorization", "capability_missing"}:
+                return _service_error(exc.code, exc.safe_message, status_code=403)
+            status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
+            return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        if isinstance(exc, EngineToolProjectionError):
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        if isinstance(exc, ExecutionRuntimeError):
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
+        return None
+
+    def _orchestrate_request_from_payload(
+        self,
+        payload: Any,
+    ) -> tuple[str, OrchestrationRequest, ExecutionRequest, str] | ServiceResponse:
+        """Validate untrusted wire input and build a bounded OrchestrationRequest.
+
+        Returns either the built request with its logical fingerprint, or a
+        ServiceResponse describing the contract failure. Shared by the JSON
+        orchestrate route and the NDJSON orchestration stream route so both
+        enforce the identical wire contract.
+        """
         if not self._b14_service_bound:
             return _service_error(
                 "b14_service_unavailable",
@@ -752,6 +661,11 @@ class OrchestrationEngineService:
             plan, rec_policy, max_retries, subject_id, require_evidence, require_verification = (
                 _parse_orchestration_options(payload)
             )
+            tool_kwargs = self._tool_request_kwargs(
+                app_id=app_id,
+                plan=plan,
+                raw_tool_arguments=payload.get("tool_arguments"),
+            )
             orch_req = OrchestrationRequest(
                 execution_request=exec_req,
                 context=ctx,
@@ -762,34 +676,42 @@ class OrchestrationEngineService:
                 max_retries=max_retries,
                 require_evidence=require_evidence,
                 require_verification=require_verification,
+                **tool_kwargs,
             )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (AgentPlannerError, AgentRecoveryError, OrchestrationError) as exc:
             return _service_error(exc.code, exc.safe_message, status_code=400)
         except (TypeError, ValueError, OverflowError):
             return _service_error("invalid_request", "Orchestration request fields are invalid.", status_code=400)
 
+        return app_id, orch_req, exec_req, _execution_request_fingerprint(app_id=app_id, request=exec_req)
+
+    async def orchestrate_payload(self, payload: Any) -> ServiceResponse:
+        """Execute an orchestration request through OrchestrationRunner."""
+        built = self._orchestrate_request_from_payload(payload)
+        if isinstance(built, ServiceResponse):
+            return built
+        app_id, orch_req, exec_req, request_fingerprint_value = built
+
         try:
             runtime = self._runtime_factory(app_id)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.run(orch_req)
-        except IdempotencyConflictError:
-            return _service_error(
-                "idempotency_conflict",
-                "Idempotency key is already bound to a different execution request.",
-                status_code=409,
-            )
-        except OrchestrationError as exc:
-            status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
-            return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
+            response = self._orchestration_run_error_response(exc)
+            if response is not None:
+                return response
+            raise
         except Exception:
             return _service_error("engine_internal_error", "Orchestration execution failed.", status_code=500)
         try:
             orchestration_body = await self._orchestration_body(
                 result,
                 app_id=app_id,
-                request_fingerprint_value=_execution_request_fingerprint(app_id=app_id, request=exec_req),
+                request_fingerprint_value=request_fingerprint_value,
             )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
@@ -910,6 +832,24 @@ class OrchestrationEngineService:
             rec_policy = _parse_recovery_policy(payload.get("recovery_policy"))
             max_retries = _parse_max_retries(payload.get("max_retries", 3))
             subject_id = _parse_subject_id(payload.get("subject_id"))
+            tool_kwargs = self._tool_request_kwargs(
+                app_id=app_id,
+                plan=plan,
+                raw_tool_arguments=payload.get("tool_arguments"),
+                resume=True,
+            )
+            if (
+                plan is not None
+                and "tool_runtime" in tool_kwargs
+                and record.plan_id is not None
+            ):
+                # Continuation non-widening: the wire may only resume the exact
+                # invocation that produced the server-issued pause.
+                self._assert_resumed_invocation_matches(
+                    plan,
+                    record.pause,
+                    tool_kwargs.get("tool_arguments") or {},
+                )
             resume_req = OrchestrationResumeRequest(
                 pause=record.pause,
                 decision=decision,
@@ -920,8 +860,11 @@ class OrchestrationEngineService:
                 agent_plan=plan,
                 recovery_policy=rec_policy,
                 max_retries=max_retries,
+                **tool_kwargs,
             )
         except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except EngineToolProjectionError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (AgentPlannerError, AgentRecoveryError, OrchestrationError) as exc:
             return _service_error(exc.code, exc.safe_message, status_code=400)
@@ -970,8 +913,27 @@ class OrchestrationEngineService:
                     )
                 except ServiceContractError as release_exc:
                     return _service_error(release_exc.code, release_exc.safe_message, status_code=release_exc.status_code)
+            if exc.code in {"missing_approval_authorization", "authorization_denied"}:
+                return _service_error(exc.code, exc.safe_message, status_code=403)
             status_code = 409 if exc.code in {"continuation_expired", "approval_denied", "continuation_identity_mismatch"} else 422
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        except ExecutionRuntimeError as exc:
+            try:
+                await self._release_claim(
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError as release_exc:
+                return _service_error(release_exc.code, release_exc.safe_message, status_code=release_exc.status_code)
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Orchestration resumption failed.", status_code=500)
         except asyncio.CancelledError:
             try:
                 await self._release_claim(
@@ -1103,6 +1065,24 @@ class OrchestrationEngineService:
             except ServiceContractError:
                 pass
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except ExecutionRuntimeError as exc:
+            try:
+                await self._continuation_call(
+                    "release_cancel",
+                    app_id=app_id,
+                    continuation_ref=record.continuation_ref,
+                    claim_token=claim_token,
+                )
+            except ServiceContractError:
+                pass
+            if _is_b14_model_error(exc):
+                return _service_error(
+                    exc.code,
+                    exc.safe_message,
+                    status_code=_b14_model_error_status(exc),
+                    retryable=exc.retryable,
+                )
+            return _service_error("engine_internal_error", "Cancellation failed.", status_code=500)
         except Exception:
             try:
                 await self._continuation_call(
@@ -1139,6 +1119,170 @@ class OrchestrationEngineService:
                 "events": [e.to_public_dict() for e in events],
             },
         )
+
+    async def prepare_stream(
+        self,
+        *,
+        method: str,
+        path: str,
+        content_type: str | None = None,
+        body: bytes = b"",
+    ) -> PreparedOrchestrationStream | ServiceResponse:
+        """Validate and prime an orchestration stream before HTTP 200 commits.
+
+        Mirrors the NDJSON streaming contract used by ``StreamingEngineService``:
+        every wire validation runs here so route-level failures surface as
+        normal JSON error responses, and the first lifecycle event (or an
+        immediate run failure) is awaited before the caller starts writing.
+        """
+
+        normalized_method = method.upper() if isinstance(method, str) else ""
+        if path != ORCHESTRATION_STREAM_PATH:
+            return _service_error("not_found", "Orchestration route not found.", status_code=404)
+        if normalized_method != "POST":
+            return _service_error("method_not_allowed", "Method not allowed.", status_code=405)
+        if not isinstance(content_type, str) or content_type.split(";", 1)[0].strip().lower() != "application/json":
+            return _service_error("unsupported_media_type", "Content-Type must be application/json.", status_code=415)
+        if not isinstance(body, (bytes, bytearray, memoryview)):
+            return _service_error("invalid_request", "Request body is invalid.", status_code=400)
+        raw = bytes(body)
+        if len(raw) > MAX_REQUEST_BODY_BYTES:
+            return _service_error("request_too_large", "Request body exceeds the safety limit.", status_code=413)
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return _service_error("invalid_json", "Request body must contain valid UTF-8 JSON.", status_code=400)
+
+        built = self._orchestrate_request_from_payload(payload)
+        if isinstance(built, ServiceResponse):
+            return built
+        app_id, orch_req, _exec_req, request_fingerprint_value = built
+
+        # The synchronous sink receives events in emission order (Core's emit
+        # closures deliver synchronously); an unbounded asyncio.Queue never
+        # suspends on put_nowait, so ordering and liveness are preserved.
+        queue: asyncio.Queue[OrchestrationEvent] = asyncio.Queue()
+        runner = OrchestrationRunner(
+            runtime=self._runtime_factory(app_id),
+            idempotency=self._idempotency_adapter,
+            event_sink=queue.put_nowait,
+        )
+        task = asyncio.create_task(runner.run(orch_req))
+        first_event_task = asyncio.ensure_future(queue.get())
+        done, _pending = await asyncio.wait(
+            {first_event_task, task},
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        if task in done and first_event_task in done:
+            # The queue consumer observed the first event in the same turn the
+            # run completed; that observed event is the first visible
+            # lifecycle event and any remaining queued events stream after it.
+            return PreparedOrchestrationStream(
+                first_event=first_event_task.result(),
+                queue=queue,
+                task=task,
+                app_id=app_id,
+                request_fingerprint_value=request_fingerprint_value,
+            )
+        if task in done:
+            if first_event_task not in done:
+                first_event_task.cancel()
+                try:
+                    await first_event_task
+                except (asyncio.CancelledError, Exception):
+                    pass
+            # A run can complete (or fail) in the same event-loop turn that
+            # produces its first event, before the queue consumer ever runs.
+            # A populated queue is a valid stream: the first queued event is
+            # the first visible lifecycle event and the task result/exception
+            # settles in iter_ndjson exactly like a slow run.
+            if not queue.empty():
+                return PreparedOrchestrationStream(
+                    first_event=queue.get_nowait(),
+                    queue=queue,
+                    task=task,
+                    app_id=app_id,
+                    request_fingerprint_value=request_fingerprint_value,
+                )
+            try:
+                await task
+            except asyncio.CancelledError:
+                raise
+            except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
+                response = self._orchestration_run_error_response(exc)
+                if response is not None:
+                    return response
+                return _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            except Exception:
+                return _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            # A run that ends before its first lifecycle event violates the
+            # orchestration event contract: the RUN_STARTED event is always
+            # emitted synchronously at the start of a valid run.
+            return _service_error(
+                "malformed_upstream",
+                "Orchestration run ended before producing a lifecycle event.",
+                status_code=502,
+            )
+        return PreparedOrchestrationStream(
+            first_event=first_event_task.result(),
+            queue=queue,
+            task=task,
+            app_id=app_id,
+            request_fingerprint_value=request_fingerprint_value,
+        )
+
+    async def iter_ndjson(self, prepared: PreparedOrchestrationStream) -> AsyncIterator[str]:
+        """Emit one public orchestration event per line, then the settled result line.
+
+        The terminal NDJSON line carries the same orchestration body as the
+        non-stream ``/internal/v1/orchestrate`` route (including a
+        ``continuation_ref`` when the run paused for approval), so stream and
+        non-stream consumers settle on identical semantics.
+        """
+
+        if not isinstance(prepared, PreparedOrchestrationStream):
+            raise ValueError("prepared must be PreparedOrchestrationStream")
+        try:
+            yield _stream_event_line(prepared.first_event)
+            while not prepared.task.done():
+                event_task = asyncio.ensure_future(prepared.queue.get())
+                done, _pending = await asyncio.wait(
+                    {event_task, prepared.task},
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                if event_task in done:
+                    yield _stream_event_line(event_task.result())
+                if prepared.task in done and event_task not in done:
+                    event_task.cancel()
+            while not prepared.queue.empty():
+                yield _stream_event_line(prepared.queue.get_nowait())
+            result = prepared.task.result()
+            orchestration_body = await self._orchestration_body(
+                result,
+                app_id=prepared.app_id,
+                request_fingerprint_value=prepared.request_fingerprint_value,
+            )
+            yield _stream_result_line(orchestration_body)
+        except asyncio.CancelledError:
+            raise
+        except ServiceContractError as exc:
+            yield _stream_error_line(_service_error(exc.code, exc.safe_message, status_code=exc.status_code))
+        except (IdempotencyConflictError, OrchestrationError, EngineToolProjectionError, ExecutionRuntimeError) as exc:
+            response = self._orchestration_run_error_response(exc)
+            if response is None:
+                response = _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            yield _stream_error_line(response)
+        except Exception:
+            yield _stream_error_line(
+                _service_error("engine_internal_error", "Orchestration streaming failed.", status_code=500)
+            )
+        finally:
+            if not prepared.task.done():
+                prepared.task.cancel()
+                try:
+                    await prepared.task
+                except (asyncio.CancelledError, Exception):
+                    pass
 
     async def handle(
         self,

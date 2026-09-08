@@ -1,4 +1,10 @@
-"""Network-free contract for B14 MiniMax M3 free candidate (#1442)."""
+"""#1442 MiniMax M3 free candidate contract — RETIRED by #2094/#2097.
+
+The lane stayed registered after #2096 only because fixed_chain_v1 pinned it;
+#2097 refreshed the chain and unregistered the lane. These tests pin the
+fail-closed retirement behavior for both retired Kilo free lanes. The
+keyless-platform boundary test moved to the live Laguna free lane.
+"""
 
 from __future__ import annotations
 
@@ -9,38 +15,42 @@ import pytest
 
 from app.pilot import platform as plat
 from app.pilot.catalog import get_catalog_by_id
+from app.pilot.errors import NoSafeRoute
 from app.pilot.kilo_provider import (
     KILO_BASE_ORIGIN,
+    KILO_HY3_MODEL_ID,
+    KILO_LAGUNA_MODEL_ID,
+    KILO_LAGUNA_UPSTREAM_MODEL,
     KILO_MINIMAX_M3_MODEL_ID,
     KILO_MINIMAX_M3_UPSTREAM_MODEL,
 )
 from app.pilot.router_core import resolve_auto_route, resolve_manual_route
 
-
-def test_minimax_m3_candidate_is_registered_as_explicit_free_route() -> None:
-    model = get_catalog_by_id(KILO_MINIMAX_M3_MODEL_ID)
-    assert model is not None
-    assert model.upstream_model == KILO_MINIMAX_M3_UPSTREAM_MODEL
-    assert model.provider == "Kilo Gateway / MiniMax"
-    assert model.input_price_usd_per_1m == 0.0
-    assert model.output_price_usd_per_1m == 0.0
-    assert model.context_window == 1_048_576
-    assert "chat" in model.capabilities
-    assert "free" in model.capabilities
-    assert model.platform_provider_id == "kilo"
-    assert model.source_checked_at == "2026-09-02"
+RETIRED_LANES = (
+    (KILO_MINIMAX_M3_MODEL_ID, KILO_MINIMAX_M3_UPSTREAM_MODEL),
+    (KILO_HY3_MODEL_ID, "tencent/hy3:free"),
+)
 
 
-def test_minimax_m3_candidate_is_manual_only_and_never_in_b14_auto() -> None:
-    manual = resolve_manual_route(KILO_MINIMAX_M3_MODEL_ID)
-    assert manual.selected_model == KILO_MINIMAX_M3_MODEL_ID
-    assert manual.selected_upstream_model == KILO_MINIMAX_M3_UPSTREAM_MODEL
-    assert manual.selected_provider == "Kilo Gateway / MiniMax"
-    assert manual.platform_provider_id == "kilo"
-    assert manual.credential_available is True
-    assert manual.max_attempts == 1
-    assert manual.fallback_allowed is False
+@pytest.mark.parametrize(("model_id", "upstream_model"), RETIRED_LANES)
+def test_retired_lane_is_unregistered_from_the_catalog(
+    model_id: str,
+    upstream_model: str,
+) -> None:
+    assert get_catalog_by_id(model_id) is None
 
+
+@pytest.mark.parametrize(("model_id", "upstream_model"), RETIRED_LANES)
+def test_retired_lane_manual_resolve_fails_closed(
+    model_id: str,
+    upstream_model: str,
+) -> None:
+    with pytest.raises(NoSafeRoute) as exc_info:
+        resolve_manual_route(model_id)
+    assert exc_info.value.reason_code == "model_not_in_catalog"
+
+
+def test_retired_lane_is_never_in_b14_auto_pool() -> None:
     auto = resolve_auto_route(
         task_type="general",
         required_capabilities=["chat"],
@@ -48,11 +58,12 @@ def test_minimax_m3_candidate_is_manual_only_and_never_in_b14_auto() -> None:
         allow_external_fallback=True,
     )
     auto_pool = {auto.selected_model, *(item["model_id"] for item in auto.eligible_fallback)}
-    assert KILO_MINIMAX_M3_MODEL_ID not in auto_pool
+    for model_id, _ in RETIRED_LANES:
+        assert model_id not in auto_pool
 
 
 @pytest.mark.asyncio
-async def test_minimax_m3_candidate_uses_fixed_keyless_kilo_boundary(monkeypatch) -> None:
+async def test_laguna_free_lane_uses_fixed_keyless_kilo_boundary(monkeypatch) -> None:
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     captured: dict[str, object] = {}
 
@@ -63,11 +74,11 @@ async def test_minimax_m3_candidate_uses_fixed_keyless_kilo_boundary(monkeypatch
         return httpx.Response(
             200,
             json={
-                "id": "minimax-m3-candidate-test",
-                "model": KILO_MINIMAX_M3_UPSTREAM_MODEL,
+                "id": "laguna-free-boundary-test",
+                "model": KILO_LAGUNA_UPSTREAM_MODEL,
                 "choices": [
                     {
-                        "message": {"role": "assistant", "content": "후보 테스트 응답"},
+                        "message": {"role": "assistant", "content": "경계 테스트 응답"},
                         "finish_reason": "stop",
                     }
                 ],
@@ -76,9 +87,9 @@ async def test_minimax_m3_candidate_uses_fixed_keyless_kilo_boundary(monkeypatch
         )
 
     response = await plat.call_platform_chat_completions(
-        model_id=KILO_MINIMAX_M3_MODEL_ID,
-        upstream_model=KILO_MINIMAX_M3_UPSTREAM_MODEL,
-        provider="Kilo Gateway / MiniMax",
+        model_id=KILO_LAGUNA_MODEL_ID,
+        upstream_model=KILO_LAGUNA_UPSTREAM_MODEL,
+        provider="Kilo Gateway / Poolside",
         platform_provider_id="kilo",
         messages=[{"role": "user", "content": "합성 테스트"}],
         max_tokens=None,
@@ -87,6 +98,6 @@ async def test_minimax_m3_candidate_uses_fixed_keyless_kilo_boundary(monkeypatch
 
     assert captured["url"] == f"{KILO_BASE_ORIGIN}/chat/completions"
     assert captured["authorization"] is None
-    assert captured["body"]["model"] == KILO_MINIMAX_M3_UPSTREAM_MODEL
-    assert response["model"] == KILO_MINIMAX_M3_UPSTREAM_MODEL
-    assert response["choices"][0]["message"]["content"] == "후보 테스트 응답"
+    assert captured["body"]["model"] == KILO_LAGUNA_UPSTREAM_MODEL
+    assert response["model"] == KILO_LAGUNA_UPSTREAM_MODEL
+    assert response["choices"][0]["message"]["content"] == "경계 테스트 응답"

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
+from app import model_policy as model_policy_module
 from app.model_policy import (
     AUTO_B14_MODEL_ID,
     DEFAULT_B14_MODEL_ID,
@@ -19,6 +22,7 @@ from app.model_policy import (
     PADIEM_PRO,
     PRODUCT_TIER_NAMES,
     PROFILE_MODEL_IDS,
+    RETIRED_B14_MODEL_IDS,
     UNASSIGNED_B14_MODEL_ID,
     ModelPolicyError,
     model_policy_is_executable,
@@ -175,3 +179,60 @@ def test_tier_assignment_is_distinct_from_route_executability():
         assert MODEL_CAPABILITIES[model_id] == frozenset()
 
     assert AUTO_B14_MODEL_ID == "b14/auto"
+
+
+def test_route_identities_are_derived_from_shared_contract():
+    """#2099 STEP-2: Chat no longer owns duplicate route literals."""
+    from padiem_control_plane.product_tier_routes import (
+        MAX_HOLD_MODEL_ID as CONTRACT_MAX_HOLD_MODEL_ID,
+    )
+    from padiem_control_plane.product_tier_routes import (
+        RETIRED_PRODUCT_MODEL_IDS as CONTRACT_RETIRED_MODEL_IDS,
+    )
+    from padiem_control_plane.product_tier_routes import (
+        ProductTierLabel as ContractTierLabel,
+    )
+    from padiem_control_plane.product_tier_routes import (
+        active_route_for as contract_active_route_for,
+    )
+
+    assert LOW_B14_MODEL_ID == contract_active_route_for(ContractTierLabel.PLUS).model_id
+    assert MEDIUM_B14_MODEL_ID == contract_active_route_for(ContractTierLabel.PRO).model_id
+    assert MAX_HOLD_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
+    assert RETIRED_B14_MODEL_IDS == frozenset(CONTRACT_RETIRED_MODEL_IDS)
+
+
+def test_model_policy_source_contains_no_route_id_literals_after_derivation():
+    source = Path(model_policy_module.__file__).read_text(encoding="utf-8")
+    assert '"kilo/' not in source
+    assert "'kilo/" not in source
+    assert '"padiem-profile/max-hold"' not in source
+    assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
+
+
+def test_executable_profile_routes_are_explicit_registered_and_not_retired():
+    """#2094 contract: no product tier may ever point at a retired free lane."""
+    assert RETIRED_B14_MODEL_IDS == frozenset(
+        {
+            "kilo/minimax-minimax-m3-free",
+            "kilo/tencent-hy3-free",
+        }
+    )
+
+    for executable_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
+        assert executable_id not in RETIRED_B14_MODEL_IDS
+
+    for profile_id in ("low", "medium"):
+        model_id = PROFILE_MODEL_IDS[profile_id]
+        assert model_policy_is_executable(model_id) is True
+        assert model_id not in RETIRED_B14_MODEL_IDS
+        assert model_id.startswith("kilo/")
+        assert model_id.count("/") == 1
+        assert model_id != AUTO_B14_MODEL_ID
+
+    assert PROFILE_MODEL_IDS["high"] == MAX_HOLD_MODEL_ID
+    assert model_policy_is_executable(MAX_HOLD_MODEL_ID) is False
+
+    assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
+    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
+    assert DEFAULT_B14_MODEL_ID not in RETIRED_B14_MODEL_IDS

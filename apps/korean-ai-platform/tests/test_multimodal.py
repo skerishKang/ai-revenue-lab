@@ -8,9 +8,8 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.catalog import get_catalog_by_id
 from app.pilot.multimodal_contract import MAX_IMAGE_BYTES, validate_image_data_url
-from app.pilot.openrouter_config import openrouter_config
+from app.pilot.b14_runtime_config import runtime_config
 
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"phase8"
@@ -31,20 +30,16 @@ def multimodal_content(url: str | None = None):
 
 @pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
-    old_mode = openrouter_config.provider_mode
-    old_key = openrouter_config.api_key
-    old_base = openrouter_config.base_url
-    openrouter_config.provider_mode = "mock"
-    openrouter_config.api_key = ""
+    old_mode = runtime_config.provider_mode
+    runtime_config.provider_mode = "mock"
     yield
-    openrouter_config.provider_mode = old_mode
-    openrouter_config.api_key = old_key
-    openrouter_config.base_url = old_base
+    runtime_config.provider_mode = old_mode
 
 
 @pytest.fixture()
 def client():
-    return TestClient(create_app())
+    with TestClient(create_app()) as test_client:
+        yield test_client
 
 
 def post_image(client, *, model="b14/auto", content=None, business14=None):
@@ -66,9 +61,15 @@ def test_text_chat_contract_remains_backward_compatible(client):
     assert response.json()["business14"]["selected_model"]
 
 
-def test_valid_multimodal_auto_route_selects_image_capable_model(client, monkeypatch):
-    from app.pilot import openrouter as orv
+def test_valid_multimodal_auto_route_uses_fixed_chain_head(
+    client, monkeypatch):
 
+    from app.pilot import platform as plat
+
+    # D14 (#2044): b14/auto no longer filters by image capability; the fixed
+    # chain head answers and the validated multimodal array passes through.
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     captured = {}
 
     async def fake_call(**kwargs):
@@ -82,14 +83,12 @@ def test_valid_multimodal_auto_route_selects_image_capable_model(client, monkeyp
             "_actual_response_model": kwargs["upstream_model"],
         }
 
-    monkeypatch.setattr(orv, "call_openrouter_chat_completions", fake_call)
+    monkeypatch.setattr(plat, "call_platform_chat_completions", fake_call)
     response = post_image(client, business14={"required_capabilities": ["chat"]})
     assert response.status_code == 200
     body = response.json()
-    selected = get_catalog_by_id(body["business14"]["selected_model"])
-    assert selected is not None
-    assert "image" in selected.capabilities
-    assert body["business14"]["selected_model"] == "google/gemini-2.5-flash"
+    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert body["business14"]["routing_policy"] == "fixed_chain_v1"
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
     assert outbound[0]["content"][0] == {"type": "text", "text": "이 이미지를 설명해줘"}
@@ -147,19 +146,19 @@ def test_decoded_image_over_4_mib_rejected_without_network():
 
 
 def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch):
-    from app.pilot import openrouter as orv
+    from app.pilot import platform as plat
 
     calls = 0
 
     async def should_not_call(**kwargs):
         nonlocal calls
         calls += 1
-        raise AssertionError("OpenRouter must not be called")
+        raise AssertionError("platform adapter must not be called")
 
-    monkeypatch.setattr(orv, "call_openrouter_chat_completions", should_not_call)
+    monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
     response = post_image(
         client,
-        model="openrouter/free",
+        model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         business14={"allow_external_fallback": True},
     )
     assert response.status_code == 503
@@ -169,55 +168,52 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     assert calls == 0
 
 
-def test_no_image_capable_auto_candidate_fails_before_upstream(client, monkeypatch):
-    from app.pilot import openrouter as orv
+def test_auto_route_ignores_capability_filter_hook(client, monkeypatch):
+    """D14 (#2044): the scorer capability filter is dead for b14/auto."""
     from app.pilot import router_core as rcore
 
-    calls = 0
-
-    async def should_not_call(**kwargs):
-        nonlocal calls
-        calls += 1
-        raise AssertionError("OpenRouter must not be called")
-
-    monkeypatch.setattr(orv, "call_openrouter_chat_completions", should_not_call)
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     monkeypatch.setattr(rcore, "_filter_catalog", lambda **kwargs: [])
     response = post_image(client)
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "no_safe_route"
-    assert calls == 0
+    assert response.status_code == 200
+    body = response.json()
+    assert body["business14"]["routing_policy"] == "fixed_chain_v1"
+    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 
 
 @pytest.mark.asyncio
-async def test_live_openrouter_body_preserves_validated_multimodal_array():
-    from app.pilot import openrouter as orv
+async def test_live_platform_body_preserves_validated_multimodal_array():
+    from app.pilot import platform as plat
 
     captured = {}
 
     async def handler(request: httpx.Request) -> httpx.Response:
         captured["json"] = json.loads(request.content)
+        assert request.headers.get("authorization") is None
         return httpx.Response(
             200,
             json={
                 "id": "live-test",
-                "model": "google/gemini-2.5-flash",
+                "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
         )
 
-    openrouter_config.provider_mode = "live"
-    openrouter_config.api_key = "phase8-fixture-nonsecret-value"
+    runtime_config.provider_mode = "live"
     messages = [{"role": "user", "content": multimodal_content()}]
-    result = await orv.call_openrouter_chat_completions(
+    result = await plat.call_platform_chat_completions(
         messages=messages,
         temperature=0.2,
         max_tokens=100,
-        model_id="google/gemini-2.5-flash",
-        upstream_model="google/gemini-2.5-flash",
-        provider="Google",
+        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        provider="Kilo Gateway / NVIDIA",
+        platform_provider_id="kilo",
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
-    assert captured["json"]["model"] == "google/gemini-2.5-flash"
+    assert captured["json"]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert "provider" not in captured["json"]

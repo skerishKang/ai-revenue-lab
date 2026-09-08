@@ -6,7 +6,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from app.b14_client import B14Client, ChatRuntimeError
+from app.b14_client import B14Client, ChatRuntimeError, PADIEM_IDENTITY_INSTRUCTION
 from app.config import ConfigError, Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
@@ -16,7 +16,7 @@ from app.usage_gate import InMemoryUsageCounterStore
 USER_MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 QUOTA_SALT = "b62-runtime-test-quota-salt-not-a-real-secret-0001"
 ACTIVE_MODEL = DEFAULT_B14_MODEL_ID
-ACTIVE_PROVIDER = "Kilo Gateway / NVIDIA"
+ACTIVE_PROVIDER = "Kilo Gateway / MiniMax"
 
 
 def success_payload():
@@ -93,8 +93,10 @@ async def test_b14_request_is_fixed_explicit_default_pro_route_and_has_no_provid
     assert seen["body"]["model"] == ACTIVE_MODEL
     assert get_skill("auto").system_instruction is None
     assert get_skill("auto").max_tokens is None
-    assert seen["body"]["messages"] == USER_MESSAGES
-    assert sum(1 for item in seen["body"]["messages"] if item["role"] == "system") == 0
+    system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
+    assert len(system_messages) == 1
+    assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+    assert seen["body"]["messages"][-1] == USER_MESSAGES[0]
     assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"] == {
         "task_type": "general",
@@ -177,7 +179,7 @@ async def test_unknown_model_alias_fails_before_any_b14_call():
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("status", "code", "client_status"),
-    [(429, "upstream_busy", 503), (500, "upstream_error", 502)],
+    [(429, "upstream_busy", 503), (500, "provider_server_error", 502)],
 )
 async def test_b14_http_errors_are_friendly(status, code, client_status):
     async def handler(request):
@@ -342,18 +344,22 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
     conversation_state = (root / "static/conversation-state.js").read_text(encoding="utf-8")
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
     assert "자동 추천" in html
+    assert '<div class="starter-grid" aria-label="추천 질문">' in html
     assert 'data-skill="explain"' in html
     assert 'data-skill="plan"' in html
-    assert 'data-skill="brainstorm"' in html
+    assert 'id="recentTitle"' not in html
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
-    assert "TXT·Markdown·CSV·JSON" in html
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
+    assert "지원 문서 형식" in html
+    for label in ["TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
+        assert f'label: "{label}"' in capabilities
+    assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "웹 검색 · 준비 중" in html
     assert "모의 응답 · 실제 모델 호출 없음" in js
     assert "chatTransport.requestCompleted(payload, signal)" in js

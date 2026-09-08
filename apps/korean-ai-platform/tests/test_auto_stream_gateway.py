@@ -7,13 +7,15 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.openrouter_config import openrouter_config as orcfg
+from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 
 AUTO_STREAM_URL = "/api/pilot/v1/chat/completions/auto-stream-preview"
 MANUAL_STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
 LIVE_DUMMY_KEY = "unit-live-key-auto-stream-abcdef1234567890"
+KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
 
 
 class _ChunkStream(httpx.AsyncByteStream):
@@ -33,22 +35,19 @@ class _ChunkStream(httpx.AsyncByteStream):
 
 
 @pytest.fixture(autouse=True)
-def _reset_openrouter_config():
+def _reset_runtime_config(monkeypatch):
+    monkeypatch.delenv("KILO_API_KEY", raising=False)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
-        "api_key": orcfg.api_key,
-        "provider_mode": orcfg.provider_mode,
-        "base_url": orcfg.base_url,
-        "max_response_bytes": orcfg.max_response_bytes,
+        "provider_mode": rcfg.provider_mode,
+        "max_response_bytes": rcfg.max_response_bytes,
     }
-    orcfg.api_key = ""
-    orcfg.provider_mode = "mock"
-    orcfg.base_url = "https://openrouter.ai/api/v1"
-    orcfg.max_response_bytes = 1024 * 1024
+    rcfg.provider_mode = "mock"
+    rcfg.max_response_bytes = 1024 * 1024
     yield
-    orcfg.api_key = saved["api_key"]
-    orcfg.provider_mode = saved["provider_mode"]
-    orcfg.base_url = saved["base_url"]
-    orcfg.max_response_bytes = saved["max_response_bytes"]
+    rcfg.provider_mode = saved["provider_mode"]
+    rcfg.max_response_bytes = saved["max_response_bytes"]
 
 
 def _payload(**overrides):
@@ -71,7 +70,7 @@ def _payload(**overrides):
 def _client(transport: httpx.AsyncBaseTransport | None = None) -> TestClient:
     app = create_app()
     if transport is not None:
-        app.state.openrouter_stream_transport = transport
+        app.state.stream_transport = transport
     return TestClient(app)
 
 
@@ -148,7 +147,9 @@ def _json_data_frames(text: str) -> list[dict]:
     return out
 
 
-def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata():
+def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata(monkeypatch):
+    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     response = _client().post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
@@ -160,12 +161,15 @@ def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata():
     first = next(frame for frame in frames if frame["choices"] and frame["choices"][0]["delta"].get("content"))
     meta = first["business14"]
     assert meta["route_mode"] == "auto"
-    assert meta["selected_model"] == "stealth/ox-alpha"
+    assert meta["selected_model"] == KILO_MODEL
     assert meta["fallback_used"] is False
     assert meta["attempt_count"] == 1
     assert meta["committed"] is True
     assert meta["provider_mode"] == "mock"
-    assert "capabilities:free" in meta["reason_codes"]
+    # D14 (#2044): scorer reason codes are gone; the fixed chain reports its policy.
+    assert meta["routing_policy"] == "fixed_chain_v1"
+    assert "routing_policy:fixed_chain_v1" in meta["reason_codes"]
+    assert any(rc.startswith("ignored_options:") for rc in meta["reason_codes"])
     assert meta["route_evidence_status"] == "mock_no_upstream_call"
 
 
@@ -179,7 +183,7 @@ def test_auto_preview_requires_stream_true():
 
 def test_auto_preview_rejects_explicit_model_while_manual_preview_still_owns_it():
     client = _client()
-    explicit = {**_payload(), "model": "openrouter/free"}
+    explicit = {**_payload(), "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"}
     response = client.post(AUTO_STREAM_URL, json=explicit)
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "invalid_request"
@@ -187,7 +191,7 @@ def test_auto_preview_rejects_explicit_model_while_manual_preview_still_owns_it(
     manual = client.post(
         MANUAL_STREAM_URL,
         json={
-            "model": "openrouter/free",
+            "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             "messages": [{"role": "user", "content": "안녕하세요"}],
             "stream": True,
         },
@@ -204,7 +208,25 @@ def test_canonical_endpoint_still_rejects_stream_true_for_b14_auto():
     assert response.json()["error"]["code"] == "stream_not_supported"
 
 
-def test_free_hard_filter_never_calls_paid_catalog_candidate():
+SENSENOVA_MODEL_ID = "sensenova/sensenova-6.8-flash-lite"
+SENSENOVA_UPSTREAM = "sensenova-6.8-flash-lite"
+SENSENOVA_KEY = "sk-chain-unit-sensenova-0123456789"
+POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
+
+
+def _chain_secrets(monkeypatch):
+    """Opt the deterministic fixed chain into all four positions."""
+    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", SENSENOVA_KEY)
+    monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
+
+
+def test_fixed_chain_advances_on_retryable_stream_error(monkeypatch):
+    """D14 (#2044): a retryable pre-content error advances the fixed chain.
+
+    The scorer-era free/paid filter is gone: the chain itself is the
+    candidate pool, and each attempt uses its own provider binding.
+    """
+    _chain_secrets(monkeypatch)
     calls: list[str] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -212,26 +234,26 @@ def test_free_hard_filter_never_calls_paid_catalog_candidate():
         model = body["model"]
         calls.append(model)
         assert body["stream"] is True
-        if model == "stealth/ox-alpha":
-            return httpx.Response(429, content=b"bounded")
-        assert model == "openrouter/free"
-        return httpx.Response(200, stream=_success_stream(model, "무료 fallback"))
+        if model == SENSENOVA_UPSTREAM:
+            return httpx.Response(500, content=b"bounded")
+        assert model == KILO_UPSTREAM
+        return httpx.Response(200, stream=_success_stream(model, "체인 fallback"))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
-    assert calls == ["stealth/ox-alpha", "openrouter/free"]
-    assert "google/gemini-2.5-flash" not in calls
+    assert calls == [SENSENOVA_UPSTREAM, KILO_UPSTREAM]
     frames = _json_data_frames(response.text)
     visible = next(frame for frame in frames if frame["choices"] and frame["choices"][0]["delta"].get("content"))
     meta = visible["business14"]
-    assert meta["selected_model"] == "openrouter/free"
+    assert meta["selected_model"] == KILO_MODEL
     assert meta["fallback_used"] is True
     assert meta["attempt_count"] == 2
     assert meta["committed"] is True
-    assert "capabilities:free" in meta["reason_codes"]
+    assert meta["routing_policy"] == "fixed_chain_v1"
+    assert "routing_policy:fixed_chain_v1" in meta["reason_codes"]
 
 
 def test_metadata_only_before_content_does_not_make_empty_stream_successful():
@@ -243,8 +265,8 @@ def test_metadata_only_before_content_does_not_make_empty_stream_successful():
             stream=_ChunkStream([_usage_frame(model), b"data: [DONE]\n\n"]),
         )
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(
         AUTO_STREAM_URL,
         json=_payload(business14={
@@ -276,8 +298,8 @@ def test_usage_metadata_is_buffered_then_emitted_before_first_visible_content():
             ),
         )
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(
         AUTO_STREAM_URL,
         json=_payload(business14={
@@ -320,8 +342,8 @@ def test_nonretryable_pre_token_errors_stay_json_before_sse_start(
         calls += 1
         return httpx.Response(upstream_status, content=b"secret-ish upstream body")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == expected_status
@@ -332,16 +354,22 @@ def test_nonretryable_pre_token_errors_stay_json_before_sse_start(
 
 
 @pytest.mark.parametrize(
-    ("upstream_status", "expected_status", "expected_code"),
+    ("upstream_status", "expected_status", "expected_code", "expected_calls"),
     [
-        (429, 429, "upstream_rate_limited"),
-        (500, 502, "upstream_server_error"),
+        # SenseNova 429 (plain quota) falls back to Kilo; the Kilo free-tier
+        # quota is terminal by contract and never advances further. Its
+        # declared 429 status is preserved by the endpoint.
+        (429, 429, "kilo_free_rate_limited", [SENSENOVA_UPSTREAM, KILO_UPSTREAM]),
+        # Any other retryable transport error exhausts the max_attempts bound.
+        (500, 502, "upstream_server_error", [SENSENOVA_UPSTREAM, KILO_UPSTREAM]),
     ],
 )
 def test_retryable_errors_exhaust_resolved_free_candidates_before_json_failure(
+    monkeypatch,
     upstream_status: int,
     expected_status: int,
     expected_code: str,
+    expected_calls: list[str],
 ):
     calls: list[str] = []
 
@@ -350,13 +378,14 @@ def test_retryable_errors_exhaust_resolved_free_candidates_before_json_failure(
         calls.append(model)
         return httpx.Response(upstream_status, content=b"bounded")
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    _chain_secrets(monkeypatch)
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == expected_status
     assert response.json()["error"]["code"] == expected_code
-    assert calls == ["stealth/ox-alpha", "openrouter/free"]
+    assert calls == expected_calls
 
 
 def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done():
@@ -374,12 +403,13 @@ def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done
             ),
         )
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = LIVE_DUMMY_KEY
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
-    assert calls == ["stealth/ox-alpha"]
+    assert calls == [KILO_UPSTREAM]
+    assert len(calls) == 1  # no fallback after a visible token was committed
     assert "부분 응답" in response.text
     assert "event: error" in response.text
     assert '"code":"stream_execution_error"' in response.text
@@ -387,8 +417,16 @@ def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done
     assert secret not in response.text
 
 
-def test_live_success_keeps_authorization_upstream_only_and_done_once():
-    secret = "unit-auto-stream-secret-abcdef1234567890"
+def test_live_keyless_route_sends_no_authorization_and_leaks_nothing(monkeypatch):
+    """Keyless Kilo route: no credential crosses the boundary either way.
+
+    The Kilo provider spec is CredentialSource.NONE, so the outbound request
+    never carries an Authorization header. A stale OpenRouter key configured
+    on the legacy plane must not be forwarded to it, and nothing may leak
+    back to the client.
+    """
+    stale_key = "sk-or-v1-stale-abcdef1234567890"
+    monkeypatch.setenv("KILO_API_KEY", stale_key)
     seen_auth: list[str | None] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -396,8 +434,8 @@ def test_live_success_keeps_authorization_upstream_only_and_done_once():
         model = json.loads(request.content)["model"]
         return httpx.Response(200, stream=_success_stream(model, "안전한 응답"))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = secret
+    rcfg.provider_mode = "live"
+    rcfg.api_key = stale_key  # legacy OpenRouter plane must stay isolated
     response = _client(httpx.MockTransport(handler)).post(
         AUTO_STREAM_URL,
         json=_payload(business14={
@@ -408,24 +446,37 @@ def test_live_success_keeps_authorization_upstream_only_and_done_once():
     )
 
     assert response.status_code == 200
-    assert seen_auth == [f"Bearer {secret}"]
-    assert secret not in response.text
+    assert seen_auth == [None]
+    assert stale_key not in response.text
     assert "안전한 응답" in response.text
     assert response.text.count("data: [DONE]") == 1
 
 
-def test_live_missing_key_is_json_503_without_transport_call():
+def test_live_missing_key_is_anonymous_with_no_authorization_header():
+    """Keyless Kilo route: no key is required, and none is ever sent.
+
+    Decision #1933 removed the secret-backed routes, so a missing key is not
+    an error here. The security contract becomes "zero key material": exactly
+    one anonymous upstream call, no Authorization header, nothing leaked.
+    The secret-required fail-closed path is covered by
+    test_platform_provider_credential_plane.py (Agnes).
+    """
     calls = 0
+    seen_auth: list[str | None] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
         nonlocal calls
         calls += 1
-        return httpx.Response(200, content=b"data: [DONE]\n\n")
+        seen_auth.append(request.headers.get("authorization"))
+        model = json.loads(request.content)["model"]
+        return httpx.Response(200, stream=_success_stream(model, "익명 응답"))
 
-    orcfg.provider_mode = "live"
-    orcfg.api_key = ""
+    rcfg.provider_mode = "live"
+    rcfg.api_key = ""
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "pilot_not_configured"
-    assert calls == 0
+    assert response.status_code == 200
+    assert calls == 1
+    assert seen_auth == [None]
+    assert "익명 응답" in response.text
+    assert "data: [DONE]" in response.text

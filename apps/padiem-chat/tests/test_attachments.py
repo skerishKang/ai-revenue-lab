@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from app.attachments import MAX_IMAGE_BYTES, parse_attachments
+from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
@@ -62,7 +63,10 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         )
     assert response.status_code == 200
     assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID
-    assert seen["body"]["messages"] == [{"role": "user", "content": "안녕"}]
+    system_messages = [item for item in seen["body"]["messages"] if item["role"] == "system"]
+    assert len(system_messages) == 1
+    assert PADIEM_IDENTITY_INSTRUCTION in system_messages[0]["content"]
+    assert seen["body"]["messages"][-1] == {"role": "user", "content": "안녕"}
     assert "max_tokens" not in seen["body"]
     assert seen["body"]["business14"]["required_capabilities"] == ["chat"]
     assert seen["body"]["business14"]["allow_external_fallback"] is False
@@ -196,16 +200,19 @@ def test_frontend_exposes_generic_file_control_without_losing_image_support():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     assert 'id="attachmentFileInput"' in html
-    assert "image/jpeg,image/png,image/webp" in html
-    assert "text/plain,text/markdown,text/csv,application/json" in html
+    assert 'script src="./attachment-capabilities.js"' in html
+    for media_type in ["image/jpeg", "image/png", "image/webp", "text/plain", "text/markdown", "text/csv", "application/json"]:
+        assert media_type in capabilities
+    for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
+        assert f'label: "{label}"' in capabilities
     assert 'id="attachmentButton"' in html
     assert "<span>파일</span>" in html
     assert "문서와 대화" in html
-    assert "TXT·Markdown·CSV·JSON" in html
-    assert "PDF·Office 문서는 아직 지원하지 않습니다" in html
-    assert "MAX_IMAGE_BYTES = 4 * 1024 * 1024" in js
-    assert "MAX_DOCUMENT_BYTES = 96 * 1024" in js
+    assert "지원 문서 형식" in html
+    assert "const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;" in js
+    assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in js
     assert "ALLOWED_IMAGE_TYPES" in js
     assert "ALLOWED_DOCUMENT_TYPES" in js
     assert "URL.createObjectURL" in js

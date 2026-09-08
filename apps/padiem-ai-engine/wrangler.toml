@@ -7,3 +7,27 @@ workers_dev = false
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
+
+# WO-8 PR-B (#1235 A9): durable idempotency + identity-bound continuation
+# authority. Both bindings point at the SAME provisioned database
+# (padiem-engine, database_id below; provision evidence: CI run 34042827563,
+# recorded on #1621). App code never provisions schema; migrations 0001+0002
+# are applied by the D1 provision gate.
+[[d1_databases]]
+binding = "ENGINE_IDEMPOTENCY"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+[[d1_databases]]
+binding = "ENGINE_CONTINUATION"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# WO-10 PR-C2 (D28): OAuth connector grant references only.
+# Same provisioned database as ENGINE_IDEMPOTENCY/ENGINE_CONTINUATION.
+# Schema 0003 applied by the D1 provision gate. Credential material is
+# never stored here; the three OAuth secrets come from Worker secrets.
+[[d1_databases]]
+binding = "ENGINE_CONNECTOR_GRANTS"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"

@@ -211,3 +211,101 @@ def public_orchestration_event(
         message=message,
         metadata=metadata or {},
     )
+
+
+_EVENT_PUBLIC_KEYS = frozenset(
+    {
+        "event_id",
+        "run_id",
+        "trace_id",
+        "app_id",
+        "kind",
+        "sequence",
+        "timestamp_iso",
+        "message",
+        "metadata",
+    }
+)
+
+
+def orchestration_event_from_public(payload: Mapping[str, Any]) -> OrchestrationEvent:
+    """Reconstruct one event from its public-dict wire shape.
+
+    Core owns `OrchestrationEvent`, so Core owns reconstruction. Consumers must
+    not hand-roll a partial parser: a parser that skips an unrecognized kind or
+    field turns a wire-shape change into silently missing lifecycle evidence,
+    for example an approval pause that never reached the consumer.
+
+    The parser is therefore closed-shape and fail-closed. Unknown keys, unknown
+    kinds and malformed fields are rejected rather than ignored. Bounds and
+    identifier rules stay in `OrchestrationEvent.__post_init__` so they are
+    enforced in exactly one place.
+    """
+
+    if not isinstance(payload, Mapping):
+        raise OrchestrationEventError(
+            "invalid_event_payload",
+            "orchestration event payload must be a mapping",
+        )
+
+    unknown = sorted(str(key) for key in payload if key not in _EVENT_PUBLIC_KEYS)
+    if unknown:
+        raise OrchestrationEventError(
+            "unsupported_event_field",
+            "orchestration event payload contains unsupported fields",
+        )
+
+    kind_value = payload.get("kind")
+    if not isinstance(kind_value, str):
+        raise OrchestrationEventError(
+            "invalid_event_kind",
+            "kind must be an orchestration event kind string",
+        )
+    try:
+        kind = OrchestrationEventKind(kind_value)
+    except ValueError as exc:
+        raise OrchestrationEventError(
+            "unsupported_event_kind",
+            "orchestration event kind is not supported",
+        ) from exc
+
+    raw_metadata = payload.get("metadata", {})
+    if raw_metadata is None:
+        raw_metadata = {}
+    if not isinstance(raw_metadata, Mapping):
+        raise OrchestrationEventError(
+            "invalid_event_metadata",
+            "metadata must be a mapping",
+        )
+    metadata: dict[str, Any] = {}
+    for key, value in raw_metadata.items():
+        if not isinstance(key, str) or not key:
+            raise OrchestrationEventError(
+                "invalid_event_metadata",
+                "metadata keys must be non-empty strings",
+            )
+        if value is not None and not isinstance(value, (str, int, float, bool)):
+            raise OrchestrationEventError(
+                "invalid_event_metadata",
+                "metadata values must be scalars or null",
+            )
+        metadata[key] = value
+
+    message = payload.get("message")
+    if message is not None and not isinstance(message, str):
+        raise OrchestrationEventError(
+            "invalid_event_message",
+            "message must be a string or null",
+        )
+
+    return OrchestrationEvent(
+        event_id=payload.get("event_id"),
+        run_id=payload.get("run_id"),
+        trace_id=payload.get("trace_id"),
+        app_id=payload.get("app_id"),
+        kind=kind,
+        sequence=payload.get("sequence"),
+        timestamp_iso=payload.get("timestamp_iso"),
+        message=message,
+        metadata=MappingProxyType(metadata),
+    )

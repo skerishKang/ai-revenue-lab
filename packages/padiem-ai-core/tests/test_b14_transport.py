@@ -23,7 +23,10 @@ def run(coro):
 
 
 def request_fixture() -> B14ChatRequest:
-    return B14ChatRequest(messages=({"role": "user", "content": "hello"},))
+    return B14ChatRequest(
+        messages=({"role": "user", "content": "hello"},),
+        model="test/route",
+    )
 
 
 def success_payload() -> dict:

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlencode
 
-import httpx
+from . import httpx_compat as httpx
 
 from .config import Settings
 

@@ -30,6 +30,7 @@ def _agent_payload() -> dict:
         "task_type": "general",
         "optimize_for": "balanced",
         "max_tokens": 2048,
+        "model_policy": {"model": "test/route"},
     }
 
 

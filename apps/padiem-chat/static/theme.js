@@ -6,6 +6,7 @@
   const COLOR_SCHEMES={light:"light",dark:"dark",cinematic:"dark","padiem-home":"light","padiem-glass":"light"};
   var glassMotionFrame=0;
   var glassObserver=null;
+  var glassStateObserver=null;
 
   function isValid(t){return VALID.indexOf(t)!==-1;}
   function isGlassVariant(v){return GLASS_VARIANTS.indexOf(v)!==-1;}
@@ -22,6 +23,7 @@
   function ensureGlassStyles(){
     ensureStylesheet("./padiem-glass.css","data-padiem-glass-theme");
     ensureStylesheet("./padiem-glass-portrait.css","data-padiem-glass-portrait");
+    ensureStylesheet("./padiem-glass-reading.css","data-padiem-glass-reading");
   }
 
   function ensureGlassOption(){
@@ -48,6 +50,23 @@
     var cur=document.documentElement.getAttribute("data-glass-variant");
     if(isGlassVariant(cur)) return cur;
     return getUrlGlassVariant()||"female";
+  }
+
+  function glassMode(){
+    var shell=document.querySelector(".app-shell");
+    return shell && shell.dataset.state==="chat" ? "reading" : "home";
+  }
+
+  function syncGlassMode(){
+    var root=document.documentElement;
+    if(getCurrent()!=="padiem-glass"){
+      root.removeAttribute("data-glass-mode");
+      return "home";
+    }
+    var mode=glassMode();
+    root.setAttribute("data-glass-mode",mode);
+    if(mode==="reading") resetGlassPointer();
+    return mode;
   }
 
   function syncGlassVariant(variant,theme){
@@ -159,6 +178,7 @@
     } else {
       syncGlassVariant(getGlassVariant(),theme);
     }
+    syncGlassMode();
     syncPicker(theme);
     queueGlassMotion();
     try{window.dispatchEvent(new CustomEvent("padiem:themechange",{detail:{theme:theme}}));}catch(e){}
@@ -195,6 +215,7 @@
     glassMotionFrame=0;
     if(getCurrent()!=="padiem-glass") return;
     var root=document.documentElement;
+    var mode=syncGlassMode();
     if(prefersReducedMotion()){
       root.style.setProperty("--glass-art-x","0px");
       root.style.setProperty("--glass-art-y","0px");
@@ -202,6 +223,19 @@
       root.style.setProperty("--glass-mask-start","6%");
       root.style.setProperty("--glass-mask-full","24%");
       root.style.setProperty("--glass-reveal","0.8");
+      resetGlassPointer();
+      return;
+    }
+
+    if(mode==="reading"){
+      var calmVariant=getGlassVariant();
+      root.style.setProperty("--glass-art-x","0px");
+      root.style.setProperty("--glass-art-y","0px");
+      root.style.setProperty("--glass-art-scale","1");
+      root.style.setProperty("--glass-mask-start",calmVariant==="male"?"28%":"30%");
+      root.style.setProperty("--glass-mask-full",calmVariant==="male"?"50%":"54%");
+      root.style.setProperty("--glass-reveal","0");
+      resetGlassPointer();
       return;
     }
 
@@ -215,10 +249,9 @@
     var messageTravel=messageCount*.28;
 
     /*
-     * Padiem Glass mirrors the sibling's scroll-driven portrait reveal, but
-     * conversation travel is the timeline here: as messages stack and the chat
-     * rises, the mask opens, closes, and opens again in a continuous ping-pong
-     * loop. No autonomous timer is used; the conversation itself drives it.
+     * Home keeps the original Padiem Glass travel behavior. Once the explicit
+     * app-shell conversation state becomes chat, the reading branch above
+     * freezes travel so long answers do not compete with portrait motion.
      */
     var travel=messageTravel+overflowTravel+scrollTravel;
     var reveal=smoothstep(pingPong(travel));
@@ -244,6 +277,10 @@
 
   function updateGlassPointer(event){
     if(getCurrent()!=="padiem-glass"||prefersReducedMotion()) return;
+    if(glassMode()==="reading"){
+      resetGlassPointer();
+      return;
+    }
     var root=document.documentElement;
     var nx=Math.max(-1,Math.min(1,(event.clientX/window.innerWidth-.5)*2));
     var ny=Math.max(-1,Math.min(1,(event.clientY/window.innerHeight-.5)*2));
@@ -264,6 +301,20 @@
     glassObserver.observe(list,{childList:true,subtree:true,characterData:true});
   }
 
+  function observeGlassState(){
+    var shell=document.querySelector(".app-shell");
+    if(!shell || !window.MutationObserver || glassStateObserver) return;
+    glassStateObserver=new MutationObserver(function(mutations){
+      var changed=mutations.some(function(mutation){
+        return mutation.type==="attributes" && mutation.attributeName==="data-state";
+      });
+      if(!changed) return;
+      syncGlassMode();
+      queueGlassMotion();
+    });
+    glassStateObserver.observe(shell,{attributes:true,attributeFilter:["data-state"]});
+  }
+
   function init(){
     ensureGlassOption();
     ensureGlassVariantControl();
@@ -280,6 +331,7 @@
       syncPicker(cur);
       if(document.body) document.body.setAttribute("data-theme",cur);
       if(document.body) document.body.setAttribute("data-glass-variant",getGlassVariant());
+      syncGlassMode();
     }
     var picker=document.getElementById("themePicker");
     if(!picker) return;
@@ -300,7 +352,17 @@
     window.addEventListener("pointermove",updateGlassPointer,{passive:true});
     document.addEventListener("mouseleave",resetGlassPointer);
     observeGlassConversation();
+    observeGlassState();
     queueGlassMotion();
+    try{
+      var reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+      var reducedMotionHandler=function(){
+        resetGlassPointer();
+        queueGlassMotion();
+      };
+      if(reducedMotion.addEventListener) reducedMotion.addEventListener("change",reducedMotionHandler);
+      else if(reducedMotion.addListener) reducedMotion.addListener(reducedMotionHandler);
+    }catch(e){}
     try{
       var mql=window.matchMedia("(prefers-color-scheme: dark)");
       var handler=function(){

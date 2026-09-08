@@ -10,6 +10,13 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page, Route, async_playwright
 
+from b62_product_confirm_helpers import (
+    accept_product_confirm,
+    cancel_product_confirm,
+    install_native_dialog_guard,
+    open_product_confirm,
+)
+
 
 BASE_URL = os.environ.get("B62_PROJECT_FILES_QA_BASE_URL", "http://127.0.0.1:8772")
 OUT_DIR = Path(os.environ.get("B62_PROJECT_FILES_QA_OUT_DIR", ".tmp/b62-project-files-browser-qa"))
@@ -223,6 +230,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     state = FixtureState()
     unexpected_hosts: set[str] = set()
     stubbed_hosts: set[str] = set()
+    native_dialogs: list[str] = []
 
     def observe(request) -> None:
         host = (urlparse(request.url).hostname or "").lower()
@@ -230,6 +238,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
             unexpected_hosts.add(host)
 
     page.on("request", observe)
+    await install_native_dialog_guard(page, native_dialogs)
     await _stub_fonts(page, stubbed_hosts)
     await _install_api(page, state)
     await page.set_viewport_size({"width": width, "height": height})
@@ -250,14 +259,13 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         timeout=5_000,
     )
     await _no_overflow(page, f"{label}-project-selected")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-project-selected.png"), full_page=True)
 
+    # Add a persisted Project File and verify the bounded write payload.
     await page.locator("#editProjectButton").click()
     await page.locator("#projectDialog").wait_for(state="visible")
     if await page.locator("#projectFilesPanel").is_hidden():
         raise AssertionError("Project Files panel must be visible when project_files_ready=true")
     await _wait_text(page, "#projectFilesEmpty", "저장된 프로젝트 파일이 없습니다.")
-
     await page.locator("#projectFileInput").set_input_files({
         "name": FILE_NAME,
         "mimeType": FILE_TYPE,
@@ -270,15 +278,12 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     )
     if state.file_posts != [{"name": FILE_NAME, "media_type": FILE_TYPE, "text": FILE_TEXT}]:
         raise AssertionError(f"unexpected Project File create calls: {state.file_posts!r}")
-    await _wait_text(page, "#projectFilesList", FILE_TYPE)
     await _wait_text(page, "#activeProjectFiles", "파일 1개")
-    visible_text = await page.locator("body").inner_text()
-    if "PROJECT_FILE_PRIVATE_MARKER_1032" in visible_text:
+    if "PROJECT_FILE_PRIVATE_MARKER_1032" in await page.locator("body").inner_text():
         raise AssertionError("Project File content leaked into visible UI")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-project-file-added.png"), full_page=True)
 
+    # Chat sends only Project authority reference; persisted file id/content remain server-owned.
     await page.locator("#projectDialogClose").click()
-    await page.wait_for_function("() => document.getElementById('projectDialog')?.open === false", timeout=5_000)
     await page.locator("#messageInput").fill(QUESTION)
     await page.locator("#sendButton").click()
     await _wait_text(page, "#messageList", ANSWER)
@@ -287,8 +292,8 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         raise AssertionError(f"expected one project stream request, saw {len(state.stream_posts)}")
     if FILE_TEXT in await page.locator("body").inner_text():
         raise AssertionError("Project File private text leaked after chat completion")
-    await page.screenshot(path=str(OUT_DIR / f"{label}-project-file-chat.png"), full_page=True)
 
+    # Reopen, verify safe cancel path then intentionally confirm deletion.
     await page.locator("#editProjectButton").click()
     await page.locator("#projectDialog").wait_for(state="visible")
     await page.wait_for_function(
@@ -297,12 +302,22 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         timeout=5_000,
     )
     delete_button = page.locator("#projectFilesList .project-file-row button", has_text="삭제")
+    if mobile:
+        box = await delete_button.bounding_box()
+        if not box or box["width"] < 44 or box["height"] < 44:
+            raise AssertionError(f"mobile Project File delete target below 44px: {box}")
 
-    async def accept_dialog(dialog) -> None:
-        await dialog.accept()
+    await open_product_confirm(page, delete_button, title_contains="프로젝트 파일을 삭제할까요?", message_contains=FILE_NAME)
+    await cancel_product_confirm(page)
+    if not await delete_button.evaluate("node => document.activeElement === node"):
+        raise AssertionError("Project File cancel did not return focus to delete trigger")
+    if state.file_deletes:
+        raise AssertionError(f"cancel issued Project File DELETE: {state.file_deletes!r}")
+    if await page.locator("#projectFilesList .project-file-row").count() != 1:
+        raise AssertionError("cancel removed Project File row")
 
-    page.once("dialog", accept_dialog)
-    await delete_button.click()
+    await open_product_confirm(page, delete_button, title_contains="프로젝트 파일을 삭제할까요?", message_contains="복구할 수 없습니다")
+    await accept_product_confirm(page)
     await page.wait_for_function(
         "() => document.querySelectorAll('#projectFilesList .project-file-row').length === 0 && !document.getElementById('projectFilesEmpty')?.hidden",
         timeout=5_000,
@@ -313,6 +328,8 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     await _no_overflow(page, f"{label}-project-file-deleted")
     await page.screenshot(path=str(OUT_DIR / f"{label}-project-file-deleted.png"), full_page=True)
 
+    if native_dialogs:
+        raise AssertionError(f"native browser dialog used by destructive flow: {native_dialogs!r}")
     if unexpected_hosts:
         raise AssertionError(f"unexpected external browser hosts: {sorted(unexpected_hosts)}")
 
@@ -321,6 +338,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         "file_deletes": len(state.file_deletes),
         "stream_posts": len(state.stream_posts),
         "final_file_count": len(state.files),
+        "native_dialogs": native_dialogs,
         "stubbed_static_hosts": sorted(stubbed_hosts),
         "unexpected_external_hosts": sorted(unexpected_hosts),
         "viewport": {"width": width, "height": height},
@@ -329,36 +347,28 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
 
 async def main() -> None:
     report: dict[str, Any] = {
-        "status": "RUNNING",
-        "model_selection": "DEFERRED",
-        "real_provider_calls": 0,
-        "real_google_oauth": 0,
-        "real_d1": 0,
-        "pdf_docx": "DEFERRED",
-        "production_mutation": False,
+        "base_url": BASE_URL,
         "views": {},
+        "window_confirm_destructive_flows": 0,
+        "project_file_authority": "server-owned",
     }
-    report_path = OUT_DIR / "report.json"
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    try:
-        async with async_playwright() as playwright:
-            browser = await playwright.chromium.launch(headless=True)
-            try:
-                desktop = await browser.new_page(viewport={"width": 1440, "height": 1000})
-                report["views"]["desktop"] = await _run(desktop, label="desktop", width=1440, height=1000, mobile=False)
-                await desktop.close()
-                mobile = await browser.new_page(viewport={"width": 390, "height": 844})
-                report["views"]["mobile"] = await _run(mobile, label="mobile", width=390, height=844, mobile=True)
-                await mobile.close()
-            finally:
-                await browser.close()
-        report["status"] = "PASS"
-    except Exception as exc:
-        report["status"] = "FAIL"
-        report["error"] = f"{type(exc).__name__}: {exc}"
-        raise
-    finally:
-        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(headless=True)
+        try:
+            for label, width, height, mobile in (
+                ("desktop", 1280, 800, False),
+                ("mobile", 390, 844, True),
+            ):
+                page = await browser.new_page()
+                try:
+                    report["views"][label] = await _run(page, label=label, width=width, height=height, mobile=mobile)
+                finally:
+                    await page.close()
+        finally:
+            await browser.close()
+
+    (OUT_DIR / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

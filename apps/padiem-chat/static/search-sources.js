@@ -6,10 +6,8 @@
   const runtimeNote = document.getElementById("runtimeNote");
   const attachmentThumb = document.getElementById("attachmentThumb");
   const deepResearchButton = document.getElementById("deepResearchButton");
-  const toolButtons = Array.from(document.querySelectorAll(".composer-tools .tool-button"));
-  const webSearchButton = toolButtons.find((button) => button.textContent.includes("웹 검색"));
-  const starters = Array.from(document.querySelectorAll(".starter"));
-  const webSearchStarter = starters.find((button) => button.textContent.includes("웹에서 찾아줘"));
+  const webSearchButton = document.getElementById("webSearchButton");
+  const webSearchStarter = document.getElementById("webSearchStarterButton");
 
   if (!messageList || !input || !webSearchButton || !webSearchStarter || !deepResearchButton) return;
 
@@ -22,8 +20,6 @@
   let retryTool = null;
   let retryOverride = false;
 
-  webSearchButton.id = webSearchButton.id || "webSearchButton";
-  webSearchStarter.id = webSearchStarter.id || "webSearchStarterButton";
   webSearchButton.setAttribute("aria-pressed", "false");
   webSearchStarter.setAttribute("aria-pressed", "false");
   deepResearchButton.setAttribute("aria-pressed", "false");
@@ -46,15 +42,19 @@
 
   function syncControls() {
     const busy = toolInFlight !== null;
-    const webUnavailable = !webReady || busy;
-    const researchUnavailable = !researchReady || busy;
+    const webBusy = webReady && busy;
+    const researchBusy = researchReady && busy;
 
-    webSearchButton.disabled = webUnavailable;
-    webSearchButton.setAttribute("aria-disabled", webUnavailable ? "true" : "false");
-    webSearchStarter.disabled = webUnavailable;
-    webSearchStarter.setAttribute("aria-disabled", webUnavailable ? "true" : "false");
-    deepResearchButton.disabled = researchUnavailable;
-    deepResearchButton.setAttribute("aria-disabled", researchUnavailable ? "true" : "false");
+    webSearchButton.hidden = !webReady;
+    webSearchStarter.hidden = !webReady;
+    deepResearchButton.hidden = !researchReady;
+
+    webSearchButton.disabled = webBusy;
+    webSearchButton.setAttribute("aria-disabled", webBusy ? "true" : "false");
+    webSearchStarter.disabled = webBusy;
+    webSearchStarter.setAttribute("aria-disabled", webBusy ? "true" : "false");
+    deepResearchButton.disabled = researchBusy;
+    deepResearchButton.setAttribute("aria-disabled", researchBusy ? "true" : "false");
 
     const webActive = activeTool === "web_search";
     const researchActive = activeTool === "deep_research";
@@ -71,13 +71,12 @@
         : "다음 질문을 웹에서 찾아 출처와 함께 답합니다";
       if (starterStatus) starterStatus.textContent = webActive ? "다음 질문에서 사용" : "최신 정보 · 출처와 함께";
     } else {
-      webSearchButton.title = "웹 검색은 현재 사용할 수 없습니다";
-      if (starterStatus) starterStatus.textContent = "웹 검색 · 준비 중";
+      webSearchButton.title = "";
     }
 
     deepResearchButton.title = researchReady
       ? (researchActive ? "심층 리서치 사용 중 · 누르면 해제합니다" : "여러 검색과 출처를 비교해 다음 질문에 답합니다")
-      : "심층 리서치는 현재 사용할 수 없습니다";
+      : "";
   }
 
   function setActiveTool(toolId, next = true, announce = true) {
@@ -373,7 +372,15 @@
     attachmentObserver.observe(attachmentThumb, { attributes: true, attributeFilter: ["hidden", "src"] });
   }
 
-  async function loadCapability() {
+  function applyCapabilityProjection(state) {
+    const projected = state && state.deployment;
+    webReady = Boolean(projected && projected.loaded === true && projected.webSearch === true);
+    researchReady = Boolean(projected && projected.loaded === true && projected.deepResearch === true);
+    if (activeTool && !readyFor(activeTool)) activeTool = null;
+    syncControls();
+  }
+
+  async function loadCapabilityFallback() {
     try {
       const response = await nativeFetch("/health", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
@@ -388,5 +395,10 @@
   }
 
   syncControls();
-  loadCapability();
+  if (window.PadiemProductCapabilities && typeof window.PadiemProductCapabilities.get === "function") {
+    applyCapabilityProjection(window.PadiemProductCapabilities.get());
+    window.addEventListener("padiem:capabilitychange", (event) => applyCapabilityProjection(event.detail));
+  } else {
+    loadCapabilityFallback();
+  }
 })();

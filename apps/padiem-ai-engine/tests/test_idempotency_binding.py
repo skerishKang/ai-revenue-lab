@@ -209,10 +209,12 @@ def test_worker_injects_idempotency_binding_without_process_local_fake_store() -
 
 
 def test_adapter_does_not_create_runtime_schema_or_mutate_production_config() -> None:
+    """The adapter never provisions schema; Production config carries the binding."""
     adapter_source = (Path(__file__).resolve().parents[1] / "app" / "idempotency_binding.py").read_text(
         encoding="utf-8"
     )
     wrangler_source = (Path(__file__).resolve().parents[1] / "wrangler.toml").read_text(encoding="utf-8")
 
     assert "CREATE TABLE" not in adapter_source.upper()
-    assert "ENGINE_IDEMPOTENCY" not in wrangler_source
+    assert 'binding = "ENGINE_IDEMPOTENCY"' in wrangler_source
+    assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in wrangler_source

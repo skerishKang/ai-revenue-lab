@@ -184,6 +184,7 @@
 
 .app-shell[data-state="chat"] .user-message {
   padding-left: clamp(52px, 11vw, 132px);
+  padding-right: max(12px, env(safe-area-inset-right));
 }
 
 .app-shell[data-state="chat"] .message-bubble {

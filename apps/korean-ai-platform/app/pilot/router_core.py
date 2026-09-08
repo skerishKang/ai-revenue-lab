@@ -7,18 +7,21 @@ Manual:
   - Specific catalog model ID → single upstream call
   - No provider switching unless explicit
 
-Automatic:
+Automatic (D14, #2044):
   - model = "b14/auto"
-  - Selects best model from catalog based on optimize_for, task_type,
-    required_capabilities, allow_external_fallback, provider_order, max_attempts
-  - Hard constraints applied before preferences
-  - Deterministic result
+  - Resolves through the owner-designated fixed chain in
+    app.pilot.routing_policy (ROUTING_POLICY_ID = "fixed_chain_v1").
+    No scorer is consulted; task_type / required_capabilities /
+    optimize_for / provider_order / allow_paid are accepted but ignored
+    (recorded as ignored_options in reason_codes).
+  - allow_external_fallback=False → one attempt; max_attempts bounds the
+    chain walk (capped at the chain length).
   - Fallback on: timeout, transport failure, HTTP 429, HTTP 5xx
   - No fallback on: HTTP 400/401/403/404/409/422/any other 4xx,
     malformed request, malformed upstream response, missing key,
     unsupported feature, oversize response, unknown exceptions
 
-Option enforcement (every accepted option changes the result):
+Legacy scorer options (kept for the resolve_auto_route library only):
   - allow_external_fallback=False → no fallback candidates, one attempt
   - provider_order → deterministic provider priority in candidate sorting
   - task_type → hard capability filter (+ korean scoring boost)
@@ -40,10 +43,11 @@ from app.pilot.catalog import (
     get_catalog_by_id,
     get_catalog_models,
     filter_catalog as _filter_catalog,
+    is_evidenced_free,
     select_by_optimize,
 )
-from app.pilot.openrouter_config import openrouter_config
-from app.pilot.errors import NoSafeRoute
+from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.errors import NoSafeRoute, RoutingError
 
 
 class RouteMode(str, enum.Enum):
@@ -57,12 +61,6 @@ class EvidenceStatus(str, enum.Enum):
     LIVE_VERIFIED = "live_verified"
     RESOLVED_NOT_CALLED = "resolved_not_called"
     LIVE_FAILED = "live_failed"
-
-
-class NoKeyReason(str, enum.Enum):
-    LIVE_MODE_REQUIRES_KEY = "live_mode_requires_key"
-    NO_KEY_SET = "no_key_set"
-    KEY_AVAILABLE = "key_available"
 
 
 @dataclass(frozen=True)
@@ -122,7 +120,7 @@ class RouteDecision:
     request_id: str
     provider_mode: str
     max_attempts: int
-    credential_source: str = ""  # platform_secret | openrouter | request_byok | none
+    credential_source: str = ""  # platform_secret (OpenRouter retired, D14 #2044)
     platform_provider_id: str = ""
 
 
@@ -130,22 +128,13 @@ def _new_request_id() -> str:
     return f"b14req_{uuid.uuid4().hex[:12]}"
 
 
-def _check_credentials() -> tuple[bool, str]:
-    """Check whether credentials are available for live mode."""
-    if openrouter_config.is_live:
-        if openrouter_config.has_key:
-            return True, NoKeyReason.KEY_AVAILABLE.value
-        return False, NoKeyReason.LIVE_MODE_REQUIRES_KEY.value
-    # mock mode
-    return False, NoKeyReason.NO_KEY_SET.value
-
-
 def _credential_status_for(cm) -> tuple[bool, str, str, str]:
     """Resolve credential availability/status for a catalog model.
 
     Returns ``(available, status, source, platform_provider_id)``.
-    ``platform_secret`` models read their own Provider binding; missing secret
-    fails closed. Everything else defers to the OpenRouter adapter config.
+    Every routable model is a platform route (``platform_secret`` marker with
+    its own Provider binding); any other credential source is a retired
+    configuration and fails closed (D14 #2044: the OpenRouter adapter is gone).
     """
     if cm.credential_source == "platform_secret":
         from app.pilot import platform_secrets as ps
@@ -158,8 +147,13 @@ def _credential_status_for(cm) -> tuple[bool, str, str, str]:
             "platform_secret",
             cm.platform_provider_id or "",
         )
-    ok, status = _check_credentials()
-    return ok, status, "openrouter", ""
+    raise RoutingError(
+        code="unsupported_credential_source",
+        message=(
+            f"model '{cm.model_id}' uses retired credential source "
+            f"'{cm.credential_source}'."
+        ),
+    )
 
 
 def _platform_secret_present(cm) -> bool:
@@ -213,10 +207,7 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
-    route_id = (
-        f"platform:{cm.model_id}" if cred_source == "platform_secret"
-        else f"openrouter:{cm.model_id}"
-    )
+    route_id = f"platform:{cm.model_id}"
 
     fallback_candidates: list[dict[str, str]] = []
     if allow_external_fallback:
@@ -226,11 +217,7 @@ def resolve_manual_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
-                "route_id": (
-                    f"platform:{m.model_id}"
-                    if m.credential_source == "platform_secret"
-                    else f"openrouter:{m.model_id}"
-                ),
+                "route_id": f"platform:{m.model_id}",
                 "reason": "catalog_alternative",
             }
             for m in all_models
@@ -255,7 +242,7 @@ def resolve_manual_route(
         credential_status=cred_status,
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
-        provider_mode=openrouter_config.provider_mode,
+        provider_mode=runtime_config.provider_mode,
         max_attempts=1 if not allow_external_fallback else min(1 + len(fallback_candidates), 3),
         credential_source=cred_source,
         platform_provider_id=plat_pid,
@@ -269,8 +256,15 @@ def resolve_auto_route(
     allow_external_fallback: bool = True,
     provider_order: list[str] | None = None,
     max_attempts: int | None = None,
+    allow_paid: bool = False,
 ) -> RouteDecision:
     """Resolve an automatic route for b14/auto.
+
+    NOTE (D14, #2044): the live ``b14/auto`` lane no longer calls this
+    scorer; it resolves through ``app.pilot.routing_policy`` (fixed_chain_v1).
+    This function is retained as the deterministic scorer library surface
+    (capability filtering and optimize_for ranking) and is exercised directly
+    by scorer unit tests only.
 
     Uses canonical capability evidence to deterministically select the best model.
     Does NOT make upstream calls.
@@ -281,6 +275,7 @@ def resolve_auto_route(
     - execution capabilities are evaluated through canonical capability evidence
     - task_type requirements compose with explicit capability requirements
     - UNKNOWN and UNSUPPORTED canonical capability evidence are both ineligible
+    - By default (allow_paid=False), only evidenced-free models are eligible
 
     Preferences (applied second, all enforced):
     - provider_order: listed providers win in the given order
@@ -340,6 +335,19 @@ def resolve_auto_route(
             if m.credential_source == "platform_secret" and not _platform_secret_present(m):
                 secret_missing_ids.add(m.model_id)
                 continue
+            if not allow_paid and not is_evidenced_free(m):
+                # An explicit provider_order opts in to the specified providers.
+                # Platform-owned models with secret present (like Agnes) can be in the fallback pool.
+                is_explicit_provider = bool(provider_order and m.provider in provider_order)
+                is_platform_secret_eligible = bool(m.credential_source == "platform_secret")
+                if not (is_explicit_provider or is_platform_secret_eligible):
+                    excluded.append({
+                        "model_id": m.model_id,
+                        "upstream_model": m.upstream_model,
+                        "provider": m.provider,
+                        "reason": "paid_or_unknown_price_not_allowed",
+                    })
+                    continue
             candidates.append(m)
         else:
             excluded.append({
@@ -373,10 +381,7 @@ def resolve_auto_route(
     )
     selected = sorted_candidates[0]
     cred_ok, cred_status, cred_source, plat_pid = _credential_status_for(selected)
-    route_id = (
-        f"platform:{selected.model_id}" if cred_source == "platform_secret"
-        else f"openrouter:{selected.model_id}"
-    )
+    route_id = f"platform:{selected.model_id}"
 
     if allow_external_fallback:
         fallback_candidates = [
@@ -384,11 +389,7 @@ def resolve_auto_route(
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,
                 "provider": m.provider,
-                "route_id": (
-                    f"platform:{m.model_id}"
-                    if m.credential_source == "platform_secret"
-                    else f"openrouter:{m.model_id}"
-                ),
+                "route_id": f"platform:{m.model_id}",
                 "reason": "auto_fallback_candidate",
             }
             for m in sorted_candidates[1:]
@@ -398,7 +399,11 @@ def resolve_auto_route(
         fallback_candidates = []
         effective_max_attempts = 1
 
-    reason_codes = [f"optimize_for:{optimize_for}", f"task_type:{task_type}"]
+    reason_codes = [
+        f"optimize_for:{optimize_for}",
+        f"task_type:{task_type}",
+        "free_first:opt_in" if allow_paid else "free_first:default",
+    ]
     if required_capabilities:
         reason_codes.append(f"capabilities:{','.join(required_capabilities)}")
     if provider_order:
@@ -421,7 +426,7 @@ def resolve_auto_route(
         credential_status=cred_status,
         evidence_status=EvidenceStatus.RESOLVED_NOT_CALLED.value,
         request_id=request_id,
-        provider_mode=openrouter_config.provider_mode,
+        provider_mode=runtime_config.provider_mode,
         max_attempts=effective_max_attempts,
         credential_source=cred_source,
         platform_provider_id=plat_pid,
@@ -431,7 +436,8 @@ def resolve_auto_route(
 def resolve_route(model_id: str, business14_options: dict[str, Any] | None = None) -> RouteDecision:
     """Resolve any route (manual or auto) without making upstream calls.
 
-    - If model_id == "b14/auto": use automatic routing
+    - If model_id == "b14/auto": use the owner-designated fixed chain
+      (app.pilot.routing_policy, D14 #2044)
     - Otherwise: use manual routing with the specific model_id
 
     Returns RouteDecision. Raises NoSafeRoute if routing fails.
@@ -439,14 +445,15 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
     opts = business14_options or {}
 
     if model_id.strip() == "b14/auto":
+        # D14 (#2044): owner-designated fixed chain, no scorer. Imported
+        # lazily because routing_policy depends on this module's types.
+        from app.pilot.routing_policy import resolve_chain_route
+
         allow_external_fallback = opts.get("allow_external_fallback", True)
-        return resolve_auto_route(
-            task_type=opts.get("task_type", "general"),
-            required_capabilities=opts.get("required_capabilities") or ["chat"],
-            optimize_for=opts.get("optimize_for", "balanced"),
+        return resolve_chain_route(
             allow_external_fallback=allow_external_fallback,
-            provider_order=opts.get("provider_order"),
             max_attempts=opts.get("max_attempts"),
+            requested_options=opts,
         )
 
     allow_external_fallback = opts.get("allow_external_fallback", False)
@@ -454,16 +461,6 @@ def resolve_route(model_id: str, business14_options: dict[str, Any] | None = Non
         model_id,
         allow_external_fallback=allow_external_fallback,
     )
-
-
-# Error classes for fallback logic
-class RoutingError(Exception):
-    """Raised when routing cannot be completed."""
-
-    def __init__(self, code: str, message: str) -> None:
-        self.code = code
-        self.message = message
-        super().__init__(message)
 
 
 # Fallback-allowable error codes:

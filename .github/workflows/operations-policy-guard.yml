@@ -1,0 +1,92 @@
+name: Operations Policy Guard
+
+# Repository-side governance guard for the Web CTO -> Web Developer ->
+# independent Local Validator chain defined in AGENTS.md and
+# docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md.
+#
+# This workflow proves only what it executes:
+#   1. the operating-policy consistency tests pass (blocking);
+#   2. the pull request body carries the contract fields the review chain
+#      depends on (report by default; blocking only when `enforce` is set).
+#
+# It does not review a change, does not assign a CTO readiness verdict and does
+# not mutate any product source or deployment.
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      enforce_pr_contract:
+        description: "Fail the job when a load-bearing PR contract field is missing"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: operations-policy-guard-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  policy-consistency:
+    name: Operating policy consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+
+      - name: Run operating policy consistency tests
+        run: python -m pytest -q docs/operations/tests
+
+      - name: Run pull request contract guard tests
+        run: python -m pytest -q .github/tests/test_pr_contract_guard.py
+
+      - name: Record guard scope
+        run: |
+          echo 'OPERATIONS_POLICY_GUARD=PASSED'
+          echo 'GUARD_REVIEWS_THE_CHANGE=NO'
+          echo 'GUARD_ASSIGNS_CTO_READINESS=NO'
+          echo 'PRODUCTION_MUTATION=NO'
+
+  pr-contract:
+    name: Pull request contract report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Report pull request contract fields
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_CONTRACT_GUARD_ENFORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.enforce_pr_contract == 'true' && '1' || '0' }}
+        run: python .github/scripts/pr_contract_guard.py
+
+      - name: Record non-blocking scope
+        if: always()
+        run: |
+          echo 'PR_CONTRACT_GUARD_MODE=REPORT_BY_DEFAULT'
+          echo 'CTO_FINAL_STATUS_ASSIGNED_BY_THIS_GUARD=NO'

@@ -26,6 +26,7 @@
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
   const accountName = document.getElementById("accountName");
+  const accountContainer = document.querySelector(".sidebar-account");
   const historySection = document.getElementById("historySection");
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
@@ -65,20 +66,17 @@
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
+  const attachmentCapabilities = window.PadiemAttachmentCapabilities;
+  const binaryDocuments = window.PadiemBinaryDocuments;
 
-  const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
-  const MAX_DOCUMENT_BYTES = 96 * 1024;
-  const MAX_DOCUMENT_CHARS = 40000;
-  const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-  const ALLOWED_DOCUMENT_TYPES = new Set(["text/plain", "text/markdown", "text/csv", "application/json"]);
-  const DOCUMENT_EXTENSION_TYPES = new Map([
-    [".txt", "text/plain"],
-    [".md", "text/markdown"],
-    [".markdown", "text/markdown"],
-    [".csv", "text/csv"],
-    [".json", "application/json"],
-  ]);
-  const DEFAULT_NOTE = "사진과 TXT·Markdown·CSV·JSON 문서 한 개를 첨부할 수 있습니다. PDF·Office 문서는 아직 지원하지 않습니다.";
+  const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
+  const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
+  const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;
+  const ALLOWED_IMAGE_TYPES = new Set(attachmentCapabilities.images.flatMap((format) => format.mediaTypes));
+  const ALLOWED_DOCUMENT_TYPES = new Set(attachmentCapabilities.textDocuments.flatMap((format) => format.mediaTypes));
+  const DOCUMENT_EXTENSION_TYPES = new Map(
+    attachmentCapabilities.textDocuments.flatMap((format) => format.extensions.map((extension) => [extension, format.mediaTypes[0]]))
+  );
 
   let inFlight = false;
   let activeRequestController = null;
@@ -94,8 +92,11 @@
   let editingProjectId = null;
   let dialogProjectFiles = [];
 
+  function attachmentCopy() {
+    return attachmentCapabilities.copy(document.documentElement.lang);
+  }
   function idleNote() {
-    return activeProject ? `‘${activeProject.name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.` : DEFAULT_NOTE;
+    return activeProject ? `‘${activeProject.name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.` : attachmentCopy().idleNote;
   }
   function setNote(text, state = "normal") {
     runtimeNote.textContent = text;
@@ -117,10 +118,20 @@
   function lifecycleForError(error) {
     return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED;
   }
+  function setNavActive() {
+    const state = shell.dataset.state;
+    const workspace = document.getElementById("clawWorkspace");
+    if (workspace) workspace.hidden = state !== "claw";
+    const chatNav = document.getElementById("newChatButton");
+    const clawNav = document.getElementById("clawNavButton");
+    if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
+    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" ? "page" : "false");
+  }
   function showConversation() {
     emptyState.hidden = true;
     messageList.hidden = false;
     shell.dataset.state = "chat";
+    setNavActive();
   }
   function addUserMessage(text, attachment) {
     const fragment = document.getElementById("userMessageTemplate").content.cloneNode(true);
@@ -308,19 +319,19 @@
   }
   async function readDocumentFile(file) {
     const mediaType = documentMediaType(file);
-    if (!mediaType) throw new Error("현재는 TXT, Markdown, CSV, JSON 문서만 지원합니다. PDF·Office 문서는 아직 지원하지 않습니다.");
-    if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) throw new Error("텍스트 문서는 96 KiB 이하만 첨부할 수 있습니다.");
+    if (!mediaType) throw new Error(attachmentCopy().unsupportedFormat);
+    if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) throw new Error(attachmentCopy().textTooLarge);
     const raw = await readAsText(file);
     if (typeof raw !== "string") throw new Error("문서를 읽지 못했습니다.");
     const text = raw.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     if (!text.trim()) throw new Error("빈 문서는 첨부할 수 없습니다.");
-    if (text.length > MAX_DOCUMENT_CHARS) throw new Error("문서는 40,000자 이하만 첨부할 수 있습니다.");
+    if (text.length > MAX_DOCUMENT_CHARS) throw new Error(attachmentCopy().textTooLong);
     if (text.includes("\u0000")) throw new Error("바이너리 파일은 텍스트 문서로 첨부할 수 없습니다.");
     return { type: "document", name: file.name || "document.txt", mediaType, text, byteSize: file.size };
   }
   async function selectImage(file) {
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error("JPEG, PNG, WebP 사진만 첨부할 수 있습니다.");
-    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error("사진은 4 MiB 이하만 첨부할 수 있습니다.");
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error(attachmentCopy().unsupportedFormat);
+    if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
     const dataUrl = await readAsDataUrl(file);
     const expectedPrefix = `data:${file.type};base64,`;
     if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error("사진 형식을 확인할 수 없습니다.");
@@ -331,7 +342,10 @@
   async function selectAttachment(file) {
     if (!file) return;
     try {
-      const next = ALLOWED_IMAGE_TYPES.has(file.type) ? await selectImage(file) : await readDocumentFile(file);
+      let next;
+      if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
+      else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
+      else next = await readDocumentFile(file);
       if (selectedAttachment && selectedAttachment.previewUrl) URL.revokeObjectURL(selectedAttachment.previewUrl);
       selectedAttachment = next;
       renderSelectedAttachment();
@@ -344,6 +358,9 @@
     if (!attachment) return undefined;
     if (attachment.type === "image") {
       return [{ type: "image", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
+    }
+    if (typeof attachment.base64 === "string" && attachment.base64) {
+      return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, base64: attachment.base64 }];
     }
     return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, text: attachment.text }];
   }
@@ -527,7 +544,12 @@
   }
   async function deleteProjectFile(fileId, name) {
     if (!editingProjectId || !authState.project_files_ready) return;
-    const confirmed = window.confirm(`‘${name}’ 파일을 프로젝트에서 삭제할까요?`);
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "프로젝트 파일을 삭제할까요?",
+      message: `‘${name}’ 파일을 이 프로젝트에서 삭제합니다. 삭제한 파일은 복구할 수 없습니다.`,
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
@@ -558,6 +580,7 @@
     messageList.hidden = true;
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    setNavActive();
     input.value = "";
     renderProjectState();
     updateComposer();
@@ -596,7 +619,7 @@
     projectNameInput.focus();
   }
   function closeProjectDialog() {
-    if (projectDialog.open) projectDialog.close();
+    if (projectDialog.open && typeof projectDialog.close === "function") projectDialog.close();
     editingProjectId = null;
     dialogProjectFiles = [];
     projectFileInput.value = "";
@@ -647,9 +670,12 @@
     if (!editingProjectId || !projectsReady || !authState.authenticated || inFlight) return;
     const project = projectById(editingProjectId);
     if (!project) return;
-    const confirmed = window.confirm(
-      `‘${project.name}’ 프로젝트를 삭제할까요?\n프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 되돌릴 수 없습니다.`
-    );
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "프로젝트를 삭제할까요?",
+      message: `‘${project.name}’ 프로젝트를 삭제합니다. 프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 복구할 수 없습니다.`,
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
     if (!confirmed) return;
     const deletingId = editingProjectId;
     const deletingActiveProject = Boolean(activeProject && activeProject.id === deletingId);
@@ -680,7 +706,7 @@
       await loadProjects();
       if (deletingActiveProject) {
         renderProjectState();
-        setNote(DEFAULT_NOTE);
+        setNote(idleNote());
       }
       input.focus();
     } catch (error) {
@@ -695,33 +721,60 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    const english = document.documentElement.lang === "en";
+    const sessionState = !ready
+      ? "unavailable"
+      : authenticated
+        ? "signed_in"
+        : authState.session_state === "expired"
+          ? "expired"
+          : "guest";
+
+    if (accountContainer) {
+      accountContainer.dataset.accountState = sessionState;
+      accountContainer.hidden = sessionState === "unavailable";
+    }
+    loginButton.hidden = sessionState === "unavailable";
     loginButton.disabled = !ready;
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
-    if (!ready) {
-      loginButton.textContent = "로그인";
-      loginButton.title = "로그인 기능이 설정되지 않았습니다";
+
+    if (sessionState === "unavailable") {
+      loginButton.textContent = english ? "Sign in" : "로그인";
+      loginButton.title = english ? "Sign-in is unavailable" : "로그인 기능이 설정되지 않았습니다";
       accountName.hidden = true;
       accountName.textContent = "";
       clearHistoryUI();
       clearProjectsUI();
       return;
     }
-    if (authenticated) {
-      loginButton.textContent = "로그아웃";
-      loginButton.title = "현재 계정에서 로그아웃합니다";
-      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name : "";
-      accountName.textContent = name;
-      accountName.hidden = !name;
+
+    if (sessionState === "signed_in") {
+      loginButton.textContent = english ? "Sign out" : "로그아웃";
+      loginButton.title = english ? "Sign out of the current account" : "현재 계정에서 로그아웃합니다";
+      const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
+      accountName.textContent = name || (english ? "Signed in" : "로그인됨");
+      accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = "확인 중";
-    } else {
-      loginButton.textContent = "로그인";
-      loginButton.title = "Google 계정으로 로그인합니다";
-      accountName.hidden = true;
-      accountName.textContent = "";
+      projectsBadge.textContent = english ? "Checking" : "확인 중";
+      return;
+    }
+
+    if (sessionState === "expired") {
+      loginButton.textContent = english ? "Sign in again" : "다시 로그인";
+      loginButton.title = english ? "Your session expired. Sign in again" : "세션이 만료되었습니다. 다시 로그인합니다";
+      accountName.textContent = english ? "Session expired" : "세션 만료";
+      accountName.hidden = false;
       clearHistoryUI();
       clearProjectsUI();
+      return;
     }
+
+    loginButton.textContent = english ? "Sign in" : "로그인";
+    loginButton.title = english ? "Sign in with your Google account" : "Google 계정으로 로그인합니다";
+    accountName.textContent = english ? "Guest" : "게스트";
+    accountName.hidden = false;
+    clearHistoryUI();
+    clearProjectsUI();
   }
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {
@@ -759,7 +812,12 @@
   }
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
-    const confirmed = window.confirm(`‘${title}’ 대화를 삭제할까요?\n삭제한 대화는 되돌릴 수 없습니다.`);
+    const confirmed = await window.PadiemConfirmDialog.confirm({
+      title: "대화를 삭제할까요?",
+      message: `‘${title}’ 대화를 삭제합니다. 삭제한 대화는 복구할 수 없습니다.`,
+      cancelLabel: "취소",
+      confirmLabel: "삭제",
+    });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, {
@@ -1092,8 +1150,133 @@
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
   });
+  window.addEventListener("padiem:localechange", () => {
+    if (!selectedAttachment) setNote(idleNote());
+  });
 
-  setNote(DEFAULT_NOTE);
+  // Claw first-class workspace & client-side preview wiring
+  const clawNavButton = document.getElementById("clawNavButton");
+  const clawWorkspace = document.getElementById("clawWorkspace");
+  const clawManualForm = document.getElementById("clawManualForm");
+  const clawChannel = document.getElementById("clawChannel");
+  const clawAction = document.getElementById("clawAction");
+  const clawSender = document.getElementById("clawSender");
+  const clawRequestText = document.getElementById("clawRequestText");
+  const clawResultPreview = document.getElementById("clawResultPreview");
+  const clawResultCard = document.getElementById("clawResultCard");
+  const clawResultEmpty = document.getElementById("clawResultEmpty");
+  const clawResultKind = document.getElementById("clawResultKind");
+
+  function openClawWorkspace() {
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    setNavActive();
+    if (clawRequestText) clawRequestText.focus();
+    closeSidebar();
+  }
+
+  if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  if (clawWorkspace) {
+    clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const action = chip.dataset.clawAction;
+        if (clawAction && action) clawAction.value = action;
+        clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((other) => {
+          other.setAttribute("aria-pressed", other === chip ? "true" : "false");
+        });
+        if (clawRequestText) clawRequestText.focus();
+      });
+    });
+  }
+  setNavActive();
+
+  function revealClawCard(kindText) {
+    if (clawResultEmpty) clawResultEmpty.hidden = true;
+    if (clawResultCard) clawResultCard.hidden = false;
+    if (clawResultKind) clawResultKind.textContent = kindText || "";
+  }
+
+  if (clawManualForm) {
+    clawManualForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const body = (clawRequestText?.value || "").trim();
+      const isEn = document.documentElement.lang === "en";
+      if (!body) {
+        if (clawResultCard) clawResultCard.hidden = true;
+        if (clawResultEmpty) {
+          clawResultEmpty.hidden = false;
+          clawResultEmpty.textContent = isEn
+            ? "Paste request text before creating a preview."
+            : "요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.";
+        }
+        if (clawRequestText) clawRequestText.focus();
+        return;
+      }
+      const channelValue = clawChannel?.value || "other";
+      const actionValue = clawAction?.value || "quote";
+      const channelText = clawChannel?.options[clawChannel.selectedIndex]?.textContent || channelValue;
+      const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
+      const senderText = (clawSender?.value || "").trim();
+
+      const renderFallback = () => {
+        const clipped = body.length > 900 ? `${body.slice(0, 900)}…` : body;
+        const notice = isEn
+          ? "Client-side preview only. This draft is not stored and is lost on refresh."
+          : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
+        const channelLabel = isEn ? "Channel" : "채널";
+        const actionLabel = isEn ? "Action" : "작업";
+        const senderLabel = isEn ? "Sender hint" : "발신자 힌트";
+        const sourceLabel = isEn ? "Source text" : "요청 원문";
+        revealClawCard(actionText);
+        if (clawResultPreview) {
+          clawResultPreview.textContent = [
+            notice,
+            "",
+            `${channelLabel}: ${channelText}`,
+            `${actionLabel}: ${actionText}`,
+            `${senderLabel}: ${senderText || "-"}`,
+            "",
+            `${sourceLabel}:`,
+            clipped,
+          ].join("\n");
+        }
+      };
+
+      try {
+        const response = await fetch("/api/claw/manual-intake/preview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            content: body,
+            channel: channelValue,
+            action: actionValue,
+            sender_hint: senderText || null,
+          }),
+        });
+        if (!response.ok) {
+          renderFallback();
+          return;
+        }
+        const data = await response.json();
+        if (!data || !data.ok || !data.preview || typeof data.preview.result_text !== "string") {
+          renderFallback();
+          return;
+        }
+        const preview = data.preview;
+        revealClawCard(preview.title);
+        if (clawResultPreview) {
+          clawResultPreview.textContent = preview.result_text;
+        }
+      } catch {
+        renderFallback();
+      }
+    });
+  }
+
+  setNote(idleNote());
   renderProjectState();
   updateComposer();
   loadAuthStatus();

@@ -1,6 +1,8 @@
 # Agnes AI Provider Intake — B14 V1
 
-Status: CANDIDATE / OWNER_TEST_ONLY
+Status: **RETIRED** (#1933 S2-b, 2026-09-07) — historical intake record kept for provenance. The Agnes route is no longer registered in production code or the catalog; do not reimplement without a new owner decision.
+
+Original status: CANDIDATE / OWNER_TEST_ONLY
 
 ## Verified public integration facts
 
