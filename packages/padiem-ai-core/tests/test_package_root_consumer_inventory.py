@@ -166,6 +166,13 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "request_fingerprint",
         }
     ),
+    "apps/padiem-ai-engine/app/public_event_projection.py": frozenset(
+        {
+            "PublicUiEvent",
+            "PublicUiEventError",
+            "PublicUiEventStream",
+        }
+    ),
     "apps/padiem-ai-engine/app/service.py": frozenset(
         {
             "AgentProfile",
