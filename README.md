@@ -4,6 +4,18 @@ AI Revenue Lab is a private product and research repository for testing a specif
 
 > Abundant AI production can do more than reduce cost; it can make new personalized digital products and revenue models economically viable.
 
+## Documentation entrypoints
+
+Repository documentation is intentionally split between **current canonical authority** and historical/evidence documents. Start here:
+
+- [`docs/README.md`](docs/README.md) — documentation map and authority rules
+- [`docs/architecture/PADIEM_AI_VERTICAL_STACK.md`](docs/architecture/PADIEM_AI_VERTICAL_STACK.md) — Padiem AI vertical platform architecture
+- [`docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`](docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md) — IP-CORE / IP-ENGINE / IP-CONTROL / proposed IP-SIDECAR
+- [`docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`](docs/product/AI_PRODUCT_CONSUMER_MATRIX.md) — Chat, Claw, StoryMemory, Sidecar and other AI consumers
+- [`docs/portfolio/BUSINESS_REGISTRY.md`](docs/portfolio/BUSINESS_REGISTRY.md) — sole Business-number authority
+
+Dated, issue-numbered and phase-specific documents are valuable evidence but are not automatically current architecture or runtime authority.
+
 ## Core thesis
 
 The Lab focuses on:
@@ -15,18 +27,70 @@ The Lab focuses on:
 5. **Personalization** — turn common source material into different products for different users.
 6. **Revenue evidence** — measure user behavior, operating cost, direct/attributable revenue, and willingness to pay.
 
-Canonical intent:
+Canonical operating intent:
 
 - `docs/portfolio/AI_REVENUE_LAB_OPERATING_INTENT.md`
 
 More files, screens, agents, or deployments are not success by themselves. A Business advances when product, operating, user, and commercial evidence improve.
+
+## Two registries: Businesses and Internal Platform
+
+AI Revenue Lab contains both independently operated Businesses/products and shared Padiem platform infrastructure. They use different identifiers and must not be mixed.
+
+### Business / product portfolio
+
+Business numbering authority is only:
+
+```text
+docs/portfolio/BUSINESS_REGISTRY.md
+```
+
+Businesses own their product/domain UX, product-local authorization, records, persistence, deployment lifecycle and commercial evidence.
+
+### Padiem Internal Platform
+
+Shared AI infrastructure uses Internal Platform IDs rather than fake Business numbers:
+
+```text
+IP-CORE     = Padiem AI Core
+IP-ENGINE   = Padiem AI Engine
+IP-CONTROL  = Padiem Control Plane
+IP-SIDECAR  = Padiem Embedded AI Runtime  [proposed / separately gated]
+```
+
+B14 Korean AI Platform remains **Business 14** and is the Provider/model execution authority. Its Router is an internal B14 capability, not a separate Business or platform ID.
+
+Canonical AI composition:
+
+```text
+Product / Business domain + UX
+        │
+        ├─ optional IP-SIDECAR embedded presentation layer
+        │
+        ▼
+IP-ENGINE  cross-runtime trusted service boundary
+        │
+        ▼
+IP-CORE    reusable AI semantics/contracts/runtime
+        │
+        ▼
+B14        provider/model catalog, routing, credentials, execution
+        │
+        ▼
+Provider / Model
+
+IP-CONTROL = cross-cutting identity / tenant / entitlement / usage / audit
+             and neutral cross-product declarations
+```
+
+Same-runtime/library consumers may use IP-CORE directly only where architecture explicitly permits it. Product code must not create a second generic AI policy engine or Provider/model router.
 
 ## Portfolio architecture
 
 AI Revenue Lab is a portfolio of independently operated Businesses, not one monolithic application.
 
 ```text
-shared Firebase identity
+shared portfolio identity
           │
           ▼
  AI Revenue Lab Portal
@@ -40,9 +104,9 @@ own roles   own roles   own roles
 own DB      own DB      own DB
 ```
 
-Shared authentication proves who authenticated; each Business remains responsible for admission, internal identities, roles, records, databases, secrets, deletion, deployment, and evidence.
+Shared authentication proves who authenticated; each Business remains responsible for admission, internal identities, roles, records, databases, secrets, deletion, deployment, and evidence unless a separately accepted shared authority explicitly owns that concern.
 
-Canonical architecture/numbering documents:
+Canonical portfolio references:
 
 - `docs/decisions/ADR-0003-shared-portal-isolated-products.md`
 - `docs/product/AI_REVENUE_LAB_PORTAL_CONTRACT.md`
@@ -51,66 +115,65 @@ Canonical architecture/numbering documents:
 - `docs/portfolio/EXTERNAL_PORTFOLIO_PROJECTS.md`
 - `docs/architecture/PORTAL_PRODUCT_INTEGRATION_CONTRACT.md`
 
+## Repository model
+
+Product/runtime workspaces live under `apps/` when a runtime is authorized. Shared Padiem packages live under `packages/`. Bounded visual/product-evidence work may remain under `reference/`.
+
+```text
+apps/                         # products and runtime services
+packages/
+├─ padiem-ai-core/            # IP-CORE
+└─ padiem-control-plane/      # IP-CONTROL
+
+docs/                         # canonical docs + evidence/history
+reference/                    # bounded review/reference workspaces
+```
+
+`apps/padiem-ai-engine/` is IP-ENGINE even though its runtime packaging lives under `apps/`; that filesystem location does not make it a numbered Business.
+
+Some source-of-truth projects remain in external repositories. They are tracked in `docs/portfolio/EXTERNAL_PORTFOLIO_PROJECTS.md` or the relevant successor lineage rather than recreated as fake internal placeholders.
+
+Workspace existence does not itself create canonical numbering, owner approval, backend authorization, or Production readiness.
+
+## Selected product relationships to the AI stack
+
+### B62 · Padiem Chat
+
+Padiem Chat owns the general chat product surface: conversations, Projects, attachments, Saved Outputs, modes and product context presentation. Reusable execution/grounding/evidence semantics belong to Core; cross-runtime paths use Engine; Provider/model execution belongs to B14.
+
+### B54 · Padiem Claw / Korean AI Code Agent
+
+Canonical source remains `apps/korean-ai-code-agent/**`. Claw owns repository/task/run/workspace/GitHub product semantics. Generic Agent/Tool/Skill/approval/recovery/orchestration semantics belong to Core, with Engine as the cross-runtime service boundary and B14 as model execution authority.
+
+### B61 · StoryMemory
+
+StoryMemory owns reader/domain semantics including canonical locators, reading progress, knowledge ceiling, annotations and spoiler/no-future behavior. Bible/classic-work locator meaning remains product-owned. Generic retrieval permission/context/evidence semantics belong to Core; Engine projects them across runtimes; B14 executes models.
+
+### B53 · Padiem Sidecar vs IP-SIDECAR
+
+These are distinct identities:
+
+```text
+B53 Padiem Sidecar
+= commercial product / onboarding / packaging / customer journey
+
+IP-SIDECAR
+= proposed reusable embedded AI shell/runtime layer
+```
+
+See `docs/internal-platform/sidecar/README.md`.
+
+### B14 · Korean AI Platform
+
+B14 is Padiem's general AI Router Platform and owns Provider/model registry, inference credentials, executable route validation, provider adapters and actual upstream model execution. Current Padiem product-tier declarations are neutral shared declarations in Control Plane; B14 remains final executability authority.
+
+See `apps/korean-ai-platform/README.md`.
+
 ## Portfolio Console
 
 `apps/portfolio-console/` is the private owner/operator control tower, not the user-facing Portal.
 
-Its static Business identity must agree with the registry and successor lineage. Volatile facts such as Issue/PR/SHA/CI/deployment/health are synchronized separately. Owner/product decisions remain human-governed evidence, not derived from green automation alone.
-
-## Repository model
-
-Product/runtime workspaces live under `apps/` when a runtime is authorized. Bounded visual/product-evidence work may remain under `reference/`.
-
-Some source-of-truth projects remain in external repositories. They are tracked in `docs/portfolio/EXTERNAL_PORTFOLIO_PROJECTS.md` when portfolio visibility is required but a BI/Business number is not yet assigned or not required.
-
-```text
-apps/
-├─ personal-edition/          # B1
-├─ living-travel/             # B2
-├─ living-learning/           # B4
-├─ world-feed/                # B6 technical/research workspace
-├─ personal-video-archive/    # B13
-├─ korean-ai-platform/        # B14
-└─ portfolio-console/         # B44 private control tower
-
-reference/
-├─ business-06-world-feed-v1/
-├─ business-07-personal-meaning-map-v1/
-├─ business-08-family-newspaper-v1/
-├─ business-09-personalized-childrens-story-v1/
-├─ business-10-fan-magazine-v1/
-├─ business-11-language-learning-magazine-v1/
-└─ business-12-creator-mini-media-v1/
-```
-
-Workspace existence does not itself create canonical numbering, owner approval, backend authorization, or Production readiness.
-
-## Canonical / expanded Business truth
-
-Numbering authority is only `docs/portfolio/BUSINESS_REGISTRY.md`.
-
-Current high-level mapping includes:
-
-- **B1 — Personal Edition** — recurring personal letters/magazines/books from private fragments and records.
-- **B2 — Living Travel** — adaptive travel editions shaped by feedback and current situation.
-- **B3 — Living Fiction** — canonical Business identity retained; current implementation is treated as external/parallel under successor policy, with no invented repository link.
-- **B4 — Living Learning** — recurring personalized learning experiences.
-- **B5 — Neighbor Market** — canonical Business retained; implementation expanded to **DanjiOn / 단지온** at `skerishKang/02-danji-on`. Do not create a duplicate internal `apps/neighbor-market/` implementation.
-- **B6 — World Feed / Personal World Discovery** — stable slug `world-feed`; finite source-forward discovery connecting world changes with nearby relevance. Concierge validation remains separate from runtime expansion.
-- **B7 — Personal Meaning Map** — canonical number; current reviewed reference workspace retained.
-- **B8 — Family Newspaper** — canonical number; current reviewed reference workspace retained.
-- **B9 — Personalized Children’s Story** — canonical number; current reviewed reference workspace retained.
-- **B10 — Fan Magazine** — canonical number; current reviewed reference workspace retained.
-- **B11 — Language Learning Magazine** — canonical number; current reviewed reference workspace retained.
-- **B12 — Creator Mini-Media** — canonical number; current reviewed reference workspace retained.
-- **B13 — Personal Video Archive** — user-controlled video discovery plus durable private viewing records.
-- **B14 — Korean AI Platform** — Korean-first model-access platform; Router Core is an internal B14 capability.
-- **B54 — Korean AI Code Agent** — proposed-number first-party client of B14; the hardened CLI/TUI vertical slice is integrated at `apps/korean-ai-code-agent/`, while canonical-number promotion remains a separate registry decision.
-- **B60 — AI API / AI API 탐색 허브** — proposed-number discovery/deal-intelligence product for current AI API access paths, free tiers, credits, promotions, low-cost routes and source verification. B60 remains separate from B14 execution/routing; runtime workspace and Production surface are not yet authorized. See Issue #650 and `docs/portfolio/BUSINESS_60_AI_API_PROPOSAL.md`.
-
-External/integrated successor mappings for B23/B24/B25/B26/B27/B28/B30/B31/B50 are maintained in `BUSINESS_EXPANSION_LINEAGE.md` and the Portfolio Console static manifest. Unnumbered external portfolio projects are maintained in `EXTERNAL_PORTFOLIO_PROJECTS.md`. Do not recreate prohibited internal placeholders.
-
-Historical Issues/PRs may contain older proposed/candidate/phase wording. They remain historical evidence; current authority comes from current canonical documents and merged source.
+Its static Business identity must agree with the canonical registries and successor lineage. Volatile facts such as Issue/PR/SHA/CI/deployment/health are synchronized separately. Owner/product decisions remain human-governed evidence, not derived from green automation alone.
 
 ## Development operating model
 
@@ -128,37 +191,11 @@ Supporting policy:
 - `docs/operations/BACKEND_MVP_OPERATING_POLICY.md`
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 
-### Current mode
-
-```text
-MVP_AND_VISUAL_UPGRADE
-ROLE_SEPARATED_EVIDENCE
-NO_MANDATORY_UI_UX_BACKEND_SEQUENCE
-```
-
-The Web CTO chooses the smallest evidence slice that answers the current uncertainty. Product work may begin with visual design, UX, deterministic simulation, service-led delivery, local runtime, a live backend/provider vertical slice, or commercial hardening when that is the right evidence target.
-
-UI, UX, backend/runtime, security, market-reference, investor-demo, deployment, owner-visual, and commercial verdicts remain separate.
-
-### Responsibility flow
-
-```text
-User request / portfolio authority
-→ Web CTO exact work contract
-→ Web Developer implementation
-→ implementation self-check + configured CI
-→ independent validation when required
-→ Web CTO final review
-→ owner decision when materially reserved
-→ merge
-→ configured Production deployment/acceptance when authorized
-```
-
-One actor may perform multiple non-independent stages, but the same actor must not claim both implementation and **independent Local Validation** for the same revision.
+Current product-development mode remains evidence-driven rather than ceremony-driven. The Web CTO chooses the smallest slice that answers the current uncertainty; UI, UX, backend/runtime, security, deployment and commercial verdicts remain distinguishable evidence classes.
 
 ## Evidence standard
 
-Before implementation/review/merge, record and re-read:
+Before implementation/review/merge, record and re-read the relevant subset of:
 
 - repository and current `main`;
 - exact base/head SHA;
@@ -172,21 +209,20 @@ Before implementation/review/merge, record and re-read:
 
 CI proves only what it actually executes. Wrong-project Preview deployments, accessible URLs, or HTTP 200 responses do not prove the intended reviewed revision.
 
-## Backend evidence modes
+## Source readiness is not Production activation
 
-Choose explicitly when runtime work is relevant:
+This distinction applies across Core, Engine, Control Plane, products and B14:
 
 ```text
-NO_BACKEND
-DETERMINISTIC_SIMULATION
-SERVICE_LED
-LOCAL_RUNTIME
-LIVE_VERTICAL_SLICE
-PILOT_RUNTIME
-COMMERCIAL_HARDENING
+SOURCE_PRESENT
+!= CONTRACT_AVAILABLE
+!= BINDING_CONFIGURED
+!= PROVIDER_READY
+!= DEPLOYED
+!= PRODUCTION_ACCEPTED
 ```
 
-Backend is not frozen by default. Build it early when it is necessary to prove the product and keep it bounded to the evidence goal. Do not add infrastructure for ceremony.
+A class, route, manifest entry, UI control or passing unit test does not by itself prove a live Provider, secret, database, connector or Production binding.
 
 ## Deployment model
 
@@ -195,29 +231,25 @@ For Git-connected Production targets, after the required source/evidence/authori
 ```text
 validated exact head
 → authorized expected-head merge
-→ configured automatic Production deployment
+→ configured Production deployment path
 → Production acceptance against resulting revision
 → reviewed fix/revert recovery when required
 ```
 
-Preview/staging/manual deployment is not an operator fallback. It requires explicit authority under `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` or a stricter Business-specific contract.
-
-A green deployment under an unrelated project is invalid product evidence.
+Direct/manual deployment, DNS changes, credential mutation and rollback require the repository's applicable release policy and explicit authority.
 
 ## Identity and product access
 
-Portfolio identity project: `ai-revenue-lab-identity`.
-
-Shared identity does not imply universal access:
+Shared portfolio identity does not imply universal product access:
 
 ```text
-verified Firebase identity
+verified shared identity
 → stable portal identity
 → product-local identity mapping
 → product-local role and record authorization
 ```
 
-Every portal-integrated Business must define authentication mode, product-local authorization owner, deployment lifecycle, deletion/revocation behavior, and evidence that authenticated-but-unauthorized users are denied.
+Control Plane may own accepted canonical subject/tenant/entitlement contracts, but each product remains responsible for its product-specific admission and record authorization unless a shared contract explicitly replaces that responsibility.
 
 ## Governance / business evidence
 
