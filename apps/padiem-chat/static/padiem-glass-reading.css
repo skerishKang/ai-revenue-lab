@@ -26,7 +26,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .app-shell::before {
 }
 
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
-  opacity: .14;
+  opacity: .28;
   filter: saturate(.42) contrast(.90) brightness(1.10) blur(.35px);
 }
 
@@ -68,7 +68,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
     right: -30vw;
     width: 78vw;
-    opacity: .08;
+    opacity: .16;
     filter: saturate(.34) contrast(.86) brightness(1.12) blur(.6px);
   }
 
@@ -82,7 +82,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
   html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
     right: -38vw;
     width: 86vw;
-    opacity: .055;
+    opacity: .10;
   }
 }
 

@@ -61,7 +61,9 @@ def test_reading_css_is_glass_only_and_reduces_visual_noise() -> None:
     assert 'body::after' in READING
     assert 'opacity: .025;' in READING
     assert '.main-panel::before' in READING
-    assert 'opacity: .14;' in READING
+    # #2093-4: reading-mode hero presence was rebalanced .14 -> .28 so the
+    # brand visual stays calm but visible behind the conversation.
+    assert 'opacity: .28;' in READING
     assert '.conversation' in READING
     assert 'rgba(251, 252, 253, .97)' in READING
     for other_theme in ['data-theme="light"', 'data-theme="dark"', 'data-theme="cinematic"', 'data-theme="padiem-home"']:
@@ -82,8 +84,13 @@ def test_reading_surface_overrides_legacy_chat_glass_with_explicit_state_scope()
 def test_mobile_reading_posture_is_calmer_and_overflow_is_not_hidden() -> None:
     assert '@media (max-width: 920px)' in READING
     assert '@media (max-width: 620px)' in READING
-    assert 'opacity: .08;' in READING
-    assert 'opacity: .055;' in READING
+    # #2093-4: breakpoints scale proportionally (.16 / .10) and stay calmer
+    # than the desktop .28 posture. Scope to each media block because the
+    # reduced-motion block also carries an .08 opacity.
+    tablet = READING.split('@media (max-width: 920px)', 1)[1].split('@media (max-width: 620px)', 1)[0]
+    assert 'opacity: .16;' in tablet
+    mobile = READING.split('@media (max-width: 620px)', 1)[1].split('@media (prefers-reduced-motion', 1)[0]
+    assert 'opacity: .10;' in mobile
     assert 'overflow-x: hidden' not in READING
 
 

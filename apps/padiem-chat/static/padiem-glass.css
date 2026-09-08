@@ -185,6 +185,15 @@ html[data-theme="padiem-glass"] .sidebar-bottom {
   bottom: 18px;
   z-index: 2;
   margin: 0;
+  /* The floating block's transparent padding must not swallow clicks on
+   * sidebar list content that flows beneath it (#2093: the Issue B spacing
+   * increase pushed the block over the Saved Outputs rows). Only the
+   * interactive children capture pointer events.
+   */
+  pointer-events: none;
+}
+html[data-theme="padiem-glass"] .sidebar-bottom > * {
+  pointer-events: auto;
 }
 
 html[data-theme="padiem-glass"] .topbar {
