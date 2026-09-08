@@ -1,0 +1,21 @@
+{
+  "bootstrap": {
+    "host_id": "s3-bridge-host-01",
+    "shell_version": "0.2.0",
+    "locale": "ko",
+    "features": ["context-panel", "event-feed"],
+    "host_name": "S3 bridge reference host",
+    "contract_version": "1.0"
+  },
+  "context_valid": {
+    "theme": "dark",
+    "surface": "panel",
+    "role": "admin",
+    "tenant_id": "tenant-9"
+  },
+  "context_malformed": {
+    "theme": "dark",
+    "count": 3
+  },
+  "incompatible_contract_version": "99.0"
+}

@@ -1,7 +1,9 @@
-# padiem-embedded-runtime (IP-SIDECAR S2 minimal contract)
+# padiem-embedded-runtime (IP-SIDECAR S3 host-context bridge)
 
-Shared, browser-safe embedded shell boundary for host products. S2 scope is
-the package-level runtime contract plus one repository-local reference host.
+Shared, browser-safe embedded shell boundary for host products. S2 delivered
+the package-level runtime contract plus one repository-local reference host;
+S3 adds the reusable host-context bridge, public bootstrap/session projection,
+version-compatibility and integration diagnostics, and host-safe fail-over.
 No Engine transport, no provider calls, no secrets, no product semantics.
 
 ## Layout
@@ -14,8 +16,11 @@ packages/padiem-embedded-runtime/
     host_context.py          # untrusted host-context envelope (never authority)
     events.py                # public-safe event projection primitives
     engine_port.py           # abstract Engine port + deterministic fake (tests/demo only)
+    compatibility.py         # S3 runtime/host contract version check (no raise)
+    diagnostics.py           # S3 public-safe status/reason-code diagnostics
+    bridge.py                # S3 untrusted-context -> projection + fail-safe pipeline
   reference_host/            # repository-local demo host (fixture-driven, no I/O)
-  fixtures/                  # deterministic demo fixture (JSON)
+  fixtures/                  # deterministic demo fixtures (JSON)
   tests/                     # focused unittest contract tests (stdlib only)
 ```
 
@@ -29,6 +34,14 @@ packages/padiem-embedded-runtime/
   `RAW_TERMINAL_OUTPUT_EXPOSED=NO` — event allowlist + shape guards.
 - `FAIL_SAFE_DISABLE=YES` — failures land in `disabled`; host-safe results
   keep the host primary journey unbroken.
+- `DIAGNOSTICS_PUBLIC_SAFE=YES` — diagnostics expose only allowlisted
+  status/reason codes; raw exceptions, credentials, and Engine/provider
+  material never reach the projected view.
+- `VERSION_CHECK_NEVER_RAISES=YES` — malformed/missing host versions yield a
+  deterministic unsupported verdict instead of an exception.
+- `BRIDGE_NEVER_BREAKS_HOST=YES` — every invalid/incompatible intake returns
+  a host-safe outcome (degraded or disabled), never an error to the host.
+- `REAL_ENGINE_TRANSPORT=NO` — `EnginePort` stays abstract/fake-only in S3.
 
 ## Run tests
 
