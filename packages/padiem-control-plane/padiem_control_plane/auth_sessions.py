@@ -11,7 +11,12 @@ Security invariants:
   carried by this contract;
 - expiry and revocation are explicit and monotonic;
 - terminal revoked/expired sessions cannot reactivate in place;
-- product-owned auth persistence is not migrated by this module.
+- product-owned auth persistence is not migrated by this module;
+- ``tenant_id`` is an optional distinct tenancy/isolation fact: it never
+  defaults, never aliases ``product_id`` or the subject id, and is absent
+  (unavailable) until a canonical Control Plane tenant producer exists;
+- wire compatibility: ``to_public_dict`` omits the ``tenant_id`` key entirely
+  while the fact is absent, so existing closed-key consumers are unaffected.
 """
 
 from __future__ import annotations
@@ -68,6 +73,7 @@ class AuthSessionSnapshot:
     expires_at: datetime
     state: AuthSessionState = AuthSessionState.ACTIVE
     revision: int = 1
+    tenant_id: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "session_id", _safe_identifier("session_id", self.session_id))
@@ -94,6 +100,18 @@ class AuthSessionSnapshot:
                 "invalid_auth_session",
                 "revision must be a positive integer",
             )
+        if self.tenant_id is not None:
+            object.__setattr__(self, "tenant_id", _safe_identifier("tenant_id", self.tenant_id))
+            if self.tenant_id == self.product_id:
+                raise ControlPlaneContractError(
+                    "invalid_auth_session",
+                    "tenant_id must be distinct from product_id",
+                )
+            if self.tenant_id == self.subject.subject_id:
+                raise ControlPlaneContractError(
+                    "invalid_auth_session",
+                    "tenant_id must be distinct from the subject id",
+                )
 
     def effective_state(self, *, now: datetime) -> AuthSessionState:
         now = _aware_datetime("now", now)
@@ -107,7 +125,7 @@ class AuthSessionSnapshot:
         return self.effective_state(now=now) is AuthSessionState.ACTIVE
 
     def to_public_dict(self) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "session_id": self.session_id,
             "product_id": self.product_id,
             "subject": self.subject.to_public_dict(),
@@ -116,6 +134,9 @@ class AuthSessionSnapshot:
             "state": self.state.value,
             "revision": self.revision,
         }
+        if self.tenant_id is not None:
+            payload["tenant_id"] = self.tenant_id
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -217,6 +238,7 @@ def apply_auth_session_transition(
         expires_at=snapshot.expires_at,
         state=next_state,
         revision=snapshot.revision + 1,
+        tenant_id=snapshot.tenant_id,
     )
     return AppliedAuthSessionTransition(
         previous=snapshot,
