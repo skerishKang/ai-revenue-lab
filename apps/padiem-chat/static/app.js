@@ -1198,7 +1198,7 @@
   }
 
   if (clawManualForm) {
-    clawManualForm.addEventListener("submit", (event) => {
+    clawManualForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const body = (clawRequestText?.value || "").trim();
       const isEn = document.documentElement.lang === "en";
@@ -1211,30 +1211,67 @@
         if (clawRequestText) clawRequestText.focus();
         return;
       }
-      const channelText = clawChannel?.options[clawChannel.selectedIndex]?.textContent || clawChannel?.value || "-";
-      const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || clawAction?.value || "-";
-      const senderText = (clawSender?.value || "").trim() || "-";
-      const clipped = body.length > 900 ? `${body.slice(0, 900)}…` : body;
+      const channelValue = clawChannel?.value || "other";
+      const actionValue = clawAction?.value || "quote";
+      const channelText = clawChannel?.options[clawChannel.selectedIndex]?.textContent || channelValue;
+      const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
+      const senderText = (clawSender?.value || "").trim();
 
-      const notice = isEn
-        ? "Client-side preview only. This draft is not stored and is lost on refresh."
-        : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
-      const channelLabel = isEn ? "Channel" : "채널";
-      const actionLabel = isEn ? "Action" : "작업";
-      const senderLabel = isEn ? "Sender hint" : "발신자 힌트";
-      const sourceLabel = isEn ? "Source text" : "요청 원문";
+      const renderFallback = () => {
+        const clipped = body.length > 900 ? `${body.slice(0, 900)}…` : body;
+        const notice = isEn
+          ? "Client-side preview only. This draft is not stored and is lost on refresh."
+          : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
+        const channelLabel = isEn ? "Channel" : "채널";
+        const actionLabel = isEn ? "Action" : "작업";
+        const senderLabel = isEn ? "Sender hint" : "발신자 힌트";
+        const sourceLabel = isEn ? "Source text" : "요청 원문";
+        if (clawResultPreview) {
+          clawResultPreview.textContent = [
+            notice,
+            "",
+            `${channelLabel}: ${channelText}`,
+            `${actionLabel}: ${actionText}`,
+            `${senderLabel}: ${senderText || "-"}`,
+            "",
+            `${sourceLabel}:`,
+            clipped,
+          ].join("\n");
+        }
+      };
 
-      if (clawResultPreview) {
-        clawResultPreview.textContent = [
-          notice,
-          "",
-          `${channelLabel}: ${channelText}`,
-          `${actionLabel}: ${actionText}`,
-          `${senderLabel}: ${senderText}`,
-          "",
-          `${sourceLabel}:`,
-          clipped,
-        ].join("\n");
+      try {
+        const response = await fetch("/api/claw/manual-intake/preview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            content: body,
+            channel: channelValue,
+            action: actionValue,
+            sender_hint: senderText || null,
+          }),
+        });
+        if (!response.ok) {
+          renderFallback();
+          return;
+        }
+        const data = await response.json();
+        if (!data || !data.ok || !data.preview || typeof data.preview.result_text !== "string") {
+          renderFallback();
+          return;
+        }
+        const preview = data.preview;
+        const headerNotice = isEn
+          ? `[Claw Preview] ${preview.title}\nNotice: Read-only preview. Not saved or sent.`
+          : `[Claw 미리보기] ${preview.title}\n안내: 읽기 전용 미리보기입니다. 저장되거나 발송되지 않습니다.`;
+        if (clawResultPreview) {
+          clawResultPreview.textContent = `${headerNotice}\n\n${preview.result_text}`;
+        }
+      } catch {
+        renderFallback();
       }
     });
   }
