@@ -4,10 +4,11 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
+import uuid
 
 from .b14_execution import B14ExecutionError, B14ExecutionResult
 from .b14_multimodal import B14MultimodalChatRequest, _normalize_messages as _normalize_b14_messages
-from .contracts import AgentProfile, ErrorClass, RunMetadata, RunStatus
+from .contracts import AgentProfile, ErrorClass, RunStatus
 from .execution_runtime import (
     MAX_EXECUTION_MESSAGES,
     ExecutionResult,
@@ -225,6 +226,10 @@ class MultimodalStreamingExecutionRuntime(StreamingExecutionRuntime):
     async def stream(self, request: MultimodalExecutionRequest) -> Any:
         if not isinstance(request, MultimodalExecutionRequest):
             raise ValueError("request must be MultimodalExecutionRequest")
+
+        started_at = self._clock()
+        trace_id = request.trace_id or f"run_{uuid.uuid4().hex[:24]}"
+
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
@@ -239,17 +244,17 @@ class MultimodalStreamingExecutionRuntime(StreamingExecutionRuntime):
                 routing=routing,
             )
         except ValueError:
+            metadata = self._metadata(  # type: ignore[arg-type]
+                request=request,
+                trace_id=trace_id,
+                status=RunStatus.REJECTED,
+                started_at=started_at,
+                error_class=ErrorClass.INPUT_ERROR,
+            )
             raise ExecutionRuntimeError(
                 "invalid_execution_request",
                 "Execution request or agent model policy is invalid.",
-                metadata=RunMetadata(
-                    trace_id=request.trace_id or "multimodal-stream",
-                    app_id=self.app_id,
-                    agent_id=request.agent.id,
-                    session_id=request.session_id,
-                    status=RunStatus.REJECTED,
-                    error_class=ErrorClass.INPUT_ERROR,
-                ),
+                metadata=metadata,
             ) from None
         iterator = self._stream_b14_request(request, b14_request)
         try:

@@ -364,6 +364,9 @@ class StreamingExecutionRuntime:
         if not isinstance(request, ExecutionRequest):
             raise ValueError("request must be ExecutionRequest")
 
+        started_at = self._clock()
+        trace_id = request.trace_id or f"run_{uuid.uuid4().hex[:24]}"
+
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
@@ -378,17 +381,17 @@ class StreamingExecutionRuntime:
                 routing=routing,
             )
         except ValueError:
+            metadata = self._metadata(
+                request=request,
+                trace_id=trace_id,
+                status=RunStatus.REJECTED,
+                started_at=started_at,
+                error_class=ErrorClass.INPUT_ERROR,
+            )
             raise ExecutionRuntimeError(
                 "invalid_execution_request",
                 "Execution request or agent model policy is invalid.",
-                metadata=RunMetadata(
-                    trace_id=request.trace_id or "stream",
-                    app_id=self._app_id,
-                    agent_id=request.agent.id,
-                    session_id=request.session_id,
-                    status=RunStatus.REJECTED,
-                    error_class=ErrorClass.INPUT_ERROR,
-                ),
+                metadata=metadata,
             ) from None
         iterator = self._stream_b14_request(request, b14_request)
         try:
