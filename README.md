@@ -10,7 +10,7 @@ Repository documentation is intentionally split between **current canonical auth
 
 - [`docs/README.md`](docs/README.md) — documentation map and authority rules
 - [`docs/architecture/PADIEM_AI_VERTICAL_STACK.md`](docs/architecture/PADIEM_AI_VERTICAL_STACK.md) — Padiem AI vertical platform architecture
-- [`docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`](docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md) — IP-CORE / IP-ENGINE / IP-CONTROL / proposed IP-SIDECAR
+- [`docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`](docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md) — IP-CORE / IP-ENGINE / IP-CONTROL / IP-SIDECAR
 - [`docs/product/AI_PRODUCT_CONSUMER_MATRIX.md`](docs/product/AI_PRODUCT_CONSUMER_MATRIX.md) — Chat, Claw, StoryMemory, Sidecar and other AI consumers
 - [`docs/portfolio/BUSINESS_REGISTRY.md`](docs/portfolio/BUSINESS_REGISTRY.md) — sole Business-number authority
 
@@ -55,7 +55,7 @@ Shared AI infrastructure uses Internal Platform IDs rather than fake Business nu
 IP-CORE     = Padiem AI Core
 IP-ENGINE   = Padiem AI Engine
 IP-CONTROL  = Padiem Control Plane
-IP-SIDECAR  = Padiem Embedded AI Runtime  [proposed / separately gated]
+IP-SIDECAR  = Padiem Embedded AI Runtime  [S2 source-present / non-production]
 ```
 
 B14 Korean AI Platform remains **Business 14** and is the Provider/model execution authority. Its Router is an internal B14 capability, not a separate Business or platform ID.
@@ -65,7 +65,7 @@ Canonical AI composition:
 ```text
 Product / Business domain + UX
         │
-        ├─ optional IP-SIDECAR embedded presentation layer
+        ├─ optional IP-SIDECAR embedded shell/context/event layer
         │
         ▼
 IP-ENGINE  cross-runtime trusted service boundary
@@ -83,7 +83,7 @@ IP-CONTROL = cross-cutting identity / tenant / entitlement / usage / audit
              and neutral cross-product declarations
 ```
 
-Same-runtime/library consumers may use IP-CORE directly only where architecture explicitly permits it. Product code must not create a second generic AI policy engine or Provider/model router.
+Same-runtime/library consumers may use IP-CORE directly only where architecture explicitly permits it. Product code must not create a second generic AI policy engine or Provider/model router. IP-SIDECAR's current S2 package does not provide real Engine transport, Provider calls or Production activation.
 
 ## Portfolio architecture
 
@@ -123,7 +123,8 @@ Product/runtime workspaces live under `apps/` when a runtime is authorized. Shar
 apps/                         # products and runtime services
 packages/
 ├─ padiem-ai-core/            # IP-CORE
-└─ padiem-control-plane/      # IP-CONTROL
+├─ padiem-control-plane/      # IP-CONTROL
+└─ padiem-embedded-runtime/   # IP-SIDECAR S2 source; non-production
 
 docs/                         # canonical docs + evidence/history
 reference/                    # bounded review/reference workspaces
@@ -158,7 +159,10 @@ B53 Padiem Sidecar
 = commercial product / onboarding / packaging / customer journey
 
 IP-SIDECAR
-= proposed reusable embedded AI shell/runtime layer
+= reusable embedded AI runtime primitives
+= packages/padiem-embedded-runtime/
+= S2 minimal runtime contract source-present
+= no real Engine transport / no Provider execution / no Production activation
 ```
 
 See `docs/internal-platform/sidecar/README.md`.
@@ -211,7 +215,7 @@ CI proves only what it actually executes. Wrong-project Preview deployments, acc
 
 ## Source readiness is not Production activation
 
-This distinction applies across Core, Engine, Control Plane, products and B14:
+This distinction applies across Core, Engine, Control Plane, Sidecar, products and B14:
 
 ```text
 SOURCE_PRESENT
