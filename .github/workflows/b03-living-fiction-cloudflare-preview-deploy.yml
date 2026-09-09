@@ -21,7 +21,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # Dedicated B03 preview token. Scoped to the account that already hosts
+      # living-fiction-cloudflare-container-m0 and granted Workers Containers
+      # Write, which the shared CLOUDFLARE_API_TOKEN does not carry.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.LF_PREVIEW_CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
