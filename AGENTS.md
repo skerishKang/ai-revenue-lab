@@ -9,6 +9,7 @@ Canonical operating documents:
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
 - `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
+- `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
 
 ## Roles
 
@@ -80,6 +81,7 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
+- Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
 
 ## Required templates
 
