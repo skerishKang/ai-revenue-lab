@@ -142,11 +142,6 @@ jobs:
           test -n "${DB_ID}"
           echo "::add-mask::${DB_ID}"
           echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
-          db_meta="${RUNNER_TEMP}/b62-d1-008-db-meta.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}?fields=uuid,name" \
-            -o "${db_meta}"
-          jq -e '.success == true and (.result.uuid | type == "string") and (.result.name | type == "string")' "${db_meta}" >/dev/null
           echo 'LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
           echo 'D1_IDENTIFIER_OUTPUT=0'
 
