@@ -41,10 +41,13 @@ from app.cloudflare_transport import (
 )
 from app.connector_bindings import (
     build_tool_binding_resolver,
+    DriveGrant,
+    GmailGrant,
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.gmail_port_httpx import HttpxGmailReadPort
+from app.drive_port_httpx import HttpxDriveReadPort
 from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
@@ -136,33 +139,44 @@ def _research_service_for_env(
 
 
 async def _tool_binding_resolver_for_env(env: Any):
-    """Compose the Engine Gmail tool binding resolver (WO-10 PR-C activation).
+    """Compose the Engine Gmail + Drive tool binding resolver (WO-10 PR-C).
 
     Reads the three Worker secrets and the ENGINE_CONNECTOR_GRANTS D1 binding
     from the deployment env. If any piece is missing the factory returns None,
     keeping the canonical composition fail-closed. A grant store outage
-    (``ServiceContractError`` from ``_gmail_grants_for_env``) is NOT treated as
-    \"grant missed\": the port and binding are present, so every app_id gets a
-    resolver that surfaces the same 503 ``connector_grants_unavailable`` instead
-    of a silent fail-closed misread.
+    (``ServiceContractError``) is NOT treated as \"grant missed\": the port
+    and binding are present, so every app_id gets a resolver that surfaces
+    the same 503 ``connector_grants_unavailable`` instead of a silent
+    fail-closed misread.
+
+    Gmail and Drive resolvers coexist: a request is routed to the first
+    matching grant type. When either port is absent or its grant mapping
+    is empty, that connector's resolver is simply absent.
     """
-    port = _gmail_port_for_env(env)
-    if port is None:
+    gmail_port = _gmail_port_for_env(env)
+    drive_port = _drive_port_for_env(env)
+    if gmail_port is None and drive_port is None:
         return None
     try:
-        grants = await _gmail_grants_for_env(env)
+        gmail_grants, drive_grants = await asyncio.gather(
+            _gmail_grants_for_env(env),
+            _drive_grants_for_env(env),
+        )
     except ServiceContractError as exc:
-        # `except ... as exc` clears `exc` when the block ends, so the closure
-        # must capture the value through a persistent local name.
         grant_error = exc
 
         def unavailable(_app_id: str) -> None:
             raise grant_error
 
         return unavailable
-    if not grants:
+    if not gmail_grants and not drive_grants:
         return None
-    return build_tool_binding_resolver(gmail_port=port, grants=grants)
+    return build_tool_binding_resolver(
+        gmail_port=gmail_port,
+        grants=gmail_grants or None,
+        drive_port=drive_port,
+        drive_grants=drive_grants or None,
+    )
 
 
 def _gmail_port_for_env(env: Any) -> HttpxGmailReadPort | None:
@@ -188,6 +202,39 @@ async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
     try:
         store = CloudflareD1ConnectorGrantStore(binding)
         return await store.load_gmail_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _drive_port_for_env(env: Any) -> HttpxDriveReadPort | None:
+    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
+    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
+    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
+    if not client_id or not client_secret or not refresh_token:
+        return None
+    try:
+        return HttpxDriveReadPort(
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+        )
+    except Exception:
+        return None
+
+
+async def _drive_grants_for_env(env: Any) -> dict[str, DriveGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_drive_grants()
     except ServiceContractError:
         raise
     except Exception:
