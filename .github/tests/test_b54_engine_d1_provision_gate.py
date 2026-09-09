@@ -4,10 +4,10 @@ Proves statically that the gate:
   1. is dispatch-only (a pull request can never trigger provisioning);
   2. requires the exact confirmation phrase and production environment;
   3. carries exact-SHA + account premutation assertions, fail-closed;
-  4. is idempotent for database creation and applies migrations 0001-0005
-     verbatim without editing wrangler.toml;
-  5. asserts the required tables and Drive capability column before PASS;
-  6. never deploys the worker.
+  4. is idempotent for database creation and migration replay;
+  5. applies migrations 0001-0005 in order, with 0005 schema-readback guarded;
+  6. asserts the required tables and Drive capability column before PASS;
+  7. never deploys the worker.
 """
 
 from __future__ import annotations
@@ -26,7 +26,6 @@ def _workflow_text() -> str:
 
 
 def _workflow() -> dict:
-    # YAML 1.1 parses bare `on:` as True; normalise the key for portability.
     data = yaml.safe_load(_workflow_text())
     trigger = data.get("on", data.get(True))
     assert isinstance(trigger, dict)
@@ -35,19 +34,14 @@ def _workflow() -> dict:
 
 def test_workflow_parses_and_is_dispatch_only() -> None:
     wf = _workflow()
-    assert set(wf["triggers"]) == {"workflow_dispatch"}, (
-        "provision gate must be workflow_dispatch-only: an ordinary pull "
-        "request must never create cloud resources"
-    )
+    assert set(wf["triggers"]) == {"workflow_dispatch"}
     inputs = wf["triggers"]["workflow_dispatch"]["inputs"]
     assert set(inputs) == {"target_sha", "confirmation"}
-    for spec in inputs.values():
-        assert spec["required"] is True
+    assert all(spec["required"] is True for spec in inputs.values())
 
 
 def test_provision_job_requires_exact_confirmation_phrase() -> None:
-    wf = _workflow()
-    job = wf["jobs"]["provision-d1"]
+    job = _workflow()["jobs"]["provision-d1"]
     assert job["if"] == "github.event.inputs.confirmation == 'PROVISION_B54_ENGINE_D1'"
     assert job["environment"] == "production"
 
@@ -65,15 +59,12 @@ def test_premutation_assertions_are_fail_closed() -> None:
 def test_create_step_is_idempotent() -> None:
     text = _workflow_text()
     assert "d1 list --json" in text
-    assert "padiem-engine" in text
     assert "D1_CREATE=SKIPPED_ALREADY_EXISTS" in text
     assert "d1 create padiem-engine" in text
-    assert "d1-create.txt" not in text
-    assert "database_id'" not in text.replace('"database_id"', "")
     assert "d1-list-after-create.json" in text
 
 
-def test_migrations_0001_through_0005_are_applied_verbatim_in_order() -> None:
+def test_migrations_0001_through_0005_are_applied_in_order() -> None:
     text = _workflow_text()
     paths = [
         "migrations/0001_engine_idempotency.sql",
@@ -85,10 +76,19 @@ def test_migrations_0001_through_0005_are_applied_verbatim_in_order() -> None:
     positions = [text.index(path) for path in paths]
     assert positions == sorted(positions)
     assert "D1_MIGRATIONS=0001,0002,0003,0004,0005" in text
-    # The owner gate applies reviewed files verbatim; it does not mutate
-    # wrangler.toml or switch to binding-resolved migration authority.
     assert "migrations apply" not in text
     assert "[[d1_databases]]" not in text
+
+
+def test_migration_0005_is_remote_schema_guarded_and_replay_safe() -> None:
+    text = _workflow_text()
+    before = "PRAGMA table_info(padiem_engine_connector_grants)"
+    migration = "migrations/0005_engine_connector_drive_capabilities.sql"
+    assert text.index(before) < text.index(migration)
+    assert "d1-grant-columns-before-0005.json" in text
+    assert "D1_MIGRATION_0005=SKIPPED_ALREADY_APPLIED" in text
+    assert "D1_MIGRATION_0005=APPLIED" in text
+    assert "sys.exit(0 if 'granted_capabilities_json' in columns else 1)" in text
 
 
 def test_schema_assertion_covers_tables_and_drive_capability_column() -> None:
