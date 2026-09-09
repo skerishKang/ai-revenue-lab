@@ -64,9 +64,6 @@ jobs:
             echo "D1_CREATE=SKIPPED_ALREADY_EXISTS"
           else
             npx --yes wrangler@4 d1 create padiem-engine
-            # Do not parse create output (shape varies by wrangler version:
-            # {"d1_databases":[{...}]} or a TOML snippet). Re-query the
-            # authoritative list instead.
             npx --yes wrangler@4 d1 list --json > /tmp/d1-list-after-create.json
             DB_ID=$(python3 - <<'PY'
           import json
@@ -78,7 +75,6 @@ jobs:
             test -n "$DB_ID"
             echo "D1_CREATE=PASS"
           fi
-          # database UUID is an identifier, not a secret — logging it is required evidence.
           echo "D1_DATABASE_ID=$DB_ID"
           echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
 
@@ -88,11 +84,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          # Binding-resolved migration apply needs a wrangler.toml d1_databases
-          # entry; this gate intentionally applies the reviewed files verbatim
-          # via d1 execute --file instead. 0001-0004 are idempotent CREATE TABLE
-          # migrations; 0005 is an ALTER TABLE and is applied only under this
-          # owner-authorized exact-main production gate.
+          # 0001-0004 are CREATE TABLE IF NOT EXISTS and replay-safe.
+          # SQLite ALTER TABLE ADD COLUMN has no portable IF NOT EXISTS form,
+          # so 0005 is guarded by authoritative remote schema readback. This
+          # preserves the provision gate's existing re-run/idempotency contract.
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0001_engine_idempotency.sql
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
@@ -101,8 +96,23 @@ jobs:
             --file=apps/padiem-ai-engine/migrations/0003_engine_connector_grants.sql
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0004_engine_attachment_images.sql
-          npx --yes wrangler@4 d1 execute padiem-engine --remote \
-            --file=apps/padiem-ai-engine/migrations/0005_engine_connector_drive_capabilities.sql
+
+          npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
+            --command "PRAGMA table_info(padiem_engine_connector_grants)" > /tmp/d1-grant-columns-before-0005.json
+          if python3 - <<'PY'
+          import json, sys
+          rows = json.load(open('/tmp/d1-grant-columns-before-0005.json'))
+          results = rows[0]['results'] if isinstance(rows, list) and rows and 'results' in rows[0] else rows
+          columns = {r['name'] for r in results}
+          sys.exit(0 if 'granted_capabilities_json' in columns else 1)
+          PY
+          then
+            echo 'D1_MIGRATION_0005=SKIPPED_ALREADY_APPLIED'
+          else
+            npx --yes wrangler@4 d1 execute padiem-engine --remote \
+              --file=apps/padiem-ai-engine/migrations/0005_engine_connector_drive_capabilities.sql
+            echo 'D1_MIGRATION_0005=APPLIED'
+          fi
           echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005'
 
       - name: Assert schema tables and Drive capability column exist
