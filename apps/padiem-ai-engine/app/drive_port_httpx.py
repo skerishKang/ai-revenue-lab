@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import time
 from typing import Any, Awaitable, Callable
+from urllib.parse import urlencode
 
 import httpx
 
@@ -70,11 +71,17 @@ class HttpxDriveReadPort(DriveReadPort):
     # --- token refresh ---------------------------------------------------
 
     async def _refresh(self) -> str:
-        data = (
-            f"client_id={self._client_id}"
-            f"&client_secret={self._client_secret}"
-            f"&refresh_token={self._refresh_token}"
-            "&grant_type=refresh_token"
+        # OAuth token requests are application/x-www-form-urlencoded. Always
+        # percent-encode credential values rather than concatenating them: real
+        # secrets may legally contain '&', '=', '+', '%' and other reserved
+        # characters that would otherwise change field boundaries or values.
+        data = urlencode(
+            {
+                "client_id": self._client_id,
+                "client_secret": self._client_secret,
+                "refresh_token": self._refresh_token,
+                "grant_type": "refresh_token",
+            }
         )
         status = 0
         body = b""
