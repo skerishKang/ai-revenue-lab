@@ -81,7 +81,13 @@ def _evict_expired_artifacts() -> None:
 
 def _evict_overlimit_artifacts() -> None:
     global _artifact_cache_bytes
+    # Evict by entry count first.
     while len(_artifact_cache) > _ARTIFACT_CACHE_MAX_ENTRIES:
+        token = next(iter(_artifact_cache))
+        artifact, _ = _artifact_cache.pop(token)
+        _artifact_cache_bytes -= artifact.byte_length
+    # Then evict by byte bound until within limit.
+    while _artifact_cache_bytes > _ARTIFACT_CACHE_MAX_BYTES and _artifact_cache:
         token = next(iter(_artifact_cache))
         artifact, _ = _artifact_cache.pop(token)
         _artifact_cache_bytes -= artifact.byte_length
@@ -89,6 +95,9 @@ def _evict_overlimit_artifacts() -> None:
 
 def _cache_artifact(artifact: GeneratedDocumentArtifact) -> str:
     global _artifact_cache_bytes
+    # Single artifact larger than the bound is not cached — fail closed.
+    if artifact.byte_length > _ARTIFACT_CACHE_MAX_BYTES:
+        raise DocumentExportError("artifact_exceeds_cache_bound")
     token = uuid.uuid4().hex
     _artifact_cache[token] = (artifact, time.time() + _ARTIFACT_CACHE_TTL_SECONDS)
     _artifact_cache_bytes += artifact.byte_length
@@ -103,6 +112,7 @@ def _get_cached_artifact(token: str) -> GeneratedDocumentArtifact | None:
     if entry is None:
         return None
     return entry[0]
+
 
 _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "quote": ManualIntakeAction.QUOTE_DRAFT,
@@ -244,7 +254,7 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
                 "connector_required": False,
             },
         },
-status_code=200,
+        status_code=200,
         headers=_NO_STORE_HEADERS,
     )
 
@@ -355,8 +365,13 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             artifact_token = _cache_artifact(artifact)
             artifact_descriptor = artifact.public_projection()
         except DocumentExportError:
-            artifact_descriptor = None
-            artifact_token = None
+            # Artifact generation is part of quote/order acceptance.
+            # Fail closed with a bounded product-safe error.
+            return _error(
+                500,
+                "artifact_generation_failed",
+                "문서 아티팩트 생성에 실패했습니다.",
+            )
 
     result: dict[str, Any] = {
         "request_id": run.run_id,
