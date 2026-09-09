@@ -1,7 +1,8 @@
-# B03 Living Fiction Cloudflare M0 source/preflight configuration.
+# B03 Living Fiction Cloudflare Python Worker reference configuration.
 #
-# This file is intentionally NOT Production-deployable by itself.
-# Issue #2223 requires an actual Python-Workers dependency probe first.
+# Cloudflare Container is the current primary migration target under #2223.
+# This Python Worker config is retained only for a future dependency-compatibility
+# proof; it is intentionally NOT Production-deployable by itself.
 # Hyperdrive and secret bindings are deliberately not fabricated here.
 
 name = "living-fiction-cloudflare-m0"
@@ -15,8 +16,8 @@ LF_DATABASE_BACKEND = "postgres"
 LF_AI_PROVIDER = "mock"
 LF_AI_MODEL = "mock-living-fiction-v1"
 
-# Required before any authorized deployment, supplied from trusted Cloudflare
-# configuration rather than committed values:
+# Required before any separately authorized Python Worker experiment, supplied
+# from trusted Cloudflare configuration rather than committed values:
 #   HYPERDRIVE                 -> existing Neon PostgreSQL
 #   LF_ADMIN_SECRET            -> Worker secret
 #   LF_CREDENTIAL_HMAC_KEY     -> Worker secret
