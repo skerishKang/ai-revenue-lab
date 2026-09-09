@@ -7,6 +7,10 @@ from workers import DurableObject, Response, WorkerEntrypoint
 from padiem_control_plane.connector_connect_ticket import ConnectorConnectTicketAuthority
 from padiem_control_plane.contracts import ControlPlaneContractError
 
+from google_oauth_access_lease import (
+    CloudflareGoogleOAuthRefreshPort,
+    GoogleOAuthAccessLeaseRuntime,
+)
 from google_oauth_durable_store import CloudflareDurableGoogleOAuthStore
 from google_oauth_ingress_runtime import (
     CloudflareGoogleOAuthTokenExchangePort,
@@ -21,6 +25,7 @@ from google_oauth_webcrypto_sealer import GoogleOAuthWebCryptoSealer
 _AUTHORITY_REF_FALLBACK = "control-plane.google-oauth.production.v1"
 _CONNECT_KEYS = frozenset({"connect_ticket"})
 _CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
+_ACCESS_LEASE_KEYS = frozenset({"binding_ref", "connector_id"})
 
 
 def _closed_payload(payload: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]:
@@ -55,24 +60,32 @@ class GoogleOAuthDurableObject(DurableObject):
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
         self._store = CloudflareDurableGoogleOAuthStore(ctx.storage)
+        sealer = GoogleOAuthWebCryptoSealer(
+            key_secret_b64url=_required_env(env, "GOOGLE_OAUTH_SEAL_KEY"),
+        )
+        config = GoogleOAuthIngressConfig(
+            client_id=_required_env(env, "GOOGLE_OAUTH_CLIENT_ID"),
+            client_secret=_required_env(env, "GOOGLE_OAUTH_CLIENT_SECRET"),
+            redirect_uri=_required_env(env, "GOOGLE_OAUTH_REDIRECT_URI"),
+        )
         self._runtime = GoogleOAuthIngressRuntime(
             store=self._store,
-            sealer=GoogleOAuthWebCryptoSealer(
-                key_secret_b64url=_required_env(env, "GOOGLE_OAUTH_SEAL_KEY"),
-            ),
+            sealer=sealer,
             ticket_authority=ConnectorConnectTicketAuthority(
                 signing_key=_decode_key_secret(
                     _required_env(env, "GOOGLE_CONNECT_TICKET_KEY"),
                     "GOOGLE_CONNECT_TICKET_KEY",
                 )
             ),
-            config=GoogleOAuthIngressConfig(
-                client_id=_required_env(env, "GOOGLE_OAUTH_CLIENT_ID"),
-                client_secret=_required_env(env, "GOOGLE_OAUTH_CLIENT_SECRET"),
-                redirect_uri=_required_env(env, "GOOGLE_OAUTH_REDIRECT_URI"),
-            ),
+            config=config,
             token_exchange=CloudflareGoogleOAuthTokenExchangePort(),
             random_token=production_google_oauth_token,
+        )
+        self._access_lease_runtime = GoogleOAuthAccessLeaseRuntime(
+            store=self._store,
+            sealer=sealer,
+            config=config,
+            refresh_port=CloudflareGoogleOAuthRefreshPort(),
         )
 
     async def begin_connect(self, payload: dict) -> dict:
@@ -92,6 +105,26 @@ class GoogleOAuthDurableObject(DurableObject):
                 provider_error=payload["provider_error"],
             )
             return {"ok": True, "connection": receipt.safe_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
+    async def issue_access_lease(self, payload: dict) -> dict:
+        """Return one short-lived access credential over private RPC only.
+
+        The long-lived refresh credential is loaded, unsealed and refreshed
+        inside this Durable Object. It never appears in the RPC response.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _ACCESS_LEASE_KEYS,
+                "Google OAuth access-lease RPC",
+            )
+            lease = await self._access_lease_runtime.issue(
+                binding_ref=payload["binding_ref"],
+                connector_id=payload["connector_id"],
+            )
+            return {"ok": True, "lease": lease.to_private_rpc_dict()}
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
@@ -120,6 +153,9 @@ class Default(WorkerEntrypoint):
     async def complete_callback(self, payload: dict) -> dict:
         return await self._stub().complete_callback(payload)
 
+    async def issue_access_lease(self, payload: dict) -> dict:
+        return await self._stub().issue_access_lease(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -132,7 +168,11 @@ PUBLIC_FETCH = False
 PRODUCTION_RANDOM_SOURCE_HARDENED = True
 CONNECT_TICKET_RAW_RPC_RESPONSE = False
 AUTHORIZATION_CODE_RAW_RPC_RESPONSE = False
+# Kept for onboarding-RPC compatibility. The access token is exposed only by
+# the dedicated private issue_access_lease RPC and never by public fetch or
+# onboarding callback projections.
 ACCESS_TOKEN_RAW_RPC_RESPONSE = False
+ACCESS_TOKEN_PRIVATE_LEASE_RPC = True
 REFRESH_TOKEN_RAW_RPC_RESPONSE = False
 LOCAL_AGENT_INGRESS_CHANGED = False
 PRODUCTION_ROUTE_CONFIGURED = False
