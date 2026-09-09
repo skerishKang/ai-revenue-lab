@@ -52,8 +52,9 @@ async def test_tenant_aware_session_is_accepted_and_preserved() -> None:
     assert binding.payloads == [{"session_id": "authsession:b62:tenant-test"}]
 
 
-async def test_legacy_session_without_tenant_remains_compatible() -> None:
-    authority = CloudflareControlPlaneIdentityAuthority(_Binding(_session_wire()))
+@pytest.mark.parametrize("wire", [_session_wire(), _session_wire(tenant_id=None)])
+async def test_session_without_effective_tenant_remains_compatible(wire) -> None:
+    authority = CloudflareControlPlaneIdentityAuthority(_Binding(wire))
 
     session = await authority.resolve_auth_session(session_id="authsession:b62:tenant-test")
 
@@ -67,7 +68,6 @@ async def test_legacy_session_without_tenant_remains_compatible() -> None:
         "subject:padiem:user:tenant-test",
         "tenant id with spaces",
         "",
-        None,
     ],
 )
 async def test_invalid_tenant_projection_fails_closed(tenant_id) -> None:
