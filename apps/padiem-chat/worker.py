@@ -30,6 +30,7 @@ from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
+    WORKSPACE_R2_BINDING_NAME,
     apply_live_deadman_switch,
     binding_value,
     response_headers_for_path,
@@ -250,6 +251,10 @@ class Default(WorkerEntrypoint):
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
+                # Private Claw workspace bytes (#2266). Resolved from trusted
+                # Worker bindings only; absent until #2259/#2246 activation, in
+                # which case WorkspaceDocumentStore stays None (fail closed).
+                r2_binding = binding_value(self.env, WORKSPACE_R2_BINDING_NAME)
 
                 history_store = D1HistoryStore(db_binding) if db_binding is not None else None
                 project_file_store = D1ProjectFileStore(db_binding) if db_binding is not None else None
@@ -276,7 +281,7 @@ class Default(WorkerEntrypoint):
                     if b14_binding is not None
                     else None
                 )
-                _worker_app = create_app(settings=settings, history_store=history_store)
+                _worker_app = create_app(settings=settings, history_store=history_store, d1_binding=db_binding, r2_binding=r2_binding)
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
                 _worker_app.state.project_file_store = project_file_store
