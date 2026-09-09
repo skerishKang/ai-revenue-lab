@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import re
 from typing import Any, Callable
 
@@ -52,7 +52,7 @@ def _expires_at(value: Any, *, now: datetime) -> datetime:
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise _unavailable("Control Plane access lease expiry is invalid.")
     parsed = parsed.astimezone(timezone.utc)
-    if not now < parsed <= now.replace(microsecond=now.microsecond) + __import__("datetime").timedelta(seconds=MAX_ACCESS_LEASE_SECONDS):
+    if not now < parsed <= now + timedelta(seconds=MAX_ACCESS_LEASE_SECONDS):
         raise _unavailable("Control Plane access lease is expired or exceeds the trusted lifetime.")
     return parsed
 
