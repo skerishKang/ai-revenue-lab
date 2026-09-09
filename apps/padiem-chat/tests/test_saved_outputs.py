@@ -368,7 +368,7 @@ def test_saved_outputs_ui_is_additive_and_truthful():
     assert 'dialog.id = "confirmDialog"' in a11y
     assert "innerHTML" not in js
     assert "D1SavedOutputStore" in worker
-    assert "create_app(settings=settings, history_store=history_store)" in worker
+    assert "create_app(settings=settings, history_store=history_store, d1_binding=db_binding, r2_binding=r2_binding)" in worker
 
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"
