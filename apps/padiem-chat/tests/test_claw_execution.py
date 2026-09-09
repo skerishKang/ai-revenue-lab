@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -9,7 +10,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
+from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.usage_gate import InMemoryUsageCounterStore, UsageDecision
+from padiem_control_plane import (
+    AuthSessionSnapshot,
+    AuthSessionState,
+    CanonicalSubjectRef,
+    SubjectType,
+)
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
@@ -70,30 +79,45 @@ def _make_workspace_store() -> MagicMock:
     return store
 
 
-def _make_identity_shadow_store() -> MagicMock:
+def _make_identity_shadow_store(**overrides) -> MagicMock:
     store = MagicMock()
-    record = MagicMock()
-    record.auth_session_id = "session_test123"
-    record.canonical_subject_id = "subject_test"
-    record.session_revision = 1
-    record.session_state = "active"
+    now = datetime.now(timezone.utc)
+    values = {
+        "product_user_id": "usr_" + "7" * 32,
+        "canonical_subject_id": "subject_test",
+        "auth_session_id": "session_test123",
+        "session_revision": 1,
+        "session_state": "active",
+        "session_expires_at": now + timedelta(hours=1),
+        "observed_at": now,
+    }
+    values.update(overrides)
+    record = IdentityShadowRecord(**values)
     store.load_projection = AsyncMock(return_value=record)
     return store
 
 
-def _make_auth_session_snapshot(tenant_id: str = "tenant_test") -> MagicMock:
-    snap = MagicMock()
-    snap.tenant_id = tenant_id
-    snap.session_id = "session_test123"
-    snap.product_id = "padiem-chat"
-    snap.state = "active"
-    snap.revision = 1
-    return snap
+def _make_auth_session_snapshot(**overrides) -> AuthSessionSnapshot:
+    now = datetime.now(timezone.utc)
+    values = {
+        "session_id": "session_test123",
+        "product_id": PADIEM_CHAT_PRODUCT_ID,
+        "subject": CanonicalSubjectRef(SubjectType.USER, "subject_test"),
+        "issued_at": now - timedelta(hours=1),
+        "expires_at": now + timedelta(hours=1),
+        "state": AuthSessionState.ACTIVE,
+        "revision": 1,
+        "tenant_id": "tenant_test",
+    }
+    values.update(overrides)
+    return AuthSessionSnapshot(**values)
 
 
-def _make_authority() -> MagicMock:
+def _make_authority(snapshot: AuthSessionSnapshot | MagicMock | None = None) -> MagicMock:
     authority = MagicMock()
-    authority.resolve_auth_session = AsyncMock(return_value=_make_auth_session_snapshot())
+    authority.resolve_auth_session = AsyncMock(
+        return_value=snapshot if snapshot is not None else _make_auth_session_snapshot()
+    )
     return authority
 
 
@@ -895,3 +919,165 @@ def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     assert 'request.headers.get("cf-connecting-ip")' in gate_helper
     assert "current_user_id(request)" in gate_helper
     assert "request.body" not in gate_helper
+
+
+# ── #2227 canonical tenant session-validation hardening (deny matrix) ──────
+
+
+QUOTE_PAYLOAD = {
+    "content": "가상 테스트: A업체 견적서 요청.",
+    "channel": "kakao",
+    "action": "quote",
+    "sender_hint": "A업체",
+}
+
+
+def _execute_quote_with_identity(
+    *,
+    snapshot: object | None = None,
+    shadow_store: MagicMock | None = None,
+) -> TestClient:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    if shadow_store is not None:
+        app.state.identity_shadow_store = shadow_store
+    if snapshot is not None:
+        app.state.control_plane_identity_authority = _make_authority(snapshot)  # type: ignore[arg-type]
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    return client
+
+
+def _post_quote(client: TestClient):
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        return client.post(EXECUTE_ROUTE_PATH, json=QUOTE_PAYLOAD)
+
+
+def test_canonical_tenant_accepts_fully_validated_session() -> None:
+    client = _execute_quote_with_identity()
+    resp = _post_quote(client)
+    assert resp.status_code == 200
+    assert resp.json()["result"]["artifact"]["document_id"]
+
+
+@pytest.mark.parametrize(
+    ("scenario", "snapshot", "shadow_overrides"),
+    [
+        (
+            "revoked",
+            lambda: _make_auth_session_snapshot(state=AuthSessionState.REVOKED),
+            {},
+        ),
+        (
+            "expired_state",
+            lambda: _make_auth_session_snapshot(state=AuthSessionState.EXPIRED),
+            {},
+        ),
+        (
+            "expired_clock",
+            lambda: _make_auth_session_snapshot(
+                expires_at=datetime.now(timezone.utc) - timedelta(minutes=1),
+            ),
+            {},
+        ),
+        (
+            "product_mismatch",
+            lambda: _make_auth_session_snapshot(product_id="b99"),
+            {},
+        ),
+        (
+            "subject_id_mismatch",
+            lambda: _make_auth_session_snapshot(
+                subject=CanonicalSubjectRef(SubjectType.USER, "subject_attacker")
+            ),
+            {},
+        ),
+        (
+            "subject_type_not_user",
+            lambda: _make_auth_session_snapshot(
+                subject=CanonicalSubjectRef(SubjectType.ANONYMOUS, "subject_test")
+            ),
+            {},
+        ),
+        (
+            "session_id_mismatch",
+            lambda: _make_auth_session_snapshot(session_id="session_attacker"),
+            {},
+        ),
+        (
+            "revision_rollback",
+            lambda: _make_auth_session_snapshot(revision=1),
+            {"session_revision": 2},
+        ),
+        (
+            "invalid_snapshot_type",
+            lambda: MagicMock(),
+            {},
+        ),
+        (
+            "snapshot_without_tenant",
+            lambda: _make_auth_session_snapshot(tenant_id=None),
+            {},
+        ),
+    ],
+    ids=[
+        "revoked",
+        "expired_state",
+        "expired_clock",
+        "product_mismatch",
+        "subject_id_mismatch",
+        "subject_type_not_user",
+        "session_id_mismatch",
+        "revision_rollback",
+        "invalid_snapshot_type",
+        "snapshot_without_tenant",
+    ],
+)
+def test_canonical_tenant_denies_contract_violations(scenario, snapshot, shadow_overrides) -> None:
+    del scenario
+    shadow_store = _make_identity_shadow_store(**shadow_overrides) if shadow_overrides else None
+    client = _execute_quote_with_identity(
+        snapshot=snapshot(),
+        shadow_store=shadow_store,
+    )
+    resp = _post_quote(client)
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "workspace_scope_unavailable"
+
+
+def test_canonical_tenant_denies_when_authority_raises() -> None:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    authority = MagicMock()
+    authority.resolve_auth_session = AsyncMock(side_effect=RuntimeError("authority down"))
+    app.state.control_plane_identity_authority = authority
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    resp = _post_quote(client)
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "workspace_scope_unavailable"
+
+
+def test_resolve_canonical_tenant_uses_shared_refreshed_session_contract() -> None:
+    source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
+    helper = source.split("async def _resolve_canonical_tenant", 1)[1].split("async def", 1)[0]
+    assert "resolve_refreshed_session(" in helper
+    assert 'request.headers.get("x-tenant-id")' not in helper
+    assert "data.get(" not in helper
+    shadow_source = (
+        Path(__file__).resolve().parents[1] / "app" / "control_plane_identity_shadow.py"
+    ).read_text(encoding="utf-8")
+    resolver_body = shadow_source.split("class RefreshingCanonicalSubjectResolver", 1)[1].split(
+        "async def resolve_refreshed_session", 1
+    )[0]
+    assert "resolve_refreshed_session(" in resolver_body

@@ -31,7 +31,12 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
-from .control_plane_identity_shadow import IdentityShadowRecord, IdentityShadowStore, CurrentCanonicalSessionAuthority
+from .control_plane_identity_shadow import (
+    IdentityShadowRecord,
+    IdentityShadowStore,
+    CurrentCanonicalSessionAuthority,
+    resolve_refreshed_session,
+)
 from .usage_gate import UsageGate
 from kagent.document_export import (
     DocumentExportError,
@@ -125,10 +130,15 @@ async def _resolve_canonical_tenant(request: Request) -> str | None:
     """Resolve the canonical tenant_id from the signed-in session.
 
     Flow:
-        signed-in user_id → identity shadow → auth_session_id
-        → Control Plane resolve_auth_session → AuthSessionSnapshot.tenant_id
+        signed-in user_id → identity shadow → Control Plane session refresh
+        → shared canonical contract validation (RefreshingCanonicalSubjectResolver
+        contract: session id, chat product id, USER subject, canonical subject
+        id, monotonic revision, ACTIVE effective state, snapshot type)
+        → AuthSessionSnapshot.tenant_id
 
-    Returns None if any step fails (caller must fail closed).
+    The tenant is returned only when every contract check passes; any
+    violation (revoked, expired, product/subject mismatch, revision rollback,
+    invalid snapshot) resolves to None and the caller fails closed.
     """
     if not auth_ready(request):
         return None
@@ -144,18 +154,14 @@ async def _resolve_canonical_tenant(request: Request) -> str | None:
     if shadow_store is None or authority is None:
         return None
     try:
-        shadow = await shadow_store.load_projection(product_user_id)
+        session = await resolve_refreshed_session(
+            authority=authority,
+            store=shadow_store,
+            product_user_id=product_user_id,
+        )
     except Exception:
         return None
-    if shadow is None:
-        return None
-    try:
-        session = await authority.resolve_auth_session(session_id=shadow.auth_session_id)
-    except Exception:
-        return None
-    if not isinstance(session, object):
-        return None
-    tenant_id = getattr(session, "tenant_id", None)
+    tenant_id = session.tenant_id
     if not isinstance(tenant_id, str) or not tenant_id:
         return None
     return tenant_id
