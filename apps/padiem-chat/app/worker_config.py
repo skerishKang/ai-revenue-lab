@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
-from dataclasses import replace
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from .config import Settings
@@ -32,6 +33,24 @@ D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
+
+# Worker-native P01/Engine configuration surface (#2229). Owned by B62 deployment
+# composition and read only from trusted Worker bindings — never from os.environ
+# and never from browser/request input. The Engine target is the fixed
+# ``P01_ENGINE_SERVICE`` Service Binding; caller identity/credential are
+# server/deployment-owned. Missing or malformed values fail closed.
+P01_ENGINE_SERVICE_BINDING_NAME = "P01_ENGINE_SERVICE"
+P01_ENGINE_CALLER_ID_ENV = "P01_ENGINE_CALLER_ID"
+P01_ENGINE_CREDENTIAL_ENV = "P01_ENGINE_CREDENTIAL"
+P01_ENGINE_BINDING_NAMES = frozenset({
+    P01_ENGINE_SERVICE_BINDING_NAME,
+    P01_ENGINE_CALLER_ID_ENV,
+    P01_ENGINE_CREDENTIAL_ENV,
+})
+_P01_CALLER_ID_MAX = 64
+_P01_CREDENTIAL_MIN_BYTES = 32
+_P01_CREDENTIAL_MAX_BYTES = 512
+_P01_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
@@ -85,6 +104,46 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         user_burst_limit=binding_value(env, "PADIEM_CHAT_USER_BURST_LIMIT") or "8",
         user_daily_limit=binding_value(env, "PADIEM_CHAT_USER_DAILY_LIMIT") or "100",
         global_daily_limit=binding_value(env, "PADIEM_CHAT_GLOBAL_DAILY_LIMIT") or "1000",
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class P01EngineWorkerConfig:
+    service_binding: Any = field(repr=False)
+    caller_id: str
+    credential: str = field(repr=False)
+
+
+def p01_engine_config_from_worker_bindings(env: Any) -> P01EngineWorkerConfig | None:
+    """Project the Worker-native P01/Engine surface from trusted bindings.
+
+    Returns ``None`` (fail closed, before any transport) unless the Engine
+    Service Binding is present and both server-owned caller values are well
+    formed. Never consults ``os.environ``.
+    """
+    service_binding = binding_value(env, P01_ENGINE_SERVICE_BINDING_NAME)
+    raw_caller = binding_value(env, P01_ENGINE_CALLER_ID_ENV)
+    raw_credential = binding_value(env, P01_ENGINE_CREDENTIAL_ENV)
+    caller_id = raw_caller.strip() if isinstance(raw_caller, str) else ""
+    credential = raw_credential if isinstance(raw_credential, str) else ""
+
+    if service_binding is None and not caller_id and not credential:
+        return None
+    if service_binding is None:
+        return None
+    if (
+        not caller_id
+        or len(caller_id) > _P01_CALLER_ID_MAX
+        or not _P01_SAFE_ID_RE.fullmatch(caller_id)
+    ):
+        return None
+    credential_bytes = len(credential.encode("utf-8"))
+    if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
+        return None
+    return P01EngineWorkerConfig(
+        service_binding=service_binding,
+        caller_id=caller_id,
+        credential=credential,
     )
 
 

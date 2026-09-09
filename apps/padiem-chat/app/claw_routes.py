@@ -5,7 +5,10 @@ Provides:
 - POST /api/claw/manual-intake/execute — real P01/Engine-backed execution (#2215)
 
 The preview route remains deterministic and never calls provider/P01.
-The execute route consumes the existing B54 P01 composition chain:
+The execute route consumes a Worker-native P01 adapter composed from trusted
+B62 bindings at app/route composition time (see ``claw_p01_composition``) and
+exposed on ``app.state.claw_p01_adapter``. It never reads ``os.environ``. The
+composition chain it drives is the existing B54 P01 contract:
 
     ManualIntakeRequest
     → create_claw_run
@@ -14,9 +17,9 @@ The execute route consumes the existing B54 P01 composition chain:
     → Engine
     → B14
 
-Both routes are fail-closed: missing/malformed input, missing Engine
-configuration, Engine timeout/unreachable, and malformed P01 responses
-all return bounded safe errors. No credential/provider raw text leaks
+Both routes are fail-closed: missing/malformed input, a missing Worker P01/Engine
+binding (adapter unbound), Engine timeout/unreachable, and malformed P01
+responses all return bounded safe errors. No credential/provider raw text leaks
 into the browser. No silent preview fallback after explicit execute.
 """
 
@@ -50,11 +53,8 @@ from kagent.manual_intake import (
     ManualIntakeRequest,
     ManualIntakeRouter,
 )
-from kagent.p01_adapter import P01AdapterError
-from kagent.p01_run_flow import (
-    create_claw_run,
-    p01_adapter_from_environment,
-)
+from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter
+from kagent.p01_run_flow import create_claw_run
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CONTENT_CHARS = 4_000
@@ -317,9 +317,10 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if denial is not None:
         return denial
 
-    try:
-        adapter = p01_adapter_from_environment()
-    except P01AdapterError as exc:
+    adapter: P01CoreOrchestrationAdapter | None = getattr(
+        request.app.state, "claw_p01_adapter", None
+    )
+    if adapter is None:
         return _error(503, "engine_not_configured", "Engine 클라이언트가 설정되지 않았습니다.")
 
     task_text = _build_execute_task(action, content_clean)
