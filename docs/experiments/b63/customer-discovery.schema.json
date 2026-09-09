@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/b63/customer-discovery.schema.json",
+  "title": "B63 Customer Discovery Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "business", "interviews"],
+  "properties": {
+    "schema_version": { "const": "b63.customer-discovery.v1" },
+    "business": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "status"],
+      "properties": {
+        "number": { "const": 63 },
+        "status": { "const": "proposed" }
+      }
+    },
+    "interviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_type",
+          "problem_severity",
+          "clinical_domain_gap",
+          "budget_owner",
+          "deployment_feasibility",
+          "poc_intent",
+          "poc_path"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "organization_type": { "enum": ["hospital", "his_vendor", "other"] },
+          "problem_severity": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "clinical_domain_gap": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "budget_owner": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "deployment_feasibility": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "poc_intent": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "poc_path": { "enum": ["none", "paid", "grant_backed"] }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/b63/r0-result.schema.json",
+  "title": "B63 R0 Result Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "business", "dataset", "systems", "tests", "evaluation_design", "reproducibility", "result"],
+  "properties": {
+    "schema_version": { "const": "b63.r0-result.v1" },
+    "business": { "type": "object", "additionalProperties": false, "required": ["number", "status"], "properties": { "number": { "const": 63 }, "status": { "const": "proposed" } } },
+    "dataset": { "type": "object", "additionalProperties": false, "required": ["real_patient_data_used", "synthetic_public_only", "synthetic_identifier_collision_safe", "base_cases"], "properties": { "real_patient_data_used": { "type": "boolean" }, "synthetic_public_only": { "type": "boolean" }, "synthetic_identifier_collision_safe": { "type": "boolean" }, "base_cases": { "type": "integer", "minimum": 0 } } },
+    "systems": { "type": "object", "additionalProperties": false, "required": ["s0_ipu_current", "s1_generic_pii_baseline", "s2_clinical_baseline", "s3_b63_hybrid_r0"], "properties": { "s0_ipu_current": { "type": "boolean" }, "s1_generic_pii_baseline": { "type": "boolean" }, "s2_clinical_baseline": { "type": "boolean" }, "s3_b63_hybrid_r0": { "type": "boolean" } } },
+    "tests": { "type": "object", "additionalProperties": false, "required": ["passed", "changed_file_secret_scan_passed", "synthetic_identifier_safety_passed"], "properties": { "passed": { "type": "boolean" }, "changed_file_secret_scan_passed": { "type": "boolean" }, "synthetic_identifier_safety_passed": { "type": "boolean" } } },
+    "evaluation_design": { "type": "object", "additionalProperties": false, "required": ["holdout_independent", "holdout_base_cases", "unseen_holdout_templates", "unseen_holdout_lexicon", "s3_frozen_before_holdout_evaluation"], "properties": { "holdout_independent": { "type": "boolean" }, "holdout_base_cases": { "type": "integer", "minimum": 0 }, "unseen_holdout_templates": { "type": "boolean" }, "unseen_holdout_lexicon": { "type": "boolean" }, "s3_frozen_before_holdout_evaluation": { "type": "boolean" } } },
+    "reproducibility": { "type": "object", "additionalProperties": false, "required": ["fixed_seed", "corpus_version", "schema_version", "git_sha", "runtime_version", "deterministic_ordering", "git_dirty", "exact_head_benchmark_evidence"], "properties": { "fixed_seed": { "type": "boolean" }, "corpus_version": { "type": "string", "minLength": 1 }, "schema_version": { "type": "string", "minLength": 1 }, "git_sha": { "type": "string", "minLength": 1 }, "runtime_version": { "type": "string", "minLength": 1 }, "deterministic_ordering": { "type": "boolean" }, "git_dirty": { "type": "boolean" }, "exact_head_benchmark_evidence": { "type": "boolean" } } },
+    "result": { "type": "object", "additionalProperties": false, "required": ["measurable_advantage", "holdout_measurable_advantage", "r0_decision", "catastrophic_recall_collapse", "clinical_utility_measured", "utility_measurement_level"], "properties": { "measurable_advantage": { "enum": ["YES", "NO", "INCONCLUSIVE"] }, "holdout_measurable_advantage": { "enum": ["YES", "NO", "INCONCLUSIVE"] }, "r0_decision": { "enum": ["PASS_CANDIDATE", "NARROW", "STOP_OR_REFRAME", "INCOMPLETE"] }, "catastrophic_recall_collapse": { "type": "boolean" }, "clinical_utility_measured": { "type": "boolean" }, "utility_measurement_level": { "enum": ["VERBATIM_RETENTION", "DOWNSTREAM_TASK", "OTHER"] } } }
+  }
+}
