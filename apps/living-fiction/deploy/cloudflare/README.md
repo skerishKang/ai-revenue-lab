@@ -2,83 +2,102 @@
 
 Issue: #2223
 
-This directory replaces the old assumption that B03 must be restored on Modal. It is a **source-only compatibility adapter** for moving the existing Living Fiction FastAPI application to Cloudflare while preserving Neon PostgreSQL and the existing private reader/admin security boundary.
+This directory replaces the old assumption that B03 must be restored on Modal. It is a **source-only migration adapter** for moving the existing Living Fiction FastAPI application to Cloudflare while preserving Neon PostgreSQL and the existing private reader/admin security boundary.
 
-## Target
+## Current target decision
 
-Preferred path, only after compatibility proof:
+The current production dependency path uses `psycopg[binary]` and `psycopg_pool`. Cloudflare Python Workers run on Pyodide and should not be treated as compatible with this native libpq-based path without an actual compatibility proof.
+
+Therefore the accepted M0 direction is:
 
 ```text
-Browser
-→ Cloudflare Python Worker
-→ canonical FastAPI create_app()
-→ Hyperdrive
-→ existing Neon PostgreSQL
+PRIMARY_MIGRATION_TARGET = CLOUDFLARE_CONTAINER
+DATABASE = EXISTING_NEON_POSTGRESQL
+MODAL = ROLLBACK_ONLY_UNTIL_PARITY
+PYTHON_WORKER = REFERENCE / FUTURE_IF_DEPENDENCY_COMPATIBLE
 ```
 
-Fallback if the native PostgreSQL dependency cannot run safely in Python Workers:
+Primary path:
 
 ```text
 Browser
 → Cloudflare Worker
-→ Cloudflare Container running the existing FastAPI application
+→ Cloudflare Container
+→ canonical FastAPI app.main:app / create_app()
+→ existing psycopg PostgreSQL adapter
+→ existing Neon PostgreSQL
+```
+
+Reference/future path only if the complete dependency set is proven compatible:
+
+```text
+Browser
+→ Cloudflare Python Worker / FastAPI ASGI
+→ Hyperdrive
 → existing Neon PostgreSQL
 ```
 
 Do not rewrite the product into JavaScript merely to remove Modal. Do not move Neon data to D1 as part of this migration.
 
-## M0 adapter
+## M0 source adapters
 
-`worker.py`:
+### Container path — current primary
 
-- imports Cloudflare `workers.asgi`;
-- projects trusted Worker bindings into the existing `LF_*` configuration seam before importing `app.factory`;
-- reuses `create_app()` directly;
-- requires a Hyperdrive binding for the runtime PostgreSQL URL;
-- never exposes or imports the migration-role database URL;
-- keeps `MockProvider` during hosting migration so infrastructure movement does not silently widen AI-provider scope;
-- fails closed if required trusted bindings are absent.
+`Dockerfile.cloudflare`:
 
-`wrangler.toml` intentionally omits Hyperdrive IDs and secret values. It is not a Production deployment authorization.
+- uses Python 3.13 Linux runtime;
+- installs the existing package with the existing PostgreSQL extra;
+- starts `uvicorn app.main:app`;
+- does not fork application routes or business logic.
 
-## Compatibility gate
+`deploy/cloudflare/container_worker.js`:
 
-Cloudflare Python Workers run on Pyodide. Current Cloudflare package guidance supports FastAPI/Pydantic and pure/PyEmscripten packages, but the existing production database path uses:
+- uses `@cloudflare/containers`;
+- routes requests to one bounded Living Fiction container instance for parity testing;
+- injects only server-owned `LF_*` runtime bindings;
+- never injects `LF_MIGRATION_DATABASE_URL`;
+- keeps `MockProvider` during hosting migration.
 
-```text
-psycopg[binary]
-psycopg_pool
-```
+`wrangler.cloudflare-container.toml`:
 
-Do **not** claim native Python Worker compatibility until an actual `pywrangler` build/dev probe exercises the deployed dependency set and a PostgreSQL/Hyperdrive connection path.
+- declares the Container, Durable Object binding and SQLite-backed class migration required by current Cloudflare Containers;
+- contains no secret values, account IDs, deployment IDs or guessed Production hostname;
+- authorizes no deployment by itself.
 
-Required disposition:
+### Python Worker path — reference only
 
-```text
-PYTHON_WORKER_COMPATIBLE
-```
+`deploy/cloudflare/worker.py` reuses `app.factory.create_app()` through Cloudflare ASGI and shows how trusted Worker bindings would project into the existing `LF_*` seam. `deploy/cloudflare/wrangler.toml` intentionally omits Hyperdrive IDs and secret values.
 
-or
+Do **not** claim `PYTHON_WORKER_COMPATIBLE` until an actual current Workers dependency/build/runtime probe proves the complete PostgreSQL path.
 
-```text
-CONTAINER_FALLBACK_REQUIRED
-```
-
-If `psycopg` or another required dependency is unavailable under Pyodide, stop the native Worker lane. Use the Cloudflare Container fallback so the existing Python/PostgreSQL implementation remains authoritative.
-
-## Required trusted bindings before a later deployment
+## Required trusted bindings before a later Container Preview deployment
 
 Names only; no values belong in this repository:
 
 ```text
-HYPERDRIVE
+LF_DATABASE_URL
 LF_ADMIN_SECRET
 LF_CREDENTIAL_HMAC_KEY
 LF_SESSION_HMAC_KEY
 LF_ALLOWED_ORIGINS
 ```
 
+`LF_DATABASE_URL` must be the existing Neon runtime-role connection URL. The owner/migration-role URL remains operator-only and absent from the serving runtime.
+
 `LF_ALLOWED_ORIGINS` must be the exact authorized Cloudflare application origin selected by a later deployment gate. Do not guess a hostname in source.
+
+## M0 CI gate
+
+`.github/workflows/b03-living-fiction-cloudflare-m0-ci.yml` performs only non-deploy validation:
+
+1. Cloudflare migration source-contract tests;
+2. Python syntax compilation;
+3. actual `Dockerfile.cloudflare` image build;
+4. current Wrangler + `@cloudflare/containers` install;
+5. `wrangler deploy --dry-run` for Worker/Container config and bundle validation;
+6. diff whitespace validation.
+
+No Cloudflare credentials are supplied and no remote resource is created.
 
 ## Preserved invariants
 
@@ -90,18 +109,18 @@ ADMIN_REVIEW_BOUNDARY = PRESERVE
 POSTGRES_SCHEMA = PRESERVE
 NEON_DATA = PRESERVE
 MIGRATIONS_AT_RUNTIME_STARTUP = NO
-MIGRATION_ROLE_IN_WORKER = NO
+MIGRATION_ROLE_IN_SERVING_RUNTIME = NO
 AI_PROVIDER_ACTIVATION = NO
 MODAL_RETIREMENT_BEFORE_PARITY = NO
 PRODUCTION_DEPLOYMENT_BY_M0 = NO
 ```
 
-## Operator sequence after this PR
+## Next gate after this PR
 
-1. Run the native Python Worker dependency/build probe from `apps/living-fiction` using current Cloudflare tooling.
-2. If native Worker dependencies pass, provision an approved Hyperdrive binding to the existing Neon database and run bounded Preview parity tests.
-3. If native Worker dependencies fail, create the bounded Cloudflare Container adapter using the existing FastAPI/psycopg app unchanged where practical.
-4. Verify `/health`, `/access`, reader/admin auth, invite flow, database persistence, restart behavior, noindex/security headers, and fail-closed errors with synthetic/owner-controlled data.
-5. Only after parity and rollback evidence, cut traffic to Cloudflare and retire Modal separately.
+1. Require exact-head M0 CI GREEN.
+2. Use an explicitly authorized Cloudflare Preview deployment with server-side secrets only.
+3. Verify `/health`, `/access`, reader/admin auth, invite flow, database persistence, restart behavior, noindex/security headers and fail-closed errors with synthetic/owner-controlled data.
+4. Confirm rollback to the existing Modal deployment remains available during parity testing.
+5. Only after Cloudflare live parity, select the canonical Cloudflare URL and retire Modal separately.
 
 Modal remains a rollback anchor until those gates pass.
