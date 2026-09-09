@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_binding_state_guard.py"
+      - ".github/tests/test_b62_binding_state_guard.py"
       - "apps/padiem-chat/tests/test_b62_production_deploy_config.py"
       - "apps/padiem-chat/wrangler.toml"
   workflow_dispatch:
@@ -95,6 +97,7 @@ jobs:
 
           workflow = Path(".github/workflows/b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
           generator = Path(".github/scripts/b62_cloudflare_production_deploy_config.py").read_text(encoding="utf-8")
+          binding_guard = Path(".github/scripts/b62_binding_state_guard.py").read_text(encoding="utf-8")
 
           assert "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN" in workflow
           assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in workflow
@@ -110,6 +113,9 @@ jobs:
           assert "PRODUCTION_MUTATION=0" in workflow
           assert "PADIEM_CHAT_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev" in workflow or \
               "B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev" in workflow
+          assert "python .github/scripts/b62_binding_state_guard.py" in workflow
+          assert "b62-settings-before-normalized.json" in workflow
+          assert "PUBLIC_BASE_URL_NORMALIZATION=INJECTED_EXPECTED_ONLY" in workflow
 
           assert "unsupported live binding type" in generator
           assert "SECRET_VALUES_READ=0" in generator
@@ -118,6 +124,13 @@ jobs:
           assert "drift" in generator
           assert "runtime mode is mock" in generator
           assert "tomllib" in generator
+
+          assert "bucket_name" in binding_guard
+          assert "jurisdiction" in binding_guard
+          assert "environment" in binding_guard
+          assert "unsupported binding type" in binding_guard
+          assert "duplicate binding names" in binding_guard
+          assert "SECRET_VALUES_READ=0" in binding_guard
           print("B62_PRODUCTION_CODE_GATE_SOURCE=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
@@ -340,46 +353,54 @@ jobs:
 
           settings="${RUNNER_TEMP}/b62-settings-after.json"
           curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
-          python - "${RUNNER_TEMP}/b62-settings-before.json" "${settings}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${B62_PUBLIC_BASE_URL}" <<'PY'
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+
+          normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"
+          python - "${RUNNER_TEMP}/b62-settings-before.json" "${normalized_before}" "${B62_PUBLIC_BASE_URL}" <<'PY'
           import json
           import sys
 
-          before = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"]
-          after = json.load(open(sys.argv[2], encoding="utf-8"))["result"]["bindings"]
-          binding_name, identity_worker, public_url = sys.argv[3:]
-
-          def key(bindings):
-              return sorted(
-                  (b.get("type"), b.get("name"), b.get("service") or b.get("id") or b.get("text") or "")
-                  for b in bindings
+          source, destination, public_url = sys.argv[1:]
+          payload = json.load(open(source, encoding="utf-8"))
+          bindings = payload["result"]["bindings"]
+          matches = [b for b in bindings if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"]
+          if not matches:
+              bindings.append(
+                  {
+                      "name": "PADIEM_CHAT_PUBLIC_BASE_URL",
+                      "type": "plain_text",
+                      "text": public_url,
+                  }
               )
+              print("PUBLIC_BASE_URL_NORMALIZATION=INJECTED_EXPECTED_ONLY")
+          elif len(matches) == 1 and matches[0].get("type") == "plain_text" and matches[0].get("text") == public_url:
+              print("PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED")
+          else:
+              raise SystemExit("refusing unexpected pre-deploy PADIEM_CHAT_PUBLIC_BASE_URL state")
+          with open(destination, "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, separators=(",", ":"))
+          PY
 
-          before_key = key(before)
-          after_key = key(after)
-          added = [entry for entry in after_key if entry not in before_key]
-          removed = [entry for entry in before_key if entry not in after_key]
-          expected_entry = ("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)
-          assert removed == [], f"bindings removed by deploy: {removed}"
-          assert set(added) <= {expected_entry}, \
-              f"unexpected binding delta: added={added}"
-          assert expected_entry in after_key, \
-              "PADIEM_CHAT_PUBLIC_BASE_URL missing or drifted after deploy"
+          python .github/scripts/b62_binding_state_guard.py \
+            --before "${normalized_before}" \
+            --after "${settings}"
+          echo "BINDINGS_PRESERVED_EXACTLY=PASS"
 
+          python - "${settings}" "${IDENTITY_BINDING}" "${IDENTITY_WORKER}" "${B62_PUBLIC_BASE_URL}" <<'PY'
+          import json
+          import sys
+
+          after = json.load(open(sys.argv[1], encoding="utf-8"))["result"]["bindings"]
+          binding_name, identity_worker, public_url = sys.argv[2:]
           identity = [b for b in after if b.get("name") == binding_name]
           assert len(identity) == 1 and identity[0].get("type") == "service"
           assert identity[0].get("service") == identity_worker
-          secrets_before = sorted(b["name"] for b in before if b.get("type") == "secret_text")
+          public = [b for b in after if b.get("name") == "PADIEM_CHAT_PUBLIC_BASE_URL"]
+          assert len(public) == 1 and public[0].get("type") == "plain_text" and public[0].get("text") == public_url
           secrets_after = sorted(b["name"] for b in after if b.get("type") == "secret_text")
-          assert secrets_before == secrets_after and "PADIEM_CHAT_QUOTA_SALT" in secrets_after
-          print("BINDINGS_PRESERVED_EXACTLY=PASS")
+          assert "PADIEM_CHAT_QUOTA_SALT" in secrets_after
           print("SECRET_BINDINGS_PRESERVED=PASS")
           print("PUBLIC_BASE_URL_SET=PASS")
-          public_base_url_state = (
-              "already_expected"
-              if expected_entry in before_key
-              else "injected"
-          )
-          print(f"PADIEM_CHAT_PUBLIC_BASE_URL_STATE={public_base_url_state}")
           PY
 
           detail="${RUNNER_TEMP}/b62-version-after.json"
