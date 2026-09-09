@@ -1168,6 +1168,8 @@
   const clawResultKind = document.getElementById("clawResultKind");
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
+  const clawResultOpen = document.getElementById("clawResultOpen");
+  const clawResultDocx = document.getElementById("clawResultDocx");
 
   function openClawWorkspace() {
     if (!clawWorkspace) return;
@@ -1330,6 +1332,29 @@
             clawResultPreview.textContent = result.result_text;
           }
           if (clawResultEmpty) clawResultEmpty.hidden = true;
+          const hasArtifact = !!(result.artifact && result.artifact.document_id);
+          if (clawResultOpen) clawResultOpen.disabled = !hasArtifact;
+          if (clawResultOpen) clawResultOpen.setAttribute("aria-disabled", String(!hasArtifact));
+          if (clawResultDocx) clawResultDocx.disabled = !hasArtifact;
+          if (clawResultDocx) clawResultDocx.setAttribute("aria-disabled", String(!hasArtifact));
+          if (hasArtifact && clawResultDocx) {
+            clawResultDocx.dataset.documentId = result.artifact.document_id;
+            clawResultDocx.addEventListener("click", () => {
+              const documentId = clawResultDocx.dataset.documentId;
+              if (!documentId) return;
+              fetch(`/api/claw/manual-intake/artifact/${documentId}`)
+                .then(r => { if (!r.ok) throw new Error("download failed"); return r.blob(); })
+                .then(blob => {
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = result.artifact.filename || "document.docx";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                })
+                .catch(() => {});
+            }, { once: true });
+          }
           return;
         }
         if (clawResultEmpty) {
