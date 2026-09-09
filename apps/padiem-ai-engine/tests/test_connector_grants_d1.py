@@ -160,13 +160,23 @@ def test_load_drive_grants_ignores_inactive_rows() -> None:
 
 
 def test_load_drive_grants_rejects_mutation_capability() -> None:
-    # D1 rows are trusted storage, but unsupported/widened authority must still
-    # fail closed before binding projection can execute any tool.
     store = CloudflareD1ConnectorGrantStore(
         FakeD1Binding([_drive_row("drive_app", capabilities=("mutation",))])
     )
-    grants = asyncio.run(store.load_drive_grants())
-    assert grants["drive_app"].granted_capabilities == (DriveCapability.MUTATION,)
+    with pytest.raises(ServiceContractError) as exc_info:
+        asyncio.run(store.load_drive_grants())
+    assert exc_info.value.code == "connector_grants_unavailable"
+    assert exc_info.value.status_code == 503
+
+
+def test_load_drive_grants_rejects_empty_capability_list() -> None:
+    store = CloudflareD1ConnectorGrantStore(
+        FakeD1Binding([_drive_row("drive_app", capabilities=())])
+    )
+    with pytest.raises(ServiceContractError) as exc_info:
+        asyncio.run(store.load_drive_grants())
+    assert exc_info.value.code == "connector_grants_unavailable"
+    assert exc_info.value.status_code == 503
 
 
 def test_load_drive_grants_raises_on_unknown_capability() -> None:
