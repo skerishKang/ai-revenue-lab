@@ -16,6 +16,11 @@ from padiem_ai_core import (
     OrchestrationRequest,
     OrchestrationResult,
 )
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
 
 from .contracts import (
     ClawRunStatus,
@@ -78,14 +83,27 @@ def _trace_id_for(run: ClawRun) -> str:
     return f"claw_{digest}"
 
 
-def _agent_profile() -> AgentProfile:
+def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PRO) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
-    Claw directly connects to the owner-approved pinned model
-    'sensenova/sensenova-6.8-flash-lite' (#2003, owner-provisioned key).
-    Product/client task input cannot pin an arbitrary
-    Provider, model, fallback order, or credential through this adapter.
+    The model route is derived from the canonical Padiem v1 product-tier
+    declaration (padiem_control_plane.product_tier_routes), shared with
+    B62 Padiem Chat.  B14 remains provider/model execution authority.
+
+    Plus → kilo/poolside-laguna-s-2.1-free
+    Pro  → kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+    Max  → HOLD / fail-closed (no executable route)
     """
+    try:
+        route = active_route_for(product_tier)
+    except ProductTierRoutesError as exc:
+        raise P01AdapterError("invalid_product_tier", f"제품 등급 라우트 계약이 무효합니다: {exc}") from exc
+
+    if route is None or route.model_id is None:
+        raise P01AdapterError(
+            "max_tier_hold",
+            "Padiem Max는 현재 실행 가능한 라우트가 없습니다 (HOLD).",
+        )
 
     return AgentProfile(
         id=P01_AGENT_ID,
@@ -102,7 +120,7 @@ def _agent_profile() -> AgentProfile:
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={"model": "sensenova/sensenova-6.8-flash-lite"},
+        model_policy={"model": route.model_id},
         max_steps=1,
         output_contract={},
     )
@@ -114,6 +132,7 @@ class P01RequestFactory:
         *,
         timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
         clock: Callable[[], datetime] | None = None,
+        product_tier: ProductTierLabel = ProductTierLabel.PRO,
     ) -> None:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise P01AdapterError("invalid_timeout", "P01 timeout must be numeric.")
@@ -133,6 +152,7 @@ class P01RequestFactory:
             ) from None
         self._timeout_seconds = normalized_timeout
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._product_tier = product_tier
 
     def build(self, run: ClawRun, *, lease: SandboxLease | None = None) -> P01RequestBundle:
         if run.terminal:
@@ -161,7 +181,7 @@ class P01RequestFactory:
 
         trace_id = _trace_id_for(run)
         execution_request = ExecutionRequest(
-            agent=_agent_profile(),
+            agent=_agent_profile(self._product_tier),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
             additional_system_context=None,

@@ -159,7 +159,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "sensenova/sensenova-6.8-flash-lite"})
+        self.assertEqual(payload["agent"]["model_policy"], {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())
@@ -172,6 +172,24 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         bad_agent = replace(
             request.execution_request.agent,
             model_policy={"model": "google/gemini-2.5-flash"},
+        )
+        bad_execution = replace(request.execution_request, agent=bad_agent)
+        bad_request = replace(request, execution_request=bad_execution)
+        transport = _ok_transport(_public_result(request))
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, bad_request)
+        self.assertEqual(ctx.exception.code, "p01_authority_pinning")
+        self.assertEqual(transport.requests, [])
+
+    def test_extra_model_policy_authority_key_is_refused_before_transport(self) -> None:
+        _, request = _build_request()
+        bad_agent = replace(
+            request.execution_request.agent,
+            model_policy={
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "provider": "caller-provider",
+            },
         )
         bad_execution = replace(request.execution_request, agent=bad_agent)
         bad_request = replace(request, execution_request=bad_execution)

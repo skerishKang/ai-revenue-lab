@@ -36,7 +36,7 @@ from kagent.p01_adapter import (
     ClawOrchestrationOutcome,
     P01AdapterError,
 )
-from kagent.p01_orchestration_client import OWNER_APPROVED_PINNED_MODEL
+from kagent.p01_orchestration_client import PADIEM_EXECUTABLE_MODEL_IDS
 from kagent.p01_run_flow import p01_adapter_from_environment
 
 _FAKE_CREDENTIAL = "b54-order-credential-" + ("0" * 28)
@@ -444,9 +444,9 @@ class OrderFlowTests(unittest.TestCase):
         sent = transport.requests[0]
         self.assertEqual(sent["url"], f"{_ENGINE_BASE_URL}/internal/v1/orchestrate")
         payload = json.loads(sent["body"].decode("utf-8"))
-        self.assertEqual(
-            payload["agent"]["model_policy"],
-            {"model": OWNER_APPROVED_PINNED_MODEL},
+        self.assertIn(
+            payload["agent"]["model_policy"]["model"],
+            PADIEM_EXECUTABLE_MODEL_IDS,
         )
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
