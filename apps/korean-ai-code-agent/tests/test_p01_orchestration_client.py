@@ -143,6 +143,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
             ],
         )
         self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
+        self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
         self.assertEqual(transport.requests[0]["url"], "https://padiem-ai-engine.internal/internal/v1/orchestrate")
 
     def test_outgoing_payload_pins_approved_free_model_only(self) -> None:
@@ -172,6 +173,24 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         bad_agent = replace(
             request.execution_request.agent,
             model_policy={"model": "google/gemini-2.5-flash"},
+        )
+        bad_execution = replace(request.execution_request, agent=bad_agent)
+        bad_request = replace(request, execution_request=bad_execution)
+        transport = _ok_transport(_public_result(request))
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, bad_request)
+        self.assertEqual(ctx.exception.code, "p01_authority_pinning")
+        self.assertEqual(transport.requests, [])
+
+    def test_extra_model_policy_authority_key_is_refused_before_transport(self) -> None:
+        _, request = _build_request()
+        bad_agent = replace(
+            request.execution_request.agent,
+            model_policy={
+                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "provider": "caller-provider",
+            },
         )
         bad_execution = replace(request.execution_request, agent=bad_agent)
         bad_request = replace(request, execution_request=bad_execution)
