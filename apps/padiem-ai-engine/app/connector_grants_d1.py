@@ -85,10 +85,10 @@ class CloudflareD1ConnectorGrantStore:
         grants: dict[str, DriveGrant] = {}
         for data in rows:
             try:
-                capabilities = tuple(
-                    DriveCapability(item)
-                    for item in json.loads(data["granted_capabilities_json"])
-                )
+                raw_capabilities = json.loads(data["granted_capabilities_json"])
+                if raw_capabilities != [DriveCapability.READ.value]:
+                    raise ValueError("Drive grants must contain exactly the reviewed READ capability")
+                capabilities = (DriveCapability.READ,)
                 grants[data["app_id"]] = DriveGrant(
                     app_id=str(data["app_id"]),
                     canonical_agent_id=str(data["canonical_agent_id"]),
