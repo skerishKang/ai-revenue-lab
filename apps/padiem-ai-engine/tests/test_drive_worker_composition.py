@@ -8,6 +8,7 @@ Network-free: uses recording fakes for both Drive and Gmail ports.
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
@@ -22,6 +23,8 @@ from padiem_ai_core.drive_capability import (
     DriveReadPort,
 )
 from padiem_ai_core.tool_runtime import ToolRuntime
+
+APP_ROOT = Path(__file__).resolve().parents[1]
 
 from app.connector_bindings import (
     DRIVE_AGENT_ID,
@@ -298,9 +301,7 @@ def test_resolver_empty_drive_grants_returns_none_for_drive() -> None:
 
 def test_worker_composes_drive_port_and_grants() -> None:
     """worker_identity exposes Drive port/grants helpers via source inspection."""
-    src = open(
-        "apps/padiem-ai-engine/worker_identity.py", encoding="utf-8"
-    ).read()
+    src = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
     assert "_drive_port_for_env" in src
     assert "_drive_grants_for_env" in src
     assert "HttpxDriveReadPort" in src
@@ -342,23 +343,17 @@ def test_caller_payload_cannot_mint_drive_scope_or_binding_ref() -> None:
 
 def test_drive_write_scope_or_operation_absent() -> None:
     """Drive port source only supports readonly scope."""
-    src = open(
-        "apps/padiem-ai-engine/app/drive_port_httpx.py", encoding="utf-8"
-    ).read()
+    src = (APP_ROOT / "app" / "drive_port_httpx.py").read_text(encoding="utf-8")
     assert "DRIVE_READONLY_SCOPE" in src
     assert "DRIVE_FULL_SCOPE" not in src
 
 
 def test_no_secret_value_in_drive_port_errors() -> None:
     """Drive port error strings must never leak credential values."""
-    src = open(
-        "apps/padiem-ai-engine/app/drive_port_httpx.py", encoding="utf-8"
-    ).read()
-    assert 'ENGINE_GOOGLE_OAUTH_CLIENT_ID' in src
-    assert 'ENGINE_GOOGLE_OAUTH_CLIENT_SECRET' in src
-    assert 'ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN' in src
-    # The secret env var names are declared but values never appear in strings
-    assert "client_secret=" not in src or "client_secret" in src
+    src = (APP_ROOT / "app" / "drive_port_httpx.py").read_text(encoding="utf-8")
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID" in src
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET" in src
+    assert "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN" in src
 
 
 def test_gmail_and_drive_resolvers_coexist() -> None:
