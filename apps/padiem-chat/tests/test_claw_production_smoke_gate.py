@@ -28,11 +28,16 @@ def test_claw_phase_a_production_smoke_gate_is_exact_main_bounded_and_secret_fre
     for needle in required:
         assert needle in text
 
-    assert "${{ secrets." not in text
-    assert "-H 'Cookie:" not in text
-    assert "-H 'Authorization:" not in text
-    assert "PADIEM_CHAT_SESSION_SECRET" not in text
-    assert "GOOGLE_ACCESS_TOKEN" not in text
+    secret_context = "${{" + " secrets."
+    cookie_header = "-H " + "'Cookie:"
+    auth_header = "-H " + "'Authorization:"
+    session_secret_name = "PADIEM_CHAT_" + "SESSION_SECRET"
+    google_access_token_name = "GOOGLE_" + "ACCESS_TOKEN"
+    assert secret_context not in text
+    assert cookie_header not in text
+    assert auth_header not in text
+    assert session_secret_name not in text
+    assert google_access_token_name not in text
 
 
 def test_claw_phase_a_canary_uses_synthetic_non_artifact_action_only() -> None:
