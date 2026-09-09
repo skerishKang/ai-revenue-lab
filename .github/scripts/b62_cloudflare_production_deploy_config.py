@@ -17,7 +17,7 @@ import tomllib
 from pathlib import Path
 
 EXPECTED_WORKER = "padiem-chat"
-SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "plain_text", "secret_text"}
+SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
 
@@ -44,6 +44,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     assets: list[dict] = []
     services: list[dict] = []
     d1: list[dict] = []
+    r2: list[dict] = []
     plain_vars: dict[str, str] = {}
     secret_names: list[str] = []
     for raw in bindings:
@@ -64,6 +65,14 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
             services.append(raw)
         elif kind == "d1":
             d1.append(raw)
+        elif kind == "r2_bucket":
+            bucket_name = raw.get("bucket_name")
+            if not isinstance(bucket_name, str) or not bucket_name:
+                raise ProductionConfigError(f"r2 binding {name!r} has no bucket_name")
+            jurisdiction = raw.get("jurisdiction")
+            if jurisdiction is not None and jurisdiction not in {"eu", "fedramp", "fedramp-high", "us"}:
+                raise ProductionConfigError(f"r2 binding {name!r} has unsupported jurisdiction")
+            r2.append(raw)
         elif kind == "plain_text":
             text = raw.get("text")
             if not isinstance(text, str):
@@ -77,6 +86,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
         "assets": assets,
         "services": services,
         "d1": d1,
+        "r2": r2,
         "vars": plain_vars,
         "secret_names": secret_names,
     }
@@ -155,6 +165,20 @@ def build_production_config(
         lines.append(f"database_id = {_toml_string(database_id)}")
         lines.append("")
 
+    for bucket in live["r2"]:
+        bucket_name = bucket.get("bucket_name")
+        if not isinstance(bucket_name, str) or not bucket_name:
+            raise ProductionConfigError(
+                f"r2 binding {bucket.get('name')!r} has no bucket_name"
+            )
+        lines.append("[[r2_buckets]]")
+        lines.append(f"binding = {_toml_string(str(bucket['name']))}")
+        lines.append(f"bucket_name = {_toml_string(bucket_name)}")
+        jurisdiction = bucket.get("jurisdiction")
+        if isinstance(jurisdiction, str) and jurisdiction:
+            lines.append(f"jurisdiction = {_toml_string(jurisdiction)}")
+        lines.append("")
+
     plain_vars = live["vars"]
     assert isinstance(plain_vars, dict)
     for required in REQUIRED_VARS:
@@ -214,6 +238,7 @@ def main(argv: list[str] | None = None) -> int:
     print("B62_PRODUCTION_CONFIG_GENERATED=PASS")
     print(f"SERVICE_BINDINGS={len(live['services'])}")
     print(f"D1_BINDINGS={len(live['d1'])}")
+    print(f"R2_BINDINGS={len(live['r2'])}")
     print(f"PLAIN_TEXT_VARS={len(plain_vars)}")
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
     print("SECRET_VALUES_READ=0")
