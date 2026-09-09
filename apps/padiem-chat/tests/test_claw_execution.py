@@ -66,6 +66,12 @@ def test_valid_quote_executes_through_p01_chain(client: TestClient) -> None:
     assert "result" in data
     assert data["result"]["result_text"] == "test result"
     assert data["result"]["action"] == "quote_draft"
+    assert "artifact" in data["result"]
+    assert "artifact_token" in data["result"]
+    assert data["result"]["artifact"]["format"] == "docx"
+    assert data["result"]["artifact"]["media_type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert isinstance(data["result"]["artifact"]["byte_length"], int)
+    assert data["result"]["artifact"]["byte_length"] > 0
 
 
 def test_valid_order_executes_through_p01_chain(client: TestClient) -> None:
@@ -81,6 +87,8 @@ def test_valid_order_executes_through_p01_chain(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is True
     assert data["result"]["action"] == "order_draft"
+    assert "artifact" in data["result"]
+    assert "artifact_token" in data["result"]
 
 
 def test_valid_reply_executes_through_p01_chain(client: TestClient) -> None:
@@ -111,6 +119,42 @@ def test_valid_summary_executes_through_p01_chain(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is True
     assert data["result"]["action"] == "summarize_request"
+    assert "artifact" not in data["result"]
+    assert "artifact_token" not in data["result"]
+
+
+def test_quote_artifact_download_endpoint(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "가상 테스트: A업체 견적서 요청.",
+            "channel": "kakao",
+            "action": "quote",
+            "sender_hint": "A업체",
+        }
+        execute_resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert execute_resp.status_code == 200
+    execute_data = execute_resp.json()
+    assert "artifact" in execute_data["result"]
+    token = execute_data["result"]["artifact_token"]
+    assert token
+
+    download_resp = client.get(f"/api/claw/manual-intake/artifact/{token}")
+    assert download_resp.status_code == 200
+    assert download_resp.headers["content-type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert "attachment" in download_resp.headers.get("content-disposition", "")
+    assert len(download_resp.content) > 0
+    assert download_resp.headers["cache-control"] == "no-store, max-age=0"
+
+
+def test_artifact_download_invalid_token_fails_closed(client: TestClient) -> None:
+    resp = client.get("/api/claw/manual-intake/artifact/invalid!token")
+    assert resp.status_code == 400
+    assert resp.json()["ok"] is False
+
+
+def test_artifact_download_expired_token_not_found(client: TestClient) -> None:
+    resp = client.get("/api/claw/manual-intake/artifact/00000000000000000000000000000000")
+    assert resp.status_code == 404
 
 
 def test_browser_payload_cannot_set_provider_or_model(client: TestClient) -> None:

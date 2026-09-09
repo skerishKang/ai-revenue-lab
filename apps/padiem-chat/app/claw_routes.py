@@ -23,14 +23,21 @@ into the browser. No silent preview fallback after explicit execute.
 from __future__ import annotations
 
 import json
+import re
+import time
 from typing import Any
 import uuid
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
 from .usage_gate import UsageGate
+from kagent.document_export import (
+    DocumentExportError,
+    GeneratedDocumentArtifact,
+    build_document_artifact,
+)
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -54,6 +61,48 @@ _NO_STORE_HEADERS = {
     "Referrer-Policy": "no-referrer",
     "X-Content-Type-Options": "nosniff",
 }
+
+# Bounded ephemeral handoff for beta DOCX artifacts (not durable storage).
+_ARTIFACT_CACHE_MAX_ENTRIES = 100
+_ARTIFACT_CACHE_TTL_SECONDS = 300  # 5 minutes
+_ARTIFACT_CACHE_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
+_artifact_cache: dict[str, tuple[GeneratedDocumentArtifact, float]] = {}
+_artifact_cache_bytes = 0
+
+
+def _evict_expired_artifacts() -> None:
+    global _artifact_cache_bytes
+    now = time.time()
+    expired = [t for t, (_, expiry) in _artifact_cache.items() if now >= expiry]
+    for token in expired:
+        artifact, _ = _artifact_cache.pop(token)
+        _artifact_cache_bytes -= artifact.byte_length
+
+
+def _evict_overlimit_artifacts() -> None:
+    global _artifact_cache_bytes
+    while len(_artifact_cache) > _ARTIFACT_CACHE_MAX_ENTRIES:
+        token = next(iter(_artifact_cache))
+        artifact, _ = _artifact_cache.pop(token)
+        _artifact_cache_bytes -= artifact.byte_length
+
+
+def _cache_artifact(artifact: GeneratedDocumentArtifact) -> str:
+    global _artifact_cache_bytes
+    token = uuid.uuid4().hex
+    _artifact_cache[token] = (artifact, time.time() + _ARTIFACT_CACHE_TTL_SECONDS)
+    _artifact_cache_bytes += artifact.byte_length
+    _evict_expired_artifacts()
+    _evict_overlimit_artifacts()
+    return token
+
+
+def _get_cached_artifact(token: str) -> GeneratedDocumentArtifact | None:
+    _evict_expired_artifacts()
+    entry = _artifact_cache.get(token)
+    if entry is None:
+        return None
+    return entry[0]
 
 _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "quote": ManualIntakeAction.QUOTE_DRAFT,
@@ -282,25 +331,78 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if outcome.projection.status.value != "completed" or not outcome.answer:
         return _error(502, "engine_execution_failed", "Engine 실행이 완료되지 않았습니다.")
 
+    title = f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
+
+    artifact_descriptor: dict[str, Any] | None = None
+    artifact_token: str | None = None
+    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
+        try:
+            artifact = build_document_artifact(
+                document_type=action.value.replace("_draft", ""),
+                file_format="docx",
+                title=title,
+                metadata_fields=[
+                    ("채널", channel.value),
+                    ("작업", action.value),
+                    ("발신자", sender_hint or "미지정"),
+                ],
+                section_title=f"실행 결과 — {action.value}",
+                body_text=outcome.answer or "",
+                items=[],
+                total="",
+                markdown_fallback_text=outcome.answer or "",
+            )
+            artifact_token = _cache_artifact(artifact)
+            artifact_descriptor = artifact.public_projection()
+        except DocumentExportError:
+            artifact_descriptor = None
+            artifact_token = None
+
+    result: dict[str, Any] = {
+        "request_id": run.run_id,
+        "channel": channel.value,
+        "action": action.value,
+        "title": title,
+        "result_text": outcome.answer,
+        "status": outcome.projection.status.value,
+        "p01_run_id": outcome.p01_run_id,
+        "p01_event_count": outcome.p01_event_count,
+        "direct_kakao_send": False,
+        "direct_sms_send": False,
+        "connector_required": False,
+    }
+    if artifact_descriptor is not None and artifact_token is not None:
+        result["artifact"] = artifact_descriptor
+        result["artifact_token"] = artifact_token
+
     return JSONResponse(
-        {
-            "ok": True,
-            "result": {
-                "request_id": run.run_id,
-                "channel": channel.value,
-                "action": action.value,
-                "title": f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}",
-                "result_text": outcome.answer,
-                "status": outcome.projection.status.value,
-                "p01_run_id": outcome.p01_run_id,
-                "p01_event_count": outcome.p01_event_count,
-                "direct_kakao_send": False,
-                "direct_sms_send": False,
-                "connector_required": False,
-            },
-        },
+        {"ok": True, "result": result},
         status_code=200,
         headers=_NO_STORE_HEADERS,
+    )
+
+
+async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Response:
+    token = request.path_params.get("token", "")
+    if not token or not re.match(r"^[0-9a-f]{32}$", token):
+        return _error(400, "invalid_token", "잘못된 토큰입니다.")
+
+    artifact = _get_cached_artifact(token)
+    if artifact is None:
+        return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
+
+    content = artifact.content_bytes()
+    import urllib.parse as _urllib_parse
+
+    return Response(
+        content,
+        status_code=200,
+        headers={
+            "Content-Type": artifact.media_type,
+            "Content-Disposition": f"attachment; filename*=UTF-8''{_urllib_parse.quote(artifact.filename)}",
+            "Cache-Control": "no-store, max-age=0",
+            "Content-Length": str(len(content)),
+        },
     )
 
 
