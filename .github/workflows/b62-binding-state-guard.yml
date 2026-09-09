@@ -1,0 +1,46 @@
+name: B62 Binding State Guard
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b62_binding_state_guard.py"
+      - ".github/tests/test_b62_binding_state_guard.py"
+      - ".github/workflows/b62-binding-state-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run binding authority guard regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pytest .github/tests/test_b62_binding_state_guard.py -q
+          python - <<'PY'
+          from pathlib import Path
+
+          guard = Path('.github/scripts/b62_binding_state_guard.py').read_text(encoding='utf-8')
+          assert 'bucket_name' in guard
+          assert 'jurisdiction' in guard
+          assert 'environment' in guard
+          assert 'SECRET_VALUES_READ=0' in guard
+          assert 'unsupported binding type' in guard
+          print('B62_BINDING_STATE_GUARD_SOURCE=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
