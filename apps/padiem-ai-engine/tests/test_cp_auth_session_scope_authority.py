@@ -102,15 +102,11 @@ def test_cp_service_binding_missing_fails_closed() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_cp_service_binding_malformed_fails_closed() -> None:
+async def test_cp_service_binding_malformed_fails_closed() -> None:
     """Malformed binding (object without resolve_auth_session) fails closed."""
     client = CloudflareControlPlaneAuthSessionClient(object())
     with pytest.raises(DocumentAuthorityError) as excinfo:
-        import asyncio
-
-        asyncio.get_event_loop().run_until_complete(
-            client.resolve_auth_session(session_id=_SESSION_ID)
-        )
+        await client.resolve_auth_session(session_id=_SESSION_ID)
     assert excinfo.value.code == "auth_session_unavailable"
     assert excinfo.value.status_code == 503
 
@@ -244,18 +240,14 @@ async def test_execute_and_stream_share_cp_scope_authority() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_no_public_https_fallback() -> None:
+async def test_no_public_https_fallback() -> None:
     """No public HTTPS fallback: the client only uses the private binding."""
     class NoMethodBinding:
         pass
 
     client = CloudflareControlPlaneAuthSessionClient(NoMethodBinding())
     with pytest.raises(DocumentAuthorityError) as excinfo:
-        import asyncio
-
-        asyncio.get_event_loop().run_until_complete(
-            client.resolve_auth_session(session_id=_SESSION_ID)
-        )
+        await client.resolve_auth_session(session_id=_SESSION_ID)
     assert excinfo.value.code == "auth_session_unavailable"
     assert excinfo.value.status_code == 503
 
