@@ -159,7 +159,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "sensenova/sensenova-6.8-flash-lite"})
+        self.assertEqual(payload["agent"]["model_policy"], {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())

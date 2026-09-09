@@ -7,8 +7,9 @@ contract and reconstructs the response through the Core-owned public parser
 is rejected fail-closed here, before Claw can project it: a silently dropped
 approval pause or plan would let a paused run be reported as completed.
 
-Claw pins only the owner-approved free model ('stealth/ox-alpha') through this
-port; any other provider, model, fallback order, or credential fails closed.
+Claw pins only the executable Padiem v1 product-tier routes (derived from the
+shared declaration contract, #2212) through this port; any other provider,
+model, fallback order, or credential fails closed.
 """
 
 from __future__ import annotations
@@ -22,14 +23,44 @@ from padiem_ai_core import (
     orchestration_result_from_public,
 )
 from padiem_ai_engine_client import PadiemAiEngineClientError
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
 
 from .p01_adapter import P01AdapterError
 
-# Owner-approved pinned model (#2003): the single model the P01 wire accepts.
-# Switched from the Kilo free route to the owner-provisioned SenseNova direct
-# route after the measured Kilo 502/504 episodes. The allowlist stays
-# exactly-one-model; any other model_policy is refused as authority pinning.
-OWNER_APPROVED_PINNED_MODEL = "sensenova/sensenova-6.8-flash-lite"
+
+def _padiem_executable_route_ids() -> frozenset[str]:
+    """Model IDs of the executable Padiem v1 tiers, derived from the shared
+    declaration contract (#2099 SOT). B14 stays the execution authority: a
+    route unregistered there still fails closed at dispatch. Max is HOLD and
+    therefore never enters this set."""
+    ids: set[str] = set()
+    for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
+        try:
+            route = active_route_for(label)
+        except ProductTierRoutesError as exc:
+            raise P01AdapterError(
+                "invalid_product_tier",
+                f"제품 등급 라우트 계약이 무효합니다: {exc}",
+            ) from exc
+        if route is not None and route.model_id is not None:
+            ids.add(route.model_id)
+    if not ids:
+        raise P01AdapterError(
+            "invalid_product_tier",
+            "Padiem 공유 라우트 계약에 실행 가능한 등급 라우트가 없습니다.",
+        )
+    return frozenset(ids)
+
+
+# Padiem v1 executable product routes (#2212): the only model policies the
+# P01 wire accepts, consumed read-only from the shared declaration contract
+# so Claw never owns an independent route literal. Any other model_policy is
+# refused as authority pinning.
+PADIEM_EXECUTABLE_MODEL_IDS = _padiem_executable_route_ids()
 
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.
@@ -115,7 +146,7 @@ class P01EngineOrchestrationClient:
         agent = execution.agent
         valid_model_policy = (
             not agent.model_policy
-            or agent.model_policy == {"model": OWNER_APPROVED_PINNED_MODEL}
+            or agent.model_policy.get("model") in PADIEM_EXECUTABLE_MODEL_IDS
         )
         if (
             not valid_model_policy
