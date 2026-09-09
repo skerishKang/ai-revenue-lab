@@ -91,3 +91,24 @@ def test_claw_phase_a_smoke_gate_event_context_safe_for_all_triggers() -> None:
 
     canary_block = text.split("phase-a-production-canary:")[1]
     assert "if: ${{ github.event_name == 'workflow_dispatch' }}" in canary_block
+
+
+def test_claw_phase_a_smoke_gate_has_no_unclosed_expression_sequences() -> None:
+    """#2267 third pass: GitHub rejects the whole file before job materialization
+    whenever any line contains an unclosed expression-open sequence. The Actions
+    expression scanner runs over raw run-block text, so a literal built via
+    string concatenation still fails admission; local YAML parsing cannot
+    catch this, hence this scanner-style guard mirroring the server check.
+    """
+    text = WORKFLOW.read_text(encoding="utf-8")
+    open_token = "$" + "{{"
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        idx = 0
+        while True:
+            idx = line.find(open_token, idx)
+            if idx < 0:
+                break
+            assert "}}" in line[idx + len(open_token) :], (
+                f"unclosed expression sequence at line {line_no}"
+            )
+            idx += len(open_token)
