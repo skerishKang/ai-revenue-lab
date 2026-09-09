@@ -77,7 +77,7 @@ jobs:
           ]
           for needle in required:
               assert needle in text, needle
-          secret_context = '${{' + ' secrets.'
+          secret_context = '$' + '{{' + ' secrets.'
           cookie_header = '-H ' + "'Cookie:"
           auth_header = '-H ' + "'Authorization:"
           assert secret_context not in text
