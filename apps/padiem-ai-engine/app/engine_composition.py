@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.agent_skill_service import AgentSkillEngineService
+from app.auth_session_scope_authority import AuthSessionScopeAuthority
 from app.document_context_service import DocumentContextEngineService
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.memory_service import MemoryRetrievalEngineService
@@ -49,6 +50,7 @@ class EngineServices:
     # #1964 source slice: replay stays fail-closed until the trusted durable
     # idempotency adapter is explicitly composed.
     idempotency_replay: IdempotencyReplayEngineService | None = None
+    scope_authority: AuthSessionScopeAuthority | None = None
 
     def __post_init__(self) -> None:
         for name in ("completed", "streaming", "orchestration", "research", "memory"):

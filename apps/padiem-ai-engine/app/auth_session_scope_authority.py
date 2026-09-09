@@ -74,6 +74,59 @@ class ControlPlaneAuthSessionClient(Protocol):
     def resolve_auth_session(self, *, session_id: str) -> Any: ...
 
 
+class CloudflareControlPlaneAuthSessionClient:
+    """Engine adapter over the private Control Plane identity Service Binding.
+
+    Calls the canonical ``resolve_auth_session`` RPC on the
+    ``CONTROL_PLANE_IDENTITY`` private Service Binding and returns the
+    public-dict session view (or ``None`` when the session does not exist).
+    The Engine never interprets or persists session state beyond deriving
+    this one request's scope.
+    """
+
+    def __init__(self, binding: Any) -> None:
+        if binding is None:
+            raise ValueError("Control Plane identity Service Binding is required")
+        self._binding = binding
+
+    async def resolve_auth_session(self, *, session_id: str) -> Any:
+        method = getattr(self._binding, "resolve_auth_session", None)
+        if not callable(method):
+            raise DocumentAuthorityError(
+                "auth_session_unavailable",
+                "Control Plane auth session resolution is unavailable.",
+                status_code=503,
+            )
+        try:
+            result = await method({"session_id": session_id})
+        except DocumentAuthorityError:
+            raise
+        except Exception:
+            raise DocumentAuthorityError(
+                "auth_session_unavailable",
+                "Control Plane auth session resolution failed.",
+                status_code=503,
+            ) from None
+        if not isinstance(result, Mapping):
+            raise DocumentAuthorityError(
+                "auth_session_unavailable",
+                "Control Plane auth session resolution returned invalid data.",
+                status_code=503,
+            )
+        if result.get("ok") is False:
+            return None
+        if result.get("ok") is not True:
+            raise DocumentAuthorityError(
+                "auth_session_unavailable",
+                "Control Plane auth session resolution returned invalid data.",
+                status_code=503,
+            )
+        session = result.get("session")
+        if session is None:
+            return None
+        return session
+
+
 def _unavailable(message: str) -> DocumentAuthorityError:
     return DocumentAuthorityError(
         "auth_session_unavailable", message, status_code=503
