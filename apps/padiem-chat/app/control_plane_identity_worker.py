@@ -18,7 +18,10 @@ from .control_plane_identity import IdentityBridgeError
 
 _MAX_RPC_TICKET_CHARS = 24_576
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "canonical_subject_id", "state"})
-_SESSION_KEYS = frozenset({"session_id", "product_id", "subject", "issued_at", "expires_at", "state", "revision"})
+_SESSION_KEYS_LEGACY = frozenset(
+    {"session_id", "product_id", "subject", "issued_at", "expires_at", "state", "revision"}
+)
+_SESSION_KEYS_TENANT = _SESSION_KEYS_LEGACY | {"tenant_id"}
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TICKET_KEYS = frozenset({"connect_ticket", "connector_id", "expires_at"})
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
@@ -52,6 +55,25 @@ def _closed(value: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]
             503,
             "control_plane_rpc_invalid",
             f"{field_name} returned invalid canonical data.",
+        )
+    return wire
+
+
+def _closed_session(value: Any) -> dict[str, Any]:
+    """Accept only the legacy or canonical tenant-aware auth-session schema.
+
+    #2176 deliberately made tenant_id additive and omitted it when unavailable.
+    B62 must therefore accept exactly the legacy seven-key shape or the
+    tenant-aware eight-key shape, while continuing to reject arbitrary RPC
+    expansion and client-invented tenancy fields.
+    """
+
+    wire = _dict(value)
+    if wire is None or set(wire) not in {_SESSION_KEYS_LEGACY, _SESSION_KEYS_TENANT}:
+        raise IdentityBridgeError(
+            503,
+            "control_plane_rpc_invalid",
+            "auth session returned invalid canonical data.",
         )
     return wire
 
@@ -193,7 +215,7 @@ class CloudflareControlPlaneIdentityAuthority:
         authenticated_at: datetime,
         not_after: datetime,
     ) -> AuthSessionSnapshot:
-        wire = _closed(
+        wire = _closed_session(
             await self._rpc(
                 "establish_auth_session",
                 {
@@ -203,17 +225,13 @@ class CloudflareControlPlaneIdentityAuthority:
                     "not_after": not_after.isoformat(),
                 },
                 "session",
-            ),
-            _SESSION_KEYS,
-            "auth session",
+            )
         )
         return self._session_from_wire(wire)
 
     async def resolve_auth_session(self, *, session_id: str) -> AuthSessionSnapshot:
-        wire = _closed(
-            await self._rpc("resolve_auth_session", {"session_id": session_id}, "session"),
-            _SESSION_KEYS,
-            "auth session",
+        wire = _closed_session(
+            await self._rpc("resolve_auth_session", {"session_id": session_id}, "session")
         )
         return self._session_from_wire(wire)
 
@@ -253,6 +271,7 @@ class CloudflareControlPlaneIdentityAuthority:
                 expires_at=_time(wire["expires_at"], "expires_at"),
                 state=AuthSessionState(wire["state"]),
                 revision=wire["revision"],
+                tenant_id=wire.get("tenant_id"),
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical auth session is invalid.") from exc

@@ -1,11 +1,11 @@
 name: B54 Engine D1 Provision Gate
 
 # WO-8 PR-A (#1621 / #1753 E9 A9) — provisions the Cloudflare D1 database
-# `padiem-engine` and applies the idempotency/continuation/grants/attachment
-# migrations. Dispatch-only by contract: an ordinary pull request can never
-# trigger it. This workflow does NOT edit wrangler.toml and does NOT deploy
-# the worker. #2152 extends the sequence with 0004 (schema only; the
-# attachment store stays unwired until its own activation slices).
+# `padiem-engine` and applies the idempotency/continuation/grants/attachment/
+# Drive-capability migrations. Dispatch-only by contract: an ordinary pull
+# request can never trigger it. This workflow does NOT edit wrangler.toml and
+# does NOT deploy the worker. #2152 added 0004; #2222 adds 0005 so the Drive
+# grant loader's capability column exists before Drive ACT-2 grant seeding.
 
 on:
   workflow_dispatch:
@@ -64,9 +64,6 @@ jobs:
             echo "D1_CREATE=SKIPPED_ALREADY_EXISTS"
           else
             npx --yes wrangler@4 d1 create padiem-engine
-            # Do not parse create output (shape varies by wrangler version:
-            # {"d1_databases":[{...}]} or a TOML snippet). Re-query the
-            # authoritative list instead.
             npx --yes wrangler@4 d1 list --json > /tmp/d1-list-after-create.json
             DB_ID=$(python3 - <<'PY'
           import json
@@ -78,21 +75,19 @@ jobs:
             test -n "$DB_ID"
             echo "D1_CREATE=PASS"
           fi
-          # database UUID is an identifier, not a secret — logging it is required evidence.
           echo "D1_DATABASE_ID=$DB_ID"
           echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
 
-      - name: Apply migrations 0001 + 0002 + 0003 + 0004 to remote
+      - name: Apply migrations 0001 + 0002 + 0003 + 0004 + 0005 to remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          # Binding-resolved migration apply needs a wrangler.toml d1_databases
-          # entry; PR-A must not touch wrangler.toml (the ENGINE_IDEMPOTENCY
-          # binding lands in PR-B), so the migration files are applied
-          # verbatim via d1 execute --file. All are
-          # CREATE TABLE IF NOT EXISTS — idempotent by construction.
+          # 0001-0004 are CREATE TABLE IF NOT EXISTS and replay-safe.
+          # SQLite ALTER TABLE ADD COLUMN has no portable IF NOT EXISTS form,
+          # so 0005 is guarded by authoritative remote schema readback. This
+          # preserves the provision gate's existing re-run/idempotency contract.
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0001_engine_idempotency.sql
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
@@ -101,9 +96,26 @@ jobs:
             --file=apps/padiem-ai-engine/migrations/0003_engine_connector_grants.sql
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0004_engine_attachment_images.sql
-          echo 'D1_MIGRATIONS=0001,0002,0003,0004'
 
-      - name: Assert schema tables exist
+          npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
+            --command "PRAGMA table_info(padiem_engine_connector_grants)" > /tmp/d1-grant-columns-before-0005.json
+          if python3 - <<'PY'
+          import json, sys
+          rows = json.load(open('/tmp/d1-grant-columns-before-0005.json'))
+          results = rows[0]['results'] if isinstance(rows, list) and rows and 'results' in rows[0] else rows
+          columns = {r['name'] for r in results}
+          sys.exit(0 if 'granted_capabilities_json' in columns else 1)
+          PY
+          then
+            echo 'D1_MIGRATION_0005=SKIPPED_ALREADY_APPLIED'
+          else
+            npx --yes wrangler@4 d1 execute padiem-engine --remote \
+              --file=apps/padiem-ai-engine/migrations/0005_engine_connector_drive_capabilities.sql
+            echo 'D1_MIGRATION_0005=APPLIED'
+          fi
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005'
+
+      - name: Assert schema tables and Drive capability column exist
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -125,11 +137,22 @@ jobs:
               assert required in names, f'missing table: {required} (have {sorted(names)})'
           print('D1_TABLES_ASSERT=PASS')
           PY
+          npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
+            --command "PRAGMA table_info(padiem_engine_connector_grants)" > /tmp/d1-grant-columns.json
+          python3 - <<'PY'
+          import json
+          rows = json.load(open('/tmp/d1-grant-columns.json'))
+          results = rows[0]['results'] if isinstance(rows, list) and rows and 'results' in rows[0] else rows
+          columns = {r['name'] for r in results}
+          assert 'granted_capabilities_json' in columns, f'missing Drive grant capability column: {sorted(columns)}'
+          print('D1_DRIVE_CAPABILITY_COLUMN_ASSERT=PASS')
+          PY
 
       - name: Final evidence
         run: |
           echo 'D1_PROVISION=PASS'
           echo "D1_DATABASE_ID=$DB_ID"
-          echo 'D1_MIGRATIONS=0001,0002,0003,0004'
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005'
+          echo 'D1_DRIVE_CAPABILITY_COLUMN_ASSERT=PASS'
           echo 'WORKER_DEPLOYED=0'
           echo 'WRANGLER_TOML_MODIFIED=0'

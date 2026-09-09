@@ -1,10 +1,9 @@
 name: B54 Engine D1 Provision Gate Contract Tests
 
-# WO-8 PR-A — CI for the D1 provision gate itself. The gate workflow
-# (b54-engine-d1-provision-gate.yml) stays workflow_dispatch-only by contract,
-# so its static contract tests run here on pull requests that touch the gate
-# or its tests. This workflow never provisions anything: it only parses YAML
-# and runs pytest.
+# CI for the dispatch-only D1 provision gate. This workflow never provisions
+# anything: it only parses YAML and runs static pytest contracts. Migration
+# changes are included in the path filter so a new migration cannot silently
+# drift from the explicit owner-authorized provision sequence.
 
 on:
   pull_request:
@@ -12,6 +11,7 @@ on:
       - ".github/workflows/b54-engine-d1-provision-gate.yml"
       - ".github/workflows/b54-engine-d1-provision-gate-contract-tests.yml"
       - ".github/tests/test_b54_engine_d1_provision_gate.py"
+      - "apps/padiem-ai-engine/migrations/**"
   workflow_dispatch:
 
 permissions:
