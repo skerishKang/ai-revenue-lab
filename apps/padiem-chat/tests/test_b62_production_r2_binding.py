@@ -71,6 +71,28 @@ def test_live_r2_binding_is_preserved_into_generated_wrangler(tmp_path):
     assert live["r2"][0]["name"] == "PADIEM_WORKSPACE_FILES"
 
 
+def test_r2_jurisdiction_is_preserved_when_present(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(
+        _payload(
+            _bindings(
+                {
+                    "type": "r2_bucket",
+                    "name": "PADIEM_WORKSPACE_FILES",
+                    "bucket_name": "padiem-workspace-files",
+                    "jurisdiction": "eu",
+                }
+            )
+        )
+    )
+    config = module.build_production_config(
+        live,
+        _repo_config(tmp_path),
+        "https://padiem-chat.charliekant.workers.dev",
+    )
+    assert 'jurisdiction = "eu"' in config
+
+
 def test_r2_binding_missing_bucket_name_fails_closed():
     module = _load_module()
     with pytest.raises(module.ProductionConfigError, match="has no bucket_name"):
