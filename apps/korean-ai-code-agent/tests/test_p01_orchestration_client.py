@@ -143,7 +143,6 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
             ],
         )
         self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
-        self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
         self.assertEqual(transport.requests[0]["url"], "https://padiem-ai-engine.internal/internal/v1/orchestrate")
 
     def test_outgoing_payload_pins_approved_free_model_only(self) -> None:
