@@ -60,13 +60,11 @@ def test_live_r2_binding_is_preserved_into_generated_wrangler(tmp_path):
             )
         )
     )
-
     config = module.build_production_config(
         live,
         _repo_config(tmp_path),
         "https://padiem-chat.charliekant.workers.dev",
     )
-
     assert '[[r2_buckets]]' in config
     assert 'binding = "PADIEM_WORKSPACE_FILES"' in config
     assert 'bucket_name = "padiem-workspace-files"' in config
