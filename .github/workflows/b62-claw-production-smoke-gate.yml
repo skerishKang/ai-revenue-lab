@@ -57,9 +57,12 @@ jobs:
           ]
           for needle in required:
               assert needle in text, needle
-          assert '${{ secrets.' not in text
-          assert "-H 'Cookie:" not in text
-          assert "-H 'Authorization:" not in text
+          secret_context = '${{' + ' secrets.'
+          cookie_header = '-H ' + "'Cookie:"
+          auth_header = '-H ' + "'Authorization:"
+          assert secret_context not in text
+          assert cookie_header not in text
+          assert auth_header not in text
           print('B62_CLAW_PHASE_A_SMOKE_SOURCE=PASS')
           print('PRODUCTION_MUTATION=0')
           PY
