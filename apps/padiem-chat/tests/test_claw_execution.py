@@ -7,7 +7,9 @@ from starlette.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.app_factory import create_app
+from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.usage_gate import InMemoryUsageCounterStore, UsageDecision
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
@@ -389,3 +391,237 @@ def test_executed_result_is_not_labelled_as_preview() -> None:
 def test_preview_path_still_uses_preview_label() -> None:
     assert "revealClawCard(preview.title)" in APP_JS
     assert 'data-locale-key="claw-result-badge"' in INDEX_HTML
+
+
+# ── B62 UsageGate boundary on the real-execution path (CENTRAL blocker) ────
+# The execute route reaches a real model, so it must pass the same abuse/quota
+# gate as /api/chat, with identity derived only server-side.
+
+
+QUOTA_SALT = "claw-gate-quota-salt-not-a-real-secret-000001"
+SESSION_SECRET = "claw-gate-session-secret-not-a-real-credential-0"
+SIGNED_IN_USER_ID = "usr_" + "7" * 32
+TRUSTED_IP = "203.0.113.77"
+PREVIEW_ROUTE_PATH = "/api/claw/manual-intake/preview"
+GATE_PAYLOAD = {
+    "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
+    "channel": "kakao",
+    "action": "quote",
+    "sender_hint": "A업체",
+}
+
+
+class RecordingUsageGate:
+    def __init__(self, decision: UsageDecision) -> None:
+        self.decision = decision
+        self.calls: list[dict[str, str | None]] = []
+
+    async def authorize(self, *, raw_ip: str | None, user_id: str | None) -> UsageDecision:
+        self.calls.append({"raw_ip": raw_ip, "user_id": user_id})
+        return self.decision
+
+
+def _denied_decision() -> UsageDecision:
+    return UsageDecision(
+        allowed=False,
+        code="rate_limited",
+        status_code=429,
+        user_message="요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
+        retry_after_seconds=37,
+    )
+
+
+def _allowed_decision() -> UsageDecision:
+    return UsageDecision(allowed=True, subject_type="user")
+
+
+def _gated_app(
+    gate: RecordingUsageGate,
+    *,
+    settings: Settings | None = None,
+    history_store: object | None = None,
+):
+    app = create_app(
+        settings or Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"),
+        history_store=history_store,
+    )
+    app.state.usage_gate = gate
+    app.state.usage_gate_enforced = True
+    return app
+
+
+def _google_settings(**overrides) -> Settings:
+    values = {
+        "runtime_mode": "mock",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "claw-gate-client.apps.googleusercontent.com",
+        "google_client_secret": "claw-gate-google-secret",
+        "session_secret": SESSION_SECRET,
+        "session_max_age_seconds": 3600,
+    }
+    values.update(overrides)
+    return Settings.from_values(**values)
+
+
+def _live_quota_settings(**overrides) -> Settings:
+    values = {
+        "runtime_mode": "b14",
+        "b14_base_url": "https://b14.example",
+        "quota_salt": QUOTA_SALT,
+        "anonymous_burst_limit": 2,
+        "anonymous_daily_limit": 20,
+        "user_burst_limit": 8,
+        "user_daily_limit": 100,
+        "global_daily_limit": 1000,
+    }
+    values.update(overrides)
+    return Settings.from_values(**values)
+
+
+class _PresenceOnlyHistoryStore:
+    """auth_ready() only requires that a history store is bound."""
+
+    async def get_user(self, user_id: str):
+        return None
+
+
+def test_execute_is_denied_before_p01_transport_when_usage_gate_denies() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    factory = MagicMock(name="p01_adapter_from_environment")
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", factory
+    ):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 429
+    assert resp.headers["retry-after"] == "37"
+    assert resp.json()["ok"] is False
+    assert resp.json()["error"]["code"] == "rate_limited"
+    factory.assert_not_called()
+    assert len(gate.calls) == 1
+
+
+def test_execute_denial_holds_even_when_the_engine_is_fully_configured() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 429
+    factory.assert_not_called()
+
+
+def test_execute_identity_is_server_derived_and_body_identity_is_ignored() -> None:
+    gate = RecordingUsageGate(_allowed_decision())
+    spoofed = dict(GATE_PAYLOAD, user_id="attacker-chosen-uid", ip="198.51.100.244", raw_ip="198.51.100.244")
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=spoofed, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 200
+    assert gate.calls == [{"raw_ip": TRUSTED_IP, "user_id": None}]
+
+
+def test_signed_in_execute_authorizes_with_the_session_user_id() -> None:
+    settings = _google_settings()
+    gate = RecordingUsageGate(_allowed_decision())
+    app = _gated_app(gate, settings=settings, history_store=_PresenceOnlyHistoryStore())
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            resp = client.post(
+                EXECUTE_ROUTE_PATH,
+                json=dict(GATE_PAYLOAD, user_id="attacker-chosen-uid"),
+                headers={"cf-connecting-ip": TRUSTED_IP},
+            )
+    assert resp.status_code == 200
+    assert gate.calls == [{"raw_ip": TRUSTED_IP, "user_id": SIGNED_IN_USER_ID}]
+
+
+def test_anonymous_execute_is_burst_bounded_per_trusted_ip_with_the_real_usage_gate() -> None:
+    store = InMemoryUsageCounterStore()
+    app = create_app(_live_quota_settings(), usage_store=store)
+    assert app.state.usage_gate_enforced is True
+    allowed = 0
+    with TestClient(app) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        first = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+        second = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+        third = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+        other_ip = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": "192.0.2.9"})
+    assert (first.status_code, second.status_code) == (200, 200)
+    assert third.status_code == 429
+    assert third.headers["retry-after"]
+    assert other_ip.status_code == 200
+    assert factory.call_count == 3
+
+
+def test_execute_fails_closed_when_live_identity_or_gate_is_unavailable() -> None:
+    store = InMemoryUsageCounterStore()
+    app = create_app(_live_quota_settings(), usage_store=store)
+    with TestClient(app) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        no_identity = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD)
+    assert no_identity.status_code == 503
+    assert no_identity.json()["error"]["code"] == "live_identity_unavailable"
+    factory.assert_not_called()
+
+    unbound = create_app(_live_quota_settings())
+    assert unbound.state.usage_gate_enforced is True
+    with TestClient(unbound) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        no_gate = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert no_gate.status_code == 503
+    assert no_gate.json()["error"]["code"] == "live_abuse_gate_unavailable"
+    factory.assert_not_called()
+
+
+def test_quota_denial_does_not_expose_internal_quota_state() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    body = resp.text
+    assert TRUSTED_IP not in body
+    assert QUOTA_SALT not in body
+    for internal in ("anon_", "burst", "daily", "subject_type", "bucket"):
+        assert internal not in body
+    assert resp.headers["cache-control"] == "no-store, max-age=0"
+
+
+def test_preview_never_calls_the_usage_gate_or_the_p01_adapter() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    factory = MagicMock(name="p01_adapter_from_environment")
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", factory
+    ):
+        resp = client.post(PREVIEW_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 200
+    assert resp.json()["ok"] is True
+    assert gate.calls == []
+    factory.assert_not_called()
+
+
+def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
+    source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
+    execute_handler = source.split("async def claw_manual_intake_execute", 1)[1]
+    assert execute_handler.index("_usage_gate_denial(request)") < execute_handler.index(
+        "p01_adapter_from_environment()"
+    )
+    preview_handler = source.split("async def claw_manual_intake_preview", 1)[1].split(
+        "async def claw_manual_intake_execute", 1
+    )[0]
+    assert "_usage_gate_denial" not in preview_handler
+    gate_helper = source.split("async def _usage_gate_denial", 1)[1].split("async def", 1)[0]
+    assert 'request.headers.get("cf-connecting-ip")' in gate_helper
+    assert "current_user_id(request)" in gate_helper
+    assert "request.body" not in gate_helper

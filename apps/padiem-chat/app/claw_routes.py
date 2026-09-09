@@ -29,6 +29,8 @@ import uuid
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from .auth_routes import auth_ready, current_user_id
+from .usage_gate import UsageGate
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -81,6 +83,35 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
         status_code=status_code,
         headers=_NO_STORE_HEADERS,
     )
+
+
+def _usage_denied_response(decision) -> JSONResponse:
+    headers = dict(_NO_STORE_HEADERS)
+    if decision.retry_after_seconds is not None:
+        headers["Retry-After"] = str(decision.retry_after_seconds)
+    return JSONResponse(
+        {"ok": False, "error": {"code": decision.code, "message": decision.user_message}},
+        status_code=decision.status_code,
+        headers=headers,
+    )
+
+
+async def _usage_gate_denial(request: Request) -> JSONResponse | None:
+    """Server-derived B62 usage gate for the real-execution path.
+
+    Identity comes only from the signed-in session cookie and the trusted
+    edge IP header; nothing in the request body can supply or override it.
+    Returns a bounded product-safe response when denied, otherwise None.
+    """
+    if not getattr(request.app.state, "usage_gate_enforced", False):
+        return None
+    uid = current_user_id(request) if auth_ready(request) else None
+    usage_gate: UsageGate = request.app.state.usage_gate
+    decision = await usage_gate.authorize(
+        raw_ip=request.headers.get("cf-connecting-ip"),
+        user_id=uid,
+    )
+    return _usage_denied_response(decision) if not decision.allowed else None
 
 
 async def claw_manual_intake_preview(request: Request) -> JSONResponse:
@@ -228,6 +259,10 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         return _error(400, "contract_violation", str(exc))
     except Exception as exc:
         return _error(400, "invalid_input", str(exc))
+
+    denial = await _usage_gate_denial(request)
+    if denial is not None:
+        return denial
 
     try:
         adapter = p01_adapter_from_environment()
