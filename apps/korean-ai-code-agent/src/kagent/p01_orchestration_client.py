@@ -144,9 +144,13 @@ class P01EngineOrchestrationClient:
 
         execution = request.execution_request
         agent = execution.agent
+        model_policy = dict(agent.model_policy)
         valid_model_policy = (
-            not agent.model_policy
-            or agent.model_policy.get("model") in PADIEM_EXECUTABLE_MODEL_IDS
+            not model_policy
+            or (
+                set(model_policy) == {"model"}
+                and model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+            )
         )
         if (
             not valid_model_policy
@@ -169,7 +173,7 @@ class P01EngineOrchestrationClient:
                 "optimize_for": agent.optimize_for,
                 "max_tokens": agent.max_tokens,
                 "required_capabilities": list(agent.required_capabilities),
-                "model_policy": dict(agent.model_policy),
+                "model_policy": model_policy,
             },
             "messages": [dict(message) for message in execution.messages],
             "trace_id": execution.trace_id,
