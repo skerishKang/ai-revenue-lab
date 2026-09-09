@@ -28,7 +28,7 @@ The default presentation is an embedded right-side panel/drawer, but the product
 Host website/app
   -> B53 Padiem Sidecar product + customer configuration
   -> Product/Customer Adapter
-  -> IP-SIDECAR (proposed shared embedded runtime)
+  -> IP-SIDECAR (shared embedded runtime)
   -> IP-ENGINE
   -> IP-CORE
   -> B14 Korean AI Platform
@@ -75,13 +75,22 @@ CONTROL_PLANE_TRUTH_REIMPLEMENTED_IN_B53 = NO
 PRODUCT_SPECIFIC_DOMAIN_SEMANTICS_STAY_IN_ADAPTER = YES
 ```
 
-## Current phase
+## Current implementation status
+
+Repository authority after the accepted Sidecar foundation and B53 product slices:
 
 ```text
-S0 = PRODUCT CONSOLIDATION + DOCUMENTATION
-LIVE_SIDECAR_RUNTIME = NOT YET AUTHORIZED
-IP_SIDECAR_REGISTRATION = REGISTERED S1 / RUNTIME S2
-PRODUCTION_MUTATION = NO
+S0_PRODUCT_CONSOLIDATION_DOCS = COMPLETE
+IP_SIDECAR_FOUNDATION = COMPLETE (#1739)
+B53_PRODUCT_ADAPTER_REFERENCE_HOST = COMPLETE (#2180)
+B53_INSTALL_EMBED_LOCAL_CONFORMANCE = COMPLETE (#2194)
+REAL_SERVER_MEDIATED_ENGINEPORT = NOT_DONE (#2198 queued)
+ENGINE_CP_TRUSTED_SCOPE_PRECONDITION = #2195 OPEN
+REAL_CDN_DOMAIN_PACKAGE_PUBLISH = NO
+EXTERNAL_CUSTOMER_PILOT = NO
+PRODUCTION_ACTIVATION = NO
 ```
 
-Refs #1722 #1723 #313 #315 #1707
+The current B53 source can exercise deterministic local/reference-host flows and bounded install/onboarding/configuration diagnostics. It must not be described as a live customer Engine integration until #2195 establishes trusted Engine scope composition and the subsequent B53 server-mediated EnginePort work is accepted.
+
+Refs #1722 #1723 #1739 #2180 #2194 #2195 #2198 #313 #315 #1707

@@ -10,7 +10,7 @@ const repoRoot = path.resolve(consoleRoot, '..', '..');
 const manifestPath = path.join(consoleRoot, 'business-manifest.js');
 const docsRoot = path.join(repoRoot, 'docs', 'products', 'padiem-sidecar');
 const historicalB53 = path.join(repoRoot, 'reference', 'business-53-embedded-ai-sdk-v1');
-const futureRuntime = path.join(repoRoot, 'apps', 'padiem-sidecar');
+const productRuntime = path.join(repoRoot, 'apps', 'padiem-sidecar');
 
 const context = { window: { ARL_IDENTITY_CORE: null } };
 vm.createContext(context);
@@ -63,9 +63,9 @@ assert.equal(
   'historical Embedded AI SDK reference must remain preserved'
 );
 assert.equal(
-  fs.existsSync(futureRuntime),
-  false,
-  'S0 must not claim/create apps/padiem-sidecar runtime'
+  fs.existsSync(productRuntime),
+  true,
+  'accepted B53 product runtime must remain present after #2180/#2194'
 );
 
 const readme = fs.readFileSync(path.join(docsRoot, 'README.md'), 'utf8');
@@ -87,4 +87,4 @@ assert.ok(security.includes('BROWSER_ENGINE_SECRET = NO'));
 assert.ok(architecture.includes('DIRECT_B53_TO_PROVIDER = NO'));
 assert.ok(architecture.includes('IFRAME_B62_AS_PLATFORM = NO'));
 
-console.log(`Padiem Sidecar S0 registry/docs contract PASS (${expectedDocs.length} canonical docs)`);
+console.log(`Padiem Sidecar registry/docs contract PASS (${expectedDocs.length} canonical docs)`);
