@@ -70,3 +70,29 @@ def test_container_path_preserves_private_security_bindings() -> None:
         "LF_ALLOWED_ORIGINS",
     ):
         assert f"{binding}: workerEnv.{binding}" in worker
+
+
+def test_container_build_context_excludes_secrets_runtime_state_and_tooling() -> None:
+    ignored = {
+        line.strip()
+        for line in (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
+    required = {
+        ".env",
+        ".env.*",
+        "node_modules",
+        ".wrangler",
+        ".wrangler-*",
+        "__pycache__",
+        "*.py[cod]",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        "var",
+    }
+    assert required <= ignored
+    # Keep the non-secret configuration example available to image builders and
+    # reviewers even though environment files are denied by default.
+    assert "!.env.example" in ignored
