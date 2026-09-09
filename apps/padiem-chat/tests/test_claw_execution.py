@@ -1,0 +1,627 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+from starlette.testclient import TestClient
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from app.app_factory import create_app
+from app.auth import SESSION_COOKIE, create_session_token
+from app.config import Settings
+from app.usage_gate import InMemoryUsageCounterStore, UsageDecision
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+
+EXECUTE_ROUTE_PATH = "/api/claw/manual-intake/execute"
+
+
+@pytest.fixture
+def client() -> TestClient:
+    settings = Settings.from_values(
+        runtime_mode="mock",
+        live_enabled="false",
+        auth_mode="off",
+    )
+    app = create_app(settings=settings)
+    return TestClient(app)
+
+
+def _make_outcome(answer: str = "test result", status_value: str = "completed") -> MagicMock:
+    status_mock = MagicMock()
+    status_mock.value = status_value
+    projection = MagicMock()
+    projection.status = status_mock
+    projection.run_id = "run_test123"
+    outcome = MagicMock()
+    outcome.projection = projection
+    outcome.answer = answer
+    outcome.p01_run_id = "p01_run_test123"
+    outcome.p01_event_count = 2
+    return outcome
+
+
+def _make_adapter() -> MagicMock:
+    adapter = MagicMock()
+    adapter.execute = AsyncMock(return_value=_make_outcome())
+    return adapter
+
+
+def test_valid_quote_executes_through_p01_chain(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
+            "channel": "kakao",
+            "action": "quote",
+            "sender_hint": "A업체",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ok"] is True
+    assert "result" in data
+    assert data["result"]["result_text"] == "test result"
+    assert data["result"]["action"] == "quote_draft"
+
+
+def test_valid_order_executes_through_p01_chain(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "가상 테스트: B업체 발주 요청.",
+            "channel": "email",
+            "action": "order",
+            "sender_hint": "B업체",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ok"] is True
+    assert data["result"]["action"] == "order_draft"
+
+
+def test_valid_reply_executes_through_p01_chain(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "답장 테스트 내용.",
+            "channel": "sms",
+            "action": "reply",
+            "sender_hint": "C고객",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ok"] is True
+    assert data["result"]["action"] == "reply_draft"
+
+
+def test_valid_summary_executes_through_p01_chain(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "요약 테스트 내용.",
+            "channel": "telegram",
+            "action": "summary",
+            "sender_hint": "D고객",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ok"] is True
+    assert data["result"]["action"] == "summarize_request"
+
+
+def test_browser_payload_cannot_set_provider_or_model(client: TestClient) -> None:
+    adapter = _make_adapter()
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=adapter):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+            "sender_hint": "A",
+            "provider": "evil-provider",
+            "model": "evil-model",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    adapter.execute.assert_awaited_once()
+
+
+def test_browser_payload_cannot_supply_engine_credential(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+            "sender_hint": "A",
+            "engine_credential": "secret123",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "secret123" not in str(data)
+
+
+def test_missing_engine_configuration_fails_closed(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    with patch("app.claw_routes.p01_adapter_from_environment", side_effect=P01AdapterError("p01_engine_not_configured", "Engine 클라이언트가 설정되지 않았습니다.")):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "engine_not_configured"
+
+
+def test_engine_failure_projects_safe_error(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(side_effect=P01AdapterError("p01_engine_request_failed", "P01 orchestration failed at the Engine boundary."))
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=adapter):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 502
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "engine_execution_failed"
+
+
+def test_no_silent_preview_fallback_after_execute(client: TestClient) -> None:
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(return_value=_make_outcome(answer=None, status_value="failed"))
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=adapter):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 502
+    data = resp.json()
+    assert data["ok"] is False
+
+
+def test_preview_route_remains_non_provider_if_preserved(client: TestClient) -> None:
+    payload = {
+        "content": "가상 테스트: 견적서 요청.",
+        "channel": "kakao",
+        "action": "quote",
+        "sender_hint": "A업체",
+    }
+    resp = client.post("/api/claw/manual-intake/preview", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ok"] is True
+    assert "preview" in data
+    assert data["preview"]["connector_required"] is False
+
+
+def test_no_auto_send_or_connector_write(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["result"]["direct_kakao_send"] is False
+    assert data["result"]["direct_sms_send"] is False
+    assert data["result"]["connector_required"] is False
+
+
+def test_untrusted_input_bounds_preserved(client: TestClient) -> None:
+    payload = {
+        "content": "A" * 5000,
+        "channel": "kakao",
+        "action": "quote",
+    }
+    resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 400
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "content_too_long"
+
+
+def test_invalid_action_rejected(client: TestClient) -> None:
+    payload = {
+        "content": "테스트",
+        "channel": "kakao",
+        "action": "forbidden_action",
+    }
+    resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 400
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "invalid_action"
+
+
+def test_invalid_channel_rejected(client: TestClient) -> None:
+    payload = {
+        "content": "테스트",
+        "channel": "unsupported_channel",
+        "action": "quote",
+    }
+    resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 400
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "invalid_channel"
+
+
+def test_empty_content_rejected(client: TestClient) -> None:
+    payload = {
+        "content": "   ",
+        "channel": "kakao",
+        "action": "quote",
+    }
+    resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 400
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "invalid_content"
+
+
+def test_non_json_request_rejected(client: TestClient) -> None:
+    resp = client.post(
+        "/api/claw/manual-intake/execute",
+        content="not json",
+        headers={"Content-Type": "text/plain"},
+    )
+    assert resp.status_code == 415
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "unsupported_media_type"
+
+
+def test_oversized_body_rejected(client: TestClient) -> None:
+    big_str = "x" * 70_000
+    resp = client.post(
+        "/api/claw/manual-intake/execute",
+        content=f'{{"content": "{big_str}"}}',
+        headers={"Content-Type": "application/json"},
+    )
+    assert resp.status_code in (400, 413)
+    data = resp.json()
+    assert data["ok"] is False
+
+
+def test_engine_not_configured_returns_503(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    with patch("app.claw_routes.p01_adapter_from_environment", side_effect=P01AdapterError("p01_engine_misconfigured", "P01 Engine client is not configured")):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "engine_not_configured"
+
+
+def test_engine_timeout_projects_safe_error(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(side_effect=P01AdapterError("p01_engine_unreachable", "P01 Engine endpoint could not be reached."))
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=adapter):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 502
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "engine_execution_failed"
+
+
+def test_no_credential_raw_text_in_response(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    with patch("app.claw_routes.p01_adapter_from_environment", side_effect=P01AdapterError("p01_engine_misconfigured", "Missing P01_ENGINE_CREDENTIAL")):
+        payload = {
+            "content": "테스트",
+            "channel": "kakao",
+            "action": "quote",
+        }
+        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 503
+    data = resp.json()
+    assert "P01_ENGINE_CREDENTIAL" not in str(data)
+    assert "Missing" not in str(data)
+
+
+# ── Web UI wiring contracts (#2215) ────────────────────────────────────────
+# Guard against dead wiring: the execute handler must attach to an element that
+# actually exists in the served HTML and must call the registered route.
+
+
+def test_execute_button_exists_in_served_html() -> None:
+    line = next(line for line in INDEX_HTML.splitlines() if 'id="clawExecuteButton"' in line)
+    # type="button" keeps execution from submitting the deterministic preview form.
+    assert 'type="button"' in line
+
+
+def test_execute_handler_is_attached_in_app_js() -> None:
+    assert 'document.getElementById("clawExecuteButton")' in APP_JS
+    assert 'clawExecuteButton.addEventListener("click"' in APP_JS
+
+
+def test_execute_handler_calls_a_registered_route(client: TestClient) -> None:
+    registered = {getattr(route, "path", None) for route in client.app.routes}
+    assert EXECUTE_ROUTE_PATH in registered
+    assert f'fetch("{EXECUTE_ROUTE_PATH}"' in APP_JS
+
+
+def test_execute_button_label_exists_in_both_locales() -> None:
+    assert '"claw-btn-execute": "실제 실행"' in LOCALE_JS
+    assert '"claw-btn-execute": "Run with real model"' in LOCALE_JS
+
+
+def test_execute_button_meets_touch_target_contract() -> None:
+    block = WORKSPACE_CSS.split(".claw-execute-button {", 1)[1].split("}", 1)[0]
+    assert "min-height: 48px" in block
+
+
+def test_executed_result_is_not_labelled_as_preview() -> None:
+    assert 'id="clawResultBadge"' in INDEX_HTML
+    assert "revealClawCard(result.title, true)" in APP_JS
+    assert '"claw-result-badge-run": "실제 실행"' in LOCALE_JS
+    assert '"claw-result-badge-run": "Real run"' in LOCALE_JS
+
+
+def test_preview_path_still_uses_preview_label() -> None:
+    assert "revealClawCard(preview.title)" in APP_JS
+    assert 'data-locale-key="claw-result-badge"' in INDEX_HTML
+
+
+# ── B62 UsageGate boundary on the real-execution path (CENTRAL blocker) ────
+# The execute route reaches a real model, so it must pass the same abuse/quota
+# gate as /api/chat, with identity derived only server-side.
+
+
+QUOTA_SALT = "claw-gate-quota-salt-not-a-real-secret-000001"
+SESSION_SECRET = "claw-gate-session-secret-not-a-real-credential-0"
+SIGNED_IN_USER_ID = "usr_" + "7" * 32
+TRUSTED_IP = "203.0.113.77"
+PREVIEW_ROUTE_PATH = "/api/claw/manual-intake/preview"
+GATE_PAYLOAD = {
+    "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
+    "channel": "kakao",
+    "action": "quote",
+    "sender_hint": "A업체",
+}
+
+
+class RecordingUsageGate:
+    def __init__(self, decision: UsageDecision) -> None:
+        self.decision = decision
+        self.calls: list[dict[str, str | None]] = []
+
+    async def authorize(self, *, raw_ip: str | None, user_id: str | None) -> UsageDecision:
+        self.calls.append({"raw_ip": raw_ip, "user_id": user_id})
+        return self.decision
+
+
+def _denied_decision() -> UsageDecision:
+    return UsageDecision(
+        allowed=False,
+        code="rate_limited",
+        status_code=429,
+        user_message="요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
+        retry_after_seconds=37,
+    )
+
+
+def _allowed_decision() -> UsageDecision:
+    return UsageDecision(allowed=True, subject_type="user")
+
+
+def _gated_app(
+    gate: RecordingUsageGate,
+    *,
+    settings: Settings | None = None,
+    history_store: object | None = None,
+):
+    app = create_app(
+        settings or Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"),
+        history_store=history_store,
+    )
+    app.state.usage_gate = gate
+    app.state.usage_gate_enforced = True
+    return app
+
+
+def _google_settings(**overrides) -> Settings:
+    values = {
+        "runtime_mode": "mock",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "claw-gate-client.apps.googleusercontent.com",
+        "google_client_secret": "claw-gate-google-secret",
+        "session_secret": SESSION_SECRET,
+        "session_max_age_seconds": 3600,
+    }
+    values.update(overrides)
+    return Settings.from_values(**values)
+
+
+def _live_quota_settings(**overrides) -> Settings:
+    values = {
+        "runtime_mode": "b14",
+        "b14_base_url": "https://b14.example",
+        "quota_salt": QUOTA_SALT,
+        "anonymous_burst_limit": 2,
+        "anonymous_daily_limit": 20,
+        "user_burst_limit": 8,
+        "user_daily_limit": 100,
+        "global_daily_limit": 1000,
+    }
+    values.update(overrides)
+    return Settings.from_values(**values)
+
+
+class _PresenceOnlyHistoryStore:
+    """auth_ready() only requires that a history store is bound."""
+
+    async def get_user(self, user_id: str):
+        return None
+
+
+def test_execute_is_denied_before_p01_transport_when_usage_gate_denies() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    factory = MagicMock(name="p01_adapter_from_environment")
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", factory
+    ):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 429
+    assert resp.headers["retry-after"] == "37"
+    assert resp.json()["ok"] is False
+    assert resp.json()["error"]["code"] == "rate_limited"
+    factory.assert_not_called()
+    assert len(gate.calls) == 1
+
+
+def test_execute_denial_holds_even_when_the_engine_is_fully_configured() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 429
+    factory.assert_not_called()
+
+
+def test_execute_identity_is_server_derived_and_body_identity_is_ignored() -> None:
+    gate = RecordingUsageGate(_allowed_decision())
+    spoofed = dict(GATE_PAYLOAD, user_id="attacker-chosen-uid", ip="198.51.100.244", raw_ip="198.51.100.244")
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=spoofed, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 200
+    assert gate.calls == [{"raw_ip": TRUSTED_IP, "user_id": None}]
+
+
+def test_signed_in_execute_authorizes_with_the_session_user_id() -> None:
+    settings = _google_settings()
+    gate = RecordingUsageGate(_allowed_decision())
+    app = _gated_app(gate, settings=settings, history_store=_PresenceOnlyHistoryStore())
+    with TestClient(app, base_url="https://chat.example.test") as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(settings, SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            resp = client.post(
+                EXECUTE_ROUTE_PATH,
+                json=dict(GATE_PAYLOAD, user_id="attacker-chosen-uid"),
+                headers={"cf-connecting-ip": TRUSTED_IP},
+            )
+    assert resp.status_code == 200
+    assert gate.calls == [{"raw_ip": TRUSTED_IP, "user_id": SIGNED_IN_USER_ID}]
+
+
+def test_anonymous_execute_is_burst_bounded_per_trusted_ip_with_the_real_usage_gate() -> None:
+    store = InMemoryUsageCounterStore()
+    app = create_app(_live_quota_settings(), usage_store=store)
+    assert app.state.usage_gate_enforced is True
+    allowed = 0
+    with TestClient(app) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        first = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+        second = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+        third = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+        other_ip = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": "192.0.2.9"})
+    assert (first.status_code, second.status_code) == (200, 200)
+    assert third.status_code == 429
+    assert third.headers["retry-after"]
+    assert other_ip.status_code == 200
+    assert factory.call_count == 3
+
+
+def test_execute_fails_closed_when_live_identity_or_gate_is_unavailable() -> None:
+    store = InMemoryUsageCounterStore()
+    app = create_app(_live_quota_settings(), usage_store=store)
+    with TestClient(app) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        no_identity = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD)
+    assert no_identity.status_code == 503
+    assert no_identity.json()["error"]["code"] == "live_identity_unavailable"
+    factory.assert_not_called()
+
+    unbound = create_app(_live_quota_settings())
+    assert unbound.state.usage_gate_enforced is True
+    with TestClient(unbound) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ) as factory:
+        no_gate = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert no_gate.status_code == 503
+    assert no_gate.json()["error"]["code"] == "live_abuse_gate_unavailable"
+    factory.assert_not_called()
+
+
+def test_quota_denial_does_not_expose_internal_quota_state() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
+    ):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    body = resp.text
+    assert TRUSTED_IP not in body
+    assert QUOTA_SALT not in body
+    for internal in ("anon_", "burst", "daily", "subject_type", "bucket"):
+        assert internal not in body
+    assert resp.headers["cache-control"] == "no-store, max-age=0"
+
+
+def test_preview_never_calls_the_usage_gate_or_the_p01_adapter() -> None:
+    gate = RecordingUsageGate(_denied_decision())
+    factory = MagicMock(name="p01_adapter_from_environment")
+    with TestClient(_gated_app(gate)) as client, patch(
+        "app.claw_routes.p01_adapter_from_environment", factory
+    ):
+        resp = client.post(PREVIEW_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
+    assert resp.status_code == 200
+    assert resp.json()["ok"] is True
+    assert gate.calls == []
+    factory.assert_not_called()
+
+
+def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
+    source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
+    execute_handler = source.split("async def claw_manual_intake_execute", 1)[1]
+    assert execute_handler.index("_usage_gate_denial(request)") < execute_handler.index(
+        "p01_adapter_from_environment()"
+    )
+    preview_handler = source.split("async def claw_manual_intake_preview", 1)[1].split(
+        "async def claw_manual_intake_execute", 1
+    )[0]
+    assert "_usage_gate_denial" not in preview_handler
+    gate_helper = source.split("async def _usage_gate_denial", 1)[1].split("async def", 1)[0]
+    assert 'request.headers.get("cf-connecting-ip")' in gate_helper
+    assert "current_user_id(request)" in gate_helper
+    assert "request.body" not in gate_helper

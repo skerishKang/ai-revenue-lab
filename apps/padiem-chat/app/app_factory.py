@@ -12,7 +12,7 @@ from .auth import GoogleOAuthClient
 from .auth_routes import auth_status, google_callback, google_start, logout
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
-from .claw_routes import claw_manual_intake_preview
+from .claw_routes import claw_manual_intake_preview, claw_manual_intake_execute
 from .config import Settings
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -88,6 +88,7 @@ def create_app(
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
+        Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
