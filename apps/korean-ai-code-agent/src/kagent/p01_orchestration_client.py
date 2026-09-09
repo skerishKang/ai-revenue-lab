@@ -29,7 +29,7 @@ from padiem_control_plane.product_tier_routes import (
     active_route_for,
 )
 
-from .p01_adapter import P01AdapterError
+from .p01_adapter import P01AdapterError, P01DispatchClass
 
 
 def _padiem_executable_route_ids() -> frozenset[str]:
@@ -45,6 +45,7 @@ def _padiem_executable_route_ids() -> frozenset[str]:
             raise P01AdapterError(
                 "invalid_product_tier",
                 f"제품 등급 라우트 계약이 무효합니다: {exc}",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             ) from exc
         if route is not None and route.model_id is not None:
             ids.add(route.model_id)
@@ -52,6 +53,7 @@ def _padiem_executable_route_ids() -> frozenset[str]:
         raise P01AdapterError(
             "invalid_product_tier",
             "Padiem 공유 라우트 계약에 실행 가능한 등급 라우트가 없습니다.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
         )
     return frozenset(ids)
 
@@ -106,6 +108,7 @@ class P01EngineOrchestrationClient:
             raise P01AdapterError(
                 "invalid_engine_client",
                 "Engine client must expose async orchestrate(request).",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         self._client = client
 
@@ -114,16 +117,21 @@ class P01EngineOrchestrationClient:
         try:
             raw = await self._client.orchestrate(payload)
         except PadiemAiEngineClientError as exc:
+            # The Engine call was attempted; the provider-side state is ambiguous.
+            # Conservative UNKNOWN: never refundable under the #830 invariant.
             raise P01AdapterError(
                 "p01_engine_request_failed",
                 "P01 orchestration failed at the Engine boundary.",
+                dispatch_class=P01DispatchClass.UNKNOWN,
             ) from exc
         try:
             result = orchestration_result_from_public(raw)
         except OrchestrationError as exc:
+            # A wire response was received, so execution was dispatched.
             raise P01AdapterError(
                 exc.code,
                 "P01 orchestration result carries data the public projection cannot reconstruct.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             ) from exc
         self._validate_correlation(request, result)
         return result
@@ -133,12 +141,14 @@ class P01EngineOrchestrationClient:
             raise P01AdapterError(
                 "invalid_p01_request",
                 "P01 port requires a canonical OrchestrationRequest.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         client_app_id = getattr(self._client, "app_id", None)
         if client_app_id is not None and client_app_id != request.app_id:
             raise P01AdapterError(
                 "p01_app_id_mismatch",
                 "Engine client app identity does not match the P01 request.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         self._reject_unsupported_authority(request)
 
@@ -162,6 +172,7 @@ class P01EngineOrchestrationClient:
             raise P01AdapterError(
                 "p01_authority_pinning",
                 "P01 agent profile carries routing or tool authority the Engine wire cannot accept.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         payload: dict[str, Any] = {
             "agent": {
@@ -194,33 +205,39 @@ class P01EngineOrchestrationClient:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
                 "P01 requests must not carry a subject identity.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         for name in _NULLABLE_AUTHORITY_FIELDS:
             if getattr(request, name) is not None:
                 raise P01AdapterError(
                     "p01_authority_field_unsupported",
                     f"P01 requests must not carry the {name} authority field.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
         for name in _EMPTY_AUTHORITY_FIELDS:
             if getattr(request, name):
                 raise P01AdapterError(
                     "p01_authority_field_unsupported",
                     f"P01 requests must not carry {name} payload.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
         if request.require_evidence or request.require_verification:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
                 "P01 requests must not require evidence or verification the projection cannot carry.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if request.max_retries != _ENGINE_MAX_RETRIES_DEFAULT:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
                 "P01 requests must keep the canonical Engine retry budget.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if request.context.idempotency_key is not None:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
                 "P01 requests must not carry an idempotency key.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
 
     @staticmethod
@@ -240,6 +257,7 @@ class P01EngineOrchestrationClient:
             raise P01AdapterError(
                 "p01_result_correlation_mismatch",
                 "P01 orchestration result does not match the request correlation.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
             )
 
 

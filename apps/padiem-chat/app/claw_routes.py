@@ -21,6 +21,13 @@ Both routes are fail-closed: missing/malformed input, a missing Worker P01/Engin
 binding (adapter unbound), Engine timeout/unreachable, and malformed P01
 responses all return bounded safe errors. No credential/provider raw text leaks
 into the browser. No silent preview fallback after explicit execute.
+
+Quota accounting (#2226): the B62 UsageGate consumes before the P01/Engine
+transport. A consumed authorization is compensated only when the failure is
+provably pre-dispatch (unbound adapter or ``P01DispatchClass.NOT_DISPATCHED``
+classification from the P01 chain). Success, dispatched failures, ambiguous
+timeouts, and gate denials never refund. Callers cannot request or mint a
+refund: the decision derives solely from server-side dispatch classification.
 """
 
 from __future__ import annotations
@@ -40,6 +47,7 @@ from .control_plane_identity_shadow import (
     CurrentCanonicalSessionAuthority,
     resolve_refreshed_session,
 )
+from .dispatch_quota import _clear_reservation, _refund_active_reservation
 from .usage_gate import UsageGate
 from kagent.document_export import (
     DocumentExportError,
@@ -53,7 +61,7 @@ from kagent.manual_intake import (
     ManualIntakeRequest,
     ManualIntakeRouter,
 )
-from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter
+from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter, P01DispatchClass
 from kagent.p01_run_flow import create_claw_run
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
@@ -321,6 +329,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         request.app.state, "claw_p01_adapter", None
     )
     if adapter is None:
+        # No composed transport exists, so the consumed authorization is
+        # provably un-dispatched: compensate the exact receipt (#2226).
+        await _refund_active_reservation()
         return _error(503, "engine_not_configured", "Engine 클라이언트가 설정되지 않았습니다.")
 
     task_text = _build_execute_task(action, content_clean)
@@ -329,9 +340,17 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     try:
         outcome = await adapter.execute(run)
     except P01AdapterError as exc:
+        # Canonical #830 invariant: refund only when B62 can prove the Engine
+        # call was never dispatched. Dispatched/ambiguous failures stay counted.
+        if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
+            await _refund_active_reservation()
+        else:
+            _clear_reservation()
         return _error(502, "engine_execution_failed", "Engine 실행에 실패했습니다.")
-    except Exception as exc:
+    except Exception:
+        _clear_reservation()
         return _error(502, "engine_execution_failed", "Engine 실행에 실패했습니다.")
+    _clear_reservation()
 
     if outcome.projection.status.value != "completed" or not outcome.answer:
         return _error(502, "engine_execution_failed", "Engine 실행이 완료되지 않았습니다.")
