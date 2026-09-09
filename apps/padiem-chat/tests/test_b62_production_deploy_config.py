@@ -71,7 +71,7 @@ def _bindings_without_public_url() -> list[dict]:
 
 
 def _readback_simulation(before_bindings: list[dict], after_bindings: list[dict], public_url: str) -> str:
-    """Pure-Python mirror of the deploy read-back diff logic in the workflow."""
+    """Pure-Python mirror of the deploy read-back public-URL allowance."""
 
     def key(bindings):
         return sorted(
@@ -198,13 +198,16 @@ def test_main_cli_refuses_existing_output(tmp_path, capsys):
     assert output_path.read_text(encoding="utf-8") == "existing"
 
 
-def test_workflow_readback_pins_new_assertion_form_and_forbids_old_form():
+def test_workflow_readback_uses_exact_binding_authority_guard_with_only_public_url_normalization():
     workflow = _read_workflow()
-    assert 'expected_entry = ("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)' in workflow
-    assert "assert set(added) <= {expected_entry}" in workflow
-    assert "assert expected_entry in after_key" in workflow
-    assert "PADIEM_CHAT_PUBLIC_BASE_URL_STATE=" in workflow
-    assert "added == [" not in workflow
+    assert 'normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"' in workflow
+    assert "PUBLIC_BASE_URL_NORMALIZATION=INJECTED_EXPECTED_ONLY" in workflow
+    assert "PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED" in workflow
+    assert "python .github/scripts/b62_binding_state_guard.py" in workflow
+    assert '--before "${normalized_before}"' in workflow
+    assert '--after "${settings}"' in workflow
+    assert "BINDINGS_PRESERVED_EXACTLY=PASS" in workflow
+    assert 'expected_entry = ("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)' not in workflow
 
 
 def test_readback_first_deploy_injects_public_base_url():
