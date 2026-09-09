@@ -8,6 +8,10 @@ workers_dev = false
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"
 
+[[services]]
+binding = "CONTROL_PLANE_IDENTITY"
+service = "padiem-control-plane-identity"
+
 # WO-8 PR-B (#1235 A9): durable idempotency + identity-bound continuation
 # authority. Both bindings point at the SAME provisioned database
 # (padiem-engine, database_id below; provision evidence: CI run 34042827563,
