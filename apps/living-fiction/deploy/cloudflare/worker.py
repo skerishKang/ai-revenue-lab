@@ -1,11 +1,12 @@
-"""Cloudflare Python Worker adapter for Living Fiction.
+"""Cloudflare Python Worker reference adapter for Living Fiction.
 
 This module deliberately reuses the canonical FastAPI ``create_app`` factory.
 It contains no product routes or database implementation of its own.
 
-M0 is source/preflight only. Production deployment stays blocked until the
-PostgreSQL dependency path is proven compatible with Python Workers or the
-Cloudflare Container fallback is selected under Issue #2223.
+M0 selected Cloudflare Container as the primary migration target because the
+current production database path uses ``psycopg[binary]`` / ``psycopg_pool``.
+Keep this Python Worker adapter only as a reference/future path until the full
+PostgreSQL dependency stack is proven compatible with Python Workers.
 """
 
 from __future__ import annotations
