@@ -22,7 +22,9 @@ def test_claw_phase_a_production_smoke_gate_is_exact_main_bounded_and_secret_fre
         "PRODUCTION_MUTATION=0",
         "environment: production",
         "git fetch --no-tags --depth=1 origin main",
-        'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"',
+        'test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"',
+        'test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"',
+        'test "${{ inputs.confirmation }}" = "RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY"',
         "--max-time 45",
     )
     for needle in required:
@@ -61,3 +63,31 @@ def test_claw_phase_a_smoke_gate_push_admission_does_not_fail_closed_on_ordinary
     assert "  push:" in text
     assert '      - ".github/workflows/b62-claw-production-smoke-gate.yml"' in text
     assert "if: ${{ github.event_name == 'workflow_dispatch' }}" in text
+
+
+def test_claw_phase_a_smoke_gate_event_context_safe_for_all_triggers() -> None:
+    """#2267 second pass: every declared trigger must materialize >= 1 job.
+
+    - source-contract admits push, pull_request, and workflow_dispatch.
+    - each event uses a context-safe checkout (no dispatch-only inputs on
+      push/PR paths, no PR-only fields on push/dispatch paths).
+    - dispatch-only inputs.* never appear in top-level/global env.
+    - the real canary job stays workflow_dispatch-only.
+    """
+    text = WORKFLOW.read_text(encoding="utf-8")
+
+    assert (
+        "if: ${{ github.event_name == 'pull_request' "
+        "|| github.event_name == 'push' "
+        "|| github.event_name == 'workflow_dispatch' }}" in text
+    )
+    assert "ref: ${{ github.event.pull_request.head.sha }}" in text
+    assert "ref: ${{ github.sha }}" in text
+    assert "ref: ${{ inputs.target_sha }}" in text
+
+    top_level = text.split("jobs:")[0]
+    top_env = top_level.split("env:")[1] if "env:" in top_level else ""
+    assert "inputs." not in top_env
+
+    canary_block = text.split("phase-a-production-canary:")[1]
+    assert "if: ${{ github.event_name == 'workflow_dispatch' }}" in canary_block

@@ -30,7 +30,7 @@ env:
 
 jobs:
   source-contract:
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -39,6 +39,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout push SHA
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -99,6 +107,7 @@ jobs:
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
           test "${{ inputs.confirmation }}" = "RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
           echo "PHASE_A_EXACT_MAIN=PASS"
@@ -143,7 +152,7 @@ jobs:
           {
             echo '## B62 Claw Phase-A Production canary'
             echo
-            echo "- exact SHA: \`${TARGET_SHA}\`"
+            echo "- exact SHA: \`${{ inputs.target_sha }}\`"
             echo '- action: `summary`'
             echo '- synthetic input only: yes'
             echo '- human session material stored in CI: no'
