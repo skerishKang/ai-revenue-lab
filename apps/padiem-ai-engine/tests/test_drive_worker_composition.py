@@ -105,9 +105,6 @@ def _d1_row(app_id: str, *, active: int = 1, capabilities: tuple[str, ...] = ("r
     }
 
 
-# --- DriveGrant validation ---
-
-
 def test_drive_grant_rejects_duplicate_capabilities() -> None:
     with pytest.raises(DriveContractError):
         DriveGrant(
@@ -117,9 +114,6 @@ def test_drive_grant_rejects_duplicate_capabilities() -> None:
             actor_ref=ACTOR_REF,
             granted_capabilities=(DriveCapability.READ, DriveCapability.READ),
         )
-
-
-# --- drive_tool_binding ---
 
 
 def test_drive_tool_binding_assembles_engine_tool_binding() -> None:
@@ -177,9 +171,6 @@ def test_drive_tool_binding_rejects_incomplete_port() -> None:
         drive_tool_binding(grant=grant, port=port)
 
 
-# --- D1 grant loader ---
-
-
 def test_load_drive_grants_returns_grants_on_hit() -> None:
     store = CloudflareD1ConnectorGrantStore(
         FakeD1Binding([_d1_row("app_1"), _d1_row("app_2")])
@@ -216,9 +207,6 @@ def test_load_drive_grants_raises_on_binding_exception() -> None:
     store = CloudflareD1ConnectorGrantStore(FakeD1Binding(fail=True))
     with pytest.raises(Exception):
         run(store.load_drive_grants())
-
-
-# --- resolver coexistence ---
 
 
 def test_resolver_no_ports_returns_none() -> None:
@@ -296,27 +284,22 @@ def test_resolver_empty_drive_grants_returns_none_for_drive() -> None:
     assert resolver is None
 
 
-# --- worker_identity composition ---
-
-
 def test_worker_composes_drive_port_and_grants() -> None:
-    """worker_identity exposes Drive port/grants helpers via source inspection."""
+    """worker_identity exposes the canonical CP-lease Drive port + grant helpers."""
     src = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
     assert "_drive_port_for_env" in src
     assert "_drive_grants_for_env" in src
-    assert "HttpxDriveReadPort" in src
+    assert "ControlPlaneLeaseDriveReadPort" in src
+    assert "CONTROL_PLANE_GOOGLE_OAUTH" in src
+    assert "HttpxDriveReadPort" not in src
 
 
 def test_missing_drive_store_keeps_drive_tools_unavailable() -> None:
-    """When no Drive port or grants are bound, resolver returns None."""
     resolver = build_tool_binding_resolver(gmail_port=None, drive_port=None)
     assert resolver is None
 
 
 def test_caller_payload_cannot_mint_drive_scope_or_binding_ref() -> None:
-    """DriveGrant is server-resolved only; caller fields are never used."""
-    # DriveGrant is a frozen dataclass with no caller fields.
-    # The only way to construct one is via server-resolved facts.
     grant = DriveGrant(
         app_id=DRIVE_REFERENCE_APP_ID,
         canonical_agent_id=DRIVE_AGENT_ID,
@@ -326,30 +309,23 @@ def test_caller_payload_cannot_mint_drive_scope_or_binding_ref() -> None:
     )
     assert grant.binding_ref == "server:bind:ref"
     assert grant.actor_ref == "server:actor:ref"
-    # DriveGrant only accepts DriveCapability values, not raw scope strings.
-    # A caller cannot mint a grant by passing a raw scope string.
     with pytest.raises(DriveContractError):
         DriveGrant(
             app_id=DRIVE_REFERENCE_APP_ID,
             canonical_agent_id=DRIVE_AGENT_ID,
             binding_ref="bind",
             actor_ref="actor",
-            granted_capabilities=("drive.readonly",),  # raw scope string, not DriveCapability
+            granted_capabilities=("drive.readonly",),
         )
 
 
-# --- source-level guards ---
-
-
 def test_drive_write_scope_or_operation_absent() -> None:
-    """Drive port source only supports readonly scope."""
     src = (APP_ROOT / "app" / "drive_port_httpx.py").read_text(encoding="utf-8")
     assert "DRIVE_READONLY_SCOPE" in src
     assert "DRIVE_FULL_SCOPE" not in src
 
 
 def test_no_secret_value_in_drive_port_errors() -> None:
-    """Drive port error strings must never leak credential values."""
     src = (APP_ROOT / "app" / "drive_port_httpx.py").read_text(encoding="utf-8")
     assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID" in src
     assert "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET" in src
@@ -357,7 +333,6 @@ def test_no_secret_value_in_drive_port_errors() -> None:
 
 
 def test_gmail_and_drive_resolvers_coexist() -> None:
-    """Both Gmail and Drive resolvers can be built from the same resolver."""
     drive_port = FakeDrivePort()
     gmail_port = FakeGmailPort()
     dgrant = drive_grant()
