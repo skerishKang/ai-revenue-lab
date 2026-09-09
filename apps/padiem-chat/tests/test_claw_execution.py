@@ -51,36 +51,167 @@ def _make_adapter() -> MagicMock:
     return adapter
 
 
-def test_valid_quote_executes_through_p01_chain(client: TestClient) -> None:
-    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
-        payload = {
-            "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
-            "channel": "kakao",
-            "action": "quote",
-            "sender_hint": "A업체",
-        }
-        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+def _make_workspace_store() -> MagicMock:
+    store = MagicMock()
+    metadata = MagicMock()
+    metadata.document_id = "doc_test1234567890abcdef1234567890ab"
+    metadata.tenant_id = "tenant_test"
+    metadata.filename = "견적서.docx"
+    metadata.media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    metadata.byte_length = 1024
+    metadata.public_projection.return_value = {
+        "document_id": metadata.document_id,
+        "filename": metadata.filename,
+        "media_type": metadata.media_type,
+        "byte_length": metadata.byte_length,
+    }
+    store.put_generated_docx = AsyncMock(return_value=metadata)
+    store.get_for_tenant = AsyncMock(return_value=(metadata, b"fake docx content"))
+    return store
+
+
+def _make_identity_shadow_store() -> MagicMock:
+    store = MagicMock()
+    record = MagicMock()
+    record.auth_session_id = "session_test123"
+    record.canonical_subject_id = "subject_test"
+    record.session_revision = 1
+    record.session_state = "active"
+    store.load_projection = AsyncMock(return_value=record)
+    return store
+
+
+def _make_auth_session_snapshot(tenant_id: str = "tenant_test") -> MagicMock:
+    snap = MagicMock()
+    snap.tenant_id = tenant_id
+    snap.session_id = "session_test123"
+    snap.product_id = "padiem-chat"
+    snap.state = "active"
+    snap.revision = 1
+    return snap
+
+
+def _make_authority() -> MagicMock:
+    authority = MagicMock()
+    authority.resolve_auth_session = AsyncMock(return_value=_make_auth_session_snapshot())
+    return authority
+
+
+def _app_with_identity(**overrides) -> MagicMock:
+    """Create an app with identity shadow store + CP authority for artifact tests."""
+    values = {
+        "runtime_mode": "mock",
+        "live_enabled": "false",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "test-client-id",
+        "google_client_secret": "test-client-secret",
+        "session_secret": "claw-gate-session-secret-not-a-real-credential-0",
+        "session_max_age_seconds": "3600",
+    }
+    values.update(overrides)
+    settings = Settings.from_values(**values)
+    app = create_app(
+        settings=settings,
+        history_store=MagicMock(),
+        d1_binding=MagicMock(),
+        r2_binding=MagicMock(),
+    )
+    app.state.identity_shadow_store = _make_identity_shadow_store()
+    app.state.control_plane_identity_authority = _make_authority()
+    return app
+
+
+def _signed_in_client(**overrides) -> TestClient:
+    app = _app_with_identity(**overrides)
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    return client
+
+
+def _google_settings(**overrides) -> Settings:
+    values = {
+        "runtime_mode": "mock",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "claw-gate-client.apps.googleusercontent.com",
+        "google_client_secret": "claw-gate-google-secret",
+        "session_secret": "claw-gate-session-secret-not-a-real-credential-0",
+        "session_max_age_seconds": 3600,
+    }
+    values.update(overrides)
+    return Settings.from_values(**values)
+
+
+SIGNED_IN_USER_ID = "usr_" + "7" * 32
+TRUSTED_IP = "203.0.113.77"
+
+
+def test_valid_quote_executes_through_p01_chain() -> None:
+    workspace_store = _make_workspace_store()
+    app = _app_with_identity()
+    app.state.workspace_document_store = workspace_store
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            payload = {
+                "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
+                "channel": "kakao",
+                "action": "quote",
+                "sender_hint": "A업체",
+            }
+            resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     assert data["ok"] is True
     assert "result" in data
     assert data["result"]["result_text"] == "test result"
     assert data["result"]["action"] == "quote_draft"
+    assert "artifact" in data["result"]
+    assert "document_id" in data["result"]["artifact"]
+    assert "artifact_token" not in data["result"]
+    assert data["result"]["artifact"]["document_id"].startswith("doc_")
+    assert data["result"]["artifact"]["media_type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert isinstance(data["result"]["artifact"]["byte_length"], int)
+    assert data["result"]["artifact"]["byte_length"] > 0
 
 
-def test_valid_order_executes_through_p01_chain(client: TestClient) -> None:
-    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
-        payload = {
-            "content": "가상 테스트: B업체 발주 요청.",
-            "channel": "email",
-            "action": "order",
-            "sender_hint": "B업체",
-        }
-        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+def test_valid_order_executes_through_p01_chain() -> None:
+    workspace_store = _make_workspace_store()
+    app = _app_with_identity()
+    app.state.workspace_document_store = workspace_store
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            payload = {
+                "content": "가상 테스트: B업체 발주 요청.",
+                "channel": "email",
+                "action": "order",
+                "sender_hint": "B업체",
+            }
+            resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     assert data["ok"] is True
     assert data["result"]["action"] == "order_draft"
+    assert "artifact" in data["result"]
+    assert "document_id" in data["result"]["artifact"]
+    assert "artifact_token" not in data["result"]
 
 
 def test_valid_reply_executes_through_p01_chain(client: TestClient) -> None:
@@ -111,34 +242,167 @@ def test_valid_summary_executes_through_p01_chain(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is True
     assert data["result"]["action"] == "summarize_request"
+    assert "artifact" not in data["result"]
 
 
-def test_browser_payload_cannot_set_provider_or_model(client: TestClient) -> None:
-    adapter = _make_adapter()
-    with patch("app.claw_routes.p01_adapter_from_environment", return_value=adapter):
+def test_quote_artifact_download_by_document_id() -> None:
+    workspace_store = _make_workspace_store()
+    app = _app_with_identity()
+    app.state.workspace_document_store = workspace_store
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            payload = {
+                "content": "가상 테스트: A업체 견적서 요청.",
+                "channel": "kakao",
+                "action": "quote",
+                "sender_hint": "A업체",
+            }
+            execute_resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
+    assert execute_resp.status_code == 200
+    execute_data = execute_resp.json()
+    assert "artifact" in execute_data["result"]
+    document_id = execute_data["result"]["artifact"]["document_id"]
+    assert document_id
+
+    download_resp = test_client.get(f"/api/claw/manual-intake/artifact/{document_id}")
+    assert download_resp.status_code == 200
+    assert download_resp.headers["content-type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert "attachment" in download_resp.headers.get("content-disposition", "")
+    assert len(download_resp.content) > 0
+    assert download_resp.headers["cache-control"] == "no-store, max-age=0"
+
+
+def test_artifact_download_invalid_document_id_fails_closed(client: TestClient) -> None:
+    resp = client.get("/api/claw/manual-intake/artifact/invalid!docid")
+    assert resp.status_code == 400
+    assert resp.json()["ok"] is False
+
+
+def test_artifact_download_not_found_returns_404() -> None:
+    app = _app_with_identity()
+    workspace_store = _make_workspace_store()
+    workspace_store.get_for_tenant = AsyncMock(return_value=None)
+    app.state.workspace_document_store = workspace_store
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        resp = test_client.get("/api/claw/manual-intake/artifact/doc_nonexistent1234567890abcdef12345")
+    assert resp.status_code == 404
+
+
+def test_quote_artifact_failure_fail_closed() -> None:
+    from kagent.document_export import DocumentExportError
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            payload = {
+                "content": "가상 테스트: A업체 견적서 요청.",
+                "channel": "kakao",
+                "action": "quote",
+                "sender_hint": "A업체",
+            }
+            with patch("app.claw_routes.build_document_artifact", side_effect=DocumentExportError("export_failed", "export failed")):
+                resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 500
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "artifact_generation_failed"
+
+
+def test_quote_no_tenant_fails_closed(client: TestClient) -> None:
+    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
         payload = {
-            "content": "테스트",
+            "content": "가상 테스트: A업체 견적서 요청.",
             "channel": "kakao",
             "action": "quote",
-            "sender_hint": "A",
-            "provider": "evil-provider",
-            "model": "evil-model",
+            "sender_hint": "A업체",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["error"]["code"] in ("workspace_scope_unavailable", "workspace_storage_unavailable")
+
+
+def test_quote_workspace_store_unavailable_fails_closed() -> None:
+    app = _app_with_identity()
+    del app.state.workspace_document_store
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            resp = test_client.post(
+                EXECUTE_ROUTE_PATH,
+                json={"content": "test", "channel": "kakao", "action": "quote"},
+            )
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "workspace_storage_unavailable"
+
+
+def test_browser_payload_cannot_set_provider_or_model() -> None:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    adapter = _make_adapter()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=adapter):
+            payload = {
+                "content": "테스트",
+                "channel": "kakao",
+                "action": "quote",
+                "sender_hint": "A",
+                "provider": "evil-provider",
+                "model": "evil-model",
+            }
+            resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 200
     adapter.execute.assert_awaited_once()
 
 
-def test_browser_payload_cannot_supply_engine_credential(client: TestClient) -> None:
-    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
-        payload = {
-            "content": "테스트",
-            "channel": "kakao",
-            "action": "quote",
-            "sender_hint": "A",
-            "engine_credential": "secret123",
-        }
-        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+def test_browser_payload_cannot_supply_engine_credential() -> None:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            payload = {
+                "content": "테스트",
+                "channel": "kakao",
+                "action": "quote",
+                "sender_hint": "A",
+                "engine_credential": "secret123",
+            }
+            resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     assert "secret123" not in str(data)
@@ -208,14 +472,23 @@ def test_preview_route_remains_non_provider_if_preserved(client: TestClient) -> 
     assert data["preview"]["connector_required"] is False
 
 
-def test_no_auto_send_or_connector_write(client: TestClient) -> None:
-    with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
-        payload = {
-            "content": "테스트",
-            "channel": "kakao",
-            "action": "quote",
-        }
-        resp = client.post("/api/claw/manual-intake/execute", json=payload)
+def test_no_auto_send_or_connector_write() -> None:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with patch("app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()):
+            payload = {
+                "content": "테스트",
+                "channel": "kakao",
+                "action": "quote",
+            }
+            resp = test_client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     assert data["result"]["direct_kakao_send"] is False
@@ -350,13 +623,10 @@ def test_no_credential_raw_text_in_response(client: TestClient) -> None:
 
 
 # ── Web UI wiring contracts (#2215) ────────────────────────────────────────
-# Guard against dead wiring: the execute handler must attach to an element that
-# actually exists in the served HTML and must call the registered route.
 
 
 def test_execute_button_exists_in_served_html() -> None:
     line = next(line for line in INDEX_HTML.splitlines() if 'id="clawExecuteButton"' in line)
-    # type="button" keeps execution from submitting the deterministic preview form.
     assert 'type="button"' in line
 
 
@@ -393,9 +663,7 @@ def test_preview_path_still_uses_preview_label() -> None:
     assert 'data-locale-key="claw-result-badge"' in INDEX_HTML
 
 
-# ── B62 UsageGate boundary on the real-execution path (CENTRAL blocker) ────
-# The execute route reaches a real model, so it must pass the same abuse/quota
-# gate as /api/chat, with identity derived only server-side.
+# ── B62 UsageGate boundary on the real-execution path ──────────────────────
 
 
 QUOTA_SALT = "claw-gate-quota-salt-not-a-real-secret-000001"
@@ -440,6 +708,9 @@ def _gated_app(
     *,
     settings: Settings | None = None,
     history_store: object | None = None,
+    identity_shadow_store: object | None = None,
+    control_plane_identity_authority: object | None = None,
+    workspace_document_store: object | None = None,
 ):
     app = create_app(
         settings or Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"),
@@ -447,21 +718,13 @@ def _gated_app(
     )
     app.state.usage_gate = gate
     app.state.usage_gate_enforced = True
+    if identity_shadow_store is not None:
+        app.state.identity_shadow_store = identity_shadow_store
+    if control_plane_identity_authority is not None:
+        app.state.control_plane_identity_authority = control_plane_identity_authority
+    if workspace_document_store is not None:
+        app.state.workspace_document_store = workspace_document_store
     return app
-
-
-def _google_settings(**overrides) -> Settings:
-    values = {
-        "runtime_mode": "mock",
-        "auth_mode": "google",
-        "public_base_url": "https://chat.example.test",
-        "google_client_id": "claw-gate-client.apps.googleusercontent.com",
-        "google_client_secret": "claw-gate-google-secret",
-        "session_secret": SESSION_SECRET,
-        "session_max_age_seconds": 3600,
-    }
-    values.update(overrides)
-    return Settings.from_values(**values)
 
 
 def _live_quota_settings(**overrides) -> Settings:
@@ -513,7 +776,7 @@ def test_execute_denial_holds_even_when_the_engine_is_fully_configured() -> None
 
 def test_execute_identity_is_server_derived_and_body_identity_is_ignored() -> None:
     gate = RecordingUsageGate(_allowed_decision())
-    spoofed = dict(GATE_PAYLOAD, user_id="attacker-chosen-uid", ip="198.51.100.244", raw_ip="198.51.100.244")
+    spoofed = dict(GATE_PAYLOAD, action="reply", user_id="attacker-chosen-uid", ip="198.51.100.244", raw_ip="198.51.100.244")
     with TestClient(_gated_app(gate)) as client, patch(
         "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
     ):
@@ -525,7 +788,14 @@ def test_execute_identity_is_server_derived_and_body_identity_is_ignored() -> No
 def test_signed_in_execute_authorizes_with_the_session_user_id() -> None:
     settings = _google_settings()
     gate = RecordingUsageGate(_allowed_decision())
-    app = _gated_app(gate, settings=settings, history_store=_PresenceOnlyHistoryStore())
+    app = _gated_app(
+        gate,
+        settings=settings,
+        history_store=_PresenceOnlyHistoryStore(),
+        identity_shadow_store=_make_identity_shadow_store(),
+        control_plane_identity_authority=_make_authority(),
+        workspace_document_store=_make_workspace_store(),
+    )
     with TestClient(app, base_url="https://chat.example.test") as client:
         client.cookies.set(
             SESSION_COOKIE,
@@ -551,10 +821,10 @@ def test_anonymous_execute_is_burst_bounded_per_trusted_ip_with_the_real_usage_g
     with TestClient(app) as client, patch(
         "app.claw_routes.p01_adapter_from_environment", return_value=_make_adapter()
     ) as factory:
-        first = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
-        second = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
-        third = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": TRUSTED_IP})
-        other_ip = client.post(EXECUTE_ROUTE_PATH, json=GATE_PAYLOAD, headers={"cf-connecting-ip": "192.0.2.9"})
+        first = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
+        second = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
+        third = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": TRUSTED_IP})
+        other_ip = client.post(EXECUTE_ROUTE_PATH, json=dict(GATE_PAYLOAD, action="reply"), headers={"cf-connecting-ip": "192.0.2.9"})
     assert (first.status_code, second.status_code) == (200, 200)
     assert third.status_code == 429
     assert third.headers["retry-after"]

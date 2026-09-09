@@ -23,14 +23,21 @@ into the browser. No silent preview fallback after explicit execute.
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 import uuid
 
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
+from .control_plane_identity_shadow import IdentityShadowRecord, IdentityShadowStore, CurrentCanonicalSessionAuthority
 from .usage_gate import UsageGate
+from kagent.document_export import (
+    DocumentExportError,
+    GeneratedDocumentArtifact,
+    build_document_artifact,
+)
 from kagent.manual_intake import (
     ContractError,
     ManualIntakeAction,
@@ -114,6 +121,46 @@ async def _usage_gate_denial(request: Request) -> JSONResponse | None:
     return _usage_denied_response(decision) if not decision.allowed else None
 
 
+async def _resolve_canonical_tenant(request: Request) -> str | None:
+    """Resolve the canonical tenant_id from the signed-in session.
+
+    Flow:
+        signed-in user_id → identity shadow → auth_session_id
+        → Control Plane resolve_auth_session → AuthSessionSnapshot.tenant_id
+
+    Returns None if any step fails (caller must fail closed).
+    """
+    if not auth_ready(request):
+        return None
+    product_user_id = current_user_id(request)
+    if not product_user_id:
+        return None
+    shadow_store: IdentityShadowStore | None = getattr(
+        request.app.state, "identity_shadow_store", None
+    )
+    authority: CurrentCanonicalSessionAuthority | None = getattr(
+        request.app.state, "control_plane_identity_authority", None
+    )
+    if shadow_store is None or authority is None:
+        return None
+    try:
+        shadow = await shadow_store.load_projection(product_user_id)
+    except Exception:
+        return None
+    if shadow is None:
+        return None
+    try:
+        session = await authority.resolve_auth_session(session_id=shadow.auth_session_id)
+    except Exception:
+        return None
+    if not isinstance(session, object):
+        return None
+    tenant_id = getattr(session, "tenant_id", None)
+    if not isinstance(tenant_id, str) or not tenant_id:
+        return None
+    return tenant_id
+
+
 async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
@@ -195,7 +242,7 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
                 "connector_required": False,
             },
         },
-status_code=200,
+        status_code=200,
         headers=_NO_STORE_HEADERS,
     )
 
@@ -282,25 +329,120 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if outcome.projection.status.value != "completed" or not outcome.answer:
         return _error(502, "engine_execution_failed", "Engine 실행이 완료되지 않았습니다.")
 
+    title = f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
+
+    # Artifact-producing actions (quote/order) require canonical tenant resolution.
+    artifact_descriptor: dict[str, Any] | None = None
+    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
+        tenant_id = await _resolve_canonical_tenant(request)
+        if tenant_id is None:
+            return _error(
+                503,
+                "workspace_scope_unavailable",
+                "문서 저장 권한을 확인할 수 없습니다.",
+            )
+        workspace_store: Any = getattr(request.app.state, "workspace_document_store", None)
+        if workspace_store is None:
+            return _error(
+                503,
+                "workspace_storage_unavailable",
+                "문서 저장소가 설정되지 않았습니다.",
+            )
+        try:
+            artifact = build_document_artifact(
+                document_type=action.value.replace("_draft", ""),
+                file_format="docx",
+                title=title,
+                metadata_fields=[
+                    ("채널", channel.value),
+                    ("작업", action.value),
+                    ("발신자", sender_hint or "미지정"),
+                ],
+                section_title=f"실행 결과 — {action.value}",
+                body_text=outcome.answer or "",
+                items=[],
+                total="",
+                markdown_fallback_text=outcome.answer or "",
+            )
+            metadata = await workspace_store.put_generated_docx(
+                tenant_id=tenant_id,
+                filename=artifact.filename,
+                body=artifact.content_bytes(),
+            )
+            artifact_descriptor = metadata.public_projection()
+        except DocumentExportError:
+            return _error(
+                500,
+                "artifact_generation_failed",
+                "문서 아티팩트 생성에 실패했습니다.",
+            )
+        except Exception:
+            return _error(
+                500,
+                "artifact_storage_failed",
+                "문서 저장에 실패했습니다.",
+            )
+
+    result: dict[str, Any] = {
+        "request_id": run.run_id,
+        "channel": channel.value,
+        "action": action.value,
+        "title": title,
+        "result_text": outcome.answer,
+        "status": outcome.projection.status.value,
+        "p01_run_id": outcome.p01_run_id,
+        "p01_event_count": outcome.p01_event_count,
+        "direct_kakao_send": False,
+        "direct_sms_send": False,
+        "connector_required": False,
+    }
+    if artifact_descriptor is not None:
+        result["artifact"] = artifact_descriptor
+
     return JSONResponse(
-        {
-            "ok": True,
-            "result": {
-                "request_id": run.run_id,
-                "channel": channel.value,
-                "action": action.value,
-                "title": f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}",
-                "result_text": outcome.answer,
-                "status": outcome.projection.status.value,
-                "p01_run_id": outcome.p01_run_id,
-                "p01_event_count": outcome.p01_event_count,
-                "direct_kakao_send": False,
-                "direct_sms_send": False,
-                "connector_required": False,
-            },
-        },
+        {"ok": True, "result": result},
         status_code=200,
         headers=_NO_STORE_HEADERS,
+    )
+
+
+async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Response:
+    document_id = request.path_params.get("document_id", "")
+    if not document_id or not re.match(r"^doc_[A-Za-z0-9]{32}$", document_id):
+        return _error(400, "invalid_document_id", "잘못된 문서 ID입니다.")
+
+    tenant_id = await _resolve_canonical_tenant(request)
+    if tenant_id is None:
+        return _error(401, "workspace_scope_unavailable", "인증 세션이 필요합니다.")
+
+    workspace_store: Any = getattr(request.app.state, "workspace_document_store", None)
+    if workspace_store is None:
+        return _error(503, "workspace_storage_unavailable", "문서 저장소가 설정되지 않았습니다.")
+
+    try:
+        result = await workspace_store.get_for_tenant(
+            tenant_id=tenant_id,
+            document_id=document_id,
+        )
+    except Exception:
+        return _error(503, "workspace_document_read_failed", "문서 읽기 중 오류가 발생했습니다.")
+
+    if result is None:
+        return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
+
+    metadata, content = result
+    import urllib.parse as _urllib_parse
+
+    return Response(
+        content,
+        status_code=200,
+        headers={
+            "Content-Type": metadata.media_type,
+            "Content-Disposition": f"attachment; filename*=UTF-8''{_urllib_parse.quote(metadata.filename)}",
+            "Cache-Control": "no-store, max-age=0",
+            "Content-Length": str(len(content)),
+            "X-Content-Type-Options": "nosniff",
+        },
     )
 
 
