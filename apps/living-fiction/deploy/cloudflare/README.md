@@ -50,6 +50,13 @@ Do not rewrite the product into JavaScript merely to remove Modal. Do not move N
 - starts `uvicorn app.main:app`;
 - does not fork application routes or business logic.
 
+`.dockerignore`:
+
+- excludes `.env*` except the non-secret `.env.example`;
+- excludes local DB/runtime state (`var`, `*.db`, `*.sqlite*`);
+- excludes `node_modules`, Wrangler artifacts, test caches and Python bytecode;
+- prevents CI tooling and local state from inflating or contaminating the deployment image.
+
 `deploy/cloudflare/container_worker.js`:
 
 - uses `@cloudflare/containers`;
@@ -66,7 +73,7 @@ Do not rewrite the product into JavaScript merely to remove Modal. Do not move N
 
 ### Python Worker path — reference only
 
-`deploy/cloudflare/worker.py` reuses `app.factory.create_app()` through Cloudflare ASGI and shows how trusted Worker bindings would project into the existing `LF_*` seam. `deploy/cloudflare/wrangler.toml` intentionally omits Hyperdrive IDs and secret values.
+`deploy/cloudflare/worker.py` reuses `app.factory.create_app()` through Cloudflare ASGI and shows how trusted Worker bindings would project into the existing `LF_*` seam. `deploy/cloudflare/wrangler.toml` is explicitly reference-only and intentionally omits Hyperdrive IDs and secret values.
 
 Do **not** claim `PYTHON_WORKER_COMPATIBLE` until an actual current Workers dependency/build/runtime probe proves the complete PostgreSQL path.
 
@@ -90,7 +97,7 @@ LF_ALLOWED_ORIGINS
 
 `.github/workflows/b03-living-fiction-cloudflare-m0-ci.yml` performs only non-deploy validation:
 
-1. Cloudflare migration source-contract tests;
+1. Cloudflare migration source-contract tests, including build-context secret/runtime-state exclusions;
 2. Python syntax compilation;
 3. actual `Dockerfile.cloudflare` image build;
 4. current Wrangler + `@cloudflare/containers` install;
