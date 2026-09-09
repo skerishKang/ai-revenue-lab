@@ -1332,17 +1332,17 @@
             clawResultPreview.textContent = result.result_text;
           }
           if (clawResultEmpty) clawResultEmpty.hidden = true;
-          const hasArtifact = !!(result.artifact && result.artifact_token);
+          const hasArtifact = !!(result.artifact && result.artifact.document_id);
           if (clawResultOpen) clawResultOpen.disabled = !hasArtifact;
           if (clawResultOpen) clawResultOpen.setAttribute("aria-disabled", String(!hasArtifact));
           if (clawResultDocx) clawResultDocx.disabled = !hasArtifact;
           if (clawResultDocx) clawResultDocx.setAttribute("aria-disabled", String(!hasArtifact));
           if (hasArtifact && clawResultDocx) {
-            clawResultDocx.dataset.artifactToken = result.artifact_token;
+            clawResultDocx.dataset.documentId = result.artifact.document_id;
             clawResultDocx.addEventListener("click", () => {
-              const token = clawResultDocx.dataset.artifactToken;
-              if (!token) return;
-              fetch(`/api/claw/manual-intake/artifact/${token}`)
+              const documentId = clawResultDocx.dataset.documentId;
+              if (!documentId) return;
+              fetch(`/api/claw/manual-intake/artifact/${documentId}`)
                 .then(r => { if (!r.ok) throw new Error("download failed"); return r.blob(); })
                 .then(blob => {
                   const url = URL.createObjectURL(blob);

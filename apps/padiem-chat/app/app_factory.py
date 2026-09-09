@@ -30,6 +30,10 @@ from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
 from .usage_gate import UsageCounterStore, UsageGate
 from .web_tools import create_web_provider
+from .workspace_storage import (
+    D1ClawDocumentMetadataStore,
+    WorkspaceDocumentStore,
+)
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
@@ -72,6 +76,8 @@ def create_app(
     usage_store: UsageCounterStore | None = None,
     control_plane_identity_authority=None,
     identity_shadow_store=None,
+    d1_binding=None,
+    r2_binding=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -93,7 +99,7 @@ def create_app(
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
-        Route("/api/claw/manual-intake/artifact/{token}", claw_manual_intake_artifact, methods=["GET"]),
+        Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -116,4 +122,17 @@ def create_app(
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
     app.state.auto_grounding = AutoGroundingService(app.state.web_provider)
+    # Workspace document store: D1 metadata + private R2 bytes.
+    # Both bindings must be present; no memory fallback.
+    _metadata_store: D1ClawDocumentMetadataStore | None = None
+    _workspace_store: WorkspaceDocumentStore | None = None
+    if d1_binding is not None and r2_binding is not None:
+        try:
+            _metadata_store = D1ClawDocumentMetadataStore(d1_binding)
+            _workspace_store = WorkspaceDocumentStore(_metadata_store, r2_binding)
+        except Exception:
+            _metadata_store = None
+            _workspace_store = None
+    app.state.workspace_document_store = _workspace_store
+    app.state._workspace_metadata_store = _metadata_store
     return app
