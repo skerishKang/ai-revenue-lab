@@ -62,6 +62,10 @@ def test_create_step_is_idempotent() -> None:
     assert "D1_CREATE=SKIPPED_ALREADY_EXISTS" in text
     assert "d1 create padiem-engine" in text
     assert "d1-list-after-create.json" in text
+    # Regression guard from #2019: create output shape varies by wrangler
+    # version, so it must never become the authority for the database id.
+    assert "d1-create.txt" not in text
+    assert "database_id'" not in text.replace('"database_id"', "")
 
 
 def test_migrations_0001_through_0005_are_applied_in_order() -> None:
