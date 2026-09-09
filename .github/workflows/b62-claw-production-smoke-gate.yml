@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b62-claw-production-smoke-gate.yml"
+  push:
+    paths:
+      - ".github/workflows/b62-claw-production-smoke-gate.yml"
   workflow_dispatch:
     inputs:
       target_sha:

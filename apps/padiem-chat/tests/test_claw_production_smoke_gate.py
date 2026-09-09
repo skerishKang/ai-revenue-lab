@@ -47,3 +47,17 @@ def test_claw_phase_a_canary_uses_synthetic_non_artifact_action_only() -> None:
     assert '"action":"order"' not in text
     assert "human session material stored in CI: no" in text
     assert "external send/write: no" in text
+
+
+def test_claw_phase_a_smoke_gate_push_admission_does_not_fail_closed_on_ordinary_push() -> None:
+    """#2267: ordinary pushes must not create a failing zero-job check.
+
+    The workflow declares an explicit push trigger scoped to its own file so
+    pushes touching the gate run source-contract (success), while ordinary
+    pushes that do not touch the file create no run at all. The real canary
+    job stays workflow_dispatch-only.
+    """
+    text = WORKFLOW.read_text(encoding="utf-8")
+    assert "  push:" in text
+    assert '      - ".github/workflows/b62-claw-production-smoke-gate.yml"' in text
+    assert "if: ${{ github.event_name == 'workflow_dispatch' }}" in text
