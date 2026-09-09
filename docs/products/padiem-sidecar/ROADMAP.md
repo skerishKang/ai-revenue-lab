@@ -1,10 +1,19 @@
 # Padiem Sidecar Roadmap
 
+## Status legend
+
+```text
+COMPLETE = accepted source/documentation foundation is merged
+PARTIAL = bounded source exists but the full roadmap outcome is not live
+BLOCKED = next step is explicitly gated by an upstream owner/runtime dependency
+PLANNED = not yet started as an accepted implementation slice
+```
+
 ## S0 — Product consolidation and documentation
 
-Status: current.
+Status: COMPLETE.
 
-Deliver:
+Delivered:
 
 - B53 product identity consolidation;
 - canonical docs/operations pack;
@@ -14,44 +23,39 @@ Deliver:
 
 ## S1 — Internal Platform registration
 
-Dependency: Internal Platform registry S1 / Runtime contract S2 already merged.
-
-Add:
+Status: COMPLETE for shared runtime ownership/foundation.
 
 ```text
 IP-SIDECAR = Padiem Embedded AI Runtime
 ```
 
-Define exact source/runtime ownership before implementation. Do not fake a Business number for the internal component.
+The reusable embedded runtime is owned as an Internal Platform component, not a Business-number duplicate. See #1739 and the internal platform registry lineage.
 
-## S2 — Reference host + panel shell
+## S2 — Reference host + panel/runtime primitives
 
-Build one deterministic host fixture and reusable right-side Sidecar shell proving:
+Status: COMPLETE for deterministic/reference-host and shared runtime foundations.
 
-- desktop/mobile behavior;
-- accessibility;
-- theme tokens;
-- open/close/disabled/error states;
-- host primary journey unaffected.
-
-No real model call required for the first shell.
+Accepted work establishes reusable shell/runtime primitives and a deterministic B53 reference host without requiring a live model call. B53 product adapter/reference-host conformance is tracked by #2180.
 
 ## S3 — Host context + bootstrap/session
 
-Implement bounded public bootstrap and context bridge:
+Status: PARTIAL.
 
-- tenant/Sidecar public ID;
-- allowed origin;
-- adapter/version;
-- structured current-page context;
-- server-authoritative configuration;
-- no browser machine secrets.
+Bounded public bootstrap/context and host-safe runtime contracts exist in IP-SIDECAR/B53 source. Canonical session/tenant authority is not owned by B53 and live trusted scope remains an Engine/Control Plane concern.
 
 ## S4 — Engine/Core execution
 
-Integrate the reference Sidecar through IP-ENGINE/IP-CORE/B14.
+Status: BLOCKED on trusted Engine scope composition and subsequent B53 server-mediated EnginePort work.
 
-Required:
+Required chain:
+
+```text
+#2195 Engine -> Control Plane auth-session Service Binding trusted scope
+  -> #2198 B53 server-mediated EnginePort preflight/implementation
+  -> live integration gate in a separate accepted slice
+```
+
+Required invariants remain:
 
 ```text
 DIRECT_PROVIDER = NO
@@ -62,39 +66,41 @@ FAIL_CLOSED = YES
 
 ## S5 — Evidence, files and reusable AI UI primitives
 
-- citations/evidence;
-- source inspection;
-- files/images after storage/trust contract;
-- research/status presentation;
-- reusable error/retry/reconnect states.
+Status: PARTIAL.
+
+Reusable evidence/citation, attachment/file presentation, stream/error/retry lifecycle primitives exist in IP-SIDECAR. Real attachment execution still depends on trusted Engine scope composition and accepted server-mediated transport; source presence is not Production activation.
 
 ## S6 — Approved action/tool bridge
 
-Introduce capability allowlists and confirmation/approval UI for a bounded host action.
+Status: PARTIAL.
 
-First action should be reversible/low-risk. No arbitrary host code execution.
+Approval/confirmation presentation primitives exist in the shared runtime. A real bounded host action bridge with authoritative capability policy remains a later slice. No arbitrary host code execution is authorized.
 
 ## S7 — Multi-tenant admin/onboarding
 
-Add customer/Business configuration flow:
+Status: PARTIAL — local product surface complete, live Control Plane/commercial authority not complete.
 
-- host registration;
-- origins;
-- branding;
-- capabilities;
-- adapter/version;
-- preview/health;
-- disable/rollback.
+#2194 merged B53-owned local-conformance source for:
 
-Control Plane integration occurs only through accepted identity/entitlement/usage contracts.
+- install/bootstrap version contract;
+- site/app registration product projection;
+- onboarding state flow;
+- integration-health diagnostics;
+- normal/malformed fixtures and tests.
+
+It does not create canonical tenant/account authority, real CDN/package publication, Production activation, or external customer readiness.
 
 ## S8 — First-party adoption reconciliation
+
+Status: PLANNED.
 
 Audit B30, B61 and LoveBud against IP-SIDECAR.
 
 Goal is not immediate rewrite. Replace duplicated generic capabilities in bounded slices while preserving product-specific adapters and accepted production behavior.
 
 ## S9 — External customer pilot
+
+Status: PLANNED.
 
 Choose one bounded external host with low-sensitivity/public context and one or two measurable journeys.
 
@@ -110,6 +116,8 @@ Prove:
 
 ## S10 — Commercial hardening
 
+Status: PLANNED.
+
 Based on pilot evidence:
 
 - finalize packaging/entitlements/pricing;
@@ -122,10 +130,11 @@ Based on pilot evidence:
 
 ## Parallel platform dependencies
 
-- #1698 and subsequent Engine service identity work may affect cross-product caller onboarding.
+- Engine trusted session/tenant scope authority remains upstream of real B53 EnginePort integration (#2195).
 - IP-CORE Web/Research/Tool/Memory capabilities should be consumed rather than forked.
 - B14 remains provider/model authority.
 - Control Plane remains identity/entitlement/usage/billing authority.
+- Google/other connector activation remains owned by the shared connector program rather than B53.
 
 ## Success definition
 
@@ -138,4 +147,4 @@ PRODUCT_DOMAIN_OWNERSHIP = PRESERVED
 EXTERNAL_CUSTOMER_ONBOARDING = REPEATABLE
 ```
 
-Refs #1722 #1723 #1707 #1698
+Refs #1722 #1723 #1739 #2180 #2194 #2195 #2198 #1707
