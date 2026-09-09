@@ -1166,6 +1166,7 @@
   const clawResultCard = document.getElementById("clawResultCard");
   const clawResultEmpty = document.getElementById("clawResultEmpty");
   const clawResultKind = document.getElementById("clawResultKind");
+  const clawExecuteButton = document.getElementById("clawExecuteButton");
 
   function openClawWorkspace() {
     if (!clawWorkspace) return;
@@ -1280,4 +1281,53 @@
   renderProjectState();
   updateComposer();
   loadAuthStatus();
+
+  if (clawExecuteButton) {
+    clawExecuteButton.addEventListener("click", async () => {
+      const body = (clawRequestText?.value || "").trim();
+      if (!body) return;
+      const channelValue = clawChannel?.value || "other";
+      const actionValue = clawAction?.value || "quote";
+      const senderText = (clawSender?.value || "").trim();
+
+      if (clawResultCard) clawResultCard.hidden = true;
+      if (clawResultEmpty) clawResultEmpty.hidden = false;
+      clawResultEmpty.textContent = "실행 중...";
+
+      try {
+        const response = await fetch("/api/claw/manual-intake/execute", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            content: body,
+            channel: channelValue,
+            action: actionValue,
+            sender_hint: senderText || null,
+          }),
+        });
+        const data = await response.json();
+        if (!data || !data.ok || !data.result || typeof data.result.result_text !== "string") {
+          if (clawResultEmpty) {
+            clawResultEmpty.hidden = false;
+            clawResultEmpty.textContent = "실행 결과를 받지 못했습니다.";
+          }
+          return;
+        }
+        const result = data.result;
+        revealClawCard(result.title);
+        if (clawResultPreview) {
+          clawResultPreview.textContent = result.result_text;
+        }
+        if (clawResultEmpty) clawResultEmpty.hidden = true;
+      } catch {
+        if (clawResultEmpty) {
+          clawResultEmpty.hidden = false;
+          clawResultEmpty.textContent = "실행 중 오류가 발생했습니다.";
+        }
+      }
+    });
+  }
 })();
