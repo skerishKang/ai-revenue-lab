@@ -1167,6 +1167,7 @@
   const clawResultEmpty = document.getElementById("clawResultEmpty");
   const clawResultKind = document.getElementById("clawResultKind");
   const clawExecuteButton = document.getElementById("clawExecuteButton");
+  const clawResultBadge = document.getElementById("clawResultBadge");
 
   function openClawWorkspace() {
     if (!clawWorkspace) return;
@@ -1191,10 +1192,17 @@
   }
   setNavActive();
 
-  function revealClawCard(kindText) {
+  function revealClawCard(kindText, executed = false) {
+    const isEn = document.documentElement.lang === "en";
     if (clawResultEmpty) clawResultEmpty.hidden = true;
     if (clawResultCard) clawResultCard.hidden = false;
     if (clawResultKind) clawResultKind.textContent = kindText || "";
+    if (clawResultBadge) {
+      clawResultBadge.dataset.localeKey = executed ? "claw-result-badge-run" : "claw-result-badge";
+      clawResultBadge.textContent = executed
+        ? (isEn ? "Real run" : "실제 실행")
+        : (isEn ? "Preview" : "미리보기");
+    }
   }
 
   if (clawManualForm) {
@@ -1286,13 +1294,19 @@
     clawExecuteButton.addEventListener("click", async () => {
       const body = (clawRequestText?.value || "").trim();
       if (!body) return;
+      const isEn = document.documentElement.lang === "en";
       const channelValue = clawChannel?.value || "other";
       const actionValue = clawAction?.value || "quote";
       const senderText = (clawSender?.value || "").trim();
+      const runningText = isEn ? "Running…" : "실행 중...";
+      const failedText = isEn ? "Execution failed. Please try again." : "실행 중 오류가 발생했습니다.";
 
       if (clawResultCard) clawResultCard.hidden = true;
-      if (clawResultEmpty) clawResultEmpty.hidden = false;
-      clawResultEmpty.textContent = "실행 중...";
+      if (clawResultEmpty) {
+        clawResultEmpty.hidden = false;
+        clawResultEmpty.textContent = runningText;
+      }
+      clawExecuteButton.disabled = true;
 
       try {
         const response = await fetch("/api/claw/manual-intake/execute", {
@@ -1308,25 +1322,27 @@
             sender_hint: senderText || null,
           }),
         });
-        const data = await response.json();
-        if (!data || !data.ok || !data.result || typeof data.result.result_text !== "string") {
-          if (clawResultEmpty) {
-            clawResultEmpty.hidden = false;
-            clawResultEmpty.textContent = "실행 결과를 받지 못했습니다.";
+        const data = await response.json().catch(() => null);
+        if (data && data.ok && data.result && typeof data.result.result_text === "string") {
+          const result = data.result;
+          revealClawCard(result.title, true);
+          if (clawResultPreview) {
+            clawResultPreview.textContent = result.result_text;
           }
+          if (clawResultEmpty) clawResultEmpty.hidden = true;
           return;
         }
-        const result = data.result;
-        revealClawCard(result.title);
-        if (clawResultPreview) {
-          clawResultPreview.textContent = result.result_text;
+        if (clawResultEmpty) {
+          clawResultEmpty.hidden = false;
+          clawResultEmpty.textContent = data?.error?.message || failedText;
         }
-        if (clawResultEmpty) clawResultEmpty.hidden = true;
       } catch {
         if (clawResultEmpty) {
           clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = "실행 중 오류가 발생했습니다.";
+          clawResultEmpty.textContent = failedText;
         }
+      } finally {
+        clawExecuteButton.disabled = false;
       }
     });
   }

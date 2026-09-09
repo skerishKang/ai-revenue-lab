@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from starlette.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.app_factory import create_app
 from app.config import Settings
+
+STATIC = Path(__file__).resolve().parents[1] / "static"
+INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
+APP_JS = (STATIC / "app.js").read_text(encoding="utf-8")
+LOCALE_JS = (STATIC / "locale.js").read_text(encoding="utf-8")
+WORKSPACE_CSS = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+
+EXECUTE_ROUTE_PATH = "/api/claw/manual-intake/execute"
 
 
 @pytest.fixture
@@ -335,3 +345,47 @@ def test_no_credential_raw_text_in_response(client: TestClient) -> None:
     data = resp.json()
     assert "P01_ENGINE_CREDENTIAL" not in str(data)
     assert "Missing" not in str(data)
+
+
+# ── Web UI wiring contracts (#2215) ────────────────────────────────────────
+# Guard against dead wiring: the execute handler must attach to an element that
+# actually exists in the served HTML and must call the registered route.
+
+
+def test_execute_button_exists_in_served_html() -> None:
+    line = next(line for line in INDEX_HTML.splitlines() if 'id="clawExecuteButton"' in line)
+    # type="button" keeps execution from submitting the deterministic preview form.
+    assert 'type="button"' in line
+
+
+def test_execute_handler_is_attached_in_app_js() -> None:
+    assert 'document.getElementById("clawExecuteButton")' in APP_JS
+    assert 'clawExecuteButton.addEventListener("click"' in APP_JS
+
+
+def test_execute_handler_calls_a_registered_route(client: TestClient) -> None:
+    registered = {getattr(route, "path", None) for route in client.app.routes}
+    assert EXECUTE_ROUTE_PATH in registered
+    assert f'fetch("{EXECUTE_ROUTE_PATH}"' in APP_JS
+
+
+def test_execute_button_label_exists_in_both_locales() -> None:
+    assert '"claw-btn-execute": "실제 실행"' in LOCALE_JS
+    assert '"claw-btn-execute": "Run with real model"' in LOCALE_JS
+
+
+def test_execute_button_meets_touch_target_contract() -> None:
+    block = WORKSPACE_CSS.split(".claw-execute-button {", 1)[1].split("}", 1)[0]
+    assert "min-height: 48px" in block
+
+
+def test_executed_result_is_not_labelled_as_preview() -> None:
+    assert 'id="clawResultBadge"' in INDEX_HTML
+    assert "revealClawCard(result.title, true)" in APP_JS
+    assert '"claw-result-badge-run": "실제 실행"' in LOCALE_JS
+    assert '"claw-result-badge-run": "Real run"' in LOCALE_JS
+
+
+def test_preview_path_still_uses_preview_label() -> None:
+    assert "revealClawCard(preview.title)" in APP_JS
+    assert 'data-locale-key="claw-result-badge"' in INDEX_HTML
