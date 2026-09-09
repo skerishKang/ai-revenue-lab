@@ -12,6 +12,13 @@ service = "ai-revenue-korean-ai-platform"
 binding = "CONTROL_PLANE_IDENTITY"
 service = "padiem-control-plane-identity"
 
+# #2216: canonical Google OAuth credential authority remains Control Plane.
+# Engine receives only short-lived access leases over this private Service
+# Binding; long-lived refresh credentials never enter Engine composition.
+[[services]]
+binding = "CONTROL_PLANE_GOOGLE_OAUTH"
+service = "padiem-google-oauth-state"
+
 # WO-8 PR-B (#1235 A9): durable idempotency + identity-bound continuation
 # authority. Both bindings point at the SAME provisioned database
 # (padiem-engine, database_id below; provision evidence: CI run 34042827563,
@@ -29,8 +36,8 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 
 # WO-10 PR-C2 (D28): OAuth connector grant references only.
 # Same provisioned database as ENGINE_IDEMPOTENCY/ENGINE_CONTINUATION.
-# Schema 0003 applied by the D1 provision gate. Credential material is
-# never stored here; the three OAuth secrets come from Worker secrets.
+# Schema 0003 applied by the D1 provision gate. Credential material is never
+# stored in this D1 binding; canonical Google OAuth credentials stay in CP.
 [[d1_databases]]
 binding = "ENGINE_CONNECTOR_GRANTS"
 database_name = "padiem-engine"

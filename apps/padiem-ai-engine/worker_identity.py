@@ -47,7 +47,10 @@ from app.connector_bindings import (
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.gmail_port_httpx import HttpxGmailReadPort
-from app.drive_port_httpx import HttpxDriveReadPort
+from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
+from app.google_oauth_access_lease import (
+    CloudflareControlPlaneGoogleOAuthAccessLeaseClient,
+)
 from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
@@ -82,6 +85,7 @@ ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
+CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 
 
 def _continuation_store_for_env(
@@ -139,19 +143,13 @@ def _research_service_for_env(
 
 
 async def _tool_binding_resolver_for_env(env: Any):
-    """Compose the Engine Gmail + Drive tool binding resolver (WO-10 PR-C).
+    """Compose the Engine Gmail + Drive tool binding resolver.
 
-    Reads the three Worker secrets and the ENGINE_CONNECTOR_GRANTS D1 binding
-    from the deployment env. If any piece is missing the factory returns None,
-    keeping the canonical composition fail-closed. A grant store outage
-    (``ServiceContractError``) is NOT treated as \"grant missed\": the port
-    and binding are present, so every app_id gets a resolver that surfaces
-    the same 503 ``connector_grants_unavailable`` instead of a silent
-    fail-closed misread.
-
-    Gmail and Drive resolvers coexist: a request is routed to the first
-    matching grant type. When either port is absent or its grant mapping
-    is empty, that connector's resolver is simply absent.
+    Gmail keeps its existing compatibility secret seam. Drive is canonicalized
+    through the private ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the
+    Engine receives only short-lived access leases and never a long-lived
+    refresh credential. Both connectors continue to share the trusted
+    ENGINE_CONNECTOR_GRANTS D1 binding. Missing authorities fail closed.
     """
     gmail_port = _gmail_port_for_env(env)
     drive_port = _drive_port_for_env(env)
@@ -212,19 +210,20 @@ async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
         ) from None
 
 
-def _drive_port_for_env(env: Any) -> HttpxDriveReadPort | None:
-    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
-    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
-    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
-    if not client_id or not client_secret or not refresh_token:
+def _drive_port_for_env(env: Any) -> ControlPlaneLeaseDriveReadPort | None:
+    """Resolve canonical Drive execution via the private CP OAuth authority.
+
+    There is deliberately no fallback to the Engine's legacy client-secret /
+    refresh-token compatibility values. If the private CP OAuth Service
+    Binding is absent or malformed, Drive remains unavailable.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
         return None
     try:
-        return HttpxDriveReadPort(
-            client_id=client_id,
-            client_secret=client_secret,
-            refresh_token=refresh_token,
-        )
-    except Exception:
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseDriveReadPort(lease_client=lease_client)
+    except (TypeError, ValueError):
         return None
 
 

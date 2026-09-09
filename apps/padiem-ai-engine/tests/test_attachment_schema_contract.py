@@ -91,15 +91,16 @@ def test_provision_gate_applies_0004_in_sequence() -> None:
 
 
 def test_attachment_wiring_is_a_repo_owned_d1_binding_only() -> None:
-    """#2152 shipped the schema with zero wiring; #2182 S5 adds exactly one
-    repo-owned D1 binding. Nothing else about the attachment surface may be
-    declared in wrangler: no bucket, KV, var, secret or new Worker."""
+    """The attachment feature owns exactly one D1 binding and no other store.
+
+    Other independently reviewed Engine service bindings may be added without
+    weakening this attachment-specific storage boundary.
+    """
 
     wrangler = _text(WRANGLER)
 
-    assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
+    assert wrangler.count('binding = "ENGINE_IMAGE_STORE"') == 1
     assert wrangler.count("[[d1_databases]]") == 4
-    assert wrangler.count('binding = "') == 6
     for forbidden in (
         "[[r2_buckets]]",
         "[[kv_namespaces]]",
