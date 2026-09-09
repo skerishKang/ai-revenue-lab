@@ -184,3 +184,71 @@ def test_anonymous_subject_is_supported_without_making_browser_authoritative() -
 
     assert snapshot.subject.subject_type is SubjectType.ANONYMOUS
     assert snapshot.is_active(now=NOW + timedelta(minutes=1)) is True
+
+def test_tenant_id_is_absent_by_default_and_wire_omits_the_key() -> None:
+    snapshot = session()
+
+    assert snapshot.tenant_id is None
+    assert set(snapshot.to_public_dict()) == {
+        "session_id",
+        "product_id",
+        "subject",
+        "issued_at",
+        "expires_at",
+        "state",
+        "revision",
+    }
+
+
+def test_distinct_bounded_tenant_fact_is_carried_in_state_and_wire() -> None:
+    snapshot = session(tenant_id="tenant_alpha-1")
+
+    assert snapshot.tenant_id == "tenant_alpha-1"
+    assert snapshot.to_public_dict()["tenant_id"] == "tenant_alpha-1"
+
+
+def test_tenant_id_never_aliases_product_or_subject() -> None:
+    with pytest.raises(ControlPlaneContractError) as exc_info:
+        session(tenant_id="b62")
+    assert exc_info.value.code == "invalid_auth_session"
+
+    with pytest.raises(ControlPlaneContractError) as exc_info:
+        session(tenant_id="user_123")
+    assert exc_info.value.code == "invalid_auth_session"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "",
+        " tenant_1",
+        "tenant 1",
+        "-tenant",
+        "tenant\n1",
+        "tenant_1;drop",
+        "x" * 129,
+        123,
+        True,
+    ],
+)
+def test_malformed_or_oversized_tenant_id_fails_closed(value) -> None:
+    with pytest.raises(ControlPlaneContractError) as exc_info:
+        session(tenant_id=value)
+    assert exc_info.value.code == "invalid_auth_session"
+
+
+def test_tenant_fact_survives_terminal_transition_batch() -> None:
+    snapshot = session(tenant_id="tenant_alpha")
+    applied = apply_auth_session_transition(
+        snapshot,
+        AuthSessionTransition(
+            event_id="event_revoke_tenant",
+            session_id="session_1",
+            kind=AuthSessionTransitionKind.REVOKE,
+            occurred_at=NOW + timedelta(minutes=5),
+            from_revision=1,
+        ),
+    )
+
+    assert applied.current.tenant_id == "tenant_alpha"
+    assert applied.current.to_public_dict()["tenant_id"] == "tenant_alpha"

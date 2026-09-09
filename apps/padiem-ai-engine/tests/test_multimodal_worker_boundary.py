@@ -8,6 +8,7 @@ browser/public surface.
 from __future__ import annotations
 
 import asyncio
+import ast
 import importlib
 import json
 import sys
@@ -25,6 +26,7 @@ CALLER_ID = "e5-boundary-caller"
 CALLER_SECRET = "e5-boundary-secret-0123456789abcdef-0123456789abcdef"
 ALLOWED_APP = "b62"
 MULTIMODAL_PATH = "/internal/v1/multimodal/execute"
+MULTIMODAL_STREAM_PATH = "/internal/v1/multimodal/stream"
 VALID_REF = "att_F1xture-Ref_000123"
 
 
@@ -129,11 +131,30 @@ def _multimodal_payload() -> bytes:
                 "task_type": "general",
                 "optimize_for": "balanced",
                 "max_tokens": 256,
+                "model_policy": {"model": "test/route"},
             },
             "messages": [{"role": "user", "content": "What is in this image?"}],
             "attachment_ref": VALID_REF,
         }
     ).encode("utf-8")
+
+
+class _FakeD1Statement:
+    """D1-shaped statement that must never be exercised without trusted scope."""
+
+    def bind(self, *_params: Any) -> "_FakeD1Statement":
+        return self
+
+    async def first(self) -> None:
+        raise AssertionError("no D1 read may occur without a trusted scope")
+
+    async def run(self) -> None:
+        raise AssertionError("no D1 write may occur without a trusted scope")
+
+
+class _FakeD1Binding:
+    def prepare(self, _sql: str) -> _FakeD1Statement:
+        return _FakeD1Statement()
 
 
 @pytest.mark.parametrize(
@@ -205,21 +226,143 @@ def test_legacy_worker_is_not_widened_by_e5a(identity_modules) -> None:
     assert "MULTIMODAL_EXECUTE_PATH" not in legacy_source
 
     assert asyncio.run(legacy._engine_services_for_env(_identity_env())).multimodal is None
+    assert (
+        asyncio.run(legacy._engine_services_for_env(_identity_env())).multimodal_streaming is None
+    )
 
 
-def test_canonical_composition_wires_multimodal_service_without_resolver(
+def test_canonical_composition_wires_multimodal_service_without_authorities(
     identity_modules,
 ) -> None:
-    """Production composition has no trusted resolver in either composition shape."""
+    """Production composition has no trusted attachment authority in either shape."""
 
-    from app.multimodal_attachment_service import MultimodalAttachmentEngineService
+    from app.multimodal_attachment_service import (
+        MultimodalAttachmentEngineService,
+        MultimodalStreamingEngineService,
+    )
 
     _legacy, identity = identity_modules
 
     for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
         services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services.multimodal, MultimodalAttachmentEngineService)
-        assert services.multimodal._attachment_resolver is None
+        assert services.multimodal._image_byte_store is None
+        assert services.multimodal._scope_authority is None
+        assert isinstance(services.multimodal_streaming, MultimodalStreamingEngineService)
+        assert services.multimodal_streaming._image_byte_store is None
+        assert services.multimodal_streaming._scope_authority is None
+
+
+def test_bound_image_store_composes_but_still_fails_closed_without_scope_authority(
+    identity_modules,
+) -> None:
+    """#2182 S5: a bound ``ENGINE_IMAGE_STORE`` reaches the service; the missing
+    Control Plane scope authority still fails the route closed.
+
+    The store is composed for real, so this proves the binding seam works. The
+    scope triple cannot be server-minted yet, so no resolver is built, no D1
+    query runs and no Core/B14 execution is reached.
+    """
+
+    from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
+
+    _legacy, identity = identity_modules
+    env = _identity_env(ENGINE_IMAGE_STORE=_FakeD1Binding())
+    services = asyncio.run(identity._engine_services_for_env(env))
+    store = services.multimodal._image_byte_store
+
+    assert isinstance(store, ScopedImageByteStore)
+    assert isinstance(store._port, CloudflareD1ImageByteStore)
+    assert services.multimodal._scope_authority is None
+    assert services.multimodal_streaming._scope_authority is None
+
+    runtime_calls: list[str] = []
+    original = services.multimodal._runtime_factory
+
+    def counting_runtime_factory(app_id: str) -> Any:
+        runtime_calls.append(app_id)
+        return original(app_id)
+
+    services.multimodal._runtime_factory = counting_runtime_factory
+
+    def bound_factory(_env: Any) -> Any:
+        async def _ready():
+            return services
+
+        return _ready()
+
+    saved = identity.Default.engine_services_factory
+    identity.Default.engine_services_factory = staticmethod(bound_factory)
+    try:
+        response = _fetch(
+            identity, env, _Request(MULTIMODAL_PATH, body=_multimodal_payload())
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(saved)
+
+    assert response.status == 503
+    assert _body(response)["error"]["code"] == "attachment_resolver_unavailable"
+    assert runtime_calls == []
+
+
+def test_malformed_image_store_binding_composes_no_store(identity_modules) -> None:
+    """A present-but-unusable binding yields no store; it never fakes one."""
+
+    _legacy, identity = identity_modules
+    for malformed in (object(), "", 0, {"binding": "ENGINE_IMAGE_STORE"}, [], b"d1"):
+        services = asyncio.run(
+            identity._engine_services_for_env(
+                _identity_env(ENGINE_IMAGE_STORE=malformed)
+            )
+        )
+        assert services.multimodal._image_byte_store is None, repr(malformed)
+        assert services.multimodal_streaming._image_byte_store is None, repr(malformed)
+
+
+def test_connector_grants_binding_is_never_the_attachment_store(
+    identity_modules,
+) -> None:
+    """#2181 correction: the grants D1 store must not be borrowed for bytes."""
+
+    from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
+
+    _legacy, identity = identity_modules
+    services = asyncio.run(
+        identity._engine_services_for_env(
+            _identity_env(ENGINE_CONNECTOR_GRANTS=_FakeD1Binding())
+        )
+    )
+    assert services.multimodal._image_byte_store is None
+    assert services.multimodal_streaming._image_byte_store is None
+    assert not isinstance(services.multimodal._image_byte_store, CloudflareD1ConnectorGrantStore)
+
+    identity_source = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
+    tree = ast.parse(identity_source)
+    factory = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_image_byte_store_for_env"
+    )
+    factory_source = ast.get_source_segment(identity_source, factory) or ""
+    assert "ENGINE_IMAGE_STORE" in factory_source
+    assert "CONNECTOR_GRANTS" not in factory_source
+    assert "ScopedImageByteStore" in factory_source
+    assert "CloudflareD1ImageByteStore" in factory_source
+
+
+def test_execute_and_stream_share_the_same_authority_composition(
+    identity_modules,
+) -> None:
+    """One store object and one authority seam serve both multimodal routes."""
+
+    _legacy, identity = identity_modules
+    env = _identity_env(ENGINE_IMAGE_STORE=_FakeD1Binding())
+    services = asyncio.run(identity._engine_services_for_env(env))
+
+    assert services.multimodal._image_byte_store is services.multimodal_streaming._image_byte_store
+    assert services.multimodal._scope_authority is services.multimodal_streaming._scope_authority
+    assert services.multimodal._image_byte_store is not None
+    assert services.multimodal._scope_authority is None
 
 
 def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
@@ -254,6 +397,38 @@ def test_multimodal_request_is_rejected_before_any_composition_or_resolution(
     assert _body(response)["error"]["code"] == "service_authentication_failed"
 
 
+def test_multimodal_stream_request_is_rejected_before_any_composition_or_resolution(
+    identity_modules,
+) -> None:
+    """The stream route shares the execute route's auth gate and error shape.
+
+    Reaching ``engine_services_factory`` at all would mean an unauthenticated
+    caller touched attachment resolution or streaming composition.
+    """
+
+    _legacy, identity = identity_modules
+
+    def forbidden_composition(env: Any) -> Any:
+        async def _forbidden():
+            raise AssertionError("stream composition reached before service identity")
+
+        return _forbidden()
+
+    saved = identity.Default.engine_services_factory
+    identity.Default.engine_services_factory = staticmethod(forbidden_composition)
+    try:
+        response = _fetch(
+            identity,
+            _identity_env(),
+            _Request(MULTIMODAL_STREAM_PATH, body=_multimodal_payload(), authenticated=False),
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(saved)
+
+    assert response.status == 401
+    assert _body(response)["error"]["code"] == "service_authentication_failed"
+
+
 @pytest.mark.parametrize("b14_bound", [False, True])
 def test_valid_ref_fails_closed_through_canonical_fetch(
     identity_modules, b14_bound: bool
@@ -274,7 +449,8 @@ def test_valid_ref_fails_closed_through_canonical_fetch(
         async def _spying():
             services = await real_factory(composition_env)
             assert services.multimodal is not None
-            assert services.multimodal._attachment_resolver is None
+            assert services.multimodal._image_byte_store is None
+            assert services.multimodal._scope_authority is None
             original = services.multimodal._runtime_factory
 
             def counting_runtime_factory(app_id: str) -> Any:
@@ -290,6 +466,58 @@ def test_valid_ref_fails_closed_through_canonical_fetch(
     try:
         response = _fetch(
             identity, env, _Request(MULTIMODAL_PATH, body=_multimodal_payload())
+        )
+    finally:
+        identity.Default.engine_services_factory = staticmethod(real_factory)
+
+    assert response.status == 503
+    payload = _body(response)
+    assert payload["ok"] is False
+    assert payload["error"]["code"] == "attachment_resolver_unavailable"
+    assert runtime_calls == []
+    serialized = str(response.body)
+    assert VALID_REF not in serialized
+    assert "data:" not in serialized
+
+
+@pytest.mark.parametrize("b14_bound", [False, True])
+def test_valid_ref_stream_fails_closed_through_canonical_fetch(
+    identity_modules, b14_bound: bool
+) -> None:
+    """A valid opaque ref on the stream route still fails closed before execution.
+
+    The streaming runtime factory is instrumented to count invocations: zero
+    calls plus the bounded 503 prove no resolver, storage or Core/B14 streaming
+    fallback is reachable through the canonical fetch.
+    """
+
+    _legacy, identity = identity_modules
+    env = _identity_env(**({"B14_SERVICE": object()} if b14_bound else {}))
+    runtime_calls: list[str] = []
+
+    real_factory = identity.Default.engine_services_factory
+
+    def spying_factory(composition_env: Any) -> Any:
+        async def _spying():
+            services = await real_factory(composition_env)
+            assert services.multimodal_streaming is not None
+            assert services.multimodal_streaming._image_byte_store is None
+            assert services.multimodal_streaming._scope_authority is None
+            original = services.multimodal_streaming._runtime_factory
+
+            def counting_runtime_factory(app_id: str) -> Any:
+                runtime_calls.append(app_id)
+                return original(app_id)
+
+            services.multimodal_streaming._runtime_factory = counting_runtime_factory
+            return services
+
+        return _spying()
+
+    identity.Default.engine_services_factory = staticmethod(spying_factory)
+    try:
+        response = _fetch(
+            identity, env, _Request(MULTIMODAL_STREAM_PATH, body=_multimodal_payload())
         )
     finally:
         identity.Default.engine_services_factory = staticmethod(real_factory)

@@ -1,0 +1,79 @@
+{
+  "proposals_normal": [
+    {
+      "proposal_id": "prop_1001",
+      "tool_id": "tool.email.send",
+      "requirement": "first_party",
+      "summary": "Send a weekly digest"
+    },
+    {
+      "proposal_id": "prop_1002",
+      "tool_id": "tool.calendar.read",
+      "requirement": "always",
+      "summary": "Read today's agenda"
+    },
+    {
+      "proposal_id": "prop_1001",
+      "tool_id": "tool.email.send",
+      "requirement": "first_party",
+      "summary": "Send a weekly digest"
+    }
+  ],
+  "proposals_empty": [],
+  "proposals_degraded": [
+    {
+      "proposal_id": "prop_ok",
+      "tool_id": "tool.files.list",
+      "requirement": "always",
+      "summary": "List workspace files"
+    },
+    {
+      "proposal_id": "prop_args",
+      "tool_id": "tool.x",
+      "requirement": "always",
+      "summary": "tool_args payload dump"
+    },
+    {
+      "proposal_id": "prop_url",
+      "tool_id": "tool.x",
+      "requirement": "always",
+      "summary": "see https://leak.example/x"
+    },
+    {
+      "proposal_id": "prop_diff",
+      "tool_id": "tool.x",
+      "requirement": "always",
+      "summary": "diff --git a/x b/x"
+    },
+    {
+      "proposal_id": "C:\\path\\prop",
+      "tool_id": "tool.x",
+      "requirement": "always"
+    },
+    {
+      "proposal_id": "prop_extra",
+      "tool_id": "tool.x",
+      "requirement": "always",
+      "summary": "ok",
+      "args": { "raw": "x" }
+    },
+    "not-a-mapping"
+  ],
+  "intent_flow": [
+    { "intent": "approve", "proposal_id": "prop_1001" },
+    { "intent": "confirm", "proposal_id": "prop_1001" },
+    { "intent": "cancel", "proposal_id": "prop_1002" },
+    { "intent": "reject", "proposal_id": "prop_1002" }
+  ],
+  "intent_malformed": { "intent": "force_execute", "proposal_id": "prop_1001" },
+  "state_flow": [
+    { "state": "pending" },
+    { "state": "approved" },
+    { "state": "rejected", "reason_code": "USER_REJECTED" },
+    { "state": "expired", "reason_code": "AUTHORITY_TIMEOUT" },
+    { "state": "unavailable", "reason_code": "AUTHORITY_UNAVAILABLE" }
+  ],
+  "state_malformed": { "state": "auto_approved_by_sidecar" },
+  "reference_valid": "evidence_9f2c1a7b",
+  "reference_invalid": "https://authority.example/decision/42"
+}

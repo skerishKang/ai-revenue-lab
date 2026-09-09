@@ -39,8 +39,8 @@ class FakeSql:
 
     def exec(self, statement: str, *args):
         cursor = self._connection.execute(statement, args)
-        if statement.lstrip().upper().startswith("SELECT"):
-            columns = [item[0] for item in cursor.description or ()]
+        if cursor.description is not None:
+            columns = [item[0] for item in cursor.description]
             rows = [dict(zip(columns, row, strict=True)) for row in cursor.fetchall()]
             return FakeCursor(rows)
         return FakeCursor([])

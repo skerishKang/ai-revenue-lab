@@ -23,13 +23,18 @@ from padiem_ai_core import (
     StreamingExecutionRuntime,
 )
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
-from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRuntime
+from padiem_ai_core.multimodal_execution_runtime import (
+    MultimodalExecutionRuntime,
+    MultimodalStreamingExecutionRuntime,
+)
 from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
 import worker as legacy_worker
 from app.agent_skill_service import AgentSkillEngineService
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
+from app.auth_session_scope_authority import AuthSessionScopeAuthority
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -46,7 +51,9 @@ from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
+    MULTIMODAL_STREAM_PATH,
     MultimodalAttachmentEngineService,
+    MultimodalStreamingEngineService,
 )
 from app.orchestration_idempotency_service import (
     CanonicalIdempotencyOrchestrationEngineService,
@@ -66,6 +73,7 @@ ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
 ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
 ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
+ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
 
 
 def _continuation_store_for_env(
@@ -79,6 +87,43 @@ def _continuation_store_for_env(
         return CloudflareD1IdentityBoundContinuationStore(binding)
     except (TypeError, ValueError):
         return None
+
+
+def _image_byte_store_for_env(env: Any) -> ScopedImageByteStore | None:
+    """Resolve the deployment-owned scoped image byte store (#2182 S5).
+
+    The D1 binding is Worker-owned and the ``0004_engine_attachment_images``
+    schema is applied by the D1 provision gate; app code never creates or
+    mutates schema. A missing or unusable binding yields ``None`` so the
+    attachment route keeps failing closed instead of reading a fake store.
+    """
+    binding = legacy_worker._binding_value(env, ENGINE_IMAGE_STORE_BINDING)
+    if binding is None:
+        return None
+    try:
+        return ScopedImageByteStore(port=CloudflareD1ImageByteStore(binding))
+    except (TypeError, ValueError):
+        return None
+
+
+def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
+    """Compose the per-request trusted scope authority (#2182 S5).
+
+    ``CONTROL_PLANE_LIVE_ADAPTER = NOT_DONE``: the Engine has no live Control
+    Plane ``resolve_auth_session`` transport yet, exactly as for the tenant
+    admission gate in ``app/tenant_auth.py``. Without that trusted client the
+    scope triple cannot be server-minted, so this returns ``None`` and every
+    ``att_*`` request fails closed with 503 ``attachment_resolver_unavailable``
+    rather than trusting a request-asserted tenant or subject.
+    """
+
+    return None
+
+
+def _multimodal_authorities_for_env(
+    env: Any,
+) -> tuple[ScopedImageByteStore | None, AuthSessionScopeAuthority | None]:
+    return _image_byte_store_for_env(env), _scope_authority_for_env(env)
 
 
 def _research_service_for_env(
@@ -164,6 +209,7 @@ async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
 
 async def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
+    image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
             RuntimeError("unreachable without B14 service binding")
@@ -187,7 +233,13 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             memory=legacy_worker._memory_service_for_env(env),
             multimodal=MultimodalAttachmentEngineService(
                 runtime_factory=unavailable,
-                attachment_resolver=None,
+                image_byte_store=image_byte_store,
+                scope_authority=scope_authority,
+            ),
+            multimodal_streaming=MultimodalStreamingEngineService(
+                runtime_factory=unavailable,
+                image_byte_store=image_byte_store,
+                scope_authority=scope_authority,
             ),
             # E7 tool execution/continuation remains a source seam: the
             # resolver factory below returns None until a real port and grant
@@ -228,6 +280,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     def multimodal_runtime_factory(app_id: str) -> MultimodalExecutionRuntime:
         return MultimodalExecutionRuntime(app_id=app_id, b14_client=b14_client)
 
+    def multimodal_streaming_runtime_factory(app_id: str) -> MultimodalStreamingExecutionRuntime:
+        return MultimodalStreamingExecutionRuntime(
+            app_id=app_id,
+            b14_stream_client=b14_stream_client,
+        )
+
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -254,9 +312,17 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         memory=legacy_worker._memory_service_for_env(env),
         multimodal=MultimodalAttachmentEngineService(
             runtime_factory=multimodal_runtime_factory,
-            # E5A source seam only. A deployment-owned resolver that proves
-            # app/tenant/subject scope is a later Production activation gate.
-            attachment_resolver=None,
+            # #2182 S5: the resolver is no longer a caller-supplied object. It
+            # is built per request from the deployment D1 image store plus the
+            # per-request server-minted TrustedCallerScope. Either authority is
+            # absent until its own gate, and the route fails closed 503.
+            image_byte_store=image_byte_store,
+            scope_authority=scope_authority,
+        ),
+        multimodal_streaming=MultimodalStreamingEngineService(
+            runtime_factory=multimodal_streaming_runtime_factory,
+            image_byte_store=image_byte_store,
+            scope_authority=scope_authority,
         ),
         # E7 tool execution/continuation remains a source seam: the
         # resolver factory below returns None until a real port and grant
@@ -298,6 +364,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
             return await self._fetch_multimodal(request, path)
+        if path == MULTIMODAL_STREAM_PATH:
+            return await self._fetch_multimodal_stream(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
@@ -356,6 +424,38 @@ class Default(legacy_worker.Default):
             body=body,
         )
         return legacy_worker._json_response(result)
+
+    async def _fetch_multimodal_stream(self, request: Any, path: str) -> Any:
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        body = b""
+        if method.upper() == "POST":
+            try:
+                body = str(await request.text()).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(status_code=400, body={"ok": False, "error": {
+                        "code": "invalid_request", "message": "Request body could not be read.",
+                        "retryable": False, "metadata": None,
+                    }})
+                )
+        auth_error = legacy_worker._authenticate_non_health_request(self.env, headers, body)
+        if auth_error is not None:
+            return auth_error
+        services = await self.engine_services_factory(self.env)
+        if services.multimodal_streaming is None:
+            return legacy_worker._error_response(
+                "multimodal_streaming_unavailable",
+                "Multimodal streaming service is unavailable.",
+                503,
+            )
+        prepared = await services.multimodal_streaming.prepare(
+            method=method, path=path, content_type=content_type, body=body
+        )
+        if isinstance(prepared, ServiceResponse):
+            return legacy_worker._json_response(prepared)
+        return legacy_worker._ndjson_response(services.multimodal_streaming, prepared)
 
     async def _fetch_tool(self, request: Any, path: str) -> Any:
         """E7 tool execution/continuation route: source-wired, fail-closed.

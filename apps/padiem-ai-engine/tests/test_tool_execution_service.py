@@ -111,7 +111,7 @@ class Fixture:
             max_tokens=1024,
             max_steps_cap=8,
             context_policy={},
-            model_policy={},
+            model_policy={"model": "test/route"},
             output_contract={},
             tool_bindings=tuple(
                 ToolRuntimeBinding(canonical, spec.id)
@@ -636,6 +636,7 @@ def orch_payload(app_id: str = APP_ID) -> dict:
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 2048,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "run the plan"}],
         "trace_id": "tr_orch_test",

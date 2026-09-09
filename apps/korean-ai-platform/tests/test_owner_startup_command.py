@@ -61,6 +61,8 @@ def test_documented_owner_startup_loads_dotenv_end_to_end(tmp_path: Path) -> Non
     env.pop("AGNES_API_KEY", None)
     env.pop("PADIEM_POOLSIDE_API_KEY", None)
     env.pop("PADIEM_SENSENOVA_API_KEY", None)
+    env.pop("PADIEM_AGNES_API_KEY", None)
+    env.pop("PADIEM_B_AI_API_KEY", None)
     env.pop("PYTHONWARNINGS", None)
     existing_pythonpath = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = (

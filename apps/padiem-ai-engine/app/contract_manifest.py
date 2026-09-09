@@ -19,6 +19,7 @@ from .agent_skill_service import (
 from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
+from .multimodal_attachment_service import MULTIMODAL_STREAM_PATH
 from .orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -149,6 +150,7 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             # E5A completed one-image source route. Trusted storage resolution is
             # intentionally not Production-wired yet, so capability stays DEFERRED.
             EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
+            EngineEndpointContract(MULTIMODAL_STREAM_PATH, "POST", "application/x-ndjson"),
             # #1964 source slice: the replay route is declared but the feature
             # stays DEFERRED until the #1235 production activation blockers are
             # proven in a separately authorized change (BLOCKER_10).
@@ -190,6 +192,11 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("multimodal_completed_run", EngineFeatureState.DEFERRED),
+            # #1972: the streaming route and shared stream state machine are
+            # source-complete, but the Production composition injects no
+            # trusted attachment resolver (fail-closed 503), so — per the
+            # tool_runtime_projection audit precedent — the claim stays
+            # DEFERRED until resolver activation is separately authorized.
             EngineFeatureContract("multimodal_streaming_run", EngineFeatureState.DEFERRED),
             EngineFeatureContract("document_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("public_browser_api", EngineFeatureState.UNAVAILABLE),

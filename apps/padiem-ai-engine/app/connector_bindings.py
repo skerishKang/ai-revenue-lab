@@ -25,9 +25,9 @@ from dataclasses import dataclass
 from padiem_ai_core import (
     AgentExecutionBudget,
     BoundedAgentDefinition,
-    GmailReadPort,
     GMAIL_CANONICAL_TOOL_IDS,
     GMAIL_CONNECTOR_ID,
+    GmailReadPort,
     ToolAuthorizationContext,
     ToolRegistrySnapshot,
     ToolResourcePolicy,
@@ -36,6 +36,16 @@ from padiem_ai_core import (
     TrustedAgentRuntimePolicy,
     compile_agent_profile,
     gmail_read_tool_specs,
+)
+from padiem_ai_core.drive_capability import (
+    DRIVE_CANONICAL_TOOL_IDS,
+    DRIVE_CONNECTOR_ID,
+    DriveCapability,
+    DriveCapabilityGrant,
+    DriveContractError,
+    DriveReadPort,
+    drive_read_tool_specs,
+    register_drive_read_tools,
 )
 from padiem_ai_core.tool_runtime import (
     ToolRuntime as _CoreToolRuntime,  # identity-gate check below
@@ -53,6 +63,9 @@ from app.tool_projection import (
 # before the OAuth credential store is bound.
 GMAIL_REFERENCE_APP_ID = "b54-padiem-claw"
 GMAIL_MAIL_READER_AGENT_ID = "agent:padiem:claw_mail_reader@1"
+
+DRIVE_REFERENCE_APP_ID = "b54-padiem-claw-drive"
+DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
 
 # Server-side identifiers (deployment decision D28, pre-activation). They
 # identify the trusted Engine composition slot for the Gmail read connector
@@ -75,6 +88,34 @@ class GmailGrant:
     binding_ref: str
     actor_ref: str
     granted_scopes: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class DriveGrant:
+    """Server-resolved grant fact for one canonical Drive Agent.
+
+    ``granted_capabilities`` carries only explicit DriveCapability values
+    resolved server-side from grant references; never derived from caller
+    JSON. Raw OAuth/access/refresh tokens can never appear here.
+    """
+
+    app_id: str
+    canonical_agent_id: str
+    binding_ref: str
+    actor_ref: str
+    granted_capabilities: tuple[DriveCapability, ...]
+
+    def __post_init__(self) -> None:
+        # Fail-closed parity with Core's DriveCapabilityGrant: a grant that
+        # repeats a capability is ambiguous and must never reach binding.
+        if not isinstance(self.granted_capabilities, tuple) or any(
+            not isinstance(item, DriveCapability) for item in self.granted_capabilities
+        ):
+            raise DriveContractError(
+                "granted_capabilities must contain DriveCapability values"
+            )
+        if len(self.granted_capabilities) != len(set(self.granted_capabilities)):
+            raise DriveContractError("granted_capabilities must be unique")
 
 
 def _gmail_definition(*, app_id: str, canonical_agent_id: str) -> BoundedAgentDefinition:
@@ -120,6 +161,55 @@ def _gmail_policy() -> TrustedAgentRuntimePolicy:
                 ),
             )
             for _ in (specs.get(spec_id),)  # static-only check below
+            if spec_id in specs
+        ),
+    )
+
+
+def _drive_definition(*, app_id: str, canonical_agent_id: str) -> BoundedAgentDefinition:
+    return BoundedAgentDefinition(
+        agent_id=canonical_agent_id,
+        publisher_id="padiem",
+        title="Claw drive reader",
+        description="Read-only Google Drive projection for Padiem Claw",
+        instruction=(
+            "Read selected Drive resources through the trusted Drive port; "
+            "never write or modify."
+        ),
+        output_contract_ref="output:text@1",
+        allowed_tool_ids=DRIVE_CANONICAL_TOOL_IDS,
+        execution_budget=AgentExecutionBudget(),
+    )
+
+
+def _drive_policy() -> TrustedAgentRuntimePolicy:
+    specs = {spec.id: spec for spec in drive_read_tool_specs()}
+    return TrustedAgentRuntimePolicy(
+        context_policy_ref="context:default",
+        model_policy_ref="model:auto",
+        output_contract_ref="output:text@1",
+        task_type="general",
+        optimize_for="balanced",
+        max_tokens=1024,
+        max_steps_cap=8,
+        context_policy={},
+        model_policy={},
+        output_contract={},
+        tool_bindings=tuple(
+            ToolRuntimeBinding(
+                canonical_tool_id=canonical,
+                runtime_tool_id=spec_id,
+            )
+            for canonical, spec_id in zip(
+                DRIVE_CANONICAL_TOOL_IDS,
+                (
+                    "drive.search_files",
+                    "drive.list_recent_files",
+                    "drive.get_file_metadata",
+                    "drive.read_file_content",
+                ),
+            )
+            for _ in (specs.get(spec_id),)
             if spec_id in specs
         ),
     )
@@ -227,56 +317,188 @@ def gmail_tool_binding(
     )
 
 
+def drive_tool_binding(
+    *,
+    grant: DriveGrant,
+    port: DriveReadPort,
+) -> EngineToolBinding:
+    """Assemble one server-trusted EngineToolBinding from a server Drive grant.
+
+    Core entry point is ``register_drive_read_tools``; the Engine never
+    instantiates a second runtime. The Engine never invents a
+    ``ToolAuthorizationContext`` from request JSON; the grant's
+    ``granted_capabilities`` is the only source of authority.
+    """
+
+    if not isinstance(grant, DriveGrant):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Drive binding requires a server-resolved DriveGrant.",
+            status_code=503,
+        )
+    if not callable(getattr(port, "get_json", None)) or not callable(
+        getattr(port, "get_text", None)
+    ):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Drive binding requires a Core DriveReadPort.",
+            status_code=503,
+        )
+    if grant.app_id != DRIVE_REFERENCE_APP_ID:
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Drive grant app_id does not match the trusted Engine slot.",
+            status_code=403,
+        )
+    if grant.canonical_agent_id != DRIVE_AGENT_ID:
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Drive grant canonical_agent_id does not match the bound Agent.",
+            status_code=403,
+        )
+
+    runtime = ToolRuntime()
+    register_drive_read_tools(
+        runtime,
+        port,
+        binding_ref=grant.binding_ref,
+        actor_ref=grant.actor_ref,
+    )
+
+    specs = list(drive_read_tool_specs())
+    registry = ToolRegistrySnapshot.from_entries(
+        tuple(
+            sorted(
+                (
+                    RegisteredTool.from_spec(
+                        canonical_tool_id=canonical,
+                        runtime_spec=spec,
+                    )
+                    for canonical, spec in zip(
+                        DRIVE_CANONICAL_TOOL_IDS,
+                        specs,
+                    )
+                ),
+                key=lambda entry: entry.canonical_tool_id,
+            )
+        )
+    )
+
+    definition = _drive_definition(
+        app_id=grant.app_id,
+        canonical_agent_id=grant.canonical_agent_id,
+    )
+    policy = _drive_policy()
+    compiled = compile_agent_profile(definition, policy)
+    authorization = ToolAuthorizationContext(
+        app_id=grant.app_id,
+        agent_id=compiled.runtime_profile.id,
+        granted_auth_scopes=tuple(grant.granted_capabilities),
+    )
+    authority = TrustedToolAuthority(
+        canonical_agent_id=grant.canonical_agent_id,
+        definition=definition,
+        compiled=compiled,
+        authorization=authorization,
+    )
+    assert type(runtime) is _CoreToolRuntime
+
+    return EngineToolBinding(
+        app_id=grant.app_id,
+        tool_runtime=runtime,
+        registry=registry,
+        authorities={grant.canonical_agent_id: authority},
+        authorization_provider=None,
+        resource_policy=ToolResourcePolicy(),
+    )
+
+
 def build_tool_binding_resolver(
     *,
     gmail_port: GmailReadPort | None,
     grants: Mapping[str, GmailGrant] | None = None,
     grants_loader: Callable[[], Awaitable[Mapping[str, GmailGrant]]] | None = None,
+    drive_port: DriveReadPort | None = None,
+    drive_grants: Mapping[str, DriveGrant] | None = None,
+    drive_grants_loader: Callable[[], Awaitable[Mapping[str, DriveGrant]]] | None = None,
 ) -> Callable[[str], EngineToolBinding | None] | None:
     """Build the cached per-app_id resolver the composition root injects.
 
-    * ``gmail_port is None`` ⇒ ``None``. The composition stays fail-closed
-      (``tool_runtime_unavailable``) exactly as it was in the WO-1 source
-      seam.
+    Gmail and Drive resolvers coexist: a request is routed to the first
+    matching grant type. When either port is ``None`` or its grant
+    mapping is empty, that connector's resolver is absent.
 
-    * ``grants`` is a pre-resolved mapping. ``grants_loader`` is an async
-      factory that the caller may supply when grants come from an async
-      source (e.g., D1). When both are provided, ``grants`` wins.
-
-    * When either ``gmail_port`` or the effective grants mapping is empty,
-      the resolver is ``None``.
+    * ``gmail_port is None and drive_port is None`` ⇒ ``None``.
+    * ``grants`` / ``drive_grants`` are pre-resolved mappings;
+      ``*_loader`` async factories are ignored until pre-resolved
+      (fail-closed until then).
     """
-    if gmail_port is None:
+    gmail_resolver: Callable[[str], EngineToolBinding | None] | None = None
+    if gmail_port is not None:
+        effective_grants = grants
+        if effective_grants is None and grants_loader is not None:
+            effective_grants = {}
+        if effective_grants:
+            cache: dict[str, EngineToolBinding] = {}
+
+            def _gmail_resolver(app_id: str) -> EngineToolBinding | None:
+                grant = effective_grants.get(app_id)
+                if grant is None:
+                    return None
+                cached = cache.get(app_id)
+                if cached is not None:
+                    return cached
+                binding = gmail_tool_binding(grant=grant, port=gmail_port)
+                cache[app_id] = binding
+                return binding
+
+            gmail_resolver = _gmail_resolver
+
+    drive_resolver: Callable[[str], EngineToolBinding | None] | None = None
+    if drive_port is not None:
+        effective_drive_grants = drive_grants
+        if effective_drive_grants is None and drive_grants_loader is not None:
+            effective_drive_grants = {}
+        if effective_drive_grants:
+            cache: dict[str, EngineToolBinding] = {}
+
+            def _drive_resolver(app_id: str) -> EngineToolBinding | None:
+                grant = effective_drive_grants.get(app_id)
+                if grant is None:
+                    return None
+                cached = cache.get(app_id)
+                if cached is not None:
+                    return cached
+                binding = drive_tool_binding(grant=grant, port=drive_port)
+                cache[app_id] = binding
+                return binding
+
+            drive_resolver = _drive_resolver
+
+    if gmail_resolver is None and drive_resolver is None:
         return None
-    effective_grants = grants
-    if effective_grants is None and grants_loader is not None:
-        # grants_loader is async; the resolver is sync. The caller must
-        # pre-resolve grants before passing them. Until then, fail-closed.
-        effective_grants = {}
-    if not effective_grants:
+
+    def _resolver(app_id: str) -> EngineToolBinding | None:
+        if gmail_resolver is not None:
+            binding = gmail_resolver(app_id)
+            if binding is not None:
+                return binding
+        if drive_resolver is not None:
+            return drive_resolver(app_id)
         return None
 
-    cache: dict[str, EngineToolBinding] = {}
-
-    def resolver(app_id: str) -> EngineToolBinding | None:
-        grant = effective_grants.get(app_id)
-        if grant is None:
-            return None
-        cached = cache.get(app_id)
-        if cached is not None:
-            return cached
-        binding = gmail_tool_binding(grant=grant, port=gmail_port)
-        cache[app_id] = binding
-        return binding
-
-    return resolver
+    return _resolver
 
 
 __all__ = [
+    "DRIVE_AGENT_ID",
+    "DRIVE_REFERENCE_APP_ID",
     "GMAIL_CONNECTOR_ID",
     "GMAIL_MAIL_READER_AGENT_ID",
     "GMAIL_REFERENCE_APP_ID",
+    "DriveGrant",
     "GmailGrant",
     "build_tool_binding_resolver",
+    "drive_tool_binding",
     "gmail_tool_binding",
 ]

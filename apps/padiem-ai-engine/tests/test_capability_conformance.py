@@ -535,7 +535,8 @@ async def test_agent_skill_fail_closed_without_binding_resolver() -> None:
 async def test_multimodal_fail_closed_without_attachment_resolver() -> None:
     service = MultimodalAttachmentEngineService(
         runtime_factory=_UnreachableRuntimeFactory(),
-        attachment_resolver=None,
+        image_byte_store=None,
+        scope_authority=None,
     )
 
     response = await service.execute_payload(

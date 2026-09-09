@@ -1,9 +1,11 @@
 name: B54 Engine D1 Provision Gate
 
 # WO-8 PR-A (#1621 / #1753 E9 A9) — provisions the Cloudflare D1 database
-# `padiem-engine` and applies the idempotency/continuation migrations.
-# Dispatch-only by contract: an ordinary pull request can never trigger it.
-# This workflow does NOT edit wrangler.toml and does NOT deploy the worker.
+# `padiem-engine` and applies the idempotency/continuation/grants/attachment
+# migrations. Dispatch-only by contract: an ordinary pull request can never
+# trigger it. This workflow does NOT edit wrangler.toml and does NOT deploy
+# the worker. #2152 extends the sequence with 0004 (schema only; the
+# attachment store stays unwired until its own activation slices).
 
 on:
   workflow_dispatch:
@@ -80,7 +82,7 @@ jobs:
           echo "D1_DATABASE_ID=$DB_ID"
           echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
 
-      - name: Apply migrations 0001 + 0002 + 0003 to remote
+      - name: Apply migrations 0001 + 0002 + 0003 + 0004 to remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -97,7 +99,9 @@ jobs:
             --file=apps/padiem-ai-engine/migrations/0002_engine_continuations.sql
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0003_engine_connector_grants.sql
-          echo 'D1_MIGRATIONS=0001,0002,0003'
+          npx --yes wrangler@4 d1 execute padiem-engine --remote \
+            --file=apps/padiem-ai-engine/migrations/0004_engine_attachment_images.sql
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004'
 
       - name: Assert schema tables exist
         env:
@@ -116,6 +120,7 @@ jobs:
               'padiem_engine_idempotency',
               'padiem_engine_continuations',
               'padiem_engine_connector_grants',
+              'padiem_engine_attachment_images',
           ):
               assert required in names, f'missing table: {required} (have {sorted(names)})'
           print('D1_TABLES_ASSERT=PASS')
@@ -125,6 +130,6 @@ jobs:
         run: |
           echo 'D1_PROVISION=PASS'
           echo "D1_DATABASE_ID=$DB_ID"
-          echo 'D1_MIGRATIONS=0001,0002,0003'
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004'
           echo 'WORKER_DEPLOYED=0'
           echo 'WRANGLER_TOML_MODIFIED=0'

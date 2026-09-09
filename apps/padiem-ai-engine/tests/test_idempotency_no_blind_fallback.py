@@ -69,6 +69,7 @@ def _payload(idempotency_key: str = "idem_fail_safe") -> dict:
             "task_type": "general",
             "optimize_for": "balanced",
             "max_tokens": 2048,
+            "model_policy": {"model": "test/route"},
         },
         "messages": [{"role": "user", "content": "Hello engine"}],
         "trace_id": "tr_idem_failure",
