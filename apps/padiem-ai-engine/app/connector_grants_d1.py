@@ -12,7 +12,8 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from app.connector_bindings import GMAIL_CONNECTOR_ID, GmailGrant
+from padiem_ai_core.drive_capability import DRIVE_CONNECTOR_ID, DriveCapability
+from app.connector_bindings import GMAIL_CONNECTOR_ID, GmailGrant, DriveGrant
 from app.continuation_d1 import _maybe_await
 from app.service import ServiceContractError
 
@@ -56,6 +57,44 @@ class CloudflareD1ConnectorGrantStore:
                     binding_ref=str(data["binding_ref"]),
                     actor_ref=str(data["actor_ref"]),
                     granted_scopes=scopes,
+                )
+            except (ValueError, KeyError, TypeError):
+                raise ServiceContractError(
+                    "connector_grants_unavailable",
+                    "Connector grant storage returned an invalid record.",
+                    status_code=503,
+                ) from None
+
+        return grants
+
+    async def load_drive_grants(self) -> dict[str, DriveGrant]:
+        sql = (
+            f"SELECT app_id, canonical_agent_id, connector_id, binding_ref, "
+            f"actor_ref, granted_capabilities_json FROM {_TABLE_NAME} "
+            f"WHERE connector_id = ? AND active = 1"
+        )
+        try:
+            rows = await self._all(sql, DRIVE_CONNECTOR_ID)
+        except Exception:
+            raise ServiceContractError(
+                "connector_grants_unavailable",
+                "Connector grant storage returned an invalid record.",
+                status_code=503,
+            ) from None
+
+        grants: dict[str, DriveGrant] = {}
+        for data in rows:
+            try:
+                capabilities = tuple(
+                    DriveCapability(item)
+                    for item in json.loads(data["granted_capabilities_json"])
+                )
+                grants[data["app_id"]] = DriveGrant(
+                    app_id=str(data["app_id"]),
+                    canonical_agent_id=str(data["canonical_agent_id"]),
+                    binding_ref=str(data["binding_ref"]),
+                    actor_ref=str(data["actor_ref"]),
+                    granted_capabilities=capabilities,
                 )
             except (ValueError, KeyError, TypeError):
                 raise ServiceContractError(
