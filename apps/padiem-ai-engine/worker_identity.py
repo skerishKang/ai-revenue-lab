@@ -67,6 +67,10 @@ from app.tool_projection import (
     TOOL_RESUME_PATH,
 )
 from app.web_research_service import WebResearchEngineService
+from app.auth_session_scope_authority import (
+    AuthSessionScopeAuthority,
+    CloudflareControlPlaneAuthSessionClient,
+)
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
 ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
@@ -74,6 +78,7 @@ ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
 ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
+CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
 
 
 def _continuation_store_for_env(
@@ -104,20 +109,6 @@ def _image_byte_store_for_env(env: Any) -> ScopedImageByteStore | None:
         return ScopedImageByteStore(port=CloudflareD1ImageByteStore(binding))
     except (TypeError, ValueError):
         return None
-
-
-def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
-    """Compose the per-request trusted scope authority (#2182 S5).
-
-    ``CONTROL_PLANE_LIVE_ADAPTER = NOT_DONE``: the Engine has no live Control
-    Plane ``resolve_auth_session`` transport yet, exactly as for the tenant
-    admission gate in ``app/tenant_auth.py``. Without that trusted client the
-    scope triple cannot be server-minted, so this returns ``None`` and every
-    ``att_*`` request fails closed with 503 ``attachment_resolver_unavailable``
-    rather than trusting a request-asserted tenant or subject.
-    """
-
-    return None
 
 
 def _multimodal_authorities_for_env(
@@ -207,7 +198,30 @@ async def _gmail_grants_for_env(env: Any) -> dict[str, GmailGrant]:
         ) from None
 
 
+def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
+    """Resolve the CP auth-session scope authority via private Service Binding.
+
+    Reads the ``CONTROL_PLANE_IDENTITY`` private Service Binding from the
+    deployment env and constructs the ``CloudflareControlPlaneAuthSessionClient``
+    adapter. Missing or malformed binding fails closed by returning ``None``;
+    the Engine composition then leaves the authority absent so every request
+    fails closed before any scope can be minted.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        client = CloudflareControlPlaneAuthSessionClient(binding)
+    except (TypeError, ValueError):
+        return None
+    try:
+        return AuthSessionScopeAuthority(session_client=client)
+    except (TypeError, ValueError):
+        return None
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    scope_authority = _scope_authority_for_env(env)
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
     if binding is None:
@@ -253,6 +267,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 runtime_factory=unavailable,
                 binding_resolver=None,
             ),
+            scope_authority=scope_authority,
         )
 
     transport = CloudflareB14ServiceBindingTransport(
@@ -344,6 +359,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
             continuation_store=continuation_store,
         ),
+        scope_authority=scope_authority,
     )
 
 
