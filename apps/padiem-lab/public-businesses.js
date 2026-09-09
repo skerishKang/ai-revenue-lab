@@ -253,6 +253,17 @@
       currentPublicUrl: "https://lovetree3.pages.dev/"
     }),
     Object.freeze({
+      number: 25,
+      slug: "love-matchmaking-resonance",
+      title: "Love Matchmaking · Resonance",
+      koreanTitle: "공명 · Resonance",
+      summary: "관계와 매칭의 맥락을 탐색하는 독립 Love Matchmaking 제품입니다.",
+      publicStatus: "LIVE",
+      routeKind: "EXTERNAL_RUNTIME",
+      targetPath: "/b25/",
+      currentPublicUrl: "https://3287293c.401-love-match-making.pages.dev/"
+    }),
+    Object.freeze({
       number: 29,
       slug: "apartment-governance",
       title: "Apartment Governance",
