@@ -1,0 +1,146 @@
+name: B62 Claw Production Smoke Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-claw-production-smoke-gate.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact canary authorization phrase"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-claw-production-smoke-gate
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate smoke gate contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/b62-claw-production-smoke-gate.yml').read_text(encoding='utf-8')
+          required = [
+              'RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY',
+              '/api/claw/manual-intake/execute',
+              '"action":"summary"',
+              'P01_RUN_ID_PRESENT=PASS',
+              'MODEL_RESULT_NONEMPTY=PASS',
+              'NO_EXTERNAL_SIDE_EFFECT_ACTION=PASS',
+              'SECRET_VALUES_OUTPUT=0',
+              'PRODUCTION_MUTATION=0',
+          ]
+          for needle in required:
+              assert needle in text, needle
+          forbidden = [
+              'session_cookie',
+              'PADIEM_CHAT_SESSION_SECRET',
+              'GOOGLE_ACCESS_TOKEN',
+              'provider_key',
+          ]
+          lowered = text.lower()
+          for needle in forbidden:
+              assert needle.lower() not in lowered, needle
+          print('B62_CLAW_PHASE_A_SMOKE_SOURCE=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+  phase-a-production-canary:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Require exact current main and explicit canary authorization
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${CONFIRMATION}" = "RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "PHASE_A_EXACT_MAIN=PASS"
+
+      - name: Run bounded synthetic real-model canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="${RUNNER_TEMP}/claw-phase-a.json"
+          headers="${RUNNER_TEMP}/claw-phase-a.headers"
+          payload='{"channel":"other","action":"summary","content":"Closed beta synthetic canary. Summarize this sentence in one short sentence."}'
+          status="$(curl --silent --show-error --max-time 45 \
+            -D "${headers}" -o "${body}" -w '%{http_code}' \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json' \
+            --data "${payload}" \
+            "${B62_PUBLIC_BASE_URL}/api/claw/manual-intake/execute")"
+          echo "HTTP_STATUS=${status}"
+          test "${status}" = "200"
+          jq -e '.ok == true' "${body}" >/dev/null
+          jq -e '.result.result_text | type == "string" and length > 0' "${body}" >/dev/null
+          jq -e '.result.p01_run_id | type == "string" and length > 0' "${body}" >/dev/null
+          jq -e '.result.p01_event_count | type == "number" and . >= 0' "${body}" >/dev/null
+          jq -e '.result.action == "summarize_request" or .result.action == "summary"' "${body}" >/dev/null
+          jq -e '.result.direct_kakao_send == false and .result.direct_sms_send == false' "${body}" >/dev/null
+          grep -qi '^cache-control:.*no-store' "${headers}"
+          if grep -Eqi 'credential|api[_-]?key|provider[_-]?key|engine[_-]?url|object[_-]?key|bucket[_-]?name|access[_-]?token|refresh[_-]?token' "${body}"; then
+            echo "Public canary response contains forbidden internal material." >&2
+            exit 1
+          fi
+          echo "MODEL_RESULT_NONEMPTY=PASS"
+          echo "P01_RUN_ID_PRESENT=PASS"
+          echo "NO_EXTERNAL_SIDE_EFFECT_ACTION=PASS"
+          echo "SECRET_VALUES_OUTPUT=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Publish bounded evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## B62 Claw Phase-A Production canary'
+            echo
+            echo "- exact SHA: \`${TARGET_SHA}\`"
+            echo '- action: `summary`'
+            echo '- synthetic input only: yes'
+            echo '- human session material stored in CI: no'
+            echo '- external send/write: no'
+            echo '- production deployment/config mutation: no'
+          } >> "${GITHUB_STEP_SUMMARY}"
