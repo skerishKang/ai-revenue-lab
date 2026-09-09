@@ -1,0 +1,78 @@
+name: B03 Living Fiction Cloudflare Preview Deploy
+
+# Owner-authorized CI path for B03 Cloudflare Container Preview deployment.
+# Builds the existing Dockerfile.cloudflare on the GitHub runner (no local
+# Docker dependency), deploys the existing container Worker config, and
+# verifies /health and /access. Preview only: no custom domain, no Modal
+# changes, no production branch changes.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b03-lf-preview-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install current Cloudflare tooling
+        working-directory: apps/living-fiction
+        run: npm install --no-save --ignore-scripts wrangler @cloudflare/containers
+
+      - name: Resolve workers.dev subdomain and preview origin
+        id: sub
+        run: |
+          SUB=$(curl -sS \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
+            | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["subdomain"])')
+          test -n "$SUB"
+          echo "subdomain=$SUB" >> "$GITHUB_OUTPUT"
+          echo "origin=https://living-fiction-cloudflare-container-m0.$SUB.workers.dev" >> "$GITHUB_OUTPUT"
+
+      - name: Put Worker secrets (server-side only, values never printed)
+        working-directory: apps/living-fiction
+        env:
+          LF_DATABASE_URL: ${{ secrets.LF_PREVIEW_DATABASE_URL }}
+          LF_ADMIN_SECRET: ${{ secrets.LF_PREVIEW_ADMIN_SECRET }}
+          LF_CREDENTIAL_HMAC_KEY: ${{ secrets.LF_PREVIEW_CREDENTIAL_HMAC_KEY }}
+          LF_SESSION_HMAC_KEY: ${{ secrets.LF_PREVIEW_SESSION_HMAC_KEY }}
+          LF_ALLOWED_ORIGINS: ${{ steps.sub.outputs.origin }}
+        run: |
+          for k in LF_DATABASE_URL LF_ADMIN_SECRET LF_CREDENTIAL_HMAC_KEY LF_SESSION_HMAC_KEY LF_ALLOWED_ORIGINS; do
+            v=$(printenv "$k")
+            if [ -z "$v" ]; then echo "missing secret $k" >&2; exit 1; fi
+            printf '%s' "$v" | npx wrangler secret put "$k" --config wrangler.cloudflare-container.toml
+          done
+
+      - name: Build container image and deploy Preview Worker
+        working-directory: apps/living-fiction
+        run: npx wrangler deploy --config wrangler.cloudflare-container.toml
+
+      - name: Verify /health and /access on preview origin
+        run: |
+          ORIGIN="${{ steps.sub.outputs.origin }}"
+          echo "verifying $ORIGIN"
+          h=$(curl -sS -o /tmp/health.json -w '%{http_code}' --max-time 180 "$ORIGIN/health")
+          echo "health status=$h"
+          cat /tmp/health.json
+          test "$h" = "200"
+          a=$(curl -sS -o /tmp/access.html -w '%{http_code}' --max-time 180 "$ORIGIN/access")
+          echo "access status=$a"
+          test "$a" = "200"
+          grep -q "Living Fiction" /tmp/access.html
