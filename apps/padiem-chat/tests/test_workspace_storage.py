@@ -11,6 +11,7 @@ from app.workspace_storage import (
     SINGLE_FILE_MAX_BYTES,
     WorkspaceDocumentStore,
     WorkspaceStorageAccessError,
+    WorkspaceStorageError,
 )
 
 NOW = datetime(2026, 9, 9, 10, 0, tzinfo=timezone.utc)
@@ -144,6 +145,54 @@ async def test_single_file_bound_is_enforced_before_r2_write() -> None:
         )
 
     assert r2.put_calls == []
+
+
+async def test_r2_write_failure_fails_closed_without_metadata_row() -> None:
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+
+    async def fail_put(key, body, **kwargs):
+        raise RuntimeError("r2 unavailable")
+
+    r2.put = fail_put
+    storage = WorkspaceDocumentStore(metadata, r2)
+
+    with pytest.raises(WorkspaceStorageError):
+        await storage.put_generated_docx(
+            tenant_id=TENANT,
+            filename="견적서.docx",
+            body=b"PK-docx-bytes",
+            now=NOW,
+        )
+
+    # A private R2 write failure must never leave a D1 metadata row behind.
+    assert metadata.rows == {}
+
+
+async def test_metadata_write_failure_cleans_up_orphan_r2_object() -> None:
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+
+    async def fail_insert(record):
+        raise RuntimeError("d1 unavailable")
+
+    metadata.insert = fail_insert
+    storage = WorkspaceDocumentStore(metadata, r2)
+
+    with pytest.raises(WorkspaceStorageError):
+        await storage.put_generated_docx(
+            tenant_id=TENANT,
+            filename="견적서.docx",
+            body=b"PK-docx-bytes",
+            now=NOW,
+        )
+
+    # The R2 object was written before the D1 metadata insert failed; the
+    # orphaned private object must be deleted, not left addressable in the bucket.
+    assert len(r2.put_calls) == 1
+    written_key = r2.put_calls[0][0]
+    assert written_key in r2.delete_calls
+    assert written_key not in r2.objects
 
 
 async def test_caller_cannot_supply_object_key_or_document_id() -> None:

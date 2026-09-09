@@ -1070,6 +1070,51 @@ def test_canonical_tenant_denies_when_authority_raises() -> None:
     assert resp.json()["error"]["code"] == "workspace_scope_unavailable"
 
 
+def test_quote_identity_shadow_unavailable_fails_closed() -> None:
+    # Auth is enabled and a valid session cookie is present, but the identity
+    # shadow store is not bound on the Worker: canonical tenant resolution must
+    # fail closed (503) rather than store a document under an unverifiable tenant.
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    app.state.identity_shadow_store = None
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    resp = _post_quote(client)
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "workspace_scope_unavailable"
+
+
+def test_quote_storage_write_failure_fails_closed() -> None:
+    # A private artifact write (R2/D1) failure must surface as a storage error,
+    # not leak a document id or return a raw traceback, and must not be reported
+    # as the distinct generation failure.
+    app = _app_with_identity()
+    workspace_store = _make_workspace_store()
+    workspace_store.put_generated_docx = AsyncMock(
+        side_effect=RuntimeError("workspace document storage failed")
+    )
+    app.state.workspace_document_store = workspace_store
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, _make_adapter()):
+            resp = test_client.post(EXECUTE_ROUTE_PATH, json=QUOTE_PAYLOAD)
+    assert resp.status_code == 500
+    data = resp.json()
+    assert data["ok"] is False
+    assert data["error"]["code"] == "artifact_storage_failed"
+    assert "document_id" not in data.get("result", {})
+
+
 def test_resolve_canonical_tenant_uses_shared_refreshed_session_contract() -> None:
     source = (Path(__file__).resolve().parents[1] / "app" / "claw_routes.py").read_text(encoding="utf-8")
     helper = source.split("async def _resolve_canonical_tenant", 1)[1].split("async def", 1)[0]
