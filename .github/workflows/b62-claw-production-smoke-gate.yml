@@ -26,18 +26,35 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  TARGET_SHA: ${{ inputs.target_sha }}
   B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev
 
 jobs:
   source-contract:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Checkout exact source
+      - name: Checkout PR head
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || env.TARGET_SHA }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout push SHA
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -76,25 +93,23 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: production
-    env:
-      CONFIRMATION: ${{ inputs.confirmation }}
     steps:
-      - name: Require exact current main and explicit canary authorization
+      - name: Checkout exact target SHA
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.TARGET_SHA }}
+          ref: ${{ inputs.target_sha }}
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Reconfirm exact main
+      - name: Require exact current main and explicit canary authorization
         shell: bash
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
-          test "${CONFIRMATION}" = "RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY"
-          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${{ inputs.confirmation }}" = "RUN_B62_CLAW_PHASE_A_REAL_MODEL_CANARY"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
           echo "PHASE_A_EXACT_MAIN=PASS"
 
       - name: Run bounded synthetic real-model canary
@@ -137,7 +152,7 @@ jobs:
           {
             echo '## B62 Claw Phase-A Production canary'
             echo
-            echo "- exact SHA: \`${TARGET_SHA}\`"
+            echo "- exact SHA: \`${{ inputs.target_sha }}\`"
             echo '- action: `summary`'
             echo '- synthetic input only: yes'
             echo '- human session material stored in CI: no'
