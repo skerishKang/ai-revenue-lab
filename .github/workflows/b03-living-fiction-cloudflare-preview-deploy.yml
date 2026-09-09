@@ -1,13 +1,23 @@
 name: B03 Living Fiction Cloudflare Preview Deploy
 
-# Owner-authorized CI path for B03 Cloudflare Container Preview deployment.
-# Builds the existing Dockerfile.cloudflare on the GitHub runner (no local
-# Docker dependency), deploys the existing container Worker config, and
-# verifies /health and /access. Preview only: no custom domain, no Modal
-# changes, no production branch changes.
+# HOLD as of 2026-09-09 KST: Cloudflare Containers require Workers Paid.
+# This workflow must not be used for the current B03 UI check. The active path
+# is existing Modal redeploy tracked by #2255. This file remains only as future
+# Cloudflare migration preparation and is guarded against accidental dispatch.
+# Builds, if re-enabled by a future owner decision, must occur on CI/remote
+# infrastructure only. Do not use local Docker Desktop.
 
 on:
   workflow_dispatch:
+    inputs:
+      workers_paid_confirmed:
+        description: "Type YES only after owner approves Workers Paid / Containers for B03 or broader infra."
+        required: true
+        default: "NO"
+      owner_paid_plan_issue:
+        description: "Issue number recording the separate paid-plan approval."
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -27,6 +37,30 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.LF_PREVIEW_CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      - name: Guard Workers Paid approval
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.workers_paid_confirmed }}" != "YES" ]; then
+            cat >&2 <<'MSG'
+          B03 Cloudflare Container Preview deploy is HOLD.
+
+          Reason:
+          - Cloudflare Containers require Workers Paid.
+          - Owner decision on 2026-09-09: do not purchase Workers Paid solely for B03 UI check.
+          - Active path: existing Modal redeploy, tracked by #2255.
+          - Local Docker Desktop remains forbidden by operating policy.
+
+          To use this workflow in the future, record a separate paid-plan owner
+          approval issue and dispatch with workers_paid_confirmed=YES.
+          MSG
+            exit 1
+          fi
+          if [ -z "${{ inputs.owner_paid_plan_issue }}" ]; then
+            echo "owner_paid_plan_issue is required when enabling paid Containers deploy" >&2
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
