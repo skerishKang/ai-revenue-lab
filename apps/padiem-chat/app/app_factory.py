@@ -78,6 +78,7 @@ def create_app(
     identity_shadow_store=None,
     d1_binding=None,
     r2_binding=None,
+    claw_p01_adapter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -135,4 +136,8 @@ def create_app(
             _workspace_store = None
     app.state.workspace_document_store = _workspace_store
     app.state._workspace_metadata_store = _metadata_store
+    # Worker-native Claw P01/Engine adapter (#2229). Injected by the Worker
+    # composition root from trusted bindings; None means unconfigured and the
+    # execute route fails closed before any transport.
+    app.state.claw_p01_adapter = claw_p01_adapter
     return app

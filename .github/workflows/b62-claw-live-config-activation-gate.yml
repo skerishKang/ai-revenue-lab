@@ -1,0 +1,496 @@
+name: B62 Claw Live Config Activation Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-claw-live-config-activation-gate.yml"
+      - ".github/scripts/b62_claw_live_config_activation.py"
+      - ".github/tests/test_b62_claw_live_config_activation.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Live config gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activate_config
+          - rollback_config
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+      engine_service_name:
+        description: "Canonical Engine Worker service name for P01_ENGINE_SERVICE"
+        required: false
+        default: ""
+        type: string
+      r2_bucket_name:
+        description: "Existing private R2 bucket name for PADIEM_WORKSPACE_FILES"
+        required: false
+        default: ""
+        type: string
+      rollback_version_id:
+        description: "Recorded pre-activation version id to restore"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-claw-live-config-activation-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${{ inputs.target_sha }}
+  ENGINE_SERVICE_NAME: ${{ inputs.engine_service_name }}
+  R2_BUCKET_NAME: ${{ inputs.r2_bucket_name }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run live config activation gate contract tests
+        run: python .github/tests/test_b62_claw_live_config_activation.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_CLAW_LIVE_CONFIG_SOURCE_CONTRACT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      disposition: ${{ steps.classify.outputs.disposition }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before live readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read live Worker settings and classify activation targets
+        id: classify
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test -n "${ENGINE_SERVICE_NAME}"
+          test -n "${R2_BUCKET_NAME}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-readonly.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          jq -e '.success == true' "${settings}" >/dev/null
+          jq -c '[.result.bindings[] | {name, type}]' "${settings}"
+          evidence="$(python .github/scripts/b62_claw_live_config_activation.py classify \
+            --settings "${settings}" --engine-service "${ENGINE_SERVICE_NAME}" --r2-bucket "${R2_BUCKET_NAME}")"
+          echo "${evidence}"
+          disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_CLAW_LIVE_CONFIG_DISPOSITION=//p')"
+          case "${disposition}" in
+            ALREADY_EXACT|ACTIVATION_REQUIRED) ;;
+            *) echo 'Refusing: live config requires human review before any mutation.' >&2; exit 1;;
+          esac
+          echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  activate-config:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_config' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      READONLY_DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
+    steps:
+      - name: Require explicit activation authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_ACTIVATE_B62_CLAW_LIVE_CONFIG"
+          case "${READONLY_DISPOSITION}" in
+            ALREADY_EXACT|ACTIVATION_REQUIRED) ;;
+            *)
+              echo 'Refusing mutation: no trustworthy readonly disposition.' >&2
+              exit 1
+              ;;
+          esac
+          echo 'B62_CLAW_LIVE_CONFIG_AUTHORIZATION=PASS'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record rollback anchor and pre-mutation settings snapshot
+        id: before
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-premutation.json"
+          deployments="${RUNNER_TEMP}/b62-deployments-premutation.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+            -o "${deployments}"
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
+            "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          test -n "${active}"
+          echo "B62_CLAW_CONFIG_PREMUTATION_VERSION_ID=${active}"
+          echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
+          jq -c '.result.bindings | map({name, type})' "${settings}"
+          echo 'PREMUTATION_SETTINGS_SNAPSHOT=RECORDED'
+          echo 'D1_IDENTIFIER_OUTPUT=0'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Rebuild the activation patch against the pre-mutation snapshot
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/b62-config-patch.json"
+          evidence="$(python .github/scripts/b62_claw_live_config_activation.py plan \
+            --settings "${RUNNER_TEMP}/b62-settings-premutation.json" \
+            --engine-service "${ENGINE_SERVICE_NAME}" \
+            --r2-bucket "${R2_BUCKET_NAME}" \
+            --target-sha "${TARGET_SHA}" \
+            --output "${RUNNER_TEMP}/b62-config-patch.json")"
+          echo "${evidence}"
+          no_op="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_CLAW_CONFIG_NO_OP=//p')"
+          credential="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED=//p')"
+          test -n "${no_op}" && test -n "${credential}"
+          echo "B62_CLAW_CONFIG_NO_OP=${no_op}" >> "${GITHUB_ENV}"
+          echo "B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED=${credential}" >> "${GITHUB_ENV}"
+
+      - name: Confirm the private R2 bucket already exists
+        if: ${{ env.B62_CLAW_CONFIG_NO_OP != '1' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          bucket="${RUNNER_TEMP}/b62-r2-bucket.json"
+          http_status="$(curl -sS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}" \
+            -o "${bucket}" -w '%{http_code}')"
+          test "${http_status}" = "200"
+          jq -e --arg name "${R2_BUCKET_NAME}" '.success == true and .result.name == $name' "${bucket}" >/dev/null
+          echo 'R2_BUCKET_REUSE_EXISTING=PASS'
+          echo 'R2_BUCKET_CREATED=0'
+
+      - name: Apply the activation patch through the settings API
+        if: ${{ env.B62_CLAW_CONFIG_NO_OP != '1' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/b62-config-patch-response.json"
+          http_status="$(
+            curl -sS -X PATCH \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -F "settings=<${RUNNER_TEMP}/b62-config-patch.json;type=application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          echo "B62_CLAW_CONFIG_PATCH_HTTP_STATUS=${http_status}"
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo 'B62_CLAW_CONFIG_PATCH=FAIL'
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+            else
+              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+            fi
+            exit 1
+          fi
+          jq -e '.success == true and (.result.bindings | type == "array")' "${response}" >/dev/null
+          echo 'B62_CLAW_CONFIG_PATCH=SUCCESS'
+          echo 'UNRELATED_BINDINGS_PRESERVED=PASS'
+          echo 'SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO'
+          echo 'WORKER_CODE_REDEPLOY=0'
+
+      - name: Create the P01 Engine credential only when it is absent
+        if: ${{ env.B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED == '1' }}
+        shell: bash
+        env:
+          B62_P01_ENGINE_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+        run: |
+          set -euo pipefail
+          test -n "${B62_P01_ENGINE_CREDENTIAL}"
+          payload="${RUNNER_TEMP}/b62-p01-credential.json"
+          python - "${payload}" <<'PY'
+          import json, os, sys
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(
+                  {
+                      "name": "P01_ENGINE_CREDENTIAL",
+                      "type": "secret_text",
+                      "text": os.environ["B62_P01_ENGINE_CREDENTIAL"],
+                  },
+                  handle,
+                  separators=(",", ":"),
+              )
+          PY
+          response="${RUNNER_TEMP}/b62-p01-credential-response.json"
+          http_status="$(
+            curl -sS -X PUT \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/secrets" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          rm -f "${payload}"
+          echo "B62_P01_CREDENTIAL_HTTP_STATUS=${http_status}"
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo 'B62_P01_CREDENTIAL=FAIL'
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+            else
+              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+            fi
+            exit 1
+          fi
+          jq -e '.success == true' "${response}" >/dev/null
+          echo 'B62_P01_CREDENTIAL=CREATED'
+          echo 'SECRET_VALUE_EMITTED=0'
+          echo 'SECRET_REUSE_ONLY_NO_RECREATION=PASS'
+
+      - name: Read back the fully activated live configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          ready=no
+          for _ in $(seq 1 30); do
+            settings="${RUNNER_TEMP}/b62-settings-after.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+              -o "${settings}"
+            if python .github/scripts/b62_claw_live_config_activation.py verify \
+              --settings "${settings}" --engine-service "${ENGINE_SERVICE_NAME}" --r2-bucket "${R2_BUCKET_NAME}" \
+              >"${RUNNER_TEMP}/b62-verify-after.log" 2>&1; then
+              ready=yes
+              break
+            fi
+            sleep 2
+          done
+          cat "${RUNNER_TEMP}/b62-verify-after.log"
+          test "${ready}" = yes
+          echo 'B62_CLAW_LIVE_CONFIG_POST_READBACK=PASS'
+          if [ "${B62_CLAW_CONFIG_NO_OP}" = "1" ]; then
+            echo 'B62_CLAW_LIVE_CONFIG_ACTIVATION=SKIPPED_ALREADY_EXACT'
+            echo 'PRODUCTION_MUTATION=0'
+          else
+            echo 'B62_CLAW_LIVE_CONFIG_ACTIVATION=COMPLETE'
+            echo 'PRODUCTION_MUTATION=1'
+          fi
+          echo 'SECRET_VALUES_READ=0'
+          echo 'UNRELATED_CONFIG_MUTATED=0'
+
+  rollback-config:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'rollback_config' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      ROLLBACK_VERSION_ID: ${{ inputs.rollback_version_id }}
+    steps:
+      - name: Require explicit rollback authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_ROLLBACK_B62_CLAW_LIVE_CONFIG"
+          echo "${ROLLBACK_VERSION_ID}" | grep -Eq '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+          echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK_AUTHORIZATION=PASS'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREROLLBACK_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore the recorded pre-activation version through the deployments API
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          deployments="${RUNNER_TEMP}/b62-deployments-before-rollback.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+            -o "${deployments}"
+          current="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          if [ "${current}" = "${ROLLBACK_VERSION_ID}" ]; then
+            echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=SKIPPED_ALREADY_RESTORED'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 0
+          fi
+          payload="${RUNNER_TEMP}/b62-rollback-deployment.json"
+          python - "${payload}" "${ROLLBACK_VERSION_ID}" "${TARGET_SHA}" <<'PY'
+          import json, sys
+          body = {
+              "strategy": "percentage",
+              "versions": [{"percentage": 100, "version_id": sys.argv[2]}],
+              "annotations": {
+                  "workers/message": f"B62 Claw live config rollback to {sys.argv[2]} at {sys.argv[3]}",
+                  "workers/triggered_by": "b62-claw-live-config-activation-gate",
+              },
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(body, handle, separators=(",", ":"))
+          PY
+          response="${RUNNER_TEMP}/b62-rollback-response.json"
+          http_status="$(
+            curl -sS -X POST "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+              --data-binary "@${payload}" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          echo "B62_CLAW_CONFIG_ROLLBACK_HTTP_STATUS=${http_status}"
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=FAIL'
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+            else
+              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+            fi
+            exit 1
+          fi
+          jq -e '.success == true' "${response}" >/dev/null
+          echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=SUBMITTED'
+          echo 'PRODUCTION_MUTATION=1'
+
+      - name: Read back the restored active version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          restored=no
+          for _ in $(seq 1 30); do
+            deployments="${RUNNER_TEMP}/b62-deployments-after-rollback.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+              -o "${deployments}"
+            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+            if [ "${active}" = "${ROLLBACK_VERSION_ID}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+              restored=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${restored}" = yes
+          echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK_READBACK=PASS'
+          echo 'ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED'
+          echo 'PIECEMEAL_SECRET_RESTORE=0'
