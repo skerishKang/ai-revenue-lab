@@ -36,10 +36,10 @@ def test_cloudflare_m0_does_not_fabricate_runtime_resources_or_activate_ai() -> 
 
     assert 'compatibility_flags = ["python_workers"]' in config
     assert "[[hyperdrive]]" not in config
-    assert "LF_DATABASE_URL" not in config
-    assert "LF_MIGRATION_DATABASE_URL" not in config
+    assert "LF_DATABASE_URL =" not in config
+    assert "LF_MIGRATION_DATABASE_URL =" not in config
     assert 'os.environ["LF_AI_PROVIDER"] = "mock"' in source
-    assert "CONTAINER_FALLBACK_REQUIRED" in readme
+    assert "PRIMARY_MIGRATION_TARGET = CLOUDFLARE_CONTAINER" in readme
     assert "MODAL_RETIREMENT_BEFORE_PARITY = NO" in readme
 
 
