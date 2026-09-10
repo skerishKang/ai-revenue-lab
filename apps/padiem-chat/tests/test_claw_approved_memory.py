@@ -474,4 +474,5 @@ def test_no_runtime_ddl_or_retrieval_machinery_in_new_modules() -> None:
             assert forbidden not in source.lower()
     migration_names = sorted(p.name for p in (Path(__file__).resolve().parents[1] / "migrations").glob("*.sql"))
     assert "011_claw_approved_memory.sql" in migration_names
-    assert "010_claw_task_alert.sql" not in migration_names
+    # 010_claw_task_alert.sql is a separately reserved migration (#2328) and is
+    # intentionally not asserted absent here; #2331 owns only migration 011.
