@@ -26,6 +26,14 @@ _deploy_config = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_deploy_config)
 parse_live_bindings = _deploy_config.parse_live_bindings
 
+_guard_spec = importlib.util.spec_from_file_location(
+    "b62_binding_state_guard", _HERE / "b62_binding_state_guard.py"
+)
+assert _guard_spec is not None and _guard_spec.loader is not None
+_binding_guard = importlib.util.module_from_spec(_guard_spec)
+_guard_spec.loader.exec_module(_binding_guard)
+canonical_binding = _binding_guard.canonical_binding
+
 WORKER = "padiem-chat"
 
 QUOTA_VALUES = {
@@ -208,16 +216,145 @@ def build_activation_patch(
     }
 
 
+QUOTA_TARGET_NAMES = tuple(sorted(QUOTA_VALUES))
+P01_TARGET_NAMES = (P01_SERVICE_NAME, P01_CALLER_NAME, P01_CREDENTIAL_NAME)
+WORKSPACE_R2_TARGET_NAMES = (R2_BINDING_NAME,)
+
+
+def deploy_prereq_failures(states: dict[str, str]) -> list[str]:
+    """Every activation target must already be exactly accepted before a code deploy."""
+    return sorted(name for name, state in states.items() if state != "exact")
+
+
+def _group_exact(states: dict[str, str], names: tuple[str, ...]) -> bool:
+    return all(states[name] == "exact" for name in names)
+
+
+def _inherit(name: str) -> dict:
+    return {"name": name, "type": "inherit", "version_id": "latest"}
+
+
+def _inline_binding(binding: dict) -> dict:
+    kind = binding["type"]
+    entry: dict = {"name": binding["name"], "type": kind}
+    if kind == "plain_text":
+        entry["text"] = binding["text"]
+    elif kind == "service":
+        entry["service"] = binding["service"]
+        if isinstance(binding.get("environment"), str) and binding["environment"]:
+            entry["environment"] = binding["environment"]
+    elif kind == "d1":
+        entry["id"] = binding["id"]
+    elif kind == "r2_bucket":
+        entry["bucket_name"] = binding["bucket_name"]
+        if isinstance(binding.get("jurisdiction"), str) and binding["jurisdiction"]:
+            entry["jurisdiction"] = binding["jurisdiction"]
+    return entry
+
+
+class ManualConfigRecoveryRequired(ActivationPlanError):
+    pass
+
+
+def build_rollback_plan(
+    snapshot_payload: object,
+    current_payload: object,
+    *,
+    credential_created_by_activation: bool,
+    target_sha: str,
+) -> dict:
+    """Plan a settings restore bounded to the pre-activation snapshot.
+
+    This is CONFIG_ROLLBACK authority, never a code-version rollback claim.
+    Anything that cannot be restored from bounded pre-mutation evidence without
+    reading or reconstructing a secret value fails closed with
+    MANUAL_CONFIG_RECOVERY_REQUIRED instead of claiming a full config rollback.
+    """
+    snapshot_bindings = _raw_bindings(snapshot_payload)
+    current_bindings = _raw_bindings(current_payload)
+    snapshot_by_name = {binding["name"]: binding for binding in snapshot_bindings}
+    current_by_name = {binding["name"]: binding for binding in current_bindings}
+
+    patch_bindings: list[dict] = []
+    changes: list[str] = []
+    manual_reasons: list[str] = []
+
+    for name in sorted(snapshot_by_name):
+        snapshot = snapshot_by_name[name]
+        current = current_by_name.get(name)
+        if snapshot.get("type") == "secret_text":
+            if current is not None and current.get("type") == "secret_text":
+                patch_bindings.append(_inherit(name))
+            else:
+                manual_reasons.append(
+                    f"{name}: pre-activation secret binding is gone or retyped and its value "
+                    "cannot be reconstructed from bounded evidence"
+                )
+            continue
+        if current is not None and canonical_binding(snapshot) == canonical_binding(current):
+            patch_bindings.append(_inherit(name))
+        elif name in TARGET_NAMES:
+            patch_bindings.append(_inline_binding(snapshot))
+            changes.append(f"CONFIG_RESTORE_{name}")
+        else:
+            manual_reasons.append(
+                f"{name}: unrelated binding changed after activation; refusing to overwrite it"
+            )
+
+    for name in sorted(current_by_name):
+        if name in snapshot_by_name:
+            continue
+        if name == P01_CREDENTIAL_NAME:
+            if credential_created_by_activation:
+                changes.append("P01_CREDENTIAL_REMOVE_NEW")
+            else:
+                manual_reasons.append(
+                    f"{name}: present live but absent from the pre-activation snapshot and this "
+                    "rollback run does not attribute its creation to the recorded activation"
+                )
+        elif name in TARGET_NAMES:
+            changes.append(f"CONFIG_REMOVE_{name}")
+        else:
+            patch_bindings.append(_inherit(name))
+
+    if manual_reasons:
+        raise ManualConfigRecoveryRequired("; ".join(manual_reasons))
+
+    payload = {
+        "bindings": patch_bindings,
+        "annotations": {
+            "workers/message": f"B62 Claw config rollback from pre-activation snapshot {target_sha}",
+            "workers/triggered_by": "b62-claw-live-config-activation-gate",
+        },
+    }
+    return {
+        "payload": payload,
+        "changes": changes,
+        "no_op": not changes,
+        "restored_bindings": sum(1 for b in patch_bindings if b["type"] != "inherit"),
+        "inherited_bindings": sum(1 for b in patch_bindings if b["type"] == "inherit"),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     args_in = sys.argv[1:] if argv is None else argv
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("classify", "plan", "verify"))
+    parser.add_argument("command", choices=("classify", "plan", "verify", "deploy-prereq", "rollback-plan"))
     parser.add_argument("--settings", required=True, type=Path)
-    parser.add_argument("--engine-service", required=True)
-    parser.add_argument("--r2-bucket", required=True)
+    parser.add_argument("--engine-service", default="")
+    parser.add_argument("--r2-bucket", default="")
     parser.add_argument("--target-sha", default="")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--snapshot", type=Path)
+    parser.add_argument("--credential-created-by-activation", default="false")
     args = parser.parse_args(args_in)
+
+    if args.command == "rollback-plan":
+        return _main_rollback_plan(args)
+
+    if not args.engine_service or not args.r2_bucket:
+        print(f"usage: {args.command} requires --engine-service and --r2-bucket", file=sys.stderr)
+        return 2
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
@@ -229,6 +366,27 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, json.JSONDecodeError, ActivationPlanError, _deploy_config.ProductionConfigError) as exc:
         print(f"B62_CLAW_LIVE_CONFIG_{args.command.upper()}=FAIL\nREASON={exc}", file=sys.stderr)
         return 1
+
+    if args.command == "deploy-prereq":
+        for name in sorted(states):
+            print(f"BINDING_STATE {name}={states[name]}")
+        failures = deploy_prereq_failures(states)
+        print(f"QUOTA_PREDEPLOY_EXACT={'PASS' if _group_exact(states, QUOTA_TARGET_NAMES) else 'FAIL'}")
+        print(f"P01_PREDEPLOY_EXACT={'PASS' if _group_exact(states, P01_TARGET_NAMES) else 'FAIL'}")
+        print(
+            "WORKSPACE_R2_PREDEPLOY_EXACT="
+            f"{'PASS' if _group_exact(states, WORKSPACE_R2_TARGET_NAMES) else 'FAIL'}"
+        )
+        print("P01_CREDENTIAL_AUTHORITY=NAME_AND_TYPE_ONLY")
+        print("SECRET_VALUES_READ=0")
+        print("APPLICATION_ROW_READ=0")
+        if failures:
+            for name in failures:
+                print(f"PREREQ_REFUSE_TARGET {name}={states[name]}", file=sys.stderr)
+            print("B62_DEPLOY_LIVE_PREREQ=FAIL", file=sys.stderr)
+            return 1
+        print("B62_DEPLOY_LIVE_PREREQ=PASS")
+        return 0
 
     overall = disposition(states)
     for name in sorted(states):
@@ -267,6 +425,59 @@ def main(argv: list[str] | None = None) -> int:
     print(f"B62_CLAW_LIVE_CONFIG_PLAN=PASS DISPOSITION={overall}")
     print(f"B62_CLAW_CONFIG_NO_OP={'1' if plan['no_op'] else '0'}")
     print(f"B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED={'1' if plan['credential_create_required'] else '0'}")
+    print("SECRET_VALUES_READ=0")
+    print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_rollback_plan(args: argparse.Namespace) -> int:
+    if not args.snapshot or not args.output:
+        print("usage: rollback-plan requires --snapshot and --output", file=sys.stderr)
+        return 2
+    if args.credential_created_by_activation not in {"true", "false"}:
+        print("--credential-created-by-activation must be true or false", file=sys.stderr)
+        return 2
+    try:
+        current_payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        snapshot_payload = json.loads(args.snapshot.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"B62_CLAW_CONFIG_ROLLBACK_PLAN=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    try:
+        plan = build_rollback_plan(
+            snapshot_payload,
+            current_payload,
+            credential_created_by_activation=args.credential_created_by_activation == "true",
+            target_sha=args.target_sha,
+        )
+    except ManualConfigRecoveryRequired as exc:
+        print(
+            "B62_CLAW_CONFIG_ROLLBACK_PLAN=MANUAL_CONFIG_RECOVERY_REQUIRED\n"
+            f"REASON={exc}\n"
+            "CONFIG_ROLLBACK=MANUAL_CONFIG_RECOVERY_REQUIRED\n"
+            "CODE_VERSION_ROLLBACK_UNAFFECTED=YES\n"
+            "FULL_CONFIG_ROLLBACK_CLAIM=NO\n"
+            "SECRET_VALUES_READ=0",
+            file=sys.stderr,
+        )
+        return 3
+    except (ActivationPlanError, _deploy_config.ProductionConfigError) as exc:
+        print(f"B62_CLAW_CONFIG_ROLLBACK_PLAN=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    if args.output.exists():
+        print("B62_CLAW_CONFIG_ROLLBACK_PLAN=FAIL\nREASON=output path already exists", file=sys.stderr)
+        return 1
+    args.output.write_text(json.dumps(plan["payload"], separators=(",", ":")), encoding="utf-8")
+    for change in plan["changes"]:
+        print(f"CONFIG_CHANGE {change}")
+    print("B62_CLAW_CONFIG_ROLLBACK_PLAN=PASS")
+    print(f"B62_CLAW_CONFIG_ROLLBACK_NO_OP={'1' if plan['no_op'] else '0'}")
+    print(f"CONFIG_RESTORED_BINDINGS={plan['restored_bindings']}")
+    print(f"CONFIG_INHERITED_BINDINGS={plan['inherited_bindings']}")
+    print("CONFIG_ROLLBACK_SCOPE=SNAPSHOT_BOUNDED_SETTINGS_ONLY")
+    print("CODE_VERSION_ROLLBACK_DISTINGUISHED=YES")
+    print("FULL_CONFIG_ROLLBACK_CLAIM=NO_UNTIL_READBACK")
+    print("PIECEMEAL_SECRET_RESTORE=0")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
     return 0
