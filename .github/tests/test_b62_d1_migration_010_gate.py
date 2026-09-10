@@ -124,3 +124,9 @@ def test_workflow_is_exact_main_and_migration_specific() -> None:
     assert "BINDING_MUTATION=0" in workflow
     assert "idx_claw_task_alert_workspace_kind_status" in workflow
     assert "idx_claw_task_alert_member_updated" in workflow
+
+
+if __name__ == "__main__":
+    test_schema_classifier_contract()
+    test_migration_is_additive_and_bounded()
+    test_workflow_is_exact_main_and_migration_specific()
