@@ -40,6 +40,11 @@ def _bindings(r2: dict) -> list[dict]:
         r2,
         {"type": "plain_text", "name": "PADIEM_CHAT_RUNTIME_MODE", "text": "b14"},
         {"type": "plain_text", "name": "PADIEM_CHAT_LIVE_ENABLED", "text": "true"},
+        {
+            "type": "plain_text",
+            "name": "PADIEM_CHAT_PUBLIC_BASE_URL",
+            "text": "https://padiem-chat.charliekant.workers.dev",
+        },
     ]
 
 
