@@ -17,6 +17,7 @@ from .claw_routes import (
     claw_manual_intake_preview,
     claw_manual_intake_execute,
 )
+from .claw_telegram_routes import claw_telegram_ingest
 from .config import Settings
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -79,6 +80,7 @@ def create_app(
     d1_binding=None,
     r2_binding=None,
     claw_p01_adapter=None,
+    claw_telegram_authority=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -101,6 +103,7 @@ def create_app(
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
+        Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -140,4 +143,7 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # Thin Telegram inbound consumer seam (#2315): the trusted binding
+    # authority is injected server-side only; None keeps the route fail-closed.
+    app.state.claw_telegram_authority = claw_telegram_authority
     return app
