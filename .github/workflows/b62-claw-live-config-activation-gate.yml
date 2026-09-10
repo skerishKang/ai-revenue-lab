@@ -127,6 +127,7 @@ jobs:
       contents: read
     outputs:
       disposition: ${{ steps.classify.outputs.disposition }}
+      r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -179,6 +180,40 @@ jobs:
           echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
           echo 'SECRET_VALUES_READ=0'
           echo 'PRODUCTION_MUTATION=0'
+
+      - name: Read-only R2 bucket existence check
+        id: r2_bucket
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${R2_BUCKET_NAME}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          bucket="${RUNNER_TEMP}/b62-r2-bucket-readonly.json"
+          http_status="$(curl -sS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}" \
+            -o "${bucket}" -w '%{http_code}')"
+          case "${http_status}" in
+            200)
+              if jq -e --arg name "${R2_BUCKET_NAME}" '.success == true and .result.name == $name' "${bucket}" >/dev/null; then
+                echo "r2_bucket_existence=EXISTS" >> "${GITHUB_OUTPUT}"
+                echo 'R2_BUCKET_EXISTENCE=EXISTS'
+              else
+                echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+                echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              fi
+              ;;
+            404)
+              echo "r2_bucket_existence=ABSENT" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ABSENT'
+              ;;
+            *)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              ;;
+          esac
+          echo "R2_OBJECT_READ=0" >> "${GITHUB_OUTPUT}"
+          echo "R2_OBJECT_WRITE=0" >> "${GITHUB_OUTPUT}"
+          echo "PRODUCTION_MUTATION=0" >> "${GITHUB_OUTPUT}"
 
   activate-config:
     needs: [source-contract, cloudflare-readonly]
