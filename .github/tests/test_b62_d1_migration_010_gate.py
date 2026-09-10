@@ -22,7 +22,16 @@ def _result(rows):
 
 
 def _payload(
-    *, table=True, index_created=True, index_kind_status=True, index_member_updated=True, columns=None, table_sql=None
+    *,
+    table=True,
+    index_created=True,
+    index_kind_status=True,
+    index_member_updated=True,
+    columns=None,
+    table_sql=None,
+    index_created_sql=None,
+    index_kind_status_sql=None,
+    index_member_updated_sql=None,
 ):
     migration = MIGRATION.read_text(encoding="utf-8")
     objects = []
@@ -39,7 +48,8 @@ def _payload(
             {
                 "name": "idx_claw_task_alert_workspace_created",
                 "type": "index",
-                "sql": "CREATE INDEX idx_claw_task_alert_workspace_created ON claw_task_alert (workspace_id, created_at DESC)",
+                "sql": index_created_sql
+                or "CREATE INDEX idx_claw_task_alert_workspace_created ON claw_task_alert (workspace_id, created_at DESC)",
             }
         )
     if index_kind_status:
@@ -47,7 +57,8 @@ def _payload(
             {
                 "name": "idx_claw_task_alert_workspace_kind_status",
                 "type": "index",
-                "sql": "CREATE INDEX idx_claw_task_alert_workspace_kind_status ON claw_task_alert (workspace_id, kind, status)",
+                "sql": index_kind_status_sql
+                or "CREATE INDEX idx_claw_task_alert_workspace_kind_status ON claw_task_alert (workspace_id, kind, status)",
             }
         )
     if index_member_updated:
@@ -55,7 +66,8 @@ def _payload(
             {
                 "name": "idx_claw_task_alert_member_updated",
                 "type": "index",
-                "sql": "CREATE INDEX idx_claw_task_alert_member_updated ON claw_task_alert (member_id, updated_at DESC) WHERE member_id != '' AND kind = 'alert'",
+                "sql": index_member_updated_sql
+                or "CREATE INDEX idx_claw_task_alert_member_updated ON claw_task_alert (member_id, updated_at DESC) WHERE member_id != '' AND kind = 'alert'",
             }
         )
     expected_columns = (
@@ -97,6 +109,94 @@ def test_schema_classifier_contract() -> None:
     assert helper.classify_schema(_payload(table=False, index_member_updated=True)) == "drift"
 
 
+def test_index_sql_structure_variation_is_drift() -> None:
+    helper = _load_helper()
+    # workspace_created: missing DESC on created_at
+    assert helper.classify_schema(
+        _payload(
+            index_created_sql=(
+                "CREATE INDEX idx_claw_task_alert_workspace_created "
+                "ON claw_task_alert (workspace_id, created_at)"
+            )
+        )
+    ) == "drift"
+    # workspace_created: reversed column order
+    assert helper.classify_schema(
+        _payload(
+            index_created_sql=(
+                "CREATE INDEX idx_claw_task_alert_workspace_created "
+                "ON claw_task_alert (created_at DESC, workspace_id)"
+            )
+        )
+    ) == "drift"
+    # workspace_kind_status: wrong column order
+    assert helper.classify_schema(
+        _payload(
+            index_kind_status_sql=(
+                "CREATE INDEX idx_claw_task_alert_workspace_kind_status "
+                "ON claw_task_alert (workspace_id, status, kind)"
+            )
+        )
+    ) == "drift"
+    # workspace_kind_status: missing a column
+    assert helper.classify_schema(
+        _payload(
+            index_kind_status_sql=(
+                "CREATE INDEX idx_claw_task_alert_workspace_kind_status "
+                "ON claw_task_alert (workspace_id, kind)"
+            )
+        )
+    ) == "drift"
+    # member_updated: dropped updated_at from the key
+    assert helper.classify_schema(
+        _payload(
+            index_member_updated_sql=(
+                "CREATE INDEX idx_claw_task_alert_member_updated "
+                "ON claw_task_alert (member_id) "
+                "WHERE member_id != '' AND kind = 'alert'"
+            )
+        )
+    ) == "drift"
+    # member_updated: missing DESC on updated_at
+    assert helper.classify_schema(
+        _payload(
+            index_member_updated_sql=(
+                "CREATE INDEX idx_claw_task_alert_member_updated "
+                "ON claw_task_alert (member_id, updated_at) "
+                "WHERE member_id != '' AND kind = 'alert'"
+            )
+        )
+    ) == "drift"
+
+
+def test_member_id_predicate_alone_is_drift() -> None:
+    helper = _load_helper()
+    # kind = 'alert' kept, but the member_id != '' predicate is dropped
+    assert helper.classify_schema(
+        _payload(
+            index_member_updated_sql=(
+                "CREATE INDEX idx_claw_task_alert_member_updated "
+                "ON claw_task_alert (member_id, updated_at DESC) "
+                "WHERE kind = 'alert'"
+            )
+        )
+    ) == "drift"
+
+
+def test_kind_alert_predicate_alone_is_drift() -> None:
+    helper = _load_helper()
+    # member_id != '' kept, but the kind = 'alert' predicate is dropped
+    assert helper.classify_schema(
+        _payload(
+            index_member_updated_sql=(
+                "CREATE INDEX idx_claw_task_alert_member_updated "
+                "ON claw_task_alert (member_id, updated_at DESC) "
+                "WHERE member_id != ''"
+            )
+        )
+    ) == "drift"
+
+
 def test_migration_is_additive_and_bounded() -> None:
     migration = MIGRATION.read_text(encoding="utf-8")
     assert "CREATE TABLE IF NOT EXISTS claw_task_alert" in migration
@@ -128,5 +228,8 @@ def test_workflow_is_exact_main_and_migration_specific() -> None:
 
 if __name__ == "__main__":
     test_schema_classifier_contract()
+    test_index_sql_structure_variation_is_drift()
+    test_member_id_predicate_alone_is_drift()
+    test_kind_alert_predicate_alone_is_drift()
     test_migration_is_additive_and_bounded()
     test_workflow_is_exact_main_and_migration_specific()
