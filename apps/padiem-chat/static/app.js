@@ -854,6 +854,7 @@
         await loadProjects();
         await loadRecentConversations();
       }
+      syncApprovedMemoryVisibility();
     } catch (_) {
       applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false });
     }
@@ -1319,6 +1320,7 @@
     setNavActive();
     if (clawRequestText) clawRequestText.focus();
     closeSidebar();
+    syncApprovedMemoryVisibility();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
@@ -1446,6 +1448,7 @@
         revealClawCard(preview.title);
         if (clawResultPreview) clawResultPreview.textContent = preview.result_text;
         clearClawArtifact();
+        renderMemoryProposalReview(Array.isArray(preview.memory_proposals) ? preview.memory_proposals : []);
         setClawStatus(clawT("claw-status-preview-success"), "success");
         setClawAreaState("success");
         // Move focus to result for screen-reader and keyboard users
@@ -1552,5 +1555,293 @@
         setClawButtonsBusy(false);
       }
     });
+  }
+  // Approved-memory review UI (#2340)
+  const clawApprovedMemory = document.getElementById("clawApprovedMemory");
+  const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");
+  const clawApprovedLoading = document.getElementById("clawApprovedLoading");
+  const clawApprovedError = document.getElementById("clawApprovedError");
+  const clawApprovedList = document.getElementById("clawApprovedList");
+  const clawApprovedEmpty = document.getElementById("clawApprovedEmpty");
+  const clawMemoryReview = document.getElementById("clawMemoryReview");
+
+  let approvedMemoryInFlight = false;
+
+  function setApprovedMemoryStatus(message, state) {
+    if (!clawApprovedError) return;
+    if (!message) {
+      clawApprovedError.hidden = true;
+      clawApprovedError.textContent = "";
+      clawApprovedError.removeAttribute("data-state");
+      return;
+    }
+    clawApprovedError.hidden = false;
+    clawApprovedError.textContent = message;
+    if (state) clawApprovedError.dataset.state = state;
+    else clawApprovedError.removeAttribute("data-state");
+  }
+
+  function approvedMemoryErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const status = response ? response.status : 0;
+    if (code === "explicit_approval_required") return "명시적 승인이 필요합니다.";
+    if (code === "invalid_proposal" || code === "invalid_payload" || code === "forbidden_owner_field") return "제안 형식이 올바르지 않습니다.";
+    if (code === "unauthorized" || status === 401) return "로그인이 필요합니다.";
+    if (code === "approved_memory_unavailable" || code === "approved_memory_write_failed" || code === "approved_memory_read_failed" || status === 503) return "승인 메모리를 사용할 수 없습니다.";
+    if (code === "approved_memory_not_found" || status === 404) return "메모리를 찾을 수 없습니다.";
+    return "승인 메모리 처리에 실패했습니다.";
+  }
+
+  // Proposal review surface: rendered from preview memory_proposals. Approve is
+  // impossible until the user explicitly clicks 승인; reject never persists.
+  function renderMemoryProposalReview(proposals) {
+    if (!clawMemoryReview) return;
+    clawMemoryReview.replaceChildren();
+    if (!Array.isArray(proposals) || proposals.length === 0) {
+      clawMemoryReview.hidden = true;
+      return;
+    }
+    const heading = document.createElement("h3");
+    heading.className = "claw-memory-review-title";
+    heading.textContent = "메모리 저장 후보 (승인 필요)";
+    clawMemoryReview.appendChild(heading);
+    proposals.forEach((proposal) => {
+      if (!proposal || typeof proposal !== "object") return;
+      const safe = {
+        type: typeof proposal.type === "string" ? proposal.type : "",
+        name: typeof proposal.name === "string" ? proposal.name : "",
+        note: typeof proposal.note === "string" ? proposal.note : "",
+        source_channel: typeof proposal.source_channel === "string" ? proposal.source_channel : "",
+      };
+      const card = document.createElement("div");
+      card.className = "claw-memory-proposal";
+      const title = document.createElement("strong");
+      title.className = "claw-memory-proposal-name";
+      title.textContent = safe.name;
+      const meta = document.createElement("span");
+      meta.className = "claw-memory-proposal-type";
+      meta.textContent = safe.type;
+      const note = document.createElement("p");
+      note.className = "claw-memory-proposal-note";
+      note.textContent = safe.note;
+      const actions = document.createElement("div");
+      actions.className = "claw-memory-proposal-actions";
+      const approveBtn = document.createElement("button");
+      approveBtn.type = "button";
+      approveBtn.className = "claw-memory-approve";
+      approveBtn.textContent = "승인";
+      approveBtn.addEventListener("click", () => approveProposal(safe));
+      const rejectBtn = document.createElement("button");
+      rejectBtn.type = "button";
+      rejectBtn.className = "claw-memory-reject";
+      rejectBtn.textContent = "거절";
+      rejectBtn.addEventListener("click", () => rejectProposal(safe));
+      actions.append(approveBtn, rejectBtn);
+      card.append(title, meta, note, actions);
+      clawMemoryReview.appendChild(card);
+    });
+    clawMemoryReview.hidden = false;
+  }
+
+  function proposalBody(proposal) {
+    return { type: proposal.type, name: proposal.name, note: proposal.note || null, source_channel: proposal.source_channel || null };
+  }
+
+  async function approveProposal(proposal) {
+    if (approvedMemoryInFlight) return;
+    approvedMemoryInFlight = true;
+    setApprovedMemoryStatus("", "");
+    try {
+      const response = await fetch("/api/claw/memory/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ approved: true, proposal: proposalBody(proposal) }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || !data.memory) {
+        throw new Error(approvedMemoryErrorMessage(data, response));
+      }
+      await fetchApprovedMemoryList();
+    } catch (error) {
+      setApprovedMemoryStatus(error instanceof Error ? error.message : "승인하지 못했습니다.", "error");
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  async function rejectProposal(proposal) {
+    if (approvedMemoryInFlight) return;
+    approvedMemoryInFlight = true;
+    setApprovedMemoryStatus("", "");
+    try {
+      const response = await fetch("/api/claw/memory/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ proposal: proposalBody(proposal) }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || data.persisted !== false) {
+        throw new Error(approvedMemoryErrorMessage(data, response));
+      }
+      await fetchApprovedMemoryList();
+    } catch (error) {
+      setApprovedMemoryStatus(error instanceof Error ? error.message : "거절하지 못했습니다.", "error");
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  function renderApprovedMemoryCard(memory) {
+    const card = document.createElement("div");
+    card.className = "claw-approved-card";
+    card.dataset.memoryId = memory.memory_id || "";
+
+    const head = document.createElement("div");
+    head.className = "claw-approved-card-head";
+    const title = document.createElement("strong");
+    title.className = "claw-approved-card-title";
+    title.textContent = memory.name || "";
+    const badge = document.createElement("span");
+    badge.className = "claw-approved-card-badge";
+    badge.textContent = memory.status || "";
+    head.append(title, badge);
+
+    const meta = document.createElement("div");
+    meta.className = "claw-approved-card-meta";
+    meta.textContent = `${memory.memory_type || ""} · ${memory.created_at || ""}`;
+
+    const note = document.createElement("p");
+    note.className = "claw-approved-card-note";
+    note.textContent = memory.note || "";
+
+    const actions = document.createElement("div");
+    actions.className = "claw-approved-card-actions";
+    const detailBtn = document.createElement("button");
+    detailBtn.type = "button";
+    detailBtn.className = "claw-approved-action";
+    detailBtn.textContent = "상세";
+    detailBtn.addEventListener("click", () => {
+      const id = card.dataset.memoryId;
+      if (id) loadApprovedMemoryDetail(id);
+    });
+    actions.appendChild(detailBtn);
+    card.append(head, meta, note, actions);
+    return card;
+  }
+
+  function renderApprovedMemoryDetail(memory) {
+    const existing = clawApprovedList?.querySelector(".claw-approved-detail");
+    if (existing) existing.remove();
+    const detail = document.createElement("div");
+    detail.className = "claw-approved-detail";
+    const rows = [
+      { label: "유형", value: memory.memory_type || "" },
+      { label: "이름", value: memory.name || "" },
+      { label: "노트", value: memory.note || "" },
+      { label: "채널", value: memory.source_channel || "" },
+      { label: "상태", value: memory.status || "" },
+      { label: "생성", value: memory.created_at || "" },
+      { label: "수정", value: memory.updated_at || "" },
+    ];
+    rows.forEach((row) => {
+      const rowEl = document.createElement("div");
+      rowEl.className = "claw-approved-detail-row";
+      const label = document.createElement("span");
+      label.className = "claw-approved-detail-label";
+      label.textContent = row.label;
+      const value = document.createElement("span");
+      value.className = "claw-approved-detail-value";
+      value.textContent = row.value;
+      rowEl.append(label, value);
+      detail.appendChild(rowEl);
+    });
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "claw-approved-action";
+    closeBtn.textContent = "닫기";
+    closeBtn.addEventListener("click", () => {
+      detail.remove();
+      loadApprovedMemoryList();
+    });
+    detail.appendChild(closeBtn);
+    clawApprovedList?.appendChild(detail);
+  }
+
+  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
+  async function fetchApprovedMemoryList() {
+    if (!clawApprovedMemory) return;
+    setApprovedMemoryStatus("", "");
+    if (clawApprovedLoading) clawApprovedLoading.hidden = false;
+    if (clawApprovedList) clawApprovedList.hidden = true;
+    if (clawApprovedEmpty) clawApprovedEmpty.hidden = true;
+    if (clawApprovedList) clawApprovedList.replaceChildren();
+    try {
+      const response = await fetch("/api/claw/memory", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || !Array.isArray(data.memories)) {
+        throw new Error(approvedMemoryErrorMessage(data, response));
+      }
+      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+      if (clawApprovedList) clawApprovedList.hidden = false;
+      if (data.memories.length === 0) {
+        if (clawApprovedEmpty) clawApprovedEmpty.hidden = false;
+        return;
+      }
+      data.memories.forEach((memory) => {
+        if (!memory || typeof memory.memory_id !== "string") return;
+        clawApprovedList?.appendChild(renderApprovedMemoryCard(memory));
+      });
+    } catch (error) {
+      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+      setApprovedMemoryStatus(error instanceof Error ? error.message : "목록을 불러오지 못했습니다.", "error");
+    }
+  }
+
+  async function loadApprovedMemoryList() {
+    if (approvedMemoryInFlight) return;
+    approvedMemoryInFlight = true;
+    try {
+      await fetchApprovedMemoryList();
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  async function loadApprovedMemoryDetail(memoryId) {
+    if (!clawApprovedMemory || approvedMemoryInFlight) return;
+    approvedMemoryInFlight = true;
+    setApprovedMemoryStatus("", "");
+    if (clawApprovedLoading) clawApprovedLoading.hidden = false;
+    if (clawApprovedList) clawApprovedList.hidden = true;
+    if (clawApprovedEmpty) clawApprovedEmpty.hidden = true;
+    try {
+      const response = await fetch(`/api/claw/memory/${encodeURIComponent(memoryId)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || !data.memory) {
+        throw new Error(approvedMemoryErrorMessage(data, response));
+      }
+      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+      if (clawApprovedList) clawApprovedList.hidden = false;
+      renderApprovedMemoryDetail(data.memory);
+    } catch (error) {
+      if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+      setApprovedMemoryStatus(error instanceof Error ? error.message : "상세를 불러오지 못했습니다.", "error");
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  function syncApprovedMemoryVisibility() {
+    if (!clawApprovedMemory) return;
+    // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
+    const show = authState.authenticated === true && shell.dataset.state === "claw";
+    clawApprovedMemory.hidden = !show;
+    if (show) loadApprovedMemoryList();
+  }
+
+  if (clawApprovedRefresh) {
+    clawApprovedRefresh.addEventListener("click", () => loadApprovedMemoryList());
   }
 })();
