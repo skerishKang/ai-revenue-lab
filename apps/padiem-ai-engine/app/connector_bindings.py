@@ -47,6 +47,16 @@ from padiem_ai_core.drive_capability import (
     drive_read_tool_specs,
     register_drive_read_tools,
 )
+from padiem_ai_core.telegram_capability import (
+    TELEGRAM_CANONICAL_TOOL_IDS,
+    TELEGRAM_CONNECTOR_ID,
+    TelegramCapability,
+    TelegramCapabilityGrant,
+    TelegramContractError,
+    TelegramReadPort,
+    register_telegram_read_tools,
+    telegram_read_tool_specs,
+)
 from padiem_ai_core.tool_runtime import (
     ToolRuntime as _CoreToolRuntime,  # identity-gate check below
 )
@@ -66,6 +76,12 @@ GMAIL_MAIL_READER_AGENT_ID = "agent:padiem:claw_mail_reader@1"
 
 DRIVE_REFERENCE_APP_ID = "b54-padiem-claw-drive"
 DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
+
+# Server-side identifiers for the promoted Telegram read connector (#2353).
+# The slot is pre-activation: the resolver stays None until a bot-token port
+# and server-derived grants are both composed by the canonical root.
+TELEGRAM_REFERENCE_APP_ID = "b54-padiem-claw-telegram"
+TELEGRAM_AGENT_ID = "agent:padiem:claw_telegram_reader@1"
 
 # Server-side identifiers (deployment decision D28, pre-activation). They
 # identify the trusted Engine composition slot for the Gmail read connector
@@ -116,6 +132,40 @@ class DriveGrant:
             )
         if len(self.granted_capabilities) != len(set(self.granted_capabilities)):
             raise DriveContractError("granted_capabilities must be unique")
+
+
+@dataclass(frozen=True, slots=True)
+class TelegramGrant:
+    """Server-resolved grant fact for one canonical Telegram Agent (#2353).
+
+    ``granted_capabilities`` carries only explicit TelegramCapability values
+    resolved server-side from grant references; never derived from caller
+    JSON. The raw bot token can never appear here.
+    """
+
+    app_id: str
+    canonical_agent_id: str
+    binding_ref: str
+    actor_ref: str
+    granted_capabilities: tuple[TelegramCapability, ...]
+
+    def __post_init__(self) -> None:
+        # Fail-closed parity with Core's TelegramCapabilityGrant: a grant that
+        # repeats a capability is ambiguous and must never reach binding.
+        if not isinstance(self.granted_capabilities, tuple) or any(
+            not isinstance(item, TelegramCapability) for item in self.granted_capabilities
+        ):
+            raise TelegramContractError(
+                "granted_capabilities must contain TelegramCapability values"
+            )
+        if len(self.granted_capabilities) != len(set(self.granted_capabilities)):
+            raise TelegramContractError("granted_capabilities must be unique")
+        if any(
+            capability is not TelegramCapability.READ for capability in self.granted_capabilities
+        ):
+            raise TelegramContractError(
+                "only the READ capability may be granted to a Telegram binding"
+            )
 
 
 def _gmail_definition(*, app_id: str, canonical_agent_id: str) -> BoundedAgentDefinition:
@@ -207,6 +257,53 @@ def _drive_policy() -> TrustedAgentRuntimePolicy:
                     "drive.list_recent_files",
                     "drive.get_file_metadata",
                     "drive.read_file_content",
+                ),
+            )
+            for _ in (specs.get(spec_id),)
+            if spec_id in specs
+        ),
+    )
+
+
+def _telegram_definition(*, app_id: str, canonical_agent_id: str) -> BoundedAgentDefinition:
+    return BoundedAgentDefinition(
+        agent_id=canonical_agent_id,
+        publisher_id="padiem",
+        title="Claw telegram reader",
+        description="Read-only Telegram Bot API projection for Padiem Claw",
+        instruction=(
+            "Read the bot's own identity and server-paired chat metadata "
+            "through the trusted Telegram port; never send or modify."
+        ),
+        output_contract_ref="output:text@1",
+        allowed_tool_ids=TELEGRAM_CANONICAL_TOOL_IDS,
+        execution_budget=AgentExecutionBudget(),
+    )
+
+
+def _telegram_policy() -> TrustedAgentRuntimePolicy:
+    specs = {spec.id: spec for spec in telegram_read_tool_specs()}
+    return TrustedAgentRuntimePolicy(
+        context_policy_ref="context:default",
+        model_policy_ref="model:auto",
+        output_contract_ref="output:text@1",
+        task_type="general",
+        optimize_for="balanced",
+        max_tokens=1024,
+        max_steps_cap=8,
+        context_policy={},
+        model_policy={},
+        output_contract={},
+        tool_bindings=tuple(
+            ToolRuntimeBinding(
+                canonical_tool_id=canonical,
+                runtime_tool_id=spec_id,
+            )
+            for canonical, spec_id in zip(
+                TELEGRAM_CANONICAL_TOOL_IDS,
+                (
+                    "telegram.get_bot_info",
+                    "telegram.get_chat_info",
                 ),
             )
             for _ in (specs.get(spec_id),)
@@ -413,6 +510,101 @@ def drive_tool_binding(
     )
 
 
+def telegram_tool_binding(
+    *,
+    grant: TelegramGrant,
+    port: TelegramReadPort,
+) -> EngineToolBinding:
+    """Assemble one server-trusted EngineToolBinding from a server Telegram grant.
+
+    Core entry point is ``register_telegram_read_tools``; the Engine never
+    instantiates a second runtime. The Engine never invents a
+    ``ToolAuthorizationContext`` from request JSON; the grant's
+    ``granted_capabilities`` is the only source of authority. The raw bot
+    token stays inside the trusted port and never crosses this seam.
+    """
+
+    if not isinstance(grant, TelegramGrant):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Telegram binding requires a server-resolved TelegramGrant.",
+            status_code=503,
+        )
+    if not callable(getattr(port, "get_json", None)):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Telegram binding requires a Core TelegramReadPort.",
+            status_code=503,
+        )
+    if grant.app_id != TELEGRAM_REFERENCE_APP_ID:
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Telegram grant app_id does not match the trusted Engine slot.",
+            status_code=403,
+        )
+    if grant.canonical_agent_id != TELEGRAM_AGENT_ID:
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Telegram grant canonical_agent_id does not match the bound Agent.",
+            status_code=403,
+        )
+
+    runtime = ToolRuntime()
+    register_telegram_read_tools(
+        runtime,
+        port,
+        binding_ref=grant.binding_ref,
+        actor_ref=grant.actor_ref,
+    )
+
+    specs = list(telegram_read_tool_specs())
+    registry = ToolRegistrySnapshot.from_entries(
+        tuple(
+            sorted(
+                (
+                    RegisteredTool.from_spec(
+                        canonical_tool_id=canonical,
+                        runtime_spec=spec,
+                    )
+                    for canonical, spec in zip(
+                        TELEGRAM_CANONICAL_TOOL_IDS,
+                        specs,
+                    )
+                ),
+                key=lambda entry: entry.canonical_tool_id,
+            )
+        )
+    )
+
+    definition = _telegram_definition(
+        app_id=grant.app_id,
+        canonical_agent_id=grant.canonical_agent_id,
+    )
+    policy = _telegram_policy()
+    compiled = compile_agent_profile(definition, policy)
+    authorization = ToolAuthorizationContext(
+        app_id=grant.app_id,
+        agent_id=compiled.runtime_profile.id,
+        granted_auth_scopes=tuple(grant.granted_capabilities),
+    )
+    authority = TrustedToolAuthority(
+        canonical_agent_id=grant.canonical_agent_id,
+        definition=definition,
+        compiled=compiled,
+        authorization=authorization,
+    )
+    assert type(runtime) is _CoreToolRuntime
+
+    return EngineToolBinding(
+        app_id=grant.app_id,
+        tool_runtime=runtime,
+        registry=registry,
+        authorities={grant.canonical_agent_id: authority},
+        authorization_provider=None,
+        resource_policy=ToolResourcePolicy(),
+    )
+
+
 def build_tool_binding_resolver(
     *,
     gmail_port: GmailReadPort | None,
@@ -421,16 +613,22 @@ def build_tool_binding_resolver(
     drive_port: DriveReadPort | None = None,
     drive_grants: Mapping[str, DriveGrant] | None = None,
     drive_grants_loader: Callable[[], Awaitable[Mapping[str, DriveGrant]]] | None = None,
+    telegram_port: TelegramReadPort | None = None,
+    telegram_grants: Mapping[str, TelegramGrant] | None = None,
+    telegram_grants_loader: (
+        Callable[[], Awaitable[Mapping[str, TelegramGrant]]] | None
+    ) = None,
 ) -> Callable[[str], EngineToolBinding | None] | None:
     """Build the cached per-app_id resolver the composition root injects.
 
-    Gmail and Drive resolvers coexist: a request is routed to the first
-    matching grant type. When either port is ``None`` or its grant
-    mapping is empty, that connector's resolver is absent.
+    Gmail, Drive and Telegram resolvers coexist (#2353): a request is routed
+    to the first matching grant type. When either port is ``None`` or its
+    grant mapping is empty, that connector's resolver is absent.
 
-    * ``gmail_port is None and drive_port is None`` ⇒ ``None``.
-    * ``grants`` / ``drive_grants`` are pre-resolved mappings;
-      ``*_loader`` async factories are ignored until pre-resolved
+    * ``gmail_port is None and drive_port is None and telegram_port is None``
+      ⇒ ``None``.
+    * ``grants`` / ``drive_grants`` / ``telegram_grants`` are pre-resolved
+      mappings; ``*_loader`` async factories are ignored until pre-resolved
       (fail-closed until then).
     """
     gmail_resolver: Callable[[str], EngineToolBinding | None] | None = None
@@ -475,7 +673,28 @@ def build_tool_binding_resolver(
 
             drive_resolver = _drive_resolver
 
-    if gmail_resolver is None and drive_resolver is None:
+    telegram_resolver: Callable[[str], EngineToolBinding | None] | None = None
+    if telegram_port is not None:
+        effective_telegram_grants = telegram_grants
+        if effective_telegram_grants is None and telegram_grants_loader is not None:
+            effective_telegram_grants = {}
+        if effective_telegram_grants:
+            cache: dict[str, EngineToolBinding] = {}
+
+            def _telegram_resolver(app_id: str) -> EngineToolBinding | None:
+                grant = effective_telegram_grants.get(app_id)
+                if grant is None:
+                    return None
+                cached = cache.get(app_id)
+                if cached is not None:
+                    return cached
+                binding = telegram_tool_binding(grant=grant, port=telegram_port)
+                cache[app_id] = binding
+                return binding
+
+            telegram_resolver = _telegram_resolver
+
+    if gmail_resolver is None and drive_resolver is None and telegram_resolver is None:
         return None
 
     def _resolver(app_id: str) -> EngineToolBinding | None:
@@ -484,7 +703,11 @@ def build_tool_binding_resolver(
             if binding is not None:
                 return binding
         if drive_resolver is not None:
-            return drive_resolver(app_id)
+            binding = drive_resolver(app_id)
+            if binding is not None:
+                return binding
+        if telegram_resolver is not None:
+            return telegram_resolver(app_id)
         return None
 
     return _resolver
@@ -496,9 +719,14 @@ __all__ = [
     "GMAIL_CONNECTOR_ID",
     "GMAIL_MAIL_READER_AGENT_ID",
     "GMAIL_REFERENCE_APP_ID",
+    "TELEGRAM_AGENT_ID",
+    "TELEGRAM_CONNECTOR_ID",
+    "TELEGRAM_REFERENCE_APP_ID",
     "DriveGrant",
     "GmailGrant",
+    "TelegramGrant",
     "build_tool_binding_resolver",
     "drive_tool_binding",
     "gmail_tool_binding",
+    "telegram_tool_binding",
 ]

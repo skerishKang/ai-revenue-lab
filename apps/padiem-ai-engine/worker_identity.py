@@ -43,10 +43,12 @@ from app.connector_bindings import (
     build_tool_binding_resolver,
     DriveGrant,
     GmailGrant,
+    TelegramGrant,
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.gmail_port_httpx import HttpxGmailReadPort
+from app.telegram_port_httpx import HttpxTelegramReadPort, parse_paired_chat_ids
 from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
 from app.google_oauth_access_lease import (
     CloudflareControlPlaneGoogleOAuthAccessLeaseClient,
@@ -86,6 +88,11 @@ ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+# Telegram promotion (#2353): the bot token is a Worker secret; the paired-chat
+# allowlist is server-derived configuration. Neither value is ever logged and
+# no caller-provided chat id can widen the allowlist.
+ENGINE_TELEGRAM_BOT_TOKEN_ENV = "ENGINE_TELEGRAM_BOT_TOKEN"
+ENGINE_TELEGRAM_PAIRED_CHAT_IDS_ENV = "ENGINE_TELEGRAM_PAIRED_CHAT_IDS"
 
 
 def _continuation_store_for_env(
@@ -143,22 +150,26 @@ def _research_service_for_env(
 
 
 async def _tool_binding_resolver_for_env(env: Any):
-    """Compose the Engine Gmail + Drive tool binding resolver.
+    """Compose the Engine Gmail + Drive + Telegram tool binding resolver.
 
     Gmail keeps its existing compatibility secret seam. Drive is canonicalized
     through the private ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the
     Engine receives only short-lived access leases and never a long-lived
-    refresh credential. Both connectors continue to share the trusted
-    ENGINE_CONNECTOR_GRANTS D1 binding. Missing authorities fail closed.
+    refresh credential. Telegram (#2353) uses its own bot-token secret plus a
+    server-derived paired-chat allowlist and has no Google OAuth dependency.
+    All connectors continue to share the trusted ENGINE_CONNECTOR_GRANTS D1
+    binding. Missing authorities fail closed.
     """
     gmail_port = _gmail_port_for_env(env)
     drive_port = _drive_port_for_env(env)
-    if gmail_port is None and drive_port is None:
+    telegram_port = _telegram_port_for_env(env)
+    if gmail_port is None and drive_port is None and telegram_port is None:
         return None
     try:
-        gmail_grants, drive_grants = await asyncio.gather(
+        gmail_grants, drive_grants, telegram_grants = await asyncio.gather(
             _gmail_grants_for_env(env),
             _drive_grants_for_env(env),
+            _telegram_grants_for_env(env),
         )
     except ServiceContractError as exc:
         grant_error = exc
@@ -167,13 +178,15 @@ async def _tool_binding_resolver_for_env(env: Any):
             raise grant_error
 
         return unavailable
-    if not gmail_grants and not drive_grants:
+    if not gmail_grants and not drive_grants and not telegram_grants:
         return None
     return build_tool_binding_resolver(
         gmail_port=gmail_port,
         grants=gmail_grants or None,
         drive_port=drive_port,
         drive_grants=drive_grants or None,
+        telegram_port=telegram_port,
+        telegram_grants=telegram_grants or None,
     )
 
 
@@ -234,6 +247,44 @@ async def _drive_grants_for_env(env: Any) -> dict[str, DriveGrant]:
     try:
         store = CloudflareD1ConnectorGrantStore(binding)
         return await store.load_drive_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _telegram_port_for_env(env: Any) -> HttpxTelegramReadPort | None:
+    """Resolve the promoted Telegram read port (#2353).
+
+    Requires both the bot-token secret and a non-empty server-derived
+    paired-chat allowlist. Missing or malformed authorities fail closed by
+    returning ``None``; there is no caller-side override and no Google OAuth
+    dependency.
+    """
+    bot_token = legacy_worker._binding_value(env, ENGINE_TELEGRAM_BOT_TOKEN_ENV)
+    paired_raw = legacy_worker._binding_value(env, ENGINE_TELEGRAM_PAIRED_CHAT_IDS_ENV)
+    if not bot_token or not paired_raw:
+        return None
+    try:
+        paired_chat_ids = parse_paired_chat_ids(str(paired_raw))
+        if not paired_chat_ids:
+            return None
+        return HttpxTelegramReadPort(bot_token=bot_token, paired_chat_ids=paired_chat_ids)
+    except Exception:
+        return None
+
+
+async def _telegram_grants_for_env(env: Any) -> dict[str, TelegramGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_telegram_grants()
     except ServiceContractError:
         raise
     except Exception:
