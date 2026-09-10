@@ -315,13 +315,14 @@
 
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
         <div class="project-files-heading">
-          <div><strong id="projectFilesTitle">프로젝트 파일</strong><small>TXT·Markdown·CSV·JSON · 최대 12개</small></div>
+          <div><strong id="projectFilesTitle">프로젝트 파일</strong><small>TXT·Markdown·CSV·JSON·PDF·DOCX · 최대 12개</small></div>
           <label class="project-file-add" for="projectFileInput">＋ 파일 추가</label>
-          <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json" hidden />
+          <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" hidden />
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
         <p class="project-files-empty" id="projectFilesEmpty" hidden>저장된 프로젝트 파일이 없습니다.</p>
-        <p class="project-files-note">프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다. Composer 첨부와 달리 PDF·DOCX·PPTX·XLSX는 저장하지 않습니다.</p>
+        <p class="project-files-status" id="projectFileStatus" role="status" aria-live="polite" hidden></p>
+        <p class="project-files-note">프로젝트 파일은 TXT·Markdown·CSV·JSON과 PDF·DOCX를 지원합니다. PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다. PPTX·XLSX는 지원하지 않습니다.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>

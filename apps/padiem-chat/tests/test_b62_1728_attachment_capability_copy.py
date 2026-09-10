@@ -76,9 +76,9 @@ def test_binary_reader_derives_formats_and_limit_from_capabilities():
 
 
 def test_project_file_persistence_copy_remains_explicitly_distinct():
-    assert "프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다." in INDEX_HTML
-    assert "PDF·DOCX·PPTX·XLSX는 저장하지 않습니다." in INDEX_HTML
-    assert 'id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json"' in INDEX_HTML
+    assert "PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다." in INDEX_HTML
+    assert "PPTX·XLSX는 지원하지 않습니다." in INDEX_HTML
+    assert 'application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"' in INDEX_HTML
     assert "Project files are a distinct persistence capability." in README
     assert "validated UTF-8 text files only" in README
 

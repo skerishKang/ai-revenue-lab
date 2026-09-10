@@ -53,6 +53,7 @@
 .project-files-heading small,
 .project-files-note,
 .project-files-empty,
+.project-files-status,
 .project-file-row small {
   color: #777b82;
   font-size: 11px;
@@ -117,6 +118,10 @@
 
 .project-files-empty {
   margin: 10px 0 0;
+}
+
+.project-files-status {
+  margin: 8px 0 0;
 }
 
 @media (max-width: 680px) {
