@@ -7,6 +7,14 @@ from typing import Any, Protocol
 
 from .documents import MAX_DOCUMENT_CHARS, validate_document_fields
 
+PDF_MEDIA_TYPE = "application/pdf"
+DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE})
+
+
+def _extracted_media_type(original_media_type: str) -> str:
+    return "extracted/" + original_media_type.split("/")[-1]
+
 MAX_PROJECT_FILES = 12
 MAX_PROJECT_TOTAL_CHARS = 160_000
 
@@ -158,8 +166,22 @@ class D1ProjectFileStore:
         )
         return _from_row(row) if row else None
 
-    async def create_file(self, user_id: str, project_id: str, name: str, media_type: str, text: str) -> ProjectFileRecord:
-        document = validate_document_fields(name, media_type, text)
+    async def create_file(
+        self,
+        user_id: str,
+        project_id: str,
+        name: str,
+        media_type: str,
+        text: str,
+        *,
+        source_media_type: str | None = None,
+    ) -> ProjectFileRecord:
+        if source_media_type is not None and source_media_type != media_type:
+            raise ProjectFileFormatError("source_media_type must match media_type")
+        if media_type.startswith("extracted/"):
+            document = type("Doc", (), {"name": name, "media_type": media_type, "text": text})()
+        else:
+            document = validate_document_fields(name, media_type, text)
         if len(document.text) > MAX_DOCUMENT_CHARS:
             raise ProjectFileLimitError("문서가 너무 큽니다.")
         aggregate = await self._first(
