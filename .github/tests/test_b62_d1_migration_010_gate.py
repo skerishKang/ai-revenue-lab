@@ -84,16 +84,17 @@ def _payload(
 def test_schema_classifier_contract() -> None:
     helper = _load_helper()
     assert helper.classify_schema(_payload()) == "exact"
-    assert helper.classify_schema(_payload(table=False)) == "missing"
-    assert helper.classify_schema(_payload(table=False)) == "drift"
+    assert helper.classify_schema(_payload(table=False, index_created=False, index_kind_status=False, index_member_updated=False)) == "missing"
+    assert helper.classify_schema(_payload(index_created=False)) == "drift"
+    assert helper.classify_schema(_payload(index_kind_status=False)) == "drift"
+    assert helper.classify_schema(_payload(index_member_updated=False)) == "drift"
     assert helper.classify_schema(_payload(columns=("id", "workspace_id"))) == "drift"
     assert helper.classify_schema(
         _payload(table_sql="CREATE TABLE claw_task_alert (id TEXT PRIMARY KEY)")
     ) == "drift"
-    assert helper.classify_schema(_payload(index_created=False)) == "drift"
-    assert helper.classify_schema(_payload(index_kind_status=False)) == "drift"
-    assert helper.classify_schema(_payload(index_member_updated=False)) == "drift"
-    assert helper.classify_schema(_payload(index_created=False, index_kind_status=False, index_member_updated=False)) == "drift"
+    assert helper.classify_schema(_payload(table=False, index_created=True)) == "drift"
+    assert helper.classify_schema(_payload(table=False, index_kind_status=True)) == "drift"
+    assert helper.classify_schema(_payload(table=False, index_member_updated=True)) == "drift"
 
 
 def test_migration_is_additive_and_bounded() -> None:

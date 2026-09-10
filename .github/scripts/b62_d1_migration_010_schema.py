@@ -97,19 +97,17 @@ def classify_schema(payload: object) -> str:
         ("idx_claw_task_alert_workspace_created", "on claw_task_alert (workspace_id, created_at desc)"),
         ("idx_claw_task_alert_workspace_kind_status", "on claw_task_alert (workspace_id, kind, status)"),
         ("idx_claw_task_alert_member_updated", "on claw_task_alert (member_id, updated_at desc)"),
-        ("member_id != ''", "member_id != ''"),
-        ("kind = 'alert'", "kind = 'alert'"),
     )
     for idx_name, fragment in required_indexes:
-        if idx_name == "idx_claw_task_alert_member_updated":
-            idx_obj = index_member_updated
-        elif idx_name == "idx_claw_task_alert_workspace_kind_status":
-            idx_obj = index_workspace_kind_status
-        else:
-            idx_obj = index_workspace_created
+        idx_obj = by_name.get(idx_name)
         if idx_obj is None or idx_obj.get("type") != "index":
             return "drift"
         if fragment not in _normalized_sql(idx_obj.get("sql", "")):
+            return "drift"
+    member_updated = by_name.get("idx_claw_task_alert_member_updated")
+    if member_updated is not None and member_updated.get("type") == "index":
+        member_sql = _normalized_sql(member_updated.get("sql", ""))
+        if "member_id != ''" not in member_sql or "kind = 'alert'" not in member_sql:
             return "drift"
     return "exact"
 

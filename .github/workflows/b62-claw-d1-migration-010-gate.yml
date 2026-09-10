@@ -77,7 +77,7 @@ jobs:
           python-version: "3.12"
 
       - name: Run migration gate contract tests
-        run: python .github/tests/test_b62_d1_migration_010_gate.py
+        run: python -m pytest -q .github/tests/test_b62_d1_migration_010_gate.py
 
       - name: Source-only evidence
         run: |
