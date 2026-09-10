@@ -189,19 +189,51 @@ def build_production_config(
     if plain_vars.get("PADIEM_CHAT_LIVE_ENABLED") != "true":
         raise ProductionConfigError("live arm is not enabled in live settings; deploy aborted")
 
+    # The deploy never injects or rewrites plain-text variables. The live settings
+    # are the authority; the expected public base URL must already be present and
+    # exact, otherwise this run fails closed and the activation gate owns the fix.
     existing_public = plain_vars.get(PUBLIC_BASE_URL_VAR)
-    if existing_public is not None and existing_public != public_base_url:
+    if existing_public is None:
+        raise ProductionConfigError(
+            f"{PUBLIC_BASE_URL_VAR} is absent from live settings; deploy does not inject it"
+        )
+    if existing_public != public_base_url:
         raise ProductionConfigError(
             f"{PUBLIC_BASE_URL_VAR} drift: live value differs from the expected production origin"
         )
-    plain_vars = dict(plain_vars)
-    plain_vars[PUBLIC_BASE_URL_VAR] = public_base_url
 
     lines.append("[vars]")
     for name in sorted(plain_vars):
         lines.append(f"{name} = {_toml_string(plain_vars[name])}")
     lines.append("")
     return "\n".join(lines) + ""
+
+
+def verify_mutation_zero(config_text: str, live: dict[str, object]) -> None:
+    """The generated [vars] block must equal the live plain-text variables exactly."""
+    plain_vars = live["vars"]
+    assert isinstance(plain_vars, dict)
+    generated: dict[str, str] = {}
+    in_vars = False
+    for line in config_text.splitlines():
+        if line.strip() == "[vars]":
+            in_vars = True
+            continue
+        if in_vars:
+            if line.startswith("["):
+                break
+            if not line.strip():
+                continue
+            name, _, value = line.partition("=")
+            generated[name.strip()] = json.loads(value)
+    if generated != plain_vars:
+        changed = sorted(
+            name for name in set(generated) | set(plain_vars)
+            if generated.get(name) != plain_vars.get(name)
+        )
+        raise ProductionConfigError(
+            f"generated config mutates live plain-text vars: {', '.join(changed)}"
+        )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -216,6 +248,7 @@ def main(argv: list[str] | None = None) -> int:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
         config_text = build_production_config(live, args.repo_config, args.public_base_url)
+        verify_mutation_zero(config_text, live)
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)
         return 1
@@ -230,11 +263,6 @@ def main(argv: list[str] | None = None) -> int:
     plain_vars = live["vars"]
     assert isinstance(secret_names, list)
     assert isinstance(plain_vars, dict)
-    public_state = (
-        "already_expected"
-        if plain_vars.get(PUBLIC_BASE_URL_VAR) == args.public_base_url
-        else "injected"
-    )
     print("B62_PRODUCTION_CONFIG_GENERATED=PASS")
     print(f"SERVICE_BINDINGS={len(live['services'])}")
     print(f"D1_BINDINGS={len(live['d1'])}")
@@ -243,7 +271,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"SECRET_BINDINGS_PRESERVED_BY_PLATFORM={len(secret_names)}")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
-    print(f"{PUBLIC_BASE_URL_VAR}_STATE={public_state}")
+    print("PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED")
+    print("DEPLOY_CONFIG_MUTATION_ZERO=PASS")
     return 0
 
 
