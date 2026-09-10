@@ -445,23 +445,159 @@
   border-color: rgba(121, 188, 231, 0.5);
 }
 
-/* ── Glass theme: near-solid workspace surface, hero stays secondary ──── */
-html[data-theme="padiem-glass"] .claw-workspace-title,
-html[data-theme="padiem-glass"] .claw-intake-label,
-html[data-theme="padiem-glass"] .claw-result-kind,
-html[data-theme="padiem-glass"] .claw-result-body {
-  color: #111a22;
+/* ── Approved memory review ──────────────────────────────────── */
+.claw-approved-memory {
+  display: grid;
+  gap: 12px;
 }
-html[data-theme="padiem-glass"] .claw-intake-hero textarea,
-html[data-theme="padiem-glass"] .claw-chip,
-html[data-theme="padiem-glass"] .claw-result-card,
-html[data-theme="padiem-glass"] .claw-result-action {
+.claw-approved-memory-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-refresh-button {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+  color: var(--ink, #111a22);
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+.claw-refresh-button:focus-visible {
+  outline: 2px solid var(--accent, #2f6f99);
+  outline-offset: 1px;
+}
+.claw-approved-loading {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--text-muted, #5b6672);
+  text-align: center;
+}
+.claw-approved-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: none;
+}
+.claw-approved-error[data-state="error"] {
+  display: block;
+  background: rgba(220, 62, 62, 0.07);
+  border: 1px solid rgba(220, 62, 62, 0.16);
+  color: #8a1a1a;
+}
+.claw-approved-list {
+  display: grid;
+  gap: 10px;
+}
+.claw-approved-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--text-muted, #5b6672);
+  text-align: center;
+}
+.claw-approved-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.2));
+  border-radius: 14px;
+  background: var(--card-bg, #fff);
+  box-shadow: 0 4px 16px rgba(20, 29, 38, 0.06);
+}
+.claw-approved-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.claw-approved-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #111a22);
+}
+.claw-approved-card-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted, #5b6672);
+  background: rgba(121, 188, 231, 0.18);
+}
+.claw-approved-card-meta {
+  font-size: 12px;
+  color: var(--text-muted, #5b6672);
+}
+.claw-approved-card-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink, #111a22);
+}
+.claw-approved-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.claw-approved-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
+  background: var(--card-bg, #fff);
+  color: var(--ink, #111a22);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-approved-action:focus-visible {
+  outline: 2px solid var(--accent, #2f6f99);
+  outline-offset: 1px;
+}
+.claw-approved-detail {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.2));
+  border-radius: 14px;
+  background: var(--card-bg, #fff);
+}
+.claw-approved-detail-row {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+}
+.claw-approved-detail-label {
+  font-weight: 700;
+  color: var(--text-muted, #5b6672);
+  min-width: 80px;
+}
+.claw-approved-detail-value {
+  color: var(--ink, #111a22);
+  word-break: break-word;
+}
+
+/* ── Glass theme: near-solid workspace surface ───────────────── */
+html[data-theme="padiem-glass"] .claw-approved-card,
+html[data-theme="padiem-glass"] .claw-approved-detail,
+html[data-theme="padiem-glass"] .claw-refresh-button {
   background: rgba(247, 249, 251, 0.97);
   color: #111a22;
-}
-html[data-theme="padiem-glass"] .claw-chip[aria-pressed="true"] {
-  background: #2f6f99;
-  color: #fff;
 }
 
 /* ── Mobile: single column, hero image minimized during active work ───── */

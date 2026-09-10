@@ -1476,81 +1476,330 @@
   setClawAreaState("idle");
   clearClawArtifact();
 
-  if (clawExecuteButton) {
-    clawExecuteButton.addEventListener("click", async () => {
-      if (clawInFlight) return;
-      const body = (clawRequestText?.value || "").trim();
-      if (!body) {
-        clearClawArtifact();
-        if (clawResultCard) clawResultCard.hidden = true;
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = clawT("claw-error-empty");
-        }
-        setClawStatus(clawT("claw-error-empty"), "error");
-        setClawAreaState("error");
-        if (clawRequestText) clawRequestText.focus();
-        return;
-      }
-      if (body.length > 4000) {
-        setClawStatus(clawT("claw-error-too-large"), "error");
-        setClawAreaState("error");
-        return;
-      }
-      const channelValue = clawChannel?.value || "other";
-      const actionValue = clawAction?.value || "quote";
-      const senderText = (clawSender?.value || "").trim();
+   if (clawExecuteButton) {
+     clawExecuteButton.addEventListener("click", async () => {
+       if (clawInFlight) return;
+       const body = (clawRequestText?.value || "").trim();
+       if (!body) {
+         clearClawArtifact();
+         if (clawResultCard) clawResultCard.hidden = true;
+         if (clawResultEmpty) {
+           clawResultEmpty.hidden = false;
+           clawResultEmpty.textContent = clawT("claw-error-empty");
+         }
+         setClawStatus(clawT("claw-error-empty"), "error");
+         setClawAreaState("error");
+         if (clawRequestText) clawRequestText.focus();
+         return;
+       }
+       if (body.length > 4000) {
+         setClawStatus(clawT("claw-error-too-large"), "error");
+         setClawAreaState("error");
+         return;
+       }
+       const channelValue = clawChannel?.value || "other";
+       const actionValue = clawAction?.value || "quote";
+       const senderText = (clawSender?.value || "").trim();
 
-      setClawButtonsBusy(true);
-      setClawStatus(clawT("claw-status-execute-running"), "running");
-      setClawAreaState("submitting");
-      if (clawResultCard) clawResultCard.hidden = true;
-      clearClawArtifact();
-      if (clawResultEmpty) {
-        clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = clawT("claw-status-execute-running");
-      }
+       setClawButtonsBusy(true);
+       setClawStatus(clawT("claw-status-execute-running"), "running");
+       setClawAreaState("submitting");
+       if (clawResultCard) clawResultCard.hidden = true;
+       clearClawArtifact();
+       if (clawResultEmpty) {
+         clawResultEmpty.hidden = false;
+         clawResultEmpty.textContent = clawT("claw-status-execute-running");
+       }
 
-      try {
-        const response = await fetch("/api/claw/manual-intake/execute", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
-        });
-        const data = await response.json().catch(() => null);
-        if (data && data.ok && data.result && typeof data.result.result_text === "string") {
-          const result = data.result;
-          const safeText = String(result.result_text);
-          revealClawCard(result.title, true);
-          if (clawResultPreview) clawResultPreview.textContent = safeText;
-          if (clawResultEmpty) clawResultEmpty.hidden = true;
-          const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
-          const hasArtifact = !!(artifact && artifact.document_id);
-          if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
-          setClawStatus(clawT("claw-status-execute-success"), "success");
-          setClawAreaState("success");
-          if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
-          else if (clawResultPreview) clawResultPreview.focus?.();
-          return;
-        }
-        const safeMsg = safeClawErrorMessage(data, response);
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = safeMsg;
-        }
-        setClawStatus(safeMsg, "error");
-        setClawAreaState("error");
-      } catch {
-        const fallback = clawT("claw-error-generic");
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = fallback;
-        }
-        setClawStatus(fallback, "error");
-        setClawAreaState("error");
-      } finally {
-        setClawButtonsBusy(false);
-      }
-    });
-  }
+       try {
+         const response = await fetch("/api/claw/manual-intake/execute", {
+           method: "POST",
+           headers: { "Content-Type": "application/json", "Accept": "application/json" },
+           body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
+         });
+         const data = await response.json().catch(() => null);
+         if (data && data.ok && data.result && typeof data.result.result_text === "string") {
+           const result = data.result;
+           const safeText = String(result.result_text);
+           revealClawCard(result.title, true);
+           if (clawResultPreview) clawResultPreview.textContent = safeText;
+           if (clawResultEmpty) clawResultEmpty.hidden = true;
+           const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
+           const hasArtifact = !!(artifact && artifact.document_id);
+           if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
+           setClawStatus(clawT("claw-status-execute-success"), "success");
+           setClawAreaState("success");
+           if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
+           else if (clawResultPreview) clawResultPreview.focus?.();
+           return;
+         }
+         const safeMsg = safeClawErrorMessage(data, response);
+         if (clawResultEmpty) {
+           clawResultEmpty.hidden = false;
+           clawResultEmpty.textContent = safeMsg;
+         }
+         setClawStatus(safeMsg, "error");
+         setClawAreaState("error");
+       } catch {
+         const fallback = clawT("claw-error-generic");
+         if (clawResultEmpty) {
+           clawResultEmpty.hidden = false;
+           clawResultEmpty.textContent = fallback;
+         }
+         setClawStatus(fallback, "error");
+         setClawAreaState("error");
+       } finally {
+         setClawButtonsBusy(false);
+       }
+     });
+   }
+
+   // Approved-memory review UI (#2340)
+   const clawApprovedMemory = document.getElementById("clawApprovedMemory");
+   const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");
+   const clawApprovedLoading = document.getElementById("clawApprovedLoading");
+   const clawApprovedError = document.getElementById("clawApprovedError");
+   const clawApprovedList = document.getElementById("clawApprovedList");
+   const clawApprovedEmpty = document.getElementById("clawApprovedEmpty");
+
+   let approvedMemoryInFlight = false;
+
+   function setApprovedMemoryStatus(message, state) {
+     if (!clawApprovedError) return;
+     if (!message) {
+       clawApprovedError.hidden = true;
+       clawApprovedError.textContent = "";
+       clawApprovedError.removeAttribute("data-state");
+       return;
+     }
+     clawApprovedError.hidden = false;
+     clawApprovedError.textContent = message;
+     if (state) clawApprovedError.dataset.state = state;
+     else clawApprovedError.removeAttribute("data-state");
+   }
+
+   function renderApprovedMemoryCard(memory) {
+     const card = document.createElement("div");
+     card.className = "claw-approved-card";
+     card.dataset.memoryId = memory.memory_id || "";
+
+     const head = document.createElement("div");
+     head.className = "claw-approved-card-head";
+
+     const title = document.createElement("strong");
+     title.className = "claw-approved-card-title";
+     title.textContent = memory.name || "";
+
+     const badge = document.createElement("span");
+     badge.className = "claw-approved-card-badge";
+     badge.textContent = memory.status || "";
+
+     head.append(title, badge);
+
+     const meta = document.createElement("div");
+     meta.className = "claw-approved-card-meta";
+     meta.textContent = `${memory.memory_type || ""} · ${memory.created_at || ""}`;
+
+     const note = document.createElement("p");
+     note.className = "claw-approved-card-note";
+     note.textContent = memory.note || "";
+
+     const actions = document.createElement("div");
+     actions.className = "claw-approved-card-actions";
+
+     const detailBtn = document.createElement("button");
+     detailBtn.type = "button";
+     detailBtn.className = "claw-approved-action";
+     detailBtn.textContent = "상세";
+     detailBtn.addEventListener("click", () => {
+       const id = card.dataset.memoryId;
+       if (!id) return;
+       window.location.hash = `#memory-${id}`;
+       loadApprovedMemoryDetail(id);
+     });
+
+     actions.appendChild(detailBtn);
+     card.append(head, meta, note, actions);
+     return card;
+   }
+
+   function renderApprovedMemoryDetail(memory) {
+     const existing = clawApprovedList?.querySelector(".claw-approved-detail");
+     if (existing) existing.remove();
+
+     const detail = document.createElement("div");
+     detail.className = "claw-approved-detail";
+
+     const rows = [
+       { label: "유형", value: memory.memory_type || "" },
+       { label: "이름", value: memory.name || "" },
+       { label: "노트", value: memory.note || "" },
+       { label: "채널", value: memory.source_channel || "" },
+       { label: "상태", value: memory.status || "" },
+       { label: "생성", value: memory.created_at || "" },
+       { label: "수정", value: memory.updated_at || "" },
+     ];
+
+     rows.forEach((row) => {
+       const rowEl = document.createElement("div");
+       rowEl.className = "claw-approved-detail-row";
+       const label = document.createElement("span");
+       label.className = "claw-approved-detail-label";
+       label.textContent = row.label;
+       const value = document.createElement("span");
+       value.className = "claw-approved-detail-value";
+       value.textContent = row.value;
+       rowEl.append(label, value);
+       detail.appendChild(rowEl);
+     });
+
+     const closeBtn = document.createElement("button");
+     closeBtn.type = "button";
+     closeBtn.className = "claw-approved-action";
+     closeBtn.textContent = "닫기";
+     closeBtn.addEventListener("click", () => {
+       detail.remove();
+       loadApprovedMemoryList();
+     });
+     detail.appendChild(closeBtn);
+
+     clawApprovedList?.appendChild(detail);
+   }
+
+   async function loadApprovedMemoryList() {
+     if (!clawApprovedMemory || approvedMemoryInFlight) return;
+     approvedMemoryInFlight = true;
+     setApprovedMemoryStatus("", "");
+     if (clawApprovedLoading) clawApprovedLoading.hidden = false;
+     if (clawApprovedError) clawApprovedError.hidden = true;
+     if (clawApprovedList) clawApprovedList.hidden = true;
+     if (clawApprovedEmpty) clawApprovedEmpty.hidden = true;
+     if (clawApprovedList) clawApprovedList.replaceChildren();
+
+     try {
+       const response = await fetch("/api/claw/memory", { headers: { "Accept": "application/json" }, cache: "no-store" });
+       if (!response.ok) {
+         const data = await response.json().catch(() => null);
+         throw new Error(safeClawErrorMessage(data, response));
+       }
+       const data = await response.json().catch(() => null);
+       if (!data || !Array.isArray(data.memories)) throw new Error("목록을 불러오지 못했습니다.");
+
+       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+       if (clawApprovedList) clawApprovedList.hidden = false;
+
+       if (data.memories.length === 0) {
+         if (clawApprovedEmpty) clawApprovedEmpty.hidden = false;
+         return;
+       }
+
+       data.memories.forEach((memory) => {
+         const card = renderApprovedMemoryCard(memory);
+         clawApprovedList?.appendChild(card);
+       });
+     } catch (error) {
+       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+       setApprovedMemoryStatus(error instanceof Error ? error.message : "목록을 불러오지 못했습니다.", "error");
+     } finally {
+       approvedMemoryInFlight = false;
+     }
+   }
+
+   async function loadApprovedMemoryDetail(memoryId) {
+     if (!clawApprovedMemory || approvedMemoryInFlight) return;
+     approvedMemoryInFlight = true;
+     setApprovedMemoryStatus("", "");
+     if (clawApprovedLoading) clawApprovedLoading.hidden = false;
+     if (clawApprovedError) clawApprovedError.hidden = true;
+     if (clawApprovedList) clawApprovedList.hidden = true;
+     if (clawApprovedEmpty) clawApprovedEmpty.hidden = true;
+
+     try {
+       const response = await fetch(`/api/claw/memory/${encodeURIComponent(memoryId)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
+       if (!response.ok) {
+         const data = await response.json().catch(() => null);
+         throw new Error(safeClawErrorMessage(data, response));
+       }
+       const data = await response.json().catch(() => null);
+       if (!data || !data.memory) throw new Error("상세를 불러오지 못했습니다.");
+
+       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+       if (clawApprovedList) clawApprovedList.hidden = false;
+       renderApprovedMemoryDetail(data.memory);
+     } catch (error) {
+       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
+       setApprovedMemoryStatus(error instanceof Error ? error.message : "상세를 불러오지 못했습니다.", "error");
+     } finally {
+       approvedMemoryInFlight = false;
+     }
+   }
+
+   async function approveApprovedMemory(memoryId) {
+     if (!memoryId || approvedMemoryInFlight) return;
+     approvedMemoryInFlight = true;
+     setApprovedMemoryStatus("", "");
+
+     try {
+       const response = await fetch("/api/claw/memory/approve", {
+         method: "POST",
+         headers: { "Content-Type": "application/json", "Accept": "application/json" },
+         body: JSON.stringify({ memory_id: memoryId, approved: true }),
+       });
+       if (!response.ok) {
+         const data = await response.json().catch(() => null);
+         throw new Error(safeClawErrorMessage(data, response));
+       }
+       await loadApprovedMemoryList();
+     } catch (error) {
+       setApprovedMemoryStatus(error instanceof Error ? error.message : "승인하지 못했습니다.", "error");
+     } finally {
+       approvedMemoryInFlight = false;
+     }
+   }
+
+   async function rejectApprovedMemory(memoryId) {
+     if (!memoryId || approvedMemoryInFlight) return;
+     approvedMemoryInFlight = true;
+     setApprovedMemoryStatus("", "");
+
+     try {
+       const response = await fetch("/api/claw/memory/reject", {
+         method: "POST",
+         headers: { "Content-Type": "application/json", "Accept": "application/json" },
+         body: JSON.stringify({ memory_id: memoryId }),
+       });
+       if (!response.ok) {
+         const data = await response.json().catch(() => null);
+         throw new Error(safeClawErrorMessage(data, response));
+       }
+       await loadApprovedMemoryList();
+     } catch (error) {
+       setApprovedMemoryStatus(error instanceof Error ? error.message : "거절하지 못했습니다.", "error");
+     } finally {
+       approvedMemoryInFlight = false;
+     }
+   }
+
+   if (clawApprovedRefresh) {
+     clawApprovedRefresh.addEventListener("click", () => {
+       if (!approvedMemoryInFlight) loadApprovedMemoryList();
+     });
+   }
+
+   if (clawApprovedMemory) {
+     const observer = new MutationObserver(() => {
+       if (!clawApprovedMemory.hidden) {
+         loadApprovedMemoryList();
+       }
+     });
+     observer.observe(clawApprovedMemory, { attributes: true, attributeFilter: ["hidden"] });
+   }
+
+   setNote(idleNote());
+   renderProjectState();
+   updateComposer();
+   loadAuthStatus();
+   // Initial state
+   setClawAreaState("idle");
+   clearClawArtifact();
 })();

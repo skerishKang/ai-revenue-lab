@@ -193,7 +193,7 @@
         </form>
         <section class="claw-result" id="clawResultArea" data-claw-state="idle">
           <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
-          <p class="claw-result-hint" id="clawResultHint" data-locale-key="claw-preview-empty-hint">예: “A업체 견적 요청 — 품목 20개, 납기 9월 말”처럼 붙여넣어 보세요.</p>
+          <p class="claw-result-hint" id="clawResultHint" data-locale-key="claw-preview-empty-hint">예: "A업체 견적 요청 — 품목 20개, 납기 9월 말"처럼 붙여넣어 보세요.</p>
           <p class="claw-execute-hint" id="clawExecuteHint" data-locale-key="claw-execute-hint">실제 실행은 AI가 서버에서 완성합니다. 견적서·발주서는 문서로 저장해 다운로드할 수 있습니다.</p>
           <article class="claw-result-card" id="clawResultCard" hidden>
             <div class="claw-result-card-head">
@@ -213,6 +213,20 @@
             <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 열어보거나 다운로드할 수 있습니다.</p>
           </article>
           <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
+        </section>
+        <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
+          <header class="claw-approved-memory-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-approved-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawApprovedMemoryTitle" data-locale-key="claw-approved-title">승인된 메모리</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawApprovedRefresh" aria-label="목록 새로고침">↻</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-approved-tagline">명시적으로 승인한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.</p>
+          <div class="claw-approved-loading" id="clawApprovedLoading" hidden aria-live="polite">불러오는 중…</div>
+          <p class="claw-approved-error" id="clawApprovedError" hidden role="alert"></p>
+          <div class="claw-approved-list" id="clawApprovedList" hidden></div>
+          <p class="claw-approved-empty" id="clawApprovedEmpty" hidden>승인된 메모리가 없습니다.</p>
         </section>
         <div class="claw-disabled-controls" aria-label="준비 중인 기능">
           <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
