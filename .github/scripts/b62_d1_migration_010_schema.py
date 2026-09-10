@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 TABLE = "claw_task_alert"
-INDEX = "idx_claw_task_alert_workspace_created"
 EXPECTED_COLUMNS = (
     "id",
     "workspace_id",
@@ -65,13 +64,15 @@ def classify_schema(payload: object) -> str:
         if isinstance(row.get("name"), str)
     }
     table_row = by_name.get(TABLE)
-    index_row = by_name.get(INDEX)
+    index_workspace_created = by_name.get("idx_claw_task_alert_workspace_created")
+    index_workspace_kind_status = by_name.get("idx_claw_task_alert_workspace_kind_status")
+    index_member_updated = by_name.get("idx_claw_task_alert_member_updated")
 
-    if table_row is None and index_row is None and not columns and not index_columns:
+    if table_row is None and not index_workspace_created and not index_workspace_kind_status and not index_member_updated and not columns:
         return "missing"
-    if table_row is None or index_row is None:
+    if table_row is None:
         return "drift"
-    if table_row.get("type") != "table" or index_row.get("type") != "index":
+    if table_row.get("type") != "table":
         return "drift"
 
     column_names = tuple(str(row.get("name", "")) for row in columns)
@@ -91,10 +92,25 @@ def classify_schema(payload: object) -> str:
     )
     if any(fragment not in table_sql for fragment in required_table_fragments):
         return "drift"
-    if "on claw_task_alert (workspace_id, created_at desc)" not in _normalized_sql(
-        next((row.get("sql", "") for row in objects if row.get("name") == INDEX), "")
-    ):
-        return "drift"
+
+    required_indexes = (
+        ("idx_claw_task_alert_workspace_created", "on claw_task_alert (workspace_id, created_at desc)"),
+        ("idx_claw_task_alert_workspace_kind_status", "on claw_task_alert (workspace_id, kind, status)"),
+        ("idx_claw_task_alert_member_updated", "on claw_task_alert (member_id, updated_at desc)"),
+        ("member_id != ''", "member_id != ''"),
+        ("kind = 'alert'", "kind = 'alert'"),
+    )
+    for idx_name, fragment in required_indexes:
+        if idx_name == "idx_claw_task_alert_member_updated":
+            idx_obj = index_member_updated
+        elif idx_name == "idx_claw_task_alert_workspace_kind_status":
+            idx_obj = index_workspace_kind_status
+        else:
+            idx_obj = index_workspace_created
+        if idx_obj is None or idx_obj.get("type") != "index":
+            return "drift"
+        if fragment not in _normalized_sql(idx_obj.get("sql", "")):
+            return "drift"
     return "exact"
 
 

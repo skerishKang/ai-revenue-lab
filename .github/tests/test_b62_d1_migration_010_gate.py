@@ -21,7 +21,9 @@ def _result(rows):
     return {"success": True, "results": rows}
 
 
-def _payload(*, table=True, index=True, columns=None, table_sql=None):
+def _payload(
+    *, table=True, index_created=True, index_kind_status=True, index_member_updated=True, columns=None, table_sql=None
+):
     migration = MIGRATION.read_text(encoding="utf-8")
     objects = []
     if table:
@@ -32,12 +34,28 @@ def _payload(*, table=True, index=True, columns=None, table_sql=None):
                 "sql": table_sql or migration.split("CREATE INDEX", 1)[0].strip(),
             }
         )
-    if index:
+    if index_created:
         objects.append(
             {
                 "name": "idx_claw_task_alert_workspace_created",
                 "type": "index",
                 "sql": "CREATE INDEX idx_claw_task_alert_workspace_created ON claw_task_alert (workspace_id, created_at DESC)",
+            }
+        )
+    if index_kind_status:
+        objects.append(
+            {
+                "name": "idx_claw_task_alert_workspace_kind_status",
+                "type": "index",
+                "sql": "CREATE INDEX idx_claw_task_alert_workspace_kind_status ON claw_task_alert (workspace_id, kind, status)",
+            }
+        )
+    if index_member_updated:
+        objects.append(
+            {
+                "name": "idx_claw_task_alert_member_updated",
+                "type": "index",
+                "sql": "CREATE INDEX idx_claw_task_alert_member_updated ON claw_task_alert (member_id, updated_at DESC) WHERE member_id != '' AND kind = 'alert'",
             }
         )
     expected_columns = (
@@ -66,12 +84,16 @@ def _payload(*, table=True, index=True, columns=None, table_sql=None):
 def test_schema_classifier_contract() -> None:
     helper = _load_helper()
     assert helper.classify_schema(_payload()) == "exact"
-    assert helper.classify_schema(_payload(table=False, index=False)) == "missing"
+    assert helper.classify_schema(_payload(table=False)) == "missing"
     assert helper.classify_schema(_payload(table=False)) == "drift"
     assert helper.classify_schema(_payload(columns=("id", "workspace_id"))) == "drift"
     assert helper.classify_schema(
         _payload(table_sql="CREATE TABLE claw_task_alert (id TEXT PRIMARY KEY)")
     ) == "drift"
+    assert helper.classify_schema(_payload(index_created=False)) == "drift"
+    assert helper.classify_schema(_payload(index_kind_status=False)) == "drift"
+    assert helper.classify_schema(_payload(index_member_updated=False)) == "drift"
+    assert helper.classify_schema(_payload(index_created=False, index_kind_status=False, index_member_updated=False)) == "drift"
 
 
 def test_migration_is_additive_and_bounded() -> None:
@@ -99,3 +121,5 @@ def test_workflow_is_exact_main_and_migration_specific() -> None:
     assert "ROW_DATA_READ=0" in workflow
     assert "WORKER_DEPLOYED=0" in workflow
     assert "BINDING_MUTATION=0" in workflow
+    assert "idx_claw_task_alert_workspace_kind_status" in workflow
+    assert "idx_claw_task_alert_member_updated" in workflow
