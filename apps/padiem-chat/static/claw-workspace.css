@@ -666,6 +666,25 @@ html[data-theme="padiem-glass"] .claw-refresh-button {
   color: #111a22;
 }
 
+/* ── Glass theme: near-solid workspace surface, hero stays secondary ──── */
+html[data-theme="padiem-glass"] .claw-workspace-title,
+html[data-theme="padiem-glass"] .claw-intake-label,
+html[data-theme="padiem-glass"] .claw-result-kind,
+html[data-theme="padiem-glass"] .claw-result-body {
+  color: #111a22;
+}
+html[data-theme="padiem-glass"] .claw-intake-hero textarea,
+html[data-theme="padiem-glass"] .claw-chip,
+html[data-theme="padiem-glass"] .claw-result-card,
+html[data-theme="padiem-glass"] .claw-result-action {
+  background: rgba(247, 249, 251, 0.97);
+  color: #111a22;
+}
+html[data-theme="padiem-glass"] .claw-chip[aria-pressed="true"] {
+  background: #2f6f99;
+  color: #fff;
+}
+
 /* ── Mobile: single column, hero image minimized during active work ───── */
 @media (max-width: 720px) {
   .claw-workspace {
