@@ -22,6 +22,12 @@ binding (adapter unbound), Engine timeout/unreachable, and malformed P01
 responses all return bounded safe errors. No credential/provider raw text leaks
 into the browser. No silent preview fallback after explicit execute.
 
+Artifact download (#2308): an unauthorized cross-tenant ``document_id`` is
+projected as the same non-disclosing ``404 artifact_not_found`` as a missing
+artifact, so no caller can learn whether a foreign document exists. Genuine
+storage failures stay ``503 workspace_document_read_failed``. The store keeps
+raising on tenant mismatch; only the HTTP projection is normalized.
+
 Quota accounting (#2226): the B62 UsageGate consumes before the P01/Engine
 transport. A consumed authorization is compensated only when the failure is
 provably pre-dispatch (unbound adapter or ``P01DispatchClass.NOT_DISPATCHED``
@@ -63,6 +69,7 @@ from kagent.manual_intake import (
 )
 from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter, P01DispatchClass
 from kagent.p01_run_flow import create_claw_run
+from .workspace_storage import WorkspaceStorageAccessError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CONTENT_CHARS = 4_000
@@ -450,6 +457,13 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
             tenant_id=tenant_id,
             document_id=document_id,
         )
+    except WorkspaceStorageAccessError:
+        # #2308: a canonical-tenant denial must be observationally identical to
+        # a missing artifact. Returning 503 here disclosed that a foreign
+        # document id exists; the same 404 body removes that oracle. The store
+        # still raises (tenant enforcement unchanged) — only the projection is
+        # normalized.
+        return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
     except Exception:
         return _error(503, "workspace_document_read_failed", "문서 읽기 중 오류가 발생했습니다.")
 
