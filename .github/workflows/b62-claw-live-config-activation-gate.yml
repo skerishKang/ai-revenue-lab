@@ -363,9 +363,19 @@ jobs:
       - name: Confirm the private R2 bucket already exists
         if: ${{ env.B62_CLAW_CONFIG_NO_OP != '1' }}
         shell: bash
+        env:
+          R2_READONLY_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
         run: |
           set -euo pipefail
-          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          test -n "${R2_BUCKET_NAME}"
+          if [ -z "${R2_READONLY_API_TOKEN:-}" ]; then
+            echo 'B62_R2_READONLY_CREDENTIAL=MISSING' >&2
+            echo 'R2_BUCKET_PROBE=NOT_ATTEMPTED' >&2
+            echo 'SECRET_VALUE_EMITTED=0' >&2
+            echo 'PRODUCTION_MUTATION=0' >&2
+            exit 1
+          fi
+          auth=(-H "Authorization: Bearer ${R2_READONLY_API_TOKEN}" -H "Content-Type: application/json")
           bucket="${RUNNER_TEMP}/b62-r2-bucket.json"
           http_status="$(curl -sS "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}" \
