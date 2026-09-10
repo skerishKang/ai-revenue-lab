@@ -5,12 +5,17 @@ This gate provisions ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (type secret_text)
 on the ``padiem-ai-engine`` worker so that the Claw caller ``b54-kagent``
 (allowed to ``b54-padiem-claw``) is present in the Engine caller authority.
 
-Two secrets are consumed, both from environment variables only (never argv,
+Three secrets are consumed, all from environment variables only (never argv,
 never workflow inputs, never stdout):
 
 - ``B54_ENGINE_CALLER_REGISTRY_V1_BASELINE``: the private baseline — the
-  CURRENT complete V1 registry plaintext, held by the owner. Required on the
+  complete V1 registry plaintext held by the owner. Required on the
   preservation path (live V1 already present).
+- ``B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS``: the bounded,
+  NON-SECRET currentness attestation issued by the private authority process
+  (#2400). Required on the preservation path; it is the only proof that the
+  supplied baseline is the currently authoritative complete payload. It
+  carries no registry plaintext and no credential material.
 - ``B62_P01_ENGINE_CREDENTIAL``: the raw Claw credential. It is embedded in
   the registry UNHASHED — the Engine hashes each entry credential internally
   at load time (``caller_secret_digest`` in
@@ -18,7 +23,6 @@ never workflow inputs, never stdout):
   would break authentication with ``service_authentication_failed``.
 
 Preservation contract (live V1 PRESENT):
-
 - the baseline must parse as a complete V1 registry;
 - the baseline must contain ``caller_id=storymemory-b61`` with
   ``allowed_app_ids`` exactly ``["b61"]`` (B61 preservation contract);
@@ -32,9 +36,30 @@ Preservation contract (live V1 PRESENT):
 - the COMPLETE merged result is validated against the Engine's own registry
   contract (identical semantics to ``parse_caller_registry_v1``).
 
+Currentness contract (``BASELINE_CURRENTNESS_PROVEN``):
+A structurally valid baseline is NOT sufficient: a stale yet well-formed
+baseline could overwrite newer live authority and silently drop unknown
+callers. Therefore ``EXTEND_REQUIRED`` additionally requires a canonical,
+bounded, non-secret attestation (canonical form)::
+
+    b54-currentness-v1 authority=b54-preservation-authority \
+baseline_sha256=<64-lowercase-hex> caller_count=<1-64> \
+issued_at=<YYYY-MM-DDTHH:MM:SSZ>
+
+The authority id is the canonical source constant ``CURRENTNESS_AUTHORITY_ID``
+(not a free-form field), so credential-shaped material can never occupy that
+slot or be echoed into evidence. The gate fails closed unless the attestation
+is present, canonical, carries the approved authority, was issued for the
+*exact* supplied baseline (SHA-256 of its UTF-8 bytes), matches the baseline
+caller count, and is fresh with respect to the source-bounded maximum age. ``BASELINE_CURRENTNESS_PROVEN=YES`` is emitted only then, and the
+workflow refuses to reach the PUT unless it is. This proves the private
+authority certified the baseline as the currently authoritative complete
+payload; it does NOT (and cannot) prove equality with the opaque Cloudflare
+``secret_text`` value, which is never retrievable.
+
 The greenfield path (all caller authority ABSENT) remains only as an isolated,
 tested capability: a single-caller registry with ``b54-kagent``. It is not the
-current Production path.
+current Production path and forbids both the baseline and the attestation.
 
 This script never prints a credential, a registry, or any secret value.
 Readback is NAME/TYPE-only and reuses the merged B54 caller-authority
@@ -45,7 +70,9 @@ Subcommands:
 - ``classify --settings <worker-settings.json>`` — NAME/TYPE-only authority
   classification plus the provision disposition.
 - ``plan --disposition <DISP> --credential-env <ENV> [--baseline-env <ENV>]
-  --output <put-body.json>`` — build the bounded PUT body from secrets.
+  [--currentness-env <ENV>] --output <put-body.json>`` — build the bounded PUT
+  body from secrets (and enforce the currentness guard on the preservation
+  path).
 - ``verify --settings <worker-settings.json>`` — post-mutation NAME/TYPE-only
   readback: registry secret present with type ``secret_text``.
 """
@@ -53,11 +80,13 @@ Subcommands:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
@@ -98,6 +127,25 @@ MAX_CALLER_APP_IDS = 32
 MAX_CALLER_REGISTRY_V1_BYTES = 524288
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
+# Baseline currentness attestation contract (#2400 private authority issues it).
+CURRENTNESS_ATTESTATION_PREFIX = "b54-currentness-v1"
+# The only authority id the gate accepts. A canonical source constant (not a
+# free-form field) so credential-shaped material can never be carried in the
+# authority slot or echoed into evidence, and so "valid" means a recognised
+# private authority — not merely a well-formed string.
+CURRENTNESS_AUTHORITY_ID = "b54-preservation-authority"
+CURRENTNESS_FIELD_ORDER = ("authority", "baseline_sha256", "caller_count", "issued_at")
+CURRENTNESS_FINGERPRINT_ALGO = "sha256"
+CURRENTNESS_MAX_ATTESTATION_BYTES = 1024
+# Source-bounded freshness: an attestation older than this cannot prove that
+# the baseline is the CURRENT live authority.
+CURRENTNESS_MAX_AGE_SECONDS = 24 * 60 * 60
+# Tolerated clock skew for an attestation issued slightly in the future.
+CURRENTNESS_MAX_FUTURE_SKEW_SECONDS = 5 * 60
+_FINGERPRINT_RE = re.compile(r"^[0-9a-f]{64}$")
+_ISSUED_AT_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+_FORBIDDEN_ATTESTATION_CHARS = ('{', '}', '"')
+
 _ENTRY_KEYS = frozenset({"caller_id", "credential", "allowed_app_ids"})
 _TOP_LEVEL_KEYS = frozenset({"version", "callers"})
 
@@ -111,7 +159,8 @@ def authority_disposition(states: dict[str, str]) -> str:
 
     - ``EXTEND_REQUIRED``: V1 registry already present as ``secret_text``.
       Its value is opaque/non-retrievable; extension requires the private
-      baseline secret and follows the preservation path.
+      baseline secret, the currentness attestation, and follows the
+      preservation path.
     - ``REFUSE_WRONG_TYPE``: registry name exists but not as ``secret_text``.
     - ``REFUSE_LEGACY_AUTHORITY_PRESENT``: the legacy one-caller trio is
       configured while V1 is absent. Enabling V1 would silently retire that
@@ -191,6 +240,147 @@ def _assert_b61_preserved(payload: dict) -> None:
 
 def _serialized(payload: dict) -> str:
     return json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+
+
+def baseline_fingerprint(baseline: str) -> str:
+    """SHA-256 of the exact baseline plaintext bytes (non-secret reference)."""
+    if not isinstance(baseline, str) or not baseline:
+        raise ProvisionPlanError("baseline registry is missing or blank")
+    return hashlib.sha256(baseline.encode("utf-8")).hexdigest()
+
+
+def parse_currentness_attestation(attestation: str) -> dict:
+    """Strictly parse the bounded, NON-SECRET currentness attestation.
+
+    The canonical form is a single ASCII line with exactly the fixed prefix
+    and exactly the four ordered ``key=value`` fields. Anything else — raw
+    registry JSON, a raw credential, an appended or reordered field — fails
+    closed, so secret material can never be smuggled in as provenance.
+    """
+    if not isinstance(attestation, str) or not attestation.strip():
+        raise ProvisionPlanError("baseline currentness attestation is missing or blank")
+    if not attestation.isascii():
+        raise ProvisionPlanError("baseline currentness attestation must be ASCII")
+    if any(ch in attestation for ch in _FORBIDDEN_ATTESTATION_CHARS):
+        raise ProvisionPlanError(
+            "baseline currentness attestation must not contain registry or credential material"
+        )
+    if "\n" in attestation or "\r" in attestation or "\t" in attestation:
+        raise ProvisionPlanError("baseline currentness attestation must be a single line")
+    if len(attestation.encode("utf-8")) > CURRENTNESS_MAX_ATTESTATION_BYTES:
+        raise ProvisionPlanError("baseline currentness attestation exceeds the bounded size")
+
+    fields = attestation.split(" ")
+    if len(fields) != 1 + len(CURRENTNESS_FIELD_ORDER):
+        raise ProvisionPlanError(
+            "baseline currentness attestation must have exactly the canonical fields"
+        )
+    if fields[0] != CURRENTNESS_ATTESTATION_PREFIX:
+        raise ProvisionPlanError(
+            "baseline currentness attestation prefix is not the approved authority contract"
+        )
+    parsed: dict[str, str] = {}
+    for token, key in zip(fields[1:], CURRENTNESS_FIELD_ORDER):
+        name, sep, value = token.partition("=")
+        if sep != "=" or name != key or not value:
+            raise ProvisionPlanError(
+                "baseline currentness attestation fields are not canonical and ordered"
+            )
+        parsed[key] = value
+
+    _check_identifier("currentness authority", parsed["authority"])
+    if parsed["authority"] != CURRENTNESS_AUTHORITY_ID:
+        raise ProvisionPlanError(
+            "baseline currentness authority is not the approved private authority"
+        )
+    fingerprint = parsed["baseline_sha256"]
+    if not _FINGERPRINT_RE.fullmatch(fingerprint):
+        raise ProvisionPlanError(
+            "baseline currentness fingerprint must be 64 lowercase hex characters"
+        )
+    try:
+        caller_count = int(parsed["caller_count"])
+    except ValueError:
+        raise ProvisionPlanError("baseline currentness caller_count must be an integer") from None
+    if not 1 <= caller_count <= MAX_ENGINE_CALLERS:
+        raise ProvisionPlanError("baseline currentness caller_count is out of bounds")
+    issued_at_raw = parsed["issued_at"]
+    if not _ISSUED_AT_RE.fullmatch(issued_at_raw):
+        raise ProvisionPlanError(
+            "baseline currentness issued_at must be UTC YYYY-MM-DDTHH:MM:SSZ"
+        )
+    issued_at = datetime.strptime(issued_at_raw, "%Y-%m-%dT%H:%M:%SZ").replace(
+        tzinfo=timezone.utc
+    )
+    return {
+        "authority": parsed["authority"],
+        "baseline_sha256": fingerprint,
+        "caller_count": caller_count,
+        "issued_at": issued_at,
+        "issued_at_raw": issued_at_raw,
+    }
+
+
+def format_currentness_attestation(
+    *,
+    authority: str,
+    baseline: str,
+    caller_count: int,
+    issued_at: datetime,
+) -> str:
+    """Emit the canonical attestation (contract documentation for #2400)."""
+    _check_identifier("currentness authority", authority)
+    if authority != CURRENTNESS_AUTHORITY_ID:
+        raise ProvisionPlanError(
+            "currentness authority is not the approved private authority"
+        )
+    if isinstance(caller_count, bool) or not isinstance(caller_count, int):
+        raise ProvisionPlanError("currentness caller_count must be an integer")
+    if not 1 <= caller_count <= MAX_ENGINE_CALLERS:
+        raise ProvisionPlanError("currentness caller_count is out of bounds")
+    if not isinstance(issued_at, datetime) or issued_at.tzinfo is None:
+        raise ProvisionPlanError("currentness issued_at must be timezone-aware")
+    stamp = issued_at.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return (
+        f"{CURRENTNESS_ATTESTATION_PREFIX} authority={authority} "
+        f"baseline_sha256={baseline_fingerprint(baseline)} "
+        f"caller_count={caller_count} issued_at={stamp}"
+    )
+
+
+def assert_baseline_currentness(
+    baseline: str,
+    payload: dict,
+    attestation: str,
+    *,
+    now: datetime | None = None,
+) -> dict:
+    """Fail closed unless the baseline is proven currently authoritative.
+
+    Binds the attestation to the EXACT supplied baseline (UTF-8 SHA-256), to
+    its caller count, and to a source-bounded freshness window. Returns the
+    bounded non-secret attestation metadata on success.
+    """
+    meta = parse_currentness_attestation(attestation)
+    reference = now if now is not None else datetime.now(timezone.utc)
+    if reference.tzinfo is None:
+        raise ProvisionPlanError("currentness clock must be timezone-aware")
+    age_seconds = (reference - meta["issued_at"]).total_seconds()
+    if age_seconds < -CURRENTNESS_MAX_FUTURE_SKEW_SECONDS:
+        raise ProvisionPlanError("baseline currentness attestation is issued in the future")
+    if age_seconds > CURRENTNESS_MAX_AGE_SECONDS:
+        raise ProvisionPlanError(
+            "baseline currentness attestation is stale (older than the bounded maximum age)"
+        )
+    if baseline_fingerprint(baseline) != meta["baseline_sha256"]:
+        raise ProvisionPlanError(
+            "baseline currentness fingerprint does not match the supplied baseline"
+        )
+    if meta["caller_count"] != len(payload["callers"]):
+        raise ProvisionPlanError(
+            "baseline currentness caller_count does not match the supplied baseline"
+        )
+    return meta
 
 
 def build_registry_payload(*, credential: str) -> dict:
@@ -353,19 +543,36 @@ def _cmd_plan(args: argparse.Namespace) -> int:
         return 1
     try:
         credential = _read_env_secret(args.credential_env, label="new Claw credential")
+        currentness: dict | None = None
         if args.disposition == "EXTEND_REQUIRED":
             baseline = _read_env_secret(args.baseline_env, label="private baseline registry")
+            # Fail closed BEFORE parsing/merging anything when the currentness
+            # attestation is missing: a structurally valid baseline is not
+            # proof that it is the CURRENT live authority.
+            attestation = _read_env_secret(
+                args.currentness_env, label="baseline currentness attestation"
+            )
             baseline_payload = parse_baseline_registry(baseline)
+            currentness = assert_baseline_currentness(
+                baseline, baseline_payload, attestation
+            )
             payload, verdict = merge_b54_caller(baseline_payload, credential)
         else:
             if args.baseline_env and os.environ.get(args.baseline_env, ""):
                 raise ProvisionPlanError(
                     "baseline is forbidden on the greenfield path (all-ABSENT)"
                 )
+            if args.currentness_env and os.environ.get(args.currentness_env, ""):
+                raise ProvisionPlanError(
+                    "currentness attestation is forbidden on the greenfield path (all-ABSENT)"
+                )
             payload = build_registry_payload(credential=credential)
             verdict = "GREENFIELD_SINGLE_CALLER"
     except ProvisionPlanError as exc:
-        print(f"B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL\nREASON={exc}", file=sys.stderr)
+        print("B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL", file=sys.stderr)
+        if args.disposition == "EXTEND_REQUIRED":
+            print("BASELINE_CURRENTNESS_PROVEN=NO", file=sys.stderr)
+        print(f"REASON={exc}", file=sys.stderr)
         return 1
 
     body = build_put_body(payload)
@@ -378,15 +585,23 @@ def _cmd_plan(args: argparse.Namespace) -> int:
     print(f"B54_ENGINE_CALLER_REGISTRY_PAYLOAD_BYTES={registry_bytes}")
     print(f"B54_ENGINE_CALLER_REGISTRY_VERSION={REGISTRY_VERSION}")
     if args.disposition == "EXTEND_REQUIRED":
+        assert currentness is not None
         print("B61_PRESERVATION_ASSERT=PASS")
         print("UNKNOWN_CALLERS_PRESERVED=PASS")
         print("BASELINE_CALLERS_PRESERVED_VERBATIM=PASS")
+        print("BASELINE_CURRENTNESS_PROVEN=YES")
+        print(f"BASELINE_CURRENTNESS_AUTHORITY={CURRENTNESS_AUTHORITY_ID}")
+        print(f"BASELINE_CURRENTNESS_ISSUED_AT={currentness['issued_at_raw']}")
+        print(f"BASELINE_CURRENTNESS_CALLER_COUNT={currentness['caller_count']}")
+        print("BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES")
+        print("CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO")
         if verdict == "ALREADY_COMPATIBLE":
             print("B54_KAGENT_APPEND_ONLY=ALREADY_COMPATIBLE")
         else:
             print("B54_KAGENT_APPEND_ONLY=PASS")
     else:
         print("B54_KAGENT_APPEND_ONLY=GREENFIELD_SINGLE_CALLER")
+        print("BASELINE_CURRENTNESS_PROVEN=GREENFIELD_NOT_APPLICABLE")
     print("RAW_CREDENTIAL_PREHASHED=NO")
     print("CREDENTIAL_BYTES_IN_BOUNDS=PASS")
     print("RAW_SECRET_OUTPUT=0")
@@ -441,6 +656,14 @@ def main(argv: list[str] | None = None) -> int:
         "--baseline-env",
         default="",
         help="environment variable holding the private baseline registry (preservation path)",
+    )
+    plan.add_argument(
+        "--currentness-env",
+        default="",
+        help=(
+            "environment variable holding the non-secret baseline currentness attestation "
+            "(required on the preservation path)"
+        ),
     )
     plan.add_argument("--output", required=True, type=Path)
 

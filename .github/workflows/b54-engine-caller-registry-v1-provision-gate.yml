@@ -7,6 +7,8 @@ name: B54 Engine Caller Registry V1 Provision Gate
 # Secret material NEVER passes through workflow_dispatch inputs:
 # - the private baseline registry comes from the repository secret
 #   `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE`;
+# - the non-secret baseline currentness attestation comes from the repository
+#   secret `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS`;
 # - the new Claw credential comes from `B62_P01_ENGINE_CREDENTIAL`.
 #
 # Preservation path (live V1 PRESENT:secret_text -> EXTEND_REQUIRED):
@@ -17,6 +19,21 @@ name: B54 Engine Caller Registry V1 Provision Gate
 # Engine hashes internally; nothing is pre-hashed). If `b54-kagent` already
 # exists, the plan fails closed unless the baseline entry is exactly
 # compatible, in which case the plan is a no-op.
+#
+# Currentness guard (fail-closed): a structurally valid baseline is NOT proof
+# that it is the currently authoritative complete payload, so a stale baseline
+# could silently drop unknown callers. The plan therefore requires the bounded
+# NON-SECRET currentness attestation issued by the private authority process
+# (#2400), canonical form:
+#   b54-currentness-v1 authority=b54-preservation-authority
+#     baseline_sha256=<64-lowercase-hex> caller_count=<1-64>
+#     issued_at=<YYYY-MM-DDTHH:MM:SSZ>
+# It must be present, canonical, bound to the EXACT supplied baseline (SHA-256
+# of its UTF-8 bytes), match the baseline caller count, and be within the
+# source-bounded freshness window. Otherwise BASELINE_CURRENTNESS_PROVEN=NO and
+# the plan fails; the PUT step is unreachable unless the guard reported YES.
+# The attestation carries no registry plaintext and no credential material and
+# does not (cannot) prove equality with the opaque Cloudflare secret_text value.
 #
 # Greenfield path (all authority ABSENT -> PROVISION_REQUIRED) is an isolated,
 # tested capability only; it is not the current Production path.
@@ -185,6 +202,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ENGINE_CALLER_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       BASELINE_REGISTRY: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE }}
+      BASELINE_CURRENTNESS: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS }}
       CONFIRMATION: ${{ inputs.confirmation }}
       DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
     steps:
@@ -231,24 +249,47 @@ jobs:
           test -n "${ENGINE_CALLER_CREDENTIAL}"
           if [ "${DISPOSITION}" = "EXTEND_REQUIRED" ]; then
             test -n "${BASELINE_REGISTRY}"
+            test -n "${BASELINE_CURRENTNESS}"
           fi
           rm -f "${RUNNER_TEMP}/b54-engine-caller-registry-payload.json"
+          plan_status=0
           evidence="$(python .github/scripts/b54_engine_caller_registry_v1_provision.py plan \
             --disposition "${DISPOSITION}" \
             --credential-env ENGINE_CALLER_CREDENTIAL \
             --baseline-env BASELINE_REGISTRY \
-            --output "${RUNNER_TEMP}/b54-engine-caller-registry-payload.json")"
+            --currentness-env BASELINE_CURRENTNESS \
+            --output "${RUNNER_TEMP}/b54-engine-caller-registry-payload.json")" \
+            || plan_status=$?
           echo "${evidence}"
+          if [ "${plan_status}" -ne 0 ]; then
+            # Fail closed with auditable evidence; never reach the PUT.
+            echo 'B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL'
+            echo 'BASELINE_CURRENTNESS_PROVEN=NO'
+            echo 'B54_ENGINE_CALLER_REGISTRY_PROVISION=SKIPPED_PLAN_FAILED'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
           printf '%s\n' "${evidence}" | grep -q '^B54_ENGINE_CALLER_REGISTRY_PLAN=PASS$'
           no_op="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_CALLER_REGISTRY_NO_OP=//p')"
           test -n "${no_op}"
+          currentness="$(printf '%s\n' "${evidence}" | sed -n 's/^BASELINE_CURRENTNESS_PROVEN=//p')"
+          test -n "${currentness}"
+          if [ "${DISPOSITION}" = "EXTEND_REQUIRED" ]; then
+            # Fail closed: the PUT must not be reachable without proven
+            # currentness of the exact supplied baseline.
+            test "${currentness}" = "YES"
+            printf '%s\n' "${evidence}" | grep -q '^BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES$'
+            printf '%s\n' "${evidence}" | grep -q '^CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO$'
+            echo 'BASELINE_CURRENTNESS_GUARD=PASS'
+          fi
           echo "B54_ENGINE_CALLER_REGISTRY_NO_OP=${no_op}" >> "${GITHUB_ENV}"
+          echo "BASELINE_CURRENTNESS_PROVEN=${currentness}" >> "${GITHUB_ENV}"
           echo 'RAW_SECRET_OUTPUT=0'
           echo 'RAW_REGISTRY_OUTPUT=0'
           echo 'SECRET_VALUE_OUTPUT=0'
 
       - name: Provision the registry secret only when a change is required
-        if: ${{ env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1' }}
+        if: ${{ env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1' && (env.BASELINE_CURRENTNESS_PROVEN == 'YES' || env.BASELINE_CURRENTNESS_PROVEN == 'GREENFIELD_NOT_APPLICABLE') }}
         shell: bash
         run: |
           set -euo pipefail

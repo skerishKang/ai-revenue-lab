@@ -5,7 +5,8 @@ Proves statically that the gate:
   2. requires the exact confirmation phrase and the production environment;
   3. carries exact-main assertions fail-closed before any live read/mutation;
   4. never accepts secret material (raw registry or raw credential) through
-     workflow_dispatch inputs — both come from Actions secrets only;
+     workflow_dispatch inputs — the baseline, the currentness attestation, and
+     the credential all come from Actions secrets only;
   5. on the preservation path (live V1 PRESENT), requires the private baseline
      secret, asserts the B61 entry (storymemory-b61 / exactly ["b61"]),
      preserves every existing caller entry verbatim (unknown callers are
@@ -17,10 +18,18 @@ Proves statically that the gate:
      proves authentication round-trips for B61, unknown callers, and
      b54-kagent against the exact payload shape;
   8. keeps the greenfield all-ABSENT path only as an isolated tested
-     capability (not the Production path);
-  9. never re-creates or blindly replaces an existing registry secret; and
+     capability (not the Production path), forbidding baseline and attestation;
+  9. never re-creates or blindly replaces an existing registry secret;
  10. never touches the B62 live-config workflow or the ``padiem-chat`` worker,
-     and never deploys the Engine worker.
+     and never deploys the Engine worker;
+ 11. FAILS CLOSED unless BASELINE_CURRENTNESS_PROVEN=YES: a structurally valid
+     baseline is not proof of currentness, so the bounded NON-SECRET
+     attestation from the private authority process (#2400) must be present,
+     canonical, bound to the EXACT supplied baseline (SHA-256 of its UTF-8
+     bytes), match the baseline caller count, and be fresh — otherwise the plan
+     fails and the workflow cannot reach the PUT;
+ 12. rejects any attempt to smuggle registry plaintext or credential material
+     in as the currentness provenance input.
 """
 
 from __future__ import annotations
@@ -34,6 +43,7 @@ import re
 import sys
 import tempfile
 import types
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,6 +53,8 @@ HELPER = ROOT / ".github/scripts/b54_engine_caller_registry_v1_provision.py"
 SENTINEL = "sentinel-raw-value-must-never-appear"
 CREDENTIAL_ENV = "B54_TEST_ENGINE_CALLER_CREDENTIAL"
 BASELINE_ENV = "B54_TEST_ENGINE_CALLER_REGISTRY_BASELINE"
+CURRENTNESS_ENV = "B54_TEST_ENGINE_CALLER_REGISTRY_CURRENTNESS"
+CURRENTNESS_AUTHORITY = "b54-preservation-authority"
 LEGACY_TRIO_NAMES = (
     "PADIEM_ENGINE_CALLER_ID",
     "PADIEM_ENGINE_CALLER_SECRET",
@@ -108,6 +120,25 @@ def _write_settings(payload: object) -> Path:
     return path
 
 
+@contextlib.contextmanager
+def _env(**values: str | None):
+    """Temporarily set/clear environment variables, always restoring them."""
+    previous = {key: os.environ.get(key) for key in values}
+    try:
+        for key, value in values.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
 def _registry_entry(caller_id: str, credential: str, app_ids: list[str]) -> dict:
     return {"caller_id": caller_id, "credential": credential, "allowed_app_ids": app_ids}
 
@@ -122,7 +153,31 @@ def _baseline_payload(b54_credential: str, b61_credential: str) -> dict:
     }
 
 
-def _run_plan(helper, *, disposition: str, output: Path) -> tuple[int, str]:
+def _currentness(
+    helper,
+    baseline: str,
+    payload: dict,
+    *,
+    authority: str = CURRENTNESS_AUTHORITY,
+    issued_at: datetime | None = None,
+    caller_count: int | None = None,
+) -> str:
+    """Build a canonical attestation for a baseline (the #2400 issuance contract)."""
+    return helper.format_currentness_attestation(
+        authority=authority,
+        baseline=baseline,
+        caller_count=len(payload["callers"]) if caller_count is None else caller_count,
+        issued_at=issued_at if issued_at is not None else datetime.now(timezone.utc),
+    )
+
+
+def _plan_argv(
+    *,
+    disposition: str,
+    output: Path,
+    baseline_env: str | None,
+    currentness_env: str | None,
+) -> list[str]:
     argv = [
         "plan",
         "--disposition",
@@ -132,9 +187,30 @@ def _run_plan(helper, *, disposition: str, output: Path) -> tuple[int, str]:
         "--output",
         str(output),
     ]
-    if disposition == "EXTEND_REQUIRED":
-        argv += ["--baseline-env", BASELINE_ENV]
-    return _run_main(helper, argv)
+    if baseline_env is not None:
+        argv += ["--baseline-env", baseline_env]
+    if currentness_env is not None:
+        argv += ["--currentness-env", currentness_env]
+    return argv
+
+
+def _run_plan(
+    helper,
+    *,
+    disposition: str,
+    output: Path,
+    baseline_env: str | None = BASELINE_ENV,
+    currentness_env: str | None = CURRENTNESS_ENV,
+) -> tuple[int, str]:
+    return _run_main(
+        helper,
+        _plan_argv(
+            disposition=disposition,
+            output=output,
+            baseline_env=baseline_env,
+            currentness_env=currentness_env,
+        ),
+    )
 
 
 def test_script_constants_exact() -> None:
@@ -150,6 +226,19 @@ def test_script_constants_exact() -> None:
     assert helper.MAX_CREDENTIAL_BYTES == 512
     assert helper.MAX_CALLER_REGISTRY_V1_BYTES == 524288
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
+    # Currentness contract constants (source-bounded; not dispatcher-tunable).
+    assert helper.CURRENTNESS_ATTESTATION_PREFIX == "b54-currentness-v1"
+    assert helper.CURRENTNESS_AUTHORITY_ID == CURRENTNESS_AUTHORITY
+    assert helper.CURRENTNESS_FIELD_ORDER == (
+        "authority",
+        "baseline_sha256",
+        "caller_count",
+        "issued_at",
+    )
+    assert helper.CURRENTNESS_FINGERPRINT_ALGO == "sha256"
+    assert helper.CURRENTNESS_MAX_ATTESTATION_BYTES == 1024
+    assert helper.CURRENTNESS_MAX_AGE_SECONDS == 24 * 60 * 60
+    assert helper.CURRENTNESS_MAX_FUTURE_SKEW_SECONDS == 5 * 60
 
 
 def test_authority_dispositions() -> None:
@@ -386,29 +475,392 @@ def test_merged_payload_parses_and_authenticates_with_engine_parser() -> None:
     raise AssertionError("pre-hashed credential must not authenticate")
 
 
+# ---------------------------------------------------------------------------
+# Currentness guard (BLOCKING: a structurally valid baseline is not proof of
+# currentness). Requirements 1-4, 7-8, 11.
+# ---------------------------------------------------------------------------
+
+
+def test_currentness_attestation_canonical_form_contract() -> None:
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    payload = json.loads(baseline)
+    now = datetime(2026, 9, 11, 12, 0, 0, tzinfo=timezone.utc)
+
+    attestation = _currentness(helper, baseline, payload, issued_at=now)
+    assert attestation.startswith("b54-currentness-v1 authority=")
+    assert f"baseline_sha256={helper.baseline_fingerprint(baseline)}" in attestation
+    assert "caller_count=2" in attestation
+    assert "issued_at=2026-09-11T12:00:00Z" in attestation
+    meta = helper.parse_currentness_attestation(attestation)
+    assert meta["authority"] == CURRENTNESS_AUTHORITY
+    assert meta["caller_count"] == 2
+    assert meta["issued_at"] == now
+    # The canonical form carries no registry plaintext and no credential.
+    assert b61_cred not in attestation
+    assert "{" not in attestation and '"' not in attestation
+
+    # Bounded issuance inputs.
+    for bad_count in (0, 65, True):
+        try:
+            _currentness(helper, baseline, payload, caller_count=bad_count)
+        except helper.ProvisionPlanError:
+            continue
+        raise AssertionError(f"caller_count {bad_count!r} must fail closed")
+    try:
+        helper.format_currentness_attestation(
+            authority=CURRENTNESS_AUTHORITY,
+            baseline=baseline,
+            caller_count=2,
+            issued_at=datetime(2026, 9, 11, 12, 0, 0),
+        )
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("naive issued_at must fail closed")
+    for bad_authority in (
+        "",
+        "bad authority",
+        "x" * 129,
+        "bad\nauthority",
+        # Bounded but NOT the approved private authority: a credential-shaped
+        # string must not be accepted in the authority slot (and is never
+        # echoed, because only the canonical constant is emitted).
+        "some-other-authority",
+        "n" * 40,
+    ):
+        try:
+            helper.format_currentness_attestation(
+                authority=bad_authority,
+                baseline=baseline,
+                caller_count=2,
+                issued_at=now,
+            )
+        except helper.ProvisionPlanError:
+            continue
+        raise AssertionError(f"authority {bad_authority!r} must fail closed")
+
+    # The approved authority is the only one that parses.
+    for bad_authority in ("some-other-authority", "n" * 40):
+        forged = attestation.replace(CURRENTNESS_AUTHORITY, bad_authority)
+        assert forged != attestation
+        try:
+            helper.parse_currentness_attestation(forged)
+        except helper.ProvisionPlanError:
+            continue
+        raise AssertionError(f"unapproved authority {bad_authority!r} must fail closed")
+
+
+def test_currentness_binds_exact_baseline_fingerprint_and_caller_count() -> None:
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    payload = json.loads(baseline)
+    now = datetime(2026, 9, 11, 12, 0, 0, tzinfo=timezone.utc)
+
+    # Fingerprint issued for a DIFFERENT (longer) baseline must not match.
+    other_baseline = json.dumps(
+        {
+            "version": 1,
+            "callers": payload["callers"]
+            + [_registry_entry("another-caller", "a" * 40, ["b61"])],
+        }
+    )
+    mismatched = _currentness(helper, other_baseline, payload, issued_at=now)
+    try:
+        helper.assert_baseline_currentness(baseline, payload, mismatched, now=now)
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("attestation for another baseline must fail closed")
+
+    # Caller count that does not match the supplied baseline must fail.
+    wrong_count = _currentness(helper, baseline, payload, issued_at=now, caller_count=3)
+    try:
+        helper.assert_baseline_currentness(baseline, payload, wrong_count, now=now)
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("caller_count mismatch must fail closed")
+
+    # Exact binding succeeds, including the freshness boundaries.
+    accepted = _currentness(helper, baseline, payload, issued_at=now)
+    helper.assert_baseline_currentness(baseline, payload, accepted, now=now)
+    helper.assert_baseline_currentness(
+        baseline,
+        payload,
+        accepted,
+        now=now + timedelta(seconds=helper.CURRENTNESS_MAX_AGE_SECONDS),
+    )
+
+
+def test_extend_without_currentness_proof_fails_closed() -> None:
+    """Requirement 1: EXTEND + valid baseline + NO proof -> FAIL (PUT=NO)."""
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+
+    # (a) no --currentness-env argument at all
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: None}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out, currentness_env=None)
+        assert code == 1
+        assert "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL" in output
+        assert "BASELINE_CURRENTNESS_PROVEN=NO" in output
+        assert not out.exists()
+
+    # (b) flag present but the environment variable is unset
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: None}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 1
+        assert "BASELINE_CURRENTNESS_PROVEN=NO" in output
+        assert not out.exists()
+
+    # (c) flag present but blank
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: ""}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 1
+        assert "BASELINE_CURRENTNESS_PROVEN=NO" in output
+        assert not out.exists()
+
+
+def test_extend_with_invalid_currentness_proof_fails_closed() -> None:
+    """Requirement 2: EXTEND + valid baseline + INVALID proof -> FAIL."""
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    payload = json.loads(baseline)
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    valid = _currentness(helper, baseline, payload, issued_at=now)
+    fingerprint = helper.baseline_fingerprint(baseline)
+    stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert f"issued_at={stamp}" in valid
+
+    invalid = {
+        "wrong prefix": valid.replace("b54-currentness-v1", "b54-currentness-v2"),
+        "extra field appended": valid + " extra=1",
+        "field reordered": f"b54-currentness-v1 baseline_sha256={fingerprint} authority={CURRENTNESS_AUTHORITY} caller_count=2 issued_at={stamp}",
+        "unbounded authority": valid.replace(CURRENTNESS_AUTHORITY, "bad authority"),
+        "non-hex fingerprint": valid.replace(fingerprint, "z" * 64),
+        "short fingerprint": valid.replace(fingerprint, fingerprint[:63]),
+        "non-integer count": valid.replace("caller_count=2", "caller_count=two"),
+        "count out of bounds": valid.replace("caller_count=2", "caller_count=65"),
+        "non-UTC timestamp": valid.replace("Z", "+00:00"),
+        "malformed timestamp": valid.replace(f"issued_at={stamp}", "issued_at=today"),
+        "date-only timestamp": valid.replace(
+            f"issued_at={stamp}", f"issued_at={now.strftime('%Y-%m-%d')}"
+        ),
+        "not the contract": "attested",
+        "empty": "",
+        "non-ascii": "b54-currentness-v1 authority=é baseline_sha256="
+        + fingerprint
+        + f" caller_count=2 issued_at={stamp}",
+    }
+    for label, value in invalid.items():
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "put-body.json"
+            with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: value}):
+                code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+            assert code == 1, label
+            assert "BASELINE_CURRENTNESS_PROVEN=NO" in output, label
+            assert not out.exists(), label
+
+
+def test_extend_stale_or_future_currentness_cannot_reach_put() -> None:
+    """Requirement 4: a valid-but-stale/unproven baseline cannot reach PUT."""
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    payload = json.loads(baseline)
+    reference = datetime(2026, 9, 11, 12, 0, 0, tzinfo=timezone.utc)
+
+    stale_at = reference - timedelta(seconds=helper.CURRENTNESS_MAX_AGE_SECONDS + 1)
+    stale = _currentness(helper, baseline, payload, issued_at=stale_at)
+    # The stale attestation is formally canonical and fingerprint-correct...
+    helper.parse_currentness_attestation(stale)
+    assert helper.baseline_fingerprint(baseline) in stale
+    # ...but it cannot prove currentness.
+    try:
+        helper.assert_baseline_currentness(baseline, payload, stale, now=reference)
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("stale attestation must fail closed")
+
+    future = _currentness(
+        helper,
+        baseline,
+        payload,
+        issued_at=reference + timedelta(seconds=helper.CURRENTNESS_MAX_FUTURE_SKEW_SECONDS + 1),
+    )
+    try:
+        helper.assert_baseline_currentness(baseline, payload, future, now=reference)
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("future-dated attestation must fail closed")
+
+    # End-to-end: a stale attestation must not produce a PUT body. Built
+    # against the real clock so the staleness holds regardless of run date.
+    real_stale = _currentness(
+        helper,
+        baseline,
+        payload,
+        issued_at=datetime.now(timezone.utc)
+        - timedelta(seconds=helper.CURRENTNESS_MAX_AGE_SECONDS + 60),
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: real_stale}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 1
+        assert "BASELINE_CURRENTNESS_PROVEN=NO" in output
+        assert not out.exists()
+
+    # End-to-end: a future-dated attestation also cannot produce a PUT body.
+    real_future = _currentness(
+        helper,
+        baseline,
+        payload,
+        issued_at=datetime.now(timezone.utc)
+        + timedelta(seconds=helper.CURRENTNESS_MAX_FUTURE_SKEW_SECONDS + 60),
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: real_future}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 1
+        assert "BASELINE_CURRENTNESS_PROVEN=NO" in output
+        assert not out.exists()
+
+
+def test_extend_with_valid_currentness_is_allowed() -> None:
+    """Requirement 3: EXTEND + valid baseline + accepted proof -> plan allowed."""
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    payload = json.loads(baseline)
+    attestation = _currentness(helper, baseline, payload)
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: attestation}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 0
+        assert "B54_ENGINE_CALLER_REGISTRY_PLAN=PASS" in output
+        assert "BASELINE_CURRENTNESS_PROVEN=YES" in output
+        assert "CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO" in output
+        assert out.exists()
+        body = json.loads(out.read_text(encoding="utf-8"))
+    merged = json.loads(body["text"])
+    by_id = {entry["caller_id"]: entry for entry in merged["callers"]}
+    # Requirement 5: unknown baseline callers remain preserved.
+    assert set(by_id) == {"storymemory-b61", "opaque-unknown-caller", "b54-kagent"}
+    # Requirement 6: B61 preservation remains exact.
+    assert by_id["storymemory-b61"]["allowed_app_ids"] == ["b61"]
+    assert by_id["storymemory-b61"]["credential"] == b61_cred
+    assert by_id["opaque-unknown-caller"]["credential"] == "u" * 40
+    assert by_id["b54-kagent"]["credential"] == "n" * 40
+    assert by_id["b54-kagent"]["allowed_app_ids"] == ["b54-padiem-claw"]
+
+
+def test_currentness_rejects_raw_registry_material() -> None:
+    """Requirement 7: the raw registry cannot be the provenance input."""
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    forbidden = {
+        "raw registry json": baseline,
+        "pretty registry json": json.dumps(json.loads(baseline), indent=2),
+        "registry json in envelope": (
+            f"b54-currentness-v1 authority={CURRENTNESS_AUTHORITY} baseline_sha256="
+            f"{helper.baseline_fingerprint(baseline)} caller_count=2 "
+            f"issued_at=2026-09-11T12:00:00Z {baseline}"
+        ),
+        "json braces only": '{"version":1,"callers":[]}',
+    }
+    for label, value in forbidden.items():
+        try:
+            helper.parse_currentness_attestation(value)
+        except helper.ProvisionPlanError:
+            continue
+        raise AssertionError(f"raw registry material accepted as provenance: {label}")
+
+    # And the credential-free gate still refuses it end to end.
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: baseline}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 1
+        assert not out.exists()
+        assert b61_cred not in output
+
+
+def test_currentness_rejects_raw_credential_material() -> None:
+    """Requirement 8: the raw credential cannot be the provenance input."""
+    helper = _load_helper()
+    b61_cred = "b" * 40
+    new_cred = "n" * 40
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    forbidden = {
+        "raw credential": new_cred,
+        "credential in envelope": (
+            f"b54-currentness-v1 authority={CURRENTNESS_AUTHORITY} baseline_sha256="
+            f"{helper.baseline_fingerprint(baseline)} caller_count=2 "
+            f"issued_at=2026-09-11T12:00:00Z {new_cred}"
+        ),
+        "credential as authority": (
+            f"b54-currentness-v1 authority={new_cred} baseline_sha256="
+            f"{helper.baseline_fingerprint(baseline)} caller_count=2 "
+            f"issued_at=2026-09-11T12:00:00Z"
+        ),
+    }
+    for label, value in forbidden.items():
+        try:
+            helper.parse_currentness_attestation(value)
+        except helper.ProvisionPlanError:
+            continue
+        raise AssertionError(f"raw credential accepted as provenance: {label}")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(**{CREDENTIAL_ENV: new_cred, BASELINE_ENV: baseline, CURRENTNESS_ENV: new_cred}):
+            code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
+        assert code == 1
+        assert not out.exists()
+        assert new_cred not in output
+
+
 def test_plan_extend_path_evidence_and_never_emits_secrets() -> None:
     helper = _load_helper()
     b61_cred = "b" * 40
     new_cred = "n" * 40
-    baseline = _baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred)
+    baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
+    payload = json.loads(baseline)
+    attestation = _currentness(helper, baseline, payload)
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "put-body.json"
-        os.environ[CREDENTIAL_ENV] = new_cred
-        os.environ[BASELINE_ENV] = json.dumps(baseline)
-        try:
+        with _env(**{CREDENTIAL_ENV: new_cred, BASELINE_ENV: baseline, CURRENTNESS_ENV: attestation}):
             code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
-        finally:
-            os.environ.pop(CREDENTIAL_ENV, None)
-            os.environ.pop(BASELINE_ENV, None)
         assert code == 0
         body = json.loads(out.read_text(encoding="utf-8"))
-    for leaked in (new_cred, b61_cred, json.dumps(baseline)):
-        assert leaked not in output
+    for leaked in (new_cred, b61_cred, baseline, attestation, helper.baseline_fingerprint(baseline)):
+        assert leaked not in output, "secret/provenance material must not be emitted"
     for marker in (
         "B61_PRESERVATION_ASSERT=PASS",
         "UNKNOWN_CALLERS_PRESERVED=PASS",
         "BASELINE_CALLERS_PRESERVED_VERBATIM=PASS",
         "B54_KAGENT_APPEND_ONLY=PASS",
+        "BASELINE_CURRENTNESS_PROVEN=YES",
+        "BASELINE_CURRENTNESS_AUTHORITY=b54-preservation-authority",
+        "BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES",
+        "BASELINE_CURRENTNESS_CALLER_COUNT=2",
+        "CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO",
         "RAW_CREDENTIAL_PREHASHED=NO",
         "RAW_SECRET_OUTPUT=0",
         "RAW_REGISTRY_OUTPUT=0",
@@ -428,39 +880,41 @@ def test_plan_extend_no_op_when_b54_already_compatible() -> None:
     helper = _load_helper()
     b61_cred = "b" * 40
     compatible_cred = "c" * 40
-    baseline = {
-        "version": 1,
-        "callers": [
-            _registry_entry("storymemory-b61", b61_cred, ["b61"]),
-            _registry_entry("b54-kagent", compatible_cred, ["b54-padiem-claw"]),
-        ],
-    }
+    baseline = json.dumps(
+        {
+            "version": 1,
+            "callers": [
+                _registry_entry("storymemory-b61", b61_cred, ["b61"]),
+                _registry_entry("b54-kagent", compatible_cred, ["b54-padiem-claw"]),
+            ],
+        }
+    )
+    payload = json.loads(baseline)
+    attestation = _currentness(helper, baseline, payload)
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "put-body.json"
-        os.environ[CREDENTIAL_ENV] = compatible_cred
-        os.environ[BASELINE_ENV] = json.dumps(baseline)
-        try:
+        with _env(
+            **{
+                CREDENTIAL_ENV: compatible_cred,
+                BASELINE_ENV: baseline,
+                CURRENTNESS_ENV: attestation,
+            }
+        ):
             code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
-        finally:
-            os.environ.pop(CREDENTIAL_ENV, None)
-            os.environ.pop(BASELINE_ENV, None)
         assert code == 0
         assert "B54_KAGENT_APPEND_ONLY=ALREADY_COMPATIBLE" in output
+        assert "BASELINE_CURRENTNESS_PROVEN=YES" in output
         assert "B54_ENGINE_CALLER_REGISTRY_NO_OP=1" in output
         body = json.loads(out.read_text(encoding="utf-8"))
-        assert json.loads(body["text"])["callers"] == baseline["callers"]
+        assert json.loads(body["text"])["callers"] == payload["callers"]
 
 
 def test_plan_extend_requires_baseline_secret() -> None:
     helper = _load_helper()
-    os.environ.pop(BASELINE_ENV, None)
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "put-body.json"
-        os.environ[CREDENTIAL_ENV] = "n" * 40
-        try:
+        with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: None, CURRENTNESS_ENV: None}):
             code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
-        finally:
-            os.environ.pop(CREDENTIAL_ENV, None)
     assert code == 1
     assert "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL" in output
     assert not out.exists()
@@ -470,26 +924,43 @@ def test_plan_greenfield_isolated_and_baseline_forbidden() -> None:
     helper = _load_helper()
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "put-body.json"
-        os.environ[CREDENTIAL_ENV] = "g" * 40
-        try:
+        with _env(**{CREDENTIAL_ENV: "g" * 40, BASELINE_ENV: None, CURRENTNESS_ENV: None}):
             code, output = _run_plan(helper, disposition="PROVISION_REQUIRED", output=out)
-        finally:
-            os.environ.pop(CREDENTIAL_ENV, None)
         assert code == 0
         assert "B54_KAGENT_APPEND_ONLY=GREENFIELD_SINGLE_CALLER" in output
+        assert "BASELINE_CURRENTNESS_PROVEN=GREENFIELD_NOT_APPLICABLE" in output
         assert "B54_ENGINE_CALLER_REGISTRY_NO_OP=0" in output
         body = json.loads(out.read_text(encoding="utf-8"))
         assert [e["caller_id"] for e in json.loads(body["text"])["callers"]] == ["b54-kagent"]
 
         # Baseline on the greenfield path is contradictory: fail closed.
-        os.environ[CREDENTIAL_ENV] = "g" * 40
-        os.environ[BASELINE_ENV] = json.dumps(_baseline_payload("x" * 40, "b" * 40))
-        try:
+        with _env(
+            **{
+                CREDENTIAL_ENV: "g" * 40,
+                BASELINE_ENV: json.dumps(_baseline_payload("x" * 40, "b" * 40)),
+                CURRENTNESS_ENV: None,
+            }
+        ):
             code, output = _run_plan(helper, disposition="PROVISION_REQUIRED", output=out)
-        finally:
-            os.environ.pop(CREDENTIAL_ENV, None)
-            os.environ.pop(BASELINE_ENV, None)
         assert code == 1
+
+    # Requirement 10: the attestation is equally forbidden there — the
+    # greenfield path stays an isolated capability, not a bypass.
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "put-body.json"
+        with _env(
+            **{
+                CREDENTIAL_ENV: "g" * 40,
+                BASELINE_ENV: None,
+                CURRENTNESS_ENV: "b54-currentness-v1 authority=x baseline_sha256="
+                + "0" * 64
+                + " caller_count=1 issued_at=2026-09-11T12:00:00Z",
+            }
+        ):
+            code, output = _run_plan(helper, disposition="PROVISION_REQUIRED", output=out)
+        assert code == 1
+        assert "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL" in output
+        assert not out.exists()
 
 
 def test_classify_cli_dispositions() -> None:
@@ -540,24 +1011,34 @@ def test_verify_cli_post_readback() -> None:
 
 
 def test_workflow_dispatch_inputs_never_accept_secret_material() -> None:
+    """Requirement 9: no secret material (or provenance) enters dispatch."""
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "workflow_dispatch" in text
     assert "apply_engine_caller_registry_v1" in text
     assert "cloudflare_readonly" in text
     assert "repository_preflight" in text
     # Only mode/target_sha/confirmation are dispatch inputs — no raw registry,
-    # no raw credential, no baseline input.
+    # no raw credential, no baseline, no currentness attestation.
     for forbidden_input in (
         "registry",
         "baseline",
         "credential",
         "secret",
+        "currentness",
+        "attestation",
     ):
         assert re.search(
             rf"inputs:\s*\n\s*{forbidden_input}:", text, re.IGNORECASE
         ) is None, f"dispatch input must not accept secret material: {forbidden_input}"
+    # Dispatch inputs are exactly the three bounded non-secret strings.
+    assert set(re.findall(r"\n      (\w+):\n        description:", text)) == {
+        "mode",
+        "target_sha",
+        "confirmation",
+    }
     assert "B62_P01_ENGINE_CREDENTIAL" in text
     assert "B54_ENGINE_CALLER_REGISTRY_V1_BASELINE" in text
+    assert "B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS" in text
     assert "PROVISION_B54_ENGINE_CALLER_REGISTRY_V1_FROM_EXACT_MAIN" in text
 
 
@@ -571,9 +1052,44 @@ def test_workflow_apply_job_confirmation_environment_and_guards() -> None:
     assert "Refusing mutation: no trustworthy readonly disposition" in text
     assert "PREMUTATION_EXACT_MAIN_SHA=PASS" in text
     assert "SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0" in text
-    # Both secrets arrive only through job environment variables.
+    # All secret/provenance material arrives only through job environment vars.
     assert "ENGINE_CALLER_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}" in text
     assert "BASELINE_REGISTRY: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE }}" in text
+    assert (
+        "BASELINE_CURRENTNESS: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS }}"
+        in text
+    )
+    assert "inputs.currentness" not in text
+    assert "inputs.baseline" not in text
+    assert "inputs.credential" not in text
+
+
+def test_workflow_currentness_guard_blocks_put_until_proven() -> None:
+    """Requirements 1-4 (workflow side): PUT is unreachable without YES."""
+    text = WORKFLOW.read_text(encoding="utf-8")
+    # The attestation secret is env-only, and the plan step consumes it.
+    assert (
+        "BASELINE_CURRENTNESS: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS }}"
+        in text
+    )
+    assert "--currentness-env BASELINE_CURRENTNESS" in text
+    # Fail closed before the plan when the attestation is absent on EXTEND.
+    assert 'if [ "${DISPOSITION}" = "EXTEND_REQUIRED" ]; then' in text
+    assert "test -n \"${BASELINE_CURRENTNESS}\"" in text
+    assert 'test "${currentness}" = "YES"' in text
+    assert "BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES" in text
+    assert "CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO" in text
+    assert "BASELINE_CURRENTNESS_GUARD=PASS" in text
+    # The proven flag is exported, and the PUT step requires it.
+    assert 'echo "BASELINE_CURRENTNESS_PROVEN=${currentness}" >> "${GITHUB_ENV}"' in text
+    put_if = re.search(
+        r"- name: Provision the registry secret only when a change is required\n\s+if: \$\{\{(.+)\}\}",
+        text,
+    )
+    assert put_if is not None
+    condition = put_if.group(1)
+    assert "env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1'" in condition
+    assert "env.BASELINE_CURRENTNESS_PROVEN == 'YES'" in condition
 
 
 def test_workflow_exact_main_guards_fail_closed() -> None:
@@ -646,6 +1162,14 @@ if __name__ == "__main__":
     test_merge_existing_incompatible_b54_fails_closed()
     test_greenfield_payload_is_isolated_single_caller()
     test_merged_payload_parses_and_authenticates_with_engine_parser()
+    test_currentness_attestation_canonical_form_contract()
+    test_currentness_binds_exact_baseline_fingerprint_and_caller_count()
+    test_extend_without_currentness_proof_fails_closed()
+    test_extend_with_invalid_currentness_proof_fails_closed()
+    test_extend_stale_or_future_currentness_cannot_reach_put()
+    test_extend_with_valid_currentness_is_allowed()
+    test_currentness_rejects_raw_registry_material()
+    test_currentness_rejects_raw_credential_material()
     test_plan_extend_path_evidence_and_never_emits_secrets()
     test_plan_extend_no_op_when_b54_already_compatible()
     test_plan_extend_requires_baseline_secret()
@@ -654,6 +1178,7 @@ if __name__ == "__main__":
     test_verify_cli_post_readback()
     test_workflow_dispatch_inputs_never_accept_secret_material()
     test_workflow_apply_job_confirmation_environment_and_guards()
+    test_workflow_currentness_guard_blocks_put_until_proven()
     test_workflow_exact_main_guards_fail_closed()
     test_workflow_provisions_engine_secret_gated_on_plan_no_op()
     test_workflow_never_touches_b62_live_config_or_padiem_chat()
