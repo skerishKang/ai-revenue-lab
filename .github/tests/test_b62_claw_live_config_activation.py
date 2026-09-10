@@ -233,6 +233,74 @@ def test_workflow_is_production_gated_and_secret_safe() -> None:
         assert token not in workflow, token
 
 
+def test_readonly_job_contains_r2_bucket_existence_check() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "r2/buckets/${R2_BUCKET_NAME}" in workflow
+    assert "R2_BUCKET_EXISTENCE=EXISTS" in workflow
+    assert "R2_BUCKET_EXISTENCE=ABSENT" in workflow
+    assert "R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT" in workflow
+    assert "R2_OBJECT_READ=0" in workflow
+    assert "R2_OBJECT_WRITE=0" in workflow
+
+
+def test_readonly_r2_check_is_get_only_in_readonly_path() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+    assert "r2/buckets/${R2_BUCKET_NAME}" in readonly
+    assert "curl -sS -X PATCH" not in readonly
+    assert "-F \"settings=<${RUNNER_TEMP}/b62-config-patch.json;type=application/json\"" not in readonly
+    assert "deploy" not in readonly.lower() or "B62_DEPLOY" not in readonly
+    assert "r2/buckets/${R2_BUCKET_NAME} -X PUT" not in readonly
+    assert "DELETE" not in readonly
+    assert "R2_BUCKET_CREATED=0" not in readonly
+
+
+def test_activate_config_behavior_unchanged() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    activate = workflow.split("activate-config:", 1)[1]
+    assert "r2/buckets/${R2_BUCKET_NAME}" in activate
+    assert "R2_BUCKET_REUSE_EXISTING=PASS" in activate
+    assert "R2_BUCKET_CREATED=0" in activate
+    assert "inputs.mode == 'activate_config'" in workflow
+    assert "inputs.mode == 'rollback_config'" in workflow
+
+
+def test_exact_main_lock_remains_required_in_readonly_path() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+    assert 'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"' in readonly
+    assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in readonly
+    assert 'READONLY_EXACT_MAIN_SHA=PASS' in readonly
+
+
+def test_readonly_path_never_emits_secret_values() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+    assert "SECRET_VALUES_READ=0" in readonly
+    assert "BINDING_NAME_AND_TYPE_ONLY=YES" in readonly
+    assert "PRODUCTION_MUTATION=0" in readonly
+    assert "R2_OBJECT_READ=0" in readonly
+    assert "R2_OBJECT_WRITE=0" in readonly
+    assert "secret_text" not in readonly
+    assert "P01_ENGINE_CREDENTIAL" not in readonly
+
+
+def test_candidate_bucket_name_is_input_bounded() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "r2_bucket_name:" in workflow
+    assert "R2_BUCKET_NAME: ${{ inputs.r2_bucket_name }}" in workflow
+    assert "test -n \"${R2_BUCKET_NAME}\"" in workflow
+    assert "padiem-workspace-files" not in workflow.split("env:", 1)[0]
+
+
+def test_no_public_r2_url_authority_introduced() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "r2:///" not in workflow
+    assert "r2.dev" not in workflow
+    assert "s3.amazonaws.com" not in workflow
+    assert "public_r2_url" not in workflow
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -243,4 +311,11 @@ if __name__ == "__main__":
     test_plan_refuses_on_refuse_disposition()
     test_helper_names_match_worker_config_contract()
     test_workflow_is_production_gated_and_secret_safe()
+    test_readonly_job_contains_r2_bucket_existence_check()
+    test_readonly_r2_check_is_get_only_in_readonly_path()
+    test_activate_config_behavior_unchanged()
+    test_exact_main_lock_remains_required_in_readonly_path()
+    test_readonly_path_never_emits_secret_values()
+    test_candidate_bucket_name_is_input_bounded()
+    test_no_public_r2_url_authority_introduced()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")

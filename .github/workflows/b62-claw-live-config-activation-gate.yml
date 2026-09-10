@@ -180,6 +180,36 @@ jobs:
           echo 'SECRET_VALUES_READ=0'
           echo 'PRODUCTION_MUTATION=0'
 
+      - name: Read-only R2 bucket existence check
+        id: r2_bucket
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${R2_BUCKET_NAME}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          bucket="${RUNNER_TEMP}/b62-r2-bucket-readonly.json"
+          http_status="$(curl -sS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}" \
+            -o "${bucket}" -w '%{http_code}')"
+          case "${http_status}" in
+            200)
+              if jq -e --arg name "${R2_BUCKET_NAME}" '.success == true and .result.name == $name' "${bucket}" >/dev/null; then
+                echo "R2_BUCKET_EXISTENCE=EXISTS" >> "${GITHUB_OUTPUT}"
+              else
+                echo "R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              fi
+              ;;
+            404)
+              echo "R2_BUCKET_EXISTENCE=ABSENT" >> "${GITHUB_OUTPUT}"
+              ;;
+            *)
+              echo "R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              ;;
+          esac
+          echo "R2_OBJECT_READ=0" >> "${GITHUB_OUTPUT}"
+          echo "R2_OBJECT_WRITE=0" >> "${GITHUB_OUTPUT}"
+          echo "PRODUCTION_MUTATION=0" >> "${GITHUB_OUTPUT}"
+
   activate-config:
     needs: [source-contract, cloudflare-readonly]
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_config' }}
