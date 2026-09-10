@@ -13,6 +13,7 @@ MAX_PROJECT_NAME_CHARS = 80
 MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
 MAX_PROJECTS = 50
 MAX_CLAW_RUNS = 30
+MAX_RUN_RESULT_SUMMARY_CHARS = 200
 
 
 class HistoryError(RuntimeError):
@@ -65,7 +66,7 @@ class HistoryStore(Protocol):
     async def update_project(self, user_id: str, project_id: str, name: str, instructions: str) -> ProjectProfile | None: ...
     async def delete_project(self, user_id: str, project_id: str) -> bool: ...
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
-    async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None) -> bool: ...
+    async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None) -> None: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS) -> list[dict[str, Any]]: ...
 
 
@@ -91,7 +92,7 @@ def _project_id() -> str:
 
 
 def _run_history_id() -> str:
-    return "run_" + uuid.uuid4().hex
+    return "crh_" + uuid.uuid4().hex
 
 
 def _validate_hex_id(value: object, prefix: str, label: str) -> str | None:
@@ -120,12 +121,12 @@ def validate_project_fields(name: object, instructions: object = "") -> tuple[st
         raise ValueError("프로젝트 이름 형식이 올바르지 않습니다.")
     cleaned_name = " ".join(name.split())
     if not 1 <= len(cleaned_name) <= MAX_PROJECT_NAME_CHARS:
-        raise ValueError("프로젝트 이름은 1 자 이상 80 자 이하로 입력해 주세요.")
+        raise ValueError("프로젝트 이름은 1자 이상 80자 이하로 입력해 주세요.")
     if not isinstance(instructions, str):
         raise ValueError("프로젝트 지침 형식이 올바르지 않습니다.")
     cleaned_instructions = instructions.strip()
     if len(cleaned_instructions) > MAX_PROJECT_INSTRUCTIONS_CHARS:
-        raise ValueError("프로젝트 지침은 1800 자 이하로 입력해 주세요.")
+        raise ValueError("프로젝트 지침은 1800자 이하로 입력해 주세요.")
     return cleaned_name, cleaned_instructions
 
 
@@ -197,9 +198,16 @@ def _project_from_row(row: dict[str, Any]) -> ProjectProfile:
     )
 
 
-def _run_history_from_row(row: dict[str, Any]) -> dict[str, Any]:
+def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
+    document_id = row.get("artifact_document_id")
+    artifact = None
+    if document_id is not None and str(document_id):
+        artifact = {
+            "document_id": str(document_id),
+            "filename": str(row.get("artifact_filename") or ""),
+            "media_type": str(row.get("artifact_media_type") or ""),
+        }
     return {
-        "id": str(row.get("id", "")),
         "run_id": str(row.get("run_id", "")),
         "channel": str(row.get("channel", "")),
         "action": str(row.get("action", "")),
@@ -207,12 +215,8 @@ def _run_history_from_row(row: dict[str, Any]) -> dict[str, Any]:
         "status": str(row.get("status", "")),
         "created_at": str(row.get("created_at", "")),
         "updated_at": str(row.get("updated_at", "")),
-        "result_summary": row.get("result_summary"),
-        "artifact": {
-            "document_id": str(row.get("artifact_document_id", "")) if row.get("artifact_document_id") is not None else None,
-            "filename": str(row.get("artifact_filename", "")) if row.get("artifact_filename") is not None else None,
-            "media_type": str(row.get("artifact_media_type", "")) if row.get("artifact_media_type") is not None else None,
-        } if row.get("artifact_document_id") is not None else None,
+        "result_summary": str(row.get("result_summary")) if row.get("result_summary") is not None else None,
+        "artifact": artifact,
     }
 
 
@@ -413,21 +417,36 @@ class D1HistoryStore:
         artifact_document_id: str | None = None,
         artifact_filename: str | None = None,
         artifact_media_type: str | None = None,
-    ) -> bool:
-        history_id = _run_history_id()
+    ) -> None:
+        summary = result_summary[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_summary else None
         now = _now_iso()
+        existing = await self._first(
+            "SELECT id, created_at FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if existing is not None:
+            await self._run(
+                "UPDATE claw_run_history SET channel=?, action=?, title=?, status=?, updated_at=?, "
+                "result_summary=?, artifact_document_id=?, artifact_filename=?, artifact_media_type=? "
+                "WHERE run_id=? AND user_id=?",
+                channel, action, title, status, now,
+                summary, artifact_document_id, artifact_filename, artifact_media_type,
+                run_id, user_id,
+            )
+            return
         await self._run(
             "INSERT INTO claw_run_history (id, user_id, run_id, channel, action, title, status, created_at, updated_at, result_summary, artifact_document_id, artifact_filename, artifact_media_type) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            history_id, user_id, run_id, channel, action, title, status, now, now, result_summary, artifact_document_id, artifact_filename, artifact_media_type,
+            _run_history_id(), user_id, run_id, channel, action, title, status, now, now,
+            summary, artifact_document_id, artifact_filename, artifact_media_type,
         )
-        return True
 
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS) -> list[dict[str, Any]]:
         bounded = max(1, min(int(limit), MAX_CLAW_RUNS))
         rows = await self._all(
-            "SELECT id, user_id, run_id, channel, action, title, status, created_at, updated_at, result_summary, artifact_document_id, artifact_filename, artifact_media_type "
+            "SELECT run_id, channel, action, title, status, created_at, updated_at, result_summary, "
+            "artifact_document_id, artifact_filename, artifact_media_type "
             "FROM claw_run_history WHERE user_id=? ORDER BY created_at DESC LIMIT ?",
             user_id, bounded,
         )
-        return [_run_history_from_row(row) for row in rows]
+        return [_run_history_public(row) for row in rows]

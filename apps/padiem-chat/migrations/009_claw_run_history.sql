@@ -16,6 +16,3 @@ CREATE TABLE IF NOT EXISTS claw_run_history (
 
 CREATE INDEX IF NOT EXISTS idx_claw_run_history_user_created
 ON claw_run_history (user_id, created_at DESC);
-
-CREATE INDEX IF NOT EXISTS idx_claw_run_history_run_id
-ON claw_run_history (run_id);
