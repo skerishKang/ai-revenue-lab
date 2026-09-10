@@ -432,6 +432,17 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if artifact_descriptor is not None:
         result["artifact"] = artifact_descriptor
 
+    await _record_claw_run_history(
+        request,
+        run.run_id,
+        channel.value,
+        action.value,
+        title,
+        outcome.projection.status.value,
+        outcome.answer,
+        artifact_descriptor,
+    )
+
     return JSONResponse(
         {"ok": True, "result": result},
         status_code=200,
@@ -483,6 +494,68 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
             "Content-Length": str(len(content)),
             "X-Content-Type-Options": "nosniff",
         },
+    )
+
+
+async def _record_claw_run_history(
+    request: Request,
+    run_id: str,
+    channel: str,
+    action: str,
+    title: str,
+    status: str,
+    result_text: str | None,
+    artifact: dict[str, Any] | None,
+) -> None:
+    """Record a bounded run history row for owner-scoped history (#2317)."""
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return
+    history_store = getattr(request.app.state, "history_store", None)
+    if history_store is None:
+        return
+    result_summary = result_text[:200] if result_text else None
+    artifact_document_id = artifact.get("document_id") if artifact else None
+    artifact_filename = artifact.get("filename") if artifact else None
+    artifact_media_type = artifact.get("media_type") if artifact else None
+    try:
+        await history_store.record_claw_run(
+            user_id=uid,
+            run_id=run_id,
+            channel=channel,
+            action=action,
+            title=title,
+            status=status,
+            result_summary=result_summary,
+            artifact_document_id=artifact_document_id,
+            artifact_filename=artifact_filename,
+            artifact_media_type=artifact_media_type,
+        )
+    except Exception:
+        pass
+
+
+async def claw_runs_history(request: Request) -> JSONResponse:
+    """Get owner-scoped bounded recent run history (#2317)."""
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return _error(401, "unauthorized", "인증이 필요합니다.")
+
+    history_store = getattr(request.app.state, "history_store", None)
+    if history_store is None:
+        return _error(503, "history_unavailable", "이력 저장소가 설정되지 않았습니다.")
+
+    limit_param = request.query_params.get("limit", "30")
+    try:
+        limit = max(1, min(int(limit_param), 50))
+    except (ValueError, TypeError):
+        limit = 30
+
+    runs = await history_store.list_recent_claw_runs(uid, limit)
+    return JSONResponse(
+        {"ok": True, "runs": runs},
+        status_code=200,
+        headers=_NO_STORE_HEADERS,
     )
 
 
