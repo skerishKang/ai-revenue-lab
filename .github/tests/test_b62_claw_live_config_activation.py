@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import textwrap
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -372,6 +373,202 @@ def test_readonly_worker_settings_classification_unchanged() -> None:
     assert "workers/scripts/${B62_WORKER}/settings" in readonly
 
 
+def _r2_step_block() -> str:
+    return _readonly_job_block().split(
+        "- name: Read-only R2 bucket existence check", 1
+    )[1]
+
+
+def _expected_block(text: str, base_indent: int) -> str:
+    """Dedent a literal, then re-indent it to the workflow's real base column."""
+    prefix = " " * base_indent
+    return "\n".join(
+        prefix + line if line else line
+        for line in textwrap.dedent(text).splitlines()
+    )
+
+
+def test_readonly_r2_bucket_http_status_is_bounded() -> None:
+    readonly = _readonly_job_block()
+    emitted = {
+        line.strip()
+        for line in readonly.splitlines()
+        if line.strip().startswith("echo 'R2_BUCKET_HTTP_STATUS=")
+    }
+    assert emitted == {
+        "echo 'R2_BUCKET_HTTP_STATUS=200'",
+        "echo 'R2_BUCKET_HTTP_STATUS=404'",
+        "echo 'R2_BUCKET_HTTP_STATUS=401'",
+        "echo 'R2_BUCKET_HTTP_STATUS=403'",
+        "echo 'R2_BUCKET_HTTP_STATUS=OTHER'",
+    }
+    for unbounded in (
+        "R2_BUCKET_HTTP_STATUS=500",
+        "R2_BUCKET_HTTP_STATUS=502",
+        "R2_BUCKET_HTTP_STATUS=503",
+        "R2_BUCKET_HTTP_STATUS=${http_status}",
+        'R2_BUCKET_HTTP_STATUS="${http_status}"',
+    ):
+        assert unbounded not in readonly, unbounded
+
+
+def test_readonly_r2_bucket_response_shape_is_bounded() -> None:
+    readonly = _readonly_job_block()
+    emitted = {
+        line.strip()
+        for line in readonly.splitlines()
+        if line.strip().startswith("echo 'R2_BUCKET_RESPONSE_SHAPE=")
+    }
+    assert emitted == {
+        "echo 'R2_BUCKET_RESPONSE_SHAPE=EXACT'",
+        "echo 'R2_BUCKET_RESPONSE_SHAPE=DRIFT'",
+        "echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'",
+    }
+
+
+def test_readonly_r2_bucket_http_status_uses_stable_output_keys() -> None:
+    readonly = _readonly_job_block()
+    for key, value in (
+        ("r2_bucket_http_status", "200"),
+        ("r2_bucket_http_status", "404"),
+        ("r2_bucket_http_status", "401"),
+        ("r2_bucket_http_status", "403"),
+        ("r2_bucket_http_status", "OTHER"),
+        ("r2_bucket_response_shape", "EXACT"),
+        ("r2_bucket_response_shape", "DRIFT"),
+        ("r2_bucket_response_shape", "NOT_APPLICABLE"),
+    ):
+        assert f'{key}={value}" >> "${{GITHUB_OUTPUT}}"' in readonly, (key, value)
+
+
+def test_readonly_job_output_wires_r2_status_observability() -> None:
+    readonly = _readonly_job_block()
+    outputs_block = readonly.split("steps:", 1)[0]
+    assert "disposition: ${{ steps.classify.outputs.disposition }}" in outputs_block
+    assert (
+        "r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}"
+        in outputs_block
+    )
+    assert (
+        "r2_bucket_http_status: ${{ steps.r2_bucket.outputs.r2_bucket_http_status }}"
+        in outputs_block
+    )
+    assert (
+        "r2_bucket_response_shape: ${{ steps.r2_bucket.outputs.r2_bucket_response_shape }}"
+        in outputs_block
+    )
+
+
+def test_readonly_r2_status_mapping_is_exact_per_case_arm() -> None:
+    """Every case arm must bind status -> existence -> response shape atomically."""
+    readonly = _readonly_job_block()
+
+    arm_200_exact = _expected_block(
+        """\
+            200)
+              if jq -e --arg name "${R2_BUCKET_NAME}" '.success == true and .result.name == $name' "${bucket}" >/dev/null; then
+                echo "r2_bucket_existence=EXISTS" >> "${GITHUB_OUTPUT}"
+                echo "r2_bucket_http_status=200" >> "${GITHUB_OUTPUT}"
+                echo "r2_bucket_response_shape=EXACT" >> "${GITHUB_OUTPUT}"
+                echo 'R2_BUCKET_EXISTENCE=EXISTS'
+                echo 'R2_BUCKET_HTTP_STATUS=200'
+                echo 'R2_BUCKET_RESPONSE_SHAPE=EXACT'""",
+        12,
+    )
+    arm_200_drift = _expected_block(
+        """\
+            else
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=200" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=DRIFT" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=200'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=DRIFT'
+            fi
+            ;;""",
+        14,
+    )
+    arm_404 = _expected_block(
+        """\
+            404)
+              echo "r2_bucket_existence=ABSENT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=404" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ABSENT'
+              echo 'R2_BUCKET_HTTP_STATUS=404'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+    arm_401 = _expected_block(
+        """\
+            401)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=401" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=401'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+    arm_403 = _expected_block(
+        """\
+            403)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=403" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=403'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+    arm_other = _expected_block(
+        """\
+            *)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=OTHER" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=OTHER'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+
+    for arm in (arm_200_exact, arm_200_drift, arm_404, arm_401, arm_403, arm_other):
+        assert arm in readonly, arm
+
+    # 200 must be the only arm that can report a response shape other than NOT_APPLICABLE.
+    assert readonly.count('R2_BUCKET_RESPONSE_SHAPE=EXACT') == 1
+    assert readonly.count('R2_BUCKET_RESPONSE_SHAPE=DRIFT') == 1
+    assert readonly.count('R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE') == 4
+
+
+def test_readonly_r2_status_evidence_emits_no_raw_response_or_secrets() -> None:
+    r2 = _r2_step_block()
+    for line in r2.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert "${bucket}" not in stripped, stripped
+            assert "CLOUDFLARE_ACCOUNT_ID" not in stripped, stripped
+            assert "CLOUDFLARE_API_TOKEN" not in stripped, stripped
+            assert "Authorization" not in stripped, stripped
+            assert "object_key" not in stripped, stripped
+    for token in ("-i ", "--include", "-D ", "cat ", "jq -c .", "jq . "):
+        assert token not in r2, token
+
+
+def test_readonly_r2_single_get_preserved_after_status_observability() -> None:
+    r2 = _r2_step_block()
+    assert r2.count("curl ") == 1
+    assert "/r2/buckets/${R2_BUCKET_NAME}" in r2
+    assert "-w '%{http_code}'" in r2
+    for verb in ("-X PUT", "-X POST", "-X PATCH", "-X DELETE", "--data", "-F ", "wrangler"):
+        assert verb not in r2, verb
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -395,4 +592,11 @@ if __name__ == "__main__":
     test_readonly_r2_evidence_never_emits_credentials_or_account_id()
     test_readonly_r2_check_stays_get_only_with_no_mutation_verbs()
     test_readonly_worker_settings_classification_unchanged()
+    test_readonly_r2_bucket_http_status_is_bounded()
+    test_readonly_r2_bucket_response_shape_is_bounded()
+    test_readonly_r2_bucket_http_status_uses_stable_output_keys()
+    test_readonly_job_output_wires_r2_status_observability()
+    test_readonly_r2_status_mapping_is_exact_per_case_arm()
+    test_readonly_r2_status_evidence_emits_no_raw_response_or_secrets()
+    test_readonly_r2_single_get_preserved_after_status_observability()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
