@@ -1,0 +1,9 @@
+httpx<1,>=0.27
+padiem-ai-core @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core
+
+[dev]
+pytest<9,>=8.3
+pytest-asyncio<1,>=0.24
+workers-py<2,>=1.16.2
+workers-runtime-sdk>=1.6.3
+jsonschema<5,>=4.23

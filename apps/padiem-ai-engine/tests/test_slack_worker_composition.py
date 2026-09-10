@@ -11,6 +11,10 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
+import importlib
+import sys
+import types
+
 import pytest
 
 from padiem_ai_core.slack_capability import SlackCapability
@@ -31,6 +35,19 @@ ACTOR_REF = "actor_1"
 
 def run(coro):
     return asyncio.run(coro)
+
+
+class FakeResponse:
+    def __init__(self, body=None, status=200, headers=None):
+        self.body = body
+        self.status = status
+        self.headers = headers or {}
+
+
+class FakeWorkerEntrypoint:
+    def __init__(self, ctx=None, env=None):
+        self.ctx = ctx
+        self.env = env
 
 
 class FakeSlackPort:
@@ -129,3 +146,44 @@ def test_no_secret_value_in_slack_port_source() -> None:
     # Only secret NAMES appear; no token-shaped literal is embedded
     # (the bot-token shape regex alone is allowed; a fake token sentinel is not).
     assert "xoxb-fake" not in src
+
+
+def test_private_channels_absent_yields_frozenset() -> None:
+    """Regression: private channel config absent must yield frozenset(), not ().
+    
+    When BOT_TOKEN=valid, ALLOWED_CHANNELS=nonempty, PRIVATE_CHANNELS=absent:
+    - Slack port is constructed
+    - private subset is empty frozenset()
+    - public allowed-channel READ is available
+    """
+    stub = types.ModuleType("workers")
+    stub.Request = lambda *args, **kwargs: None
+    stub.Response = FakeResponse
+    stub.WorkerEntrypoint = FakeWorkerEntrypoint
+
+    saved = {n: sys.modules.get(n) for n in ("workers", "worker", "worker_identity")}
+    sys.modules["workers"] = stub
+    for n in ("worker", "worker_identity"):
+        sys.modules.pop(n, None)
+
+    identity = importlib.import_module("worker_identity")
+
+    async def _fake_resolver(_env):
+        return None
+
+    monkeypatch.setattr(identity, "_tool_binding_resolver_for_env", _fake_resolver)
+
+    env = types.SimpleNamespace()
+    env.ENGINE_SLACK_BOT_TOKEN = "xoxb-valid-token"
+    env.ENGINE_SLACK_ALLOWED_CHANNELS = "C01,C02"
+    # NOTE: PRIVATE_CHANNELS intentionally omitted
+
+    port = identity._slack_port_for_env(env)
+    assert port is not None
+    assert port._explicitly_private_channel_ids == frozenset()
+
+    for n, mod in saved.items():
+        if mod is None:
+            sys.modules.pop(n, None)
+        else:
+            sys.modules[n] = mod

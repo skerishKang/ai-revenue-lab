@@ -335,7 +335,7 @@ def _slack_port_for_env(env: Any) -> HttpxSlackReadPort | None:
         if not allowed_channel_ids:
             return None
         private_channel_ids = (
-            parse_slack_channel_ids(str(private_raw)) if private_raw else ()
+            parse_slack_channel_ids(str(private_raw)) if private_raw else frozenset()
         )
         return HttpxSlackReadPort(
             bot_token=bot_token,
