@@ -301,6 +301,77 @@ def test_no_public_r2_url_authority_introduced() -> None:
     assert "public_r2_url" not in workflow
 
 
+def _readonly_job_block() -> str:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    return workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+
+
+def test_readonly_job_output_wires_r2_bucket_existence() -> None:
+    """JOB_OUTPUT_WIRED=YES: CENTRAL must be able to retrieve the bounded R2 result."""
+    readonly = _readonly_job_block()
+    outputs_block = readonly.split("steps:", 1)[0]
+    assert "outputs:" in outputs_block
+    assert "disposition: ${{ steps.classify.outputs.disposition }}" in outputs_block
+    assert (
+        "r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}"
+        in outputs_block
+    )
+    assert "id: r2_bucket" in readonly
+
+
+def test_readonly_r2_bucket_existence_uses_stable_output_key() -> None:
+    readonly = _readonly_job_block()
+    for state in ("EXISTS", "ABSENT", "ERROR_OR_DRIFT"):
+        assert f'r2_bucket_existence={state}" >> "${{GITHUB_OUTPUT}}"' in readonly, state
+
+
+def test_readonly_r2_bucket_existence_emits_bounded_log_evidence() -> None:
+    readonly = _readonly_job_block()
+    evidence_lines = [
+        line.strip() for line in readonly.splitlines() if "R2_BUCKET_EXISTENCE=" in line
+    ]
+    assert evidence_lines, "expected bounded ordinary R2 bucket existence evidence"
+    allowed = {
+        "echo 'R2_BUCKET_EXISTENCE=EXISTS'",
+        "echo 'R2_BUCKET_EXISTENCE=ABSENT'",
+        "echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'",
+    }
+    for line in evidence_lines:
+        assert line in allowed, line
+
+
+def test_readonly_r2_evidence_never_emits_credentials_or_account_id() -> None:
+    readonly = _readonly_job_block()
+    for line in readonly.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert "CLOUDFLARE_ACCOUNT_ID" not in stripped, stripped
+            assert "CLOUDFLARE_API_TOKEN" not in stripped, stripped
+            assert "secret_text" not in stripped.lower(), stripped
+            assert "secrets." not in stripped.lower(), stripped
+            assert "object_key" not in stripped, stripped
+            assert "r2:///" not in stripped, stripped
+
+
+def test_readonly_r2_check_stays_get_only_with_no_mutation_verbs() -> None:
+    readonly = _readonly_job_block()
+    assert "/r2/buckets/${R2_BUCKET_NAME}" in readonly
+    assert readonly.count("/r2/buckets/") == 1
+    assert "/objects" not in readonly
+    for verb in ("-X PUT", "-X POST", "-X PATCH", "-X DELETE", "--data", "-F ", "wrangler"):
+        assert verb not in readonly, verb
+
+
+def test_readonly_worker_settings_classification_unchanged() -> None:
+    readonly = _readonly_job_block()
+    assert "id: classify" in readonly
+    assert "B62_CLAW_LIVE_CONFIG_DISPOSITION=" in readonly
+    assert "ALREADY_EXACT|ACTIVATION_REQUIRED" in readonly
+    assert "BINDING_NAME_AND_TYPE_ONLY=YES" in readonly
+    assert "SECRET_VALUES_READ=0" in readonly
+    assert "workers/scripts/${B62_WORKER}/settings" in readonly
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -318,4 +389,10 @@ if __name__ == "__main__":
     test_readonly_path_never_emits_secret_values()
     test_candidate_bucket_name_is_input_bounded()
     test_no_public_r2_url_authority_introduced()
+    test_readonly_job_output_wires_r2_bucket_existence()
+    test_readonly_r2_bucket_existence_uses_stable_output_key()
+    test_readonly_r2_bucket_existence_emits_bounded_log_evidence()
+    test_readonly_r2_evidence_never_emits_credentials_or_account_id()
+    test_readonly_r2_check_stays_get_only_with_no_mutation_verbs()
+    test_readonly_worker_settings_classification_unchanged()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
