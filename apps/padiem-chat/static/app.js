@@ -1154,7 +1154,7 @@
     if (!selectedAttachment) setNote(idleNote());
   });
 
-  // Claw first-class workspace & client-side preview wiring
+  // Claw first-class workspace & MVP usability wiring (#2299)
   const clawNavButton = document.getElementById("clawNavButton");
   const clawWorkspace = document.getElementById("clawWorkspace");
   const clawManualForm = document.getElementById("clawManualForm");
@@ -1162,14 +1162,151 @@
   const clawAction = document.getElementById("clawAction");
   const clawSender = document.getElementById("clawSender");
   const clawRequestText = document.getElementById("clawRequestText");
+  const clawResultArea = document.getElementById("clawResultArea");
   const clawResultPreview = document.getElementById("clawResultPreview");
   const clawResultCard = document.getElementById("clawResultCard");
   const clawResultEmpty = document.getElementById("clawResultEmpty");
   const clawResultKind = document.getElementById("clawResultKind");
+  const clawGenerateBtn = document.getElementById("clawGenerateBtn");
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
+  const clawStatus = document.getElementById("clawStatus");
+  const clawArtifactMeta = document.getElementById("clawArtifactMeta");
+  const clawArtifactName = document.getElementById("clawArtifactName");
+  const clawArtifactSize = document.getElementById("clawArtifactSize");
+  const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
+  const clawResultHint = document.getElementById("clawResultHint");
+  const clawExecuteHint = document.getElementById("clawExecuteHint");
+
+  let clawInFlight = false;
+  let clawLastAction = null;
+
+  function clawT(key) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const v = window.__padiemLocale.text(key);
+        if (v && v !== key) return v;
+      }
+    } catch (_) {}
+    return key;
+  }
+
+  function setClawStatus(message, state) {
+    if (!clawStatus) return;
+    if (!message) {
+      clawStatus.hidden = true;
+      clawStatus.textContent = "";
+      clawStatus.removeAttribute("data-state");
+      return;
+    }
+    clawStatus.hidden = false;
+    clawStatus.textContent = message;
+    if (state) clawStatus.dataset.state = state;
+    else clawStatus.removeAttribute("data-state");
+  }
+
+  function setClawAreaState(state) {
+    if (clawResultArea) clawResultArea.dataset.clawState = state;
+  }
+
+  function setClawButtonsBusy(busy) {
+    clawInFlight = busy;
+    const busyVal = busy ? "true" : "false";
+    if (clawGenerateBtn) {
+      clawGenerateBtn.disabled = busy;
+      clawGenerateBtn.setAttribute("aria-busy", busyVal);
+      clawGenerateBtn.setAttribute("aria-disabled", String(busy));
+    }
+    if (clawExecuteButton) {
+      clawExecuteButton.disabled = busy;
+      clawExecuteButton.setAttribute("aria-busy", busyVal);
+      clawExecuteButton.setAttribute("aria-disabled", String(busy));
+    }
+  }
+
+  function clearClawArtifact() {
+    if (clawArtifactMeta) clawArtifactMeta.hidden = true;
+    if (clawArtifactName) clawArtifactName.textContent = "";
+    if (clawArtifactSize) clawArtifactSize.textContent = "";
+    if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
+    [clawResultOpen, clawResultDocx].forEach((btn) => {
+      if (!btn) return;
+      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
+      btn.classList.remove("is-prominent");
+      delete btn.dataset.documentId;
+    });
+  }
+
+  function formatClawBytes(bytes) {
+    if (!Number.isFinite(bytes) || bytes < 0) return "";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  function renderClawArtifactMeta(artifact) {
+    if (!artifact || !artifact.document_id) {
+      clearClawArtifact();
+      return;
+    }
+    const filename = typeof artifact.filename === "string" && artifact.filename ? artifact.filename : "document.docx";
+    const byteLength = typeof artifact.byte_length === "number" ? artifact.byte_length : null;
+    if (clawArtifactName) clawArtifactName.textContent = filename;
+    if (clawArtifactSize) clawArtifactSize.textContent = byteLength != null ? formatClawBytes(byteLength) : "";
+    if (clawArtifactMeta) clawArtifactMeta.hidden = false;
+    if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
+    [clawResultOpen, clawResultDocx].forEach((btn) => {
+      if (!btn) return;
+      btn.disabled = false;
+      btn.setAttribute("aria-disabled", "false");
+      btn.dataset.documentId = artifact.document_id;
+      if (artifact.filename) btn.dataset.filename = artifact.filename;
+    });
+    if (clawResultDocx) clawResultDocx.classList.add("is-prominent");
+  }
+
+  function safeClawErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const status = response ? response.status : 0;
+    if (code === "invalid_content" || code === "content_too_short") return clawT("claw-error-empty");
+    if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
+    if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
+    if (code === "rate_limited" || status === 429) return clawT("claw-error-rate-limited");
+    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable" || code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
+    if (code === "workspace_storage_unavailable" || code === "artifact_storage_failed" || code === "artifact_generation_failed") return clawT("claw-error-storage");
+    if (status === 503 || code === "engine_not_configured" || code === "live_abuse_gate_unavailable") return clawT("claw-error-generic");
+    if (code === "engine_execution_failed" || status === 502) return clawT("claw-error-generic");
+    return clawT("claw-error-generic");
+  }
+
+  async function downloadClawArtifact(documentId, filenameHint) {
+    if (!documentId || !/^doc_[A-Za-z0-9]{32}$/.test(String(documentId))) return;
+    try {
+      const resp = await fetch(`/api/claw/manual-intake/artifact/${encodeURIComponent(documentId)}`, { cache: "no-store" });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => null);
+        setClawStatus(safeClawErrorMessage(err, resp), "error");
+        setClawAreaState("error");
+        return;
+      }
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filenameHint || "document.docx";
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    } catch (_) {
+      setClawStatus(clawT("claw-error-generic"), "error");
+      setClawAreaState("error");
+    }
+  }
 
   function openClawWorkspace() {
     if (!clawWorkspace) return;
@@ -1188,39 +1325,63 @@
         clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((other) => {
           other.setAttribute("aria-pressed", other === chip ? "true" : "false");
         });
+        clawLastAction = action || null;
         if (clawRequestText) clawRequestText.focus();
       });
     });
+    // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
   }
   setNavActive();
 
   function revealClawCard(kindText, executed = false) {
-    const isEn = document.documentElement.lang === "en";
     if (clawResultEmpty) clawResultEmpty.hidden = true;
+    if (clawResultHint) clawResultHint.hidden = true;
     if (clawResultCard) clawResultCard.hidden = false;
     if (clawResultKind) clawResultKind.textContent = kindText || "";
     if (clawResultBadge) {
       clawResultBadge.dataset.localeKey = executed ? "claw-result-badge-run" : "claw-result-badge";
-      clawResultBadge.textContent = executed
-        ? (isEn ? "Real run" : "실제 실행")
-        : (isEn ? "Preview" : "미리보기");
+      try {
+        clawResultBadge.textContent = window.__padiemLocale ? window.__padiemLocale.text(executed ? "claw-result-badge-run" : "claw-result-badge") : (executed ? "실제 실행" : "미리보기");
+      } catch (_) {
+        const isEn = document.documentElement.lang === "en";
+        clawResultBadge.textContent = executed ? (isEn ? "Real run" : "실제 실행") : (isEn ? "Preview" : "미리보기");
+      }
     }
   }
+
+  // Single artifact handlers: read current dataset at click time (no per-result listener leak).
+  if (clawResultDocx) clawResultDocx.addEventListener("click", () => {
+    const docId = clawResultDocx.dataset.documentId;
+    const fname = clawResultDocx.dataset.filename;
+    if (docId && !clawResultDocx.disabled) downloadClawArtifact(docId, fname);
+  });
+  if (clawResultOpen) clawResultOpen.addEventListener("click", () => {
+    const docId = clawResultOpen.dataset.documentId;
+    const fname = clawResultOpen.dataset.filename;
+    if (docId && !clawResultOpen.disabled) downloadClawArtifact(docId, fname);
+  });
 
   if (clawManualForm) {
     clawManualForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (clawInFlight) return;
       const body = (clawRequestText?.value || "").trim();
-      const isEn = document.documentElement.lang === "en";
       if (!body) {
         if (clawResultCard) clawResultCard.hidden = true;
+        clearClawArtifact();
         if (clawResultEmpty) {
           clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = isEn
-            ? "Paste request text before creating a preview."
-            : "요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.";
+          clawResultEmpty.textContent = clawT("claw-error-empty");
         }
+        if (clawResultHint) clawResultHint.hidden = false;
+        setClawStatus(clawT("claw-error-empty"), "error");
+        setClawAreaState("error");
         if (clawRequestText) clawRequestText.focus();
+        return;
+      }
+      if (body.length > 4000) {
+        setClawStatus(clawT("claw-error-too-large"), "error");
+        setClawAreaState("error");
         return;
       }
       const channelValue = clawChannel?.value || "other";
@@ -1229,43 +1390,43 @@
       const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
       const senderText = (clawSender?.value || "").trim();
 
+      setClawButtonsBusy(true);
+      setClawStatus(clawT("claw-status-preview-running"), "running");
+      setClawAreaState("submitting");
+      if (clawResultCard) clawResultCard.hidden = true;
+      clearClawArtifact();
+      if (clawResultEmpty) {
+        clawResultEmpty.hidden = false;
+        clawResultEmpty.textContent = clawT("claw-status-preview-running");
+      }
+
       const renderFallback = () => {
         const clipped = body.length > 900 ? `${body.slice(0, 900)}…` : body;
-        const notice = isEn
-          ? "Client-side preview only. This draft is not stored and is lost on refresh."
-          : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
-        const channelLabel = isEn ? "Channel" : "채널";
-        const actionLabel = isEn ? "Action" : "작업";
-        const senderLabel = isEn ? "Sender hint" : "발신자 힌트";
-        const sourceLabel = isEn ? "Source text" : "요청 원문";
-        revealClawCard(actionText);
-        if (clawResultPreview) {
-          clawResultPreview.textContent = [
-            notice,
-            "",
-            `${channelLabel}: ${channelText}`,
-            `${actionLabel}: ${actionText}`,
-            `${senderLabel}: ${senderText || "-"}`,
-            "",
-            `${sourceLabel}:`,
-            clipped,
-          ].join("\n");
+        let notice;
+        try { notice = window.__padiemLocale ? window.__padiemLocale.text("claw-preview-notice") : ""; } catch (_) { notice = ""; }
+        if (!notice || notice === "claw-preview-notice") {
+          const isEn = document.documentElement.lang === "en";
+          notice = isEn ? "Client-side preview only. This draft is not stored and is lost on refresh." : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
         }
+        const isEn2 = document.documentElement.lang === "en";
+        const channelLabel = isEn2 ? "Channel" : "채널";
+        const actionLabel = isEn2 ? "Action" : "작업";
+        const senderLabel = isEn2 ? "Sender hint" : "발신자 힌트";
+        const sourceLabel = isEn2 ? "Source text" : "요청 원문";
+        revealClawCard(actionText, false);
+        clearClawArtifact();
+        if (clawResultPreview) {
+          clawResultPreview.textContent = [notice, "", `${channelLabel}: ${channelText}`, `${actionLabel}: ${actionText}`, `${senderLabel}: ${senderText || "-"}`, "", `${sourceLabel}:`, clipped].join("\n");
+        }
+        setClawStatus(clawT("claw-status-preview-success"), "success");
+        setClawAreaState("success");
       };
 
       try {
         const response = await fetch("/api/claw/manual-intake/preview", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            content: body,
-            channel: channelValue,
-            action: actionValue,
-            sender_hint: senderText || null,
-          }),
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
         });
         if (!response.ok) {
           renderFallback();
@@ -1278,96 +1439,112 @@
         }
         const preview = data.preview;
         revealClawCard(preview.title);
-        if (clawResultPreview) {
-          clawResultPreview.textContent = preview.result_text;
-        }
+        if (clawResultPreview) clawResultPreview.textContent = preview.result_text;
+        clearClawArtifact();
+        setClawStatus(clawT("claw-status-preview-success"), "success");
+        setClawAreaState("success");
+        // Move focus to result for screen-reader and keyboard users
+        if (clawResultPreview) clawResultPreview.focus?.();
       } catch {
         renderFallback();
+      } finally {
+        setClawButtonsBusy(false);
       }
     });
   }
+
+  // Keep preview/execute hints in sync with locale switches (data-locale-key auto-syncs static text,
+  // but status and dynamic card chrome need manual refresh when language toggles).
+  window.addEventListener("padiem:localechange", () => {
+    // Re-apply badge text to current card state if visible
+    if (clawResultCard && !clawResultCard.hidden && clawResultBadge) {
+      const isExecuted = clawResultBadge.dataset.localeKey === "claw-result-badge-run";
+      try { clawResultBadge.textContent = window.__padiemLocale.text(isExecuted ? "claw-result-badge-run" : "claw-result-badge"); } catch (_) {}
+    }
+  });
 
   setNote(idleNote());
   renderProjectState();
   updateComposer();
   loadAuthStatus();
+  // Initial state
+  setClawAreaState("idle");
+  clearClawArtifact();
 
   if (clawExecuteButton) {
     clawExecuteButton.addEventListener("click", async () => {
+      if (clawInFlight) return;
       const body = (clawRequestText?.value || "").trim();
-      if (!body) return;
-      const isEn = document.documentElement.lang === "en";
+      if (!body) {
+        clearClawArtifact();
+        if (clawResultCard) clawResultCard.hidden = true;
+        if (clawResultEmpty) {
+          clawResultEmpty.hidden = false;
+          clawResultEmpty.textContent = clawT("claw-error-empty");
+        }
+        setClawStatus(clawT("claw-error-empty"), "error");
+        setClawAreaState("error");
+        if (clawRequestText) clawRequestText.focus();
+        return;
+      }
+      if (body.length > 4000) {
+        setClawStatus(clawT("claw-error-too-large"), "error");
+        setClawAreaState("error");
+        return;
+      }
       const channelValue = clawChannel?.value || "other";
       const actionValue = clawAction?.value || "quote";
       const senderText = (clawSender?.value || "").trim();
-      const runningText = isEn ? "Running…" : "실행 중...";
-      const failedText = isEn ? "Execution failed. Please try again." : "실행 중 오류가 발생했습니다.";
 
+      setClawButtonsBusy(true);
+      setClawStatus(clawT("claw-status-execute-running"), "running");
+      setClawAreaState("submitting");
       if (clawResultCard) clawResultCard.hidden = true;
+      clearClawArtifact();
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = runningText;
+        clawResultEmpty.textContent = clawT("claw-status-execute-running");
       }
-      clawExecuteButton.disabled = true;
 
       try {
         const response = await fetch("/api/claw/manual-intake/execute", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            content: body,
-            channel: channelValue,
-            action: actionValue,
-            sender_hint: senderText || null,
-          }),
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
         });
         const data = await response.json().catch(() => null);
         if (data && data.ok && data.result && typeof data.result.result_text === "string") {
           const result = data.result;
+          const safeText = String(result.result_text);
           revealClawCard(result.title, true);
-          if (clawResultPreview) {
-            clawResultPreview.textContent = result.result_text;
-          }
+          if (clawResultPreview) clawResultPreview.textContent = safeText;
           if (clawResultEmpty) clawResultEmpty.hidden = true;
-          const hasArtifact = !!(result.artifact && result.artifact.document_id);
-          if (clawResultOpen) clawResultOpen.disabled = !hasArtifact;
-          if (clawResultOpen) clawResultOpen.setAttribute("aria-disabled", String(!hasArtifact));
-          if (clawResultDocx) clawResultDocx.disabled = !hasArtifact;
-          if (clawResultDocx) clawResultDocx.setAttribute("aria-disabled", String(!hasArtifact));
-          if (hasArtifact && clawResultDocx) {
-            clawResultDocx.dataset.documentId = result.artifact.document_id;
-            clawResultDocx.addEventListener("click", () => {
-              const documentId = clawResultDocx.dataset.documentId;
-              if (!documentId) return;
-              fetch(`/api/claw/manual-intake/artifact/${documentId}`)
-                .then(r => { if (!r.ok) throw new Error("download failed"); return r.blob(); })
-                .then(blob => {
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = result.artifact.filename || "document.docx";
-                  a.click();
-                  URL.revokeObjectURL(url);
-                })
-                .catch(() => {});
-            }, { once: true });
-          }
+          const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
+          const hasArtifact = !!(artifact && artifact.document_id);
+          if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
+          setClawStatus(clawT("claw-status-execute-success"), "success");
+          setClawAreaState("success");
+          if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
+          else if (clawResultPreview) clawResultPreview.focus?.();
           return;
         }
+        const safeMsg = safeClawErrorMessage(data, response);
         if (clawResultEmpty) {
           clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = data?.error?.message || failedText;
+          clawResultEmpty.textContent = safeMsg;
         }
+        setClawStatus(safeMsg, "error");
+        setClawAreaState("error");
       } catch {
+        const fallback = clawT("claw-error-generic");
         if (clawResultEmpty) {
           clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = failedText;
+          clawResultEmpty.textContent = fallback;
         }
+        setClawStatus(fallback, "error");
+        setClawAreaState("error");
       } finally {
-        clawExecuteButton.disabled = false;
+        setClawButtonsBusy(false);
       }
     });
   }
