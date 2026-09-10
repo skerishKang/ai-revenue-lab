@@ -34,10 +34,19 @@ provably pre-dispatch (unbound adapter or ``P01DispatchClass.NOT_DISPATCHED``
 classification from the P01 chain). Success, dispatched failures, ambiguous
 timeouts, and gate denials never refund. Callers cannot request or mint a
 refund: the decision derives solely from server-side dispatch classification.
+
+Run history (#2317): ``GET /api/claw/runs`` serves a bounded, owner-scoped list
+of recent Claw runs (run id, channel, action, title, status, timestamps, a
+truncated result summary, and a document reference for artifact runs). Rows are
+written by the execute path through the existing D1 ``PADIEM_CHAT_DB`` history
+authority; raw request content, provider secrets, session cookies, OAuth tokens,
+and object keys are never persisted. A history write/read failure fails closed
+with a stable public-safe 503 instead of silently claiming persistence.
 """
 
 from __future__ import annotations
 
+import inspect
 import json
 import re
 from typing import Any
@@ -54,6 +63,7 @@ from .control_plane_identity_shadow import (
     resolve_refreshed_session,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .history import MAX_CLAW_RUNS, MAX_RUN_RESULT_SUMMARY_CHARS
 from .usage_gate import UsageGate
 from kagent.document_export import (
     DocumentExportError,
@@ -432,6 +442,19 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if artifact_descriptor is not None:
         result["artifact"] = artifact_descriptor
 
+    history_failure = await _record_claw_run_history(
+        request,
+        run_id=run.run_id,
+        channel=channel.value,
+        action=action.value,
+        title=title,
+        status=outcome.projection.status.value,
+        result_text=outcome.answer,
+        artifact=artifact_descriptor,
+    )
+    if history_failure is not None:
+        return history_failure
+
     return JSONResponse(
         {"ok": True, "result": result},
         status_code=200,
@@ -484,6 +507,88 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
             "X-Content-Type-Options": "nosniff",
         },
     )
+
+
+async def _record_claw_run_history(
+    request: Request,
+    *,
+    run_id: str,
+    channel: str,
+    action: str,
+    title: str,
+    status: str,
+    result_text: str | None,
+    artifact: dict[str, Any] | None,
+) -> JSONResponse | None:
+    """Persist a bounded owner-scoped run history row (#2317).
+
+    Fail-closed: a store that advertises ``record_claw_run`` but raises is a
+    storage failure and returns a stable public-safe 503 so the caller never
+    sees a success that silently dropped history. A store that does not
+    implement the capability (a presence-only auth stub) is a no-op, and an
+    anonymous run has no owner to record against, so both return ``None``.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None
+    history_store = getattr(request.app.state, "history_store", None)
+    record = getattr(history_store, "record_claw_run", None)
+    if record is None:
+        return None
+    summary = result_text[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_text else None
+    try:
+        outcome_record = record(
+            user_id=uid,
+            run_id=run_id,
+            channel=channel,
+            action=action,
+            title=title,
+            status=status,
+            result_summary=summary,
+            artifact_document_id=artifact.get("document_id") if artifact else None,
+            artifact_filename=artifact.get("filename") if artifact else None,
+            artifact_media_type=artifact.get("media_type") if artifact else None,
+        )
+        if inspect.isawaitable(outcome_record):
+            await outcome_record
+    except Exception:
+        return _error(503, "run_history_write_failed", "실행 이력 저장에 실패했습니다.")
+    return None
+
+
+async def claw_runs_history(request: Request) -> JSONResponse:
+    """Owner-scoped bounded recent run history (#2317).
+
+    Identity is server-derived only; a caller can never list another owner's
+    runs because every read is filtered by the session user id, and a
+    non-owner ``run_id`` is not distinguishable from a missing one.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return _error(401, "unauthorized", "인증이 필요합니다.")
+
+    history_store = getattr(request.app.state, "history_store", None)
+    list_runs = getattr(history_store, "list_recent_claw_runs", None)
+    if list_runs is None:
+        return _error(503, "run_history_unavailable", "실행 이력을 사용할 수 없습니다.")
+
+    raw_limit = request.query_params.get("limit")
+    try:
+        limit = MAX_CLAW_RUNS if raw_limit is None else int(raw_limit)
+    except (TypeError, ValueError):
+        return _error(400, "invalid_limit", "limit 는 정수여야 합니다.")
+    if limit < 1:
+        return _error(400, "invalid_limit", "limit 는 1 이상이어야 합니다.")
+
+    try:
+        runs = list_runs(uid, limit)
+        if inspect.isawaitable(runs):
+            runs = await runs
+    except Exception:
+        return _error(503, "run_history_read_failed", "실행 이력 읽기에 실패했습니다.")
+    if not isinstance(runs, list):
+        return _error(503, "run_history_read_failed", "실행 이력 읽기에 실패했습니다.")
+    return JSONResponse({"ok": True, "runs": runs}, status_code=200, headers=_NO_STORE_HEADERS)
 
 
 def _build_execute_task(action: ManualIntakeAction, content: str) -> str:

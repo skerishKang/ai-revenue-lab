@@ -1199,12 +1199,17 @@
       clawStatus.hidden = true;
       clawStatus.textContent = "";
       clawStatus.removeAttribute("data-state");
+      if (clawRequestText) clawRequestText.removeAttribute("aria-invalid");
       return;
     }
     clawStatus.hidden = false;
     clawStatus.textContent = message;
     if (state) clawStatus.dataset.state = state;
     else clawStatus.removeAttribute("data-state");
+    if (clawRequestText) {
+      if (state === "error") clawRequestText.setAttribute("aria-invalid", "true");
+      else clawRequestText.removeAttribute("aria-invalid");
+    }
   }
 
   function setClawAreaState(state) {

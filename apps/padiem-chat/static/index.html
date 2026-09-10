@@ -151,7 +151,7 @@
         <form class="claw-intake" id="clawManualForm" aria-label="수동 인입 양식">
           <label class="claw-intake-hero">
             <span class="claw-intake-label" data-locale-key="claw-field-request">요청 원문 붙여넣기</span>
-            <textarea id="clawRequestText" rows="5" maxlength="4000" autocomplete="off" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
+            <textarea id="clawRequestText" rows="5" maxlength="4000" autocomplete="off" aria-describedby="clawStatus" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
           </label>
           <div class="claw-chips" role="group" aria-label="Claw 작업 선택">
             <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="false"><span data-locale-key="claw-chip-quote">견적서</span></button>
@@ -191,7 +191,7 @@
           </div>
           <p class="claw-actions-hint" data-locale-key="claw-actions-hint">미리보기: 저장 없이 바로 확인 · 실제 실행: AI가 완성하고 필요하면 문서로 저장</p>
         </form>
-        <section class="claw-result" id="clawResultArea" aria-live="polite" data-claw-state="idle">
+        <section class="claw-result" id="clawResultArea" data-claw-state="idle">
           <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
           <p class="claw-result-hint" id="clawResultHint" data-locale-key="claw-preview-empty-hint">예: “A업체 견적 요청 — 품목 20개, 납기 9월 말”처럼 붙여넣어 보세요.</p>
           <p class="claw-execute-hint" id="clawExecuteHint" data-locale-key="claw-execute-hint">실제 실행은 AI가 서버에서 완성합니다. 견적서·발주서는 문서로 저장해 다운로드할 수 있습니다.</p>
@@ -200,7 +200,7 @@
               <span class="claw-result-kind" id="clawResultKind"></span>
               <span class="claw-result-badge" id="clawResultBadge" data-locale-key="claw-result-badge">미리보기</span>
             </div>
-            <pre id="clawResultPreview" class="claw-result-body"></pre>
+            <pre id="clawResultPreview" class="claw-result-body" tabindex="-1"></pre>
             <div class="claw-artifact-meta" id="clawArtifactMeta" hidden>
               <span class="claw-artifact-name" id="clawArtifactName"></span>
               <span class="claw-artifact-size" id="clawArtifactSize"></span>
