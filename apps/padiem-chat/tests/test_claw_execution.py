@@ -14,6 +14,11 @@ from app.config import Settings
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.usage_gate import InMemoryUsageCounterStore, UsageDecision
+from app.workspace_storage import (
+    DOCX_MEDIA_TYPE,
+    WorkspaceDocumentStore,
+    WorkspaceStorageError,
+)
 from padiem_control_plane import (
     AuthSessionSnapshot,
     AuthSessionState,
@@ -339,6 +344,159 @@ def test_artifact_download_not_found_returns_404() -> None:
         )
         resp = test_client.get("/api/claw/manual-intake/artifact/doc_nonexistent1234567890abcdef12345")
     assert resp.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# #2308 — route-level cross-tenant artifact existence oracle regression
+#
+# A signed-in tenant must not be able to tell "this document exists but belongs
+# to someone else" from "no such document". Both project the identical 404.
+# ---------------------------------------------------------------------------
+
+OWNER_TENANT = "tenant_owner_0123456789abcdef"
+FOREIGN_TENANT = "tenant_foreign_fedcba9876543210"
+_ARTIFACT_ROUTE = "/api/claw/manual-intake/artifact/{document_id}"
+_DOCX_BODY = b"PK\x03\x04-docx-bytes"
+
+
+class _RouteMemoryMetadata:
+    def __init__(self) -> None:
+        self.rows: dict[str, object] = {}
+
+    async def insert(self, metadata):
+        self.rows[metadata.document_id] = metadata
+
+    async def get_active(self, document_id):
+        return self.rows.get(document_id)
+
+    async def mark_deleted(self, document_id, deleted_at):
+        self.rows.pop(document_id, None)
+
+
+class _RouteR2Object:
+    def __init__(self, body: bytes) -> None:
+        self.body = body
+
+
+class _RouteMemoryR2:
+    def __init__(self) -> None:
+        self.objects: dict[str, bytes] = {}
+
+    async def put(self, key, body, **kwargs):
+        self.objects[key] = bytes(body)
+
+    async def get(self, key):
+        body = self.objects.get(key)
+        return None if body is None else _RouteR2Object(body)
+
+    async def delete(self, key):
+        self.objects.pop(key, None)
+
+
+def _real_workspace_store() -> WorkspaceDocumentStore:
+    return WorkspaceDocumentStore(_RouteMemoryMetadata(), _RouteMemoryR2())
+
+
+def _artifact_route_client(tenant_id: str, store: WorkspaceDocumentStore) -> TestClient:
+    app = _app_with_identity()
+    app.state.workspace_document_store = store
+    app.state.control_plane_identity_authority = _make_authority(
+        _make_auth_session_snapshot(tenant_id=tenant_id)
+    )
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    return client
+
+
+async def test_artifact_route_same_tenant_download_returns_docx_headers() -> None:
+    store = _real_workspace_store()
+    saved = await store.put_generated_docx(
+        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+    )
+    client = _artifact_route_client(OWNER_TENANT, store)
+
+    resp = client.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id))
+
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == DOCX_MEDIA_TYPE
+    assert resp.headers["content-disposition"].startswith("attachment;")
+    assert "no-store" in resp.headers["cache-control"]
+    assert resp.content == _DOCX_BODY
+
+
+async def test_artifact_route_missing_and_foreign_tenant_are_observationally_identical() -> None:
+    store = _real_workspace_store()
+    saved = await store.put_generated_docx(
+        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+    )
+    owner = _artifact_route_client(OWNER_TENANT, store)
+    foreign = _artifact_route_client(FOREIGN_TENANT, store)
+
+    # The document really exists — proof that the 404 below is authorization,
+    # not absence, and that the oracle is closed rather than merely relocated.
+    assert owner.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id)).status_code == 200
+
+    missing_resp = foreign.get(
+        _ARTIFACT_ROUTE.format(document_id="doc_" + "0" * 32)
+    )
+    foreign_resp = foreign.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id))
+
+    assert missing_resp.status_code == 404
+    assert foreign_resp.status_code == 404
+    assert foreign_resp.json() == missing_resp.json()
+    assert foreign_resp.json() == {
+        "ok": False,
+        "error": {"code": "artifact_not_found", "message": "아티팩트를 찾을 수 없습니다."},
+    }
+    assert foreign_resp.content == missing_resp.content
+    assert _DOCX_BODY not in foreign_resp.content
+
+
+async def test_artifact_route_real_storage_failure_returns_503() -> None:
+    store = _real_workspace_store()
+    saved = await store.put_generated_docx(
+        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+    )
+
+    async def fail_get_for_tenant(**kwargs):
+        raise WorkspaceStorageError("workspace document read failed")
+
+    store.get_for_tenant = fail_get_for_tenant
+    client = _artifact_route_client(OWNER_TENANT, store)
+
+    resp = client.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id))
+
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "workspace_document_read_failed"
+
+
+async def test_artifact_route_error_json_discloses_no_internal_material() -> None:
+    store = _real_workspace_store()
+    saved = await store.put_generated_docx(
+        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+    )
+    foreign = _artifact_route_client(FOREIGN_TENANT, store)
+
+    resp = foreign.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id))
+    body = resp.text
+
+    for marker in (
+        "object_key",
+        "workspaces/",
+        OWNER_TENANT,
+        FOREIGN_TENANT,
+        "r2.cloudflarestorage",
+        "bucket",
+        "PK\x03\x04",
+    ):
+        assert marker not in body, marker
+    assert set(resp.json()) == {"ok", "error"}
+    assert set(resp.json()["error"]) == {"code", "message"}
 
 
 def test_quote_artifact_failure_fail_closed() -> None:
