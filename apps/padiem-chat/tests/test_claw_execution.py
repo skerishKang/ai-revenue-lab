@@ -1286,3 +1286,293 @@ def test_resolve_canonical_tenant_uses_shared_refreshed_session_contract() -> No
         "async def resolve_refreshed_session", 1
     )[0]
     assert "resolve_refreshed_session(" in resolver_body
+
+
+# ── #2317 owner-scoped bounded Claw run history ──────────────────────────────
+
+RUNS_HISTORY_ROUTE_PATH = "/api/claw/runs"
+
+
+class _RecordingRunHistoryStore:
+    """Async history store that records run rows and serves owner-scoped lists."""
+
+    def __init__(self) -> None:
+        self.rows: dict[str, dict] = {}
+        self.list_calls: list[tuple[str, int]] = []
+
+    async def get_user(self, user_id: str):
+        return None
+
+    async def record_claw_run(self, *, user_id, run_id, channel, action, title, status,
+                              result_summary=None, artifact_document_id=None,
+                              artifact_filename=None, artifact_media_type=None) -> None:
+        self.rows[run_id] = {
+            "user_id": user_id, "run_id": run_id, "channel": channel, "action": action,
+            "title": title, "status": status, "result_summary": result_summary,
+            "artifact_document_id": artifact_document_id,
+        }
+
+    async def list_recent_claw_runs(self, user_id: str, limit: int) -> list[dict]:
+        self.list_calls.append((user_id, limit))
+        return [row for row in self.rows.values() if row["user_id"] == user_id][:limit]
+
+
+def _history_client(store: object) -> TestClient:
+    app = _app_with_identity()
+    app.state.history_store = store
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    return client
+
+
+def test_runs_history_route_is_registered() -> None:
+    registered = {getattr(route, "path", None) for route in create_app(
+        Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off")
+    ).routes}
+    assert RUNS_HISTORY_ROUTE_PATH in registered
+
+
+def test_execute_records_owner_scoped_run_history() -> None:
+    store = _RecordingRunHistoryStore()
+    app = _app_with_identity()
+    app.state.history_store = store
+    app.state.workspace_document_store = _make_workspace_store()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, _make_adapter()):
+            resp = test_client.post(EXECUTE_ROUTE_PATH, json={
+                "content": "테스트 견적 요청.", "channel": "kakao", "action": "quote",
+                "sender_hint": "A업체",
+            })
+    assert resp.status_code == 200
+    assert len(store.rows) == 1
+    row = next(iter(store.rows.values()))
+    assert row["user_id"] == SIGNED_IN_USER_ID
+    assert row["channel"] == "kakao"
+    assert row["action"] == "quote_draft"
+    assert row["artifact_document_id"] == "doc_test1234567890abcdef1234567890ab"
+
+
+def test_execute_history_write_failure_fails_closed() -> None:
+    class _FailingStore(_RecordingRunHistoryStore):
+        async def record_claw_run(self, **kwargs):
+            raise RuntimeError("d1 write down")
+
+    store = _FailingStore()
+    app = _app_with_identity()
+    app.state.history_store = store
+    app.state.workspace_document_store = _make_workspace_store()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, _make_adapter()):
+            resp = test_client.post(EXECUTE_ROUTE_PATH, json={
+                "content": "테스트.", "channel": "kakao", "action": "reply",
+            })
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "run_history_write_failed"
+
+
+def test_runs_history_requires_auth() -> None:
+    app = _app_with_identity()
+    app.state.history_store = _RecordingRunHistoryStore()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        resp = test_client.get(RUNS_HISTORY_ROUTE_PATH)
+    assert resp.status_code == 401
+    assert resp.json()["error"]["code"] == "unauthorized"
+
+
+def test_runs_history_is_owner_scoped_and_bounded() -> None:
+    store = _RecordingRunHistoryStore()
+    store.rows = {
+        "run_a": {"user_id": SIGNED_IN_USER_ID, "run_id": "run_a", "channel": "kakao",
+                  "action": "quote_draft", "title": "T", "status": "completed",
+                  "result_summary": "s", "artifact_document_id": None},
+        "run_b": {"user_id": "usr_" + "f" * 32, "run_id": "run_b", "channel": "sms",
+                  "action": "reply_draft", "title": "T", "status": "completed",
+                  "result_summary": "s", "artifact_document_id": None},
+    }
+    client = _history_client(store)
+    resp = client.get(f"{RUNS_HISTORY_ROUTE_PATH}?limit=5")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["ok"] is True
+    assert [r["run_id"] for r in body["runs"]] == ["run_a"]
+    assert store.list_calls == [(SIGNED_IN_USER_ID, 5)]
+    assert "usr_" + "f" * 32 not in resp.text
+
+
+def test_runs_history_rejects_invalid_limit() -> None:
+    client = _history_client(_RecordingRunHistoryStore())
+    assert client.get(f"{RUNS_HISTORY_ROUTE_PATH}?limit=abc").status_code == 400
+    assert client.get(f"{RUNS_HISTORY_ROUTE_PATH}?limit=0").status_code == 400
+
+
+def test_runs_history_read_failure_fails_closed() -> None:
+    class _FailingStore(_RecordingRunHistoryStore):
+        async def list_recent_claw_runs(self, user_id, limit):
+            raise RuntimeError("d1 read down")
+
+    client = _history_client(_FailingStore())
+    resp = client.get(RUNS_HISTORY_ROUTE_PATH)
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "run_history_read_failed"
+
+
+def test_presence_only_history_store_execute_is_not_broken_by_history() -> None:
+    # auth_ready() only needs a store bound; a store without run-history
+    # capability must be a no-op, not a 503, so anonymous/Phase A reply+summary
+    # execution keeps working (#2317 non-regression).
+    class _PresenceOnly:
+        async def get_user(self, user_id):
+            return None
+
+    app = _app_with_identity()
+    app.state.history_store = _PresenceOnly()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, _make_adapter()):
+            resp = test_client.post(EXECUTE_ROUTE_PATH, json={
+                "content": "요약.", "channel": "telegram", "action": "summary",
+            })
+    assert resp.status_code == 200
+
+
+# ── #2317 direct D1HistoryStore network-free tests ───────────────────────────
+
+
+class _HistoryStatement:
+    def __init__(self, db, sql):
+        self.db = db
+        self.sql = sql
+        self.values: tuple = ()
+
+    def bind(self, *values):
+        self.values = values
+        return self
+
+    async def first(self):
+        if self.sql.startswith("SELECT id, created_at FROM claw_run_history"):
+            run_id, user_id = self.values
+            for row in self.db.rows:
+                if row["run_id"] == run_id and row["user_id"] == user_id:
+                    return {"id": row["id"], "created_at": row["created_at"]}
+            return None
+        return None
+
+    async def run(self):
+        self.db.bound.append((self.sql, self.values))
+        if self.sql.startswith("INSERT INTO claw_run_history"):
+            cols = ("id", "user_id", "run_id", "channel", "action", "title", "status",
+                    "created_at", "updated_at", "result_summary", "artifact_document_id",
+                    "artifact_filename", "artifact_media_type")
+            self.db.rows.append(dict(zip(cols, self.values)))
+            return {"results": []}
+        if self.sql.startswith("UPDATE claw_run_history SET"):
+            (channel, action, title, status, updated_at, summary, doc_id, fname, mtype,
+             run_id, user_id) = self.values
+            for row in self.db.rows:
+                if row["run_id"] == run_id and row["user_id"] == user_id:
+                    row.update(channel=channel, action=action, title=title, status=status,
+                               updated_at=updated_at, result_summary=summary,
+                               artifact_document_id=doc_id, artifact_filename=fname,
+                               artifact_media_type=mtype)
+            return {"results": []}
+        if self.sql.startswith("SELECT run_id, channel"):
+            user_id, limit = self.values
+            rows = [r for r in self.db.rows if r["user_id"] == user_id]
+            rows.sort(key=lambda r: r["created_at"], reverse=True)
+            return {"results": rows[:limit]}
+        return {"results": []}
+
+
+class _HistoryD1:
+    def __init__(self):
+        self.rows: list[dict] = []
+        self.bound: list[tuple] = []
+        self.prepared: list[str] = []
+
+    def prepare(self, sql):
+        self.prepared.append(sql)
+        return _HistoryStatement(self, sql)
+
+
+@pytest.mark.asyncio
+async def test_d1_record_claw_run_inserts_then_updates_same_run_id():
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(user_id="usr_owner", run_id="run_1", channel="kakao",
+                                action="quote_draft", title="T1", status="completed",
+                                result_summary="x" * 500)
+    inserted = store.db.rows[0]
+    assert inserted["user_id"] == "usr_owner"
+    assert len(inserted["result_summary"]) == 200  # bounded, no raw prompt
+    await store.record_claw_run(user_id="usr_owner", run_id="run_1", channel="kakao",
+                                action="quote_draft", title="T1", status="failed")
+    assert len(store.db.rows) == 1  # update, not duplicate insert
+    assert store.db.rows[0]["status"] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_d1_list_recent_claw_runs_owner_scoped_and_hard_bounded():
+    from app.history import D1HistoryStore, MAX_CLAW_RUNS
+
+    store = D1HistoryStore(_HistoryD1())
+    for i in range(5):
+        await store.record_claw_run(user_id="usr_owner", run_id=f"run_{i}", channel="kakao",
+                                    action="quote_draft", title="T", status="completed")
+    await store.record_claw_run(user_id="usr_other", run_id="run_x", channel="kakao",
+                                action="quote_draft", title="T", status="completed")
+    runs = await store.list_recent_claw_runs("usr_owner", limit=999)
+    assert len(runs) == 5
+    assert all(r["run_id"].startswith("run_") for r in runs)
+    assert "run_x" not in [r["run_id"] for r in runs]
+    # hard cap even if caller asks for more than MAX_CLAW_RUNS
+    assert len(await store.list_recent_claw_runs("usr_owner", limit=999)) <= MAX_CLAW_RUNS
+
+
+@pytest.mark.asyncio
+async def test_d1_run_history_projects_only_safe_fields():
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(user_id="usr_owner", run_id="run_1", channel="kakao",
+                                action="quote_draft", title="T", status="completed",
+                                result_summary="short", artifact_document_id="doc_1",
+                                artifact_filename="q.docx", artifact_media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    runs = await store.list_recent_claw_runs("usr_owner", limit=10)
+    public = runs[0]
+    assert set(public) == {"run_id", "channel", "action", "title", "status", "created_at",
+                           "updated_at", "result_summary", "artifact"}
+    assert "user_id" not in public
+    assert public["artifact"]["document_id"] == "doc_1"
+    # values are bound, never interpolated into SQL text
+    assert all("usr_owner" not in sql for sql in store.db.prepared)
+
+
+def test_run_history_migration_has_no_runtime_create_and_bounds_columns() -> None:
+    migration = (Path(__file__).resolve().parents[1] / "migrations" / "009_claw_run_history.sql").read_text(encoding="utf-8")
+    assert "CREATE TABLE IF NOT EXISTS claw_run_history" in migration
+    assert "run_id TEXT NOT NULL UNIQUE" in migration
+    for forbidden in ("raw_content", "prompt", "secret", "token", "cookie", "object_key"):
+        assert forbidden not in migration.lower()
