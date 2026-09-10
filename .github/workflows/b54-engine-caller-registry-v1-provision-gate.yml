@@ -35,6 +35,12 @@ name: B54 Engine Caller Registry V1 Provision Gate
 # The attestation carries no registry plaintext and no credential material and
 # does not (cannot) prove equality with the opaque Cloudflare secret_text value.
 #
+# Failure evidence is bounded too: a failed secret PUT emits HTTP status,
+# boolean success, integer error codes, and fixed local markers only — never
+# `.errors[].message` or the response body, because a future error message
+# could reflect request material. The response temp file is deleted after
+# extraction on both the failure and the success path.
+#
 # Greenfield path (all authority ABSENT -> PROVISION_REQUIRED) is an isolated,
 # tested capability only; it is not the current Production path.
 #
@@ -308,22 +314,36 @@ jobs:
           )"
           curl_status=$?
           set -e
+          case "${http_status}" in
+            ''|*[!0-9]*) http_status=000 ;;
+          esac
           rm -f "${payload}"
           echo "B54_ENGINE_CALLER_REGISTRY_HTTP_STATUS=${http_status}"
           if [ "${curl_status}" -ne 0 ] || [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
-            echo 'B54_ENGINE_CALLER_REGISTRY=FAIL'
-            if [ -f "${response}" ] && jq -e . "${response}" >/dev/null 2>&1; then
-              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
-            else
-              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
-            fi
+            # Bounded, non-secret failure evidence ONLY. Cloudflare error
+            # message text and the raw response body are never selected or
+            # printed: a future error message could reflect request material,
+            # which would break RAW_SECRET_OUTPUT=0 / SECRET_VALUE_OUTPUT=0.
+            # The helper also deletes the response temp file.
+            python .github/scripts/b54_engine_caller_registry_v1_provision.py failure-evidence \
+              --response "${response}" \
+              --http-status "${http_status}"
+            rm -f "${response}"
             exit 1
           fi
-          jq -e '.success == true' "${response}" >/dev/null
+          # Success path: read only the bounded boolean, then delete the
+          # response BEFORE any later failure can abort the step.
+          success="$(jq -r 'if (.success == true) then "true" else "false" end' "${response}" 2>/dev/null || echo unknown)"
+          rm -f "${response}"
+          test "${success}" = "true"
           echo 'B54_ENGINE_CALLER_REGISTRY=PROVISIONED'
           echo 'SECRET_VALUE_EMITTED=0'
+          echo 'CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0'
+          echo 'CLOUDFLARE_RESPONSE_BODY_OUTPUT=0'
+          echo 'RESPONSE_TEMP_CLEANUP=PASS'
           echo 'RAW_SECRET_OUTPUT=0'
           echo 'RAW_REGISTRY_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
           echo 'SECRET_REUSE_ONLY_NO_RECREATION=PASS'
 
       - name: Read back the provisioned caller authority (NAME/TYPE only)

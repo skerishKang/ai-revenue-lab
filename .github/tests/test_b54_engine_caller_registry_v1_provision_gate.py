@@ -29,7 +29,14 @@ Proves statically that the gate:
      bytes), match the baseline caller count, and be fresh — otherwise the plan
      fails and the workflow cannot reach the PUT;
  12. rejects any attempt to smuggle registry plaintext or credential material
-     in as the currentness provenance input.
+     in as the currentness provenance input;
+ 13. emits only bounded, non-secret evidence when the Engine secret PUT fails:
+     the HTTP status, a boolean success, integer error codes, and fixed local
+     markers — never ``.errors[].message`` or the response body, so a future
+     Cloudflare error message (which could reflect request material) can never
+     reach stdout/stderr or break RAW_SECRET_OUTPUT=0 / SECRET_VALUE_OUTPUT=0;
+     and the response temp file is deleted after extraction on both the failure
+     and the success path.
 """
 
 from __future__ import annotations
@@ -111,6 +118,22 @@ def _run_main(helper, argv: list[str]) -> tuple[int, str]:
     with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
         code = helper.main(argv)
     return code, stdout.getvalue() + stderr.getvalue()
+
+
+def _run_main_split(helper, argv: list[str]) -> tuple[int, str, str]:
+    """Run the CLI capturing stdout and stderr separately (leak assertions)."""
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+        code = helper.main(argv)
+    return code, stdout.getvalue(), stderr.getvalue()
+
+
+def _write_response_file(body: str) -> Path:
+    tmp = tempfile.mkdtemp(prefix="b54-put-failure-")
+    path = Path(tmp) / "cloudflare-response.json"
+    path.write_text(body, encoding="utf-8")
+    return path
 
 
 def _write_settings(payload: object) -> Path:
@@ -963,6 +986,203 @@ def test_plan_greenfield_isolated_and_baseline_forbidden() -> None:
         assert not out.exists()
 
 
+# ---------------------------------------------------------------------------
+# Bounded PUT-failure evidence: Cloudflare error message text must never be
+# selected, printed, or otherwise able to reach stdout/stderr.
+# ---------------------------------------------------------------------------
+
+
+def test_failure_evidence_never_emits_cloudflare_message_text() -> None:
+    helper = _load_helper()
+    sentinel = "sentinel-error-message-must-never-appear"
+    bodies = {
+        "message in errors": json.dumps(
+            {"success": False, "errors": [{"code": 10000, "message": sentinel}]}
+        ),
+        "sentinel in many fields": json.dumps(
+            {
+                "success": False,
+                "errors": [{"code": 10000, "message": sentinel, "meta": {"detail": sentinel}}],
+                "messages": [sentinel],
+                "result": sentinel,
+            }
+        ),
+        "credential-shaped code": json.dumps(
+            {"success": False, "errors": [{"code": sentinel, "message": sentinel}]}
+        ),
+        "credential-shaped success": json.dumps({"success": sentinel}),
+        "non-json body": sentinel,
+        "json array body": json.dumps([sentinel]),
+    }
+    for label, body in bodies.items():
+        path = _write_response_file(body)
+        code, stdout, stderr = _run_main_split(
+            helper, ["failure-evidence", "--response", str(path), "--http-status", "403"]
+        )
+        assert code == 0, label
+        assert sentinel not in stdout, f"message reflected on stdout: {label}"
+        assert sentinel not in stderr, f"message reflected on stderr: {label}"
+        # Only bounded, non-secret evidence is emitted.
+        assert "CLOUDFLARE_HTTP_STATUS=403" in stdout, label
+        assert "CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0" in stdout, label
+        assert "CLOUDFLARE_RESPONSE_BODY_OUTPUT=0" in stdout, label
+        assert "RAW_SECRET_OUTPUT=0" in stdout, label
+        assert "RAW_REGISTRY_OUTPUT=0" in stdout, label
+        assert "SECRET_VALUE_OUTPUT=0" in stdout, label
+        assert not path.exists(), f"response temp file not cleaned up: {label}"
+
+    # The integer code is the only code ever emitted; a string code is dropped.
+    path = _write_response_file(
+        json.dumps({"success": False, "errors": [{"code": 10000, "message": sentinel}]})
+    )
+    _, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", "403"]
+    )
+    assert "CLOUDFLARE_ERROR_CODE=10000" in stdout
+    assert "CLOUDFLARE_ERROR_CODE_COUNT=1" in stdout
+    assert "CLOUDFLARE_SUCCESS=false" in stdout
+    assert "CLOUDFLARE_ERROR_BODY_PARSABLE=YES" in stdout
+
+    path = _write_response_file(
+        json.dumps({"success": False, "errors": [{"code": sentinel, "message": sentinel}]})
+    )
+    _, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", "400"]
+    )
+    assert "CLOUDFLARE_ERROR_CODE=NONE" in stdout
+    assert "CLOUDFLARE_ERROR_CODE_COUNT=0" in stdout
+    assert sentinel not in stdout
+
+    # A missing / unreadable response still yields bounded evidence.
+    missing = Path(tempfile.mkdtemp(prefix="b54-put-failure-")) / "absent.json"
+    code, stdout, stderr = _run_main_split(
+        helper, ["failure-evidence", "--response", str(missing), "--http-status", "500"]
+    )
+    assert code == 0
+    assert "CLOUDFLARE_ERROR_BODY_PARSABLE=NO" in stdout
+    assert "RESPONSE_TEMP_CLEANUP=PASS" in stdout
+    assert sentinel not in stdout + stderr
+
+
+def test_failure_evidence_bounds_codes_and_status() -> None:
+    helper = _load_helper()
+    many = json.dumps(
+        {
+            "success": False,
+            "errors": [{"code": 1000 + index, "message": "ignored"} for index in range(12)],
+        }
+    )
+    path = _write_response_file(many)
+    _, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", "429"]
+    )
+    # Total is reported, but only the source-bounded number of codes is emitted.
+    assert f"CLOUDFLARE_ERROR_CODE_COUNT={len(json.loads(many)['errors'])}" in stdout
+    emitted = re.search(r"^CLOUDFLARE_ERROR_CODES=(.+)$", stdout, re.MULTILINE)
+    assert emitted is not None
+    assert len(emitted.group(1).split(",")) == helper.MAX_CLOUDFLARE_ERROR_CODES
+    assert "CLOUDFLARE_ERROR_CODE=1000" in stdout
+
+    # Non-integer codes (including booleans) are dropped, never emitted.
+    weird = json.dumps(
+        {
+            "success": False,
+            "errors": [{"code": True}, {"code": "1001"}, {"code": None}, "1002", {"code": 1003}],
+        }
+    )
+    path = _write_response_file(weird)
+    _, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", "400"]
+    )
+    assert "CLOUDFLARE_ERROR_CODES=1003" in stdout
+    assert "CLOUDFLARE_ERROR_CODE_COUNT=1" in stdout
+
+    # A non-numeric HTTP status is reported as bounded ``unknown``.
+    path = _write_response_file(json.dumps({"success": False, "errors": []}))
+    _, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", ""]
+    )
+    assert "CLOUDFLARE_HTTP_STATUS=unknown" in stdout
+    assert "CLOUDFLARE_ERROR_CODE=NONE" in stdout
+
+
+def test_failure_evidence_deletes_response_temp_file() -> None:
+    helper = _load_helper()
+    path = _write_response_file(json.dumps({"success": False, "errors": [{"code": 10000}]}))
+    assert path.exists()
+    code, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", "403"]
+    )
+    assert code == 0
+    assert "RESPONSE_TEMP_CLEANUP=PASS" in stdout
+    assert not path.exists()
+    # Calling it again on an already-deleted path is safe and still bounded.
+    code, stdout, _ = _run_main_split(
+        helper, ["failure-evidence", "--response", str(path), "--http-status", "403"]
+    )
+    assert code == 0
+    assert "RESPONSE_TEMP_CLEANUP=PASS" in stdout
+    assert "CLOUDFLARE_ERROR_BODY_PARSABLE=NO" in stdout
+
+
+def test_workflow_put_failure_never_selects_error_messages() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+    # Cloudflare message text / response body must never be selected or printed.
+    # Comments may *document* the prohibition, so only executable lines count.
+    code_lines = [
+        line for line in text.splitlines() if not line.lstrip().startswith("#")
+    ]
+    code_text = "\n".join(code_lines)
+    assert re.search(r"(?i)\bmessages?\b", code_text) is None, (
+        "workflow code must never select or print Cloudflare message text"
+    )
+    assert "errors: [(.errors" not in text
+    assert "jq -c '{success" not in text
+    assert "CLOUDFLARE_ERROR_BODY_JSON" not in text
+    assert 'cat "${response}"' not in text
+    assert 'jq -e . "${response}"' not in text
+    assert '.errors[]? | {code,message}' not in text
+    # Bounded replacement is present: the failure path delegates to the helper,
+    # which owns the bounded evidence markers.
+    assert "failure-evidence" in text
+    assert '--response "${response}"' in text
+    assert '--http-status "${http_status}"' in text
+    assert "CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0" in text
+    assert "CLOUDFLARE_RESPONSE_BODY_OUTPUT=0" in text
+    assert "RESPONSE_TEMP_CLEANUP=PASS" in text
+    script = HELPER.read_text(encoding="utf-8")
+    for marker in (
+        "CLOUDFLARE_HTTP_STATUS=",
+        "CLOUDFLARE_SUCCESS=",
+        "CLOUDFLARE_ERROR_CODE=",
+        "CLOUDFLARE_ERROR_CODE_COUNT=",
+        "CLOUDFLARE_ERROR_CODES=",
+        "CLOUDFLARE_ERROR_BODY_PARSABLE=",
+        "CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0",
+        "CLOUDFLARE_RESPONSE_BODY_OUTPUT=0",
+        "RESPONSE_TEMP_CLEANUP=",
+    ):
+        assert marker in script, marker
+    # The helper must never select the Cloudflare message field at all.
+    for forbidden_selection in ('"message"', "'message'", '"messages"', "'messages'"):
+        assert forbidden_selection not in script, forbidden_selection
+    # Only the bounded success boolean is read from the response on success.
+    assert 'jq -r \'if (.success == true) then "true" else "false" end\'' in text
+    # Response temp file cleanup is enforced on both the failure and success path.
+    assert text.count('rm -f "${response}"') >= 2
+    # The three zero-output invariants remain asserted in the mutation step.
+    put_start = text.index("Provision the registry secret only when a change is required")
+    put_end = text.index("Read back the provisioned caller authority", put_start)
+    put_step = text[put_start:put_end]
+    for marker in (
+        "RAW_SECRET_OUTPUT=0",
+        "RAW_REGISTRY_OUTPUT=0",
+        "SECRET_VALUE_OUTPUT=0",
+        "SECRET_VALUE_EMITTED=0",
+    ):
+        assert marker in put_step, marker
+
+
 def test_classify_cli_dispositions() -> None:
     helper = _load_helper()
     empty = _settings([])
@@ -1174,6 +1394,10 @@ if __name__ == "__main__":
     test_plan_extend_no_op_when_b54_already_compatible()
     test_plan_extend_requires_baseline_secret()
     test_plan_greenfield_isolated_and_baseline_forbidden()
+    test_failure_evidence_never_emits_cloudflare_message_text()
+    test_failure_evidence_bounds_codes_and_status()
+    test_failure_evidence_deletes_response_temp_file()
+    test_workflow_put_failure_never_selects_error_messages()
     test_classify_cli_dispositions()
     test_verify_cli_post_readback()
     test_workflow_dispatch_inputs_never_accept_secret_material()

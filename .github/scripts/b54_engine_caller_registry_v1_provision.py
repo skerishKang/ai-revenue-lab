@@ -75,6 +75,12 @@ Subcommands:
   path).
 - ``verify --settings <worker-settings.json>`` — post-mutation NAME/TYPE-only
   readback: registry secret present with type ``secret_text``.
+- ``failure-evidence --response <cf-response.json> --http-status <status>`` —
+  bounded, NON-SECRET failure evidence for a failed secret PUT. Cloudflare
+  error message text and the response body are NEVER selected or printed
+  (a future error message could reflect request material), so only the HTTP
+  status, a boolean success, integer error codes, and fixed local markers are
+  emitted. The response temp file is deleted after extraction.
 """
 
 from __future__ import annotations
@@ -142,6 +148,10 @@ CURRENTNESS_MAX_ATTESTATION_BYTES = 1024
 CURRENTNESS_MAX_AGE_SECONDS = 24 * 60 * 60
 # Tolerated clock skew for an attestation issued slightly in the future.
 CURRENTNESS_MAX_FUTURE_SKEW_SECONDS = 5 * 60
+
+# Bounded failure-evidence bounds (a Cloudflare response body is never emitted).
+MAX_CLOUDFLARE_ERROR_CODES = 8
+_HTTP_STATUS_RE = re.compile(r"^\d{3}$")
 _FINGERPRINT_RE = re.compile(r"^[0-9a-f]{64}$")
 _ISSUED_AT_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 _FORBIDDEN_ATTESTATION_CHARS = ('{', '}', '"')
@@ -500,6 +510,80 @@ def build_put_body(payload: dict) -> dict:
     }
 
 
+def bounded_cloudflare_failure_evidence(response_path: Path, http_status: str) -> dict:
+    """Extract ONLY bounded, non-secret evidence from a Cloudflare response.
+
+    Never returns ``.errors[].message``, ``.messages``, ``.result``, the raw
+    response body, or any request material: only the HTTP status, a boolean
+    ``success``, and integer error codes. A non-integer code (e.g. a
+    credential-shaped string) is dropped rather than emitted.
+    """
+    status = http_status if _HTTP_STATUS_RE.fullmatch(http_status or "") else "unknown"
+    evidence: dict = {
+        "http_status": status,
+        "success": "unknown",
+        "error_codes": [],
+        "error_codes_total": 0,
+        "body_parsable": False,
+    }
+    try:
+        raw = response_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return evidence
+    try:
+        payload = json.loads(raw)
+    except (ValueError, RecursionError):
+        return evidence
+    evidence["body_parsable"] = True
+    if not isinstance(payload, dict):
+        return evidence
+    success = payload.get("success")
+    if isinstance(success, bool):
+        evidence["success"] = "true" if success else "false"
+    errors = payload.get("errors")
+    if isinstance(errors, list):
+        codes: list[int] = []
+        for entry in errors:
+            if isinstance(entry, dict):
+                code = entry.get("code")
+                if isinstance(code, int) and not isinstance(code, bool):
+                    codes.append(code)
+        evidence["error_codes_total"] = len(codes)
+        evidence["error_codes"] = codes[:MAX_CLOUDFLARE_ERROR_CODES]
+    return evidence
+
+
+def delete_response_file(response_path: Path) -> bool:
+    """Deterministically remove the response temp file; returns cleanup state."""
+    try:
+        response_path.unlink(missing_ok=True)
+    except OSError:
+        pass
+    return not response_path.exists()
+
+
+def _cmd_failure_evidence(args: argparse.Namespace) -> int:
+    """Emit bounded non-secret PUT-failure evidence, then delete the response."""
+    evidence = bounded_cloudflare_failure_evidence(args.response, args.http_status)
+    cleaned = delete_response_file(args.response)
+    codes = evidence["error_codes"]
+    print("B54_ENGINE_CALLER_REGISTRY=FAIL")
+    print(f"CLOUDFLARE_HTTP_STATUS={evidence['http_status']}")
+    print(f"CLOUDFLARE_SUCCESS={evidence['success']}")
+    print(f"CLOUDFLARE_ERROR_CODE_COUNT={evidence['error_codes_total']}")
+    print(f"CLOUDFLARE_ERROR_CODE={codes[0] if codes else 'NONE'}")
+    print(f"CLOUDFLARE_ERROR_CODES={','.join(str(code) for code in codes) or 'NONE'}")
+    print(f"CLOUDFLARE_ERROR_BODY_PARSABLE={'YES' if evidence['body_parsable'] else 'NO'}")
+    print("CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0")
+    print("CLOUDFLARE_RESPONSE_BODY_OUTPUT=0")
+    print(f"RESPONSE_TEMP_CLEANUP={'PASS' if cleaned else 'FAIL'}")
+    print("RAW_SECRET_OUTPUT=0")
+    print("RAW_REGISTRY_OUTPUT=0")
+    print("SECRET_VALUE_OUTPUT=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
 def _settings_states(settings_payload: object) -> dict[str, str]:
     return classify_authority(settings_payload)
 
@@ -670,6 +754,13 @@ def main(argv: list[str] | None = None) -> int:
     verify = sub.add_parser("verify", help="post-mutation NAME/TYPE-only readback")
     verify.add_argument("--settings", required=True, type=Path)
 
+    failure = sub.add_parser(
+        "failure-evidence",
+        help="bounded non-secret evidence for a failed secret PUT (never the response body)",
+    )
+    failure.add_argument("--response", required=True, type=Path)
+    failure.add_argument("--http-status", default="", help="curl HTTP status (bounded digits)")
+
     args = parser.parse_args(args_in)
     if args.command == "classify":
         return _cmd_classify(args)
@@ -677,6 +768,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_plan(args)
     if args.command == "verify":
         return _cmd_verify(args)
+    if args.command == "failure-evidence":
+        return _cmd_failure_evidence(args)
     parser.error(f"unknown command: {args.command}")
 
 
