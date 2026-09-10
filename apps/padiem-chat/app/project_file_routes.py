@@ -6,11 +6,19 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
+from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
-from .project_files import ProjectFileLimitError, ProjectFileStore, validate_file_id
+from .project_files import (
+    BINARY_PROJECT_FILE_MEDIA,
+    ProjectFileLimitError,
+    ProjectFileStore,
+    _extracted_media_type,
+    validate_file_id,
+)
 
 MAX_PROJECT_FILE_BODY_BYTES = 160_000
+MAX_BINARY_PROJECT_FILE_BASE64_BYTES = ((2 * 1024 * 1024 + 2) // 3) * 4 + 4  # 2 MiB binary cap, base64-expanded
 
 
 def _unavailable() -> JSONResponse:
@@ -56,6 +64,28 @@ async def _identity(request: Request):
     return uid, pid, None
 
 
+def _parse_project_file_item(raw: dict[str, Any]) -> tuple[str, str, str]:
+    if not isinstance(raw, dict):
+        raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
+    keys = set(raw)
+    text_item = keys == {"name", "media_type", "text"}
+    binary_item = keys == {"name", "media_type", "base64"}
+    if not text_item and not binary_item:
+        raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
+    if text_item:
+        document = validate_document_fields(raw.get("name"), raw.get("media_type"), raw.get("text"))
+        return document.name, document.media_type, document.text
+    name = raw.get("name")
+    media_type = raw.get("media_type")
+    if media_type not in BINARY_PROJECT_FILE_MEDIA:
+        raise BinaryDocumentValidationError("PDF, DOCX 문서만 이 형식으로 첨부할 수 있습니다.")
+    try:
+        document = parse_binary_document_item({"type": "document", "name": name, "media_type": media_type, "base64": raw.get("base64")})
+    except BinaryDocumentValidationError as exc:
+        raise ValueError(str(exc)) from exc
+    return document.name, _extracted_media_type(document.media_type), document.text
+
+
 async def project_files_collection(request: Request) -> JSONResponse:
     uid, pid, error = await _identity(request)
     if error is not None:
@@ -70,15 +100,15 @@ async def project_files_collection(request: Request) -> JSONResponse:
         return JSONResponse({"files": [item.public_dict() for item in files]})
 
     body = await request.body()
-    if len(body) > MAX_PROJECT_FILE_BODY_BYTES:
+    if len(body) > MAX_BINARY_PROJECT_FILE_BASE64_BYTES:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
     try:
         raw = json.loads(body.decode("utf-8"))
-        if not isinstance(raw, dict) or set(raw) != {"name", "media_type", "text"}:
+        if not isinstance(raw, dict):
             raise ValueError("프로젝트 문서 요청 형식이 올바르지 않습니다.")
-        document = validate_document_fields(raw.get("name"), raw.get("media_type"), raw.get("text"))
-        created = await store.create_file(uid, pid, document.name, document.media_type, document.text)
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError) as exc:
+        name, media_type, text = _parse_project_file_item(raw)
+        created = await store.create_file(uid, pid, name, media_type, text)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DocumentValidationError, BinaryDocumentValidationError) as exc:
         return JSONResponse({"error": {"code": "invalid_document", "message": str(exc) or "문서 형식이 올바르지 않습니다."}}, status_code=422)
     except ProjectFileLimitError as exc:
         return JSONResponse({"error": {"code": "project_file_limit", "message": str(exc)}}, status_code=422)
