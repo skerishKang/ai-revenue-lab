@@ -214,6 +214,7 @@
           </article>
           <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
         </section>
+        <section class="claw-memory-review" id="clawMemoryReview" aria-label="메모리 저장 후보" hidden></section>
         <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
           <header class="claw-approved-memory-header">
             <div class="claw-workspace-identity">
@@ -223,8 +224,8 @@
             <button type="button" class="claw-refresh-button" id="clawApprovedRefresh" aria-label="목록 새로고침">↻</button>
           </header>
           <p class="claw-workspace-tagline" data-locale-key="claw-approved-tagline">명시적으로 승인한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.</p>
-          <div class="claw-approved-loading" id="clawApprovedLoading" hidden aria-live="polite">불러오는 중…</div>
-          <p class="claw-approved-error" id="clawApprovedError" hidden role="alert"></p>
+          <div class="claw-approved-loading" id="clawApprovedLoading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <p class="claw-approved-error" id="clawApprovedError" role="alert" hidden></p>
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" hidden>승인된 메모리가 없습니다.</p>
         </section>

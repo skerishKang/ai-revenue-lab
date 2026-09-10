@@ -446,6 +446,72 @@
 }
 
 /* ── Approved memory review ──────────────────────────────────── */
+.claw-memory-review {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.2));
+  border-radius: 16px;
+  background: rgba(47, 111, 153, 0.06);
+}
+.claw-memory-review-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink, #111a22);
+}
+.claw-memory-proposal {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.18));
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+}
+.claw-memory-proposal-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #111a22);
+}
+.claw-memory-proposal-type {
+  font-size: 12px;
+  color: var(--text-muted, #5b6672);
+}
+.claw-memory-proposal-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink, #111a22);
+}
+.claw-memory-proposal-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.claw-memory-approve,
+.claw-memory-reject {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.claw-memory-approve {
+  border: 1px solid var(--accent, #2f6f99);
+  background: var(--accent, #2f6f99);
+  color: #fff;
+}
+.claw-memory-reject {
+  border: 1px solid var(--line, rgba(73, 86, 98, 0.24));
+  background: transparent;
+  color: var(--text, #17202a);
+}
+.claw-memory-approve:focus-visible,
+.claw-memory-reject:focus-visible {
+  outline: 2px solid var(--accent, #2f6f99);
+  outline-offset: 1px;
+}
 .claw-approved-memory {
   display: grid;
   gap: 12px;
