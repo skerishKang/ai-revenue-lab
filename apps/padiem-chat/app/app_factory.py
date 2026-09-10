@@ -19,6 +19,13 @@ from .claw_routes import (
     claw_runs_history,
 )
 from .claw_telegram_routes import claw_telegram_ingest
+from .approved_memory import ApprovedMemoryStore, D1ApprovedMemoryStore
+from .claw_memory_routes import (
+    claw_memory_approve,
+    claw_memory_detail,
+    claw_memory_list,
+    claw_memory_reject,
+)
 from .config import Settings
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -89,6 +96,7 @@ def create_app(
     r2_binding=None,
     claw_p01_adapter=None,
     claw_telegram_authority=None,
+    approved_memory_store: ApprovedMemoryStore | None = None,
     telemetry_emitter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -114,6 +122,10 @@ def create_app(
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
+        Route("/api/claw/memory/approve", claw_memory_approve, methods=["POST"]),
+        Route("/api/claw/memory/reject", claw_memory_reject, methods=["POST"]),
+        Route("/api/claw/memory", claw_memory_list, methods=["GET"]),
+        Route("/api/claw/memory/{memory_id}", claw_memory_detail, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -160,4 +172,15 @@ def create_app(
     # Thin Telegram inbound consumer seam (#2315): the trusted binding
     # authority is injected server-side only; None keeps the route fail-closed.
     app.state.claw_telegram_authority = claw_telegram_authority
+    # Durable explicitly user-approved memory (#2331): reuse the existing
+    # PADIEM_CHAT_DB D1 binding with no new database authority. An explicitly
+    # injected store wins (network-free tests); otherwise derive from the
+    # D1 binding when present. None keeps the routes fail-closed.
+    _approved_memory_store = approved_memory_store
+    if _approved_memory_store is None and d1_binding is not None:
+        try:
+            _approved_memory_store = D1ApprovedMemoryStore(d1_binding)
+        except Exception:
+            _approved_memory_store = None
+    app.state.approved_memory_store = _approved_memory_store
     return app
