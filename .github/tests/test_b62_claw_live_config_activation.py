@@ -379,6 +379,25 @@ def _r2_step_block() -> str:
     )[1]
 
 
+def _classify_step_block() -> str:
+    return _readonly_job_block().split(
+        "- name: Read live Worker settings and classify activation targets", 1
+    )[1].split("- name: Read-only R2 bucket existence check", 1)[0]
+
+
+def _readonly_job_env_block() -> str:
+    """The job-level env block, i.e. everything before the first step."""
+    return _readonly_job_block().split("steps:", 1)[0]
+
+
+DEDICATED_R2_SECRET = "B62_R2_READONLY_API_TOKEN"
+DEDICATED_R2_ENV = "R2_READONLY_API_TOKEN"
+DEDICATED_R2_ENV_LINE = (
+    "R2_READONLY_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}"
+)
+SHARED_TOKEN_ENV_LINE = "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+
+
 def _expected_block(text: str, base_indent: int) -> str:
     """Dedent a literal, then re-indent it to the workflow's real base column."""
     prefix = " " * base_indent
@@ -569,6 +588,101 @@ def test_readonly_r2_single_get_preserved_after_status_observability() -> None:
         assert verb not in r2, verb
 
 
+def test_readonly_r2_step_uses_only_the_dedicated_secret() -> None:
+    """R2 bucket metadata GET must authenticate with the dedicated secret only."""
+    r2 = _r2_step_block()
+    assert DEDICATED_R2_ENV_LINE in r2
+    assert f"secrets.{DEDICATED_R2_SECRET}" in r2
+    assert f"Bearer ${{{DEDICATED_R2_ENV}}}" in r2
+    assert "CLOUDFLARE_API_TOKEN" not in r2
+
+
+def test_readonly_r2_dedicated_secret_reference_is_canonical_and_single() -> None:
+    r2 = _r2_step_block()
+    assert r2.count(f"secrets.{DEDICATED_R2_SECRET}") == 1
+    assert f"${{{{ secrets.{DEDICATED_R2_SECRET} }}}}" in r2
+
+
+def test_readonly_worker_settings_step_keeps_shared_token() -> None:
+    """Worker settings classification must keep using the shared deployment token."""
+    classify = _classify_step_block()
+    assert SHARED_TOKEN_ENV_LINE in classify
+    assert "Bearer ${CLOUDFLARE_API_TOKEN}" in classify
+    assert "workers/scripts/${B62_WORKER}/settings" in classify
+    assert DEDICATED_R2_SECRET not in classify
+    assert DEDICATED_R2_ENV not in classify
+
+
+def test_readonly_job_env_does_not_expose_shared_token_to_r2_step() -> None:
+    job_env = _readonly_job_env_block()
+    assert "CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" in job_env
+    assert "CLOUDFLARE_API_TOKEN" not in job_env
+    assert DEDICATED_R2_SECRET not in job_env
+    assert DEDICATED_R2_ENV not in job_env
+
+
+def test_readonly_r2_missing_dedicated_token_fails_closed_before_curl() -> None:
+    r2 = _r2_step_block()
+    # empty-default expansion only; never a shared-token default
+    guard = 'if [ -z "${R2_READONLY_API_TOKEN:-}" ]; then'
+    assert guard in r2
+    assert "exit 1" in r2
+    # the guard must run before any network request
+    assert r2.index(guard) < r2.index("curl ")
+
+    guard_block = r2.split(guard, 1)[1].split("\n          fi\n", 1)[0]
+    assert "B62_R2_READONLY_CREDENTIAL=MISSING" in guard_block
+    assert "R2_BUCKET_PROBE=NOT_ATTEMPTED" in guard_block
+    assert "SECRET_VALUE_EMITTED=0" in guard_block
+    assert "PRODUCTION_MUTATION=0" in guard_block
+    # fail-closed must not fabricate bounded R2 evidence
+    assert "R2_BUCKET_EXISTENCE=" not in guard_block
+    assert "R2_BUCKET_HTTP_STATUS=" not in guard_block
+    assert "R2_BUCKET_RESPONSE_SHAPE=" not in guard_block
+
+
+def test_readonly_r2_step_has_no_shared_token_fallback() -> None:
+    r2 = _r2_step_block()
+    assert "CLOUDFLARE_API_TOKEN" not in r2
+    for fallback in (
+        "${CLOUDFLARE_API_TOKEN:-",
+        ":-${CLOUDFLARE_API_TOKEN}",
+        ":-$CLOUDFLARE_API_TOKEN",
+        "${R2_READONLY_API_TOKEN:-${CLOUDFLARE_API_TOKEN}}",
+        "|| ${CLOUDFLARE_API_TOKEN}",
+        "|| $CLOUDFLARE_API_TOKEN",
+    ):
+        assert fallback not in r2, fallback
+
+
+def test_readonly_r2_dedicated_token_value_is_never_emitted() -> None:
+    r2 = _r2_step_block()
+    for line in r2.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert DEDICATED_R2_ENV not in stripped, stripped
+            assert DEDICATED_R2_SECRET not in stripped, stripped
+            assert "Bearer" not in stripped, stripped
+
+
+def test_readonly_r2_evidence_keys_unchanged_after_credential_split() -> None:
+    """The credential split must not alter the bounded evidence contract."""
+    readonly = _readonly_job_block()
+    assert "R2_BUCKET_EXISTENCE=EXISTS" in readonly
+    assert "R2_BUCKET_EXISTENCE=ABSENT" in readonly
+    assert "R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT" in readonly
+    assert "R2_OBJECT_READ=0" in readonly
+    assert "R2_OBJECT_WRITE=0" in readonly
+    assert "PRODUCTION_MUTATION=0" in readonly
+    outputs_block = readonly.split("steps:", 1)[0]
+    assert "r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}" in outputs_block
+    assert "r2_bucket_http_status: ${{ steps.r2_bucket.outputs.r2_bucket_http_status }}" in outputs_block
+    assert (
+        "r2_bucket_response_shape: ${{ steps.r2_bucket.outputs.r2_bucket_response_shape }}"
+        in outputs_block
+    )
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -599,4 +713,12 @@ if __name__ == "__main__":
     test_readonly_r2_status_mapping_is_exact_per_case_arm()
     test_readonly_r2_status_evidence_emits_no_raw_response_or_secrets()
     test_readonly_r2_single_get_preserved_after_status_observability()
+    test_readonly_r2_step_uses_only_the_dedicated_secret()
+    test_readonly_r2_dedicated_secret_reference_is_canonical_and_single()
+    test_readonly_worker_settings_step_keeps_shared_token()
+    test_readonly_job_env_does_not_expose_shared_token_to_r2_step()
+    test_readonly_r2_missing_dedicated_token_fails_closed_before_curl()
+    test_readonly_r2_step_has_no_shared_token_fallback()
+    test_readonly_r2_dedicated_token_value_is_never_emitted()
+    test_readonly_r2_evidence_keys_unchanged_after_credential_split()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
