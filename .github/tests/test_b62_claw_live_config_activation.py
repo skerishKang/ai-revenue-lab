@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import textwrap
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -233,6 +234,598 @@ def test_workflow_is_production_gated_and_secret_safe() -> None:
         assert token not in workflow, token
 
 
+def test_readonly_job_contains_r2_bucket_existence_check() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "r2/buckets/${R2_BUCKET_NAME}" in workflow
+    assert "R2_BUCKET_EXISTENCE=EXISTS" in workflow
+    assert "R2_BUCKET_EXISTENCE=ABSENT" in workflow
+    assert "R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT" in workflow
+    assert "R2_OBJECT_READ=0" in workflow
+    assert "R2_OBJECT_WRITE=0" in workflow
+
+
+def test_readonly_r2_check_is_get_only_in_readonly_path() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+    assert "r2/buckets/${R2_BUCKET_NAME}" in readonly
+    assert "curl -sS -X PATCH" not in readonly
+    assert "-F \"settings=<${RUNNER_TEMP}/b62-config-patch.json;type=application/json\"" not in readonly
+    assert "deploy" not in readonly.lower() or "B62_DEPLOY" not in readonly
+    assert "r2/buckets/${R2_BUCKET_NAME} -X PUT" not in readonly
+    assert "DELETE" not in readonly
+    assert "R2_BUCKET_CREATED=0" not in readonly
+
+
+def test_activate_config_behavior_unchanged() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    activate = workflow.split("activate-config:", 1)[1]
+    assert "r2/buckets/${R2_BUCKET_NAME}" in activate
+    assert "R2_BUCKET_REUSE_EXISTING=PASS" in activate
+    assert "R2_BUCKET_CREATED=0" in activate
+    assert "inputs.mode == 'activate_config'" in workflow
+    assert "inputs.mode == 'rollback_config'" in workflow
+
+
+def test_exact_main_lock_remains_required_in_readonly_path() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+    assert 'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"' in readonly
+    assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in readonly
+    assert 'READONLY_EXACT_MAIN_SHA=PASS' in readonly
+
+
+def test_readonly_path_never_emits_secret_values() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    readonly = workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+    assert "SECRET_VALUES_READ=0" in readonly
+    assert "BINDING_NAME_AND_TYPE_ONLY=YES" in readonly
+    assert "PRODUCTION_MUTATION=0" in readonly
+    assert "R2_OBJECT_READ=0" in readonly
+    assert "R2_OBJECT_WRITE=0" in readonly
+    assert "secret_text" not in readonly
+    assert "P01_ENGINE_CREDENTIAL" not in readonly
+
+
+def test_candidate_bucket_name_is_input_bounded() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "r2_bucket_name:" in workflow
+    assert "R2_BUCKET_NAME: ${{ inputs.r2_bucket_name }}" in workflow
+    assert "test -n \"${R2_BUCKET_NAME}\"" in workflow
+    assert "padiem-workspace-files" not in workflow.split("env:", 1)[0]
+
+
+def test_no_public_r2_url_authority_introduced() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "r2:///" not in workflow
+    assert "r2.dev" not in workflow
+    assert "s3.amazonaws.com" not in workflow
+    assert "public_r2_url" not in workflow
+
+
+def _readonly_job_block() -> str:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    return workflow.split("cloudflare-readonly:", 1)[1].split("activate-config:", 1)[0]
+
+
+def test_readonly_job_output_wires_r2_bucket_existence() -> None:
+    """JOB_OUTPUT_WIRED=YES: CENTRAL must be able to retrieve the bounded R2 result."""
+    readonly = _readonly_job_block()
+    outputs_block = readonly.split("steps:", 1)[0]
+    assert "outputs:" in outputs_block
+    assert "disposition: ${{ steps.classify.outputs.disposition }}" in outputs_block
+    assert (
+        "r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}"
+        in outputs_block
+    )
+    assert "id: r2_bucket" in readonly
+
+
+def test_readonly_r2_bucket_existence_uses_stable_output_key() -> None:
+    readonly = _readonly_job_block()
+    for state in ("EXISTS", "ABSENT", "ERROR_OR_DRIFT"):
+        assert f'r2_bucket_existence={state}" >> "${{GITHUB_OUTPUT}}"' in readonly, state
+
+
+def test_readonly_r2_bucket_existence_emits_bounded_log_evidence() -> None:
+    readonly = _readonly_job_block()
+    evidence_lines = [
+        line.strip() for line in readonly.splitlines() if "R2_BUCKET_EXISTENCE=" in line
+    ]
+    assert evidence_lines, "expected bounded ordinary R2 bucket existence evidence"
+    allowed = {
+        "echo 'R2_BUCKET_EXISTENCE=EXISTS'",
+        "echo 'R2_BUCKET_EXISTENCE=ABSENT'",
+        "echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'",
+    }
+    for line in evidence_lines:
+        assert line in allowed, line
+
+
+def test_readonly_r2_evidence_never_emits_credentials_or_account_id() -> None:
+    readonly = _readonly_job_block()
+    for line in readonly.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert "CLOUDFLARE_ACCOUNT_ID" not in stripped, stripped
+            assert "CLOUDFLARE_API_TOKEN" not in stripped, stripped
+            assert "secret_text" not in stripped.lower(), stripped
+            assert "secrets." not in stripped.lower(), stripped
+            assert "object_key" not in stripped, stripped
+            assert "r2:///" not in stripped, stripped
+
+
+def test_readonly_r2_check_stays_get_only_with_no_mutation_verbs() -> None:
+    readonly = _readonly_job_block()
+    assert "/r2/buckets/${R2_BUCKET_NAME}" in readonly
+    assert readonly.count("/r2/buckets/") == 1
+    assert "/objects" not in readonly
+    for verb in ("-X PUT", "-X POST", "-X PATCH", "-X DELETE", "--data", "-F ", "wrangler"):
+        assert verb not in readonly, verb
+
+
+def test_readonly_worker_settings_classification_unchanged() -> None:
+    readonly = _readonly_job_block()
+    assert "id: classify" in readonly
+    assert "B62_CLAW_LIVE_CONFIG_DISPOSITION=" in readonly
+    assert "ALREADY_EXACT|ACTIVATION_REQUIRED" in readonly
+    assert "BINDING_NAME_AND_TYPE_ONLY=YES" in readonly
+    assert "SECRET_VALUES_READ=0" in readonly
+    assert "workers/scripts/${B62_WORKER}/settings" in readonly
+
+
+def _r2_step_block() -> str:
+    return _readonly_job_block().split(
+        "- name: Read-only R2 bucket existence check", 1
+    )[1]
+
+
+def _activate_job_block() -> str:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    return workflow.split("activate-config:", 1)[1].split("rollback-config:", 1)[0]
+
+
+def _activation_r2_confirm_block() -> str:
+    """The activation-time bucket confirmation step body."""
+    activate = _activate_job_block()
+    return activate.split(
+        "- name: Confirm the private R2 bucket already exists", 1
+    )[1].split("- name: ", 1)[0]
+
+
+def _activation_plan_step_block() -> str:
+    activate = _activate_job_block()
+    return activate.split(
+        "- name: Rebuild the activation patch against the pre-mutation snapshot", 1
+    )[1].split("- name: Confirm the private R2 bucket already exists", 1)[0]
+
+
+def _activation_patch_step_block() -> str:
+    activate = _activate_job_block()
+    return activate.split(
+        "- name: Apply the activation patch through the settings API", 1
+    )[1].split("- name: ", 1)[0]
+
+
+def _classify_step_block() -> str:
+    return _readonly_job_block().split(
+        "- name: Read live Worker settings and classify activation targets", 1
+    )[1].split("- name: Read-only R2 bucket existence check", 1)[0]
+
+
+def _readonly_job_env_block() -> str:
+    """The job-level env block, i.e. everything before the first step."""
+    return _readonly_job_block().split("steps:", 1)[0]
+
+
+DEDICATED_R2_SECRET = "B62_R2_READONLY_API_TOKEN"
+DEDICATED_R2_ENV = "R2_READONLY_API_TOKEN"
+DEDICATED_R2_ENV_LINE = (
+    "R2_READONLY_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}"
+)
+SHARED_TOKEN_ENV_LINE = "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+
+
+def _expected_block(text: str, base_indent: int) -> str:
+    """Dedent a literal, then re-indent it to the workflow's real base column."""
+    prefix = " " * base_indent
+    return "\n".join(
+        prefix + line if line else line
+        for line in textwrap.dedent(text).splitlines()
+    )
+
+
+def test_readonly_r2_bucket_http_status_is_bounded() -> None:
+    readonly = _readonly_job_block()
+    emitted = {
+        line.strip()
+        for line in readonly.splitlines()
+        if line.strip().startswith("echo 'R2_BUCKET_HTTP_STATUS=")
+    }
+    assert emitted == {
+        "echo 'R2_BUCKET_HTTP_STATUS=200'",
+        "echo 'R2_BUCKET_HTTP_STATUS=404'",
+        "echo 'R2_BUCKET_HTTP_STATUS=401'",
+        "echo 'R2_BUCKET_HTTP_STATUS=403'",
+        "echo 'R2_BUCKET_HTTP_STATUS=OTHER'",
+    }
+    for unbounded in (
+        "R2_BUCKET_HTTP_STATUS=500",
+        "R2_BUCKET_HTTP_STATUS=502",
+        "R2_BUCKET_HTTP_STATUS=503",
+        "R2_BUCKET_HTTP_STATUS=${http_status}",
+        'R2_BUCKET_HTTP_STATUS="${http_status}"',
+    ):
+        assert unbounded not in readonly, unbounded
+
+
+def test_readonly_r2_bucket_response_shape_is_bounded() -> None:
+    readonly = _readonly_job_block()
+    emitted = {
+        line.strip()
+        for line in readonly.splitlines()
+        if line.strip().startswith("echo 'R2_BUCKET_RESPONSE_SHAPE=")
+    }
+    assert emitted == {
+        "echo 'R2_BUCKET_RESPONSE_SHAPE=EXACT'",
+        "echo 'R2_BUCKET_RESPONSE_SHAPE=DRIFT'",
+        "echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'",
+    }
+
+
+def test_readonly_r2_bucket_http_status_uses_stable_output_keys() -> None:
+    readonly = _readonly_job_block()
+    for key, value in (
+        ("r2_bucket_http_status", "200"),
+        ("r2_bucket_http_status", "404"),
+        ("r2_bucket_http_status", "401"),
+        ("r2_bucket_http_status", "403"),
+        ("r2_bucket_http_status", "OTHER"),
+        ("r2_bucket_response_shape", "EXACT"),
+        ("r2_bucket_response_shape", "DRIFT"),
+        ("r2_bucket_response_shape", "NOT_APPLICABLE"),
+    ):
+        assert f'{key}={value}" >> "${{GITHUB_OUTPUT}}"' in readonly, (key, value)
+
+
+def test_readonly_job_output_wires_r2_status_observability() -> None:
+    readonly = _readonly_job_block()
+    outputs_block = readonly.split("steps:", 1)[0]
+    assert "disposition: ${{ steps.classify.outputs.disposition }}" in outputs_block
+    assert (
+        "r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}"
+        in outputs_block
+    )
+    assert (
+        "r2_bucket_http_status: ${{ steps.r2_bucket.outputs.r2_bucket_http_status }}"
+        in outputs_block
+    )
+    assert (
+        "r2_bucket_response_shape: ${{ steps.r2_bucket.outputs.r2_bucket_response_shape }}"
+        in outputs_block
+    )
+
+
+def test_readonly_r2_status_mapping_is_exact_per_case_arm() -> None:
+    """Every case arm must bind status -> existence -> response shape atomically."""
+    readonly = _readonly_job_block()
+
+    arm_200_exact = _expected_block(
+        """\
+            200)
+              if jq -e --arg name "${R2_BUCKET_NAME}" '.success == true and .result.name == $name' "${bucket}" >/dev/null; then
+                echo "r2_bucket_existence=EXISTS" >> "${GITHUB_OUTPUT}"
+                echo "r2_bucket_http_status=200" >> "${GITHUB_OUTPUT}"
+                echo "r2_bucket_response_shape=EXACT" >> "${GITHUB_OUTPUT}"
+                echo 'R2_BUCKET_EXISTENCE=EXISTS'
+                echo 'R2_BUCKET_HTTP_STATUS=200'
+                echo 'R2_BUCKET_RESPONSE_SHAPE=EXACT'""",
+        12,
+    )
+    arm_200_drift = _expected_block(
+        """\
+            else
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=200" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=DRIFT" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=200'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=DRIFT'
+            fi
+            ;;""",
+        14,
+    )
+    arm_404 = _expected_block(
+        """\
+            404)
+              echo "r2_bucket_existence=ABSENT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=404" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ABSENT'
+              echo 'R2_BUCKET_HTTP_STATUS=404'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+    arm_401 = _expected_block(
+        """\
+            401)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=401" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=401'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+    arm_403 = _expected_block(
+        """\
+            403)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=403" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=403'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+    arm_other = _expected_block(
+        """\
+            *)
+              echo "r2_bucket_existence=ERROR_OR_DRIFT" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_http_status=OTHER" >> "${GITHUB_OUTPUT}"
+              echo "r2_bucket_response_shape=NOT_APPLICABLE" >> "${GITHUB_OUTPUT}"
+              echo 'R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT'
+              echo 'R2_BUCKET_HTTP_STATUS=OTHER'
+              echo 'R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE'
+              ;;""",
+        12,
+    )
+
+    for arm in (arm_200_exact, arm_200_drift, arm_404, arm_401, arm_403, arm_other):
+        assert arm in readonly, arm
+
+    # 200 must be the only arm that can report a response shape other than NOT_APPLICABLE.
+    assert readonly.count('R2_BUCKET_RESPONSE_SHAPE=EXACT') == 1
+    assert readonly.count('R2_BUCKET_RESPONSE_SHAPE=DRIFT') == 1
+    assert readonly.count('R2_BUCKET_RESPONSE_SHAPE=NOT_APPLICABLE') == 4
+
+
+def test_readonly_r2_status_evidence_emits_no_raw_response_or_secrets() -> None:
+    r2 = _r2_step_block()
+    for line in r2.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert "${bucket}" not in stripped, stripped
+            assert "CLOUDFLARE_ACCOUNT_ID" not in stripped, stripped
+            assert "CLOUDFLARE_API_TOKEN" not in stripped, stripped
+            assert "Authorization" not in stripped, stripped
+            assert "object_key" not in stripped, stripped
+    for token in ("-i ", "--include", "-D ", "cat ", "jq -c .", "jq . "):
+        assert token not in r2, token
+
+
+def test_readonly_r2_single_get_preserved_after_status_observability() -> None:
+    r2 = _r2_step_block()
+    assert r2.count("curl ") == 1
+    assert "/r2/buckets/${R2_BUCKET_NAME}" in r2
+    assert "-w '%{http_code}'" in r2
+    for verb in ("-X PUT", "-X POST", "-X PATCH", "-X DELETE", "--data", "-F ", "wrangler"):
+        assert verb not in r2, verb
+
+
+def test_readonly_r2_step_uses_only_the_dedicated_secret() -> None:
+    """R2 bucket metadata GET must authenticate with the dedicated secret only."""
+    r2 = _r2_step_block()
+    assert DEDICATED_R2_ENV_LINE in r2
+    assert f"secrets.{DEDICATED_R2_SECRET}" in r2
+    assert f"Bearer ${{{DEDICATED_R2_ENV}}}" in r2
+    assert "CLOUDFLARE_API_TOKEN" not in r2
+
+
+def test_readonly_r2_dedicated_secret_reference_is_canonical_and_single() -> None:
+    r2 = _r2_step_block()
+    assert r2.count(f"secrets.{DEDICATED_R2_SECRET}") == 1
+    assert f"${{{{ secrets.{DEDICATED_R2_SECRET} }}}}" in r2
+
+
+def test_readonly_worker_settings_step_keeps_shared_token() -> None:
+    """Worker settings classification must keep using the shared deployment token."""
+    classify = _classify_step_block()
+    assert SHARED_TOKEN_ENV_LINE in classify
+    assert "Bearer ${CLOUDFLARE_API_TOKEN}" in classify
+    assert "workers/scripts/${B62_WORKER}/settings" in classify
+    assert DEDICATED_R2_SECRET not in classify
+    assert DEDICATED_R2_ENV not in classify
+
+
+def test_readonly_job_env_does_not_expose_shared_token_to_r2_step() -> None:
+    job_env = _readonly_job_env_block()
+    assert "CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" in job_env
+    assert "CLOUDFLARE_API_TOKEN" not in job_env
+    assert DEDICATED_R2_SECRET not in job_env
+    assert DEDICATED_R2_ENV not in job_env
+
+
+def test_readonly_r2_missing_dedicated_token_fails_closed_before_curl() -> None:
+    r2 = _r2_step_block()
+    # empty-default expansion only; never a shared-token default
+    guard = 'if [ -z "${R2_READONLY_API_TOKEN:-}" ]; then'
+    assert guard in r2
+    assert "exit 1" in r2
+    # the guard must run before any network request
+    assert r2.index(guard) < r2.index("curl ")
+
+    guard_block = r2.split(guard, 1)[1].split("\n          fi\n", 1)[0]
+    assert "B62_R2_READONLY_CREDENTIAL=MISSING" in guard_block
+    assert "R2_BUCKET_PROBE=NOT_ATTEMPTED" in guard_block
+    assert "SECRET_VALUE_EMITTED=0" in guard_block
+    assert "PRODUCTION_MUTATION=0" in guard_block
+    # fail-closed must not fabricate bounded R2 evidence
+    assert "R2_BUCKET_EXISTENCE=" not in guard_block
+    assert "R2_BUCKET_HTTP_STATUS=" not in guard_block
+    assert "R2_BUCKET_RESPONSE_SHAPE=" not in guard_block
+
+
+def test_readonly_r2_step_has_no_shared_token_fallback() -> None:
+    r2 = _r2_step_block()
+    assert "CLOUDFLARE_API_TOKEN" not in r2
+    for fallback in (
+        "${CLOUDFLARE_API_TOKEN:-",
+        ":-${CLOUDFLARE_API_TOKEN}",
+        ":-$CLOUDFLARE_API_TOKEN",
+        "${R2_READONLY_API_TOKEN:-${CLOUDFLARE_API_TOKEN}}",
+        "|| ${CLOUDFLARE_API_TOKEN}",
+        "|| $CLOUDFLARE_API_TOKEN",
+    ):
+        assert fallback not in r2, fallback
+
+
+def test_readonly_r2_dedicated_token_value_is_never_emitted() -> None:
+    r2 = _r2_step_block()
+    for line in r2.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert DEDICATED_R2_ENV not in stripped, stripped
+            assert DEDICATED_R2_SECRET not in stripped, stripped
+            assert "Bearer" not in stripped, stripped
+
+
+def test_readonly_r2_evidence_keys_unchanged_after_credential_split() -> None:
+    """The credential split must not alter the bounded evidence contract."""
+    readonly = _readonly_job_block()
+    assert "R2_BUCKET_EXISTENCE=EXISTS" in readonly
+    assert "R2_BUCKET_EXISTENCE=ABSENT" in readonly
+    assert "R2_BUCKET_EXISTENCE=ERROR_OR_DRIFT" in readonly
+    assert "R2_OBJECT_READ=0" in readonly
+    assert "R2_OBJECT_WRITE=0" in readonly
+    assert "PRODUCTION_MUTATION=0" in readonly
+    outputs_block = readonly.split("steps:", 1)[0]
+    assert "r2_bucket_existence: ${{ steps.r2_bucket.outputs.r2_bucket_existence }}" in outputs_block
+    assert "r2_bucket_http_status: ${{ steps.r2_bucket.outputs.r2_bucket_http_status }}" in outputs_block
+    assert (
+        "r2_bucket_response_shape: ${{ steps.r2_bucket.outputs.r2_bucket_response_shape }}"
+        in outputs_block
+    )
+
+
+def test_activation_r2_confirm_uses_only_the_dedicated_secret() -> None:
+    """Activation-time R2 metadata GET must authenticate with the dedicated secret only."""
+    confirm = _activation_r2_confirm_block()
+    assert DEDICATED_R2_ENV_LINE in confirm
+    assert f"secrets.{DEDICATED_R2_SECRET}" in confirm
+    assert f"Bearer ${{{DEDICATED_R2_ENV}}}" in confirm
+    assert "CLOUDFLARE_API_TOKEN" not in confirm
+
+
+def test_activation_r2_confirm_dedicated_reference_is_canonical_and_single() -> None:
+    confirm = _activation_r2_confirm_block()
+    assert confirm.count(f"secrets.{DEDICATED_R2_SECRET}") == 1
+    assert f"${{{{ secrets.{DEDICATED_R2_SECRET} }}}}" in confirm
+
+
+def test_activation_r2_confirm_has_no_shared_token_fallback() -> None:
+    confirm = _activation_r2_confirm_block()
+    assert "CLOUDFLARE_API_TOKEN" not in confirm
+    for fallback in (
+        "${CLOUDFLARE_API_TOKEN:-",
+        ":-${CLOUDFLARE_API_TOKEN}",
+        ":-$CLOUDFLARE_API_TOKEN",
+        "${R2_READONLY_API_TOKEN:-${CLOUDFLARE_API_TOKEN}}",
+        "|| ${CLOUDFLARE_API_TOKEN}",
+        "|| $CLOUDFLARE_API_TOKEN",
+    ):
+        assert fallback not in confirm, fallback
+
+
+def test_activation_r2_confirm_missing_dedicated_token_fails_closed_before_curl() -> None:
+    confirm = _activation_r2_confirm_block()
+    guard = 'if [ -z "${R2_READONLY_API_TOKEN:-}" ]; then'
+    assert guard in confirm
+    assert "exit 1" in confirm
+    assert confirm.index(guard) < confirm.index("curl ")
+
+    guard_block = confirm.split(guard, 1)[1].split("\n          fi\n", 1)[0]
+    assert "B62_R2_READONLY_CREDENTIAL=MISSING" in guard_block
+    assert "R2_BUCKET_PROBE=NOT_ATTEMPTED" in guard_block
+    assert "SECRET_VALUE_EMITTED=0" in guard_block
+    assert "PRODUCTION_MUTATION=0" in guard_block
+    assert "R2_BUCKET_REUSE_EXISTING" not in guard_block
+
+
+def test_activation_r2_confirm_remains_single_get_only() -> None:
+    confirm = _activation_r2_confirm_block()
+    assert confirm.count("curl ") == 1
+    assert "/r2/buckets/${R2_BUCKET_NAME}" in confirm
+    assert "-w '%{http_code}'" in confirm
+    assert "test \"${http_status}\" = \"200\"" in confirm
+    for verb in ("-X PUT", "-X POST", "-X PATCH", "-X DELETE", "--data", "-F ", "wrangler"):
+        assert verb not in confirm, verb
+
+
+def test_activation_r2_confirm_fails_on_success_false_or_name_mismatch() -> None:
+    confirm = _activation_r2_confirm_block()
+    assert (
+        "jq -e --arg name \"${R2_BUCKET_NAME}\" "
+        "'.success == true and .result.name == $name' \"${bucket}\" >/dev/null" in confirm
+    )
+
+
+def test_activation_r2_confirm_never_emits_token_account_or_raw_response() -> None:
+    confirm = _activation_r2_confirm_block()
+    for line in confirm.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert DEDICATED_R2_ENV not in stripped, stripped
+            assert DEDICATED_R2_SECRET not in stripped, stripped
+            assert "CLOUDFLARE_ACCOUNT_ID" not in stripped, stripped
+            assert "CLOUDFLARE_API_TOKEN" not in stripped, stripped
+            assert "Bearer" not in stripped, stripped
+            assert "Authorization" not in stripped, stripped
+            assert "${bucket}" not in stripped, stripped
+    for token in ("-i ", "--include", "-D ", "cat ", "jq -c .", "jq . "):
+        assert token not in confirm, token
+
+
+def test_activation_r2_confirm_precedes_settings_patch_and_secret_put() -> None:
+    """Fail-closed bucket confirmation must gate every downstream mutation."""
+    activate = _activate_job_block()
+    confirm_at = activate.index("- name: Confirm the private R2 bucket already exists")
+    patch_at = activate.index("- name: Apply the activation patch through the settings API")
+    credential_at = activate.index("- name: Create the P01 Engine credential only when it is absent")
+    assert confirm_at < patch_at < credential_at
+
+
+def test_activation_shared_token_remains_for_worker_config_operations() -> None:
+    """Shared token stays available only for Worker settings/secret operations."""
+    activate = _activate_job_block()
+    assert SHARED_TOKEN_ENV_LINE in activate.split("steps:", 1)[0]
+    patch = _activation_patch_step_block()
+    assert "Bearer ${CLOUDFLARE_API_TOKEN}" in patch
+    assert "workers/scripts/${B62_WORKER}/settings" in patch
+    credential_step = activate.split(
+        "- name: Create the P01 Engine credential only when it is absent", 1
+    )[1].split("- name: ", 1)[0]
+    assert "Bearer ${CLOUDFLARE_API_TOKEN}" in credential_step
+    assert "workers/scripts/${B62_WORKER}/secrets" in credential_step
+    assert DEDICATED_R2_SECRET not in patch
+    assert DEDICATED_R2_ENV not in patch
+
+
+def test_activation_r2_evidence_keys_unchanged_after_dedicated_wiring() -> None:
+    """The dedicated wiring must not alter the activation evidence contract."""
+    activate = _activate_job_block()
+    assert "R2_BUCKET_REUSE_EXISTING=PASS" in activate
+    assert "R2_BUCKET_CREATED=0" in activate
+    assert "B62_CLAW_LIVE_CONFIG_AUTHORIZATION=PASS" in activate
+    assert "B62_CLAW_CONFIG_PATCH=SUCCESS" in activate
+    assert "B62_CLAW_LIVE_CONFIG_POST_READBACK=PASS" in activate
+    assert "SKIPPED_ALREADY_EXACT" in activate
+    assert "SECRET_VALUES_READ=0" in activate
+    assert "UNRELATED_BINDINGS_PRESERVED=PASS" in activate
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -243,4 +836,42 @@ if __name__ == "__main__":
     test_plan_refuses_on_refuse_disposition()
     test_helper_names_match_worker_config_contract()
     test_workflow_is_production_gated_and_secret_safe()
+    test_readonly_job_contains_r2_bucket_existence_check()
+    test_readonly_r2_check_is_get_only_in_readonly_path()
+    test_activate_config_behavior_unchanged()
+    test_exact_main_lock_remains_required_in_readonly_path()
+    test_readonly_path_never_emits_secret_values()
+    test_candidate_bucket_name_is_input_bounded()
+    test_no_public_r2_url_authority_introduced()
+    test_readonly_job_output_wires_r2_bucket_existence()
+    test_readonly_r2_bucket_existence_uses_stable_output_key()
+    test_readonly_r2_bucket_existence_emits_bounded_log_evidence()
+    test_readonly_r2_evidence_never_emits_credentials_or_account_id()
+    test_readonly_r2_check_stays_get_only_with_no_mutation_verbs()
+    test_readonly_worker_settings_classification_unchanged()
+    test_readonly_r2_bucket_http_status_is_bounded()
+    test_readonly_r2_bucket_response_shape_is_bounded()
+    test_readonly_r2_bucket_http_status_uses_stable_output_keys()
+    test_readonly_job_output_wires_r2_status_observability()
+    test_readonly_r2_status_mapping_is_exact_per_case_arm()
+    test_readonly_r2_status_evidence_emits_no_raw_response_or_secrets()
+    test_readonly_r2_single_get_preserved_after_status_observability()
+    test_readonly_r2_step_uses_only_the_dedicated_secret()
+    test_readonly_r2_dedicated_secret_reference_is_canonical_and_single()
+    test_readonly_worker_settings_step_keeps_shared_token()
+    test_readonly_job_env_does_not_expose_shared_token_to_r2_step()
+    test_readonly_r2_missing_dedicated_token_fails_closed_before_curl()
+    test_readonly_r2_step_has_no_shared_token_fallback()
+    test_readonly_r2_dedicated_token_value_is_never_emitted()
+    test_readonly_r2_evidence_keys_unchanged_after_credential_split()
+    test_activation_r2_confirm_uses_only_the_dedicated_secret()
+    test_activation_r2_confirm_dedicated_reference_is_canonical_and_single()
+    test_activation_r2_confirm_has_no_shared_token_fallback()
+    test_activation_r2_confirm_missing_dedicated_token_fails_closed_before_curl()
+    test_activation_r2_confirm_remains_single_get_only()
+    test_activation_r2_confirm_fails_on_success_false_or_name_mismatch()
+    test_activation_r2_confirm_never_emits_token_account_or_raw_response()
+    test_activation_r2_confirm_precedes_settings_patch_and_secret_put()
+    test_activation_shared_token_remains_for_worker_config_operations()
+    test_activation_r2_evidence_keys_unchanged_after_dedicated_wiring()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
