@@ -16,6 +16,7 @@ from .claw_routes import (
     claw_manual_intake_artifact,
     claw_manual_intake_preview,
     claw_manual_intake_execute,
+    claw_runs_history,
 )
 from .config import Settings
 from .connector_ticket_routes import google_connector_ticket
@@ -109,6 +110,7 @@ def create_app(
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
+        Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)

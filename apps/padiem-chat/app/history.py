@@ -12,6 +12,8 @@ MAX_RECENT_CONVERSATIONS = 30
 MAX_PROJECT_NAME_CHARS = 80
 MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
 MAX_PROJECTS = 50
+MAX_CLAW_RUNS = 30
+MAX_RUN_RESULT_SUMMARY_CHARS = 200
 
 
 class HistoryError(RuntimeError):
@@ -64,6 +66,8 @@ class HistoryStore(Protocol):
     async def update_project(self, user_id: str, project_id: str, name: str, instructions: str) -> ProjectProfile | None: ...
     async def delete_project(self, user_id: str, project_id: str) -> bool: ...
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
+    async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None) -> None: ...
+    async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS) -> list[dict[str, Any]]: ...
 
 
 def _now_iso() -> str:
@@ -85,6 +89,10 @@ def _message_id() -> str:
 
 def _project_id() -> str:
     return "proj_" + uuid.uuid4().hex
+
+
+def _run_history_id() -> str:
+    return "crh_" + uuid.uuid4().hex
 
 
 def _validate_hex_id(value: object, prefix: str, label: str) -> str | None:
@@ -188,6 +196,28 @@ def _project_from_row(row: dict[str, Any]) -> ProjectProfile:
         created_at=str(row.get("created_at", "")),
         updated_at=str(row.get("updated_at", "")),
     )
+
+
+def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
+    document_id = row.get("artifact_document_id")
+    artifact = None
+    if document_id is not None and str(document_id):
+        artifact = {
+            "document_id": str(document_id),
+            "filename": str(row.get("artifact_filename") or ""),
+            "media_type": str(row.get("artifact_media_type") or ""),
+        }
+    return {
+        "run_id": str(row.get("run_id", "")),
+        "channel": str(row.get("channel", "")),
+        "action": str(row.get("action", "")),
+        "title": str(row.get("title", "")),
+        "status": str(row.get("status", "")),
+        "created_at": str(row.get("created_at", "")),
+        "updated_at": str(row.get("updated_at", "")),
+        "result_summary": str(row.get("result_summary")) if row.get("result_summary") is not None else None,
+        "artifact": artifact,
+    }
 
 
 class D1HistoryStore:
@@ -374,3 +404,49 @@ class D1HistoryStore:
         if project_id is not None:
             await self._run("UPDATE projects SET updated_at=? WHERE id=? AND user_id=?", now, project_id, user_id)
         return cid
+
+    async def record_claw_run(
+        self,
+        user_id: str,
+        run_id: str,
+        channel: str,
+        action: str,
+        title: str,
+        status: str,
+        result_summary: str | None = None,
+        artifact_document_id: str | None = None,
+        artifact_filename: str | None = None,
+        artifact_media_type: str | None = None,
+    ) -> None:
+        summary = result_summary[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_summary else None
+        now = _now_iso()
+        existing = await self._first(
+            "SELECT id, created_at FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if existing is not None:
+            await self._run(
+                "UPDATE claw_run_history SET channel=?, action=?, title=?, status=?, updated_at=?, "
+                "result_summary=?, artifact_document_id=?, artifact_filename=?, artifact_media_type=? "
+                "WHERE run_id=? AND user_id=?",
+                channel, action, title, status, now,
+                summary, artifact_document_id, artifact_filename, artifact_media_type,
+                run_id, user_id,
+            )
+            return
+        await self._run(
+            "INSERT INTO claw_run_history (id, user_id, run_id, channel, action, title, status, created_at, updated_at, result_summary, artifact_document_id, artifact_filename, artifact_media_type) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            _run_history_id(), user_id, run_id, channel, action, title, status, now, now,
+            summary, artifact_document_id, artifact_filename, artifact_media_type,
+        )
+
+    async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS) -> list[dict[str, Any]]:
+        bounded = max(1, min(int(limit), MAX_CLAW_RUNS))
+        rows = await self._all(
+            "SELECT run_id, channel, action, title, status, created_at, updated_at, result_summary, "
+            "artifact_document_id, artifact_filename, artifact_media_type "
+            "FROM claw_run_history WHERE user_id=? ORDER BY created_at DESC LIMIT ?",
+            user_id, bounded,
+        )
+        return [_run_history_public(row) for row in rows]
