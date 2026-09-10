@@ -5,7 +5,9 @@ on:
     paths:
       - ".github/workflows/b62-claw-live-config-activation-gate.yml"
       - ".github/scripts/b62_claw_live_config_activation.py"
+      - ".github/scripts/b62_binding_state_guard.py"
       - ".github/tests/test_b62_claw_live_config_activation.py"
+      - ".github/tests/test_b62_deploy_prereq_rollback_contracts.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -42,6 +44,19 @@ on:
         required: false
         default: ""
         type: string
+      premutation_run_id:
+        description: "Run id that recorded the pre-mutation settings snapshot artifact"
+        required: false
+        default: ""
+        type: string
+      credential_created_by_activation:
+        description: "Whether the recorded activation run created P01_ENGINE_CREDENTIAL"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 permissions:
   contents: read
@@ -94,6 +109,9 @@ jobs:
 
       - name: Run live config activation gate contract tests
         run: python .github/tests/test_b62_claw_live_config_activation.py
+
+      - name: Run deploy prereq and config rollback contract tests
+        run: python .github/tests/test_b62_deploy_prereq_rollback_contracts.py
 
       - name: Source-only evidence
         run: |
@@ -170,6 +188,7 @@ jobs:
     environment: production
     permissions:
       contents: read
+      actions: write
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -234,6 +253,14 @@ jobs:
           echo 'PREMUTATION_SETTINGS_SNAPSHOT=RECORDED'
           echo 'D1_IDENTIFIER_OUTPUT=0'
           echo 'SECRET_VALUES_READ=0'
+
+      - name: Publish the pre-mutation settings snapshot for bounded config rollback
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-claw-config-premutation-settings
+          path: ${{ runner.temp }}/b62-settings-premutation.json
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Rebuild the activation patch against the pre-mutation snapshot
         id: plan
@@ -387,11 +414,14 @@ jobs:
     environment: production
     permissions:
       contents: read
+      actions: read
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CONFIRMATION: ${{ inputs.confirmation }}
       ROLLBACK_VERSION_ID: ${{ inputs.rollback_version_id }}
+      PREMUTATION_RUN_ID: ${{ inputs.premutation_run_id }}
+      CREDENTIAL_CREATED_BY_ACTIVATION: ${{ inputs.credential_created_by_activation }}
     steps:
       - name: Require explicit rollback authorization
         shell: bash
@@ -399,7 +429,10 @@ jobs:
           set -euo pipefail
           test "${CONFIRMATION}" = "CONFIRM_ROLLBACK_B62_CLAW_LIVE_CONFIG"
           echo "${ROLLBACK_VERSION_ID}" | grep -Eq '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+          echo "${PREMUTATION_RUN_ID}" | grep -Eq '^[0-9]+$'
+          case "${CREDENTIAL_CREATED_BY_ACTIVATION}" in true|false) ;; *) exit 1;; esac
           echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK_AUTHORIZATION=PASS'
+          echo 'CODE_VERSION_ROLLBACK_AND_CONFIG_ROLLBACK_ARE_DISTINCT=YES'
 
       - name: Checkout exact approved main SHA
         uses: actions/checkout@v4
@@ -421,7 +454,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Restore the recorded pre-activation version through the deployments API
+      - name: Restore the recorded pre-activation code version (CODE_VERSION_ROLLBACK)
         shell: bash
         run: |
           set -euo pipefail
@@ -432,7 +465,7 @@ jobs:
             -o "${deployments}"
           current="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
           if [ "${current}" = "${ROLLBACK_VERSION_ID}" ]; then
-            echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=SKIPPED_ALREADY_RESTORED'
+            echo 'CODE_VERSION_ROLLBACK=SKIPPED_ALREADY_RESTORED'
             echo 'PRODUCTION_MUTATION=0'
             exit 0
           fi
@@ -469,10 +502,11 @@ jobs:
             exit 1
           fi
           jq -e '.success == true' "${response}" >/dev/null
-          echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK=SUBMITTED'
+          echo 'CODE_VERSION_ROLLBACK=SUBMITTED'
           echo 'PRODUCTION_MUTATION=1'
+          echo 'CODE_VERSION_ROLLBACK_IS_NOT_CONFIG_ROLLBACK=YES'
 
-      - name: Read back the restored active version
+      - name: Read back the restored active code version
         shell: bash
         run: |
           set -euo pipefail
@@ -491,6 +525,127 @@ jobs:
             sleep 2
           done
           test "${restored}" = yes
-          echo 'B62_CLAW_LIVE_CONFIG_ROLLBACK_READBACK=PASS'
-          echo 'ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED'
+          echo 'CODE_VERSION_ROLLBACK_READBACK=PASS'
+          echo 'CODE_VERSION_ROLLBACK_MECHANISM=VERSION_TARGET_RESTORED'
+          echo 'CONFIG_ROLLBACK=PENDING_SNAPSHOT_BOUNDED_RESTORE'
+
+      - name: Download the bounded pre-mutation settings snapshot
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          workflow_name="$(gh run view "${PREMUTATION_RUN_ID}" --json workflowName -q .workflowName)"
+          test "${workflow_name}" = "B62 Claw Live Config Activation Gate"
+          gh run download "${PREMUTATION_RUN_ID}" \
+            --name b62-claw-config-premutation-settings \
+            --dir "${RUNNER_TEMP}/b62-rollback-snapshot"
+          snapshot="${RUNNER_TEMP}/b62-rollback-snapshot/b62-settings-premutation.json"
+          test -s "${snapshot}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${snapshot}" >/dev/null
+          echo 'CONFIG_ROLLBACK_EVIDENCE=BOUNDED_PREMUTATION_SNAPSHOT'
+          echo 'SECRET_VALUES_READ=0'
+          echo "CONFIG_SNAPSHOT_PATH=${snapshot}" >> "${GITHUB_ENV}"
+
+      - name: Read current live settings for the config rollback plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-current-for-rollback.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -c '.result.bindings | map({name, type})' "${settings}"
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Plan the snapshot-bounded config restore (CONFIG_ROLLBACK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/b62-config-rollback-patch.json"
+          plan_log="${RUNNER_TEMP}/b62-config-rollback-plan.log"
+          set +e
+          python .github/scripts/b62_claw_live_config_activation.py rollback-plan \
+            --settings "${RUNNER_TEMP}/b62-settings-current-for-rollback.json" \
+            --snapshot "${CONFIG_SNAPSHOT_PATH}" \
+            --credential-created-by-activation "${CREDENTIAL_CREATED_BY_ACTIVATION}" \
+            --target-sha "${TARGET_SHA}" \
+            --output "${RUNNER_TEMP}/b62-config-rollback-patch.json" >"${plan_log}" 2>&1
+          plan_status=$?
+          set -e
+          cat "${plan_log}"
+          if [ "${plan_status}" -eq 3 ]; then
+            echo 'CONFIG_ROLLBACK=MANUAL_CONFIG_RECOVERY_REQUIRED' >&2
+            echo 'CODE_VERSION_ROLLBACK_UNAFFECTED=YES' >&2
+            echo 'FULL_CONFIG_ROLLBACK_CLAIM=NO' >&2
+            exit 1
+          fi
+          if [ "${plan_status}" -ne 0 ]; then
+            echo 'CONFIG_ROLLBACK=FAIL' >&2
+            exit 1
+          fi
+          no_op="$(sed -n 's/^B62_CLAW_CONFIG_ROLLBACK_NO_OP=//p' "${plan_log}")"
+          test -n "${no_op}"
+          echo "B62_CLAW_CONFIG_ROLLBACK_NO_OP=${no_op}" >> "${GITHUB_ENV}"
+          echo 'CONFIG_ROLLBACK_SCOPE=SNAPSHOT_BOUNDED_SETTINGS_ONLY'
           echo 'PIECEMEAL_SECRET_RESTORE=0'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Apply the snapshot-bounded config restore through the settings API
+        if: ${{ env.B62_CLAW_CONFIG_ROLLBACK_NO_OP != '1' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/b62-config-rollback-patch-response.json"
+          http_status="$(
+            curl -sS -X PATCH \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -F "settings=<${RUNNER_TEMP}/b62-config-rollback-patch.json;type=application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          echo "B62_CLAW_CONFIG_ROLLBACK_PATCH_HTTP_STATUS=${http_status}"
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo 'CONFIG_ROLLBACK=FAIL'
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+            else
+              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+            fi
+            exit 1
+          fi
+          jq -e '.success == true and (.result.bindings | type == "array")' "${response}" >/dev/null
+          echo 'CONFIG_ROLLBACK=SUBMITTED'
+          echo 'PRODUCTION_MUTATION=1'
+          echo 'WORKER_CODE_REDEPLOY=0'
+
+      - name: Read back the restored config against the pre-mutation snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          exact=no
+          for _ in $(seq 1 30); do
+            settings="${RUNNER_TEMP}/b62-settings-after-config-rollback.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+              -o "${settings}"
+            if python .github/scripts/b62_binding_state_guard.py \
+              --before "${CONFIG_SNAPSHOT_PATH}" \
+              --after "${settings}" >"${RUNNER_TEMP}/b62-config-rollback-guard.log" 2>&1; then
+              exact=yes
+              break
+            fi
+            sleep 2
+          done
+          cat "${RUNNER_TEMP}/b62-config-rollback-guard.log"
+          test "${exact}" = yes
+          echo 'CONFIG_ROLLBACK_READBACK=EXACT'
+          echo 'FULL_CONFIG_ROLLBACK_CLAIM=READBACK_CONFIRMED_EXACT_SNAPSHOT'
+          echo 'PIECEMEAL_SECRET_RESTORE=0'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'UNRELATED_CONFIG_MUTATED=0'

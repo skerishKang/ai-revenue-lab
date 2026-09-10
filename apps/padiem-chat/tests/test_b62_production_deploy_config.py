@@ -31,6 +31,7 @@ def _production_bindings() -> list[dict]:
         {"type": "plain_text", "name": "PADIEM_CHAT_RUNTIME_MODE", "text": "b14"},
         {"type": "plain_text", "name": "PADIEM_CHAT_LIVE_ENABLED", "text": "true"},
         {"type": "plain_text", "name": "PADIEM_CHAT_TIMEOUT_SECONDS", "text": "20"},
+        {"type": "plain_text", "name": "PADIEM_CHAT_PUBLIC_BASE_URL", "text": PUBLIC_URL},
     ]
 
 
@@ -71,7 +72,11 @@ def _bindings_without_public_url() -> list[dict]:
 
 
 def _readback_simulation(before_bindings: list[dict], after_bindings: list[dict], public_url: str) -> str:
-    """Pure-Python mirror of the deploy read-back public-URL allowance."""
+    """Pure-Python mirror of the deploy read-back: normalization is assertion-only.
+
+    The pre-deploy snapshot must already carry exactly the expected public base URL
+    (activation owns the live value); the deploy must not change any binding.
+    """
 
     def key(bindings):
         return sorted(
@@ -81,13 +86,13 @@ def _readback_simulation(before_bindings: list[dict], after_bindings: list[dict]
 
     before_key = key(before_bindings)
     after_key = key(after_bindings)
-    added = [entry for entry in after_key if entry not in before_key]
-    removed = [entry for entry in before_key if entry not in after_key]
     expected_entry = ("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)
-    assert removed == [], f"bindings removed by deploy: {removed}"
-    assert set(added) <= {expected_entry}, f"unexpected binding delta: added={added}"
-    assert expected_entry in after_key, "PADIEM_CHAT_PUBLIC_BASE_URL missing or drifted after deploy"
-    return "already_expected" if expected_entry in before_key else "injected"
+    assert expected_entry in before_key, (
+        "pre-deploy PADIEM_CHAT_PUBLIC_BASE_URL state is not exactly expected; "
+        "deploy refuses instead of injecting"
+    )
+    assert before_key == after_key, f"deploy changed binding authority: {set(before_key) ^ set(after_key)}"
+    return "already_expected"
 
 
 def test_live_dump_is_authority_and_repo_mock_vars_do_not_leak(tmp_path):
@@ -134,11 +139,19 @@ def test_mock_runtime_in_live_settings_aborts(tmp_path):
 
 def test_public_base_url_drift_aborts(tmp_path):
     module = _load_module()
-    bindings = _production_bindings() + [
+    bindings = _bindings_without_public_url() + [
         {"type": "plain_text", "name": "PADIEM_CHAT_PUBLIC_BASE_URL", "text": "https://elsewhere.example.test"}
     ]
     live = module.parse_live_bindings(_settings_payload(bindings))
     with pytest.raises(module.ProductionConfigError, match="drift"):
+        module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+
+
+def test_public_base_url_absent_is_refused_not_injected(tmp_path):
+    module = _load_module()
+    bindings = _bindings_without_public_url()
+    live = module.parse_live_bindings(_settings_payload(bindings))
+    with pytest.raises(module.ProductionConfigError, match="deploy does not inject"):
         module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
 
 
@@ -177,8 +190,19 @@ def test_main_cli_writes_output_and_reports_zero_secret_reads(tmp_path, capsys):
     assert "B62_PRODUCTION_CONFIG_GENERATED=PASS" in printed
     assert "SECRET_VALUES_READ=0" in printed
     assert "SECRET_VALUES_EMITTED=0" in printed
-    assert "PADIEM_CHAT_PUBLIC_BASE_URL_STATE=injected" in printed
+    assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in printed
+    assert "DEPLOY_CONFIG_MUTATION_ZERO=PASS" in printed
     assert output_path.exists()
+
+
+def test_generated_vars_mutate_no_live_plain_text_var(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    config = module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+    module.verify_mutation_zero(config, live)
+    tampered = config.replace('PADIEM_CHAT_TIMEOUT_SECONDS = "20"', 'PADIEM_CHAT_TIMEOUT_SECONDS = "999"')
+    with pytest.raises(module.ProductionConfigError, match="mutates live plain-text vars"):
+        module.verify_mutation_zero(tampered, live)
 
 
 def test_main_cli_refuses_existing_output(tmp_path, capsys):
@@ -198,10 +222,10 @@ def test_main_cli_refuses_existing_output(tmp_path, capsys):
     assert output_path.read_text(encoding="utf-8") == "existing"
 
 
-def test_workflow_readback_uses_exact_binding_authority_guard_with_only_public_url_normalization():
+def test_workflow_readback_uses_exact_binding_authority_guard_without_injection():
     workflow = _read_workflow()
     assert 'normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"' in workflow
-    assert "PUBLIC_BASE_URL_NORMALIZATION=INJECTED_EXPECTED_ONLY" in workflow
+    assert "INJECTED_EXPECTED_" + "ONLY" not in workflow
     assert "PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED" in workflow
     assert "python .github/scripts/b62_binding_state_guard.py" in workflow
     assert '--before "${normalized_before}"' in workflow
@@ -210,13 +234,19 @@ def test_workflow_readback_uses_exact_binding_authority_guard_with_only_public_u
     assert 'expected_entry = ("plain_text", "PADIEM_CHAT_PUBLIC_BASE_URL", public_url)' not in workflow
 
 
-def test_readback_first_deploy_injects_public_base_url():
+def test_readback_absent_public_base_url_before_deploy_raises():
     before = _bindings_without_public_url()
+    with pytest.raises(AssertionError, match="deploy refuses instead of injecting"):
+        _readback_simulation(before, list(before), PUBLIC_URL)
+
+
+def test_readback_redeploy_binding_delta_raises():
+    before = _production_bindings()
     after = before + [
         {"type": "plain_text", "name": "PADIEM_CHAT_PUBLIC_BASE_URL", "text": PUBLIC_URL}
     ]
-    state = _readback_simulation(before, after, PUBLIC_URL)
-    assert state == "injected"
+    with pytest.raises(AssertionError, match="binding authority"):
+        _readback_simulation(before, after, PUBLIC_URL)
 
 
 def test_readback_redeply_already_expected_passes():
@@ -235,11 +265,9 @@ def test_readback_wrong_public_base_url_value_remains_raises():
         _readback_simulation(list(before), list(before), PUBLIC_URL)
 
 
-def test_generator_already_expected_public_base_url_state(tmp_path, capsys):
+def test_generator_expected_public_base_url_prestate(tmp_path, capsys):
     module = _load_module()
-    bindings = _production_bindings() + [
-        {"type": "plain_text", "name": "PADIEM_CHAT_PUBLIC_BASE_URL", "text": PUBLIC_URL}
-    ]
+    bindings = _production_bindings()
     settings_path = tmp_path / "settings.json"
     settings_path.write_text(json.dumps(_settings_payload(bindings)), encoding="utf-8")
     output_path = tmp_path / "wrangler.production.generated.toml"
@@ -252,4 +280,24 @@ def test_generator_already_expected_public_base_url_state(tmp_path, capsys):
     ])
     assert rc == 0
     printed = capsys.readouterr().out
-    assert "PADIEM_CHAT_PUBLIC_BASE_URL_STATE=already_expected" in printed
+    assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in printed
+    assert "DEPLOY_CONFIG_MUTATION_ZERO=PASS" in printed
+
+
+def test_generator_cli_refuses_absent_public_base_url(tmp_path, capsys):
+    module = _load_module()
+    bindings = _bindings_without_public_url()
+    settings_path = tmp_path / "settings.json"
+    settings_path.write_text(json.dumps(_settings_payload(bindings)), encoding="utf-8")
+    output_path = tmp_path / "wrangler.production.generated.toml"
+
+    rc = module.main([
+        "--settings", str(settings_path),
+        "--repo-config", str(_write_repo_config(tmp_path)),
+        "--public-base-url", PUBLIC_URL,
+        "--output", str(output_path),
+    ])
+    assert rc == 1
+    assert not output_path.exists()
+    err = capsys.readouterr().err
+    assert "deploy does not inject" in err
