@@ -148,7 +148,7 @@ def test_no_secret_value_in_slack_port_source() -> None:
     assert "xoxb-fake" not in src
 
 
-def test_private_channels_absent_yields_frozenset() -> None:
+def test_private_channels_absent_yields_frozenset(monkeypatch) -> None:
     """Regression: private channel config absent must yield frozenset(), not ().
     
     When BOT_TOKEN=valid, ALLOWED_CHANNELS=nonempty, PRIVATE_CHANNELS=absent:
@@ -175,7 +175,7 @@ def test_private_channels_absent_yields_frozenset() -> None:
 
     env = types.SimpleNamespace()
     env.ENGINE_SLACK_BOT_TOKEN = "xoxb-valid-token"
-    env.ENGINE_SLACK_ALLOWED_CHANNELS = "C01,C02"
+    env.ENGINE_SLACK_ALLOWED_CHANNELS = "C0123456789,C0987654321"
     # NOTE: PRIVATE_CHANNELS intentionally omitted
 
     port = identity._slack_port_for_env(env)
