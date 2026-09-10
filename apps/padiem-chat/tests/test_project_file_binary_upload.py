@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import io
+from io import BytesIO
 import json
 import zipfile
 from base64 import b64encode
 
 import httpx
 import pytest
-from pypdf import PdfWriter
+from pypdf import PdfWriter, PdfReader
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.binary_documents import parse_binary_document_item, BinaryDocumentValidationError
@@ -143,12 +144,35 @@ def _make_docx_base64() -> str:
     return b64encode(buf.getvalue()).decode()
 
 
-def _make_pdf_base64() -> str:
-    buf = io.BytesIO()
-    writer = PdfWriter()
-    writer.add_blank_page(width=612, height=792)
-    writer.write(buf)
-    return b64encode(buf.getvalue()).decode()
+def _make_pdf_base64(*, text: str = "Positive PDF Text") -> str:
+    # Minimal valid PDF-1.4 with extractable text via pypdf
+    stream_content = f"BT /F1 12 Tf 72 700 Td ({text}) Tj ET".encode("latin-1", errors="replace")
+    objs = [
+        (1, b"<< /Type /Catalog /Pages 2 0 R >>"),
+        (2, b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>"),
+        (3, b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >>>> >>"),
+        (4, b"<< /Length " + str(len(stream_content)).encode() + b" >>\nstream\n" + stream_content + b"\nendstream"),
+    ]
+    pdf = BytesIO()
+    pdf.write(b"%PDF-1.4\n")
+    offsets = {}
+    for num, data in objs:
+        offsets[num] = pdf.tell()
+        pdf.write(f"{num} 0 obj\n".encode())
+        pdf.write(data)
+        pdf.write(b"\nendobj\n")
+    xref_offset = pdf.tell()
+    pdf.write(b"xref\n0 5\n0000000000 65535 f \n")
+    for i in range(1, 5):
+        pdf.write(f"{offsets[i]:010d} 00000 n \n".encode())
+    pdf.write(b"trailer\n<< /Size 5 /Root 1 0 R >>\n")
+    pdf.write(b"startxref\n")
+    pdf.write(f"{xref_offset}\n".encode())
+    pdf.write(b"%%EOF\n")
+    return b64encode(pdf.getvalue()).decode()
+
+
+MAX_BINARY_PROJECT_FILE_BASE64_BYTES = 2 * 1024 * 1024
 
 
 async def client_with_session(app, user: UserProfile):
@@ -185,6 +209,34 @@ async def test_text_project_file_create_unchanged():
         await client.aclose()
 
 
+def _make_empty_pdf_base64() -> str:
+    # Minimal valid PDF with NO extractable text (empty content stream)
+    stream_content = b""
+    objs = [
+        (1, b"<< /Type /Catalog /Pages 2 0 R >>"),
+        (2, b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>"),
+        (3, b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << >> >>"),
+        (4, b"<< /Length 0 >>\nstream\n" + stream_content + b"\nendstream"),
+    ]
+    pdf = BytesIO()
+    pdf.write(b"%PDF-1.4\n")
+    offsets = {}
+    for num, data in objs:
+        offsets[num] = pdf.tell()
+        pdf.write(f"{num} 0 obj\n".encode())
+        pdf.write(data)
+        pdf.write(b"\nendobj\n")
+    xref_offset = pdf.tell()
+    pdf.write(b"xref\n0 5\n0000000000 65535 f \n")
+    for i in range(1, 5):
+        pdf.write(f"{offsets[i]:010d} 00000 n \n".encode())
+    pdf.write(b"trailer\n<< /Size 5 /Root 1 0 R >>\n")
+    pdf.write(b"startxref\n")
+    pdf.write(f"{xref_offset}\n".encode())
+    pdf.write(b"%%EOF\n")
+    return b64encode(pdf.getvalue()).decode()
+
+
 @pytest.mark.asyncio
 async def test_pdf_upload_rejected_when_no_extractable_text():
     store = MemoryProjectFileStore()
@@ -196,10 +248,38 @@ async def test_pdf_upload_rejected_when_no_extractable_text():
     client = await client_with_session(app, user_profile(owner.id))
     try:
         response = await client.post(f"/api/projects/{project.id}/files", json={
-            "name": "보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_pdf_base64()
+            "name": "빈보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_empty_pdf_base64()
         })
         assert response.status_code == 422
         assert "PDF" in response.json()["error"]["message"]
+    finally:
+        await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_positive_pdf_upload_signed_in_owner_201():
+    """CENTRAL FIX A: positive PDF with actual extractable text, signed-in owner, HTTP 201."""
+    store = MemoryProjectFileStore()
+    history = MemoryProjectStore()
+    owner = await history.add_user("owner-pdf-positive")
+    project = await history.create_project(owner.id, "PDF 양성 프로젝트", "")
+    cfg = settings()
+    app = create_app(cfg, history_store=history, project_file_store=store)
+    client = await client_with_session(app, user_profile(owner.id))
+    try:
+        response = await client.post(f"/api/projects/{project.id}/files", json={
+            "name": "보고서.pdf", "media_type": PDF_MEDIA, "base64": _make_pdf_base64()
+        })
+        assert response.status_code == 201, response.json()
+        data = response.json()["file"]
+        assert data["media_type"] == "extracted/pdf"
+        assert data["name"] == "보고서.pdf"
+        files = await store.list_files(owner.id, project.id)
+        assert len(files) == 1
+        assert "Positive PDF Text" in files[0].content_text
+        # Public-safe projection: no base64, no object keys
+        payload = json.dumps(data, ensure_ascii=False)
+        assert "base64" not in payload
     finally:
         await client.aclose()
 
@@ -219,11 +299,11 @@ async def test_docx_upload_extracts_text_persisted_as_extracted_docx():
         })
         assert response.status_code == 201, response.json()
         data = response.json()["file"]
-        assert data["media_type"] == "extracted/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        assert data["media_type"] == "extracted/docx"
         assert data["name"] == "문서.docx"
         files = await store.list_files(owner.id, project.id)
         assert len(files) == 1
-        assert files[0].media_type == "extracted/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        assert files[0].media_type == "extracted/docx"
     finally:
         await client.aclose()
 
@@ -303,9 +383,29 @@ async def test_projection_contains_no_base64_secrets():
         await client.aclose()
 
 
+@pytest.mark.asyncio
+async def test_oversized_route_level_413():
+    """CENTRAL FIX B: route-level actual HTTP request, verified 413."""
+    store = MemoryProjectFileStore()
+    history = MemoryProjectStore()
+    owner = await history.add_user("owner-oversize")
+    project = await history.create_project(owner.id, "프로젝트", "")
+    cfg = settings()
+    app = create_app(cfg, history_store=history, project_file_store=store)
+    client = await client_with_session(app, user_profile(owner.id))
+    try:
+        oversized = b64encode(b"x" * (MAX_BINARY_PROJECT_FILE_BASE64_BYTES + 1)).decode()
+        response = await client.post(f"/api/projects/{project.id}/files", json={
+            "name": "big.pdf", "media_type": PDF_MEDIA, "base64": oversized
+        })
+        assert response.status_code == 413, f"expected 413 got {response.status_code}: {response.json()}"
+    finally:
+        await client.aclose()
+
+
 def test_extracted_media_type_helper():
     assert _extracted_media_type("application/pdf") == "extracted/pdf"
-    assert _extracted_media_type(DOCX_MEDIA) == "extracted/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    assert _extracted_media_type(DOCX_MEDIA) == "extracted/docx"
 
 
 def test_binary_project_file_media_contains_pdf_docx():

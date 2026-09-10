@@ -13,13 +13,21 @@ BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE})
 
 
 def _extracted_media_type(original_media_type: str) -> str:
-    return "extracted/" + original_media_type.split("/")[-1]
+    # Canonicalize extracted media types: DOCX → extracted/docx, PDF → extracted/pdf
+    ext = original_media_type.split("/")[-1]
+    if ext.startswith("vnd.openxmlformats-officedocument.wordprocessingml.document"):
+        return "extracted/docx"
+    return "extracted/" + ext
 
 MAX_PROJECT_FILES = 12
 MAX_PROJECT_TOTAL_CHARS = 160_000
 
 
 class ProjectFileError(RuntimeError):
+    pass
+
+
+class ProjectFileFormatError(ProjectFileError):
     pass
 
 
