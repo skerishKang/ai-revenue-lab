@@ -28,7 +28,7 @@
   const COMPOSER_MIN_HEIGHT = 50;
   const COMPOSER_MAX_HEIGHT = 180;
   const MIN_CONVERSATION_CLEARANCE = 230;
-  const COMPOSER_CLEARANCE_GAP = 24;
+  const COMPOSER_CLEARANCE_GAP = 64;
   let phase = phases.IDLE;
   let attachmentLoading = false;
   let terminalSettling = false;
