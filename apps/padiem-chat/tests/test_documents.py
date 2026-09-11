@@ -313,9 +313,9 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     migration = (root / "migrations/003_project_files.sql").read_text(encoding="utf-8")
     assert 'id="attachmentFileInput"' in html
     assert 'id="projectFilesPanel"' in html
-    assert 'id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json"' in html
-    assert "프로젝트 파일 저장은 TXT·Markdown·CSV·JSON만 지원합니다." in html
-    assert "PDF·DOCX·PPTX·XLSX는 저장하지 않습니다." in html
+    assert ".pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" in html
+    assert "PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다." in html
+    assert "PPTX·XLSX는 지원하지 않습니다." in html
     assert 'script src="./attachment-capabilities.js"' in html
     assert 'label: "PDF"' in capabilities
     assert 'label: "DOCX"' in capabilities
@@ -324,8 +324,8 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert "binaryBytes: 2 * 1024 * 1024" in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "PDF·DOCX는 아직 지원하지 않습니다" not in html
-    assert "application/pdf" not in html
-    assert "application/vnd.openxmlformats" not in html
+    assert "presentationml" not in html
+    assert "spreadsheetml" not in html
     assert 'fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`' in js
     assert "innerHTML" not in js
     assert "CREATE TABLE IF NOT EXISTS project_files" in migration
