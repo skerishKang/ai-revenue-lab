@@ -41,11 +41,16 @@ def _success_result(payload: object, label: str) -> dict[str, Any]:
 
 
 def resolve_served_version_id(deployments_payload: object) -> str:
-    """Return the single 100%-traffic served version id or fail closed."""
+    """Return the 100%-traffic served version id of the active deployment or fail closed.
+
+    The Cloudflare deployments endpoint returns deployment history and documents
+    that the first entry is the latest deployment actively serving traffic, so
+    later entries are previous deployments and are not ambiguity.
+    """
     result = _success_result(deployments_payload, "deployments payload")
     deployments = result.get("deployments")
-    if not isinstance(deployments, list) or len(deployments) != 1:
-        raise ServedVersionGuardError("ambiguous active deployment: expected exactly one deployment")
+    if not isinstance(deployments, list) or len(deployments) == 0:
+        raise ServedVersionGuardError("ambiguous active deployment: no deployment records returned")
     first = deployments[0]
     if not isinstance(first, dict):
         raise ServedVersionGuardError("ambiguous active deployment: deployment entry is not an object")
