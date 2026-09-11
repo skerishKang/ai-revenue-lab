@@ -119,15 +119,50 @@ jobs:
           body="${RUNNER_TEMP}/claw-phase-a.json"
           headers="${RUNNER_TEMP}/claw-phase-a.headers"
           payload='{"channel":"other","action":"summary","content":"Closed beta synthetic canary. Summarize this sentence in one short sentence."}'
+          scan_secret_patterns() {
+            local f="$1"
+            [ -s "${f}" ] || return 1
+            grep -Eiq -e 'Bearer ' -e 'CLOUDFLARE_API_TOKEN' -e 'Authorization:' -e 'connect_ticket' "${f}"
+          }
+          curl_exit=0
           status="$(curl --silent --show-error --max-time 45 \
             -D "${headers}" -o "${body}" -w '%{http_code}' \
             -X POST \
             -H 'Content-Type: application/json' \
             -H 'Accept: application/json' \
             --data "${payload}" \
-            "${B62_PUBLIC_BASE_URL}/api/claw/manual-intake/execute")"
+            "${B62_PUBLIC_BASE_URL}/api/claw/manual-intake/execute")" || curl_exit=$?
+          if [ -s "${body}" ]; then body_captured=YES; else body_captured=NO; fi
+          if [ -s "${headers}" ]; then headers_captured=YES; else headers_captured=NO; fi
+          if [ "${curl_exit}" -ne 0 ] || [ "${status}" != "200" ]; then
+            echo "CURL_EXIT_CODE=${curl_exit}"
+            echo "INTAKE_POST_STATUS=${status:-NO_RESPONSE}"
+            body_redacted=NO
+            if [ "${body_captured}" = "YES" ] || [ "${headers_captured}" = "YES" ]; then
+              if scan_secret_patterns "${body}" || scan_secret_patterns "${headers}"; then
+                body_redacted=YES
+                echo "RESPONSE_REDACTED_BY_SECRET_SCAN=YES"
+              else
+                echo "::group::canary_failure_response_body_bounded"
+                head -c 4096 "${body}" 2>/dev/null || true
+                echo
+                echo "::endgroup::"
+                echo "::group::canary_failure_response_headers_selected"
+                grep -Ei '^(HTTP/|content-type:|cache-control:|cf-ray:|cf-cache-status:|server:|date:|via:|x-[a-z0-9-]+:)' "${headers}" 2>/dev/null || true
+                echo "::endgroup::"
+              fi
+            fi
+            echo "RESPONSE_BODY_CAPTURED=${body_captured}"
+            echo "RESPONSE_BODY_REDACTED=${body_redacted}"
+            echo "RESPONSE_HEADERS_CAPTURED=${headers_captured}"
+            echo "PHASE_A_CANARY=FAIL"
+            exit 1
+          fi
           echo "HTTP_STATUS=${status}"
-          test "${status}" = "200"
+          echo "INTAKE_POST_STATUS=${status}"
+          echo "RESPONSE_BODY_CAPTURED=${body_captured}"
+          echo "RESPONSE_BODY_REDACTED=NO"
+          echo "RESPONSE_HEADERS_CAPTURED=${headers_captured}"
           jq -e '.ok == true' "${body}" >/dev/null
           jq -e '.result.result_text | type == "string" and length > 0' "${body}" >/dev/null
           jq -e '.result.p01_run_id | type == "string" and length > 0' "${body}" >/dev/null
