@@ -63,11 +63,17 @@
   const projectFileInput = document.getElementById("projectFileInput");
   const projectFilesList = document.getElementById("projectFilesList");
   const projectFilesEmpty = document.getElementById("projectFilesEmpty");
+  const projectFileStatus = document.getElementById("projectFileStatus");
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const binaryDocuments = window.PadiemBinaryDocuments;
+
+  const PROJECT_BINARY_EXTENSION_MEDIA = new Map([
+    [".pdf", "application/pdf"],
+    [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+  ]);
 
   const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
   const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
@@ -521,15 +527,50 @@
       projectFormError.hidden = false;
     }
   }
+  function projectBinaryMediaType(file) {
+    // Project-scoped subset preflight: PDF/DOCX only (the server allow-lists exactly these two
+    // binaries). Extension-driven to mirror document-binary.js canRead/canonicalMediaType, which
+    // are themselves extension-canonical. Everything else — PPTX/XLSX and unsupported text types —
+    // falls through to the text path and is rejected there BEFORE any request is made.
+    return PROJECT_BINARY_EXTENSION_MEDIA.get(extensionOf(file && file.name)) || null;
+  }
+  let projectFileBusy = false;
+  function setProjectFileBusy(busy) {
+    projectFileBusy = busy;
+    if (busy) {
+      projectFilesPanel.setAttribute("aria-busy", "true");
+      projectFileInput.setAttribute("aria-disabled", "true");
+      if (projectFileStatus) { projectFileStatus.textContent = "문서 저장 중…"; projectFileStatus.hidden = false; }
+    } else {
+      projectFilesPanel.removeAttribute("aria-busy");
+      projectFileInput.removeAttribute("aria-disabled");
+      if (projectFileStatus) { projectFileStatus.hidden = true; projectFileStatus.textContent = ""; }
+    }
+  }
   async function addProjectFile(file) {
     if (!file || !editingProjectId || !authState.project_files_ready) return;
     projectFileInput.value = "";
+    if (projectFileBusy) return;
+    // Clear any stale error so a successful retry never leaves the old message up.
+    projectFormError.hidden = true;
+    projectFormError.textContent = "";
+    setProjectFileBusy(true);
     try {
-      const documentFile = await readDocumentFile(file);
+      const projectBinary = projectBinaryMediaType(file);
+      let payload;
+      if (projectBinary && binaryDocuments && typeof binaryDocuments.read === "function") {
+        const documentFile = await binaryDocuments.read(file);
+        payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };
+      } else if (projectBinary) {
+        throw new Error(attachmentCopy().unsupportedFormat);
+      } else {
+        const documentFile = await readDocumentFile(file);
+        payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
+      }
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
@@ -540,6 +581,8 @@
     } catch (error) {
       projectFormError.textContent = error instanceof Error ? error.message : "프로젝트 파일을 저장하지 못했습니다.";
       projectFormError.hidden = false;
+    } finally {
+      setProjectFileBusy(false);
     }
   }
   async function deleteProjectFile(fileId, name) {
