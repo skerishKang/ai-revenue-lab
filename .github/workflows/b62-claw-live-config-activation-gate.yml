@@ -19,6 +19,7 @@ on:
           - repository_preflight
           - cloudflare_readonly
           - activate_config
+          - replace_p01_engine_credential
           - rollback_config
       target_sha:
         description: "Exact current main SHA"
@@ -120,7 +121,7 @@ jobs:
 
   cloudflare-readonly:
     needs: source-contract
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' && inputs.mode != 'replace_p01_engine_credential' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -492,6 +493,179 @@ jobs:
             echo 'B62_CLAW_LIVE_CONFIG_ACTIVATION=COMPLETE'
             echo 'PRODUCTION_MUTATION=1'
           fi
+          echo 'SECRET_VALUES_READ=0'
+          echo 'UNRELATED_CONFIG_MUTATED=0'
+
+  replace-p01-credential:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'replace_p01_engine_credential' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Require explicit credential replacement authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_REPLACE_B62_P01_ENGINE_CREDENTIAL"
+          echo 'B62_P01_REPLACEMENT_AUTHORIZATION=PASS'
+          echo 'ACTIVATION_CONFIRMATION_PHRASE_NOT_REUSED=YES'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Gate the source credential with bounded quality evidence
+        shell: bash
+        env:
+          B62_P01_ENGINE_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_claw_live_config_activation.py credential-quality
+
+      - name: Record pre-mutation settings and served version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-pre-replacement.json"
+          deployments="${RUNNER_TEMP}/b62-deployments-pre-replacement.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+            -o "${deployments}"
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
+            "${deployments}" >/dev/null
+          served="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          test -n "${served}"
+          echo "PREMUTATION_SERVED_VERSION_ID=${served}" >> "${GITHUB_ENV}"
+          jq -c '.result.bindings | map({name, type})' "${settings}"
+          python .github/scripts/b62_claw_live_config_activation.py replacement-precheck --settings "${settings}"
+          echo 'PREMUTATION_SETTINGS_SNAPSHOT=RECORDED'
+          echo 'OLD_SECRET_VALUE_READ=NO'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Replace the P01 Engine credential through the secrets API
+        shell: bash
+        env:
+          B62_P01_ENGINE_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+        run: |
+          set -euo pipefail
+          test -n "${B62_P01_ENGINE_CREDENTIAL}"
+          payload="${RUNNER_TEMP}/b62-p01-replacement.json"
+          python - "${payload}" <<'PY'
+          import json, os, sys
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(
+                  {
+                      "name": "P01_ENGINE_CREDENTIAL",
+                      "type": "secret_text",
+                      "text": os.environ["B62_P01_ENGINE_CREDENTIAL"],
+                  },
+                  handle,
+                  separators=(",", ":"),
+              )
+          PY
+          response="${RUNNER_TEMP}/b62-p01-replacement-response.json"
+          http_status="$(
+            curl -sS -X PUT \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/secrets" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          rm -f "${payload}"
+          echo "B62_P01_CREDENTIAL_REPLACE_HTTP_STATUS=${http_status}"
+          if [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            echo 'B62_P01_CREDENTIAL_REPLACE=FAIL'
+            if jq -e . "${response}" >/dev/null 2>&1; then
+              jq -c '{success, errors: [(.errors // [])[] | {code, message}]}' "${response}"
+            else
+              echo 'CLOUDFLARE_ERROR_BODY_JSON=NO'
+            fi
+            exit 1
+          fi
+          jq -e '.success == true' "${response}" >/dev/null
+          echo 'B62_P01_CREDENTIAL_REPLACE=SUBMITTED'
+          echo 'SETTINGS_PATCH=0'
+          echo 'UNRELATED_SECRET_MUTATION=0'
+          echo 'WORKER_CODE_REDEPLOY=0'
+          echo 'SECRET_VALUE_EMITTED=0'
+          echo 'PRODUCTION_MUTATION=1'
+
+      - name: Record post-mutation served version evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          deployments="${RUNNER_TEMP}/b62-deployments-post-replacement.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+            -o "${deployments}"
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
+            "${deployments}" >/dev/null
+          served="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          test -n "${served}"
+          echo "POSTMUTATION_SERVED_VERSION_ID=${served}"
+          if [ "${served}" = "${PREMUTATION_SERVED_VERSION_ID}" ]; then
+            echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO'
+          else
+            echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES'
+          fi
+          echo 'WORKER_CODE_DEPLOY_SUBMITTED=0'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Read back the replaced credential by binding name and type only
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          verified=no
+          for _ in $(seq 1 30); do
+            settings="${RUNNER_TEMP}/b62-settings-after-replacement.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+              -o "${settings}"
+            if python .github/scripts/b62_claw_live_config_activation.py replacement-verify \
+              --settings "${settings}" \
+              --pre-settings "${RUNNER_TEMP}/b62-settings-pre-replacement.json" \
+              >"${RUNNER_TEMP}/b62-replacement-verify.log" 2>&1; then
+              verified=yes
+              break
+            fi
+            sleep 2
+          done
+          cat "${RUNNER_TEMP}/b62-replacement-verify.log"
+          test "${verified}" = yes
+          echo 'B62_P01_REPLACEMENT_POST_READBACK=PASS'
+          echo 'RUNTIME_SUCCESS_CLAIM=NO_UNTIL_PHASE_A_RERUN'
           echo 'SECRET_VALUES_READ=0'
           echo 'UNRELATED_CONFIG_MUTATED=0'
 
