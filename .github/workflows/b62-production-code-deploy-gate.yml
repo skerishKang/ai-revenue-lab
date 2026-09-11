@@ -565,9 +565,19 @@ jobs:
           fi
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          deployments="${RUNNER_TEMP}/b62-rollback-precheck.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
+            echo "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED"
+            echo "ROLLBACK_POST_ATTEMPTED=NO"
+            echo "ROLLBACK_EFFECT=NONE_VERIFIED"
+            exit 0
+          fi
           curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
             -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
             -o "${RUNNER_TEMP}/b62-auto-rollback.json"
+          echo "ROLLBACK_POST_ATTEMPTED=YES"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-auto-rollback-state.json"
             curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
@@ -582,6 +592,7 @@ jobs:
           test "${health_status}" = "200"
           echo "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED"
           echo "AUTO_ROLLBACK_HEALTH_STATUS=${health_status}"
+          echo "ROLLBACK_EFFECT=EXECUTED"
 
       - name: Publish bounded deploy evidence
         if: always()
