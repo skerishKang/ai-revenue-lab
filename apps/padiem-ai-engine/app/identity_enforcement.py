@@ -12,10 +12,11 @@ Deployment configuration supports the following authorities:
   caller authority; a malformed or blank payload fails closed and never
   falls back to the legacy configuration.
 - ``PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY``: an optional additive
-  single-caller overlay. It is strictly additive to the V1 base: it is
-  composed in memory with the base callers and can neither shadow, replace, nor
-  widen any base caller. If the overlay is configured while the V1 base is
-  absent the composition fails closed.
+  single-caller overlay. It is strictly additive to the V1 base but remains an
+  independently bounded authority at authentication time, so the base registry
+  keeps its original capacity. It can neither shadow, replace, nor widen any
+  base caller. If the overlay is configured while the V1 base is absent the
+  composition fails closed.
 - the legacy one-caller trio (``PADIEM_ENGINE_CALLER_ID``,
   ``PADIEM_ENGINE_CALLER_SECRET``, ``PADIEM_ENGINE_ALLOWED_APPS``):
   authoritative only while the V1 registry variable is genuinely absent,
@@ -212,18 +213,15 @@ def parse_caller_registry_v1_overlay(raw: str) -> TrustedEngineCaller:
     )
 
 
-def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
-    """Build the caller registry from deployment configuration.
+def _build_registry_authority_from_env(
+    env: Any,
+) -> tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]:
+    """Build the base registry plus an independently bounded overlay caller.
 
-    When ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` is configured, the parsed
-    secret-backed registry is the single caller authority: a malformed,
-    blank, or unsupported payload fails closed and never falls back to the
-    legacy one-caller trio. When the overlay variable is also configured, it is
-    composed in memory with the V1 base as an additional caller; it can neither
-    shadow, replace, nor widen any base caller and a duplicate caller id fails
-    closed. When the registry variable is genuinely absent, the legacy one-caller
-    trio remains authoritative with unchanged behavior and refuses partially configured
-    state, and an overlay configured without the V1 base fails closed.
+    The base V1 registry keeps its original 1..MAX_ENGINE_CALLERS capacity.
+    The overlay is never materialized into that registry, so a fully valid
+    64-caller opaque base remains valid when the one-caller overlay is present.
+    Duplicate caller IDs are rejected before either authority is usable.
     """
 
     registry_raw = getattr(env, CALLER_REGISTRY_V1_ENV, None)
@@ -242,7 +240,7 @@ def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
 
         overlay_raw = getattr(env, CALLER_REGISTRY_V1_OVERLAY_ENV, None)
         if overlay_raw is None:
-            return base_registry
+            return base_registry, None
         if not isinstance(overlay_raw, str):
             raise ServiceIdentityError(
                 "invalid_caller_registry",
@@ -253,10 +251,17 @@ def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
                 "invalid_caller_registry",
                 "Padiem AI Engine caller registry overlay is configured but blank",
             )
+
         overlay_caller = parse_caller_registry_v1_overlay(overlay_raw)
-        return EngineCallerRegistry(
-            callers=base_registry.callers + (overlay_caller,)
-        )
+        if any(
+            caller.caller_id == overlay_caller.caller_id
+            for caller in base_registry.callers
+        ):
+            raise ServiceIdentityError(
+                "duplicate_service_caller",
+                "caller registry overlay must not duplicate a base caller ID",
+            )
+        return base_registry, overlay_caller
 
     if getattr(env, CALLER_REGISTRY_V1_OVERLAY_ENV, None) is not None:
         raise ServiceIdentityError(
@@ -269,7 +274,7 @@ def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
     allowed_raw = _text(getattr(env, CALLER_ALLOWED_APPS_ENV, None)).strip()
 
     if not caller_id and not secret and not allowed_raw:
-        return None
+        return None, None
     if not caller_id or not secret or not allowed_raw:
         raise ServiceIdentityError(
             "service_identity_misconfigured",
@@ -288,7 +293,21 @@ def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
         allowed_app_ids=allowed_apps,
         credential_sha256=caller_secret_digest(secret),
     )
-    return EngineCallerRegistry(callers=(caller,))
+    return EngineCallerRegistry(callers=(caller,)), None
+
+
+def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
+    """Build the canonical base/legacy registry from deployment configuration.
+
+    When V1 plus the additive overlay are configured, this function deliberately
+    returns only the independently valid base V1 registry. The overlay is parsed
+    and duplicate-checked by the shared authority builder, then authenticated
+    separately by :func:`authenticate_request`. This preserves the established
+    64-caller capacity of the opaque base without redefining that contract.
+    """
+
+    registry, _overlay_caller = _build_registry_authority_from_env(env)
+    return registry
 
 
 def authenticate_request(
@@ -299,7 +318,7 @@ def authenticate_request(
 ) -> None:
     """Fail closed unless the request authenticates as a registered caller."""
 
-    registry = build_registry_from_env(env)
+    registry, overlay_caller = _build_registry_authority_from_env(env)
     if registry is None:
         raise ServiceIdentityError(
             "service_identity_unavailable",
@@ -315,6 +334,15 @@ def authenticate_request(
             "service_authentication_failed",
             "Engine caller authentication failed",
         )
+
+    if overlay_caller is not None and caller_id == overlay_caller.caller_id:
+        authenticate_engine_caller(
+            registry=EngineCallerRegistry(callers=(overlay_caller,)),
+            caller_id=caller_id,
+            credential=credential,
+            requested_app_id=requested_app_id,
+        )
+        return
 
     authenticate_engine_caller(
         registry=registry,
