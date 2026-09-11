@@ -6,10 +6,12 @@ on:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/scripts/b62_binding_state_guard.py"
+      - ".github/scripts/b62_served_version_secret_guard.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
       - ".github/tests/test_b62_binding_state_guard.py"
       - ".github/tests/test_b62_deploy_prereq_rollback_contracts.py"
+      - ".github/tests/test_b62_served_version_secret_guard.py"
       - "apps/padiem-chat/tests/test_b62_production_deploy_config.py"
       - "apps/padiem-chat/wrangler.toml"
   workflow_dispatch:
@@ -94,6 +96,15 @@ jobs:
         shell: bash
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml
 
+      - name: Run served-version secret set guard regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q
+          echo "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       - name: Gate source contract
         shell: bash
         run: |
@@ -104,6 +115,7 @@ jobs:
           workflow = Path(".github/workflows/b62-production-code-deploy-gate.yml").read_text(encoding="utf-8")
           generator = Path(".github/scripts/b62_cloudflare_production_deploy_config.py").read_text(encoding="utf-8")
           binding_guard = Path(".github/scripts/b62_binding_state_guard.py").read_text(encoding="utf-8")
+          served_guard = Path(".github/scripts/b62_served_version_secret_guard.py").read_text(encoding="utf-8")
 
           assert "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN" in workflow
           assert "ROLLBACK_B62_PRODUCTION_CODE_TO_RECORDED_VERSION" in workflow
@@ -155,6 +167,29 @@ jobs:
           assert "unsupported binding type" in binding_guard
           assert "duplicate binding names" in binding_guard
           assert "SECRET_VALUES_READ=0" in binding_guard
+
+          assert "python .github/scripts/b62_served_version_secret_guard.py capture" in workflow
+          assert "python .github/scripts/b62_served_version_secret_guard.py verify" in workflow
+          assert "b62-served-secret-set-before.json" in workflow
+          assert "PREDEPLOY_SERVED_VERSION_IDENTIFIED=PASS" in workflow
+          assert "POSTDEPLOY_SERVED_VERSION_IDENTIFIED=PASS" in workflow
+          assert "FULL_SECRET_SET_EQUALITY=PASS" in workflow
+          capture_pos = workflow.rindex("b62_served_version_secret_guard.py capture")
+          deploy_pos = workflow.rindex("- name: Deploy production code preserving the full binding set")
+          verify_pos = workflow.rindex("b62_served_version_secret_guard.py verify")
+          assert capture_pos < deploy_pos < verify_pos
+          assert "ambiguous active deployment" in served_guard
+          assert "duplicate binding names" in served_guard
+          assert "type drift" in served_guard
+          assert "missing pre-existing secret" in served_guard
+          assert "PADIEM_CHAT_QUOTA_SALT" in served_guard
+          assert "P01_ENGINE_CREDENTIAL" in served_guard
+          assert "served version id is missing" in served_guard
+          assert "SECRET_VALUES_READ=0" in served_guard
+          assert "SECRET_VALUES_EMITTED=0" in served_guard
+          assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in served_guard
+          assert '"text"' not in served_guard
+          print("B62_SERVED_VERSION_SECRET_GUARD_SOURCE=PASS")
           print("B62_PRODUCTION_CODE_GATE_SOURCE=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
@@ -313,6 +348,19 @@ jobs:
             echo "PREVIOUS_VERSION_ID=${active}"
             echo "PREVIOUS_SCRIPT_ETAG=${etag_before}"
           } >> "${GITHUB_ENV}"
+
+      - name: Capture the pre-deploy served version secret set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_served_version_secret_guard.py capture \
+            --deployments "${RUNNER_TEMP}/b62-deployments-before.json" \
+            --version-detail "${RUNNER_TEMP}/b62-version-before.json" \
+            --output "${RUNNER_TEMP}/b62-served-secret-set-before.json"
+          echo "PREDEPLOY_SERVED_VERSION_IDENTIFIED=PASS"
+          echo "PREDEPLOY_SECRET_SET_CAPTURE=NAME_AND_TYPE_ONLY"
+          echo "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO"
+          echo "PRODUCTION_MUTATION=0"
 
       - name: Prove live config prerequisites before any deploy mutation
         shell: bash
@@ -513,6 +561,19 @@ jobs:
           curl -fsS "${auth[@]}" "${api}/subdomain" -o "${subdomain}"
           jq -e '.success == true and .result.enabled == true' "${subdomain}" >/dev/null
           echo "B62_PUBLIC_ORIGIN_STILL_ENABLED=PASS"
+
+      - name: Verify the complete secret set on the served version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_served_version_secret_guard.py verify \
+            --expected "${RUNNER_TEMP}/b62-served-secret-set-before.json" \
+            --deployments "${RUNNER_TEMP}/b62-deployments-after.json" \
+            --version-detail "${RUNNER_TEMP}/b62-version-after.json"
+          echo "POSTDEPLOY_SERVED_VERSION_IDENTIFIED=PASS"
+          echo "FULL_SECRET_SET_EQUALITY=PASS"
+          echo "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO"
+          echo "PRODUCTION_MUTATION=0"
 
       - name: Production smoke — connector ticket edge contract (Scenario A)
         shell: bash
