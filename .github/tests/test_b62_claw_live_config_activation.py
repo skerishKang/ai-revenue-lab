@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
 import textwrap
 from pathlib import Path
 
@@ -826,6 +831,349 @@ def test_activation_r2_evidence_keys_unchanged_after_dedicated_wiring() -> None:
     assert "UNRELATED_BINDINGS_PRESERVED=PASS" in activate
 
 
+SOURCE_CREDENTIAL_ENV = "B62_P01_ENGINE_CREDENTIAL"
+GOOD_CREDENTIAL = "x" * 40
+
+
+def _run_cli(args: list[str], *, credential: str | None = None):
+    env = {key: value for key, value in os.environ.items() if key != SOURCE_CREDENTIAL_ENV}
+    if credential is not None:
+        env[SOURCE_CREDENTIAL_ENV] = credential
+    return subprocess.run(
+        [sys.executable, str(HELPER), *args],
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
+    )
+
+
+def _write_settings(directory: Path, name: str, bindings) -> Path:
+    path = directory / name
+    path.write_text(json.dumps(_settings(bindings)), encoding="utf-8")
+    return path
+
+
+def _replacement_job_block() -> str:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    return workflow.split("replace-p01-credential:", 1)[1].split("\n  rollback-config:", 1)[0]
+
+
+def test_source_credential_quality_byte_boundaries() -> None:
+    helper = _load_helper()
+    assert helper.source_credential_quality("a" * 32) is True
+    assert helper.source_credential_quality("a" * 512) is True
+    assert helper.source_credential_quality("a" * 31) is False
+    assert helper.source_credential_quality("a" * 513) is False
+    assert helper.source_credential_quality("") is False
+    assert helper.source_credential_quality(None) is False
+    assert helper.source_credential_quality(12345) is False
+
+
+def test_source_credential_quality_counts_utf8_bytes_not_characters() -> None:
+    helper = _load_helper()
+    assert helper.source_credential_quality("가" * 10) is False
+    assert helper.source_credential_quality("가" * 11) is True
+    assert helper.source_credential_quality("가" * 171) is False
+
+
+def test_helper_credential_bounds_match_worker_config() -> None:
+    helper = _load_helper()
+    source = WORKER_CONFIG.read_text(encoding="utf-8")
+    assert f'_P01_CREDENTIAL_MIN_BYTES = {helper.P01_CREDENTIAL_MIN_BYTES}' in source
+    assert f'_P01_CREDENTIAL_MAX_BYTES = {helper.P01_CREDENTIAL_MAX_BYTES}' in source
+
+
+def test_replacement_precheck_requires_existing_secret_text() -> None:
+    helper = _load_helper()
+    result = helper.replacement_precheck(_settings(_activated_bindings()))
+    assert helper.P01_CREDENTIAL_NAME in result["secret_names"]
+    assert "LEGACY_SECRET" in result["secret_names"]
+
+    for bindings, needle in (
+        (_baseline_bindings() + [_binding(helper.P01_CREDENTIAL_NAME, "plain_text", text="x")],
+         "refusing to overwrite"),
+    ):
+        try:
+            helper.replacement_precheck(_settings(bindings))
+        except helper.ActivationPlanError as exc:
+            assert needle in str(exc)
+        else:
+            raise AssertionError(f"expected refusal: {needle}")
+
+    try:
+        helper.replacement_precheck(_settings(_baseline_bindings()))
+    except helper.ActivationPlanError as exc:
+        assert "absent" in str(exc) and "activate_config" in str(exc)
+    else:
+        raise AssertionError("absent credential must refuse replacement")
+
+
+def test_replacement_precheck_reports_names_only() -> None:
+    helper = _load_helper()
+    result = helper.replacement_precheck(_settings(_activated_bindings()))
+    assert list(result) == ["secret_names"]
+    assert all(isinstance(name, str) for name in result["secret_names"])
+
+
+def test_verify_replacement_readback_accepts_identical_or_extended_bindings() -> None:
+    helper = _load_helper()
+    activated = _activated_bindings()
+    assert helper.verify_replacement_readback(_settings(activated), _settings(activated)) == []
+    extended = activated + [_binding("QUOTA_SALT", "plain_text", text="1")]
+    assert helper.verify_replacement_readback(_settings(activated), _settings(extended)) == []
+
+
+def test_verify_replacement_readback_flags_credential_loss_or_retype() -> None:
+    helper = _load_helper()
+    activated = _activated_bindings()
+    dropped = [b for b in activated if b["name"] != helper.P01_CREDENTIAL_NAME]
+    failures = helper.verify_replacement_readback(_settings(activated), _settings(dropped))
+    assert any(helper.P01_CREDENTIAL_NAME in f for f in failures)
+    retyped = [
+        _binding(helper.P01_CREDENTIAL_NAME, "plain_text", text="oops")
+        if b["name"] == helper.P01_CREDENTIAL_NAME
+        else b
+        for b in activated
+    ]
+    failures = helper.verify_replacement_readback(_settings(activated), _settings(retyped))
+    assert any(helper.P01_CREDENTIAL_NAME in f for f in failures)
+
+
+def test_verify_replacement_readback_flags_unrelated_secret_loss() -> None:
+    helper = _load_helper()
+    activated = _activated_bindings()
+    lost = [b for b in activated if b["name"] != "LEGACY_SECRET"]
+    failures = helper.verify_replacement_readback(_settings(activated), _settings(lost))
+    assert any("LEGACY_SECRET" in f for f in failures)
+
+
+def test_cli_credential_quality_passes_with_valid_env_without_emitting_value() -> None:
+    proc = _run_cli(["credential-quality"], credential=GOOD_CREDENTIAL)
+    assert proc.returncode == 0, proc.stderr
+    assert "SOURCE_CREDENTIAL_PRESENT=YES" in proc.stdout
+    assert "SOURCE_CREDENTIAL_QUALITY=PASS" in proc.stdout
+    for key in (
+        "SECRET_VALUE_OUTPUT=0",
+        "SECRET_LENGTH_OUTPUT=0",
+        "SECRET_HASH_OUTPUT=0",
+        "PRODUCTION_MUTATION=0",
+    ):
+        assert key in proc.stdout, key
+    assert GOOD_CREDENTIAL not in proc.stdout + proc.stderr
+
+
+def test_cli_credential_quality_fails_closed_when_env_missing() -> None:
+    proc = _run_cli(["credential-quality"])
+    assert proc.returncode == 1
+    assert "SOURCE_CREDENTIAL_PRESENT=NO" in proc.stdout
+    assert "SOURCE_CREDENTIAL_QUALITY=FAIL" in proc.stdout
+
+
+def test_cli_credential_quality_fails_on_invalid_length_without_leaking() -> None:
+    for value in ("a" * 31, "a" * 513, "가" * 171):
+        proc = _run_cli(["credential-quality"], credential=value)
+        assert proc.returncode == 1, value
+        assert "SOURCE_CREDENTIAL_QUALITY=FAIL" in proc.stdout
+        assert value not in proc.stdout + proc.stderr
+
+
+def test_cli_replacement_precheck_requires_settings() -> None:
+    proc = _run_cli(["replacement-precheck"])
+    assert proc.returncode == 2
+    assert "--settings" in proc.stderr
+
+
+def test_cli_replacement_precheck_passes_with_existing_secret_text() -> None:
+    helper = _load_helper()
+    with tempfile.TemporaryDirectory() as tmp:
+        path = _write_settings(Path(tmp), "pre.json", _activated_bindings())
+        proc = _run_cli(["replacement-precheck", "--settings", str(path)])
+    assert proc.returncode == 0, proc.stderr
+    assert "B62_P01_REPLACEMENT_PRECHECK=PASS" in proc.stdout
+    assert helper.P01_CREDENTIAL_NAME in proc.stdout
+    assert "OLD_SECRET_VALUE_READ=NO" in proc.stdout
+    assert "SECRET_VALUES_READ=0" in proc.stdout
+
+
+def test_cli_replacement_precheck_refuses_absent_and_wrong_type() -> None:
+    helper = _load_helper()
+    with tempfile.TemporaryDirectory() as tmp:
+        absent = _write_settings(Path(tmp), "absent.json", _baseline_bindings())
+        wrong = _write_settings(
+            Path(tmp),
+            "wrong.json",
+            _baseline_bindings() + [_binding(helper.P01_CREDENTIAL_NAME, "plain_text", text="x")],
+        )
+        proc_absent = _run_cli(["replacement-precheck", "--settings", str(absent)])
+        proc_wrong = _run_cli(["replacement-precheck", "--settings", str(wrong)])
+    assert proc_absent.returncode == 1
+    assert "B62_P01_REPLACEMENT_PRECHECK=FAIL" in proc_absent.stderr
+    assert "absent" in proc_absent.stderr
+    assert proc_wrong.returncode == 1
+    assert "refusing to overwrite" in proc_wrong.stderr
+
+
+def test_cli_replacement_verify_passes_and_denies_runtime_claim() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        pre = _write_settings(Path(tmp), "pre.json", _activated_bindings())
+        post = _write_settings(Path(tmp), "post.json", _activated_bindings())
+        proc = _run_cli(
+            ["replacement-verify", "--settings", str(post), "--pre-settings", str(pre)]
+        )
+    assert proc.returncode == 0, proc.stderr
+    assert "B62_P01_REPLACEMENT_VERIFY=PASS" in proc.stdout
+    assert "P01_ENGINE_CREDENTIAL=PRESENT:secret_text" in proc.stdout
+    assert "UNRELATED_SECRET_MUTATION=0" in proc.stdout
+    assert "RUNTIME_SUCCESS_CLAIM=NO_UNTIL_PHASE_A_RERUN" in proc.stdout
+
+
+def test_cli_replacement_verify_fails_on_dropped_binding() -> None:
+    helper = _load_helper()
+    with tempfile.TemporaryDirectory() as tmp:
+        pre = _write_settings(Path(tmp), "pre.json", _activated_bindings())
+        post = _write_settings(
+            Path(tmp),
+            "post.json",
+            [b for b in _activated_bindings() if b["name"] != helper.P01_CREDENTIAL_NAME],
+        )
+        proc = _run_cli(
+            ["replacement-verify", "--settings", str(post), "--pre-settings", str(pre)]
+        )
+    assert proc.returncode == 1
+    assert "B62_P01_REPLACEMENT_VERIFY=FAIL" in proc.stderr
+    assert helper.P01_CREDENTIAL_NAME in proc.stderr
+
+
+def test_cli_replacement_verify_requires_both_settings_files() -> None:
+    proc = _run_cli(["replacement-verify"])
+    assert proc.returncode == 2
+    assert "--pre-settings" in proc.stderr
+
+
+def test_workflow_exposes_replacement_dispatch_mode() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "- replace_p01_engine_credential" in workflow
+    assert "inputs.mode == 'replace_p01_engine_credential'" in workflow
+    assert (
+        "inputs.mode != 'replace_p01_engine_credential'"
+        in workflow.split("cloudflare-readonly:", 1)[1].split("steps:", 1)[0]
+    )
+
+
+def test_replacement_job_uses_dedicated_confirmation_phrase() -> None:
+    block = _replacement_job_block()
+    assert "CONFIRM_REPLACE_B62_P01_ENGINE_CREDENTIAL" in block
+    assert "CONFIRM_ACTIVATE_B62_CLAW_LIVE_CONFIG" not in block
+    assert "ACTIVATION_CONFIRMATION_PHRASE_NOT_REUSED=YES" in block
+
+
+def test_replacement_job_is_production_gated_and_needs_only_source_contract() -> None:
+    block = _replacement_job_block()
+    header = block.split("steps:", 1)[0]
+    assert "environment: production" in header
+    assert "needs: source-contract" in header
+    assert "cloudflare-readonly" not in header
+    assert "github.event_name == 'workflow_dispatch'" in header
+
+
+def test_replacement_job_uses_only_secret_put_and_never_patches_settings() -> None:
+    block = _replacement_job_block()
+    assert "workers/scripts/${B62_WORKER}/secrets" in block
+    assert re.findall(r"-X ([A-Z]+)", block) == ["PUT"]
+    for token in ("-X PATCH", "-X POST", "-F ", "settings=<", "--keep-vars", "wrangler"):
+        assert token not in block, token
+
+
+def test_replacement_job_mutates_only_the_p01_credential_binding_name() -> None:
+    block = _replacement_job_block()
+    names = re.findall(r'"name": "([A-Za-z0-9_]+)"', block)
+    assert names == ["P01_ENGINE_CREDENTIAL"]
+
+
+def test_replacement_job_records_served_version_evidence() -> None:
+    block = _replacement_job_block()
+    assert "PREMUTATION_SERVED_VERSION_ID" in block
+    assert "POSTMUTATION_SERVED_VERSION_ID" in block
+    assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" in block
+    assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" in block
+    assert "(.result.deployments[0].versions | length) == 1" in block
+    assert ".result.deployments[0].versions[0].percentage == 100" in block
+    assert "WORKER_CODE_DEPLOY_SUBMITTED=0" in block
+
+
+def test_replacement_job_step_order_is_authorize_gate_precheck_mutate_verify() -> None:
+    block = _replacement_job_block()
+    order = [
+        "- name: Require explicit credential replacement authorization",
+        "- name: Gate the source credential with bounded quality evidence",
+        "- name: Record pre-mutation settings and served version",
+        "- name: Replace the P01 Engine credential through the secrets API",
+        "- name: Record post-mutation served version evidence",
+        "- name: Read back the replaced credential by binding name and type only",
+    ]
+    positions = [block.index(step) for step in order]
+    assert positions == sorted(positions)
+    assert 'test "${CONFIRMATION}"' in block[: positions[1]]
+
+
+def test_replacement_job_wires_helper_precheck_and_verify_commands() -> None:
+    block = _replacement_job_block()
+    assert "b62_claw_live_config_activation.py credential-quality" in block
+    assert "b62_claw_live_config_activation.py replacement-precheck" in block
+    assert "b62_claw_live_config_activation.py replacement-verify" in block
+    assert "--pre-settings" in block
+    assert "OLD_SECRET_VALUE_READ=NO" in block
+
+
+def test_replacement_job_never_echoes_the_source_credential_value() -> None:
+    block = _replacement_job_block()
+    for line in block.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert "${B62_P01_ENGINE_CREDENTIAL}" not in stripped, stripped
+    assert "test -n \"${B62_P01_ENGINE_CREDENTIAL}\"" in block
+
+
+def test_replacement_job_is_placed_between_activate_and_rollback() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    activate_at = workflow.index("  activate-config:")
+    replace_at = workflow.index("  replace-p01-credential:")
+    rollback_at = workflow.index("  rollback-config:")
+    assert activate_at < replace_at < rollback_at
+
+
+def test_activate_config_create_path_remains_untouched_by_replacement() -> None:
+    activate = _activate_job_block()
+    assert "B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED == '1'" in activate
+    assert "CONFIRM_ACTIVATE_B62_CLAW_LIVE_CONFIG" in activate
+    block = _replacement_job_block()
+    assert "CREDENTIAL_CREATE_REQUIRED" not in block
+    assert "credential-quality" in block
+
+
+def test_replacement_plan_and_activate_paths_never_replace_existing_credential() -> None:
+    helper = _load_helper()
+    plan = helper.build_activation_patch(
+        _settings(_activated_bindings()),
+        engine_service_name=ENGINE,
+        r2_bucket_name=BUCKET,
+        target_sha="0" * 40,
+    )
+    assert plan["no_op"] is True
+    assert plan["credential_create_required"] is False
+    assert helper.P01_CREDENTIAL_NAME not in [c.split("_")[0] for c in plan["changes"]]
+    with tempfile.TemporaryDirectory() as tmp:
+        path = _write_settings(Path(tmp), "s.json", _activated_bindings())
+        proc = _run_cli(
+            ["plan", "--settings", str(path), "--engine-service", ENGINE,
+             "--r2-bucket", BUCKET, "--target-sha", "0" * 40,
+             "--output", str(Path(tmp) / "patch.json")]
+        )
+    assert proc.returncode == 0, proc.stderr
+    assert "B62_CLAW_CONFIG_CREDENTIAL_CREATE_REQUIRED=0" in proc.stdout
+
+
 if __name__ == "__main__":
     test_classify_full_activation_required_and_exact()
     test_classify_quota_drift_and_wrong_type()
@@ -874,4 +1222,33 @@ if __name__ == "__main__":
     test_activation_r2_confirm_precedes_settings_patch_and_secret_put()
     test_activation_shared_token_remains_for_worker_config_operations()
     test_activation_r2_evidence_keys_unchanged_after_dedicated_wiring()
+    test_source_credential_quality_byte_boundaries()
+    test_source_credential_quality_counts_utf8_bytes_not_characters()
+    test_helper_credential_bounds_match_worker_config()
+    test_replacement_precheck_requires_existing_secret_text()
+    test_replacement_precheck_reports_names_only()
+    test_verify_replacement_readback_accepts_identical_or_extended_bindings()
+    test_verify_replacement_readback_flags_credential_loss_or_retype()
+    test_verify_replacement_readback_flags_unrelated_secret_loss()
+    test_cli_credential_quality_passes_with_valid_env_without_emitting_value()
+    test_cli_credential_quality_fails_closed_when_env_missing()
+    test_cli_credential_quality_fails_on_invalid_length_without_leaking()
+    test_cli_replacement_precheck_requires_settings()
+    test_cli_replacement_precheck_passes_with_existing_secret_text()
+    test_cli_replacement_precheck_refuses_absent_and_wrong_type()
+    test_cli_replacement_verify_passes_and_denies_runtime_claim()
+    test_cli_replacement_verify_fails_on_dropped_binding()
+    test_cli_replacement_verify_requires_both_settings_files()
+    test_workflow_exposes_replacement_dispatch_mode()
+    test_replacement_job_uses_dedicated_confirmation_phrase()
+    test_replacement_job_is_production_gated_and_needs_only_source_contract()
+    test_replacement_job_uses_only_secret_put_and_never_patches_settings()
+    test_replacement_job_mutates_only_the_p01_credential_binding_name()
+    test_replacement_job_records_served_version_evidence()
+    test_replacement_job_step_order_is_authorize_gate_precheck_mutate_verify()
+    test_replacement_job_wires_helper_precheck_and_verify_commands()
+    test_replacement_job_never_echoes_the_source_credential_value()
+    test_replacement_job_is_placed_between_activate_and_rollback()
+    test_activate_config_create_path_remains_untouched_by_replacement()
+    test_replacement_plan_and_activate_paths_never_replace_existing_credential()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
