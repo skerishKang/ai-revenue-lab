@@ -784,6 +784,94 @@ def test_engine_not_configured_returns_503(client: TestClient) -> None:
     assert data["error"]["code"] == "engine_not_configured"
 
 
+# ── #2413 bounded composition diagnostics on the public 503 ────────────────
+
+
+@pytest.mark.parametrize(
+    "diagnostic",
+    [
+        "engine_service_missing",
+        "caller_id_shape_invalid",
+        "credential_length_invalid",
+        "client_constructor_error",
+        "composition_unavailable",
+    ],
+)
+def test_engine_not_configured_503_carries_bounded_safe_detail(
+    client: TestClient, diagnostic: str
+) -> None:
+    previous = client.app.state.claw_p01_composition_diagnostic
+    client.app.state.claw_p01_composition_diagnostic = diagnostic
+    try:
+        with _injected_adapter(client, None):
+            resp = client.post(
+                "/api/claw/manual-intake/execute",
+                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            )
+    finally:
+        client.app.state.claw_p01_composition_diagnostic = previous
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["error"]["code"] == "engine_not_configured"
+    assert data["error"]["detail"] == diagnostic
+
+
+def test_engine_not_configured_503_detail_defaults_when_diagnostic_unset(
+    client: TestClient,
+) -> None:
+    previous = client.app.state.claw_p01_composition_diagnostic
+    client.app.state.claw_p01_composition_diagnostic = None
+    try:
+        with _injected_adapter(client, None):
+            resp = client.post(
+                "/api/claw/manual-intake/execute",
+                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            )
+    finally:
+        client.app.state.claw_p01_composition_diagnostic = previous
+    assert resp.status_code == 503
+    assert resp.json()["error"]["detail"] == "composition_unavailable"
+
+
+def test_engine_not_configured_503_rejects_out_of_allowlist_detail(
+    client: TestClient,
+) -> None:
+    previous = client.app.state.claw_p01_composition_diagnostic
+    client.app.state.claw_p01_composition_diagnostic = "leaked-p01-engine-credential-abc"
+    try:
+        with _injected_adapter(client, None):
+            resp = client.post(
+                "/api/claw/manual-intake/execute",
+                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            )
+    finally:
+        client.app.state.claw_p01_composition_diagnostic = previous
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["error"]["detail"] == "composition_unavailable"
+    assert "leaked" not in str(data)
+
+
+def test_successful_execution_response_has_no_diagnostic_fields(client: TestClient) -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
+        )
+    assert resp.status_code == 200
+    body = resp.text
+    for diagnostic in (
+        "engine_service_missing",
+        "caller_id_shape_invalid",
+        "credential_length_invalid",
+        "client_constructor_error",
+        "composition_unavailable",
+        "engine_not_configured",
+    ):
+        assert diagnostic not in body
+
+
 def test_engine_timeout_projects_safe_error(client: TestClient) -> None:
     from kagent.p01_adapter import P01AdapterError
 

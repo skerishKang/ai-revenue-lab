@@ -52,6 +52,23 @@ _P01_CREDENTIAL_MIN_BYTES = 32
 _P01_CREDENTIAL_MAX_BYTES = 512
 _P01_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
+# Bounded public-safe binding diagnostics (#2413). Fixed constants only: they
+# classify *which* validation step failed closed without ever carrying a
+# credential value, credential length, caller value, binding content, or any
+# exception text.
+P01_DIAG_ENGINE_SERVICE_MISSING = "engine_service_missing"
+P01_DIAG_CALLER_ID_SHAPE_INVALID = "caller_id_shape_invalid"
+P01_DIAG_CREDENTIAL_LENGTH_INVALID = "credential_length_invalid"
+P01_DIAG_CLIENT_CONSTRUCTOR_ERROR = "client_constructor_error"
+P01_DIAG_COMPOSITION_UNAVAILABLE = "composition_unavailable"
+P01_COMPOSITION_DIAGNOSTICS = frozenset({
+    P01_DIAG_ENGINE_SERVICE_MISSING,
+    P01_DIAG_CALLER_ID_SHAPE_INVALID,
+    P01_DIAG_CREDENTIAL_LENGTH_INVALID,
+    P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
+    P01_DIAG_COMPOSITION_UNAVAILABLE,
+})
+
 CONTENT_SECURITY_POLICY = (
     "default-src 'self'; "
     "base-uri 'none'; "
@@ -121,6 +138,27 @@ def p01_engine_config_from_worker_bindings(env: Any) -> P01EngineWorkerConfig | 
     Service Binding is present and both server-owned caller values are well
     formed. Never consults ``os.environ``.
     """
+    config, _ = _p01_engine_config_and_diagnostic(env)
+    return config
+
+
+def p01_engine_binding_diagnostic(env: Any) -> str | None:
+    """Classify why the P01 binding surface fails closed (#2413).
+
+    Returns one bounded public-safe constant
+    (``engine_service_missing`` / ``caller_id_shape_invalid`` /
+    ``credential_length_invalid``) or ``None`` when the binding surface is
+    valid. The diagnostic is derived from the same validation order as
+    ``p01_engine_config_from_worker_bindings`` and never exposes values,
+    lengths, hashes, or exception text.
+    """
+    _, diagnostic = _p01_engine_config_and_diagnostic(env)
+    return diagnostic
+
+
+def _p01_engine_config_and_diagnostic(
+    env: Any,
+) -> tuple[P01EngineWorkerConfig | None, str | None]:
     service_binding = binding_value(env, P01_ENGINE_SERVICE_BINDING_NAME)
     raw_caller = binding_value(env, P01_ENGINE_CALLER_ID_ENV)
     raw_credential = binding_value(env, P01_ENGINE_CREDENTIAL_ENV)
@@ -128,22 +166,25 @@ def p01_engine_config_from_worker_bindings(env: Any) -> P01EngineWorkerConfig | 
     credential = raw_credential if isinstance(raw_credential, str) else ""
 
     if service_binding is None and not caller_id and not credential:
-        return None
+        return None, P01_DIAG_ENGINE_SERVICE_MISSING
     if service_binding is None:
-        return None
+        return None, P01_DIAG_ENGINE_SERVICE_MISSING
     if (
         not caller_id
         or len(caller_id) > _P01_CALLER_ID_MAX
         or not _P01_SAFE_ID_RE.fullmatch(caller_id)
     ):
-        return None
+        return None, P01_DIAG_CALLER_ID_SHAPE_INVALID
     credential_bytes = len(credential.encode("utf-8"))
     if not _P01_CREDENTIAL_MIN_BYTES <= credential_bytes <= _P01_CREDENTIAL_MAX_BYTES:
-        return None
-    return P01EngineWorkerConfig(
-        service_binding=service_binding,
-        caller_id=caller_id,
-        credential=credential,
+        return None, P01_DIAG_CREDENTIAL_LENGTH_INVALID
+    return (
+        P01EngineWorkerConfig(
+            service_binding=service_binding,
+            caller_id=caller_id,
+            credential=credential,
+        ),
+        None,
     )
 
 
