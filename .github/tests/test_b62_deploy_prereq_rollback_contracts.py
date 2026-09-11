@@ -450,6 +450,31 @@ def test_case_14_no_tests_still_assert_deploy_injection() -> None:
     assert "PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED" in pytest_source
 
 
+def _auto_rollback_step_source() -> str:
+    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    marker = "- name: Auto-rollback to recorded version on any failed step"
+    start = deploy.index(marker)
+    following = deploy.find("\n      - name: ", start + len(marker))
+    assert following != -1
+    return deploy[start:following]
+
+
+def test_case_15_rollback_noop_when_active_version_unchanged() -> None:
+    step = _auto_rollback_step_source()
+    assert "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED" in step
+    assert "ROLLBACK_POST_ATTEMPTED=NO" in step
+    equality = step.index('if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]')
+    post = step.index('-X POST "${api}/deployments"')
+    assert equality < post
+
+
+def test_case_16_rollback_fires_when_active_version_changed() -> None:
+    step = _auto_rollback_step_source()
+    assert "ROLLBACK_POST_ATTEMPTED=YES" in step
+    assert "ROLLBACK_EFFECT=EXECUTED" in step
+    assert '-X POST "${api}/deployments"' in step
+
+
 def test_deploy_prereq_cli_exit_codes() -> None:
     code, out, _ = _run_cli([
         "deploy-prereq",
