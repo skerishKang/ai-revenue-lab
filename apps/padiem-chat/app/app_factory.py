@@ -169,6 +169,10 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # Bounded non-secret composition diagnostic (#2413). Set by the Worker
+    # composition root alongside a None adapter; always None on the success
+    # path and validated against the closed allowlist before public projection.
+    app.state.claw_p01_composition_diagnostic = None
     # Thin Telegram inbound consumer seam (#2315): the trusted binding
     # authority is injected server-side only; None keeps the route fail-closed.
     app.state.claw_telegram_authority = claw_telegram_authority

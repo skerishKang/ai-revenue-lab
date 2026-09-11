@@ -11,9 +11,19 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-from app.claw_p01_composition import build_claw_p01_adapter
+from app.claw_p01_composition import (
+    build_claw_p01_adapter,
+    build_claw_p01_adapter_with_diagnostic,
+)
 from app.worker_config import (
+    P01_DIAG_CALLER_ID_SHAPE_INVALID,
+    P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
+    P01_DIAG_COMPOSITION_UNAVAILABLE,
+    P01_DIAG_CREDENTIAL_LENGTH_INVALID,
+    P01_DIAG_ENGINE_SERVICE_MISSING,
+    P01_COMPOSITION_DIAGNOSTICS,
     P01_ENGINE_SERVICE_BINDING_NAME,
+    p01_engine_binding_diagnostic,
     p01_engine_config_from_worker_bindings,
 )
 from kagent.p01_adapter import P01_APP_ID, P01CoreOrchestrationAdapter
@@ -107,6 +117,94 @@ def test_non_string_or_out_of_bounds_credential_fails_closed() -> None:
 
 def test_unusable_request_factory_fails_closed_before_transport() -> None:
     assert build_claw_p01_adapter(_env(), request_factory=None) is None
+
+
+# ── #2413 bounded composition diagnostics ──────────────────────────────────
+
+
+def test_missing_engine_service_binding_is_classified() -> None:
+    adapter, diagnostic = build_claw_p01_adapter_with_diagnostic(
+        {}, request_factory=_request_factory
+    )
+    assert adapter is None
+    assert diagnostic == P01_DIAG_ENGINE_SERVICE_MISSING
+    assert p01_engine_binding_diagnostic({}) == P01_DIAG_ENGINE_SERVICE_MISSING
+    env = _env(**{P01_ENGINE_SERVICE_BINDING_NAME: None})
+    assert p01_engine_binding_diagnostic(env) == P01_DIAG_ENGINE_SERVICE_MISSING
+
+
+def test_malformed_caller_id_is_classified() -> None:
+    for bad in ("attacker/id;rm", "x" * 65, "   ", None, 12345):
+        env = _env(**{"P01_ENGINE_CALLER_ID": bad})
+        adapter, diagnostic = build_claw_p01_adapter_with_diagnostic(
+            env, request_factory=_request_factory
+        )
+        assert adapter is None, bad
+        assert diagnostic == P01_DIAG_CALLER_ID_SHAPE_INVALID, bad
+
+
+def test_out_of_bounds_credential_length_is_classified() -> None:
+    for bad in ("short" * 4, "d" * 513, None, 999999):
+        env = _env(**{"P01_ENGINE_CREDENTIAL": bad})
+        adapter, diagnostic = build_claw_p01_adapter_with_diagnostic(
+            env, request_factory=_request_factory
+        )
+        assert adapter is None, repr(bad)
+        assert diagnostic == P01_DIAG_CREDENTIAL_LENGTH_INVALID, repr(bad)
+
+
+def test_valid_bindings_compose_adapter_with_no_diagnostic() -> None:
+    adapter, diagnostic = build_claw_p01_adapter_with_diagnostic(
+        _env(), request_factory=_request_factory
+    )
+    assert isinstance(adapter, P01CoreOrchestrationAdapter)
+    assert diagnostic is None
+
+
+def test_constructor_value_error_is_classified_as_client_constructor_error() -> None:
+    adapter, diagnostic = build_claw_p01_adapter_with_diagnostic(
+        _env(), request_factory=None
+    )
+    assert adapter is None
+    assert diagnostic == P01_DIAG_CLIENT_CONSTRUCTOR_ERROR
+
+
+def test_unexpected_constructor_failure_is_classified_as_composition_unavailable(
+    monkeypatch,
+) -> None:
+    import app.claw_p01_composition as composition
+
+    def _boom(*args: object, **kwargs: object) -> None:
+        raise RuntimeError(f"secret-ish failure text {VALID_CREDENTIAL}")
+
+    monkeypatch.setattr(composition, "PadiemAiEngineClient", _boom)
+    adapter, diagnostic = build_claw_p01_adapter_with_diagnostic(
+        _env(), request_factory=_request_factory
+    )
+    assert adapter is None
+    assert diagnostic == P01_DIAG_COMPOSITION_UNAVAILABLE
+    assert VALID_CREDENTIAL not in str(diagnostic)
+
+
+def test_diagnostics_are_bounded_allowlist_and_never_carry_the_credential() -> None:
+    for env in (
+        {},
+        _env(**{P01_ENGINE_SERVICE_BINDING_NAME: None}),
+        _env(**{"P01_ENGINE_CALLER_ID": "bad/id"}),
+        _env(**{"P01_ENGINE_CREDENTIAL": "short"}),
+        _env(**{"P01_ENGINE_CREDENTIAL": "d" * 513}),
+    ):
+        _, diagnostic = build_claw_p01_adapter_with_diagnostic(
+            env, request_factory=_request_factory
+        )
+        assert diagnostic in P01_COMPOSITION_DIAGNOSTICS
+        assert VALID_CREDENTIAL not in diagnostic
+        assert VALID_CALLER not in diagnostic
+        assert not any(ch.isdigit() for ch in diagnostic)
+
+
+def test_success_path_plain_builder_is_unchanged() -> None:
+    assert build_claw_p01_adapter(_env(), request_factory=_request_factory) is not None
 
 
 def test_config_repr_and_error_paths_never_carry_the_credential() -> None:
