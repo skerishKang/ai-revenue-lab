@@ -1,0 +1,443 @@
+name: B54 Engine Caller Registry Overlay Rotation Gate
+
+# Dispatch-only credential ROTATION of the b54-kagent Engine caller authority.
+#
+# This gate replaces ONLY ``PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY`` (a served
+# Worker ``secret_text`` on the ``padiem-ai-engine`` worker) with a canonical
+# single-caller overlay built from the current GitHub Actions secret
+# ``B62_P01_ENGINE_CREDENTIAL``. It NEVER mutates the base
+# ``PADIEM_ENGINE_CALLER_REGISTRY_V1``, NEVER touches the legacy one-caller trio,
+# and NEVER requires or consumes the private base-registry baseline or its
+# currentness attestation (that material belongs to the separate V1 provisioning
+# gate and is deliberately not referenced here).
+#
+# Why the OVERLAY (not the base V1): the #2375 Production authority established
+# caller ``b54-kagent`` / app ``b54-padiem-claw`` as an additive SINGLE-caller
+# OVERLAY, kept OUT of the opaque multi-caller base. After the B62 credential
+# rotation the resulting drift is an OVERLAY credential drift, so the fix is an
+# overlay credential rewrite — a base V1 rewrite is NOT this gate's job: it
+# would require the private baseline and belongs to the provisioning
+# gate.
+#
+# Canonical overlay payload (credential embedded UNHASHED; the Engine hashes it
+# internally via ``caller_secret_digest``):
+#   {"version": 1,
+#    "caller": {"caller_id": "b54-kagent",
+#               "credential": <raw B62_P01_ENGINE_CREDENTIAL>,
+#               "allowed_app_ids": ["b54-padiem-claw"]}}
+#
+# Served-version proof (not the settings plane): a secret PUT may create or
+# activate a NEW Worker version, so pre- and post-mutation readback is proven on
+# the ACTUALLY SERVED version (deployments API -> ``versions/{active}`` detail ->
+# ``result.resources.bindings``), reusing the shared B54 served-version guard so
+# this gate and the deploy gate cannot drift on version-detail parsing. A
+# settings-plane-only readback is never accepted as proof.
+#
+# Fail-closed preconditions (NAME/TYPE only, on the served version): BOTH the
+# base V1 and the overlay must already be ``secret_text`` and the legacy trio
+# must be absent. Any other shape (base absent, base/overlay wrong type, legacy
+# trio present, overlay absent) refuses mutation for direct operator review;
+# overlay CREATION belongs to the provisioning gate, not this rotation gate.
+#
+# The credential NEVER passes through workflow_dispatch inputs: it arrives only
+# as the ``B62_P01_ENGINE_CREDENTIAL`` job environment secret. Failure evidence
+# is bounded too: a failed secret PUT emits HTTP status, boolean success, and
+# integer error codes only — never ``.errors[].message`` or the response body,
+# because a future error message could reflect request material. The response
+# temp file is deleted after extraction on both the failure and the success path.
+#
+# A pull request can only run the static contract tests; mutation requires an
+# exact-main workflow_dispatch with the confirmation phrase. This gate does NOT
+# touch the B62 live-config activation gate, the chat worker deployment, or
+# deploy the Engine worker code.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-caller-registry-overlay-rotation-gate.yml"
+      - ".github/scripts/b54_engine_caller_registry_overlay_rotation.py"
+      - ".github/scripts/b54_engine_served_version_guard.py"
+      - ".github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Engine overlay rotation gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - apply_overlay_credential_rotation
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-caller-registry-overlay-rotation-gate
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN_GUARD=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run engine overlay rotation gate contract tests
+        run: python .github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B54_ENGINE_OVERLAY_ROTATION_SOURCE_CONTRACT=PASS'
+          echo 'CLOUDFLARE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      disposition: ${{ steps.classify.outputs.disposition }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - name: Read the served-version caller authority and classify rotation disposition
+        id: classify
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          deployments="${RUNNER_TEMP}/b54-engine-overlay-deployments-pre.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}"
+          # Served-version authority: exactly one deployment entry with exactly
+          # one version at 100 percent. A settings GET, a secret PUT response,
+          # or a version-upload/latest read is never accepted as proof.
+          jq -e '.success == true' "${deployments}" >/dev/null
+          jq -e '(.result.deployments | type == "array" and length > 0)' "${deployments}" >/dev/null
+          jq -e '(.result.deployments[0].versions | type == "array" and length == 1)' "${deployments}" >/dev/null
+          jq -e '.result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          readback_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          test "${active_version}" = "${readback_version}"
+          version_detail="${RUNNER_TEMP}/b54-engine-overlay-version-pre.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
+          evidence="$(python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py classify \
+            --version-detail "${version_detail}" \
+            --active-version "${active_version}")"
+          echo "${evidence}"
+          disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
+          if [ "${disposition}" != "ROTATION_REQUIRED" ]; then
+            echo 'Refusing: served-version caller authority is not a safe overlay-rotation state. Human review required before any mutation.' >&2
+            exit 1
+          fi
+          echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
+          echo 'GET_ONLY=PASS'
+          echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
+          echo 'VERSION_UPLOAD_LATEST_READ_ACCEPTED=NO'
+          echo 'SERVED_VERSION_READBACK=YES'
+          echo 'SETTINGS_PLANE_ONLY_ACCEPTANCE=NO'
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_OVERLAY_OUTPUT=0'
+          echo 'CLOUDFLARE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  apply-overlay-credential-rotation:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_overlay_credential_rotation' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_CALLER_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
+    steps:
+      - name: Require explicit rotation authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ROTATE_B54_KAGENT_ENGINE_OVERLAY_FROM_EXACT_MAIN"
+          if [ "${DISPOSITION}" != "ROTATION_REQUIRED" ]; then
+            echo 'Refusing mutation: no trustworthy readonly served-version disposition.' >&2
+            exit 1
+          fi
+          echo 'B54_ENGINE_OVERLAY_ROTATION_AUTHORIZATION=PASS'
+          echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build the bounded overlay-only PUT body from the credential secret
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${ENGINE_CALLER_CREDENTIAL}"
+          rm -f "${RUNNER_TEMP}/b54-engine-overlay-put-body.json"
+          plan_status=0
+          evidence="$(python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py plan \
+            --credential-env ENGINE_CALLER_CREDENTIAL \
+            --output "${RUNNER_TEMP}/b54-engine-overlay-put-body.json")" \
+            || plan_status=$?
+          echo "${evidence}"
+          if [ "${plan_status}" -ne 0 ]; then
+            # Fail closed with auditable evidence; never reach the PUT.
+            echo 'B54_ENGINE_OVERLAY_ROTATION_PLAN=FAIL'
+            echo 'B54_ENGINE_OVERLAY_ROTATION=SKIPPED_PLAN_FAILED'
+            echo 'ENGINE_BASE_V1_MUTATION=0'
+            echo 'LEGACY_TRIO_MUTATION=0'
+            echo 'UNRELATED_SECRET_MUTATION=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          printf '%s\n' "${evidence}" | grep -q '^B54_ENGINE_OVERLAY_ROTATION_PLAN=PASS$'
+          printf '%s\n' "${evidence}" | grep -q '^B54_ENGINE_OVERLAY_TARGET_NAME=PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY$'
+          printf '%s\n' "${evidence}" | grep -q '^CREDENTIAL_BYTES_IN_BOUNDS=PASS$'
+          # Structural guarantee: the PUT body targets ONLY the overlay secret,
+          # so a base V1 rewrite is impossible through this path.
+          jq -e '.name == "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY" and .type == "secret_text"' \
+            "${RUNNER_TEMP}/b54-engine-overlay-put-body.json" >/dev/null
+          jq -e '.name != "PADIEM_ENGINE_CALLER_REGISTRY_V1"' \
+            "${RUNNER_TEMP}/b54-engine-overlay-put-body.json" >/dev/null
+          echo 'B54_ENGINE_OVERLAY_TARGET_GUARD=PASS'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_OVERLAY_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'SECRET_LENGTH_OUTPUT=0'
+          echo 'SECRET_HASH_OUTPUT=0'
+
+      - name: Resolve the served version immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          deployments="${RUNNER_TEMP}/b54-engine-overlay-deployments-pre.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}"
+          jq -e '.success == true' "${deployments}" >/dev/null
+          jq -e '(.result.deployments | type == "array" and length > 0)' "${deployments}" >/dev/null
+          jq -e '(.result.deployments[0].versions | type == "array" and length == 1)' "${deployments}" >/dev/null
+          jq -e '.result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          readback_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          test "${active_version}" = "${readback_version}"
+          echo "PREMUTATION_SERVED_VERSION_ID=${active_version}" >> "${GITHUB_ENV}"
+          echo "PREMUTATION_SERVED_VERSION_ID=${active_version}"
+          echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
+          echo 'VERSION_UPLOAD_LATEST_READ_ACCEPTED=NO'
+          echo 'SERVED_VERSION_READBACK=YES'
+          echo 'SETTINGS_PLANE_ONLY_ACCEPTANCE=NO'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Rotate the OVERLAY secret credential (base V1 and legacy trio untouched)
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/b54-engine-overlay-put-body.json"
+          test -s "${payload}"
+          response="${RUNNER_TEMP}/b54-engine-overlay-response.json"
+          set +e
+          http_status="$(
+            curl -sS -X PUT \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/secrets" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          curl_status=$?
+          set -e
+          case "${http_status}" in
+            ''|*[!0-9]*) http_status=000 ;;
+          esac
+          rm -f "${payload}"
+          echo "B54_ENGINE_OVERLAY_ROTATION_HTTP_STATUS=${http_status}"
+          if [ "${curl_status}" -ne 0 ] || [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            # Bounded, non-secret failure evidence ONLY. Cloudflare error text
+            # and the raw response body are never selected or printed: a future
+            # error message could reflect request material, which would break
+            # RAW_SECRET_OUTPUT=0 / SECRET_VALUE_OUTPUT=0. The helper also
+            # deletes the response temp file.
+            python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py failure-evidence \
+              --response "${response}" \
+              --http-status "${http_status}"
+            rm -f "${response}"
+            exit 1
+          fi
+          # Success path: read only the bounded boolean, then delete the
+          # response BEFORE any later failure can abort the step.
+          success="$(jq -r 'if (.success == true) then "true" else "false" end' "${response}" 2>/dev/null || echo unknown)"
+          rm -f "${response}"
+          test "${success}" = "true"
+          echo 'B54_ENGINE_OVERLAY_ROTATION=APPLIED'
+          echo 'CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0'
+          echo 'CLOUDFLARE_RESPONSE_BODY_OUTPUT=0'
+          echo 'RESPONSE_TEMP_CLEANUP=PASS'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_OVERLAY_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'ENGINE_BASE_V1_MUTATION=0'
+          echo 'LEGACY_TRIO_MUTATION=0'
+          echo 'UNRELATED_SECRET_MUTATION=0'
+
+      - name: Re-resolve the served version and verify the rotation (NAME/TYPE only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/b54-engine-overlay-put-body.json"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          # A secret PUT may create or activate a NEW Worker version, so poll
+          # the deployments API until a single 100-percent version is served
+          # again. The PUT response itself is never accepted as proof.
+          post_version=""
+          for _ in $(seq 1 30); do
+            deployments="${RUNNER_TEMP}/b54-engine-overlay-deployments-post.json"
+            if curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}" &&
+              jq -e '(.success == true)
+                and ((.result.deployments | type == "array") and (.result.deployments | length > 0))
+                and ((.result.deployments[0].versions | type == "array") and (.result.deployments[0].versions | length == 1))
+                and (.result.deployments[0].versions[0].percentage == 100)' \
+                "${deployments}" >/dev/null; then
+              candidate="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+              if [ -n "${candidate}" ] && [ "${candidate}" != "null" ]; then
+                post_version="${candidate}"
+                break
+              fi
+            fi
+            sleep 2
+          done
+          test -n "${post_version}"
+          POSTMUTATION_SERVED_VERSION_ID="${post_version}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          test "$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')" = "${POSTMUTATION_SERVED_VERSION_ID}"
+          if [ "${POSTMUTATION_SERVED_VERSION_ID}" = "${PREMUTATION_SERVED_VERSION_ID}" ]; then
+            echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO'
+          else
+            echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES'
+          fi
+          echo "POSTMUTATION_SERVED_VERSION_ID=${POSTMUTATION_SERVED_VERSION_ID}"
+          # Authority proof runs against the EXACT post-mutation served version
+          # detail only: never a settings GET, never the PUT response, never a
+          # version-upload/latest read.
+          active_version="${POSTMUTATION_SERVED_VERSION_ID}"
+          version_detail="${RUNNER_TEMP}/b54-engine-overlay-version-post.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
+          python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py verify \
+            --version-detail "${version_detail}" \
+            --active-version "${active_version}"
+          echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
+          echo 'VERSION_UPLOAD_LATEST_READ_ACCEPTED=NO'
+          echo 'B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS'
+          echo 'SERVED_VERSION_READBACK=YES'
+          echo 'SETTINGS_PLANE_ONLY_ACCEPTANCE=NO'
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_OVERLAY_OUTPUT=0'
+          echo 'ENGINE_BASE_V1_MUTATION=0'
+          echo 'LEGACY_TRIO_MUTATION=0'
+          echo 'UNRELATED_SECRET_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=1'
+          echo 'WORKER_DEPLOYED=0'
+          echo 'RUNTIME_SUCCESS=UNPROVEN_PENDING_PHASE_A'
