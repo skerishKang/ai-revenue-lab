@@ -21,7 +21,12 @@ from kagent.p01_adapter import P01_APP_ID, P01CoreOrchestrationAdapter
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from padiem_ai_engine_client import PadiemAiEngineClient
 
-from .worker_config import p01_engine_config_from_worker_bindings
+from .worker_config import (
+    P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
+    P01_DIAG_COMPOSITION_UNAVAILABLE,
+    p01_engine_binding_diagnostic,
+    p01_engine_config_from_worker_bindings,
+)
 from .worker_orchestration import CloudflareEngineServiceTransport
 
 
@@ -36,9 +41,34 @@ def build_claw_p01_adapter(
     Binding transport; it is supplied by the caller (``worker.py``) so this module
     stays free of any runtime import of the ``workers`` package.
     """
-    config = p01_engine_config_from_worker_bindings(env)
+    adapter, _ = build_claw_p01_adapter_with_diagnostic(env, request_factory=request_factory)
+    return adapter
+
+
+def build_claw_p01_adapter_with_diagnostic(
+    env: Any,
+    *,
+    request_factory: Any,
+) -> tuple[P01CoreOrchestrationAdapter | None, str | None]:
+    """Same fail-closed composition as ``build_claw_p01_adapter``, plus one
+    bounded public-safe diagnostic (#2413).
+
+    On success returns ``(adapter, None)`` exactly as before. On failure returns
+    ``(None, diagnostic)`` where the diagnostic is one fixed constant from
+    ``worker_config`` describing *which* composition step failed. Exception
+    messages, types, and any binding values are never propagated: the
+    diagnostic vocabulary is closed and non-secret.
+    """
+    try:
+        config = p01_engine_config_from_worker_bindings(env)
+    except Exception:
+        return None, P01_DIAG_COMPOSITION_UNAVAILABLE
     if config is None:
-        return None
+        try:
+            binding_diagnostic = p01_engine_binding_diagnostic(env)
+        except Exception:
+            binding_diagnostic = None
+        return None, binding_diagnostic or P01_DIAG_COMPOSITION_UNAVAILABLE
     try:
         transport = CloudflareEngineServiceTransport(
             config.service_binding,
@@ -51,11 +81,13 @@ def build_claw_p01_adapter(
             credential=config.credential,
         )
     except (TypeError, ValueError):
-        return None
-    try:
-        return P01CoreOrchestrationAdapter(P01EngineOrchestrationClient(client))
+        return None, P01_DIAG_CLIENT_CONSTRUCTOR_ERROR
     except Exception:
-        return None
+        return None, P01_DIAG_COMPOSITION_UNAVAILABLE
+    try:
+        return P01CoreOrchestrationAdapter(P01EngineOrchestrationClient(client)), None
+    except Exception:
+        return None, P01_DIAG_COMPOSITION_UNAVAILABLE
 
 
-__all__ = ["build_claw_p01_adapter"]
+__all__ = ["build_claw_p01_adapter", "build_claw_p01_adapter_with_diagnostic"]

@@ -79,6 +79,7 @@ from kagent.manual_intake import (
 )
 from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter, P01DispatchClass
 from kagent.p01_run_flow import create_claw_run
+from .worker_config import P01_COMPOSITION_DIAGNOSTICS
 from .workspace_storage import WorkspaceStorageAccessError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
@@ -120,6 +121,20 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
         status_code=status_code,
         headers=_NO_STORE_HEADERS,
     )
+
+
+def _safe_composition_diagnostic(request: Request) -> str:
+    """Return the bounded P01 composition diagnostic for a public 503 (#2413).
+
+    Only a value from the closed allowlist is ever projected; anything else
+    (including an unset state) degrades to ``composition_unavailable``. The
+    generic ``engine_not_configured`` code is preserved unchanged for existing
+    clients; the diagnostic rides in a separate bounded ``detail`` field.
+    """
+    diagnostic = getattr(request.app.state, "claw_p01_composition_diagnostic", None)
+    if isinstance(diagnostic, str) and diagnostic in P01_COMPOSITION_DIAGNOSTICS:
+        return diagnostic
+    return "composition_unavailable"
 
 
 def _usage_denied_response(decision) -> JSONResponse:
@@ -349,7 +364,21 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         # No composed transport exists, so the consumed authorization is
         # provably un-dispatched: compensate the exact receipt (#2226).
         await _refund_active_reservation()
-        return _error(503, "engine_not_configured", "Engine 클라이언트가 설정되지 않았습니다.")
+        # Public code stays the generic ``engine_not_configured`` for existing
+        # clients; the bounded non-secret ``detail`` distinguishes why the
+        # composition failed closed (#2413).
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_not_configured",
+                    "message": "Engine 클라이언트가 설정되지 않았습니다.",
+                    "detail": _safe_composition_diagnostic(request),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
 
     task_text = _build_execute_task(action, content_clean)
     run = create_claw_run("padiem-chat", task_text)
