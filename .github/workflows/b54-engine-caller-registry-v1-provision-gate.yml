@@ -1,0 +1,383 @@
+name: B54 Engine Caller Registry V1 Provision Gate
+
+# Dispatch-only provisioning so caller `b54-kagent` (allowed to
+# `b54-padiem-claw`) is present in the Engine caller authority
+# (`PADIEM_ENGINE_CALLER_REGISTRY_V1` on the `padiem-ai-engine` worker).
+#
+# Secret material NEVER passes through workflow_dispatch inputs:
+# - the private baseline registry comes from the repository secret
+#   `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE`;
+# - the non-secret baseline currentness attestation comes from the repository
+#   secret `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS`;
+# - the new Claw credential comes from `B62_P01_ENGINE_CREDENTIAL`.
+#
+# Preservation path (live V1 PRESENT:secret_text -> EXTEND_REQUIRED):
+# the complete baseline V1 must parse, must contain the B61 entry
+# (`storymemory-b61` / exactly `["b61"]`), every existing caller entry is
+# preserved verbatim (unknown callers are opaque existing authority), and
+# exactly the `b54-kagent` entry is appended with the raw credential (the
+# Engine hashes internally; nothing is pre-hashed). If `b54-kagent` already
+# exists, the plan fails closed unless the baseline entry is exactly
+# compatible, in which case the plan is a no-op.
+#
+# Currentness guard (fail-closed): a structurally valid baseline is NOT proof
+# that it is the currently authoritative complete payload, so a stale baseline
+# could silently drop unknown callers. The plan therefore requires the bounded
+# NON-SECRET currentness attestation issued by the private authority process
+# (#2400), canonical form:
+#   b54-currentness-v1 authority=b54-preservation-authority
+#     baseline_sha256=<64-lowercase-hex> caller_count=<1-64>
+#     issued_at=<YYYY-MM-DDTHH:MM:SSZ>
+# It must be present, canonical, bound to the EXACT supplied baseline (SHA-256
+# of its UTF-8 bytes), match the baseline caller count, and be within the
+# source-bounded freshness window. Otherwise BASELINE_CURRENTNESS_PROVEN=NO and
+# the plan fails; the PUT step is unreachable unless the guard reported YES.
+# The attestation carries no registry plaintext and no credential material and
+# does not (cannot) prove equality with the opaque Cloudflare secret_text value.
+#
+# Failure evidence is bounded too: a failed secret PUT emits HTTP status,
+# boolean success, integer error codes, and fixed local markers only — never
+# `.errors[].message` or the response body, because a future error message
+# could reflect request material. The response temp file is deleted after
+# extraction on both the failure and the success path.
+#
+# Greenfield path (all authority ABSENT -> PROVISION_REQUIRED) is an isolated,
+# tested capability only; it is not the current Production path.
+#
+# A pull request can only run the static contract tests; mutation requires an
+# exact-main workflow_dispatch with the confirmation phrase. This gate does
+# NOT touch the B62 live-config workflow or the `padiem-chat` worker.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-caller-registry-v1-provision-gate.yml"
+      - ".github/scripts/b54_engine_caller_registry_v1_provision.py"
+      - ".github/tests/test_b54_engine_caller_registry_v1_provision_gate.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Engine caller registry provision gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - apply_engine_caller_registry_v1
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-caller-registry-v1-provision-gate
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN_GUARD=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run engine caller registry provision gate contract tests
+        run: python .github/tests/test_b54_engine_caller_registry_v1_provision_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B54_ENGINE_CALLER_REGISTRY_SOURCE_CONTRACT=PASS'
+          echo 'CLOUDFLARE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      disposition: ${{ steps.classify.outputs.disposition }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - name: Read Engine caller authority and classify provision disposition
+        id: classify
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          settings="${RUNNER_TEMP}/b54-engine-caller-authority-readonly.json"
+          http_status="$(curl -sS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -o "${settings}" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings")"
+          test "${http_status}" = "200"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          evidence="$(python .github/scripts/b54_engine_caller_registry_v1_provision.py classify \
+            --settings "${settings}")"
+          echo "${evidence}"
+          disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_CALLER_REGISTRY_DISPOSITION=//p')"
+          case "${disposition}" in
+            PROVISION_REQUIRED|EXTEND_REQUIRED) ;;
+            *)
+              echo 'Refusing: Engine caller authority requires human review before any mutation.' >&2
+              exit 1
+              ;;
+          esac
+          echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
+          echo 'GET_ONLY=PASS'
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_REGISTRY_OUTPUT=0'
+          echo 'CLOUDFLARE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  apply-engine-caller-registry-v1:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_engine_caller_registry_v1' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_CALLER_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      BASELINE_REGISTRY: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE }}
+      BASELINE_CURRENTNESS: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
+    steps:
+      - name: Require explicit provisioning authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "PROVISION_B54_ENGINE_CALLER_REGISTRY_V1_FROM_EXACT_MAIN"
+          case "${DISPOSITION}" in
+            PROVISION_REQUIRED|EXTEND_REQUIRED) ;;
+            *)
+              echo 'Refusing mutation: no trustworthy readonly disposition.' >&2
+              exit 1
+              ;;
+          esac
+          echo 'B54_ENGINE_CALLER_REGISTRY_AUTHORIZATION=PASS'
+          echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build the bounded caller registry PUT body from secrets
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${ENGINE_CALLER_CREDENTIAL}"
+          if [ "${DISPOSITION}" = "EXTEND_REQUIRED" ]; then
+            test -n "${BASELINE_REGISTRY}"
+            test -n "${BASELINE_CURRENTNESS}"
+          fi
+          rm -f "${RUNNER_TEMP}/b54-engine-caller-registry-payload.json"
+          plan_status=0
+          evidence="$(python .github/scripts/b54_engine_caller_registry_v1_provision.py plan \
+            --disposition "${DISPOSITION}" \
+            --credential-env ENGINE_CALLER_CREDENTIAL \
+            --baseline-env BASELINE_REGISTRY \
+            --currentness-env BASELINE_CURRENTNESS \
+            --output "${RUNNER_TEMP}/b54-engine-caller-registry-payload.json")" \
+            || plan_status=$?
+          echo "${evidence}"
+          if [ "${plan_status}" -ne 0 ]; then
+            # Fail closed with auditable evidence; never reach the PUT.
+            echo 'B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL'
+            echo 'BASELINE_CURRENTNESS_PROVEN=NO'
+            echo 'B54_ENGINE_CALLER_REGISTRY_PROVISION=SKIPPED_PLAN_FAILED'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          printf '%s\n' "${evidence}" | grep -q '^B54_ENGINE_CALLER_REGISTRY_PLAN=PASS$'
+          no_op="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_CALLER_REGISTRY_NO_OP=//p')"
+          test -n "${no_op}"
+          currentness="$(printf '%s\n' "${evidence}" | sed -n 's/^BASELINE_CURRENTNESS_PROVEN=//p')"
+          test -n "${currentness}"
+          if [ "${DISPOSITION}" = "EXTEND_REQUIRED" ]; then
+            # Fail closed: the PUT must not be reachable without proven
+            # currentness of the exact supplied baseline.
+            test "${currentness}" = "YES"
+            printf '%s\n' "${evidence}" | grep -q '^BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES$'
+            printf '%s\n' "${evidence}" | grep -q '^CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO$'
+            echo 'BASELINE_CURRENTNESS_GUARD=PASS'
+          fi
+          echo "B54_ENGINE_CALLER_REGISTRY_NO_OP=${no_op}" >> "${GITHUB_ENV}"
+          echo "BASELINE_CURRENTNESS_PROVEN=${currentness}" >> "${GITHUB_ENV}"
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_REGISTRY_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+
+      - name: Provision the registry secret only when a change is required
+        if: ${{ env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1' && (env.BASELINE_CURRENTNESS_PROVEN == 'YES' || env.BASELINE_CURRENTNESS_PROVEN == 'GREENFIELD_NOT_APPLICABLE') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/b54-engine-caller-registry-payload.json"
+          test -s "${payload}"
+          response="${RUNNER_TEMP}/b54-engine-caller-registry-response.json"
+          set +e
+          http_status="$(
+            curl -sS -X PUT \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/secrets" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          curl_status=$?
+          set -e
+          case "${http_status}" in
+            ''|*[!0-9]*) http_status=000 ;;
+          esac
+          rm -f "${payload}"
+          echo "B54_ENGINE_CALLER_REGISTRY_HTTP_STATUS=${http_status}"
+          if [ "${curl_status}" -ne 0 ] || [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            # Bounded, non-secret failure evidence ONLY. Cloudflare error
+            # message text and the raw response body are never selected or
+            # printed: a future error message could reflect request material,
+            # which would break RAW_SECRET_OUTPUT=0 / SECRET_VALUE_OUTPUT=0.
+            # The helper also deletes the response temp file.
+            python .github/scripts/b54_engine_caller_registry_v1_provision.py failure-evidence \
+              --response "${response}" \
+              --http-status "${http_status}"
+            rm -f "${response}"
+            exit 1
+          fi
+          # Success path: read only the bounded boolean, then delete the
+          # response BEFORE any later failure can abort the step.
+          success="$(jq -r 'if (.success == true) then "true" else "false" end' "${response}" 2>/dev/null || echo unknown)"
+          rm -f "${response}"
+          test "${success}" = "true"
+          echo 'B54_ENGINE_CALLER_REGISTRY=PROVISIONED'
+          echo 'SECRET_VALUE_EMITTED=0'
+          echo 'CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0'
+          echo 'CLOUDFLARE_RESPONSE_BODY_OUTPUT=0'
+          echo 'RESPONSE_TEMP_CLEANUP=PASS'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_REGISTRY_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'SECRET_REUSE_ONLY_NO_RECREATION=PASS'
+
+      - name: Read back the provisioned caller authority (NAME/TYPE only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/b54-engine-caller-registry-payload.json"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          ready=no
+          for _ in $(seq 1 30); do
+            settings="${RUNNER_TEMP}/b54-engine-caller-authority-after.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings" \
+              -o "${settings}"
+            if python .github/scripts/b54_engine_caller_registry_v1_provision.py verify \
+              --settings "${settings}" >"${RUNNER_TEMP}/b54-engine-caller-registry-verify.log" 2>&1; then
+              ready=yes
+              break
+            fi
+            sleep 2
+          done
+          cat "${RUNNER_TEMP}/b54-engine-caller-registry-verify.log"
+          test "${ready}" = yes
+          echo 'B54_ENGINE_CALLER_REGISTRY_POST_READBACK=PASS'
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'RAW_SECRET_OUTPUT=0'
+          echo 'RAW_REGISTRY_OUTPUT=0'
+          if [ "${B54_ENGINE_CALLER_REGISTRY_NO_OP}" = "1" ]; then
+            echo 'B54_ENGINE_CALLER_REGISTRY_PROVISION=SKIPPED_ALREADY_COMPATIBLE'
+            echo 'PRODUCTION_MUTATION=0'
+          else
+            echo 'B54_ENGINE_CALLER_REGISTRY_PROVISION=COMPLETE'
+            echo 'PRODUCTION_MUTATION=1'
+          fi
+          echo 'WORKER_DEPLOYED=0'
+          echo 'UNRELATED_CONFIG_MUTATED=0'
