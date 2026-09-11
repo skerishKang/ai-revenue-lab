@@ -406,11 +406,12 @@ class BaseAndOverlayEnv:
     PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
 
 
-def test_overlay_present_plus_base_is_additive() -> None:
+def test_overlay_present_keeps_base_registry_capacity_independent() -> None:
     registry = build_registry_from_env(BaseAndOverlayEnv())
     assert registry is not None
     caller_ids = {caller.caller_id for caller in registry.callers}
-    assert caller_ids == {"caller-a", "caller-b", "overlay-caller"}
+    assert caller_ids == {"caller-a", "caller-b"}
+    assert "overlay-caller" not in caller_ids
 
 
 def test_base_caller_auth_still_works_with_overlay() -> None:
@@ -586,10 +587,57 @@ def test_overlay_legacy_trio_ignored() -> None:
     assert exc_info.value.code == "service_authentication_failed"
 
 
+def test_max_capacity_base_plus_overlay_does_not_outage_base_or_overlay() -> None:
+    callers = tuple(
+        _caller_entry(
+            f"max-caller-{index:02d}",
+            chr(65 + index % 26) * 48,
+            f"max-app-{index:02d}",
+        )
+        for index in range(MAX_ENGINE_CALLERS)
+    )
+    base_payload = _registry_payload(*callers)
+
+    @dataclass
+    class MaxCapacityEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = base_payload
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
+
+    registry = build_registry_from_env(MaxCapacityEnv())
+    assert registry is not None
+    assert len(registry.callers) == MAX_ENGINE_CALLERS
+    assert all(caller.caller_id != "overlay-caller" for caller in registry.callers)
+
+    authenticate_request(
+        env=MaxCapacityEnv(),
+        headers={
+            CALLER_ID_HEADER: "max-caller-00",
+            CALLER_CREDENTIAL_HEADER: "A" * 48,
+        },
+        requested_app_id="max-app-00",
+    )
+    authenticate_request(
+        env=MaxCapacityEnv(),
+        headers={
+            CALLER_ID_HEADER: "max-caller-63",
+            CALLER_CREDENTIAL_HEADER: "L" * 48,
+        },
+        requested_app_id="max-app-63",
+    )
+    authenticate_request(
+        env=MaxCapacityEnv(),
+        headers={
+            CALLER_ID_HEADER: "overlay-caller",
+            CALLER_CREDENTIAL_HEADER: SECRET_OVERLAY,
+        },
+        requested_app_id="overlay-app",
+    )
+
+
 def test_overlay_credential_plaintext_never_leaks() -> None:
+    overlay_caller = parse_caller_registry_v1_overlay(_overlay_payload())
     registry = build_registry_from_env(BaseAndOverlayEnv())
     assert registry is not None
-    overlay_caller = registry.caller("overlay-caller")
     assert SECRET_OVERLAY not in repr(overlay_caller)
     assert SECRET_OVERLAY not in repr(registry)
     public = str(overlay_caller.to_public_dict())
