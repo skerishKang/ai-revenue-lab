@@ -10,11 +10,13 @@ from app.identity_enforcement import (
     CALLER_CREDENTIAL_HEADER,
     CALLER_ID_HEADER,
     CALLER_REGISTRY_V1_ENV,
+    CALLER_REGISTRY_V1_OVERLAY_ENV,
     CALLER_REGISTRY_V1_VERSION,
     MAX_CALLER_REGISTRY_V1_BYTES,
     authenticate_request,
     build_registry_from_env,
     parse_caller_registry_v1,
+    parse_caller_registry_v1_overlay,
 )
 from app.service_identity import (
     MAX_CALLER_APP_IDS,
@@ -379,3 +381,273 @@ def test_multi_caller_source_stays_product_neutral() -> None:
     source = (APP_ROOT / "app" / "identity_enforcement.py").read_text(encoding="utf-8")
     for forbidden in ("storymemory-b61", "b61", "lovebud-scout", "lovebud-scout-server", "padiem-chat"):
         assert forbidden not in source
+
+
+# ---------------------------------------------------------------------------
+# #2402 additive single-caller overlay (PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY)
+# ---------------------------------------------------------------------------
+
+SECRET_OVERLAY = "O" * 48
+
+
+def _overlay_payload(**caller_kwargs: object) -> str:
+    caller = {
+        "caller_id": "overlay-caller",
+        "credential": SECRET_OVERLAY,
+        "allowed_app_ids": ["overlay-app"],
+        **caller_kwargs,
+    }
+    return json.dumps({"version": CALLER_REGISTRY_V1_VERSION, "caller": caller})
+
+
+@dataclass
+class BaseAndOverlayEnv:
+    PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+    PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
+
+
+def test_overlay_present_keeps_base_registry_capacity_independent() -> None:
+    registry = build_registry_from_env(BaseAndOverlayEnv())
+    assert registry is not None
+    caller_ids = {caller.caller_id for caller in registry.callers}
+    assert caller_ids == {"caller-a", "caller-b"}
+    assert "overlay-caller" not in caller_ids
+
+
+def test_base_caller_auth_still_works_with_overlay() -> None:
+    authenticate_request(
+        env=BaseAndOverlayEnv(),
+        headers={CALLER_ID_HEADER: "caller-a", CALLER_CREDENTIAL_HEADER: SECRET_A},
+        requested_app_id="app-a",
+    )
+    authenticate_request(
+        env=BaseAndOverlayEnv(),
+        headers={CALLER_ID_HEADER: "caller-b", CALLER_CREDENTIAL_HEADER: SECRET_B},
+        requested_app_id="app-b",
+    )
+
+
+def test_overlay_caller_auth_works() -> None:
+    authenticate_request(
+        env=BaseAndOverlayEnv(),
+        headers={CALLER_ID_HEADER: "overlay-caller", CALLER_CREDENTIAL_HEADER: SECRET_OVERLAY},
+        requested_app_id="overlay-app",
+    )
+
+
+def test_overlay_callers_are_not_merged_into_base_on_disk() -> None:
+    registry = build_registry_from_env(BaseAndOverlayEnv())
+    assert registry is not None
+    base_caller = registry.caller("caller-a")
+    assert base_caller.credential_sha256 == caller_secret_digest(SECRET_A)
+    assert base_caller.allowed_app_ids == ("app-a",)
+
+
+def test_duplicate_caller_id_across_base_and_overlay_fails_closed() -> None:
+    dup = _overlay_payload(caller_id="caller-a", credential=SECRET_OVERLAY, allowed_app_ids=["overlay-app"])
+
+    @dataclass
+    class DupEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = dup
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(DupEnv())
+    assert exc_info.value.code == "duplicate_service_caller"
+
+
+def test_overlay_cannot_shadow_base_caller() -> None:
+    shadow = _overlay_payload(caller_id="caller-a", credential="S" * 48, allowed_app_ids=["overlay-app"])
+
+    @dataclass
+    class ShadowEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = shadow
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(ShadowEnv())
+    assert exc_info.value.code == "duplicate_service_caller"
+
+
+def test_overlay_cannot_widen_base_caller_apps() -> None:
+    widen = _overlay_payload(caller_id="caller-a", credential=SECRET_A, allowed_app_ids=["overlay-app"])
+
+    @dataclass
+    class WidenEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = widen
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(WidenEnv())
+    assert exc_info.value.code == "duplicate_service_caller"
+
+
+def test_base_caller_app_scope_unchanged_by_overlay() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=BaseAndOverlayEnv(),
+            headers={CALLER_ID_HEADER: "caller-a", CALLER_CREDENTIAL_HEADER: SECRET_A},
+            requested_app_id="overlay-app",
+        )
+    assert exc_info.value.code == "service_app_not_authorized"
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "{not-json",
+        '{"version":2,"caller":{}}',
+        '{"version":true,"caller":{}}',
+        '{"caller":{}}',
+        '{"version":1}',
+        '{"version":1,"callers":[]}',
+        '{"version":1,"caller":"not-a-dict"}',
+        '{"version":1,"caller":{"caller_id":"c","allowed_app_ids":["a"]}}',
+        '{"version":1,"caller":{"caller_id":"c","credential":"' + "S" * 31 + '","allowed_app_ids":["a"]}}',
+        '{"version":1,"caller":{"caller_id":"bad id","credential":"' + "S" * 48 + '","allowed_app_ids":["a"]}}',
+        '{"version":1,"caller":{"caller_id":"c","credential":"' + "S" * 48 + '","allowed_app_ids":"a"}}',
+        '{"version":1,"caller":{"caller_id":"c","credential":"' + "S" * 48 + '","allowed_app_ids":[]}}',
+        '{"version":1,"caller":{"caller_id":"c","credential":"' + "S" * 48 + '","allowed_app_ids":["a"],"extra":"bag"}}',
+    ],
+)
+def test_malformed_overlay_fails_closed(raw: str) -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        parse_caller_registry_v1_overlay(raw)
+    assert exc_info.value.code in {
+        "invalid_caller_registry",
+        "invalid_service_identity",
+        "invalid_service_credential",
+    }
+    assert SECRET_A not in str(exc_info.value)
+    assert raw not in str(exc_info.value)
+
+
+@pytest.mark.parametrize("blank", ["", "   ", "\n\t "])
+def test_blank_overlay_with_base_fails_closed(blank: str) -> None:
+    @dataclass
+    class BlankOverlayEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = blank
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(BlankOverlayEnv())
+    assert exc_info.value.code == "invalid_caller_registry"
+
+
+def test_overlay_without_base_v1_fails_closed() -> None:
+    @dataclass
+    class OverlayOnlyEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(OverlayOnlyEnv())
+    assert exc_info.value.code == "invalid_caller_registry"
+
+    with pytest.raises(ServiceIdentityError) as exc_auth:
+        authenticate_request(
+            env=OverlayOnlyEnv(),
+            headers={CALLER_ID_HEADER: "overlay-caller", CALLER_CREDENTIAL_HEADER: SECRET_OVERLAY},
+            requested_app_id="overlay-app",
+        )
+    assert exc_auth.value.code == "invalid_caller_registry"
+
+
+def test_legacy_fallback_with_v1_present_no_legacy_auth() -> None:
+    @dataclass
+    class BasePlusLegacy:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+        PADIEM_ENGINE_CALLER_ID: str = "legacy-id"
+        PADIEM_ENGINE_CALLER_SECRET: str = "L" * 48
+        PADIEM_ENGINE_ALLOWED_APPS: str = "legacy-app"
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=BasePlusLegacy(),
+            headers={CALLER_ID_HEADER: "legacy-id", CALLER_CREDENTIAL_HEADER: "L" * 48},
+            requested_app_id="legacy-app",
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_overlay_legacy_trio_ignored() -> None:
+    @dataclass
+    class OverlayPlusLegacy:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = TWO_CALLER_REGISTRY
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
+        PADIEM_ENGINE_CALLER_ID: str = "legacy-id"
+        PADIEM_ENGINE_CALLER_SECRET: str = "L" * 48
+        PADIEM_ENGINE_ALLOWED_APPS: str = "legacy-app"
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=OverlayPlusLegacy(),
+            headers={CALLER_ID_HEADER: "legacy-id", CALLER_CREDENTIAL_HEADER: "L" * 48},
+            requested_app_id="legacy-app",
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_max_capacity_base_plus_overlay_does_not_outage_base_or_overlay() -> None:
+    callers = tuple(
+        _caller_entry(
+            f"max-caller-{index:02d}",
+            chr(65 + index % 26) * 48,
+            f"max-app-{index:02d}",
+        )
+        for index in range(MAX_ENGINE_CALLERS)
+    )
+    base_payload = _registry_payload(*callers)
+
+    @dataclass
+    class MaxCapacityEnv:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = base_payload
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
+
+    registry = build_registry_from_env(MaxCapacityEnv())
+    assert registry is not None
+    assert len(registry.callers) == MAX_ENGINE_CALLERS
+    assert all(caller.caller_id != "overlay-caller" for caller in registry.callers)
+
+    authenticate_request(
+        env=MaxCapacityEnv(),
+        headers={
+            CALLER_ID_HEADER: "max-caller-00",
+            CALLER_CREDENTIAL_HEADER: "A" * 48,
+        },
+        requested_app_id="max-app-00",
+    )
+    authenticate_request(
+        env=MaxCapacityEnv(),
+        headers={
+            CALLER_ID_HEADER: "max-caller-63",
+            CALLER_CREDENTIAL_HEADER: "L" * 48,
+        },
+        requested_app_id="max-app-63",
+    )
+    authenticate_request(
+        env=MaxCapacityEnv(),
+        headers={
+            CALLER_ID_HEADER: "overlay-caller",
+            CALLER_CREDENTIAL_HEADER: SECRET_OVERLAY,
+        },
+        requested_app_id="overlay-app",
+    )
+
+
+def test_overlay_credential_plaintext_never_leaks() -> None:
+    overlay_caller = parse_caller_registry_v1_overlay(_overlay_payload())
+    registry = build_registry_from_env(BaseAndOverlayEnv())
+    assert registry is not None
+    assert SECRET_OVERLAY not in repr(overlay_caller)
+    assert SECRET_OVERLAY not in repr(registry)
+    public = str(overlay_caller.to_public_dict())
+    assert SECRET_OVERLAY not in public
+    assert overlay_caller.credential_sha256 not in public
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=BaseAndOverlayEnv(),
+            headers={CALLER_ID_HEADER: "overlay-caller", CALLER_CREDENTIAL_HEADER: "W" * 48},
+            requested_app_id="overlay-app",
+        )
+    assert SECRET_OVERLAY not in str(exc_info.value)

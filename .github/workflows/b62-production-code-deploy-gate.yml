@@ -131,6 +131,11 @@ jobs:
           assert "deploy-prereq" in workflow
           assert "B62_D1_MIGRATION_008_SCHEMA=EXACT" in workflow
           assert "APPLICATION_ROW_READ=0" in workflow
+          assert "STATE_ADOPTION_REQUIRED" in workflow
+          assert "STATE_ADOPTION_PERFORMED" in workflow
+          assert "STATE_ADOPTION_UPLOADS" in workflow
+          assert "last updated via the script API" in workflow
+          assert "Aborting the upload operation because of conflicts" in workflow
 
           assert "unsupported live binding type" in generator
           assert "SECRET_VALUES_READ=0" in generator
@@ -397,11 +402,37 @@ jobs:
           set -euo pipefail
           generated="wrangler.production.generated.toml"
           trap 'rm -f "${generated}"' EXIT
+          set +e
           uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
-            --config "${generated}" \
-            --strict \
+            --config "${generated}" --strict \
             --tag "git-${TARGET_SHA}" \
-            --message "B62 production code ${TARGET_SHA}"
+            --message "B62 production code ${TARGET_SHA}" \
+            > "${RUNNER_TEMP}/b62-deploy-attempt-1.log" 2>&1
+          attempt1_status=$?
+          set -e
+          if [ "${attempt1_status}" -eq 0 ]; then
+            echo "STATE_ADOPTION_REQUIRED=NO"
+            echo "STATE_ADOPTION_PERFORMED=NO"
+            echo "STATE_ADOPTION_UPLOADS=0"
+          elif grep -q "last updated via the script API" \
+              "${RUNNER_TEMP}/b62-deploy-attempt-1.log" \
+            && grep -q "Aborting the upload operation because of conflicts" \
+              "${RUNNER_TEMP}/b62-deploy-attempt-1.log"; then
+            echo "STATE_ADOPTION_REQUIRED=YES"
+            uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+              --config "${generated}" \
+              --tag "git-${TARGET_SHA}" \
+              --message "B62 production code ${TARGET_SHA} (state adoption)"
+            echo "STATE_ADOPTION_UPLOADS=1"
+            uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+              --config "${generated}" --strict \
+              --tag "git-${TARGET_SHA}" \
+              --message "B62 production code ${TARGET_SHA}"
+            echo "STATE_ADOPTION_PERFORMED=YES"
+          else
+            cat "${RUNNER_TEMP}/b62-deploy-attempt-1.log" >&2
+            exit "${attempt1_status}"
+          fi
           rm -f "${generated}"
           echo "B62_PRODUCTION_CODE_DEPLOY=SUCCESS"
           echo "PRODUCTION_MUTATION=1"
@@ -534,9 +565,19 @@ jobs:
           fi
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          deployments="${RUNNER_TEMP}/b62-rollback-precheck.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
+            echo "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED"
+            echo "ROLLBACK_POST_ATTEMPTED=NO"
+            echo "ROLLBACK_EFFECT=NONE_VERIFIED"
+            exit 0
+          fi
           curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
             -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
             -o "${RUNNER_TEMP}/b62-auto-rollback.json"
+          echo "ROLLBACK_POST_ATTEMPTED=YES"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-auto-rollback-state.json"
             curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
@@ -551,6 +592,7 @@ jobs:
           test "${health_status}" = "200"
           echo "B62_PRODUCTION_CODE_AUTO_ROLLBACK=EXECUTED"
           echo "AUTO_ROLLBACK_HEALTH_STATUS=${health_status}"
+          echo "ROLLBACK_EFFECT=EXECUTED"
 
       - name: Publish bounded deploy evidence
         if: always()
