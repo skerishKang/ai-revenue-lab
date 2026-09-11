@@ -34,6 +34,8 @@ from kagent.p01_adapter import (
     P01CoreOrchestrationAdapter,
     P01DispatchClass,
     P01RequestFactory,
+    P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_UNKNOWN,
 )
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from kagent.runs import ClawRun
@@ -172,6 +174,7 @@ class P01DispatchClassificationTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as ctx:
             _run_port(transport, request)
         self.assertEqual(ctx.exception.code, "p01_engine_request_failed")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)
         self.assertEqual(ctx.exception.dispatch_class, P01DispatchClass.UNKNOWN)
         self.assertEqual(len(transport.requests), 1)
 
@@ -241,6 +244,7 @@ class P01DispatchClassificationTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as ctx:
             asyncio.run(adapter.execute(run))
         self.assertEqual(ctx.exception.code, "p01_execution_failed")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_UNKNOWN)
         self.assertEqual(ctx.exception.dispatch_class, P01DispatchClass.UNKNOWN)
 
     def test_successful_execution_produces_no_error(self) -> None:

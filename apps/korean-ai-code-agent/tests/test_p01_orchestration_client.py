@@ -16,6 +16,7 @@ from padiem_ai_core.orchestration_events import (
 from padiem_ai_engine_client import (
     EngineTransportResponse,
     PadiemAiEngineClient,
+    PadiemAiEngineClientError,
 )
 
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
@@ -25,6 +26,11 @@ from kagent.p01_adapter import (
     P01AdapterError,
     P01CoreOrchestrationAdapter,
     P01RequestFactory,
+    P01_FAILURE_DETAIL_AUTHENTICATION,
+    P01_FAILURE_DETAIL_AUTHORIZATION,
+    P01_FAILURE_DETAIL_CONTRACT,
+    P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_TRANSPORT,
 )
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from kagent.runs import ClawRun
@@ -233,7 +239,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "unsupported_result_approval_pause")
 
-    def test_engine_error_maps_to_adapter_error_without_leakage(self) -> None:
+    def test_engine_error_maps_to_bounded_downstream_detail_without_leakage(self) -> None:
         _, request = _build_request()
         body = json.dumps(
             {
@@ -249,8 +255,70 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "p01_engine_request_failed")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)
         self.assertNotIn("provider", ctx.exception.safe_message.lower())
         self.assertNotIn("secret", ctx.exception.safe_message.lower())
+
+    def test_engine_authentication_codes_map_to_authentication_detail(self) -> None:
+        for code in ("service_authentication_failed", "invalid_service_credential"):
+            _, request = _build_request()
+            body = json.dumps({"ok": False, "error": {"code": code, "message": "secret sentinel"}}).encode()
+            transport = FakeEngineTransport(EngineTransportResponse(status=401, body=body))
+            with self.subTest(code=code), self.assertRaises(P01AdapterError) as ctx:
+                self.run_port(transport, request)
+            self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_AUTHENTICATION)
+            self.assertNotIn(code, ctx.exception.safe_message)
+            self.assertNotIn("secret sentinel", ctx.exception.safe_message)
+
+    def test_engine_authorization_code_maps_to_authorization_detail(self) -> None:
+        _, request = _build_request()
+        body = json.dumps(
+            {"ok": False, "error": {"code": "service_app_not_authorized", "message": "provider sentinel"}}
+        ).encode()
+        transport = FakeEngineTransport(EngineTransportResponse(status=403, body=body))
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_AUTHORIZATION)
+        self.assertNotIn("provider sentinel", ctx.exception.safe_message)
+
+    def test_engine_transport_codes_map_to_transport_detail(self) -> None:
+        for code, status, body in (
+            ("invalid_engine_response", 502, b"not-json"),
+            ("engine_http_error", 503, b'{"ok":true}'),
+            ("invalid_engine_transport", 502, b"{}"),
+        ):
+            _, request = _build_request()
+            if code == "invalid_engine_transport":
+                class BrokenClient:
+                    app_id = P01_APP_ID
+
+                    async def orchestrate(self, payload):
+                        del payload
+                        raise PadiemAiEngineClientError(code, "raw exception sentinel")
+
+                port = P01EngineOrchestrationClient(BrokenClient())
+                with self.subTest(code=code), self.assertRaises(P01AdapterError) as ctx:
+                    asyncio.run(port.run(request))
+            else:
+                if code == "invalid_engine_response":
+                    response_body = body
+                else:
+                    response_body = json.dumps(
+                        {"ok": False, "error": {"code": code, "message": "raw provider sentinel"}}
+                    ).encode()
+                transport = FakeEngineTransport(EngineTransportResponse(status=status, body=response_body))
+                with self.subTest(code=code), self.assertRaises(P01AdapterError) as ctx:
+                    self.run_port(transport, request)
+            self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_TRANSPORT)
+
+    def test_projection_failure_maps_to_contract_detail(self) -> None:
+        _, request = _build_request()
+        public = _public_result(request)
+        public["tool_authorization"] = {"provider": "secret sentinel"}
+        transport = _ok_transport(public)
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_CONTRACT)
 
     def test_authority_bearing_request_is_refused_before_transport(self) -> None:
         _, request = _build_request()
