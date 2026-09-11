@@ -12,6 +12,8 @@ on:
       - ".github/workflows/b54-engine-production-deploy-gate.yml"
       - ".github/workflows/b54-engine-deploy-gate-contract-tests.yml"
       - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
+      - ".github/tests/test_b54_engine_served_version_guard.py"
+      - ".github/scripts/b54_engine_served_version_guard.py"
       - "apps/padiem-ai-engine/scripts/a9_production_smoke.py"
       - "apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py"
   workflow_dispatch:
