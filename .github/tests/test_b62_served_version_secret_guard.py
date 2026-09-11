@@ -91,10 +91,27 @@ def test_ambiguous_active_deployments_fail_closed():
     with pytest.raises(mod.ServedVersionGuardError) as exc:
         mod.resolve_served_version_id({"success": True, "result": {"deployments": []}})
     assert "ambiguous active deployment" in str(exc.value)
+
+
+def test_first_deployment_is_the_active_one_when_history_is_returned():
+    # Cloudflare documents the deployments endpoint as returning history whose
+    # first entry is the latest deployment actively serving traffic.
+    payload = {
+        "success": True,
+        "result": {
+            "deployments": [
+                {"versions": [served(PRE_VERSION)]},
+                {"versions": [served(POST_VERSION)]},
+            ]
+        },
+    }
+    assert mod.resolve_served_version_id(payload) == PRE_VERSION
+
+
+def test_non_object_first_deployment_fails_closed():
+    payload = {"success": True, "result": {"deployments": ["not-an-object"]}}
     with pytest.raises(mod.ServedVersionGuardError) as exc:
-        mod.resolve_served_version_id(
-            {"success": True, "result": {"deployments": [{"versions": [served(PRE_VERSION)]}, {"versions": [served(POST_VERSION)]}]}}
-        )
+        mod.resolve_served_version_id(payload)
     assert "ambiguous active deployment" in str(exc.value)
 
 
