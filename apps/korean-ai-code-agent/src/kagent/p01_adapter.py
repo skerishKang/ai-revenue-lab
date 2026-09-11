@@ -37,6 +37,23 @@ P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
 DEFAULT_P01_TIMEOUT_SECONDS = 20.0
 
+P01_FAILURE_DETAIL_AUTHENTICATION = "engine_authentication_failed"
+P01_FAILURE_DETAIL_AUTHORIZATION = "engine_authorization_failed"
+P01_FAILURE_DETAIL_TRANSPORT = "engine_transport_or_response_failed"
+P01_FAILURE_DETAIL_DOWNSTREAM = "engine_downstream_execution_failed"
+P01_FAILURE_DETAIL_CONTRACT = "p01_contract_failure"
+P01_FAILURE_DETAIL_UNKNOWN = "unknown_engine_failure"
+P01_FAILURE_DETAILS = frozenset(
+    {
+        P01_FAILURE_DETAIL_AUTHENTICATION,
+        P01_FAILURE_DETAIL_AUTHORIZATION,
+        P01_FAILURE_DETAIL_TRANSPORT,
+        P01_FAILURE_DETAIL_DOWNSTREAM,
+        P01_FAILURE_DETAIL_CONTRACT,
+        P01_FAILURE_DETAIL_UNKNOWN,
+    }
+)
+
 
 class P01DispatchClass:
     """Authoritative dispatch classification for one P01 execution attempt (#2226).
@@ -61,11 +78,17 @@ class P01AdapterError(RuntimeError):
         safe_message: str,
         *,
         dispatch_class: str = P01DispatchClass.UNKNOWN,
+        failure_detail: str | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = code
         self.safe_message = safe_message
         self.dispatch_class = dispatch_class
+        self.failure_detail = (
+            failure_detail
+            if isinstance(failure_detail, str) and failure_detail in P01_FAILURE_DETAILS
+            else None
+        )
 
 
 class P01ProjectionError(P01AdapterError):
@@ -497,12 +520,14 @@ class P01CoreOrchestrationAdapter:
             raise P01AdapterError(
                 "p01_contract_failure",
                 "P01 orchestration contract could not be safely projected.",
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             ) from None
         except Exception:
             self._fail_run_if_possible(run)
             raise P01AdapterError(
                 "p01_execution_failed",
                 "P01 orchestration failed without a safe product result.",
+                failure_detail=P01_FAILURE_DETAIL_UNKNOWN,
             ) from None
 
     @staticmethod

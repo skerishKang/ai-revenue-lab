@@ -77,7 +77,17 @@ from kagent.manual_intake import (
     ManualIntakeRequest,
     ManualIntakeRouter,
 )
-from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter, P01DispatchClass
+from kagent.p01_adapter import (
+    P01AdapterError,
+    P01CoreOrchestrationAdapter,
+    P01DispatchClass,
+    P01ProjectionError,
+    P01_FAILURE_DETAIL_CONTRACT,
+    P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_TRANSPORT,
+    P01_FAILURE_DETAIL_UNKNOWN,
+    P01_FAILURE_DETAILS,
+)
 from kagent.p01_run_flow import create_claw_run
 from .worker_config import P01_COMPOSITION_DIAGNOSTICS
 from .workspace_storage import WorkspaceStorageAccessError
@@ -121,6 +131,37 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
         status_code=status_code,
         headers=_NO_STORE_HEADERS,
     )
+
+
+_P01_CONTRACT_ERROR_CODES = frozenset(
+    {
+        "invalid_p01_result",
+        "incomplete_p01_lifecycle",
+        "p01_contract_failure",
+        "p01_result_correlation_mismatch",
+        "unsupported_result_field",
+        "unsupported_result_approval_pause",
+    }
+)
+_P01_DOWNSTREAM_ERROR_CODES = frozenset(
+    {"p01_engine_request_failed", "engine_unavailable"}
+)
+_P01_TRANSPORT_ERROR_CODES = frozenset(
+    {"p01_engine_unreachable", "p01_engine_response_too_large", "p01_engine_url_invalid"}
+)
+
+
+def _safe_engine_failure_detail(exc: P01AdapterError) -> str:
+    """Project only the closed failure vocabulary to the public route."""
+    if exc.failure_detail in P01_FAILURE_DETAILS:
+        return exc.failure_detail
+    if isinstance(exc, P01ProjectionError) or exc.code in _P01_CONTRACT_ERROR_CODES:
+        return P01_FAILURE_DETAIL_CONTRACT
+    if exc.code in _P01_TRANSPORT_ERROR_CODES:
+        return P01_FAILURE_DETAIL_TRANSPORT
+    if exc.code in _P01_DOWNSTREAM_ERROR_CODES:
+        return P01_FAILURE_DETAIL_DOWNSTREAM
+    return P01_FAILURE_DETAIL_UNKNOWN
 
 
 def _safe_composition_diagnostic(request: Request) -> str:
@@ -392,14 +433,47 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             await _refund_active_reservation()
         else:
             _clear_reservation()
-        return _error(502, "engine_execution_failed", "Engine 실행에 실패했습니다.")
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행에 실패했습니다.",
+                    "detail": _safe_engine_failure_detail(exc),
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
     except Exception:
         _clear_reservation()
-        return _error(502, "engine_execution_failed", "Engine 실행에 실패했습니다.")
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행에 실패했습니다.",
+                    "detail": P01_FAILURE_DETAIL_UNKNOWN,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
     _clear_reservation()
 
     if outcome.projection.status.value != "completed" or not outcome.answer:
-        return _error(502, "engine_execution_failed", "Engine 실행이 완료되지 않았습니다.")
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행이 완료되지 않았습니다.",
+                    "detail": P01_FAILURE_DETAIL_CONTRACT,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
 
     title = f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
 
