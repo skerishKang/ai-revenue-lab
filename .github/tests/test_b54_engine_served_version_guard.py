@@ -2,7 +2,8 @@
 
 Proves that ``b54_engine_served_version_guard.py`` resolves the active version
 fail-closed, validates ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (and the overlay
-when expected) only on the *served* version (never the settings plane), never
+when expected) only on the *served* version using the documented Cloudflare
+version-detail shape (``result.id`` + ``result.resources.bindings``), never
 emits binding values, and that the deploy gate wires both guards GET-only.
 """
 
@@ -40,10 +41,15 @@ def _binding(name: str, binding_type: str, **value_fields: object) -> dict[str, 
     return row
 
 
-def _version_settings(bindings: list[dict[str, object]], tag: str | None = "ver-active") -> dict[str, object]:
-    result: dict[str, object] = {"settings": {"bindings": bindings}}
-    if tag is not None:
-        result["tag"] = tag
+def _version_detail(
+    bindings: object,
+    version_id: str | None = "ver-active",
+) -> dict[str, object]:
+    """Exact documented version-detail payload shape: result.id + result.resources.bindings."""
+    result: dict[str, object] = {}
+    if version_id is not None:
+        result["id"] = version_id
+    result["resources"] = {"bindings": bindings}
     return {"success": True, "result": result}
 
 
@@ -140,11 +146,12 @@ def test_resolve_active_unsafe_version_id_fails_closed() -> None:
     assert "unsafe" in out
 
 
-# --- verify: pass paths -------------------------------------------------------
+# --- verify: documented payload pass paths -------------------------------------
 
-def test_verify_passes_v1_on_served_version_without_overlay() -> None:
+def test_verify_passes_documented_version_detail_payload() -> None:
+    # Canonical documented shape: result.id + result.resources.bindings (list).
     helper = _load_helper()
-    payload = _version_settings([_binding(V1, "secret_text", text=SENTINEL)])
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)])
     code, out = _verify(helper, payload)
     assert code == 0
     assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in out
@@ -158,7 +165,7 @@ def test_verify_passes_v1_on_served_version_without_overlay() -> None:
 
 def test_verify_passes_overlay_when_expected_and_present() -> None:
     helper = _load_helper()
-    payload = _version_settings([
+    payload = _version_detail([
         _binding(V1, "secret_text", text=SENTINEL),
         _binding(OVERLAY, "secret_text", text=SENTINEL),
     ])
@@ -170,22 +177,146 @@ def test_verify_passes_overlay_when_expected_and_present() -> None:
     assert SENTINEL not in out
 
 
-def test_verify_accepts_flat_bindings_and_version_id_identity() -> None:
+def test_verify_passes_name_keyed_binding_map_variant() -> None:
+    # Name-keyed map is tolerated only where the payload contract justifies it;
+    # every entry key must agree with its own name.
+    helper = _load_helper()
+    payload = _version_detail({
+        V1: {"type": "secret_text"},
+        OVERLAY: {"name": OVERLAY, "type": "secret_text"},
+        "PADIEM_CHAT_QUOTA_SALT": {"type": "secret_text"},
+    })
+    code, out = _verify(helper, payload, expect_overlay=True)
+    assert code == 0
+    assert "ENGINE_V1_SERVED_BINDING=PRESENT:secret_text" in out
+    assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in out
+
+
+# --- verify: fail-closed on missing/mismatched documented fields ----------------
+
+def test_verify_result_id_mismatch_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id="ver-other")
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "does not match active version" in out
+
+
+def test_verify_result_id_missing_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id=None)
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "identity unproven" in out
+
+
+def test_verify_result_id_unsafe_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id="ver active; rm -rf /")
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "unsafe" in out
+
+
+def test_verify_result_missing_fails_closed() -> None:
+    helper = _load_helper()
+    code, out = _verify(helper, {"success": True})
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+
+
+def test_verify_result_not_object_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": [{"id": "ver-active"}]}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "malformed" in out
+
+
+def test_verify_resources_missing_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"id": "ver-active"}}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "no resources object" in out
+
+
+def test_verify_resources_bindings_missing_fails_closed() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"id": "ver-active", "resources": {}}}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "bindings collection is missing or malformed" in out
+
+
+def test_verify_bindings_array_entry_not_object_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail([V1])
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "bindings array is malformed" in out
+
+
+def test_verify_map_key_disagrees_with_entry_name_fails_closed() -> None:
+    helper = _load_helper()
+    payload = _version_detail({V1: {"name": OVERLAY, "type": "secret_text"}})
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "disagrees with its entry name" in out
+
+
+# --- verify: legacy/synthetic shapes must not pass ------------------------------
+
+def test_verify_rejects_flat_result_bindings_without_resources() -> None:
+    # result.bindings without result.resources is not the documented shape.
     helper = _load_helper()
     payload = {"success": True, "result": {
-        "version_id": "ver-active",
+        "id": "ver-active",
         "bindings": [_binding(V1, "secret_text", text=SENTINEL)],
     }}
     code, out = _verify(helper, payload)
-    assert code == 0
-    assert "ENGINE_V1_SERVED_BINDING=PRESENT:secret_text" in out
+    assert code == 1
+    assert "no resources object" in out
 
 
-# --- verify: fail-closed paths ------------------------------------------------
+def test_verify_rejects_settings_plane_bindings_even_with_matching_id() -> None:
+    # The #2412 gap: the mutable settings plane must never pass as served-version
+    # validation, not even when the version id happens to match.
+    helper = _load_helper()
+    payload = {"success": True, "result": {
+        "id": "ver-active",
+        "settings": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]},
+    }}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "no resources object" in out
+
+
+def test_verify_rejects_tag_identity_without_id() -> None:
+    # result.tag is not version identity authority; result.id is required.
+    helper = _load_helper()
+    payload = {"success": True, "result": {
+        "tag": "ver-active",
+        "resources": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]},
+    }}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "identity unproven" in out
+
+
+def test_verify_settings_plane_payload_without_version_identity_is_rejected() -> None:
+    helper = _load_helper()
+    payload = {"success": True, "result": {"settings": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]}}}
+    code, out = _verify(helper, payload)
+    assert code == 1
+    assert "identity unproven" in out
+
+
+# --- verify: secret-set contract fail-closed paths -------------------------------
 
 def test_verify_missing_v1_fails_closed() -> None:
     helper = _load_helper()
-    payload = _version_settings([_binding("UNRELATED_KV", "kv_namespace", id=SENTINEL)])
+    payload = _version_detail([_binding("UNRELATED_KV", "kv_namespace", id=SENTINEL)])
     code, out = _verify(helper, payload)
     assert code == 1
     assert "registry binding" in out
@@ -193,7 +324,7 @@ def test_verify_missing_v1_fails_closed() -> None:
 
 def test_verify_missing_expected_overlay_fails_closed() -> None:
     helper = _load_helper()
-    payload = _version_settings([_binding(V1, "secret_text", text=SENTINEL)])
+    payload = _version_detail([_binding(V1, "secret_text", text=SENTINEL)])
     code, out = _verify(helper, payload, expect_overlay=True)
     assert code == 1
     assert "overlay binding is missing" in out
@@ -201,7 +332,7 @@ def test_verify_missing_expected_overlay_fails_closed() -> None:
 
 def test_verify_v1_type_drift_fails_closed() -> None:
     helper = _load_helper()
-    payload = _version_settings([_binding(V1, "plain_text", text=SENTINEL)])
+    payload = _version_detail([_binding(V1, "plain_text", text=SENTINEL)])
     code, out = _verify(helper, payload)
     assert code == 1
     assert "registry binding" in out
@@ -209,7 +340,7 @@ def test_verify_v1_type_drift_fails_closed() -> None:
 
 def test_verify_overlay_type_drift_fails_closed_even_when_not_expected() -> None:
     helper = _load_helper()
-    payload = _version_settings([
+    payload = _version_detail([
         _binding(V1, "secret_text", text=SENTINEL),
         _binding(OVERLAY, "plain_text", text=SENTINEL),
     ])
@@ -220,7 +351,7 @@ def test_verify_overlay_type_drift_fails_closed_even_when_not_expected() -> None
 
 def test_verify_duplicate_binding_names_fail_closed() -> None:
     helper = _load_helper()
-    payload = _version_settings([
+    payload = _version_detail([
         _binding(V1, "secret_text", text=SENTINEL),
         _binding(V1, "secret_text", text=SENTINEL),
     ])
@@ -229,32 +360,15 @@ def test_verify_duplicate_binding_names_fail_closed() -> None:
     assert "duplicate" in out
 
 
-def test_verify_settings_plane_payload_without_version_tag_is_rejected() -> None:
-    # The #2412 gap: the mutable settings plane must never pass as served-version
-    # validation. A payload without a provable version identity fails closed.
-    helper = _load_helper()
-    payload = {"success": True, "result": {"bindings": [_binding(V1, "secret_text", text=SENTINEL)]}}
-    code, out = _verify(helper, payload)
-    assert code == 1
-    assert "identity unproven" in out
-
-
-def test_verify_version_tag_mismatch_fails_closed() -> None:
-    helper = _load_helper()
-    payload = _version_settings([_binding(V1, "secret_text", text=SENTINEL)], tag="ver-other")
-    code, out = _verify(helper, payload)
-    assert code == 1
-    assert "does not match active version" in out
-
-
 def test_verify_never_emits_binding_values() -> None:
     helper = _load_helper()
     payloads = [
-        _version_settings([_binding(V1, "secret_text", text=SENTINEL), _binding(OVERLAY, "secret_text", text=SENTINEL)]),
-        _version_settings([_binding(V1, "plain_text", text=SENTINEL)]),
-        _version_settings([], tag=None),
-        _version_settings([_binding(V1, "secret_text", text=SENTINEL), _binding(V1, "secret_text", text=SENTINEL)]),
-        _version_settings([_binding(V1, "secret_text", text=SENTINEL)], tag=SENTINEL),
+        _version_detail([_binding(V1, "secret_text", text=SENTINEL), _binding(OVERLAY, "secret_text", text=SENTINEL)]),
+        _version_detail([_binding(V1, "plain_text", text=SENTINEL)]),
+        _version_detail([], version_id=None),
+        _version_detail([_binding(V1, "secret_text", text=SENTINEL), _binding(V1, "secret_text", text=SENTINEL)]),
+        _version_detail([_binding(V1, "secret_text", text=SENTINEL)], version_id=SENTINEL),
+        _version_detail({V1: {"type": "secret_text", "text": SENTINEL}}),
     ]
     for payload in payloads:
         for argv in (

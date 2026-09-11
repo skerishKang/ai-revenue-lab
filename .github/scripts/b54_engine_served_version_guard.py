@@ -9,6 +9,11 @@ Consumes bounded Cloudflare API GET responses saved to disk by the deploy gate:
 - ``verify``: assert ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (and the overlay
   secret when expected) are ``PRESENT:secret_text`` on that exact version.
 
+Version-detail parsing follows the documented Cloudflare response authority:
+identity is ``result.id`` and bindings are ``result.resources.bindings``
+(list or name-keyed map). Settings-plane payloads are never accepted as
+served-version proof.
+
 Emits NAME/TYPE state only. Never reads or prints any binding value, raw
 settings JSON, or the Cloudflare account id. Performs no mutation.
 """
@@ -117,36 +122,56 @@ def resolve_active(payload: object) -> str:
     raise ServedVersionGuardError("deployments result is malformed")
 
 
+def _binding_entries(bindings: object) -> list[dict]:
+    """Normalize the documented bindings collection (list or name-keyed map).
+
+    A name-keyed map is tolerated only when each entry's own ``name`` (if
+    present) agrees with its key, so normalization can never invent or mask a
+    binding identity.
+    """
+    if isinstance(bindings, list):
+        for raw in bindings:
+            if not isinstance(raw, dict):
+                raise ServedVersionGuardError("served version bindings array is malformed")
+        return list(bindings)
+    if isinstance(bindings, dict):
+        entries: list[dict] = []
+        for name, raw in bindings.items():
+            if not isinstance(raw, dict):
+                raise ServedVersionGuardError(f"served binding {name!r} metadata is malformed")
+            if isinstance(raw.get("name"), str) and raw["name"] != name:
+                raise ServedVersionGuardError(
+                    f"served binding key {name!r} disagrees with its entry name"
+                )
+            entries.append({**raw, "name": name})
+        return entries
+    raise ServedVersionGuardError("served version bindings collection is missing or malformed")
+
+
 def _version_bindings(payload: object, active_version: str) -> list[dict]:
     """Return the served version bindings, proving version identity first.
 
-    A settings-plane payload without a version tag is rejected here, so a
-    settings-only readback can never pass as served-version validation.
+    Canonical documented version-detail shape: identity is ``result.id`` and
+    bindings are ``result.resources.bindings``. A settings-plane payload is
+    rejected here, so a settings-only readback can never pass as
+    served-version validation.
     """
-    result = _success_result(payload, "version settings")
-    if isinstance(result, list):
-        if len(result) != 1 or not isinstance(result[0], dict):
-            raise ServedVersionGuardError("version settings result is malformed")
-        result = result[0]
+    result = _success_result(payload, "version detail")
     if not isinstance(result, dict):
-        raise ServedVersionGuardError("version settings result is malformed")
+        raise ServedVersionGuardError("version detail result is malformed")
 
-    identity = result.get("tag")
-    if not isinstance(identity, str):
-        identity = result.get("version_id")
+    identity = result.get("id")
     if not isinstance(identity, str) or not identity.strip():
         raise ServedVersionGuardError("served version identity unproven")
     if not _VERSION_ID_RE.match(identity):
-        raise ServedVersionGuardError("version tag is unsafe")
+        raise ServedVersionGuardError("version id is unsafe")
     if identity != active_version:
-        raise ServedVersionGuardError("version settings tag does not match active version")
+        raise ServedVersionGuardError("version detail id does not match active version")
 
-    bindings = result.get("bindings")
-    if bindings is None and isinstance(result.get("settings"), dict):
-        bindings = result["settings"].get("bindings")
-    if not isinstance(bindings, list) or not all(isinstance(b, dict) for b in bindings):
-        raise ServedVersionGuardError("served version bindings array is malformed")
-    return bindings
+    resources = result.get("resources")
+    if not isinstance(resources, dict):
+        raise ServedVersionGuardError("version detail has no resources object")
+    return _binding_entries(resources.get("bindings"))
 
 
 def _classify(bindings: list[dict], name: str) -> str:
@@ -164,7 +189,7 @@ def _classify(bindings: list[dict], name: str) -> str:
 def verify_served(payload: object, active_version: str, expect_overlay: bool) -> dict[str, str]:
     """Return NAME -> state for the registry and overlay secrets on the version.
 
-    Fails closed on: unproven version identity, version tag mismatch, duplicate
+    Fails closed on: unproven version identity, version id mismatch, duplicate
     binding names, missing V1, expected overlay missing, and any type drift.
     """
     if not _VERSION_ID_RE.match(active_version):
@@ -229,7 +254,7 @@ def main(argv: list[str] | None = None) -> int:
     resolve.set_defaults(handler=_run_resolve)
 
     verify = sub.add_parser("verify", help="assert registry secrets on the served version")
-    verify.add_argument("--version-settings", required=True, help="version settings GET response JSON file")
+    verify.add_argument("--version-settings", required=True, help="version detail GET response JSON file")
     verify.add_argument("--active-version", required=True, help="expected served version id")
     verify.add_argument(
         "--expect-overlay",
