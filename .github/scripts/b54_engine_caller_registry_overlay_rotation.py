@@ -47,13 +47,16 @@ Subcommands:
 
 - ``classify --version-detail <version-detail.json> --active-version <id>`` —
   served-version NAME/TYPE-only authority classification plus the rotation
-  disposition (base V1 + overlay present, legacy trio untouched).
+  disposition (base V1 + overlay present; a runtime-inert legacy trio does NOT
+  block, and its captured ``LEGACY_PRE_STATE`` must be preserved).
 - ``plan --credential-env <ENV> --output <put-body.json>`` — build the bounded
   overlay-only PUT body from the raw credential (enforcing the 32..512 UTF-8
   byte credential gate before any output is written).
-- ``verify --version-detail <version-detail.json> --active-version <id>`` —
-  post-mutation served-version NAME/TYPE-only readback proving base V1 and the
-  overlay are both ``PRESENT:secret_text`` and the legacy trio is untouched.
+- ``verify --version-detail <version-detail.json> --active-version <id>
+  --legacy-pre-state <LEGACY_PRE_STATE>`` — post-mutation served-version
+  NAME/TYPE-only readback proving base V1 and the overlay are both
+  ``PRESENT:secret_text`` and every legacy trio binding state is IDENTICAL to
+  the pre-mutation capture (preservation, not enforced absence).
 - ``failure-evidence --response <cf-response.json> --http-status <status>`` —
   bounded, NON-SECRET failure evidence for a failed secret PUT. Cloudflare
   error message text and the response body are NEVER selected or printed.
@@ -134,12 +137,14 @@ def rotation_disposition(states: dict[str, str]) -> str:
     the overlay already exists (this is a credential DRIFT fix, not a create).
     Every other shape is refused for direct operator review:
 
-    - ``ROTATION_REQUIRED``: base V1 and overlay are both ``secret_text`` and
-      the legacy trio is genuinely absent.
+    - ``ROTATION_REQUIRED``: base V1 and overlay are both ``secret_text``.
+      The legacy trio is NOT an eligibility blocker: while V1 is present the
+      Engine runtime never consults the legacy bindings
+      (apps/padiem-ai-engine/app/identity_enforcement.py), so a physically
+      present trio is runtime-inert. Its NAME/TYPE state is captured
+      pre-mutation and required to be preserved exactly post-mutation instead.
     - ``REFUSE_BASE_V1_ABSENT``: no base authority to be additive to.
     - ``REFUSE_BASE_V1_WRONG_TYPE``: base V1 exists but not as ``secret_text``.
-    - ``REFUSE_LEGACY_TRIO_PRESENT``: legacy trio configured alongside V1; the
-      overlay path must not proceed while that mixed authority exists.
     - ``REFUSE_OVERLAY_ABSENT``: overlay missing -> this is not a rotation;
       creation belongs to the provisioning gate and needs human review.
     - ``REFUSE_OVERLAY_WRONG_TYPE``: overlay exists but not as ``secret_text``.
@@ -150,13 +155,46 @@ def rotation_disposition(states: dict[str, str]) -> str:
         return "REFUSE_BASE_V1_ABSENT"
     if base != f"PRESENT:{REQUIRED_BINDING_TYPE}":
         return "REFUSE_BASE_V1_WRONG_TYPE"
-    if any(states.get(name, "ABSENT") != "ABSENT" for name in LEGACY_TRIO_NAMES):
-        return "REFUSE_LEGACY_TRIO_PRESENT"
     if overlay == "ABSENT":
         return "REFUSE_OVERLAY_ABSENT"
     if overlay != f"PRESENT:{REQUIRED_BINDING_TYPE}":
         return "REFUSE_OVERLAY_WRONG_TYPE"
     return "ROTATION_REQUIRED"
+
+
+def encode_legacy_states(states: dict[str, str]) -> str:
+    """Deterministically encode the legacy trio NAME/TYPE state.
+
+    The encoding carries binding NAMES and TYPES only (``ABSENT`` or
+    ``PRESENT:<type>``); it can never carry a secret value.
+    """
+    return ";".join(f"{name}={states.get(name, 'ABSENT')}" for name in LEGACY_TRIO_NAMES)
+
+
+def decode_legacy_states(encoded: str) -> dict[str, str]:
+    """Parse the bounded encoding produced by ``encode_legacy_states``.
+
+    Fails closed on any malformed, duplicated, foreign, or missing entry, so a
+    post-mutation comparison can never be skipped through a tampered pre-state.
+    """
+    parts = encoded.split(";") if encoded else []
+    if len(parts) != len(LEGACY_TRIO_NAMES):
+        raise OverlayRotationError(
+            "legacy pre-state must carry exactly three NAME=STATE entries"
+        )
+    decoded: dict[str, str] = {}
+    for part in parts:
+        name, sep, state = part.partition("=")
+        if not sep or name not in LEGACY_TRIO_NAMES or name in decoded:
+            raise OverlayRotationError("legacy pre-state entry is malformed or duplicated")
+        if state != "ABSENT" and not (
+            state.startswith("PRESENT:") and len(state) <= 1 + 8 + 64
+        ):
+            raise OverlayRotationError("legacy pre-state value is unsafe")
+        decoded[name] = state
+    if set(decoded) != set(LEGACY_TRIO_NAMES):
+        raise OverlayRotationError("legacy pre-state is missing an entry")
+    return decoded
 
 
 def _check_identifier(name: str, value: str) -> None:
@@ -335,6 +373,8 @@ def _cmd_classify(args: argparse.Namespace) -> int:
     for name in _TARGET_NAMES:
         print(f"AUTHORITY_STATE {name}={states[name]}")
     print(f"B54_ENGINE_OVERLAY_ROTATION_DISPOSITION={disposition}")
+    print(f"LEGACY_PRE_STATE={encode_legacy_states(states)}")
+    print("LEGACY_TRIO_PRESERVATION_REQUIRED=YES")
     print("SERVED_VERSION_READBACK=YES")
     print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
     print("BINDING_NAME_AND_TYPE_ONLY=YES")
@@ -385,7 +425,8 @@ def _cmd_verify(args: argparse.Namespace) -> int:
     try:
         payload = json.loads(args.version_detail.read_text(encoding="utf-8"))
         states = _served_states(payload, args.active_version)
-    except (OSError, json.JSONDecodeError, ServedVersionGuardError) as exc:
+        pre_legacy = decode_legacy_states(args.legacy_pre_state)
+    except (OSError, json.JSONDecodeError, ServedVersionGuardError, OverlayRotationError) as exc:
         print("B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         print("SECRET_VALUES_READ=0", file=sys.stderr)
@@ -397,8 +438,11 @@ def _cmd_verify(args: argparse.Namespace) -> int:
     if states.get(OVERLAY_SECRET_NAME) != expected:
         problems.append(f"{OVERLAY_SECRET_NAME} is not {expected} on the served version")
     for name in LEGACY_TRIO_NAMES:
-        if states.get(name, "ABSENT") != "ABSENT":
-            problems.append(f"legacy trio binding unexpectedly present: {name}")
+        post = states.get(name, "ABSENT")
+        if post != pre_legacy[name]:
+            problems.append(
+                f"legacy trio state changed: {name} {pre_legacy[name]} -> {post}"
+            )
     if problems:
         print("B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL", file=sys.stderr)
         print(f"REASON={'; '.join(problems)}", file=sys.stderr)
@@ -408,7 +452,8 @@ def _cmd_verify(args: argparse.Namespace) -> int:
     print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
     print(f"ENGINE_V1_SERVED_BINDING={states[REGISTRY_SECRET_NAME]}")
     print(f"ENGINE_OVERLAY_SERVED_BINDING={states[OVERLAY_SECRET_NAME]}")
-    print("LEGACY_TRIO_SERVED_BINDING=ABSENT")
+    print(f"LEGACY_TRIO_SERVED_STATE={encode_legacy_states(states)}")
+    print("LEGACY_TRIO_PRESERVATION=YES")
     print("B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS")
     print("ENGINE_BASE_V1_MUTATION=0")
     print("LEGACY_TRIO_MUTATION=0")
@@ -477,6 +522,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     verify.add_argument("--version-detail", required=True, type=Path)
     verify.add_argument("--active-version", required=True)
+    verify.add_argument(
+        "--legacy-pre-state",
+        required=True,
+        help=(
+            "LEGACY_PRE_STATE captured immediately before the mutation; "
+            "verify requires the post-mutation legacy trio NAME/TYPE state "
+            "to be identical (preservation, not absence)"
+        ),
+    )
     verify.set_defaults(handler=_cmd_verify)
 
     failure = sub.add_parser(

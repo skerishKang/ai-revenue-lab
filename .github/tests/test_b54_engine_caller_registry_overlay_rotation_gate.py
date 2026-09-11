@@ -12,8 +12,10 @@ Proves statically and locally (no network) that the gate:
      name is structurally fixed to the overlay and the workflow additionally
      asserts it before the PUT, so a base V1 rewrite is impossible;
   6. refuses mutation unless the SERVED version shows base V1 and overlay both
-     ``PRESENT:secret_text`` with the legacy trio absent (overlay creation, base
-     absence, wrong types, and legacy-trio presence all refuse for review);
+     ``PRESENT:secret_text`` (overlay creation, base absence, and wrong types
+     refuse for review); a runtime-inert legacy trio NEVER blocks rotation, but
+     its pre-mutation NAME/TYPE state must be captured and proven identical
+     post-mutation (preservation, not enforced absence);
   7. builds the canonical single-caller overlay payload with the RAW credential
      (never pre-hashed), enforcing the Engine 32..512 UTF-8 byte gate before any
      output is written, and round-trips it through the Engine's own
@@ -29,8 +31,11 @@ Proves statically and locally (no network) that the gate:
  10. never prints a credential, overlay, registry, secret value, secret length
      (a single-caller overlay's serialized length is credential-adjacent), or
      secret hash on any code path;
- 11. never deploys the Engine worker, never touches the B62 live-config
-     workflow or the ``padiem-chat`` worker.
+  11. never deploys the Engine worker, never touches the B62 live-config
+      workflow or the ``padiem-chat`` worker;
+  12. always prints the classify evidence (AUTHORITY_STATE / DISPOSITION /
+      LEGACY_PRE_STATE) before evaluating a non-zero exit, so a REFUSE_*
+      disposition can never be swallowed from the log by ``set -e``.
 """
 
 from __future__ import annotations
@@ -232,14 +237,35 @@ def test_rotation_dispositions() -> None:
         helper.rotation_disposition(_rotation_states(overlay="PRESENT:plain_text"))
         == "REFUSE_OVERLAY_WRONG_TYPE"
     )
-    # Any legacy trio member present alongside V1 authority refuses mutation.
+    # A runtime-inert legacy trio never blocks rotation (the Engine consults the
+    # legacy bindings only when base V1 is genuinely absent): any single member,
+    # any mixed combination, and all three alongside V1 authority still
+    # classify as ROTATION_REQUIRED.
     for slot in range(3):
         legacy = ["ABSENT", "ABSENT", "ABSENT"]
         legacy[slot] = "PRESENT:secret_text"
         assert (
             helper.rotation_disposition(_rotation_states(legacy=tuple(legacy)))
-            == "REFUSE_LEGACY_TRIO_PRESENT"
+            == "ROTATION_REQUIRED"
         )
+    assert (
+        helper.rotation_disposition(_rotation_states(legacy=("PRESENT:secret_text",) * 3))
+        == "ROTATION_REQUIRED"
+    )
+    assert (
+        helper.rotation_disposition(
+            _rotation_states(legacy=("PRESENT:secret_text", "ABSENT", "PRESENT:secret_text"))
+        )
+        == "ROTATION_REQUIRED"
+    )
+    # Legacy members are preservation targets, not eligibility checks: even a
+    # wrong-type legacy binding never changes the disposition.
+    assert (
+        helper.rotation_disposition(
+            _rotation_states(legacy=("PRESENT:plain_text", "ABSENT", "ABSENT"))
+        )
+        == "ROTATION_REQUIRED"
+    )
     # Base absence outranks every later check (overlay path fails closed).
     assert (
         helper.rotation_disposition(
@@ -247,6 +273,35 @@ def test_rotation_dispositions() -> None:
         )
         == "REFUSE_BASE_V1_ABSENT"
     )
+    # The removed legacy-presence refusal must never come back.
+    assert "REFUSE_LEGACY_TRIO_PRESENT" not in HELPER.read_text(encoding="utf-8")
+
+
+def test_legacy_state_codec_is_bounded_and_fails_closed() -> None:
+    helper = _load_helper()
+    states = _rotation_states(legacy=("PRESENT:secret_text", "ABSENT", "PRESENT:plain_text"))
+    encoded = helper.encode_legacy_states(states)
+    decoded = helper.decode_legacy_states(encoded)
+    assert decoded == {name: states[name] for name in LEGACY_TRIO_NAMES}
+    assert helper.encode_legacy_states(states) == encoded  # deterministic
+    # The encoding is NAME/TYPE only: a binding VALUE can never leak into it.
+    assert SENTINEL not in encoded
+    for bad in (
+        "",
+        "x=y",
+        "PADIEM_ENGINE_CALLER_ID",
+        "PADIEM_ENGINE_CALLER_ID=ABSENT",
+        "PADIEM_ENGINE_CALLER_ID=ABSENT;PADIEM_ENGINE_CALLER_SECRET=ABSENT",
+        ";".join(["PADIEM_ENGINE_CALLER_ID=ABSENT"] * 3),  # duplicated entry
+        ";".join([f"{name}=value:hunter2" for name in LEGACY_TRIO_NAMES]),
+        ";".join(["UNKNOWN_BINDING=ABSENT"] * 3),
+    ):
+        try:
+            helper.decode_legacy_states(bad)
+        except helper.OverlayRotationError:
+            pass
+        else:
+            raise AssertionError(f"decode accepted malformed pre-state: {bad!r}")
 
 
 def test_build_overlay_payload_is_canonical_single_caller() -> None:
@@ -535,6 +590,12 @@ def test_classify_cli_rotation_required() -> None:
     assert "BINDING_NAME_AND_TYPE_ONLY=YES" in output
     assert "SECRET_VALUES_READ=0" in output
     assert "CLOUDFLARE_MUTATION=0" in output
+    # The legacy trio NAME/TYPE state is captured for the preservation contract.
+    assert (
+        f"LEGACY_PRE_STATE={';'.join(f'{name}=ABSENT' for name in LEGACY_TRIO_NAMES)}"
+        in output
+    )
+    assert "LEGACY_TRIO_PRESERVATION_REQUIRED=YES" in output
     assert SENTINEL not in output
 
 
@@ -568,15 +629,23 @@ def test_classify_cli_refusals() -> None:
     assert code == 1
     assert "B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=REFUSE_OVERLAY_WRONG_TYPE" in output
 
+    # A physically present legacy trio is runtime-inert while base V1 exists:
+    # it must NOT refuse rotation; its state is captured for preservation.
     code, output = classify(
         [
             _binding(BASE_NAME, "secret_text"),
             _binding(OVERLAY_NAME, "secret_text"),
             _binding("PADIEM_ENGINE_CALLER_ID", "secret_text"),
+            _binding("PADIEM_ENGINE_CALLER_SECRET", "secret_text"),
         ]
     )
-    assert code == 1
-    assert "B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=REFUSE_LEGACY_TRIO_PRESENT" in output
+    assert code == 0
+    assert "B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=ROTATION_REQUIRED" in output
+    assert f"AUTHORITY_STATE {LEGACY_TRIO_NAMES[0]}=PRESENT:secret_text" in output
+    assert f"AUTHORITY_STATE {LEGACY_TRIO_NAMES[1]}=PRESENT:secret_text" in output
+    assert f"AUTHORITY_STATE {LEGACY_TRIO_NAMES[2]}=ABSENT" in output
+    assert f"{LEGACY_TRIO_NAMES[0]}=PRESENT:secret_text" in output
+    assert "REFUSE_LEGACY_TRIO_PRESENT" not in output
 
     # A settings-plane payload is never accepted as served-version proof.
     settings = _settings_plane(
@@ -689,65 +758,108 @@ def test_plan_cli_fails_closed_on_bad_credential_and_existing_output() -> None:
 
 def test_verify_cli_post_readback() -> None:
     helper = _load_helper()
+
+    def verify(detail: dict, pre_state: str) -> tuple[int, str]:
+        return _run_main(
+            helper,
+            [
+                "verify",
+                "--version-detail",
+                str(_write_json_file(detail)),
+                "--active-version",
+                VERSION_ID,
+                "--legacy-pre-state",
+                pre_state,
+            ],
+        )
+
+    absent_state = ";".join(f"{name}=ABSENT" for name in LEGACY_TRIO_NAMES)
+    present_state = ";".join(
+        f"{name}=PRESENT:secret_text" for name in LEGACY_TRIO_NAMES
+    )
+    legacy_bindings = [_binding(name, "secret_text") for name in LEGACY_TRIO_NAMES]
+
+    # Legacy trio genuinely absent before and after: PASS.
     detail = _version_detail(
         [
             _binding(BASE_NAME, "secret_text", text=SENTINEL),
             _binding(OVERLAY_NAME, "secret_text", text=SENTINEL),
         ]
     )
-    code, output = _run_main(
-        helper,
-        [
-            "verify",
-            "--version-detail",
-            str(_write_json_file(detail)),
-            "--active-version",
-            VERSION_ID,
-        ],
-    )
+    code, output = verify(detail, absent_state)
     assert code == 0
     assert f"ENGINE_SERVED_VERSION_ID={VERSION_ID}" in output
     assert "ENGINE_V1_SERVED_BINDING=PRESENT:secret_text" in output
     assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in output
-    assert "LEGACY_TRIO_SERVED_BINDING=ABSENT" in output
+    assert f"LEGACY_TRIO_SERVED_STATE={absent_state}" in output
+    assert "LEGACY_TRIO_PRESERVATION=YES" in output
     assert "B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS" in output
     assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in output
     assert "RUNTIME_SUCCESS=UNPROVEN_PENDING_PHASE_A" in output
     assert SENTINEL not in output
 
-    # Overlay missing from the served version fails the post-readback.
-    missing = _version_detail([_binding(BASE_NAME, "secret_text")])
-    code, output = _run_main(
-        helper,
-        [
-            "verify",
-            "--version-detail",
-            str(_write_json_file(missing)),
-            "--active-version",
-            VERSION_ID,
-        ],
-    )
-    assert code == 1
-    assert "B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL" in output
-
-    # Legacy trio reappearing on the served version fails the post-readback.
-    legacy = _version_detail(
+    # Legacy trio present before and IDENTICAL after (rotation-inert
+    # preservation): PASS - the preservation contract replaces enforced absence.
+    preserved = _version_detail(
         [
             _binding(BASE_NAME, "secret_text"),
             _binding(OVERLAY_NAME, "secret_text"),
-            _binding("PADIEM_ENGINE_CALLER_SECRET", "secret_text"),
+            *legacy_bindings,
         ]
     )
-    code, output = _run_main(
-        helper,
+    code, output = verify(preserved, present_state)
+    assert code == 0
+    assert f"LEGACY_TRIO_SERVED_STATE={present_state}" in output
+    assert "LEGACY_TRIO_PRESERVATION=YES" in output
+    assert "B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS" in output
+
+    # Any legacy NAME/TYPE drift after the PUT fails closed.
+    for label, drifted in (
+        ("type changed", _version_detail(
+            [
+                _binding(BASE_NAME, "secret_text"),
+                _binding(OVERLAY_NAME, "secret_text"),
+                _binding(LEGACY_TRIO_NAMES[0], "plain_text"),
+                *legacy_bindings[1:],
+            ]
+        )),
+        ("deleted by drift", _version_detail(
+            [
+                _binding(BASE_NAME, "secret_text"),
+                _binding(OVERLAY_NAME, "secret_text"),
+                *legacy_bindings[1:],
+            ]
+        )),
+    ):
+        code, output = verify(drifted, present_state)
+        assert code == 1, label
+        assert "B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL" in output, label
+        assert "legacy trio state changed" in output, label
+        assert "LEGACY_TRIO_PRESERVATION=YES" not in output, label
+
+    # A legacy binding newly appearing after the PUT fails closed too.
+    appeared = _version_detail(
         [
-            "verify",
-            "--version-detail",
-            str(_write_json_file(legacy)),
-            "--active-version",
-            VERSION_ID,
-        ],
+            _binding(BASE_NAME, "secret_text"),
+            _binding(OVERLAY_NAME, "secret_text"),
+            _binding(LEGACY_TRIO_NAMES[0], "secret_text"),
+        ]
     )
+    code, output = verify(appeared, absent_state)
+    assert code == 1
+    assert "B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL" in output
+    assert "legacy trio state changed" in output
+
+    # A malformed or foreign pre-state can never skip the comparison.
+    for bad in ("", "x=y", ";".join([f"{LEGACY_TRIO_NAMES[0]}=ABSENT"] * 3),
+                "PADIEM_ENGINE_CALLER_ID=ABSENT;PADIEM_ENGINE_CALLER_SECRET=ABSENT"):
+        code, output = verify(detail, bad)
+        assert code == 1, bad
+        assert "B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL" in output
+
+    # Overlay missing from the served version fails the post-readback.
+    missing = _version_detail([_binding(BASE_NAME, "secret_text")])
+    code, output = verify(missing, absent_state)
     assert code == 1
     assert "B54_ENGINE_OVERLAY_ROTATION_VERIFY=FAIL" in output
 
@@ -951,8 +1063,54 @@ def test_workflow_readonly_job_is_get_only_and_refuses_non_rotation_states() -> 
     assert "SECRET_VALUES_READ=0" in text
     assert "CLOUDFLARE_MUTATION=0" in text
     assert "PRODUCTION_MUTATION=0" in text
-    assert 'if [ "${disposition}" != "ROTATION_REQUIRED" ]; then' in text
+    # Evidence preservation: the classify exit status is captured and only
+    # evaluated AFTER the AUTHORITY_STATE / DISPOSITION / LEGACY_PRE_STATE
+    # lines are printed, so a REFUSE_* disposition can never be swallowed
+    # from the log by set -e.
+    assert "classify_status=0" in text
+    assert "|| classify_status=$?" in text
+    assert 'printf \'%s\\n\' "${evidence}"' in text
+    assert (
+        'if [ "${classify_status}" -ne 0 ] '
+        '|| [ "${disposition}" != "ROTATION_REQUIRED" ]; then'
+    ) in text
     assert "Human review required before any mutation" in text
+    # Both classify call sites (readonly and pre-mutation) use the pattern.
+    assert text.count("|| classify_status=$?") == 2
+    # Legacy trio presence is no longer an eligibility blocker anywhere.
+    assert "REFUSE_LEGACY_TRIO_PRESENT" not in text
+
+
+def test_workflow_legacy_trio_preservation_wiring() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+    # The readonly capture is exported as a job output.
+    assert "legacy_pre_state: ${{ steps.classify.outputs.legacy_pre_state }}" in text
+    assert 'test -n "${legacy_pre_state}"' in text
+    assert 'echo "legacy_pre_state=${legacy_pre_state}" >> "${GITHUB_OUTPUT}"' in text
+    # The apply job requires that capture and re-checks eligibility plus
+    # re-captures the legacy state immediately before the PUT.
+    assert (
+        "READONLY_LEGACY_PRE_STATE: "
+        "${{ needs.cloudflare-readonly.outputs.legacy_pre_state }}"
+    ) in text
+    assert 'test -n "${READONLY_LEGACY_PRE_STATE}"' in text
+    assert (
+        'echo "PREMUTATION_LEGACY_TRIO_STATE=${legacy_pre_state}" >> "${GITHUB_ENV}"'
+    ) in text
+    assert "PREMUTATION_LEGACY_TRIO_STATE_CAPTURED=YES" in text
+    # Drift between the readonly read and the pre-mutation capture fails closed.
+    assert 'if [ "${legacy_pre_state}" != "${READONLY_LEGACY_PRE_STATE}" ]; then' in text
+    assert "LEGACY_TRIO_STATE_DRIFT=PREMUTATION" in text
+    # Post-mutation verify must compare against the exact pre-mutation capture.
+    assert '--legacy-pre-state "${PREMUTATION_LEGACY_TRIO_STATE}"' in text
+    assert "LEGACY_TRIO_PRESERVATION_VERIFIED=YES" in text
+    assert "LEGACY_TRIO_PRESERVATION_REQUIRED=YES" in text
+    # The pre-mutation capture precedes the PUT and the preservation proof
+    # follows it.
+    capture_pos = text.index("PREMUTATION_LEGACY_TRIO_STATE=${legacy_pre_state}")
+    put_pos = text.index("-X PUT")
+    verify_pos = text.index('--legacy-pre-state "${PREMUTATION_LEGACY_TRIO_STATE}"')
+    assert capture_pos < put_pos < verify_pos
 
 
 def test_workflow_bounded_failure_evidence_wiring() -> None:
@@ -987,6 +1145,7 @@ def test_workflow_never_touches_b62_live_config_or_padiem_chat() -> None:
 if __name__ == "__main__":
     test_script_constants_exact()
     test_rotation_dispositions()
+    test_legacy_state_codec_is_bounded_and_fails_closed()
     test_build_overlay_payload_is_canonical_single_caller()
     test_overlay_shape_rejects_noncanonical_payloads()
     test_put_body_targets_overlay_only()
@@ -1005,6 +1164,7 @@ if __name__ == "__main__":
     test_workflow_uses_served_version_never_settings_plane()
     test_workflow_put_targets_overlay_only_and_never_base_v1()
     test_workflow_readonly_job_is_get_only_and_refuses_non_rotation_states()
+    test_workflow_legacy_trio_preservation_wiring()
     test_workflow_bounded_failure_evidence_wiring()
     test_workflow_never_touches_b62_live_config_or_padiem_chat()
     print("B54_ENGINE_CALLER_REGISTRY_OVERLAY_ROTATION_GATE_TESTS=PASS")
