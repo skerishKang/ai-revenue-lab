@@ -34,10 +34,16 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 # settings-plane-only readback is never accepted as proof.
 #
 # Fail-closed preconditions (NAME/TYPE only, on the served version): BOTH the
-# base V1 and the overlay must already be ``secret_text`` and the legacy trio
-# must be absent. Any other shape (base absent, base/overlay wrong type, legacy
-# trio present, overlay absent) refuses mutation for direct operator review;
-# overlay CREATION belongs to the provisioning gate, not this rotation gate.
+# base V1 and the overlay must already be ``secret_text``. The legacy trio is
+# NOT an eligibility blocker: while the base V1 is present the Engine runtime
+# never consults the legacy bindings, so a physically present trio is
+# runtime-inert and permitted. Its NAME/TYPE state is captured pre-mutation
+# (readonly AND immediately before the PUT, and required to agree) and must be
+# proven identical post-mutation - preservation, never enforced absence. Any
+# other shape (base absent, base/overlay wrong type, overlay absent) refuses
+# mutation for direct operator review; overlay CREATION belongs to the
+# provisioning gate, not this rotation gate. Refusal evidence (AUTHORITY_STATE,
+# DISPOSITION, LEGACY_PRE_STATE) is ALWAYS printed before the refusal exit.
 #
 # The credential NEVER passes through workflow_dispatch inputs: it arrives only
 # as the ``B62_P01_ENGINE_CREDENTIAL`` job environment secret. Failure evidence
@@ -144,6 +150,7 @@ jobs:
       contents: read
     outputs:
       disposition: ${{ steps.classify.outputs.disposition }}
+      legacy_pre_state: ${{ steps.classify.outputs.legacy_pre_state }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -190,16 +197,28 @@ jobs:
           test "${active_version}" = "${readback_version}"
           version_detail="${RUNNER_TEMP}/b54-engine-overlay-version-pre.json"
           curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
+          # Evidence must reach the log BEFORE the exit status is evaluated:
+          # a REFUSE_* disposition exits non-zero, and under set -e an
+          # unguarded command substitution aborts the step and swallows the
+          # AUTHORITY_STATE / DISPOSITION / LEGACY_PRE_STATE lines.
+          classify_status=0
           evidence="$(python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py classify \
             --version-detail "${version_detail}" \
-            --active-version "${active_version}")"
-          echo "${evidence}"
+            --active-version "${active_version}")" || classify_status=$?
+          printf '%s\n' "${evidence}"
           disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
-          if [ "${disposition}" != "ROTATION_REQUIRED" ]; then
+          legacy_pre_state="$(printf '%s\n' "${evidence}" | sed -n 's/^LEGACY_PRE_STATE=//p')"
+          if [ "${classify_status}" -gt 1 ]; then
+            echo 'Refusing: classify exited with an unexpected status. Human review required before any mutation.' >&2
+            exit 1
+          fi
+          if [ "${classify_status}" -ne 0 ] || [ "${disposition}" != "ROTATION_REQUIRED" ]; then
             echo 'Refusing: served-version caller authority is not a safe overlay-rotation state. Human review required before any mutation.' >&2
             exit 1
           fi
+          test -n "${legacy_pre_state}"
           echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
+          echo "legacy_pre_state=${legacy_pre_state}" >> "${GITHUB_OUTPUT}"
           echo 'GET_ONLY=PASS'
           echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
           echo 'VERSION_UPLOAD_LATEST_READ_ACCEPTED=NO'
@@ -226,6 +245,7 @@ jobs:
       ENGINE_CALLER_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       CONFIRMATION: ${{ inputs.confirmation }}
       DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
+      READONLY_LEGACY_PRE_STATE: ${{ needs.cloudflare-readonly.outputs.legacy_pre_state }}
     steps:
       - name: Require explicit rotation authorization
         shell: bash
@@ -236,7 +256,11 @@ jobs:
             echo 'Refusing mutation: no trustworthy readonly served-version disposition.' >&2
             exit 1
           fi
+          # The legacy trio NAME/TYPE state must have been captured by the
+          # approved readonly read; without it preservation cannot be proven.
+          test -n "${READONLY_LEGACY_PRE_STATE}"
           echo 'B54_ENGINE_OVERLAY_ROTATION_AUTHORIZATION=PASS'
+          echo 'LEGACY_TRIO_PRESERVATION_REQUIRED=YES'
           echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
 
       - name: Checkout exact approved main SHA
@@ -318,6 +342,32 @@ jobs:
           active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
           test -n "${active_version}"
           test "${active_version}" = "${readback_version}"
+          # Fresh eligibility re-check and legacy trio NAME/TYPE capture on the
+          # EXACT version about to be mutated. Evidence is printed before the
+          # exit status is evaluated so a REFUSE_* disposition stays auditable.
+          version_detail="${RUNNER_TEMP}/b54-engine-overlay-version-pre.json"
+          curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
+          classify_status=0
+          evidence="$(python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py classify \
+            --version-detail "${version_detail}" \
+            --active-version "${active_version}")" || classify_status=$?
+          printf '%s\n' "${evidence}"
+          disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
+          legacy_pre_state="$(printf '%s\n' "${evidence}" | sed -n 's/^LEGACY_PRE_STATE=//p')"
+          if [ "${classify_status}" -ne 0 ] || [ "${disposition}" != "ROTATION_REQUIRED" ] || [ -z "${legacy_pre_state}" ]; then
+            echo 'Refusing mutation: the served version immediately before the PUT is not a safe overlay-rotation state or carries no legacy pre-state.' >&2
+            exit 1
+          fi
+          if [ "${legacy_pre_state}" != "${READONLY_LEGACY_PRE_STATE}" ]; then
+            # The legacy trio state changed between the approved readonly read
+            # and this pre-mutation capture: fail closed for human review.
+            echo 'Refusing mutation: legacy trio state drifted after the readonly classification.' >&2
+            echo 'LEGACY_TRIO_STATE_DRIFT=PREMUTATION' >&2
+            exit 1
+          fi
+          echo "PREMUTATION_LEGACY_TRIO_STATE=${legacy_pre_state}" >> "${GITHUB_ENV}"
+          echo 'PREMUTATION_LEGACY_TRIO_STATE_CAPTURED=YES'
           echo "PREMUTATION_SERVED_VERSION_ID=${active_version}" >> "${GITHUB_ENV}"
           echo "PREMUTATION_SERVED_VERSION_ID=${active_version}"
           echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
@@ -425,7 +475,9 @@ jobs:
             "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
           python3 .github/scripts/b54_engine_caller_registry_overlay_rotation.py verify \
             --version-detail "${version_detail}" \
-            --active-version "${active_version}"
+            --active-version "${active_version}" \
+            --legacy-pre-state "${PREMUTATION_LEGACY_TRIO_STATE}"
+          echo 'LEGACY_TRIO_PRESERVATION_VERIFIED=YES'
           echo 'DEPLOYMENTS_SHAPE_GUARD=PASS'
           echo 'VERSION_UPLOAD_LATEST_READ_ACCEPTED=NO'
           echo 'B54_ENGINE_OVERLAY_ROTATION_POST_READBACK=PASS'
