@@ -53,7 +53,7 @@ def test_all_chat_themes_define_accent_contrast():
         "light": "#ffffff",
         "dark": "#131417",
         "cinematic": "#04070d",
-        "padiem-home": "#ffffff",
+        "padiem-home": "#0b0f14",
     }
 
     for theme, value in expected.items():
