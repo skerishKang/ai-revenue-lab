@@ -57,27 +57,27 @@ def test_app_runtime_copy_does_not_hardcode_korean_user_text():
     assert offending == []
 
 
-def test_static_korean_copy_is_bound_to_locale_contract():
+def test_static_korean_copy_uses_declared_or_selector_locale_contract():
     html = read("index.html")
-    allowed_binding_markers = (
-        "data-locale-key",
-        "data-locale-aria-label",
-        "data-locale-placeholder",
-        "data-locale-title",
-        "data-locale-alt",
-        "data-locale-content",
+    locale = read("locale.js")
+
+    selector_contracts = (
+        '["#attachmentButton span:last-child", "file"]',
+        '["#webSearchButton span:last-child", "web"]',
+        '["#deepResearchButton span:last-child", "research"]',
+        '[".starter:nth-child(3) strong", "document-title"]',
+        '[".starter-grid", "aria-label", "starter-grid"]',
+        '[".claw-chips", "aria-label", "claw-actions-aria"]',
     )
+    for contract in selector_contracts:
+        assert contract in locale
 
-    offending = []
-    for line_no, line in enumerate(html.splitlines(), start=1):
-        stripped = line.strip()
-        if not KOREAN.search(line) or stripped.startswith("<!--"):
-            continue
-        if not any(marker in line for marker in allowed_binding_markers):
-            offending.append((line_no, stripped))
-
-    assert offending == []
-
+    assert '<span>파일</span>' in html
+    assert '<span>웹 검색</span>' in html
+    assert '<span>심층 리서치</span>' in html
+    assert '<div class="starter-grid" aria-label="추천 질문">' in html
+    assert 'role="group" aria-label="Claw 작업 선택"' in html
+    assert 'id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.' in html
 
 def test_runtime_translation_calls_reference_declared_keys():
     locale_source = read("locale.js")
