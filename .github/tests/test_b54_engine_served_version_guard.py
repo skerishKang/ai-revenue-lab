@@ -1,8 +1,13 @@
 """Network-free contract tests for the served-version caller-registry guard (#2414).
 
 Proves that ``b54_engine_served_version_guard.py`` resolves the active version
-fail-closed, validates ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (and the overlay
-when expected) only on the *served* version using the documented Cloudflare
+fail-closed from the canonical Cloudflare deployments envelope ONLY (#2452
+convergence to the #2427 contract): ``result.deployments[0]``, exactly one
+version at 100 percent, safe ``version_id``. Raw top-level lists, list-shaped
+``result`` values, and the ``result.versions`` shortcut are REFUSED — including
+the descending/newest-first raw list that the removed last-entry rule falsely
+passed. Validates ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (and the overlay when
+expected) only on the *served* version using the documented Cloudflare
 version-detail shape (``result.id`` + ``result.resources.bindings``), never
 emits binding values, and that the deploy gate wires both guards GET-only.
 """
@@ -91,23 +96,93 @@ def test_resolve_active_canonical_deployments_shape() -> None:
     assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in out
 
 
-def test_resolve_active_raw_wrangler_list_uses_latest() -> None:
+def test_resolve_active_canonical_history_first_entry_is_served() -> None:
+    # Required test 1 (#2452): deployment HISTORY with several entries; the
+    # first entry is the actively serving deployment (#2426 contract) and must
+    # resolve despite the older history entries present.
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [
+        {"versions": [{"version_id": "ver-current", "percentage": 100}]},
+        {"versions": [{"version_id": "ver-previous", "percentage": 0}]},
+        {"versions": [{"version_id": "ver-older", "percentage": 0}]},
+    ]}}
+    code, out = _resolve(helper, payload)
+    assert code == 0
+    assert "ENGINE_ACTIVE_VERSION_ID=ver-current" in out
+    assert "ver-previous" not in out and "ver-older" not in out
+
+
+def test_resolve_active_refuses_raw_list_descending_newest_first() -> None:
+    # Required tests 7 + the #2419-proven false-pass fixture: a newest-first
+    # (descending) raw wrangler-style list with two full-rollout entries. The
+    # removed last-entry rule resolved this to the STALE version. The canonical
+    # resolver must REFUSE the shape outright, never pick an entry by order.
+    helper = _load_helper()
+    payload = [
+        {"versions": [{"version_id": "ver-new", "percentage": 100}]},
+        {"versions": [{"version_id": "ver-old", "percentage": 100}]},
+    ]
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "envelope" in out
+    assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_raw_list_ascending() -> None:
+    # Required test 8: the oldest-first raw list the old last-entry rule PASSed
+    # is now refused too — list ORDER is not a served-version authority.
     helper = _load_helper()
     payload = [
         {"versions": [{"version_id": "ver-old", "percentage": 0}]},
         {"versions": [{"version_id": "ver-new", "percentage": 100}]},
     ]
     code, out = _resolve(helper, payload)
-    assert code == 0
-    assert "ENGINE_ACTIVE_VERSION_ID=ver-new" in out
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "ENGINE_ACTIVE_VERSION_ID" not in out
 
 
-def test_resolve_active_accepts_result_versions_with_id_key() -> None:
+def test_resolve_active_refuses_result_list() -> None:
+    # Required test 9: a list-shaped result is not the documented deployments
+    # envelope; the old last-entry branch over it is removed.
     helper = _load_helper()
-    payload = {"success": True, "result": {"versions": [{"id": "ver-B", "percentage": 100}]}}
+    payload = {"success": True, "result": [
+        {"versions": [{"version_id": "ver-old", "percentage": 100}]},
+        {"versions": [{"version_id": "ver-new", "percentage": 100}]},
+    ]}
     code, out = _resolve(helper, payload)
-    assert code == 0
-    assert "ENGINE_ACTIVE_VERSION_ID=ver-B" in out
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "no result object" in out
+    assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_result_versions_shortcut() -> None:
+    # Required test 10: ``result.versions`` is a version-list shape, not
+    # deployment authority. Accepting it (and its bare ``id`` fields) allowed a
+    # non-deployments endpoint to masquerade as served-version proof.
+    helper = _load_helper()
+    for payload in (
+        {"success": True, "result": {"versions": [{"id": "ver-B", "percentage": 100}]}},
+        {"success": True, "result": {"versions": [{"version_id": "ver-B", "percentage": 100}]}},
+    ):
+        code, out = _resolve(helper, payload)
+        assert code == 1
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+        assert "no deployment records returned" in out
+        assert "ENGINE_ACTIVE_VERSION_ID" not in out
+
+
+def test_resolve_active_refuses_deployments_without_version_id_field() -> None:
+    # A deployments entry whose version carries only a bare ``id`` comes from an
+    # endpoint other than the documented history shape and is refused.
+    helper = _load_helper()
+    payload = {"success": True, "result": {"deployments": [{"versions": [{"id": "ver-A", "percentage": 100}]}]}}
+    code, out = _resolve(helper, payload)
+    assert code == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+    assert "missing or unsafe" in out
 
 
 def test_resolve_active_ambiguous_versions_fail_closed() -> None:
