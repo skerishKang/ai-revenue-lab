@@ -142,8 +142,18 @@ jobs:
     timeout-minutes: 15
     environment: production
     env:
-      CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-      CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier b54-kagent and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-kagent
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-kagent
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ENGINE_BASE_URL: https://engine.padiem.net
@@ -182,9 +192,6 @@ jobs:
 
       - name: Run A10 continuation fail-closed smoke
         shell: bash
-        env:
-          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
@@ -204,9 +211,6 @@ jobs:
       # contradictory/unexpected production behaviour and fails the gate.
       - name: Run A11 Gmail tool_runtime smoke
         shell: bash
-        env:
-          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
@@ -219,9 +223,6 @@ jobs:
 
       - name: Run A12 streaming idempotency replay smoke
         shell: bash
-        env:
-          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
