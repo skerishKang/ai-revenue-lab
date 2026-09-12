@@ -792,8 +792,8 @@
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
 
     if (sessionState === "unavailable") {
-      loginButton.textContent = english ? "Sign in" : "로그인";
-      loginButton.title = english ? "Sign-in is unavailable" : "로그인 기능이 설정되지 않았습니다";
+      loginButton.textContent = uiT("login");
+      loginButton.title = uiT("login-unavailable-title");
       accountName.hidden = true;
       accountName.textContent = "";
       clearHistoryUI();
@@ -802,19 +802,19 @@
     }
 
     if (sessionState === "signed_in") {
-      loginButton.textContent = english ? "Sign out" : "로그아웃";
-      loginButton.title = english ? "Sign out of the current account" : "현재 계정에서 로그아웃합니다";
+      loginButton.textContent = uiT("logout");
+      loginButton.title = uiT("logout-title");
       const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
       accountName.textContent = name || uiT("signed-in");
       accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = english ? "Checking" : "확인 중";
+      projectsBadge.textContent = uiT("checking");
       return;
     }
 
     if (sessionState === "expired") {
-      loginButton.textContent = english ? "Sign in again" : "다시 로그인";
-      loginButton.title = english ? "Your session expired. Sign in again" : "세션이 만료되었습니다. 다시 로그인합니다";
+      loginButton.textContent = uiT("sign-in-again");
+      loginButton.title = uiT("expired-title");
       accountName.textContent = uiT("session-expired");
       accountName.hidden = false;
       clearHistoryUI();
@@ -822,8 +822,8 @@
       return;
     }
 
-    loginButton.textContent = english ? "Sign in" : "로그인";
-    loginButton.title = english ? "Sign in with your Google account" : "Google 계정으로 로그인합니다";
+    loginButton.textContent = uiT("login");
+    loginButton.title = uiT("login-title");
     accountName.textContent = uiT("guest");
     accountName.hidden = false;
     clearHistoryUI();
@@ -1673,7 +1673,7 @@
   }
 
   // Proposal review surface: rendered from preview memory_proposals. Approve is
-  // impossible until the user explicitly clicks 승인; reject never persists.
+  // impossible until the user explicitly approves; reject never persists.
   function renderMemoryProposalReview(proposals) {
     if (!clawMemoryReview) return;
     clawMemoryReview.replaceChildren();
