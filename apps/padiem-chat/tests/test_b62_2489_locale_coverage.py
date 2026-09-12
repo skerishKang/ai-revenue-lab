@@ -89,10 +89,10 @@ def test_runtime_translation_calls_reference_declared_keys():
     assert runtime_keys <= keys
 
 
-def test_explicit_locale_preference_is_persisted():
+def test_explicit_locale_preference_uses_url_without_browser_storage():
     locale = read("locale.js")
 
-    assert 'const LOCALE_STORAGE_KEY = "padiem.locale";' in locale
-    assert "window.localStorage.setItem(LOCALE_STORAGE_KEY, lang)" in locale
-    assert 'apply(getUrlLocale() || getStoredLocale() || "ko", false);' in locale
-    assert "getStoredLocale" in locale
+    assert 'url.searchParams.set("lang", lang)' in locale
+    assert 'apply(getUrlLocale() || "ko", false);' in locale
+    assert "localStorage" not in locale
+    assert "sessionStorage" not in locale
