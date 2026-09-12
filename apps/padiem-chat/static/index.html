@@ -8,7 +8,7 @@
   <link rel="icon" href="data:," />
   <title>Padiem Chat</title>
   <script src="./theme-init.js"></script>
-  <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
+  <meta name="description" data-locale-content="meta-description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <!-- Legacy regression marker only: "자동 추천" is a deprecated label; model selection remains deferred. -->
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./attachments.css" />
@@ -256,7 +256,7 @@
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
-          <h1>안녕하세요.<br />무엇을 도와드릴까요?</h1>
+          <h1><span data-locale-key="hello">안녕하세요.</span><br /><span data-locale-key="ask">무엇을 도와드릴까요?</span></h1>
           <p class="empty-copy" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
           <div class="starter-grid" data-locale-aria-label="starter-grid" aria-label="추천 질문">
             <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
@@ -310,8 +310,8 @@
       </div>
       <label for="projectNameInput" data-locale-key="project-name">프로젝트 이름</label>
       <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required data-locale-placeholder="project-name-placeholder" placeholder="예: 제주 가족여행" />
-      <label for="projectInstructionsInput">프로젝트 지침 <span>선택</span></label>
-      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
+      <label for="projectInstructionsInput"><span data-project-instructions-label data-locale-key="project-instructions">프로젝트 지침</span> <span data-project-instructions-optional data-locale-key="optional">선택</span></label>
+      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" data-locale-placeholder="project-instructions-placeholder" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
       <p class="project-form-note" data-locale-key="project-instructions-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
 
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
