@@ -143,7 +143,7 @@ def test_result_supporting_copy_uses_primary_text_on_translucent_surfaces():
     workspace = read("claw-workspace.css")
 
     for selector in (".claw-result-note", ".claw-result-empty"):
-        block = re.search(rf'{re.escape(selector)}\s*\{{(.*?)\n\}}', workspace, re.S)
+        block = re.search(rf'(?m)^{re.escape(selector)}\s*\{{(.*?)\n\}}', workspace, re.S)
         assert block, selector
         assert "color: var(--text);" in block.group(1)
 
