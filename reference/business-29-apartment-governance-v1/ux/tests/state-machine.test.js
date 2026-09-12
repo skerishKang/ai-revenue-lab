@@ -414,15 +414,19 @@ check("allowed-scope check (only canonical Phase2 workspace changed)", function 
   var diff = git("diff --name-only origin/main...HEAD").trim();
   if (diff) {
     diff.split("\n").forEach(function (p) {
-      assert.ok(p.indexOf("reference/business-29-apartment-governance-v1/ux/") === 0, "out-of-scope committed path: " + p);
+      var ok = p.indexOf("reference/business-29-apartment-governance-v1/ux/") === 0 ||
+        p === "reference/business-29-apartment-governance-v1/guide.html";
+      assert.ok(ok, "out-of-scope committed path: " + p);
     });
   }
-  var refStatus = git("status --porcelain=v1 -z -- reference/business-29-apartment-governance-v1/ux/");
+  var refStatus = git("status --porcelain=v1 -z -- reference/business-29-apartment-governance-v1/ux/ reference/business-29-apartment-governance-v1/guide.html");
   if (refStatus) {
     refStatus.split("\0").forEach(function (rec) {
       if (!rec) return;
       var p = rec.slice(3);
-      assert.ok(p.indexOf("reference/business-29-apartment-governance-v1/ux/") === 0, "out-of-scope reference change: " + p);
+      var ok = p.indexOf("reference/business-29-apartment-governance-v1/ux/") === 0 ||
+        p === "reference/business-29-apartment-governance-v1/guide.html";
+      assert.ok(ok, "out-of-scope reference change: " + p);
     });
   }
 });

@@ -1,9 +1,40 @@
 {
-  "workspace": "reference/business-29-apartment-governance-ux",
-  "contract": {
+  "workspace": "reference/business-29-apartment-governance-v1/ux",
+  "historical_provenance": {
+    "label": "HISTORICAL_PROVENANCE",
     "issue": 351,
     "pr": 352,
-    "repair": "RESIDENT_INTERNAL_TAB_BYPASS_FIXED · RAW_GOVERNANCE_OBJECTS_PRIVATE · ROLE_GATED_INTERNAL_TABS_ENFORCED · PROJECTION_REVIEW_PROVENANCE_RECORDED · PROJECTION_PUBLICATION_PROVENANCE_RECORDED"
+    "pr_head": "8e610bd040c6d48ba17fe087fd917be026c35cb2",
+    "pr_status": "CLOSED_UNMERGED_EVIDENCE_ONLY",
+    "prior_workspace": "reference/business-29-apartment-governance-ux",
+    "browser_verification": "DEFERRED (historical record only; superseded by current_authority below)",
+    "recorded_at": "2026-08-01",
+    "contract_repair": "RESIDENT_INTERNAL_TAB_BYPASS_FIXED · RAW_GOVERNANCE_OBJECTS_PRIVATE · ROLE_GATED_INTERNAL_TABS_ENFORCED · PROJECTION_REVIEW_PROVENANCE_RECORDED · PROJECTION_PUBLICATION_PROVENANCE_RECORDED"
+  },
+  "current_authority": {
+    "label": "CURRENT_AUTHORITY",
+    "issue": 2471,
+    "pr": 2476,
+    "pr_draft": true,
+    "merge": "NO",
+    "current_main_base": "e227f8cde3a97eaaeed3498261e73b009f72c456",
+    "correction_parent_head": "ced37e29536c9e680cb6095e29c8eed1fa1cd672",
+    "workspace": "reference/business-29-apartment-governance-v1/ux",
+    "validated_at": "2026-09-12",
+    "browser_verification": "PERFORMED",
+    "browser_qa": {
+      "desktop_1440x1100": "PASS",
+      "mobile_390x844": "PASS",
+      "console_errors": 0,
+      "page_errors": 0,
+      "external_runtime_requests": 0
+    },
+    "focused_tests": "34/34 PASS (node reference/business-29-apartment-governance-v1/ux/tests/state-machine.test.js)",
+    "node_check": "clean",
+    "git_diff_check": "clean",
+    "scope": "ux/** + guide.html only; Phase1 canonical root byte-unchanged",
+    "backend_auth_db_neon_modal": 0,
+    "production_mutation": 0
   },
   "resident_boundary": {
     "currentTab": "ledger forced for 일반 주민",
@@ -30,12 +61,13 @@
     "publishPublicNotice": "stamps publishedBy + publishedVersion; blocks when review provenance missing",
     "notice": "Gate 1 stamps full provenance (reviewedBy/reviewedVersion/publishedBy/publishedVersion)"
   },
-  "runner": "node tests/state-machine.test.js",
-  "environment": "Node, no browser/Playwright/CDP/WebBridge",
+  "runner": "node reference/business-29-apartment-governance-v1/ux/tests/state-machine.test.js",
+  "environment": "Node for the focused suite; desktop 1440x1100 + mobile 390x844 viewports for browser QA",
   "checks": {
     "total": 34,
     "passed": 34,
-    "failed": 0
+    "failed": 0,
+    "checks_provenance": "current exact-head run under current_authority; the historical 2026-08-01 run asserted the same 34-check list under historical_provenance — the two runs are recorded separately and must not be confused"
   },
   "results": [
     "24-state contract coverage",
@@ -73,9 +105,7 @@
     "resident role switch resets currentTab",
     "resident screen HTML leaks no raw governance data"
   ],
-  "browser_verification": "DEFERRED",
   "backend": "FROZEN",
   "external_runtime_requests": 0,
-  "synthetic_data_only": true,
-  "recorded_at": "2026-08-01"
+  "synthetic_data_only": true
 }
