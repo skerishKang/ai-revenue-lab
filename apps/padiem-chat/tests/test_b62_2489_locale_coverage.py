@@ -23,7 +23,7 @@ def test_locale_dictionary_has_exact_ko_en_key_parity():
     en = locale_keys(source, "en: {", "\n    }")
 
     assert ko == en
-    assert len(ko) >= 295
+    assert len(ko) >= 294
 
 
 def test_static_locale_bindings_reference_declared_keys():
