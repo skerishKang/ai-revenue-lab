@@ -56,7 +56,7 @@
       "easy-title": "쉽게 설명해줘", "easy-copy": "어려운 내용도 쉬운 말로", "life-title": "생활 도움", "life-copy": "일상 질문과 계획 세우기", "document-title": "문서와 대화",
       "input": "무엇이든 물어보세요", "file": "파일", "web": "웹 검색", "research": "심층 리서치", "footer": "편하게 질문해 보세요",
       "main-menu": "주요 메뉴", "chat-menu": "채팅 메뉴", "account-settings": "계정 및 설정", "home-aria": "Padiem Chat 홈", "home-open": "Padiem Home 열기",
-      "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
+      "coming-soon": "준비 중", "login-after": "로그인 후", "checking": "확인 중", "attachment-checking": "파일 첨부 형식을 확인하는 중입니다.", "setup-needed": "설정 필요", "empty": "비어 있음", "create-new": "새로 만들기",
       "projects-empty": "아직 프로젝트가 없습니다.", "history-title": "최근 대화", "history-empty": "저장된 대화가 없습니다.", "outputs-empty": "저장한 답변이 없습니다.",
       "create-project-aria": "새 프로젝트 만들기", "login-unavailable-title": "로그인 기능이 설정되지 않았습니다", "login-title": "Google 계정으로 로그인합니다", "logout-title": "현재 계정에서 로그아웃합니다", "expired-title": "세션이 만료되었습니다. 다시 로그인합니다",
       "settings-close": "설정 닫기", "theme-picker": "테마 선택", "language-picker": "언어 선택", "starter-grid": "추천 질문", "web-starter-title": "웹에서 찾아줘", "web-starter-copy": "웹 검색 · 준비 중",
@@ -273,6 +273,16 @@
     document.querySelectorAll("[data-locale-aria-label]").forEach((element) => {
       const key = element.dataset.localeAriaLabel;
       if (key) element.setAttribute("aria-label", text(key, lang));
+    });
+    [
+      ["data-locale-placeholder", "placeholder", "localePlaceholder"],
+      ["data-locale-title", "title", "localeTitle"],
+      ["data-locale-alt", "alt", "localeAlt"]
+    ].forEach(([attribute, target, datasetKey]) => {
+      document.querySelectorAll(`[${attribute}]`).forEach((element) => {
+        const key = element.dataset[datasetKey];
+        if (key) element.setAttribute(target, text(key, lang));
+      });
     });
     setCombinedHeading(lang);
     const input = document.getElementById("messageInput");
