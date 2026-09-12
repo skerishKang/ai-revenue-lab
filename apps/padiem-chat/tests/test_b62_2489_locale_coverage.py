@@ -87,3 +87,12 @@ def test_runtime_translation_calls_reference_declared_keys():
     runtime_keys = set(re.findall(r'\b(?:uiT|clawT)\("([^"]+)"', app))
     assert runtime_keys
     assert runtime_keys <= keys
+
+
+def test_explicit_locale_preference_is_persisted():
+    locale = read("locale.js")
+
+    assert 'const LOCALE_STORAGE_KEY = "padiem.locale";' in locale
+    assert "window.localStorage.setItem(LOCALE_STORAGE_KEY, lang)" in locale
+    assert 'apply(getUrlLocale() || getStoredLocale() || "ko", false);' in locale
+    assert "getStoredLocale" in locale
