@@ -1204,6 +1204,9 @@
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
+    applyAuthState(authState);
+    if (projectsReady) renderProjects();
+    renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
   });
 
