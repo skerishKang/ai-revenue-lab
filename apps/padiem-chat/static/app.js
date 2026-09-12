@@ -745,7 +745,7 @@
       if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
         const message = data && data.error && typeof data.error.message === "string"
           ? data.error.message
-          : "프로젝트를 삭제하지 못했습니다.";
+          : uiT("project-delete-failed");
         throw new Error(message);
       }
       projects = projects.filter((item) => item.id !== deletingId);
@@ -882,7 +882,7 @@
       if (!response.ok || !data || data.deleted !== true || data.conversation_id !== id) {
         const message = data && data.error && typeof data.error.message === "string"
           ? data.error.message
-          : "대화를 삭제하지 못했습니다.";
+          : uiT("conversation-delete-failed");
         throw new Error(message);
       }
       const deletedActiveConversation = conversationState.getConversationId() === id;
@@ -1018,7 +1018,7 @@
         if (frame.event === "error") {
           const message = data && data.error && typeof data.error.message === "string"
             ? data.error.message
-            : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.";
+            : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
           renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(chatTransport.errorFor(data, message)));
