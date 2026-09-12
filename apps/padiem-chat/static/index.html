@@ -29,16 +29,16 @@
 </head>
 <body>
   <div class="app-shell" data-state="home">
-    <aside class="sidebar" id="sidebar" aria-label="주요 메뉴">
+    <aside class="sidebar" id="sidebar" data-locale-aria-label="main-menu" aria-label="주요 메뉴">
       <div class="brand-row">
         <button class="mobile-close" id="mobileClose" data-locale-aria-label="close-menu" aria-label="메뉴 닫기">×</button>
         <a class="brand" href="./" data-locale-aria-label="home-aria" aria-label="Padiem Chat 홈"><span class="brand-mark" aria-hidden="true">P</span><span>Padiem Chat</span></a>
       </div>
-      <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span>새 채팅</span></button>
+      <button class="new-chat" id="newChatButton" type="button"><span aria-hidden="true">＋</span><span data-locale-key="new-chat">새 채팅</span></button>
       <nav class="side-nav" data-locale-aria-label="chat-menu" aria-label="채팅 메뉴">
-        <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span>검색</span></button>
-        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span>프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
-        <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span>저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
+        <button class="side-item" id="sidebarSearchButton" type="button" disabled aria-disabled="true" aria-pressed="false" hidden><span class="side-icon" aria-hidden="true">⌕</span><span data-locale-key="search">검색</span></button>
+        <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span data-locale-key="projects">프로젝트</span><span class="mini-badge" id="projectsBadge" data-locale-key="checking">확인 중</span></button>
+        <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="saved">저장한 답변</span><span class="mini-badge" id="outputsBadge" data-locale-key="login-after">로그인 후</span></button>
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
@@ -50,29 +50,29 @@
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
-          <h2 id="projectsTitle">프로젝트</h2>
+          <h2 id="projectsTitle" data-locale-key="projects">프로젝트</h2>
           <button class="section-add-button" id="projectCreateButton" type="button" data-locale-aria-label="create-project-aria" aria-label="새 프로젝트 만들기">＋</button>
         </div>
         <div id="projectsList"></div>
-        <p class="history-empty" id="projectsEmpty" hidden>아직 프로젝트가 없습니다.</p>
+        <p class="history-empty" id="projectsEmpty" data-locale-key="projects-empty" hidden>아직 프로젝트가 없습니다.</p>
       </section>
       <section class="recent-section" id="historySection" aria-labelledby="historyTitle" hidden>
-        <h2 id="historyTitle">최근 대화</h2>
+        <h2 id="historyTitle" data-locale-key="history-title">최근 대화</h2>
         <div id="historyList"></div>
-        <p class="history-empty" id="historyEmpty" hidden>저장된 대화가 없습니다.</p>
+        <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
       </section>
       <section class="recent-section" id="outputsSection" aria-labelledby="outputsTitle" hidden>
-        <h2 id="outputsTitle">저장한 답변</h2>
+        <h2 id="outputsTitle" data-locale-key="saved">저장한 답변</h2>
         <div id="outputsList"></div>
-        <p class="history-empty" id="outputsEmpty" hidden>저장한 답변이 없습니다.</p>
+        <p class="history-empty" id="outputsEmpty" data-locale-key="outputs-empty" hidden>저장한 답변이 없습니다.</p>
       </section>
-      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span>편하게 질문해 보세요</span></div>
+      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
         <a class="home-link" href="https://padiem.net/" target="_blank" rel="noopener" aria-label="Padiem Home 열기"><span class="home-link-mark" aria-hidden="true">↗</span><span data-locale-key="home-link">Padiem Home</span></a>
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false"><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
           <span class="account-name" id="accountName" hidden></span>
-          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" title="Google 계정으로 로그인" hidden>로그인</button>
+          <button class="login-button" id="loginButton" type="button" disabled aria-disabled="true" data-locale-key="login" data-locale-title="login-title" title="Google 계정으로 로그인" hidden>로그인</button>
         </div>
       </div>
     </aside>
@@ -152,7 +152,7 @@
         <form class="claw-intake" id="clawManualForm" data-locale-aria-label="claw-form-aria" aria-label="수동 인입 양식">
           <label class="claw-intake-hero">
             <span class="claw-intake-label" data-locale-key="claw-field-request">요청 원문 붙여넣기</span>
-            <textarea id="clawRequestText" rows="5" maxlength="4000" autocomplete="off" aria-describedby="clawStatus" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
+            <textarea id="clawRequestText" rows="5" maxlength="4000" autocomplete="off" aria-describedby="clawStatus" data-locale-placeholder="claw-request-placeholder" placeholder="카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요."></textarea>
           </label>
           <div class="claw-chips" role="group" data-locale-aria-label="claw-actions-aria" aria-label="Claw 작업 선택">
             <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="false"><span data-locale-key="claw-chip-quote">견적서</span></button>
@@ -176,7 +176,7 @@
               </label>
               <label class="claw-field">
                 <span data-locale-key="claw-field-sender">보낸 사람/거래처 힌트</span>
-                <input type="text" id="clawSender" maxlength="120" autocomplete="off" placeholder="선택 입력: 고객사, 공급사, 발신자명" />
+                <input type="text" id="clawSender" maxlength="120" autocomplete="off" data-locale-placeholder="claw-sender-placeholder" placeholder="선택 입력: 고객사, 공급사, 발신자명" />
               </label>
             </div>
           </details>
@@ -257,22 +257,22 @@
         <div class="empty-state" id="emptyState">
           <p class="eyebrow">PADIEM AI</p>
           <h1>안녕하세요.<br />무엇을 도와드릴까요?</h1>
-          <p class="empty-copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
+          <p class="empty-copy" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
           <div class="starter-grid" data-locale-aria-label="starter-grid" aria-label="추천 질문">
-            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong>쉽게 설명해줘</strong><small>어려운 내용도 쉬운 말로</small></span></button>
-            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong>생활 도움</strong><small>일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
-            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong>웹에서 찾아줘</strong><small>웹 검색 · 준비 중</small></span></button>
+            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
+            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
+            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong data-locale-key="document-title">문서와 대화</strong><small>지원 문서 형식</small></span></button>
+            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
           </div>
         </div>
         <div class="message-list" id="messageList" hidden></div>
       </section>
       <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
         <div class="project-banner" id="projectBanner" hidden>
-          <div class="project-banner-copy"><span>프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
+          <div class="project-banner-copy"><span data-locale-key="project-banner">프로젝트</span><strong id="activeProjectName"></strong><small id="activeProjectFiles" hidden></small></div>
           <div class="project-banner-actions">
-            <button id="editProjectButton" type="button">지침·파일</button>
-            <button id="exitProjectButton" type="button">나가기</button>
+            <button id="editProjectButton" type="button" data-locale-key="project-edit">지침·파일</button>
+            <button id="exitProjectButton" type="button" data-locale-key="project-exit">나가기</button>
           </div>
         </div>
         <form class="composer" id="composerForm">
@@ -284,20 +284,20 @@
               <button id="removeAttachment" class="attachment-remove" type="button" data-locale-aria-label="attachment-remove" aria-label="첨부 파일 제거">×</button>
             </div>
           </div>
-          <label for="messageInput" class="sr-only">메시지 입력</label>
-          <textarea id="messageInput" rows="1" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
+          <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
+          <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
               <input id="attachmentFileInput" type="file" hidden />
-              <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
-              <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
-              <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span>심층 리서치</span></button>
+              <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span data-locale-key="file">파일</span></button>
+              <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span data-locale-key="web">웹 검색</span></button>
+              <button type="button" class="tool-button" disabled id="deepResearchButton" aria-disabled="true" aria-pressed="false" title="심층 리서치" hidden><span aria-hidden="true">✦</span><span data-locale-key="research">심층 리서치</span></button>
             </div>
             <button class="cancel-stream-button" id="cancelStreamButton" type="button" data-locale-key="cancel" data-locale-aria-label="cancel-answer" aria-label="답변 생성 취소" hidden>취소</button>
             <button class="send-button" id="sendButton" type="submit" data-locale-aria-label="send" aria-label="메시지 보내기" disabled><span aria-hidden="true">↑</span></button>
           </div>
         </form>
-        <p class="composer-note" id="runtimeNote">파일 첨부 형식을 확인하는 중입니다.</p>
+        <p class="composer-note" id="runtimeNote" data-locale-key="attachment-checking">파일 첨부 형식을 확인하는 중입니다.</p>
       </section>
     </main>
   </div>
@@ -305,31 +305,31 @@
   <dialog class="project-dialog" id="projectDialog" aria-labelledby="projectDialogTitle">
     <form class="project-form" id="projectForm">
       <div class="project-dialog-header">
-        <div><p>PROJECT</p><h2 id="projectDialogTitle">새 프로젝트</h2></div>
+        <div><p>PROJECT</p><h2 id="projectDialogTitle" data-locale-key="project-new">새 프로젝트</h2></div>
         <button id="projectDialogClose" class="project-dialog-close" type="button" data-locale-aria-label="project-close" aria-label="프로젝트 창 닫기">×</button>
       </div>
-      <label for="projectNameInput">프로젝트 이름</label>
-      <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required placeholder="예: 제주 가족여행" />
+      <label for="projectNameInput" data-locale-key="project-name">프로젝트 이름</label>
+      <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required data-locale-placeholder="project-name-placeholder" placeholder="예: 제주 가족여행" />
       <label for="projectInstructionsInput">프로젝트 지침 <span>선택</span></label>
       <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
-      <p class="project-form-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
+      <p class="project-form-note" data-locale-key="project-instructions-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
 
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
         <div class="project-files-heading">
-          <div><strong id="projectFilesTitle">프로젝트 파일</strong><small>TXT·Markdown·CSV·JSON·PDF·DOCX · 최대 12개</small></div>
-          <label class="project-file-add" for="projectFileInput">＋ 파일 추가</label>
+          <div><strong id="projectFilesTitle" data-locale-key="project-files">프로젝트 파일</strong><small data-locale-key="project-files-limit">TXT·Markdown·CSV·JSON·PDF·DOCX · 최대 12개</small></div>
+          <label class="project-file-add" for="projectFileInput" data-locale-key="project-file-add">＋ 파일 추가</label>
           <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" hidden />
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
-        <p class="project-files-empty" id="projectFilesEmpty" hidden>저장된 프로젝트 파일이 없습니다.</p>
+        <p class="project-files-empty" id="projectFilesEmpty" data-locale-key="project-files-empty" hidden>저장된 프로젝트 파일이 없습니다.</p>
         <p class="project-files-status" id="projectFileStatus" role="status" aria-live="polite" hidden></p>
-        <p class="project-files-note">프로젝트 파일은 TXT·Markdown·CSV·JSON과 PDF·DOCX를 지원합니다. PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다. PPTX·XLSX는 지원하지 않습니다.</p>
+        <p class="project-files-note" data-locale-key="project-files-note">프로젝트 파일은 TXT·Markdown·CSV·JSON과 PDF·DOCX를 지원합니다. PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다. PPTX·XLSX는 지원하지 않습니다.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
       <div class="project-form-actions">
-        <button id="projectDialogCancel" type="button" class="project-secondary">취소</button>
-        <button id="projectSaveButton" type="submit" class="project-primary">저장</button>
+        <button id="projectDialogCancel" type="button" class="project-secondary" data-locale-key="cancel">취소</button>
+        <button id="projectSaveButton" type="submit" class="project-primary" data-locale-key="save">저장</button>
       </div>
     </form>
   </dialog>
@@ -337,24 +337,24 @@
   <dialog class="saved-output-dialog" id="savedOutputDialog" aria-labelledby="savedOutputDialogTitle">
     <section class="saved-output-view">
       <div class="saved-output-header">
-        <div><p>SAVED OUTPUT</p><h2 id="savedOutputDialogTitle">저장한 답변</h2></div>
+        <div><p>SAVED OUTPUT</p><h2 id="savedOutputDialogTitle" data-locale-key="saved-output-title">저장한 답변</h2></div>
         <button id="savedOutputClose" class="saved-output-close" type="button" data-locale-aria-label="saved-output-close" aria-label="저장한 답변 닫기">×</button>
       </div>
-      <label for="savedOutputTitleInput">제목</label>
+      <label for="savedOutputTitleInput" data-locale-key="title">제목</label>
       <input class="saved-output-title-input" id="savedOutputTitleInput" maxlength="100" autocomplete="off" />
-      <div class="saved-output-content" id="savedOutputContent" tabindex="0" aria-label="저장한 답변 내용"></div>
+      <div class="saved-output-content" id="savedOutputContent" tabindex="0" data-locale-aria-label="saved-output-content" aria-label="저장한 답변 내용"></div>
       <p class="saved-output-status" id="savedOutputStatus" role="status"></p>
       <div class="saved-output-actions">
-        <button id="savedOutputCopy" type="button">복사</button>
-        <button id="savedOutputDownload" type="button">다운로드</button>
-        <button id="savedOutputRename" type="button" class="saved-output-primary">제목 저장</button>
-        <button id="savedOutputDelete" type="button" class="saved-output-danger">삭제</button>
+        <button id="savedOutputCopy" type="button" data-locale-key="copy-action">복사</button>
+        <button id="savedOutputDownload" type="button" data-locale-key="download">다운로드</button>
+        <button id="savedOutputRename" type="button" class="saved-output-primary" data-locale-key="save-title">제목 저장</button>
+        <button id="savedOutputDelete" type="button" class="saved-output-danger" data-locale-key="delete">삭제</button>
       </div>
     </section>
   </dialog>
 
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
-  <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label>답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
+  <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
   <script src="./attachment-capabilities.js"></script>
   <script src="./locale.js"></script>
