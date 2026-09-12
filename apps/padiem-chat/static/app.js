@@ -774,7 +774,6 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
-    const english = document.documentElement.lang === "en";
     const sessionState = !ready
       ? "unavailable"
       : authenticated
