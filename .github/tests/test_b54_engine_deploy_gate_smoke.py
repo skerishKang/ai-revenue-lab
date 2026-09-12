@@ -229,3 +229,117 @@ def test_smoke_script_reads_route_identity_from_execution_route() -> None:
     assert module._execution_identity(run_body) == "b14req_ec37a6ce00c0"
     # 이전 경로(metadata 아래 route)에는 아무것도 없다 — 형제 구조임을 고정.
     assert run_body["orchestration"]["execution"]["metadata"].get("route") is None
+
+
+# --- #2466: A9 S0 must not pin whole-manifest endpoint cardinality ----------
+# A9 is an idempotency/orchestration smoke, not a whole-manifest cardinality
+# smoke. The stale "len(endpoints) != 15" assertion made an exact-current-main
+# Engine deploy fail S0 against a healthy runtime (the manifest now advertises
+# 16 endpoints). These regression tests lock the corrected S0 contract: it
+# accepts the current 16-endpoint manifest, tolerates an unrelated future
+# endpoint, still requires the orchestrate + completed-replay routes and the
+# idempotency_replay capability, guards duplicate paths, and never touches the
+# network.
+
+_A9_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
+_A9_REPLAY_PATH = "/internal/v1/idempotency/completed/replay"
+
+# The current Engine contract manifest advertises exactly these 16 paths.
+_A9_CURRENT_16_PATHS = [
+    "/internal/v1/execute",
+    "/internal/v1/stream",
+    "/internal/v1/health",
+    _A9_ORCHESTRATE_PATH,
+    "/internal/v1/orchestrate/resume",
+    "/internal/v1/orchestrate/cancel",
+    "/internal/v1/orchestrate/stream",
+    "/internal/v1/research",
+    "/internal/v1/memory",
+    "/internal/v1/memory/write",
+    "/internal/v1/agent-skill/run",
+    "/internal/v1/agent-skill/resume",
+    "/internal/v1/agent-skill/cancel",
+    "/internal/v1/multimodal/execute",
+    "/internal/v1/multimodal/stream",
+    _A9_REPLAY_PATH,
+]
+
+
+def _a9_module():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("a9_production_smoke", SMOKE_SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _a9_health_body(paths, *, capability="available"):
+    return {
+        "status": "ok",
+        "service": "padiem-ai-engine",
+        "capabilities": {"idempotency_replay": capability},
+        "endpoints": [
+            {"path": path, "method": "POST", "response_media_type": "application/json"}
+            for path in paths
+        ],
+    }
+
+
+def _a9_s0_failures(body):
+    """Run A9 s0_health against a fake health body with zero network access.
+
+    urllib.request.urlopen is guarded so any real request attempt raises, proving
+    the S0 gate is exercised entirely offline.
+    """
+    import urllib.request
+    from unittest.mock import patch
+
+    module = _a9_module()
+    with patch.object(module, "_failures", []) as failures, patch.object(
+        module, "_request", return_value=(200, body)
+    ), patch.object(urllib.request, "urlopen", side_effect=AssertionError("network call in test")):
+        module.s0_health()
+        return list(failures)
+
+
+def test_a9_s0_passes_with_current_16_endpoint_manifest() -> None:
+    assert len(_A9_CURRENT_16_PATHS) == 16
+    assert _a9_s0_failures(_a9_health_body(_A9_CURRENT_16_PATHS)) == []
+
+
+def test_a9_s0_tolerates_an_unrelated_future_endpoint() -> None:
+    body = _a9_health_body(_A9_CURRENT_16_PATHS + ["/internal/v1/future/route"])
+    assert _a9_s0_failures(body) == []
+
+
+def test_a9_s0_fails_when_orchestrate_path_is_missing() -> None:
+    paths = [p for p in _A9_CURRENT_16_PATHS if p != _A9_ORCHESTRATE_PATH]
+    failures = _a9_s0_failures(_a9_health_body(paths))
+    assert any(_A9_ORCHESTRATE_PATH in failure for failure in failures)
+
+
+def test_a9_s0_fails_when_replay_path_is_missing() -> None:
+    paths = [p for p in _A9_CURRENT_16_PATHS if p != _A9_REPLAY_PATH]
+    failures = _a9_s0_failures(_a9_health_body(paths))
+    assert any(_A9_REPLAY_PATH in failure for failure in failures)
+
+
+def test_a9_s0_fails_when_idempotency_replay_capability_unavailable() -> None:
+    body = _a9_health_body(_A9_CURRENT_16_PATHS, capability="unavailable")
+    failures = _a9_s0_failures(body)
+    assert any("idempotency_replay" in failure for failure in failures)
+
+
+def test_a9_s0_fails_on_duplicate_endpoint_paths() -> None:
+    body = _a9_health_body(_A9_CURRENT_16_PATHS + [_A9_ORCHESTRATE_PATH])
+    failures = _a9_s0_failures(body)
+    assert any("duplicate" in failure for failure in failures)
+
+
+def test_a9_script_has_no_exact_endpoint_count_hardcode() -> None:
+    source = SMOKE_SCRIPT.read_text(encoding="utf-8")
+    assert "!= 15" not in source
+    assert "15 endpoints" not in source
+    assert "endpoints count" not in source
