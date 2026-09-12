@@ -24,21 +24,34 @@ non-secret booleans/enums. It deliberately:
   uses, so the diagnostic can never disagree with real authentication, and it
   changes no existing auth/quota/runtime semantics.
 
-Closed output projection (independent-validation rework, #2447)
-----------------------------------------------------------------
-The diagnostic projection is *closed by construction*, not merely filtered at
-render time. Arbitrary caller-supplied strings are allowed as INPUT, but the
-internal comparison/classification stage maps every string field to one of a
-small fixed vocabulary before it can reach any output path, and the returned
-:class:`AuthBoundaryDiagnosticResult` re-validates that closed vocabulary on
-construction. ``render`` only accepts that bounded type, so the previously
-forgeable generic seven-key dictionary can no longer reflect a raw credential,
-a digest, a digest fragment, or a numeric length:
+Closed, immutable output projection (independent-validation rework #2447/#2449)
+-------------------------------------------------------------------------------
+The projection is *closed and structurally immutable*, not merely filtered at
+render time:
 
     INPUT MAY BE ARBITRARY -> internal classification -> OUTPUT MUST BE CLOSED
 
+Arbitrary caller-supplied strings are mapped to a small fixed vocabulary before
+they can reach any output path. The returned :class:`AuthBoundaryDiagnosticResult`
+stores its values in an immutable tuple, blocks attribute mutation/deletion, and
+re-validates every value against that key's closed vocabulary on *every* output
+surface (``__getitem__``, ``as_dict``, ``repr``, ``render``). So neither ordinary
+attribute access nor a deliberately forced state change can move a raw
+credential, digest, digest fragment, or numeric length into the emitted output;
+an invariant violation fails closed with static text that never echoes a value.
+
+Canonical-caller fail-closed (#2449)
+------------------------------------
+This diagnostic is scoped to the canonical B54/P01 Claw caller ``b54-kagent``.
+The caller id is classified first; authority is resolved only when the
+classification is exactly ``b54-kagent``. An ``ABSENT`` or ``NONCANONICAL``
+caller never resolves an arbitrary registry caller: ``CALLER_PRESENT``,
+``APP_ALLOWED``, ``ENGINE_MATCH`` and ``CHAT_MATCH`` are all FALSE, while the
+``NONCANONICAL`` classification is still reported so caller drift stays
+distinguishable from absence.
+
 The credential-equivalence booleans are defined against the Engine's stored
-authority for the requested caller:
+authority for the canonical caller:
 
 - ``ENGINE_MATCH`` is TRUE when the operator-canonical credential authenticates
   against that stored authority;
@@ -97,8 +110,8 @@ OUTPUT_KEYS = (
 )
 
 # Closed output vocabulary per key. A value that is not in its key's set can
-# never be constructed into a result or rendered, so no arbitrary string —
-# including one that matches a generic identifier shape — can be reflected.
+# never be stored in, read out of, or rendered from a result — including one
+# that happens to match a generic identifier shape.
 _TARGET_VOCAB = frozenset({ENGINE_WORKER, ABSENT, NONCANONICAL})
 _CALLER_VOCAB = frozenset({P01_CHAT_CALLER_ID, ABSENT, NONCANONICAL})
 _ENVIRONMENT_VOCAB = ENVIRONMENT_ALLOWLIST | frozenset({ABSENT, NONCANONICAL})
@@ -119,7 +132,8 @@ class AuthBoundaryEvidenceError(RuntimeError):
     """Structurally malformed diagnostic input; fails closed without leaking.
 
     Error messages reference only key names and static text — never a supplied
-    value — so an exception can not carry secret-shaped input out of the module.
+    or stored value — so an exception can not carry secret-shaped input out of
+    the module.
     """
 
 
@@ -184,21 +198,24 @@ def _resolve_effective_caller(
 
 
 class AuthBoundaryDiagnosticResult(Mapping):
-    """A diagnostic projection whose values are closed by construction.
+    """A diagnostic projection that is closed and immutable after construction.
 
-    This is a read-only :class:`~collections.abc.Mapping` over exactly the seven
-    #2445 keys, but every value is validated against that key's closed vocabulary
-    at construction time. A raw credential, digest, digest fragment, numeric
-    length, or any other arbitrary string therefore cannot be stored in — or
-    read out of — a result, and the generic forgeable-dict boundary is gone.
+    Read-only :class:`~collections.abc.Mapping` over exactly the seven #2445
+    keys. The backing state is an immutable ``tuple`` (no reachable mutable
+    container), attribute mutation/deletion is blocked, and every value is
+    re-validated against its key's closed vocabulary on each output surface. A
+    raw credential, digest, digest fragment, numeric length, or any other
+    arbitrary string therefore can not be stored in — or read out of — a result
+    through normal accessible object state, and a forced invariant violation
+    fails closed instead of leaking.
     """
 
-    __slots__ = ("_data",)
+    __slots__ = ("_values",)
 
     def __init__(self, data: Mapping[str, Any]) -> None:
         if not isinstance(data, Mapping) or set(data) != set(OUTPUT_KEYS):
             raise AuthBoundaryEvidenceError("diagnostic result vocabulary is not exact")
-        validated: dict[str, str] = {}
+        validated: list[str] = []
         for key in OUTPUT_KEYS:
             value = data[key]
             if not isinstance(value, str) or value not in _VOCAB_BY_KEY[key]:
@@ -206,11 +223,34 @@ class AuthBoundaryDiagnosticResult(Mapping):
                 raise AuthBoundaryEvidenceError(
                     f"{key} is outside the closed diagnostic vocabulary"
                 )
-            validated[key] = value
-        self._data = validated
+            validated.append(value)
+        # Bypass the (now-blocking) __setattr__ only for the one-time init.
+        object.__setattr__(self, "_values", tuple(validated))
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        raise AttributeError("AuthBoundaryDiagnosticResult is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError("AuthBoundaryDiagnosticResult is immutable")
+
+    @staticmethod
+    def _index(key: str) -> int:
+        try:
+            return OUTPUT_KEYS.index(key)
+        except ValueError:
+            raise KeyError(key) from None
+
+    def _validated_at(self, index: int) -> str:
+        key = OUTPUT_KEYS[index]
+        value = self._values[index]
+        if not isinstance(value, str) or value not in _VOCAB_BY_KEY[key]:
+            raise AuthBoundaryEvidenceError(
+                f"{key} is outside the closed diagnostic vocabulary"
+            )
+        return value
 
     def __getitem__(self, key: str) -> str:
-        return self._data[key]
+        return self._validated_at(self._index(key))
 
     def __iter__(self):
         return iter(OUTPUT_KEYS)
@@ -219,11 +259,17 @@ class AuthBoundaryDiagnosticResult(Mapping):
         return len(OUTPUT_KEYS)
 
     def __repr__(self) -> str:
-        # Safe: _data holds only closed-vocabulary literals.
-        return f"AuthBoundaryDiagnosticResult({self._data!r})"
+        # Built only from re-validated closed values; a corrupted value fails
+        # closed rather than becoming a secret-output oracle.
+        rendered = ", ".join(
+            f"{key}={self._validated_at(index)}" for index, key in enumerate(OUTPUT_KEYS)
+        )
+        return f"AuthBoundaryDiagnosticResult({rendered})"
 
     def as_dict(self) -> dict[str, str]:
-        return dict(self._data)
+        return {
+            key: self._validated_at(index) for index, key in enumerate(OUTPUT_KEYS)
+        }
 
 
 def run_auth_boundary_diagnostic(
@@ -242,8 +288,9 @@ def run_auth_boundary_diagnostic(
     All secret material enters only as ``canonical_credential`` /
     ``chat_supplied_credential`` and is consumed by the constant-time compare;
     neither value, its digest, nor its length is ever returned. The three string
-    fields are classified to a closed vocabulary (never echoed), so arbitrary or
-    secret-shaped diagnostic metadata can not reach the output projection.
+    fields are classified to a closed vocabulary (never echoed), and the caller
+    id is classified before any authority lookup so a non-canonical caller can
+    never resolve a registry caller.
     """
 
     if registry is not None and not isinstance(registry, EngineCallerRegistry):
@@ -253,17 +300,22 @@ def run_auth_boundary_diagnostic(
     if registry is None and overlay_caller is None:
         raise AuthBoundaryEvidenceError("no caller registry authority is available")
 
-    # The raw caller id is used only internally to resolve the authority; it is
-    # never placed in the result. A non-string caller id simply resolves to no
-    # authority (fail closed) rather than raising on arbitrary input.
-    caller_lookup = chat_caller_id if isinstance(chat_caller_id, str) else ""
-    effective = _resolve_effective_caller(registry, overlay_caller, caller_lookup)
-    caller_present = effective is not None
-    app_allowed = bool(
-        caller_present and isinstance(app_id, str) and app_id in effective.allowed_app_ids
-    )
-    engine_match = bool(caller_present and _credential_matches(effective, canonical_credential))
-    chat_match = bool(caller_present and _credential_matches(effective, chat_supplied_credential))
+    caller_class = _closed_string(chat_caller_id, frozenset({P01_CHAT_CALLER_ID}))
+
+    # Fail-closed caller drift: only the canonical b54-kagent caller may resolve
+    # an authority. ABSENT/NONCANONICAL never look up an arbitrary registry
+    # caller; their booleans are all FALSE while the classification is reported.
+    caller_present = False
+    app_allowed = False
+    engine_match = False
+    chat_match = False
+    if caller_class == P01_CHAT_CALLER_ID:
+        effective = _resolve_effective_caller(registry, overlay_caller, caller_class)
+        caller_present = effective is not None
+        if caller_present:
+            app_allowed = bool(isinstance(app_id, str) and app_id in effective.allowed_app_ids)
+            engine_match = bool(_credential_matches(effective, canonical_credential))
+            chat_match = bool(_credential_matches(effective, chat_supplied_credential))
 
     return AuthBoundaryDiagnosticResult(
         {
@@ -271,7 +323,7 @@ def run_auth_boundary_diagnostic(
             "CHAT_SERVICE_ENVIRONMENT": _closed_string(
                 chat_service_environment, ENVIRONMENT_ALLOWLIST
             ),
-            "CHAT_CALLER_ID": _closed_string(chat_caller_id, frozenset({P01_CHAT_CALLER_ID})),
+            "CHAT_CALLER_ID": caller_class,
             "CALLER_PRESENT": _bool(caller_present),
             "APP_ALLOWED": _bool(app_allowed),
             "ENGINE_MATCH": _bool(engine_match),
@@ -319,8 +371,9 @@ def render(result: AuthBoundaryDiagnosticResult) -> str:
     """Render bounded ``KEY=VALUE`` lines plus non-disclosure safety markers.
 
     Only a closed :class:`AuthBoundaryDiagnosticResult` may be rendered; a raw
-    dictionary is refused outright, which removes the forgeable generic-dict
-    output boundary entirely.
+    dictionary is refused outright. Each line is read through the result's
+    validating ``__getitem__``, so an invalid stored state fails closed instead
+    of being emitted.
     """
 
     if not isinstance(result, AuthBoundaryDiagnosticResult):

@@ -392,6 +392,137 @@ def test_adv_J_authority_error_message_has_no_supplied_secret() -> None:
     assert SENTINEL not in str(exc_info.value)
 
 
+# --- #2449 A: result is structurally immutable after construction -------------
+
+
+def test_adv2449_A_result_rejects_all_mutation_paths() -> None:
+    result = _run()
+    original = result.as_dict()
+    for key in OUTPUT_KEYS:
+        # Mapping exposes no item assignment.
+        with pytest.raises(TypeError):
+            result[key] = SENTINEL
+        # Attribute mutation is blocked for any name, including the backing slot.
+        with pytest.raises(AttributeError):
+            setattr(result, key, SENTINEL)
+        with pytest.raises(AttributeError):
+            setattr(result, "_values", SENTINEL)
+    with pytest.raises(AttributeError):
+        del result._values
+    with pytest.raises(TypeError):
+        del result["CHAT_MATCH"]
+    # The backing container is an immutable tuple, not a reachable dict.
+    assert isinstance(result._values, tuple)
+    with pytest.raises(TypeError):
+        result._values[1] = SENTINEL
+    # No instance __dict__ is reachable.
+    with pytest.raises(AttributeError):
+        result.__dict__
+    # Every output surface is unchanged.
+    assert result.as_dict() == original
+    assert dict(result) == original
+    assert render(result).splitlines()[1] == "CHAT_SERVICE_ENVIRONMENT=production"
+
+
+# --- #2449 B: even forced state corruption can not leak secrets ---------------
+
+
+@pytest.mark.parametrize(
+    "secret",
+    [
+        SENTINEL,
+        caller_secret_digest(SENTINEL),
+        caller_secret_digest(SENTINEL)[:16],
+        caller_secret_digest(SENTINEL)[-16:],
+        "32",
+        "64",
+        "128",
+        "512",
+    ],
+)
+def test_adv2449_B_forced_corruption_fails_closed_on_every_surface(secret: str) -> None:
+    result = _run()
+    # Deliberately bypass the normal API to simulate an invariant violation.
+    object.__setattr__(
+        result, "_values", (secret,) + result._values[1:]
+    )
+    with pytest.raises(AuthBoundaryEvidenceError) as exc_info:
+        result["CHAT_SERVICE_TARGET"]
+    assert secret not in str(exc_info.value)
+    with pytest.raises(AuthBoundaryEvidenceError):
+        result.as_dict()
+    with pytest.raises(AuthBoundaryEvidenceError):
+        render(result)
+    with pytest.raises(AuthBoundaryEvidenceError):
+        repr(result)
+    with pytest.raises(AuthBoundaryEvidenceError):
+        list(result.values())
+
+
+# --- #2449 C: a registered non-canonical caller must NOT resolve --------------
+
+
+def test_adv2449_C_registered_noncanonical_caller_fails_closed() -> None:
+    other = _caller(caller_id="other-valid-caller", credential=STORED_CREDENTIAL)
+    registry = EngineCallerRegistry(callers=(other,))
+    result = run_auth_boundary_diagnostic(
+        registry=registry,
+        overlay_caller=None,
+        chat_service_target=ENGINE_WORKER,
+        chat_service_environment="production",
+        chat_caller_id="other-valid-caller",
+        app_id=P01_APP_ID,
+        canonical_credential=STORED_CREDENTIAL,
+        chat_supplied_credential=STORED_CREDENTIAL,
+    )
+    assert result["CHAT_CALLER_ID"] == NONCANONICAL
+    assert result["CALLER_PRESENT"] == "FALSE"
+    assert result["APP_ALLOWED"] == "FALSE"
+    assert result["ENGINE_MATCH"] == "FALSE"
+    assert result["CHAT_MATCH"] == "FALSE"
+
+
+def test_adv2449_C_noncanonical_caller_never_reveals_registry_match() -> None:
+    # Even when the caller id is present and would match a registry entry with
+    # valid credentials, the diagnostic must not surface any TRUE booleans.
+    registry = EngineCallerRegistry(
+        callers=(_caller(caller_id="b54-leaked-but-registered", credential=STORED_CREDENTIAL),)
+    )
+    result = _run(
+        registry=registry,
+        chat_caller_id="b54-leaked-but-registered",
+        canonical_credential=STORED_CREDENTIAL,
+        chat_supplied_credential=STORED_CREDENTIAL,
+    )
+    assert result["CHAT_CALLER_ID"] == NONCANONICAL
+    assert "TRUE" not in result.values()
+
+
+# --- #2449 D: canonical b54-kagent happy path is preserved ---------------------
+
+
+def test_adv2449_D_canonical_caller_regression() -> None:
+    result = _run()
+    assert result["CHAT_CALLER_ID"] == P01_CHAT_CALLER_ID
+    assert result["CALLER_PRESENT"] == "TRUE"
+    assert result["APP_ALLOWED"] == "TRUE"
+    assert result["ENGINE_MATCH"] == "TRUE"
+    assert result["CHAT_MATCH"] == "TRUE"
+
+
+# --- #2449 E: absent caller fails closed --------------------------------------
+
+
+def test_adv2449_E_absent_caller_fails_closed() -> None:
+    for missing in (None, "", "   "):
+        result = _run(chat_caller_id=missing)
+        assert result["CHAT_CALLER_ID"] == ABSENT
+        assert result["CALLER_PRESENT"] == "FALSE"
+        assert result["APP_ALLOWED"] == "FALSE"
+        assert result["ENGINE_MATCH"] == "FALSE"
+        assert result["CHAT_MATCH"] == "FALSE"
+
+
 # --- no public credential oracle / runtime unchanged --------------------------
 
 
