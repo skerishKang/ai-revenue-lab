@@ -14,6 +14,12 @@ identity is ``result.id`` and bindings are ``result.resources.bindings``
 (list or name-keyed map). Settings-plane payloads are never accepted as
 served-version proof.
 
+``resolve-active`` accepts ONLY the canonical Cloudflare deployments envelope,
+converged under #2452 with the #2427 B62 contract: object ``result``, active
+deployment ``result.deployments[0]``, exactly one version at 100 percent, safe
+``version_id``. Raw top-level lists, list-shaped ``result`` values, and the
+``result.versions`` shortcut are refused with no ordering fallback.
+
 Emits NAME/TYPE state only. Never reads or prints any binding value, raw
 settings JSON, or the Cloudflare account id. Performs no mutation.
 """
@@ -54,72 +60,77 @@ def _success_result(payload: object, what: str) -> object:
 
 
 def _version_id_of(entry: dict) -> str:
+    """Return the served version id of an active-deployment version entry.
+
+    The deployments history shape names the field ``version_id``; a bare ``id``
+    is a version-list/detail field and is not accepted here, so a payload from
+    an endpoint other than ``/deployments`` can never resolve as served version.
+    """
     raw = entry.get("version_id")
-    if not isinstance(raw, str):
-        raw = entry.get("id")
     if not isinstance(raw, str) or not _VERSION_ID_RE.match(raw):
         raise ServedVersionGuardError("active version id is missing or unsafe")
     return raw
 
 
-def _pick_active(versions: list, *, source: str) -> str:
-    if not versions:
-        raise ServedVersionGuardError(f"no active version in {source}")
-    if not all(isinstance(v, dict) for v in versions):
-        raise ServedVersionGuardError(f"{source} array is malformed")
-    full = [v for v in versions if v.get("percentage") == 100]
-    if not full:
-        raise ServedVersionGuardError(f"no version at 100 percent in {source}")
-    if len(full) > 1:
-        raise ServedVersionGuardError(f"ambiguous active version in {source}")
-    return _version_id_of(full[0])
-
-
 def resolve_active(payload: object) -> str:
-    """Return the single 100-percent served version id from a deployments body.
+    """Return the served version id from a canonical Cloudflare deployments envelope.
 
-    Accepts the raw wrangler list (oldest-first deployments), the canonical
-    ``result.deployments`` shape, and a ``result.versions`` shape. Fails closed
-    on empty, ambiguous, or malformed input.
+    Contract (converged with the #2427 B62 canonical resolver under #2452):
+
+    - input is a successful Cloudflare API envelope with an object ``result``;
+    - the active deployment is ``result.deployments[0]`` — the endpoint returns
+      deployment history and documents the first entry as the latest deployment
+      actively serving traffic, so later entries are previous deployments and
+      are not ambiguity;
+    - that deployment serves exactly one version, at 100 percent traffic;
+    - the version id must be present and carry a safe charset.
+
+    Refused, with no ordering guess and no fallback: a raw top-level list (the
+    wrangler CLI shape, whose entry order is not a documented served-version
+    authority), a list-shaped ``result``, and a ``result.versions`` shortcut.
+    Each of those can resolve a stale version as served — a descending
+    (newest-first) raw list makes any last-entry rule pick the oldest deployment.
+    A caller that holds wrangler raw-list output must convert it behind an
+    explicitly named adapter with its own ordering contract before it reaches
+    this resolver; no repository caller does today.
+
+    Fails closed on empty, ambiguous, or malformed input. Performs no mutation
+    and reads no binding value.
     """
-    if isinstance(payload, list):
-        if not payload:
-            raise ServedVersionGuardError("deployments list is empty")
-        last = payload[-1]
-        if not isinstance(last, dict):
-            raise ServedVersionGuardError("latest deployment entry is malformed")
-        versions = last.get("versions")
-        if not isinstance(versions, list):
-            raise ServedVersionGuardError("latest deployment versions array is malformed")
-        return _pick_active(versions, source="latest deployment")
-
-    result = _success_result(payload, "deployments")
-    if isinstance(result, dict):
-        if isinstance(result.get("versions"), list):
-            return _pick_active(result["versions"], source="result versions")
-        deployments = result.get("deployments")
-        if not isinstance(deployments, list):
-            raise ServedVersionGuardError("deployments result is malformed")
-        if not deployments:
-            raise ServedVersionGuardError("deployments list is empty")
-        first = deployments[0]
-        if not isinstance(first, dict):
-            raise ServedVersionGuardError("active deployment entry is malformed")
-        versions = first.get("versions")
-        if not isinstance(versions, list):
-            raise ServedVersionGuardError("active deployment versions array is malformed")
-        return _pick_active(versions, source="active deployment")
-    if isinstance(result, list):
-        if not result:
-            raise ServedVersionGuardError("deployments list is empty")
-        last = result[-1]
-        if not isinstance(last, dict):
-            raise ServedVersionGuardError("latest deployment entry is malformed")
-        versions = last.get("versions")
-        if not isinstance(versions, list):
-            raise ServedVersionGuardError("latest deployment versions array is malformed")
-        return _pick_active(versions, source="latest deployment")
-    raise ServedVersionGuardError("deployments result is malformed")
+    if not isinstance(payload, dict) or payload.get("success") is not True:
+        raise ServedVersionGuardError(
+            "deployments payload is not a successful Cloudflare API envelope"
+        )
+    result = payload.get("result")
+    if not isinstance(result, dict):
+        raise ServedVersionGuardError(
+            "ambiguous active deployment: deployments payload has no result object"
+        )
+    deployments = result.get("deployments")
+    if not isinstance(deployments, list) or not deployments:
+        raise ServedVersionGuardError(
+            "ambiguous active deployment: no deployment records returned"
+        )
+    first = deployments[0]
+    if not isinstance(first, dict):
+        raise ServedVersionGuardError(
+            "ambiguous active deployment: deployment entry is not an object"
+        )
+    versions = first.get("versions")
+    if not isinstance(versions, list) or len(versions) != 1:
+        raise ServedVersionGuardError(
+            "ambiguous active deployment: expected exactly one served version"
+        )
+    entry = versions[0]
+    if not isinstance(entry, dict):
+        raise ServedVersionGuardError(
+            "ambiguous active deployment: served version entry is not an object"
+        )
+    if entry.get("percentage") != 100:
+        raise ServedVersionGuardError(
+            "ambiguous active deployment: served version traffic split is not 100"
+        )
+    return _version_id_of(entry)
 
 
 def _binding_entries(bindings: object) -> list[dict]:
