@@ -95,3 +95,62 @@ def test_status_and_compact_labels_use_accessible_theme_tokens():
     assert "--success:" in glass
     assert "var(--ink" not in capability
     assert "color: var(--text);" in capability
+
+
+def _relative_luminance(hex_color: str) -> float:
+    raw = hex_color.lstrip("#")
+    channels = [int(raw[index:index + 2], 16) / 255 for index in (0, 2, 4)]
+
+    def linear(channel: float) -> float:
+        if channel <= 0.04045:
+            return channel / 12.92
+        return ((channel + 0.055) / 1.055) ** 2.4
+
+    red, green, blue = [linear(channel) for channel in channels]
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+
+
+def _contrast_ratio(foreground: str, background: str) -> float:
+    fg = _relative_luminance(foreground)
+    bg = _relative_luminance(background)
+    lighter, darker = max(fg, bg), min(fg, bg)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def test_translucent_theme_status_tokens_keep_wcag_aa_contrast():
+    glass = read("padiem-glass.css")
+    themes = read("padiem-themes.css")
+
+    assert "--success: #14532d;" in glass
+    assert "--danger: #7f1d1d;" in glass
+
+    home_match = re.search(
+        r'html\[data-theme="padiem-home"\]\s*\{(.*?)\n\}',
+        themes,
+        re.S,
+    )
+    assert home_match
+    assert "--success: #14532d;" in home_match.group(1)
+
+    # Representative rendered surfaces captured by the independent browser audit:
+    # Glass translucent card -> approx rgb(196,195,203), Home light surface -> off-white.
+    assert _contrast_ratio("#14532d", "#c4c3cb") >= 4.5
+    assert _contrast_ratio("#7f1d1d", "#c4c3cb") >= 4.5
+    assert _contrast_ratio("#14532d", "#f2f4f7") >= 4.5
+
+
+def test_result_supporting_copy_uses_primary_text_on_translucent_surfaces():
+    workspace = read("claw-workspace.css")
+
+    for selector in (".claw-result-note", ".claw-result-empty"):
+        block = re.search(rf'{re.escape(selector)}\s*\{{(.*?)\n\}}', workspace, re.S)
+        assert block, selector
+        assert "color: var(--text);" in block.group(1)
+
+    hint_block = re.search(
+        r'\.claw-result-hint,\s*\n\.claw-execute-hint\s*\{(.*?)\n\}',
+        workspace,
+        re.S,
+    )
+    assert hint_block
+    assert "color: var(--text);" in hint_block.group(1)
