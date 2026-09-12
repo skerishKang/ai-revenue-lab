@@ -8,7 +8,7 @@
 
   const labels = {
     ko: {
-      "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
+      "meta-description": "누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스", "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
       "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기",
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "설정", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "언어", "done": "완료",
@@ -73,7 +73,7 @@
       "export": "대화 내보내기", "export-aria": "현재 대화를 텍스트 파일로 내보내기", "active-project-note": "‘{name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.", "attachment-photo": "사진", "attachment-document": "문서", "project-files-used": "프로젝트 파일 {count}개를 참고했습니다.", "provider-route": "제공 경로: {provider}", "model-label": "모델: {model}", "answer-load-failed": "답변을 불러오지 못했습니다.", "try-again": "잠시 후 다시 시도해 주세요.", "generation-cancelled": "생성 취소됨", "generation-cancelled-copy": "생성 중인 답변을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "regenerate": "다시 생성", "attachment-image-note": "선택한 사진은 이 질문과 함께 한 번만 전송됩니다.", "attachment-document-note": "선택한 문서는 이 질문의 참고 자료로만 사용되며 대화 기록에 파일 내용이 저장되지 않습니다.", "image-read-failed": "사진을 읽지 못했습니다.", "document-read-failed": "문서를 읽지 못했습니다.", "empty-document": "빈 문서는 첨부할 수 없습니다.", "binary-document": "바이너리 파일은 텍스트 문서로 첨부할 수 없습니다.", "image-format-invalid": "사진 형식을 확인할 수 없습니다.", "image-data-empty": "사진 데이터가 비어 있습니다.", "file-read-failed": "파일을 읽지 못했습니다.", "project-files-count": "파일 {count}개", "project-manage-aria": "‘{name}’ 프로젝트 관리", "project-files-load-failed": "프로젝트 파일을 불러오지 못했습니다.", "character-count": "{count}자", "document-saving": "문서 저장 중…", "project-file-save-failed": "프로젝트 파일을 저장하지 못했습니다.", "project-file-delete-title": "프로젝트 파일을 삭제할까요?", "project-file-delete-message": "‘{name}’ 파일을 이 프로젝트에서 삭제합니다. 삭제한 파일은 복구할 수 없습니다.", "project-file-delete-failed": "프로젝트 파일을 삭제하지 못했습니다.", "project-name-required": "프로젝트 이름을 입력해 주세요.", "project-save-failed": "프로젝트를 저장하지 못했습니다.", "project-delete-title": "프로젝트를 삭제할까요?", "project-delete-message": "‘{name}’ 프로젝트를 삭제합니다. 프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 복구할 수 없습니다.", "project-delete-failed": "프로젝트를 삭제하지 못했습니다.", "signed-in": "로그인됨", "session-expired": "세션 만료", "guest": "게스트", "conversation-delete-aria": "‘{title}’ 대화 삭제", "conversation-delete-title": "대화를 삭제할까요?", "conversation-delete-message": "‘{title}’ 대화를 삭제합니다. 삭제한 대화는 복구할 수 없습니다.", "conversation-delete-failed": "대화를 삭제하지 못했습니다.", "conversation-load-failed": "저장된 대화를 불러오지 못했습니다.", "conversation-project-load-failed": "이 대화의 프로젝트를 불러오지 못했습니다.", "stream-format-invalid": "AI 스트리밍 응답 형식을 확인할 수 없습니다.", "stream-continue-failed": "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.", "stream-complete-invalid": "AI 스트리밍 응답이 정상적으로 완료되지 않았습니다.", "stream-done-duplicate": "AI 스트리밍 완료 신호가 중복되었습니다.", "stream-incomplete": "AI 스트리밍 응답이 완료되지 않았습니다. 다시 시도해 주세요.", "answer-cancelled-note": "답변 생성을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "connectors-grid-aria": "연결 예정 커넥터", "skills-grid-aria": "준비 중 스킬", "coming-features-aria": "준비 중인 기능", "glass-background": "Padiem Glass 배경", "glass-background-selection": "Padiem Glass 배경 선택", "glass-a": "배경 A", "glass-b": "배경 B"
     },
     en: {
-      "new-chat": "New chat", "search": "Search", "projects": "Projects", "saved": "Saved answers", "recent": "Suggested questions",
+      "meta-description": "Padiem’s general AI interface, ready for everyday work.", "new-chat": "New chat", "search": "Search", "projects": "Projects", "saved": "Saved answers", "recent": "Suggested questions",
       "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu",
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "Settings", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "Language", "done": "Done",
@@ -121,7 +121,7 @@
       "easy-title": "Explain simply", "easy-copy": "Make difficult ideas easy", "life-title": "Everyday help", "life-copy": "Questions and planning", "document-title": "Chat with documents",
       "input": "Ask anything", "file": "File", "web": "Web search", "research": "Deep research", "footer": "Ask comfortably",
       "main-menu": "Main menu", "chat-menu": "Chat menu", "account-settings": "Account and settings", "home-aria": "Padiem Chat home", "home-open": "Open Padiem Home",
-      "coming-soon": "Coming soon", "login-after": "Log in first", "checking": "Checking", "setup-needed": "Setup needed", "empty": "Empty", "create-new": "Create new",
+      "coming-soon": "Coming soon", "login-after": "Log in first", "checking": "Checking", "attachment-checking": "Checking supported attachment formats.", "setup-needed": "Setup needed", "empty": "Empty", "create-new": "Create new",
       "projects-empty": "No projects yet.", "history-title": "Recent conversations", "history-empty": "No saved conversations.", "outputs-empty": "No saved answers.",
       "create-project-aria": "Create a new project", "login-unavailable-title": "Login is not configured", "login-title": "Log in with your Google account", "logout-title": "Log out of the current account", "expired-title": "Your session expired. Sign in again",
       "settings-close": "Close settings", "theme-picker": "Theme selection", "language-picker": "Language selection", "starter-grid": "Suggested prompts", "web-starter-title": "Search the web", "web-starter-copy": "Web search · coming soon",
@@ -209,10 +209,13 @@
   function setCombinedHeading(lang) {
     const heading = document.querySelector(".empty-state h1");
     if (!heading) return;
-    const first = text("hello", lang);
-    const second = text("ask", lang);
-    const br = document.createElement("br");
-    heading.replaceChildren(document.createTextNode(first), br, document.createTextNode(second));
+    const first = document.createElement("span");
+    first.dataset.localeKey = "hello";
+    first.textContent = text("hello", lang);
+    const second = document.createElement("span");
+    second.dataset.localeKey = "ask";
+    second.textContent = text("ask", lang);
+    heading.replaceChildren(first, document.createElement("br"), second);
   }
 
   function syncLoginButton(lang) {
@@ -277,7 +280,8 @@
     [
       ["data-locale-placeholder", "placeholder", "localePlaceholder"],
       ["data-locale-title", "title", "localeTitle"],
-      ["data-locale-alt", "alt", "localeAlt"]
+      ["data-locale-alt", "alt", "localeAlt"],
+      ["data-locale-content", "content", "localeContent"]
     ].forEach(([attribute, target, datasetKey]) => {
       document.querySelectorAll(`[${attribute}]`).forEach((element) => {
         const key = element.dataset[datasetKey];
@@ -297,9 +301,10 @@
     if (clawRequestText) clawRequestText.placeholder = text("claw-request-placeholder", lang);
     const instructionLabel = document.querySelector("label[for='projectInstructionsInput']");
     if (instructionLabel) {
-      const optional = instructionLabel.querySelector("span") || document.createElement("span");
-      instructionLabel.replaceChildren(document.createTextNode(`${text("project-instructions", lang)} `), optional);
-      optional.textContent = text("optional", lang);
+      const primary = instructionLabel.querySelector("[data-project-instructions-label]");
+      const optional = instructionLabel.querySelector("[data-project-instructions-optional]");
+      if (primary) primary.textContent = text("project-instructions", lang);
+      if (optional) optional.textContent = text("optional", lang);
     }
     setText(".project-form-note", "project-instructions-note", lang);
     [
