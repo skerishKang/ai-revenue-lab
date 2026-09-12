@@ -120,7 +120,7 @@
 .claw-chip[aria-pressed="true"] {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--accent-contrast);
 }
 
 /* ── Collapsed source/counterparty disclosure ─────────────────────────── */
@@ -175,8 +175,8 @@
   font-weight: 750;
   font-size: 16px;
   cursor: pointer;
-  color: #07111f;
-  background: linear-gradient(135deg, #f8fafc, #c7d2fe);
+  color: var(--accent-contrast);
+  background: var(--accent);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
 }
 
@@ -188,7 +188,7 @@
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
-  color: var(--text, #17202a);
+  color: var(--text);
   background: transparent;
 }
 
@@ -282,7 +282,7 @@
 .claw-status[data-state="running"] {
   background: var(--accent-soft);
   border: 1px solid var(--line);
-  color: var(--muted, #3b4a5a);
+  color: var(--muted);
 }
 .claw-status[data-state="success"] {
   background: rgba(34, 158, 94, 0.08);
@@ -305,7 +305,7 @@
 .claw-result-action:not(:disabled).is-prominent {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--accent-contrast);
   box-shadow: var(--shadow);
 }
 
@@ -404,11 +404,11 @@
 }
 .claw-disabled-control {
   text-align: left;
-  border: 1px solid var(--line, rgba(148, 163, 184, 0.16));
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
   background: var(--card-bg);
-  color: var(--muted, #94a3b8);
+  color: var(--muted);
   font: inherit;
   cursor: not-allowed;
   opacity: 0.7;
@@ -500,12 +500,12 @@
 .claw-memory-approve {
   border: 1px solid var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-contrast);
 }
 .claw-memory-reject {
   border: 1px solid var(--line);
   background: transparent;
-  color: var(--text, #17202a);
+  color: var(--text);
 }
 .claw-memory-approve:focus-visible,
 .claw-memory-reject:focus-visible {
