@@ -208,6 +208,14 @@ _B14_MODEL_ERROR_CLASSES = frozenset(
     }
 )
 
+# Fail-closed public message for every B14/model-execution failure. The Engine
+# public boundary never forwards an ExecutionRuntimeError.safe_message verbatim:
+# even though the ordinary Core B14 transport already canonicalizes the upstream
+# detail via _safe_message_for_b14(code), the mapper must not trust an arbitrary
+# internal safe_message string. One stable bounded message is emitted for all
+# B14/model failures; the safe code, status, and retryable carry the class.
+_B14_MODEL_ERROR_PUBLIC_MESSAGE = "Model execution failed."
+
 
 def _is_b14_model_error(exc: ExecutionRuntimeError) -> bool:
     """True when exc is a B14/model-service execution failure (not engine-internal)."""
@@ -605,7 +613,7 @@ class OrchestrationEngineService:
             if _is_b14_model_error(exc):
                 return _service_error(
                     exc.code,
-                    exc.safe_message,
+                    _B14_MODEL_ERROR_PUBLIC_MESSAGE,
                     status_code=_b14_model_error_status(exc),
                     retryable=exc.retryable,
                 )
@@ -929,7 +937,7 @@ class OrchestrationEngineService:
             if _is_b14_model_error(exc):
                 return _service_error(
                     exc.code,
-                    exc.safe_message,
+                    _B14_MODEL_ERROR_PUBLIC_MESSAGE,
                     status_code=_b14_model_error_status(exc),
                     retryable=exc.retryable,
                 )
@@ -1078,7 +1086,7 @@ class OrchestrationEngineService:
             if _is_b14_model_error(exc):
                 return _service_error(
                     exc.code,
-                    exc.safe_message,
+                    _B14_MODEL_ERROR_PUBLIC_MESSAGE,
                     status_code=_b14_model_error_status(exc),
                     retryable=exc.retryable,
                 )

@@ -116,12 +116,14 @@ async def test_production_class_maps_b14_failure_to_4xx(
     exp_status: int,
     exp_retryable: bool,
 ) -> None:
-    message = f"Model execution failed ({code})."
+    # An arbitrary, potentially-unsafe internal safe_message: the Production
+    # public boundary must NOT forward it verbatim for B14/model failures (#2475).
+    raw_safe_message = f"SENTINEL_{code}_raw_upstream_detail"
 
     def fake_run(self, request):  # noqa: ANN001 - patched onto OrchestrationRunner
         raise ExecutionRuntimeError(
             code,
-            message,
+            raw_safe_message,
             metadata=_run_metadata(error_class),
             retryable=retryable,
         )
@@ -144,7 +146,9 @@ async def test_production_class_maps_b14_failure_to_4xx(
     assert body["error"]["retryable"] is exp_retryable
     assert set(body.keys()) == {"ok", "error"}
     assert set(body["error"].keys()) == {"code", "message", "retryable", "metadata"}
-    assert body["error"]["message"] == message
+    # Fail-closed: a single stable bounded message, never the internal safe_message.
+    assert body["error"]["message"] == "Model execution failed."
+    assert raw_safe_message not in repr(body)
 
 
 async def test_production_class_b14_failure_never_500(monkeypatch) -> None:
@@ -181,10 +185,14 @@ _LEAK_SENTINEL = "LEAK_SENTINEL_7c41de"
 
 
 async def test_production_class_never_forwards_raw_upstream_body(monkeypatch) -> None:
+    """Direct #2474 probe on the Production class: an ExecutionRuntimeError
+    carrying an arbitrary sentinel safe_message must NOT surface that sentinel in
+    the public response; the mapper emits one stable bounded message instead."""
+
     def fake_run(self, request):  # noqa: ANN001
         raise ExecutionRuntimeError(
             "upstream_rate_limited",
-            "Model execution failed (upstream_rate_limited).",
+            _LEAK_SENTINEL,
             metadata=_run_metadata(ErrorClass.PROVIDER_RATE_LIMIT),
             retryable=True,
         )
@@ -195,6 +203,7 @@ async def test_production_class_never_forwards_raw_upstream_body(monkeypatch) ->
     # Only the bounded envelope reaches the caller: no raw upstream body/detail.
     assert set(response.body.keys()) == {"ok", "error"}
     assert set(response.body["error"].keys()) == {"code", "message", "retryable", "metadata"}
+    assert response.body["error"]["message"] == "Model execution failed."
     serialized = repr(response.body)
     assert _LEAK_SENTINEL not in serialized
 
