@@ -10,6 +10,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-engine-production-deploy-gate.yml"
+      - ".github/workflows/b54-engine-production-smoke-only-gate.yml"
       - ".github/workflows/b54-engine-deploy-gate-contract-tests.yml"
       - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
       - ".github/tests/test_b54_engine_served_version_guard.py"
