@@ -1,0 +1,173 @@
+name: B54 Engine Production Smoke-Only Gate
+
+# ISSUE #2484 Goal B — re-prove A9/A10/A11/A12 against the ALREADY DEPLOYED
+# production Engine WITHOUT another Engine deploy. This workflow is dispatch-only
+# and mutation-free: it performs no wrangler/pywrangler deploy, no secret PUT,
+# no binding mutation, no D1 migration, no rollback, no Phase-A/Chat request and
+# no Production source mutation. It reads the live served version with the
+# canonical GET-only resolver, fails closed unless that served version is exactly
+# the expected one and carries the V1 + OVERLAY caller-registry secrets, and only
+# then runs the four smokes with the single canonical B62 credential.
+#
+# SHA semantics (must stay explicit — this workflow never claims current main is
+# the deployed Engine source):
+#   WORKFLOW_SOURCE_SHA      = the exact repository main checked out here.
+#   DEPLOYED_ENGINE_SOURCE_SHA = the source the currently served version was
+#                              actually deployed from (fixed literal below).
+#   EXPECTED_SERVED_VERSION  = the served version id this gate requires active.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact repository main SHA whose workflow source runs this gate (NOT asserted to be the deployed Engine source)'
+        required: true
+      expected_served_version:
+        description: 'Served version id that MUST be active before any smoke runs'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_ENGINE_POSTDEPLOY_SMOKE_ONLY to authorize the read-only smoke gate'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-only-production-gate:
+    if: github.event.inputs.confirmation == 'RUN_B54_ENGINE_POSTDEPLOY_SMOKE_ONLY'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      # Canonical B62 -> Engine authority only. CALLER_ID is the fixed non-secret
+      # identifier; the credential is the same secret the B62 worker uses. A10
+      # reads only the legacy env NAMES, so those names are re-pointed at the same
+      # canonical source. No independent smoke credential secret is referenced.
+      CALLER_ID: b54-kagent
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-kagent
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+      EXPECTED_SERVED_VERSION: ${{ github.event.inputs.expected_served_version }}
+      # The source the currently served Engine version was deployed from. Fixed
+      # literal, deliberately NOT derived from target_sha.
+      DEPLOYED_ENGINE_SOURCE_SHA: b0bf34ab90420d6b47070c192e108adf3f4ea76d
+    steps:
+      - name: Checkout exact workflow-source SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Exact-main workflow-source preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo "WORKFLOW_SOURCE_SHA=$(git rev-parse HEAD)"
+          echo "DEPLOYED_ENGINE_SOURCE_SHA=${DEPLOYED_ENGINE_SOURCE_SHA}"
+          echo "EXPECTED_SERVED_VERSION=${EXPECTED_SERVED_VERSION}"
+          echo "SMOKE_ONLY_GATE=WORKFLOW_SOURCE_IS_NOT_ASSERTED_AS_DEPLOYED_SOURCE"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - name: GET-only served-version preflight (canonical resolver, fail-closed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_SERVED_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}$' \
+            || { echo 'EXPECTED_SERVED_VERSION_UNSAFE' >&2; exit 1; }
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/deployments-smoke-only.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          if [ "${active_version}" != "${EXPECTED_SERVED_VERSION}" ]; then
+            echo "SERVED_VERSION_MISMATCH active=${active_version} expected=${EXPECTED_SERVED_VERSION}" >&2
+            echo 'SMOKE_ONLY_PREFLIGHT=FAIL_SERVED_VERSION_MISMATCH' >&2
+            exit 1
+          fi
+          version_detail="${RUNNER_TEMP}/version-smoke-only.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" \
+            --expect-overlay
+          echo "SMOKE_ONLY_SERVED_VERSION=${active_version}"
+          echo 'PREFLIGHT_SERVED_VERSION_MATCH=PASS'
+          echo 'PREFLIGHT_V1_OVERLAY_PRESENT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when the canonical credential is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # A11 never fakes a PASS. Accepted non-blocking verdicts are PASS or the
+      # bounded DEFERRED classes; FAIL is a hard gate failure.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          grep -q 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log
+          grep 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log | tail -1
+
+      - name: Record smoke-only gate outcome (no mutation performed)
+        if: always()
+        shell: bash
+        run: |
+          echo 'B54_ENGINE_PRODUCTION_SMOKE_ONLY=COMPLETE'
+          echo 'ENGINE_DEPLOYED_BY_THIS_WORKFLOW=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'D1_MIGRATION=0'
+          echo 'ROLLBACK_PERFORMED=0'
+          echo 'PHASE_A_CHAT_REQUEST=0'
+          echo 'PRODUCTION_SOURCE_MUTATION=0'
