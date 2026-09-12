@@ -75,3 +75,23 @@ def test_claw_does_not_restore_legacy_shared_aliases():
     for source in (workspace, manual):
         assert "var(--ink" not in source
         assert "var(--text-muted" not in source
+
+
+def test_status_and_compact_labels_use_accessible_theme_tokens():
+    workspace = read("claw-workspace.css")
+    themes = read("padiem-themes.css")
+    glass = read("padiem-glass.css")
+    capability = read("capability-nav.css")
+
+    assert "color: #1a6b3a;" not in workspace
+    assert "color: #8a1a1a;" not in workspace
+    assert ".claw-result-success-note" in workspace and "color: var(--success);" in workspace
+    assert '.claw-status[data-state="success"]' in workspace
+    assert 'color: var(--danger);' in workspace
+    assert '.claw-workspace-chip' in workspace and 'color: var(--text);' in workspace
+    assert '.claw-result-badge' in workspace and 'color: var(--text);' in workspace
+
+    assert themes.count("--success:") >= 4
+    assert "--success:" in glass
+    assert "var(--ink" not in capability
+    assert "color: var(--text);" in capability
