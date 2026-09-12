@@ -20,6 +20,7 @@ html[data-theme="padiem-glass"] {
   --muted: #53606c;
   --line: rgba(255, 255, 255, .38);
   --accent: #79bce7;
+  --accent-contrast: #17202a;
   --accent-soft: rgba(121, 188, 231, .16);
   --accent-strong: #2f6f99;
   --gold: #c7a76b;
