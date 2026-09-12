@@ -27,6 +27,7 @@ html[data-theme="padiem-glass"] {
   --gold-soft: rgba(199, 167, 107, .14);
   --blue: #79bce7;
   --danger: #a93838;
+  --success: #1a6b3a;
   --shadow: 0 20px 60px rgba(24, 33, 42, .16);
   --card-bg: rgba(239, 243, 246, .48);
   --card-border: rgba(255, 255, 255, .42);
