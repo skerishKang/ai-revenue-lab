@@ -3,8 +3,8 @@
 These prove the required properties without any live Cloudflare call, network
 access, or real secret: the closed-vocabulary classification, exact reuse of the
 live constant-time credential comparison, fail-closed behavior on malformed
-input, non-disclosure of credential material, and the absence of any public
-credential oracle or change to existing runtime behavior.
+input, and — after the #2447 rework — that no output/projection path can reflect
+arbitrary caller-supplied (secret-shaped) strings.
 """
 
 from __future__ import annotations
@@ -16,9 +16,13 @@ import pytest
 
 from app.auth_boundary_diagnostic import (
     ABSENT,
+    ENGINE_WORKER,
+    ENVIRONMENT_ALLOWLIST,
+    NONCANONICAL,
     OUTPUT_KEYS,
     P01_APP_ID,
     P01_CHAT_CALLER_ID,
+    AuthBoundaryDiagnosticResult,
     AuthBoundaryEvidenceError,
     render,
     run_auth_boundary_diagnostic,
@@ -39,6 +43,7 @@ from app.service_identity import (
 STORED_CREDENTIAL = "stored-canonical-credential-0123456789abcdef"
 OTHER_CREDENTIAL = "different-served-credential-9876543210fedcba"
 SENTINEL = "SUPER-SECRET-SENTINEL-0123456789abcdef-DO-NOT-LEAK"
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 _MODULE_SOURCE = (
     Path(__file__).resolve().parents[1] / "app" / "auth_boundary_diagnostic.py"
@@ -63,7 +68,7 @@ def _run(**over):
     kwargs = {
         "registry": _registry(),
         "overlay_caller": None,
-        "chat_service_target": "padiem-ai-engine",
+        "chat_service_target": ENGINE_WORKER,
         "chat_service_environment": "production",
         "chat_caller_id": P01_CHAT_CALLER_ID,
         "app_id": P01_APP_ID,
@@ -74,11 +79,24 @@ def _run(**over):
     return run_auth_boundary_diagnostic(**kwargs)
 
 
+def _forged_result_dict(string_value: str) -> dict[str, str]:
+    return {
+        "CHAT_SERVICE_TARGET": string_value,
+        "CHAT_SERVICE_ENVIRONMENT": string_value,
+        "CHAT_CALLER_ID": string_value,
+        "CALLER_PRESENT": "TRUE",
+        "APP_ALLOWED": "TRUE",
+        "ENGINE_MATCH": "TRUE",
+        "CHAT_MATCH": "TRUE",
+    }
+
+
 # --- vocabulary / exactness ---------------------------------------------------
 
 
 def test_result_vocabulary_is_exact_seven_keys() -> None:
     result = _run()
+    assert isinstance(result, AuthBoundaryDiagnosticResult)
     assert tuple(result) == OUTPUT_KEYS
     assert set(result) == {
         "CHAT_SERVICE_TARGET",
@@ -99,7 +117,7 @@ def test_boolean_fields_use_closed_true_false_vocabulary() -> None:
 
 def test_service_target_environment_caller_id_are_exact() -> None:
     result = _run()
-    assert result["CHAT_SERVICE_TARGET"] == "padiem-ai-engine"
+    assert result["CHAT_SERVICE_TARGET"] == ENGINE_WORKER
     assert result["CHAT_CALLER_ID"] == P01_CHAT_CALLER_ID
     assert result["CHAT_SERVICE_ENVIRONMENT"] == "production"
 
@@ -107,6 +125,11 @@ def test_service_target_environment_caller_id_are_exact() -> None:
 def test_environment_absent_for_none_and_blank() -> None:
     assert _run(chat_service_environment=None)["CHAT_SERVICE_ENVIRONMENT"] == ABSENT
     assert _run(chat_service_environment="   ")["CHAT_SERVICE_ENVIRONMENT"] == ABSENT
+
+
+def test_environment_allowlist_is_closed_and_grounded() -> None:
+    assert ENVIRONMENT_ALLOWLIST == frozenset({"production", "preview"})
+    assert _run(chat_service_environment="preview")["CHAT_SERVICE_ENVIRONMENT"] == "preview"
 
 
 # --- decision contract branches ----------------------------------------------
@@ -154,7 +177,7 @@ def test_overlay_authority_is_resolved_before_base() -> None:
     result = run_auth_boundary_diagnostic(
         registry=base,
         overlay_caller=overlay,
-        chat_service_target="padiem-ai-engine",
+        chat_service_target=ENGINE_WORKER,
         chat_service_environment="production",
         chat_caller_id=P01_CHAT_CALLER_ID,
         app_id=P01_APP_ID,
@@ -191,19 +214,24 @@ def test_short_credential_is_false_not_an_error_oracle() -> None:
     assert result["ENGINE_MATCH"] == "FALSE"
 
 
-# --- fail-closed on malformed structural input --------------------------------
+# --- closed classification of arbitrary metadata (no reflection) --------------
 
 
-def test_malformed_metadata_fails_closed() -> None:
-    for bad in (
-        {"chat_service_target": "bad target!"},
-        {"chat_service_target": 123},
-        {"chat_caller_id": "-leading-dash"},
-        {"app_id": ""},
-        {"chat_service_environment": "has space"},
-    ):
-        with pytest.raises(AuthBoundaryEvidenceError):
-            _run(**bad)
+def test_arbitrary_metadata_is_classified_not_echoed() -> None:
+    # The old bug: these strings all satisfied a generic identifier regex and
+    # would have been echoed verbatim. They must now collapse to NONCANONICAL.
+    for bad in ("bad target!", "-leading-dash", "has space", "b54-rotated-secret-caller-xyz"):
+        assert _run(chat_service_target=bad)["CHAT_SERVICE_TARGET"] == NONCANONICAL
+        assert _run(chat_caller_id=bad)["CHAT_CALLER_ID"] == NONCANONICAL
+        assert _run(chat_service_environment=bad)["CHAT_SERVICE_ENVIRONMENT"] == NONCANONICAL
+
+
+def test_nonstring_metadata_is_classified_not_raised() -> None:
+    assert _run(chat_service_target=123)["CHAT_SERVICE_TARGET"] == ABSENT
+    assert _run(chat_service_environment=["x"])["CHAT_SERVICE_ENVIRONMENT"] == ABSENT
+
+
+# --- fail-closed on malformed structural authority ----------------------------
 
 
 def test_missing_authority_fails_closed() -> None:
@@ -230,9 +258,8 @@ def test_no_credential_material_is_emitted() -> None:
     blob = "\n".join(f"{k}={v}" for k, v in result.items())
     assert SENTINEL not in blob
     assert caller_secret_digest(SENTINEL) not in blob
-    hex64 = re.compile(r"^[0-9a-f]{64}$")
     for value in result.values():
-        assert not hex64.match(value)
+        assert not HEX64.match(value)
         assert value != str(len(SENTINEL))
 
 
@@ -248,20 +275,129 @@ def test_render_is_bounded_and_marker_safe() -> None:
     for marker in (
         "SECRET_VALUE_OUTPUT=0",
         "SECRET_HASH_OUTPUT=0",
+        "SECRET_LENGTH_OUTPUT=0",
         "PUBLIC_DIAGNOSTIC_ROUTE=NONE",
         "DIAGNOSTIC_ONLY=YES",
         "PRODUCTION_MUTATION=0",
     ):
         assert marker in text.splitlines()
-    assert len(text.splitlines()) == len(OUTPUT_KEYS) + 5
+    assert len(text.splitlines()) == len(OUTPUT_KEYS) + 6
+
+
+# --- adversarial projection tests (#2447 finding) -----------------------------
+
+
+def test_adv_A_forge_result_with_raw_credential_is_rejected() -> None:
+    forged = _forged_result_dict(SENTINEL)
+    with pytest.raises(AuthBoundaryEvidenceError) as exc_info:
+        AuthBoundaryDiagnosticResult(forged)
+    assert SENTINEL not in str(exc_info.value)
+    with pytest.raises(AuthBoundaryEvidenceError) as exc_info:
+        render(forged)
+    assert SENTINEL not in str(exc_info.value)
+    # Even through the classifier path, the raw credential is never reflected.
+    result = _run(chat_service_target=SENTINEL, chat_caller_id=SENTINEL)
+    assert SENTINEL not in "\n".join(result.values())
+
+
+def test_adv_B_forge_result_with_sha256_digest_is_rejected() -> None:
+    digest = caller_secret_digest(SENTINEL)
+    assert HEX64.match(digest)
+    with pytest.raises(AuthBoundaryEvidenceError):
+        AuthBoundaryDiagnosticResult(_forged_result_dict(digest))
+    with pytest.raises(AuthBoundaryEvidenceError):
+        render(_forged_result_dict(digest))
+    assert digest not in "\n".join(_run(chat_service_environment=digest).values())
+
+
+def test_adv_C_forge_result_with_digest_fragment_is_rejected() -> None:
+    digest = caller_secret_digest(SENTINEL)
+    for fragment in (digest[:16], digest[-16:], digest[:8]):
+        with pytest.raises(AuthBoundaryEvidenceError):
+            AuthBoundaryDiagnosticResult(_forged_result_dict(fragment))
+        assert fragment not in "\n".join(_run(chat_service_target=fragment).values())
+
+
+def test_adv_D_numeric_secret_length_is_never_echoed() -> None:
+    for length in ("32", "64", "128", "512"):
+        result = _run(chat_service_target=length, chat_service_environment=length, chat_caller_id=length)
+        assert length not in result.values()
+        assert result["CHAT_SERVICE_TARGET"] == NONCANONICAL
+        assert result["CHAT_SERVICE_ENVIRONMENT"] == NONCANONICAL
+        assert result["CHAT_CALLER_ID"] == NONCANONICAL
+
+
+def test_adv_E_direct_metadata_secret_injection_never_reflected() -> None:
+    result = _run(
+        chat_service_target=SENTINEL,
+        chat_service_environment=OTHER_CREDENTIAL,
+        chat_caller_id=caller_secret_digest(SENTINEL),
+    )
+    blob = render(result)
+    for secret in (SENTINEL, OTHER_CREDENTIAL, caller_secret_digest(SENTINEL)):
+        assert secret not in blob
+    assert set(result.values()) <= {
+        ENGINE_WORKER,
+        P01_CHAT_CALLER_ID,
+        ABSENT,
+        NONCANONICAL,
+        "TRUE",
+        "FALSE",
+        *ENVIRONMENT_ALLOWLIST,
+    }
+
+
+def test_adv_F_boolean_field_rejects_non_boolean_vocabulary() -> None:
+    forged = _forged_result_dict(ENGINE_WORKER)
+    forged["CHAT_CALLER_ID"] = P01_CHAT_CALLER_ID
+    forged["CHAT_SERVICE_ENVIRONMENT"] = "production"
+    forged["CALLER_PRESENT"] = "MAYBE"
+    with pytest.raises(AuthBoundaryEvidenceError) as exc_info:
+        AuthBoundaryDiagnosticResult(forged)
+    assert "MAYBE" not in str(exc_info.value)
+
+
+def test_adv_G_result_keys_must_be_exact() -> None:
+    good = _run().as_dict()
+    with pytest.raises(AuthBoundaryEvidenceError):
+        AuthBoundaryDiagnosticResult({**good, "EXTRA": "production"})
+    with pytest.raises(AuthBoundaryEvidenceError):
+        del_key = dict(good)
+        del_key.pop("CHAT_MATCH")
+        AuthBoundaryDiagnosticResult(del_key)
+
+
+def test_adv_I_drift_classified_without_reflecting_raw_value() -> None:
+    unexpected_target = "attacker-controlled-engine.example"
+    unexpected_caller = "b54-kagent-rotated-leaked-id"
+    result = _run(chat_service_target=unexpected_target, chat_caller_id=unexpected_caller)
+    assert result["CHAT_SERVICE_TARGET"] == NONCANONICAL
+    assert result["CHAT_CALLER_ID"] == NONCANONICAL
+    assert result["CALLER_PRESENT"] == "FALSE"
+    assert unexpected_target not in "\n".join(result.values())
+    assert unexpected_caller not in "\n".join(result.values())
+
+
+def test_adv_J_authority_error_message_has_no_supplied_secret() -> None:
+    env = _FakeEnv(**{CALLER_REGISTRY_V1_ENV: SENTINEL})
+    with pytest.raises(AuthBoundaryEvidenceError) as exc_info:
+        run_auth_boundary_diagnostic_from_env(
+            env,
+            chat_service_target=ENGINE_WORKER,
+            chat_service_environment="production",
+            chat_caller_id=P01_CHAT_CALLER_ID,
+            canonical_credential=SENTINEL,
+            chat_supplied_credential=SENTINEL,
+        )
+    assert SENTINEL not in str(exc_info.value)
+
+
+# --- no public credential oracle / runtime unchanged --------------------------
 
 
 def test_render_refuses_foreign_vocabulary() -> None:
     with pytest.raises(AuthBoundaryEvidenceError):
-        render({"CHAT_SERVICE_TARGET": "padiem-ai-engine"})
-
-
-# --- no public credential oracle / runtime unchanged --------------------------
+        render({"CHAT_SERVICE_TARGET": ENGINE_WORKER})
 
 
 def test_module_defines_no_http_route_or_fetch_handler() -> None:
@@ -280,8 +416,6 @@ def test_diagnostic_is_not_wired_into_worker_entrypoints() -> None:
 
 
 def test_existing_authentication_request_semantics_unchanged() -> None:
-    # The live path still fails closed for a bad credential and succeeds for a
-    # good one after the diagnostic module is importable.
     registry = _registry()
     with pytest.raises(ServiceIdentityError):
         authenticate_engine_caller(
@@ -320,7 +454,7 @@ def test_from_env_resolves_base_registry_authority() -> None:
     env = _FakeEnv(**{CALLER_REGISTRY_V1_ENV: payload})
     result = run_auth_boundary_diagnostic_from_env(
         env,
-        chat_service_target="padiem-ai-engine",
+        chat_service_target=ENGINE_WORKER,
         chat_service_environment=None,
         chat_caller_id=P01_CHAT_CALLER_ID,
         canonical_credential=STORED_CREDENTIAL,
@@ -336,7 +470,7 @@ def test_from_env_fails_closed_on_unparseable_authority() -> None:
     with pytest.raises(AuthBoundaryEvidenceError) as exc_info:
         run_auth_boundary_diagnostic_from_env(
             env,
-            chat_service_target="padiem-ai-engine",
+            chat_service_target=ENGINE_WORKER,
             chat_service_environment="production",
             chat_caller_id=P01_CHAT_CALLER_ID,
             canonical_credential=STORED_CREDENTIAL,
