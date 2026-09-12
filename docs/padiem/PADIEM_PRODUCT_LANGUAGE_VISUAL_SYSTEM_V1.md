@@ -126,7 +126,9 @@ The user must be able to switch language explicitly.
 Preferred behavior:
 
 - explicit KR/EN selector;
-- persist user choice;
+- preserve explicit language in the URL (`?lang=ko|en`) so reloads and shared links remain deterministic;
+- do not use localStorage/sessionStorage for locale preference under the current browser-persistence privacy contract;
+- a future trusted account preference may become the cross-product persistence authority after a separate approval;
 - no IP-based forced language;
 - no separate Claw language setting;
 - Chat and Claw use the same active locale;
