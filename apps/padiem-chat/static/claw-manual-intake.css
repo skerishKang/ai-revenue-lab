@@ -9,7 +9,7 @@
   display: grid;
   gap: 8px;
   font-size: 14px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 
 .claw-field input,
@@ -20,7 +20,7 @@
   border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
   border-radius: 12px;
   background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   padding: 10px 12px;
   font-family: inherit;
   font-size: 16px; /* >=16px: prevents iOS focus auto-zoom */

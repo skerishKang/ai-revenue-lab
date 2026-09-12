@@ -45,7 +45,7 @@
   margin: 0;
   font-size: clamp(22px, 4vw, 30px);
   font-weight: 800;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-workspace-chip {
   margin: 4px 0 0;
@@ -54,7 +54,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 650;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   background: rgba(121, 188, 231, 0.16);
   border: 1px solid rgba(121, 188, 231, 0.28);
 }
@@ -62,7 +62,7 @@
   margin: -6px 0 0;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 
 /* ── Intake (hero) ────────────────────────────────────────────────────── */
@@ -78,7 +78,7 @@
 .claw-intake-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 .claw-intake-hero textarea {
   width: 100%;
@@ -88,7 +88,7 @@
   border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
   border-radius: 16px;
   background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   font-family: inherit;
   font-size: 16px; /* >=16px: prevents iOS focus auto-zoom */
   line-height: 1.55;
@@ -111,7 +111,7 @@
   border-radius: 999px;
   border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
   background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
@@ -137,7 +137,7 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 650;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   list-style: none;
 }
 .claw-meta > summary::-webkit-details-marker {
@@ -205,7 +205,7 @@
   border: 1px solid rgba(47, 111, 153, 0.12);
   font-size: 13px;
   line-height: 1.5;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 
 .claw-actions {
@@ -221,14 +221,14 @@
   margin: -6px 0 0;
   font-size: 12px;
   line-height: 1.5;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 .claw-result-hint,
 .claw-execute-hint {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 .claw-result-hint {
   padding: 0 2px;
@@ -253,12 +253,12 @@
 }
 .claw-artifact-name {
   font-weight: 700;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   word-break: break-all;
 }
 .claw-artifact-size {
   margin-left: auto;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   font-variant-numeric: tabular-nums;
 }
 .claw-result-success-note {
@@ -282,7 +282,7 @@
 .claw-status[data-state="running"] {
   background: rgba(47, 111, 153, 0.08);
   border: 1px solid rgba(47, 111, 153, 0.14);
-  color: var(--text-muted, #3b4a5a);
+  color: var(--muted, #3b4a5a);
 }
 .claw-status[data-state="success"] {
   background: rgba(34, 158, 94, 0.08);
@@ -320,7 +320,7 @@
   border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
   border-radius: 14px;
   font-size: 14px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   text-align: center;
 }
 .claw-result-card {
@@ -340,7 +340,7 @@
 .claw-result-kind {
   font-size: 16px;
   font-weight: 800;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-result-badge {
   margin-left: auto;
@@ -349,7 +349,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   background: rgba(121, 188, 231, 0.18);
 }
 .claw-result-body {
@@ -359,7 +359,7 @@
   font-family: inherit;
   font-size: 15px;
   line-height: 1.6;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   max-height: 320px;
   overflow: auto;
 }
@@ -381,7 +381,7 @@
   border-radius: 12px;
   border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
   background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   font: inherit;
   font-size: 14px;
   font-weight: 650;
@@ -393,7 +393,7 @@
 .claw-result-note {
   margin: 0;
   font-size: 12px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 
 /* ── Honest "coming soon" group ───────────────────────────────────────── */
@@ -408,7 +408,7 @@
   border-radius: 12px;
   padding: 12px;
   background: var(--card-bg, rgba(148, 163, 184, 0.08));
-  color: var(--text-muted, #94a3b8);
+  color: var(--muted, #94a3b8);
   font: inherit;
   cursor: not-allowed;
   opacity: 0.7;
@@ -458,7 +458,7 @@
   margin: 0;
   font-size: 14px;
   font-weight: 800;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-memory-proposal {
   display: grid;
@@ -471,16 +471,16 @@
 .claw-memory-proposal-name {
   font-size: 14px;
   font-weight: 700;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-memory-proposal-type {
   font-size: 12px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 .claw-memory-proposal-note {
   margin: 0;
   font-size: 13px;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-memory-proposal-actions {
   display: flex;
@@ -528,7 +528,7 @@
   border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
   border-radius: 12px;
   background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   font: inherit;
   font-size: 16px;
   cursor: pointer;
@@ -543,7 +543,7 @@
   border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
   border-radius: 14px;
   font-size: 14px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   text-align: center;
 }
 .claw-approved-error {
@@ -571,7 +571,7 @@
   border: 1px dashed var(--line, rgba(73, 86, 98, 0.24));
   border-radius: 14px;
   font-size: 14px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   text-align: center;
 }
 .claw-approved-card {
@@ -591,7 +591,7 @@
 .claw-approved-card-title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-approved-card-badge {
   padding: 2px 8px;
@@ -599,17 +599,17 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   background: rgba(121, 188, 231, 0.18);
 }
 .claw-approved-card-meta {
   font-size: 12px;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
 }
 .claw-approved-card-note {
   margin: 0;
   font-size: 13px;
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
 }
 .claw-approved-card-actions {
   display: flex;
@@ -625,7 +625,7 @@
   border-radius: 12px;
   border: 1px solid var(--line, rgba(73, 86, 98, 0.22));
   background: var(--card-bg, #fff);
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   font: inherit;
   font-size: 13px;
   font-weight: 650;
@@ -650,11 +650,11 @@
 }
 .claw-approved-detail-label {
   font-weight: 700;
-  color: var(--text-muted, #5b6672);
+  color: var(--muted, #5b6672);
   min-width: 80px;
 }
 .claw-approved-detail-value {
-  color: var(--ink, #111a22);
+  color: var(--text, #111a22);
   word-break: break-word;
 }
 
