@@ -2,6 +2,7 @@
   "use strict";
 
   const VALID_LOCALES = ["ko", "en"];
+  const LOCALE_STORAGE_KEY = "padiem.locale";
   const TRUSTED_AUTH_SESSION_STATES = new Set(["unavailable", "guest", "signed_in", "expired"]);
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const nativeConfirm = typeof window.confirm === "function" ? window.confirm.bind(window) : null;
@@ -166,6 +167,14 @@
   function getUrlLocale() {
     try {
       return normalizeLocale(new URLSearchParams(window.location.search).get("lang"));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function getStoredLocale() {
+    try {
+      return normalizeLocale(window.localStorage.getItem(LOCALE_STORAGE_KEY));
     } catch (_) {
       return null;
     }
@@ -415,6 +424,9 @@
 
   function persistLocale(lang) {
     try {
+      window.localStorage.setItem(LOCALE_STORAGE_KEY, lang);
+    } catch (_) {}
+    try {
       const url = new URL(window.location.href);
       if (url.searchParams.get("lang") === lang) return;
       url.searchParams.set("lang", lang);
@@ -442,17 +454,17 @@
 
   function init() {
     installConfirmLocalization();
-    apply(getUrlLocale() || "ko", false);
+    apply(getUrlLocale() || getStoredLocale() || "ko", false);
     document.getElementById("languagePicker")?.addEventListener("click", (event) => {
       const button = event.target.closest("[data-locale-value]");
       const requested = button ? normalizeLocale(button.dataset.localeValue) : null;
       if (requested) apply(requested, true);
     });
-    window.addEventListener("popstate", () => apply(getUrlLocale() || "ko", false));
+    window.addEventListener("popstate", () => apply(getUrlLocale() || getStoredLocale() || "ko", false));
   }
 
   window.__padiemLocale = {
-    VALID: VALID_LOCALES.slice(), apply, getCurrent, getUrlLocale,
+    VALID: VALID_LOCALES.slice(), apply, getCurrent, getUrlLocale, getStoredLocale,
     text: (key, variables = null) => text(key, getCurrent(), variables),
     localizeExisting: () => localizeExistingDynamicControls(getCurrent())
   };
