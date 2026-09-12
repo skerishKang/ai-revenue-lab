@@ -20,6 +20,7 @@ from padiem_ai_core import (
     OrchestrationResumeRequest,
     OrchestrationRunner,
 )
+from padiem_ai_core.execution_runtime import ExecutionRuntimeError
 
 from app.continuation_binding import IdentityBoundContinuationRecord
 from app.continuation_identity import (
@@ -186,6 +187,11 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
         except OrchestrationError as exc:
             status_code = 422 if exc.code in {"invalid_plan", "authority_widening_rejected"} else 400
             return _service_error(exc.code, exc.safe_message, status_code=status_code)
+        except ExecutionRuntimeError as exc:
+            response = self._orchestration_run_error_response(exc)
+            if response is not None:
+                return response
+            raise
         except (TypeError, ValueError):
             return _service_error("invalid_request", "Orchestration request is invalid.", status_code=400)
         except Exception:
