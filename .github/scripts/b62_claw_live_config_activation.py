@@ -40,6 +40,19 @@ _binding_guard = importlib.util.module_from_spec(_guard_spec)
 _guard_spec.loader.exec_module(_binding_guard)
 canonical_binding = _binding_guard.canonical_binding
 
+# Reuse the canonical served-version resolver (#2427, aligned with #2452) so the
+# replacement convergence poll accepts exactly the same served-version shape as
+# the deploy guards: successful envelope, result.deployments[0], exactly one
+# version at 100 percent, safe version_id. No shape rules are duplicated here.
+_served_guard_spec = importlib.util.spec_from_file_location(
+    "b62_served_version_secret_guard", _HERE / "b62_served_version_secret_guard.py"
+)
+assert _served_guard_spec is not None and _served_guard_spec.loader is not None
+_served_guard = importlib.util.module_from_spec(_served_guard_spec)
+_served_guard_spec.loader.exec_module(_served_guard)
+resolve_served_version_id = _served_guard.resolve_served_version_id
+ServedVersionGuardError = _served_guard.ServedVersionGuardError
+
 WORKER = "padiem-chat"
 
 QUOTA_VALUES = {
@@ -62,6 +75,19 @@ P01_CREDENTIAL_NAME = "P01_ENGINE_CREDENTIAL"
 P01_CREDENTIAL_MIN_BYTES = 32
 P01_CREDENTIAL_MAX_BYTES = 512
 SOURCE_CREDENTIAL_ENV = "B62_P01_ENGINE_CREDENTIAL"
+
+# Bounded post-secret-PUT served-version convergence (#2453). The poll budget
+# mirrors the proven overlay-rotation gate: 30 attempts x 2 seconds. A single
+# immediate read may observe stale deployment metadata while Cloudflare
+# propagates the secret-triggered version transition, so a first acceptable
+# read that still equals the pre-mutation version must NOT finalize NO while
+# the window is open. NO is legal evidence only after the FULL window observes
+# nothing but the pre-mutation version across at least this many acceptable
+# same-version observations; fewer means the served state was never acceptably
+# observed enough to conclude anything, which is a FAIL, not a NO.
+POST_PUT_POLL_ATTEMPTS = 30
+POST_PUT_POLL_INTERVAL_SECONDS = 2
+POST_PUT_MIN_SAME_VERSION_OBSERVATIONS = 15
 
 TARGET_NAMES = frozenset(QUOTA_VALUES) | {
     R2_BINDING_NAME,
@@ -276,6 +302,91 @@ def replacement_precheck(settings_payload: object) -> dict:
     }
 
 
+def convergence_decision(
+    pre_version_id: object,
+    read_results: list[tuple[bool, object]],
+    *,
+    min_same_observations: int = POST_PUT_MIN_SAME_VERSION_OBSERVATIONS,
+) -> dict:
+    """Decide post-secret-PUT served-version evidence from bounded poll reads.
+
+    ``read_results`` is the ordered per-attempt outcome of the bounded
+    post-PUT deployments poll; each item is ``(acceptable, served_or_none)``
+    where an acceptable read is one whose payload satisfied the canonical
+    served-version contract via ``resolve_served_version_id`` (successful
+    envelope, ``result.deployments[0]``, exactly one version at 100 percent,
+    safe id). A rejected read is NOT evidence: a malformed, ambiguous, raw
+    list, or otherwise non-canonical poll never finalizes anything in either
+    direction, it is simply skipped.
+
+    Rules (#2453):
+    - first acceptable read differing from the pre-mutation version -> YES
+      immediately (the transition was observed);
+    - an acceptable read equal to the pre-mutation version does NOT finalize
+      NO while the window remains open; NO requires at least
+      ``min_same_observations`` acceptable same-version observations and no
+      divergence anywhere in the stream;
+    - no divergence and fewer than the minimum stable observations -> FAIL
+      (the acceptable served state was not established within the window);
+    - zero acceptable observations -> FAIL.
+
+    ``NO`` is evidence only; it never claims the PUT failed.
+    """
+    if not isinstance(pre_version_id, str) or not pre_version_id:
+        raise ActivationPlanError("pre-mutation served version id is missing or empty")
+    acceptable = [(ok, v) for ok, v in read_results if ok]
+    if not acceptable:
+        return {
+            "finalized": "FAIL",
+            "changed": None,
+            "post_version_id": None,
+            "same_observations": 0,
+            "diverged_at": None,
+            "reason": "no acceptable canonical served-version observation within the bounded window",
+        }
+    same = 0
+    for index, (_ok, version) in enumerate(acceptable):
+        if not isinstance(version, str) or not version:
+            return {
+                "finalized": "FAIL",
+                "changed": None,
+                "post_version_id": None,
+                "same_observations": same,
+                "diverged_at": None,
+                "reason": "acceptable poll returned no usable version id",
+            }
+        if version != pre_version_id:
+            return {
+                "finalized": "YES",
+                "changed": True,
+                "post_version_id": version,
+                "same_observations": same,
+                "diverged_at": index + 1,
+                "reason": "served version differs from the pre-mutation version",
+            }
+        same += 1
+        if same >= min_same_observations:
+            return {
+                "finalized": "NO",
+                "changed": False,
+                "post_version_id": version,
+                "same_observations": same,
+                "diverged_at": None,
+                "reason": "canonical served state stayed stable through the convergence window",
+            }
+    return {
+        "finalized": "FAIL",
+        "changed": None,
+        "post_version_id": None,
+        "same_observations": same,
+        "diverged_at": None,
+        "reason": (
+            "bounded window closed before the stable unchanged state met the "
+            f"minimum of {min_same_observations} acceptable observations"
+        ),
+    }
+
+
 def verify_replacement_readback(pre_payload: object, post_payload: object) -> list[str]:
     """Compare pre/post served configuration by binding name and type only.
 
@@ -426,6 +537,8 @@ def main(argv: list[str] | None = None) -> int:
             "credential-quality",
             "replacement-precheck",
             "replacement-verify",
+            "replacement-served-version-read",
+            "replacement-served-version-final",
         ),
     )
     parser.add_argument("--settings", type=Path)
@@ -436,6 +549,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--snapshot", type=Path)
     parser.add_argument("--pre-settings", type=Path)
     parser.add_argument("--credential-created-by-activation", default="false")
+    parser.add_argument("--deployments", type=Path)
+    parser.add_argument("--pre-version", default="")
+    parser.add_argument("--observations-file", type=Path)
     args = parser.parse_args(args_in)
 
     if args.command == "credential-quality":
@@ -444,6 +560,10 @@ def main(argv: list[str] | None = None) -> int:
         return _main_replacement_precheck(args)
     if args.command == "replacement-verify":
         return _main_replacement_verify(args)
+    if args.command == "replacement-served-version-read":
+        return _main_replacement_served_version_read(args)
+    if args.command == "replacement-served-version-final":
+        return _main_replacement_served_version_final(args)
     if not args.settings:
         print(f"usage: {args.command} requires --settings", file=sys.stderr)
         return 2
@@ -646,6 +766,92 @@ def _main_replacement_verify(args: argparse.Namespace) -> int:
     print("RUNTIME_SUCCESS_CLAIM=NO_UNTIL_PHASE_A_RERUN")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_replacement_served_version_read(args: argparse.Namespace) -> int:
+    """Resolve ONE bounded post-secret-PUT poll read through the canonical resolver.
+
+    Exit 0 with the served version id on the single stdout line means the read
+    satisfied the canonical served-version contract and is usable as
+    convergence evidence. Any non-canonical shape (envelope failure, empty or
+    absent deployments, ambiguous version list, non-100 split, missing id,
+    malformed JSON) exits 1 without emitting a version id, so the caller
+    records it as a skipped attempt rather than PASS or NO evidence.
+    """
+    if not args.deployments:
+        print("usage: replacement-served-version-read requires --deployments", file=sys.stderr)
+        return 2
+    try:
+        payload = json.loads(args.deployments.read_text(encoding="utf-8"))
+        version_id = resolve_served_version_id(payload)
+    except (OSError, json.JSONDecodeError, ServedVersionGuardError) as exc:
+        print("B62_P01_SERVED_VERSION_READ=REJECTED", file=sys.stderr)
+        print(f"REASON={exc}", file=sys.stderr)
+        return 1
+    print(version_id)
+    return 0
+
+
+def _main_replacement_served_version_final(args: argparse.Namespace) -> int:
+    """Finalize SERVED_VERSION_CHANGED_BY_SECRET_PUT from the bounded poll log.
+
+    The observations file is one ``acceptable<TAB>version_id_or_empty`` line per
+    poll attempt, in attempt order, written by the workflow poll loop only for
+    attempts that completed a deployments read. The decision comes exclusively
+    from ``convergence_decision`` over the canonical resolver's per-read
+    verdicts: YES on the first acceptable divergence, NO only after the stable
+    unchanged state meets the minimum acceptable-observation floor, FAIL
+    otherwise. A FAIL exits 1 so the step cannot silently pass without an
+    acceptably observed served state. NO is evidence, never a mutation claim.
+    """
+    if not args.observations_file or not args.pre_version:
+        print(
+            "usage: replacement-served-version-final requires --observations-file and --pre-version",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        lines = args.observations_file.read_text(encoding="utf-8").splitlines()
+        observations: list[tuple[bool, object]] = []
+        for line in lines:
+            if not line.strip():
+                continue
+            flag, _, version = line.partition("\t")
+            acceptable = flag.strip() == "acceptable"
+            value = version.strip() if version.strip() else None
+            observations.append((acceptable, value))
+        decision = convergence_decision(args.pre_version, observations)
+    except (OSError, ValueError, ActivationPlanError) as exc:
+        print("B62_P01_SERVED_VERSION_CONVERGENCE=FAIL")
+        print(f"REASON={exc}", file=sys.stderr)
+        return 1
+    attempts = len(observations)
+    acceptable_count = sum(1 for ok, _ in observations if ok)
+    if decision["finalized"] == "FAIL":
+        print("B62_P01_SERVED_VERSION_CONVERGENCE=FAIL")
+        print(f"POST_PUT_POLL_ATTEMPTS_OBSERVED={attempts}")
+        print(f"POST_PUT_CANONICAL_OBSERVATIONS={acceptable_count}")
+        print(f"REASON={decision['reason']}", file=sys.stderr)
+        print("SECRET_VALUE_OUTPUT=0")
+        print("SECRET_HASH_OUTPUT=0")
+        print("SECRET_LENGTH_OUTPUT=0")
+        print("SECRET_VALUES_READ=0")
+        return 1
+    print(f"POSTMUTATION_SERVED_VERSION_ID={decision['post_version_id']}")
+    print(f"SERVED_VERSION_CHANGED_BY_SECRET_PUT={decision['finalized']}")
+    print(f"POST_PUT_POLL_ATTEMPTS_OBSERVED={attempts}")
+    print(f"POST_PUT_CANONICAL_OBSERVATIONS={acceptable_count}")
+    print(f"POST_PUT_SAME_VERSION_OBSERVATIONS={decision['same_observations']}")
+    diverged_at = decision["diverged_at"]
+    print(f"POST_PUT_DIVERGENCE_OBSERVED_AT={'none' if diverged_at is None else diverged_at}")
+    print(f"POST_PUT_CONVERGENCE_REASON={decision['reason']}")
+    print("SECRET_PUT_MUST_CHANGE_VERSION=NO")
+    print("WORKER_CODE_DEPLOY_SUBMITTED=0")
+    print("SECRET_VALUE_OUTPUT=0")
+    print("SECRET_HASH_OUTPUT=0")
+    print("SECRET_LENGTH_OUTPUT=0")
+    print("SECRET_VALUES_READ=0")
     return 0
 
 

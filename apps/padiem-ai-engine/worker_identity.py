@@ -43,11 +43,13 @@ from app.connector_bindings import (
     build_tool_binding_resolver,
     DriveGrant,
     GmailGrant,
+    SlackGrant,
     TelegramGrant,
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.gmail_port_httpx import HttpxGmailReadPort
+from app.slack_port_httpx import HttpxSlackReadPort, parse_slack_channel_ids
 from app.telegram_port_httpx import HttpxTelegramReadPort, parse_paired_chat_ids
 from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
 from app.google_oauth_access_lease import (
@@ -97,6 +99,13 @@ CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 # no caller-provided chat id can widen the allowlist.
 ENGINE_TELEGRAM_BOT_TOKEN_ENV = "ENGINE_TELEGRAM_BOT_TOKEN"
 ENGINE_TELEGRAM_PAIRED_CHAT_IDS_ENV = "ENGINE_TELEGRAM_PAIRED_CHAT_IDS"
+# Slack promotion (#2356): the bot token is a Worker secret; the channel
+# allowlist is server-derived configuration. The optional private-channel
+# subset must stay inside the allowlist. Nothing is ever logged and no
+# caller-provided channel id can widen the allowlist.
+ENGINE_SLACK_BOT_TOKEN_ENV = "ENGINE_SLACK_BOT_TOKEN"
+ENGINE_SLACK_ALLOWED_CHANNELS_ENV = "ENGINE_SLACK_ALLOWED_CHANNELS"
+ENGINE_SLACK_PRIVATE_CHANNELS_ENV = "ENGINE_SLACK_PRIVATE_CHANNELS"
 
 
 def _continuation_store_for_env(
@@ -154,26 +163,36 @@ def _research_service_for_env(
 
 
 async def _tool_binding_resolver_for_env(env: Any):
-    """Compose the Engine Gmail + Drive + Telegram tool binding resolver.
+    """Compose the Engine Gmail + Drive + Telegram + Slack tool binding resolver.
 
     Gmail keeps its existing compatibility secret seam. Drive is canonicalized
     through the private ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the
     Engine receives only short-lived access leases and never a long-lived
     refresh credential. Telegram (#2353) uses its own bot-token secret plus a
     server-derived paired-chat allowlist and has no Google OAuth dependency.
-    All connectors continue to share the trusted ENGINE_CONNECTOR_GRANTS D1
-    binding. Missing authorities fail closed.
+    Slack (#2356) uses its own bot-token secret plus a server-derived channel
+    allowlist and is READ-only: outbound posting stays behind the P01
+    approval authority in the reference product. All connectors continue to
+    share the trusted ENGINE_CONNECTOR_GRANTS D1 binding. Missing authorities
+    fail closed.
     """
     gmail_port = _gmail_port_for_env(env)
     drive_port = _drive_port_for_env(env)
     telegram_port = _telegram_port_for_env(env)
-    if gmail_port is None and drive_port is None and telegram_port is None:
+    slack_port = _slack_port_for_env(env)
+    if (
+        gmail_port is None
+        and drive_port is None
+        and telegram_port is None
+        and slack_port is None
+    ):
         return None
     try:
-        gmail_grants, drive_grants, telegram_grants = await asyncio.gather(
+        gmail_grants, drive_grants, telegram_grants, slack_grants = await asyncio.gather(
             _gmail_grants_for_env(env),
             _drive_grants_for_env(env),
             _telegram_grants_for_env(env),
+            _slack_grants_for_env(env),
         )
     except ServiceContractError as exc:
         grant_error = exc
@@ -182,7 +201,7 @@ async def _tool_binding_resolver_for_env(env: Any):
             raise grant_error
 
         return unavailable
-    if not gmail_grants and not drive_grants and not telegram_grants:
+    if not gmail_grants and not drive_grants and not telegram_grants and not slack_grants:
         return None
     return build_tool_binding_resolver(
         gmail_port=gmail_port,
@@ -191,6 +210,8 @@ async def _tool_binding_resolver_for_env(env: Any):
         drive_grants=drive_grants or None,
         telegram_port=telegram_port,
         telegram_grants=telegram_grants or None,
+        slack_port=slack_port,
+        slack_grants=slack_grants or None,
     )
 
 
@@ -289,6 +310,53 @@ async def _telegram_grants_for_env(env: Any) -> dict[str, TelegramGrant]:
     try:
         store = CloudflareD1ConnectorGrantStore(binding)
         return await store.load_telegram_grants()
+    except ServiceContractError:
+        raise
+    except Exception:
+        raise ServiceContractError(
+            "connector_grants_unavailable",
+            "Connector grant storage could not be loaded.",
+            status_code=503,
+        ) from None
+
+
+def _slack_port_for_env(env: Any) -> HttpxSlackReadPort | None:
+    """Resolve the promoted Slack read port (#2356).
+
+    Requires both the bot-token secret and a non-empty server-derived channel
+    allowlist. The optional private-channel subset is only honored for ids
+    already inside the allowlist. Missing or malformed authorities fail closed
+    by returning ``None``; there is no caller-side override and no Google OAuth
+    dependency.
+    """
+    bot_token = legacy_worker._binding_value(env, ENGINE_SLACK_BOT_TOKEN_ENV)
+    allowed_raw = legacy_worker._binding_value(env, ENGINE_SLACK_ALLOWED_CHANNELS_ENV)
+    private_raw = legacy_worker._binding_value(env, ENGINE_SLACK_PRIVATE_CHANNELS_ENV)
+    if not bot_token or not allowed_raw:
+        return None
+    try:
+        allowed_channel_ids = parse_slack_channel_ids(str(allowed_raw))
+        if not allowed_channel_ids:
+            return None
+        private_channel_ids = (
+            parse_slack_channel_ids(str(private_raw)) if private_raw else frozenset()
+        )
+        return HttpxSlackReadPort(
+            bot_token=bot_token,
+            allowed_channel_ids=allowed_channel_ids,
+            explicitly_private_channel_ids=private_channel_ids,
+        )
+    except Exception:
+        return None
+
+
+async def _slack_grants_for_env(env: Any) -> dict[str, SlackGrant]:
+    binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if binding is None:
+        return {}
+    try:
+        store = CloudflareD1ConnectorGrantStore(binding)
+        return await store.load_slack_grants()
     except ServiceContractError:
         raise
     except Exception:

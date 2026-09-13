@@ -620,26 +620,59 @@ jobs:
           echo 'SECRET_VALUE_EMITTED=0'
           echo 'PRODUCTION_MUTATION=1'
 
+      # Bounded post-secret-PUT served-version convergence (#2453). One
+      # immediate GET after the PUT can still read pre-transition deployment
+      # metadata while Cloudflare propagates a secret-triggered version change,
+      # which produced false SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO evidence.
+      # The decision is therefore finalized only from this bounded poll window
+      # (30 attempts x 2 seconds, same budget as the overlay-rotation gate):
+      # every read is shape-gated by the canonical jq pin and resolved ONLY
+      # through the helper's canonical resolver; the workflow never maps a
+      # single read to YES or NO itself. The first acceptable divergent read
+      # closes the window as YES; NO requires the stable unchanged state across
+      # at least 15 acceptable observations; anything else is FAIL evidence,
+      # never a silent pass. NO means the mutation is not proven to have
+      # changed the served version within the window; it never claims the PUT
+      # failed (secret PUT changing the version is evidence, not a
+      # requirement).
       - name: Record post-mutation served version evidence
         shell: bash
         run: |
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          deployments="${RUNNER_TEMP}/b62-deployments-post-replacement.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
-            -o "${deployments}"
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
-            "${deployments}" >/dev/null
-          served="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
-          test -n "${served}"
-          echo "POSTMUTATION_SERVED_VERSION_ID=${served}"
-          if [ "${served}" = "${PREMUTATION_SERVED_VERSION_ID}" ]; then
-            echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO'
-          else
-            echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES'
-          fi
+          observations="${RUNNER_TEMP}/b62-served-version-observations.tsv"
+          : > "${observations}"
+          same=0
+          for attempt in $(seq 1 30); do
+            deployments="${RUNNER_TEMP}/b62-deployments-post-replacement-${attempt}.json"
+            served=""
+            if curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
+              -o "${deployments}" \
+              && jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
+                "${deployments}" >/dev/null; then
+              served="$(python .github/scripts/b62_claw_live_config_activation.py replacement-served-version-read --deployments "${deployments}")" || served=""
+            fi
+            if [ -n "${served}" ]; then
+              printf 'acceptable\t%s\n' "${served}" >> "${observations}"
+              if [ "${served}" != "${PREMUTATION_SERVED_VERSION_ID}" ]; then
+                break
+              fi
+              same=$((same + 1))
+              if [ "${same}" -ge 15 ]; then
+                break
+              fi
+            else
+              printf 'rejected\t\n' >> "${observations}"
+            fi
+            sleep 2
+          done
+          python .github/scripts/b62_claw_live_config_activation.py replacement-served-version-final \
+            --observations-file "${observations}" \
+            --pre-version "${PREMUTATION_SERVED_VERSION_ID}"
           echo 'WORKER_CODE_DEPLOY_SUBMITTED=0'
+          echo 'SETTINGS_PATCH=0'
+          echo 'UNRELATED_SECRET_MUTATION=0'
           echo 'SECRET_VALUES_READ=0'
 
       - name: Read back the replaced credential by binding name and type only

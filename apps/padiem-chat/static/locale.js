@@ -8,27 +8,27 @@
 
   const labels = {
     ko: {
-      "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
+      "meta-description": "누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스", "new-chat": "새 채팅", "search": "검색", "projects": "프로젝트", "saved": "저장한 답변", "recent": "추천 질문",
       "easy": "AI를 쉽게 설명해줘", "trip": "제주도 여행 계획", "dinner": "저녁 메뉴 추천", "close-menu": "메뉴 닫기", "open-menu": "메뉴 열기",
       "mode": "기본 대화", "theme": "테마", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "설정", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "언어", "done": "완료",
       "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Files", "nav-alerts": "알림", "nav-tasks": "작업", "workspace-menu": "워크스페이스 메뉴",
       "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트",
-      "claw-status": "수동 인입 미리보기 셸 — 백엔드 경로, 저장소, 커넥터, 발송 기능은 아직 연결되지 않았습니다.",
+      "claw-status": "요청을 미리 확인하거나 실제 실행으로 문서를 만들 수 있습니다. 커넥터와 발송은 아직 연결되지 않았습니다.",
       "claw-form-aria": "수동 인입 양식", "claw-actions-aria": "Claw 작업 선택", "claw-card-hint": "양식 작업으로 설정",
       "claw-field-channel": "원문 채널", "claw-field-action": "초안 작업", "claw-field-sender": "보낸 사람/거래처 힌트", "claw-field-request": "요청 원문 붙여넣기",
       "claw-sender-placeholder": "선택 입력: 고객사, 공급사, 발신자명", "claw-request-placeholder": "카카오톡, 문자, 이메일, Telegram, Discord 등으로 받은 업무 요청을 붙여넣으세요.",
       "claw-btn-generate": "초안 만들기", "claw-btn-execute": "실제 실행", "claw-result-title": "미리보기 결과", "claw-preview-empty": "요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.",
-      "claw-preview-notice": "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.",
+      "claw-preview-notice": "서버에서 만든 미리보기입니다. 저장되지 않으며 새로고침하면 사라집니다.",
       "claw-opt-quote": "견적서 초안", "claw-opt-order": "발주서 초안", "claw-opt-reply": "답장 초안", "claw-opt-summary": "요청사항 정리",
-      "claw-ctrl-md-title": "Markdown 다운로드", "claw-ctrl-md-note": "백엔드 연결 전까지 비활성화",
-      "claw-ctrl-docx-title": "DOCX 다운로드", "claw-ctrl-docx-note": "백엔드 연결 전까지 비활성화",
-      "claw-ctrl-mem-title": "메모리 저장 후보", "claw-ctrl-mem-note": "사용자 승인 필요 / 준비 중",
-      "claw-ctrl-email-title": "이메일 발송", "claw-ctrl-email-note": "사용자 승인 필요 / 준비 중",
-      "claw-ctrl-share-title": "공유 링크", "claw-ctrl-share-note": "저장소 연결 후 가능",
-      "claw-quote": "견적서 초안", "claw-order": "발주서 초안", "claw-reply": "답장 초안", "claw-requests": "요청사항 정리", "claw-cta-note": "각 카드는 준비 중입니다. 실행은 이후 버전에서 연결됩니다.",
-      "claw-mode-chip": "미리보기 · 읽기 전용", "claw-chip-quote": "견적서", "claw-chip-order": "발주서", "claw-chip-reply": "답장", "claw-chip-summary": "요청 정리",
-      "claw-meta-summary": "출처 · 거래처 (선택)", "claw-result-badge": "미리보기", "claw-result-badge-run": "실제 실행", "claw-result-open": "문서 열기", "claw-result-docx": "DOCX 다운로드", "claw-result-note": "백엔드 연결 전까지 미리보기 텍스트만 표시됩니다.",
+      "claw-ctrl-md-title": "Markdown 다운로드", "claw-ctrl-md-note": "이 작업공간에서는 아직 사용할 수 없습니다.",
+      "claw-ctrl-docx-title": "DOCX 문서", "claw-ctrl-docx-note": "실제 실행 후 결과 카드에서 다운로드할 수 있습니다.",
+      "claw-ctrl-mem-title": "메모리 저장 후보", "claw-ctrl-mem-note": "사용자 명시 승인이 필요합니다.",
+      "claw-ctrl-email-title": "이메일 발송", "claw-ctrl-email-note": "이메일 커넥터가 연결되면 사용할 수 있습니다.",
+      "claw-ctrl-share-title": "공유 링크", "claw-ctrl-share-note": "저장소 연결 후 사용할 수 있습니다.",
+      "claw-quote": "견적서 초안", "claw-order": "발주서 초안", "claw-reply": "답장 초안", "claw-requests": "요청사항 정리", "claw-cta-note": "미리보기와 실제 실행을 구분해 사용하세요.",
+      "claw-mode-chip": "미리보기 + 실제 실행", "claw-chip-quote": "견적서", "claw-chip-order": "발주서", "claw-chip-reply": "답장", "claw-chip-summary": "요청 정리",
+      "claw-meta-summary": "출처 · 거래처 (선택)", "claw-result-badge": "미리보기", "claw-result-badge-run": "실제 실행", "claw-result-open": "문서 열기", "claw-result-docx": "DOCX 다운로드", "claw-result-note": "미리보기는 저장되지 않습니다. 실제 실행 결과에는 문서가 포함될 수 있습니다.",
       "claw-workspace-help": "미리보기는 바로 확인하는 임시 결과, 실제 실행은 AI가 완성해 문서까지 준비합니다.",
       "claw-actions-hint": "미리보기: 저장 없이 바로 확인 · 실제 실행: AI가 완성하고 필요하면 문서로 저장",
       "claw-preview-empty-hint": "예: “A업체 견적 요청 — 품목 20개, 납기 9월 말”처럼 붙여넣어 보세요.",
@@ -36,7 +36,7 @@
       "claw-artifact-ready": "문서가 준비되었습니다. 아래에서 열어보거나 다운로드할 수 있습니다.",
       "claw-status-preview-running": "미리보기 생성 중...",
       "claw-status-execute-running": "실행 중... 잠시만 기다려 주세요.",
-      "claw-status-preview-success": "미리보기가 준비되었습니다.",
+      "claw-status-preview-success": "미리보기가 준비되었습니다.", "claw-error-preview": "미리보기를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
       "claw-status-execute-success": "실행이 완료되었습니다.",
       "claw-status-error": "실행 중 오류가 발생했습니다. 입력 내용을 확인한 뒤 다시 시도해 주세요.",
       "claw-error-empty": "요청 원문을 붙여넣은 뒤 실행해 주세요.",
@@ -46,6 +46,9 @@
       "claw-error-auth-needed": "로그인이 필요합니다. 다시 로그인한 뒤 시도해 주세요.",
       "claw-error-storage": "문서를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
       "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      "claw-approved-kicker": "PADIEM CLAW", "claw-approved-title": "승인된 메모리", "claw-approved-tagline": "명시적으로 승인한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.", "claw-approved-refresh-aria": "목록 새로고침", "claw-memory-review-aria": "메모리 저장 검토", "claw-approved-loading": "불러오는 중…", "claw-approved-empty": "승인된 메모리가 없습니다.",
+      "claw-memory-review-title": "메모리 저장 후보 (승인 필요)", "claw-memory-approve": "승인", "claw-memory-reject": "거절", "claw-memory-detail": "상세", "claw-memory-close": "닫기", "claw-memory-type": "유형", "claw-memory-name": "이름", "claw-memory-note": "노트", "claw-memory-channel": "채널", "claw-memory-status": "상태", "claw-memory-created": "생성", "claw-memory-updated": "수정", "claw-memory-status-approved": "승인됨", "claw-memory-type-customer_contact_candidate": "거래처 후보",
+      "claw-memory-error-approval": "명시적 승인이 필요합니다.", "claw-memory-error-invalid": "제안 형식이 올바르지 않습니다.", "claw-memory-error-auth": "로그인이 필요합니다.", "claw-memory-error-unavailable": "승인 메모리를 사용할 수 없습니다.", "claw-memory-error-not-found": "메모리를 찾을 수 없습니다.", "claw-memory-error-generic": "승인 메모리 처리에 실패했습니다.",
       "connectors-kicker": "CONNECTORS", "connectors-title": "Connectors", "connectors-note": "커넥터는 아직 연결되지 않았습니다. 연결 예정입니다.",
       "skills-kicker": "SKILLS", "skills-title": "Skills", "skills-note": "스킬은 준비 중입니다. 지금은 목록만 표시됩니다.",
       "skill-quote": "견적서 만들기", "skill-order": "발주서 만들기", "skill-reply": "답장 초안 만들기", "skill-requests": "요청사항 정리", "skill-extract": "거래처/품목 추출", "skill-custom": "사용자 정의 스킬 만들기", "capability-close-aria": "닫기",
@@ -67,30 +70,30 @@
       "answer-preparing": "답변 준비 중", "stored-conversation": "저장된 대화", "mock-response": "모의 응답 · 실제 모델 호출 없음", "ai-response": "AI 응답", "route-question": "어떤 AI가 답했나요?",
       "retry": "다시 시도", "timeout": "응답 시간 초과", "connection-error": "연결 오류", "project-delete": "프로젝트 삭제", "project-delete-aria": "현재 프로젝트 삭제",
       "code": "코드", "table": "표", "csv-download": "CSV 다운로드", "sources": "출처", "sources-aria": "답변 출처", "answer-actions": "답변 작업", "copied": "복사됨", "copy-failed": "복사 실패", "saved-state": "저장됨", "save-failed": "저장 실패",
-      "export": "대화 내보내기", "export-aria": "현재 대화를 텍스트 파일로 내보내기", "glass-background": "Padiem Glass 배경", "glass-background-selection": "Padiem Glass 배경 선택", "glass-a": "배경 A", "glass-b": "배경 B"
+      "export": "대화 내보내기", "export-aria": "현재 대화를 텍스트 파일로 내보내기", "active-project-note": "‘{name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.", "attachment-photo": "사진", "attachment-document": "문서", "project-files-used": "프로젝트 파일 {count}개를 참고했습니다.", "provider-route": "제공 경로: {provider}", "model-label": "모델: {model}", "answer-load-failed": "답변을 불러오지 못했습니다.", "try-again": "잠시 후 다시 시도해 주세요.", "generation-cancelled": "생성 취소됨", "generation-cancelled-copy": "생성 중인 답변을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "regenerate": "다시 생성", "attachment-image-note": "선택한 사진은 이 질문과 함께 한 번만 전송됩니다.", "attachment-document-note": "선택한 문서는 이 질문의 참고 자료로만 사용되며 대화 기록에 파일 내용이 저장되지 않습니다.", "image-read-failed": "사진을 읽지 못했습니다.", "document-read-failed": "문서를 읽지 못했습니다.", "empty-document": "빈 문서는 첨부할 수 없습니다.", "binary-document": "바이너리 파일은 텍스트 문서로 첨부할 수 없습니다.", "image-format-invalid": "사진 형식을 확인할 수 없습니다.", "image-data-empty": "사진 데이터가 비어 있습니다.", "file-read-failed": "파일을 읽지 못했습니다.", "project-files-count": "파일 {count}개", "project-manage-aria": "‘{name}’ 프로젝트 관리", "project-files-load-failed": "프로젝트 파일을 불러오지 못했습니다.", "character-count": "{count}자", "document-saving": "문서 저장 중…", "project-file-save-failed": "프로젝트 파일을 저장하지 못했습니다.", "project-file-delete-title": "프로젝트 파일을 삭제할까요?", "project-file-delete-message": "‘{name}’ 파일을 이 프로젝트에서 삭제합니다. 삭제한 파일은 복구할 수 없습니다.", "project-file-delete-failed": "프로젝트 파일을 삭제하지 못했습니다.", "project-name-required": "프로젝트 이름을 입력해 주세요.", "project-save-failed": "프로젝트를 저장하지 못했습니다.", "project-delete-title": "프로젝트를 삭제할까요?", "project-delete-message": "‘{name}’ 프로젝트를 삭제합니다. 프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 복구할 수 없습니다.", "project-delete-failed": "프로젝트를 삭제하지 못했습니다.", "signed-in": "로그인됨", "session-expired": "세션 만료", "guest": "게스트", "conversation-delete-aria": "‘{title}’ 대화 삭제", "conversation-delete-title": "대화를 삭제할까요?", "conversation-delete-message": "‘{title}’ 대화를 삭제합니다. 삭제한 대화는 복구할 수 없습니다.", "conversation-delete-failed": "대화를 삭제하지 못했습니다.", "conversation-load-failed": "저장된 대화를 불러오지 못했습니다.", "conversation-project-load-failed": "이 대화의 프로젝트를 불러오지 못했습니다.", "stream-format-invalid": "AI 스트리밍 응답 형식을 확인할 수 없습니다.", "stream-continue-failed": "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.", "stream-complete-invalid": "AI 스트리밍 응답이 정상적으로 완료되지 않았습니다.", "stream-done-duplicate": "AI 스트리밍 완료 신호가 중복되었습니다.", "stream-incomplete": "AI 스트리밍 응답이 완료되지 않았습니다. 다시 시도해 주세요.", "answer-cancelled-note": "답변 생성을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "connectors-grid-aria": "연결 예정 커넥터", "skills-grid-aria": "준비 중 스킬", "coming-features-aria": "준비 중인 기능", "glass-background": "Padiem Glass 배경", "glass-background-selection": "Padiem Glass 배경 선택", "glass-a": "배경 A", "glass-b": "배경 B"
     },
     en: {
-      "new-chat": "New chat", "search": "Search", "projects": "Projects", "saved": "Saved answers", "recent": "Suggested questions",
+      "meta-description": "Padiem’s general AI interface, ready for everyday work.", "new-chat": "New chat", "search": "Search", "projects": "Projects", "saved": "Saved answers", "recent": "Suggested questions",
       "easy": "Explain AI simply", "trip": "Plan a Jeju trip", "dinner": "Suggest dinner", "close-menu": "Close menu", "open-menu": "Open menu",
       "mode": "Standard chat", "theme": "Theme", "light": "Light", "dark": "Dark", "cinematic": "Cinematic", "home-theme": "Padiem Home", "glass-theme": "Padiem Glass",
       "home-link": "Padiem Home", "settings": "Settings", "settings-kicker": "Padiem Chat", "appearance": "APPEARANCE", "language": "LANGUAGE", "language-choice": "Language", "done": "Done",
       "nav-claw": "Claw", "nav-connectors": "Connectors", "nav-skills": "Skills", "nav-files": "Files", "nav-alerts": "Alerts", "nav-tasks": "Tasks", "workspace-menu": "Workspace menu",
       "claw-kicker": "PADIEM CLAW", "claw-title": "Padiem Claw", "claw-tagline": "Paste requests received via KakaoTalk, text, or email to prepare quote, order, and reply drafts — a work agent",
-      "claw-status": "Manual intake preview shell — backend route, storage, connectors, and sending actions are not connected yet.",
+      "claw-status": "Review a request with Preview or create a document with Real run. Connectors and sending are not connected yet.",
       "claw-form-aria": "Manual intake form", "claw-actions-aria": "Select Claw action", "claw-card-hint": "Set form action",
       "claw-field-channel": "Source channel", "claw-field-action": "Draft action", "claw-field-sender": "Sender hint", "claw-field-request": "Paste request text",
       "claw-sender-placeholder": "Optional: customer, vendor, sender name", "claw-request-placeholder": "Paste a KakaoTalk, SMS, email, Telegram, Discord, or other business request here.",
       "claw-btn-generate": "Create preview draft", "claw-btn-execute": "Run with real model", "claw-result-title": "Preview result", "claw-preview-empty": "Paste request text before creating a preview.",
-      "claw-preview-notice": "Client-side preview only. This draft is not stored and is lost on refresh.",
+      "claw-preview-notice": "Server-generated preview. It is not stored and is lost on refresh.",
       "claw-opt-quote": "Quote draft", "claw-opt-order": "Order draft", "claw-opt-reply": "Reply draft", "claw-opt-summary": "Request summary",
-      "claw-ctrl-md-title": "Markdown download", "claw-ctrl-md-note": "Disabled until backend wiring",
-      "claw-ctrl-docx-title": "DOCX download", "claw-ctrl-docx-note": "Disabled until backend wiring",
-      "claw-ctrl-mem-title": "Memory save proposal", "claw-ctrl-mem-note": "Approval-gated / coming soon",
-      "claw-ctrl-email-title": "Email send", "claw-ctrl-email-note": "User approval required / coming soon",
-      "claw-ctrl-share-title": "Share link", "claw-ctrl-share-note": "Available only after storage connection",
-      "claw-quote": "Quote draft", "claw-order": "Order draft", "claw-reply": "Reply draft", "claw-requests": "Request summary", "claw-cta-note": "Each card is in preparation. Actions will be connected in a later version.",
-      "claw-mode-chip": "Preview · read-only", "claw-chip-quote": "Quote", "claw-chip-order": "Order", "claw-chip-reply": "Reply", "claw-chip-summary": "Summarize",
-      "claw-meta-summary": "Source · counterparty (optional)", "claw-result-badge": "Preview", "claw-result-badge-run": "Real run", "claw-result-open": "Open document", "claw-result-docx": "Download DOCX", "claw-result-note": "Only preview text is shown until the backend is connected.",
+      "claw-ctrl-md-title": "Markdown download", "claw-ctrl-md-note": "Not available in this workspace yet.",
+      "claw-ctrl-docx-title": "DOCX document", "claw-ctrl-docx-note": "Download it from the result card after a Real run.",
+      "claw-ctrl-mem-title": "Memory save proposal", "claw-ctrl-mem-note": "Requires explicit user approval.",
+      "claw-ctrl-email-title": "Email send", "claw-ctrl-email-note": "Available when the email connector is connected.",
+      "claw-ctrl-share-title": "Share link", "claw-ctrl-share-note": "Available after storage is connected.",
+      "claw-quote": "Quote draft", "claw-order": "Order draft", "claw-reply": "Reply draft", "claw-requests": "Request summary", "claw-cta-note": "Use Preview and Real run as distinct actions.",
+      "claw-mode-chip": "Preview + Real run", "claw-chip-quote": "Quote", "claw-chip-order": "Order", "claw-chip-reply": "Reply", "claw-chip-summary": "Summarize",
+      "claw-meta-summary": "Source · counterparty (optional)", "claw-result-badge": "Preview", "claw-result-badge-run": "Real run", "claw-result-open": "Open document", "claw-result-docx": "Download DOCX", "claw-result-note": "Preview results are not stored. A Real run may include a document.",
       "claw-workspace-help": "Preview shows instantly without saving; Real run lets AI complete and save a document.",
       "claw-actions-hint": "Preview: check instantly without saving · Real run: AI completes and saves a document if needed",
       "claw-preview-empty-hint": "Try e.g. “Quote request from A Corp — 20 items, due end of Sep.”",
@@ -98,7 +101,7 @@
       "claw-artifact-ready": "Document is ready. Open or download it below.",
       "claw-status-preview-running": "Generating preview...",
       "claw-status-execute-running": "Running... please wait a moment.",
-      "claw-status-preview-success": "Preview is ready.",
+      "claw-status-preview-success": "Preview is ready.", "claw-error-preview": "Preview could not be loaded. Please try again shortly.",
       "claw-status-execute-success": "Done.",
       "claw-status-error": "Something went wrong. Please check your input and try again.",
       "claw-error-empty": "Paste your request before running.",
@@ -108,6 +111,9 @@
       "claw-error-auth-needed": "Please sign in again to continue.",
       "claw-error-storage": "Could not save the document. Please try again shortly.",
       "claw-error-generic": "Something went wrong. Please try again shortly.",
+      "claw-approved-kicker": "PADIEM CLAW", "claw-approved-title": "Approved memory", "claw-approved-tagline": "Only explicitly approved memory is shown. Rejected proposals are not saved.", "claw-approved-refresh-aria": "Refresh memory list", "claw-memory-review-aria": "Review memory proposal", "claw-approved-loading": "Loading…", "claw-approved-empty": "No approved memory.",
+      "claw-memory-review-title": "Memory save proposal (approval required)", "claw-memory-approve": "Approve", "claw-memory-reject": "Reject", "claw-memory-detail": "Details", "claw-memory-close": "Close", "claw-memory-type": "Type", "claw-memory-name": "Name", "claw-memory-note": "Note", "claw-memory-channel": "Channel", "claw-memory-status": "Status", "claw-memory-created": "Created", "claw-memory-updated": "Updated", "claw-memory-status-approved": "Approved", "claw-memory-type-customer_contact_candidate": "Counterparty candidate",
+      "claw-memory-error-approval": "Explicit approval is required.", "claw-memory-error-invalid": "The proposal format is invalid.", "claw-memory-error-auth": "Please sign in.", "claw-memory-error-unavailable": "Approved memory is unavailable.", "claw-memory-error-not-found": "Memory was not found.", "claw-memory-error-generic": "Approved memory could not be processed.",
       "connectors-kicker": "CONNECTORS", "connectors-title": "Connectors", "connectors-note": "Connectors are not connected yet. Coming soon.",
       "skills-kicker": "SKILLS", "skills-title": "Skills", "skills-note": "Skills are in preparation. Only the list is shown for now.",
       "skill-quote": "Create quote", "skill-order": "Create order", "skill-reply": "Create reply draft", "skill-requests": "Summarize requests", "skill-extract": "Extract partners and items", "skill-custom": "Create custom skill", "capability-close-aria": "Close",
@@ -129,7 +135,7 @@
       "answer-preparing": "Preparing answer", "stored-conversation": "Saved conversation", "mock-response": "Preview response · no live model call", "ai-response": "AI response", "route-question": "Which AI answered?",
       "retry": "Try again", "timeout": "Response timed out", "connection-error": "Connection error", "project-delete": "Delete project", "project-delete-aria": "Delete current project",
       "code": "Code", "table": "Table", "csv-download": "Download CSV", "sources": "Sources", "sources-aria": "Answer sources", "answer-actions": "Answer actions", "copied": "Copied", "copy-failed": "Copy failed", "saved-state": "Saved", "save-failed": "Save failed",
-      "export": "Export conversation", "export-aria": "Export the current conversation as a text file", "glass-background": "Padiem Glass background", "glass-background-selection": "Padiem Glass background selection", "glass-a": "Background A", "glass-b": "Background B"
+      "export": "Export conversation", "export-aria": "Export the current conversation as a text file", "active-project-note": "Using instructions and saved files from project ‘{name}’ in this conversation.", "attachment-photo": "Photo", "attachment-document": "Document", "project-files-used": "Referenced {count} project file(s).", "provider-route": "Provider route: {provider}", "model-label": "Model: {model}", "answer-load-failed": "We couldn’t load the answer.", "try-again": "Please try again shortly.", "generation-cancelled": "Generation cancelled", "generation-cancelled-copy": "Answer generation was cancelled. Incomplete content cannot be saved or exported.", "regenerate": "Generate again", "attachment-image-note": "The selected photo will be sent once with this question.", "attachment-document-note": "The selected document is used only as reference for this question. Its contents are not stored in conversation history.", "image-read-failed": "We couldn’t read the photo.", "document-read-failed": "We couldn’t read the document.", "empty-document": "An empty document cannot be attached.", "binary-document": "A binary file cannot be attached as a text document.", "image-format-invalid": "We couldn’t verify the photo format.", "image-data-empty": "The photo data is empty.", "file-read-failed": "We couldn’t read the file.", "project-files-count": "{count} file(s)", "project-manage-aria": "Manage project ‘{name}’", "project-files-load-failed": "We couldn’t load the project files.", "character-count": "{count} chars", "document-saving": "Saving document…", "project-file-save-failed": "We couldn’t save the project file.", "project-file-delete-title": "Delete project file?", "project-file-delete-message": "Remove ‘{name}’ from this project? This cannot be undone.", "project-file-delete-failed": "We couldn’t delete the project file.", "project-name-required": "Enter a project name.", "project-save-failed": "We couldn’t save the project.", "project-delete-title": "Delete project?", "project-delete-message": "Delete project ‘{name}’? Its conversations remain, but the project link is removed. This cannot be undone.", "project-delete-failed": "We couldn’t delete the project.", "signed-in": "Signed in", "session-expired": "Session expired", "guest": "Guest", "conversation-delete-aria": "Delete conversation ‘{title}’", "conversation-delete-title": "Delete conversation?", "conversation-delete-message": "Delete conversation ‘{title}’? This cannot be undone.", "conversation-delete-failed": "We couldn’t delete the conversation.", "conversation-load-failed": "We couldn’t load the saved conversation.", "conversation-project-load-failed": "We couldn’t load this conversation’s project.", "stream-format-invalid": "We couldn’t read the streaming response format.", "stream-continue-failed": "The streaming answer stopped. Please try again.", "stream-complete-invalid": "The streaming answer did not complete correctly.", "stream-done-duplicate": "The streaming completion signal was duplicated.", "stream-incomplete": "The streaming answer did not complete. Please try again.", "answer-cancelled-note": "Answer generation was cancelled. Incomplete content cannot be saved or exported.", "connectors-grid-aria": "Connectors coming soon", "skills-grid-aria": "Skills coming soon", "coming-features-aria": "Features coming soon", "glass-background": "Padiem Glass background", "glass-background-selection": "Padiem Glass background selection", "glass-a": "Background A", "glass-b": "Background B"
     }
   };
 
@@ -203,10 +209,13 @@
   function setCombinedHeading(lang) {
     const heading = document.querySelector(".empty-state h1");
     if (!heading) return;
-    const first = text("hello", lang);
-    const second = text("ask", lang);
-    const br = document.createElement("br");
-    heading.replaceChildren(document.createTextNode(first), br, document.createTextNode(second));
+    const first = document.createElement("span");
+    first.dataset.localeKey = "hello";
+    first.textContent = text("hello", lang);
+    const second = document.createElement("span");
+    second.dataset.localeKey = "ask";
+    second.textContent = text("ask", lang);
+    heading.replaceChildren(first, document.createElement("br"), second);
   }
 
   function syncLoginButton(lang) {
@@ -252,7 +261,7 @@
       ["#newChatButton span:last-child", "new-chat"], [".side-item:nth-child(1) span:nth-child(2)", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
       ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"], [".model-pill span:last-child", "mode"],
       [".empty-copy", "copy"], [".starter:nth-child(1) strong", "easy-title"], [".starter:nth-child(1) small", "easy-copy"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
-      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], [".sidebar-footer span:last-child", "footer"], [".side-item:nth-child(1) .mini-badge", "coming-soon"],
+      [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"], [".side-item:nth-child(1) .mini-badge", "coming-soon"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
       [".starter:nth-child(4) strong", "web-starter-title"], [".starter:nth-child(4) small", "web-starter-copy"], [".project-banner-copy > span", "project-banner"], ["#editProjectButton", "project-edit"], ["#exitProjectButton", "project-exit"],
       ["#projectDialogTitle", "project-new"], ["label[for='projectNameInput']", "project-name"], ["#projectFilesTitle", "project-files"], [".project-files-heading small", "project-files-limit"], [".project-file-add", "project-file-add"],
@@ -263,6 +272,21 @@
     document.querySelectorAll("[data-locale-key]").forEach((element) => {
       const key = element.dataset.localeKey;
       if (key) element.textContent = text(key, lang);
+    });
+    document.querySelectorAll("[data-locale-aria-label]").forEach((element) => {
+      const key = element.dataset.localeAriaLabel;
+      if (key) element.setAttribute("aria-label", text(key, lang));
+    });
+    [
+      ["data-locale-placeholder", "placeholder", "localePlaceholder"],
+      ["data-locale-title", "title", "localeTitle"],
+      ["data-locale-alt", "alt", "localeAlt"],
+      ["data-locale-content", "content", "localeContent"]
+    ].forEach(([attribute, target, datasetKey]) => {
+      document.querySelectorAll(`[${attribute}]`).forEach((element) => {
+        const key = element.dataset[datasetKey];
+        if (key) element.setAttribute(target, text(key, lang));
+      });
     });
     setCombinedHeading(lang);
     const input = document.getElementById("messageInput");
@@ -277,9 +301,10 @@
     if (clawRequestText) clawRequestText.placeholder = text("claw-request-placeholder", lang);
     const instructionLabel = document.querySelector("label[for='projectInstructionsInput']");
     if (instructionLabel) {
-      const optional = instructionLabel.querySelector("span") || document.createElement("span");
-      instructionLabel.replaceChildren(document.createTextNode(`${text("project-instructions", lang)} `), optional);
-      optional.textContent = text("optional", lang);
+      const primary = instructionLabel.querySelector("[data-project-instructions-label]");
+      const optional = instructionLabel.querySelector("[data-project-instructions-optional]");
+      if (primary) primary.textContent = text("project-instructions", lang);
+      if (optional) optional.textContent = text("optional", lang);
     }
     setText(".project-form-note", "project-instructions-note", lang);
     [
@@ -288,7 +313,7 @@
       ["#themePicker", "aria-label", "theme-picker"], ["#languagePicker", "aria-label", "language-picker"], [".starter-grid", "aria-label", "starter-grid"], [".composer-wrap", "aria-label", "composer"], ["#attachmentThumb", "alt", "attachment-preview-alt"],
       ["#removeAttachment", "aria-label", "attachment-remove"], [".composer-tools .tool-button:nth-of-type(2)", "title", "web-unavailable-title"], ["#deepResearchButton", "title", "research-unavailable-title"], ["#cancelStreamButton", "aria-label", "cancel-answer"], ["#sendButton", "aria-label", "send"],
       ["#projectDialogClose", "aria-label", "project-close"], ["#savedOutputClose", "aria-label", "saved-output-close"], ["#savedOutputContent", "aria-label", "saved-output-content"],
-      ["#clawManualForm", "aria-label", "claw-form-aria"], [".claw-actions-grid", "aria-label", "claw-actions-aria"]
+      ["#clawManualForm", "aria-label", "claw-form-aria"], [".claw-chips", "aria-label", "claw-actions-aria"], ["#connectorsDialog .capability-grid", "aria-label", "connectors-grid-aria"], ["#skillsDialog .capability-grid", "aria-label", "skills-grid-aria"], [".claw-disabled-controls", "aria-label", "coming-features-aria"]
     ].forEach(([selector, attribute, key]) => setAttribute(selector, attribute, key, lang));
     const messageLabel = document.querySelector("label[for='messageInput']");
     if (messageLabel) messageLabel.textContent = text("message-input-label", lang);
