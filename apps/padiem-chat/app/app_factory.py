@@ -26,6 +26,8 @@ from .claw_memory_routes import (
     claw_memory_list,
     claw_memory_reject,
 )
+from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
+from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -97,6 +99,7 @@ def create_app(
     claw_p01_adapter=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
+    claw_task_alert_store=None,
     telemetry_emitter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -126,6 +129,8 @@ def create_app(
         Route("/api/claw/memory/reject", claw_memory_reject, methods=["POST"]),
         Route("/api/claw/memory", claw_memory_list, methods=["GET"]),
         Route("/api/claw/memory/{memory_id}", claw_memory_detail, methods=["GET"]),
+        Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
+        Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -187,4 +192,14 @@ def create_app(
         except Exception:
             _approved_memory_store = None
     app.state.approved_memory_store = _approved_memory_store
+
+    # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
+    # No schema creation or alternate DB authority is introduced here.
+    _task_alert_store = claw_task_alert_store
+    if _task_alert_store is None and d1_binding is not None:
+        try:
+            _task_alert_store = D1ClawTaskAlertStore(d1_binding)
+        except Exception:
+            _task_alert_store = None
+    app.state.claw_task_alert_store = _task_alert_store
     return app
