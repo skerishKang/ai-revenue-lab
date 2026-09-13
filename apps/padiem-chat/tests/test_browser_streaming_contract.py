@@ -10,6 +10,7 @@ APP_PATH = ROOT / "static" / "app.js"
 TRANSPORT_PATH = ROOT / "static" / "chat-transport.js"
 LIFECYCLE_PATH = ROOT / "static" / "message-lifecycle.js"
 INDEX_PATH = ROOT / "static" / "index.html"
+LOCALE_PATH = ROOT / "static" / "locale.js"
 
 
 def _source() -> str:
@@ -210,7 +211,8 @@ def test_streamed_browser_path_never_renders_provider_route_details() -> None:
 
     assert "route-details" not in stream_source
     assert "provider" not in stream_source
-    assert 'textContent = "AI 응답"' in stream_source
+    assert 'textContent = uiT("ai-response")' in stream_source
+    assert '"ai-response": "AI 응답"' in LOCALE_PATH.read_text(encoding="utf-8")
 
 
 def test_answer_lifecycle_is_explicit_and_success_actions_are_completed_only() -> None:
@@ -245,8 +247,11 @@ def test_cancel_and_retry_are_product_surface_only_and_preserve_stream_boundary(
     assert "cancelActiveStream" in source
     assert 'activeRequestCancelReason = "user_cancel"' in source
     assert "renderCancelled(article" in source
-    assert 'textContent = "생성 취소됨"' in source
-    assert '"다시 생성"' in source
+    assert 'textContent = uiT("generation-cancelled")' in source
+    assert 'uiT("regenerate")' in source
+    locale = LOCALE_PATH.read_text(encoding="utf-8")
+    assert '"generation-cancelled": "생성 취소됨"' in locale
+    assert '"regenerate": "다시 생성"' in locale
     assert 'retry.textContent = actionLabel' in source
     assert "requestStreamingAnswer(article" in source
     assert "chatTransport.requestStreaming(payload, signal)" in source
