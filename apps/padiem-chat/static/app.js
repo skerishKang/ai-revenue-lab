@@ -55,9 +55,9 @@
   projectDeleteButton.id = "projectDeleteButton";
   projectDeleteButton.type = "button";
   projectDeleteButton.className = "project-danger";
-  projectDeleteButton.textContent = "프로젝트 삭제";
+  projectDeleteButton.textContent = uiT("project-delete");
   projectDeleteButton.hidden = true;
-  projectDeleteButton.setAttribute("aria-label", "현재 프로젝트 삭제");
+  projectDeleteButton.setAttribute("aria-label", uiT("project-delete-aria"));
   projectFormActions.prepend(projectDeleteButton);
   const projectFilesPanel = document.getElementById("projectFilesPanel");
   const projectFileInput = document.getElementById("projectFileInput");
@@ -98,11 +98,21 @@
   let editingProjectId = null;
   let dialogProjectFiles = [];
 
+
+  function uiT(key, variables = null) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const value = window.__padiemLocale.text(key, variables);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return key;
+  }
   function attachmentCopy() {
     return attachmentCapabilities.copy(document.documentElement.lang);
   }
   function idleNote() {
-    return activeProject ? `‘${activeProject.name}’ 프로젝트의 지침과 저장 파일을 이 대화에 적용합니다.` : attachmentCopy().idleNote;
+    return activeProject ? uiT("active-project-note", { name: activeProject.name }) : attachmentCopy().idleNote;
   }
   function setNote(text, state = "normal") {
     runtimeNote.textContent = text;
@@ -146,7 +156,7 @@
     if (attachment) {
       const meta = document.createElement("span");
       meta.className = "message-attachment-meta";
-      const label = attachment.type === "image" ? "사진" : "문서";
+      const label = attachment.type === "image" ? uiT("attachment-photo") : uiT("attachment-document");
       meta.textContent = `${label} · ${attachment.name} · ${formatBytes(attachment.byteSize)}`;
       bubble.appendChild(meta);
     }
@@ -165,12 +175,12 @@
     content.replaceChildren();
     const typing = document.createElement("span");
     typing.className = "typing";
-    typing.setAttribute("aria-label", "답변 준비 중");
+    typing.setAttribute("aria-label", uiT("answer-preparing"));
     typing.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
     content.appendChild(typing);
   }
   function renderStoredAssistant(text) {
-    const article = addAssistantShell("저장된 대화");
+    const article = addAssistantShell(uiT("stored-conversation"));
     const content = article.querySelector(".assistant-content");
     const paragraph = document.createElement("p");
     paragraph.textContent = text;
@@ -186,34 +196,34 @@
     if (Number.isInteger(result.project_files_used) && result.project_files_used > 0) {
       const used = document.createElement("small");
       used.className = "reference-note";
-      used.textContent = `프로젝트 파일 ${result.project_files_used}개를 참고했습니다.`;
+      used.textContent = uiT("project-files-used", { count: result.project_files_used });
       content.appendChild(used);
     }
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
-    const runtimeLabel = result.runtime === "mock" ? "모의 응답 · 실제 모델 호출 없음" : "AI 응답";
+    const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : uiT("ai-response");
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     if (result.runtime === "b14" && result.route && (result.route.model || result.route.provider)) {
       const details = document.createElement("details");
       details.className = "route-details";
       const summary = document.createElement("summary");
-      summary.textContent = "어떤 AI가 답했나요?";
+      summary.textContent = uiT("route-question");
       const meta = document.createElement("p");
       const pieces = [];
-      if (result.route.provider) pieces.push(`제공 경로: ${result.route.provider}`);
-      if (result.route.model) pieces.push(`모델: ${result.route.model}`);
+      if (result.route.provider) pieces.push(uiT("provider-route", { provider: result.route.provider }));
+      if (result.route.model) pieces.push(uiT("model-label", { model: result.route.model }));
       meta.textContent = pieces.join(" · ");
       details.append(summary, meta);
       content.appendChild(details);
     }
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = "다시 시도") {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
-    strong.textContent = "답변을 불러오지 못했습니다.";
+    strong.textContent = uiT("answer-load-failed");
     const p = document.createElement("p");
-    p.textContent = message || "잠시 후 다시 시도해 주세요.";
+    p.textContent = message || uiT("try-again");
     const retry = document.createElement("button");
     retry.type = "button";
     retry.className = "retry-button";
@@ -235,7 +245,7 @@
   function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
-    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? "응답 시간 초과" : "연결 오류";
+    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -244,7 +254,7 @@
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? "응답 시간 초과" : "연결 오류";
+    article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
     content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
@@ -253,8 +263,8 @@
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
-    article.querySelector("[data-runtime-label]").textContent = "생성 취소됨";
-    content.appendChild(buildRetryBox("생성 중인 답변을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", article, retryMessages, retrySkill, null, retryContext, "다시 생성"));
+    article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
+    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
@@ -295,13 +305,13 @@
       attachmentThumb.src = selectedAttachment.previewUrl;
       attachmentThumb.hidden = false;
       attachmentKind.hidden = true;
-      setNote("선택한 사진은 이 질문과 함께 한 번만 전송됩니다.");
+      setNote(uiT("attachment-image-note"));
     } else {
       attachmentThumb.removeAttribute("src");
       attachmentThumb.hidden = true;
       attachmentKind.hidden = false;
       attachmentKind.textContent = extensionOf(selectedAttachment.name).replace(".", "").toUpperCase() || "DOC";
-      setNote("선택한 문서는 이 질문의 참고 자료로만 사용되며 대화 기록에 파일 내용이 저장되지 않습니다.");
+      setNote(uiT("attachment-document-note"));
     }
     attachmentName.textContent = selectedAttachment.name;
     attachmentSize.textContent = formatBytes(selectedAttachment.byteSize);
@@ -311,7 +321,7 @@
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.addEventListener("load", () => resolve(reader.result), { once: true });
-      reader.addEventListener("error", () => reject(new Error("사진을 읽지 못했습니다.")), { once: true });
+      reader.addEventListener("error", () => reject(new Error(uiT("image-read-failed"))), { once: true });
       reader.readAsDataURL(file);
     });
   }
@@ -319,7 +329,7 @@
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.addEventListener("load", () => resolve(reader.result), { once: true });
-      reader.addEventListener("error", () => reject(new Error("문서를 읽지 못했습니다.")), { once: true });
+      reader.addEventListener("error", () => reject(new Error(uiT("document-read-failed"))), { once: true });
       reader.readAsText(file, "UTF-8");
     });
   }
@@ -328,11 +338,11 @@
     if (!mediaType) throw new Error(attachmentCopy().unsupportedFormat);
     if (file.size < 1 || file.size > MAX_DOCUMENT_BYTES) throw new Error(attachmentCopy().textTooLarge);
     const raw = await readAsText(file);
-    if (typeof raw !== "string") throw new Error("문서를 읽지 못했습니다.");
+    if (typeof raw !== "string") throw new Error(uiT("document-read-failed"));
     const text = raw.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    if (!text.trim()) throw new Error("빈 문서는 첨부할 수 없습니다.");
+    if (!text.trim()) throw new Error(uiT("empty-document"));
     if (text.length > MAX_DOCUMENT_CHARS) throw new Error(attachmentCopy().textTooLong);
-    if (text.includes("\u0000")) throw new Error("바이너리 파일은 텍스트 문서로 첨부할 수 없습니다.");
+    if (text.includes("\u0000")) throw new Error(uiT("binary-document"));
     return { type: "document", name: file.name || "document.txt", mediaType, text, byteSize: file.size };
   }
   async function selectImage(file) {
@@ -340,9 +350,9 @@
     if (file.size < 1 || file.size > MAX_IMAGE_BYTES) throw new Error(attachmentCopy().imageTooLarge);
     const dataUrl = await readAsDataUrl(file);
     const expectedPrefix = `data:${file.type};base64,`;
-    if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error("사진 형식을 확인할 수 없습니다.");
+    if (typeof dataUrl !== "string" || !dataUrl.startsWith(expectedPrefix)) throw new Error(uiT("image-format-invalid"));
     const base64 = dataUrl.slice(expectedPrefix.length);
-    if (!base64) throw new Error("사진 데이터가 비어 있습니다.");
+    if (!base64) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, base64, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function selectAttachment(file) {
@@ -357,7 +367,7 @@
       renderSelectedAttachment();
     } catch (error) {
       attachmentFileInput.value = "";
-      setNote(error instanceof Error ? error.message : "파일을 읽지 못했습니다.", "error");
+      setNote(error instanceof Error ? error.message : uiT("file-read-failed"), "error");
     }
   }
   function attachmentPayload(attachment) {
@@ -386,14 +396,14 @@
     projectsEmpty.hidden = true;
     projectsNavButton.disabled = true;
     projectsNavButton.setAttribute("aria-disabled", "true");
-    projectsBadge.textContent = authState.authenticated ? "설정 필요" : "로그인 후";
+    projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
     renderProjectState();
   }
   function renderProjectState() {
     projectBanner.hidden = !activeProject;
     activeProjectName.textContent = activeProject ? activeProject.name : "";
     activeProjectFiles.hidden = !activeProject || activeProjectFileCount < 1;
-    activeProjectFiles.textContent = activeProjectFileCount > 0 ? `파일 ${activeProjectFileCount}개` : "";
+    activeProjectFiles.textContent = activeProjectFileCount > 0 ? uiT("project-files-count", { count: activeProjectFileCount }) : "";
     projectsList.querySelectorAll(".project-item").forEach((button) => {
       button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
     });
@@ -416,13 +426,13 @@
       const manage = document.createElement("button");
       manage.type = "button";
       manage.className = "project-manage";
-      manage.textContent = "관리";
-      manage.setAttribute("aria-label", `‘${project.name}’ 프로젝트 관리`);
+      manage.textContent = uiT("manage");
+      manage.setAttribute("aria-label", uiT("project-manage-aria", { name: project.name }));
       manage.addEventListener("click", () => openProjectDialog(project));
       row.append(button, manage);
       projectsList.appendChild(row);
     });
-    projectsBadge.textContent = projects.length ? String(projects.length) : "새로 만들기";
+    projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
@@ -431,7 +441,7 @@
     }
     projectsNavButton.disabled = true;
     projectsNavButton.setAttribute("aria-disabled", "true");
-    projectsBadge.textContent = "확인 중";
+    projectsBadge.textContent = uiT("checking");
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
@@ -472,7 +482,7 @@
     if (!authState.authenticated || !authState.project_files_ready || !projectId) return [];
     const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/files`, { headers: { "Accept": "application/json" }, cache: "no-store" });
     const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.files)) throw new Error("프로젝트 파일을 불러오지 못했습니다.");
+    if (!response.ok || !data || !Array.isArray(data.files)) throw new Error(uiT("project-files-load-failed"));
     return data.files.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
   }
   async function refreshActiveProjectFileCount() {
@@ -499,11 +509,11 @@
       const strong = document.createElement("strong");
       strong.textContent = file.name;
       const small = document.createElement("small");
-      small.textContent = `${file.media_type} · ${Number(file.content_chars || 0).toLocaleString()}자`;
+      small.textContent = `${file.media_type} · ${uiT("character-count", { count: Number(file.content_chars || 0).toLocaleString() })}`;
       copy.append(strong, small);
       const remove = document.createElement("button");
       remove.type = "button";
-      remove.textContent = "삭제";
+      remove.textContent = uiT("delete");
       remove.addEventListener("click", () => deleteProjectFile(file.id, file.name));
       row.append(copy, remove);
       projectFilesList.appendChild(row);
@@ -523,7 +533,7 @@
         renderProjectState();
       }
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : "프로젝트 파일을 불러오지 못했습니다.";
+      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-files-load-failed");
       projectFormError.hidden = false;
     }
   }
@@ -540,7 +550,7 @@
     if (busy) {
       projectFilesPanel.setAttribute("aria-busy", "true");
       projectFileInput.setAttribute("aria-disabled", "true");
-      if (projectFileStatus) { projectFileStatus.textContent = "문서 저장 중…"; projectFileStatus.hidden = false; }
+      if (projectFileStatus) { projectFileStatus.textContent = uiT("document-saving"); projectFileStatus.hidden = false; }
     } else {
       projectFilesPanel.removeAttribute("aria-busy");
       projectFileInput.removeAttribute("aria-disabled");
@@ -574,12 +584,12 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
-        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "프로젝트 파일을 저장하지 못했습니다.";
+        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-file-save-failed");
         throw new Error(message);
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : "프로젝트 파일을 저장하지 못했습니다.";
+      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-file-save-failed");
       projectFormError.hidden = false;
     } finally {
       setProjectFileBusy(false);
@@ -588,18 +598,18 @@
   async function deleteProjectFile(fileId, name) {
     if (!editingProjectId || !authState.project_files_ready) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: "프로젝트 파일을 삭제할까요?",
-      message: `‘${name}’ 파일을 이 프로젝트에서 삭제합니다. 삭제한 파일은 복구할 수 없습니다.`,
-      cancelLabel: "취소",
-      confirmLabel: "삭제",
+      title: uiT("project-file-delete-title"),
+      message: uiT("project-file-delete-message", { name }),
+      cancelLabel: uiT("cancel"),
+      confirmLabel: uiT("delete"),
     });
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("프로젝트 파일을 삭제하지 못했습니다.");
+      if (!response.ok) throw new Error(uiT("project-file-delete-failed"));
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : "프로젝트 파일을 삭제하지 못했습니다.";
+      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-file-delete-failed");
       projectFormError.hidden = false;
     }
   }
@@ -646,7 +656,7 @@
   function openProjectDialog(project = null) {
     if (!projectsReady || !authState.authenticated || inFlight) return;
     editingProjectId = project ? project.id : null;
-    projectDialogTitle.textContent = project ? "프로젝트 지침·파일" : "새 프로젝트";
+    projectDialogTitle.textContent = project ? uiT("project-edit-title") : uiT("project-new");
     projectNameInput.value = project ? project.name : "";
     projectInstructionsInput.value = project && typeof project.instructions === "string" ? project.instructions : "";
     projectFormError.textContent = "";
@@ -675,7 +685,7 @@
     const name = projectNameInput.value.trim();
     const instructions = projectInstructionsInput.value.trim();
     if (!name) {
-      projectFormError.textContent = "프로젝트 이름을 입력해 주세요.";
+      projectFormError.textContent = uiT("project-name-required");
       projectFormError.hidden = false;
       return;
     }
@@ -691,7 +701,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.project) {
-        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : "프로젝트를 저장하지 못했습니다.";
+        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-save-failed");
         throw new Error(message);
       }
       const saved = data.project;
@@ -703,7 +713,7 @@
       closeProjectDialog();
       if (!editing) selectProject(saved);
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : "프로젝트를 저장하지 못했습니다.";
+      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-save-failed");
       projectFormError.hidden = false;
       projectSaveButton.disabled = false;
     }
@@ -714,10 +724,10 @@
     const project = projectById(editingProjectId);
     if (!project) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: "프로젝트를 삭제할까요?",
-      message: `‘${project.name}’ 프로젝트를 삭제합니다. 프로젝트의 대화는 남지만 프로젝트 연결은 해제됩니다. 삭제한 프로젝트는 복구할 수 없습니다.`,
-      cancelLabel: "취소",
-      confirmLabel: "삭제",
+      title: uiT("project-delete-title"),
+      message: uiT("project-delete-message", { name: project.name }),
+      cancelLabel: uiT("cancel"),
+      confirmLabel: uiT("delete"),
     });
     if (!confirmed) return;
     const deletingId = editingProjectId;
@@ -735,7 +745,7 @@
       if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
         const message = data && data.error && typeof data.error.message === "string"
           ? data.error.message
-          : "프로젝트를 삭제하지 못했습니다.";
+          : uiT("project-delete-failed");
         throw new Error(message);
       }
       projects = projects.filter((item) => item.id !== deletingId);
@@ -753,7 +763,7 @@
       }
       input.focus();
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : "프로젝트를 삭제하지 못했습니다.";
+      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-delete-failed");
       projectFormError.hidden = false;
       projectDeleteButton.disabled = false;
       projectSaveButton.disabled = false;
@@ -764,7 +774,6 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
-    const english = document.documentElement.lang === "en";
     const sessionState = !ready
       ? "unavailable"
       : authenticated
@@ -782,8 +791,8 @@
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
 
     if (sessionState === "unavailable") {
-      loginButton.textContent = english ? "Sign in" : "로그인";
-      loginButton.title = english ? "Sign-in is unavailable" : "로그인 기능이 설정되지 않았습니다";
+      loginButton.textContent = uiT("login");
+      loginButton.title = uiT("login-unavailable-title");
       accountName.hidden = true;
       accountName.textContent = "";
       clearHistoryUI();
@@ -792,29 +801,29 @@
     }
 
     if (sessionState === "signed_in") {
-      loginButton.textContent = english ? "Sign out" : "로그아웃";
-      loginButton.title = english ? "Sign out of the current account" : "현재 계정에서 로그아웃합니다";
+      loginButton.textContent = uiT("logout");
+      loginButton.title = uiT("logout-title");
       const name = authState.user && typeof authState.user.name === "string" ? authState.user.name.trim() : "";
-      accountName.textContent = name || (english ? "Signed in" : "로그인됨");
+      accountName.textContent = name || uiT("signed-in");
       accountName.hidden = false;
       historySection.hidden = false;
-      projectsBadge.textContent = english ? "Checking" : "확인 중";
+      projectsBadge.textContent = uiT("checking");
       return;
     }
 
     if (sessionState === "expired") {
-      loginButton.textContent = english ? "Sign in again" : "다시 로그인";
-      loginButton.title = english ? "Your session expired. Sign in again" : "세션이 만료되었습니다. 다시 로그인합니다";
-      accountName.textContent = english ? "Session expired" : "세션 만료";
+      loginButton.textContent = uiT("sign-in-again");
+      loginButton.title = uiT("expired-title");
+      accountName.textContent = uiT("session-expired");
       accountName.hidden = false;
       clearHistoryUI();
       clearProjectsUI();
       return;
     }
 
-    loginButton.textContent = english ? "Sign in" : "로그인";
-    loginButton.title = english ? "Sign in with your Google account" : "Google 계정으로 로그인합니다";
-    accountName.textContent = english ? "Guest" : "게스트";
+    loginButton.textContent = uiT("login");
+    loginButton.title = uiT("login-title");
+    accountName.textContent = uiT("guest");
     accountName.hidden = false;
     clearHistoryUI();
     clearProjectsUI();
@@ -843,8 +852,8 @@
         const remove = document.createElement("button");
         remove.type = "button";
         remove.className = "history-delete";
-        remove.textContent = "삭제";
-        remove.setAttribute("aria-label", `‘${conversation.title}’ 대화 삭제`);
+        remove.textContent = uiT("delete");
+        remove.setAttribute("aria-label", uiT("conversation-delete-aria", { title: conversation.title }));
         remove.addEventListener("click", () => deleteConversation(conversation.id, conversation.title));
         row.append(button, remove);
         historyList.appendChild(row);
@@ -856,10 +865,10 @@
   async function deleteConversation(id, title) {
     if (!authState.authenticated || inFlight) return;
     const confirmed = await window.PadiemConfirmDialog.confirm({
-      title: "대화를 삭제할까요?",
-      message: `‘${title}’ 대화를 삭제합니다. 삭제한 대화는 복구할 수 없습니다.`,
-      cancelLabel: "취소",
-      confirmLabel: "삭제",
+      title: uiT("conversation-delete-title"),
+      message: uiT("conversation-delete-message", { title }),
+      cancelLabel: uiT("cancel"),
+      confirmLabel: uiT("delete"),
     });
     if (!confirmed) return;
     try {
@@ -872,7 +881,7 @@
       if (!response.ok || !data || data.deleted !== true || data.conversation_id !== id) {
         const message = data && data.error && typeof data.error.message === "string"
           ? data.error.message
-          : "대화를 삭제하지 못했습니다.";
+          : uiT("conversation-delete-failed");
         throw new Error(message);
       }
       const deletedActiveConversation = conversationState.getConversationId() === id;
@@ -884,7 +893,7 @@
         setNote(idleNote());
       }
     } catch (error) {
-      setNote(error instanceof Error ? error.message : "대화를 삭제하지 못했습니다.", "error");
+      setNote(error instanceof Error ? error.message : uiT("conversation-delete-failed"), "error");
     }
   }
   async function loadAuthStatus() {
@@ -907,10 +916,10 @@
     try {
       const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error("저장된 대화를 불러오지 못했습니다.");
+      if (!response.ok || !data || !data.conversation || !Array.isArray(data.conversation.messages)) throw new Error(uiT("conversation-load-failed"));
       const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
       const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
-      if (savedProjectId && !restoredProject) throw new Error("이 대화의 프로젝트를 불러오지 못했습니다.");
+      if (savedProjectId && !restoredProject) throw new Error(uiT("conversation-project-load-failed"));
       clearAttachment();
       messageList.replaceChildren();
       conversationState.reset();
@@ -929,7 +938,7 @@
       closeSidebar();
       input.focus();
     } catch (error) {
-      setNote(error instanceof Error ? error.message : "저장된 대화를 불러오지 못했습니다.", "error");
+      setNote(error instanceof Error ? error.message : uiT("conversation-load-failed"), "error");
     }
   }
 
@@ -963,7 +972,7 @@
     if (Number.isInteger(data.project_files_used) && data.project_files_used > 0) {
       const used = document.createElement("small");
       used.className = "reference-note";
-      used.textContent = `프로젝트 파일 ${data.project_files_used}개를 참고했습니다.`;
+      used.textContent = uiT("project-files-used", { count: data.project_files_used });
       article.querySelector(".assistant-content").appendChild(used);
     }
     renderProjectState();
@@ -989,17 +998,17 @@
         try {
           data = JSON.parse(frame.data);
         } catch (_) {
-          throw new Error("AI 스트리밍 응답 형식을 확인할 수 없습니다.");
+          throw new Error(uiT("stream-format-invalid"));
         }
         if (frame.event === "delta") {
-          if (!data || typeof data.delta !== "string") throw new Error("AI 스트리밍 응답 형식을 확인할 수 없습니다.");
+          if (!data || typeof data.delta !== "string") throw new Error(uiT("stream-format-invalid"));
           if (!data.delta) return false;
           if (!paragraph) {
             const content = article.querySelector(".assistant-content");
             content.replaceChildren();
             paragraph = document.createElement("p");
             content.appendChild(paragraph);
-            article.querySelector("[data-runtime-label]").textContent = "AI 응답";
+            article.querySelector("[data-runtime-label]").textContent = uiT("ai-response");
           }
           answer += data.delta;
           paragraph.textContent = answer;
@@ -1008,25 +1017,25 @@
         if (frame.event === "error") {
           const message = data && data.error && typeof data.error.message === "string"
             ? data.error.message
-            : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.";
+            : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
           renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(chatTransport.errorFor(data, message)));
           return true;
         }
-        if (!data || data.done !== true || !paragraph || !answer) throw new Error("AI 스트리밍 응답이 정상적으로 완료되지 않았습니다.");
-        if (done) throw new Error("AI 스트리밍 완료 신호가 중복되었습니다.");
+        if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
+        if (done) throw new Error(uiT("stream-done-duplicate"));
         done = true;
         applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
         return true;
       });
       if (done) return true;
       if (terminalError) return false;
-      throw new Error("AI 스트리밍 응답이 완료되지 않았습니다. 다시 시도해 주세요.");
+      throw new Error(uiT("stream-incomplete"));
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : "스트리밍 답변을 계속하지 못했습니다. 다시 시도해 주세요.", outboundMessages, skill, contextSnapshot);
+        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot);
         return false;
       }
       throw error;
@@ -1037,7 +1046,7 @@
     if (!inFlight || !activeRequestController || !activeRequestArticle) return;
     activeRequestCancelReason = "user_cancel";
     activeRequestController.abort();
-    setNote("답변 생성을 취소했습니다. 완성되지 않은 내용은 저장하거나 내보낼 수 없습니다.", "error");
+    setNote(uiT("answer-cancelled-note"), "error");
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
@@ -1048,7 +1057,7 @@
     const controller = new AbortController();
     activeRequestController = controller;
     updateComposer();
-    const article = addAssistantShell("답변 준비 중");
+    const article = addAssistantShell(uiT("answer-preparing"));
     activeRequestArticle = article;
     renderTyping(article);
     try {
@@ -1071,7 +1080,7 @@
       if (requestEpoch !== conversationEpoch) return false;
       renderError(
         article,
-        error instanceof Error ? error.message : "다시 시도해 주세요.",
+        error instanceof Error ? error.message : uiT("try-again"),
         outboundMessages,
         skill,
         attachment,
@@ -1195,6 +1204,9 @@
     if (event.key === "Escape" && shell.classList.contains("sidebar-open")) closeSidebar();
   });
   window.addEventListener("padiem:localechange", () => {
+    applyAuthState(authState);
+    if (projectsReady) renderProjects();
+    renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
   });
 
@@ -1663,7 +1675,7 @@
   }
 
   // Proposal review surface: rendered from preview memory_proposals. Approve is
-  // impossible until the user explicitly clicks 승인; reject never persists.
+  // impossible until the user explicitly approves; reject never persists.
   function renderMemoryProposalReview(proposals) {
     if (!clawMemoryReview) return;
     clawMemoryReview.replaceChildren();
