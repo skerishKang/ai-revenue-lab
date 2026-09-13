@@ -165,6 +165,11 @@ def test_workflow_is_get_only() -> None:
 
 def test_workflow_has_no_secret_mutation_endpoint_or_wrangler() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
+    # No job in this workflow ever reads a secret_text value from the
+    # Cloudflare control plane (the API does not return plaintext by
+    # design). The content-blind mode invokes the token-gated Engine
+    # runtime diagnostic route instead; the readonly job stays
+    # NAME/TYPE-only.
     assert "/secrets" not in workflow
     assert "wrangler" not in workflow
     assert "environment:" not in workflow
