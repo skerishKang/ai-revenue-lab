@@ -78,15 +78,15 @@ def test_no_raw_locale_key_sink_for_inbox():
     assert ".textContent = inboxT(" not in APP
 
 
-def test_glass_sidebar_reserves_space_for_bottom_utility_stack():
+def test_glass_sidebar_bottom_stays_out_of_recent_surface_click_area():
     sidebar = GLASS_CSS.split('html[data-theme="padiem-glass"] .sidebar {', 1)[1].split("}", 1)[0]
     bottom = GLASS_CSS.rsplit('html[data-theme="padiem-glass"] .sidebar-bottom {', 1)[1].split("}", 1)[0]
-    assert "padding-bottom: 216px;" in sidebar
-    assert "position: absolute;" in bottom
-    assert "bottom: 18px;" in bottom
-    assert "pointer-events: none;" in bottom
-    assert 'html[data-theme="padiem-glass"] .sidebar-bottom > * {' in GLASS_CSS
-    assert "pointer-events: auto;" in GLASS_CSS
+    assert "padding-bottom: 18px;" in sidebar
+    assert "position: static;" in bottom
+    assert "flex: 0 0 auto;" in bottom
+    assert "margin: auto 0 0;" in bottom
+    assert "position: absolute;" not in bottom
+    assert "pointer-events: auto;" in bottom
 
 
 def test_auth_loss_clears_rendered_inbox_dom():
