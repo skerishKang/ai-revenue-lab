@@ -7,9 +7,13 @@ Run: python .github/tests/test_b54_engine_caller_credential_regeneration_gate.py
 ACT-1 is SOURCE ONLY: these tests never dispatch anything, never touch the
 network, and never install or use an admin token. They prove:
 
-1. BUILTIN_GITHUB_TOKEN_SECRET_WRITE_REJECTED — the workflow never references
-   the built-in token for a secret write; the single `gh secret set` call is
-   authenticated ONLY with the dedicated admin authority;
+1. AUTH SPLIT (CENTRAL blocking fix): BUILTIN_GITHUB_TOKEN_FOR_SECRET_WRITE=NO
+   — the single `gh secret set` call is authenticated ONLY with the dedicated
+   admin authority; BUILTIN_GITHUB_TOKEN_FOR_ACTIONS_ORCHESTRATION=YES — every
+   Actions orchestration command (`gh workflow run` / `gh run list` /
+   `gh run watch` / `gh run view`) is bound ONLY to the built-in token at step
+   level; the admin token is never assumed to hold Actions permissions
+   (DEDICATED_ADMIN_TOKEN_FOR_ACTIONS_ORCHESTRATION=NO);
 2. DEDICATED_ADMIN_AUTH_REQUIRED — a dedicated secret admin authority exists,
    its secret name differs from the regeneration target, and the workflow
    never loads the engine credential value at all;
@@ -80,22 +84,56 @@ def _permissions_block(text: str) -> str:
     return text.split("\npermissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
 
 
-# 1. built-in GITHUB_TOKEN may never write repository secrets
+# 1. authority split: built-in token orchestrates Actions, never writes secrets
 
 
 def test_builtin_github_token_secret_write_rejected() -> None:
     text = _text()
     code = _code(text)
     assert "secrets.GITHUB_TOKEN" not in text
-    assert "${{ github.token }}" not in text
     assert "secrets:" not in _permissions_block(text)
     # the single secret write authenticates ONLY with the admin authority
     assert code.count("gh secret set") == 1
     write_line = next(line for line in code.splitlines() if "gh secret set" in line)
     assert 'GH_TOKEN="${ADMIN_TOKEN}"' in write_line
-    assert "GITHUB_TOKEN" not in write_line
+    assert "GITHUB_TOKEN" not in write_line and "github.token" not in write_line
     # the admin authority must not be a copy of the built-in token
     assert 'if [ "${ADMIN_TOKEN}" = "${GITHUB_TOKEN:-}" ]; then' in text
+
+
+def test_auth_split_secret_write_vs_actions_orchestration() -> None:
+    text = _text()
+    code = _code(text)
+    apply_job = _code(_job(text, "regenerate-and-rotate"))
+    # SECRET_WRITE_TOKEN=DEDICATED_ADMIN: the admin token is bound exactly
+    # once in the mutating job and only on the secret write command.
+    assert apply_job.count('GH_TOKEN="${ADMIN_TOKEN}"') == 1
+    # WORKFLOW_DISPATCH_TOKEN=BUILTIN_GITHUB_TOKEN: exactly the three
+    # orchestration steps (rotation dispatch, oracle, smoke) bind the
+    # built-in token at step level.
+    assert code.count("GH_TOKEN: ${{ github.token }}") == 3
+    assert apply_job.count("GH_TOKEN: ${{ github.token }}") == 3
+    # gh workflow run/list/watch/view never carry the admin token: the built-in
+    # token is the only credential the orchestration commands can use.
+    verbs = ("gh workflow run", "gh run list", "gh run watch", "gh run view")
+    for line in apply_job.splitlines():
+        if any(verb in line for verb in verbs):
+            assert 'GH_TOKEN="${ADMIN_TOKEN}"' not in line
+        if "gh secret" in line:
+            assert "${{ github.token }}" not in line
+    # the built-in token holds the Actions permission the orchestration needs
+    assert "actions: write" in _job(text, "regenerate-and-rotate")
+    # closed split vocabulary is echoed by the APPLY pre-authorization step,
+    # the APPLY closed-evidence step, and the PLAN evidence step
+    for flag in (
+        "SECRET_WRITE_TOKEN=DEDICATED_ADMIN",
+        "WORKFLOW_DISPATCH_TOKEN=BUILTIN_GITHUB_TOKEN",
+        "BUILTIN_GITHUB_TOKEN_FOR_SECRET_WRITE=NO",
+        "BUILTIN_GITHUB_TOKEN_FOR_ACTIONS_ORCHESTRATION=YES",
+        "DEDICATED_ADMIN_TOKEN_FOR_SECRET_WRITE=YES",
+        "DEDICATED_ADMIN_TOKEN_FOR_ACTIONS_ORCHESTRATION=NO",
+    ):
+        assert flag in text, flag
 
 
 # 2. dedicated admin authority, distinct from the regeneration target
