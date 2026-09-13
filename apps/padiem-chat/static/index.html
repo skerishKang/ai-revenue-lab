@@ -230,6 +230,33 @@
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
         </section>
+        <section class="claw-inbox" id="clawInbox" data-locale-aria-label="claw-inbox-aria" aria-label="작업 및 알림함" hidden>
+          <header class="claw-inbox-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-inbox-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawInboxTitle" data-locale-key="claw-inbox-title">작업 및 알림</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawInboxRefresh" data-locale-aria-label="claw-inbox-refresh-aria" aria-label="목록 새로고침">↻</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-inbox-tagline">저장된 작업과 알림을 확인합니다. 자동 실행이나 외부 전송은 하지 않습니다.</p>
+          <div class="claw-inbox-loading" id="clawInboxLoading" data-locale-key="claw-inbox-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <div class="claw-inbox-error" id="clawInboxError" hidden>
+            <p class="claw-inbox-error-message" id="clawInboxErrorMessage" role="alert"></p>
+            <button type="button" class="claw-inbox-retry" id="clawInboxRetry" data-locale-key="claw-inbox-retry">다시 시도</button>
+          </div>
+          <div class="claw-inbox-body" id="clawInboxBody" hidden>
+            <section class="claw-inbox-group" id="clawInboxTasksGroup" aria-labelledby="clawInboxTasksTitle" tabindex="-1">
+              <h3 class="claw-inbox-group-title" id="clawInboxTasksTitle" data-locale-key="claw-inbox-tasks-title">작업</h3>
+              <div class="claw-inbox-list" id="clawInboxTasks" hidden></div>
+              <p class="claw-inbox-group-empty" id="clawInboxTasksEmpty" data-locale-key="claw-inbox-empty" hidden>표시할 작업이나 알림이 없습니다.</p>
+            </section>
+            <section class="claw-inbox-group" id="clawInboxAlertsGroup" aria-labelledby="clawInboxAlertsTitle" tabindex="-1">
+              <h3 class="claw-inbox-group-title" id="clawInboxAlertsTitle" data-locale-key="claw-inbox-alerts-title">알림</h3>
+              <div class="claw-inbox-list" id="clawInboxAlerts" hidden></div>
+              <p class="claw-inbox-group-empty" id="clawInboxAlertsEmpty" data-locale-key="claw-inbox-empty" hidden>표시할 작업이나 알림이 없습니다.</p>
+            </section>
+          </div>
+        </section>
         <div class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
           <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
             <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>

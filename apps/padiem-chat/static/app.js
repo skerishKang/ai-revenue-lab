@@ -907,6 +907,8 @@
         await loadRecentConversations();
       }
       syncApprovedMemoryVisibility();
+      syncInboxNavAvailability();
+      syncInboxVisibility();
     } catch (_) {
       applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false });
     }
@@ -1273,6 +1275,32 @@
     "claw-memory-error-unavailable": "Approved memory is unavailable.",
     "claw-memory-error-not-found": "Memory was not found.",
     "claw-memory-error-generic": "Approved memory could not be processed.",
+    "claw-inbox-tasks-title": "Tasks",
+    "claw-inbox-alerts-title": "Alerts",
+    "claw-inbox-retry": "Try again",
+    "claw-inbox-created": "Created",
+    "claw-inbox-due": "Due",
+    "claw-inbox-error-auth": "Please sign in.",
+    "claw-inbox-error-unavailable": "The task/alert list is unavailable.",
+    "claw-inbox-error-not-found": "The item was not found.",
+    "claw-inbox-error-generic": "Tasks and alerts could not be processed.",
+    "claw-task-status-open": "Open",
+    "claw-task-status-done": "Done",
+    "claw-task-status-cancelled": "Cancelled",
+    "claw-alert-status-active": "Active",
+    "claw-alert-status-dismissed": "Dismissed",
+    "claw-alert-severity-info": "Info",
+    "claw-alert-severity-warn": "Warning",
+    "claw-alert-severity-critical": "Critical",
+    "claw-alert-kind-followup_due": "Follow-up due",
+    "claw-alert-kind-price_change": "Price change",
+    "claw-alert-kind-unresolved_request": "Unresolved request",
+    "claw-alert-kind-memory_proposal": "Memory proposal",
+    "claw-inbox-mark-done": "Mark done",
+    "claw-inbox-reopen": "Reopen",
+    "claw-inbox-cancel-task": "Mark cancelled",
+    "claw-inbox-dismiss-alert": "Dismiss",
+    "claw-inbox-restore-alert": "Restore",
   };
 
   function clawT(key) {
@@ -1414,6 +1442,7 @@
     if (clawRequestText) clawRequestText.focus();
     closeSidebar();
     syncApprovedMemoryVisibility();
+    syncInboxVisibility();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
@@ -1928,4 +1957,250 @@
   if (clawApprovedRefresh) {
     clawApprovedRefresh.addEventListener("click", () => loadApprovedMemoryList());
   }
+
+  // Task / alert inbox (#2341) — read-only consumption of the durable B54/B62
+  // store through /api/claw/tasks and /api/claw/alerts. The only writes are the
+  // reversible status updates the store contract already supports; there is no
+  // scheduler, no timed dispatch, no autonomous execution, and no external send.
+  const clawInbox = document.getElementById("clawInbox");
+  const clawInboxRefresh = document.getElementById("clawInboxRefresh");
+  const clawInboxLoading = document.getElementById("clawInboxLoading");
+  const clawInboxError = document.getElementById("clawInboxError");
+  const clawInboxErrorMessage = document.getElementById("clawInboxErrorMessage");
+  const clawInboxRetry = document.getElementById("clawInboxRetry");
+  const clawInboxBody = document.getElementById("clawInboxBody");
+  const clawInboxTasks = document.getElementById("clawInboxTasks");
+  const clawInboxTasksEmpty = document.getElementById("clawInboxTasksEmpty");
+  const clawInboxAlerts = document.getElementById("clawInboxAlerts");
+  const clawInboxAlertsEmpty = document.getElementById("clawInboxAlertsEmpty");
+  const clawInboxTasksGroup = document.getElementById("clawInboxTasksGroup");
+  const clawInboxAlertsGroup = document.getElementById("clawInboxAlertsGroup");
+  const tasksNavButton = document.getElementById("tasksNavButton");
+  const alertsNavButton = document.getElementById("alertsNavButton");
+
+  let inboxInFlight = false;
+
+  function setInboxError(message) {
+    if (!clawInboxError) return;
+    if (!message) {
+      clawInboxError.hidden = true;
+      if (clawInboxErrorMessage) clawInboxErrorMessage.textContent = "";
+      return;
+    }
+    clawInboxError.hidden = false;
+    if (clawInboxErrorMessage) clawInboxErrorMessage.textContent = message;
+  }
+
+  function inboxErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const status = response ? response.status : 0;
+    if (code === "unauthorized" || status === 401) return clawT("claw-inbox-error-auth");
+    if (code === "claw_task_alert_unavailable" || status === 503) return clawT("claw-inbox-error-unavailable");
+    if (code === "claw_task_not_found" || code === "claw_alert_not_found" || status === 404) return clawT("claw-inbox-error-not-found");
+    return clawT("claw-inbox-error-generic");
+  }
+
+  function inboxActionButton(localeKey, handler) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "claw-inbox-action";
+    button.textContent = clawT(localeKey);
+    button.addEventListener("click", handler);
+    return button;
+  }
+
+  function renderInboxTask(task) {
+    const card = document.createElement("div");
+    card.className = "claw-inbox-card";
+    card.dataset.taskId = typeof task.task_id === "string" ? task.task_id : "";
+    const status = typeof task.status === "string" ? task.status : "";
+
+    const head = document.createElement("div");
+    head.className = "claw-inbox-card-head";
+    const title = document.createElement("strong");
+    title.className = "claw-inbox-card-title";
+    title.textContent = typeof task.title === "string" ? task.title : "";
+    const badge = document.createElement("span");
+    badge.className = "claw-inbox-card-badge";
+    badge.dataset.status = status;
+    badge.textContent = clawT(`claw-task-status-${status}`);
+    head.append(title, badge);
+
+    const meta = document.createElement("p");
+    meta.className = "claw-inbox-card-meta";
+    let metaText = `${clawT("claw-inbox-created")} ${typeof task.created_at === "string" ? task.created_at : ""}`;
+    if (typeof task.due_date === "string" && task.due_date) {
+      metaText += ` · ${clawT("claw-inbox-due")} ${task.due_date}`;
+    }
+    meta.textContent = metaText;
+
+    const actions = document.createElement("div");
+    actions.className = "claw-inbox-card-actions";
+    if (status !== "done") {
+      actions.appendChild(inboxActionButton("claw-inbox-mark-done", () => setTaskStatus(card.dataset.taskId, "done")));
+    }
+    if (status !== "open") {
+      actions.appendChild(inboxActionButton("claw-inbox-reopen", () => setTaskStatus(card.dataset.taskId, "open")));
+    }
+    if (status !== "cancelled") {
+      actions.appendChild(inboxActionButton("claw-inbox-cancel-task", () => setTaskStatus(card.dataset.taskId, "cancelled")));
+    }
+
+    card.append(head, meta, actions);
+    return card;
+  }
+
+  function renderInboxAlert(alert) {
+    const card = document.createElement("div");
+    card.className = "claw-inbox-card";
+    card.dataset.alertId = typeof alert.alert_id === "string" ? alert.alert_id : "";
+    const status = typeof alert.status === "string" ? alert.status : "";
+
+    const head = document.createElement("div");
+    head.className = "claw-inbox-card-head";
+    const title = document.createElement("strong");
+    title.className = "claw-inbox-card-title";
+    title.textContent = typeof alert.title === "string" ? alert.title : "";
+    const badge = document.createElement("span");
+    badge.className = "claw-inbox-card-badge";
+    badge.dataset.status = status;
+    badge.textContent = clawT(`claw-alert-status-${status}`);
+    head.append(title, badge);
+
+    const meta = document.createElement("p");
+    meta.className = "claw-inbox-card-meta";
+    const kind = typeof alert.kind === "string" ? alert.kind : "";
+    const severity = typeof alert.severity === "string" ? alert.severity : "";
+    const severityText = clawT(`claw-alert-severity-${severity}`);
+    meta.textContent = `${clawT(`claw-alert-kind-${kind}`)} · ${severityText} · ${typeof alert.created_at === "string" ? alert.created_at : ""}`;
+
+    const actions = document.createElement("div");
+    actions.className = "claw-inbox-card-actions";
+    if (status !== "dismissed") {
+      actions.appendChild(inboxActionButton("claw-inbox-dismiss-alert", () => setAlertStatus(card.dataset.alertId, "dismissed")));
+    }
+    if (status !== "active") {
+      actions.appendChild(inboxActionButton("claw-inbox-restore-alert", () => setAlertStatus(card.dataset.alertId, "active")));
+    }
+
+    card.append(head, meta, actions);
+    return card;
+  }
+
+  function renderInboxGroup(list, emptyEl, records, renderOne) {
+    if (!list) return;
+    list.replaceChildren();
+    const items = Array.isArray(records) ? records.filter((record) => record && typeof record === "object") : [];
+    if (items.length === 0) {
+      list.hidden = true;
+      if (emptyEl) emptyEl.hidden = false;
+      return;
+    }
+    if (emptyEl) emptyEl.hidden = true;
+    items.forEach((record) => list.appendChild(renderOne(record)));
+    list.hidden = false;
+  }
+
+  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
+  async function fetchInbox() {
+    if (!clawInbox) return;
+    setInboxError("");
+    if (clawInboxLoading) clawInboxLoading.hidden = false;
+    if (clawInboxBody) clawInboxBody.hidden = true;
+    try {
+      const requestOptions = { headers: { "Accept": "application/json" }, cache: "no-store" };
+      const [tasksResponse, alertsResponse] = await Promise.all([
+        fetch("/api/claw/tasks", requestOptions),
+        fetch("/api/claw/alerts", requestOptions),
+      ]);
+      const tasksData = await tasksResponse.json().catch(() => null);
+      const alertsData = await alertsResponse.json().catch(() => null);
+      if (!tasksResponse.ok || !tasksData || !Array.isArray(tasksData.tasks)) {
+        throw new Error(inboxErrorMessage(tasksData, tasksResponse));
+      }
+      if (!alertsResponse.ok || !alertsData || !Array.isArray(alertsData.alerts)) {
+        throw new Error(inboxErrorMessage(alertsData, alertsResponse));
+      }
+      if (clawInboxLoading) clawInboxLoading.hidden = true;
+      if (clawInboxBody) clawInboxBody.hidden = false;
+      renderInboxGroup(clawInboxTasks, clawInboxTasksEmpty, tasksData.tasks, renderInboxTask);
+      renderInboxGroup(clawInboxAlerts, clawInboxAlertsEmpty, alertsData.alerts, renderInboxAlert);
+    } catch (error) {
+      if (clawInboxLoading) clawInboxLoading.hidden = true;
+      if (clawInboxBody) clawInboxBody.hidden = true;
+      setInboxError(error instanceof Error ? error.message : clawT("claw-inbox-error-generic"));
+    }
+  }
+
+  async function loadInbox() {
+    if (inboxInFlight) return;
+    inboxInFlight = true;
+    try {
+      await fetchInbox();
+    } finally {
+      inboxInFlight = false;
+    }
+  }
+
+  async function updateInboxStatus(path, status) {
+    if (inboxInFlight) return;
+    inboxInFlight = true;
+    setInboxError("");
+    try {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        cache: "no-store",
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true) {
+        throw new Error(inboxErrorMessage(data, response));
+      }
+      await fetchInbox();
+    } catch (error) {
+      setInboxError(error instanceof Error ? error.message : clawT("claw-inbox-error-generic"));
+    } finally {
+      inboxInFlight = false;
+    }
+  }
+
+  function setTaskStatus(taskId, status) {
+    if (!taskId) return;
+    updateInboxStatus(`/api/claw/tasks/${encodeURIComponent(taskId)}/status`, status);
+  }
+
+  function setAlertStatus(alertId, status) {
+    if (!alertId) return;
+    updateInboxStatus(`/api/claw/alerts/${encodeURIComponent(alertId)}/status`, status);
+  }
+
+  function syncInboxVisibility() {
+    if (!clawInbox) return;
+    // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
+    const show = authState.authenticated === true && shell.dataset.state === "claw";
+    clawInbox.hidden = !show;
+    if (show) loadInbox();
+  }
+
+  function syncInboxNavAvailability() {
+    const enabled = authState.authenticated === true;
+    [tasksNavButton, alertsNavButton].forEach((button) => {
+      if (!button) return;
+      button.disabled = !enabled;
+      button.setAttribute("aria-disabled", enabled ? "false" : "true");
+    });
+  }
+
+  function focusInboxGroup(group) {
+    openClawWorkspace();
+    if (!group) return;
+    if (typeof group.scrollIntoView === "function") group.scrollIntoView({ block: "nearest" });
+    if (typeof group.focus === "function") group.focus();
+  }
+
+  if (clawInboxRefresh) clawInboxRefresh.addEventListener("click", () => loadInbox());
+  if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => loadInbox());
+  if (tasksNavButton) tasksNavButton.addEventListener("click", () => focusInboxGroup(clawInboxTasksGroup));
+  if (alertsNavButton) alertsNavButton.addEventListener("click", () => focusInboxGroup(clawInboxAlertsGroup));
 })();

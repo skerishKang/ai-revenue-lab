@@ -662,6 +662,172 @@
  * Shared visual roles inherit the active Padiem Chat theme tokens above.
  */
 
+/* ── Task / alert inbox (#2341) ───────────────────────────────────────────
+ * Consumes the durable B54/B62 store through a read-only API seam. Surfaces
+ * reuse the shared theme roles above — no theme-specific palette, and the
+ * success/danger surfaces inherit the per-theme tokens introduced with #2491
+ * so the glass theme keeps its WCAG-AA anchor.
+ */
+.claw-inbox {
+  display: grid;
+  gap: 12px;
+}
+/* Author `display` beats the UA `[hidden]` rule, so every container this
+ * module toggles with the `hidden` attribute needs an explicit override. */
+.claw-inbox[hidden] {
+  display: none;
+}
+.claw-inbox-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-inbox-loading,
+.claw-inbox-group-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-inbox-error {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--danger-surface);
+  border: 1px solid var(--danger-border);
+}
+.claw-inbox-error[hidden] {
+  display: none;
+}
+.claw-inbox-error-message {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--danger);
+}
+.claw-inbox-retry {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--danger-border);
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-inbox-retry:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.claw-inbox-body {
+  display: grid;
+  gap: 16px;
+}
+.claw-inbox-body[hidden] {
+  display: none;
+}
+.claw-inbox-group {
+  display: grid;
+  gap: 10px;
+}
+.claw-inbox-group:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+.claw-inbox-group-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.claw-inbox-list {
+  display: grid;
+  gap: 10px;
+}
+.claw-inbox-list[hidden] {
+  display: none;
+}
+.claw-inbox-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+.claw-inbox-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.claw-inbox-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.claw-inbox-card-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--accent-soft);
+}
+.claw-inbox-card-badge[data-status="done"] {
+  background: var(--success-surface);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+.claw-inbox-card-badge[data-status="cancelled"],
+.claw-inbox-card-badge[data-status="dismissed"] {
+  opacity: 0.72;
+}
+.claw-inbox-card-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.claw-inbox-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.claw-inbox-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-inbox-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 /* ── Mobile: single column, hero image minimized during active work ───── */
 @media (max-width: 720px) {
   .claw-workspace {

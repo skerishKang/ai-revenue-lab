@@ -26,6 +26,15 @@ from .claw_memory_routes import (
     claw_memory_list,
     claw_memory_reject,
 )
+from .claw_task_alert_routes import (
+    claw_alert_detail,
+    claw_alert_status,
+    claw_alerts_list,
+    claw_task_detail,
+    claw_task_status,
+    claw_tasks_list,
+)
+from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
@@ -97,6 +106,7 @@ def create_app(
     claw_p01_adapter=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
+    claw_task_alert_store: D1ClawTaskAlertStore | None = None,
     telemetry_emitter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -126,6 +136,15 @@ def create_app(
         Route("/api/claw/memory/reject", claw_memory_reject, methods=["POST"]),
         Route("/api/claw/memory", claw_memory_list, methods=["GET"]),
         Route("/api/claw/memory/{memory_id}", claw_memory_detail, methods=["GET"]),
+        # #2341 task/alert inbox read seam: consumes the #2328 durable store.
+        # Read-only list/detail plus reversible status updates; no scheduling,
+        # execution, notification transport, or new persistence authority.
+        Route("/api/claw/tasks", claw_tasks_list, methods=["GET"]),
+        Route("/api/claw/tasks/{task_id}", claw_task_detail, methods=["GET"]),
+        Route("/api/claw/tasks/{task_id}/status", claw_task_status, methods=["POST"]),
+        Route("/api/claw/alerts", claw_alerts_list, methods=["GET"]),
+        Route("/api/claw/alerts/{alert_id}", claw_alert_detail, methods=["GET"]),
+        Route("/api/claw/alerts/{alert_id}/status", claw_alert_status, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -187,4 +206,14 @@ def create_app(
         except Exception:
             _approved_memory_store = None
     app.state.approved_memory_store = _approved_memory_store
+    # Task/alert inbox (#2341): same D1 binding, same "no new database
+    # authority" rule. An explicitly injected store wins (network-free tests);
+    # otherwise derive from PADIEM_CHAT_DB. None keeps the routes fail-closed.
+    _task_alert_store = claw_task_alert_store
+    if _task_alert_store is None and d1_binding is not None:
+        try:
+            _task_alert_store = D1ClawTaskAlertStore(d1_binding)
+        except Exception:
+            _task_alert_store = None
+    app.state.claw_task_alert_store = _task_alert_store
     return app
