@@ -13,18 +13,25 @@ never mutate any secret. They prove:
    the auth probe all live in ONE bash step (one shell process), and the
    credential reaches the payload builder ONLY through the environment
    (`--credential-env`), never argv;
-3. closed budgets: ONE_GENERATION_MAX, ONE_OVERLAY_PUT_MAX (single PUT, body
-   file removed immediately), ONE_AUTH_PROBE_MAX (exactly one transport call in
-   the probe), NO_AUTOMATIC_RETRY, no artifacts, no secret-derived output;
-4. fail-closed stops D1..D5 exist, run BEFORE the probe budget is consumed
-   where applicable, and the terminal verdict contract is exactly
-   DIRECT_WRITE_AND_DIRECT_PROBE=PASS|FAIL + STOP_AND_REPORT=YES;
-5. reuse without duplication: the existing overlay payload builder
+3. closed budgets: ONE_GENERATION_MAX, ONE_OVERLAY_PUT_MAX (single PUT gated on
+   HTTP 2xx AND response JSON .success == true, boolean-only, body and response
+   files removed before continuing), ONE_AUTH_PROBE_MAX (exactly one transport
+   call in the probe), NO_AUTOMATIC_RETRY, no artifacts, no secret-derived
+   output;
+4. CENTRAL fix 1: post-PUT served-version confirmation uses the rotation gate's
+   bounded GET-only polling (30 attempts x 2s, single 100-percent served
+   version, guard cross-check) with no mutation and no PUT retry;
+5. CENTRAL fix 3: the auth verdict is the closed three-way contract
+   PASS / FAIL / INCONCLUSIVE, regression-tested behaviorally under bash;
+6. fail-closed stops D1..D5 exist, run BEFORE the probe budget is consumed
+   where applicable, and the always() evidence step never claims an executed
+   result when the pipeline stopped early (truthful outcome markers only);
+7. reuse without duplication: the existing overlay payload builder
    (plan/classify/failure-evidence), the canonical GET-only served-version
    guard (resolve-active/verify), and the existing oracle module semantics
    (build_request/classify_response/_transport_post) are invoked, not
    re-implemented;
-6. execution gating: only workflow_dispatch + environment: production + exact
+8. execution gating: only workflow_dispatch + environment: production + exact
    confirmation phrase + double exact-main guard can reach the mutating step;
    the PR trigger runs only these static tests and echoes DIAGNOSTIC_EXECUTED=NO.
 """
@@ -32,6 +39,7 @@ never mutate any secret. They prove:
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -77,6 +85,28 @@ def _pipeline_step() -> str:
     ]
     assert len(candidates) == 1, "the credential pipeline must live in exactly ONE bash step"
     return candidates[0]
+
+
+def _verdict_block() -> str:
+    step = _pipeline_step()
+    start = step.index("# --- verdict-begin ---") + len("# --- verdict-begin ---")
+    end = step.index("# --- verdict-end ---")
+    return step[start:end]
+
+
+def _run_verdict(accepted: str, status: str, error: str) -> str:
+    script = (
+        "set -euo pipefail\n"
+        f'probe_accepted="{accepted}"\n'
+        f'probe_status="{status}"\n'
+        f'probe_error="{error}"\n'
+    ) + _verdict_block()
+    # bytes stdin/stdout: no universal-newline translation (LF stays LF on
+    # Windows) and bounded decoding of any launcher noise on stderr
+    proc = subprocess.run(["bash", "-s"], input=script.encode("utf-8"), capture_output=True)
+    out = proc.stdout.decode("utf-8", errors="replace")
+    assert proc.returncode == 0, f"verdict block failed: {out}"
+    return out
 
 
 def test_workflow_structure_and_triggers() -> None:
@@ -187,7 +217,10 @@ def test_closed_mutation_and_probe_budgets() -> None:
     assert "NO_AUTOMATIC_RETRY=YES" in code
     step_no_marker = step.replace("NO_AUTOMATIC_RETRY=YES", "")
     assert "for attempt" not in step_no_marker and "until " not in step_no_marker
-    assert "retry" not in step_no_marker.lower() and "sleep" not in step_no_marker
+    assert "retry" not in step_no_marker.lower()
+    # the ONLY sleep is the bounded GET-only polling interval; no PUT retry
+    assert step_no_marker.count("sleep 2") == 1
+    assert step_no_marker.count("-X PUT") == 1
 
 
 def test_fail_closed_stops_before_probe_budget() -> None:
@@ -200,7 +233,8 @@ def test_fail_closed_stops_before_probe_budget() -> None:
     ):
         assert marker in step
     # the probe budget is untouched on every post-generation stop
-    assert step.count("AUTH_PROBE_REQUESTS_ISSUED=0") == 2
+    # (D4 once + D5 three times: polling exhausted / guard mismatch / unchanged)
+    assert step.count("AUTH_PROBE_REQUESTS_ISSUED=0") == 4
     for stop in ("D4=STOP_OVERLAY_PUT_FAILED", "D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED"):
         at = step.index(stop)
         window = step[max(0, at - 120):at + 260]
@@ -213,11 +247,93 @@ def test_terminal_verdict_contract() -> None:
     step = _pipeline_step()
     assert "DIRECT_WRITE_AND_DIRECT_PROBE=PASS" in step
     assert "DIRECT_WRITE_AND_DIRECT_PROBE=FAIL" in step
+    assert "DIRECT_WRITE_AND_DIRECT_PROBE=INCONCLUSIVE" in step
     assert "VERDICT=WRITE_AND_READ_HEALTHY_GITHUB_SECRET_PATH_IS_DEFECT" in step
     assert "VERDICT=CLOUDFLARE_WRITE_OR_ENGINE_READ_PATH_DEFECT" in step
+    assert "VERDICT=AUTH_ORACLE_NOT_REACHED_OR_UNEXPECTED" in step
     assert "SAME_PROCESS_CREDENTIAL=YES" in step
     assert "STOP_AND_REPORT=YES" in step
     assert "PROBE_CREDENTIAL_UNSET=YES" in step
+
+
+def test_verdict_regression_pass() -> None:
+    out = _run_verdict("YES", "200", "none")
+    assert "DIRECT_WRITE_AND_DIRECT_PROBE=PASS" in out
+    assert "VERDICT=WRITE_AND_READ_HEALTHY_GITHUB_SECRET_PATH_IS_DEFECT" in out
+    assert "INCONCLUSIVE" not in out and "DIRECT_WRITE_AND_DIRECT_PROBE=FAIL" not in out
+
+
+def test_verdict_regression_fail() -> None:
+    out = _run_verdict("NO", "401", "service_authentication_failed")
+    assert "DIRECT_WRITE_AND_DIRECT_PROBE=FAIL" in out
+    assert "VERDICT=CLOUDFLARE_WRITE_OR_ENGINE_READ_PATH_DEFECT" in out
+    assert "INCONCLUSIVE" not in out and "DIRECT_WRITE_AND_DIRECT_PROBE=PASS" not in out
+
+
+def test_verdict_regression_inconclusive() -> None:
+    for accepted, status, error in (
+        ("NO", "0", "transport_blocked"),
+        ("NO", "0", "none"),
+        ("NO", "403", "unrecognized"),
+        ("NO", "401", "unrecognized"),
+        ("NO", "500", "unrecognized"),
+        ("NO", "503", "unrecognized"),
+        ("NO", "200", "unrecognized"),
+    ):
+        out = _run_verdict(accepted, status, error)
+        assert "DIRECT_WRITE_AND_DIRECT_PROBE=INCONCLUSIVE" in out, (status, error, out)
+        assert "VERDICT=AUTH_ORACLE_NOT_REACHED_OR_UNEXPECTED" in out, (status, error, out)
+        assert "NO_AUTOMATIC_RETRY=YES" in out and "STOP_AND_REPORT=YES" in out
+        assert "DIRECT_WRITE_AND_DIRECT_PROBE=PASS" not in out
+        assert "DIRECT_WRITE_AND_DIRECT_PROBE=FAIL" not in out
+
+
+def test_bounded_post_put_polling() -> None:
+    step = _pipeline_step()
+    assert step.count("for _ in $(seq 1 30); do") == 1
+    poll_start = step.index("for _ in $(seq 1 30); do")
+    poll = step[poll_start:step.index("done", poll_start)]
+    # polling is GET-only: no verb override, no mutation call of any kind
+    assert "-X" not in poll and "PUT" not in poll and "POST" not in poll
+    assert "curl -fsS" in poll and "sleep 2" in poll
+    # polling applies the shared single-100-percent served guard (one definition,
+    # used by both the pre-read and the poll)
+    assert 'jq -e "${served_guards}"' in poll
+    assert step.count('jq -e "${served_guards}"') == 2
+    assert step.count("percentage == 100") == 1
+    # the guard resolver cross-checks the polled version id before accepting it
+    assert "GUARD_RESOLVE_MISMATCH=YES" in step
+    assert "POLLING_MUTATION=0" in step
+    # polling never accepts the PUT response as proof: response file already gone
+    assert step.index('rm -f "${response}"') < poll_start
+
+
+def test_put_success_contract_2xx_and_json_success() -> None:
+    step = _pipeline_step()
+    assert 'if [ "${http_status:0:1}" = "2" ] && jq -e \'.success == true\' "${response}" >/dev/null 2>&1; then put_ok=YES; fi' in step
+    assert "OVERLAY_PUT_SUCCESS_CONTRACT=HTTP_2XX_AND_JSON_SUCCESS_TRUE" in step
+    assert "PUT_RESPONSE_BODY_OUTPUT=0" in step
+    # bounded boolean read only: the body is never echoed or catted
+    assert "cat \"${response}\"" not in step
+    assert step.count('rm -f "${response}"') == 2
+
+
+def test_always_evidence_is_truthful() -> None:
+    text = _text()
+    job = _job(text, "diagnose")
+    assert "id: diagnostic" in job
+    evidence = job.split("if: always()", 1)[1]
+    assert 'outcome="${{ steps.diagnostic.outcome }}"' in evidence
+    assert "DIAGNOSTIC_PIPELINE_OUTCOME=" in evidence
+    assert "DIAGNOSTIC_TERMINAL_STATE=VERDICT_REPORTED" in evidence
+    assert "DIAGNOSTIC_TERMINAL_STATE=STOPPED_BEFORE_VERDICT" in evidence
+    assert "EXECUTION_RESULT_MARKERS=NOT_CLAIMED" in evidence
+    # static caps may always print, executed-result claims may not
+    for cap in ("GENERATION_CAP=1", "OVERLAY_PUT_CAP=1", "AUTH_PROBE_CAP=1", "POLLING_CAP=30_ATTEMPTS_GET_ONLY"):
+        assert cap in evidence
+    for claim in ("ONE_GENERATION_MAX=YES", "ONE_OVERLAY_PUT_MAX=YES", "ONE_AUTH_PROBE_MAX=YES",
+                  "PROBE_CREDENTIAL_UNSET=YES", "COMPLETE_STOP_AND_REPORT", "NEW_SERVED_VERSION_CREATED=YES"):
+        assert claim not in evidence
 
 
 def test_no_secret_derived_output() -> None:
