@@ -12,6 +12,10 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
+from padiem_ai_core.calendar_capability import (
+    CALENDAR_CONNECTOR_ID,
+    CalendarCapability,
+)
 from padiem_ai_core.drive_capability import DRIVE_CONNECTOR_ID, DriveCapability
 from padiem_ai_core.slack_capability import (
     SLACK_CONNECTOR_ID,
@@ -23,6 +27,7 @@ from padiem_ai_core.telegram_capability import (
 )
 from app.connector_bindings import (
     GMAIL_CONNECTOR_ID,
+    CalendarGrant,
     GmailGrant,
     DriveGrant,
     SlackGrant,
@@ -186,6 +191,47 @@ class CloudflareD1ConnectorGrantStore:
                     raise ValueError("Slack grants must contain exactly the promoted READ capability")
                 capabilities = (SlackCapability.READ,)
                 grants[data["app_id"]] = SlackGrant(
+                    app_id=str(data["app_id"]),
+                    canonical_agent_id=str(data["canonical_agent_id"]),
+                    binding_ref=str(data["binding_ref"]),
+                    actor_ref=str(data["actor_ref"]),
+                    granted_capabilities=capabilities,
+                )
+            except (ValueError, KeyError, TypeError):
+                raise ServiceContractError(
+                    "connector_grants_unavailable",
+                    "Connector grant storage returned an invalid record.",
+                    status_code=503,
+                ) from None
+
+        return grants
+
+    async def load_calendar_grants(self) -> dict[str, CalendarGrant]:
+        # Reuses the existing grants table and granted_capabilities_json
+        # column: no schema migration is introduced by the Calendar
+        # promotion (#2358, SCHEMA_MIGRATION=0).
+        sql = (
+            f"SELECT app_id, canonical_agent_id, connector_id, binding_ref, "
+            f"actor_ref, granted_capabilities_json FROM {_TABLE_NAME} "
+            f"WHERE connector_id = ? AND active = 1"
+        )
+        try:
+            rows = await self._all(sql, CALENDAR_CONNECTOR_ID)
+        except Exception:
+            raise ServiceContractError(
+                "connector_grants_unavailable",
+                "Connector grant storage returned an invalid record.",
+                status_code=503,
+            ) from None
+
+        grants: dict[str, CalendarGrant] = {}
+        for data in rows:
+            try:
+                raw_capabilities = json.loads(data["granted_capabilities_json"])
+                if raw_capabilities != [CalendarCapability.READ.value]:
+                    raise ValueError("Calendar grants must contain exactly the promoted READ capability")
+                capabilities = (CalendarCapability.READ,)
+                grants[data["app_id"]] = CalendarGrant(
                     app_id=str(data["app_id"]),
                     canonical_agent_id=str(data["canonical_agent_id"]),
                     binding_ref=str(data["binding_ref"]),
