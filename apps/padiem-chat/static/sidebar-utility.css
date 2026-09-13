@@ -1,5 +1,11 @@
 @import url("./accessibility-polish.css");
 
+.sidebar {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .sidebar-bottom {
   flex: 0 0 auto;
   min-height: max-content;
