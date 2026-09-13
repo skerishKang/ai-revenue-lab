@@ -80,7 +80,7 @@ def test_no_raw_locale_key_sink_for_inbox():
 
 def test_glass_sidebar_reserves_space_for_bottom_utility_stack():
     sidebar = GLASS_CSS.split('html[data-theme="padiem-glass"] .sidebar {', 1)[1].split("}", 1)[0]
-    bottom = GLASS_CSS.split('html[data-theme="padiem-glass"] .sidebar-bottom {', 1)[1].split("}", 1)[0]
+    bottom = GLASS_CSS.rsplit('html[data-theme="padiem-glass"] .sidebar-bottom {', 1)[1].split("}", 1)[0]
     assert "padding-bottom: 216px;" in sidebar
     assert "position: absolute;" in bottom
     assert "bottom: 18px;" in bottom
