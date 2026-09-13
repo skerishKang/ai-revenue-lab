@@ -140,8 +140,13 @@
     if (workspace) workspace.hidden = state !== "claw";
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
+    const tasksNav = document.getElementById("tasksNavButton");
+    const alertsNav = document.getElementById("alertsNavButton");
+    const inboxKind = workspace && workspace.dataset.view === "inbox" ? workspace.dataset.inboxKind : "";
     if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
-    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" ? "page" : "false");
+    if (clawNav) clawNav.setAttribute("aria-current", state === "claw" && !inboxKind ? "page" : "false");
+    if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
+    if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
   function showConversation() {
     emptyState.hidden = true;
@@ -774,6 +779,14 @@
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
+    const inboxNavButtons = [
+      document.getElementById("tasksNavButton"),
+      document.getElementById("alertsNavButton"),
+    ].filter(Boolean);
+    inboxNavButtons.forEach((button) => {
+      button.disabled = !authenticated;
+      button.setAttribute("aria-disabled", authenticated ? "false" : "true");
+    });
     const sessionState = !ready
       ? "unavailable"
       : authenticated
@@ -1208,11 +1221,22 @@
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
+    const activeInboxKind = document.getElementById("clawWorkspace")?.dataset.inboxKind;
+    if (activeInboxKind === "tasks" || activeInboxKind === "alerts") loadClawInbox(activeInboxKind);
   });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
   const clawNavButton = document.getElementById("clawNavButton");
+  const tasksNavButton = document.getElementById("tasksNavButton");
+  const alertsNavButton = document.getElementById("alertsNavButton");
   const clawWorkspace = document.getElementById("clawWorkspace");
+  const clawInbox = document.getElementById("clawInbox");
+  const clawInboxTitle = document.getElementById("clawInboxTitle");
+  const clawInboxLoading = document.getElementById("clawInboxLoading");
+  const clawInboxError = document.getElementById("clawInboxError");
+  const clawInboxEmpty = document.getElementById("clawInboxEmpty");
+  const clawInboxList = document.getElementById("clawInboxList");
+  const clawInboxRetry = document.getElementById("clawInboxRetry");
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
@@ -1407,9 +1431,140 @@
     }
   }
 
+  function inboxT(key) {
+    return uiT(key);
+  }
+
+  function resetClawInboxState() {
+    if (clawInboxLoading) clawInboxLoading.hidden = true;
+    if (clawInboxError) clawInboxError.hidden = true;
+    if (clawInboxEmpty) clawInboxEmpty.hidden = true;
+  }
+
+  function setClawInboxLoading() {
+    resetClawInboxState();
+    if (clawInboxList) clawInboxList.replaceChildren();
+    if (clawInboxLoading) {
+      clawInboxLoading.hidden = false;
+      clawInboxLoading.textContent = inboxT("claw-inbox-loading");
+    }
+  }
+
+  function setClawInboxError() {
+    resetClawInboxState();
+    if (clawInboxError) {
+      clawInboxError.hidden = false;
+      clawInboxError.textContent = inboxT("claw-inbox-error");
+    }
+  }
+
+  async function updateClawInboxStatus(kind, itemId, status) {
+    try {
+      const response = await fetch(`/api/claw/inbox/${encodeURIComponent(kind)}/${encodeURIComponent(itemId)}`, {
+        method: "PATCH",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true) throw new Error("inbox update failed");
+      await loadClawInbox(kind);
+    } catch (_) {
+      setClawInboxError();
+      if (clawInboxRetry) clawInboxRetry.focus?.();
+    }
+  }
+
+  function renderClawInboxItems(kind, items) {
+    resetClawInboxState();
+    if (!clawInboxList) return;
+    clawInboxList.replaceChildren();
+    if (!Array.isArray(items) || items.length === 0) {
+      if (clawInboxEmpty) {
+        clawInboxEmpty.dataset.localeKey = kind === "tasks" ? "claw-inbox-empty-tasks" : "claw-inbox-empty-alerts";
+        clawInboxEmpty.textContent = inboxT(clawInboxEmpty.dataset.localeKey);
+        clawInboxEmpty.hidden = false;
+      }
+      return;
+    }
+    items.forEach((item) => {
+      if (!item || typeof item !== "object") return;
+      const id = kind === "tasks" ? item.task_id : item.alert_id;
+      if (typeof id !== "string" || typeof item.title !== "string") return;
+      const card = document.createElement("article");
+      card.className = "claw-inbox-item";
+      card.setAttribute("role", "listitem");
+
+      const copy = document.createElement("div");
+      copy.className = "claw-inbox-item-copy";
+      const title = document.createElement("strong");
+      title.textContent = item.title;
+      const meta = document.createElement("span");
+      const statusText = inboxT(`claw-inbox-status-${String(item.status || "")}`);
+      meta.textContent = statusText === `claw-inbox-status-${String(item.status || "")}` ? String(item.status || "") : statusText;
+      copy.append(title, meta);
+
+      const action = document.createElement("button");
+      action.type = "button";
+      action.className = "claw-inbox-status-action";
+      let nextStatus = "";
+      let actionKey = "";
+      if (kind === "tasks") {
+        nextStatus = item.status === "open" ? "done" : "open";
+        actionKey = item.status === "open" ? "claw-inbox-mark-done" : "claw-inbox-reopen";
+      } else {
+        nextStatus = item.status === "active" ? "dismissed" : "active";
+        actionKey = item.status === "active" ? "claw-inbox-dismiss" : "claw-inbox-restore";
+      }
+      action.textContent = inboxT(actionKey);
+      action.addEventListener("click", () => updateClawInboxStatus(kind, id, nextStatus), { once: true });
+      card.append(copy, action);
+      clawInboxList.appendChild(card);
+    });
+  }
+
+  async function loadClawInbox(kind) {
+    if (!authState.authenticated || !clawInbox) return;
+    setClawInboxLoading();
+    try {
+      const response = await fetch(`/api/claw/inbox/${encodeURIComponent(kind)}?limit=20`, {
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.items)) throw new Error("inbox unavailable");
+      renderClawInboxItems(kind, data.items);
+    } catch (_) {
+      setClawInboxError();
+    }
+  }
+
+  function openClawInbox(kind) {
+    if (!clawWorkspace || !clawInbox || !authState.authenticated) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "inbox";
+    clawWorkspace.dataset.inboxKind = kind;
+    clawInbox.hidden = false;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = true;
+    if (clawInboxTitle) {
+      clawInboxTitle.dataset.localeKey = kind === "tasks" ? "claw-inbox-tasks-title" : "claw-inbox-alerts-title";
+      clawInboxTitle.textContent = inboxT(clawInboxTitle.dataset.localeKey);
+    }
+    setNavActive();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    loadClawInbox(kind);
+  }
+
   function openClawWorkspace() {
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "manual";
+    delete clawWorkspace.dataset.inboxKind;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = false;
+    if (clawResultArea) clawResultArea.hidden = false;
     setNavActive();
     if (clawRequestText) clawRequestText.focus();
     closeSidebar();
@@ -1417,6 +1572,12 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
+  if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
+  if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
+    const kind = clawWorkspace?.dataset.inboxKind;
+    if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);
+  });
   if (clawWorkspace) {
     clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((chip) => {
       chip.addEventListener("click", () => {
@@ -1920,7 +2081,9 @@
   function syncApprovedMemoryVisibility() {
     if (!clawApprovedMemory) return;
     // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
-    const show = authState.authenticated === true && shell.dataset.state === "claw";
+    const show = authState.authenticated === true
+      && shell.dataset.state === "claw"
+      && clawWorkspace?.dataset.view !== "inbox";
     clawApprovedMemory.hidden = !show;
     if (show) loadApprovedMemoryList();
   }
