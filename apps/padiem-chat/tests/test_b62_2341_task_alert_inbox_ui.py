@@ -79,7 +79,10 @@ def test_no_raw_locale_key_sink_for_inbox():
 
 
 def test_sidebar_bottom_cannot_shrink_over_clickable_history_or_outputs():
+    sidebar = SIDEBAR_CSS.split(".sidebar {", 1)[1].split("}", 1)[0]
     block = SIDEBAR_CSS.split(".sidebar-bottom {", 1)[1].split("}", 1)[0]
+    assert "overflow-y: auto;" in sidebar
+    assert "overflow-x: hidden;" in sidebar
     assert "flex: 0 0 auto;" in block
     assert "min-height: max-content;" in block
 
