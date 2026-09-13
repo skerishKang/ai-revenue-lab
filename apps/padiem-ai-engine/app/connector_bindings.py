@@ -47,6 +47,15 @@ from padiem_ai_core.drive_capability import (
     drive_read_tool_specs,
     register_drive_read_tools,
 )
+from padiem_ai_core.slack_capability import (
+    SLACK_CANONICAL_TOOL_IDS,
+    SLACK_CONNECTOR_ID,
+    SlackCapability,
+    SlackContractError,
+    SlackReadPort,
+    register_slack_read_tools,
+    slack_read_tool_specs,
+)
 from padiem_ai_core.telegram_capability import (
     TELEGRAM_CANONICAL_TOOL_IDS,
     TELEGRAM_CONNECTOR_ID,
@@ -82,6 +91,12 @@ DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
 # and server-derived grants are both composed by the canonical root.
 TELEGRAM_REFERENCE_APP_ID = "b54-padiem-claw-telegram"
 TELEGRAM_AGENT_ID = "agent:padiem:claw_telegram_reader@1"
+
+# Server-side identifiers for the promoted Slack read connector (#2356).
+# The slot is pre-activation: the resolver stays None until a bot-token port
+# and server-derived grants are both composed by the canonical root.
+SLACK_REFERENCE_APP_ID = "b54-padiem-claw-slack"
+SLACK_AGENT_ID = "agent:padiem:claw_slack_reader@1"
 
 # Server-side identifiers (deployment decision D28, pre-activation). They
 # identify the trusted Engine composition slot for the Gmail read connector
@@ -165,6 +180,40 @@ class TelegramGrant:
         ):
             raise TelegramContractError(
                 "only the READ capability may be granted to a Telegram binding"
+            )
+
+
+@dataclass(frozen=True, slots=True)
+class SlackGrant:
+    """Server-resolved grant fact for one canonical Slack Agent (#2356).
+
+    ``granted_capabilities`` carries only explicit SlackCapability values
+    resolved server-side from grant references; never derived from caller
+    JSON. The raw bot token can never appear here.
+    """
+
+    app_id: str
+    canonical_agent_id: str
+    binding_ref: str
+    actor_ref: str
+    granted_capabilities: tuple[SlackCapability, ...]
+
+    def __post_init__(self) -> None:
+        # Fail-closed parity with Core's SlackCapabilityGrant: a grant that
+        # repeats a capability is ambiguous and must never reach binding.
+        if not isinstance(self.granted_capabilities, tuple) or any(
+            not isinstance(item, SlackCapability) for item in self.granted_capabilities
+        ):
+            raise SlackContractError(
+                "granted_capabilities must contain SlackCapability values"
+            )
+        if len(self.granted_capabilities) != len(set(self.granted_capabilities)):
+            raise SlackContractError("granted_capabilities must be unique")
+        if any(
+            capability is not SlackCapability.READ for capability in self.granted_capabilities
+        ):
+            raise SlackContractError(
+                "only the READ capability may be granted to a Slack binding"
             )
 
 
@@ -304,6 +353,58 @@ def _telegram_policy() -> TrustedAgentRuntimePolicy:
                 (
                     "telegram.get_bot_info",
                     "telegram.get_chat_info",
+                ),
+            )
+            for _ in (specs.get(spec_id),)
+            if spec_id in specs
+        ),
+    )
+
+
+def _slack_definition(*, app_id: str, canonical_agent_id: str) -> BoundedAgentDefinition:
+    return BoundedAgentDefinition(
+        agent_id=canonical_agent_id,
+        publisher_id="padiem",
+        title="Claw slack reader",
+        description="Read-only Slack Web API projection for Padiem Claw",
+        instruction=(
+            "Read workspace identity, server-allowed channel metadata and "
+            "bounded history through the trusted Slack port; never post or "
+            "modify."
+        ),
+        output_contract_ref="output:text@1",
+        allowed_tool_ids=SLACK_CANONICAL_TOOL_IDS,
+        execution_budget=AgentExecutionBudget(),
+    )
+
+
+def _slack_policy() -> TrustedAgentRuntimePolicy:
+    specs = {spec.id: spec for spec in slack_read_tool_specs()}
+    return TrustedAgentRuntimePolicy(
+        context_policy_ref="context:default",
+        model_policy_ref="model:auto",
+        output_contract_ref="output:text@1",
+        task_type="general",
+        optimize_for="balanced",
+        max_tokens=1024,
+        max_steps_cap=8,
+        context_policy={},
+        model_policy={},
+        output_contract={},
+        tool_bindings=tuple(
+            ToolRuntimeBinding(
+                canonical_tool_id=canonical,
+                runtime_tool_id=spec_id,
+            )
+            for canonical, spec_id in zip(
+                SLACK_CANONICAL_TOOL_IDS,
+                (
+                    "slack.get_workspace_info",
+                    "slack.list_channels",
+                    "slack.get_channel_history",
+                    "slack.get_thread_replies",
+                    "slack.get_user_info",
+                    "slack.get_file_info",
                 ),
             )
             for _ in (specs.get(spec_id),)
@@ -605,6 +706,101 @@ def telegram_tool_binding(
     )
 
 
+def slack_tool_binding(
+    *,
+    grant: SlackGrant,
+    port: SlackReadPort,
+) -> EngineToolBinding:
+    """Assemble one server-trusted EngineToolBinding from a server Slack grant.
+
+    Core entry point is ``register_slack_read_tools``; the Engine never
+    instantiates a second runtime. The Engine never invents a
+    ``ToolAuthorizationContext`` from request JSON; the grant's
+    ``granted_capabilities`` is the only source of authority. The raw bot
+    token stays inside the trusted port and never crosses this seam.
+    """
+
+    if not isinstance(grant, SlackGrant):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Slack binding requires a server-resolved SlackGrant.",
+            status_code=503,
+        )
+    if not callable(getattr(port, "get_json", None)):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Slack binding requires a Core SlackReadPort.",
+            status_code=503,
+        )
+    if grant.app_id != SLACK_REFERENCE_APP_ID:
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Slack grant app_id does not match the trusted Engine slot.",
+            status_code=403,
+        )
+    if grant.canonical_agent_id != SLACK_AGENT_ID:
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Slack grant canonical_agent_id does not match the bound Agent.",
+            status_code=403,
+        )
+
+    runtime = ToolRuntime()
+    register_slack_read_tools(
+        runtime,
+        port,
+        binding_ref=grant.binding_ref,
+        actor_ref=grant.actor_ref,
+    )
+
+    specs = list(slack_read_tool_specs())
+    registry = ToolRegistrySnapshot.from_entries(
+        tuple(
+            sorted(
+                (
+                    RegisteredTool.from_spec(
+                        canonical_tool_id=canonical,
+                        runtime_spec=spec,
+                    )
+                    for canonical, spec in zip(
+                        SLACK_CANONICAL_TOOL_IDS,
+                        specs,
+                    )
+                ),
+                key=lambda entry: entry.canonical_tool_id,
+            )
+        )
+    )
+
+    definition = _slack_definition(
+        app_id=grant.app_id,
+        canonical_agent_id=grant.canonical_agent_id,
+    )
+    policy = _slack_policy()
+    compiled = compile_agent_profile(definition, policy)
+    authorization = ToolAuthorizationContext(
+        app_id=grant.app_id,
+        agent_id=compiled.runtime_profile.id,
+        granted_auth_scopes=tuple(grant.granted_capabilities),
+    )
+    authority = TrustedToolAuthority(
+        canonical_agent_id=grant.canonical_agent_id,
+        definition=definition,
+        compiled=compiled,
+        authorization=authorization,
+    )
+    assert type(runtime) is _CoreToolRuntime
+
+    return EngineToolBinding(
+        app_id=grant.app_id,
+        tool_runtime=runtime,
+        registry=registry,
+        authorities={grant.canonical_agent_id: authority},
+        authorization_provider=None,
+        resource_policy=ToolResourcePolicy(),
+    )
+
+
 def build_tool_binding_resolver(
     *,
     gmail_port: GmailReadPort | None,
@@ -618,18 +814,21 @@ def build_tool_binding_resolver(
     telegram_grants_loader: (
         Callable[[], Awaitable[Mapping[str, TelegramGrant]]] | None
     ) = None,
+    slack_port: SlackReadPort | None = None,
+    slack_grants: Mapping[str, SlackGrant] | None = None,
+    slack_grants_loader: Callable[[], Awaitable[Mapping[str, SlackGrant]]] | None = None,
 ) -> Callable[[str], EngineToolBinding | None] | None:
     """Build the cached per-app_id resolver the composition root injects.
 
-    Gmail, Drive and Telegram resolvers coexist (#2353): a request is routed
-    to the first matching grant type. When either port is ``None`` or its
-    grant mapping is empty, that connector's resolver is absent.
+    Gmail, Drive, Telegram and Slack resolvers coexist (#2356): a request is
+    routed to the first matching grant type. When either port is ``None`` or
+    its grant mapping is empty, that connector's resolver is absent.
 
-    * ``gmail_port is None and drive_port is None and telegram_port is None``
-      ⇒ ``None``.
-    * ``grants`` / ``drive_grants`` / ``telegram_grants`` are pre-resolved
-      mappings; ``*_loader`` async factories are ignored until pre-resolved
-      (fail-closed until then).
+    * ``gmail_port is None and drive_port is None and telegram_port is None
+      and slack_port is None`` ⇒ ``None``.
+    * ``grants`` / ``drive_grants`` / ``telegram_grants`` / ``slack_grants``
+      are pre-resolved mappings; ``*_loader`` async factories are ignored
+      until pre-resolved (fail-closed until then).
     """
     gmail_resolver: Callable[[str], EngineToolBinding | None] | None = None
     if gmail_port is not None:
@@ -694,7 +893,33 @@ def build_tool_binding_resolver(
 
             telegram_resolver = _telegram_resolver
 
-    if gmail_resolver is None and drive_resolver is None and telegram_resolver is None:
+    slack_resolver: Callable[[str], EngineToolBinding | None] | None = None
+    if slack_port is not None:
+        effective_slack_grants = slack_grants
+        if effective_slack_grants is None and slack_grants_loader is not None:
+            effective_slack_grants = {}
+        if effective_slack_grants:
+            cache: dict[str, EngineToolBinding] = {}
+
+            def _slack_resolver(app_id: str) -> EngineToolBinding | None:
+                grant = effective_slack_grants.get(app_id)
+                if grant is None:
+                    return None
+                cached = cache.get(app_id)
+                if cached is not None:
+                    return cached
+                binding = slack_tool_binding(grant=grant, port=slack_port)
+                cache[app_id] = binding
+                return binding
+
+            slack_resolver = _slack_resolver
+
+    if (
+        gmail_resolver is None
+        and drive_resolver is None
+        and telegram_resolver is None
+        and slack_resolver is None
+    ):
         return None
 
     def _resolver(app_id: str) -> EngineToolBinding | None:
@@ -707,7 +932,11 @@ def build_tool_binding_resolver(
             if binding is not None:
                 return binding
         if telegram_resolver is not None:
-            return telegram_resolver(app_id)
+            binding = telegram_resolver(app_id)
+            if binding is not None:
+                return binding
+        if slack_resolver is not None:
+            return slack_resolver(app_id)
         return None
 
     return _resolver
@@ -719,14 +948,19 @@ __all__ = [
     "GMAIL_CONNECTOR_ID",
     "GMAIL_MAIL_READER_AGENT_ID",
     "GMAIL_REFERENCE_APP_ID",
+    "SLACK_AGENT_ID",
+    "SLACK_CONNECTOR_ID",
+    "SLACK_REFERENCE_APP_ID",
     "TELEGRAM_AGENT_ID",
     "TELEGRAM_CONNECTOR_ID",
     "TELEGRAM_REFERENCE_APP_ID",
     "DriveGrant",
     "GmailGrant",
+    "SlackGrant",
     "TelegramGrant",
     "build_tool_binding_resolver",
     "drive_tool_binding",
     "gmail_tool_binding",
+    "slack_tool_binding",
     "telegram_tool_binding",
 ]

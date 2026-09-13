@@ -39,7 +39,7 @@ html[data-theme="padiem-glass"] #clawNavButton::after {
   max-height: calc(100vh - 64px);
   overflow: auto;
   background: var(--panel, #fff);
-  color: var(--ink, #1a1a2e);
+  color: var(--text);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 

@@ -380,6 +380,7 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    locale = (root / "static/locale.js").read_text(encoding="utf-8")
     a11y = (root / "static/a11y.js").read_text(encoding="utf-8")
     assert 'id="loginButton"' in html
     assert 'id="historySection"' in html and 'id="historyList"' in html
@@ -387,7 +388,8 @@ def test_auth_history_frontend_contract_and_phase1_css_unchanged():
     assert 'fetch("/api/auth/status"' in js
     assert 'fetch("/api/conversations"' in js
     assert 'method: "DELETE"' in js
-    assert "삭제한 대화는 복구할 수 없습니다." in js
+    assert "삭제한 대화는 복구할 수 없습니다." in locale
+    assert 'uiT("conversation-delete-message"' in js
     assert "window.confirm(" not in js
     assert "PadiemConfirmDialog.confirm" in js
     assert 'dialog.id = "confirmDialog"' in a11y
