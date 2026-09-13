@@ -28,6 +28,10 @@ html[data-theme="padiem-glass"] {
   --blue: #79bce7;
   --danger: #7f1d1d;
   --success: #14532d;
+  --success-surface: rgba(247, 251, 249, .92);
+  --success-border: rgba(20, 83, 45, .28);
+  --danger-surface: rgba(253, 247, 247, .92);
+  --danger-border: rgba(127, 29, 29, .28);
   --shadow: 0 20px 60px rgba(24, 33, 42, .16);
   --card-bg: rgba(239, 243, 246, .48);
   --card-border: rgba(255, 255, 255, .42);
