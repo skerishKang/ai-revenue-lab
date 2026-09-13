@@ -344,6 +344,7 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     root = Path(__file__).resolve().parents[1]
     html = (root / "static/index.html").read_text(encoding="utf-8")
     js = (root / "static/app.js").read_text(encoding="utf-8")
+    locale = (root / "static/locale.js").read_text(encoding="utf-8")
     capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
     transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
     conversation_state = (root / "static/conversation-state.js").read_text(encoding="utf-8")
@@ -361,7 +362,8 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
         assert f'label: "{label}"' in capabilities
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in html
     assert "웹 검색 · 준비 중" in html
-    assert "모의 응답 · 실제 모델 호출 없음" in js
+    assert 'uiT("mock-response")' in js
+    assert '"mock-response": "모의 응답 · 실제 모델 호출 없음"' in locale
     assert "chatTransport.requestCompleted(payload, signal)" in js
     assert 'fetch("/api/chat"' in transport
     assert "conversationState.setSkill(selectedSkill)" in js

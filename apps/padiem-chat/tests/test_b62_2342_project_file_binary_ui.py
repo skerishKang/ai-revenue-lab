@@ -241,6 +241,16 @@ function findButton(root, text) {
   }
   return null;
 }
+function findButtonByClass(root, className) {
+  const stack = [...(root.children || [])];
+  while (stack.length) {
+    const el = stack.shift();
+    const classes = String(el.className || "").split(/\s+/);
+    if (String(el.tagName).toUpperCase() === "BUTTON" && classes.includes(className)) return el;
+    stack.push(...(el.children || []));
+  }
+  return null;
+}
 function collectText(root) {
   let out = root.textContent || "";
   (root.children || []).forEach((c) => { out += " " + collectText(c); });
@@ -260,7 +270,7 @@ function pickAndUpload(file) {
   await tick(60);
 
   // Open the manage dialog for the existing project (files panel visible, ready).
-  const manage = findButton(byId.projectsList, "관리");
+  const manage = findButtonByClass(byId.projectsList, "project-manage");
   if (!manage) fail("PROJECT_MANAGE_BUTTON_MISSING");
   manage.click();
   await tick(60);
