@@ -68,6 +68,12 @@ CALLER_CREDENTIAL_HEADER = "x-padiem-engine-credential"
 NOT_FOUND_REASON = "completed_execution_not_found"
 FINGERPRINT = "0" * 64
 KEY_PREFIX = "b54-cred-eq-diag"
+# Explicit diagnostic User-Agent (repo convention: padiem-<purpose>/1.0
+# (+github-actions)). The Cloudflare edge for padiem.net blocks the default
+# ``Python-urllib`` UA before the Worker oracle is reached (2026-09-13
+# 2-request UA differential); without this header both probe requests would
+# never reach the Engine auth oracle.
+DIAGNOSTIC_USER_AGENT = "padiem-credential-diagnostic/1.0 (+github-actions)"
 # Deployed validator: ^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$
 _IDEMPOTENCY_KEY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 
@@ -128,6 +134,7 @@ def build_request(base_url: str, credential: str, idempotency_key: str) -> urlli
         data=body,
         method="POST",
         headers={
+            "User-Agent": DIAGNOSTIC_USER_AGENT,
             "Content-Type": "application/json",
             "Accept": "application/json",
             CALLER_ID_HEADER: CALLER_ID,

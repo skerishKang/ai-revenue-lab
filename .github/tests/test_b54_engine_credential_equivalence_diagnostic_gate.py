@@ -96,6 +96,7 @@ def test_constants_match_deployed_oracle() -> None:
     assert MODULE.CALLER_CREDENTIAL_HEADER == "x-padiem-engine-credential"
     assert MODULE.REQUEST_BUDGET_MAX == 2
     assert MODULE.ENGINE_BASE_URL == "https://engine.padiem.net"
+    assert MODULE.DIAGNOSTIC_USER_AGENT == "padiem-credential-diagnostic/1.0 (+github-actions)"
     assert re.fullmatch(r"[0-9a-f]{64}", MODULE.FINGERPRINT)
 
 
@@ -164,6 +165,34 @@ def test_budget_is_two_requests_max() -> None:
     MODULE.probe(SENTINEL, transport=recorder)
     assert len(recorder.requests) == 2
     assert len(recorder.responses) == 3
+
+
+# 3b. explicit diagnostic User-Agent (edge UA differential hotfix)
+
+
+def test_requests_carry_explicit_diagnostic_user_agent() -> None:
+    _, recorder, _ = run_probe([(200, _not_found_body("k")), (200, _not_found_body("k"))])
+    assert len(recorder.requests) == 2
+    for request in recorder.requests:
+        ua = presented_header(request, "User-Agent")
+        assert ua == MODULE.DIAGNOSTIC_USER_AGENT
+        assert not ua.startswith("Python-urllib")
+
+
+def test_user_agent_convention_and_request_shape_unchanged() -> None:
+    assert re.fullmatch(
+        r"padiem-[a-z0-9-]+/1\.0 \(\+github-actions\)", MODULE.DIAGNOSTIC_USER_AGENT
+    )
+    request = MODULE.build_request(MODULE.ENGINE_BASE_URL, SENTINEL, "b54-cred-eq-diag-k")
+    # The UA is declared at construction time, so the opener never falls
+    # back to the Python-urllib signature that the edge blocks.
+    assert presented_header(request, "User-Agent") == MODULE.DIAGNOSTIC_USER_AGENT
+    assert request.get_method() == "POST"
+    assert request.full_url == MODULE.ENGINE_BASE_URL + MODULE.REPLAY_PATH
+    assert presented_header(request, "Content-Type") == "application/json"
+    assert presented_header(request, "Accept") == "application/json"
+    assert presented_header(request, MODULE.CALLER_ID_HEADER) == MODULE.CALLER_ID
+    assert presented_header(request, MODULE.CALLER_CREDENTIAL_HEADER) == SENTINEL
 
 
 # 4/5. dispositions and bounded evidence
