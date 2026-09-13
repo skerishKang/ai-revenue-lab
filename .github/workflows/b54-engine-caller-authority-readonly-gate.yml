@@ -6,6 +6,8 @@ on:
       - ".github/workflows/b54-engine-caller-authority-readonly-gate.yml"
       - ".github/scripts/b54_engine_caller_authority_readonly.py"
       - ".github/tests/test_b54_engine_caller_authority_readonly_gate.py"
+      - ".github/scripts/b54_engine_caller_authority_contentblind_diagnostic.py"
+      - ".github/tests/test_b54_engine_caller_authority_contentblind_diagnostic.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -16,6 +18,7 @@ on:
         options:
           - repository_preflight
           - cloudflare_readonly
+          - content_blind_diagnostic
       target_sha:
         description: "Exact current main SHA"
         required: true
@@ -70,6 +73,9 @@ jobs:
 
       - name: Run engine caller authority read-only gate tests
         run: python .github/tests/test_b54_engine_caller_authority_readonly_gate.py
+
+      - name: Run engine caller authority content-blind diagnostic tests
+        run: python .github/tests/test_b54_engine_caller_authority_contentblind_diagnostic.py
 
       - name: Source-only evidence
         run: |
@@ -126,4 +132,89 @@ jobs:
           echo 'CLOUDFLARE_MUTATION=0'
           echo 'RAW_SETTINGS_ARTIFACT_UPLOADED=0'
           echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  # Content-blind classification of the surviving #2439 401 candidates:
+  # malformed V1 base vs base already containing the overlay caller id.
+  # The two registry payloads are read into CI memory only and are consumed
+  # by the production parsers; output is closed to six approved facts plus
+  # fixed safety markers. Values never touch disk, argv, artifacts, or logs.
+  content-blind-diagnostic:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'content_blind_diagnostic' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'CONTENTBLIND_EXACT_MAIN_SHA=PASS'
+
+      - name: Preflight NAME/TYPE authority state before any value read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          settings="${RUNNER_TEMP}/b54-engine-caller-authority-settings.json"
+          http_status="$(curl -sS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -o "${settings}" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings")"
+          test "${http_status}" = "200"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          evidence="$(python .github/scripts/b54_engine_caller_authority_readonly.py "${settings}")"
+          printf '%s\n' "${evidence}" | grep -E '^PADIEM_ENGINE_CALLER_REGISTRY_V1=PRESENT:secret_text$' >/dev/null
+          printf '%s\n' "${evidence}" | grep -E '^PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY=PRESENT:secret_text$' >/dev/null
+          echo 'CONTENTBLIND_PREFLIGHT_NAME_TYPE=PASS'
+          echo 'CONTENTBLIND_PREFLIGHT_SECRET_VALUE_OUTPUT=0'
+
+      - name: Classify live authority composition content-blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/secrets"
+          read_secret_text() {
+            curl -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "${api}/$1" | jq -er \
+              'select(.success == true) | .result | select(.type == "secret_text") | .text | select(type == "string") | select(length > 0)'
+          }
+          base_value="$(read_secret_text PADIEM_ENGINE_CALLER_REGISTRY_V1)"
+          overlay_value="$(read_secret_text PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY)"
+          evidence="$(env \
+            "PADIEM_ENGINE_CALLER_REGISTRY_V1=${base_value}" \
+            "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY=${overlay_value}" \
+            python .github/scripts/b54_engine_caller_authority_contentblind_diagnostic.py)"
+          unset base_value overlay_value
+          if printf '%s\n' "${evidence}" | grep -qvE '^(BASE_PARSE=(OK|INVALID)|OVERLAY_PARSE=(OK|INVALID)|BASE_CONTAINS_B54_KAGENT=(YES|NO)|DUPLICATE_CALLER_ID=(YES|NO)|BASE_CALLER_COUNT=([0-9]|[1-5][0-9]|6[0-4])|OVERLAY_CALLER_ID_MATCH=(YES|NO)|B54_ENGINE_AUTHORITY_CONTENTBLIND=PASS|SECRET_VALUE_OUTPUT=0|RAW_REGISTRY_JSON_OUTPUT=0|CLOUDFLARE_MUTATION=0|PRODUCTION_MUTATION=0)$'; then
+            echo 'CONTENTBLIND_OUTPUT_CONTRACT=FAIL'
+            exit 1
+          fi
+          test "$(printf '%s\n' "${evidence}" | wc -l)" -eq 11
+          for field in BASE_PARSE OVERLAY_PARSE BASE_CONTAINS_B54_KAGENT DUPLICATE_CALLER_ID BASE_CALLER_COUNT OVERLAY_CALLER_ID_MATCH; do
+            test "$(printf '%s\n' "${evidence}" | grep -c "^${field}=")" -eq 1
+          done
+          echo "${evidence}"
+          echo 'CONTENTBLIND_OUTPUT_CONTRACT=PASS'
+          echo 'GET_ONLY=PASS'
+          echo 'CONTENTBLIND_RAW_REGISTRY_JSON_OUTPUT=0'
+          echo 'CONTENTBLIND_SECRET_VALUE_OUTPUT=0'
+          echo 'CONTENTBLIND_ARTIFACT_UPLOADED=0'
+          echo 'CLOUDFLARE_MUTATION=0'
           echo 'PRODUCTION_MUTATION=0'
