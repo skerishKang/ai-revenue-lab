@@ -89,7 +89,7 @@ html[data-theme="padiem-glass"] .app-shell::before {
 }
 
 html[data-theme="padiem-glass"] .sidebar {
-  padding-bottom: 140px;
+  padding-bottom: 216px;
   background: linear-gradient(180deg, rgba(43, 51, 60, .58), rgba(35, 43, 51, .42));
   color: #f6f8fa;
   border-right: 1px solid rgba(255, 255, 255, .24);
