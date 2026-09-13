@@ -265,8 +265,8 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: rgba(34, 158, 94, 0.08);
-  border: 1px solid rgba(34, 158, 94, 0.18);
+  background: var(--success-surface);
+  border: 1px solid var(--success-border);
   font-size: 13px;
   font-weight: 650;
   color: var(--success);
@@ -285,13 +285,13 @@
   color: var(--text);
 }
 .claw-status[data-state="success"] {
-  background: rgba(34, 158, 94, 0.08);
-  border: 1px solid rgba(34, 158, 94, 0.18);
+  background: var(--success-surface);
+  border: 1px solid var(--success-border);
   color: var(--success);
 }
 .claw-status[data-state="error"] {
-  background: rgba(220, 62, 62, 0.07);
-  border: 1px solid rgba(220, 62, 62, 0.16);
+  background: var(--danger-surface);
+  border: 1px solid var(--danger-border);
   color: var(--danger);
 }
 .claw-result[data-claw-state="error"] .claw-result-empty {
