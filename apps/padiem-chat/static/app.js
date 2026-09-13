@@ -142,6 +142,9 @@
     const clawNav = document.getElementById("clawNavButton");
     if (chatNav) chatNav.setAttribute("aria-current", state === "claw" ? "false" : "page");
     if (clawNav) clawNav.setAttribute("aria-current", state === "claw" ? "page" : "false");
+    // Single choke point for the three shell state transitions, so the inbox
+    // nav disclosure can never be left stale by leaving the workspace.
+    syncInboxNavAvailability();
   }
   function showConversation() {
     emptyState.hidden = true;
@@ -1975,8 +1978,16 @@
   const clawInboxAlertsEmpty = document.getElementById("clawInboxAlertsEmpty");
   const clawInboxTasksGroup = document.getElementById("clawInboxTasksGroup");
   const clawInboxAlertsGroup = document.getElementById("clawInboxAlertsGroup");
-  const tasksNavButton = document.getElementById("tasksNavButton");
-  const alertsNavButton = document.getElementById("alertsNavButton");
+
+  // Resolved at call time rather than held in a module-scope const: setNavActive()
+  // runs during shell init, before this module body executes, so a const read from
+  // there would still be in its temporal dead zone.
+  function inboxNavButtons() {
+    return [
+      document.getElementById("tasksNavButton"),
+      document.getElementById("alertsNavButton"),
+    ];
+  }
 
   let inboxInFlight = false;
 
@@ -2175,17 +2186,27 @@
     updateInboxStatus(`/api/claw/alerts/${encodeURIComponent(alertId)}/status`, status);
   }
 
+  function inboxSurfaceActive() {
+    // Owner-authenticated Claw surface only: the anonymous Phase A flow and the
+    // plain home/chat states keep their pre-inbox layout untouched.
+    return authState.authenticated === true && shell.dataset.state === "claw";
+  }
+
   function syncInboxVisibility() {
     if (!clawInbox) return;
-    // Owner-authenticated surface only: anonymous Phase A flow is unchanged.
-    const show = authState.authenticated === true && shell.dataset.state === "claw";
+    const show = inboxSurfaceActive();
     clawInbox.hidden = !show;
     if (show) loadInbox();
   }
 
   function syncInboxNavAvailability() {
-    const enabled = authState.authenticated === true;
-    [tasksNavButton, alertsNavButton].forEach((button) => {
+    // #workspaceNav is an in-workspace jump list, so its entries are disclosed
+    // only while that workspace is open. `.side-nav .side-item:disabled` is
+    // `display: none` (padiem-first-use.css), so revealing them in the home
+    // state grows the sidebar column and lets `.sidebar-bottom` overlap the
+    // saved-outputs list underneath it.
+    const enabled = inboxSurfaceActive();
+    inboxNavButtons().forEach((button) => {
       if (!button) return;
       button.disabled = !enabled;
       button.setAttribute("aria-disabled", enabled ? "false" : "true");
@@ -2201,6 +2222,7 @@
 
   if (clawInboxRefresh) clawInboxRefresh.addEventListener("click", () => loadInbox());
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => loadInbox());
-  if (tasksNavButton) tasksNavButton.addEventListener("click", () => focusInboxGroup(clawInboxTasksGroup));
-  if (alertsNavButton) alertsNavButton.addEventListener("click", () => focusInboxGroup(clawInboxAlertsGroup));
+  const [inboxTasksNav, inboxAlertsNav] = inboxNavButtons();
+  if (inboxTasksNav) inboxTasksNav.addEventListener("click", () => focusInboxGroup(clawInboxTasksGroup));
+  if (inboxAlertsNav) inboxAlertsNav.addEventListener("click", () => focusInboxGroup(clawInboxAlertsGroup));
 })();

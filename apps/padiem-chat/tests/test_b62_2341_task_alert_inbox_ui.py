@@ -323,6 +323,16 @@ function collectText(root) {
   // 0) Anonymous shell must not fetch the inbox yet.
   if (listCalls("/api/claw/tasks") !== 0) fail("INBOX_FETCHED_BEFORE_CLAW_SHELL");
 
+  // 0b) The workspace jump list must stay undisclosed outside the Claw shell.
+  //     `.side-nav .side-item:disabled` is `display: none`, so enabling these in
+  //     the home state grows the sidebar column and lets `.sidebar-bottom` sit
+  //     over `#outputsList` items, which breaks unrelated browser QA.
+  if (shell.dataset.state === "claw") fail("SHELL_STARTED_IN_CLAW_STATE");
+  if (byId.tasksNavButton.disabled !== true) fail("TASKS_NAV_DISCLOSED_OUTSIDE_CLAW");
+  if (byId.alertsNavButton.disabled !== true) fail("ALERTS_NAV_DISCLOSED_OUTSIDE_CLAW");
+  if (byId.tasksNavButton.getAttribute("aria-disabled") !== "true") fail("TASKS_NAV_ARIA_NOT_LOCKED");
+  if (byId.alertsNavButton.getAttribute("aria-disabled") !== "true") fail("ALERTS_NAV_ARIA_NOT_LOCKED");
+
   // 1) Open the Claw workspace -> bounded reads happen, no status POST.
   byId.clawNavButton.click();
   await tick(60);
@@ -400,6 +410,14 @@ function collectText(root) {
   byId.tasksNavButton.click();
   await tick(20);
   if (shell.dataset.state !== "claw") fail("TASKS_NAV_DID_NOT_OPEN_CLAW");
+
+  // 7b) Leaving the Claw shell must re-hide the jump list, otherwise the sidebar
+  //     keeps the extra rows and the overlap returns on the next home render.
+  byId.newChatButton.click();
+  await tick(20);
+  if (shell.dataset.state !== "home") fail("NEW_CHAT_DID_NOT_RETURN_HOME");
+  if (byId.tasksNavButton.disabled !== true) fail("TASKS_NAV_LEFT_STALE");
+  if (byId.alertsNavButton.disabled !== true) fail("ALERTS_NAV_LEFT_STALE");
 
   // 8) No internal identifiers ever reach the DOM.
   const dom = collectText(byId.clawInbox);
