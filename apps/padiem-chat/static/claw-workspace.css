@@ -691,10 +691,10 @@
 .claw-inbox {
   margin-top: 18px;
   padding: 18px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--line);
   border-radius: 18px;
-  background: var(--surface-raised);
-  color: var(--text-primary);
+  background: var(--card-bg);
+  color: var(--text);
 }
 .claw-inbox-header {
   display: flex;
@@ -705,7 +705,7 @@
 .claw-inbox-header h3 { margin: 2px 0 0; font-size: 1.15rem; }
 .claw-inbox-help,
 .claw-inbox-status,
-.claw-inbox-empty { color: var(--text-secondary); }
+.claw-inbox-empty { color: var(--muted); }
 .claw-inbox-list { display: grid; gap: 10px; margin-top: 12px; }
 .claw-inbox-item {
   display: flex;
@@ -714,28 +714,28 @@
   gap: 12px;
   min-width: 0;
   padding: 12px 14px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: var(--surface-soft);
+  background: var(--card-bg);
 }
 .claw-inbox-item-copy { display: grid; gap: 4px; min-width: 0; }
 .claw-inbox-item-copy strong {
   overflow-wrap: anywhere;
-  color: var(--text-primary);
+  color: var(--text);
 }
-.claw-inbox-item-copy span { color: var(--text-secondary); font-size: .9rem; }
+.claw-inbox-item-copy span { color: var(--muted); font-size: .9rem; }
 .claw-inbox-retry,
 .claw-inbox-status-action {
   min-height: 44px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--surface-raised);
-  color: var(--text-primary);
+  background: var(--card-bg);
+  color: var(--text);
   cursor: pointer;
 }
 .claw-inbox-retry:focus-visible,
 .claw-inbox-status-action:focus-visible {
-  outline: 3px solid var(--focus-ring);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 @media (max-width: 760px) {
