@@ -14,7 +14,8 @@ Proves:
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 from starlette.testclient import TestClient
@@ -457,6 +458,191 @@ def test_no_store_calls_on_read_only_listing() -> None:
     client.get(TASKS_PATH)
     client.get(ALERTS_PATH)
     assert store.status_writes == 0
+
+
+# ── integration: the REAL store authority behind the routes ────────────────
+#
+# The fake above pins the route contracts; this section pins the *seam* by
+# wiring the production D1ClawTaskAlertStore over a minimal D1 double, so a
+# future signature drift between the routes and the store cannot pass.
+
+
+class _FakeD1Statement:
+    def __init__(self, db: "_FakeD1", sql: str) -> None:
+        self._db = db
+        self._sql = sql
+        self._values: tuple[Any, ...] = ()
+
+    def bind(self, *values: Any) -> "_FakeD1Statement":
+        self._values = values
+        return self
+
+    @staticmethod
+    def _kind(sql: str) -> str:
+        for kind in ("task", "alert"):
+            if f"kind='{kind}'" in sql:
+                return kind
+        raise AssertionError(f"no kind in SQL: {sql!r}")
+
+    async def run(self) -> dict[str, Any]:
+        sql = self._sql
+        if sql.startswith("INSERT INTO claw_task_alert"):
+            columns = [c.strip() for c in sql[sql.index("(") + 1 : sql.index(")")].split(",")]
+            placeholders = [p.strip() for p in sql.split("VALUES", 1)[1].strip().strip("()").split(",")]
+            row: dict[str, Any] = {}
+            index = 0
+            for column, placeholder in zip(columns, placeholders):
+                if placeholder == "?":
+                    row[column] = self._values[index]
+                    index += 1
+                elif placeholder.upper() == "NULL":
+                    row[column] = None
+                else:
+                    row[column] = int(placeholder)
+            self._db.rows[row["id"]] = row
+            return {"success": True}
+        if sql.startswith("UPDATE claw_task_alert"):
+            set_columns = [p.split("=")[0].strip() for p in sql.split(" SET ")[1].split(" WHERE ")[0].split(",")]
+            index = 0
+            updates: dict[str, Any] = {}
+            for column in set_columns:
+                updates[column] = self._values[index]
+                index += 1
+            row_id = self._values[index]
+            index += 1
+            workspace_id = self._values[index]
+            row = self._db.rows.get(row_id)
+            if row is not None and row["workspace_id"] == workspace_id:
+                row.update(updates)
+                return {"success": True, "meta": {"changes": 1}}
+            return {"success": True, "meta": {"changes": 0}}
+        raise AssertionError(f"unexpected run SQL: {sql!r}")
+
+    async def first(self) -> dict[str, Any] | None:
+        rows = await self.all()
+        return rows[0] if rows else None
+
+    async def all(self) -> list[dict[str, Any]]:
+        sql = self._sql
+        kind = self._kind(sql)
+        if " WHERE id=?" in sql:
+            row_id, workspace_id = self._values
+            row = self._db.rows.get(row_id)
+            if row is None or row["workspace_id"] != workspace_id or row["kind"] != kind:
+                return []
+            return [dict(row)]
+        (workspace_id,) = self._values
+        limit = int(sql.rsplit("LIMIT", 1)[1].strip())
+        matched = [
+            dict(row)
+            for row in self._db.rows.values()
+            if row["workspace_id"] == workspace_id and row["kind"] == kind
+        ]
+        matched.sort(key=lambda row: row["created_at"], reverse=True)
+        return matched[:limit]
+
+
+class _FakeD1:
+    def __init__(self) -> None:
+        self.rows: dict[str, dict[str, Any]] = {}
+
+    def prepare(self, sql: str) -> _FakeD1Statement:
+        return _FakeD1Statement(self, sql)
+
+
+async def test_real_store_authority_wires_through_the_routes() -> None:
+    from app.claw_task_alert_store import D1ClawTaskAlertStore
+
+    store = D1ClawTaskAlertStore(_FakeD1())
+    await store.add_task(
+        ClawFollowupTask(
+            task_id="task-real",
+            workspace_id=_OWN_TENANT,
+            member_id=SIGNED_IN_USER_ID,
+            title="Follow up with the vendor",
+            status=ClawTaskStatus.OPEN,
+            created_at=_now(),
+            due_date=date(2026, 9, 30),
+        )
+    )
+    await store.add_alert(
+        ClawAlert(
+            alert_id="alert-real",
+            workspace_id=_OWN_TENANT,
+            kind=ClawAlertKind.FOLLOWUP_DUE,
+            severity=ClawAlertSeverity.CRITICAL,
+            title="Quote follow-up is due",
+            created_at=_now(),
+        )
+    )
+
+    client = _client(store)
+
+    tasks = client.get(TASKS_PATH).json()["tasks"]
+    assert [t["task_id"] for t in tasks] == ["task-real"]
+    assert tasks[0]["title"] == "Follow up with the vendor"
+    assert tasks[0]["status"] == "open"
+    assert tasks[0]["due_date"] == "2026-09-30"
+
+    alerts = client.get(ALERTS_PATH).json()["alerts"]
+    assert [a["alert_id"] for a in alerts] == ["alert-real"]
+    assert alerts[0]["kind"] == "followup_due"
+    assert alerts[0]["severity"] == "critical"
+
+    assert client.get(f"{TASKS_PATH}/task-real").status_code == 200
+    assert client.get(f"{ALERTS_PATH}/alert-real").status_code == 200
+
+    done = client.post(f"{TASKS_PATH}/task-real/status", json={"status": "done"})
+    assert done.status_code == 200
+    assert done.json()["task"]["status"] == "done"
+    assert client.get(TASKS_PATH).json()["tasks"][0]["status"] == "done"
+
+    dismissed = client.post(f"{ALERTS_PATH}/alert-real/status", json={"status": "dismissed"})
+    assert dismissed.status_code == 200
+    assert dismissed.json()["alert"]["status"] == "dismissed"
+    assert client.get(ALERTS_PATH).json()["alerts"][0]["status"] == "dismissed"
+
+
+async def test_real_store_redacts_credential_shaped_titles() -> None:
+    from app.claw_task_alert_store import D1ClawTaskAlertStore
+
+    store = D1ClawTaskAlertStore(_FakeD1())
+    await store.add_task(
+        ClawFollowupTask(
+            task_id="task-secret",
+            workspace_id=_OWN_TENANT,
+            member_id=SIGNED_IN_USER_ID,
+            title="Send sk-abcdefghijklmnop to the vendor",
+            status=ClawTaskStatus.OPEN,
+            created_at=_now(),
+        )
+    )
+    client = _client(store)
+    body = client.get(TASKS_PATH).text
+    assert "sk-abcdefghijklmnop" not in body
+    assert "[REDACTED_KEY]" in body
+
+
+async def test_real_store_workspace_isolation_holds() -> None:
+    from app.claw_task_alert_store import D1ClawTaskAlertStore
+
+    store = D1ClawTaskAlertStore(_FakeD1())
+    await store.add_task(
+        ClawFollowupTask(
+            task_id="task-foreign",
+            workspace_id=_FOREIGN_TENANT,
+            member_id=OTHER_USER_ID,
+            title="Other tenant task",
+            status=ClawTaskStatus.OPEN,
+            created_at=_now(),
+        )
+    )
+    client = _client(store)
+    assert client.get(TASKS_PATH).json()["tasks"] == []
+    assert client.get(f"{TASKS_PATH}/task-foreign").status_code == 404
+    assert client.post(f"{TASKS_PATH}/task-foreign/status", json={"status": "done"}).status_code == 404
+    # The foreign row is untouched.
+    assert store.db.rows["task-foreign"]["status"] == "open"
 
 
 if __name__ == "__main__":

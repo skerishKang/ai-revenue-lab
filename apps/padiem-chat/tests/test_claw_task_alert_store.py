@@ -239,6 +239,43 @@ async def test_task_get_missing_returns_none():
     assert await store.get_task("task-1", workspace_id="ws-1") is None
 
 
+# Regression: add_task persists `due_date.isoformat()`, which is a *plain* date
+# string. Reading it back through a tz-aware datetime parser raised
+# WorkspaceStorageError, so every due-dated task made list_tasks fail and
+# get_task report "not found".
+async def test_task_with_due_date_round_trips():
+    store, _ = _store()
+    await store.add_task(_T(due_date=_dt.date(2026, 9, 30)))
+    got = await store.get_task("task-1", workspace_id="ws-1")
+    assert got is not None
+    assert got.due_date == _dt.date(2026, 9, 30)
+    listed = await store.list_tasks("ws-1")
+    assert [t.task_id for t in listed] == ["task-1"]
+    assert listed[0].due_date == _dt.date(2026, 9, 30)
+
+
+async def test_due_dated_task_status_update_round_trips():
+    store, _ = _store()
+    await store.add_task(_T(due_date=_dt.date(2026, 9, 30)))
+    updated = await store.set_task_status("task-1", ClawTaskStatus.DONE, workspace_id="ws-1")
+    assert updated.status == ClawTaskStatus.DONE
+    assert updated.due_date == _dt.date(2026, 9, 30)
+    assert (await store.get_task("task-1", workspace_id="ws-1")).status == ClawTaskStatus.DONE
+
+
+async def test_due_date_parser_still_accepts_timestamp_rows():
+    # Rows written as timestamps (not by add_task) must keep working.
+    from app.claw_task_alert_store import _parse_date
+
+    assert _parse_date("2026-09-30") == _dt.date(2026, 9, 30)
+    assert _parse_date("2026-09-30T12:00:00+00:00") == _dt.date(2026, 9, 30)
+    assert _parse_date(None) is None
+    # A malformed value still fails; _task_row_to_record narrows it to
+    # WorkspaceStorageError("claw task row is invalid").
+    with pytest.raises(ValueError):
+        _parse_date("not-a-date")
+
+
 # ---- 2. alert create/list/read ----
 async def test_alert_create_and_get_and_list():
     store, _ = _store()

@@ -16,7 +16,7 @@ This adapter does NOT:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from kagent.claw_memory import (
@@ -44,9 +44,20 @@ _TASK_ALERT_TABLE = "claw_task_alert"
 _MAX_INBOX_LIST = 256
 
 
-def _parse_date(value: Any) -> "datetime.date | None":
+def _parse_date(value: Any) -> "date | None":
+    """Parse a persisted due date.
+
+    ``add_task`` writes ``due_date.isoformat()``, i.e. a *plain* date string
+    (``"2026-09-30"``), not a timestamp. ``_parse_time`` requires a tz-aware
+    datetime, so it must only be the fallback for rows written as timestamps.
+    """
     if value is None:
         return None
+    if isinstance(value, str):
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            pass
     parsed = _parse_time(value)
     return parsed.date()
 
