@@ -7,7 +7,7 @@ INDEX = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 APP = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 LOCALE = (ROOT / "static" / "locale.js").read_text(encoding="utf-8")
 CSS = (ROOT / "static" / "claw-workspace.css").read_text(encoding="utf-8")
-SIDEBAR_CSS = (ROOT / "static" / "sidebar-utility.css").read_text(encoding="utf-8")
+GLASS_CSS = (ROOT / "static" / "padiem-glass.css").read_text(encoding="utf-8")
 ROUTES = (ROOT / "app" / "claw_inbox_routes.py").read_text(encoding="utf-8")
 FACTORY = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
 
@@ -78,13 +78,15 @@ def test_no_raw_locale_key_sink_for_inbox():
     assert ".textContent = inboxT(" not in APP
 
 
-def test_sidebar_bottom_cannot_shrink_over_clickable_history_or_outputs():
-    sidebar = SIDEBAR_CSS.split(".sidebar {", 1)[1].split("}", 1)[0]
-    block = SIDEBAR_CSS.split(".sidebar-bottom {", 1)[1].split("}", 1)[0]
-    assert "overflow-y: auto;" in sidebar
-    assert "overflow-x: hidden;" in sidebar
-    assert "flex: 0 0 auto;" in block
-    assert "min-height: max-content;" in block
+def test_glass_sidebar_reserves_space_for_bottom_utility_stack():
+    sidebar = GLASS_CSS.split('html[data-theme="padiem-glass"] .sidebar {', 1)[1].split("}", 1)[0]
+    bottom = GLASS_CSS.split('html[data-theme="padiem-glass"] .sidebar-bottom {', 1)[1].split("}", 1)[0]
+    assert "padding-bottom: 216px;" in sidebar
+    assert "position: absolute;" in bottom
+    assert "bottom: 18px;" in bottom
+    assert "pointer-events: none;" in bottom
+    assert 'html[data-theme="padiem-glass"] .sidebar-bottom > * {' in GLASS_CSS
+    assert "pointer-events: auto;" in GLASS_CSS
 
 
 def test_auth_loss_clears_rendered_inbox_dom():
