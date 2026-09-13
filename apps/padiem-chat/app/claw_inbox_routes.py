@@ -20,6 +20,7 @@ from .claw_memory_routes import _require_owner, _resolve_memory_workspace
 from .workspace_storage import WorkspaceStorageError
 
 MAX_INBOX_HTTP_LIMIT = 50
+_STORE_SCAN_LIMIT = 256  # existing D1ClawTaskAlertStore hard bound
 MAX_INBOX_BODY_BYTES = 4096
 
 _NO_STORE_HEADERS = {
@@ -75,10 +76,10 @@ async def claw_inbox_list(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     try:
         if kind == "tasks":
-            records = await _call(store.list_tasks(workspace_id, limit=MAX_INBOX_HTTP_LIMIT))
+            records = await _call(store.list_tasks(workspace_id, limit=_STORE_SCAN_LIMIT))
             items = [item.safe_dict() for item in records if getattr(item, "member_id", None) == uid][:limit]
         else:
-            records = await _call(store.list_alerts(workspace_id, member_id=uid, limit=limit))
+            records = await _call(store.list_alerts(workspace_id, member_id=uid, limit=_STORE_SCAN_LIMIT))
             items = [item.safe_dict() for item in records][:limit]
     except Exception:
         return _error(503, "inbox_read_failed", "Inbox could not be loaded.")
