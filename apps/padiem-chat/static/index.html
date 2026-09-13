@@ -149,6 +149,22 @@
         </header>
         <p class="claw-workspace-tagline" data-locale-key="claw-tagline">카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트</p>
         <p class="claw-workspace-help" data-locale-key="claw-workspace-help">미리보기는 바로 확인하는 임시 결과, 실제 실행은 AI가 완성해 문서까지 준비합니다.</p>
+        <section class="claw-inbox" id="clawInbox" aria-labelledby="clawInboxTitle" hidden>
+          <div class="claw-inbox-header">
+            <div>
+              <p class="claw-workspace-kicker" data-locale-key="claw-inbox-kicker">PADIEM CLAW INBOX</p>
+              <h3 id="clawInboxTitle" data-locale-key="claw-inbox-tasks-title">작업</h3>
+            </div>
+            <button class="claw-inbox-retry" id="clawInboxRetry" type="button" data-locale-key="retry">다시 시도</button>
+          </div>
+          <p class="claw-inbox-help" id="clawInboxHelp" data-locale-key="claw-inbox-help">최근 항목만 표시되며 현재 로그인 계정과 워크스페이스 범위 안에서만 조회됩니다.</p>
+          <div class="claw-inbox-status" id="clawInboxStatus" aria-live="polite" aria-atomic="true">
+            <p id="clawInboxLoading" data-locale-key="claw-inbox-loading" hidden>불러오는 중…</p>
+            <p id="clawInboxError" data-locale-key="claw-inbox-error" hidden>목록을 불러오지 못했습니다.</p>
+          </div>
+          <p class="claw-inbox-empty" id="clawInboxEmpty" data-locale-key="claw-inbox-empty-tasks" hidden>최근 작업이 없습니다.</p>
+          <div class="claw-inbox-list" id="clawInboxList" role="list"></div>
+        </section>
         <form class="claw-intake" id="clawManualForm" data-locale-aria-label="claw-form-aria" aria-label="수동 인입 양식">
           <label class="claw-intake-hero">
             <span class="claw-intake-label" data-locale-key="claw-field-request">요청 원문 붙여넣기</span>
