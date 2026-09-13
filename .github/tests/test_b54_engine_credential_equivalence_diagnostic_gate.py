@@ -237,6 +237,26 @@ def test_rendered_evidence_never_contains_secret_material() -> None:
     assert not re.search(r"=[0-9a-f]{16,}", rendered)
 
 
+def test_rendered_evidence_key_cardinality_is_exactly_one() -> None:
+    # Regression (#2507, run 34775820262): REQUESTS_ISSUED was emitted twice
+    # (EVIDENCE_ORDER and SAFETY_MARKERS), so the workflow's exactly-one count
+    # guard aborted the probe job before any evidence was echoed.
+    evidence, _, _ = run_probe(
+        [(401, _error_body("service_authentication_failed")), (200, _not_found_body("k"))]
+    )
+    rendered = MODULE.render(evidence)
+    keys = [line.split("=", 1)[0] for line in rendered.splitlines()]
+    assert len(keys) == len(set(keys)), f"duplicate evidence keys: {keys}"
+    assert keys.count("REQUESTS_ISSUED") == 1
+    assert keys == list(MODULE.EVIDENCE_ORDER) + [name for name, _ in MODULE.SAFETY_MARKERS]
+    requests_line = [line for line in rendered.splitlines() if line.startswith("REQUESTS_ISSUED=")]
+    assert len(requests_line) == 1
+    assert re.fullmatch(r"REQUESTS_ISSUED=[0-2]", requests_line[0]), requests_line[0]
+    assert requests_line[0] == f"REQUESTS_ISSUED={evidence['REQUESTS_ISSUED']}"
+    assert SENTINEL not in rendered
+    assert CANONICAL not in rendered
+
+
 def test_cli_fails_closed_without_consuming_budget_on_empty_env() -> None:
     stdout, stderr = io.StringIO(), io.StringIO()
     old = os.environ.copy()
