@@ -787,6 +787,17 @@
       button.disabled = !authenticated;
       button.setAttribute("aria-disabled", authenticated ? "false" : "true");
     });
+    if (!authenticated) {
+      const inbox = document.getElementById("clawInbox");
+      const inboxList = document.getElementById("clawInboxList");
+      const workspace = document.getElementById("clawWorkspace");
+      if (inbox) inbox.hidden = true;
+      if (inboxList) inboxList.replaceChildren();
+      if (workspace) {
+        delete workspace.dataset.inboxKind;
+        if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
+      }
+    }
     const sessionState = !ready
       ? "unavailable"
       : authenticated
