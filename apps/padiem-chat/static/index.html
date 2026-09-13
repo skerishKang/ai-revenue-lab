@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#04070d" />
+  <link rel="icon" href="data:," />
   <title>Padiem Chat</title>
   <script src="./theme-init.js"></script>
   <meta name="description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
@@ -144,7 +145,7 @@
             <p class="claw-workspace-kicker" data-locale-key="claw-kicker">PADIEM CLAW</p>
             <h2 class="claw-workspace-title" id="clawWorkspaceTitle" data-locale-key="claw-title">Padiem Claw</h2>
           </div>
-          <p class="claw-workspace-chip" data-locale-key="claw-mode-chip">미리보기 · 읽기 전용</p>
+          <p class="claw-workspace-chip" data-locale-key="claw-mode-chip">미리보기 + 실제 실행</p>
         </header>
         <p class="claw-workspace-tagline" data-locale-key="claw-tagline">카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트</p>
         <p class="claw-workspace-help" data-locale-key="claw-workspace-help">미리보기는 바로 확인하는 임시 결과, 실제 실행은 AI가 완성해 문서까지 준비합니다.</p>
@@ -209,34 +210,34 @@
               <button type="button" id="clawResultOpen" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">▤</span><span data-locale-key="claw-result-open">문서 열기</span></button>
               <button type="button" id="clawResultDocx" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">↓</span><span data-locale-key="claw-result-docx">DOCX 다운로드</span></button>
             </div>
-            <p class="claw-result-note" data-locale-key="claw-result-note">백엔드 연결 전까지 미리보기 텍스트만 표시됩니다.</p>
+            <p class="claw-result-note" data-locale-key="claw-result-note">미리보기는 저장되지 않습니다. 실제 실행 결과에는 문서가 포함될 수 있습니다.</p>
             <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 열어보거나 다운로드할 수 있습니다.</p>
           </article>
           <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
         </section>
-        <section class="claw-memory-review" id="clawMemoryReview" aria-label="메모리 저장 후보" hidden></section>
+        <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
         <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
           <header class="claw-approved-memory-header">
             <div class="claw-workspace-identity">
               <p class="claw-workspace-kicker" data-locale-key="claw-approved-kicker">PADIEM CLAW</p>
               <h2 class="claw-workspace-title" id="clawApprovedMemoryTitle" data-locale-key="claw-approved-title">승인된 메모리</h2>
             </div>
-            <button type="button" class="claw-refresh-button" id="clawApprovedRefresh" aria-label="목록 새로고침">↻</button>
+            <button type="button" class="claw-refresh-button" id="clawApprovedRefresh" data-locale-aria-label="claw-approved-refresh-aria" aria-label="목록 새로고침">↻</button>
           </header>
           <p class="claw-workspace-tagline" data-locale-key="claw-approved-tagline">명시적으로 승인한 메모리만 표시됩니다. 거절한 제안은 저장되지 않습니다.</p>
-          <div class="claw-approved-loading" id="clawApprovedLoading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <div class="claw-approved-loading" id="clawApprovedLoading" data-locale-key="claw-approved-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
           <p class="claw-approved-error" id="clawApprovedError" role="alert" hidden></p>
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
-          <p class="claw-approved-empty" id="clawApprovedEmpty" hidden>승인된 메모리가 없습니다.</p>
+          <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
         </section>
         <div class="claw-disabled-controls" aria-label="준비 중인 기능">
           <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
             <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
-            <small data-locale-key="claw-ctrl-md-note">백엔드 연결 전까지 비활성화</small>
+            <small data-locale-key="claw-ctrl-md-note">이 작업공간에서는 아직 사용할 수 없습니다.</small>
           </button>
           <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
             <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
-            <small data-locale-key="claw-ctrl-docx-note">백엔드 연결 전까지 비활성화</small>
+            <small data-locale-key="claw-ctrl-docx-note">실제 실행 후 결과 카드에서 다운로드할 수 있습니다.</small>
           </button>
           <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
             <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
