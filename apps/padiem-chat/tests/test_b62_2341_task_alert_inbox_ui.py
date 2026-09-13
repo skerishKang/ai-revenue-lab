@@ -7,6 +7,7 @@ INDEX = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 APP = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 LOCALE = (ROOT / "static" / "locale.js").read_text(encoding="utf-8")
 CSS = (ROOT / "static" / "claw-workspace.css").read_text(encoding="utf-8")
+SIDEBAR_CSS = (ROOT / "static" / "sidebar-utility.css").read_text(encoding="utf-8")
 ROUTES = (ROOT / "app" / "claw_inbox_routes.py").read_text(encoding="utf-8")
 FACTORY = (ROOT / "app" / "app_factory.py").read_text(encoding="utf-8")
 
@@ -71,8 +72,16 @@ def test_mobile_and_theme_contracts_use_shared_tokens():
 
 def test_no_raw_locale_key_sink_for_inbox():
     assert "claw-inbox-" in LOCALE
-    assert 'uiT("claw-inbox-' in APP
-    assert ".textContent = inboxT(" in APP
+    assert 'uiT("claw-inbox-loading")' in APP
+    assert 'uiT("claw-inbox-error")' in APP
+    assert "function inboxT(" not in APP
+    assert ".textContent = inboxT(" not in APP
+
+
+def test_sidebar_bottom_cannot_shrink_over_clickable_history_or_outputs():
+    block = SIDEBAR_CSS.split(".sidebar-bottom {", 1)[1].split("}", 1)[0]
+    assert "flex: 0 0 auto;" in block
+    assert "min-height: max-content;" in block
 
 
 def test_auth_loss_clears_rendered_inbox_dom():
