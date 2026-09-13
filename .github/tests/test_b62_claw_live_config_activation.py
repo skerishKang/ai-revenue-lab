@@ -859,6 +859,13 @@ def _replacement_job_block() -> str:
     return workflow.split("replace-p01-credential:", 1)[1].split("\n  rollback-config:", 1)[0]
 
 
+def _post_mutation_step_block() -> str:
+    step = _replacement_job_block().split(
+        "- name: Record post-mutation served version evidence", 1
+    )[1]
+    return step.split("\n      - name:", 1)[0]
+
+
 def test_source_credential_quality_byte_boundaries() -> None:
     helper = _load_helper()
     assert helper.source_credential_quality("a" * 32) is True
@@ -1094,12 +1101,47 @@ def test_replacement_job_mutates_only_the_p01_credential_binding_name() -> None:
 def test_replacement_job_records_served_version_evidence() -> None:
     block = _replacement_job_block()
     assert "PREMUTATION_SERVED_VERSION_ID" in block
-    assert "POSTMUTATION_SERVED_VERSION_ID" in block
-    assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" in block
-    assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" in block
     assert "(.result.deployments[0].versions | length) == 1" in block
     assert ".result.deployments[0].versions[0].percentage == 100" in block
     assert "WORKER_CODE_DEPLOY_SUBMITTED=0" in block
+
+
+def test_replacement_served_version_evidence_is_bounded_polling_not_single_read() -> None:
+    """#2453: the YES|NO verdict must come from the bounded convergence poll.
+
+    The workflow may not map one immediate post-PUT GET to YES or NO: a first
+    read still equal to the pre-mutation version is transient lag, not stable
+    evidence. The poll reuses the overlay-rotation budget (30 x 2s), resolves
+    every read only through the canonical helper resolver, and finalizes the
+    verdict via replacement-served-version-final over the observation log.
+    """
+    block = _replacement_job_block()
+    step = block.split("- name: Record post-mutation served version evidence", 1)[1]
+    step = step.split("\n      - name:", 1)[0]
+    assert "for attempt in $(seq 1 30)" in step
+    assert "sleep 2" in step
+    assert "replacement-served-version-read" in step
+    assert "replacement-served-version-final" in step
+    assert '--pre-version "${PREMUTATION_SERVED_VERSION_ID}"' in step
+    assert "(.result.deployments | length) > 0" in step
+    # the first acceptable divergent read closes YES, and NO needs the 15-observation floor
+    assert '[ "${served}" != "${PREMUTATION_SERVED_VERSION_ID}" ]' in step
+    assert '[ "${same}" -ge 15 ]' in step
+    assert "b62-served-version-observations.tsv" in step
+
+
+def test_replacement_served_version_step_never_finalizes_from_one_read() -> None:
+    """Static prohibition (fixture 6): no direct shell mapping of a read to YES/NO."""
+    step = _post_mutation_step_block()
+    assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" not in step
+    assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" not in step
+    assert "POSTMUTATION_SERVED_VERSION_ID=" not in step
+    verdict_writers = [
+        line for line in step.splitlines()
+        if "SERVED_VERSION_CHANGED_BY_SECRET_PUT" in line
+        or "POSTMUTATION_SERVED_VERSION_ID" in line
+    ]
+    assert verdict_writers == [], verdict_writers
 
 
 def test_replacement_job_step_order_is_authorize_gate_precheck_mutate_verify() -> None:
@@ -1133,6 +1175,217 @@ def test_replacement_job_never_echoes_the_source_credential_value() -> None:
         if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
             assert "${B62_P01_ENGINE_CREDENTIAL}" not in stripped, stripped
     assert "test -n \"${B62_P01_ENGINE_CREDENTIAL}\"" in block
+
+
+def _deployments_envelope(version_id: str) -> dict:
+    """The canonical served-version envelope the poll must accept (#2427 shape)."""
+    return {
+        "success": True,
+        "result": {"deployments": [{"id": "deployment-1", "versions": [
+            {"version_id": version_id, "percentage": 100}
+        ]}]},
+    }
+
+
+def _observations(directory: Path, name: str, entries: list[tuple[str, str | None]]) -> Path:
+    path = directory / name
+    lines = [
+        f"{flag}\t{version or ''}"
+        for flag, version in entries
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def test_convergence_decision_first_divergent_read_finalizes_yes() -> None:
+    """Fixture 1: PRE=A, acceptable A then B -> YES on the second read."""
+    helper = _load_helper()
+    decision = helper.convergence_decision("A", [(True, "A"), (True, "B")])
+    assert decision["finalized"] == "YES"
+    assert decision["post_version_id"] == "B"
+    assert decision["diverged_at"] == 2
+
+
+def test_convergence_decision_transient_repeats_then_new_version_is_yes() -> None:
+    """Fixture 2: several pre-version reads then the new canonical version -> YES."""
+    helper = _load_helper()
+    decision = helper.convergence_decision(
+        "A", [(True, "A"), (True, "A"), (True, "A"), (True, "A"), (True, "B")]
+    )
+    assert decision["finalized"] == "YES"
+    assert decision["post_version_id"] == "B"
+    assert decision["same_observations"] == 4
+    assert decision["diverged_at"] == 5
+
+
+def test_convergence_decision_stable_window_finalizes_no_as_evidence() -> None:
+    """Fixture 3: unchanged canonical state across the full window -> NO, not failure."""
+    helper = _load_helper()
+    decision = helper.convergence_decision("A", [(True, "A")] * 30)
+    assert decision["finalized"] == "NO"
+    assert decision["changed"] is False
+    assert decision["post_version_id"] == "A"
+    assert decision["diverged_at"] is None
+
+
+def test_convergence_decision_needs_the_stable_minimum_before_no() -> None:
+    """A short acceptable window proves nothing: below the floor it is FAIL, not NO."""
+    helper = _load_helper()
+    decision = helper.convergence_decision("A", [(True, "A")] * 14)
+    assert decision["finalized"] == "FAIL"
+    assert decision["changed"] is None
+
+
+def test_convergence_decision_rejects_malformed_and_ambiguous_reads() -> None:
+    """Fixture 4: rejected reads are skipped, never PASS or NO evidence."""
+    helper = _load_helper()
+    assert helper.convergence_decision("A", [(False, None)] * 20)["finalized"] == "FAIL"
+    mixed = helper.convergence_decision(
+        "A", [(False, None), (False, "garbage"), (True, "B")]
+    )
+    assert mixed["finalized"] == "YES"
+    assert mixed["diverged_at"] == 1  # counted over acceptable reads only
+
+
+def test_convergence_decision_requires_a_usable_pre_version() -> None:
+    helper = _load_helper()
+    for bad in ("", None, 123):
+        try:
+            helper.convergence_decision(bad, [(True, "A")])
+        except helper.ActivationPlanError:
+            continue
+        raise AssertionError(f"pre-version {bad!r} must be refused")
+
+
+def test_cli_replacement_served_version_read_accepts_canonical_envelope() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "d.json"
+        path.write_text(json.dumps(_deployments_envelope("version-A")), encoding="utf-8")
+        proc = _run_cli(["replacement-served-version-read", "--deployments", str(path)])
+    assert proc.returncode == 0, proc.stderr
+    assert proc.stdout.strip() == "version-A"
+    assert proc.stderr == ""
+
+
+def test_cli_replacement_served_version_read_refuses_every_noncanonical_shape() -> None:
+    """Raw list, last-entry history, result list, and bad splits are never poll evidence."""
+    helper = _load_helper()
+    assert helper.resolve_served_version_id(_deployments_envelope("version-A")) == "version-A"
+    payloads = [
+        [{"versions": [{"version_id": "A", "percentage": 100}]}],  # wrangler raw list
+        {"success": True, "result": {"deployments": []}},
+        {"success": False, "result": {"deployments": []}},
+        _envelope_two_versions(),
+        {"success": True, "result": {"deployments": [{"versions": [
+            {"version_id": "A", "percentage": 50}, {"id": "B", "percentage": 50}]}]}},
+        {"success": True, "result": {"deployments": [{"versions": [
+            {"id": "bare-id-A", "percentage": 100}]}]}},
+    ]
+    for payload in payloads:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "d.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            proc = _run_cli(["replacement-served-version-read", "--deployments", str(path)])
+        assert proc.returncode == 1, payload
+        assert "B62_P01_SERVED_VERSION_READ=REJECTED" in proc.stderr
+        assert proc.stdout.strip() == "", "a rejected read must never emit a version id"
+
+
+def _envelope_two_versions() -> dict:
+    return {"success": True, "result": {"deployments": [{"versions": [
+        {"version_id": "A", "percentage": 100},
+        {"version_id": "B", "percentage": 60},
+    ]}]}}
+
+
+def test_cli_replacement_served_version_final_yes_and_no_are_bounded_evidence() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        diverged = _observations(Path(tmp), "div.tsv", [("acceptable", "A"), ("acceptable", "B")])
+        proc = _run_cli([
+            "replacement-served-version-final",
+            "--observations-file", str(diverged), "--pre-version", "A",
+        ])
+        assert proc.returncode == 0, proc.stderr
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" in proc.stdout
+        assert "POSTMUTATION_SERVED_VERSION_ID=B" in proc.stdout
+        assert "POST_PUT_DIVERGENCE_OBSERVED_AT=2" in proc.stdout
+
+        stable = _observations(Path(tmp), "stable.tsv", [("acceptable", "A")] * 20)
+        proc = _run_cli([
+            "replacement-served-version-final",
+            "--observations-file", str(stable), "--pre-version", "A",
+        ])
+        assert proc.returncode == 0, proc.stderr
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" in proc.stdout
+        # NO is evidence, never a mutation claim
+        assert "SECRET_PUT_MUST_CHANGE_VERSION=NO" in proc.stdout
+        assert "WORKER_CODE_DEPLOY_SUBMITTED=0" in proc.stdout
+
+
+def test_cli_replacement_served_version_final_fails_closed_without_acceptable_state() -> None:
+    """Fixture 5: window exhausted with no canonical served state -> FAIL exit 1."""
+    with tempfile.TemporaryDirectory() as tmp:
+        no_ok = _observations(Path(tmp), "rej.tsv", [("rejected", None)] * 5)
+        proc = _run_cli([
+            "replacement-served-version-final",
+            "--observations-file", str(no_ok), "--pre-version", "A",
+        ])
+        assert proc.returncode == 1
+        assert "B62_P01_SERVED_VERSION_CONVERGENCE=FAIL" in proc.stdout
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT" not in proc.stdout
+
+        too_short = _observations(Path(tmp), "short.tsv", [("acceptable", "A")] * 5)
+        proc = _run_cli([
+            "replacement-served-version-final",
+            "--observations-file", str(too_short), "--pre-version", "A",
+        ])
+        assert proc.returncode == 1
+        assert "B62_P01_SERVED_VERSION_CONVERGENCE=FAIL" in proc.stdout
+        assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT" not in proc.stdout
+
+
+def test_cli_replacement_served_version_final_never_emits_secret_surfaces() -> None:
+    """Fixtures 9/10/11: no secret value, hash, or length on any convergence path."""
+    source = HELPER.read_text(encoding="utf-8")
+    read_src = source.split("def _main_replacement_served_version_read", 1)[1].split(
+        "def _main_replacement_served_version_final", 1
+    )[0]
+    final_src = source.split("def _main_replacement_served_version_final", 1)[1].split(
+        'if __name__', 1
+    )[0]
+    for body in (read_src, final_src):
+        assert "B62_P01_ENGINE_CREDENTIAL" not in body
+        assert "hashlib" not in body
+        assert "SOURCE_CREDENTIAL_ENV" not in body
+    # the finalizer emits the explicit zero-denials on both success and FAIL
+    for denial in ("SECRET_VALUE_OUTPUT=0", "SECRET_HASH_OUTPUT=0", "SECRET_LENGTH_OUTPUT=0"):
+        assert final_src.count(denial) >= 2, denial
+    with tempfile.TemporaryDirectory() as tmp:
+        obs = _observations(Path(tmp), "o.tsv", [("acceptable", "A")] * 20)
+        proc = _run_cli([
+            "replacement-served-version-final",
+            "--observations-file", str(obs), "--pre-version", "A",
+        ])
+        combined = proc.stdout + proc.stderr
+        assert "SECRET_VALUE_OUTPUT=0" in combined
+        assert "SECRET_HASH_OUTPUT=0" in combined
+        assert "SECRET_LENGTH_OUTPUT=0" in combined
+
+
+def test_replacement_job_keeps_settings_plane_name_type_verification() -> None:
+    """Fixture 12: convergence polling must not weaken the readback NAME/TYPE verify."""
+    block = _replacement_job_block()
+    assert "b62_claw_live_config_activation.py replacement-verify" in block
+    assert "--pre-settings" in block
+    assert 'test "${verified}" = yes' in block
+    assert "B62_P01_REPLACEMENT_POST_READBACK=PASS" in block
+    verify_step = block.split(
+        "- name: Read back the replaced credential by binding name and type only", 1
+    )[1]
+    for line in verify_step.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("echo ") or "${GITHUB_OUTPUT}" in stripped:
+            assert "${B62_P01_ENGINE_CREDENTIAL}" not in stripped, stripped
 
 
 def test_replacement_job_is_placed_between_activate_and_rollback() -> None:
@@ -1251,4 +1504,18 @@ if __name__ == "__main__":
     test_replacement_job_is_placed_between_activate_and_rollback()
     test_activate_config_create_path_remains_untouched_by_replacement()
     test_replacement_plan_and_activate_paths_never_replace_existing_credential()
+    test_replacement_served_version_evidence_is_bounded_polling_not_single_read()
+    test_replacement_served_version_step_never_finalizes_from_one_read()
+    test_convergence_decision_first_divergent_read_finalizes_yes()
+    test_convergence_decision_transient_repeats_then_new_version_is_yes()
+    test_convergence_decision_stable_window_finalizes_no_as_evidence()
+    test_convergence_decision_needs_the_stable_minimum_before_no()
+    test_convergence_decision_rejects_malformed_and_ambiguous_reads()
+    test_convergence_decision_requires_a_usable_pre_version()
+    test_cli_replacement_served_version_read_accepts_canonical_envelope()
+    test_cli_replacement_served_version_read_refuses_every_noncanonical_shape()
+    test_cli_replacement_served_version_final_yes_and_no_are_bounded_evidence()
+    test_cli_replacement_served_version_final_fails_closed_without_acceptable_state()
+    test_cli_replacement_served_version_final_never_emits_secret_surfaces()
+    test_replacement_job_keeps_settings_plane_name_type_verification()
     print("B62_CLAW_LIVE_CONFIG_ACTIVATION_TESTS=PASS")
