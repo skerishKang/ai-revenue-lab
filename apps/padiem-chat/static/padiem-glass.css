@@ -89,7 +89,7 @@ html[data-theme="padiem-glass"] .app-shell::before {
 }
 
 html[data-theme="padiem-glass"] .sidebar {
-  padding-bottom: 140px;
+  padding-bottom: 18px;
   background: linear-gradient(180deg, rgba(43, 51, 60, .58), rgba(35, 43, 51, .42));
   color: #f6f8fa;
   border-right: 1px solid rgba(255, 255, 255, .24);
@@ -185,18 +185,13 @@ html[data-theme="padiem-glass"] .sidebar-footer {
   display: none;
 }
 html[data-theme="padiem-glass"] .sidebar-bottom {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 18px;
-  z-index: 2;
-  margin: 0;
-  /* The floating block's transparent padding must not swallow clicks on
-   * sidebar list content that flows beneath it (#2093: the Issue B spacing
-   * increase pushed the block over the Saved Outputs rows). Only the
-   * interactive children capture pointer events.
-   */
-  pointer-events: none;
+  position: static;
+  flex: 0 0 auto;
+  margin: auto 0 0;
+  z-index: auto;
+  /* Keep the utility stack in normal sidebar flow so History and Saved
+   * Outputs can shrink/scroll above it instead of being covered by it. */
+  pointer-events: auto;
 }
 html[data-theme="padiem-glass"] .sidebar-bottom > * {
   pointer-events: auto;
