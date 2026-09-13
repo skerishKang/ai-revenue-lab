@@ -9,6 +9,14 @@ LAST_VERIFIED = 2026-09-08
 
 Padiem Chat is Padiem's Korean-first, general-user AI front door.
 
+Canonical product-language and user-guide references:
+
+- `docs/padiem/PADIEM_PRODUCT_LANGUAGE_VISUAL_SYSTEM_V1.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_ALIGNMENT_AUDIT_V1.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_COPY_GLOSSARY_V1.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_KO.md`
+- `docs/padiem/PADIEM_CHAT_CLAW_USER_GUIDE_EN.md`
+
 Canonical platform references:
 
 - `docs/architecture/PADIEM_AI_VERTICAL_STACK.md`
@@ -213,7 +221,7 @@ Current URL-level presentation contract includes:
 ?lang=en
 ```
 
-The current default/fallback is `padiem-glass`. Locale fallback is Korean (`ko`). Accepted presentation preferences may be reflected through URL state and bounded `localStorage` / `sessionStorage` use where the frontend contract permits it; those stores are never Provider/model-routing or canonical identity authority.
+The current default/fallback is `padiem-glass`. Locale fallback is Korean (`ko`). Locale preference is currently represented through explicit URL state (`?lang=ko|en`). The browser-persistence privacy contract forbids `localStorage` / `sessionStorage` for this preference. A future account-level cross-product preference requires a separately approved trusted authority.
 
 ## Cloudflare Worker boundary
 

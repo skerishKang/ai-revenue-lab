@@ -149,6 +149,21 @@ jobs:
           assert "last updated via the script API" in workflow
           assert "Aborting the upload operation because of conflicts" in workflow
 
+          # #2458: the cloudflare_readonly job must publish the active served
+          # version id as bounded non-secret operational evidence, while keeping
+          # the canonical extraction, the single-version/100% and latest==active
+          # assertions, and the existing GITHUB_OUTPUT consumer unchanged.
+          readonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
+          assert ".result.deployments[0].versions[0].version_id" in readonly_job
+          assert "versions | length) == 1" in readonly_job
+          assert ".versions[0].percentage == 100" in readonly_job
+          assert 'test "${latest}" = "${active}"' in readonly_job
+          assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly_job
+          assert 'echo "ACTIVE_VERSION=${active}"' in readonly_job
+          assert readonly_job.index('test "${latest}" = "${active}"') < readonly_job.index('echo "ACTIVE_VERSION=${active}"')
+          assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in readonly_job
+          assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly_job
+
           assert "unsupported live binding type" in generator
           assert "SECRET_VALUES_READ=0" in generator
           assert "SECRET_VALUES_EMITTED=0" in generator
@@ -233,6 +248,7 @@ jobs:
           latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
           test "${latest}" = "${active}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
+          echo "ACTIVE_VERSION=${active}"
           echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
 
           jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
