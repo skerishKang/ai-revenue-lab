@@ -1442,10 +1442,6 @@
     }
   }
 
-  function inboxT(key) {
-    return uiT(key);
-  }
-
   function resetClawInboxState() {
     if (clawInboxLoading) clawInboxLoading.hidden = true;
     if (clawInboxError) clawInboxError.hidden = true;
@@ -1457,7 +1453,7 @@
     if (clawInboxList) clawInboxList.replaceChildren();
     if (clawInboxLoading) {
       clawInboxLoading.hidden = false;
-      clawInboxLoading.textContent = inboxT("claw-inbox-loading");
+      clawInboxLoading.textContent = uiT("claw-inbox-loading");
     }
   }
 
@@ -1465,7 +1461,7 @@
     resetClawInboxState();
     if (clawInboxError) {
       clawInboxError.hidden = false;
-      clawInboxError.textContent = inboxT("claw-inbox-error");
+      clawInboxError.textContent = uiT("claw-inbox-error");
     }
   }
 
@@ -1493,7 +1489,7 @@
     if (!Array.isArray(items) || items.length === 0) {
       if (clawInboxEmpty) {
         clawInboxEmpty.dataset.localeKey = kind === "tasks" ? "claw-inbox-empty-tasks" : "claw-inbox-empty-alerts";
-        clawInboxEmpty.textContent = inboxT(clawInboxEmpty.dataset.localeKey);
+        clawInboxEmpty.textContent = uiT(clawInboxEmpty.dataset.localeKey);
         clawInboxEmpty.hidden = false;
       }
       return;
@@ -1511,7 +1507,7 @@
       const title = document.createElement("strong");
       title.textContent = item.title;
       const meta = document.createElement("span");
-      const statusText = inboxT(`claw-inbox-status-${String(item.status || "")}`);
+      const statusText = uiT(`claw-inbox-status-${String(item.status || "")}`);
       meta.textContent = statusText === `claw-inbox-status-${String(item.status || "")}` ? String(item.status || "") : statusText;
       copy.append(title, meta);
 
@@ -1527,7 +1523,7 @@
         nextStatus = item.status === "active" ? "dismissed" : "active";
         actionKey = item.status === "active" ? "claw-inbox-dismiss" : "claw-inbox-restore";
       }
-      action.textContent = inboxT(actionKey);
+      action.textContent = uiT(actionKey);
       action.addEventListener("click", () => updateClawInboxStatus(kind, id, nextStatus), { once: true });
       card.append(copy, action);
       clawInboxList.appendChild(card);
@@ -1560,7 +1556,7 @@
     if (clawResultArea) clawResultArea.hidden = true;
     if (clawInboxTitle) {
       clawInboxTitle.dataset.localeKey = kind === "tasks" ? "claw-inbox-tasks-title" : "claw-inbox-alerts-title";
-      clawInboxTitle.textContent = inboxT(clawInboxTitle.dataset.localeKey);
+      clawInboxTitle.textContent = uiT(clawInboxTitle.dataset.localeKey);
     }
     setNavActive();
     closeSidebar();
