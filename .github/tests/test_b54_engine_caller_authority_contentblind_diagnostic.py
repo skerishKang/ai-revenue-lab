@@ -272,7 +272,61 @@ def test_diagnostic_reuses_production_parsers() -> None:
     helper = _load_helper()
     assert helper.parse_caller_registry_v1.__module__ == "app.identity_enforcement"
     assert helper.parse_caller_registry_v1_overlay.__module__ == "app.identity_enforcement"
+    assert (
+        helper._authority_diagnostic.classify_authority_payloads.__module__
+        == "app.authority_diagnostic"
+    )
     assert helper.EXPECTED_OVERLAY_CALLER_ID == "b54-kagent"
+    assert helper._authority_diagnostic.AUTHORITY_DIAGNOSTIC_PATH == (
+        "/internal/v1/diagnostics/caller-authority"
+    )
+
+
+def test_runtime_module_gates_the_diagnostic_fail_closed() -> None:
+    helper = _load_helper()
+    module = helper._authority_diagnostic
+
+    class _Env:
+        PADIEM_ENGINE_AUTHORITY_DIAGNOSTIC_TOKEN = "d" * 48
+        PADIEM_ENGINE_CALLER_REGISTRY_V1 = _valid_base()
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY = _valid_overlay()
+
+    class _Headers(dict):
+        def get(self, key, default=None):  # case-insensitive like Workers Headers
+            for name, value in self.items():
+                if name.lower() == key.lower():
+                    return value
+            return default
+
+    env = _Env()
+    headers = _Headers({module.DIAGNOSTIC_TOKEN_HEADER: "d" * 48})
+
+    status, body = module.diagnostic_response(env, "POST", headers)
+    assert status == 405 and body["ok"] is False
+
+    status, body = module.diagnostic_response(object(), "GET", headers)
+    assert status == 503
+    assert body["error"]["code"] == "authority_diagnostic_unavailable"
+
+    status, body = module.diagnostic_response(env, "GET", _Headers())
+    assert status == 401 and body["error"]["code"] == "authority_diagnostic_unauthorized"
+
+    wrong = _Headers({module.DIAGNOSTIC_TOKEN_HEADER: "a" * 48})
+    status, body = module.diagnostic_response(env, "GET", wrong)
+    assert status == 401
+
+    oversized = _Headers({module.DIAGNOSTIC_TOKEN_HEADER: "a" * 900})
+    status, body = module.diagnostic_response(env, "GET", oversized)
+    assert status == 401
+
+    status, body = module.diagnostic_response(env, "GET", headers)
+    assert status == 200
+    assert tuple(sorted(body)) == tuple(sorted(module.OUTPUT_KEYS))
+    assert body["BASE_PARSE"] == "OK"
+    assert body["OVERLAY_CALLER_ID_MATCH"] == "YES"
+    rendered = json.dumps(body)
+    for sentinel in SENTINELS:
+        assert sentinel not in rendered
 
 
 def test_workflow_wiring_is_dispatch_only_and_closed() -> None:
@@ -282,13 +336,20 @@ def test_workflow_wiring_is_dispatch_only_and_closed() -> None:
         "github.event_name == 'workflow_dispatch' && inputs.mode == 'content_blind_diagnostic'"
         in workflow
     )
-    assert "CONTENTBLIND_PREFLIGHT_NAME_TYPE=PASS" in workflow
-    assert 'test "$(printf \'%s\\n\' "${evidence}" | wc -l)" -eq 11' in workflow
-    assert "unset base_value overlay_value" in workflow
+    # The diagnostic runs inside the Engine runtime; the workflow only makes
+    # one token-gated GET and never reads or transports registry values.
+    assert "https://engine.padiem.net/internal/v1/diagnostics/caller-authority" in workflow
+    assert "x-padiem-engine-authority-diagnostic-token" in workflow
+    assert "AUTHORITY_DIAGNOSTIC_TOKEN: ${{ secrets.B54_ENGINE_AUTHORITY_DIAGNOSTIC_TOKEN }}" in workflow
+    assert "(keys | sort) ==" in workflow
+    assert 'test "$(printf \'%s\\n\' "${evidence}" | wc -l)" -eq 6' in workflow
+    assert "RUNTIME_DIAGNOSTIC_STATUS=200" in workflow
+    assert "CONTENTBLIND_RUNTIME=FAIL_CLOSED" in workflow
     assert "CONTENTBLIND_OUTPUT_CONTRACT=FAIL" in workflow
     assert "upload-artifact" not in workflow
-    # Values are passed via process environment only, never argv.
-    assert '"PADIEM_ENGINE_CALLER_REGISTRY_V1=${base_value}"' in workflow
+    assert ".result.text" not in workflow
+    assert "read_secret_text" not in workflow
+    assert "/secrets" not in workflow
 
 
 if __name__ == "__main__":
@@ -304,5 +365,6 @@ if __name__ == "__main__":
     test_fixture_9_output_contract_closed_to_approved_fields()
     test_blank_and_absent_inputs_fail_closed()
     test_diagnostic_reuses_production_parsers()
+    test_runtime_module_gates_the_diagnostic_fail_closed()
     test_workflow_wiring_is_dispatch_only_and_closed()
     print("B54_ENGINE_CALLER_AUTHORITY_CONTENTBLIND_DIAGNOSTIC_TESTS=PASS")

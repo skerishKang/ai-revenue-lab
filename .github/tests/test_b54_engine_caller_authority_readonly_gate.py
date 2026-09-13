@@ -165,15 +165,12 @@ def test_workflow_is_get_only() -> None:
 
 def test_workflow_has_no_secret_mutation_endpoint_or_wrangler() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    # The content-blind diagnostic job may read the two registry payloads via
-    # GET only (the mutation-verb guard above still forbids POST/PUT/PATCH/
-    # DELETE and -X/--request anywhere in this workflow). All other jobs stay
+    # No job in this workflow ever reads a secret_text value from the
+    # Cloudflare control plane (the API does not return plaintext by
+    # design). The content-blind mode invokes the token-gated Engine
+    # runtime diagnostic route instead; the readonly job stays
     # NAME/TYPE-only.
-    assert workflow.count("/secrets") == 1
-    parts = workflow.split("content-blind-diagnostic:")
-    assert len(parts) == 2
-    assert "/secrets" in parts[1]
-    assert "/secrets" not in parts[0]
+    assert "/secrets" not in workflow
     assert "wrangler" not in workflow
     assert "environment:" not in workflow
     assert "confirmation" not in workflow
