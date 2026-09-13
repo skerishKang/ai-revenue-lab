@@ -39,6 +39,7 @@ def test_accessible_loading_empty_error_retry_surface():
 
 def test_bounded_owner_workspace_http_contract():
     assert "MAX_INBOX_HTTP_LIMIT = 50" in ROUTES
+    assert "_STORE_SCAN_LIMIT = 256" in ROUTES
     assert "_require_owner(request)" in ROUTES
     assert "_resolve_memory_workspace(request, uid)" in ROUTES
     assert 'getattr(item, "member_id", None) == uid' in ROUTES
@@ -72,3 +73,10 @@ def test_no_raw_locale_key_sink_for_inbox():
     assert "claw-inbox-" in LOCALE
     assert 'uiT("claw-inbox-' in APP
     assert ".textContent = inboxT(" in APP
+
+
+def test_auth_loss_clears_rendered_inbox_dom():
+    assert "if (!authenticated) {" in APP
+    assert 'document.getElementById("clawInboxList")' in APP
+    assert "inboxList.replaceChildren();" in APP
+    assert 'delete workspace.dataset.inboxKind;' in APP
