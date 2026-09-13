@@ -29,6 +29,10 @@ html[data-theme="light"] {
   --blue: #6557e8;
   --danger: #b3261e;
   --success: #1a6b3a;
+  --success-surface: rgba(34, 158, 94, 0.08);
+  --success-border: rgba(34, 158, 94, 0.18);
+  --danger-surface: rgba(220, 62, 62, 0.07);
+  --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 14px 36px rgba(30,28,54,.08);
   --radius-md: 16px;
   --font-body: Pretendard, "Noto Sans KR", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -164,6 +168,10 @@ html[data-theme="dark"] {
   --blue: #9fc0dd;
   --danger: #ff9d9d;
   --success: #8be9a8;
+  --success-surface: rgba(34, 158, 94, 0.08);
+  --success-border: rgba(34, 158, 94, 0.18);
+  --danger-surface: rgba(220, 62, 62, 0.07);
+  --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 10px 28px rgba(0,0,0,.28);
   --card-bg: #181a1e;
   --card-border: rgba(255,255,255,.09);
@@ -278,6 +286,10 @@ html[data-theme="cinematic"] {
   --blue: #88c9ff;
   --danger: #ff9d9d;
   --success: #8be9a8;
+  --success-surface: rgba(34, 158, 94, 0.08);
+  --success-border: rgba(34, 158, 94, 0.18);
+  --danger-surface: rgba(220, 62, 62, 0.07);
+  --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 24px 80px rgba(0,0,0,.42);
   --card-bg: rgba(8,12,19,.52);
   --card-border: rgba(136,201,255,.16);
@@ -393,6 +405,10 @@ html[data-theme="padiem-home"] {
   --blue: #5aa0e6;
   --danger: #b3261e;
   --success: #14532d;
+  --success-surface: rgba(34, 158, 94, 0.08);
+  --success-border: rgba(34, 158, 94, 0.18);
+  --danger-surface: rgba(220, 62, 62, 0.07);
+  --danger-border: rgba(220, 62, 62, 0.16);
   --shadow: 0 18px 50px rgba(26,34,48,.10);
   --card-bg: rgba(255,255,255,.68);
   --card-border: rgba(26,34,48,.10);
