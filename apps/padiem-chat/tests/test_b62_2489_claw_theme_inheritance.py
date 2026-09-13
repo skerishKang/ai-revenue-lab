@@ -117,13 +117,41 @@ def _contrast_ratio(foreground: str, background: str) -> float:
     return (lighter + 0.05) / (darker + 0.05)
 
 
-def test_translucent_theme_status_tokens_keep_wcag_aa_contrast():
+def _composite_rgb(foreground: tuple[int, int, int], alpha: float, background: str) -> str:
+    raw = background.lstrip("#")
+    bg = [int(raw[index:index + 2], 16) for index in (0, 2, 4)]
+    out = [
+        round(channel * alpha + base * (1 - alpha))
+        for channel, base in zip(foreground, bg)
+    ]
+    return "#" + "".join(f"{channel:02x}" for channel in out)
+
+
+def test_glass_status_surface_contract_uses_browser_audit_anchors():
     glass = read("padiem-glass.css")
-    themes = read("padiem-themes.css")
+    workspace = read("claw-workspace.css")
 
     assert "--success: #14532d;" in glass
     assert "--danger: #7f1d1d;" in glass
+    assert "--success-surface: rgba(247, 251, 249, .92);" in glass
+    assert "--danger-surface: rgba(253, 247, 247, .92);" in glass
 
+    assert "background: var(--success-surface);" in workspace
+    assert "border: 1px solid var(--success-border);" in workspace
+    assert "background: var(--danger-surface);" in workspace
+    assert "border: 1px solid var(--danger-border);" in workspace
+
+    # Browser-audit anchors from KILO8's rendered Glass status strip BEFORE
+    # this remediation. Composite the new declared semantic surface on top of
+    # those real rendered anchors as a conservative contract. Final acceptance
+    # still comes from the independent frozen browser harness.
+    success_surface = _composite_rgb((247, 251, 249), 0.92, "#839293")
+    error_surface = _composite_rgb((253, 247, 247), 0.92, "#afa7ac")
+
+    assert _contrast_ratio("#14532d", success_surface) >= 4.5
+    assert _contrast_ratio("#7f1d1d", error_surface) >= 4.5
+
+    themes = read("padiem-themes.css")
     home_match = re.search(
         r'html\[data-theme="padiem-home"\]\s*\{(.*?)\n\}',
         themes,
@@ -131,13 +159,7 @@ def test_translucent_theme_status_tokens_keep_wcag_aa_contrast():
     )
     assert home_match
     assert "--success: #14532d;" in home_match.group(1)
-
-    # Representative rendered surfaces captured by the independent browser audit:
-    # Glass translucent card -> approx rgb(196,195,203), Home light surface -> off-white.
-    assert _contrast_ratio("#14532d", "#c4c3cb") >= 4.5
-    assert _contrast_ratio("#7f1d1d", "#c4c3cb") >= 4.5
     assert _contrast_ratio("#14532d", "#f2f4f7") >= 4.5
-
 
 def test_result_supporting_copy_uses_primary_text_on_translucent_surfaces():
     workspace = read("claw-workspace.css")
