@@ -59,6 +59,10 @@ from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
+from app.authority_diagnostic import (
+    AUTHORITY_DIAGNOSTIC_PATH,
+    diagnostic_response,
+)
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -541,6 +545,8 @@ class Default(legacy_worker.Default):
 
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
+        if path == AUTHORITY_DIAGNOSTIC_PATH:
+            return self._fetch_authority_diagnostic(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
@@ -550,6 +556,21 @@ class Default(legacy_worker.Default):
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
+
+    def _fetch_authority_diagnostic(self, request: Any) -> Any:
+        """Content-blind caller-authority diagnostic (#2439), token-gated.
+
+        Registry-independent by construction: it must keep answering when the
+        caller registry itself is the broken component, so it never enters the
+        service-auth composition path, reads no storage, and is authenticated
+        only by the dedicated operator-token binding.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        status, body = diagnostic_response(self.env, method, headers)
+        return legacy_worker._json_response(
+            ServiceResponse(status_code=status, body=body)
+        )
 
     async def _fetch_multimodal(self, request: Any, path: str) -> Any:
         """E5A trusted multimodal reference route: source-wired, fail-closed.

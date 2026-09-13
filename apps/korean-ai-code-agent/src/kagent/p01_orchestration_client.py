@@ -29,7 +29,15 @@ from padiem_control_plane.product_tier_routes import (
     active_route_for,
 )
 
-from .p01_adapter import P01AdapterError, P01DispatchClass
+from .p01_adapter import (
+    P01AdapterError,
+    P01DispatchClass,
+    P01_FAILURE_DETAIL_AUTHENTICATION,
+    P01_FAILURE_DETAIL_AUTHORIZATION,
+    P01_FAILURE_DETAIL_CONTRACT,
+    P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_TRANSPORT,
+)
 
 
 def _padiem_executable_route_ids() -> frozenset[str]:
@@ -67,6 +75,24 @@ PADIEM_EXECUTABLE_MODEL_IDS = _padiem_executable_route_ids()
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.
 _ENGINE_MAX_RETRIES_DEFAULT = 3
+
+_ENGINE_AUTHENTICATION_CODES = frozenset(
+    {"service_authentication_failed", "invalid_service_credential"}
+)
+_ENGINE_AUTHORIZATION_CODES = frozenset({"service_app_not_authorized"})
+_ENGINE_TRANSPORT_CODES = frozenset(
+    {"invalid_engine_response", "engine_http_error", "invalid_engine_transport"}
+)
+
+
+def _engine_failure_detail(code: object) -> str:
+    if code in _ENGINE_AUTHENTICATION_CODES:
+        return P01_FAILURE_DETAIL_AUTHENTICATION
+    if code in _ENGINE_AUTHORIZATION_CODES:
+        return P01_FAILURE_DETAIL_AUTHORIZATION
+    if code in _ENGINE_TRANSPORT_CODES:
+        return P01_FAILURE_DETAIL_TRANSPORT
+    return P01_FAILURE_DETAIL_DOWNSTREAM
 
 # OrchestrationRequest fields that carry authority the public wire cannot
 # round-trip losslessly. A non-default value here would be silently dropped on
@@ -123,6 +149,7 @@ class P01EngineOrchestrationClient:
                 "p01_engine_request_failed",
                 "P01 orchestration failed at the Engine boundary.",
                 dispatch_class=P01DispatchClass.UNKNOWN,
+                failure_detail=_engine_failure_detail(exc.code),
             ) from exc
         try:
             result = orchestration_result_from_public(raw)
@@ -132,6 +159,7 @@ class P01EngineOrchestrationClient:
                 exc.code,
                 "P01 orchestration result carries data the public projection cannot reconstruct.",
                 dispatch_class=P01DispatchClass.DISPATCHED,
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             ) from exc
         self._validate_correlation(request, result)
         return result
@@ -258,6 +286,7 @@ class P01EngineOrchestrationClient:
                 "p01_result_correlation_mismatch",
                 "P01 orchestration result does not match the request correlation.",
                 dispatch_class=P01DispatchClass.DISPATCHED,
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             )
 
 

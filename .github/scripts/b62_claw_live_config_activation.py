@@ -7,6 +7,11 @@ secret) are carried into the activation patch as ``inherit``/``latest``
 references, exactly like the merged control-plane identity binding gate.
 Anything structurally unexpected fails closed so no live binding can be
 silently dropped, retyped, or rewired by this activation.
+
+The bounded replacement path (#2428) additionally gates a source credential
+that will replace an EXISTING ``P01_ENGINE_CREDENTIAL`` secret. The quality
+gate reports only bounded presence/quality evidence over the UTF-8 byte
+length; the value, its length, and any digest are never emitted.
 """
 
 from __future__ import annotations
@@ -14,6 +19,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -48,6 +54,14 @@ P01_SERVICE_NAME = "P01_ENGINE_SERVICE"
 P01_CALLER_NAME = "P01_ENGINE_CALLER_ID"
 P01_CALLER_VALUE = "b54-kagent"
 P01_CREDENTIAL_NAME = "P01_ENGINE_CREDENTIAL"
+
+# Bounded source-credential replacement gate (#2428). These thresholds mirror
+# the runtime authority in apps/padiem-chat/app/worker_config.py
+# (_P01_CREDENTIAL_MIN_BYTES/_P01_CREDENTIAL_MAX_BYTES) and are validated
+# against it by a network-free contract test.
+P01_CREDENTIAL_MIN_BYTES = 32
+P01_CREDENTIAL_MAX_BYTES = 512
+SOURCE_CREDENTIAL_ENV = "B62_P01_ENGINE_CREDENTIAL"
 
 TARGET_NAMES = frozenset(QUOTA_VALUES) | {
     R2_BINDING_NAME,
@@ -221,6 +235,68 @@ P01_TARGET_NAMES = (P01_SERVICE_NAME, P01_CALLER_NAME, P01_CREDENTIAL_NAME)
 WORKSPACE_R2_TARGET_NAMES = (R2_BINDING_NAME,)
 
 
+def source_credential_quality(value: object) -> bool:
+    """Bounded UTF-8 byte-quality gate for the replacement source credential.
+
+    Mirrors the runtime validation order in worker_config: the value must be a
+    non-empty string whose UTF-8 encoding is within the accepted byte range.
+    Returns only a boolean; callers must never print the value, its length, or
+    any digest of it.
+    """
+    if not isinstance(value, str) or not value:
+        return False
+    byte_length = len(value.encode("utf-8"))
+    return P01_CREDENTIAL_MIN_BYTES <= byte_length <= P01_CREDENTIAL_MAX_BYTES
+
+
+def replacement_precheck(settings_payload: object) -> dict:
+    """Gate the replacement path on an existing P01_ENGINE_CREDENTIAL secret_text.
+
+    An absent credential must go through the activate_config create path; a
+    non-secret binding at that name is refused rather than overwritten. Only
+    binding names and types are inspected; no secret value is ever read.
+    """
+    bindings = _raw_bindings(settings_payload)
+    by_name = {binding["name"]: binding for binding in bindings}
+    credential = by_name.get(P01_CREDENTIAL_NAME)
+    if credential is None:
+        raise ActivationPlanError(
+            f"{P01_CREDENTIAL_NAME} is absent; replacement requires an existing "
+            "secret_text binding (an absent credential uses the activate_config create path)"
+        )
+    if credential.get("type") != "secret_text":
+        raise ActivationPlanError(
+            f"{P01_CREDENTIAL_NAME} exists with type {credential.get('type')!r}; "
+            "refusing to overwrite a non-secret binding"
+        )
+    return {
+        "secret_names": sorted(
+            binding["name"] for binding in bindings if binding.get("type") == "secret_text"
+        ),
+    }
+
+
+def verify_replacement_readback(pre_payload: object, post_payload: object) -> list[str]:
+    """Compare pre/post served configuration by binding name and type only.
+
+    Every binding present before the replacement must still be present with the
+    same type afterwards, and P01_ENGINE_CREDENTIAL must remain secret_text.
+    Secret values are never read or compared.
+    """
+    pre_types = {binding["name"]: binding.get("type") for binding in _raw_bindings(pre_payload)}
+    post_types = {binding["name"]: binding.get("type") for binding in _raw_bindings(post_payload)}
+    failures: list[str] = []
+    if post_types.get(P01_CREDENTIAL_NAME) != "secret_text":
+        failures.append(
+            f"{P01_CREDENTIAL_NAME}: expected PRESENT:secret_text after replacement, "
+            f"found {post_types.get(P01_CREDENTIAL_NAME)}"
+        )
+    for name, kind in sorted(pre_types.items()):
+        if post_types.get(name) != kind:
+            failures.append(f"{name}: pre-existing binding type {kind} is missing or retyped")
+    return failures
+
+
 def deploy_prereq_failures(states: dict[str, str]) -> list[str]:
     """Every activation target must already be exactly accepted before a code deploy."""
     return sorted(name for name, state in states.items() if state != "exact")
@@ -339,15 +415,38 @@ def build_rollback_plan(
 def main(argv: list[str] | None = None) -> int:
     args_in = sys.argv[1:] if argv is None else argv
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("classify", "plan", "verify", "deploy-prereq", "rollback-plan"))
-    parser.add_argument("--settings", required=True, type=Path)
+    parser.add_argument(
+        "command",
+        choices=(
+            "classify",
+            "plan",
+            "verify",
+            "deploy-prereq",
+            "rollback-plan",
+            "credential-quality",
+            "replacement-precheck",
+            "replacement-verify",
+        ),
+    )
+    parser.add_argument("--settings", type=Path)
     parser.add_argument("--engine-service", default="")
     parser.add_argument("--r2-bucket", default="")
     parser.add_argument("--target-sha", default="")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--snapshot", type=Path)
+    parser.add_argument("--pre-settings", type=Path)
     parser.add_argument("--credential-created-by-activation", default="false")
     args = parser.parse_args(args_in)
+
+    if args.command == "credential-quality":
+        return _main_credential_quality()
+    if args.command == "replacement-precheck":
+        return _main_replacement_precheck(args)
+    if args.command == "replacement-verify":
+        return _main_replacement_verify(args)
+    if not args.settings:
+        print(f"usage: {args.command} requires --settings", file=sys.stderr)
+        return 2
 
     if args.command == "rollback-plan":
         return _main_rollback_plan(args)
@@ -478,6 +577,73 @@ def _main_rollback_plan(args: argparse.Namespace) -> int:
     print("CODE_VERSION_ROLLBACK_DISTINGUISHED=YES")
     print("FULL_CONFIG_ROLLBACK_CLAIM=NO_UNTIL_READBACK")
     print("PIECEMEAL_SECRET_RESTORE=0")
+    print("SECRET_VALUES_READ=0")
+    print("SECRET_VALUES_EMITTED=0")
+    return 0
+
+
+def _main_credential_quality() -> int:
+    value = os.environ.get(SOURCE_CREDENTIAL_ENV)
+    present = value is not None and value != ""
+    quality = source_credential_quality(value)
+    print(f"SOURCE_CREDENTIAL_PRESENT={'YES' if present else 'NO'}")
+    print(f"SOURCE_CREDENTIAL_QUALITY={'PASS' if quality else 'FAIL'}")
+    print("SECRET_VALUE_OUTPUT=0")
+    print("SECRET_LENGTH_OUTPUT=0")
+    print("SECRET_HASH_OUTPUT=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0 if quality else 1
+
+
+def _main_replacement_precheck(args: argparse.Namespace) -> int:
+    if not args.settings:
+        print("usage: replacement-precheck requires --settings", file=sys.stderr)
+        return 2
+    try:
+        payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        result = replacement_precheck(payload)
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ActivationPlanError,
+        _deploy_config.ProductionConfigError,
+    ) as exc:
+        print(f"B62_P01_REPLACEMENT_PRECHECK=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    print("B62_P01_REPLACEMENT_PRECHECK=PASS")
+    print(f"EXISTING_SECRET_NAMES={','.join(result['secret_names']) or 'NONE'}")
+    print("OLD_SECRET_VALUE_READ=NO")
+    print("SECRET_VALUES_READ=0")
+    print("SECRET_VALUES_EMITTED=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
+def _main_replacement_verify(args: argparse.Namespace) -> int:
+    if not args.settings or not args.pre_settings:
+        print("usage: replacement-verify requires --settings and --pre-settings", file=sys.stderr)
+        return 2
+    try:
+        post_payload = json.loads(args.settings.read_text(encoding="utf-8"))
+        pre_payload = json.loads(args.pre_settings.read_text(encoding="utf-8"))
+        failures = verify_replacement_readback(pre_payload, post_payload)
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ActivationPlanError,
+        _deploy_config.ProductionConfigError,
+    ) as exc:
+        print(f"B62_P01_REPLACEMENT_VERIFY=FAIL\nREASON={exc}", file=sys.stderr)
+        return 1
+    if failures:
+        for failure in failures:
+            print(f"READBACK_FAIL {failure}", file=sys.stderr)
+        print("B62_P01_REPLACEMENT_VERIFY=FAIL", file=sys.stderr)
+        return 1
+    print("B62_P01_REPLACEMENT_VERIFY=PASS")
+    print(f"{P01_CREDENTIAL_NAME}=PRESENT:secret_text")
+    print("UNRELATED_SECRET_MUTATION=0")
+    print("RUNTIME_SUCCESS_CLAIM=NO_UNTIL_PHASE_A_RERUN")
     print("SECRET_VALUES_READ=0")
     print("SECRET_VALUES_EMITTED=0")
     return 0

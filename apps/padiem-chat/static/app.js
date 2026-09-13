@@ -63,11 +63,17 @@
   const projectFileInput = document.getElementById("projectFileInput");
   const projectFilesList = document.getElementById("projectFilesList");
   const projectFilesEmpty = document.getElementById("projectFilesEmpty");
+  const projectFileStatus = document.getElementById("projectFileStatus");
   const chatTransport = window.PadiemChatTransport;
   const conversationState = window.PadiemChatConversationState;
   const MESSAGE_LIFECYCLE = window.PadiemChatLifecycle.states;
   const attachmentCapabilities = window.PadiemAttachmentCapabilities;
   const binaryDocuments = window.PadiemBinaryDocuments;
+
+  const PROJECT_BINARY_EXTENSION_MEDIA = new Map([
+    [".pdf", "application/pdf"],
+    [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+  ]);
 
   const MAX_IMAGE_BYTES = attachmentCapabilities.limits.imageBytes;
   const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;
@@ -521,15 +527,50 @@
       projectFormError.hidden = false;
     }
   }
+  function projectBinaryMediaType(file) {
+    // Project-scoped subset preflight: PDF/DOCX only (the server allow-lists exactly these two
+    // binaries). Extension-driven to mirror document-binary.js canRead/canonicalMediaType, which
+    // are themselves extension-canonical. Everything else — PPTX/XLSX and unsupported text types —
+    // falls through to the text path and is rejected there BEFORE any request is made.
+    return PROJECT_BINARY_EXTENSION_MEDIA.get(extensionOf(file && file.name)) || null;
+  }
+  let projectFileBusy = false;
+  function setProjectFileBusy(busy) {
+    projectFileBusy = busy;
+    if (busy) {
+      projectFilesPanel.setAttribute("aria-busy", "true");
+      projectFileInput.setAttribute("aria-disabled", "true");
+      if (projectFileStatus) { projectFileStatus.textContent = "문서 저장 중…"; projectFileStatus.hidden = false; }
+    } else {
+      projectFilesPanel.removeAttribute("aria-busy");
+      projectFileInput.removeAttribute("aria-disabled");
+      if (projectFileStatus) { projectFileStatus.hidden = true; projectFileStatus.textContent = ""; }
+    }
+  }
   async function addProjectFile(file) {
     if (!file || !editingProjectId || !authState.project_files_ready) return;
     projectFileInput.value = "";
+    if (projectFileBusy) return;
+    // Clear any stale error so a successful retry never leaves the old message up.
+    projectFormError.hidden = true;
+    projectFormError.textContent = "";
+    setProjectFileBusy(true);
     try {
-      const documentFile = await readDocumentFile(file);
+      const projectBinary = projectBinaryMediaType(file);
+      let payload;
+      if (projectBinary && binaryDocuments && typeof binaryDocuments.read === "function") {
+        const documentFile = await binaryDocuments.read(file);
+        payload = { name: documentFile.name, media_type: documentFile.mediaType, base64: documentFile.base64 };
+      } else if (projectBinary) {
+        throw new Error(attachmentCopy().unsupportedFormat);
+      } else {
+        const documentFile = await readDocumentFile(file);
+        payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
+      }
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
@@ -540,6 +581,8 @@
     } catch (error) {
       projectFormError.textContent = error instanceof Error ? error.message : "프로젝트 파일을 저장하지 못했습니다.";
       projectFormError.hidden = false;
+    } finally {
+      setProjectFileBusy(false);
     }
   }
   async function deleteProjectFile(fileId, name) {
@@ -1184,6 +1227,42 @@
   let clawInFlight = false;
   let clawLastAction = null;
 
+  const clawFallbackCopy = {
+    "claw-result-badge": "Preview",
+    "claw-result-badge-run": "Real run",
+    "claw-status-preview-running": "Generating preview...",
+    "claw-status-execute-running": "Running... please wait a moment.",
+    "claw-status-preview-success": "Preview is ready.",
+    "claw-status-execute-success": "Done.",
+    "claw-error-preview": "Preview could not be loaded. Please try again shortly.",
+    "claw-error-empty": "Paste your request before running.",
+    "claw-error-too-large": "Request is too long. Please shorten it and try again.",
+    "claw-error-invalid": "Please check your input and try again.",
+    "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
+    "claw-error-auth-needed": "Please sign in again to continue.",
+    "claw-error-storage": "Could not save the document. Please try again shortly.",
+    "claw-error-generic": "Something went wrong. Please try again shortly.",
+    "claw-memory-review-title": "Memory save proposal (approval required)",
+    "claw-memory-approve": "Approve",
+    "claw-memory-reject": "Reject",
+    "claw-memory-detail": "Details",
+    "claw-memory-close": "Close",
+    "claw-memory-type": "Type",
+    "claw-memory-name": "Name",
+    "claw-memory-note": "Note",
+    "claw-memory-channel": "Channel",
+    "claw-memory-status": "Status",
+    "claw-memory-created": "Created",
+    "claw-memory-updated": "Updated",
+    "claw-memory-status-approved": "Approved",
+    "claw-memory-error-approval": "Explicit approval is required.",
+    "claw-memory-error-invalid": "The proposal format is invalid.",
+    "claw-memory-error-auth": "Please sign in.",
+    "claw-memory-error-unavailable": "Approved memory is unavailable.",
+    "claw-memory-error-not-found": "Memory was not found.",
+    "claw-memory-error-generic": "Approved memory could not be processed.",
+  };
+
   function clawT(key) {
     try {
       if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
@@ -1191,10 +1270,10 @@
         if (v && v !== key) return v;
       }
     } catch (_) {}
-    return key;
+    return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
   }
 
-  function setClawStatus(message, state) {
+  function setClawStatus(message, state, localeKey) {
     if (!clawStatus) return;
     if (!message) {
       clawStatus.hidden = true;
@@ -1207,6 +1286,8 @@
     clawStatus.textContent = message;
     if (state) clawStatus.dataset.state = state;
     else clawStatus.removeAttribute("data-state");
+    if (localeKey) clawStatus.dataset.localeKey = localeKey;
+    else delete clawStatus.dataset.localeKey;
     if (clawRequestText) {
       if (state === "error") clawRequestText.setAttribute("aria-invalid", "true");
       else clawRequestText.removeAttribute("aria-invalid");
@@ -1347,12 +1428,7 @@
     if (clawResultKind) clawResultKind.textContent = kindText || "";
     if (clawResultBadge) {
       clawResultBadge.dataset.localeKey = executed ? "claw-result-badge-run" : "claw-result-badge";
-      try {
-        clawResultBadge.textContent = window.__padiemLocale ? window.__padiemLocale.text(executed ? "claw-result-badge-run" : "claw-result-badge") : (executed ? "실제 실행" : "미리보기");
-      } catch (_) {
-        const isEn = document.documentElement.lang === "en";
-        clawResultBadge.textContent = executed ? (isEn ? "Real run" : "실제 실행") : (isEn ? "Preview" : "미리보기");
-      }
+      clawResultBadge.textContent = clawT(executed ? "claw-result-badge-run" : "claw-result-badge");
     }
   }
 
@@ -1398,7 +1474,7 @@
       const senderText = (clawSender?.value || "").trim();
 
       setClawButtonsBusy(true);
-      setClawStatus(clawT("claw-status-preview-running"), "running");
+      setClawStatus(clawT("claw-status-preview-running"), "running", "claw-status-preview-running");
       setClawAreaState("submitting");
       if (clawResultCard) clawResultCard.hidden = true;
       clearClawArtifact();
@@ -1407,26 +1483,17 @@
         clawResultEmpty.textContent = clawT("claw-status-preview-running");
       }
 
-      const renderFallback = () => {
-        const clipped = body.length > 900 ? `${body.slice(0, 900)}…` : body;
-        let notice;
-        try { notice = window.__padiemLocale ? window.__padiemLocale.text("claw-preview-notice") : ""; } catch (_) { notice = ""; }
-        if (!notice || notice === "claw-preview-notice") {
-          const isEn = document.documentElement.lang === "en";
-          notice = isEn ? "Client-side preview only. This draft is not stored and is lost on refresh." : "클라이언트 미리보기 전용입니다. 저장되지 않으며 새로고침하면 사라집니다.";
-        }
-        const isEn2 = document.documentElement.lang === "en";
-        const channelLabel = isEn2 ? "Channel" : "채널";
-        const actionLabel = isEn2 ? "Action" : "작업";
-        const senderLabel = isEn2 ? "Sender hint" : "발신자 힌트";
-        const sourceLabel = isEn2 ? "Source text" : "요청 원문";
-        revealClawCard(actionText, false);
+      const renderPreviewError = () => {
+        if (clawResultCard) clawResultCard.hidden = true;
         clearClawArtifact();
-        if (clawResultPreview) {
-          clawResultPreview.textContent = [notice, "", `${channelLabel}: ${channelText}`, `${actionLabel}: ${actionText}`, `${senderLabel}: ${senderText || "-"}`, "", `${sourceLabel}:`, clipped].join("\n");
+        if (clawMemoryReview) clawMemoryReview.hidden = true;
+        if (clawResultEmpty) {
+          clawResultEmpty.hidden = false;
+          clawResultEmpty.textContent = clawT("claw-error-preview");
         }
-        setClawStatus(clawT("claw-status-preview-success"), "success");
-        setClawAreaState("success");
+        if (clawResultHint) clawResultHint.hidden = false;
+        setClawStatus(clawT("claw-error-preview"), "error", "claw-error-preview");
+        setClawAreaState("error");
       };
 
       try {
@@ -1436,12 +1503,12 @@
           body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
         });
         if (!response.ok) {
-          renderFallback();
+          renderPreviewError();
           return;
         }
         const data = await response.json();
         if (!data || !data.ok || !data.preview || typeof data.preview.result_text !== "string") {
-          renderFallback();
+          renderPreviewError();
           return;
         }
         const preview = data.preview;
@@ -1449,12 +1516,12 @@
         if (clawResultPreview) clawResultPreview.textContent = preview.result_text;
         clearClawArtifact();
         renderMemoryProposalReview(Array.isArray(preview.memory_proposals) ? preview.memory_proposals : []);
-        setClawStatus(clawT("claw-status-preview-success"), "success");
+        setClawStatus(clawT("claw-status-preview-success"), "success", "claw-status-preview-success");
         setClawAreaState("success");
         // Move focus to result for screen-reader and keyboard users
         if (clawResultPreview) clawResultPreview.focus?.();
       } catch {
-        renderFallback();
+        renderPreviewError();
       } finally {
         setClawButtonsBusy(false);
       }
@@ -1464,6 +1531,9 @@
   // Keep preview/execute hints in sync with locale switches (data-locale-key auto-syncs static text,
   // but status and dynamic card chrome need manual refresh when language toggles).
   window.addEventListener("padiem:localechange", () => {
+    if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
+      clawStatus.textContent = clawT(clawStatus.dataset.localeKey);
+    }
     // Re-apply badge text to current card state if visible
     if (clawResultCard && !clawResultCard.hidden && clawResultBadge) {
       const isExecuted = clawResultBadge.dataset.localeKey === "claw-result-badge-run";
@@ -1505,7 +1575,7 @@
       const senderText = (clawSender?.value || "").trim();
 
       setClawButtonsBusy(true);
-      setClawStatus(clawT("claw-status-execute-running"), "running");
+      setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
       setClawAreaState("submitting");
       if (clawResultCard) clawResultCard.hidden = true;
       clearClawArtifact();
@@ -1530,7 +1600,7 @@
           const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
           const hasArtifact = !!(artifact && artifact.document_id);
           if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
-          setClawStatus(clawT("claw-status-execute-success"), "success");
+          setClawStatus(clawT("claw-status-execute-success"), "success", "claw-status-execute-success");
           setClawAreaState("success");
           if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
           else if (clawResultPreview) clawResultPreview.focus?.();
@@ -1584,12 +1654,12 @@
   function approvedMemoryErrorMessage(data, response) {
     const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
     const status = response ? response.status : 0;
-    if (code === "explicit_approval_required") return "명시적 승인이 필요합니다.";
-    if (code === "invalid_proposal" || code === "invalid_payload" || code === "forbidden_owner_field") return "제안 형식이 올바르지 않습니다.";
-    if (code === "unauthorized" || status === 401) return "로그인이 필요합니다.";
-    if (code === "approved_memory_unavailable" || code === "approved_memory_write_failed" || code === "approved_memory_read_failed" || status === 503) return "승인 메모리를 사용할 수 없습니다.";
-    if (code === "approved_memory_not_found" || status === 404) return "메모리를 찾을 수 없습니다.";
-    return "승인 메모리 처리에 실패했습니다.";
+    if (code === "explicit_approval_required") return clawT("claw-memory-error-approval");
+    if (code === "invalid_proposal" || code === "invalid_payload" || code === "forbidden_owner_field") return clawT("claw-memory-error-invalid");
+    if (code === "unauthorized" || status === 401) return clawT("claw-memory-error-auth");
+    if (code === "approved_memory_unavailable" || code === "approved_memory_write_failed" || code === "approved_memory_read_failed" || status === 503) return clawT("claw-memory-error-unavailable");
+    if (code === "approved_memory_not_found" || status === 404) return clawT("claw-memory-error-not-found");
+    return clawT("claw-memory-error-generic");
   }
 
   // Proposal review surface: rendered from preview memory_proposals. Approve is
@@ -1603,7 +1673,7 @@
     }
     const heading = document.createElement("h3");
     heading.className = "claw-memory-review-title";
-    heading.textContent = "메모리 저장 후보 (승인 필요)";
+    heading.textContent = clawT("claw-memory-review-title");
     clawMemoryReview.appendChild(heading);
     proposals.forEach((proposal) => {
       if (!proposal || typeof proposal !== "object") return;
@@ -1629,12 +1699,12 @@
       const approveBtn = document.createElement("button");
       approveBtn.type = "button";
       approveBtn.className = "claw-memory-approve";
-      approveBtn.textContent = "승인";
+      approveBtn.textContent = clawT("claw-memory-approve");
       approveBtn.addEventListener("click", () => approveProposal(safe));
       const rejectBtn = document.createElement("button");
       rejectBtn.type = "button";
       rejectBtn.className = "claw-memory-reject";
-      rejectBtn.textContent = "거절";
+      rejectBtn.textContent = clawT("claw-memory-reject");
       rejectBtn.addEventListener("click", () => rejectProposal(safe));
       actions.append(approveBtn, rejectBtn);
       card.append(title, meta, note, actions);
@@ -1664,7 +1734,7 @@
       }
       await fetchApprovedMemoryList();
     } catch (error) {
-      setApprovedMemoryStatus(error instanceof Error ? error.message : "승인하지 못했습니다.", "error");
+      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
     } finally {
       approvedMemoryInFlight = false;
     }
@@ -1687,7 +1757,7 @@
       }
       await fetchApprovedMemoryList();
     } catch (error) {
-      setApprovedMemoryStatus(error instanceof Error ? error.message : "거절하지 못했습니다.", "error");
+      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
     } finally {
       approvedMemoryInFlight = false;
     }
@@ -1705,12 +1775,14 @@
     title.textContent = memory.name || "";
     const badge = document.createElement("span");
     badge.className = "claw-approved-card-badge";
-    badge.textContent = memory.status || "";
+    badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : (memory.status || "");
     head.append(title, badge);
 
     const meta = document.createElement("div");
     meta.className = "claw-approved-card-meta";
-    meta.textContent = `${memory.memory_type || ""} · ${memory.created_at || ""}`;
+    const memoryTypeKey = `claw-memory-type-${memory.memory_type || ""}`;
+    const memoryType = memory.memory_type ? clawT(memoryTypeKey) : "";
+    meta.textContent = `${memoryType === memoryTypeKey ? memory.memory_type : memoryType} · ${memory.created_at || ""}`;
 
     const note = document.createElement("p");
     note.className = "claw-approved-card-note";
@@ -1721,7 +1793,7 @@
     const detailBtn = document.createElement("button");
     detailBtn.type = "button";
     detailBtn.className = "claw-approved-action";
-    detailBtn.textContent = "상세";
+    detailBtn.textContent = clawT("claw-memory-detail");
     detailBtn.addEventListener("click", () => {
       const id = card.dataset.memoryId;
       if (id) loadApprovedMemoryDetail(id);
@@ -1737,13 +1809,13 @@
     const detail = document.createElement("div");
     detail.className = "claw-approved-detail";
     const rows = [
-      { label: "유형", value: memory.memory_type || "" },
-      { label: "이름", value: memory.name || "" },
-      { label: "노트", value: memory.note || "" },
-      { label: "채널", value: memory.source_channel || "" },
-      { label: "상태", value: memory.status || "" },
-      { label: "생성", value: memory.created_at || "" },
-      { label: "수정", value: memory.updated_at || "" },
+      { label: clawT("claw-memory-type"), value: memory.memory_type || "" },
+      { label: clawT("claw-memory-name"), value: memory.name || "" },
+      { label: clawT("claw-memory-note"), value: memory.note || "" },
+      { label: clawT("claw-memory-channel"), value: memory.source_channel || "" },
+      { label: clawT("claw-memory-status"), value: memory.status === "approved" ? clawT("claw-memory-status-approved") : (memory.status || "") },
+      { label: clawT("claw-memory-created"), value: memory.created_at || "" },
+      { label: clawT("claw-memory-updated"), value: memory.updated_at || "" },
     ];
     rows.forEach((row) => {
       const rowEl = document.createElement("div");
@@ -1760,7 +1832,7 @@
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
     closeBtn.className = "claw-approved-action";
-    closeBtn.textContent = "닫기";
+    closeBtn.textContent = clawT("claw-memory-close");
     closeBtn.addEventListener("click", () => {
       detail.remove();
       loadApprovedMemoryList();
@@ -1795,7 +1867,7 @@
       });
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      setApprovedMemoryStatus(error instanceof Error ? error.message : "목록을 불러오지 못했습니다.", "error");
+      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
     }
   }
 
@@ -1827,7 +1899,7 @@
       renderApprovedMemoryDetail(data.memory);
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      setApprovedMemoryStatus(error instanceof Error ? error.message : "상세를 불러오지 못했습니다.", "error");
+      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
     } finally {
       approvedMemoryInFlight = false;
     }

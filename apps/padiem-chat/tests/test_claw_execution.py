@@ -638,6 +638,120 @@ def test_engine_failure_projects_safe_error(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is False
     assert data["error"]["code"] == "engine_execution_failed"
+    assert data["error"]["detail"] == "engine_downstream_execution_failed"
+
+
+@pytest.mark.parametrize(
+    ("error_code", "expected_detail", "failure_detail"),
+    [
+        ("raw_engine_code", "engine_authentication_failed", "engine_authentication_failed"),
+        ("raw_engine_code", "engine_authorization_failed", "engine_authorization_failed"),
+        ("raw_engine_code", "engine_transport_or_response_failed", "engine_transport_or_response_failed"),
+        ("raw_engine_code", "engine_downstream_execution_failed", "engine_downstream_execution_failed"),
+        ("raw_engine_code", "p01_contract_failure", "p01_contract_failure"),
+    ],
+)
+def test_engine_failure_detail_is_closed_vocabulary(
+    client: TestClient, error_code: str, expected_detail: str, failure_detail: str
+) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(
+        side_effect=P01AdapterError(
+            error_code,
+            "provider secret sentinel https://internal.example/model",
+            failure_detail=failure_detail,
+        )
+    )
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+        )
+    data = resp.json()
+    assert resp.status_code == 502
+    assert data["error"]["code"] == "engine_execution_failed"
+    assert data["error"]["detail"] == expected_detail
+    assert "provider secret sentinel" not in resp.text
+    assert "internal.example" not in resp.text
+    assert error_code not in resp.text
+
+
+def test_unexpected_exception_projects_unknown_engine_detail(client: TestClient) -> None:
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(
+        side_effect=RuntimeError("provider secret sentinel https://internal.example/model")
+    )
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+        )
+    data = resp.json()
+    assert resp.status_code == 502
+    assert data["error"]["code"] == "engine_execution_failed"
+    assert data["error"]["detail"] == "unknown_engine_failure"
+    assert "provider secret sentinel" not in resp.text
+    assert "internal.example" not in resp.text
+
+
+def test_unrecognized_p01_error_code_projects_unknown_engine_detail(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(
+        side_effect=P01AdapterError(
+            "provider_secret_internal_code",
+            "provider secret sentinel https://internal.example/model",
+        )
+    )
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+        )
+    data = resp.json()
+    assert resp.status_code == 502
+    assert data["error"]["code"] == "engine_execution_failed"
+    assert data["error"]["detail"] == "unknown_engine_failure"
+    assert "provider_secret_internal_code" not in resp.text
+    assert "provider secret sentinel" not in resp.text
+    assert "internal.example" not in resp.text
+
+
+def test_p01_execution_failure_detail_is_unknown(client: TestClient) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(side_effect=P01AdapterError("p01_execution_failed", "opaque"))
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+        )
+    assert resp.status_code == 502
+    assert resp.json()["error"]["detail"] == "unknown_engine_failure"
+
+
+@pytest.mark.parametrize(
+    "error_code",
+    ["p01_engine_unreachable", "p01_engine_response_too_large", "p01_engine_url_invalid"],
+)
+def test_transport_adapter_failures_project_transport_detail(
+    client: TestClient, error_code: str
+) -> None:
+    from kagent.p01_adapter import P01AdapterError
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(side_effect=P01AdapterError(error_code, "opaque transport detail"))
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+        )
+    assert resp.status_code == 502
+    assert resp.json()["error"]["detail"] == "engine_transport_or_response_failed"
 
 
 def test_no_silent_preview_fallback_after_execute(client: TestClient) -> None:
@@ -782,6 +896,94 @@ def test_engine_not_configured_returns_503(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is False
     assert data["error"]["code"] == "engine_not_configured"
+
+
+# ── #2413 bounded composition diagnostics on the public 503 ────────────────
+
+
+@pytest.mark.parametrize(
+    "diagnostic",
+    [
+        "engine_service_missing",
+        "caller_id_shape_invalid",
+        "credential_length_invalid",
+        "client_constructor_error",
+        "composition_unavailable",
+    ],
+)
+def test_engine_not_configured_503_carries_bounded_safe_detail(
+    client: TestClient, diagnostic: str
+) -> None:
+    previous = client.app.state.claw_p01_composition_diagnostic
+    client.app.state.claw_p01_composition_diagnostic = diagnostic
+    try:
+        with _injected_adapter(client, None):
+            resp = client.post(
+                "/api/claw/manual-intake/execute",
+                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            )
+    finally:
+        client.app.state.claw_p01_composition_diagnostic = previous
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["error"]["code"] == "engine_not_configured"
+    assert data["error"]["detail"] == diagnostic
+
+
+def test_engine_not_configured_503_detail_defaults_when_diagnostic_unset(
+    client: TestClient,
+) -> None:
+    previous = client.app.state.claw_p01_composition_diagnostic
+    client.app.state.claw_p01_composition_diagnostic = None
+    try:
+        with _injected_adapter(client, None):
+            resp = client.post(
+                "/api/claw/manual-intake/execute",
+                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            )
+    finally:
+        client.app.state.claw_p01_composition_diagnostic = previous
+    assert resp.status_code == 503
+    assert resp.json()["error"]["detail"] == "composition_unavailable"
+
+
+def test_engine_not_configured_503_rejects_out_of_allowlist_detail(
+    client: TestClient,
+) -> None:
+    previous = client.app.state.claw_p01_composition_diagnostic
+    client.app.state.claw_p01_composition_diagnostic = "leaked-p01-engine-credential-abc"
+    try:
+        with _injected_adapter(client, None):
+            resp = client.post(
+                "/api/claw/manual-intake/execute",
+                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            )
+    finally:
+        client.app.state.claw_p01_composition_diagnostic = previous
+    assert resp.status_code == 503
+    data = resp.json()
+    assert data["error"]["detail"] == "composition_unavailable"
+    assert "leaked" not in str(data)
+
+
+def test_successful_execution_response_has_no_diagnostic_fields(client: TestClient) -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
+        )
+    assert resp.status_code == 200
+    body = resp.text
+    for diagnostic in (
+        "engine_service_missing",
+        "caller_id_shape_invalid",
+        "credential_length_invalid",
+        "client_constructor_error",
+        "composition_unavailable",
+        "engine_not_configured",
+    ):
+        assert diagnostic not in body
 
 
 def test_engine_timeout_projects_safe_error(client: TestClient) -> None:

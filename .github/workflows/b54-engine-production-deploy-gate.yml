@@ -52,6 +52,36 @@ jobs:
         working-directory: apps/padiem-ai-engine
         run: uv run pywrangler sync --force
 
+      # ISSUE #2414: validate the caller-registry secrets on the ACTUALLY SERVED
+      # version (deployments API -> versions/{active} detail), not the mutable
+      # settings plane. GET-only, NAME/TYPE-only, fail-closed before any mutation.
+      - name: Pre-deploy served-version secret guard
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/deployments-pre.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          version_detail="${RUNNER_TEMP}/version-pre.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}")"
+          printf '%s\n' "${verify_out}"
+          overlay_expected="$(printf '%s\n' "${verify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_EXPECTED=//p')"
+          test "${overlay_expected}" = 'YES' || test "${overlay_expected}" = 'NO'
+          {
+            echo "B54_ENGINE_ACTIVE_VERSION=${active_version}"
+            echo "B54_ENGINE_OVERLAY_EXPECTED=${overlay_expected}"
+          } >> "${GITHUB_ENV}"
+          echo 'PREMUTATION_SERVED_VERSION_GUARD=PASS'
+
       - name: Deploy engine to production
         working-directory: apps/padiem-ai-engine
         env:
@@ -72,6 +102,36 @@ jobs:
           grep -q 'orchestration_run' /tmp/health.json
           echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
 
+      # ISSUE #2414: re-resolve the served version AFTER the deploy and require
+      # the caller-registry secrets on that exact new version. If the overlay
+      # existed on the pre-deploy served version it must survive the deploy.
+      - name: Post-deploy served-version secret guard
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/deployments-post.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          version_detail="${RUNNER_TEMP}/version-post.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          overlay_args=()
+          if [ "${B54_ENGINE_OVERLAY_EXPECTED}" = 'YES' ]; then
+            overlay_args+=( --expect-overlay )
+          fi
+          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" \
+            "${overlay_args[@]}"
+          echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+
   smoke-idempotency:
     # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
     # Runs ONLY after a confirmed production deploy, against the exact deployed
@@ -82,8 +142,18 @@ jobs:
     timeout-minutes: 15
     environment: production
     env:
-      CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-      CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier b54-kagent and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-kagent
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-kagent
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ENGINE_BASE_URL: https://engine.padiem.net
@@ -122,9 +192,6 @@ jobs:
 
       - name: Run A10 continuation fail-closed smoke
         shell: bash
-        env:
-          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
@@ -144,9 +211,6 @@ jobs:
       # contradictory/unexpected production behaviour and fails the gate.
       - name: Run A11 Gmail tool_runtime smoke
         shell: bash
-        env:
-          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
@@ -159,9 +223,6 @@ jobs:
 
       - name: Run A12 streaming idempotency replay smoke
         shell: bash
-        env:
-          PADIEM_ENGINE_SMOKE_CALLER_ID: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_ID }}
-          PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET }}
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log

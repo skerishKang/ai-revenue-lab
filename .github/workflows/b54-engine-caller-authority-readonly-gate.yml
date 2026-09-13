@@ -6,6 +6,8 @@ on:
       - ".github/workflows/b54-engine-caller-authority-readonly-gate.yml"
       - ".github/scripts/b54_engine_caller_authority_readonly.py"
       - ".github/tests/test_b54_engine_caller_authority_readonly_gate.py"
+      - ".github/scripts/b54_engine_caller_authority_contentblind_diagnostic.py"
+      - ".github/tests/test_b54_engine_caller_authority_contentblind_diagnostic.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -16,6 +18,7 @@ on:
         options:
           - repository_preflight
           - cloudflare_readonly
+          - content_blind_diagnostic
       target_sha:
         description: "Exact current main SHA"
         required: true
@@ -70,6 +73,9 @@ jobs:
 
       - name: Run engine caller authority read-only gate tests
         run: python .github/tests/test_b54_engine_caller_authority_readonly_gate.py
+
+      - name: Run engine caller authority content-blind diagnostic tests
+        run: python .github/tests/test_b54_engine_caller_authority_contentblind_diagnostic.py
 
       - name: Source-only evidence
         run: |
@@ -126,4 +132,98 @@ jobs:
           echo 'CLOUDFLARE_MUTATION=0'
           echo 'RAW_SETTINGS_ARTIFACT_UPLOADED=0'
           echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  # Content-blind classification of the surviving #2439 401 candidates:
+  # malformed V1 base vs base already containing the overlay caller id.
+  # The Cloudflare control plane never returns secret_text plaintext, so no
+  # job in this workflow reads registry or credential values. The Engine
+  # runtime itself answers behind a token-gated internal diagnostic route
+  # (app/authority_diagnostic.py); this job makes one authenticated GET and
+  # validates the closed six-fact JSON projection with jq. The response never
+  # contains a value, hash, length, app id, unrelated caller id, or raw JSON.
+  content-blind-diagnostic:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'content_blind_diagnostic' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      DIAGNOSTIC_URL: https://engine.padiem.net/internal/v1/diagnostics/caller-authority
+      AUTHORITY_DIAGNOSTIC_TOKEN: ${{ secrets.B54_ENGINE_AUTHORITY_DIAGNOSTIC_TOKEN }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before the live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'CONTENTBLIND_EXACT_MAIN_SHA=PASS'
+
+      - name: Invoke the runtime-internal diagnostic (GET only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${AUTHORITY_DIAGNOSTIC_TOKEN}"
+          response="${RUNNER_TEMP}/b54-authority-diagnostic-response.json"
+          status="$(curl -sS \
+            -H "x-padiem-engine-authority-diagnostic-token: ${AUTHORITY_DIAGNOSTIC_TOKEN}" \
+            -o "${response}" -w '%{http_code}' \
+            "${DIAGNOSTIC_URL}")"
+          if [ "${status}" != "200" ]; then
+            echo "RUNTIME_DIAGNOSTIC_STATUS=${status}"
+            echo 'CONTENTBLIND_RUNTIME=FAIL_CLOSED'
+            echo 'CONTENTBLIND_SECRET_VALUE_OUTPUT=0'
+            echo 'CLOUDFLARE_MUTATION=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          echo 'RUNTIME_DIAGNOSTIC_STATUS=200'
+          jq -e '
+            .ok == true
+            and ((keys | sort) == ["BASE_CALLER_COUNT","BASE_CONTAINS_B54_KAGENT","BASE_PARSE","DUPLICATE_CALLER_ID","OVERLAY_CALLER_ID_MATCH","OVERLAY_PARSE","PRODUCTION_MUTATION","RAW_REGISTRY_JSON_OUTPUT","SECRET_VALUE_OUTPUT","ok"])
+            and (.BASE_PARSE | test("^(OK|INVALID)$"))
+            and (.OVERLAY_PARSE | test("^(OK|INVALID)$"))
+            and (.BASE_CONTAINS_B54_KAGENT | test("^(YES|NO)$"))
+            and (.DUPLICATE_CALLER_ID | test("^(YES|NO)$"))
+            and (.OVERLAY_CALLER_ID_MATCH | test("^(YES|NO)$"))
+            and (.BASE_CALLER_COUNT | test("^([0-9]|[1-5][0-9]|6[0-4])$"))
+            and .SECRET_VALUE_OUTPUT == "0"
+            and .RAW_REGISTRY_JSON_OUTPUT == "0"
+            and .PRODUCTION_MUTATION == "0"
+          ' "${response}" >/dev/null
+          evidence="$(jq -r '
+            "BASE_PARSE=\(.BASE_PARSE)",
+            "OVERLAY_PARSE=\(.OVERLAY_PARSE)",
+            "BASE_CONTAINS_B54_KAGENT=\(.BASE_CONTAINS_B54_KAGENT)",
+            "DUPLICATE_CALLER_ID=\(.DUPLICATE_CALLER_ID)",
+            "BASE_CALLER_COUNT=\(.BASE_CALLER_COUNT)",
+            "OVERLAY_CALLER_ID_MATCH=\(.OVERLAY_CALLER_ID_MATCH)"
+          ' "${response}")"
+          rm -f "${response}"
+          if printf '%s\n' "${evidence}" | grep -qvE '^(BASE_PARSE=(OK|INVALID)|OVERLAY_PARSE=(OK|INVALID)|BASE_CONTAINS_B54_KAGENT=(YES|NO)|DUPLICATE_CALLER_ID=(YES|NO)|BASE_CALLER_COUNT=([0-9]|[1-5][0-9]|6[0-4])|OVERLAY_CALLER_ID_MATCH=(YES|NO))$'; then
+            echo 'CONTENTBLIND_OUTPUT_CONTRACT=FAIL'
+            exit 1
+          fi
+          test "$(printf '%s\n' "${evidence}" | wc -l)" -eq 6
+          for field in BASE_PARSE OVERLAY_PARSE BASE_CONTAINS_B54_KAGENT DUPLICATE_CALLER_ID BASE_CALLER_COUNT OVERLAY_CALLER_ID_MATCH; do
+            test "$(printf '%s\n' "${evidence}" | grep -c "^${field}=")" -eq 1
+          done
+          echo "${evidence}"
+          echo 'CONTENTBLIND_OUTPUT_CONTRACT=PASS'
+          echo 'GET_ONLY=PASS'
+          echo 'CONTENTBLIND_REQUEST_CARRIES_NO_REGISTRY_VALUE=PASS'
+          echo 'CONTENTBLIND_RAW_REGISTRY_JSON_OUTPUT=0'
+          echo 'CONTENTBLIND_SECRET_VALUE_OUTPUT=0'
+          echo 'CONTENTBLIND_ARTIFACT_UPLOADED=0'
+          echo 'CLOUDFLARE_MUTATION=0'
           echo 'PRODUCTION_MUTATION=0'

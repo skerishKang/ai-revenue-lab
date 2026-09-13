@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 from app import httpx_compat as httpx
 from workers import Request, Response, WorkerEntrypoint
 
-from app.claw_p01_composition import build_claw_p01_adapter
+from app.claw_p01_composition import build_claw_p01_adapter_with_diagnostic
 from app.config import ConfigError
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
@@ -300,9 +300,11 @@ class Default(WorkerEntrypoint):
                 )
                 _worker_app.state.b14_service_bound = b14_binding is not None
                 _worker_app.state.identity_authority_service_bound = identity_binding is not None
-                _worker_app.state.claw_p01_adapter = build_claw_p01_adapter(
-                    self.env,
-                    request_factory=Request,
+                _worker_app.state.claw_p01_adapter, _worker_app.state.claw_p01_composition_diagnostic = (
+                    build_claw_p01_adapter_with_diagnostic(
+                        self.env,
+                        request_factory=Request,
+                    )
                 )
                 install_orchestration_routes(
                     _worker_app,

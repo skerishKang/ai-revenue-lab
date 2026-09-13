@@ -475,6 +475,57 @@ def test_case_16_rollback_fires_when_active_version_changed() -> None:
     assert '-X POST "${api}/deployments"' in step
 
 
+def _readonly_job_block() -> str:
+    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    return deploy.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
+
+
+def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> None:
+    # #2458: the active served-version id must be published to the job log as
+    # bounded non-secret evidence, sourced from the canonical extraction, only
+    # after the latest==active assertion, while the existing GITHUB_OUTPUT
+    # consumer and the read-only GET-only surface stay intact.
+    readonly = _readonly_job_block()
+    assert ".result.deployments[0].versions[0].version_id" in readonly
+    assert "versions | length) == 1" in readonly
+    assert ".versions[0].percentage == 100" in readonly
+    assert 'test "${latest}" = "${active}"' in readonly
+    assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly
+    assert 'echo "ACTIVE_VERSION=${active}"' in readonly
+    assert (
+        readonly.index('test "${latest}" = "${active}"')
+        < readonly.index('echo "ACTIVE_VERSION=${active}"')
+    )
+    assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in readonly
+    assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly
+    assert "PRODUCTION_MUTATION=0" in readonly
+    # The publication must not turn the read-only surface into a mutation or a
+    # raw-payload/secret dump. The token/account vars are legitimately referenced
+    # to build GET curl headers, but must never be echoed, and no raw payload file
+    # may be dumped to the log.
+    for forbidden in (
+        "-X POST", "-X PUT", "-X PATCH", "-X DELETE",
+        'cat "${deployments}"', 'cat "${versions}"', 'cat "${settings}"',
+        'echo "${CLOUDFLARE_API_TOKEN}"', 'echo "${CLOUDFLARE_ACCOUNT_ID}"',
+        'echo "${auth',
+    ):
+        assert forbidden not in readonly, forbidden
+
+
+def test_case_18_active_version_publication_keeps_deploy_and_rollback_gates() -> None:
+    # The #2458 evidence change must not touch the deploy/rollback job gating.
+    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    assert (
+        "if: ${{ github.event_name == 'workflow_dispatch' && "
+        "inputs.mode == 'deploy_production_code' }}" in deploy
+    )
+    assert (
+        "if: ${{ github.event_name == 'workflow_dispatch' && "
+        "inputs.mode == 'rollback_production_code' }}" in deploy
+    )
+    assert _readonly_job_block().count('echo "ACTIVE_VERSION=${active}"') == 1
+
+
 def test_deploy_prereq_cli_exit_codes() -> None:
     code, out, _ = _run_cli([
         "deploy-prereq",
