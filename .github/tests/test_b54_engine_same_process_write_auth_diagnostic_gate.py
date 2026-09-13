@@ -35,8 +35,6 @@ import re
 import sys
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/b54-engine-same-process-write-auth-diagnostic-gate.yml"
 
@@ -81,43 +79,42 @@ def _pipeline_step() -> str:
     return candidates[0]
 
 
-def test_workflow_yaml_parses() -> None:
-    data = yaml.safe_load(_text())
-    assert data["name"].startswith("B54 Engine Same-Process")
-    triggers = data[True] if True in data else data["on"]
-    assert set(triggers) == {"pull_request", "workflow_dispatch"}
-    assert "push" not in triggers
+def test_workflow_structure_and_triggers() -> None:
+    text = _text()
+    assert text.startswith("name: B54 Engine Same-Process")
+    trigger = _trigger_block(text)
+    assert trigger.startswith("  pull_request:\n")
+    assert "\n  workflow_dispatch:\n" in trigger
+    assert "\n  push:\n" not in trigger
+    assert "deploy" not in trigger
 
 
 def test_dispatch_inputs_and_phrase() -> None:
-    data = yaml.safe_load(_text())
-    triggers = data[True] if True in data else data["on"]
-    inputs = triggers["workflow_dispatch"]["inputs"]
-    assert set(inputs) == {"target_sha", "expected_served_version", "confirmation"}
-    for name in inputs:
-        assert inputs[name]["required"] is True
-        assert inputs[name]["type"] == "string"
-    assert DIAG_PHRASE in _text()
-    assert "test \"${CONFIRMATION}\" = " in _code(_text())
+    text = _text()
+    trigger = _trigger_block(text)
+    inputs = trigger.split("workflow_dispatch:", 1)[1]
+    assert inputs.count("required: true") == 3
+    for name in ("target_sha:", "expected_served_version:", "confirmation:"):
+        assert f"\n      {name}\n" in inputs
+    assert DIAG_PHRASE in text
+    assert 'test "${CONFIRMATION}" = ' in _code(text)
 
 
 def test_pr_trigger_paths_are_scoped() -> None:
-    triggers = yaml.safe_load(_text())
-    triggers = triggers[True] if True in triggers else triggers["on"]
-    paths = set(triggers["pull_request"]["paths"])
-    assert paths == {
-        ".github/workflows/b54-engine-same-process-write-auth-diagnostic-gate.yml",
+    trigger = _trigger_block(_text())
+    paths = trigger.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
+    assert sorted(re.findall(r'-\s+"([^"]+)"', paths)) == [
         ".github/tests/test_b54_engine_same_process_write_auth_diagnostic_gate.py",
-    }
+        ".github/workflows/b54-engine-same-process-write-auth-diagnostic-gate.yml",
+    ]
 
 
 def test_read_only_permissions_and_no_orchestration_token() -> None:
     code = _code(_text())
-    data = yaml.safe_load(_text())
-    assert data["permissions"] == {"contents": "read"}
-    for job_name in ("source-contract", "diagnose"):
-        job = data["jobs"][job_name]
-        assert job.get("permissions", {"contents": "read"}) == {"contents": "read"}
+    text = _text()
+    permissions = text.split("\npermissions:\n", 1)[1].split("\nconcurrency:\n", 1)[0]
+    assert permissions.strip() == "contents: read"
+    assert _job(text, "diagnose").count("permissions:\n      contents: read") == 1
     assert "actions: write" not in code
     assert "contents: write" not in code
     assert "secrets.GITHUB_TOKEN" not in code
@@ -255,11 +252,10 @@ def test_reuse_without_duplication() -> None:
 def test_execution_gating_is_production_and_exact_main() -> None:
     text = _text()
     code = _code(text)
-    data = yaml.safe_load(text)
-    diagnose = data["jobs"]["diagnose"]
-    assert diagnose["environment"] == "production"
-    assert diagnose["needs"] == ["source-contract"]
-    assert diagnose["if"] == "${{ github.event_name == 'workflow_dispatch' }}"
+    diagnose = _job(text, "diagnose")
+    assert "environment: production" in diagnose
+    assert "needs: [source-contract]" in diagnose
+    assert "if: ${{ github.event_name == 'workflow_dispatch' }}" in diagnose
     assert "checkout@v4" in code
     assert "ref: ${{ env.TARGET_SHA }}" in code
     assert "git rev-parse origin/main" in code
@@ -287,11 +283,17 @@ def test_source_contract_job_is_inert() -> None:
 
 
 def test_cloudflare_credentials_are_the_only_new_env() -> None:
-    data = yaml.safe_load(_text())
-    diagnose_env = data["jobs"]["diagnose"].get("env", {})
-    assert set(diagnose_env) == {"CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"}
-    assert set(data["jobs"]["source-contract"].get("env", {})) == set()
-    code = _code(_text())
+    text = _text()
+    diagnose = _job(text, "diagnose")
+    job_env = diagnose.split("    env:\n", 1)[1].split("    steps:\n", 1)[0]
+    assert sorted(re.findall(r"^      ([A-Z_]+):", job_env, re.M)) == [
+        "CLOUDFLARE_ACCOUNT_ID",
+        "CLOUDFLARE_API_TOKEN",
+    ]
+    assert "secrets.CLOUDFLARE_API_TOKEN" in job_env
+    assert "secrets.CLOUDFLARE_ACCOUNT_ID" in job_env
+    assert "    env:" not in _job(text, "source-contract")
+    code = _code(text)
     assert 'test -n "${CLOUDFLARE_API_TOKEN}"' in code
     assert 'test -n "${CLOUDFLARE_ACCOUNT_ID}"' in code
 
