@@ -16,7 +16,7 @@ This adapter does NOT:
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from kagent.claw_memory import (
@@ -45,8 +45,19 @@ _MAX_INBOX_LIST = 256
 
 
 def _parse_date(value: Any) -> "datetime.date | None":
+    """Read back ``due_date`` from a stored row.
+
+    ``add_task`` persists ``task.due_date.isoformat()``, i.e. a *plain* date
+    string such as ``"2026-09-30"``. ``_parse_time`` requires a tz-aware
+    datetime, so it is only the fallback for rows written as timestamps.
+    """
     if value is None:
         return None
+    if isinstance(value, str):
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            pass
     parsed = _parse_time(value)
     return parsed.date()
 
