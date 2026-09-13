@@ -36,21 +36,41 @@ as fixed strings only; exception text is never propagated.
 
 from __future__ import annotations
 
+import importlib
 import json
 import os
 import sys
+import types
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "apps" / "padiem-ai-engine"))
 
-from app.identity_enforcement import (  # noqa: E402
-    CALLER_REGISTRY_V1_ENV,
-    CALLER_REGISTRY_V1_OVERLAY_ENV,
-    parse_caller_registry_v1,
-    parse_caller_registry_v1_overlay,
-)
-from app.service_identity import MAX_ENGINE_CALLERS  # noqa: E402
+
+def _load_engine_identity_modules():
+    """Import the two identity modules under their production names.
+
+    The Engine ``app`` package ``__init__`` pulls in ``padiem_ai_core``, which
+    is not installed for CI gate runners. A stub parent package keeps the
+    production import names (``app.service_identity``,
+    ``app.identity_enforcement``) intact while bypassing ``__init__`` entirely,
+    so the diagnostic still executes the verbatim production parsers.
+    """
+    if "app" not in sys.modules:
+        package = types.ModuleType("app")
+        package.__path__ = [str(ROOT / "apps" / "padiem-ai-engine" / "app")]  # type: ignore[attr-defined]
+        sys.modules["app"] = package
+    service_identity = importlib.import_module("app.service_identity")
+    identity_enforcement = importlib.import_module("app.identity_enforcement")
+    return service_identity, identity_enforcement
+
+
+_service_identity, _identity_enforcement = _load_engine_identity_modules()
+
+CALLER_REGISTRY_V1_ENV = _identity_enforcement.CALLER_REGISTRY_V1_ENV
+CALLER_REGISTRY_V1_OVERLAY_ENV = _identity_enforcement.CALLER_REGISTRY_V1_OVERLAY_ENV
+parse_caller_registry_v1 = _identity_enforcement.parse_caller_registry_v1
+parse_caller_registry_v1_overlay = _identity_enforcement.parse_caller_registry_v1_overlay
+MAX_ENGINE_CALLERS = _service_identity.MAX_ENGINE_CALLERS
 
 # The single overlay caller this diagnostic exists to classify. This identifier
 # is already public repository constant material (P01 contract, #2375/#2402).
