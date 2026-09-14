@@ -12,8 +12,10 @@ Proves statically and locally (no network, no live mutation) that the gate:
      still contains the overlay caller id still fails closed with
      ``duplicate_service_caller``; the removal result authenticates normally);
 plus the source contract markers, the base-only PUT body, bounded non-secret
-evidence, the served-version readback, and the workflow's dispatch-only,
-exact-main, overlay-untouchable structure.
+evidence, the served-version preflight (SINGLE 100% served version, never the
+settings plane — a settings/served divergence can never authorize mutation),
+the served-version readback, and the workflow's dispatch-only, exact-main,
+overlay-untouchable structure.
 """
 
 from __future__ import annotations
@@ -404,21 +406,86 @@ def test_classify_disposition_ladder() -> None:
 
 
 def test_classify_cli_emits_only_name_type_evidence() -> None:
-    settings = _settings_plane([
+    detail = _version_detail([
         _binding(BASE_NAME),
         _binding(OVERLAY_NAME),
         _binding(LEGACY_NAMES[0], "plain_text"),
     ])
-    path = Path(tempfile.mkdtemp(prefix="b54-removal-classify-")) / "settings.json"
-    path.write_text(json.dumps(settings), encoding="utf-8")
-    code, stdout, stderr = _run(["classify", "--settings", str(path)])
+    path = Path(tempfile.mkdtemp(prefix="b54-removal-classify-")) / "detail.json"
+    path.write_text(json.dumps(detail), encoding="utf-8")
+    code, stdout, stderr = _run([
+        "classify",
+        "--version-detail", str(path),
+        "--active-version", VERSION_ID,
+    ])
     assert code == 0, stdout + stderr
     assert "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=MIGRATION_REQUIRED" in stdout
     assert f"AUTHORITY_STATE {BASE_NAME}=PRESENT:secret_text" in stdout
     assert f"AUTHORITY_STATE {OVERLAY_NAME}=PRESENT:secret_text" in stdout
+    assert f"ENGINE_SERVED_VERSION_ID={VERSION_ID}" in stdout
     assert "LEGACY_TRIO_PRE_STATE=" in stdout
+    assert "SERVED_VERSION_CLASSIFICATION=YES" in stdout
+    assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in stdout
     assert "BINDING_NAME_AND_TYPE_ONLY=YES" in stdout
     assert "{" not in stdout
+
+
+def test_classify_rejects_settings_plane_and_divergence_cannot_authorize() -> None:
+    """A settings-plane payload is never a served-version proof (fail closed)...
+
+    ...and when the settings plane and the served version DISAGREE, the
+    disposition is computed from the served version only, so a settings plane
+    that merely looks migratable can never authorize the mutation.
+    """
+    tmp = Path(tempfile.mkdtemp(prefix="b54-removal-divergence-"))
+    settings = _settings_plane([_binding(BASE_NAME), _binding(OVERLAY_NAME)])
+    settings_path = tmp / "settings.json"
+    settings_path.write_text(json.dumps(settings), encoding="utf-8")
+    code, _stdout, stderr = _run([
+        "classify",
+        "--version-detail", str(settings_path),
+        "--active-version", VERSION_ID,
+    ])
+    assert code == 1  # settings plane has no result.id: version identity unproven
+    assert "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_CLASSIFY=FAIL" in stderr
+    assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in stderr
+    assert not hasattr(helper, "_settings_states")  # no settings-plane code path remains
+
+    # Divergent truth: settings shows the migratable shape, the served version
+    # does NOT carry the overlay -> no MIGRATION_REQUIRED authorization.
+    served = _version_detail([_binding(BASE_NAME)])
+    served_path = tmp / "detail.json"
+    served_path.write_text(json.dumps(served), encoding="utf-8")
+    code, stdout, _stderr = _run([
+        "classify",
+        "--version-detail", str(served_path),
+        "--active-version", VERSION_ID,
+    ])
+    assert code == 0
+    assert "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=REFUSE_OVERLAY_ABSENT" in stdout
+    assert "MIGRATION_REQUIRED" not in stdout
+
+    # The mirror divergence: served shows base absent while settings is fine.
+    served2 = _version_detail([_binding(OVERLAY_NAME)])
+    served2_path = tmp / "detail2.json"
+    served2_path.write_text(json.dumps(served2), encoding="utf-8")
+    code, stdout, _stderr = _run([
+        "classify",
+        "--version-detail", str(served2_path),
+        "--active-version", VERSION_ID,
+    ])
+    assert code == 0
+    assert "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=REFUSE_BASE_UNAVAILABLE" in stdout
+    assert "MIGRATION_REQUIRED" not in stdout
+
+    # A version-id mismatch on the served detail also fails closed.
+    code, _stdout, stderr = _run([
+        "classify",
+        "--version-detail", str(served_path),
+        "--active-version", "11111111-1111-4111-8111-111111111111",
+    ])
+    assert code == 1
+    assert "does not match active version" in stderr
 
 
 # --------------------------------------------------------------- verify CLI
@@ -518,12 +585,17 @@ def test_workflow_put_targets_base_v1_only_and_never_the_overlay() -> None:
     assert "OVERLAY_MUTATION=0" in apply_job
 
 
-def test_workflow_readonly_and_readback_use_name_type_only() -> None:
+def test_workflow_readonly_and_readback_use_served_version_only() -> None:
     text = _workflow_text()
+    assert "/settings" not in text  # no settings-plane preflight anywhere
     assert "GET_ONLY=PASS" in text
     assert "BINDING_NAME_AND_TYPE_ONLY=YES" in text
-    assert "resolve-active" in text
-    assert "/versions/${active_version}" in text
+    assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in text
+    assert "PRE_MUTATION_STATE_SERVED_VERSION=YES" in text
+    assert "SINGLE_100_PERCENT_SERVED_VERSION_GUARD=PASS" in text
+    assert text.count("resolve-active") >= 2  # pre-mutation AND post-write
+    assert text.count("ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS") >= 1
+    assert text.count("/versions/${active_version}") >= 2
     assert "LEGACY_PRE_STATE" in text
     assert "GATE_STOPS_AFTER_READBACK=YES" in text
     assert "RUNTIME_SUCCESS=UNPROVEN_PENDING_PHASE_A" in text

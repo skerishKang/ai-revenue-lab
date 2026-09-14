@@ -28,6 +28,11 @@ name: B54 Engine Caller Registry Base V1 B54-Kagent Removal Gate
 # parse with the PRODUCTION Engine ``parse_caller_registry_v1``. Any refusal
 # makes the PUT step unreachable.
 #
+# Pre-mutation state and the legacy-trio pre-state are captured on the
+# ACTUALLY SERVED version (deployments API -> SINGLE 100% version ->
+# versions/{active} detail), never the mutable settings plane: a settings-plane
+# payload can never authorize mutation (SETTINGS_PLANE_ONLY_ACCEPTANCE=NO).
+#
 # Post-write readback proves on the SERVED version (deployments API ->
 # versions/{active} detail) that BOTH the base V1 and the overlay remain
 # ``PRESENT:secret_text`` and the runtime-inert legacy trio NAME/TYPE state is
@@ -153,25 +158,35 @@ jobs:
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           echo 'READONLY_EXACT_MAIN_SHA=PASS'
 
-      - name: Read Engine caller authority and classify removal disposition
+      - name: Read the SERVED version authority and classify removal disposition
         id: classify
         shell: bash
         run: |
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN}"
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
-          settings="${RUNNER_TEMP}/b54-engine-caller-authority-before.json"
-          curl -fsS \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H "Content-Type: application/json" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings" \
-            -o "${settings}"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          deployments="${RUNNER_TEMP}/b54-engine-base-v1-removal-deployments-before.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" \
+            -o "${deployments}"
+          resolve_out="$(python .github/scripts/b54_engine_served_version_guard.py resolve-active \
+            --deployments "${deployments}")"
+          echo "${resolve_out}"
+          printf '%s\n' "${resolve_out}" | grep -q '^ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS$'
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          version_detail="${RUNNER_TEMP}/b54-engine-base-v1-removal-version-detail-before.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" \
+            -o "${version_detail}"
           evidence="$(python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py classify \
-            --settings "${settings}")"
+            --version-detail "${version_detail}" \
+            --active-version "${active_version}")"
           echo "${evidence}"
+          printf '%s\n' "${evidence}" | grep -q '^SERVED_VERSION_CLASSIFICATION=YES$'
           disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=//p')"
           if [ "${disposition}" != "MIGRATION_REQUIRED" ]; then
-            echo 'Refusing: caller authority is not in the proven duplicate-caller shape.' >&2
+            echo 'Refusing: the SERVED version is not in the proven duplicate-caller shape.' >&2
             echo 'PRODUCTION_MUTATION=0'
             exit 1
           fi
@@ -180,6 +195,9 @@ jobs:
           echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
           echo "legacy_pre_state=${legacy_pre_state}" >> "${GITHUB_OUTPUT}"
           echo 'GET_ONLY=PASS'
+          echo 'PRE_MUTATION_STATE_SERVED_VERSION=YES'
+          echo 'SINGLE_100_PERCENT_SERVED_VERSION_GUARD=PASS'
+          echo 'SETTINGS_PLANE_ONLY_ACCEPTANCE=NO'
           echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
           echo 'SECRET_VALUES_READ=0'
           echo 'RAW_REGISTRY_JSON_OUTPUT=0'

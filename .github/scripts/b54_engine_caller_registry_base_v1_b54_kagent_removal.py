@@ -112,16 +112,6 @@ class BaseV1RemovalError(RuntimeError):
     """Fail-closed refusal carrying only a bounded, non-secret reason class."""
 
 
-def _settings_states(settings_payload: object) -> dict[str, str]:
-    """Classify the settings plane (NAME/TYPE only) for the migration targets."""
-    result = _guard._success_result(settings_payload, "worker settings")
-    if not isinstance(result, dict):
-        raise ServedVersionGuardError("worker settings result is malformed")
-    bindings = _guard._binding_entries(result.get("bindings"))
-    names = (REGISTRY_SECRET_NAME, OVERLAY_SECRET_NAME, *LEGACY_TRIO_NAMES)
-    return {name: _classify_binding(bindings, name) for name in names}
-
-
 def _served_states(version_detail: object, active_version: str) -> dict[str, str]:
     bindings = _version_bindings(version_detail, active_version)
     names = (REGISTRY_SECRET_NAME, OVERLAY_SECRET_NAME, *LEGACY_TRIO_NAMES)
@@ -242,17 +232,21 @@ def _cmd_plan(args: argparse.Namespace) -> int:
 
 def _cmd_classify(args: argparse.Namespace) -> int:
     try:
-        payload = json.loads(args.settings.read_text(encoding="utf-8"))
-        states = _settings_states(payload)
+        payload = json.loads(args.version_detail.read_text(encoding="utf-8"))
+        states = _served_states(payload, args.active_version)
     except (OSError, json.JSONDecodeError, ServedVersionGuardError) as exc:
         print("B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_CLASSIFY=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
+        print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO", file=sys.stderr)
         return 1
     disposition = migration_disposition(states)
     for name in (REGISTRY_SECRET_NAME, OVERLAY_SECRET_NAME):
         print(f"AUTHORITY_STATE {name}={states[name]}")
+    print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
     print(f"B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION={disposition}")
     print(f"LEGACY_TRIO_PRE_STATE={encode_legacy_states(states)}")
+    print("SERVED_VERSION_CLASSIFICATION=YES")
+    print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
     print("BINDING_NAME_AND_TYPE_ONLY=YES")
     print("SECRET_VALUES_READ=0")
     print("RAW_REGISTRY_JSON_OUTPUT=0")
@@ -326,8 +320,11 @@ def main(argv: list[str] | None = None) -> int:
     plan.add_argument("--output", required=True, help="PUT body output path")
     plan.set_defaults(handler=_cmd_plan)
 
-    classify = sub.add_parser("classify", help="classify settings NAME/TYPE states")
-    classify.add_argument("--settings", required=True, type=Path)
+    classify = sub.add_parser(
+        "classify", help="classify NAME/TYPE states on the SERVED version"
+    )
+    classify.add_argument("--version-detail", required=True, type=Path)
+    classify.add_argument("--active-version", required=True)
     classify.set_defaults(handler=_cmd_classify)
 
     verify = sub.add_parser("verify", help="verify the served version after the PUT")
