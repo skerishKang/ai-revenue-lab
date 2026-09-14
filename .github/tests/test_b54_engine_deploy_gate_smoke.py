@@ -565,3 +565,45 @@ def test_smoke_only_gate_uses_canonical_b62_credential() -> None:
     assert env["PADIEM_ENGINE_SMOKE_CALLER_SECRET"] == "${{ secrets.B62_P01_ENGINE_CREDENTIAL }}"
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_ID" not in _smoke_only_text()
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET" not in _smoke_only_text()
+
+
+# --- f88: post-deploy served-version guard must precede the health smoke -----
+# Run 34889667189 proved the old order defective: the smoke failed first, the
+# post-deploy served-version guard never executed (skipped), and CENTRAL could
+# not tell which version was served. The guard is GET-only evidence, so it
+# runs before the smoke; the smoke still fails the gate when unhealthy.
+
+
+def _deploy_step_names() -> list[str]:
+    wf = _workflow()
+    return [str(step.get("name", "")) for step in wf["jobs"]["deploy-production-engine"]["steps"]]
+
+
+def check_post_deploy_guard_before_smoke(names: list[str]) -> bool:
+    try:
+        guard = names.index("Post-deploy served-version secret guard")
+        smoke = names.index("Post-deploy smoke")
+    except ValueError:
+        return False
+    return guard < smoke
+
+
+def test_post_deploy_served_version_guard_runs_before_health_smoke() -> None:
+    names = _deploy_step_names()
+    assert "Pre-deploy served-version secret guard" in names
+    assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in _workflow_text()
+    assert check_post_deploy_guard_before_smoke(names), names
+
+
+def test_smoke_first_order_fails_the_same_checker() -> None:
+    names = _deploy_step_names()
+    guard = names.index("Post-deploy served-version secret guard")
+    smoke = names.index("Post-deploy smoke")
+    swapped = list(names)
+    swapped[guard], swapped[smoke] = swapped[smoke], swapped[guard]
+    assert not check_post_deploy_guard_before_smoke(swapped)
+
+
+def test_missing_post_deploy_guard_fails_the_same_checker() -> None:
+    names = [n for n in _deploy_step_names() if n != "Post-deploy served-version secret guard"]
+    assert not check_post_deploy_guard_before_smoke(names)

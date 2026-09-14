@@ -91,17 +91,10 @@ jobs:
           uv run pywrangler deploy
           echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
 
-      - name: Post-deploy smoke
-        run: |
-          set -euo pipefail
-          sleep 15
-          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
-          test "$CODE" = '200'
-          grep -q '"status":"ok"' /tmp/health.json
-          grep -q '"b14_service_bound":true' /tmp/health.json
-          grep -q 'orchestration_run' /tmp/health.json
-          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
-
+      # f88 lesson: the post-deploy served-version guard runs BEFORE the
+      # health smoke, so the exact served version is recorded as evidence even
+      # when the smoke fails (previously the guard was skipped on smoke
+      # failure and CENTRAL could not tell what version was served).
       # ISSUE #2414: re-resolve the served version AFTER the deploy and require
       # the caller-registry secrets on that exact new version. If the overlay
       # existed on the pre-deploy served version it must survive the deploy.
@@ -131,6 +124,17 @@ jobs:
             --active-version "${active_version}" \
             "${overlay_args[@]}"
           echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
+          test "$CODE" = '200'
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
 
   smoke-idempotency:
     # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
