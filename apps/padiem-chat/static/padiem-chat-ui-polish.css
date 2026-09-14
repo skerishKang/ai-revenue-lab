@@ -208,6 +208,15 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
   --padiem-chat-active-lane-offset: clamp(28px, 2.5vw, 42px);
 }
 
+@media (min-width: 1440px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] {
+    --padiem-chat-active-lane-width: min(
+      1080px,
+      calc(100vw - var(--workspace-rail, 252px) - 100px)
+    );
+  }
+}
+
 @media (min-width: 1024px) {
   html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
     width: var(--padiem-chat-active-lane-width) !important;
