@@ -263,12 +263,13 @@ for history and must not be re-executed for the Claw caller.
   base already contained `b54-kagent`, so the overlay duplicated it.
 - The legacy base entry may still be physically present in base V1. It is not
   read or required by the current overlay path, and it must not be rewritten by
-  this runbook. The pre-existing
-  `.github/workflows/b54-engine-caller-registry-v1-provision-gate.yml` path still
-  carries the old Claw-provisioning policy; that is a known
-  recurrence-prevention follow-up and **must not** be dispatched for Claw.
+  this runbook. The legacy
+  `.github/workflows/b54-engine-caller-registry-v1-provision-gate.yml` path has
+  had its Claw-provisioning policy permanently retired (#2523) and fails closed
+  (`WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED`). It **must not** be dispatched for Claw.
 - The only path that may change base V1 is the separately-authorized
   `b54-kagent` removal gate (#2519) — never this cutover.
+
 - Historical evidence naming is preserved on purpose: the Engine
   `authority_diagnostic` field `BASE_CONTAINS_B54_KAGENT` still answers "does the
   opaque base still carry the old shared caller?" against the legacy id, while
