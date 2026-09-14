@@ -88,8 +88,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          # f88 lesson: exit 0 (or wrangler's "No targets deployed" version
+          # report) proves only that the deploy COMMAND ran, never that the
+          # served deployment is healthy. This step therefore emits command
+          # evidence only; the final production PASS marker is emitted by the
+          # post-deploy served-version guard below, after served-version
+          # evidence exists.
           uv run pywrangler deploy
-          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+          echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'
 
       # f88 lesson: the post-deploy served-version guard runs BEFORE the
       # health smoke, so the exact served version is recorded as evidence even
@@ -124,13 +130,26 @@ jobs:
             --active-version "${active_version}" \
             "${overlay_args[@]}"
           echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
 
       - name: Post-deploy smoke
         run: |
           set -euo pipefail
           sleep 15
-          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
-          test "$CODE" = '200'
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
           grep -q '"status":"ok"' /tmp/health.json
           grep -q '"b14_service_bound":true' /tmp/health.json
           grep -q 'orchestration_run' /tmp/health.json
