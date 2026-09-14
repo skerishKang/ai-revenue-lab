@@ -565,3 +565,116 @@ def test_smoke_only_gate_uses_canonical_b62_credential() -> None:
     assert env["PADIEM_ENGINE_SMOKE_CALLER_SECRET"] == "${{ secrets.B62_P01_ENGINE_CREDENTIAL }}"
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_ID" not in _smoke_only_text()
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET" not in _smoke_only_text()
+
+
+# --- f88: post-deploy served-version guard must precede the health smoke -----
+# Run 34889667189 proved the old order defective: the smoke failed first, the
+# post-deploy served-version guard never executed (skipped), and CENTRAL could
+# not tell which version was served. The guard is GET-only evidence, so it
+# runs before the smoke; the smoke still fails the gate when unhealthy.
+
+
+def _deploy_step_names() -> list[str]:
+    wf = _workflow()
+    return [str(step.get("name", "")) for step in wf["jobs"]["deploy-production-engine"]["steps"]]
+
+
+def check_post_deploy_guard_before_smoke(names: list[str]) -> bool:
+    try:
+        guard = names.index("Post-deploy served-version secret guard")
+        smoke = names.index("Post-deploy smoke")
+    except ValueError:
+        return False
+    return guard < smoke
+
+
+def test_post_deploy_served_version_guard_runs_before_health_smoke() -> None:
+    names = _deploy_step_names()
+    assert "Pre-deploy served-version secret guard" in names
+    assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in _workflow_text()
+    assert check_post_deploy_guard_before_smoke(names), names
+
+
+def test_smoke_first_order_fails_the_same_checker() -> None:
+    names = _deploy_step_names()
+    guard = names.index("Post-deploy served-version secret guard")
+    smoke = names.index("Post-deploy smoke")
+    swapped = list(names)
+    swapped[guard], swapped[smoke] = swapped[smoke], swapped[guard]
+    assert not check_post_deploy_guard_before_smoke(swapped)
+
+
+def test_missing_post_deploy_guard_fails_the_same_checker() -> None:
+    names = [n for n in _deploy_step_names() if n != "Post-deploy served-version secret guard"]
+    assert not check_post_deploy_guard_before_smoke(names)
+
+
+# --- f88 CENTRAL blockers: honest deploy marker + bounded health evidence ---
+
+
+def _deploy_step_run(name: str) -> str:
+    wf = _workflow()
+    for step in wf["jobs"]["deploy-production-engine"]["steps"]:
+        if step.get("name") == name:
+            return str(step.get("run", ""))
+    raise AssertionError(f"deploy step missing: {name}")
+
+
+def check_single_pass_emitter(workflow_text: str) -> bool:
+    """The final production PASS echo must exist in exactly one step."""
+    return workflow_text.count("echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'") == 1
+
+
+def test_final_deploy_pass_comes_only_after_post_served_evidence() -> None:
+    deploy_run = _deploy_step_run("Deploy engine to production")
+    guard_run = _deploy_step_run("Post-deploy served-version secret guard")
+    # The deploy command step must not claim a production PASS by itself.
+    assert "B54_ENGINE_PRODUCTION_DEPLOY=PASS" not in deploy_run
+    # The final PASS marker is emitted in exactly one place: the post-deploy
+    # guard step, after the served-version evidence marker in that same step.
+    assert check_single_pass_emitter(_workflow_text())
+    assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in guard_run
+    assert "B54_ENGINE_PRODUCTION_DEPLOY=PASS" in guard_run
+    assert guard_run.index("POST_DEPLOY_SERVED_VERSION_GUARD=PASS") < guard_run.index(
+        "B54_ENGINE_PRODUCTION_DEPLOY=PASS"
+    )
+
+
+def test_exit_zero_alone_cannot_claim_healthy_deploy() -> None:
+    deploy_run = _deploy_step_run("Deploy engine to production")
+    # Bounded command evidence only: exit 0 / wrangler's "No targets deployed"
+    # version report never becomes a healthy-production proof here.
+    assert "B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO" in deploy_run
+    assert "B54_ENGINE_PRODUCTION_DEPLOY=PASS" not in deploy_run
+    assert "B54_ENGINE_PRODUCTION_SMOKE=PASS" not in deploy_run
+
+
+def test_duplicated_pass_marker_fails_the_same_contract() -> None:
+    # Mutation-negative: if the unconditional PASS echo came back into the
+    # deploy step (the f88 defect), the single-emitter contract must reject it.
+    doctored = _workflow_text().replace(
+        "echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'",
+        "echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'\n          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'",
+        1,
+    )
+    assert not check_single_pass_emitter(doctored)
+
+
+def test_non200_health_emits_status_and_still_fails() -> None:
+    smoke_run = _deploy_step_run("Post-deploy smoke")
+    assert "HEALTH_HTTP_STATUS=${CODE}" in smoke_run
+    assert "exit 1" in smoke_run
+    # The status is always emitted: the echo precedes the fail branch.
+    assert smoke_run.index("HEALTH_HTTP_STATUS=${CODE}") < smoke_run.index("exit 1")
+    assert "B54_ENGINE_PRODUCTION_SMOKE=FAIL" in smoke_run
+
+
+def test_health_failure_never_prints_response_body() -> None:
+    smoke_run = _deploy_step_run("Post-deploy smoke")
+    assert "cat " not in smoke_run
+    # The body file is only ever a curl output target or a fixed-literal grep
+    # subject, never echoed or dumped.
+    for line in smoke_run.splitlines():
+        stripped = line.strip()
+        if "/tmp/health.json" in stripped:
+            assert stripped.startswith("CODE=$(curl") or "grep -q" in stripped, stripped

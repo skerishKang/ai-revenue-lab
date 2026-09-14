@@ -48,6 +48,7 @@ from app.connector_bindings import (
     TelegramGrant,
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
+from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.calendar_port_httpx import (
     HttpxGoogleCalendarReadPort,
     parse_calendar_ids,
