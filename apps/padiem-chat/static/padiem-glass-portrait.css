@@ -105,7 +105,8 @@ html[data-theme="padiem-glass"] .main-panel::before {
 }
 
 html[data-theme="padiem-glass"] .topbar,
-html[data-theme="padiem-glass"] .conversation {
+html[data-theme="padiem-glass"] .conversation,
+html[data-theme="padiem-glass"] .claw-workspace {
   position: relative;
   z-index: 2;
 }

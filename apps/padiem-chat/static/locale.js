@@ -307,8 +307,8 @@
     if (projectInstructions) projectInstructions.placeholder = text("project-instructions-placeholder", lang);
     const clawSender = document.getElementById("clawSender");
     if (clawSender) clawSender.placeholder = text("claw-sender-placeholder", lang);
-    const clawRequestText = document.getElementById("clawRequestText");
-    if (clawRequestText) clawRequestText.placeholder = text("claw-request-placeholder", lang);
+    // #2532: the Claw request placeholder now lives on #messageInput and is re-applied
+    // by app.js on the padiem:localechange event while data-state="claw".
     const instructionLabel = document.querySelector("label[for='projectInstructionsInput']");
     if (instructionLabel) {
       const primary = instructionLabel.querySelector("[data-project-instructions-label]");

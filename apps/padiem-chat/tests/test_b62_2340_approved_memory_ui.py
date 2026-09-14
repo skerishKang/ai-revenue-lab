@@ -227,7 +227,7 @@ function collectText(root) {
   if (rejectCalls() !== 0) fail("REJECT_POST_BEFORE_EXPLICIT_CLICK");
 
   // 2) Run preview -> proposal review surface renders with approve/reject buttons.
-  byId.clawRequestText.value = "A업체 견적 요청 품목 20개";
+  byId.messageInput.value = "A업체 견적 요청 품목 20개";
   byId.clawManualForm.requestSubmit();
   await tick(60);
   const approveBtn = findButton(byId.clawMemoryReview, "승인");
