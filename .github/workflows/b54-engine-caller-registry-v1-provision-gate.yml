@@ -22,14 +22,18 @@ name: B54 Engine Caller Registry V1 Provision Gate
 #   secret `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS`;
 # - the new Claw credential comes from `B62_P01_ENGINE_CREDENTIAL`.
 #
-# Preservation path (live V1 PRESENT:secret_text -> EXTEND_REQUIRED):
-# the complete baseline V1 must parse, must contain the B61 entry
-# (`storymemory-b61` / exactly `["b61"]`), every existing caller entry is
-# preserved verbatim (unknown callers are opaque existing authority), and
-# exactly the `b54-kagent` entry is appended with the raw credential (the
-# Engine hashes internally; nothing is pre-hashed). If `b54-kagent` already
-# exists, the plan fails closed unless the baseline entry is exactly
-# compatible, in which case the plan is a no-op.
+# SUPERSEDED FOR CLAW (#2523, B3): the preservation-path description below
+# documents the pre-retirement plan semantics only. Claw/P01 provisioning into
+# Base V1 is permanently retired: the apply job refuses Claw with
+# WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED and exits before any plan/PUT, so no
+# `b54-kagent` entry is appended for Claw by this gate anymore. The text is
+# kept for the non-Claw contract history and must not be read as an active
+# Claw path.
+# (Pre-retirement preservation path: live V1 PRESENT:secret_text ->
+# EXTEND_REQUIRED meant the complete baseline V1 had to parse, had to contain
+# the B61 entry (`storymemory-b61` / exactly `["b61"]`), every existing caller
+# entry was preserved verbatim, and exactly the `b54-kagent` entry was appended
+# with the raw credential. That Claw append no longer executes.)
 #
 # Currentness guard (fail-closed): a structurally valid baseline is NOT proof
 # that it is the currently authoritative complete payload, so a stale baseline
@@ -65,6 +69,27 @@ on:
       - ".github/workflows/b54-engine-caller-registry-v1-provision-gate.yml"
       - ".github/scripts/b54_engine_caller_registry_v1_provision.py"
       - ".github/tests/test_b54_engine_caller_registry_v1_provision_gate.py"
+      # F1 (#2523): the P01 overlay caller-id parity contract must run in this
+      # gate's exact-head CI, so the test itself and the Engine-side
+      # source/workflow surfaces it pins are path triggers here.
+      # Deliberately NOT triggers (gate-decoupling invariant pinned by
+      # test_workflow_never_touches_b62_live_config_or_padiem_chat in the
+      # provision gate contract tests): the B62 Chat activation script and the
+      # B62 activation-gate workflow. The parity/order contracts still verify
+      # those files structurally on every run below; they are simply owned by
+      # the B62 gate's own CI, so Chat-only changes never drag this gate in.
+      - ".github/tests/test_b54_p01_overlay_caller_id_parity.py"
+      - ".github/scripts/b54_engine_caller_registry_overlay_rotation.py"
+      - ".github/scripts/b54_engine_credential_equivalence_diagnostic.py"
+      - "apps/padiem-ai-engine/app/authority_diagnostic.py"
+      - "apps/padiem-ai-engine/app/auth_boundary_diagnostic.py"
+      - ".github/workflows/b54-engine-production-smoke-only-gate.yml"
+      - ".github/workflows/b54-engine-production-deploy-gate.yml"
+      # F2 (#2523): the executable Engine-first cutover order contract and the
+      # runbook surface it pins. (The B62 activation-gate workflow it reads is
+      # excluded from triggers per the decoupling invariant above.)
+      - ".github/tests/test_b54_p01_cutover_order_contract.py"
+      - "docs/operations/P01_ENGINE_CALLER_REGISTRATION_RUNBOOK_v1.md"
   workflow_dispatch:
     inputs:
       mode:
@@ -136,10 +161,25 @@ jobs:
       - name: Run engine caller registry provision gate contract tests
         run: python .github/tests/test_b54_engine_caller_registry_v1_provision_gate.py
 
+      # F1 (#2523): the P01 overlay caller-id parity contract runs in CI, not
+      # just locally. It pins the single canonical dedicated overlay caller id
+      # across the Engine overlay authority, the Chat binding authority, the
+      # diagnostics, and the production smoke/deploy-gate surfaces.
+      - name: Run P01 overlay caller-id parity contract
+        run: python .github/tests/test_b54_p01_overlay_caller_id_parity.py
+
+      # F2 (#2523): the executable Engine-first cutover order contract runs in
+      # CI. It pins Engine-before-Chat cutover order, per-gate version-freeze
+      # preservation, and ENGINE_FIRST_THEN_CHAT rollback order, with
+      # mutation-negative proofs (swapped order fails).
+      - name: Run P01 cutover order contract
+        run: python .github/tests/test_b54_p01_cutover_order_contract.py
+
       - name: Source-only evidence
         run: |
           echo 'B54_ENGINE_CALLER_REGISTRY_SOURCE_CONTRACT=PASS'
           echo 'CLAW_BASE_PROVISION_POLICY=RETIRED'
+          echo 'P01_PARITY_AND_ORDER_CONTRACTS_WIRED=YES'
           echo 'CLOUDFLARE_MUTATION=0'
           echo 'PRODUCTION_MUTATION=0'
 
