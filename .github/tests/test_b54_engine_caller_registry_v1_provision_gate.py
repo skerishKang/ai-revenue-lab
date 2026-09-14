@@ -451,7 +451,7 @@ def test_greenfield_payload_is_isolated_single_caller() -> None:
     helper.build_registry_payload(credential="x" * 512)
 
 
-def test_merged_payload_parses_and_authenticates_with_engine_parser() -> None:
+def test_merged_payload_parses_and_denies_retired_legacy_caller() -> None:
     helper = _load_helper()
     identity = _load_engine_identity()
     b61_cred = "b" * 40
@@ -462,7 +462,8 @@ def test_merged_payload_parses_and_authenticates_with_engine_parser() -> None:
     serialized = json.dumps(merged, separators=(",", ":"), ensure_ascii=False)
     env = type("Env", (), {identity.CALLER_REGISTRY_V1_ENV: serialized})()
 
-    # Every caller authenticates with its own raw credential.
+    # The merged payload still parses as a valid Engine V1 registry, and every
+    # unrelated caller authenticates with its own raw credential.
     identity.authenticate_request(
         env=env,
         headers={identity.CALLER_ID_HEADER: "storymemory-b61", identity.CALLER_CREDENTIAL_HEADER: b61_cred},
@@ -476,26 +477,26 @@ def test_merged_payload_parses_and_authenticates_with_engine_parser() -> None:
         },
         requested_app_id="other",
     )
-    identity.authenticate_request(
-        env=env,
-        headers={identity.CALLER_ID_HEADER: "b54-kagent", identity.CALLER_CREDENTIAL_HEADER: new_cred},
-        requested_app_id="b54-padiem-claw",
-    )
-    # A pre-hashed value is NOT the accepted credential: the Engine hashes
-    # internally, so a digest in the payload must fail authentication.
-    try:
-        identity.authenticate_request(
-            env=env,
-            headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
-                identity.CALLER_CREDENTIAL_HEADER: identity.caller_secret_digest(new_cred),
-            },
-            requested_app_id="b54-padiem-claw",
-        )
-    except identity.ServiceIdentityError as exc:
-        assert exc.code == "service_authentication_failed"
-        return
-    raise AssertionError("pre-hashed credential must not authenticate")
+
+    # The legacy Claw caller is retired at the Engine authentication boundary
+    # (#2525) even though the opaque Base V1 payload still carries its entry, so
+    # a correct raw credential is denied instead of authenticating — and a
+    # pre-hashed value is denied the same way, because the Engine hashes
+    # internally. The payload itself is never rewritten or rejected.
+    for credential in (new_cred, identity.caller_secret_digest(new_cred)):
+        try:
+            identity.authenticate_request(
+                env=env,
+                headers={
+                    identity.CALLER_ID_HEADER: "b54-kagent",
+                    identity.CALLER_CREDENTIAL_HEADER: credential,
+                },
+                requested_app_id="b54-padiem-claw",
+            )
+        except identity.ServiceIdentityError as exc:
+            assert exc.code == "service_authentication_failed"
+            continue
+        raise AssertionError("the retired legacy caller must not authenticate")
 
 
 # ---------------------------------------------------------------------------
@@ -1381,7 +1382,7 @@ if __name__ == "__main__":
     test_merge_existing_compatible_b54_is_no_op()
     test_merge_existing_incompatible_b54_fails_closed()
     test_greenfield_payload_is_isolated_single_caller()
-    test_merged_payload_parses_and_authenticates_with_engine_parser()
+    test_merged_payload_parses_and_denies_retired_legacy_caller()
     test_currentness_attestation_canonical_form_contract()
     test_currentness_binds_exact_baseline_fingerprint_and_caller_count()
     test_extend_without_currentness_proof_fails_closed()

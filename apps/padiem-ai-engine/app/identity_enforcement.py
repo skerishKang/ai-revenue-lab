@@ -21,6 +21,15 @@ Deployment configuration supports the following authorities:
   ``PADIEM_ENGINE_CALLER_SECRET``, ``PADIEM_ENGINE_ALLOWED_APPS``):
   authoritative only while the V1 registry variable is genuinely absent,
   preserving existing deployment behavior unchanged.
+
+A bounded retirement policy (``RETIRED_CALLER_IDS``) additionally denies a
+small, explicit set of caller ids at the wire boundary. It exists because an
+opaque Base V1 payload may still carry a live entry for a caller that has been
+retired; the payload stays authoritative and is never rewritten, so the id is
+denied at authentication time instead. The deny runs after the overlay branch
+and before Base-registry fallback, fails closed with the existing public-safe
+``service_authentication_failed`` error, and never introduces an alias,
+fallback, shadowing, or id remapping.
 """
 
 from __future__ import annotations
@@ -46,6 +55,19 @@ CALLER_ALLOWED_APPS_ENV = "PADIEM_ENGINE_ALLOWED_APPS"
 CALLER_REGISTRY_V1_ENV = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 CALLER_REGISTRY_V1_VERSION = 1
 CALLER_REGISTRY_V1_OVERLAY_ENV = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
+
+# Bounded retirement policy for the legacy shared Claw caller (#2525).
+#
+# The opaque Base V1 authority may still contain an entry for this id and that
+# payload must neither be rewritten nor reconstructed, so the caller is retired
+# at the authentication boundary instead of in the authority. A request that
+# presents a retired caller id fails closed with the same public-safe
+# ``service_authentication_failed`` error as any other unauthenticated caller.
+#
+# The set is deliberately closed to exactly the one known legacy id; widening it
+# requires separate authorization and evidence. No alias, fallback, shadowing,
+# or id remapping is introduced here, and the guard reads no credential material.
+RETIRED_CALLER_IDS = frozenset({"b54-kagent"})
 
 # Bounded serialized registry input. A registry legally packed to the
 # generic contract limits (64 callers, 32 app ids and a 512-byte credential
@@ -343,6 +365,21 @@ def authenticate_request(
             requested_app_id=requested_app_id,
         )
         return
+
+    # Retired legacy callers are denied here, immediately before the Base
+    # registry fallback: the caller/credential presence check and the canonical
+    # Overlay branch above still run first, the malformed-authority and
+    # duplicate-caller guards already ran inside
+    # ``_build_registry_authority_from_env``, and unrelated Base callers keep the
+    # unchanged fallback path below. The error is the existing public-safe
+    # authentication failure, so the wire response stays enumeration-safe and
+    # does not distinguish a retired id from an unknown caller or a bad
+    # credential. The opaque Base payload itself is never touched.
+    if caller_id in RETIRED_CALLER_IDS:
+        raise ServiceIdentityError(
+            "service_authentication_failed",
+            "Engine caller authentication failed",
+        )
 
     authenticate_engine_caller(
         registry=registry,
