@@ -250,19 +250,6 @@ html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .user-message
   padding-left: clamp(34px, 7vw, 88px) !important;
 }
 
-@media (max-width: 1023px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-    width: min(860px, calc(100vw - 28px)) !important;
-    margin-inline: auto !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .composer-wrap {
-    left: 50% !important;
-    width: min(820px, calc(100vw - 28px)) !important;
-    transform: translateX(-50%) !important;
-  }
-}
-
 @media (max-width: 640px) {
   .settings-dialog {
     width: calc(100vw - 20px);
