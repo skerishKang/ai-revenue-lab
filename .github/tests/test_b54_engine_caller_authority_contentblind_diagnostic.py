@@ -23,6 +23,10 @@ UNRELATED_CALLER_ID = "caller-sentinel-unrelated"
 UNRELATED_APP_ID = "app-sentinel-allowed"
 B61_APP_ID = "app-sentinel-b61"
 
+# #2520: the CURRENT expected overlay caller vs the HISTORICAL base evidence id.
+NEW_CALLER_ID = "b54-p01-overlay-20260914-a1"
+LEGACY_CALLER_ID = "b54-kagent"
+
 # The full credential/app-id/unrelated-caller surface of every fixture. None
 # of these strings may ever appear in diagnostic output.
 SENTINELS = (
@@ -89,7 +93,7 @@ def _valid_base() -> str:
 
 
 def _valid_overlay() -> str:
-    return _overlay(_caller("b54-kagent", CRED_OVERLAY, "b54-padiem-claw"))
+    return _overlay(_caller(NEW_CALLER_ID, CRED_OVERLAY, "b54-padiem-claw"))
 
 
 def _run(helper, base: str | None = None, overlay: str | None = None):
@@ -143,10 +147,11 @@ def test_fixture_2_malformed_base() -> None:
 
 def test_fixture_2b_malformed_base_still_detects_duplicate_structurally() -> None:
     # A base that fails strict validation (over capacity) must not hide a
-    # positive b54-kagent duplicate finding.
+    # positive duplicate/legacy-base finding.
     helper = _load_helper()
     callers = [_caller(f"caller-{index:03d}", CRED_B61, B61_APP_ID) for index in range(65)]
-    callers.append(_caller("b54-kagent", CRED_B54_IN_BASE, "b54-padiem-claw"))
+    callers.append(_caller(LEGACY_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"))
+    callers.append(_caller(NEW_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"))
     code, output = _run(helper, _base(callers), _valid_overlay())
     assert code == 0
     fields = _fields(output)
@@ -158,7 +163,7 @@ def test_fixture_2b_malformed_base_still_detects_duplicate_structurally() -> Non
 
 def test_fixture_3_malformed_overlay() -> None:
     helper = _load_helper()
-    broken = json.dumps({"version": 2, "caller": _caller("b54-kagent", CRED_OVERLAY, "b54-padiem-claw")})
+    broken = json.dumps({"version": 2, "caller": _caller(NEW_CALLER_ID, CRED_OVERLAY, "b54-padiem-claw")})
     code, output = _run(helper, _valid_base(), broken)
     assert code == 0
     fields = _fields(output)
@@ -167,22 +172,41 @@ def test_fixture_3_malformed_overlay() -> None:
     assert fields["BASE_CONTAINS_B54_KAGENT"] == "NO"
 
 
-def test_fixture_4_base_contains_b54_kagent_duplicate() -> None:
+def test_fixture_4_base_legacy_caller_is_historical_evidence_not_a_duplicate() -> None:
+    helper = _load_helper()
+    legacy_base = _base(
+        [
+            _caller("storymemory-b61", CRED_B61, B61_APP_ID),
+            _caller(LEGACY_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"),
+        ]
+    )
+    code, output = _run(helper, legacy_base, _valid_overlay())
+    assert code == 0
+    fields = _fields(output)
+    assert fields["BASE_PARSE"] == "OK"
+    assert fields["OVERLAY_PARSE"] == "OK"
+    # Historical evidence name/meaning preserved: "does the opaque base still
+    # carry the legacy shared caller?" — and that entry is NOT a duplicate of
+    # the new dedicated overlay id.
+    assert fields["BASE_CONTAINS_B54_KAGENT"] == "YES"
+    assert fields["DUPLICATE_CALLER_ID"] == "NO"
+    assert fields["BASE_CALLER_COUNT"] == "2"
+    assert fields["OVERLAY_CALLER_ID_MATCH"] == "YES"
+
+
+def test_fixture_4b_base_with_the_new_overlay_id_is_a_duplicate() -> None:
     helper = _load_helper()
     duplicate_base = _base(
         [
             _caller("storymemory-b61", CRED_B61, B61_APP_ID),
-            _caller("b54-kagent", CRED_B54_IN_BASE, "b54-padiem-claw"),
+            _caller(NEW_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"),
         ]
     )
     code, output = _run(helper, duplicate_base, _valid_overlay())
     assert code == 0
     fields = _fields(output)
     assert fields["BASE_PARSE"] == "OK"
-    assert fields["OVERLAY_PARSE"] == "OK"
-    assert fields["BASE_CONTAINS_B54_KAGENT"] == "YES"
     assert fields["DUPLICATE_CALLER_ID"] == "YES"
-    assert fields["BASE_CALLER_COUNT"] == "2"
     assert fields["OVERLAY_CALLER_ID_MATCH"] == "YES"
 
 
@@ -276,7 +300,7 @@ def test_diagnostic_reuses_production_parsers() -> None:
         helper._authority_diagnostic.classify_authority_payloads.__module__
         == "app.authority_diagnostic"
     )
-    assert helper.EXPECTED_OVERLAY_CALLER_ID == "b54-kagent"
+    assert helper.EXPECTED_OVERLAY_CALLER_ID == NEW_CALLER_ID
     assert helper._authority_diagnostic.AUTHORITY_DIAGNOSTIC_PATH == (
         "/internal/v1/diagnostics/caller-authority"
     )
@@ -357,7 +381,8 @@ if __name__ == "__main__":
     test_fixture_2_malformed_base()
     test_fixture_2b_malformed_base_still_detects_duplicate_structurally()
     test_fixture_3_malformed_overlay()
-    test_fixture_4_base_contains_b54_kagent_duplicate()
+    test_fixture_4_base_legacy_caller_is_historical_evidence_not_a_duplicate()
+    test_fixture_4b_base_with_the_new_overlay_id_is_a_duplicate()
     test_fixture_5_valid_base_without_b54_kagent()
     test_fixture_6_bounded_caller_count()
     test_fixture_7_secret_content_never_emitted()

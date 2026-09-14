@@ -61,7 +61,10 @@ import urllib.request
 REQUEST_BUDGET_MAX = 2
 ENGINE_BASE_URL = "https://engine.padiem.net"
 REPLAY_PATH = "/internal/v1/idempotency/completed/replay"
-CALLER_ID = "b54-kagent"
+# Canonical Claw/P01 Engine caller of record. Since #2520 this is the dedicated
+# overlay-only id the Engine overlay registry serves; the legacy shared Claw id
+# is no longer presented by the live Chat path.
+CALLER_ID = "b54-p01-overlay-20260914-a1"
 APP_ID = "b54-padiem-claw"
 CALLER_ID_HEADER = "x-padiem-engine-caller"
 CALLER_CREDENTIAL_HEADER = "x-padiem-engine-credential"

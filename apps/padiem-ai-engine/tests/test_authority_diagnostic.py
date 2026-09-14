@@ -31,12 +31,18 @@ from app.authority_diagnostic import (  # noqa: E402
     CLOSED_FIELDS,
     DIAGNOSTIC_TOKEN_ENV,
     DIAGNOSTIC_TOKEN_HEADER,
+    EXPECTED_OVERLAY_CALLER_ID,
+    LEGACY_BASE_CALLER_ID,
     OUTPUT_KEYS,
     AuthorityDiagnosticError,
     AuthorityDiagnosticResult,
     classify_authority_payloads,
     diagnostic_response,
 )
+
+# #2520: the CURRENT expected overlay caller vs the HISTORICAL base evidence id.
+NEW_CALLER_ID = "b54-p01-overlay-20260914-a1"
+LEGACY_CALLER_ID = "b54-kagent"
 
 OPERATOR_TOKEN = "diag-token-" + "t" * 40
 CRED_B61 = "cred-sentinel-" + "b" * 40
@@ -81,7 +87,16 @@ def _valid_base() -> str:
 
 
 def _valid_overlay() -> str:
-    return _overlay(_caller("b54-kagent", CRED_OVERLAY, "b54-padiem-claw"))
+    return _overlay(_caller(NEW_CALLER_ID, CRED_OVERLAY, "b54-padiem-claw"))
+
+
+def test_expected_overlay_caller_is_the_dedicated_new_id() -> None:
+    # The current-authority constant is the dedicated overlay id ...
+    assert EXPECTED_OVERLAY_CALLER_ID == NEW_CALLER_ID
+    # ... while the historical base-collision evidence constant deliberately
+    # keeps the legacy shared caller id (its original, unrenamed meaning).
+    assert LEGACY_BASE_CALLER_ID == LEGACY_CALLER_ID
+    assert LEGACY_BASE_CALLER_ID != EXPECTED_OVERLAY_CALLER_ID
 
 
 class _Env:
@@ -141,7 +156,8 @@ def test_fixture_2_malformed_base() -> None:
 
 def test_fixture_2b_malformed_base_still_detects_duplicate_structurally() -> None:
     callers = [_caller(f"caller-{index:03d}", CRED_B61, B61_APP_ID) for index in range(65)]
-    callers.append(_caller("b54-kagent", CRED_B54_IN_BASE, "b54-padiem-claw"))
+    callers.append(_caller(LEGACY_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"))
+    callers.append(_caller(NEW_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"))
     fields = classify_authority_payloads(_base(callers), _valid_overlay())
     assert fields["BASE_PARSE"] == "INVALID"
     assert fields["BASE_CONTAINS_B54_KAGENT"] == "YES"
@@ -151,24 +167,42 @@ def test_fixture_2b_malformed_base_still_detects_duplicate_structurally() -> Non
 
 def test_fixture_3_malformed_overlay_id_still_matches() -> None:
     broken = json.dumps(
-        {"version": 2, "caller": _caller("b54-kagent", CRED_OVERLAY, "b54-padiem-claw")}
+        {"version": 2, "caller": _caller(NEW_CALLER_ID, CRED_OVERLAY, "b54-padiem-claw")}
     )
     fields = classify_authority_payloads(_valid_base(), broken)
     assert fields["OVERLAY_PARSE"] == "INVALID"
     assert fields["OVERLAY_CALLER_ID_MATCH"] == "YES"
 
 
-def test_fixture_4_base_contains_b54_kagent_duplicate() -> None:
+def test_fixture_4_base_legacy_caller_is_historical_evidence_not_a_duplicate() -> None:
+    # The #2439 scenario: the opaque base V1 still carries the legacy shared
+    # caller id. That stays detectable under its original field name, and it is
+    # NOT a duplicate of the NEW dedicated overlay id (no collision).
+    legacy_base = _base(
+        [
+            _caller("storymemory-b61", CRED_B61, B61_APP_ID),
+            _caller(LEGACY_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"),
+        ]
+    )
+    fields = classify_authority_payloads(legacy_base, _valid_overlay())
+    assert fields["BASE_PARSE"] == "OK"
+    assert fields["BASE_CONTAINS_B54_KAGENT"] == "YES"
+    assert fields["DUPLICATE_CALLER_ID"] == "NO"
+    assert fields["OVERLAY_CALLER_ID_MATCH"] == "YES"
+
+
+def test_fixture_4b_base_with_the_new_overlay_id_is_a_duplicate() -> None:
+    # The duplicate question itself stays data-driven for the NEW id.
     duplicate_base = _base(
         [
             _caller("storymemory-b61", CRED_B61, B61_APP_ID),
-            _caller("b54-kagent", CRED_B54_IN_BASE, "b54-padiem-claw"),
+            _caller(NEW_CALLER_ID, CRED_B54_IN_BASE, "b54-padiem-claw"),
         ]
     )
     fields = classify_authority_payloads(duplicate_base, _valid_overlay())
     assert fields["BASE_PARSE"] == "OK"
-    assert fields["BASE_CONTAINS_B54_KAGENT"] == "YES"
     assert fields["DUPLICATE_CALLER_ID"] == "YES"
+    assert fields["OVERLAY_CALLER_ID_MATCH"] == "YES"
 
 
 def test_blank_and_absent_inputs_classify_invalid() -> None:
