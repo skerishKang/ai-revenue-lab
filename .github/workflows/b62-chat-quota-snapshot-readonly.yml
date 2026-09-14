@@ -1,0 +1,116 @@
+name: B62 Chat Quota Snapshot Read-only Gate
+
+# #2509 — Capture the exact five live Padiem Chat quota values before any
+# activation, with no mutation of any kind. The snapshot job is dispatch-only
+# and guarded to an exact main SHA; it reads Worker settings with a GET-only
+# request and prints at most five bounded integer lines plus a closed verdict.
+#
+# The source-contract job runs on every pull request that touches this gate,
+# its script, or its tests so the static contract (no deploy/mutation, exact-main
+# guard, five-key output surface, fail-closed) is proven without any Cloudflare
+# credential. It never provisions, deploys, or mutates anything.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to snapshot from'
+        required: true
+  pull_request:
+    paths:
+      - ".github/workflows/b62-chat-quota-snapshot-readonly.yml"
+      - ".github/scripts/b62_quota_snapshot_readonly.py"
+      - ".github/scripts/b62_cloudflare_live_readiness.py"
+      - ".github/tests/test_b62_quota_snapshot_gate.py"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/b62-chat-quota-snapshot-readonly.yml"
+      - ".github/scripts/b62_quota_snapshot_readonly.py"
+      - ".github/scripts/b62_cloudflare_live_readiness.py"
+      - ".github/tests/test_b62_quota_snapshot_gate.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-chat-quota-snapshot-readonly
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    name: Static read-only contract (no credential, no mutation)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout event revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --quiet pyyaml pytest
+
+      - name: Run snapshot gate contract tests
+        run: python -m pytest -q .github/tests/test_b62_quota_snapshot_gate.py
+
+      - name: Record no mutation performed
+        run: |
+          echo 'B62_QUOTA_SNAPSHOT_CONTRACT_TESTS=PASS'
+          echo 'SOURCE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'VAR_MUTATION=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'REAL_PROVIDER_CALLS=0'
+
+  quota-snapshot:
+    name: Read-only live quota snapshot (dispatch only)
+    needs: source-contract
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Premutation exact-main guard (read-only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch --no-tags origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'EXACT_MAIN_SNAPSHOT=PASS'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          echo 'TARGET_ACCOUNT_PRESENT=PASS'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Snapshot five live quota values (GET only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_quota_snapshot_readonly.py
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'WORKER_SETTINGS_MUTATION=0'
+          echo 'D1_WRITE=0'
+          echo 'REAL_PROVIDER_CALLS=0'
