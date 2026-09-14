@@ -121,6 +121,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install contract test dependency (workflow YAML parsing)
+        run: python -m pip install --quiet pyyaml
+
       - name: Run base V1 b54-kagent removal gate contract tests
         run: python .github/tests/test_b54_engine_caller_registry_base_v1_b54_kagent_removal_gate.py
 

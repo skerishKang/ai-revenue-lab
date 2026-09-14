@@ -751,6 +751,15 @@ def test_workflow_source_contract_runs_the_removal_tests() -> None:
         in text
     )
     assert "b54_engine_caller_registry_base_v1_b54_kagent_removal.py" in text
+    # This suite parses the workflow YAML, so the job that runs it must install
+    # pyyaml first (the bare ubuntu-24.04 setup-python has no yaml module).
+    assert "python -m pip install --quiet pyyaml" in text
+    assert (
+        text.index("python -m pip install --quiet pyyaml")
+        < text.index(
+            "python .github/tests/test_b54_engine_caller_registry_base_v1_b54_kagent_removal_gate.py"
+        )
+    )
 
 
 READONLY_STEP = "Read the SERVED version authority and classify removal disposition"
