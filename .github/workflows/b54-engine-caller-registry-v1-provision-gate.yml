@@ -1,10 +1,21 @@
 name: B54 Engine Caller Registry V1 Provision Gate
 
-# Dispatch-only provisioning so caller `b54-kagent` (allowed to
-# `b54-padiem-claw`) is present in the Engine caller authority
-# (`PADIEM_ENGINE_CALLER_REGISTRY_V1` on the `padiem-ai-engine` worker).
+# RETIRED POLICY (#2520/#2521/#2523):
+# Base V1 Claw provisioning is permanently retired.
+# Claw/P01 caller authority belongs to Overlay only:
+# `b54-p01-overlay-20260914-a1` (in `PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY`).
+# Base V1 (`PADIEM_ENGINE_CALLER_REGISTRY_V1`) is opaque and untouched.
+#
+# Any attempt to dispatch or apply Claw provisioning into Base V1 fails closed
+# (WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED).
+# This workflow must NOT be dispatched for Claw/B54.
+#
+# Historical context:
+# Previously this workflow ran dispatch-only provisioning for caller `b54-kagent`.
+# That policy is now retired. Base V1 mutation is permanently blocked.
 #
 # Secret material NEVER passes through workflow_dispatch inputs:
+
 # - the private baseline registry comes from the repository secret
 #   `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE`;
 # - the non-secret baseline currentness attestation comes from the repository
@@ -128,6 +139,7 @@ jobs:
       - name: Source-only evidence
         run: |
           echo 'B54_ENGINE_CALLER_REGISTRY_SOURCE_CONTRACT=PASS'
+          echo 'CLAW_BASE_PROVISION_POLICY=RETIRED'
           echo 'CLOUDFLARE_MUTATION=0'
           echo 'PRODUCTION_MUTATION=0'
 
@@ -217,15 +229,15 @@ jobs:
         run: |
           set -euo pipefail
           test "${CONFIRMATION}" = "PROVISION_B54_ENGINE_CALLER_REGISTRY_V1_FROM_EXACT_MAIN"
-          case "${DISPOSITION}" in
-            PROVISION_REQUIRED|EXTEND_REQUIRED) ;;
-            *)
-              echo 'Refusing mutation: no trustworthy readonly disposition.' >&2
-              exit 1
-              ;;
-          esac
-          echo 'B54_ENGINE_CALLER_REGISTRY_AUTHORIZATION=PASS'
           echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
+          echo 'CLAW_BASE_PROVISION_POLICY=RETIRED'
+          echo 'Refusing mutation: Claw/P01 caller provisioning into Base V1 is retired (#2520/#2523).' >&2
+          echo 'Claw authority belongs to Overlay only (b54-p01-overlay-20260914-a1).' >&2
+          echo 'WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED' >&2
+          echo 'BASE_V1_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+          exit 1
+
 
       - name: Checkout exact approved main SHA
         uses: actions/checkout@v4
@@ -295,7 +307,7 @@ jobs:
           echo 'SECRET_VALUE_OUTPUT=0'
 
       - name: Provision the registry secret only when a change is required
-        if: ${{ env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1' && (env.BASELINE_CURRENTNESS_PROVEN == 'YES' || env.BASELINE_CURRENTNESS_PROVEN == 'GREENFIELD_NOT_APPLICABLE') }}
+        if: ${{ false && env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1' && (env.BASELINE_CURRENTNESS_PROVEN == 'YES' || env.BASELINE_CURRENTNESS_PROVEN == 'GREENFIELD_NOT_APPLICABLE') }}
         shell: bash
         run: |
           set -euo pipefail

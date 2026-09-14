@@ -1,87 +1,37 @@
 #!/usr/bin/env python3
-"""Plan and verify the B54 Engine caller-registry V1 provisioning mutation.
+"""Base V1 Engine caller-registry provisioning helper — Claw provisioning RETIRED (#2523).
 
-This gate provisions ``PADIEM_ENGINE_CALLER_REGISTRY_V1`` (type secret_text)
-on the ``padiem-ai-engine`` worker so that the Claw caller ``b54-kagent``
-(allowed to ``b54-padiem-claw``) is present in the Engine caller authority.
+RETIRED POLICY (#2520/#2521/#2523):
+Claw/P01 caller provisioning into Base V1 is permanently retired.
+Claw/P01 live authority belongs to Overlay ONLY:
+``b54-p01-overlay-20260914-a1`` (in ``PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY``).
 
-Three secrets are consumed, all from environment variables only (never argv,
-never workflow inputs, never stdout):
+Base V1 (``PADIEM_ENGINE_CALLER_REGISTRY_V1``) is opaque and untouched:
+``BASE_V1_LIVE_REWRITE=NO``, ``BASE_V1_MUTATION=0``.
+No Claw caller (neither legacy ``b54-kagent`` nor dedicated overlay caller
+``b54-p01-overlay-20260914-a1``) is ever appended or provisioned into Base V1
+by this helper. Any request to plan Claw Base V1 provisioning fails closed
+with ``CLAW_BASE_PROVISION_POLICY=RETIRED``.
 
-- ``B54_ENGINE_CALLER_REGISTRY_V1_BASELINE``: the private baseline — the
-  complete V1 registry plaintext held by the owner. Required on the
-  preservation path (live V1 already present).
-- ``B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS``: the bounded,
-  NON-SECRET currentness attestation issued by the private authority process
-  (#2400). Required on the preservation path; it is the only proof that the
-  supplied baseline is the currently authoritative complete payload. It
-  carries no registry plaintext and no credential material.
-- ``B62_P01_ENGINE_CREDENTIAL``: the raw Claw credential. It is embedded in
-  the registry UNHASHED — the Engine hashes each entry credential internally
-  at load time (``caller_secret_digest`` in
-  ``apps/padiem-ai-engine/app/service_identity.py``), so a pre-hashed value
-  would break authentication with ``service_authentication_failed``.
-
-Preservation contract (live V1 PRESENT):
-- the baseline must parse as a complete V1 registry;
-- the baseline must contain ``caller_id=storymemory-b61`` with
-  ``allowed_app_ids`` exactly ``["b61"]`` (B61 preservation contract);
-- every existing caller entry is preserved verbatim — additional callers are
-  opaque existing authority and are never dropped, modified, or regenerated;
-- if ``b54-kagent`` is absent, exactly one entry is appended with
-  ``allowed_app_ids=["b54-padiem-claw"]`` and the raw new credential;
-- if ``b54-kagent`` is already present, the gate fails closed unless the
-  baseline entry is exactly compatible (same raw credential, same app list) —
-  in that case the plan is a no-op and nothing is written;
-- the COMPLETE merged result is validated against the Engine's own registry
-  contract (identical semantics to ``parse_caller_registry_v1``).
-
-Currentness contract (``BASELINE_CURRENTNESS_PROVEN``):
-A structurally valid baseline is NOT sufficient: a stale yet well-formed
-baseline could overwrite newer live authority and silently drop unknown
-callers. Therefore ``EXTEND_REQUIRED`` additionally requires a canonical,
-bounded, non-secret attestation (canonical form)::
-
-    b54-currentness-v1 authority=b54-preservation-authority \
-baseline_sha256=<64-lowercase-hex> caller_count=<1-64> \
-issued_at=<YYYY-MM-DDTHH:MM:SSZ>
-
-The authority id is the canonical source constant ``CURRENTNESS_AUTHORITY_ID``
-(not a free-form field), so credential-shaped material can never occupy that
-slot or be echoed into evidence. The gate fails closed unless the attestation
-is present, canonical, carries the approved authority, was issued for the
-*exact* supplied baseline (SHA-256 of its UTF-8 bytes), matches the baseline
-caller count, and is fresh with respect to the source-bounded maximum age. ``BASELINE_CURRENTNESS_PROVEN=YES`` is emitted only then, and the
-workflow refuses to reach the PUT unless it is. This proves the private
-authority certified the baseline as the currently authoritative complete
-payload; it does NOT (and cannot) prove equality with the opaque Cloudflare
-``secret_text`` value, which is never retrievable.
-
-The greenfield path (all caller authority ABSENT) remains only as an isolated,
-tested capability: a single-caller registry with ``b54-kagent``. It is not the
-current Production path and forbids both the baseline and the attestation.
-
-This script never prints a credential, a registry, or any secret value.
-Readback is NAME/TYPE-only and reuses the merged B54 caller-authority
-read-only classifier so this gate and the read-only gate (#2397) cannot drift.
+Historical/general validation contracts preserved:
+- ``parse_baseline_registry``: validates Base V1 registry structure and ensures
+  the B61 preservation contract (``caller_id=storymemory-b61`` with
+  ``allowed_app_ids=["b61"]``).
+- ``assert_baseline_currentness``: strictly parses and bounds the non-secret
+  currentness attestation issued by the private authority process (#2400).
+- ``build_put_body``, ``failure-evidence``, and ``verify``: bounded helper
+  primitives preserved for downstream consumers (e.g. removal gate #2519).
 
 Subcommands:
-
 - ``classify --settings <worker-settings.json>`` — NAME/TYPE-only authority
-  classification plus the provision disposition.
-- ``plan --disposition <DISP> --credential-env <ENV> [--baseline-env <ENV>]
-  [--currentness-env <ENV>] --output <put-body.json>`` — build the bounded PUT
-  body from secrets (and enforce the currentness guard on the preservation
-  path).
+  classification.
+- ``plan ...`` — fails closed: Claw Base V1 provisioning is retired.
 - ``verify --settings <worker-settings.json>`` — post-mutation NAME/TYPE-only
   readback: registry secret present with type ``secret_text``.
 - ``failure-evidence --response <cf-response.json> --http-status <status>`` —
-  bounded, NON-SECRET failure evidence for a failed secret PUT. Cloudflare
-  error message text and the response body are NEVER selected or printed
-  (a future error message could reflect request material), so only the HTTP
-  status, a boolean success, integer error codes, and fixed local markers are
-  emitted. The response temp file is deleted after extraction.
+  bounded, NON-SECRET failure evidence for a failed secret PUT.
 """
+
 
 from __future__ import annotations
 
@@ -115,14 +65,21 @@ LEGACY_TRIO_NAMES = (
     "PADIEM_ENGINE_ALLOWED_APPS",
 )
 
-# Canonical B54 caller entry (P01 constants: P01_CALLER_VALUE / P01_APP_ID).
+# Canonical retired B54 Claw caller entry.
+# Claw authority moved to Overlay only in #2520/#2521.
+# Base V1 Claw provisioning is permanently retired (#2523).
 CALLER_ID = "b54-kagent"
 ALLOWED_APP_IDS = ("b54-padiem-claw",)
 REGISTRY_VERSION = 1
 
+# Dedicated overlay caller (#2520/#2521). Belongs to Overlay ONLY; forbidden from Base V1.
+OVERLAY_CALLER_ID = "b54-p01-overlay-20260914-a1"
+CLAW_BASE_PROVISION_POLICY = "RETIRED"
+
 # B61 preservation contract (historical accepted Production authority).
 B61_CALLER_ID = "storymemory-b61"
 B61_ALLOWED_APP_IDS = ("b61",)
+
 
 # Engine identity contract bounds (apps/padiem-ai-engine/app/service_identity.py
 # and app/identity_enforcement.py).
@@ -212,6 +169,10 @@ def _check_registry_shape(payload: object) -> dict:
             )
         caller_id = entry["caller_id"]
         _check_identifier("caller_id", caller_id)
+        if caller_id == OVERLAY_CALLER_ID:
+            raise ProvisionPlanError(
+                f"dedicated overlay caller {OVERLAY_CALLER_ID!r} must not appear in Base V1"
+            )
         if caller_id in seen:
             raise ProvisionPlanError("registry must not contain duplicate caller IDs")
         seen.add(caller_id)
@@ -394,71 +355,23 @@ def assert_baseline_currentness(
 
 
 def build_registry_payload(*, credential: str) -> dict:
-    """Greenfield payload: a single-caller registry with the B54 caller only.
+    """Greenfield Claw caller provisioning into Base V1 is RETIRED (#2523).
 
-    This is the isolated all-ABSENT capability, not the Production path.
-    The credential is embedded raw (never pre-hashed).
+    Claw/P01 authority belongs to Overlay only (b54-p01-overlay-20260914-a1).
+    Fails closed: Base V1 Claw provisioning path is absent.
     """
-
-    if not isinstance(credential, str):
-        raise ProvisionPlanError("caller credential is not text")
-    raw = credential.encode("utf-8")
-    if not MIN_CREDENTIAL_BYTES <= len(raw) <= MAX_CREDENTIAL_BYTES:
-        raise ProvisionPlanError(
-            "caller credential must contain "
-            f"{MIN_CREDENTIAL_BYTES} to {MAX_CREDENTIAL_BYTES} bytes"
-        )
-    _check_identifier("caller_id", CALLER_ID)
-    for app_id in ALLOWED_APP_IDS:
-        _check_identifier("allowed app id", app_id)
-    payload = {
-        "version": REGISTRY_VERSION,
-        "callers": [
-            {
-                "caller_id": CALLER_ID,
-                "credential": credential,
-                "allowed_app_ids": list(ALLOWED_APP_IDS),
-            }
-        ],
-    }
-    serialized = _serialized(payload)
-    if len(serialized.encode("utf-8")) > MAX_CALLER_REGISTRY_V1_BYTES:
-        raise ProvisionPlanError("registry payload exceeds the bounded input size")
-    return _check_registry_shape(payload)
+    raise ProvisionPlanError(
+        "Claw/P01 caller provisioning into Base V1 is retired; "
+        "Claw authority belongs to Overlay only (#2520/#2523)"
+    )
 
 
 def _append_b54_entry(callers: list[dict], credential: str) -> tuple[list[dict], str]:
-    """Append the B54 entry when absent; otherwise verify exact compatibility.
-
-    Returns ``(merged_callers, verdict)`` where verdict is
-    ``APPENDED`` or ``ALREADY_COMPATIBLE``. Existing entries are never
-    modified; the B54 entry must match the new credential and app contract
-    exactly or the plan fails closed.
-    """
-
-    b54_entries = [entry for entry in callers if entry["caller_id"] == CALLER_ID]
-    if not b54_entries:
-        merged = list(callers)
-        merged.append(
-            {
-                "caller_id": CALLER_ID,
-                "credential": credential,
-                "allowed_app_ids": list(ALLOWED_APP_IDS),
-            }
-        )
-        return merged, "APPENDED"
-    if len(b54_entries) > 1:
-        raise ProvisionPlanError("registry contains duplicate b54-kagent entries")
-    existing = b54_entries[0]
-    if existing.get("credential") != credential:
-        raise ProvisionPlanError(
-            "existing b54-kagent entry is not compatible with the new credential contract"
-        )
-    if existing.get("allowed_app_ids") != list(ALLOWED_APP_IDS):
-        raise ProvisionPlanError(
-            "existing b54-kagent entry is not compatible with the new app contract"
-        )
-    return list(callers), "ALREADY_COMPATIBLE"
+    """Retired: Base V1 must never append or provision Claw caller (#2523)."""
+    raise ProvisionPlanError(
+        "Claw/P01 caller provisioning into Base V1 is retired; "
+        "Claw authority belongs to Overlay only (#2520/#2523)"
+    )
 
 
 def parse_baseline_registry(baseline: str) -> dict:
@@ -483,21 +396,12 @@ def parse_baseline_registry(baseline: str) -> dict:
 
 
 def merge_b54_caller(payload: dict, credential: str) -> tuple[dict, str]:
-    """Preservation merge: baseline verbatim plus the B54 caller entry.
+    """Retired: Base V1 must never append or provision Claw caller (#2523)."""
+    raise ProvisionPlanError(
+        "Claw/P01 caller provisioning into Base V1 is retired; "
+        "Claw authority belongs to Overlay only (#2520/#2523)"
+    )
 
-    Every existing caller entry is preserved untouched; the B54 entry is
-    appended when absent or verified exactly compatible when present.
-    Returns ``(merged, verdict)`` with verdict ``APPENDED`` or
-    ``ALREADY_COMPATIBLE``.
-    """
-
-    merged_callers, verdict = _append_b54_entry(payload["callers"], credential)
-    merged = {"version": REGISTRY_VERSION, "callers": merged_callers}
-    serialized = _serialized(merged)
-    if len(serialized.encode("utf-8")) > MAX_CALLER_REGISTRY_V1_BYTES:
-        raise ProvisionPlanError("merged registry exceeds the bounded input size")
-    _check_registry_shape(merged)
-    return merged, verdict
 
 
 def build_put_body(payload: dict) -> dict:
@@ -600,6 +504,7 @@ def _cmd_classify(args: argparse.Namespace) -> int:
     for name in TARGET_NAMES:
         print(f"AUTHORITY_STATE {name}={states[name]}")
     print(f"B54_ENGINE_CALLER_REGISTRY_DISPOSITION={disposition}")
+    print("CLAW_BASE_PROVISION_POLICY=RETIRED")
     print("BINDING_NAME_AND_TYPE_ONLY=YES")
     print("SECRET_VALUES_READ=0")
     print("CLOUDFLARE_MUTATION=0")
@@ -615,84 +520,22 @@ def _read_env_secret(name: str, *, label: str) -> str:
 
 
 def _cmd_plan(args: argparse.Namespace) -> int:
-    if args.disposition not in ("PROVISION_REQUIRED", "EXTEND_REQUIRED"):
-        print(
-            f"B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL\n"
-            f"REASON=disposition {args.disposition!r} is not a provisionable state",
-            file=sys.stderr,
-        )
-        return 1
-    if args.output.exists():
-        print("B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL\nREASON=output path already exists", file=sys.stderr)
-        return 1
-    try:
-        credential = _read_env_secret(args.credential_env, label="new Claw credential")
-        currentness: dict | None = None
-        if args.disposition == "EXTEND_REQUIRED":
-            baseline = _read_env_secret(args.baseline_env, label="private baseline registry")
-            # Fail closed BEFORE parsing/merging anything when the currentness
-            # attestation is missing: a structurally valid baseline is not
-            # proof that it is the CURRENT live authority.
-            attestation = _read_env_secret(
-                args.currentness_env, label="baseline currentness attestation"
-            )
-            baseline_payload = parse_baseline_registry(baseline)
-            currentness = assert_baseline_currentness(
-                baseline, baseline_payload, attestation
-            )
-            payload, verdict = merge_b54_caller(baseline_payload, credential)
-        else:
-            if args.baseline_env and os.environ.get(args.baseline_env, ""):
-                raise ProvisionPlanError(
-                    "baseline is forbidden on the greenfield path (all-ABSENT)"
-                )
-            if args.currentness_env and os.environ.get(args.currentness_env, ""):
-                raise ProvisionPlanError(
-                    "currentness attestation is forbidden on the greenfield path (all-ABSENT)"
-                )
-            payload = build_registry_payload(credential=credential)
-            verdict = "GREENFIELD_SINGLE_CALLER"
-    except ProvisionPlanError as exc:
-        print("B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL", file=sys.stderr)
-        if args.disposition == "EXTEND_REQUIRED":
-            print("BASELINE_CURRENTNESS_PROVEN=NO", file=sys.stderr)
-        print(f"REASON={exc}", file=sys.stderr)
-        return 1
+    """Claw Base V1 provisioning is permanently retired (#2520/#2523).
 
-    body = build_put_body(payload)
-    merged_text = body["text"]
-    registry_bytes = len(merged_text.encode("utf-8"))
-    no_op = args.disposition == "EXTEND_REQUIRED" and verdict == "ALREADY_COMPATIBLE"
-
-    args.output.write_text(json.dumps(body, separators=(",", ":")), encoding="utf-8")
-    print("B54_ENGINE_CALLER_REGISTRY_PLAN=PASS")
-    print(f"B54_ENGINE_CALLER_REGISTRY_PAYLOAD_BYTES={registry_bytes}")
-    print(f"B54_ENGINE_CALLER_REGISTRY_VERSION={REGISTRY_VERSION}")
+    Fails closed: never creates a PUT body, never authorizes Base V1 mutation.
+    """
+    print("B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL", file=sys.stderr)
+    print("CLAW_BASE_PROVISION_POLICY=RETIRED", file=sys.stderr)
+    print(
+        "REASON=Claw/P01 caller provisioning into Base V1 is retired; "
+        "Claw authority belongs to Overlay only (#2520/#2523)",
+        file=sys.stderr,
+    )
     if args.disposition == "EXTEND_REQUIRED":
-        assert currentness is not None
-        print("B61_PRESERVATION_ASSERT=PASS")
-        print("UNKNOWN_CALLERS_PRESERVED=PASS")
-        print("BASELINE_CALLERS_PRESERVED_VERBATIM=PASS")
-        print("BASELINE_CURRENTNESS_PROVEN=YES")
-        print(f"BASELINE_CURRENTNESS_AUTHORITY={CURRENTNESS_AUTHORITY_ID}")
-        print(f"BASELINE_CURRENTNESS_ISSUED_AT={currentness['issued_at_raw']}")
-        print(f"BASELINE_CURRENTNESS_CALLER_COUNT={currentness['caller_count']}")
-        print("BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES")
-        print("CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO")
-        if verdict == "ALREADY_COMPATIBLE":
-            print("B54_KAGENT_APPEND_ONLY=ALREADY_COMPATIBLE")
-        else:
-            print("B54_KAGENT_APPEND_ONLY=PASS")
-    else:
-        print("B54_KAGENT_APPEND_ONLY=GREENFIELD_SINGLE_CALLER")
-        print("BASELINE_CURRENTNESS_PROVEN=GREENFIELD_NOT_APPLICABLE")
-    print("RAW_CREDENTIAL_PREHASHED=NO")
-    print("CREDENTIAL_BYTES_IN_BOUNDS=PASS")
-    print("RAW_SECRET_OUTPUT=0")
-    print("RAW_REGISTRY_OUTPUT=0")
-    print("SECRET_VALUE_OUTPUT=0")
-    print(f"B54_ENGINE_CALLER_REGISTRY_NO_OP={'1' if no_op else '0'}")
-    return 0
+        print("BASELINE_CURRENTNESS_PROVEN=NO", file=sys.stderr)
+    print("PRODUCTION_MUTATION=0", file=sys.stderr)
+    return 1
+
 
 
 def _cmd_verify(args: argparse.Namespace) -> int:

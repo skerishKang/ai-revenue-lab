@@ -242,6 +242,8 @@ def test_script_constants_exact() -> None:
     assert helper.REGISTRY_SECRET_NAME == "PADIEM_ENGINE_CALLER_REGISTRY_V1"
     assert helper.CALLER_ID == "b54-kagent"
     assert helper.ALLOWED_APP_IDS == ("b54-padiem-claw",)
+    assert helper.OVERLAY_CALLER_ID == "b54-p01-overlay-20260914-a1"
+    assert helper.CLAW_BASE_PROVISION_POLICY == "RETIRED"
     assert helper.B61_CALLER_ID == "storymemory-b61"
     assert helper.B61_ALLOWED_APP_IDS == ("b61",)
     assert helper.REGISTRY_VERSION == 1
@@ -351,6 +353,21 @@ def test_parse_baseline_requires_b61_contract() -> None:
     else:
         raise AssertionError("B61 allowed_app_ids must be exactly [\"b61\"]")
 
+    # Baseline containing dedicated overlay caller fails closed (NEW_OVERLAY_CALLER_IN_BASE=NO).
+    overlay_in_base = {
+        "version": 1,
+        "callers": [
+            _registry_entry("storymemory-b61", b61, ["b61"]),
+            _registry_entry("b54-p01-overlay-20260914-a1", "o" * 40, ["b54-padiem-claw"]),
+        ],
+    }
+    try:
+        helper.parse_baseline_registry(json.dumps(overlay_in_base))
+    except helper.ProvisionPlanError as exc:
+        assert "dedicated overlay caller" in str(exc)
+    else:
+        raise AssertionError("baseline containing overlay caller must fail closed")
+
     # Malformed baselines fail closed.
     for bad in ("", "not-json", "[]", '{"version":2,"callers":[]}'):
         try:
@@ -360,28 +377,33 @@ def test_parse_baseline_requires_b61_contract() -> None:
         raise AssertionError(f"baseline {bad!r} must fail closed")
 
 
-def test_merge_appends_b54_and_preserves_all_existing_verbatim() -> None:
+def test_claw_base_provision_retired_and_append_path_absent() -> None:
     helper = _load_helper()
-    b61_cred = "b" * 40
-    unknown_cred = "u" * 40
-    baseline = _baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred)
-    new_cred = "n" * 40
-    merged, verdict = helper.merge_b54_caller(baseline, new_cred)
-    assert verdict == "APPENDED"
-    by_id = {entry["caller_id"]: entry for entry in merged["callers"]}
-    # Existing entries preserved verbatim (credential and apps untouched).
-    assert by_id["storymemory-b61"] == baseline["callers"][0]
-    assert by_id["opaque-unknown-caller"] == baseline["callers"][1]
-    # B54 entry appended with raw credential and exact app list.
-    assert by_id["b54-kagent"] == {
-        "caller_id": "b54-kagent",
-        "credential": new_cred,
-        "allowed_app_ids": ["b54-padiem-claw"],
-    }
-    assert merged["version"] == 1
+    baseline = _baseline_payload(b54_credential="x" * 40, b61_credential="b" * 40)
+    # merge_b54_caller fails closed
+    try:
+        helper.merge_b54_caller(baseline, "n" * 40)
+    except helper.ProvisionPlanError as exc:
+        assert "retired" in str(exc).lower()
+    else:
+        raise AssertionError("merge_b54_caller must fail closed (retired policy)")
+
+    # _append_b54_entry fails closed
+    try:
+        helper._append_b54_entry(baseline["callers"], "n" * 40)
+    except helper.ProvisionPlanError as exc:
+        assert "retired" in str(exc).lower()
+    else:
+        raise AssertionError("_append_b54_entry must fail closed (retired policy)")
+
+    # Static code check: no append logic for old or new caller exists in helper
+    helper_source = HELPER.read_text(encoding="utf-8")
+    assert 'CLAW_BASE_PROVISION_POLICY = "RETIRED"' in helper_source
+    assert "callers.append" not in helper_source
+    assert "b54-p01-overlay-20260914-a1" in helper_source
 
 
-def test_merge_existing_compatible_b54_is_no_op() -> None:
+def test_merge_existing_b54_fails_closed() -> None:
     helper = _load_helper()
     b61_cred = "b" * 40
     compatible_cred = "c" * 40
@@ -392,77 +414,35 @@ def test_merge_existing_compatible_b54_is_no_op() -> None:
             _registry_entry("b54-kagent", compatible_cred, ["b54-padiem-claw"]),
         ],
     }
-    merged, verdict = helper.merge_b54_caller(baseline, compatible_cred)
-    assert verdict == "ALREADY_COMPATIBLE"
-    assert merged["callers"] == baseline["callers"]
-
-
-def test_merge_existing_incompatible_b54_fails_closed() -> None:
-    helper = _load_helper()
-    b61_cred = "b" * 40
-    # Different credential.
-    baseline_bad_cred = {
-        "version": 1,
-        "callers": [
-            _registry_entry("storymemory-b61", b61_cred, ["b61"]),
-            _registry_entry("b54-kagent", "z" * 40, ["b54-padiem-claw"]),
-        ],
-    }
     try:
-        helper.merge_b54_caller(baseline_bad_cred, "n" * 40)
-    except helper.ProvisionPlanError:
-        pass
+        helper.merge_b54_caller(baseline, compatible_cred)
+    except helper.ProvisionPlanError as exc:
+        assert "retired" in str(exc).lower()
     else:
-        raise AssertionError("existing b54-kagent with a different credential must fail closed")
-    # Different app contract.
-    baseline_bad_apps = {
-        "version": 1,
-        "callers": [
-            _registry_entry("storymemory-b61", b61_cred, ["b61"]),
-            _registry_entry("b54-kagent", "n" * 40, ["b54-padiem-claw", "extra"]),
-        ],
-    }
-    try:
-        helper.merge_b54_caller(baseline_bad_apps, "n" * 40)
-    except helper.ProvisionPlanError:
-        return
-    raise AssertionError("existing b54-kagent with a different app contract must fail closed")
+        raise AssertionError("merge_b54_caller must fail closed even when b54 present")
 
 
-def test_greenfield_payload_is_isolated_single_caller() -> None:
+def test_greenfield_claw_base_provision_is_retired() -> None:
     helper = _load_helper()
-    credential = "g" * 40
-    payload = helper.build_registry_payload(credential=credential)
-    assert payload["version"] == 1
-    assert payload["callers"] == [
-        {
-            "caller_id": "b54-kagent",
-            "credential": credential,
-            "allowed_app_ids": ["b54-padiem-claw"],
-        }
-    ]
-    for bad in ("", "x" * 31, "x" * 513):
-        try:
-            helper.build_registry_payload(credential=bad)
-        except helper.ProvisionPlanError:
-            continue
-        raise AssertionError(f"greenfield credential of invalid length must fail closed: {len(bad)}")
-    helper.build_registry_payload(credential="x" * 32)
-    helper.build_registry_payload(credential="x" * 512)
+    try:
+        helper.build_registry_payload(credential="g" * 40)
+    except helper.ProvisionPlanError as exc:
+        assert "retired" in str(exc).lower()
+    else:
+        raise AssertionError("greenfield Claw caller provisioning must fail closed")
 
 
-def test_merged_payload_parses_and_authenticates_with_engine_parser() -> None:
+def test_baseline_payload_parses_and_authenticates_with_engine_parser() -> None:
     helper = _load_helper()
     identity = _load_engine_identity()
     b61_cred = "b" * 40
     unknown_cred = "u" * 40
-    new_cred = "n" * 40
     baseline = _baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred)
-    merged, _ = helper.merge_b54_caller(baseline, new_cred)
-    serialized = json.dumps(merged, separators=(",", ":"), ensure_ascii=False)
+    parsed = helper.parse_baseline_registry(json.dumps(baseline))
+    serialized = json.dumps(parsed, separators=(",", ":"), ensure_ascii=False)
     env = type("Env", (), {identity.CALLER_REGISTRY_V1_ENV: serialized})()
 
-    # Every caller authenticates with its own raw credential.
+    # Every baseline caller authenticates with its own raw credential.
     identity.authenticate_request(
         env=env,
         headers={identity.CALLER_ID_HEADER: "storymemory-b61", identity.CALLER_CREDENTIAL_HEADER: b61_cred},
@@ -476,26 +456,7 @@ def test_merged_payload_parses_and_authenticates_with_engine_parser() -> None:
         },
         requested_app_id="other",
     )
-    identity.authenticate_request(
-        env=env,
-        headers={identity.CALLER_ID_HEADER: "b54-kagent", identity.CALLER_CREDENTIAL_HEADER: new_cred},
-        requested_app_id="b54-padiem-claw",
-    )
-    # A pre-hashed value is NOT the accepted credential: the Engine hashes
-    # internally, so a digest in the payload must fail authentication.
-    try:
-        identity.authenticate_request(
-            env=env,
-            headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
-                identity.CALLER_CREDENTIAL_HEADER: identity.caller_secret_digest(new_cred),
-            },
-            requested_app_id="b54-padiem-claw",
-        )
-    except identity.ServiceIdentityError as exc:
-        assert exc.code == "service_authentication_failed"
-        return
-    raise AssertionError("pre-hashed credential must not authenticate")
+
 
 
 # ---------------------------------------------------------------------------
@@ -763,33 +724,26 @@ def test_extend_stale_or_future_currentness_cannot_reach_put() -> None:
         assert not out.exists()
 
 
-def test_extend_with_valid_currentness_is_allowed() -> None:
-    """Requirement 3: EXTEND + valid baseline + accepted proof -> plan allowed."""
+def test_plan_extend_fails_closed_because_claw_provision_retired() -> None:
+    """Requirement 3: EXTEND + valid baseline + proof -> fails closed (CLAW RETIRED)."""
     helper = _load_helper()
     b61_cred = "b" * 40
     baseline = json.dumps(_baseline_payload(b54_credential="x" * 40, b61_credential=b61_cred))
     payload = json.loads(baseline)
     attestation = _currentness(helper, baseline, payload)
+    # The currentness attestation itself remains valid:
+    helper.assert_baseline_currentness(baseline, payload, attestation)
+    # But plan fails closed because Claw Base V1 provisioning is permanently retired:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "put-body.json"
         with _env(**{CREDENTIAL_ENV: "n" * 40, BASELINE_ENV: baseline, CURRENTNESS_ENV: attestation}):
             code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
-        assert code == 0
-        assert "B54_ENGINE_CALLER_REGISTRY_PLAN=PASS" in output
-        assert "BASELINE_CURRENTNESS_PROVEN=YES" in output
-        assert "CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO" in output
-        assert out.exists()
-        body = json.loads(out.read_text(encoding="utf-8"))
-    merged = json.loads(body["text"])
-    by_id = {entry["caller_id"]: entry for entry in merged["callers"]}
-    # Requirement 5: unknown baseline callers remain preserved.
-    assert set(by_id) == {"storymemory-b61", "opaque-unknown-caller", "b54-kagent"}
-    # Requirement 6: B61 preservation remains exact.
-    assert by_id["storymemory-b61"]["allowed_app_ids"] == ["b61"]
-    assert by_id["storymemory-b61"]["credential"] == b61_cred
-    assert by_id["opaque-unknown-caller"]["credential"] == "u" * 40
-    assert by_id["b54-kagent"]["credential"] == "n" * 40
-    assert by_id["b54-kagent"]["allowed_app_ids"] == ["b54-padiem-claw"]
+        assert code == 1
+        assert "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL" in output
+        assert "CLAW_BASE_PROVISION_POLICY=RETIRED" in output
+        assert "PRODUCTION_MUTATION=0" in output
+        assert not out.exists()
+
 
 
 def test_currentness_rejects_raw_registry_material() -> None:
@@ -870,36 +824,19 @@ def test_plan_extend_path_evidence_and_never_emits_secrets() -> None:
         out = Path(tmp) / "put-body.json"
         with _env(**{CREDENTIAL_ENV: new_cred, BASELINE_ENV: baseline, CURRENTNESS_ENV: attestation}):
             code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
-        assert code == 0
-        body = json.loads(out.read_text(encoding="utf-8"))
+        assert code == 1
+        assert not out.exists()
     for leaked in (new_cred, b61_cred, baseline, attestation, helper.baseline_fingerprint(baseline)):
         assert leaked not in output, "secret/provenance material must not be emitted"
     for marker in (
-        "B61_PRESERVATION_ASSERT=PASS",
-        "UNKNOWN_CALLERS_PRESERVED=PASS",
-        "BASELINE_CALLERS_PRESERVED_VERBATIM=PASS",
-        "B54_KAGENT_APPEND_ONLY=PASS",
-        "BASELINE_CURRENTNESS_PROVEN=YES",
-        "BASELINE_CURRENTNESS_AUTHORITY=b54-preservation-authority",
-        "BASELINE_CURRENTNESS_FINGERPRINT_BOUND=YES",
-        "BASELINE_CURRENTNESS_CALLER_COUNT=2",
-        "CURRENTNESS_ATTESTATION_CONTAINS_SECRET_MATERIAL=NO",
-        "RAW_CREDENTIAL_PREHASHED=NO",
-        "RAW_SECRET_OUTPUT=0",
-        "RAW_REGISTRY_OUTPUT=0",
-        "SECRET_VALUE_OUTPUT=0",
-        "B54_ENGINE_CALLER_REGISTRY_NO_OP=0",
+        "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL",
+        "CLAW_BASE_PROVISION_POLICY=RETIRED",
+        "PRODUCTION_MUTATION=0",
     ):
         assert marker in output, marker
-    assert body["name"] == "PADIEM_ENGINE_CALLER_REGISTRY_V1"
-    assert body["type"] == "secret_text"
-    merged = json.loads(body["text"])
-    by_id = {entry["caller_id"]: entry for entry in merged["callers"]}
-    assert set(by_id) == {"storymemory-b61", "opaque-unknown-caller", "b54-kagent"}
-    assert by_id["storymemory-b61"]["credential"] == b61_cred
 
 
-def test_plan_extend_no_op_when_b54_already_compatible() -> None:
+def test_plan_extend_fails_closed_even_when_b54_already_compatible() -> None:
     helper = _load_helper()
     b61_cred = "b" * 40
     compatible_cred = "c" * 40
@@ -924,12 +861,11 @@ def test_plan_extend_no_op_when_b54_already_compatible() -> None:
             }
         ):
             code, output = _run_plan(helper, disposition="EXTEND_REQUIRED", output=out)
-        assert code == 0
-        assert "B54_KAGENT_APPEND_ONLY=ALREADY_COMPATIBLE" in output
-        assert "BASELINE_CURRENTNESS_PROVEN=YES" in output
-        assert "B54_ENGINE_CALLER_REGISTRY_NO_OP=1" in output
-        body = json.loads(out.read_text(encoding="utf-8"))
-        assert json.loads(body["text"])["callers"] == payload["callers"]
+        assert code == 1
+        assert "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL" in output
+        assert "CLAW_BASE_PROVISION_POLICY=RETIRED" in output
+        assert "PRODUCTION_MUTATION=0" in output
+        assert not out.exists()
 
 
 def test_plan_extend_requires_baseline_secret() -> None:
@@ -943,47 +879,18 @@ def test_plan_extend_requires_baseline_secret() -> None:
     assert not out.exists()
 
 
-def test_plan_greenfield_isolated_and_baseline_forbidden() -> None:
+def test_plan_greenfield_fails_closed_because_claw_provision_retired() -> None:
     helper = _load_helper()
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "put-body.json"
         with _env(**{CREDENTIAL_ENV: "g" * 40, BASELINE_ENV: None, CURRENTNESS_ENV: None}):
             code, output = _run_plan(helper, disposition="PROVISION_REQUIRED", output=out)
-        assert code == 0
-        assert "B54_KAGENT_APPEND_ONLY=GREENFIELD_SINGLE_CALLER" in output
-        assert "BASELINE_CURRENTNESS_PROVEN=GREENFIELD_NOT_APPLICABLE" in output
-        assert "B54_ENGINE_CALLER_REGISTRY_NO_OP=0" in output
-        body = json.loads(out.read_text(encoding="utf-8"))
-        assert [e["caller_id"] for e in json.loads(body["text"])["callers"]] == ["b54-kagent"]
-
-        # Baseline on the greenfield path is contradictory: fail closed.
-        with _env(
-            **{
-                CREDENTIAL_ENV: "g" * 40,
-                BASELINE_ENV: json.dumps(_baseline_payload("x" * 40, "b" * 40)),
-                CURRENTNESS_ENV: None,
-            }
-        ):
-            code, output = _run_plan(helper, disposition="PROVISION_REQUIRED", output=out)
-        assert code == 1
-
-    # Requirement 10: the attestation is equally forbidden there — the
-    # greenfield path stays an isolated capability, not a bypass.
-    with tempfile.TemporaryDirectory() as tmp:
-        out = Path(tmp) / "put-body.json"
-        with _env(
-            **{
-                CREDENTIAL_ENV: "g" * 40,
-                BASELINE_ENV: None,
-                CURRENTNESS_ENV: "b54-currentness-v1 authority=x baseline_sha256="
-                + "0" * 64
-                + " caller_count=1 issued_at=2026-09-11T12:00:00Z",
-            }
-        ):
-            code, output = _run_plan(helper, disposition="PROVISION_REQUIRED", output=out)
         assert code == 1
         assert "B54_ENGINE_CALLER_REGISTRY_PLAN=FAIL" in output
+        assert "CLAW_BASE_PROVISION_POLICY=RETIRED" in output
+        assert "PRODUCTION_MUTATION=0" in output
         assert not out.exists()
+
 
 
 # ---------------------------------------------------------------------------
@@ -1189,6 +1096,7 @@ def test_classify_cli_dispositions() -> None:
     code, output = _run_main(helper, ["classify", "--settings", str(_write_settings(empty))])
     assert code == 0
     assert "B54_ENGINE_CALLER_REGISTRY_DISPOSITION=PROVISION_REQUIRED" in output
+    assert "CLAW_BASE_PROVISION_POLICY=RETIRED" in output
     assert "SECRET_VALUES_READ=0" in output
     assert "BINDING_NAME_AND_TYPE_ONLY=YES" in output
     assert SENTINEL not in output
@@ -1266,10 +1174,10 @@ def test_workflow_apply_job_confirmation_environment_and_guards() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "inputs.mode == 'apply_engine_caller_registry_v1'" in text
     assert "environment: production" in text
-    assert 'test "${CONFIRMATION}" = "PROVISION_B54_ENGINE_CALLER_REGISTRY_V1_FROM_EXACT_MAIN"' in text
-    assert "B54_ENGINE_CALLER_REGISTRY_AUTHORIZATION=PASS" in text
-    assert "PROVISION_REQUIRED|EXTEND_REQUIRED" in text
-    assert "Refusing mutation: no trustworthy readonly disposition" in text
+    assert "CLAW_BASE_PROVISION_POLICY=RETIRED" in text
+    assert "WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED" in text
+    assert "PRODUCTION_MUTATION=0" in text
+    assert "exit 1" in text
     assert "PREMUTATION_EXACT_MAIN_SHA=PASS" in text
     assert "SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0" in text
     # All secret/provenance material arrives only through job environment vars.
@@ -1328,7 +1236,7 @@ def test_workflow_provisions_engine_secret_gated_on_plan_no_op() -> None:
     assert "ENGINE_WORKER: padiem-ai-engine" in text
     assert "PADIEM_ENGINE_CALLER_REGISTRY_V1" in text
     assert "B54_ENGINE_CALLER_REGISTRY_NO_OP" in text
-    assert "env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1'" in text
+    assert "if: ${{ false && env.B54_ENGINE_CALLER_REGISTRY_NO_OP != '1'" in text
     assert "rm -f" in text
     assert "SECRET_VALUE_EMITTED=0" in text
     assert "RAW_SECRET_OUTPUT=0" in text
@@ -1373,27 +1281,142 @@ def test_readonly_job_is_get_only_name_type_only() -> None:
     assert text.count("workers/scripts/${ENGINE_WORKER}/secrets") == 1
 
 
+# ---------------------------------------------------------------------------
+# Dedicated #2523 recurrence-prevention architectural contracts
+# ---------------------------------------------------------------------------
+
+
+def test_claw_base_provision_retired_verdict() -> None:
+    helper = _load_helper()
+    assert helper.CLAW_BASE_PROVISION_POLICY == "RETIRED"
+    # Calling merge_b54_caller fails closed
+    baseline = _baseline_payload("x" * 40, "b" * 40)
+    try:
+        helper.merge_b54_caller(baseline, "n" * 40)
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("merge_b54_caller must fail closed")
+    # Calling build_registry_payload fails closed
+    try:
+        helper.build_registry_payload(credential="g" * 40)
+    except helper.ProvisionPlanError:
+        pass
+    else:
+        raise AssertionError("build_registry_payload must fail closed")
+
+
+def test_old_b54_kagent_append_path_absent() -> None:
+    source = HELPER.read_text(encoding="utf-8")
+    assert "callers.append" not in source
+    assert 'CLAW_BASE_PROVISION_POLICY = "RETIRED"' in source
+
+
+def test_new_overlay_caller_base_append_path_absent() -> None:
+    helper = _load_helper()
+    assert helper.OVERLAY_CALLER_ID == "b54-p01-overlay-20260914-a1"
+    bad_payload = {
+        "version": 1,
+        "callers": [
+            _registry_entry("storymemory-b61", "b" * 40, ["b61"]),
+            _registry_entry("b54-p01-overlay-20260914-a1", "o" * 40, ["b54-padiem-claw"]),
+        ],
+    }
+    try:
+        helper.parse_baseline_registry(json.dumps(bad_payload))
+    except helper.ProvisionPlanError as exc:
+        assert "dedicated overlay caller" in str(exc)
+    else:
+        raise AssertionError("Base V1 with dedicated overlay caller must fail closed")
+
+
+def test_base_v1_live_rewrite_required_no() -> None:
+    helper_source = HELPER.read_text(encoding="utf-8")
+    assert "BASE_V1_LIVE_REWRITE=NO" in helper_source
+    assert "BASE_V1_MUTATION=0" in helper_source
+
+
+def test_storymemory_b61_contract_preserved() -> None:
+    helper = _load_helper()
+    assert helper.B61_CALLER_ID == "storymemory-b61"
+    assert helper.B61_ALLOWED_APP_IDS == ("b61",)
+    baseline = _baseline_payload("x" * 40, "b" * 40)
+    parsed = helper.parse_baseline_registry(json.dumps(baseline))
+    b61_entries = [e for e in parsed["callers"] if e["caller_id"] == "storymemory-b61"]
+    assert len(b61_entries) == 1
+    assert b61_entries[0]["allowed_app_ids"] == ["b61"]
+
+
+def test_duplicate_service_caller_runtime_unchanged() -> None:
+    identity = _load_engine_identity()
+    overlay_caller = "b54-p01-overlay-20260914-a1"
+    overlay_payload = {
+        "version": 1,
+        "caller": {
+            "caller_id": overlay_caller,
+            "credential": "o" * 40,
+            "allowed_app_ids": ["b54-padiem-claw"],
+        },
+    }
+    colliding_base = {
+        "version": 1,
+        "callers": [
+            _registry_entry("storymemory-b61", "b" * 40, ["b61"]),
+            _registry_entry(overlay_caller, "c" * 40, ["b54-padiem-claw"]),
+        ],
+    }
+    env = type(
+        "Env",
+        (),
+        {
+            identity.CALLER_REGISTRY_V1_ENV: json.dumps(colliding_base),
+            identity.CALLER_REGISTRY_V1_OVERLAY_ENV: json.dumps(overlay_payload),
+        },
+    )()
+    try:
+        identity.authenticate_request(
+            env=env,
+            headers={
+                identity.CALLER_ID_HEADER: overlay_caller,
+                identity.CALLER_CREDENTIAL_HEADER: "o" * 40,
+            },
+            requested_app_id="b54-padiem-claw",
+        )
+    except identity.ServiceIdentityError as exc:
+        assert exc.code == "duplicate_service_caller"
+    else:
+        raise AssertionError("colliding caller id between base and overlay must fail closed")
+
+
+def test_workflow_apply_for_claw_fail_closed() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+    assert "CLAW_BASE_PROVISION_POLICY=RETIRED" in text
+    assert "WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED" in text
+    assert "PRODUCTION_MUTATION=0" in text
+    assert "exit 1" in text
+    assert "if: ${{ false &&" in text
+
+
 if __name__ == "__main__":
     test_script_constants_exact()
     test_authority_dispositions()
     test_parse_baseline_requires_b61_contract()
-    test_merge_appends_b54_and_preserves_all_existing_verbatim()
-    test_merge_existing_compatible_b54_is_no_op()
-    test_merge_existing_incompatible_b54_fails_closed()
-    test_greenfield_payload_is_isolated_single_caller()
-    test_merged_payload_parses_and_authenticates_with_engine_parser()
+    test_claw_base_provision_retired_and_append_path_absent()
+    test_merge_existing_b54_fails_closed()
+    test_greenfield_claw_base_provision_is_retired()
+    test_baseline_payload_parses_and_authenticates_with_engine_parser()
     test_currentness_attestation_canonical_form_contract()
     test_currentness_binds_exact_baseline_fingerprint_and_caller_count()
     test_extend_without_currentness_proof_fails_closed()
     test_extend_with_invalid_currentness_proof_fails_closed()
     test_extend_stale_or_future_currentness_cannot_reach_put()
-    test_extend_with_valid_currentness_is_allowed()
+    test_plan_extend_fails_closed_because_claw_provision_retired()
     test_currentness_rejects_raw_registry_material()
     test_currentness_rejects_raw_credential_material()
     test_plan_extend_path_evidence_and_never_emits_secrets()
-    test_plan_extend_no_op_when_b54_already_compatible()
+    test_plan_extend_fails_closed_even_when_b54_already_compatible()
     test_plan_extend_requires_baseline_secret()
-    test_plan_greenfield_isolated_and_baseline_forbidden()
+    test_plan_greenfield_fails_closed_because_claw_provision_retired()
     test_failure_evidence_never_emits_cloudflare_message_text()
     test_failure_evidence_bounds_codes_and_status()
     test_failure_evidence_deletes_response_temp_file()
@@ -1408,4 +1431,19 @@ if __name__ == "__main__":
     test_workflow_never_touches_b62_live_config_or_padiem_chat()
     test_workflow_never_deploys_engine_worker()
     test_readonly_job_is_get_only_name_type_only()
+    test_claw_base_provision_retired_verdict()
+    test_old_b54_kagent_append_path_absent()
+    test_new_overlay_caller_base_append_path_absent()
+    test_base_v1_live_rewrite_required_no()
+    test_storymemory_b61_contract_preserved()
+    test_duplicate_service_caller_runtime_unchanged()
+    test_workflow_apply_for_claw_fail_closed()
+    print("CLAW_BASE_PROVISION_RETIRED=PASS")
+    print("OLD_B54_KAGENT_APPEND_PATH=ABSENT")
+    print("NEW_OVERLAY_CALLER_BASE_APPEND_PATH=ABSENT")
+    print("BASE_V1_LIVE_REWRITE_REQUIRED=NO")
+    print("STORYMEMORY_B61_CONTRACT_PRESERVED=PASS")
+    print("DUPLICATE_SERVICE_CALLER_RUNTIME_UNCHANGED=PASS")
+    print("WORKFLOW_APPLY_FOR_CLAW=FAIL_CLOSED")
     print("B54_ENGINE_CALLER_REGISTRY_V1_PROVISION_GATE_TESTS=PASS")
+
