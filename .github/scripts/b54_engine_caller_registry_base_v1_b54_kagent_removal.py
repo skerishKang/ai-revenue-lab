@@ -30,6 +30,12 @@ baseline plaintext, registry JSON, credential, hash, or unrelated caller id is
 ever emitted. The Engine runtime is never imported for mutation and its
 duplicate rejection is never weakened: the production
 ``parse_caller_registry_v1`` is executed READ-ONLY to prove the RESULT parses.
+
+The ``reconfirm`` subcommand closes the cross-job TOCTOU window: immediately
+before the PUT, the apply job performs a fresh GET-only served-version read
+and this command proves it still matches what the readonly preflight captured
+(SAME SINGLE 100% served version, SAME MIGRATION_REQUIRED disposition, SAME
+legacy-trio pre-state). Any divergence fails closed with PUT_COUNT=0.
 """
 
 from __future__ import annotations
@@ -255,6 +261,67 @@ def _cmd_classify(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_reconfirm(args: argparse.Namespace) -> int:
+    """Prove the served version is UNCHANGED since the readonly preflight.
+
+    Runs in the apply job immediately before the PUT, on a FRESH GET-only
+    deployments -> resolve-active -> versions/{current} read. Git main being
+    unchanged is NOT the freshness proof: the Cloudflare worker secret state
+    can move between jobs. Any divergence fails closed; this command performs
+    no mutation and emits NAME/TYPE evidence only.
+    """
+    try:
+        payload = json.loads(args.version_detail.read_text(encoding="utf-8"))
+        states = _served_states(payload, args.active_version)
+    except (OSError, json.JSONDecodeError, ServedVersionGuardError) as exc:
+        print("B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_RECONFIRM=FAIL", file=sys.stderr)
+        print(f"REASON={exc}", file=sys.stderr)
+        print("TOCTOU_SERVED_VERSION_GUARD=FAIL", file=sys.stderr)
+        print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO", file=sys.stderr)
+        print("PUT_COUNT=0", file=sys.stderr)
+        print("OVERLAY_MUTATION=0", file=sys.stderr)
+        print("CLOUDFLARE_MUTATION=0", file=sys.stderr)
+        print("PRODUCTION_MUTATION=0", file=sys.stderr)
+        return 1
+    problems: list[str] = []
+    if args.active_version != args.pre_active_version:
+        problems.append("SERVED_VERSION_CHANGED_AFTER_READONLY_PREFLIGHT")
+    if migration_disposition(states) != "MIGRATION_REQUIRED":
+        problems.append("SERVED_DISPOSITION_NO_LONGER_MIGRATION_REQUIRED")
+    if encode_legacy_states(states) != args.pre_legacy_state:
+        problems.append("LEGACY_TRIO_PRE_STATE_DIVERGED_FROM_READONLY_CAPTURE")
+    if problems:
+        print("B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_RECONFIRM=FAIL", file=sys.stderr)
+        for problem in problems:
+            print(f"REASON={problem}", file=sys.stderr)
+        print("TOCTOU_SERVED_VERSION_GUARD=FAIL", file=sys.stderr)
+        print("PUT_COUNT=0", file=sys.stderr)
+        print("OVERLAY_MUTATION=0", file=sys.stderr)
+        print("CLOUDFLARE_MUTATION=0", file=sys.stderr)
+        print("PRODUCTION_MUTATION=0", file=sys.stderr)
+        print("RAW_REGISTRY_JSON_OUTPUT=0", file=sys.stderr)
+        print("SECRET_VALUES_READ=0", file=sys.stderr)
+        return 1
+    print("B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_RECONFIRM=PASS")
+    print(f"PRE_ACTIVE_VERSION_ID={args.pre_active_version}")
+    print(f"CURRENT_ACTIVE_VERSION_ID={args.active_version}")
+    print("SERVED_VERSION_UNCHANGED=YES")
+    print("PREWRITE_DISPOSITION=MIGRATION_REQUIRED")
+    print("LEGACY_TRIO_PRE_STATE_CONFIRMED=YES")
+    print("TOCTOU_SERVED_VERSION_GUARD=PASS")
+    print("PRE_MUTATION_STATE_SERVED_VERSION=YES")
+    print("SINGLE_100_PERCENT_SERVED_VERSION_GUARD=PASS")
+    print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
+    print("BINDING_NAME_AND_TYPE_ONLY=YES")
+    print("SECRET_VALUES_READ=0")
+    print("RAW_REGISTRY_JSON_OUTPUT=0")
+    print("PUT_COUNT=0")
+    print("OVERLAY_MUTATION=0")
+    print("CLOUDFLARE_MUTATION=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
 def _cmd_verify(args: argparse.Namespace) -> int:
     try:
         payload = json.loads(args.version_detail.read_text(encoding="utf-8"))
@@ -326,6 +393,17 @@ def main(argv: list[str] | None = None) -> int:
     classify.add_argument("--version-detail", required=True, type=Path)
     classify.add_argument("--active-version", required=True)
     classify.set_defaults(handler=_cmd_classify)
+
+    reconfirm = sub.add_parser(
+        "reconfirm",
+        help="prove the freshly read served version still matches the readonly "
+        "preflight capture immediately before the PUT (TOCTOU guard)",
+    )
+    reconfirm.add_argument("--version-detail", required=True, type=Path)
+    reconfirm.add_argument("--active-version", required=True)
+    reconfirm.add_argument("--pre-active-version", required=True)
+    reconfirm.add_argument("--pre-legacy-state", required=True)
+    reconfirm.set_defaults(handler=_cmd_reconfirm)
 
     verify = sub.add_parser("verify", help="verify the served version after the PUT")
     verify.add_argument("--version-detail", required=True, type=Path)

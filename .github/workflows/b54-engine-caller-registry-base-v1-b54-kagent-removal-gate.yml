@@ -33,6 +33,14 @@ name: B54 Engine Caller Registry Base V1 B54-Kagent Removal Gate
 # versions/{active} detail), never the mutable settings plane: a settings-plane
 # payload can never authorize mutation (SETTINGS_PLANE_ONLY_ACCEPTANCE=NO).
 #
+# TOCTOU guard: the readonly preflight also pins PRE_ACTIVE_VERSION_ID. The
+# apply job performs a FRESH GET-only served-version read (deployments ->
+# resolve-active -> versions/{current}) immediately before plan/PUT and
+# requires CURRENT_ACTIVE_VERSION_ID == PRE_ACTIVE_VERSION_ID, the same
+# MIGRATION_REQUIRED disposition, and the same legacy-trio pre-state. Git main
+# being unchanged is NOT the freshness proof: any served-state divergence
+# between jobs fails closed with PUT_COUNT=0.
+#
 # Post-write readback proves on the SERVED version (deployments API ->
 # versions/{active} detail) that BOTH the base V1 and the overlay remain
 # ``PRESENT:secret_text`` and the runtime-inert legacy trio NAME/TYPE state is
@@ -134,6 +142,7 @@ jobs:
     outputs:
       disposition: ${{ steps.classify.outputs.disposition }}
       legacy_pre_state: ${{ steps.classify.outputs.legacy_pre_state }}
+      active_version_id: ${{ steps.classify.outputs.active_version_id }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -194,6 +203,7 @@ jobs:
           test -n "${legacy_pre_state}"
           echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
           echo "legacy_pre_state=${legacy_pre_state}" >> "${GITHUB_OUTPUT}"
+          echo "active_version_id=${active_version}" >> "${GITHUB_OUTPUT}"
           echo 'GET_ONLY=PASS'
           echo 'PRE_MUTATION_STATE_SERVED_VERSION=YES'
           echo 'SINGLE_100_PERCENT_SERVED_VERSION_GUARD=PASS'
@@ -220,6 +230,7 @@ jobs:
       CONFIRMATION: ${{ inputs.confirmation }}
       DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
       LEGACY_PRE_STATE: ${{ needs.cloudflare-readonly.outputs.legacy_pre_state }}
+      PRE_ACTIVE_VERSION_ID: ${{ needs.cloudflare-readonly.outputs.active_version_id }}
     steps:
       - name: Require explicit removal authorization
         shell: bash
@@ -227,6 +238,8 @@ jobs:
           set -euo pipefail
           test "${CONFIRMATION}" = "REMOVE_B54_KAGENT_FROM_BASE_V1_FROM_EXACT_MAIN"
           test "${DISPOSITION}" = "MIGRATION_REQUIRED"
+          test -n "${PRE_ACTIVE_VERSION_ID}"
+          test -n "${LEGACY_PRE_STATE}"
           echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_AUTHORIZATION=PASS'
           echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
 
@@ -250,6 +263,34 @@ jobs:
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
 
+      - name: Reconfirm the SERVED version authority immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          deployments="${RUNNER_TEMP}/b54-engine-base-v1-removal-deployments-prewrite.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" \
+            -o "${deployments}"
+          resolve_out="$(python .github/scripts/b54_engine_served_version_guard.py resolve-active \
+            --deployments "${deployments}")"
+          echo "${resolve_out}"
+          printf '%s\n' "${resolve_out}" | grep -q '^ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS$'
+          current_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${current_version}"
+          version_detail="${RUNNER_TEMP}/b54-engine-base-v1-removal-version-detail-prewrite.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${current_version}" \
+            -o "${version_detail}"
+          python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py reconfirm \
+            --version-detail "${version_detail}" \
+            --active-version "${current_version}" \
+            --pre-active-version "${PRE_ACTIVE_VERSION_ID}" \
+            --pre-legacy-state "${LEGACY_PRE_STATE}"
+          echo 'GET_ONLY=PASS'
+          echo 'PREWRITE_SERVED_VERSION_RECONFIRMED=YES'
+
       - name: Build the bounded base V1 removal PUT body from secrets
         id: plan
         shell: bash
@@ -265,7 +306,9 @@ jobs:
           echo "${evidence}"
           if [ "${plan_status}" -ne 0 ]; then
             echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL=SKIPPED_PLAN_FAILED'
+            echo 'PUT_COUNT=0'
             echo 'OVERLAY_MUTATION=0'
+            echo 'CLOUDFLARE_MUTATION=0'
             echo 'PRODUCTION_MUTATION=0'
             exit 1
           fi
@@ -312,13 +355,17 @@ jobs:
               --response "${response}" \
               --http-status "${http_status}"
             rm -f "${response}"
+            echo 'PUT_COUNT=0'
             echo 'OVERLAY_MUTATION=0'
+            echo 'CLOUDFLARE_MUTATION=0'
+            echo 'PRODUCTION_MUTATION=0'
             exit 1
           fi
           success="$(jq -r 'if (.success == true) then "true" else "false" end' "${response}" 2>/dev/null || echo unknown)"
           rm -f "${response}"
           test "${success}" = "true"
           echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL=APPLIED'
+          echo 'PUT_COUNT=1'
           echo 'OVERLAY_MUTATION=0'
           echo 'CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0'
           echo 'SECRET_VALUE_EMITTED=0'
