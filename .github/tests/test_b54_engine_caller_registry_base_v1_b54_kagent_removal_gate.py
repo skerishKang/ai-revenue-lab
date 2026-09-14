@@ -399,7 +399,14 @@ def test_identity_enforcement_source_is_untouched() -> None:
     source = IDENTITY.read_text(encoding="utf-8")
     assert "duplicate_service_caller" in source
     assert "caller registry overlay must not duplicate a base caller ID" in source
-    assert TARGET_CALLER_ID not in source  # no caller-specific special casing
+    # This removal gate itself adds no caller-specific special casing here: the
+    # target caller id literal appears exactly once, and that single occurrence
+    # is the separately authorized closed retirement set (#2525) — a pure
+    # wire-boundary membership deny. No parse, build, or removal logic keys off
+    # this caller, and the opaque Base V1 payload is never rewritten.
+    assert source.count(TARGET_CALLER_ID) == 1
+    assert identity.RETIRED_CALLER_IDS == frozenset({TARGET_CALLER_ID})
+    assert 'RETIRED_CALLER_IDS = frozenset({"b54-kagent"})' in source
 
 
 # ------------------------------------------------------------ classify CLI

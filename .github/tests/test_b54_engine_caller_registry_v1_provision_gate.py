@@ -457,6 +457,51 @@ def test_baseline_payload_parses_and_authenticates_with_engine_parser() -> None:
         requested_app_id="other",
     )
 
+def test_historical_base_payload_with_legacy_caller_denied_at_engine_auth_boundary() -> None:
+    # Post-#2526 authority: CLAW_BASE_PROVISION_POLICY=RETIRED, so the
+    # provisioning path can no longer merge/append the legacy Claw caller and
+    # the obsolete merge_b54_caller()-based test is not resurrected here.
+    # This test hand-builds a HISTORICAL (pre-existing, opaque) Base V1 payload
+    # that still physically carries b54-kagent and proves the Engine
+    # authentication boundary (#2525) rejects it — while an unrelated baseline
+    # caller keeps authenticating. It performs no provisioning and never calls
+    # merge_b54_caller() or _append_b54_entry().
+    identity = _load_engine_identity()
+    b61_cred = "b" * 40
+    legacy_cred = "l" * 40
+    historical = {
+        "version": 1,
+        "callers": [
+            _registry_entry("storymemory-b61", b61_cred, ["b61"]),
+            _registry_entry("b54-kagent", legacy_cred, ["b54-padiem-claw"]),
+        ],
+    }
+    serialized = json.dumps(historical, separators=(",", ":"), ensure_ascii=False)
+    env = type("Env", (), {identity.CALLER_REGISTRY_V1_ENV: serialized})()
+
+    identity.authenticate_request(
+        env=env,
+        headers={identity.CALLER_ID_HEADER: "storymemory-b61", identity.CALLER_CREDENTIAL_HEADER: b61_cred},
+        requested_app_id="b61",
+    )
+
+    # The retired legacy caller is denied with the correct raw credential and
+    # with a pre-hashed value alike (the Engine hashes internally). The payload
+    # itself is never rewritten or rejected.
+    for credential in (legacy_cred, identity.caller_secret_digest(legacy_cred)):
+        try:
+            identity.authenticate_request(
+                env=env,
+                headers={
+                    identity.CALLER_ID_HEADER: "b54-kagent",
+                    identity.CALLER_CREDENTIAL_HEADER: credential,
+                },
+                requested_app_id="b54-padiem-claw",
+            )
+        except identity.ServiceIdentityError as exc:
+            assert exc.code == "service_authentication_failed"
+            continue
+        raise AssertionError("the retired legacy caller must not authenticate")
 
 
 # ---------------------------------------------------------------------------
@@ -1405,6 +1450,7 @@ if __name__ == "__main__":
     test_merge_existing_b54_fails_closed()
     test_greenfield_claw_base_provision_is_retired()
     test_baseline_payload_parses_and_authenticates_with_engine_parser()
+    test_historical_base_payload_with_legacy_caller_denied_at_engine_auth_boundary()
     test_currentness_attestation_canonical_form_contract()
     test_currentness_binds_exact_baseline_fingerprint_and_caller_count()
     test_extend_without_currentness_proof_fails_closed()
