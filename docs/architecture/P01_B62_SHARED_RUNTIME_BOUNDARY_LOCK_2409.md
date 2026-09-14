@@ -128,12 +128,14 @@ documentation snapshot, not an implementation order.
 
 ## DO_NOT_MOVE_YET (incident-near / runtime-active)
 
-While the current P0 recovery loop is active, these paths are frozen for
-incident analysis and runtime stability:
+The P0 recovery loop is closed: #2439 is CLOSED/COMPLETED and the Phase-A
+Production path was independently reverified PASS (run 34902372213, 200/200).
+These paths nevertheless remain under post-incident stabilization and
+incident-near runtime protection, so they stay frozen for now:
 
 ```text
 apps/padiem-chat/app/worker_config.py            (P01 binding composition)
-apps/padiem-chat/app/claw_p01_composition.py     (P0 recovery surface)
+apps/padiem-chat/app/claw_p01_composition.py     (incident-near composition surface)
 apps/padiem-chat/app/dispatch_quota.py           (#2509/#2531 quota gate cycle)
 apps/padiem-chat/app/usage_gate.py               (quota gate cycle)
 apps/padiem-chat/app/control_plane_identity*.py  (runtime-active identity bridge)
@@ -142,8 +144,8 @@ apps/padiem-ai-engine/app/service_identity.py    (caller registry, runtime-activ
 ```
 
 Wave 1 extraction may proceed only for platform-independent shapes that do not
-touch these live enforcement/quota/registry behaviors, and only after CENTRAL
-confirms the P0 runtime path is stable.
+touch these live enforcement/quota/registry behaviors, and only after explicit
+CENTRAL Wave 1 approval.
 
 ## Historical lane aliases and naming direction
 
