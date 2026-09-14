@@ -275,6 +275,12 @@ jobs:
           echo 'ONE_GENERATION_MAX=YES'
           echo 'CREDENTIAL_FORMAT_VALIDATED=PASS'
           echo 'SAME_PROCESS_CREDENTIAL=YES'
+          # ACT-2 export hotfix (run 34795118387 stopped before the PUT with
+          # B54_ENGINE_OVERLAY_ROTATION_PLAN=FAIL): the plan and probe child
+          # python processes consume the credential via os.environ, so the
+          # validated value must be exported (bare: never on the export line
+          # with a value); the existing unset paths below still apply.
+          export NEW_CREDENTIAL
 
           # --- (2) build the overlay PUT body from the SAME in-memory value,
           #     passed ONLY through the environment (never argv), using the
