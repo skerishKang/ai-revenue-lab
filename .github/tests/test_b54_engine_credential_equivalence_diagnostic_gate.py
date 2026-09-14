@@ -90,7 +90,7 @@ def run_probe(responses, credential=SENTINEL):
 
 def test_constants_match_deployed_oracle() -> None:
     assert MODULE.REPLAY_PATH == "/internal/v1/idempotency/completed/replay"
-    assert MODULE.CALLER_ID == "b54-kagent"
+    assert MODULE.CALLER_ID == "b54-p01-overlay-20260914-a1"
     assert MODULE.APP_ID == "b54-padiem-claw"
     assert MODULE.CALLER_ID_HEADER == "x-padiem-engine-caller"
     assert MODULE.CALLER_CREDENTIAL_HEADER == "x-padiem-engine-credential"

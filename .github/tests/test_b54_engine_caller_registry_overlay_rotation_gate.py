@@ -206,7 +206,7 @@ def test_script_constants_exact() -> None:
     assert helper.OVERLAY_SECRET_NAME == OVERLAY_NAME
     assert helper.REQUIRED_BINDING_TYPE == "secret_text"
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
-    assert helper.CALLER_ID == "b54-kagent"
+    assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     assert helper.ALLOWED_APP_IDS == ("b54-padiem-claw",)
     assert helper.OVERLAY_VERSION == 1
     assert helper.MIN_CREDENTIAL_BYTES == 32
@@ -311,7 +311,7 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
     assert payload == {
         "version": 1,
         "caller": {
-            "caller_id": "b54-kagent",
+            "caller_id": "b54-p01-overlay-20260914-a1",
             "credential": credential,
             "allowed_app_ids": ["b54-padiem-claw"],
         },
@@ -342,12 +342,12 @@ def test_overlay_shape_rejects_noncanonical_payloads() -> None:
         },
         "entry missing apps": {
             "version": 1,
-            "caller": {"caller_id": "b54-kagent", "credential": "n" * 40},
+            "caller": {"caller_id": "b54-p01-overlay-20260914-a1", "credential": "n" * 40},
         },
         "empty app list": {
             "version": 1,
             "caller": {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": "n" * 40,
                 "allowed_app_ids": [],
             },
@@ -355,7 +355,7 @@ def test_overlay_shape_rejects_noncanonical_payloads() -> None:
         "duplicate apps": {
             "version": 1,
             "caller": {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": "n" * 40,
                 "allowed_app_ids": ["a", "a"],
             },
@@ -371,7 +371,7 @@ def test_overlay_shape_rejects_noncanonical_payloads() -> None:
         "non-string credential": {
             "version": 1,
             "caller": {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": 12345,
                 "allowed_app_ids": ["b54-padiem-claw"],
             },
@@ -432,15 +432,15 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
 
     # The Engine's own overlay parser accepts the exact serialized PUT text.
     parsed = identity.parse_caller_registry_v1_overlay(body["text"])
-    assert parsed.caller_id == "b54-kagent"
+    assert parsed.caller_id == "b54-p01-overlay-20260914-a1"
     assert parsed.allowed_app_ids == ("b54-padiem-claw",)
     assert parsed.credential_sha256 == identity.caller_secret_digest(new_cred)
 
-    # b54-kagent authenticates with the RAW new credential (never pre-hashed).
+    # b54-p01-overlay-20260914-a1 authenticates with the RAW new credential (never pre-hashed).
     identity.authenticate_request(
         env=env,
         headers={
-            identity.CALLER_ID_HEADER: "b54-kagent",
+            identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
             identity.CALLER_CREDENTIAL_HEADER: new_cred,
         },
         requested_app_id="b54-padiem-claw",
@@ -450,7 +450,7 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
         identity.authenticate_request(
             env=env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: "o" * 40,
             },
             requested_app_id="b54-padiem-claw",
@@ -464,7 +464,7 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
         identity.authenticate_request(
             env=env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: identity.caller_secret_digest(new_cred),
             },
             requested_app_id="b54-padiem-claw",
@@ -487,7 +487,7 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
         identity.authenticate_request(
             env=env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: new_cred,
             },
             requested_app_id="b61",
@@ -511,7 +511,7 @@ def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
         identity.authenticate_request(
             env=solo,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: "n" * 40,
             },
             requested_app_id="b54-padiem-claw",
@@ -526,7 +526,7 @@ def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
         "version": 1,
         "callers": [
             {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": "d" * 40,
                 "allowed_app_ids": ["b54-padiem-claw"],
             }
@@ -544,7 +544,7 @@ def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
         identity.authenticate_request(
             env=dup_env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: "n" * 40,
             },
             requested_app_id="b54-padiem-claw",
@@ -701,7 +701,7 @@ def test_plan_cli_writes_overlay_body_and_never_emits_the_credential() -> None:
         assert code == 0
         assert "B54_ENGINE_OVERLAY_ROTATION_PLAN=PASS" in output
         assert f"B54_ENGINE_OVERLAY_TARGET_NAME={OVERLAY_NAME}" in output
-        assert "OVERLAY_CALLER_ID=b54-kagent" in output
+        assert "OVERLAY_CALLER_ID=b54-p01-overlay-20260914-a1" in output
         assert "OVERLAY_ALLOWED_APP_IDS=b54-padiem-claw" in output
         assert "CREDENTIAL_BYTES_IN_BOUNDS=PASS" in output
         assert "RAW_CREDENTIAL_PREHASHED=NO" in output
@@ -720,7 +720,7 @@ def test_plan_cli_writes_overlay_body_and_never_emits_the_credential() -> None:
     assert body["type"] == "secret_text"
     payload = json.loads(body["text"])
     assert payload["caller"]["credential"] == credential
-    assert payload["caller"]["caller_id"] == "b54-kagent"
+    assert payload["caller"]["caller_id"] == "b54-p01-overlay-20260914-a1"
     assert payload["caller"]["allowed_app_ids"] == ["b54-padiem-claw"]
 
 

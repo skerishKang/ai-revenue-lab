@@ -5,7 +5,8 @@ Proves statically that the deploy gate:
      only on the exact deploy confirmation phrase;
   2. runs in the production environment with a bounded timeout;
   3. binds the smoke evidence path to the single canonical B62 authority
-     (fixed caller id b54-kagent + secrets.B62_P01_ENGINE_CREDENTIAL) and no
+     (fixed dedicated overlay caller id b54-p01-overlay-20260914-a1 +
+     secrets.B62_P01_ENGINE_CREDENTIAL) and no
      longer references the independent PADIEM_ENGINE_SMOKE_CALLER_* secrets;
   4. checks out the exact target SHA without persisted credentials;
   5. fails honestly when smoke secrets are missing (SKIPPED_MISSING_SECRET);
@@ -61,13 +62,16 @@ def test_smoke_job_is_production_scoped_and_time_bounded() -> None:
     assert 0 < job["timeout-minutes"] <= 15
 
 
-def test_deploy_gate_smoke_uses_canonical_b54_kagent_caller_id() -> None:
-    # #2484 Goal A (test 1): the deploy gate smoke binds the fixed non-secret
-    # canonical caller id b54-kagent (both the CALLER_ID name the A9 script reads
-    # and the legacy NAME the A10 script reads).
+def test_deploy_gate_smoke_uses_canonical_dedicated_overlay_caller_id() -> None:
+    # #2484 Goal A (test 1) + #2520: the deploy gate smoke binds the fixed
+    # non-secret canonical caller id of the dedicated overlay-only Claw caller
+    # (both the CALLER_ID name the A9 script reads and the legacy NAME the A10
+    # script reads).
     smoke_block = _smoke_idempotency_block(_workflow_text())
-    assert "CALLER_ID: b54-kagent" in smoke_block
-    assert "PADIEM_ENGINE_SMOKE_CALLER_ID: b54-kagent" in smoke_block
+    assert "CALLER_ID: b54-p01-overlay-20260914-a1" in smoke_block
+    assert "PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1" in smoke_block
+    # The legacy shared id must not survive anywhere in the smoke identity.
+    assert "b54-kagent" not in smoke_block
 
 
 def test_deploy_gate_smoke_credential_source_is_b62_p01() -> None:
@@ -555,9 +559,9 @@ def test_smoke_only_gate_uses_canonical_b62_credential() -> None:
     # Goal A parity: the smoke-only gate binds the same canonical authority.
     job = _smoke_only_job()
     env = job["env"]
-    assert env["CALLER_ID"] == "b54-kagent"
+    assert env["CALLER_ID"] == "b54-p01-overlay-20260914-a1"
     assert env["CALLER_SECRET"] == "${{ secrets.B62_P01_ENGINE_CREDENTIAL }}"
-    assert env["PADIEM_ENGINE_SMOKE_CALLER_ID"] == "b54-kagent"
+    assert env["PADIEM_ENGINE_SMOKE_CALLER_ID"] == "b54-p01-overlay-20260914-a1"
     assert env["PADIEM_ENGINE_SMOKE_CALLER_SECRET"] == "${{ secrets.B62_P01_ENGINE_CREDENTIAL }}"
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_ID" not in _smoke_only_text()
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_SECRET" not in _smoke_only_text()
