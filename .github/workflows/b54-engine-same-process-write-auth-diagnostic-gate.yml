@@ -15,9 +15,14 @@ name: B54 Engine Same-Process Write-Auth Diagnostic Gate
 # variable (never argv), (3) PUTs it to the Cloudflare overlay, confirms the
 # PUT on the closed contract (HTTP 2xx AND response JSON .success == true,
 # boolean-only, response file deleted before continuing), then bounded-polls
-# the deployments API (GET-only, 30 attempts x 2s, single 100-percent served
-# version, reusing the approved rotation gate polling semantics) until a NEW
-# served version is confirmed with the canonical guard, and (4) probes the
+# the deployments API (POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY: GET-only, 30
+# attempts x 2s, single 100-percent served-version guards reused from the
+# approved rotation gate) until a served version DIFFERENT from the pre-PUT
+# version is confirmed; a valid 100-percent read that still equals the pre-PUT
+# version means propagation has not happened yet and CONTINUES polling (no
+# fail, no break), and only budget exhaustion stops at D5. The pre-PUT served
+# read itself is a single guarded GET (PRE_READ_CONTRACT=SINGLE_GUARDED_GET):
+# only the post-PUT confirmation polls. Then (4) the gate probes the
 # Engine auth oracle ONCE with the SAME in-memory credential before unset.
 #
 # Discriminating verdict (closed, three-way — CENTRAL fix 3):
@@ -42,14 +47,18 @@ name: B54 Engine Same-Process Write-Auth Diagnostic Gate
 #                                           overlay rotation state refused
 #   D4=STOP_OVERLAY_PUT_FAILED              PUT not (2xx AND .success==true);
 #                                           bounded failure evidence only
-#   D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED  bounded polling did not confirm a
-#                                           NEW single 100-percent served version
+#   D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED  the bounded polling budget was
+#                                           exhausted without a single
+#                                           100-percent served version that
+#                                           differs from the pre-PUT version
 #
 # Reuse (verified components are not duplicated): the overlay PUT body comes
 # from b54_engine_caller_registry_overlay_rotation.py plan (same payload
-# builder the approved rotation gate uses); the bounded post-PUT polling and
-# the single-100-percent served-version guards follow
-# b54-engine-caller-registry-overlay-rotation-gate.yml; the served-version
+# builder the approved rotation gate uses); the bounded post-PUT polling
+# budget (30 attempts x 2s) and the single-100-percent served-version guards
+# follow b54-engine-caller-registry-overlay-rotation-gate.yml, with the
+# same-process addition that the accepted served version must DIFFER from the
+# pre-PUT version (candidate == pre_version continues polling); the served-version
 # reads come from b54_engine_served_version_guard.py (canonical GET-only
 # resolver); the Engine probe reuses
 # b54_engine_credential_equivalence_diagnostic.py semantics (endpoint, headers,
@@ -254,6 +263,7 @@ jobs:
           echo 'PRECONDITION_SERVED_VERSION_MATCH=YES'
           echo 'SINGLE_100_PERCENT_SERVED_VERSION=YES'
           echo 'OVERLAY_ROTATION_STATE_REQUIRED=PASS'
+          echo 'PRE_READ_CONTRACT=SINGLE_GUARDED_GET'
 
           # --- (1) generate exactly one credential, in-memory only ---
           NEW_CREDENTIAL="$(python3 -c 'import secrets; print(secrets.token_urlsafe(48), end="")')"
@@ -296,17 +306,21 @@ jobs:
           echo 'OVERLAY_PUT_SUCCESS_CONTRACT=HTTP_2XX_AND_JSON_SUCCESS_TRUE'
           echo 'PUT_RESPONSE_BODY_OUTPUT=0'
 
-          # --- (3) bounded GET-only polling to confirm a NEW single
-          #     100-percent served version (rotation gate semantics: 30
-          #     attempts x 2s; the PUT response is never accepted as proof;
-          #     no mutation of any kind inside the loop) ---
+          # --- (3) bounded GET-only propagation polling (POST_PUT_POLLING=
+          #     BOUNDED_30x2S_GET_ONLY): 30 attempts x 2s, rotation gate
+          #     single-100-percent guards; the PUT response is never accepted
+          #     as proof; no mutation of any kind inside the loop. A valid
+          #     served version that still equals pre_version means propagation
+          #     has not happened yet: continue polling (no fail, no break).
+          #     Only a candidate that differs from pre_version is accepted.
+          #     D5 is emitted solely on budget exhaustion. ---
           new_version=""
           deployments_post="${RUNNER_TEMP}/b54-same-process-deployments-post.json"
           for _ in $(seq 1 30); do
             if curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments_post}" &&
               jq -e "${served_guards}" "${deployments_post}" >/dev/null; then
               candidate="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_post}")"
-              if [ -n "${candidate}" ] && [ "${candidate}" != "null" ]; then
+              if [ -n "${candidate}" ] && [ "${candidate}" != "null" ] && [ "${candidate}" != "${pre_version}" ]; then
                 new_version="${candidate}"
                 break
               fi
@@ -328,18 +342,12 @@ jobs:
             unset NEW_CREDENTIAL
             exit 1
           fi
-          if [ "${new_version}" = "${pre_version}" ]; then
-            echo 'D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED'
-            echo 'SERVED_VERSION_UNCHANGED=YES'
-            echo 'AUTH_PROBE_REQUESTS_ISSUED=0'
-            unset NEW_CREDENTIAL
-            exit 1
-          fi
           version_post="${RUNNER_TEMP}/b54-same-process-version-post.json"
           curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${new_version}" -o "${version_post}"
           python3 "${GUARD_SCRIPT}" verify --version-settings "${version_post}" --active-version "${new_version}" --expect-overlay >/dev/null
           echo "POST_SERVED_VERSION=${new_version}"
           echo 'NEW_SERVED_VERSION_CREATED=YES'
+          echo 'POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY'
           echo 'SINGLE_100_PERCENT_SERVED_VERSION=YES'
           echo 'GET_ONLY=PASS'
           echo 'POLLING_MUTATION=0'

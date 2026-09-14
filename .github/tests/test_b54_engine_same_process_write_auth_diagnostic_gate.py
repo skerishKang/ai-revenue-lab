@@ -18,9 +18,16 @@ never mutate any secret. They prove:
    files removed before continuing), ONE_AUTH_PROBE_MAX (exactly one transport
    call in the probe), NO_AUTOMATIC_RETRY, no artifacts, no secret-derived
    output;
-4. CENTRAL fix 1: post-PUT served-version confirmation uses the rotation gate's
-   bounded GET-only polling (30 attempts x 2s, single 100-percent served
-   version, guard cross-check) with no mutation and no PUT retry;
+ 4. polling contract (CENTRAL fix 1 + final polling fix): the pre-PUT served
+    read is a SINGLE guarded GET (PRE_READ_CONTRACT=SINGLE_GUARDED_GET — it
+    does NOT poll); only the post-PUT confirmation polls
+    (POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY: rotation gate bounded GET-only
+    polling, 30 attempts x 2s, single 100-percent served version, guard
+    cross-check, no mutation, no PUT retry) and the loop accepts ONLY a served
+    version that differs from the pre-PUT version — an old/old/new read
+    sequence keeps polling to the third read (behaviorally regression-tested
+    with stubbed curl/jq), and D5 is emitted solely when the polling budget is
+    exhausted without a new version;
 5. CENTRAL fix 3: the auth verdict is the closed three-way contract
    PASS / FAIL / INCONCLUSIVE, regression-tested behaviorally under bash;
 6. fail-closed stops D1..D5 exist, run BEFORE the probe budget is consumed
@@ -52,6 +59,8 @@ ADMIN_SECRET_NAME = "B62_GITHUB_SECRET_ADMIN_TOKEN"
 ROTATION_SCRIPT = ".github/scripts/b54_engine_caller_registry_overlay_rotation.py"
 GUARD_SCRIPT = ".github/scripts/b54_engine_served_version_guard.py"
 ORACLE_SCRIPT = ".github/scripts/b54_engine_credential_equivalence_diagnostic.py"
+POLL_OLD = "aaaaaaaa-0000-0000-0000-000000000000"
+POLL_NEW = "bbbbbbbb-0000-0000-0000-000000000000"
 
 
 def _text() -> str:
@@ -107,6 +116,71 @@ def _run_verdict(accepted: str, status: str, error: str) -> str:
     out = proc.stdout.decode("utf-8", errors="replace")
     assert proc.returncode == 0, f"verdict block failed: {out}"
     return out
+
+
+# --- behavioral polling-region harness -------------------------------------
+# The extracted region (new_version="" .. the D5 exhaustion block) is executed
+# in bash with curl/jq/sleep stubbed as shell functions, so the real loop
+# semantics are exercised without network, jq, or mutation: the stub curl
+# serves one canned deployments document per call from the given sequence
+# (clamped to its last element) and the stub jq only checks the bounded
+# "valid" flag and echoes the version id.
+
+POLL_HARNESS = r'''set -euo pipefail
+pre_version="__PRE__"
+api="https://api.invalid"
+ENGINE_WORKER="padiem-ai-engine"
+RUNNER_TEMP="$(mktemp -d)"
+auth=()
+served_guards='stubbed by the jq function below'
+declare -a VERSIONS=(__VERSIONS__)
+POLL_CURL_CALLS=0
+curl() {
+  local args=("$@") out="" i
+  for ((i = 0; i < ${#args[@]} - 1; i++)); do
+    if [ "${args[i]}" = "-o" ]; then out="${args[i + 1]}"; fi
+  done
+  POLL_CURL_CALLS=$((POLL_CURL_CALLS + 1))
+  local idx=$((POLL_CURL_CALLS - 1))
+  if [ "${idx}" -ge "${#VERSIONS[@]}" ]; then idx=$((${#VERSIONS[@]} - 1)); fi
+  printf '{"valid":true,"version_id":"%s"}\n' "${VERSIONS[idx]}" > "${out}"
+  echo "POLL_CURL_CALL_NUMBER=${POLL_CURL_CALLS}"
+}
+jq() {
+  local args=("$@") file="${args[${#args[@]} - 1]}"
+  if [ "${args[0]}" = "-e" ]; then
+    grep -q '"valid":true' "${file}"
+  else
+    sed -n 's/.*"version_id":"\([^"]*\)".*/\1/p' "${file}"
+  fi
+}
+sleep() { :; }
+__REGION__
+echo "POLL_CURL_CALLS_FINAL=${POLL_CURL_CALLS}"
+echo "POLL_NEW_VERSION=${new_version}"
+'''
+
+
+def _extract_poll_region() -> str:
+    step = _pipeline_step()
+    start = step.index('new_version=""')
+    end = step.index('resolve_post="', start)
+    region = step[start:end]
+    assert "for _ in $(seq 1 30); do" in region
+    assert "D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED" in region
+    return region
+
+
+def _run_poll_region(versions: list[str]) -> tuple[int, str]:
+    rendered = (
+        POLL_HARNESS
+        .replace("__PRE__", POLL_OLD)
+        .replace("__VERSIONS__", " ".join(f'"{v}"' for v in versions))
+        .replace("__REGION__", _extract_poll_region())
+    )
+    proc = subprocess.run(["bash", "-s"], input=rendered.encode("utf-8"), capture_output=True)
+    out = proc.stdout.decode("utf-8", errors="replace") + proc.stderr.decode("utf-8", errors="replace")
+    return proc.returncode, out
 
 
 def test_workflow_structure_and_triggers() -> None:
@@ -233,8 +307,11 @@ def test_fail_closed_stops_before_probe_budget() -> None:
     ):
         assert marker in step
     # the probe budget is untouched on every post-generation stop
-    # (D4 once + D5 three times: polling exhausted / guard mismatch / unchanged)
-    assert step.count("AUTH_PROBE_REQUESTS_ISSUED=0") == 4
+    # (D4 once + D5 twice: polling budget exhausted / guard resolve mismatch;
+    # the final polling fix moved the pre_version equality test INSIDE the
+    # loop as a continue condition, so the old third D5 site is gone)
+    assert step.count("AUTH_PROBE_REQUESTS_ISSUED=0") == 3
+    assert "SERVED_VERSION_UNCHANGED" not in step
     for stop in ("D4=STOP_OVERLAY_PUT_FAILED", "D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED"):
         at = step.index(stop)
         window = step[max(0, at - 120):at + 260]
@@ -301,11 +378,58 @@ def test_bounded_post_put_polling() -> None:
     assert 'jq -e "${served_guards}"' in poll
     assert step.count('jq -e "${served_guards}"') == 2
     assert step.count("percentage == 100") == 1
+    # final polling fix: the loop breaks ONLY on a non-empty, non-null
+    # candidate that DIFFERS from pre_version; candidate == pre_version
+    # continues polling — there is no failure path inside the loop
+    assert '[ "${candidate}" != "${pre_version}" ]' in poll
+    assert poll.count("break") == 1
+    assert poll.index('"${pre_version}"') < poll.index("break")
+    assert "D5" not in poll and "exit" not in poll
     # the guard resolver cross-checks the polled version id before accepting it
     assert "GUARD_RESOLVE_MISMATCH=YES" in step
     assert "POLLING_MUTATION=0" in step
+    assert "POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY" in step
     # polling never accepts the PUT response as proof: response file already gone
     assert step.index('rm -f "${response}"') < poll_start
+
+
+def test_pre_read_is_single_guarded_get() -> None:
+    step = _pipeline_step()
+    poll_start = step.index("for _ in $(seq 1 30); do")
+    pre_read = step[:poll_start]
+    # the pre-read is exactly ONE deployments GET validated by ONE guard
+    # application: only the post-PUT confirmation polls (wording contract:
+    # PRE_READ_CONTRACT=SINGLE_GUARDED_GET, POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY)
+    assert pre_read.count('/deployments" -o') == 1
+    assert pre_read.count('jq -e "${served_guards}"') == 1
+    assert step.count('/deployments" -o') == 2
+    assert "PRE_READ_CONTRACT=SINGLE_GUARDED_GET" in step
+
+
+def test_polling_regression_old_old_new_continues_to_third_read() -> None:
+    # CENTRAL regression: served reads old, old, new must NOT break on the
+    # first valid 100-percent version: the two old reads continue polling and
+    # the third (new) read is accepted; D5 is not emitted.
+    rc, out = _run_poll_region([POLL_OLD, POLL_OLD, POLL_NEW])
+    assert rc == 0, out
+    assert out.count("POLL_CURL_CALL_NUMBER=") == 3, out
+    assert "POLL_CURL_CALLS_FINAL=3" in out
+    assert f"POLL_NEW_VERSION={POLL_NEW}" in out
+    assert "D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED" not in out
+    assert "POLLING_ATTEMPTS_EXHAUSTED=YES" not in out
+
+
+def test_polling_regression_pre_version_only_exhausts_to_d5() -> None:
+    # budget exhaustion with only pre_version reads: exactly 30 GET attempts,
+    # then D5 with zero probe requests and no second PUT (the PUT site lives
+    # outside this region and is capped by test_closed_mutation_and_probe_budgets)
+    rc, out = _run_poll_region([POLL_OLD])
+    assert rc == 1, out
+    assert out.count("POLL_CURL_CALL_NUMBER=") == 30, out
+    assert "D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED" in out
+    assert "POLLING_ATTEMPTS_EXHAUSTED=YES" in out
+    assert "AUTH_PROBE_REQUESTS_ISSUED=0" in out
+    assert "POLL_CURL_CALLS_FINAL" not in out
 
 
 def test_put_success_contract_2xx_and_json_success() -> None:
