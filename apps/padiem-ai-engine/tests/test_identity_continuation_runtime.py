@@ -289,3 +289,27 @@ def test_active_worker_wires_explicit_durable_continuation_with_production_bindi
     assert "CREATE TABLE" not in adapter_source.upper()
     assert 'binding = "ENGINE_CONTINUATION"' in wrangler_source
     assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in wrangler_source
+
+
+def test_active_worker_imports_durable_continuation_store():
+    """f88 HEALTH-500 regression: worker_identity must import the continuation store.
+
+    c0e28b85 dropped ``from app.continuation_d1 import
+    CloudflareD1IdentityBoundContinuationStore`` while keeping both uses
+    (lazy annotation + bound-path constructor call). With
+    ``from __future__ import annotations`` the def succeeds, but the call
+    raises NameError when ENGINE_CONTINUATION is bound, which the local
+    ``except (TypeError, ValueError)`` does not catch, so every request
+    including GET /internal/v1/health 500s. Substring checks cannot catch
+    this; assert the real import binding.
+    """
+    import ast
+
+    root = Path(__file__).resolve().parents[1]
+    tree = ast.parse((root / "worker_identity.py").read_text(encoding="utf-8"))
+    imported: dict[str, int] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module == "app.continuation_d1":
+            for alias in node.names:
+                imported[alias.asname or alias.name] = node.lineno
+    assert "CloudflareD1IdentityBoundContinuationStore" in imported
