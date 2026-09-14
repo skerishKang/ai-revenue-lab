@@ -13,12 +13,22 @@ never mutate any secret. They prove:
    the auth probe all live in ONE bash step (one shell process), and the
    credential reaches the payload builder ONLY through the environment
    (`--credential-env`), never argv;
-3. closed budgets: ONE_GENERATION_MAX, ONE_OVERLAY_PUT_MAX (single PUT gated on
+3. CENTRAL export hotfix (ACT2 run 34795118387 stopped before the PUT with
+   B54_ENGINE_OVERLAY_ROTATION_PLAN=FAIL / "new Claw credential is not set
+   (environment variable NEW_CREDENTIAL)"): the validated credential is
+   exported BARE (`export NEW_CREDENTIAL`, never with a value) after
+   successful format validation and before BOTH child python consumers
+   (rotation plan and auth probe) that read os.environ["NEW_CREDENTIAL"];
+   the real generation region is executed under bash in a behavioral
+   subprocess regression test proving child-env visibility and effective
+   unset, with a negative control that detects the missing export — the
+   credential value never appears in any test output;
+4. closed budgets: ONE_GENERATION_MAX, ONE_OVERLAY_PUT_MAX (single PUT gated on
    HTTP 2xx AND response JSON .success == true, boolean-only, body and response
    files removed before continuing), ONE_AUTH_PROBE_MAX (exactly one transport
    call in the probe), NO_AUTOMATIC_RETRY, no artifacts, no secret-derived
    output;
- 4. polling contract (CENTRAL fix 1 + final polling fix): the pre-PUT served
+5. polling contract (CENTRAL fix 1 + final polling fix): the pre-PUT served
     read is a SINGLE guarded GET (PRE_READ_CONTRACT=SINGLE_GUARDED_GET — it
     does NOT poll); only the post-PUT confirmation polls
     (POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY: rotation gate bounded GET-only
@@ -28,17 +38,17 @@ never mutate any secret. They prove:
     sequence keeps polling to the third read (behaviorally regression-tested
     with stubbed curl/jq), and D5 is emitted solely when the polling budget is
     exhausted without a new version;
-5. CENTRAL fix 3: the auth verdict is the closed three-way contract
+6. CENTRAL fix 3: the auth verdict is the closed three-way contract
    PASS / FAIL / INCONCLUSIVE, regression-tested behaviorally under bash;
-6. fail-closed stops D1..D5 exist, run BEFORE the probe budget is consumed
+7. fail-closed stops D1..D5 exist, run BEFORE the probe budget is consumed
    where applicable, and the always() evidence step never claims an executed
    result when the pipeline stopped early (truthful outcome markers only);
-7. reuse without duplication: the existing overlay payload builder
+8. reuse without duplication: the existing overlay payload builder
    (plan/classify/failure-evidence), the canonical GET-only served-version
    guard (resolve-active/verify), and the existing oracle module semantics
    (build_request/classify_response/_transport_post) are invoked, not
    re-implemented;
-8. execution gating: only workflow_dispatch + environment: production + exact
+9. execution gating: only workflow_dispatch + environment: production + exact
    confirmation phrase + double exact-main guard can reach the mutating step;
    the PR trigger runs only these static tests and echoes DIAGNOSTIC_EXECUTED=NO.
 """
@@ -171,6 +181,36 @@ def _extract_poll_region() -> str:
     return region
 
 
+def _extract_generation_region() -> str:
+    step = _pipeline_step()
+    start = step.index('NEW_CREDENTIAL="$(python3')
+    end = step.index("plan_out=", start)
+    region = step[start:end]
+    assert "token_urlsafe(48)" in region
+    assert "export NEW_CREDENTIAL" in region
+    return region
+
+
+def _run_export_region(with_export: bool) -> tuple[int, str]:
+    region = _extract_generation_region()
+    if not with_export:
+        region = "\n".join(
+            line for line in region.splitlines() if line.strip() != "export NEW_CREDENTIAL"
+        )
+    script = (
+        "set -euo pipefail\n"
+        + region
+        + "if python3 -c 'import os,sys; sys.exit(0 if os.environ.get(\"NEW_CREDENTIAL\") else 1)'; "
+        "then echo EXPORTED_ENV_VISIBLE=OK; else echo EXPORTED_ENV_VISIBLE=FAIL; fi\n"
+        "unset NEW_CREDENTIAL\n"
+        "if python3 -c 'import os,sys; sys.exit(0 if \"NEW_CREDENTIAL\" not in os.environ else 1)'; "
+        "then echo UNSET_ENV_REMOVED=OK; else echo UNSET_ENV_REMOVED=FAIL; fi\n"
+    )
+    proc = subprocess.run(["bash", "-s"], input=script.encode("utf-8"), capture_output=True)
+    out = proc.stdout.decode("utf-8", errors="replace") + proc.stderr.decode("utf-8", errors="replace")
+    return proc.returncode, out
+
+
 def _run_poll_region(versions: list[str]) -> tuple[int, str]:
     rendered = (
         POLL_HARNESS
@@ -269,6 +309,51 @@ def test_credential_never_crosses_process_boundaries() -> None:
     assert "token_urlsafe(48)" in step
     assert "[A-Za-z0-9_-]{64}" in step
     assert "D2=STOP_GENERATION_FORMAT_DISCARDED" in step
+
+
+def test_credential_exported_before_child_consumers() -> None:
+    step = _pipeline_step()
+    assert step.count("export NEW_CREDENTIAL") == 1, "exactly one export site"
+    for line in step.splitlines():
+        if line.strip().startswith("export NEW_CREDENTIAL"):
+            assert line.strip() == "export NEW_CREDENTIAL", "bare export only: never a value on the export line"
+    export_at = step.index("export NEW_CREDENTIAL")
+    assert export_at > step.index("CREDENTIAL_FORMAT_VALIDATED=PASS"), "export only after successful format validation"
+    assert export_at < step.index("plan --credential-env NEW_CREDENTIAL"), "export before the rotation plan child"
+    assert export_at < step.index('os.environ["NEW_CREDENTIAL"]'), "export before the auth probe child"
+    # environment-only handoff: nothing is persisted to files or GHA scopes
+    assert "GITHUB_ENV" not in step and "GITHUB_OUTPUT" not in step
+    assert "tee" not in step
+    # unset immediately after the single probe, and on every post-export stop
+    probe_at = step.index('os.environ["NEW_CREDENTIAL"]')
+    assert step.rindex("unset NEW_CREDENTIAL") > probe_at
+    assert step.index("PROBE_CREDENTIAL_UNSET=YES") > step.rindex("unset NEW_CREDENTIAL")
+    assert step[export_at:].count("unset NEW_CREDENTIAL") == 4, "D4 + D5 x2 + post-probe"
+    d2_at = step.index("D2=STOP_GENERATION_FORMAT_DISCARDED")
+    assert "unset NEW_CREDENTIAL" in step[:d2_at]
+
+
+def test_export_regression_child_env_visible_and_unset_effective() -> None:
+    # CENTRAL regression contract 10: run the REAL generation+export region in
+    # bash and let a child python process read os.environ["NEW_CREDENTIAL"];
+    # only fixed markers print, the credential value never reaches output
+    rc, out = _run_export_region(True)
+    assert rc == 0, out
+    assert "ONE_GENERATION_MAX=YES" in out and "CREDENTIAL_FORMAT_VALIDATED=PASS" in out
+    assert "EXPORTED_ENV_VISIBLE=OK" in out
+    assert "UNSET_ENV_REMOVED=OK" in out
+    assert not re.search(r"[A-Za-z0-9_-]{64}", out), "the generated credential value must never appear in output"
+
+
+def test_export_regression_detects_missing_export() -> None:
+    # negative control: the same region WITHOUT the export line reproduces the
+    # ACT-2 runtime defect (child python cannot see NEW_CREDENTIAL), proving
+    # the regression test has detection power
+    rc, out = _run_export_region(False)
+    assert rc == 0, out
+    assert "EXPORTED_ENV_VISIBLE=FAIL" in out
+    assert "UNSET_ENV_REMOVED=OK" in out
+    assert not re.search(r"[A-Za-z0-9_-]{64}", out)
 
 
 def test_put_body_file_is_short_lived_and_target_guarded() -> None:
