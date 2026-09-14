@@ -1,0 +1,343 @@
+name: B54 Engine Caller Registry Base V1 B54-Kagent Removal Gate
+
+# Dispatch-only MIGRATION gate. It removes ONLY the caller entry
+# ``b54-kagent`` from the complete V1 base registry
+# (``PADIEM_ENGINE_CALLER_REGISTRY_V1``) on the ``padiem-ai-engine`` worker.
+# The overlay secret ``PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY`` remains the
+# SOLE authority for ``b54-kagent``; a base registry that also contains the
+# same caller id makes the Engine identity authority fail closed with
+# ``duplicate_service_caller`` for every caller.
+#
+# This gate NEVER writes the overlay secret, NEVER deletes any secret, NEVER
+# creates an overlay shadowing mechanism, and NEVER deploys the worker. The
+# Engine runtime duplicate rejection is unchanged; this gate only removes the
+# structural conflict from the base data.
+#
+# Secret material NEVER passes through workflow_dispatch inputs:
+# - the private baseline registry comes from the repository secret
+#   `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE`;
+# - the non-secret baseline currentness attestation comes from the repository
+#   secret `B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS`.
+# No credential input exists: every non-target caller entry (and the target
+# entry's credential) is preserved or discarded verbatim; nothing is rebuilt.
+#
+# Fail-closed plan guard: the baseline must parse with canonical Engine V1
+# semantics, must contain the B61 entry, must carry EXACTLY ONE ``b54-kagent``
+# entry, must be proven currently authoritative by the bounded attestation
+# (same contract as the provisioning gate), and the resulting registry must
+# parse with the PRODUCTION Engine ``parse_caller_registry_v1``. Any refusal
+# makes the PUT step unreachable.
+#
+# Post-write readback proves on the SERVED version (deployments API ->
+# versions/{active} detail) that BOTH the base V1 and the overlay remain
+# ``PRESENT:secret_text`` and the runtime-inert legacy trio NAME/TYPE state is
+# unchanged, then the gate STOPS. Runtime success is UNPROVEN_PENDING_PHASE_A;
+# a follow-up authenticated Phase A is a separate, explicitly authorized act.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-caller-registry-base-v1-b54-kagent-removal-gate.yml"
+      - ".github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py"
+      - ".github/tests/test_b54_engine_caller_registry_base_v1_b54_kagent_removal_gate.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Engine base V1 b54-kagent removal gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - apply_base_v1_b54_kagent_removal
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-caller-registry-base-v1-b54-kagent-removal-gate
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN_GUARD=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run base V1 b54-kagent removal gate contract tests
+        run: python .github/tests/test_b54_engine_caller_registry_base_v1_b54_kagent_removal_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_SOURCE_CONTRACT=PASS'
+          echo 'MIGRATION_TARGET=BASE_V1_ONLY'
+          echo 'OVERLAY_MUTATION=0'
+          echo 'CLOUDFLARE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      disposition: ${{ steps.classify.outputs.disposition }}
+      legacy_pre_state: ${{ steps.classify.outputs.legacy_pre_state }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Reconfirm exact main immediately before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - name: Read Engine caller authority and classify removal disposition
+        id: classify
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          settings="${RUNNER_TEMP}/b54-engine-caller-authority-before.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings" \
+            -o "${settings}"
+          evidence="$(python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py classify \
+            --settings "${settings}")"
+          echo "${evidence}"
+          disposition="$(printf '%s\n' "${evidence}" | sed -n 's/^B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_DISPOSITION=//p')"
+          if [ "${disposition}" != "MIGRATION_REQUIRED" ]; then
+            echo 'Refusing: caller authority is not in the proven duplicate-caller shape.' >&2
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          legacy_pre_state="$(printf '%s\n' "${evidence}" | sed -n 's/^LEGACY_TRIO_PRE_STATE=//p')"
+          test -n "${legacy_pre_state}"
+          echo "disposition=${disposition}" >> "${GITHUB_OUTPUT}"
+          echo "legacy_pre_state=${legacy_pre_state}" >> "${GITHUB_OUTPUT}"
+          echo 'GET_ONLY=PASS'
+          echo 'BINDING_NAME_AND_TYPE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'RAW_REGISTRY_JSON_OUTPUT=0'
+          echo 'CLOUDFLARE_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  apply-base-v1-b54-kagent-removal:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_base_v1_b54_kagent_removal' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      BASELINE_REGISTRY: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE }}
+      BASELINE_CURRENTNESS: ${{ secrets.B54_ENGINE_CALLER_REGISTRY_V1_BASELINE_CURRENTNESS }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      DISPOSITION: ${{ needs.cloudflare-readonly.outputs.disposition }}
+      LEGACY_PRE_STATE: ${{ needs.cloudflare-readonly.outputs.legacy_pre_state }}
+    steps:
+      - name: Require explicit removal authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "REMOVE_B54_KAGENT_FROM_BASE_V1_FROM_EXACT_MAIN"
+          test "${DISPOSITION}" = "MIGRATION_REQUIRED"
+          echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_AUTHORIZATION=PASS'
+          echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - name: Build the bounded base V1 removal PUT body from secrets
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/b54-engine-base-v1-removal-payload.json"
+          plan_status=0
+          evidence="$(python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py plan \
+            --baseline-env BASELINE_REGISTRY \
+            --currentness-env BASELINE_CURRENTNESS \
+            --output "${RUNNER_TEMP}/b54-engine-base-v1-removal-payload.json")" \
+            || plan_status=$?
+          echo "${evidence}"
+          if [ "${plan_status}" -ne 0 ]; then
+            echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL=SKIPPED_PLAN_FAILED'
+            echo 'OVERLAY_MUTATION=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          printf '%s\n' "${evidence}" | grep -q '^B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_PLAN=PASS$'
+          printf '%s\n' "${evidence}" | grep -q '^BASELINE_CURRENTNESS_PROVEN=YES$'
+          printf '%s\n' "${evidence}" | grep -q '^RESULT_ENGINE_PARSE_VALID=YES$'
+          printf '%s\n' "${evidence}" | grep -q '^OTHER_CALLERS_PRESERVED=YES$'
+          printf '%s\n' "${evidence}" | grep -q '^B61_PRESERVED=YES$'
+          jq -e '.name == "PADIEM_ENGINE_CALLER_REGISTRY_V1" and .type == "secret_text"' \
+            "${RUNNER_TEMP}/b54-engine-base-v1-removal-payload.json" >/dev/null
+          echo 'BASELINE_CURRENTNESS_GUARD=PASS'
+          echo 'PUT_TARGET=PADIEM_ENGINE_CALLER_REGISTRY_V1'
+          echo 'OVERLAY_MUTATION=0'
+          echo 'RAW_REGISTRY_JSON_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+
+      - name: Rewrite ONLY the base V1 registry secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/b54-engine-base-v1-removal-payload.json"
+          test -s "${payload}"
+          jq -e '.name == "PADIEM_ENGINE_CALLER_REGISTRY_V1"' "${payload}" >/dev/null
+          response="${RUNNER_TEMP}/b54-engine-base-v1-removal-response.json"
+          set +e
+          http_status="$(
+            curl -sS -X PUT \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/secrets" \
+              -o "${response}" \
+              -w '%{http_code}'
+          )"
+          curl_status=$?
+          set -e
+          case "${http_status}" in
+            ''|*[!0-9]*) http_status=000 ;;
+          esac
+          rm -f "${payload}"
+          echo "B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_HTTP_STATUS=${http_status}"
+          if [ "${curl_status}" -ne 0 ] || [ "${http_status}" -lt 200 ] || [ "${http_status}" -ge 300 ]; then
+            python .github/scripts/b54_engine_caller_registry_v1_provision.py failure-evidence \
+              --response "${response}" \
+              --http-status "${http_status}"
+            rm -f "${response}"
+            echo 'OVERLAY_MUTATION=0'
+            exit 1
+          fi
+          success="$(jq -r 'if (.success == true) then "true" else "false" end' "${response}" 2>/dev/null || echo unknown)"
+          rm -f "${response}"
+          test "${success}" = "true"
+          echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL=APPLIED'
+          echo 'OVERLAY_MUTATION=0'
+          echo 'CLOUDFLARE_ERROR_MESSAGE_OUTPUT=0'
+          echo 'SECRET_VALUE_EMITTED=0'
+          echo 'RAW_REGISTRY_JSON_OUTPUT=0'
+
+      - name: Read back the served version authority (NAME/TYPE only) and STOP
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/b54-engine-base-v1-removal-payload.json"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          verified=no
+          for _ in $(seq 1 30); do
+            deployments="${RUNNER_TEMP}/b54-engine-base-v1-removal-deployments.json"
+            curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" \
+              -o "${deployments}"
+            active_version="$(python .github/scripts/b54_engine_served_version_guard.py resolve-active \
+              --deployments "${deployments}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+            test -n "${active_version}"
+            version_detail="${RUNNER_TEMP}/b54-engine-base-v1-removal-version-detail.json"
+            curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" \
+              -o "${version_detail}"
+            if python .github/scripts/b54_engine_caller_registry_base_v1_b54_kagent_removal.py verify \
+              --version-detail "${version_detail}" \
+              --active-version "${active_version}" \
+              --legacy-pre-state "${LEGACY_PRE_STATE}"; then
+              verified=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${verified}" = yes
+          echo 'B54_ENGINE_BASE_V1_B54_KAGENT_REMOVAL_POST_READBACK=PASS'
+          echo 'MIGRATION_TARGET=BASE_V1_ONLY'
+          echo 'OVERLAY_MUTATION=0'
+          echo 'WORKER_DEPLOYED=0'
+          echo 'PHASE_A_EXECUTED=0'
+          echo 'RUNTIME_SUCCESS=UNPROVEN_PENDING_PHASE_A'
+          echo 'GATE_STOPS_AFTER_READBACK=YES'
