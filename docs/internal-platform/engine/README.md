@@ -15,6 +15,8 @@ Cross-runtime AI service boundary around Padiem AI Core.
 
 IP-ENGINE owns internal execution transport, Service Binding hosting, trusted first-party caller identity/authentication, and the runtime projection required for independent products to consume shared Core capabilities without owning Provider infrastructure.
 
+Per the #2409 Wave 0 boundary lock, concrete trusted caller enforcement, the caller registry, and Service Binding transport normalization are Engine runtime authority (enforcement; their platform-independent shapes are IP-CORE contracts). See `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md`.
+
 ## Boundary
 
 IP-ENGINE does not own:
