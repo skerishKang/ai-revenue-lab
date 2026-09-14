@@ -1,6 +1,6 @@
 name: B54 Engine Caller Registry Overlay Rotation Gate
 
-# Dispatch-only credential ROTATION of the b54-kagent Engine caller authority.
+# Dispatch-only credential ROTATION of the b54-p01-overlay-20260914-a1 Engine caller authority.
 #
 # This gate replaces ONLY ``PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY`` (a served
 # Worker ``secret_text`` on the ``padiem-ai-engine`` worker) with a canonical
@@ -12,7 +12,7 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 # gate and is deliberately not referenced here).
 #
 # Why the OVERLAY (not the base V1): the #2375 Production authority established
-# caller ``b54-kagent`` / app ``b54-padiem-claw`` as an additive SINGLE-caller
+# caller ``b54-p01-overlay-20260914-a1`` / app ``b54-padiem-claw`` as an additive SINGLE-caller
 # OVERLAY, kept OUT of the opaque multi-caller base. After the B62 credential
 # rotation the resulting drift is an OVERLAY credential drift, so the fix is an
 # overlay credential rewrite — a base V1 rewrite is NOT this gate's job: it
@@ -22,7 +22,7 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 # Canonical overlay payload (credential embedded UNHASHED; the Engine hashes it
 # internally via ``caller_secret_digest``):
 #   {"version": 1,
-#    "caller": {"caller_id": "b54-kagent",
+#    "caller": {"caller_id": "b54-p01-overlay-20260914-a1",
 #               "credential": <raw B62_P01_ENGINE_CREDENTIAL>,
 #               "allowed_app_ids": ["b54-padiem-claw"]}}
 #
