@@ -25,6 +25,7 @@ from padiem_control_plane import (
     CanonicalSubjectRef,
     SubjectType,
 )
+from padiem_control_plane.product_tier_routes import ProductTierLabel
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
@@ -556,6 +557,67 @@ def test_quote_workspace_store_unavailable_fails_closed() -> None:
             )
     assert resp.status_code == 503
     assert resp.json()["error"]["code"] == "workspace_storage_unavailable"
+
+
+def test_browser_plus_tier_is_forwarded_to_claw_p01_adapter() -> None:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    adapter = _make_adapter()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, adapter):
+            resp = test_client.post(
+                EXECUTE_ROUTE_PATH,
+                json={
+                    "content": "Plus 등급 실행 테스트",
+                    "channel": "kakao",
+                    "action": "reply",
+                    "tier": "plus",
+                },
+            )
+    assert resp.status_code == 200
+    adapter.execute.assert_awaited_once()
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
+
+
+def test_browser_default_tier_is_pro_when_omitted() -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={"content": "기본 등급 실행 테스트", "channel": "sms", "action": "reply"},
+        )
+    assert resp.status_code == 200
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PRO
+
+
+def test_browser_max_tier_fails_closed_before_claw_dispatch() -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={"content": "Max 등급 테스트", "channel": "sms", "action": "reply", "tier": "max"},
+        )
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "tier_unavailable"
+    adapter.execute.assert_not_called()
+
+
+def test_browser_unknown_tier_fails_closed_before_claw_dispatch() -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={"content": "잘못된 등급 테스트", "channel": "sms", "action": "reply", "tier": "auto"},
+        )
+    assert resp.status_code == 422
+    assert resp.json()["error"]["code"] == "invalid_tier"
+    adapter.execute.assert_not_called()
 
 
 def test_browser_payload_cannot_set_provider_or_model() -> None:
