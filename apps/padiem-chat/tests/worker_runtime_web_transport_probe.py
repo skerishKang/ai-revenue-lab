@@ -25,6 +25,7 @@ class Default(WorkerEntrypoint):
             "abortsignal_import": False,
             "fetch_accepts_signal": False,
             "local_normal_fetch": False,
+            "local_post_body_headers": False,
             "local_incremental_body": False,
             "local_delay_timeout": False,
             "local_body_timeout": False,
@@ -50,6 +51,19 @@ class Default(WorkerEntrypoint):
                 normal = await client.get("http://127.0.0.1:9099/normal")
                 result["fetch_accepts_signal"] = normal.status_code == 200
                 result["local_normal_fetch"] = normal.content == b"normal-ok"
+
+                posted = await client.post(
+                    "http://127.0.0.1:9099/echo-json",
+                    content=b'{"probe":"runtime"}',
+                    headers={
+                        "Content-Type": "application/json",
+                        "X-Probe": "runtime",
+                    },
+                )
+                result["local_post_body_headers"] = (
+                    posted.status_code == 200
+                    and posted.content == b'probe-ok:{"probe":"runtime"}'
+                )
 
                 started = time.monotonic()
                 first_elapsed = None
@@ -116,6 +130,7 @@ class Default(WorkerEntrypoint):
                 "abortsignal_import",
                 "fetch_accepts_signal",
                 "local_normal_fetch",
+                "local_post_body_headers",
                 "local_incremental_body",
                 "local_delay_timeout",
                 "local_body_timeout",
