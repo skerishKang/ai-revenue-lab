@@ -438,7 +438,17 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         try:
             body = bytes(await request.aread())
-            headers = {str(k): str(v) for k, v in request.headers.items()}
+            transport_managed = {
+                "host",
+                "content-length",
+                "transfer-encoding",
+                "connection",
+            }
+            headers = {
+                str(k): str(v)
+                for k, v in request.headers.items()
+                if str(k).lower() not in transport_managed
+            }
         except Exception as exc:
             raise httpx.RequestError(
                 "Worker fetch request could not be encoded.",
