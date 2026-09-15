@@ -122,11 +122,41 @@ def test_active_drift_and_structural_ambiguity_fail_closed():
         )
     with pytest.raises(helper.LineageError):
         helper.compare_lineage(
+            deployments_payload={"success": True, "result": {"deployments": []}},
+            expected_active_version=ACTIVE,
+            active_detail_payload=_detail(),
+            reference_detail_payload=_detail(),
+        )
+    with pytest.raises(helper.LineageError):
+        helper.compare_lineage(
             deployments_payload=_deployments(),
             expected_active_version="not-a-uuid",
             active_detail_payload=_detail(),
             reference_detail_payload=_detail(),
         )
+
+
+def test_deployment_history_entries_are_not_ambiguity():
+    # Cloudflare returns deployment history; deployments[0] is the current
+    # serving deployment (documented in b62_served_version_secret_guard).
+    helper = _load_helper()
+    history = {
+        "success": True,
+        "result": {
+            "deployments": [
+                {"versions": [{"version_id": ACTIVE, "percentage": 100}]},
+                {"versions": [{"version_id": REFERENCE, "percentage": 100}]},
+            ]
+        },
+    }
+    verdict = helper.compare_lineage(
+        deployments_payload=history,
+        expected_active_version=ACTIVE,
+        active_detail_payload=_detail(SECRET_ETAG),
+        reference_detail_payload=_detail(SECRET_ETAG),
+    )
+    assert verdict["ACTIVE_VERSION"] == ACTIVE
+    assert verdict["SCRIPT_IDENTITY_EQUAL"] == "YES"
 
 
 def test_missing_or_empty_script_identity_fails_closed():
@@ -225,7 +255,10 @@ def test_workflow_is_get_only_and_exact_main_guarded():
     assert 'test "${GITHUB_REF}" = "refs/heads/main"' in workflow
     assert 'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"' in workflow
     assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in workflow
-    assert 'test "${active}" = "${EXPECTED_ACTIVE_VERSION}"' in workflow
+    assert '(.result.deployments | length) >= 1' in workflow
+    assert '(.result.deployments | length) == 1' not in workflow
+    assert 'if [[ "${active}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then' in workflow
+    assert "EXPECTED_ACTIVE_VERSION_MATCH=FAIL" in workflow
     assert "percentage == 100" in workflow
     assert "b62_script_lineage_comparator.py" in workflow
     assert "RAW_SCRIPT_ETAG_OUTPUT=0" in workflow
