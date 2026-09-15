@@ -1,7 +1,8 @@
 /* Padiem Glass portrait composition layer.
  * Keeps the chat surface readable while reserving the right side for metallic portrait art.
  * Female uses the Drive-approved cyber-07 derivative; Male uses cyber-03.
- * The portrait mask is conversation-driven: chat travel reveals and re-covers the face in a loop.
+ * The portrait mask is dual-driven: pointer proximity and live answer activity
+ * can reveal/re-cover the portrait together, while home travel remains additive.
  */
 
 @property --glass-mask-start {

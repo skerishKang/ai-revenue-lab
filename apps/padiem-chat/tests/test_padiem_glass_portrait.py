@@ -80,7 +80,7 @@ def test_glass_mobile_keeps_chat_primary_and_art_subordinate() -> None:
     assert 'opacity: .16' in PORTRAIT_CSS
 
 
-def test_glass_portrait_reveal_loop_is_conversation_driven() -> None:
+def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_activity() -> None:
     assert 'function pingPong(value)' in THEME_JS
     assert 'phase<=1?phase:2-phase' in THEME_JS
     assert 'list.children.length' in THEME_JS
@@ -89,7 +89,12 @@ def test_glass_portrait_reveal_loop_is_conversation_driven() -> None:
     assert 'scrollTravel=pageY/Math.max(520,window.innerHeight*.72)' in THEME_JS
     assert 'messageTravel=messageCount*.28' in THEME_JS
     assert 'var travel=messageTravel+overflowTravel+scrollTravel' in THEME_JS
-    assert 'var reveal=smoothstep(pingPong(travel))' in THEME_JS
+    assert 'baseReveal=smoothstep(pingPong(travel))' in THEME_JS
+    assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
+    assert 'function glassAnswerReveal(now)' in THEME_JS
+    assert 'noteGlassAnswerActivity()' in THEME_JS
+    assert '*(1-pointerReveal*.78)' in THEME_JS
+    assert '*(1-answerReveal*.86);' in THEME_JS
     assert '--glass-mask-start' in THEME_JS
     assert '--glass-mask-full' in THEME_JS
     assert '--glass-reveal' in THEME_JS
@@ -97,10 +102,11 @@ def test_glass_portrait_reveal_loop_is_conversation_driven() -> None:
     assert 'requestAnimationFrame' in THEME_JS
 
 
-def test_glass_pointer_is_subtle_and_not_the_reveal_driver() -> None:
+def test_glass_pointer_is_subtle_and_also_drives_reveal() -> None:
     assert 'window.addEventListener("pointermove",updateGlassPointer' in THEME_JS
-    assert '(nx*8)' in THEME_JS
-    assert '(ny*5)' in THEME_JS
+    assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
+    assert '(nx*8*glassPointerReveal)' in THEME_JS
+    assert '(ny*5*glassPointerReveal)' in THEME_JS
     assert '--glass-pointer-x' in THEME_JS
     assert '--glass-pointer-y' in THEME_JS
     assert 'calc(var(--glass-art-x) + var(--glass-pointer-x))' in PORTRAIT_CSS

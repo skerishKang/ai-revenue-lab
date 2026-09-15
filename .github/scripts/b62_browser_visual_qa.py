@@ -168,7 +168,8 @@ async def _send_glass_turn(page: Page, *, variant: str, turn: int) -> None:
         arg=expected,
         timeout=15_000,
     )
-    await page.wait_for_timeout(950)
+    # Sample while the answer-activity reveal envelope is still active.
+    await page.wait_for_timeout(120)
 
 
 async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
@@ -210,51 +211,117 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     home_name = f"desktop-glass-{variant}-home.png"
     await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
 
+    # Return to the content side before testing answer-only motion.
+    await page.mouse.move(70, 80)
+    await page.wait_for_timeout(1100)
+
     chat_name = f"desktop-glass-{variant}-chat.png"
     reading_samples: list[dict[str, Any]] = []
+    answer_only_reveal = 0.0
+    combined_reveal = 0.0
+
     for turn in range(1, 6):
+        # Turn 1 = answer only. Turn 2 = pointer + answer together.
+        if turn == 2:
+            await page.mouse.move(1180, 180)
+            await page.wait_for_timeout(120)
+        else:
+            await page.mouse.move(70, 80)
+            await page.wait_for_timeout(120)
+
         await _send_glass_turn(page, variant=variant, turn=turn)
         await page.wait_for_function(
             "() => document.documentElement.getAttribute('data-glass-mode') === 'reading'",
             timeout=5_000,
         )
         await _assert_no_horizontal_overflow(page, f"glass-{variant}-turn-{turn}")
-        snapshot = await _glass_motion_snapshot(page)
-        reading_samples.append({"turn": turn, **snapshot})
-        if snapshot["reveal"] > 0.01:
-            raise AssertionError(f"Glass reading mode must freeze reveal travel: {snapshot}")
-        if snapshot["pointerX"] not in {"", "0px", "0.0px"} or snapshot["pointerY"] not in {"", "0px", "0.0px"}:
-            raise AssertionError(f"Glass reading mode pointer drifted: {snapshot}")
-        if snapshot["artX"] not in {"", "0px", "0.0px"} or snapshot["artY"] not in {"", "0px", "0.0px"}:
-            raise AssertionError(f"Glass reading mode portrait travel drifted: {snapshot}")
-        if snapshot["artScale"] not in {"", "1", "1.0", "1.000"}:
-            raise AssertionError(f"Glass reading mode portrait scale drifted: {snapshot}")
+        active = await _glass_motion_snapshot(page)
+        reading_samples.append({"turn": turn, "phase": "active", **active})
+
+        if not 0 <= active["reveal"] <= 1:
+            raise AssertionError(f"Glass reveal escaped bounded range: {active}")
+
         if turn == 1:
+            answer_only_reveal = active["reveal"]
+            if answer_only_reveal < 0.15:
+                raise AssertionError(
+                    f"Glass reading mode lost answer-driven reveal: {active}"
+                )
             await page.screenshot(path=str(OUT_DIR / chat_name), full_page=True)
 
-    reading_before_pointer = await _glass_motion_snapshot(page)
+        if turn == 2:
+            combined_reveal = active["reveal"]
+            if combined_reveal < 0.35:
+                raise AssertionError(
+                    f"Glass pointer+answer reveal is too weak: {active}"
+                )
+
+        # After answer activity and pointer proximity end, reading mode must
+        # return to its calm rest posture rather than accumulating travel.
+        await page.mouse.move(70, 80)
+        await page.wait_for_timeout(1900)
+        settled = await _glass_motion_snapshot(page)
+        reading_samples.append({"turn": turn, "phase": "settled", **settled})
+        if settled["reveal"] > 0.03:
+            raise AssertionError(
+                f"Glass reading mode did not settle after answer activity: {settled}"
+            )
+        if settled["pointerX"] not in {"", "0px", "0.0px"} or settled["pointerY"] not in {"", "0px", "0.0px"}:
+            raise AssertionError(f"Glass reading mode pointer failed to settle: {settled}")
+        if settled["artX"] not in {"", "0px", "0.0px"} or settled["artY"] not in {"", "0px", "0.0px"}:
+            raise AssertionError(f"Glass reading mode portrait failed to settle: {settled}")
+        if settled["artScale"] not in {"", "1", "1.0", "1.000"}:
+            raise AssertionError(f"Glass reading mode scale failed to settle: {settled}")
+
+    if answer_only_reveal <= 0:
+        raise AssertionError("Glass answer-only reveal was never sampled")
+    if combined_reveal <= 0:
+        raise AssertionError("Glass pointer+answer reveal was never sampled")
+
+    # Pointer-only reading interaction remains cinematic after the answer has
+    # fully settled.
+    reading_rest = await _glass_motion_snapshot(page)
+    await page.mouse.move(1180, 180)
+    await page.wait_for_timeout(160)
+    pointer_only = await _glass_motion_snapshot(page)
+    if pointer_only["reveal"] < 0.20:
+        raise AssertionError(
+            f"Glass reading mode lost pointer-driven reveal: {pointer_only}"
+        )
+    if pointer_only["reveal"] > 1:
+        raise AssertionError(f"Glass pointer-only reveal escaped bounds: {pointer_only}")
+
+    # Moving away must re-cover, then page scrolling alone must not drive the
+    # reading portrait.
     await page.mouse.move(70, 80)
+    await page.wait_for_timeout(1100)
+    reading_before_scroll = await _glass_motion_snapshot(page)
+    if reading_before_scroll["reveal"] > 0.03:
+        raise AssertionError(
+            f"Glass reading mode failed to re-cover after pointer exit: {reading_before_scroll}"
+        )
+
     await page.evaluate("window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight))")
     await page.wait_for_timeout(300)
-    reading_after_pointer_scroll = await _glass_motion_snapshot(page)
+    reading_after_scroll = await _glass_motion_snapshot(page)
 
     stable_keys = ("reveal", "artX", "artY", "artScale", "pointerX", "pointerY", "maskStart", "maskFull")
     for key in stable_keys:
-        if reading_before_pointer[key] != reading_after_pointer_scroll[key]:
+        if reading_before_scroll[key] != reading_after_scroll[key]:
             raise AssertionError(
-                f"Glass reading mode changed after pointer/scroll for {key}: "
-                f"before={reading_before_pointer[key]!r}, after={reading_after_pointer_scroll[key]!r}"
+                f"Glass reading mode changed from scroll-only travel for {key}: "
+                f"before={reading_before_scroll[key]!r}, after={reading_after_scroll[key]!r}"
             )
 
-    if reading_before_pointer["portraitOpacity"] >= home_before_pointer["portraitOpacity"]:
+    if reading_rest["portraitOpacity"] >= home_before_pointer["portraitOpacity"]:
         raise AssertionError(
             "Glass reading mode must reduce portrait prominence: "
-            f"home={home_before_pointer['portraitOpacity']}, reading={reading_before_pointer['portraitOpacity']}"
+            f"home={home_before_pointer['portraitOpacity']}, reading={reading_rest['portraitOpacity']}"
         )
-    if reading_before_pointer["bodyNoiseOpacity"] >= home_before_pointer["bodyNoiseOpacity"]:
+    if reading_rest["bodyNoiseOpacity"] >= home_before_pointer["bodyNoiseOpacity"]:
         raise AssertionError(
             "Glass reading mode must reduce atmospheric grid noise: "
-            f"home={home_before_pointer['bodyNoiseOpacity']}, reading={reading_before_pointer['bodyNoiseOpacity']}"
+            f"home={home_before_pointer['bodyNoiseOpacity']}, reading={reading_rest['bodyNoiseOpacity']}"
         )
 
     return {
@@ -272,8 +339,12 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         },
         "reading_calm": {
             "samples": reading_samples,
-            "before_pointer_scroll": reading_before_pointer,
-            "after_pointer_scroll": reading_after_pointer_scroll,
+            "answer_only_reveal": answer_only_reveal,
+            "combined_reveal": combined_reveal,
+            "rest": reading_rest,
+            "pointer_only": pointer_only,
+            "before_scroll": reading_before_scroll,
+            "after_scroll": reading_after_scroll,
             "status": "PASS",
         },
         "status": "PASS",
