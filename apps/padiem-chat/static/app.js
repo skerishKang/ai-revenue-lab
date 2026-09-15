@@ -1076,6 +1076,11 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
+  function selectedProductTier() {
+    const tier = window.PadiemTierSelection?.get?.();
+    return tier === "plus" ? "plus" : "pro";
+  }
+
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
     if (inFlight) return false;
     inFlight = true;
@@ -1088,7 +1093,7 @@
     activeRequestArticle = article;
     renderTyping(article);
     try {
-      const payload = { messages: outboundMessages, mode: "auto", skill };
+      const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1728,7 +1733,13 @@
         const response = await fetch("/api/claw/manual-intake/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
+          body: JSON.stringify({
+            content: body,
+            channel: channelValue,
+            action: actionValue,
+            sender_hint: senderText || null,
+            tier: selectedProductTier(),
+          }),
         });
         if (!response.ok) {
           renderPreviewError();
