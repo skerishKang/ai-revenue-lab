@@ -199,17 +199,35 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.kilo-laguna-s-2.1-free.v1",
+                route_id="plus.sensenova-6.8-flash-lite.v1",
                 status=ProductRouteStatus.EXECUTABLE,
+                model_family="sensenova",
+                provider_id="sensenova",
+                model_id="sensenova/sensenova-6.8-flash-lite",
+                upstream_model="sensenova-6.8-flash-lite",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_SENSENOVA_API_KEY",
+                evidence=(
+                    "Owner selection #2571; B14 provider registration #955/#2003; "
+                    "Production bounded direct-route evidence #2150/#2155/#2161 "
+                    "including HTTP 200 streaming with visible delta and DONE."
+                ),
+            ),
+            ProductTierRoute(
+                route_id="plus.kilo-laguna-s-2.1-free.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="poolside-laguna",
                 provider_id="kilo",
                 model_id="kilo/poolside-laguna-s-2.1-free",
                 upstream_model="poolside/laguna-s-2.1:free",
                 credential_mode=ProductCredentialMode.ANONYMOUS,
+                hold_reason=(
+                    "Superseded as the active Padiem Plus route by owner decision #2571. "
+                    "Retained as historical data only; no silent fallback is allowed."
+                ),
                 evidence=(
-                    "B14 catalog: apps/korean-ai-platform/app/pilot/kilo_provider.py "
-                    "KILO_LAGUNA_MODEL_ID (#956; listed on the 2026-09-08 Kilo Gateway "
-                    "model list); Chat LOW route apps/padiem-chat/app/model_policy.py"
+                    "Historical B14 Kilo free lane (#956/#2099); replaced by direct "
+                    "SenseNova selection on 2026-09-16."
                 ),
             ),
         ),
@@ -218,17 +236,35 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
-                route_id="pro.kilo-nemotron-3-ultra-free.v1",
+                route_id="pro.b-ai-qwen3.8-flash.v1",
                 status=ProductRouteStatus.EXECUTABLE,
+                model_family="qwen3.8-flash",
+                provider_id="b-ai",
+                model_id="b-ai/qwen3.8-flash",
+                upstream_model="qwen3.8-flash",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_B_AI_API_KEY",
+                evidence=(
+                    "Owner selection #2571; B.AI official exact model authority and "
+                    "B14 registration #2133; Production merge/deploy remains gated on "
+                    "fresh b-ai credential_ready=true and route_ready=true evidence."
+                ),
+            ),
+            ProductTierRoute(
+                route_id="pro.kilo-nemotron-3-ultra-free.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="nemotron-3-ultra",
                 provider_id="kilo",
                 model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
                 credential_mode=ProductCredentialMode.ANONYMOUS,
+                hold_reason=(
+                    "Superseded as the active Padiem Pro route by owner decision #2571. "
+                    "Retained as historical data only; no silent fallback is allowed."
+                ),
                 evidence=(
-                    "B14 catalog: apps/korean-ai-platform/app/pilot/kilo_provider.py "
-                    "KILO_NEMOTRON_MODEL_ID (#956; listed on the 2026-09-08 Kilo Gateway "
-                    "model list); #2096 Chat default/Pro repair; fixed_chain_v1 position 2 (#2097)"
+                    "Historical B14 Kilo Nemotron lane (#956/#2096/#2099); replaced by "
+                    "B.AI Qwen3.8-Flash selection on 2026-09-16."
                 ),
             ),
             ProductTierRoute(
@@ -258,8 +294,8 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="qwen",
                 model_id=MAX_HOLD_MODEL_ID,
                 hold_reason=(
-                    "no B14 provider registration or route evidence exists for any Qwen "
-                    "model; Padiem Max stays unbound pending explicit evidence (#1397)"
+                    "B.AI Qwen3.8-Flash is selected for Padiem Pro, not Max. Padiem "
+                    "Max stays unbound until the owner explicitly selects a Max route (#1397)."
                 ),
             ),
             ProductTierRoute(
