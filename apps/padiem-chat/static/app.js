@@ -138,6 +138,9 @@
     const state = shell.dataset.state;
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
+    const modeBar = document.getElementById("clawManualForm");
+    if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
     const tasksNav = document.getElementById("tasksNavButton");
@@ -1166,7 +1169,15 @@
       if (!sendButton.disabled) form.requestSubmit();
     }
   });
-  form.addEventListener("submit", (event) => { event.preventDefault(); submitPrompt(input.value); });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
+    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
+      clawManualForm.requestSubmit();
+      return;
+    }
+    submitPrompt(input.value);
+  });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
@@ -1232,6 +1243,7 @@
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
+    syncComposerForClaw(shell.dataset.state === "claw");
     const activeInboxKind = document.getElementById("clawWorkspace")?.dataset.inboxKind;
     if (activeInboxKind === "tasks" || activeInboxKind === "alerts") loadClawInbox(activeInboxKind);
   });
@@ -1252,7 +1264,6 @@
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
   const clawSender = document.getElementById("clawSender");
-  const clawRequestText = document.getElementById("clawRequestText");
   const clawResultArea = document.getElementById("clawResultArea");
   const clawResultPreview = document.getElementById("clawResultPreview");
   const clawResultCard = document.getElementById("clawResultCard");
@@ -1264,6 +1275,8 @@
   const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawStatus = document.getElementById("clawStatus");
+  const clawRequestEcho = document.getElementById("clawRequestEcho");
+  const clawRequestEchoText = document.getElementById("clawRequestEchoText");
   const clawArtifactMeta = document.getElementById("clawArtifactMeta");
   const clawArtifactName = document.getElementById("clawArtifactName");
   const clawArtifactSize = document.getElementById("clawArtifactSize");
@@ -1287,6 +1300,7 @@
     "claw-error-invalid": "Please check your input and try again.",
     "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
     "claw-error-auth-needed": "Please sign in again to continue.",
+    "claw-error-auth-unavailable": "This feature isn't available because the workspace sign-in state can't be verified. Please check the workspace configuration.",
     "claw-error-storage": "Could not save the document. Please try again shortly.",
     "claw-error-generic": "Something went wrong. Please try again shortly.",
     "claw-memory-review-title": "Memory save proposal (approval required)",
@@ -1320,13 +1334,37 @@
     return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
   }
 
+  function localeOr(key, fallback) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const value = window.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+
+  function syncComposerForClaw(isClaw) {
+    if (!input) return;
+    if (isClaw) {
+      input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
+      input.setAttribute("aria-describedby", "clawStatus");
+      input.setAttribute("maxlength", "4000");
+    } else {
+      input.placeholder = localeOr("input", "Ask anything");
+      input.removeAttribute("aria-describedby");
+      input.removeAttribute("aria-invalid");
+      input.setAttribute("maxlength", "8000");
+    }
+  }
+
   function setClawStatus(message, state, localeKey) {
     if (!clawStatus) return;
     if (!message) {
       clawStatus.hidden = true;
       clawStatus.textContent = "";
       clawStatus.removeAttribute("data-state");
-      if (clawRequestText) clawRequestText.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-invalid");
       return;
     }
     clawStatus.hidden = false;
@@ -1335,10 +1373,8 @@
     else clawStatus.removeAttribute("data-state");
     if (localeKey) clawStatus.dataset.localeKey = localeKey;
     else delete clawStatus.dataset.localeKey;
-    if (clawRequestText) {
-      if (state === "error") clawRequestText.setAttribute("aria-invalid", "true");
-      else clawRequestText.removeAttribute("aria-invalid");
-    }
+    if (state === "error") input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
   }
 
   function setClawAreaState(state) {
@@ -1409,7 +1445,8 @@
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
     if (code === "rate_limited" || status === 429) return clawT("claw-error-rate-limited");
-    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable" || code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
+    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable") return clawT("claw-error-auth-unavailable");
+    if (code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
     if (code === "workspace_storage_unavailable" || code === "artifact_storage_failed" || code === "artifact_generation_failed") return clawT("claw-error-storage");
     if (status === 503 || code === "engine_not_configured" || code === "live_abuse_gate_unavailable") return clawT("claw-error-generic");
     if (code === "engine_execution_failed" || status === 502) return clawT("claw-error-generic");
@@ -1573,7 +1610,7 @@
     if (clawManualForm) clawManualForm.hidden = false;
     if (clawResultArea) clawResultArea.hidden = false;
     setNavActive();
-    if (clawRequestText) clawRequestText.focus();
+    input.focus();
     closeSidebar();
     syncApprovedMemoryVisibility();
   }
@@ -1585,16 +1622,17 @@
     const kind = clawWorkspace?.dataset.inboxKind;
     if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);
   });
-  if (clawWorkspace) {
-    clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((chip) => {
+  if (clawManualForm) {
+    const modeChips = clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
+    modeChips.forEach((chip) => {
       chip.addEventListener("click", () => {
         const action = chip.dataset.clawAction;
         if (clawAction && action) clawAction.value = action;
-        clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((other) => {
+        modeChips.forEach((other) => {
           other.setAttribute("aria-pressed", other === chip ? "true" : "false");
         });
         clawLastAction = action || null;
-        if (clawRequestText) clawRequestText.focus();
+        input.focus();
       });
     });
     // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
@@ -1610,6 +1648,15 @@
       clawResultBadge.dataset.localeKey = executed ? "claw-result-badge-run" : "claw-result-badge";
       clawResultBadge.textContent = clawT(executed ? "claw-result-badge-run" : "claw-result-badge");
     }
+  }
+
+  // #2532 (R2): echo the submitted request as a user bubble in the shared
+  // conversation so manual Claw reads as one continuous Chat thread. This is
+  // the user's own message, never presented as an AI result.
+  function renderClawRequestEcho(text) {
+    if (!clawRequestEcho || !clawRequestEchoText) return;
+    clawRequestEchoText.textContent = text;
+    clawRequestEcho.hidden = false;
   }
 
   // Single artifact handlers: read current dataset at click time (no per-result listener leak).
@@ -1628,7 +1675,7 @@
     clawManualForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (clawInFlight) return;
-      const body = (clawRequestText?.value || "").trim();
+      const body = (input.value || "").trim();
       if (!body) {
         if (clawResultCard) clawResultCard.hidden = true;
         clearClawArtifact();
@@ -1639,7 +1686,7 @@
         if (clawResultHint) clawResultHint.hidden = false;
         setClawStatus(clawT("claw-error-empty"), "error");
         setClawAreaState("error");
-        if (clawRequestText) clawRequestText.focus();
+        input.focus();
         return;
       }
       if (body.length > 4000) {
@@ -1653,6 +1700,7 @@
       const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
       const senderText = (clawSender?.value || "").trim();
 
+      renderClawRequestEcho(body);
       setClawButtonsBusy(true);
       setClawStatus(clawT("claw-status-preview-running"), "running", "claw-status-preview-running");
       setClawAreaState("submitting");
@@ -1732,7 +1780,7 @@
   if (clawExecuteButton) {
     clawExecuteButton.addEventListener("click", async () => {
       if (clawInFlight) return;
-      const body = (clawRequestText?.value || "").trim();
+      const body = (input.value || "").trim();
       if (!body) {
         clearClawArtifact();
         if (clawResultCard) clawResultCard.hidden = true;
@@ -1742,7 +1790,7 @@
         }
         setClawStatus(clawT("claw-error-empty"), "error");
         setClawAreaState("error");
-        if (clawRequestText) clawRequestText.focus();
+        input.focus();
         return;
       }
       if (body.length > 4000) {
@@ -1754,6 +1802,7 @@
       const actionValue = clawAction?.value || "quote";
       const senderText = (clawSender?.value || "").trim();
 
+      renderClawRequestEcho(body);
       setClawButtonsBusy(true);
       setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
       setClawAreaState("submitting");
