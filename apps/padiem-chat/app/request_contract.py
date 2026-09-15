@@ -5,7 +5,7 @@ from typing import Any
 
 from .attachments import AttachmentValidationError, ImageAttachment, parse_attachments
 from .history import validate_conversation_id, validate_project_id
-from .model_policy import ModelPolicyError, resolve_model_policy
+from .model_policy import ModelPolicyError, resolve_model_policy, resolve_tier_policy
 from .task_modes import TaskMode, get_task_mode
 from .tool_presentations import ToolPresentationDescriptor, get_tool_presentation
 from .web_tools import MAX_QUERY_CHARS, normalize_public_url
@@ -67,7 +67,7 @@ def _validate_payload(
 ) -> tuple[list[dict[str, str]], TaskMode, BrowserToolRequest | None, tuple[Any, ...], str | None, str | None]:
     if not isinstance(raw, dict):
         raise BrowserRequestError("요청 형식이 올바르지 않습니다.")
-    if set(raw) - {"messages", "mode", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id"}:
+    if set(raw) - {"messages", "mode", "tier", "skill", "tool", "tool_input", "attachments", "conversation_id", "project_id"}:
         raise BrowserRequestError("지원하지 않는 요청 항목이 있습니다.")
     if raw.get("mode", "auto") != "auto":
         raise BrowserRequestError("현재는 자동 추천 모드만 지원합니다.")
@@ -119,18 +119,22 @@ def _validate_payload(
     return out, skill, tool_request, attachments, conversation_id, project_id
 
 
-def _apply_b62_model_policy(messages: list[dict[str, str]]) -> tuple[str, list[dict[str, str]]]:
-    """Recognize the product tier while preserving the selector until dispatch.
+def _apply_b62_model_policy(
+    messages: list[dict[str, str]],
+    *,
+    tier_id: str | None = None,
+) -> tuple[str, list[dict[str, str]]]:
+    """Resolve browser tier selection without exposing provider/model authority.
 
-    Browser validation recognizes a known Padiem tier even when its physical
-    backing route is temporarily HOLD. The route layer then permits only local
-    self-identity handling for a held tier and rejects ordinary execution before
-    tools/grounding/B14. Executable clients retain their own final fail-closed
-    gate. Returning the original validated messages also prevents double
-    resolution of stripped aliases.
+    Explicit browser tier ids are resolved server-side through the shared Padiem
+    product-tier contract. With no tier field, hidden slash aliases remain a
+    compatibility/test surface.
     """
     try:
-        policy = resolve_model_policy(messages, require_executable=False)
+        if tier_id is None:
+            policy = resolve_model_policy(messages, require_executable=False)
+        else:
+            policy = resolve_tier_policy(messages, tier_id, require_executable=True)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
-    return policy.model_id, [dict(message) for message in messages]
+    return policy.model_id, [dict(message) for message in policy.messages]
