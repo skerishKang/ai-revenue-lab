@@ -24,13 +24,7 @@ from padiem_ai_core import (
 
 from .attachments import ImageAttachment
 from .config import Settings
-from .model_policy import (
-    ModelPolicyError,
-    ResolvedModelPolicy,
-    model_policy_is_executable,
-    model_supports,
-    resolve_model_policy,
-)
+from .model_policy import ModelPolicyError, model_supports, resolve_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
@@ -179,22 +173,7 @@ def _translate_execution_error(exc: ExecutionRuntimeError) -> ChatRuntimeError:
     return _chat_error(exc.code)
 
 
-def _resolve_b62_policy(
-    messages: list[dict[str, str]],
-    *,
-    model: str | None = None,
-) -> ResolvedModelPolicy:
-    if model is not None:
-        if not isinstance(model, str) or not model_policy_is_executable(model):
-            raise ChatRuntimeError(
-                503,
-                "tier_unavailable",
-                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
-            )
-        return ResolvedModelPolicy(
-            model_id=model,
-            messages=[dict(message) for message in messages],
-        )
+def _resolve_b62_policy(messages: list[dict[str, str]]):
     try:
         return resolve_model_policy(messages)
     except ModelPolicyError as exc:
@@ -410,7 +389,6 @@ class B14Client:
         *,
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
-        model: str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         """Compatibility entrypoint for B62's simple default UX.
 
@@ -419,7 +397,7 @@ class B14Client:
         product-neutral ExecutionRequest to Core.
         """
 
-        policy = _resolve_b62_policy(messages, model=model)
+        policy = _resolve_b62_policy(messages)
         resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
 
@@ -559,12 +537,11 @@ class B14Client:
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
         attachments: tuple[ImageAttachment, ...] = (),
-        model: str | None = None,
     ) -> dict[str, Any]:
         if len(attachments) > 1:
             raise ValueError("only one image attachment is supported")
 
-        policy = _resolve_b62_policy(messages, model=model)
+        policy = _resolve_b62_policy(messages)
         resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
         attachment = attachments[0] if attachments else None
