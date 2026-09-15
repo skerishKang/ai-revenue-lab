@@ -1,4 +1,4 @@
-"""B62 live-content #2124 marker probe contract tests (#2548, SOURCE-ONLY)."""
+"""B62 live-content #2124 and #2544 marker probe contract tests (#2548, #2553, SOURCE-ONLY)."""
 from __future__ import annotations
 
 import importlib.util
@@ -23,6 +23,45 @@ MAX_BYTES = 1024
 MARKER_UNSUPPORTED = b"Business 14 Service Binding returned an unsupported stream chunk."
 MARKER_MEMORYVIEW = b"memoryview(value).tobytes()"
 MARKER_BYTES_VALUE = b"return bytes(value)"
+
+# #2544 completed-timeout marker family (raw bytes, mirror of the probe).
+MARKER_COMPLETED_DEFAULT_50 = b"completed_timeout_seconds: float = 50.0"
+MARKER_COMPLETED_BINDING_FALLBACK_50 = (
+    b'binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50"'
+)
+MARKER_SHARED_DEFAULT_20 = b"timeout_seconds: float = 20.0"
+MARKER_COMPLETION_CONFIG_WIRING = (
+    b"return self._config(self.settings.completed_timeout_seconds)"
+)
+MARKER_COMPLETION_TRANSPORT_WIRING = (
+    b"timeout_seconds=self.settings.completed_timeout_seconds"
+)
+MARKER_STREAMING_CLIENT_PRESENT = b"B14StreamingClient("
+MARKER_STREAMING_USES_DEFAULT_CONFIG = b"self._config(),"
+
+COMPLETED_MARKER_KEYS = (
+    "MARKER_COMPLETED_TIMEOUT_DEFAULT_50",
+    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50",
+    "MARKER_SHARED_TIMEOUT_DEFAULT_20",
+    "MARKER_COMPLETION_CONFIG_WIRING",
+    "MARKER_COMPLETION_TRANSPORT_WIRING",
+    "MARKER_STREAMING_CLIENT_PRESENT",
+    "MARKER_STREAMING_USES_DEFAULT_CONFIG",
+)
+COMPLETED_MARKER_BYTES = (
+    MARKER_COMPLETED_DEFAULT_50,
+    MARKER_COMPLETED_BINDING_FALLBACK_50,
+    MARKER_SHARED_DEFAULT_20,
+    MARKER_COMPLETION_CONFIG_WIRING,
+    MARKER_COMPLETION_TRANSPORT_WIRING,
+    MARKER_STREAMING_CLIENT_PRESENT,
+    MARKER_STREAMING_USES_DEFAULT_CONFIG,
+)
+
+
+def _completed_content(exclude: bytes | None = None) -> bytes:
+    parts = [m for m in COMPLETED_MARKER_BYTES if m is not exclude]
+    return b"\n".join(parts) + b"\n"
 
 
 def _load_helper():
@@ -55,7 +94,16 @@ def _detail(etag=SECRET_ETAG, last_deployed_from=None, **extra):
 
 
 def _full_content():
-    return b"# worker\n" + MARKER_MEMORYVIEW + b"\n" + MARKER_BYTES_VALUE + b"\n" + MARKER_UNSUPPORTED + b"\n"
+    return (
+        b"# worker\n"
+        + MARKER_MEMORYVIEW
+        + b"\n"
+        + MARKER_BYTES_VALUE
+        + b"\n"
+        + MARKER_UNSUPPORTED
+        + b"\n"
+        + _completed_content()
+    )
 
 
 def _probe(helper, **overrides):
@@ -107,6 +155,14 @@ def test_all_markers_present_yields_pass_with_exact_vocabulary(tmp_path):
         "MARKER_MEMORYVIEW_TOBYTES=PRESENT",
         "MARKER_BYTES_VALUE=PRESENT",
         "PR2124_LIVE_MARKERS=PASS",
+        "MARKER_COMPLETED_TIMEOUT_DEFAULT_50=PRESENT",
+        "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50=PRESENT",
+        "MARKER_SHARED_TIMEOUT_DEFAULT_20=PRESENT",
+        "MARKER_COMPLETION_CONFIG_WIRING=PRESENT",
+        "MARKER_COMPLETION_TRANSPORT_WIRING=PRESENT",
+        "MARKER_STREAMING_CLIENT_PRESENT=PRESENT",
+        "MARKER_STREAMING_USES_DEFAULT_CONFIG=PRESENT",
+        "COMPLETED_TIMEOUT_LIVE_MARKERS=PASS",
         "VERSION_METADATA_SOURCE=wrangler",
         "SCRIPT_LAST_DEPLOYED_FROM=wrangler-4",
         "RAW_SCRIPT_CONTENT_OUTPUT=0",
@@ -117,6 +173,7 @@ def test_all_markers_present_yields_pass_with_exact_vocabulary(tmp_path):
     combined = out.getvalue() + err.getvalue()
     assert SECRET_ETAG not in combined
     assert b"unsupported stream chunk" not in combined.encode("utf-8")
+    assert b"completed_timeout_seconds" not in combined.encode("utf-8")
 
 
 def test_any_marker_absent_is_inconclusive_not_failure():
@@ -130,6 +187,134 @@ def test_any_marker_absent_is_inconclusive_not_failure():
     assert verdict["MARKER_BYTES_VALUE"] == "PRESENT"
     assert verdict["PR2124_LIVE_MARKERS"] == "INCONCLUSIVE"
     assert verdict["PR2124_LIVE_MARKERS"] != "FAIL"
+
+
+def test_completed_timeout_all_present_yields_pass():
+    helper = _load_helper()
+    verdict = _probe(helper)  # _full_content() carries both marker families
+    for key in COMPLETED_MARKER_KEYS:
+        assert verdict[key] == "PRESENT"
+    assert verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] == "PASS"
+
+
+def test_completed_marker_family_declared_and_matches_merged_source():
+    helper = _load_helper()
+    # exactly the seven #2544 markers, in the specified names/order
+    assert tuple(helper.COMPLETED_TIMEOUT_MARKERS) == COMPLETED_MARKER_KEYS
+    assert len(helper.COMPLETED_TIMEOUT_MARKERS) == 7
+    # every declared marker byte pattern really exists in the merged source
+    src = b"".join(
+        (ROOT / "apps" / "padiem-chat" / "app" / name).read_bytes()
+        for name in ("config.py", "worker_config.py", "b14_client.py")
+    )
+    for name, needle in helper.COMPLETED_TIMEOUT_MARKERS.items():
+        assert needle in src, name
+    # and each is emitted by the probe verdict
+    verdict = _probe(helper)
+    assert all(verdict[name] == "PRESENT" for name in helper.COMPLETED_TIMEOUT_MARKERS)
+
+
+@pytest.mark.parametrize("excluded", COMPLETED_MARKER_BYTES)
+def test_each_completed_marker_absent_is_inconclusive(excluded):
+    helper = _load_helper()
+    base = (
+        b"# worker\n"
+        + MARKER_MEMORYVIEW
+        + b"\n"
+        + MARKER_BYTES_VALUE
+        + b"\n"
+        + MARKER_UNSUPPORTED
+        + b"\n"
+    )
+    verdict = _probe(helper, content_bytes=base + _completed_content(exclude=excluded))
+    assert verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] == "INCONCLUSIVE"
+    absent = [k for k in COMPLETED_MARKER_KEYS if verdict[k] == "ABSENT"]
+    assert absent == [COMPLETED_MARKER_KEYS[COMPLETED_MARKER_BYTES.index(excluded)]]
+    # the #2124 verdict stays independently PASS
+    assert verdict["PR2124_LIVE_MARKERS"] == "PASS"
+
+
+def test_completed_timeout_absent_never_emits_fix_absent_or_fail():
+    helper = _load_helper()
+    verdict = _probe(
+        helper,
+        content_bytes=(
+            b"# worker\n"
+            + MARKER_MEMORYVIEW
+            + b"\n"
+            + MARKER_BYTES_VALUE
+            + b"\n"
+            + MARKER_UNSUPPORTED
+        ),
+    )
+    text = json.dumps(verdict)
+    assert verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] == "INCONCLUSIVE"
+    assert verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] != "FAIL"
+    assert "FIX_ABSENT" not in text
+    assert "FAIL" not in text
+
+
+def test_pr2124_and_completed_verdicts_are_independent():
+    helper = _load_helper()
+    only_2124 = (
+        b"# worker\n"
+        + MARKER_MEMORYVIEW
+        + b"\n"
+        + MARKER_BYTES_VALUE
+        + b"\n"
+        + MARKER_UNSUPPORTED
+        + b"\n"
+    )
+    v1 = _probe(helper, content_bytes=only_2124)
+    assert v1["PR2124_LIVE_MARKERS"] == "PASS"
+    assert v1["COMPLETED_TIMEOUT_LIVE_MARKERS"] == "INCONCLUSIVE"
+    missing_2124 = (
+        b"# worker\n"
+        + MARKER_MEMORYVIEW
+        + b"\n"
+        + MARKER_BYTES_VALUE
+        + b"\n"
+        + _completed_content()
+    )
+    v2 = _probe(helper, content_bytes=missing_2124)
+    assert v2["PR2124_LIVE_MARKERS"] == "INCONCLUSIVE"
+    assert v2["COMPLETED_TIMEOUT_LIVE_MARKERS"] == "PASS"
+
+
+def test_cli_reports_completed_inconclusive_without_failure(tmp_path):
+    helper = _load_helper()
+    dep_pre = tmp_path / "pre.json"
+    dep_post = tmp_path / "post.json"
+    detail = tmp_path / "detail.json"
+    content = tmp_path / "content.bin"
+    dep_pre.write_bytes(json.dumps(_deployments()).encode("utf-8"))
+    dep_post.write_bytes(json.dumps(_deployments()).encode("utf-8"))
+    detail.write_bytes(json.dumps(_detail()).encode("utf-8"))
+    content.write_bytes(
+        b"# worker\n"
+        + MARKER_MEMORYVIEW
+        + b"\n"
+        + MARKER_BYTES_VALUE
+        + b"\n"
+        + MARKER_UNSUPPORTED
+        + b"\n"
+    )
+    out, err = io.StringIO(), io.StringIO()
+    with redirect_stdout(out), redirect_stderr(err):
+        rc = helper.main([
+            "--deployments-pre", str(dep_pre),
+            "--deployments-post", str(dep_post),
+            "--expected-active-version", ACTIVE,
+            "--version-detail", str(detail),
+            "--content", str(content),
+            "--max-content-bytes", str(MAX_BYTES),
+        ])
+    assert rc == 0
+    lines = out.getvalue().splitlines()
+    assert "PR2124_LIVE_MARKERS=PASS" in lines
+    assert "COMPLETED_TIMEOUT_LIVE_MARKERS=INCONCLUSIVE" in lines
+    assert not any("FIX_ABSENT" in ln for ln in lines)
+    assert b"completed_timeout_seconds" not in out.getvalue().encode("utf-8")
 
 
 def test_probe_function_never_prints_content_or_etag(capsys):
