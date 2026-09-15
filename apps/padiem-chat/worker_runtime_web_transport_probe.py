@@ -48,12 +48,12 @@ class Default(WorkerEntrypoint):
                 transport=transport,
                 timeout=httpx.Timeout(1.0),
             ) as client:
-                normal = await client.get("http://127.0.0.1:9099/normal")
+                normal = await client.get("http://127.0.0.1:9100/normal")
                 result["fetch_accepts_signal"] = normal.status_code == 200
                 result["local_normal_fetch"] = normal.content == b"normal-ok"
 
                 posted = await client.post(
-                    "http://127.0.0.1:9099/echo-json",
+                    "http://127.0.0.1:9100/echo-json",
                     content=b'{"probe":"runtime"}',
                     headers={
                         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ class Default(WorkerEntrypoint):
                 chunks = []
                 async with client.stream(
                     "GET",
-                    "http://127.0.0.1:9099/chunks",
+                    "http://127.0.0.1:9100/chunks",
                 ) as streamed:
                     async for chunk in streamed.aiter_bytes():
                         if first_elapsed is None:
@@ -91,7 +91,7 @@ class Default(WorkerEntrypoint):
                 try:
                     async with client.stream(
                         "GET",
-                        "http://127.0.0.1:9099/slow-headers",
+                        "http://127.0.0.1:9100/slow-headers",
                         timeout=httpx.Timeout(0.15),
                     ):
                         pass
@@ -101,7 +101,7 @@ class Default(WorkerEntrypoint):
                 try:
                     async with client.stream(
                         "GET",
-                        "http://127.0.0.1:9099/slow-body",
+                        "http://127.0.0.1:9100/slow-body",
                         timeout=httpx.Timeout(0.15),
                     ) as slow_body:
                         async for _ in slow_body.aiter_bytes():
@@ -111,7 +111,7 @@ class Default(WorkerEntrypoint):
 
                 async with client.stream(
                     "GET",
-                    "http://127.0.0.1:9099/chunks",
+                    "http://127.0.0.1:9100/chunks",
                 ) as early:
                     iterator = early.aiter_bytes()
                     first = await anext(iterator)
