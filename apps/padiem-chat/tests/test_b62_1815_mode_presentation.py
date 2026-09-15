@@ -22,14 +22,14 @@ def test_browser_exposes_only_plus_and_pro_tiers() -> None:
 
 
 def test_pro_is_default_and_selection_is_shared_by_chat_and_claw() -> None:
-    assert 'return "pro";' in CAPABILITIES
+    assert 'let selectedTier = "pro";' in CAPABILITIES
     assert 'window.PadiemTierSelection = Object.freeze({' in CAPABILITIES
     assert 'tier: selectedProductTier()' in APP
     assert 'const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };' in APP
 
 
 def test_tier_copy_contains_no_provider_or_model_authority() -> None:
-    tier_block = CAPABILITIES.split("const TIER_COPY", 1)[1].split("function initialTier", 1)[0].lower()
+    tier_block = CAPABILITIES.split("const TIER_COPY", 1)[1].split("let selectedTier", 1)[0].lower()
     for forbidden in (
         "openai",
         "anthropic",
