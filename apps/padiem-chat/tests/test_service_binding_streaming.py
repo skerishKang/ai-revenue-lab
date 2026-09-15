@@ -183,6 +183,64 @@ def _load_worker_streaming_types():
     )
 
 
+def test_worker_stream_bridge_uses_core_real_httpx_type_family():
+    source = WORKER_PATH.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+
+    imports_real_httpx = any(
+        isinstance(node, ast.Import)
+        and any(alias.name == "httpx" and alias.asname is None for alias in node.names)
+        for node in tree.body
+    )
+    aliases_compat_as_httpx = any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "app"
+        and any(
+            alias.name == "httpx_compat" and alias.asname == "httpx"
+            for alias in node.names
+        )
+        for node in tree.body
+    )
+
+    assert imports_real_httpx is True
+    assert aliases_compat_as_httpx is False
+
+    stream_type, transport_type = _load_worker_streaming_types()
+    assert issubclass(stream_type, httpx.AsyncByteStream)
+    assert issubclass(transport_type, httpx.AsyncBaseTransport)
+
+
+def test_service_binding_transport_satisfies_real_httpx_client_contract():
+    async def scenario():
+        FakeRequest.created.clear()
+        reader = FakeReader(
+            [_sse(_chunk_payload(content="계약")), b"data: [DONE]\n\n"]
+        )
+        binding = FakeBinding(FakeResponse(200, FakeBody(reader)))
+        _, transport_type = _load_worker_streaming_types()
+        transport = transport_type(binding)
+
+        async with httpx.AsyncClient(
+            transport=transport,
+            timeout=httpx.Timeout(20.0),
+            follow_redirects=False,
+        ) as client:
+            async with client.stream(
+                "POST",
+                BASE_URL + "/api/pilot/v1/chat/completions/stream-preview",
+                json=_request().to_payload() | {"stream": True},
+            ) as response:
+                assert response.status_code == 200
+                assert response.headers["content-type"].startswith("text/event-stream")
+                chunks = [chunk async for chunk in response.aiter_bytes()]
+
+        assert chunks
+        assert len(binding.calls) == 1
+        assert reader.release_count == 1
+
+    asyncio.run(scenario())
+
+
 def _request() -> B14ChatRequest:
     return B14ChatRequest(
         messages=({"role": "user", "content": "안녕하세요"},),
