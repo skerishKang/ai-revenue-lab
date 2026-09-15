@@ -164,8 +164,11 @@ def test_claw_status_lives_in_mode_bar_not_conversation() -> None:
 def test_request_echo_is_plain_user_message() -> None:
     # The echo reuses the message primitives (no admin-form framing, no source
     # label — see also #2483 which bans "요청 원문:" / "Source text" in app.js).
+    # It must NOT carry the generic .user-message class: the shared gutter QA
+    # selects ".user-message" / ".user-message .message-bubble" in strict mode.
     conv = _conversation_inner()
-    assert 'class="message user-message claw-request-echo"' in conv
+    assert 'class="message claw-request-echo"' in conv
+    assert 'class="message user-message claw-request-echo"' not in conv
     assert "요청 원문:" not in conv
     assert "Source text" not in conv
 
