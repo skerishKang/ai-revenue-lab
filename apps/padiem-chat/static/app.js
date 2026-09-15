@@ -1733,13 +1733,7 @@
         const response = await fetch("/api/claw/manual-intake/preview", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({
-            content: body,
-            channel: channelValue,
-            action: actionValue,
-            sender_hint: senderText || null,
-            tier: selectedProductTier(),
-          }),
+          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
         });
         if (!response.ok) {
           renderPreviewError();
@@ -1828,7 +1822,13 @@
         const response = await fetch("/api/claw/manual-intake/execute", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
+          body: JSON.stringify({
+            content: body,
+            channel: channelValue,
+            action: actionValue,
+            sender_hint: senderText || null,
+            tier: selectedProductTier(),
+          }),
         });
         const data = await response.json().catch(() => null);
         if (data && data.ok && data.result && typeof data.result.result_text === "string") {
