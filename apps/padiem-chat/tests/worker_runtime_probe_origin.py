@@ -25,13 +25,16 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
     def do_POST(self):
-        if self.path != "/echo-json":
-            self.send_error(404)
-            return
         length = int(self.headers.get("Content-Length", "0"))
         body = self.rfile.read(length)
-        prefix = b"probe-ok:" if self.headers.get("X-Probe") == "runtime" else b"bad-header:"
-        payload = prefix + body
+        if self.path == "/echo-form":
+            payload = body
+        elif self.path == "/echo-json":
+            prefix = b"probe-ok:" if self.headers.get("X-Probe") == "runtime" else b"bad-header:"
+            payload = prefix + body
+        else:
+            self.send_error(404)
+            return
         self._headers(len(payload))
         self._write(payload)
 
