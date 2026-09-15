@@ -137,4 +137,7 @@ def _apply_b62_model_policy(
             policy = resolve_tier_policy(messages, tier_id, require_executable=True)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
-    return policy.model_id, [dict(message) for message in policy.messages]
+    # Preserve validated browser messages until the B14/tier-identity dispatch
+    # boundary. Hidden slash selectors are stripped by the existing client-side
+    # model policy there; explicit browser tier selection rides request context.
+    return policy.model_id, [dict(message) for message in messages]
