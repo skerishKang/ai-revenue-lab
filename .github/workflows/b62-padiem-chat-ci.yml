@@ -129,9 +129,9 @@ jobs:
           workers_dev = true
           EOF
 
-          uv run --locked python tests/worker_runtime_probe_origin.py --port 9099 > /tmp/b62-web-origin.log 2>&1 &
+          uv run --locked python tests/worker_runtime_probe_origin.py --port 9100 > /tmp/b62-web-origin.log 2>&1 &
           ORIGIN_PID=$!
-          npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8787 > /tmp/b62-web-workerd.log 2>&1 &
+          npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 > /tmp/b62-web-workerd.log 2>&1 &
           WORKER_PID=$!
 
           cleanup() {
@@ -142,7 +142,7 @@ jobs:
 
           READY=0
           for _ in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:8787/ready >/dev/null 2>&1; then
+            if curl -fsS http://127.0.0.1:8788/ready >/dev/null 2>&1; then
               READY=1
               break
             fi
@@ -153,7 +153,7 @@ jobs:
             exit 1
           fi
 
-          HTTP_CODE="$(curl -sS -o /tmp/b62-web-result.json -w '%{http_code}' http://127.0.0.1:8787/probe)"
+          HTTP_CODE="$(curl -sS -o /tmp/b62-web-result.json -w '%{http_code}' http://127.0.0.1:8788/probe)"
           cat /tmp/b62-web-result.json
           if [ "$HTTP_CODE" != "200" ]; then
             cat /tmp/b62-web-workerd.log
