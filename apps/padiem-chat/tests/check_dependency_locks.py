@@ -121,12 +121,28 @@ def main() -> None:
     if args.phase in {"vendor", "all"}:
         if not VENDOR.is_dir():
             raise AssertionError("python_modules is required after pywrangler sync")
+        vendor_versions = _installed_vendor_versions()
         _assert_versions(
             authority=py_versions,
-            installed=_installed_vendor_versions(),
-            packages=("httpx", "httpcore", "workers-runtime-sdk"),
+            installed=vendor_versions,
+            packages=("httpx", "workers-runtime-sdk"),
             label="python_modules",
         )
+
+        pylock_httpcore = py_versions.get("httpcore")
+        vendor_httpcore = vendor_versions.get("httpcore")
+        if pylock_httpcore is None:
+            if vendor_httpcore is not None:
+                raise AssertionError(
+                    "httpcore is absent from pylock.toml but present in python_modules "
+                    f"as {vendor_httpcore}"
+                )
+            print("WORKER_HTTPCORE=NOT_REQUIRED_BY_PYODIDE_LOCK")
+        elif vendor_httpcore != pylock_httpcore:
+            raise AssertionError(
+                f"httpcore: pylock={pylock_httpcore} python_modules={vendor_httpcore}"
+            )
+
         print("WORKER_LOCK_CONSISTENCY=PASS")
 
 
