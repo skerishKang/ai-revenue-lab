@@ -12,8 +12,8 @@ injected into ``padiem_ai_core.B14StreamingClient``. Core owns a real
 module. The B62 Service-Binding streaming bridge in ``worker.py`` therefore
 imports real ``httpx`` directly.
 
-Surface provided (matches actual usage in worker.py, app/auth.py,
-app/b14_client.py, app/web_tools.py):
+Surface provided (matches actual usage in app/auth.py, app/b14_client.py,
+and app/web_tools.py):
 
 - ``AsyncClient(transport, timeout, follow_redirects)`` with ``.stream(method, url, ...)``
 - ``AsyncBaseTransport`` (subclassable; ``handle_async_request(request) -> Response``)
