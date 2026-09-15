@@ -1,9 +1,10 @@
 name: B62 Live Content Marker Gate
 
-# SOURCE-ONLY (#2548). Minimal GET-only live-content proof: fetches the
+# SOURCE-ONLY (#2548, #2553). Minimal GET-only live-content proof: fetches the
 # CURRENT served padiem-chat script content via Cloudflare's read-only
 # script-content endpoint into runner temp and checks the unique #2124
-# adapter-fix markers in memory only. /content/v2 is not version-pinned, so
+# adapter-fix markers and the #2544 completed-timeout contract markers in
+# memory only. /content/v2 is not version-pinned, so
 # deployments are read before and immediately after the content fetch and
 # must both resolve to the single expected 100%-served active version with a
 # deep-equal payload before any marker verdict is accepted (TOCTOU closure).

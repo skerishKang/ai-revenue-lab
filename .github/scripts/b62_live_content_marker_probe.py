@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""B62 live-content #2124 marker probe (B62/B14 #2548).
+"""B62 live-content #2124 and #2544 marker probe (B62/B14 #2548, #2553).
 
 READ-ONLY. Inspects the CURRENT served padiem-chat script content, fetched
 GET-only by the dispatcher workflow into runner temp, and reports whether
-the unique #2124 adapter-fix markers are present in memory.
+the unique #2124 adapter-fix markers and the #2544 completed-timeout contract
+markers are present in memory.
 
 TOCTOU closure (CENTRAL blocker 2, review 5676011767): /content/v2 serves
 the CURRENT script and is not version-id-pinned, so the workflow reads
@@ -28,6 +29,14 @@ Closed output vocabulary (version UUIDs are non-secret operational ids):
     MARKER_MEMORYVIEW_TOBYTES=PRESENT|ABSENT
     MARKER_BYTES_VALUE=PRESENT|ABSENT
     PR2124_LIVE_MARKERS=PASS|INCONCLUSIVE
+    MARKER_COMPLETED_TIMEOUT_DEFAULT_50=PRESENT|ABSENT
+    MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50=PRESENT|ABSENT
+    MARKER_SHARED_TIMEOUT_DEFAULT_20=PRESENT|ABSENT
+    MARKER_COMPLETION_CONFIG_WIRING=PRESENT|ABSENT
+    MARKER_COMPLETION_TRANSPORT_WIRING=PRESENT|ABSENT
+    MARKER_STREAMING_CLIENT_PRESENT=PRESENT|ABSENT
+    MARKER_STREAMING_USES_DEFAULT_CONFIG=PRESENT|ABSENT
+    COMPLETED_TIMEOUT_LIVE_MARKERS=PASS|INCONCLUSIVE
     VERSION_METADATA_SOURCE=<closed Cloudflare VersionGetResponse enum or UNKNOWN>
     SCRIPT_LAST_DEPLOYED_FROM=<bounded token or UNKNOWN>
     RAW_SCRIPT_CONTENT_OUTPUT=0
@@ -37,9 +46,12 @@ Closed output vocabulary (version UUIDs are non-secret operational ids):
 
 PASS requires every required marker present. ABSENT yields INCONCLUSIVE,
 never a "fix absent" verdict, because packaging/minification may transform
-source text. Structural violations (active version drift, pre/post mismatch,
-missing script identity, empty or oversized content) fail closed with a
-non-zero exit and a reason string that never contains any payload value.
+source text. PR2124_LIVE_MARKERS and COMPLETED_TIMEOUT_LIVE_MARKERS are
+independent verdicts: each is PASS only when its own full marker family is
+present and INCONCLUSIVE otherwise. Structural violations (active version
+drift, pre/post mismatch, missing script identity, empty or oversized
+content) fail closed with a non-zero exit and a reason string that never
+contains any payload value.
 """
 
 from __future__ import annotations
@@ -80,6 +92,29 @@ MARKERS: dict[str, bytes] = {
 }
 
 MARKER_KEYS = tuple(MARKERS)
+
+# Exact #2544 completed-timeout production-source markers. Together they prove
+# the separated 50s completed / 20s shared-stream contract and the completed-
+# path wiring are present in the served script, while the streaming path still
+# uses the ordinary default config. Matched as raw bytes in memory only; never
+# echoed back.
+COMPLETED_TIMEOUT_MARKERS: dict[str, bytes] = {
+    "MARKER_COMPLETED_TIMEOUT_DEFAULT_50": b"completed_timeout_seconds: float = 50.0",
+    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50": (
+        b'binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50"'
+    ),
+    "MARKER_SHARED_TIMEOUT_DEFAULT_20": b"timeout_seconds: float = 20.0",
+    "MARKER_COMPLETION_CONFIG_WIRING": (
+        b"return self._config(self.settings.completed_timeout_seconds)"
+    ),
+    "MARKER_COMPLETION_TRANSPORT_WIRING": (
+        b"timeout_seconds=self.settings.completed_timeout_seconds"
+    ),
+    "MARKER_STREAMING_CLIENT_PRESENT": b"B14StreamingClient(",
+    "MARKER_STREAMING_USES_DEFAULT_CONFIG": b"self._config(),",
+}
+
+COMPLETED_TIMEOUT_MARKER_KEYS = tuple(COMPLETED_TIMEOUT_MARKERS)
 
 
 class LiveContentError(RuntimeError):
@@ -217,6 +252,16 @@ def probe_live_content(
         verdict[key] = "PRESENT" if MARKERS[key] in content_bytes else "ABSENT"
     all_present = all(verdict[key] == "PRESENT" for key in MARKER_KEYS)
     verdict["PR2124_LIVE_MARKERS"] = "PASS" if all_present else "INCONCLUSIVE"
+    for key in COMPLETED_TIMEOUT_MARKER_KEYS:
+        verdict[key] = (
+            "PRESENT" if COMPLETED_TIMEOUT_MARKERS[key] in content_bytes else "ABSENT"
+        )
+    completed_all_present = all(
+        verdict[key] == "PRESENT" for key in COMPLETED_TIMEOUT_MARKER_KEYS
+    )
+    verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] = (
+        "PASS" if completed_all_present else "INCONCLUSIVE"
+    )
     verdict["VERSION_METADATA_SOURCE"] = extract_version_metadata_source(version_result)
     verdict["SCRIPT_LAST_DEPLOYED_FROM"] = extract_last_deployed_from(version_result)
     return verdict
@@ -248,6 +293,14 @@ OUTPUT_ORDER = (
     "MARKER_MEMORYVIEW_TOBYTES",
     "MARKER_BYTES_VALUE",
     "PR2124_LIVE_MARKERS",
+    "MARKER_COMPLETED_TIMEOUT_DEFAULT_50",
+    "MARKER_COMPLETED_TIMEOUT_BINDING_FALLBACK_50",
+    "MARKER_SHARED_TIMEOUT_DEFAULT_20",
+    "MARKER_COMPLETION_CONFIG_WIRING",
+    "MARKER_COMPLETION_TRANSPORT_WIRING",
+    "MARKER_STREAMING_CLIENT_PRESENT",
+    "MARKER_STREAMING_USES_DEFAULT_CONFIG",
+    "COMPLETED_TIMEOUT_LIVE_MARKERS",
     "VERSION_METADATA_SOURCE",
     "SCRIPT_LAST_DEPLOYED_FROM",
 )
