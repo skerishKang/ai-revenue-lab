@@ -154,6 +154,12 @@ def _chat_error(code: str) -> ChatRuntimeError:
             "provider_server_error",
             "AI 모델 제공자 측에서 일시적 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
         )
+    if code == "execution_failed":
+        return ChatRuntimeError(
+            502,
+            "upstream_execution_failed",
+            "답변을 불러오지 못했습니다. 다시 시도해 주세요.",
+        )
     return ChatRuntimeError(
         502,
         "upstream_error",
