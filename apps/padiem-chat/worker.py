@@ -11,7 +11,10 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
-from app import httpx_compat as httpx
+# The Core B14StreamingClient owns a real httpx.AsyncClient.  Its injected
+# Service-Binding transport must use that same httpx Request/Response/stream
+# type family; app.httpx_compat is only for app-owned JS-fetch clients.
+import httpx
 from workers import Request, Response, WorkerEntrypoint
 
 from app.claw_p01_composition import build_claw_p01_adapter_with_diagnostic
@@ -202,12 +205,19 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
                 request=request,
             ) from exc
 
-        service_request = Request(
-            str(request.url),
-            method="POST",
-            headers={"Content-Type": "application/json"},
-            body=body_text,
-        )
+        try:
+            service_request = Request(
+                str(request.url),
+                method="POST",
+                headers={"Content-Type": "application/json"},
+                body=body_text,
+            )
+        except Exception as exc:
+            raise httpx.RequestError(
+                "Business 14 streaming request could not be constructed.",
+                request=request,
+            ) from exc
+
         try:
             service_response = await self.binding.fetch(service_request.js_object)
         except Exception as exc:
@@ -226,16 +236,22 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
                 request=request,
             ) from exc
 
-        headers: dict[str, str] = {}
-        if content_type is not None:
-            headers["content-type"] = str(content_type)
+        try:
+            headers: dict[str, str] = {}
+            if content_type is not None:
+                headers["content-type"] = str(content_type)
 
-        return httpx.Response(
-            status_code=status_code,
-            headers=headers,
-            stream=_CloudflareReadableByteStream(response_body),
-            request=request,
-        )
+            return httpx.Response(
+                status_code=status_code,
+                headers=headers,
+                stream=_CloudflareReadableByteStream(response_body),
+                request=request,
+            )
+        except Exception as exc:
+            raise httpx.ProtocolError(
+                "Business 14 Service Binding response could not be adapted.",
+                request=request,
+            ) from exc
 
 
 class Default(WorkerEntrypoint):
