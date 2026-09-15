@@ -101,6 +101,7 @@ jobs:
               "abortsignal_timeout_call",
               "fetch_accepts_signal",
               "local_normal_fetch",
+              "local_post_form",
               "local_delay_timeout",
               "local_body_timeout",
           )
