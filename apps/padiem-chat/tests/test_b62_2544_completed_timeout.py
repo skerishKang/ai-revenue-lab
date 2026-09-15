@@ -13,8 +13,9 @@ import json
 
 import httpx
 import pytest
+from padiem_ai_core import b14_transport
 
-from app.b14_client import B14Client
+from app.b14_client import B14Client, ChatRuntimeError
 from app.config import ConfigError, Settings
 from app.worker_config import settings_from_worker_bindings
 
@@ -39,6 +40,45 @@ class FakeServiceTransport:
             "choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}],
         }
         return 200, json.dumps(payload_body).encode("utf-8")
+
+
+class _DeadlineProbe:
+    """Deterministic stand-in for ``asyncio.wait_for`` inside ``b14_transport``.
+
+    ``b14_transport`` uses the ``asyncio`` module only for ``wait_for``, so we can
+    swap that reference for this probe and (a) record the deadline the completed
+    path actually passes and (b) decide the outcome from a *logical* upstream
+    duration — proving the 50s contract without waiting in real time.
+    """
+
+    def __init__(self, logical_duration_seconds: float) -> None:
+        self.logical_duration_seconds = logical_duration_seconds
+        self.observed_timeout: float | None = None
+
+    async def wait_for(self, awaitable, timeout=None):
+        self.observed_timeout = timeout
+        if self.logical_duration_seconds > timeout:
+            # Emulate wait_for cancelling a still-pending inner awaitable.
+            close = getattr(awaitable, "close", None)
+            if close is not None:
+                close()
+            raise TimeoutError
+        return await awaitable
+
+
+def _install_deadline_probe(monkeypatch, logical_duration_seconds: float) -> _DeadlineProbe:
+    probe = _DeadlineProbe(logical_duration_seconds)
+    monkeypatch.setattr(b14_transport, "asyncio", probe)
+    return probe
+
+
+def _completed_client(service: FakeServiceTransport) -> B14Client:
+    return B14Client(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.internal"),
+        transport=httpx.MockTransport(lambda request: httpx.Response(500)),
+        service_transport=service,
+        require_service_binding=True,
+    )
 
 
 def test_default_settings_separate_completed_from_streaming_timeout():
@@ -126,17 +166,47 @@ def test_completed_transport_and_config_use_completed_timeout_only():
 
 
 @pytest.mark.asyncio
-async def test_completed_request_succeeds_beyond_the_old_twenty_second_cap():
-    # A service transport that answers normally must run through the 50s
-    # completed deadline (previously the shared 20s cap). This proves the
-    # completed path is wired to completed_timeout_seconds end to end.
+async def test_completed_path_passes_the_fifty_second_deadline(monkeypatch):
+    # The completed path must hand the 50s deadline to the transport's
+    # asyncio.wait_for (not the shared 20s). This value is what decides whether
+    # a slow gateway attempt is abandoned.
     service = FakeServiceTransport()
-    client = B14Client(
-        Settings(runtime_mode="b14", b14_base_url="https://b14.internal"),
-        transport=httpx.MockTransport(lambda request: httpx.Response(500)),
-        service_transport=service,
-        require_service_binding=True,
-    )
+    client = _completed_client(service)
+    probe = _install_deadline_probe(monkeypatch, logical_duration_seconds=10.0)
+
     result = await client.complete(USER_MESSAGES)
+
     assert result["runtime"] == "b14"
+    assert probe.observed_timeout == 50.0
+
+
+@pytest.mark.asyncio
+async def test_completed_request_succeeds_beyond_the_old_twenty_second_cap(monkeypatch):
+    # 30s is longer than the OLD 20s shared cap but shorter than the new 50s
+    # completed deadline, so it must now SUCCEED. Under the previous wiring this
+    # same upstream duration would have been abandoned at 20s.
+    service = FakeServiceTransport()
+    client = _completed_client(service)
+    probe = _install_deadline_probe(monkeypatch, logical_duration_seconds=30.0)
+
+    result = await client.complete(USER_MESSAGES)
+
+    assert result["runtime"] == "b14"
+    assert probe.observed_timeout == 50.0, "the governing completed deadline is 50s, not 20s"
     assert len(service.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_completed_request_times_out_beyond_the_fifty_second_deadline(monkeypatch):
+    # 55s exceeds the 50s completed deadline -> the transport raises
+    # httpx.ReadTimeout, which maps to upstream_timeout / HTTP 504.
+    service = FakeServiceTransport()
+    client = _completed_client(service)
+    probe = _install_deadline_probe(monkeypatch, logical_duration_seconds=55.0)
+
+    with pytest.raises(ChatRuntimeError) as info:
+        await client.complete(USER_MESSAGES)
+
+    assert probe.observed_timeout == 50.0
+    assert info.value.status_code == 504
+    assert info.value.code == "upstream_timeout"
