@@ -30,7 +30,9 @@ from app.model_policy import (
     model_supports,
     product_tier_name,
     resolve_model_policy,
+    resolve_request_model_policy,
     resolve_tier_policy,
+    request_tier_context,
 )
 
 
@@ -272,3 +274,12 @@ def test_browser_tier_rejects_non_product_values(tier_id: str) -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_tier_policy([{"role": "user", "content": "질문"}], tier_id)
     assert info.value.code == "unknown_product_tier"
+
+
+def test_request_tier_context_is_request_scoped_and_resets_to_default() -> None:
+    messages = [{"role": "user", "content": "등급 컨텍스트 테스트"}]
+
+    assert resolve_request_model_policy(messages).model_id == MEDIUM_B14_MODEL_ID
+    with request_tier_context("plus"):
+        assert resolve_request_model_policy(messages).model_id == LOW_B14_MODEL_ID
+    assert resolve_request_model_policy(messages).model_id == MEDIUM_B14_MODEL_ID
