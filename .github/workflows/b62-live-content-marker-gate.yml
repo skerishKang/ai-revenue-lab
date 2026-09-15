@@ -1,0 +1,202 @@
+name: B62 Live Content Marker Gate
+
+# SOURCE-ONLY (#2548). Minimal GET-only live-content proof: fetches the
+# CURRENT served padiem-chat script content via Cloudflare's read-only
+# script-content endpoint into runner temp and checks the unique #2124
+# adapter-fix markers in memory only. /content/v2 is not version-pinned, so
+# deployments are read before and immediately after the content fetch and
+# must both resolve to the single expected 100%-served active version with a
+# deep-equal payload before any marker verdict is accepted (TOCTOU closure).
+# Raw script content, marker-adjacent text, offsets, and script etags are
+# never printed, logged, hashed for output, artifacted, or persisted beyond
+# runner temp. No mutation verbs, no deployment actions, no live-service
+# calls, no request-path probes.
+# Dispatch is intentionally unavailable until CENTRAL reviews and merges
+# this source contract; the readonly job runs only on workflow_dispatch.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-live-content-marker-gate.yml"
+      - ".github/scripts/b62_live_content_marker_probe.py"
+      - ".github/tests/test_b62_live_content_marker_probe.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      expected_active_version:
+        description: "Expected active served version UUID"
+        required: true
+        default: "c2468c5d-73e1-41fb-9408-565f871a4ad8"
+        type: string
+      max_content_bytes:
+        description: "Bounded served-content size guard (bytes)"
+        required: false
+        default: "20971520"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-live-content-marker-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${{ inputs.target_sha }}
+  EXPECTED_ACTIVE_VERSION: ${{ inputs.expected_active_version }}
+  MAX_CONTENT_BYTES: ${{ inputs.max_content_bytes }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'CONTRACT_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --quiet pytest
+
+      - name: Run live-content marker probe contract tests
+        run: python -m pytest .github/tests/test_b62_live_content_marker_probe.py -q
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_LIVE_CONTENT_SOURCE_CONTRACT=PASS'
+          echo 'RAW_SCRIPT_CONTENT_OUTPUT=0'
+          echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  live-content-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Exact-main guard and GET-only live-content readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN=PASS'
+          uuid_re='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          [[ "${EXPECTED_ACTIVE_VERSION}" =~ $uuid_re ]]
+          [[ "${MAX_CONTENT_BYTES}" =~ ^[0-9]+$ ]]
+          test "${MAX_CONTENT_BYTES}" -gt 0
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          deployments_pre="${RUNNER_TEMP}/b62-live-deployments-pre.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments_pre}"
+          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments_pre}" >/dev/null
+          active_pre="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_pre}")"
+          [[ "${active_pre}" =~ $uuid_re ]]
+          if [[ "${active_pre}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
+            echo "ACTIVE_VERSION=${active_pre}"
+            echo 'ACTIVE_VERSION_MATCH=FAIL'
+            echo 'RAW_SCRIPT_CONTENT_OUTPUT=0'
+            echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          version_detail="${RUNNER_TEMP}/b62-live-active-detail.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active_pre}" -o "${version_detail}"
+          jq -e '.success == true' "${version_detail}" >/dev/null
+          content="${RUNNER_TEMP}/b62-live-served-content.bin"
+          curl -fsS "${auth[@]}" "${api}/content/v2" -o "${content}"
+          deployments_post="${RUNNER_TEMP}/b62-live-deployments-post.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments_post}"
+          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments_post}" >/dev/null
+          active_post="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_post}")"
+          [[ "${active_post}" =~ $uuid_re ]]
+          if [[ "${active_post}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
+            echo "ACTIVE_VERSION=${active_post}"
+            echo 'ACTIVE_VERSION_MATCH=FAIL'
+            echo 'RAW_SCRIPT_CONTENT_OUTPUT=0'
+            echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          version_detail_post="${RUNNER_TEMP}/b62-live-active-detail-post.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active_post}" -o "${version_detail_post}"
+          jq -e '.success == true' "${version_detail_post}" >/dev/null
+          python .github/scripts/b62_live_content_marker_probe.py \
+            --deployments-pre "${deployments_pre}" \
+            --deployments-post "${deployments_post}" \
+            --expected-active-version "${EXPECTED_ACTIVE_VERSION}" \
+            --version-detail "${version_detail}" \
+            --version-detail-post "${version_detail_post}" \
+            --content "${content}" \
+            --max-content-bytes "${MAX_CONTENT_BYTES}"
+
+      - name: Read-only evidence
+        run: |
+          echo 'CLOUDFLARE_REQUESTS_ARE_GET_ONLY=YES'
+          echo 'SETTINGS_PAYLOAD_READ=0'
+          echo 'RAW_SCRIPT_CONTENT_OUTPUT=0'
+          echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Purge runner-temp payloads
+        if: always()
+        shell: bash
+        run: |
+          rm -f "${RUNNER_TEMP}/b62-live-deployments-pre.json" \
+            "${RUNNER_TEMP}/b62-live-deployments-post.json" \
+            "${RUNNER_TEMP}/b62-live-active-detail.json" \
+            "${RUNNER_TEMP}/b62-live-active-detail-post.json" \
+            "${RUNNER_TEMP}/b62-live-served-content.bin"
