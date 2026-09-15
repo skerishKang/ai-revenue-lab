@@ -502,6 +502,8 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
                 request=request,
             )
             response_body = getattr(js_response, "body", None)
+        except httpx.ProtocolError:
+            raise
         except Exception as exc:
             raise httpx.ProtocolError(
                 "Worker external fetch returned malformed response metadata.",
