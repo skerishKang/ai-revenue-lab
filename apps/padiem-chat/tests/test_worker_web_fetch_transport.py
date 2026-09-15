@@ -53,6 +53,19 @@ class FakeHeadersIterator:
         return SimpleNamespace(done=False, value=value)
 
 
+class SyncFakeHeadersIterator:
+    def __init__(self, entries):
+        self._entries = list(entries)
+        self._index = 0
+
+    def next(self):
+        if self._index >= len(self._entries):
+            return SimpleNamespace(done=True, value=None)
+        value = self._entries[self._index]
+        self._index += 1
+        return SimpleNamespace(done=False, value=value)
+
+
 class FakeHeaders:
     def __init__(self, values: dict[str, str]):
         self._values = dict(values)
@@ -65,6 +78,11 @@ class FakeHeaders:
 
     def get(self, key):
         return self._values.get(key)
+
+
+class SyncFakeHeaders(FakeHeaders):
+    def entries(self):
+        return SyncFakeHeadersIterator(self._values.items())
 
 
 class FakeReader:
@@ -254,6 +272,31 @@ async def test_worker_web_transport_timeout_maps_through_core_provider_boundary(
     assert info.value.code == "web_timeout"
     assert info.value.status_code == 504
     assert abort_api.calls == [3000]
+
+
+@pytest.mark.asyncio
+async def test_worker_web_transport_accepts_synchronous_js_headers_iterator():
+    transport_type = _load_worker_web_transport()
+    abort_api = FakeAbortSignalAPI()
+
+    async def fake_fetch(url, init):
+        return SimpleNamespace(
+            status=200,
+            headers=SyncFakeHeaders({"content-type": "text/plain", "x-probe": "ok"}),
+            body=None,
+        )
+
+    transport = transport_type(
+        fetch_impl=fake_fetch,
+        abort_signal_api=abort_api,
+    )
+
+    async with httpx.AsyncClient(transport=transport, timeout=1.0) as client:
+        response = await client.get("https://example.test/sync-headers")
+
+    assert response.status_code == 200
+    assert response.headers["x-probe"] == "ok"
+    assert abort_api.calls == [1000]
 
 
 @pytest.mark.asyncio
