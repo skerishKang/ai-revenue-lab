@@ -24,6 +24,17 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+    def do_POST(self):
+        if self.path != "/echo-json":
+            self.send_error(404)
+            return
+        length = int(self.headers.get("Content-Length", "0"))
+        body = self.rfile.read(length)
+        prefix = b"probe-ok:" if self.headers.get("X-Probe") == "runtime" else b"bad-header:"
+        payload = prefix + body
+        self._headers(len(payload))
+        self._write(payload)
+
     def do_GET(self):
         if self.path == "/normal":
             payload = b"normal-ok"
