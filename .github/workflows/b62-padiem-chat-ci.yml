@@ -34,21 +34,29 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.5"
+      - name: Verify committed host lock is current
+        run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
-        run: uv sync --extra dev
+        run: uv sync --locked --extra dev
       - name: Prove shared Core import without PYTHONPATH
-        run: uv run python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
+        run: uv run --locked python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
       - name: Compile B62 and Core
-        run: uv run python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
+        run: uv run --locked python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
         run: node --check static/app.js
       - name: B62 tests
-        run: uv run python -m pytest -q
+        run: uv run --locked python -m pytest -q
       - name: Core tests with Tool Runtime dev dependency
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
-      - name: Pywrangler dependency sync
-        run: uv run pywrangler sync --force
+      - name: Verify locked host dependency versions
+        run: uv run --locked python tests/check_dependency_locks.py --phase host
+      - name: Pywrangler dependency sync from committed pylock
+        run: uv run --locked pywrangler sync --force
+      - name: Verify vendored Worker dependency versions
+        run: uv run --locked python tests/check_dependency_locks.py --phase vendor
+      - name: Prove sync did not mutate committed locks
+        run: git diff --exit-code -- uv.lock pylock.toml
       - name: Prove Core vendored for Python Worker
         run: |
           set -euo pipefail
@@ -59,7 +67,7 @@ jobs:
           test ! -e python_modules/jsonschema
           echo "Padiem AI Core base runtime is vendored without Tool Runtime extras."
       - name: Python Worker bundle dry-run
-        run: uv run pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
+        run: uv run --locked pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
 
   b14-multimodal-test:
     runs-on: ubuntu-latest
