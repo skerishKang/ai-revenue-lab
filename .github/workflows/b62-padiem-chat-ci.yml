@@ -102,6 +102,7 @@ jobs:
               "fetch_accepts_signal",
               "local_normal_fetch",
               "local_delay_timeout",
+              "local_body_timeout",
           )
           failed = [name for name in required if data.get(name) is not True]
           if failed:
