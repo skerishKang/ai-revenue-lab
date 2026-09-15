@@ -54,7 +54,7 @@ jobs:
           set -euo pipefail
           cat > .runtime-web-transport-probe.toml <<'EOF'
           name = "padiem-chat-runtime-web-transport-probe"
-          main = "tests/worker_runtime_web_transport_probe.py"
+          main = "worker_runtime_web_transport_probe.py"
           compatibility_date = "2026-08-25"
           compatibility_flags = ["python_workers"]
           workers_dev = true
