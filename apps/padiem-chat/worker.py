@@ -477,7 +477,18 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
             init["signal"] = timeout_signal
 
         try:
-            js_response = await self._fetch(str(request.url), init)
+            try:
+                from js import Object as _JsObject  # type: ignore
+                from pyodide.ffi import to_js as _to_js  # type: ignore
+            except (ImportError, ModuleNotFoundError):
+                js_init = init
+            else:
+                js_init = _to_js(
+                    init,
+                    dict_converter=_JsObject.fromEntries,
+                    create_pyproxies=False,
+                )
+            js_response = await self._fetch(str(request.url), js_init)
         except Exception as exc:
             timed_out = False
             if timeout_signal is not None:
