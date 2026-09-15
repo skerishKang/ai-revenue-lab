@@ -30,6 +30,7 @@ from app.model_policy import (
     model_supports,
     product_tier_name,
     resolve_model_policy,
+    resolve_tier_policy,
 )
 
 
@@ -236,3 +237,38 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
     assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
     assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
     assert DEFAULT_B14_MODEL_ID not in RETIRED_B14_MODEL_IDS
+
+
+@pytest.mark.parametrize(
+    ("tier_id", "expected_model", "expected_profile"),
+    [
+        ("plus", LOW_B14_MODEL_ID, "low"),
+        ("pro", MEDIUM_B14_MODEL_ID, "medium"),
+    ],
+)
+def test_explicit_browser_tier_resolves_through_shared_contract(
+    tier_id: str,
+    expected_model: str,
+    expected_profile: str,
+) -> None:
+    messages = [{"role": "user", "content": "브라우저 등급 선택 테스트"}]
+    policy = resolve_tier_policy(messages, tier_id)
+
+    assert policy.model_id == expected_model
+    assert policy.profile == expected_profile
+    assert policy.messages == messages
+    assert policy.alias is None
+
+
+def test_explicit_browser_max_stays_fail_closed_while_hold() -> None:
+    messages = [{"role": "user", "content": "Max 테스트"}]
+    with pytest.raises(ModelPolicyError) as info:
+        resolve_tier_policy(messages, "max")
+    assert info.value.code == "tier_unavailable"
+
+
+@pytest.mark.parametrize("tier_id", ["", "auto", "fast", "balanced", "deep", "unknown"])
+def test_browser_tier_rejects_non_product_values(tier_id: str) -> None:
+    with pytest.raises(ModelPolicyError) as info:
+        resolve_tier_policy([{"role": "user", "content": "질문"}], tier_id)
+    assert info.value.code == "unknown_product_tier"
