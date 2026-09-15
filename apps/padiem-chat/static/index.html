@@ -166,6 +166,21 @@
           <p class="claw-inbox-empty" id="clawInboxEmpty" data-locale-key="claw-inbox-empty-tasks" hidden>최근 작업이 없습니다.</p>
           <div class="claw-inbox-list" id="clawInboxList" role="list"></div>
         </section>
+      </section>
+      <section class="conversation" aria-live="polite">
+        <div class="empty-state" id="emptyState">
+          <p class="eyebrow">PADIEM AI</p>
+          <h1><span data-locale-key="hello">안녕하세요.</span><br /><span data-locale-key="ask">무엇을 도와드릴까요?</span></h1>
+          <p class="empty-copy" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
+          <div class="starter-grid" aria-label="추천 질문">
+            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
+            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
+            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
+            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
+          </div>
+        </div>
+        <div class="message-list" id="messageList" hidden></div>
+        <article class="message user-message claw-request-echo" id="clawRequestEcho" hidden><div class="message-bubble" id="clawRequestEchoText"></div></article>
         <section class="claw-result" id="clawResultArea" data-claw-state="idle">
           <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
           <p class="claw-result-hint" id="clawResultHint" data-locale-key="claw-preview-empty-hint">예: “A업체 견적 요청 — 품목 20개, 납기 9월 말”처럼 붙여넣어 보세요.</p>
@@ -187,7 +202,6 @@
             <p class="claw-result-note" data-locale-key="claw-result-note">미리보기는 저장되지 않습니다. 실제 실행 결과에는 문서가 포함될 수 있습니다.</p>
             <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 열어보거나 다운로드할 수 있습니다.</p>
           </article>
-          <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
         </section>
         <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
         <section class="claw-approved-memory" id="clawApprovedMemory" aria-labelledby="clawApprovedMemoryTitle" hidden>
@@ -204,42 +218,31 @@
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
         </section>
-        <div class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
-            <small data-locale-key="claw-ctrl-md-note">이 작업공간에서는 아직 사용할 수 없습니다.</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
-            <small data-locale-key="claw-ctrl-docx-note">실제 실행 후 결과 카드에서 다운로드할 수 있습니다.</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
-            <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
-            <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
-          </button>
-          <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
-            <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
-            <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
-          </button>
-        </div>
-      </section>
-      <section class="conversation" aria-live="polite">
-        <div class="empty-state" id="emptyState">
-          <p class="eyebrow">PADIEM AI</p>
-          <h1><span data-locale-key="hello">안녕하세요.</span><br /><span data-locale-key="ask">무엇을 도와드릴까요?</span></h1>
-          <p class="empty-copy" data-locale-key="copy">궁금한 것을 평소 말하듯 편하게 물어보세요.</p>
-          <div class="starter-grid" aria-label="추천 질문">
-            <button type="button" class="starter" data-prompt="AI를 처음 쓰는 사람에게 AI가 뭔지 아주 쉽게 설명해줘" data-skill="explain"><span class="starter-icon" aria-hidden="true">☺</span><span><strong data-locale-key="easy-title">쉽게 설명해줘</strong><small data-locale-key="easy-copy">어려운 내용도 쉬운 말로</small></span></button>
-            <button type="button" class="starter" data-prompt="이번 주말 가족과 집 근처에서 할 만한 일을 추천해줘" data-skill="plan"><span class="starter-icon" aria-hidden="true">⌂</span><span><strong data-locale-key="life-title">생활 도움</strong><small data-locale-key="life-copy">일상 질문과 계획 세우기</small></span></button>
-            <button type="button" class="starter" id="documentStarterButton"><span class="starter-icon" aria-hidden="true">▤</span><span><strong>문서와 대화</strong><small>지원 문서 형식</small></span></button>
-            <button type="button" class="starter" id="webSearchStarterButton" disabled aria-disabled="true" aria-pressed="false" hidden><span class="starter-icon" aria-hidden="true">⌕</span><span><strong data-locale-key="web-starter-title">웹에서 찾아줘</strong><small data-locale-key="web-starter-copy">웹 검색 · 준비 중</small></span></button>
+        <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
+          <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
+          <div class="claw-disabled-grid">
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-md-title">Markdown 다운로드</strong>
+              <small data-locale-key="claw-ctrl-md-note">이 작업공간에서는 아직 사용할 수 없습니다.</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-docx-title">DOCX 다운로드</strong>
+              <small data-locale-key="claw-ctrl-docx-note">실제 실행 후 결과 카드에서 다운로드할 수 있습니다.</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-mem-title">메모리 저장 후보</strong>
+              <small data-locale-key="claw-ctrl-mem-note">사용자 승인 필요 / 준비 중</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-email-title">이메일 발송</strong>
+              <small data-locale-key="claw-ctrl-email-note">사용자 승인 필요 / 준비 중</small>
+            </button>
+            <button type="button" class="claw-disabled-control" disabled aria-disabled="true">
+              <strong data-locale-key="claw-ctrl-share-title">공유 링크</strong>
+              <small data-locale-key="claw-ctrl-share-note">저장소 연결 후 가능</small>
+            </button>
           </div>
-        </div>
-        <div class="message-list" id="messageList" hidden></div>
+        </details>
       </section>
       <section class="composer-wrap" data-locale-aria-label="composer" aria-label="메시지 작성">
         <div class="project-banner" id="projectBanner" hidden>
@@ -289,6 +292,7 @@
             <option value="summary" data-locale-key="claw-opt-summary">요청사항 정리</option>
           </select>
           <p class="claw-actions-hint" data-locale-key="claw-actions-hint">미리보기: 저장 없이 바로 확인 · 실제 실행: AI가 완성하고 필요하면 문서로 저장</p>
+          <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
         </form>
         <form class="composer" id="composerForm">
           <div class="attachment-tray" id="attachmentTray" hidden>

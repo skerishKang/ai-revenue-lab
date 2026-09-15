@@ -1275,6 +1275,8 @@
   const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawStatus = document.getElementById("clawStatus");
+  const clawRequestEcho = document.getElementById("clawRequestEcho");
+  const clawRequestEchoText = document.getElementById("clawRequestEchoText");
   const clawArtifactMeta = document.getElementById("clawArtifactMeta");
   const clawArtifactName = document.getElementById("clawArtifactName");
   const clawArtifactSize = document.getElementById("clawArtifactSize");
@@ -1298,6 +1300,7 @@
     "claw-error-invalid": "Please check your input and try again.",
     "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
     "claw-error-auth-needed": "Please sign in again to continue.",
+    "claw-error-auth-unavailable": "This feature isn't available because the workspace sign-in state can't be verified. Please check the workspace configuration.",
     "claw-error-storage": "Could not save the document. Please try again shortly.",
     "claw-error-generic": "Something went wrong. Please try again shortly.",
     "claw-memory-review-title": "Memory save proposal (approval required)",
@@ -1442,7 +1445,8 @@
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
     if (code === "rate_limited" || status === 429) return clawT("claw-error-rate-limited");
-    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable" || code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
+    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable") return clawT("claw-error-auth-unavailable");
+    if (code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
     if (code === "workspace_storage_unavailable" || code === "artifact_storage_failed" || code === "artifact_generation_failed") return clawT("claw-error-storage");
     if (status === 503 || code === "engine_not_configured" || code === "live_abuse_gate_unavailable") return clawT("claw-error-generic");
     if (code === "engine_execution_failed" || status === 502) return clawT("claw-error-generic");
@@ -1646,6 +1650,15 @@
     }
   }
 
+  // #2532 (R2): echo the submitted request as a user bubble in the shared
+  // conversation so manual Claw reads as one continuous Chat thread. This is
+  // the user's own message, never presented as an AI result.
+  function renderClawRequestEcho(text) {
+    if (!clawRequestEcho || !clawRequestEchoText) return;
+    clawRequestEchoText.textContent = text;
+    clawRequestEcho.hidden = false;
+  }
+
   // Single artifact handlers: read current dataset at click time (no per-result listener leak).
   if (clawResultDocx) clawResultDocx.addEventListener("click", () => {
     const docId = clawResultDocx.dataset.documentId;
@@ -1687,6 +1700,7 @@
       const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
       const senderText = (clawSender?.value || "").trim();
 
+      renderClawRequestEcho(body);
       setClawButtonsBusy(true);
       setClawStatus(clawT("claw-status-preview-running"), "running", "claw-status-preview-running");
       setClawAreaState("submitting");
@@ -1788,6 +1802,7 @@
       const actionValue = clawAction?.value || "quote";
       const senderText = (clawSender?.value || "").trim();
 
+      renderClawRequestEcho(body);
       setClawButtonsBusy(true);
       setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
       setClawAreaState("submitting");

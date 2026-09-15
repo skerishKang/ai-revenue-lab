@@ -32,9 +32,19 @@ PORTRAIT_CSS = (STATIC / "padiem-glass-portrait.css").read_text(encoding="utf-8"
 def test_claw_bottom_composer_visible() -> None:
     # The composer is no longer hidden by the claw state.
     assert '.app-shell[data-state="claw"] .composer-wrap' not in WORKSPACE_CSS
-    # The conversation column still yields to the workspace.
-    rule = WORKSPACE_CSS.split('.app-shell[data-state="claw"] .conversation', 1)[1]
-    assert "display: none !important" in rule.split("}", 1)[0]
+    # R1: the shared conversation column stays VISIBLE in manual Claw — it is not
+    # display:none. Only the generic chat empty-state is replaced.
+    conv_rule = WORKSPACE_CSS.split('.app-shell[data-state="claw"] .conversation {', 1)[1].split("}", 1)[0]
+    assert "display: block" in conv_rule
+    assert "display: none" not in conv_rule
+    empty_rule = WORKSPACE_CSS.split('.app-shell[data-state="claw"] .conversation .empty-state {', 1)[1].split("}", 1)[0]
+    assert "display: none" in empty_rule
+    # The workspace chrome yields to the conversation in manual view...
+    manual_rule = WORKSPACE_CSS.split('.claw-workspace[data-view="manual"] {', 1)[1].split("}", 1)[0]
+    assert "display: none" in manual_rule
+    # ...and only the inbox (non-manual) subview hides the conversation.
+    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]) ~ .conversation {', 1)[1].split("}", 1)[0]
+    assert "display: none !important" in inbox_rule
     # The intake form now lives inside the composer wrap, above #composerForm.
     wrap = INDEX.split('class="composer-wrap"', 1)[1]
     assert 'class="claw-mode-bar" id="clawManualForm"' in wrap
@@ -114,3 +124,83 @@ def test_workspace_reserves_room_for_fixed_composer() -> None:
     assert "padding: clamp(20px, 5vh, 48px) 0 280px" in layout.split("}", 1)[0]
     mobile = WORKSPACE_CSS.split("@media (max-width: 720px)", 1)[1]
     assert "padding: 16px 0 260px" in mobile
+
+
+# ── R2: Claw result surfaces render inside the shared conversation column ─────
+
+
+def _conversation_inner() -> str:
+    return INDEX.split('class="conversation"', 1)[1].split('class="composer-wrap"', 1)[0]
+
+
+def _workspace_inner() -> str:
+    return INDEX.split('id="clawWorkspace"', 1)[1].split('class="conversation"', 1)[0]
+
+
+def test_claw_surfaces_render_in_conversation_not_workspace() -> None:
+    # R2: request echo, result, memory review and approved memory read as part of
+    # the Chat thread — they live between the conversation and composer markers,
+    # never inside the workspace canvas again.
+    conv = _conversation_inner()
+    ws = _workspace_inner()
+    for marker in (
+        'id="clawRequestEcho"',
+        'id="clawResultArea"',
+        'id="clawMemoryReview"',
+        'id="clawApprovedMemory"',
+    ):
+        assert marker in conv, marker
+        assert marker not in ws, marker
+
+
+def test_claw_status_lives_in_mode_bar_not_conversation() -> None:
+    # The single canonical status region sits in the compact mode bar (composer
+    # area), keeping the conversation's polite live region free of a nested one.
+    assert 'id="clawStatus"' not in _conversation_inner()
+    wrap = INDEX.split('class="composer-wrap"', 1)[1]
+    assert 'id="clawStatus"' in wrap
+
+
+def test_request_echo_is_plain_user_message() -> None:
+    # The echo reuses the message primitives (no admin-form framing, no source
+    # label — see also #2483 which bans "요청 원문:" / "Source text" in app.js).
+    conv = _conversation_inner()
+    assert 'class="message user-message claw-request-echo"' in conv
+    assert "요청 원문:" not in conv
+    assert "Source text" not in conv
+
+
+# ── R3: disabled capabilities demote to a collapsed disclosure ────────────────
+
+
+def test_disabled_controls_are_collapsed_disclosure() -> None:
+    conv = _conversation_inner()
+    assert "<details" in conv and 'class="claw-disabled-controls"' in conv
+    assert "<summary" in conv
+    assert conv.count('class="claw-disabled-control"') == 5
+    # no longer a top-level block inside the workspace canvas
+    assert 'class="claw-disabled-controls"' not in _workspace_inner()
+
+
+# ── R4: auth-unavailable copy is separated from re-login copy ─────────────────
+
+
+def test_auth_unavailable_copy_distinct_from_relogin() -> None:
+    locale = (STATIC / "locale.js").read_text(encoding="utf-8")
+    # KO + EN parity for the new key.
+    assert locale.count('"claw-error-auth-unavailable"') == 2
+    assert locale.count('"claw-error-auth-needed"') == 2
+    # The unavailable copy must NOT tell the user to sign in again; the re-login
+    # copy must.
+    unavailable_ko = locale.split('"claw-error-auth-unavailable":', 1)[1].split("\n", 1)[0]
+    needed_ko = locale.split('"claw-error-auth-needed":', 1)[1].split("\n", 1)[0]
+    assert "다시 로그인" not in unavailable_ko
+    assert "다시 로그인" in needed_ko
+    # safeClawErrorMessage routes scope/identity failures to the unavailable key
+    # and 401 / auth_required to the re-login key — two distinct branches.
+    scope_line = next(l for l in APP.splitlines() if "workspace_scope_unavailable" in l)
+    assert "claw-error-auth-unavailable" in scope_line
+    assert "claw-error-auth-needed" not in scope_line
+    auth_line = next(l for l in APP.splitlines() if 'code === "auth_required"' in l)
+    assert "claw-error-auth-needed" in auth_line
+    assert "claw-error-auth-unavailable" not in auth_line
