@@ -158,7 +158,6 @@ class GroundedChatService:
         tool: ToolPresentationDescriptor,
         tool_input: str | None,
         additional_system_context: str | None,
-        model: str | None,
     ) -> dict:
         query = (tool_input or _latest_user_message(messages)).strip()
         if not query or len(query) > MAX_QUERY_CHARS:
@@ -169,7 +168,6 @@ class GroundedChatService:
                 planned = await self._b14_client.complete(
                     [{"role": "user", "content": search_question}],
                     skill=_RESEARCH_PLANNER_SKILL,
-                    model=model,
                 )
                 answer = planned["answer"]
                 return answer if isinstance(answer, str) else None
@@ -181,7 +179,6 @@ class GroundedChatService:
                 messages,
                 skill=_DEEP_RESEARCH_SKILL,
                 additional_system_context=context,
-                model=model,
             )
 
         try:
@@ -217,7 +214,6 @@ class GroundedChatService:
         tool: ToolPresentationDescriptor,
         tool_input: str | None,
         additional_system_context: str | None = None,
-        model: str | None = None,
     ) -> dict:
         if tool.id == "deep_research":
             return await self._deep_research(
@@ -225,7 +221,6 @@ class GroundedChatService:
                 tool=tool,
                 tool_input=tool_input,
                 additional_system_context=additional_system_context,
-                model=model,
             )
 
         async def synthesizer(context: str):
@@ -233,7 +228,6 @@ class GroundedChatService:
                 messages,
                 skill=skill,
                 additional_system_context=context,
-                model=model,
             )
 
         try:
