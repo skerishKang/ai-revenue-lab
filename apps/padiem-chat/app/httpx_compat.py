@@ -18,7 +18,7 @@ app/b14_client.py, app/web_tools.py):
 - ``Request`` (``.url``; async ``.aread() -> bytes``)
 - ``Response(status_code, headers, stream, request)`` with ``.status_code``,
   ``.headers``, async ``.aiter_bytes()``, ``.request``
-- ``Timeout(timeout, connect=...)`` (signature-compatible; not enforced in fetch)
+- ``Timeout(timeout, connect=...)`` (Workers fetch enforces the total timeout via AbortSignal)
 - ``AsyncByteStream`` (subclassable; ``__aiter__`` yielding ``bytes``, ``aclose``)
 - Exception hierarchy: ``HTTPError`` (base) and ``RequestError``, ``ConnectError``,
   ``ReadError``, ``ProtocolError``, ``ReadTimeout`` — all accept ``message`` and
@@ -61,12 +61,16 @@ except ImportError:
 
 if _IN_WORKERS:
     from js import URLSearchParams as _JsURLSearchParams  # type: ignore
+    from js import AbortSignal as _JsAbortSignal  # type: ignore
 
     class Timeout:
-        """Signature-compatible Timeout holder. The fetch backend currently
-        does not enforce timeouts (Workers fetch needs AbortController +
-        timer to honor connect/total); the field is preserved so call sites
-        that construct ``Timeout(15.0, connect=8.0)`` keep working."""
+        """Signature-compatible timeout holder for Workers fetch.
+
+        ``timeout`` is enforced as a total request/body deadline by wiring an
+        ``AbortSignal.timeout(...)`` signal into JavaScript ``fetch``. The
+        separate ``connect`` value is retained for httpx call-site
+        compatibility because fetch has no separate connect-timeout control.
+        """
 
         __slots__ = ("timeout", "connect")
 
@@ -110,11 +114,28 @@ if _IN_WORKERS:
     class _JsBodyStream(AsyncByteStream):
         """Read a js ``ReadableStream`` body as ``bytes`` chunks."""
 
-        def __init__(self, body: Any):
+        def __init__(
+            self,
+            body: Any,
+            *,
+            request: "Request | None" = None,
+            timeout_signal: Any | None = None,
+        ):
             self._body = body
+            self._request = request
+            self._timeout_signal = timeout_signal
             self._reader: Any | None = None
             self._closed = False
             self._finished = False
+
+        def _timed_out(self) -> bool:
+            signal = self._timeout_signal
+            if signal is None:
+                return False
+            try:
+                return bool(signal.aborted)
+            except Exception:
+                return False
 
         def _reader_or_create(self) -> Any:
             if self._reader is None:
@@ -163,7 +184,15 @@ if _IN_WORKERS:
             except HTTPError:
                 raise
             except Exception as exc:
-                raise ReadError("response body read failed.") from exc
+                if self._timed_out():
+                    raise ReadTimeout(
+                        "request timed out while reading response body.",
+                        request=self._request,
+                    ) from exc
+                raise ReadError(
+                    "response body read failed.",
+                    request=self._request,
+                ) from exc
 
         async def aclose(self) -> None:
             if self._closed:
@@ -230,6 +259,31 @@ if _IN_WORKERS:
         async def handle_async_request(self, request: Request) -> Response:
             raise NotImplementedError
             yield Response(500)  # pragma: no cover
+
+    def _total_timeout_seconds(value: Any) -> float | None:
+        """Return a positive total timeout for the Workers fetch path."""
+        if value is None:
+            return None
+        raw = value.timeout if isinstance(value, Timeout) else value
+        try:
+            seconds = float(raw)
+        except (TypeError, ValueError):
+            return None
+        return seconds if seconds > 0 else None
+
+    def _timeout_signal(value: Any, *, request: Request) -> Any | None:
+        seconds = _total_timeout_seconds(value)
+        if seconds is None:
+            return None
+        milliseconds = max(1, int(round(seconds * 1000)))
+        try:
+            return _JsAbortSignal.timeout(milliseconds)
+        except Exception as exc:
+            # A configured timeout must never silently become unbounded.
+            raise RequestError(
+                "Workers fetch timeout signal is unavailable.",
+                request=request,
+            ) from exc
 
     def _build_body_and_headers(kwargs: dict) -> tuple[bytes | None, dict]:
         """Translate httpx-style ``data=`` / ``json=`` / ``content=`` kwargs into
@@ -307,6 +361,12 @@ if _IN_WORKERS:
 
             # Fetch path: ``from js import fetch`` against an HTTP(S) origin.
             init: dict = {"method": self._method, "headers": headers}
+            timeout_signal = _timeout_signal(
+                self._client._timeout,
+                request=request,
+            )
+            if timeout_signal is not None:
+                init["signal"] = timeout_signal
             if not self._client._follow_redirects:
                 init["redirect"] = "manual"
             if body is not None:
@@ -314,6 +374,17 @@ if _IN_WORKERS:
             try:
                 js_resp = await _js_fetch(self._url, init)  # type: ignore[misc]
             except Exception as exc:
+                try:
+                    timed_out = bool(
+                        timeout_signal is not None and timeout_signal.aborted
+                    )
+                except Exception:
+                    timed_out = False
+                if timed_out:
+                    raise ReadTimeout(
+                        "request timed out before response headers.",
+                        request=request,
+                    ) from exc
                 raise ConnectError(
                     f"fetch failed: {exc}", request=request
                 ) from exc
@@ -352,7 +423,11 @@ if _IN_WORKERS:
             except Exception:
                 body_stream = None
             if body_stream is not None:
-                stream = _JsBodyStream(body_stream)
+                stream = _JsBodyStream(
+                    body_stream,
+                    request=request,
+                    timeout_signal=timeout_signal,
+                )
 
             response = Response(
                 status_code=status_code,
