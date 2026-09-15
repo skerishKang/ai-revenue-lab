@@ -13,6 +13,7 @@ from app.identity_enforcement import (
     CALLER_REGISTRY_V1_OVERLAY_ENV,
     CALLER_REGISTRY_V1_VERSION,
     MAX_CALLER_REGISTRY_V1_BYTES,
+    RETIRED_CALLER_IDS,
     authenticate_request,
     build_registry_from_env,
     parse_caller_registry_v1,
@@ -651,3 +652,278 @@ def test_overlay_credential_plaintext_never_leaks() -> None:
             requested_app_id="overlay-app",
         )
     assert SECRET_OVERLAY not in str(exc_info.value)
+
+
+# ---------------------------------------------------------------------------
+# #2525 legacy caller retirement (RETIRED_CALLER_IDS) at the auth boundary
+# ---------------------------------------------------------------------------
+#
+# The opaque Base V1 authority may still carry a live entry for the retired
+# legacy shared Claw caller, and that payload must never be rewritten. The
+# caller is therefore denied at wire authentication time, immediately before
+# the Base-registry fallback. These tests pin the closed scope of that guard:
+# only the single known legacy id is denied, the canonical dedicated Overlay
+# caller is unaffected, and every other Base caller keeps the unchanged path.
+
+RETIRED_LEGACY_CALLER_ID = "b54-kagent"
+SECRET_LEGACY = "K" * 48
+LEGACY_APP_ID = "app-legacy"
+
+
+def _base_with_retired_caller() -> str:
+    return _registry_payload(
+        _caller_entry("caller-a", SECRET_A, "app-a"),
+        _caller_entry(RETIRED_LEGACY_CALLER_ID, SECRET_LEGACY, LEGACY_APP_ID),
+    )
+
+
+@dataclass
+class RetiredCallerEnv:
+    PADIEM_ENGINE_CALLER_REGISTRY_V1: str = _base_with_retired_caller()
+    PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload()
+
+
+@dataclass
+class RetiredCallerBaseOnlyEnv:
+    PADIEM_ENGINE_CALLER_REGISTRY_V1: str = _base_with_retired_caller()
+
+
+def test_retired_caller_guard_scope_is_exactly_the_legacy_id() -> None:
+    assert RETIRED_CALLER_IDS == frozenset({RETIRED_LEGACY_CALLER_ID})
+    assert "overlay-caller" not in RETIRED_CALLER_IDS
+    assert "caller-a" not in RETIRED_CALLER_IDS
+    assert "caller-b" not in RETIRED_CALLER_IDS
+
+
+def test_retired_legacy_caller_with_correct_credential_is_rejected() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={
+                CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID,
+                CALLER_CREDENTIAL_HEADER: SECRET_LEGACY,
+            },
+            requested_app_id=LEGACY_APP_ID,
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+    assert SECRET_LEGACY not in str(exc_info.value)
+
+
+def test_retired_legacy_caller_rejected_without_any_overlay() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerBaseOnlyEnv(),
+            headers={
+                CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID,
+                CALLER_CREDENTIAL_HEADER: SECRET_LEGACY,
+            },
+            requested_app_id=LEGACY_APP_ID,
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_retired_legacy_caller_with_wrong_credential_same_public_result() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={
+                CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID,
+                CALLER_CREDENTIAL_HEADER: "W" * 48,
+            },
+            requested_app_id=LEGACY_APP_ID,
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_retired_legacy_caller_with_malformed_credential_same_public_result() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={
+                CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID,
+                CALLER_CREDENTIAL_HEADER: "too-short",
+            },
+            requested_app_id=LEGACY_APP_ID,
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_retired_legacy_caller_out_of_scope_app_never_reports_app_scope() -> None:
+    """A retired caller must not surface a distinct app-scope outcome.
+
+    ``service_app_not_authorized`` would confirm the id exists in the Base
+    authority, so a retired caller must always collapse to the generic
+    authentication failure.
+    """
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={
+                CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID,
+                CALLER_CREDENTIAL_HEADER: SECRET_LEGACY,
+            },
+            requested_app_id="app-a",
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+    assert exc_info.value.code != "service_app_not_authorized"
+
+
+def test_retired_legacy_caller_denied_on_legacy_trio_authority_too() -> None:
+    """The retirement is a boundary rule, so it also covers the legacy trio.
+
+    When the opaque Base V1 variable is genuinely absent the legacy one-caller
+    trio is authoritative; the retired id stays retired there as well.
+    """
+
+    @dataclass
+    class LegacyTrioRetired:
+        PADIEM_ENGINE_CALLER_ID: str = RETIRED_LEGACY_CALLER_ID
+        PADIEM_ENGINE_CALLER_SECRET: str = SECRET_LEGACY
+        PADIEM_ENGINE_ALLOWED_APPS: str = LEGACY_APP_ID
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=LegacyTrioRetired(),
+            headers={
+                CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID,
+                CALLER_CREDENTIAL_HEADER: SECRET_LEGACY,
+            },
+            requested_app_id=LEGACY_APP_ID,
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_unrelated_base_caller_unaffected_by_retired_caller_guard() -> None:
+    authenticate_request(
+        env=RetiredCallerEnv(),
+        headers={CALLER_ID_HEADER: "caller-a", CALLER_CREDENTIAL_HEADER: SECRET_A},
+        requested_app_id="app-a",
+    )
+
+
+def test_unrelated_base_caller_credential_isolation_unchanged() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={CALLER_ID_HEADER: "caller-a", CALLER_CREDENTIAL_HEADER: SECRET_LEGACY},
+            requested_app_id="app-a",
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_unrelated_base_caller_app_scope_unchanged_by_retired_caller_guard() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={CALLER_ID_HEADER: "caller-a", CALLER_CREDENTIAL_HEADER: SECRET_A},
+            requested_app_id=LEGACY_APP_ID,
+        )
+    assert exc_info.value.code == "service_app_not_authorized"
+
+
+def test_unrelated_base_caller_malformed_credential_semantics_unchanged() -> None:
+    """The guard must not widen: only retired ids skip digest validation."""
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={CALLER_ID_HEADER: "caller-a", CALLER_CREDENTIAL_HEADER: "too-short"},
+            requested_app_id="app-a",
+        )
+    assert exc_info.value.code == "invalid_service_credential"
+
+
+def test_canonical_overlay_caller_unaffected_by_retired_caller_guard() -> None:
+    authenticate_request(
+        env=RetiredCallerEnv(),
+        headers={CALLER_ID_HEADER: "overlay-caller", CALLER_CREDENTIAL_HEADER: SECRET_OVERLAY},
+        requested_app_id="overlay-app",
+    )
+
+
+def test_unknown_caller_semantics_unchanged_by_retired_caller_guard() -> None:
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        authenticate_request(
+            env=RetiredCallerEnv(),
+            headers={CALLER_ID_HEADER: "never-registered", CALLER_CREDENTIAL_HEADER: SECRET_A},
+            requested_app_id="app-a",
+        )
+    assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_missing_caller_or_credential_semantics_unchanged_by_retired_guard() -> None:
+    for headers in (
+        {CALLER_ID_HEADER: RETIRED_LEGACY_CALLER_ID},
+        {CALLER_CREDENTIAL_HEADER: SECRET_LEGACY},
+    ):
+        with pytest.raises(ServiceIdentityError) as exc_info:
+            authenticate_request(
+                env=RetiredCallerEnv(),
+                headers=headers,
+                requested_app_id=LEGACY_APP_ID,
+            )
+        assert exc_info.value.code == "service_authentication_failed"
+
+
+def test_duplicate_caller_guard_unchanged_by_retired_caller_guard() -> None:
+    """Duplicate base/overlay detection still runs, including for the retired id."""
+
+    @dataclass
+    class DuplicateOverlayCaller:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = _base_with_retired_caller()
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload(
+            caller_id="caller-a", credential=SECRET_OVERLAY, allowed_app_ids=["overlay-app"]
+        )
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(DuplicateOverlayCaller())
+    assert exc_info.value.code == "duplicate_service_caller"
+
+    @dataclass
+    class DuplicateRetiredCaller:
+        PADIEM_ENGINE_CALLER_REGISTRY_V1: str = _base_with_retired_caller()
+        PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY: str = _overlay_payload(
+            caller_id=RETIRED_LEGACY_CALLER_ID,
+            credential=SECRET_OVERLAY,
+            allowed_app_ids=["overlay-app"],
+        )
+
+    with pytest.raises(ServiceIdentityError) as exc_info:
+        build_registry_from_env(DuplicateRetiredCaller())
+    assert exc_info.value.code == "duplicate_service_caller"
+
+
+def test_retired_caller_guard_never_rejects_or_rewrites_the_base_payload() -> None:
+    """The opaque Base V1 authority is untouched: same callers, digest, scope."""
+
+    registry = build_registry_from_env(RetiredCallerEnv())
+    assert registry is not None
+    by_id = {caller.caller_id: caller for caller in registry.callers}
+    assert set(by_id) == {"caller-a", RETIRED_LEGACY_CALLER_ID}
+
+    retired = by_id[RETIRED_LEGACY_CALLER_ID]
+    assert retired.credential_sha256 == caller_secret_digest(SECRET_LEGACY)
+    assert retired.allowed_app_ids == (LEGACY_APP_ID,)
+
+    # The overlay caller is still never merged into the base authority.
+    assert "overlay-caller" not in by_id
+
+
+def test_retired_caller_guard_is_a_single_closed_request_time_constant() -> None:
+    """Source contract: one closed literal set, evaluated only at request time.
+
+    The retired id literal must appear exactly once in the module (the closed
+    constant), so no registry parsing, payload construction, or payload
+    rewriting logic can depend on it; the deny is a pure membership check in
+    ``authenticate_request`` between the Overlay branch and the Base fallback.
+    """
+
+    source = (APP_ROOT / "app" / "identity_enforcement.py").read_text(encoding="utf-8")
+    assert source.count(RETIRED_LEGACY_CALLER_ID) == 1
+    assert 'RETIRED_CALLER_IDS = frozenset({"b54-kagent"})' in source
+
+    auth_body = source[source.index("def authenticate_request") :]
+    guard = auth_body.index("if caller_id in RETIRED_CALLER_IDS:")
+    assert auth_body.index("overlay_caller.caller_id") < guard
+    assert guard < auth_body.index("registry=registry,")

@@ -130,6 +130,11 @@ def test_oversized_argument_exceeds_the_core_ceiling_but_not_the_body_ceiling() 
     }
     assert len(json.dumps(body).encode("utf-8")) < 128 * 1024  # MAX_REQUEST_BODY_BYTES
 
+def test_unregistered_probe_argument_is_bounded_below_core_ceiling() -> None:
+    arguments = {"query": smoke.BOUNDED_UNREGISTERED_QUERY}
+    size = len(json.dumps(arguments, separators=(",", ":")).encode("utf-8"))
+    assert size < 65536
+
 
 # --- step behaviour ---------------------------------------------------------
 
@@ -155,7 +160,10 @@ def test_s1_is_live_on_tool_arguments_too_large(capsys: pytest.CaptureFixture[st
         verdict = smoke.s1_canonical_gmail_probe()
     assert verdict == smoke.TOOL_CONTRACT_LIVE
     assert smoke._failures == []
-    assert "provider never called" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "provider never called" in out
+    assert "runtime bound" not in out
+    assert "Gmail tool registered" not in out
 
 
 def test_s1_fails_when_the_tool_actually_executes() -> None:
@@ -177,32 +185,67 @@ def test_s1_fails_on_unexpected_upstream_5xx() -> None:
     assert len(failures) == 1
 
 
-def test_s2_requires_registry_rejection_when_runtime_is_live() -> None:
+def test_s2_requires_registry_rejection_with_bounded_payload() -> None:
     failures: list[str] = []
-    with patch.object(smoke, "_request", return_value=(403, _error("tool_not_registered"))), patch.object(
-        smoke, "_failures", failures
-    ):
-        smoke.s2_unregistered_tool_probe(smoke.TOOL_CONTRACT_LIVE)
+    captured: dict[str, object] = {}
+
+    def _fake_request(*, method: str, path: str, body: dict[str, object] | None = None) -> tuple[int, dict]:
+        captured["body"] = body
+        return 403, _error("tool_not_registered")
+
+    with patch.object(smoke, "_request", _fake_request), patch.object(smoke, "_failures", failures):
+        verdict = smoke.s2_unregistered_tool_probe()
+
+    assert verdict == "REGISTRY_PROVEN"
     assert failures == []
+    body = captured["body"]
+    assert isinstance(body, dict)
+    arguments = body["arguments"]
+    assert isinstance(arguments, dict)
+    assert arguments["query"] == smoke.BOUNDED_UNREGISTERED_QUERY
+    assert len(json.dumps(arguments, separators=(",", ":")).encode("utf-8")) < 65536
 
 
-def test_s2_fails_if_an_unregistered_tool_is_accepted() -> None:
-    failures: list[str] = []
-    with patch.object(
-        smoke, "_request", return_value=(400, _error("tool_arguments_too_large"))
-    ), patch.object(smoke, "_failures", failures):
-        smoke.s2_unregistered_tool_probe(smoke.TOOL_CONTRACT_LIVE)
-    assert len(failures) == 1
-    assert "unregistered tool" in failures[0]
-
-
-def test_s2_accepts_consistency_with_a_deferred_s1() -> None:
+def test_s2_defers_when_runtime_is_unavailable() -> None:
     failures: list[str] = []
     with patch.object(
         smoke, "_request", return_value=(503, _error("tool_runtime_unavailable"))
     ), patch.object(smoke, "_failures", failures):
-        smoke.s2_unregistered_tool_probe(smoke.RUNTIME_UNAVAILABLE)
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "RUNTIME_UNAVAILABLE"
     assert failures == []
+
+
+def test_s2_defers_when_agent_is_not_bound() -> None:
+    failures: list[str] = []
+    with patch.object(
+        smoke, "_request", return_value=(403, _error("tool_agent_not_bound"))
+    ), patch.object(smoke, "_failures", failures):
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "AGENT_UNAVAILABLE"
+    assert failures == []
+
+
+def test_s2_fails_if_an_unregistered_tool_executes() -> None:
+    failures: list[str] = []
+    with patch.object(smoke, "_request", return_value=(200, {"ok": True})), patch.object(
+        smoke, "_failures", failures
+    ):
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "FAIL"
+    assert len(failures) == 1
+    assert "unregistered tool executed" in failures[0]
+
+
+def test_s2_fails_on_parse_guard_instead_of_misreading_it_as_registry_evidence() -> None:
+    failures: list[str] = []
+    with patch.object(
+        smoke, "_request", return_value=(400, _error("tool_arguments_too_large"))
+    ), patch.object(smoke, "_failures", failures):
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "FAIL"
+    assert len(failures) == 1
+    assert "unexpected unregistered-tool result" in failures[0]
 
 
 def test_s3_requires_4xx_cross_app_isolation() -> None:
@@ -260,6 +303,25 @@ def test_main_defers_honestly_when_runtime_is_unbound(capsys: pytest.CaptureFixt
     assert "REASON=TOOL_RUNTIME_UNAVAILABLE" in out
     assert "ROUTE_AVAILABLE=1" in out
     assert "ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING" in out
+
+def test_main_defers_when_s1_hits_parse_guard_but_s2_finds_runtime_unbound(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = _run_main(
+        [
+            (200, HEALTH_OK),
+            (400, _error("tool_arguments_too_large")),
+            (503, _error("tool_runtime_unavailable")),
+            (403, _error("service_app_not_authorized")),
+        ]
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
+    assert "REASON=TOOL_RUNTIME_UNAVAILABLE" in out
+    assert "S1_CLASSIFICATION=TOOL_CONTRACT_LIVE" in out
+    assert "S2_CLASSIFICATION=RUNTIME_UNAVAILABLE" in out
+    assert "TOOL_REGISTRY_LIVE=PASS" not in out
 
 
 def test_main_passes_when_the_tool_contract_is_live(capsys: pytest.CaptureFixture[str]) -> None:
@@ -419,6 +481,7 @@ def test_end_to_end_pass_over_real_urllib(capsys: pytest.CaptureFixture[str]) ->
     bodies = [json.loads(bytes(item["body"]).decode("utf-8")) for item in requests[1:]]
     assert bodies[0]["tool_id"] == "tool:google:gmail.search_messages@1"
     assert bodies[1]["tool_id"] == "tool:google:gmail.a11_smoke_unregistered@1"
+    assert bodies[1]["arguments"]["query"] == smoke.BOUNDED_UNREGISTERED_QUERY
     assert bodies[2]["app_id"] == "b62"
 
 
@@ -468,3 +531,9 @@ def test_deploy_gate_workflow_runs_a11_between_a10_and_a12() -> None:
         "- name: Run A11 Gmail tool_runtime smoke",
         "- name: Run A12 streaming idempotency replay smoke",
     ]
+
+def test_s2_source_uses_bounded_fixture_independent_of_s1() -> None:
+    source = SMOKE_PATH.read_text(encoding="utf-8")
+    assert "BOUNDED_UNREGISTERED_QUERY" in source
+    assert "def s2_unregistered_tool_probe() -> str:" in source
+    assert "s2_unregistered_tool_probe(s1_verdict" not in source

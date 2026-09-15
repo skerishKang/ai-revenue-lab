@@ -23,7 +23,8 @@ IP-CONTROL does not automatically own:
 - UI state;
 - Core runtime semantics;
 - Engine Service Binding identity;
-- B14 provider/model credentials or routing.
+- B14 provider/model credentials or routing;
+- Cloudflare Worker secret/version/deployment/rollback machinery (repository operations layer under `.github` is the preferred owner; `NEW_PYTHON_PACKAGE_FOR_DEPLOYMENT_RUNTIME = NO` per #2409 Wave 0). See `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md`.
 
 ## Start here
 

@@ -42,9 +42,11 @@ an invariant violation fails closed with static text that never echoes a value.
 
 Canonical-caller fail-closed (#2449)
 ------------------------------------
-This diagnostic is scoped to the canonical B54/P01 Claw caller ``b54-kagent``.
-The caller id is classified first; authority is resolved only when the
-classification is exactly ``b54-kagent``. An ``ABSENT`` or ``NONCANONICAL``
+This diagnostic is scoped to the canonical B54/P01 Claw caller
+``b54-p01-overlay-20260914-a1`` (the dedicated overlay-only id introduced by
+#2520; the legacy shared Claw id is no longer the Claw caller of record). The
+caller id is classified first; authority is resolved only when the
+classification is exactly that one canonical id. An ``ABSENT`` or ``NONCANONICAL``
 caller never resolves an arbitrary registry caller: ``CALLER_PRESENT``,
 ``APP_ALLOWED``, ``ENGINE_MATCH`` and ``CHAT_MATCH`` are all FALSE, while the
 ``NONCANONICAL`` classification is still reported so caller drift stays
@@ -81,7 +83,9 @@ CHAT_WORKER = "padiem-chat"
 # Non-secret canonical identities for the B54/P01 Chat<->Engine boundary. These
 # are configuration identifiers (already plain_text bindings), never secrets.
 P01_APP_ID = "b54-padiem-claw"
-P01_CHAT_CALLER_ID = "b54-kagent"
+# Single canonical caller id. Closed vocabulary: exactly one value is accepted,
+# there is no alias/dual-id/fallback and no shadowing (#2520).
+P01_CHAT_CALLER_ID = "b54-p01-overlay-20260914-a1"
 
 ABSENT = "ABSENT"
 NONCANONICAL = "NONCANONICAL"
@@ -302,7 +306,7 @@ def run_auth_boundary_diagnostic(
 
     caller_class = _closed_string(chat_caller_id, frozenset({P01_CHAT_CALLER_ID}))
 
-    # Fail-closed caller drift: only the canonical b54-kagent caller may resolve
+    # Fail-closed caller drift: only the one canonical Claw caller may resolve
     # an authority. ABSENT/NONCANONICAL never look up an arbitrary registry
     # caller; their booleans are all FALSE while the classification is reported.
     caller_present = False

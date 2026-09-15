@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded rotation of the b54-kagent Engine caller-registry OVERLAY credential.
+"""Bounded rotation of the dedicated P01-overlay Engine caller-registry OVERLAY credential.
 
 This gate replaces ONLY ``PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY`` (a served
 Worker ``secret_text`` on the ``padiem-ai-engine`` worker) with a canonical
@@ -18,9 +18,11 @@ Authority model (apps/padiem-ai-engine/app/identity_enforcement.py):
   directly against the overlay caller; the overlay must not duplicate a base
   caller id, and configuring it while the V1 base is absent fails closed.
 
-Because the #2375 Production authority established the overlay specifically for
-caller ``b54-kagent`` / app ``b54-padiem-claw``, the credential drift after the
-B62 rotation is an OVERLAY credential drift, not a base V1 rewrite. This gate
+Because the overlay authority carries a DEDICATED overlay-only caller id that is
+deliberately distinct from every base V1 caller id (so the runtime
+``duplicate_service_caller`` guard can never fire for it) bound to app
+``b54-padiem-claw``, the credential drift after the B62 rotation is an OVERLAY
+credential drift, not a base V1 rewrite. This gate
 therefore requires BOTH the base V1 and the overlay to already be present as
 ``secret_text`` (NAME/TYPE only) before it will plan, and it PUTs only the
 overlay.
@@ -29,7 +31,7 @@ Canonical overlay payload (credential embedded UNHASHED; the Engine hashes it
 internally via ``caller_secret_digest``):
 
     {"version": 1,
-     "caller": {"caller_id": "b54-kagent",
+     "caller": {"caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": <raw B62_P01_ENGINE_CREDENTIAL>,
                 "allowed_app_ids": ["b54-padiem-claw"]}}
 
@@ -100,8 +102,10 @@ LEGACY_TRIO_NAMES = (
 
 # Canonical overlay caller (P01 constants: P01_CALLER_VALUE / P01_APP_ID). These
 # are fixed source constants, never dispatcher-tunable, so the rotation can never
-# widen or re-point the overlay authority.
-CALLER_ID = "b54-kagent"
+# widen or re-point the overlay authority. The caller id is overlay-dedicated
+# (#2520): it MUST stay distinct from every base V1 caller id and MUST equal the
+# Chat-side P01_CALLER_VALUE in b62_claw_live_config_activation.py.
+CALLER_ID = "b54-p01-overlay-20260914-a1"
 ALLOWED_APP_IDS = ("b54-padiem-claw",)
 OVERLAY_VERSION = 1
 

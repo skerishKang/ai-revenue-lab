@@ -472,7 +472,10 @@ def test_deploy_job_yaml_exposes_both_guard_steps() -> None:
     assert "Pre-deploy served-version secret guard" in steps
     assert "Post-deploy served-version secret guard" in steps
     assert steps.index("Pre-deploy served-version secret guard") < steps.index("Deploy engine to production")
-    assert steps.index("Post-deploy served-version secret guard") > steps.index("Post-deploy smoke")
+    # f88 (run 34889667189): the post-deploy guard ran AFTER the health smoke,
+    # so a smoke failure skipped the guard and the served version stayed
+    # unknown. The guard is GET-only evidence and must precede the smoke.
+    assert steps.index("Post-deploy served-version secret guard") < steps.index("Post-deploy smoke")
 
 
 def test_guards_run_the_shared_script_in_both_phases() -> None:
