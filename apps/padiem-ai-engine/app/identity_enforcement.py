@@ -35,9 +35,7 @@ fallback, shadowing, or id remapping.
 from __future__ import annotations
 
 import json
-import weakref
-from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from collections.abc import Mapping
 from typing import Any
 
 from app.service_identity import (
@@ -248,9 +246,10 @@ def _build_registry_authority_from_env(
     64-caller opaque base remains valid when the one-caller overlay is present.
     Duplicate caller IDs are rejected before either authority is usable.
 
-    This is the uncached builder. Hot-path callers go through
-    :func:`_registry_authority_for_env`, which memoizes one successful build
-    per isolate while the underlying binding values are unchanged.
+    The authority is deliberately rebuilt on every call. See the module-level
+    ``#2542`` note below for why no sound memoization of this value is possible
+    under the no-plaintext / no-content-surrogate constraint; correctness of the
+    authentication authority is preferred over any per-request speedup.
     """
 
     registry_raw = getattr(env, CALLER_REGISTRY_V1_ENV, None)
@@ -335,121 +334,61 @@ def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
     64-caller capacity of the opaque base without redefining that contract.
     """
 
-    registry, _overlay_caller = _registry_authority_for_env(env)
+    registry, _overlay_caller = _build_registry_authority_from_env(env)
     return registry
 
 
-# Isolate-lifetime authority memo (#2542).
+# Why the caller-registry authority is NOT memoized (#2542).
 #
-# The V1 base/overlay deployment bindings are request-invariant for the lifetime
-# of a Worker isolate, but every non-health request used to re-parse the bounded
-# registry JSON, re-digest every caller credential, and re-run the full
-# dataclass/identifier validation. This memo removes that repeated construction
-# without changing any authentication, authorization, or fail-closed semantic:
-# it only avoids rebuilding an authority whose bindings are provably the same
-# live objects already built.
+# #2542 asked us to remove the per-request rebuild of the base/overlay
+# authority. An earlier revision of this file added an isolate-lifetime memo
+# keyed by ``weakref(env)`` plus the object ``id`` of the raw V1 base/overlay
+# binding values. A security review rejected that design as ABA-unsafe at an
+# authentication boundary, and this note records why no sound replacement key
+# exists under the agreed constraints, so the correct disposition is to rebuild
+# on every call (CENTRAL options B/C: correctness over hit rate; a zero
+# production hit rate is acceptable until a safe runtime identity primitive is
+# proven).
 #
-# Cache state never holds the raw registry/overlay plaintext, and never holds
-# any content-derived surrogate (no hash, digest, fingerprint, length, prefix,
-# or excerpt). Invalidation uses non-content runtime identity only: a weak
-# reference to the env object plus the object identity (``id``) of the exact
-# binding value objects observed at build time. ``str`` values cannot be
-# weak-referenced in CPython, so value identity is tracked by ``id``; the env
-# weak reference guarantees the memo can never outlive a trusted env, and the
-# residual address-reuse window is behavior-neutral: a reused address can only
-# carry a re-materialization of the same immutable binding content, which
-# parses to an identical authority. A re-assigned binding (even one with
-# identical content or identical length) is a different object, misses, and
-# rebuilds. Where runtime identity cannot be trusted at all (an env that cannot
-# be weak-referenced), the memo is simply never populated: correctness is
-# preferred over hit rate, and a miss is always a full uncached rebuild.
+# Constraints (non-negotiable): the memo may not retain the raw registry or
+# overlay plaintext, and may not retain any content-derived surrogate (hash,
+# digest, fingerprint, length, prefix, suffix, or excerpt). Invalidation must
+# therefore rest on a runtime identity primitive that provably cannot ABA within
+# the cache lifetime.
 #
-# Only successful V1 builds are memoized; malformed, blank, wrong-type, or
-# duplicate-caller payloads raise on every call exactly as before, and the
-# legacy one-caller trio (cheap: a single digest) is deliberately not memoized.
-@dataclass(frozen=True, slots=True)
-class _AuthorityCacheEntry:
-    """Identity-keyed memo of one built authority. No payload bytes are stored.
-
-    The integer fields are runtime object addresses (``id``) of the binding
-    value objects, never content-derived values.
-    """
-
-    env_ref: Callable[[], Any | None]
-    base_id: int
-    overlay_id: int
-    authority: tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]
-
-    def matches(self, env: Any, registry_raw: Any, overlay_raw: Any) -> bool:
-        return (
-            self.env_ref() is env
-            and self.base_id == id(registry_raw)
-            and self.overlay_id == id(overlay_raw)
-        )
-
-
-_authority_cache: _AuthorityCacheEntry | None = None
-_authority_cache_stats = {"hits": 0, "misses": 0}
-
-
-def _reset_authority_cache_for_tests() -> None:
-    """Drop the memoized authority and counters (test isolation helper)."""
-
-    global _authority_cache
-    _authority_cache = None
-    _authority_cache_stats["hits"] = 0
-    _authority_cache_stats["misses"] = 0
-
-
-def _weak_identity_ref(obj: Any) -> Callable[[], Any | None] | None:
-    """Return a weak reference to ``obj``, or ``None`` if it cannot be tracked.
-
-    Only the env object is weak-referenced; the binding value objects are tracked
-    by ``id`` because CPython ``str`` instances cannot be weak-referenced. An env
-    that cannot be weak-referenced disables memoization entirely (a miss always
-    rebuilds) rather than risk serving a stale authority.
-    """
-
-    try:
-        return weakref.ref(obj)
-    except TypeError:
-        return None
-
-
-def _registry_authority_for_env(
-    env: Any,
-) -> tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]:
-    """Hot-path wrapper around :func:`_build_registry_authority_from_env`.
-
-    Returns a build identical to the uncached builder. The memo hits only while
-    the env object and both raw binding value objects are the same live objects
-    observed at build time; any replacement rebuilds, and a successful V1-backed
-    build replaces the memo. Exceptions propagate untouched.
-    """
-
-    global _authority_cache
-    registry_raw = getattr(env, CALLER_REGISTRY_V1_ENV, None)
-    overlay_raw = getattr(env, CALLER_REGISTRY_V1_OVERLAY_ENV, None)
-
-    cached = _authority_cache
-    if cached is not None and cached.matches(env, registry_raw, overlay_raw):
-        _authority_cache_stats["hits"] += 1
-        return cached.authority
-
-    authority = _build_registry_authority_from_env(env)
-    entry: _AuthorityCacheEntry | None = None
-    if isinstance(registry_raw, str) and registry_raw.strip():
-        env_ref = _weak_identity_ref(env)
-        if env_ref is not None:
-            entry = _AuthorityCacheEntry(
-                env_ref=env_ref,
-                base_id=id(registry_raw),
-                overlay_id=id(overlay_raw),
-                authority=authority,
-            )
-    _authority_cache = entry
-    _authority_cache_stats["misses"] += 1
-    return authority
+# Impossibility argument for the binding values:
+#   * The authoritative inputs are ``str`` deployment bindings. A CPython ``str``
+#     cannot be weak-referenced, so the only identity handle available for it is
+#     ``id(str)``.
+#   * ``id`` is only unique among *live* objects. If a binding is reassigned, the
+#     previous ``str`` becomes collectable; once collected, CPython is free to
+#     allocate a *different* ``str`` at the same address. A subsequent read then
+#     reports an ``id`` that matches the memo for content that was never built.
+#   * Concrete stale-hit sequence: build at address X; reassign the binding to a
+#     value at address Y (freeing X's object on a later read that already missed
+#     and rebuilt); reassign again to a new value that CPython places back at the
+#     freed address X. If no authentication happens between the two reassignments,
+#     the next read returns a live ``str`` at X whose ``id`` equals the retained
+#     ``base_id``, producing a false hit that serves the wrong authority. Nothing
+#     about immutable content prevents this: the reused address can carry a
+#     different payload, and the memo cannot observe the difference without either
+#     holding the ``str`` (plaintext) or comparing it (surrogate) — both forbidden.
+#   * Keying on the env *container* alone (``weakref(env)``) is itself ABA-safe,
+#     but it cannot detect a binding reassignment *within* one still-live env, so
+#     it would stale-hit on any mutable/synthetic env and fails the required
+#     regression that reassignment must never produce a stale authority.
+#
+# The env weak reference and the parsed authority can be tracked safely; the
+# binding ``str`` values cannot be tracked safely without violating the
+# no-plaintext / no-surrogate rules. Because the authority depends on exactly
+# those untrackable values, no sound memo exists, and a wrong-but-plausible key
+# is strictly worse than none at an authentication boundary.
+#
+# If a future runtime exposes a provably immutable or versioned authority token
+# (CENTRAL option A) — a value whose identity cannot be recycled across a
+# differing payload — the memo can be reintroduced keyed on that token. Until
+# then this module rebuilds the authority per call, which is behavior- and
+# fail-closed-identical to the pre-#2542 builder.
 
 
 def authenticate_request(
@@ -460,7 +399,7 @@ def authenticate_request(
 ) -> None:
     """Fail closed unless the request authenticates as a registered caller."""
 
-    registry, overlay_caller = _registry_authority_for_env(env)
+    registry, overlay_caller = _build_registry_authority_from_env(env)
     if registry is None:
         raise ServiceIdentityError(
             "service_identity_unavailable",
