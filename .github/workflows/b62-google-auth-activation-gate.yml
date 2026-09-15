@@ -90,6 +90,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install test dependencies
+        run: python -m pip install --quiet pytest
+
       - name: Run Google auth activation gate contract tests
         run: python -m pytest .github/tests/test_b62_google_auth_activation.py -q
 
