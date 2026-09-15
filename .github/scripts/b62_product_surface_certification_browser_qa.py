@@ -256,16 +256,21 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 4:
-        raise AssertionError(f"mode matrix incomplete at {label}")
-    if await panel.locator('[data-mode-value="auto"]').get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Auto not selected at {label}")
-    for mode in ("fast", "balanced", "deep"):
-        if not await panel.locator(f'[data-mode-value="{mode}"]').is_disabled():
-            raise AssertionError(f"{mode} must remain preview-only at {label}")
+    if await options.count() != 2:
+        raise AssertionError(f"tier matrix incomplete at {label}")
+    plus = panel.locator('[data-mode-value="plus"]')
+    pro = panel.locator('[data-mode-value="pro"]')
+    if await plus.is_disabled() or await pro.is_disabled():
+        raise AssertionError(f"Plus and Pro must be selectable at {label}")
+    if await pro.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Pro not selected by default at {label}")
+    if await plus.get_attribute("aria-pressed") != "false":
+        raise AssertionError(f"Plus must start unselected at {label}")
+    if await panel.locator('[data-mode-value="max"]').count() != 0:
+        raise AssertionError(f"Max must remain browser-hidden at {label}")
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
-        raise AssertionError(f"mode panel did not close at {label}")
+        raise AssertionError(f"tier panel did not close at {label}")
 
     await page.locator("#attachmentFileInput").set_input_files(
         {
