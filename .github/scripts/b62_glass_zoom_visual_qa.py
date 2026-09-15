@@ -229,7 +229,9 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         )
 
     # After token activity stops, the portrait must settle back to the calm
-    # reading posture. Scroll-follow state itself must not keep reveal alive.
+    # reading posture. Move the pointer out of the portrait zone first so this
+    # assertion isolates answer activity from the independent pointer driver.
+    await page.mouse.move(70, 80)
     await page.wait_for_timeout(1900)
     settled_reveal = await page.evaluate(
         "() => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0"
