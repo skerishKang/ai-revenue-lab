@@ -47,6 +47,15 @@ class Handler(BaseHTTPRequestHandler):
             self._write(payload)
             return
 
+        if self.path == "/slow-body":
+            first = b"first"
+            second = b"second"
+            self._headers(len(first) + len(second))
+            self._write(first)
+            time.sleep(0.6)
+            self._write(second)
+            return
+
         self.send_error(404)
 
 
