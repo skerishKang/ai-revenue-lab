@@ -1,17 +1,19 @@
 """httpx compatibility shim for the Cloudflare Workers Python runtime (Pyodide).
 
-The Workers Python runtime does not include the ``httpx`` package, so production
-modules written against httpx's async transport surface (Worker entrypoint,
-Google OAuth, B14 streaming, web tools) fail with
-``ModuleNotFoundError: No module named 'httpx'`` at import time. This module
-provides the subset of the httpx surface actually used by the B62 production
-code, backed by ``from js import fetch`` on Workers, and re-exporting the real
-``httpx`` on CPython so the existing test suite (which depends on
-``httpx.MockTransport``, ``httpx.ASGITransport``, ``httpx.URL`` etc.) is
-unchanged.
+The Workers runtime does not provide the normal socket-backed httpx execution
+environment for app-owned outbound fetches, so this module provides the subset
+used by B62 auth/web clients, backed by ``from js import fetch`` on Workers, and
+re-exports real ``httpx`` on CPython for tests.
 
-Surface provided (matches actual usage in worker.py, app/auth.py,
-app/b14_client.py, app/web_tools.py):
+IMPORTANT: do not use this compatibility type family for a custom transport
+injected into ``padiem_ai_core.B14StreamingClient``. Core owns a real
+``httpx.AsyncClient``, so its injected ``AsyncBaseTransport``, ``Response``,
+``AsyncByteStream``, and exception types must all come from the same real-httpx
+module. The B62 Service-Binding streaming bridge in ``worker.py`` therefore
+imports real ``httpx`` directly.
+
+Surface provided (matches actual usage in app/auth.py, app/b14_client.py,
+and app/web_tools.py):
 
 - ``AsyncClient(transport, timeout, follow_redirects)`` with ``.stream(method, url, ...)``
 - ``AsyncBaseTransport`` (subclassable; ``handle_async_request(request) -> Response``)
