@@ -7,6 +7,8 @@
   var glassMotionFrame=0;
   var glassObserver=null;
   var glassStateObserver=null;
+  var glassPointerReveal=0;
+  var glassAnswerLastActivity=0;
 
   function isValid(t){return VALID.indexOf(t)!==-1;}
   function isGlassVariant(v){return GLASS_VARIANTS.indexOf(v)!==-1;}
@@ -65,7 +67,6 @@
     }
     var mode=glassMode();
     root.setAttribute("data-glass-mode",mode);
-    if(mode==="reading") resetGlassPointer();
     return mode;
   }
 
@@ -211,6 +212,33 @@
     return phase<=1?phase:2-phase;
   }
 
+  function glassHoverCapable(){
+    try{return Boolean(window.matchMedia&&window.matchMedia("(hover: hover) and (pointer: fine)").matches);}catch(e){return true;}
+  }
+
+  function currentGlassTime(){
+    try{return window.performance&&window.performance.now?window.performance.now():Date.now();}catch(e){return Date.now();}
+  }
+
+  function noteGlassAnswerActivity(){
+    if(getCurrent()!=="padiem-glass"||prefersReducedMotion()) return;
+    glassAnswerLastActivity=currentGlassTime();
+    queueGlassMotion();
+  }
+
+  function glassAnswerReveal(now){
+    if(!glassAnswerLastActivity) return 0;
+    var age=Math.max(0,now-glassAnswerLastActivity);
+    var envelope=age<=260?1:Math.max(0,1-(age-260)/1500);
+    if(envelope<=0){
+      glassAnswerLastActivity=0;
+      return 0;
+    }
+    /* A slow ping-pong keeps streaming answers cinematic without flashing. */
+    var breathing=.58+.42*smoothstep(pingPong(now/1500));
+    return envelope*breathing;
+  }
+
   function updateGlassMotion(){
     glassMotionFrame=0;
     if(getCurrent()!=="padiem-glass") return;
@@ -223,51 +251,62 @@
       root.style.setProperty("--glass-mask-start","6%");
       root.style.setProperty("--glass-mask-full","24%");
       root.style.setProperty("--glass-reveal","0.8");
+      glassAnswerLastActivity=0;
       resetGlassPointer();
       return;
     }
 
-    if(mode==="reading"){
-      var calmVariant=getGlassVariant();
-      root.style.setProperty("--glass-art-x","0px");
-      root.style.setProperty("--glass-art-y","0px");
-      root.style.setProperty("--glass-art-scale","1");
-      root.style.setProperty("--glass-mask-start",calmVariant==="male"?"28%":"30%");
-      root.style.setProperty("--glass-mask-full",calmVariant==="male"?"50%":"54%");
-      root.style.setProperty("--glass-reveal","0");
-      resetGlassPointer();
-      return;
-    }
+    var now=currentGlassTime();
+    var pointerReveal=glassHoverCapable()?glassPointerReveal:0;
+    var answerReveal=mode==="reading"?glassAnswerReveal(now):0;
+    var baseReveal=0;
 
-    var list=document.getElementById("messageList");
-    var messageCount=list?list.children.length:0;
-    var conversationHeight=list?list.scrollHeight:0;
-    var visibleConversation=Math.max(280,window.innerHeight*.42);
-    var overflowTravel=Math.max(0,conversationHeight-visibleConversation)/620;
-    var pageY=window.scrollY||document.documentElement.scrollTop||0;
-    var scrollTravel=pageY/Math.max(520,window.innerHeight*.72);
-    var messageTravel=messageCount*.28;
+    if(mode!=="reading"){
+      var list=document.getElementById("messageList");
+      var messageCount=list?list.children.length:0;
+      var conversationHeight=list?list.scrollHeight:0;
+      var visibleConversation=Math.max(280,window.innerHeight*.42);
+      var overflowTravel=Math.max(0,conversationHeight-visibleConversation)/620;
+      var pageY=window.scrollY||document.documentElement.scrollTop||0;
+      var scrollTravel=pageY/Math.max(520,window.innerHeight*.72);
+      var messageTravel=messageCount*.28;
+      var travel=messageTravel+overflowTravel+scrollTravel;
+      baseReveal=smoothstep(pingPong(travel));
+    }
 
     /*
-     * Home keeps the original Padiem Glass travel behavior. Once the explicit
-     * app-shell conversation state becomes chat, the reading branch above
-     * freezes travel so long answers do not compete with portrait motion.
+     * Three bounded drivers share one reveal envelope:
+     * - existing home scroll/message travel,
+     * - portrait-zone pointer proximity,
+     * - live assistant-answer activity.
+     * Union composition lets pointer + answer strengthen each other without
+     * exceeding 1 or fighting over the same CSS variables.
      */
-    var travel=messageTravel+overflowTravel+scrollTravel;
-    var reveal=smoothstep(pingPong(travel));
+    var reveal=1
+      -(1-baseReveal)
+      *(1-pointerReveal*.78)
+      *(1-answerReveal*.86);
+    reveal=Math.max(0,Math.min(1,reveal));
+
     var variant=getGlassVariant();
-    var restMaskStart=variant==="male"?0:2;
-    var restMaskFull=variant==="male"?22:26;
-    var openMaskFull=variant==="male"?12:14;
-    var maskStart=restMaskStart*(1-reveal);
+    var reading=mode==="reading";
+    var restMaskStart=reading?(variant==="male"?28:30):(variant==="male"?0:2);
+    var restMaskFull=reading?(variant==="male"?50:54):(variant==="male"?22:26);
+    var openMaskStart=reading?(variant==="male"?3:5):0;
+    var openMaskFull=reading?(variant==="male"?20:24):(variant==="male"?12:14);
+    var maskStart=restMaskStart-((restMaskStart-openMaskStart)*reveal);
     var maskFull=restMaskFull-((restMaskFull-openMaskFull)*reveal);
+    var travelY=reading?-10:-18;
+    var scaleGain=reading?.008:.012;
 
     root.style.setProperty("--glass-reveal",reveal.toFixed(3));
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
     root.style.setProperty("--glass-art-x",(-5*reveal).toFixed(1)+"px");
-    root.style.setProperty("--glass-art-y",(-18*reveal).toFixed(1)+"px");
-    root.style.setProperty("--glass-art-scale",(1+reveal*.012).toFixed(3));
+    root.style.setProperty("--glass-art-y",(travelY*reveal).toFixed(1)+"px");
+    root.style.setProperty("--glass-art-scale",(1+reveal*scaleGain).toFixed(3));
+
+    if(answerReveal>0) queueGlassMotion();
   }
 
   function queueGlassMotion(){
@@ -277,27 +316,52 @@
 
   function updateGlassPointer(event){
     if(getCurrent()!=="padiem-glass"||prefersReducedMotion()) return;
-    if(glassMode()==="reading"){
+    if(!glassHoverCapable()){
       resetGlassPointer();
       return;
     }
     var root=document.documentElement;
+    var portraitWidth=Math.min(window.innerWidth*.48,680);
+    var portraitLeft=window.innerWidth-portraitWidth;
+    var proximity=Math.max(0,Math.min(1,(event.clientX-(portraitLeft-140))/180));
+    glassPointerReveal=smoothstep(proximity);
+
     var nx=Math.max(-1,Math.min(1,(event.clientX/window.innerWidth-.5)*2));
     var ny=Math.max(-1,Math.min(1,(event.clientY/window.innerHeight-.5)*2));
-    root.style.setProperty("--glass-pointer-x",(nx*8).toFixed(1)+"px");
-    root.style.setProperty("--glass-pointer-y",(ny*5).toFixed(1)+"px");
+    root.style.setProperty("--glass-pointer-x",(nx*8*glassPointerReveal).toFixed(1)+"px");
+    root.style.setProperty("--glass-pointer-y",(ny*5*glassPointerReveal).toFixed(1)+"px");
+    queueGlassMotion();
   }
 
   function resetGlassPointer(){
     var root=document.documentElement;
+    glassPointerReveal=0;
     root.style.setProperty("--glass-pointer-x","0px");
     root.style.setProperty("--glass-pointer-y","0px");
+  }
+
+  function mutationTouchesAssistant(mutation){
+    var target=mutation.target;
+    if(target&&target.nodeType===3) target=target.parentElement;
+    if(target&&target.closest&&target.closest(".assistant-message")) return true;
+    var added=mutation.addedNodes||[];
+    for(var i=0;i<added.length;i+=1){
+      var node=added[i];
+      if(!node||node.nodeType!==1) continue;
+      if((node.matches&&node.matches(".assistant-message"))
+        ||(node.closest&&node.closest(".assistant-message"))
+        ||(node.querySelector&&node.querySelector(".assistant-message"))) return true;
+    }
+    return false;
   }
 
   function observeGlassConversation(){
     var list=document.getElementById("messageList");
     if(!list || !window.MutationObserver || glassObserver) return;
-    glassObserver=new MutationObserver(queueGlassMotion);
+    glassObserver=new MutationObserver(function(mutations){
+      if(mutations.some(mutationTouchesAssistant)) noteGlassAnswerActivity();
+      else queueGlassMotion();
+    });
     glassObserver.observe(list,{childList:true,subtree:true,characterData:true});
   }
 
@@ -350,7 +414,10 @@
     window.addEventListener("scroll",queueGlassMotion,{passive:true});
     window.addEventListener("resize",queueGlassMotion);
     window.addEventListener("pointermove",updateGlassPointer,{passive:true});
-    document.addEventListener("mouseleave",resetGlassPointer);
+    document.addEventListener("mouseleave",function(){
+      resetGlassPointer();
+      queueGlassMotion();
+    });
     observeGlassConversation();
     observeGlassState();
     queueGlassMotion();
