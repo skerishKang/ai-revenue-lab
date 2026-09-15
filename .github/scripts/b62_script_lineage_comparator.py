@@ -55,7 +55,13 @@ def require_uuid(value: str, label: str) -> str:
 
 
 def resolve_active_version(deployments_payload: object) -> str:
-    """Extract the single 100%-traffic served version id, fail closed."""
+    """Extract the single 100%-traffic served version id, fail closed.
+
+    The Cloudflare deployments endpoint returns deployment history and
+    documents that the first entry is the latest deployment actively
+    serving traffic (same semantics as b62_served_version_secret_guard),
+    so later entries are previous deployments and are not ambiguity.
+    """
     if not isinstance(deployments_payload, dict):
         raise LineageError("deployments payload must be a JSON object")
     if deployments_payload.get("success") is not True:
@@ -64,8 +70,8 @@ def resolve_active_version(deployments_payload: object) -> str:
     if not isinstance(result, dict):
         raise LineageError("deployments result is missing")
     deployments = result.get("deployments")
-    if not isinstance(deployments, list) or len(deployments) != 1:
-        raise LineageError("expected exactly one current deployment record")
+    if not isinstance(deployments, list) or len(deployments) == 0:
+        raise LineageError("no deployment records returned")
     versions = deployments[0].get("versions") if isinstance(deployments[0], dict) else None
     if not isinstance(versions, list) or len(versions) != 1:
         raise LineageError("expected exactly one served version")

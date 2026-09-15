@@ -145,10 +145,16 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           deployments="${RUNNER_TEMP}/b62-lineage-deployments.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-          jq -e '.success == true and (.result.deployments | length) == 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
           active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
           [[ "${active}" =~ $uuid_re ]]
-          test "${active}" = "${EXPECTED_ACTIVE_VERSION}"
+          if [[ "${active}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
+            echo "ACTIVE_VERSION=${active}"
+            echo 'EXPECTED_ACTIVE_VERSION_MATCH=FAIL'
+            echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
           active_detail="${RUNNER_TEMP}/b62-lineage-active-detail.json"
           reference_detail="${RUNNER_TEMP}/b62-lineage-reference-detail.json"
           curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${active_detail}"
