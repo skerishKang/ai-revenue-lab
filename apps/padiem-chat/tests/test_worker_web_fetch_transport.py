@@ -256,6 +256,42 @@ async def test_worker_web_transport_timeout_maps_through_core_provider_boundary(
     assert abort_api.calls == [3000]
 
 
+@pytest.mark.asyncio
+async def test_worker_web_transport_rejects_malformed_response_headers():
+    transport_type = _load_worker_web_transport()
+    abort_api = FakeAbortSignalAPI()
+
+    class MalformedHeaders:
+        def entries(self):
+            raise RuntimeError("synthetic malformed entries")
+
+        def __iter__(self):
+            raise RuntimeError("synthetic malformed iterator")
+
+    async def fake_fetch(url, init):
+        return SimpleNamespace(
+            status=200,
+            headers=MalformedHeaders(),
+            body=None,
+        )
+
+    transport = transport_type(
+        fetch_impl=fake_fetch,
+        abort_signal_api=abort_api,
+    )
+
+    async with httpx.AsyncClient(transport=transport, timeout=1.0) as client:
+        with pytest.raises(
+            httpx.ProtocolError,
+            match="malformed response headers",
+        ) as info:
+            await client.get("https://example.test/malformed-headers")
+
+    assert info.value.request is not None
+    assert str(info.value.request.url) == "https://example.test/malformed-headers"
+    assert abort_api.calls == [1000]
+
+
 def test_worker_entrypoint_injects_external_web_transport_into_app_factory():
     source = WORKER_PATH.read_text(encoding="utf-8")
     assert "web_transport = CloudflareExternalHttpTransport()" in source
