@@ -105,15 +105,17 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         await _assert_focus(page, "#newChatButton", "desktop new chat")
 
     focus_order = await _visible_sidebar_focus_order(page)
-    required = ("newChatButton", "home-link", "settingsButton")
+    required = ("newChatButton", "settingsButton", "home-link")
     if any(item not in focus_order for item in required):
         raise AssertionError(f"required sidebar focus targets missing: {focus_order}")
-    if not (focus_order.index("newChatButton") < focus_order.index("home-link") < focus_order.index("settingsButton")):
-        raise AssertionError(f"sidebar focus order must keep navigation before bottom utilities: {focus_order}")
+    if not (focus_order.index("newChatButton") < focus_order.index("settingsButton") < focus_order.index("home-link")):
+        raise AssertionError(
+            f"sidebar focus order must keep navigation before settings/account and Padiem Home final: {focus_order}"
+        )
 
-    await home.focus()
+    await settings.focus()
     await page.keyboard.press("Tab")
-    await _assert_focus(page, "#settingsButton", "Padiem Home to settings")
+    await _assert_focus(page, ".home-link", "settings to bottom-most Padiem Home")
 
     screenshot = "sidebar-ia-mobile.png" if mobile else "sidebar-ia-desktop.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)
@@ -123,7 +125,7 @@ async def _assert_sidebar_contract(page: Page, *, mobile: bool) -> dict[str, Any
         "duplicate_sidebar_prompt_surface": 0,
         "visible_empty_state_starters": visible_starters,
         "focus_order": focus_order,
-        "utility_order": ["padiem-home", "settings", "account"],
+        "utility_order": ["settings", "account", "padiem-home"],
         "keyboard_navigation": "PASS",
         "horizontal_overflow": False,
         "status": "PASS",
