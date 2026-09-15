@@ -115,16 +115,21 @@ def _contract_executable_model_ids() -> dict[str, str]:
     return found
 
 def test_plus_pro_registry_routes_match_shared_contract() -> None:
-    """#2099 STEP-2 re-target: registry ↔ contract parity (Chat ↔ contract is
-    locked by apps/padiem-chat/tests/test_model_policy.py and the control-plane
-    derivation guard)."""
+    """Registry and shared contract must name the same explicit active routes."""
     contract = _contract_executable_model_ids()
     assert sorted(contract) == [
-        "plus.kilo-laguna-s-2.1-free.v1",
-        "pro.kilo-nemotron-3-ultra-free.v1",
+        "plus.sensenova-6.8-flash-lite.v1",
+        "pro.b-ai-qwen3.8-flash.v1",
     ]
-    assert contract["plus.kilo-laguna-s-2.1-free.v1"] == active_route_for(TierLabel.PLUS).model_id
-    assert contract["pro.kilo-nemotron-3-ultra-free.v1"] == active_route_for(TierLabel.PRO).model_id
+    assert (
+        contract["plus.sensenova-6.8-flash-lite.v1"]
+        == active_route_for(TierLabel.PLUS).model_id
+    )
+    assert (
+        contract["pro.b-ai-qwen3.8-flash.v1"]
+        == active_route_for(TierLabel.PRO).model_id
+    )
+
 
 def test_executable_registry_routes_exist_in_b14_catalog() -> None:
     """#2085 ACT-1 drift guard: registry may certify only registered B14 lanes."""
