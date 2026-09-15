@@ -11,11 +11,13 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         return
 
-    def _send(self, payload: bytes) -> None:
+    def _headers(self, length: int) -> None:
         self.send_response(200)
         self.send_header("Content-Type", "text/plain")
-        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Content-Length", str(length))
         self.end_headers()
+
+    def _write(self, payload: bytes) -> None:
         try:
             self.wfile.write(payload)
             self.wfile.flush()
@@ -23,37 +25,51 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
     def do_POST(self):
-        if self.path != "/echo-form":
-            self.send_error(404)
-            return
         length = int(self.headers.get("Content-Length", "0"))
         body = self.rfile.read(length)
-        self._send(body)
+        if self.path == "/echo-form":
+            payload = body
+        elif self.path == "/echo-json":
+            prefix = b"probe-ok:" if self.headers.get("X-Probe") == "runtime" else b"bad-header:"
+            payload = prefix + body
+        else:
+            self.send_error(404)
+            return
+        self._headers(len(payload))
+        self._write(payload)
 
     def do_GET(self):
         if self.path == "/normal":
-            self._send(b"normal-ok")
+            payload = b"normal-ok"
+            self._headers(len(payload))
+            self._write(payload)
             return
+
+        if self.path == "/chunks":
+            first = b"chunk-one"
+            second = b"chunk-two"
+            self._headers(len(first) + len(second))
+            self._write(first)
+            time.sleep(0.45)
+            self._write(second)
+            return
+
         if self.path == "/slow-headers":
             time.sleep(0.6)
-            self._send(b"too-late")
+            payload = b"too-late"
+            self._headers(len(payload))
+            self._write(payload)
             return
+
         if self.path == "/slow-body":
             first = b"first"
             second = b"second"
-            self.send_response(200)
-            self.send_header("Content-Type", "text/plain")
-            self.send_header("Content-Length", str(len(first) + len(second)))
-            self.end_headers()
-            try:
-                self.wfile.write(first)
-                self.wfile.flush()
-                time.sleep(0.6)
-                self.wfile.write(second)
-                self.wfile.flush()
-            except (BrokenPipeError, ConnectionResetError):
-                pass
+            self._headers(len(first) + len(second))
+            self._write(first)
+            time.sleep(0.6)
+            self._write(second)
             return
+
         self.send_error(404)
 
 
@@ -61,8 +77,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=9099)
     args = parser.parse_args()
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    server.serve_forever()
+    ThreadingHTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 
 
 if __name__ == "__main__":

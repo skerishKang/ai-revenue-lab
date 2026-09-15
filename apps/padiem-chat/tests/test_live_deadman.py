@@ -118,7 +118,8 @@ def test_worker_and_wrangler_wire_the_deadman_switch_before_bootstrap():
 
     apply_line = "settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))"
     assert apply_line in worker
-    assert worker.index(apply_line) < worker.index("create_app(settings=settings")
+    assert worker.index(apply_line) < worker.index("web_transport = CloudflareExternalHttpTransport()")
+    assert worker.index("web_transport = CloudflareExternalHttpTransport()") < worker.index("_worker_app = create_app(")
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
 
 
