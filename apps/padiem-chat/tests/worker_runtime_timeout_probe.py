@@ -21,6 +21,7 @@ class Default(WorkerEntrypoint):
             "fetch_accepts_signal": False,
             "local_normal_fetch": False,
             "local_delay_timeout": False,
+            "local_body_timeout": False,
         }
 
         try:
@@ -57,6 +58,20 @@ class Default(WorkerEntrypoint):
                         pass
             except compat.ReadTimeout:
                 result["local_delay_timeout"] = True
+
+            try:
+                async with compat.AsyncClient(
+                    timeout=compat.Timeout(0.15, connect=0.05),
+                    follow_redirects=False,
+                ) as client:
+                    async with client.stream(
+                        "GET",
+                        "http://127.0.0.1:9099/slow-body",
+                    ) as response:
+                        async for _ in response.aiter_bytes():
+                            pass
+            except compat.ReadTimeout:
+                result["local_body_timeout"] = True
         except Exception as exc:
             result["error_type"] = type(exc).__name__
             result["error"] = str(exc)
@@ -69,6 +84,7 @@ class Default(WorkerEntrypoint):
                 "fetch_accepts_signal",
                 "local_normal_fetch",
                 "local_delay_timeout",
+                "local_body_timeout",
             )
         )
         return Response(
