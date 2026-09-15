@@ -34,7 +34,6 @@
     displayName: "",
   });
 
-  const TIER_STORAGE_KEY = "padiem-tier-v1";
   const AVAILABLE_TIERS = Object.freeze(["plus", "pro"]);
 
   const TIER_COPY = Object.freeze({
@@ -58,15 +57,7 @@
     }),
   });
 
-  function initialTier() {
-    try {
-      const saved = window.localStorage.getItem(TIER_STORAGE_KEY);
-      if (AVAILABLE_TIERS.includes(saved)) return saved;
-    } catch (_) {}
-    return "pro";
-  }
-
-  let selectedTier = initialTier();
+  let selectedTier = "pro";
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -311,9 +302,6 @@
   function selectTier(tier) {
     if (!AVAILABLE_TIERS.includes(tier)) return false;
     selectedTier = tier;
-    try {
-      window.localStorage.setItem(TIER_STORAGE_KEY, tier);
-    } catch (_) {}
     syncModeCopy();
     window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier } }));
     return true;
