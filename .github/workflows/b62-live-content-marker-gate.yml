@@ -3,10 +3,14 @@ name: B62 Live Content Marker Gate
 # SOURCE-ONLY (#2548). Minimal GET-only live-content proof: fetches the
 # CURRENT served padiem-chat script content via Cloudflare's read-only
 # script-content endpoint into runner temp and checks the unique #2124
-# adapter-fix markers in memory only. Raw script content, marker-adjacent
-# text, offsets, and script etags are never printed, logged, hashed for
-# output, artifacted, or persisted beyond runner temp. No mutation verbs,
-# no deployment actions, no live-service calls, no request-path probes.
+# adapter-fix markers in memory only. /content/v2 is not version-pinned, so
+# deployments are read before and immediately after the content fetch and
+# must both resolve to the single expected 100%-served active version with a
+# deep-equal payload before any marker verdict is accepted (TOCTOU closure).
+# Raw script content, marker-adjacent text, offsets, and script etags are
+# never printed, logged, hashed for output, artifacted, or persisted beyond
+# runner temp. No mutation verbs, no deployment actions, no live-service
+# calls, no request-path probes.
 # Dispatch is intentionally unavailable until CENTRAL reviews and merges
 # this source contract; the readonly job runs only on workflow_dispatch.
 
@@ -135,13 +139,13 @@ jobs:
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
-          deployments="${RUNNER_TEMP}/b62-live-deployments.json"
-          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
-          [[ "${active}" =~ $uuid_re ]]
-          if [[ "${active}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
-            echo "ACTIVE_VERSION=${active}"
+          deployments_pre="${RUNNER_TEMP}/b62-live-deployments-pre.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments_pre}"
+          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments_pre}" >/dev/null
+          active_pre="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_pre}")"
+          [[ "${active_pre}" =~ $uuid_re ]]
+          if [[ "${active_pre}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
+            echo "ACTIVE_VERSION=${active_pre}"
             echo 'ACTIVE_VERSION_MATCH=FAIL'
             echo 'RAW_SCRIPT_CONTENT_OUTPUT=0'
             echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
@@ -149,14 +153,32 @@ jobs:
             exit 1
           fi
           version_detail="${RUNNER_TEMP}/b62-live-active-detail.json"
-          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${version_detail}"
+          curl -fsS "${auth[@]}" "${api}/versions/${active_pre}" -o "${version_detail}"
           jq -e '.success == true' "${version_detail}" >/dev/null
           content="${RUNNER_TEMP}/b62-live-served-content.bin"
           curl -fsS "${auth[@]}" "${api}/content/v2" -o "${content}"
+          deployments_post="${RUNNER_TEMP}/b62-live-deployments-post.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments_post}"
+          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments_post}" >/dev/null
+          active_post="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_post}")"
+          [[ "${active_post}" =~ $uuid_re ]]
+          if [[ "${active_post}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
+            echo "ACTIVE_VERSION=${active_post}"
+            echo 'ACTIVE_VERSION_MATCH=FAIL'
+            echo 'RAW_SCRIPT_CONTENT_OUTPUT=0'
+            echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+            echo 'PRODUCTION_MUTATION=0'
+            exit 1
+          fi
+          version_detail_post="${RUNNER_TEMP}/b62-live-active-detail-post.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active_post}" -o "${version_detail_post}"
+          jq -e '.success == true' "${version_detail_post}" >/dev/null
           python .github/scripts/b62_live_content_marker_probe.py \
-            --deployments "${deployments}" \
+            --deployments-pre "${deployments_pre}" \
+            --deployments-post "${deployments_post}" \
             --expected-active-version "${EXPECTED_ACTIVE_VERSION}" \
             --version-detail "${version_detail}" \
+            --version-detail-post "${version_detail_post}" \
             --content "${content}" \
             --max-content-bytes "${MAX_CONTENT_BYTES}"
 
@@ -172,4 +194,9 @@ jobs:
       - name: Purge runner-temp payloads
         if: always()
         shell: bash
-        run: rm -f "${RUNNER_TEMP}/b62-live-deployments.json" "${RUNNER_TEMP}/b62-live-active-detail.json" "${RUNNER_TEMP}/b62-live-served-content.bin"
+        run: |
+          rm -f "${RUNNER_TEMP}/b62-live-deployments-pre.json" \
+            "${RUNNER_TEMP}/b62-live-deployments-post.json" \
+            "${RUNNER_TEMP}/b62-live-active-detail.json" \
+            "${RUNNER_TEMP}/b62-live-active-detail-post.json" \
+            "${RUNNER_TEMP}/b62-live-served-content.bin"
