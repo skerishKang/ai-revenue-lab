@@ -17,6 +17,9 @@ from padiem_ai_core.b14_execution import (
     B14RoutingOptions,
 )
 from padiem_ai_core.b14_streaming import B14StreamingClient
+from padiem_ai_core.contracts import AgentProfile
+from padiem_ai_core.execution_runtime import ExecutionRequest, ExecutionRuntimeError
+from padiem_ai_core.streaming_runtime import StreamingExecutionRuntime
 
 
 BASE_URL = "https://b14.internal"
@@ -298,6 +301,43 @@ async def _collect(client: B14StreamingClient):
     return [event async for event in client.stream(_request())]
 
 
+def _runtime_request() -> ExecutionRequest:
+    return ExecutionRequest(
+        agent=AgentProfile(
+            id="b62-service-binding-stream",
+            title="B62 Service Binding Stream",
+            description="Regression profile for the B62 streaming bridge.",
+            system_instruction="Answer briefly.",
+            task_type="general",
+            optimize_for="korean",
+            max_tokens=128,
+            required_capabilities=("free",),
+            model_policy={
+                "model": MODEL,
+                "allow_external_fallback": False,
+                "max_attempts": 1,
+            },
+        ),
+        messages=({"role": "user", "content": "안녕하세요"},),
+        trace_id="trace-b62-service-binding-stream",
+        session_id="session-b62-service-binding-stream",
+    )
+
+
+async def _collect_runtime(binding: Any):
+    runtime = StreamingExecutionRuntime(
+        app_id="padiem-chat",
+        b14_stream_client=_client(binding),
+    )
+    return [event async for event in runtime.stream(_runtime_request())]
+
+
+def _runtime_error(binding: Any) -> ExecutionRuntimeError:
+    with pytest.raises(ExecutionRuntimeError) as info:
+        asyncio.run(_collect_runtime(binding))
+    return info.value
+
+
 def test_service_binding_stream_delivers_first_event_before_final_chunk():
     async def scenario():
         FakeRequest.created.clear()
@@ -517,6 +557,88 @@ def test_service_binding_stream_typed_array_first_event_streams_before_final_chu
         assert done.done is True
 
     asyncio.run(scenario())
+
+
+def test_service_binding_stream_full_runtime_preserves_ordered_deltas_and_done():
+    raw = (
+        _sse(_chunk_payload(content="첫"))
+        + _sse(_chunk_payload(content=" 둘째"))
+        + b"data: [DONE]\n\n"
+    )
+    reader = FakeReader(
+        [raw[:9], raw[9:57], raw[57:]],
+        value_factory=FakeJSTypedArray,
+    )
+    body = FakeBody(reader)
+    binding = FakeBinding(FakeResponse(200, body))
+
+    events = asyncio.run(_collect_runtime(binding))
+
+    deltas = [event.delta_content for event in events if event.delta_content]
+    assert deltas == ["첫", " 둘째"]
+    assert events[-1].done is True
+    assert events[-1].answer == "첫 둘째"
+    assert len(binding.calls) == 1
+    assert body.get_reader_count == 1
+    assert reader.release_count == 1
+
+
+def test_service_binding_fetch_failure_maps_boundedly_through_streaming_runtime():
+    class FailingBinding:
+        def __init__(self):
+            self.calls = 0
+
+        async def fetch(self, request: Any):
+            self.calls += 1
+            raise RuntimeError("synthetic binding failure")
+
+    binding = FailingBinding()
+    error = _runtime_error(binding)
+
+    assert binding.calls == 1
+    assert error.code == "upstream_unavailable"
+    assert error.code != "execution_failed"
+
+
+def test_service_binding_malformed_metadata_maps_boundedly_through_streaming_runtime():
+    class MalformedResponse:
+        @property
+        def status(self):
+            raise RuntimeError("synthetic malformed status")
+
+    class MalformedBinding:
+        def __init__(self):
+            self.calls = 0
+
+        async def fetch(self, request: Any):
+            self.calls += 1
+            return MalformedResponse()
+
+    binding = MalformedBinding()
+    error = _runtime_error(binding)
+
+    assert binding.calls == 1
+    assert error.code == "upstream_unavailable"
+    assert error.code != "execution_failed"
+
+
+def test_service_binding_unsupported_chunk_maps_boundedly_through_streaming_runtime():
+    class UnsupportedChunk:
+        pass
+
+    reader = FakeReader(
+        [b"ignored"],
+        value_factory=lambda _value: UnsupportedChunk(),
+    )
+    body = FakeBody(reader)
+    binding = FakeBinding(FakeResponse(200, body))
+
+    error = _runtime_error(binding)
+
+    assert error.code == "upstream_unavailable"
+    assert error.code != "execution_failed"
+    assert body.get_reader_count == 1
+    assert reader.release_count == 1
 
 
 def test_service_binding_stream_unsupported_chunk_fails_closed_specifically():
