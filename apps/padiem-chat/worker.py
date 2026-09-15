@@ -413,9 +413,13 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
             ) from exc
 
     @staticmethod
-    async def _headers(js_headers: Any) -> dict[str, str]:
-        result: dict[str, str] = {}
+    async def _headers(
+        js_headers: Any,
+        *,
+        request: httpx.Request,
+    ) -> dict[str, str]:
         try:
+            result: dict[str, str] = {}
             entries = js_headers.entries()
             while True:
                 entry = await entries.next()
@@ -428,12 +432,17 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
             return result
         except Exception:
             pass
+
         try:
+            result = {}
             for key in js_headers:
                 result[str(key)] = str(js_headers.get(key))
-        except Exception:
-            pass
-        return result
+            return result
+        except Exception as exc:
+            raise httpx.ProtocolError(
+                "Worker external fetch returned malformed response headers.",
+                request=request,
+            ) from exc
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         try:
@@ -488,7 +497,10 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
 
         try:
             status_code = int(js_response.status)
-            response_headers = await self._headers(js_response.headers)
+            response_headers = await self._headers(
+                js_response.headers,
+                request=request,
+            )
             response_body = getattr(js_response, "body", None)
         except Exception as exc:
             raise httpx.ProtocolError(
