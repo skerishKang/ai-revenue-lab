@@ -63,7 +63,10 @@ except ImportError:
 
 if _IN_WORKERS:
     from js import URLSearchParams as _JsURLSearchParams  # type: ignore
-    from js import AbortSignal as _JsAbortSignal  # type: ignore
+    try:
+        from js import AbortSignal as _JsAbortSignal  # type: ignore
+    except ImportError:
+        _JsAbortSignal = None
 
     class Timeout:
         """Signature-compatible timeout holder for Workers fetch.
@@ -279,6 +282,8 @@ if _IN_WORKERS:
             return None
         milliseconds = max(1, int(round(seconds * 1000)))
         try:
+            if _JsAbortSignal is None:
+                raise RuntimeError("AbortSignal is unavailable")
             return _JsAbortSignal.timeout(milliseconds)
         except Exception as exc:
             # A configured timeout must never silently become unbounded.
