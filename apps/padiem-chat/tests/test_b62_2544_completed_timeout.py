@@ -13,7 +13,6 @@ import json
 
 import httpx
 import pytest
-from padiem_ai_core import b14_transport
 
 from app.b14_client import B14Client, ChatRuntimeError
 from app.config import ConfigError, Settings
@@ -68,7 +67,10 @@ class _DeadlineProbe:
 
 def _install_deadline_probe(monkeypatch, logical_duration_seconds: float) -> _DeadlineProbe:
     probe = _DeadlineProbe(logical_duration_seconds)
-    monkeypatch.setattr(b14_transport, "asyncio", probe)
+    # b14_transport uses the asyncio module only for wait_for. Patching by string
+    # target avoids a package-root submodule import (guarded by the Core consumer
+    # inventory contract) while still rebinding just that reference.
+    monkeypatch.setattr("padiem_ai_core.b14_transport.asyncio", probe)
     return probe
 
 
