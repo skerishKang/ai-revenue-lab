@@ -422,7 +422,9 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
             result: dict[str, str] = {}
             entries = js_headers.entries()
             while True:
-                entry = await entries.next()
+                entry = entries.next()
+                if hasattr(entry, "__await__"):
+                    entry = await entry
                 if bool(getattr(entry, "done", False)):
                     break
                 pair = getattr(entry, "value", None)
