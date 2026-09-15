@@ -27,6 +27,7 @@ class Default(WorkerEntrypoint):
             "local_normal_fetch": False,
             "local_incremental_body": False,
             "local_delay_timeout": False,
+            "local_body_timeout": False,
             "early_close_release": False,
         }
 
@@ -83,6 +84,17 @@ class Default(WorkerEntrypoint):
                 except httpx.ReadTimeout:
                     result["local_delay_timeout"] = True
 
+                try:
+                    async with client.stream(
+                        "GET",
+                        "http://127.0.0.1:9099/slow-body",
+                        timeout=httpx.Timeout(0.15),
+                    ) as slow_body:
+                        async for _ in slow_body.aiter_bytes():
+                            pass
+                except httpx.ReadTimeout:
+                    result["local_body_timeout"] = True
+
                 async with client.stream(
                     "GET",
                     "http://127.0.0.1:9099/chunks",
@@ -106,6 +118,7 @@ class Default(WorkerEntrypoint):
                 "local_normal_fetch",
                 "local_incremental_body",
                 "local_delay_timeout",
+                "local_body_timeout",
                 "early_close_release",
             )
         )
