@@ -410,7 +410,7 @@ class ClawP01ProfileContractTests(unittest.TestCase):
 
     def test_profile_pins_pro_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
-        self.assertEqual(profile.model_policy, {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
+        self.assertEqual(profile.model_policy, {"model": "b-ai/qwen3.8-flash"})
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
@@ -420,7 +420,7 @@ class ClawP01ProfileContractTests(unittest.TestCase):
 
     def test_pro_tier_resolves_to_bai_qwen(self) -> None:
         profile = _agent_profile(ProductTierLabel.PRO)
-        self.assertEqual(profile.model_policy, {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
+        self.assertEqual(profile.model_policy, {"model": "b-ai/qwen3.8-flash"})
 
     def test_max_tier_fails_closed(self) -> None:
         with self.assertRaises(P01AdapterError) as caught:
