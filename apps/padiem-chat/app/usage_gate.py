@@ -78,45 +78,51 @@ def _limit_decision(
     )
 
 
+def _batch_rows(result: Any) -> list[Any]:
+    if result is None:
+        return []
+    if isinstance(result, dict):
+        rows = result.get("results")
+    else:
+        rows = getattr(result, "results", None)
+    if not rows:
+        return []
+    return list(rows)
+
+
+def _batch_count(result: Any) -> int | None:
+    """Mirror the single-take semantics: None means the take was not granted."""
+    rows = _batch_rows(result)
+    if not rows:
+        return None
+    row = _row_to_dict(rows[0])
+    if row is None:
+        return None
+    try:
+        return int(row.get("request_count"))
+    except (TypeError, ValueError):
+        return None
+
+
 class D1UsageCounterStore:
     """Cloudflare D1-backed bounded counters using prepared statements only.
+
+    All three bucket takes execute as one atomic env.DB.batch() round trip. The
+    minute take keeps the guarded INSERT/UPDATE semantics; the day and global takes
+    chain through the SQLite changes() guard (proven in the #2543 V2 local D1
+    runtime experiments), so a denied earlier take turns later takes into no-ops
+    inside the same batch. A granted take is identified by a RETURNING row.
 
     A rejected request is compensated by decrementing any earlier bucket increments
     from the same authorization attempt. If compensation itself fails, the result is
     conservative over-counting; provider execution still remains fail-closed.
+    Cleanup stays outside the batch as a separate best-effort round trip.
     """
 
     def __init__(self, db: Any):
         if db is None:
             raise ValueError("D1 binding is required")
         self.db = db
-
-    async def _increment_if_below(
-        self,
-        *,
-        subject_type: str,
-        subject_key: str,
-        bucket_type: str,
-        bucket_start: str,
-        limit: int,
-        updated_at: str,
-    ) -> int | None:
-        statement = self.db.prepare(
-            "INSERT INTO live_usage_buckets "
-            "(subject_type, subject_key, bucket_type, bucket_start, request_count, updated_at) "
-            "VALUES (?, ?, ?, ?, 1, ?) "
-            "ON CONFLICT(subject_type, subject_key, bucket_type, bucket_start) DO UPDATE SET "
-            "request_count=live_usage_buckets.request_count + 1, updated_at=excluded.updated_at "
-            "WHERE live_usage_buckets.request_count < ? "
-            "RETURNING request_count"
-        ).bind(subject_type, subject_key, bucket_type, bucket_start, updated_at, limit)
-        row = _row_to_dict(await statement.first())
-        if row is None:
-            return None
-        try:
-            return int(row.get("request_count"))
-        except (TypeError, ValueError):
-            return None
 
     async def _refund(
         self,
@@ -137,6 +143,50 @@ class D1UsageCounterStore:
         statement = self.db.prepare("DELETE FROM live_usage_buckets WHERE updated_at < ?").bind(cutoff)
         await statement.run()
 
+    def _take_statement(
+        self,
+        *,
+        subject_type: str,
+        subject_key: str,
+        bucket_type: str,
+        bucket_start: str,
+        limit: int,
+        updated_at: str,
+    ) -> Any:
+        return self.db.prepare(
+            "INSERT INTO live_usage_buckets "
+            "(subject_type, subject_key, bucket_type, bucket_start, request_count, updated_at) "
+            "VALUES (?, ?, ?, ?, 1, ?) "
+            "ON CONFLICT(subject_type, subject_key, bucket_type, bucket_start) DO UPDATE SET "
+            "request_count=live_usage_buckets.request_count + 1, updated_at=excluded.updated_at "
+            "WHERE live_usage_buckets.request_count < ? "
+            "RETURNING request_count"
+        ).bind(subject_type, subject_key, bucket_type, bucket_start, updated_at, limit)
+
+    def _chained_take_statement(
+        self,
+        *,
+        subject_type: str,
+        subject_key: str,
+        bucket_type: str,
+        bucket_start: str,
+        limit: int,
+        updated_at: str,
+    ) -> Any:
+        # Guarded by (SELECT changes()) > 0 on both the INSERT-SELECT branch and the
+        # DO UPDATE WHERE clause: after a denied/no-op previous take inside the same
+        # batch this statement changes nothing and returns no row.
+        return self.db.prepare(
+            "INSERT INTO live_usage_buckets "
+            "(subject_type, subject_key, bucket_type, bucket_start, request_count, updated_at) "
+            "SELECT ?, ?, ?, ?, 1, ? "
+            "WHERE (SELECT changes()) > 0 "
+            "ON CONFLICT(subject_type, subject_key, bucket_type, bucket_start) DO UPDATE SET "
+            "request_count=live_usage_buckets.request_count + 1, updated_at=excluded.updated_at "
+            "WHERE live_usage_buckets.request_count < ? AND (SELECT changes()) > 0 "
+            "RETURNING request_count"
+        ).bind(subject_type, subject_key, bucket_type, bucket_start, updated_at, limit)
+
     async def consume(
         self,
         *,
@@ -150,19 +200,6 @@ class D1UsageCounterStore:
         updated_at: str,
     ) -> UsageDecision:
         acquired: list[tuple[str, str, str, str]] = []
-
-        async def take(stype: str, skey: str, btype: str, bstart: str, limit: int) -> int | None:
-            count = await self._increment_if_below(
-                subject_type=stype,
-                subject_key=skey,
-                bucket_type=btype,
-                bucket_start=bstart,
-                limit=limit,
-                updated_at=updated_at,
-            )
-            if count is not None:
-                acquired.append((stype, skey, btype, bstart))
-            return count
 
         async def refund_acquired() -> None:
             for stype, skey, btype, bstart in reversed(acquired):
@@ -178,7 +215,42 @@ class D1UsageCounterStore:
                     # Conservative over-counting is safer than allowing provider execution.
                     pass
 
-        minute_count = await take(subject_type, subject_key, "minute", minute_bucket, burst_limit)
+        minute_stmt = self._take_statement(
+            subject_type=subject_type,
+            subject_key=subject_key,
+            bucket_type="minute",
+            bucket_start=minute_bucket,
+            limit=burst_limit,
+            updated_at=updated_at,
+        )
+        day_stmt = self._chained_take_statement(
+            subject_type=subject_type,
+            subject_key=subject_key,
+            bucket_type="day",
+            bucket_start=day_bucket,
+            limit=daily_limit,
+            updated_at=updated_at,
+        )
+        global_stmt = self._chained_take_statement(
+            subject_type="global",
+            subject_key="global",
+            bucket_type="global_day",
+            bucket_start=day_bucket,
+            limit=global_daily_limit,
+            updated_at=updated_at,
+        )
+        results = await self.db.batch([minute_stmt, day_stmt, global_stmt])
+
+        minute_count = _batch_count(results[0]) if len(results) > 0 else None
+        if minute_count is not None:
+            acquired.append((subject_type, subject_key, "minute", minute_bucket))
+        daily_count = _batch_count(results[1]) if len(results) > 1 else None
+        if daily_count is not None:
+            acquired.append((subject_type, subject_key, "day", day_bucket))
+        global_count = _batch_count(results[2]) if len(results) > 2 else None
+        if global_count is not None:
+            acquired.append(("global", "global", "global_day", day_bucket))
+
         if minute_count is None:
             return _limit_decision(
                 "rate_limited",
@@ -188,7 +260,6 @@ class D1UsageCounterStore:
                 retry_after_seconds=60,
             )
 
-        daily_count = await take(subject_type, subject_key, "day", day_bucket, daily_limit)
         if daily_count is None:
             await refund_acquired()
             return _limit_decision(
@@ -199,7 +270,6 @@ class D1UsageCounterStore:
                 retry_after_seconds=None,
             )
 
-        global_count = await take("global", "global", "global_day", day_bucket, global_daily_limit)
         if global_count is None:
             await refund_acquired()
             return _limit_decision(

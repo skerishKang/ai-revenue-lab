@@ -230,7 +230,7 @@ async def api_chat_stream(request: Request):
     except Exception:
         await _close_stream(stream)
         return JSONResponse(
-            {"error": {"code": "upstream_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
+            {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
             status_code=502,
         )
 
