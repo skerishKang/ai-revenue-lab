@@ -34,6 +34,8 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.5"
+      - name: Verify committed host lock is current
+        run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
         run: uv sync --locked --extra dev
       - name: Prove shared Core import without PYTHONPATH
@@ -53,6 +55,8 @@ jobs:
         run: uv run --locked pywrangler sync --force
       - name: Verify vendored Worker dependency versions
         run: uv run --locked python tests/check_dependency_locks.py --phase vendor
+      - name: Prove sync did not mutate committed locks
+        run: git diff --exit-code -- uv.lock pylock.toml
       - name: Prove Core vendored for Python Worker
         run: |
           set -euo pipefail
