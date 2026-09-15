@@ -270,20 +270,27 @@ class B14Client:
         self.stream_transport = stream_transport
         self.require_service_binding = require_service_binding
 
-    def _config(self) -> B14ExecutionConfig:
+    def _config(self, timeout_seconds: float | None = None) -> B14ExecutionConfig:
         assert self.settings.b14_base_url is not None
         return B14ExecutionConfig(
             base_url=self.settings.b14_base_url,
-            timeout_seconds=self.settings.timeout_seconds,
+            timeout_seconds=(
+                self.settings.timeout_seconds
+                if timeout_seconds is None
+                else timeout_seconds
+            ),
             max_response_bytes=MAX_B14_RESPONSE_BYTES,
         )
+
+    def _completion_config(self) -> B14ExecutionConfig:
+        return self._config(self.settings.completed_timeout_seconds)
 
     def _completion_transport(self):
         execution_transport = self.transport
         if self.service_transport is not None:
             execution_transport = B14PostJSONTransport(
                 _CoreTransportAdapter(self.service_transport),
-                timeout_seconds=self.settings.timeout_seconds,
+                timeout_seconds=self.settings.completed_timeout_seconds,
             )
         return execution_transport
 
@@ -442,7 +449,7 @@ class B14Client:
             additional_system_context=additional_system_context,
         )
         core_client = B14ExecutionClient(
-            self._config(),
+            self._completion_config(),
             transport=self._completion_transport(),
         )
         runtime = ExecutionRuntime(
@@ -492,7 +499,7 @@ class B14Client:
             additional_system_context=additional_system_context,
         )
         core_client = B14ExecutionClient(
-            self._config(),
+            self._completion_config(),
             transport=self._completion_transport(),
         )
         runtime = MultimodalExecutionRuntime(
