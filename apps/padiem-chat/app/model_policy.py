@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 
 from padiem_control_plane.product_tier_routes import (
@@ -42,6 +44,11 @@ TIER_ID_TO_PROFILE: dict[str, str] = {
     "pro": "medium",
     "max": "high",
 }
+
+_REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
+    "padiem_request_tier_id",
+    default=None,
+)
 
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
@@ -198,6 +205,42 @@ def resolve_tier_policy(
         messages=[dict(message) for message in messages],
         profile=TIER_ID_TO_PROFILE[normalized],
     )
+
+
+def resolve_request_model_policy(
+    messages: list[dict[str, str]],
+    *,
+    require_executable: bool = True,
+) -> ResolvedModelPolicy:
+    """Resolve the request-scoped browser tier, then fall back to legacy policy."""
+
+    tier_id = _REQUEST_TIER_ID.get()
+    if tier_id is not None:
+        return resolve_tier_policy(
+            messages,
+            tier_id,
+            require_executable=require_executable,
+        )
+    return resolve_model_policy(messages, require_executable=require_executable)
+
+
+@contextmanager
+def request_tier_context(tier_id: str | None):
+    """Temporarily bind a validated browser tier for this async request task."""
+
+    if tier_id is None:
+        yield
+        return
+    if not isinstance(tier_id, str):
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    normalized = tier_id.strip().lower()
+    if normalized not in TIER_ID_TO_LABEL:
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    token = _REQUEST_TIER_ID.set(normalized)
+    try:
+        yield
+    finally:
+        _REQUEST_TIER_ID.reset(token)
 
 
 def resolve_model_policy(
