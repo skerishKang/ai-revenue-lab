@@ -19,40 +19,47 @@ def test_glass_mode_is_projected_from_explicit_app_conversation_state() -> None:
     assert 'shell.dataset.state = "home";' in APP
 
 
-def test_glass_reading_branch_freezes_visual_travel_before_old_home_heuristics() -> None:
-    reading_branch = THEME.index('if(mode==="reading")')
+def test_glass_reading_suppresses_old_scroll_travel_but_accepts_answer_activity() -> None:
+    assert 'var answerReveal=mode==="reading"?glassAnswerReveal(now):0;' in THEME
+    assert 'if(mode!=="reading"){' in THEME
     message_heuristic = THEME.index('var messageCount=list?list.children.length:0;')
-    scroll_heuristic = THEME.index('var pageY=window.scrollY||document.documentElement.scrollTop||0;')
-    assert reading_branch < message_heuristic
-    assert reading_branch < scroll_heuristic
-    assert 'root.style.setProperty("--glass-art-x","0px");' in THEME[reading_branch:message_heuristic]
-    assert 'root.style.setProperty("--glass-art-y","0px");' in THEME[reading_branch:message_heuristic]
-    assert 'root.style.setProperty("--glass-art-scale","1");' in THEME[reading_branch:message_heuristic]
-    assert 'root.style.setProperty("--glass-reveal","0");' in THEME[reading_branch:message_heuristic]
-    assert 'resetGlassPointer();' in THEME[reading_branch:message_heuristic]
+    home_gate = THEME.rindex('if(mode!=="reading"){', 0, message_heuristic)
+    assert home_gate < message_heuristic
+    assert 'var scrollTravel=pageY/Math.max(520,window.innerHeight*.72);' in THEME
+    assert 'noteGlassAnswerActivity()' in THEME
+    assert 'mutations.some(mutationTouchesAssistant)' in THEME
 
 
-def test_pointer_motion_remains_home_cinematic_but_is_off_during_reading() -> None:
+def test_pointer_motion_drives_reveal_in_home_and_reading_modes() -> None:
     pointer = THEME.split("function updateGlassPointer(event){", 1)[1].split("function resetGlassPointer", 1)[0]
-    assert 'if(glassMode()==="reading")' in pointer
-    assert "resetGlassPointer();" in pointer
-    assert 'root.style.setProperty("--glass-pointer-x",(nx*8).toFixed(1)+"px");' in pointer
-    assert 'root.style.setProperty("--glass-pointer-y",(ny*5).toFixed(1)+"px");' in pointer
+    assert 'if(glassMode()==="reading")' not in pointer
+    assert 'glassPointerReveal=smoothstep(proximity);' in pointer
+    assert 'root.style.setProperty("--glass-pointer-x",(nx*8*glassPointerReveal).toFixed(1)+"px");' in pointer
+    assert 'root.style.setProperty("--glass-pointer-y",(ny*5*glassPointerReveal).toFixed(1)+"px");' in pointer
+    assert 'queueGlassMotion();' in pointer
 
 
-def test_original_home_cinematic_reveal_and_variants_are_preserved() -> None:
+def test_home_cinematic_reveal_and_variants_are_preserved() -> None:
     for token in [
         'GLASS_VARIANTS=["female","male"]',
         'var messageTravel=messageCount*.28;',
         'var travel=messageTravel+overflowTravel+scrollTravel;',
-        'var reveal=smoothstep(pingPong(travel));',
-        'var restMaskStart=variant==="male"?0:2;',
-        'var restMaskFull=variant==="male"?22:26;',
-        'var openMaskFull=variant==="male"?12:14;',
+        'baseReveal=smoothstep(pingPong(travel));',
+        'var restMaskStart=reading?(variant==="male"?28:30):(variant==="male"?0:2);',
+        'var restMaskFull=reading?(variant==="male"?50:54):(variant==="male"?22:26);',
+        'var openMaskFull=reading?(variant==="male"?20:24):(variant==="male"?12:14);',
     ]:
         assert token in THEME
     assert 'padiem-glass-female.jpg' in PORTRAIT
     assert 'padiem-glass-male.jpg' in PORTRAIT
+
+
+def test_pointer_and_answer_reveal_are_composed_together_boundedly() -> None:
+    assert 'var pointerReveal=glassHoverCapable()?glassPointerReveal:0;' in THEME
+    assert 'var answerReveal=mode==="reading"?glassAnswerReveal(now):0;' in THEME
+    assert '*(1-pointerReveal*.78)' in THEME
+    assert '*(1-answerReveal*.86);' in THEME
+    assert 'reveal=Math.max(0,Math.min(1,reveal));' in THEME
 
 
 def test_reading_css_is_glass_only_and_reduces_visual_noise() -> None:
@@ -97,7 +104,7 @@ def test_mobile_reading_posture_is_calmer_and_overflow_is_not_hidden() -> None:
 def test_reduced_motion_remains_authoritative_in_js_and_css() -> None:
     assert 'prefersReducedMotion()' in THEME
     assert 'window.matchMedia("(prefers-reduced-motion: reduce)")' in THEME
-    reduced = THEME.split('if(prefersReducedMotion()){', 1)[1].split('if(mode==="reading")', 1)[0]
+    reduced = THEME.split('if(prefersReducedMotion()){', 1)[1].split('var now=currentGlassTime();', 1)[0]
     assert 'root.style.setProperty("--glass-art-x","0px");' in reduced
     assert 'root.style.setProperty("--glass-art-y","0px");' in reduced
     assert 'resetGlassPointer();' in reduced
