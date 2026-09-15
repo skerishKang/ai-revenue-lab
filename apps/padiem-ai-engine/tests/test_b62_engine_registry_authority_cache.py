@@ -7,6 +7,7 @@ builder, and no secret-derived value may ever surface from the cache itself.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from dataclasses import dataclass
 
@@ -16,8 +17,6 @@ from app import identity_enforcement
 from app.identity_enforcement import (
     CALLER_CREDENTIAL_HEADER,
     CALLER_ID_HEADER,
-    CALLER_REGISTRY_V1_ENV,
-    CALLER_REGISTRY_V1_OVERLAY_ENV,
     RETIRED_CALLER_IDS,
     _registry_authority_for_env,
     authenticate_request,
@@ -94,67 +93,90 @@ def test_first_parse_is_a_miss() -> None:
     assert _hits() == 0
 
 
-def test_same_bindings_hit_the_cache() -> None:
+def test_same_env_and_bindings_hit_the_cache() -> None:
     env = _env(overlay=OVERLAY)
     first = _registry_authority_for_env(env)
-    second = _registry_authority_for_env(_env(base=BASE, overlay=OVERLAY))
+    second = _registry_authority_for_env(env)
     assert _misses() == 1
     assert _hits() == 1
     assert first is second
 
 
-def test_base_change_invalidates_the_cache() -> None:
-    _registry_authority_for_env(_env())
-    authority, _ = _registry_authority_for_env(_env(base=BASE_CHANGED))
+def test_equal_content_different_env_rebuilds_rather_than_content_hits() -> None:
+    # Identical binding content but a different env object: the memo keys on
+    # runtime identity, never on payload content, so it must miss and rebuild.
+    first = _registry_authority_for_env(_env(overlay=OVERLAY))
+    second = _registry_authority_for_env(_env(base=BASE, overlay=OVERLAY))
+    assert _misses() == 2
+    assert _hits() == 0
+    assert first is not second
+
+
+def test_base_reassignment_on_the_same_env_invalidates_the_cache() -> None:
+    env = _env()
+    _registry_authority_for_env(env)
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1 = BASE_CHANGED
+    authority, _ = _registry_authority_for_env(env)
     assert authority is not None
     assert len(authority.callers) == 2
     assert _misses() == 2
     assert _hits() == 0
 
 
-def test_overlay_change_invalidates_the_cache() -> None:
-    _registry_authority_for_env(_env(overlay=OVERLAY))
-    _, caller = _registry_authority_for_env(
-        _env(overlay=_overlay_payload(credential=OTHER_SECRET))
+def test_overlay_reassignment_on_the_same_env_invalidates_the_cache() -> None:
+    env = _env(overlay=OVERLAY)
+    _registry_authority_for_env(env)
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY = _overlay_payload(
+        credential=OTHER_SECRET
     )
+    _, caller = _registry_authority_for_env(env)
     assert caller is not None
     assert caller.caller_id == "p01-claw"
     assert _misses() == 2
     assert _hits() == 0
 
 
-def test_equal_length_base_change_is_not_a_stale_hit() -> None:
-    # Same byte length, different content: equality-keyed caching must rebuild.
+def test_equal_length_reassignment_is_not_a_stale_hit() -> None:
+    # Same byte length, different content, same env object: a content-derived
+    # surrogate key could not tell these apart, but object identity can.
     same_length = _base_payload(_caller_entry("b62-servicf", BASE_SECRET, "padiem-chat"))
     assert len(same_length) == len(BASE)
-    _registry_authority_for_env(_env())
-    authority, _ = _registry_authority_for_env(_env(base=same_length))
+    env = _env()
+    _registry_authority_for_env(env)
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1 = same_length
+    authority, _ = _registry_authority_for_env(env)
     assert authority.callers[0].caller_id == "b62-servicf"
     assert _hits() == 0
+    assert _misses() == 2
 
 
-def test_malformed_changed_binding_still_fails_closed() -> None:
-    _registry_authority_for_env(_env())
-    with pytest.raises(ServiceIdentityError) as exc_info:
-        _registry_authority_for_env(_env(base="{not-json"))
-    assert exc_info.value.code == "invalid_caller_registry"
-    # The failed rebuild must not poison or be served from the cache.
-    with pytest.raises(ServiceIdentityError):
-        _registry_authority_for_env(_env(base="{not-json"))
+def test_malformed_reassignment_still_fails_closed_and_is_not_cached() -> None:
+    env = _env()
+    _registry_authority_for_env(env)  # memoizes a valid authority for BASE
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1 = "{not-json"
+    for _ in range(2):
+        with pytest.raises(ServiceIdentityError) as exc_info:
+            _registry_authority_for_env(env)
+        assert exc_info.value.code == "invalid_caller_registry"
+    # A failed rebuild must never be served from, nor poison, the memo.
     assert _hits() == 0
 
 
-def test_blank_changed_binding_still_fails_closed() -> None:
-    _registry_authority_for_env(_env())
+def test_blank_reassignment_still_fails_closed() -> None:
+    env = _env()
+    _registry_authority_for_env(env)
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1 = "   "
     with pytest.raises(ServiceIdentityError) as exc_info:
-        _registry_authority_for_env(_env(base="   "))
+        _registry_authority_for_env(env)
     assert exc_info.value.code == "invalid_caller_registry"
 
 
-def test_non_string_changed_binding_still_fails_closed() -> None:
-    _registry_authority_for_env(_env())
+def test_non_string_reassignment_still_fails_closed() -> None:
+    env = _env()
+    _registry_authority_for_env(env)
+    env.PADIEM_ENGINE_CALLER_REGISTRY_V1 = 123
     with pytest.raises(ServiceIdentityError):
-        _registry_authority_for_env(_env(base=123))
+        _registry_authority_for_env(env)
 
 
 def test_duplicate_caller_fails_closed_and_is_never_cached() -> None:
@@ -277,13 +299,33 @@ def test_unconfigured_env_is_not_cached() -> None:
     assert _misses() == 2
 
 
-def test_cache_never_emits_secret_derived_evidence() -> None:
+def test_cache_state_holds_no_plaintext_or_content_derived_surrogate() -> None:
     env = _env(overlay=OVERLAY)
     _registry_authority_for_env(env)
-    _registry_authority_for_env(env)
+    _registry_authority_for_env(env)  # a hit must not add any plaintext either
     cached = identity_enforcement._authority_cache
     assert cached is not None
-    rendered = repr(_authority_public_shape())
+    assert isinstance(cached, identity_enforcement._AuthorityCacheEntry)
+
+    # The memo exposes only a weak env reference, two object addresses, and the
+    # parsed authority. There is no raw binding-value field that could leak.
+    assert {field.name for field in dataclasses.fields(cached)} == {
+        "env_ref",
+        "base_id",
+        "overlay_id",
+        "authority",
+    }
+    assert type(cached.base_id) is int
+    assert type(cached.overlay_id) is int
+    # The address fields are live object identities, not content-derived values.
+    assert cached.base_id == id(env.PADIEM_ENGINE_CALLER_REGISTRY_V1)
+    assert cached.overlay_id == id(env.PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY)
+
+    # No raw registry/overlay plaintext appears anywhere in the cache state.
+    rendered = repr(cached)
+    for payload in (BASE, BASE_CHANGED, OVERLAY):
+        assert payload not in rendered
+    # No credential plaintext is stored or reachable from the memo repr.
     for secret in (BASE_SECRET, OVERLAY_SECRET, OTHER_SECRET):
         assert secret not in rendered
         assert secret not in json.dumps(_authority_public_shape())
