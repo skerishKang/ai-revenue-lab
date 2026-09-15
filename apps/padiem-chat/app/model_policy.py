@@ -32,6 +32,17 @@ def _contract_route_id(label: ProductTierLabel) -> str:
 DEFAULT_CHAT_PROFILE = "medium"
 AUTO_B14_MODEL_ID = "b14/auto"
 
+TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
+    "plus": ProductTierLabel.PLUS,
+    "pro": ProductTierLabel.PRO,
+    "max": ProductTierLabel.MAX,
+}
+TIER_ID_TO_PROFILE: dict[str, str] = {
+    "plus": "low",
+    "pro": "medium",
+    "max": "high",
+}
+
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
@@ -143,6 +154,50 @@ def product_tier_name(model_id: str) -> str:
         return PRODUCT_TIER_NAMES[model_id]
     except KeyError as exc:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
+
+
+def resolve_tier_policy(
+    messages: list[dict[str, str]],
+    tier_id: str,
+    *,
+    require_executable: bool = True,
+) -> ResolvedModelPolicy:
+    """Resolve a browser-facing Plus/Pro/Max tier through the shared contract.
+
+    Browser callers send only the bounded tier id. Provider/model authority
+    remains server-side in the shared product-tier declaration.
+    """
+
+    if not isinstance(tier_id, str):
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    normalized = tier_id.strip().lower()
+    label = TIER_ID_TO_LABEL.get(normalized)
+    if label is None:
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+
+    try:
+        route = active_route_for(label)
+    except ProductTierRoutesError as exc:
+        raise ModelPolicyError(
+            "invalid_product_tier",
+            "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        ) from exc
+
+    if route is None or not route.model_id:
+        if require_executable:
+            raise ModelPolicyError(
+                "tier_unavailable",
+                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+            )
+        model_id = MAX_HOLD_MODEL_ID if label is ProductTierLabel.MAX else ""
+    else:
+        model_id = route.model_id
+
+    return ResolvedModelPolicy(
+        model_id=model_id,
+        messages=[dict(message) for message in messages],
+        profile=TIER_ID_TO_PROFILE[normalized],
+    )
 
 
 def resolve_model_policy(
