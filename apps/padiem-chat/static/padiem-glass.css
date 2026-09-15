@@ -299,11 +299,40 @@ html[data-theme="padiem-glass"] .route-details {
   color: #17212a !important;
 }
 
+/* #2532 Claw ↔ Chat continuity: same eyebrow/card/composer language in the workspace. */
+html[data-theme="padiem-glass"] .claw-workspace-kicker { color: #334a5b; letter-spacing: .16em; }
+html[data-theme="padiem-glass"] .claw-workspace-title { color: #16212a; }
+html[data-theme="padiem-glass"] .claw-workspace-tagline { color: #44515d; }
+html[data-theme="padiem-glass"] .claw-workspace-chip { color: #18232c; }
+html[data-theme="padiem-glass"] .claw-mode-bar {
+  background: linear-gradient(165deg, rgba(249, 251, 252, .68), rgba(226, 232, 236, .42));
+  border: 1px solid rgba(255, 255, 255, .64);
+  box-shadow: var(--composer-shadow);
+  backdrop-filter: blur(30px) saturate(110%);
+  -webkit-backdrop-filter: blur(30px) saturate(110%);
+}
+html[data-theme="padiem-glass"] .claw-result-card,
+html[data-theme="padiem-glass"] .claw-inbox,
+html[data-theme="padiem-glass"] .claw-memory-review {
+  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
+  border-color: rgba(255, 255, 255, .52);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+}
+html[data-theme="padiem-glass"] .claw-result-kind,
+html[data-theme="padiem-glass"] .claw-result-body { color: #17212a; }
+html[data-theme="padiem-glass"] .claw-disabled-control { color: #53606c; }
+html[data-theme="padiem-glass"] .claw-disabled-control strong { color: #17212a; }
+html[data-theme="padiem-glass"] .claw-chip {
+  background: rgba(255, 255, 255, .26);
+  color: #25333e;
+  border-color: rgba(255, 255, 255, .38);
+}
+
 html[data-theme="padiem-glass"] .settings-dialog::backdrop {
   background: rgba(22, 30, 38, .32);
   backdrop-filter: blur(8px);
-}
-html[data-theme="padiem-glass"] .settings-panel {
+}html[data-theme="padiem-glass"] .settings-panel {
   background: linear-gradient(160deg, rgba(246, 249, 251, .76), rgba(216, 224, 229, .56));
   color: #17212a;
   border: 1px solid rgba(255, 255, 255, .66);
@@ -347,12 +376,18 @@ html[data-theme="padiem-glass"] :focus-visible {
   html[data-theme="padiem-glass"] .topbar,
   html[data-theme="padiem-glass"] .starter,
   html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .claw-mode-bar,
+  html[data-theme="padiem-glass"] .claw-result-card,
+  html[data-theme="padiem-glass"] .claw-inbox,
   html[data-theme="padiem-glass"] .settings-panel {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
   html[data-theme="padiem-glass"] .starter,
   html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .claw-mode-bar,
+  html[data-theme="padiem-glass"] .claw-result-card,
+  html[data-theme="padiem-glass"] .claw-inbox,
   html[data-theme="padiem-glass"] .settings-panel {
     background: rgba(238, 242, 245, .92);
   }

@@ -5,8 +5,9 @@ Guards the KILO4 #2322 audit fixes:
   (tabindex="-1" on #clawResultPreview) and visibly outlined;
 - A2: the outer result container is no longer a live region — #clawStatus is
   the single canonical polite status region (no nested aria-live);
-- A3: #clawRequestText is programmatically associated with #clawStatus via
-  aria-describedby, and aria-invalid is set on error / cleared otherwise.
+- A3: the Claw request input (#messageInput via #2532) is programmatically
+  associated with #clawStatus via aria-describedby, and aria-invalid is set on
+  error / cleared otherwise.
 
 Also re-asserts the preserved mobile contracts (44/48px touch targets, 16px
 iOS zoom safety, 720px breakpoint) and the execute/result/artifact frontend
@@ -73,15 +74,16 @@ def test_status_region_is_the_single_canonical_live_region() -> None:
 
 
 def test_request_input_is_described_by_status_region() -> None:
-    line = _line(INDEX, 'id="clawRequestText"')
-    assert 'aria-describedby="clawStatus"' in line
+    # #2532: aria-describedby moves onto the shared composer input while in claw state.
+    assert 'id="clawRequestText"' not in INDEX
+    assert 'input.setAttribute("aria-describedby", "clawStatus")' in APP
 
 
 def test_aria_invalid_set_on_error_and_cleared_otherwise() -> None:
     status_fn = APP.split("function setClawStatus", 1)[1].split("\n  }", 1)[0]
-    assert 'clawRequestText.setAttribute("aria-invalid", "true")' in status_fn
+    assert 'input.setAttribute("aria-invalid", "true")' in status_fn
     assert 'if (state === "error")' in status_fn
-    assert status_fn.count('clawRequestText.removeAttribute("aria-invalid")') == 2
+    assert status_fn.count('input.removeAttribute("aria-invalid")') == 2
 
 
 # ── preserved mobile contracts ────────────────────────────────────────────
@@ -93,7 +95,8 @@ def test_touch_target_floor_preserved() -> None:
 
 
 def test_mobile_zoom_safety_preserved() -> None:
-    hero = WORKSPACE_CSS.split(".claw-intake-hero textarea", 1)[1].split("}", 1)[0]
+    # #2532: the Claw request input is the composer textarea itself.
+    hero = WORKSPACE_CSS.split('.app-shell[data-state="claw"] .composer textarea', 1)[1].split("}", 1)[0]
     assert "font-size: 16px" in hero
 
 

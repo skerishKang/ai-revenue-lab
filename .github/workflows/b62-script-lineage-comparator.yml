@@ -1,0 +1,177 @@
+name: B62 Script Lineage Comparator
+
+# SOURCE-ONLY (#2541). Minimal GET-only lineage diagnostic: compares the
+# Cloudflare version-detail script identity of the currently active
+# padiem-chat version against the last proven #2124-bearing served version.
+# Script etags/hashes are extracted in memory only and never printed,
+# logged, or artifacted. No mutation verbs, no deployment actions, no
+# live-service calls, no request-path probes, no settings reads.
+# Dispatch is intentionally unavailable until CENTRAL reviews and merges
+# this source contract; the readonly job runs only on workflow_dispatch.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-script-lineage-comparator.yml"
+      - ".github/scripts/b62_script_lineage_comparator.py"
+      - ".github/tests/test_b62_script_lineage_comparator.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      expected_active_version:
+        description: "Expected active served version UUID"
+        required: true
+        default: "c2468c5d-73e1-41fb-9408-565f871a4ad8"
+        type: string
+      reference_version:
+        description: "Last proven #2124-bearing served version UUID"
+        required: true
+        default: "cc9f8601-d3ab-4e48-ae4d-249f4d6f090c"
+        type: string
+      intermediate_version:
+        description: "Optional intermediate version UUID (empty = NOT_CHECKED)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-script-lineage-comparator
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${{ inputs.target_sha }}
+  EXPECTED_ACTIVE_VERSION: ${{ inputs.expected_active_version }}
+  REFERENCE_VERSION: ${{ inputs.reference_version }}
+  INTERMEDIATE_VERSION: ${{ inputs.intermediate_version }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'CONTRACT_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install --quiet pytest
+
+      - name: Run script lineage comparator contract tests
+        run: python -m pytest .github/tests/test_b62_script_lineage_comparator.py -q
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_SCRIPT_LINEAGE_SOURCE_CONTRACT=PASS'
+          echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+          echo 'RAW_VERSION_DETAIL_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  lineage-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Exact-main guard and GET-only lineage readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN=PASS'
+          uuid_re='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          [[ "${EXPECTED_ACTIVE_VERSION}" =~ $uuid_re ]]
+          [[ "${REFERENCE_VERSION}" =~ $uuid_re ]]
+          if [[ -n "${INTERMEDIATE_VERSION}" ]]; then
+            [[ "${INTERMEDIATE_VERSION}" =~ $uuid_re ]]
+          fi
+          test "${EXPECTED_ACTIVE_VERSION}" != "${REFERENCE_VERSION}"
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          deployments="${RUNNER_TEMP}/b62-lineage-deployments.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          jq -e '.success == true and (.result.deployments | length) == 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          [[ "${active}" =~ $uuid_re ]]
+          test "${active}" = "${EXPECTED_ACTIVE_VERSION}"
+          active_detail="${RUNNER_TEMP}/b62-lineage-active-detail.json"
+          reference_detail="${RUNNER_TEMP}/b62-lineage-reference-detail.json"
+          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${active_detail}"
+          curl -fsS "${auth[@]}" "${api}/versions/${REFERENCE_VERSION}" -o "${reference_detail}"
+          jq -e '.success == true' "${active_detail}" >/dev/null
+          jq -e '.success == true' "${reference_detail}" >/dev/null
+          args=(--deployments "${deployments}"
+                --expected-active-version "${EXPECTED_ACTIVE_VERSION}"
+                --active-detail "${active_detail}"
+                --reference-detail "${reference_detail}")
+          if [[ -n "${INTERMEDIATE_VERSION}" ]]; then
+            intermediate_detail="${RUNNER_TEMP}/b62-lineage-intermediate-detail.json"
+            curl -fsS "${auth[@]}" "${api}/versions/${INTERMEDIATE_VERSION}" -o "${intermediate_detail}"
+            jq -e '.success == true' "${intermediate_detail}" >/dev/null
+            args+=(--intermediate-detail "${intermediate_detail}")
+          fi
+          python .github/scripts/b62_script_lineage_comparator.py "${args[@]}"
+
+      - name: Read-only evidence
+        run: |
+          echo 'CLOUDFLARE_REQUESTS_ARE_GET_ONLY=YES'
+          echo 'SETTINGS_PAYLOAD_READ=0'
+          echo 'RAW_SCRIPT_ETAG_OUTPUT=0'
+          echo 'RAW_VERSION_DETAIL_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
