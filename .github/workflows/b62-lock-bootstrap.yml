@@ -1,0 +1,70 @@
+name: B62 Lock Bootstrap
+
+on:
+  push:
+    branches:
+      - "fix/2562-b62-reproducible-python-resolution"
+
+permissions:
+  contents: write
+
+jobs:
+  generate-locks:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/padiem-chat
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/2562-b62-reproducible-python-resolution
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+      - name: Generate host lock
+        run: uv lock
+      - name: Prove host lock is usable
+        run: uv sync --locked --extra dev
+      - name: Generate Worker Pyodide lock
+        run: uv run --locked pywrangler sync --force
+      - name: Reject machine-specific absolute paths
+        run: |
+          uv run --locked python - <<'PY'
+          from pathlib import Path
+
+          forbidden = (
+              "/home/runner/",
+              "/Users/",
+              "C:\\",
+              "D:\\",
+          )
+          for name in ("uv.lock", "pylock.toml"):
+              text = Path(name).read_text(encoding="utf-8")
+              bad = [marker for marker in forbidden if marker in text]
+              if bad:
+                  raise SystemExit(f"{name} contains machine-specific paths: {bad}")
+              print(f"{name}: machine-path check PASS")
+          PY
+      - name: Commit generated lockfiles
+        working-directory: .
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/padiem-chat/uv.lock apps/padiem-chat/pylock.toml
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No lockfile changes to commit."
+            exit 0
+          fi
+          git commit -m "build(b62): lock Python dependency resolution"
+          git push origin HEAD:fix/2562-b62-reproducible-python-resolution
