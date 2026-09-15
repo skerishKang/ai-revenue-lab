@@ -123,7 +123,10 @@ async def api_chat_stream(request: Request):
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
-        _, messages = _apply_b62_model_policy(messages)
+        selected_model, messages = _apply_b62_model_policy(
+            messages,
+            tier_id=raw.get("tier"),
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
@@ -205,6 +208,7 @@ async def api_chat_stream(request: Request):
         messages,
         skill=skill,
         additional_system_context=reference_context,
+        model=selected_model,
     )
 
     first_visible = None
@@ -332,7 +336,10 @@ async def api_chat(request: Request) -> JSONResponse:
     try:
         raw = json.loads(body.decode("utf-8"))
         messages, skill, tool_request, attachments, conversation_id, browser_project_id = _validate_payload(raw)
-        selected_model, messages = _apply_b62_model_policy(messages)
+        selected_model, messages = _apply_b62_model_policy(
+            messages,
+            tier_id=raw.get("tier"),
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
         return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
@@ -426,6 +433,7 @@ async def api_chat(request: Request) -> JSONResponse:
                     tool=get_tool_presentation("web_search"),
                     tool_input=auto_decision.query,
                     additional_system_context=reference_context,
+                    model=selected_model,
                 )
             else:
                 client: B14Client = request.app.state.b14_client
@@ -434,6 +442,7 @@ async def api_chat(request: Request) -> JSONResponse:
                     skill=skill,
                     additional_system_context=reference_context,
                     attachments=image_attachments,
+                    model=selected_model,
                 )
         else:
             grounded = request.app.state.grounded_chat
@@ -443,6 +452,7 @@ async def api_chat(request: Request) -> JSONResponse:
                 tool=tool_request.tool,
                 tool_input=tool_request.tool_input,
                 additional_system_context=reference_context,
+                model=selected_model,
             )
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
