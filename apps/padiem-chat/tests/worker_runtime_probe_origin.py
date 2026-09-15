@@ -22,6 +22,14 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+    def do_POST(self):
+        if self.path != "/echo-form":
+            self.send_error(404)
+            return
+        length = int(self.headers.get("Content-Length", "0"))
+        body = self.rfile.read(length)
+        self._send(body)
+
     def do_GET(self):
         if self.path == "/normal":
             self._send(b"normal-ok")
