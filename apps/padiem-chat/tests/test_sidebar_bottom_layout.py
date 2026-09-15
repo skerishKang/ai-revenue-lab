@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+UI_POLISH = (ROOT / "static" / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
 
 
 def test_settings_in_sidebar_bottom() -> None:
@@ -73,3 +74,30 @@ def test_visible_brand_remains_padiem_chat() -> None:
     brand_line = [l for l in HTML.splitlines() if 'class="brand"' in l][0]
     assert "Padiem Chat" in brand_line
     assert "PADIEM CHAT" not in brand_line
+
+
+def test_padiem_home_is_final_sidebar_bottom_utility() -> None:
+    start = HTML.index('<div class="sidebar-bottom"')
+    end = HTML.index('</div>\n    </aside>', start)
+    sidebar_bottom = HTML[start:end]
+    settings_index = sidebar_bottom.index('id="settingsButton"')
+    account_index = sidebar_bottom.index('class="sidebar-account')
+    home_index = sidebar_bottom.index('class="home-link"')
+    assert settings_index < account_index < home_index
+
+
+def test_glass_home_frame_has_desktop_vertical_breathing_room() -> None:
+    assert '@media (min-width: 921px)' in UI_POLISH
+    assert '.app-shell[data-state="home"] .conversation' in UI_POLISH
+    assert 'margin-top: 16px !important' in UI_POLISH
+    assert 'margin-bottom: 16px !important' in UI_POLISH
+    assert '.app-shell[data-state="home"] .composer-wrap' in UI_POLISH
+    assert 'bottom: 16px !important' in UI_POLISH
+    assert 'padding-bottom: 16px !important' in UI_POLISH
+
+
+def test_glass_home_composer_vertical_padding_is_balanced() -> None:
+    assert '.app-shell[data-state="home"] .composer {' in UI_POLISH
+    assert 'padding: 12px 12px 11px !important' in UI_POLISH
+    assert '.app-shell[data-state="home"] .composer textarea {' in UI_POLISH
+    assert 'padding: 9px 9px 7px !important' in UI_POLISH
