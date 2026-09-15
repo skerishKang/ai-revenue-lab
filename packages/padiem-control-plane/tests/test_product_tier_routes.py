@@ -218,16 +218,16 @@ def _registry_executable_model_ids() -> dict[str, str]:
 def test_parity_with_b14_tier_registry_active_routes() -> None:
     registry = _registry_executable_model_ids()
     assert sorted(registry) == [
-        "plus.kilo-laguna-s-2.1-free.v1",
-        "pro.kilo-nemotron-3-ultra-free.v1",
+        "plus.sensenova-6.8-flash-lite.v1",
+        "pro.b-ai-qwen3.8-flash.v1",
     ]
     executables = _executables()
     assert (
-        registry["plus.kilo-laguna-s-2.1-free.v1"]
+        registry["plus.sensenova-6.8-flash-lite.v1"]
         == executables[ProductTierLabel.PLUS].model_id
     )
     assert (
-        registry["pro.kilo-nemotron-3-ultra-free.v1"]
+        registry["pro.b-ai-qwen3.8-flash.v1"]
         == executables[ProductTierLabel.PRO].model_id
     )
 
@@ -248,25 +248,34 @@ def test_parity_with_chat_model_policy_derivation() -> None:
     assert "'kilo/" not in source
 
 
-def test_parity_with_b14_kilo_catalog_and_retirement() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
+def test_selected_routes_match_registered_provider_constants() -> None:
     executables = _executables()
+    sense_source = SENSENOVA_PROVIDER_PATH.read_text(encoding="utf-8")
+    bai_source = BAI_PROVIDER_PATH.read_text(encoding="utf-8")
 
-    laguna_constant = re.search(r'^KILO_LAGUNA_MODEL_ID = "([^"]+)"$', source, re.MULTILINE)
-    nemotron_constant = re.search(
-        r"^KILO_NEMOTRON_MODEL_ID = \"([^\"]+)\"$", source, re.MULTILINE
+    sense_model = re.search(r'^SENSENOVA_MODEL_ID = "([^"]+)"$', sense_source, re.MULTILINE)
+    bai_model = re.search(r'^BAI_QWEN_MODEL_ID = "([^"]+)"$', bai_source, re.MULTILINE)
+    sense_binding = re.search(
+        r'^SENSENOVA_CREDENTIAL_BINDING = "([^"]+)"$', sense_source, re.MULTILINE
     )
-    assert laguna_constant and nemotron_constant
-    assert laguna_constant.group(1) == executables[ProductTierLabel.PLUS].model_id
-    assert nemotron_constant.group(1) == executables[ProductTierLabel.PRO].model_id
+    bai_binding = re.search(
+        r'^BAI_CREDENTIAL_BINDING = "([^"]+)"$', bai_source, re.MULTILINE
+    )
 
-    # Both live model IDs must still be assembled into KILO_FREE_ROUTES.
-    routes_block = re.search(r"KILO_FREE_ROUTES = \((.*?)\n\)", source, re.DOTALL)
-    assert routes_block, "KILO_FREE_ROUTES block not found"
-    assert "model_id=KILO_LAGUNA_MODEL_ID" in routes_block.group(1)
-    assert "model_id=KILO_NEMOTRON_MODEL_ID" in routes_block.group(1)
-    assert "KILO_MINIMAX_M3_MODEL_ID," not in routes_block.group(1)
-    assert "KILO_HY3_MODEL_ID," not in routes_block.group(1)
+    assert sense_model and bai_model and sense_binding and bai_binding
+    assert sense_model.group(1) == executables[ProductTierLabel.PLUS].model_id
+    assert bai_model.group(1) == executables[ProductTierLabel.PRO].model_id
+    assert sense_binding.group(1) == executables[ProductTierLabel.PLUS].credential_binding
+    assert bai_binding.group(1) == executables[ProductTierLabel.PRO].credential_binding
+
+
+def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
+    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
+
+    for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
+        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
+        assert kilo_routes
+        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
 
     retired_block = re.search(
         r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
