@@ -166,6 +166,9 @@ async def test_worker_web_transport_runs_firecrawl_through_real_httpx_family():
     assert seen["init"]["method"] == "POST"
     assert seen["init"]["redirect"] == "manual"
     assert seen["init"]["headers"]["authorization"] == "Bearer fc-test-secret"
+    assert "host" not in seen["init"]["headers"]
+    assert "content-length" not in seen["init"]["headers"]
+    assert "connection" not in seen["init"]["headers"]
     assert json.loads(bytes(seen["init"]["body"]).decode("utf-8")) == {
         "query": "worker transport",
         "limit": 1,
