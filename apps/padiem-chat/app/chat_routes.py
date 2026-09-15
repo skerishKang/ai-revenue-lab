@@ -21,7 +21,7 @@ from .documents import (
 )
 from .grounding import GroundedChatService, GroundingError
 from .history import HistoryForbidden, HistoryStore, build_project_context
-from .model_policy import model_supports
+from .model_policy import model_supports, request_tier_context
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -204,39 +204,39 @@ async def api_chat_stream(request: Request):
         reference_context = auto_plan.prepared.context
 
     client: B14Client = request.app.state.b14_client
-    stream = client.stream_text_auto(
-        messages,
-        skill=skill,
-        additional_system_context=reference_context,
-        model=selected_model,
-    )
-
-    first_visible = None
-    try:
-        while True:
-            try:
-                event = await anext(stream)
-            except StopAsyncIteration:
-                await _close_stream(stream)
-                return _empty_stream_json_error()
-            if event.delta_content:
-                first_visible = event
-                break
-            if event.done:
-                await _close_stream(stream)
-                return _empty_stream_json_error()
-    except ChatRuntimeError as exc:
-        await _close_stream(stream)
-        return _stream_json_error(exc)
-    except asyncio.CancelledError:
-        await _close_stream(stream)
-        raise
-    except Exception:
-        await _close_stream(stream)
-        return JSONResponse(
-            {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
-            status_code=502,
+    with request_tier_context(raw.get("tier")):
+        stream = client.stream_text_auto(
+            messages,
+            skill=skill,
+            additional_system_context=reference_context,
         )
+
+        first_visible = None
+        try:
+            while True:
+                try:
+                    event = await anext(stream)
+                except StopAsyncIteration:
+                    await _close_stream(stream)
+                    return _empty_stream_json_error()
+                if event.delta_content:
+                    first_visible = event
+                    break
+                if event.done:
+                    await _close_stream(stream)
+                    return _empty_stream_json_error()
+        except ChatRuntimeError as exc:
+            await _close_stream(stream)
+            return _stream_json_error(exc)
+        except asyncio.CancelledError:
+            await _close_stream(stream)
+            raise
+        except Exception:
+            await _close_stream(stream)
+            return JSONResponse(
+                {"error": {"code": "upstream_route_error", "message": "답변을 불러오지 못했습니다. 다시 시도해 주세요."}},
+                status_code=502,
+            )
 
     assert first_visible is not None and first_visible.delta_content
     first_delta = first_visible.delta_content
@@ -422,38 +422,37 @@ async def api_chat(request: Request) -> JSONResponse:
             return _usage_denied_response(usage_decision)
 
     try:
-        if tool_request is None:
-            auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-            auto_decision = None if image_attachments else auto_grounding.decide(messages, skill=skill)
-            if auto_decision is not None and auto_decision.requires_search:
-                grounded: GroundedChatService = request.app.state.grounded_chat
+        with request_tier_context(raw.get("tier")):
+            if tool_request is None:
+                auto_grounding: AutoGroundingService = request.app.state.auto_grounding
+                auto_decision = None if image_attachments else auto_grounding.decide(messages, skill=skill)
+                if auto_decision is not None and auto_decision.requires_search:
+                    grounded: GroundedChatService = request.app.state.grounded_chat
+                    result = await grounded.complete(
+                        messages,
+                        skill=skill,
+                        tool=get_tool_presentation("web_search"),
+                        tool_input=auto_decision.query,
+                        additional_system_context=reference_context,
+                    )
+                else:
+                    client: B14Client = request.app.state.b14_client
+                    result = await client.complete(
+                        messages,
+                        skill=skill,
+                        additional_system_context=reference_context,
+                        attachments=image_attachments,
+                    )
+            else:
+                grounded = request.app.state.grounded_chat
                 result = await grounded.complete(
                     messages,
                     skill=skill,
-                    tool=get_tool_presentation("web_search"),
-                    tool_input=auto_decision.query,
+                    tool=tool_request.tool,
+                    tool_input=tool_request.tool_input,
                     additional_system_context=reference_context,
-                    model=selected_model,
                 )
-            else:
-                client: B14Client = request.app.state.b14_client
-                result = await client.complete(
-                    messages,
-                    skill=skill,
-                    additional_system_context=reference_context,
-                    attachments=image_attachments,
-                    model=selected_model,
-                )
-        else:
-            grounded = request.app.state.grounded_chat
-            result = await grounded.complete(
-                messages,
-                skill=skill,
-                tool=tool_request.tool,
-                tool_input=tool_request.tool_input,
-                additional_system_context=reference_context,
-                model=selected_model,
-            )
+
     except (ChatRuntimeError, GroundingError, WebToolError) as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
 
