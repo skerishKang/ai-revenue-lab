@@ -20,6 +20,7 @@ class Default(WorkerEntrypoint):
             "abortsignal_timeout_call": False,
             "fetch_accepts_signal": False,
             "local_normal_fetch": False,
+            "local_post_form": False,
             "local_delay_timeout": False,
             "local_body_timeout": False,
         }
@@ -45,6 +46,20 @@ class Default(WorkerEntrypoint):
                     body = b"".join(chunks)
                     result["fetch_accepts_signal"] = response.status_code == 200
                     result["local_normal_fetch"] = body == b"normal-ok"
+
+                async with client.stream(
+                    "POST",
+                    "http://127.0.0.1:9099/echo-form",
+                    data={"code": "synthetic", "grant_type": "authorization_code"},
+                ) as response:
+                    form_body = b"".join(
+                        [chunk async for chunk in response.aiter_bytes()]
+                    )
+                    result["local_post_form"] = (
+                        response.status_code == 200
+                        and b"code=synthetic" in form_body
+                        and b"grant_type=authorization_code" in form_body
+                    )
 
             try:
                 async with compat.AsyncClient(
@@ -83,6 +98,7 @@ class Default(WorkerEntrypoint):
                 "abortsignal_timeout_call",
                 "fetch_accepts_signal",
                 "local_normal_fetch",
+                "local_post_form",
                 "local_delay_timeout",
                 "local_body_timeout",
             )
