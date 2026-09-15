@@ -292,6 +292,26 @@ if _IN_WORKERS:
                 request=request,
             ) from exc
 
+    def _js_request_init(init: dict) -> Any:
+        """Convert Python RequestInit data to a real JavaScript Object in Workers.
+
+        Passing a Python dict directly through the FFI leaves nested values as
+        PyProxy objects; fetch expects Web-IDL RequestInit/Headers sequences and
+        can fatally reject that shape. Cloudflare's Python Workers FFI guidance
+        uses pyodide.ffi.to_js with Object.fromEntries for this boundary.
+        CPython fake-js tests intentionally keep the plain dict path.
+        """
+        try:
+            from js import Object as _JsObject  # type: ignore
+            from pyodide.ffi import to_js as _to_js  # type: ignore
+        except (ImportError, ModuleNotFoundError):
+            return init
+        return _to_js(
+            init,
+            dict_converter=_JsObject.fromEntries,
+            create_pyproxies=False,
+        )
+
     def _build_body_and_headers(kwargs: dict) -> tuple[bytes | None, dict]:
         """Translate httpx-style ``data=`` / ``json=`` / ``content=`` kwargs into
         a request body and merged headers."""
@@ -379,7 +399,10 @@ if _IN_WORKERS:
             if body is not None:
                 init["body"] = body
             try:
-                js_resp = await _js_fetch(self._url, init)  # type: ignore[misc]
+                js_resp = await _js_fetch(  # type: ignore[misc]
+                    self._url,
+                    _js_request_init(init),
+                )
             except Exception as exc:
                 try:
                     timed_out = bool(
