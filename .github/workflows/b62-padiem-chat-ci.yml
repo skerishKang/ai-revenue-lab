@@ -102,6 +102,7 @@ jobs:
               "abortsignal_import",
               "fetch_accepts_signal",
               "local_normal_fetch",
+              "local_post_body_headers",
               "local_incremental_body",
               "local_delay_timeout",
               "local_body_timeout",
