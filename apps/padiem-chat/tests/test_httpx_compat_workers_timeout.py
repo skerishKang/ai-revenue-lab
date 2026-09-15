@@ -54,11 +54,12 @@ class FakeAbortSignalAPI:
         return signal
 
 
-def _load_workers_shim(fetch_impl):
+def _load_workers_shim(fetch_impl, *, include_abort_signal: bool = True):
     fake_js = types.ModuleType("js")
     fake_js.fetch = fetch_impl
     fake_js.URLSearchParams = FakeURLSearchParams
-    fake_js.AbortSignal = FakeAbortSignalAPI
+    if include_abort_signal:
+        fake_js.AbortSignal = FakeAbortSignalAPI
 
     previous = sys.modules.get("js")
     sys.modules["js"] = fake_js
@@ -214,3 +215,31 @@ def test_workers_configured_timeout_fails_closed_if_abort_signal_is_unavailable(
     assert "timeout signal is unavailable" in str(info.value)
     assert info.value.request is not None
     assert info.value.request.url == "https://example.test/no-signal"
+
+
+def test_workers_mode_does_not_fall_back_to_real_httpx_when_abort_signal_is_missing():
+    seen = {}
+
+    async def fake_fetch(url, init):
+        seen["url"] = url
+        return SimpleNamespace(status=204, headers=FakeHeaders(), body=None)
+
+    shim = _load_workers_shim(fake_fetch, include_abort_signal=False)
+
+    assert shim._IN_WORKERS is True
+
+    async def unbounded_run():
+        async with shim.AsyncClient(timeout=None) as client:
+            async with client.stream("GET", "https://example.test/no-timeout") as response:
+                assert response.status_code == 204
+
+    asyncio.run(unbounded_run())
+    assert seen["url"] == "https://example.test/no-timeout"
+
+    async def bounded_run():
+        async with shim.AsyncClient(timeout=shim.Timeout(1.0)) as client:
+            async with client.stream("GET", "https://example.test/must-fail-closed"):
+                raise AssertionError("unreachable")
+
+    with pytest.raises(shim.RequestError, match="timeout signal is unavailable"):
+        asyncio.run(bounded_run())
