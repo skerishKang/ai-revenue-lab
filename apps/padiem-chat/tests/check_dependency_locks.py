@@ -15,7 +15,7 @@ VENDOR = ROOT / "python_modules"
 MACHINE_PATH_PATTERNS = (
     re.compile(r"/home/[^/]+/"),
     re.compile(r"/Users/[^/]+/"),
-    re.compile(r"[A-Za-z]:\\\\"),
+    re.compile(r"[A-Za-z]:\\"),
 )
 
 
