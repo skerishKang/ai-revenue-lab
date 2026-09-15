@@ -244,6 +244,10 @@ def _build_registry_authority_from_env(
     The overlay is never materialized into that registry, so a fully valid
     64-caller opaque base remains valid when the one-caller overlay is present.
     Duplicate caller IDs are rejected before either authority is usable.
+
+    This is the uncached builder. Hot-path callers go through
+    :func:`_registry_authority_for_env`, which memoizes one successful build
+    per isolate while the underlying binding values are unchanged.
     """
 
     registry_raw = getattr(env, CALLER_REGISTRY_V1_ENV, None)
@@ -328,8 +332,67 @@ def build_registry_from_env(env: Any) -> EngineCallerRegistry | None:
     64-caller capacity of the opaque base without redefining that contract.
     """
 
-    registry, _overlay_caller = _build_registry_authority_from_env(env)
+    registry, _overlay_caller = _registry_authority_for_env(env)
     return registry
+
+
+# Isolate-lifetime authority memo (#2542).
+#
+# The V1 base/overlay deployment bindings are request-invariant for the lifetime
+# of a Worker isolate, but every non-health request used to re-parse the bounded
+# registry JSON, re-digest every caller credential, and re-run the full
+# dataclass/identifier validation. This memo removes that repeated construction
+# without changing any authentication, authorization, or fail-closed semantic:
+# it only avoids rebuilding an authority whose exact raw binding values are
+# already built.
+#
+# The cache key is the pair of raw binding values themselves, compared by
+# equality. Nothing derived from the payload (hash, digest, fingerprint, length,
+# or excerpt) is ever used as a key or emitted, so a changed binding — even one
+# of identical length — can never hit a stale authority. Only successful V1
+# builds are memoized; malformed, blank, wrong-type, or duplicate-caller
+# payloads raise on every call exactly as before, and the legacy one-caller
+# trio (cheap: a single digest) is deliberately not memoized.
+_authority_cache: tuple[Any, Any, tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]] | None = None
+_authority_cache_stats = {"hits": 0, "misses": 0}
+
+
+def _reset_authority_cache_for_tests() -> None:
+    """Drop the memoized authority and counters (test isolation helper)."""
+
+    global _authority_cache
+    _authority_cache = None
+    _authority_cache_stats["hits"] = 0
+    _authority_cache_stats["misses"] = 0
+
+
+def _registry_authority_for_env(
+    env: Any,
+) -> tuple[EngineCallerRegistry | None, TrustedEngineCaller | None]:
+    """Hot-path wrapper around :func:`_build_registry_authority_from_env`.
+
+    Returns a build identical to the uncached builder. When both raw binding
+    values are byte-equal to the memoized pair, the previously built authority
+    is returned unchanged; otherwise the builder runs and a successful V1-backed
+    build replaces the memo. Exceptions propagate untouched.
+    """
+
+    global _authority_cache
+    registry_raw = getattr(env, CALLER_REGISTRY_V1_ENV, None)
+    overlay_raw = getattr(env, CALLER_REGISTRY_V1_OVERLAY_ENV, None)
+
+    cached = _authority_cache
+    if cached is not None and cached[0] == registry_raw and cached[1] == overlay_raw:
+        _authority_cache_stats["hits"] += 1
+        return cached[2]
+
+    authority = _build_registry_authority_from_env(env)
+    if isinstance(registry_raw, str) and registry_raw.strip():
+        _authority_cache = (registry_raw, overlay_raw, authority)
+    else:
+        _authority_cache = None
+    _authority_cache_stats["misses"] += 1
+    return authority
 
 
 def authenticate_request(
@@ -340,7 +403,7 @@ def authenticate_request(
 ) -> None:
     """Fail closed unless the request authenticates as a registered caller."""
 
-    registry, overlay_caller = _build_registry_authority_from_env(env)
+    registry, overlay_caller = _registry_authority_for_env(env)
     if registry is None:
         raise ServiceIdentityError(
             "service_identity_unavailable",
