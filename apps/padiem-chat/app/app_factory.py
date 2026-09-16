@@ -70,8 +70,6 @@ async def health(request: Request) -> JSONResponse:
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
         "auth_configured": settings.auth_mode != "off",
-        "auth_google_enabled": settings.auth_mode in {"google", "hybrid"},
-        "auth_password_enabled": settings.auth_mode in {"password", "hybrid"},
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,
         "project_files_code_ready": True,
