@@ -251,6 +251,7 @@
       root.style.setProperty("--glass-mask-start","6%");
       root.style.setProperty("--glass-mask-full","24%");
       root.style.setProperty("--glass-reveal","0.8");
+      root.style.setProperty("--glass-reading-art-opacity","0.28");
       glassAnswerLastActivity=0;
       resetGlassPointer();
       return;
@@ -284,27 +285,30 @@
      */
     var reveal=1
       -(1-baseReveal)
-      *(1-pointerReveal*.78)
-      *(1-answerReveal*.86);
+      *(1-pointerReveal*.94)
+      *(1-answerReveal*.90);
     reveal=Math.max(0,Math.min(1,reveal));
 
     var variant=getGlassVariant();
     var reading=mode==="reading";
-    var restMaskStart=reading?(variant==="male"?28:30):(variant==="male"?0:2);
-    var restMaskFull=reading?(variant==="male"?50:54):(variant==="male"?22:26);
-    var openMaskStart=reading?(variant==="male"?3:5):0;
-    var openMaskFull=reading?(variant==="male"?20:24):(variant==="male"?12:14);
+    /* The art is right-aligned, so these ranges are intentionally large enough
+     * to move the visible face/visor zone rather than only the empty left fade. */
+    var restMaskStart=reading?(variant==="male"?30:34):(variant==="male"?14:18);
+    var restMaskFull=reading?(variant==="male"?58:62):(variant==="male"?42:46);
+    var openMaskStart=reading?(variant==="male"?4:5):0;
+    var openMaskFull=reading?(variant==="male"?20:22):(variant==="male"?8:10);
     var maskStart=restMaskStart-((restMaskStart-openMaskStart)*reveal);
     var maskFull=restMaskFull-((restMaskFull-openMaskFull)*reveal);
-    var travelY=reading?-10:-18;
-    var scaleGain=reading?.008:.012;
+    var travelY=reading?-14:-24;
+    var scaleGain=reading?.012:.018;
 
     root.style.setProperty("--glass-reveal",reveal.toFixed(3));
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
-    root.style.setProperty("--glass-art-x",(-5*reveal).toFixed(1)+"px");
+    root.style.setProperty("--glass-art-x",(-9*reveal).toFixed(1)+"px");
     root.style.setProperty("--glass-art-y",(travelY*reveal).toFixed(1)+"px");
     root.style.setProperty("--glass-art-scale",(1+reveal*scaleGain).toFixed(3));
+    root.style.setProperty("--glass-reading-art-opacity",(0.28+reveal*(variant==="male"?.22:.20)).toFixed(3));
 
     if(answerReveal>0) queueGlassMotion();
   }
