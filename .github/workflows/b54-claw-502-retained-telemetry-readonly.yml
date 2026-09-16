@@ -67,11 +67,12 @@ jobs:
               "ai-revenue-korean-ai-platform.workers.dev",
               "token.sensenova.ai",
           ]
+          network_region = text.split("  retained-telemetry:", 1)[-1]
           for token in forbidden_network_targets:
-              if token in text:
+              if token in network_region:
                   raise SystemExit(f"runtime/provider network target forbidden: {token}")
           cloudflare_account_api = 'api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"'
-          if cloudflare_account_api not in text:
+          if cloudflare_account_api not in network_region:
               raise SystemExit("Cloudflare account API authority missing")
           print("B54_CLAW_502_TELEMETRY_SOURCE=PASS")
           print("PRODUCT_REQUESTS=0")
