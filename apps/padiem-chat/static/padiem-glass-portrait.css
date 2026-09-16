@@ -489,7 +489,7 @@ html[data-theme="padiem-glass"] .main-panel::after {
   width: clamp(220px, 20vw, 310px);
   aspect-ratio: 3.55 / 1;
   pointer-events: none;
-  opacity: calc(var(--glass-cyber-intensity) * .96);
+  opacity: var(--glass-cyber-intensity);
   border: 1px solid color-mix(in srgb, var(--glass-cyber-accent) 74%, transparent);
   border-radius: 44% 44% 36% 36% / 38% 38% 62% 62%;
   background:
@@ -519,10 +519,10 @@ html[data-theme="padiem-glass"] .main-panel::after {
   transform:
     translate3d(
       calc(var(--glass-art-x) + var(--glass-pointer-x)),
-      calc(var(--glass-art-y) + var(--glass-pointer-y) + (1 - var(--glass-cyber-intensity)) * 8px),
+      calc(var(--glass-art-y) + var(--glass-pointer-y) + var(--glass-cyber-y)),
       0
     )
-    scale(calc(.96 + var(--glass-cyber-intensity) * .04));
+    scale(var(--glass-cyber-scale));
   transform-origin: center;
   transition:
     opacity 900ms cubic-bezier(.16,.72,.22,1),
@@ -554,7 +554,7 @@ html[data-theme="padiem-glass"][data-glass-variant="male"] .main-panel::after {
     top: clamp(224px, 34vh, 320px);
     right: -2vw;
     width: min(46vw, 250px);
-    opacity: calc(var(--glass-cyber-intensity) * .48);
+    filter: saturate(1.04) brightness(1.02) opacity(.48);
   }
 }
 
@@ -562,7 +562,7 @@ html[data-theme="padiem-glass"][data-glass-variant="male"] .main-panel::after {
   html[data-theme="padiem-glass"] .main-panel::after {
     right: -8vw;
     width: min(52vw, 220px);
-    opacity: calc(var(--glass-cyber-intensity) * .34);
+    filter: saturate(1.02) brightness(1.01) opacity(.34);
   }
 }
 
