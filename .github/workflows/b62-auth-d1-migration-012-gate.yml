@@ -337,7 +337,9 @@ jobs:
           PY
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           response="${RUNNER_TEMP}/b62-d1-012-foreign-key-check-response.json"
-          curl -fsS -X POST "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"             --data-binary "@${query}" -o "${response}"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${query}" -o "${response}"
           jq -e '.success == true and (.result | length == 1) and (.result[0].success == true) and ((.result[0].results // []) | length == 0)' "${response}" >/dev/null
           echo 'B62_D1_MIGRATION_012_FOREIGN_KEY_CHECK=PASS'
           echo 'ROW_DATA_READ=0'
