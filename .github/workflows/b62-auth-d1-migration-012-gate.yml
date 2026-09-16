@@ -168,7 +168,7 @@ jobs:
           evidence="$(python .github/scripts/b62_d1_migration_012_schema.py "${response}")"
           echo "${evidence}"
           state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_D1_MIGRATION_012_SCHEMA=//p' | tr '[:upper:]' '[:lower:]')"
-          case "${state}" in exact|legacy|drift) ;; *) echo 'invalid schema classifier state' >&2; exit 1;; esac
+          case "${state}" in exact|missing|drift) ;; *) echo 'invalid schema classifier state' >&2; exit 1;; esac
           echo "schema_state=${state}" >> "${GITHUB_OUTPUT}"
           echo 'D1_SCHEMA_QUERY=READ_ONLY'
           echo 'ROW_DATA_READ=0'
@@ -194,9 +194,9 @@ jobs:
           set -euo pipefail
           test "${CONFIRMATION}" = "APPLY_B62_AUTH_D1_MIGRATION_012_FROM_EXACT_MAIN"
           case "${READONLY_SCHEMA_STATE}" in
-            exact|legacy) ;;
+            exact|missing) ;;
             drift)
-              echo 'Refusing mutation: existing migration 012 schema is structurally different from the reviewed legacy/exact contract.' >&2
+              echo 'Refusing mutation: existing migration 012 schema is structurally different from the reviewed missing/exact additive contract.' >&2
               exit 1
               ;;
             *)
@@ -250,8 +250,8 @@ jobs:
           echo 'PREMUTATION_LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
           echo 'D1_IDENTIFIER_OUTPUT=0'
 
-      - name: Apply migration 012 only from reviewed legacy schema
-        if: ${{ env.READONLY_SCHEMA_STATE == 'legacy' }}
+      - name: Apply additive migration 012 only when absent
+        if: ${{ env.READONLY_SCHEMA_STATE == 'missing' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -262,24 +262,23 @@ jobs:
           import json, sys
           sql = open(sys.argv[1], encoding='utf-8').read()
           required = (
-              'CREATE TABLE users_012',
-              'INSERT INTO users_012',
-              'DROP TABLE users',
-              'ALTER TABLE users_012 RENAME TO users',
-              'CREATE TABLE password_credentials',
-              'CREATE INDEX idx_password_credentials_username',
-              'PRAGMA foreign_key_check',
+              'CREATE TABLE IF NOT EXISTS password_credentials',
+              'CREATE INDEX IF NOT EXISTS idx_password_credentials_username',
           )
           if any(token not in sql for token in required):
-              raise SystemExit('migration 012 contract missing')
+              raise SystemExit('migration 012 additive contract missing')
+          upper = sql.upper()
           for forbidden in (
-              'DROP TABLE conversations',
-              'DROP TABLE projects',
-              'DROP TABLE claw_run_history',
-              'DROP TABLE claw_approved_memory',
+              'DROP TABLE',
+              'ALTER TABLE',
+              'DELETE FROM',
+              'UPDATE USERS',
+              'INSERT INTO USERS',
+              'PRAGMA FOREIGN_KEYS',
+              'PRAGMA DEFER_FOREIGN_KEYS',
           ):
-              if forbidden in sql:
-                  raise SystemExit('migration 012 touches unrelated ownership tables')
+              if forbidden in upper:
+                  raise SystemExit('migration 012 is not additive')
           with open(sys.argv[2], 'w', encoding='utf-8') as handle:
               json.dump({'sql': sql}, handle)
           PY
