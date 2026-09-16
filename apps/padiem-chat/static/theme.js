@@ -177,6 +177,8 @@
       var requested=getUrlGlassVariant()||getGlassVariant();
       applyGlassVariant(requested,false);
     } else {
+      document.documentElement.removeAttribute("data-glass-cyber-active");
+      document.documentElement.style.removeProperty("--glass-cyber-intensity");
       syncGlassVariant(getGlassVariant(),theme);
     }
     syncGlassMode();
@@ -251,6 +253,8 @@
       root.style.setProperty("--glass-mask-start","6%");
       root.style.setProperty("--glass-mask-full","24%");
       root.style.setProperty("--glass-reveal","0.8");
+      root.style.setProperty("--glass-cyber-intensity","0.32");
+      root.setAttribute("data-glass-cyber-active","static");
       root.style.setProperty("--glass-reading-art-opacity","0.28");
       glassAnswerLastActivity=0;
       resetGlassPointer();
@@ -302,7 +306,10 @@
     var travelY=reading?-14:-24;
     var scaleGain=reading?.012:.018;
 
+    var cyberIntensity=Math.max(0,Math.min(1,reveal));
     root.style.setProperty("--glass-reveal",reveal.toFixed(3));
+    root.style.setProperty("--glass-cyber-intensity",cyberIntensity.toFixed(3));
+    root.setAttribute("data-glass-cyber-active",cyberIntensity>.08?"true":"false");
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
     root.style.setProperty("--glass-art-x",(-9*reveal).toFixed(1)+"px");
