@@ -158,14 +158,14 @@ class P01RequestFactoryTests(unittest.TestCase):
         )
         self.assertEqual(
             dict(plus_bundle.execution_request.agent.model_policy),
-            {"model": "kilo/poolside-laguna-s-2.1-free"},
+            {"model": "sensenova/sensenova-6.8-flash-lite"},
         )
 
         pro_run = self.local_run("run_default_after_plus")
         pro_bundle = P01RequestFactory().build(pro_run)
         self.assertEqual(
             dict(pro_bundle.execution_request.agent.model_policy),
-            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+            {"model": "b-ai/qwen3.8-flash"},
         )
 
     def test_factory_does_not_promote_repository_reference_to_system_context(self):
