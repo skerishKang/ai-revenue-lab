@@ -149,7 +149,7 @@ def test_bright_theme_chat_state_regression():
 def test_bright_theme_assistant_answer_subtree_contrast():
     # Regression for the SECOND-CENTRAL-VERDICT defect class: parent
     # .assistant-content computed dark on bright pages, but the descendant
-    # .rich-response (and answer-action / reference-note / route-details)
+    # .rich-response (and answer-action / reference-note)
     # inherited/won the !important near-white colour from
     # padiem-surfaces.css (loaded via @import in padiem-cinematic-chat.css),
     # so the actual paragraph and button text stayed near-white on LIGHT and
@@ -165,7 +165,6 @@ def test_bright_theme_assistant_answer_subtree_contrast():
         ".assistant-content .rich-response .rich-response-quote",
         ".answer-action",
         ".reference-note",
-        ".route-details",
     ]
     for theme, token in bright_tokens.items():
         prefix = f'html[data-theme="{theme}"] .app-shell[data-state="chat"]'

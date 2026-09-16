@@ -278,7 +278,6 @@ html[data-theme="padiem-glass"] .document-card,
 html[data-theme="padiem-glass"] .project-card,
 html[data-theme="padiem-glass"] .project-file-card,
 html[data-theme="padiem-glass"] .rich-response,
-html[data-theme="padiem-glass"] .route-details,
 html[data-theme="padiem-glass"] .reference-note {
   background: rgba(244, 247, 249, .52) !important;
   color: #17212a !important;
@@ -294,8 +293,7 @@ html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response
 html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-list,
 html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-quote,
 html[data-theme="padiem-glass"] .answer-action,
-html[data-theme="padiem-glass"] .reference-note,
-html[data-theme="padiem-glass"] .route-details {
+html[data-theme="padiem-glass"] .reference-note {
   color: #17212a !important;
 }
 

@@ -55,6 +55,12 @@ import uuid
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
+
 from .auth_routes import auth_ready, current_user_id
 from .control_plane_identity_shadow import (
     IdentityShadowRecord,
@@ -113,6 +119,12 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "reply_draft": ManualIntakeAction.REPLY_DRAFT,
     "summarize_request": ManualIntakeAction.SUMMARIZE_REQUEST,
     "extract_candidates": ManualIntakeAction.EXTRACT_CANDIDATES,
+}
+
+_BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
+    "plus": ProductTierLabel.PLUS,
+    "pro": ProductTierLabel.PRO,
+    "max": ProductTierLabel.MAX,
 }
 
 _CHANNEL_MAP: dict[str, ManualIntakeChannel] = {
@@ -377,6 +389,19 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
         sender_hint = raw_sender or None
 
+    raw_tier = data.get("tier", "pro")
+    if not isinstance(raw_tier, str):
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
+    if product_tier is None:
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    try:
+        tier_route = active_route_for(product_tier)
+    except ProductTierRoutesError:
+        return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+    if tier_route is None or not tier_route.model_id:
+        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+
     try:
         intake_req = ManualIntakeRequest(
             request_id=f"exec_{uuid.uuid4().hex[:12]}",
@@ -425,7 +450,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     run = create_claw_run("padiem-chat", task_text)
 
     try:
-        outcome = await adapter.execute(run)
+        outcome = await adapter.execute(run, product_tier=product_tier)
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
         # call was never dispatched. Dispatched/ambiguous failures stay counted.

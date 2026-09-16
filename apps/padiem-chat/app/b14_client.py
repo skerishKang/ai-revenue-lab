@@ -24,7 +24,7 @@ from padiem_ai_core import (
 
 from .attachments import ImageAttachment
 from .config import Settings
-from .model_policy import ModelPolicyError, model_supports, resolve_model_policy
+from .model_policy import ModelPolicyError, model_supports, resolve_request_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = 14_000
@@ -175,7 +175,7 @@ def _translate_execution_error(exc: ExecutionRuntimeError) -> ChatRuntimeError:
 
 def _resolve_b62_policy(messages: list[dict[str, str]]):
     try:
-        return resolve_model_policy(messages)
+        return resolve_request_model_policy(messages)
     except ModelPolicyError as exc:
         raise ChatRuntimeError(422, exc.code, exc.message) from exc
 

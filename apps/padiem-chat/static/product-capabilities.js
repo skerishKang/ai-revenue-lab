@@ -34,38 +34,30 @@
     displayName: "",
   });
 
-  const MODE_PRESENTATION = Object.freeze({
-    selected: "auto",
-    available: Object.freeze(["auto"]),
-    previewOnly: Object.freeze(["fast", "balanced", "deep"]),
-  });
+  const AVAILABLE_TIERS = Object.freeze(["plus", "pro"]);
 
-  const MODE_COPY = Object.freeze({
+  const TIER_COPY = Object.freeze({
     ko: Object.freeze({
-      label: "대화 모드",
-      title: "대화 모드",
-      description: "현재 실제 실행은 Auto만 연결되어 있습니다.",
-      truth: "Fast · Balanced · Deep은 UI 준비 상태이며 실제 모델 연결 전까지 선택할 수 없습니다.",
+      label: "AI 등급",
+      title: "Padiem AI",
+      description: "Chat과 Claw에서 함께 사용할 AI 등급을 선택합니다.",
+      truth: "모델·제공자 선택은 파디엠 서버가 관리하며 브라우저에는 노출하지 않습니다.",
       available: "사용 가능",
-      preview: "준비 중",
-      auto: ["Auto", "질문에 맞는 기본 실행 경로"],
-      fast: ["Fast", "빠른 응답을 위한 모드"],
-      balanced: ["Balanced", "속도와 품질의 균형 모드"],
-      deep: ["Deep", "더 깊은 작업을 위한 모드"],
+      plus: ["Padiem Plus", "일상 대화와 일반 작업"],
+      pro: ["Padiem Pro", "더 복잡한 대화와 업무"],
     }),
     en: Object.freeze({
-      label: "Chat mode",
-      title: "Chat mode",
-      description: "Only Auto is connected to live execution right now.",
-      truth: "Fast, Balanced, and Deep are UI-ready but cannot be selected until trusted backend mappings are active.",
+      label: "AI tier",
+      title: "Padiem AI",
+      description: "Choose the AI tier shared by Chat and Claw.",
+      truth: "Provider and model routing stays server-managed and is not browser-selectable.",
       available: "Available",
-      preview: "Coming soon",
-      auto: ["Auto", "Default execution path for your request"],
-      fast: ["Fast", "Mode for quicker responses"],
-      balanced: ["Balanced", "Mode balancing speed and quality"],
-      deep: ["Deep", "Mode for deeper work"],
+      plus: ["Padiem Plus", "Everyday chat and general tasks"],
+      pro: ["Padiem Pro", "More complex chat and work"],
     }),
   });
+
+  let selectedTier = "pro";
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -295,7 +287,7 @@
   }
 
   function currentModeCopy() {
-    return MODE_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
+    return TIER_COPY[document.documentElement.lang === "en" ? "en" : "ko"];
   }
 
   function ensureModeStyles() {
@@ -307,27 +299,39 @@
     document.head.appendChild(link);
   }
 
-  function createModeOption(mode, enabled) {
+  function selectTier(tier) {
+    if (!AVAILABLE_TIERS.includes(tier)) return false;
+    selectedTier = tier;
+    syncModeCopy();
+    window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier } }));
+    return true;
+  }
+
+  function createModeOption(tier) {
     const copy = currentModeCopy();
     const button = document.createElement("button");
     button.type = "button";
     button.className = "mode-option";
-    button.dataset.modeValue = mode;
-    button.disabled = !enabled;
-    button.setAttribute("aria-disabled", enabled ? "false" : "true");
-    button.setAttribute("aria-pressed", mode === MODE_PRESENTATION.selected ? "true" : "false");
+    button.dataset.modeValue = tier;
+    button.disabled = false;
+    button.setAttribute("aria-disabled", "false");
+    button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
 
     const textContainer = document.createElement("span");
     const title = document.createElement("strong");
     const detail = document.createElement("small");
-    title.textContent = copy[mode][0];
-    detail.textContent = copy[mode][1];
+    title.textContent = copy[tier][0];
+    detail.textContent = copy[tier][1];
     textContainer.append(title, detail);
 
     const state = document.createElement("span");
     state.className = "mode-option-state";
-    state.textContent = enabled ? copy.available : copy.preview;
+    state.textContent = copy.available;
     button.append(textContainer, state);
+    button.addEventListener("click", () => {
+      if (!selectTier(tier)) return;
+      closeModePanel({ restoreFocus: true });
+    });
     return button;
   }
 
@@ -335,8 +339,8 @@
     if (!modePill || !modePanel) return;
     const copy = currentModeCopy();
     const label = modePill.querySelector("span:last-child");
-    if (label) label.textContent = copy.auto[0];
-    modePill.setAttribute("aria-label", `${copy.label}: ${copy.auto[0]}`);
+    if (label) label.textContent = copy[selectedTier][0];
+    modePill.setAttribute("aria-label", `${copy.label}: ${copy[selectedTier][0]}`);
     const title = modePanel.querySelector("[data-mode-title]");
     const description = modePanel.querySelector("[data-mode-description]");
     const truth = modePanel.querySelector("[data-mode-truth]");
@@ -344,14 +348,15 @@
     if (description) description.textContent = copy.description;
     if (truth) truth.textContent = copy.truth;
     modePanel.querySelectorAll("[data-mode-value]").forEach((button) => {
-      const mode = button.dataset.modeValue;
-      if (!copy[mode]) return;
+      const tier = button.dataset.modeValue;
+      if (!copy[tier]) return;
       const optionTitle = button.querySelector("strong");
       const optionDetail = button.querySelector("small");
       const state = button.querySelector(".mode-option-state");
-      if (optionTitle) optionTitle.textContent = copy[mode][0];
-      if (optionDetail) optionDetail.textContent = copy[mode][1];
-      if (state) state.textContent = button.disabled ? copy.preview : copy.available;
+      if (optionTitle) optionTitle.textContent = copy[tier][0];
+      if (optionDetail) optionDetail.textContent = copy[tier][1];
+      if (state) state.textContent = copy.available;
+      button.setAttribute("aria-pressed", tier === selectedTier ? "true" : "false");
     });
   }
 
@@ -366,7 +371,7 @@
     if (!modePill || !modePanel) return;
     modePanel.hidden = false;
     modePill.setAttribute("aria-expanded", "true");
-    const active = modePanel.querySelector('[data-mode-value="auto"]');
+    const active = modePanel.querySelector(`[data-mode-value="${selectedTier}"]`);
     if (active) active.focus();
   }
 
@@ -404,10 +409,8 @@
     list.className = "mode-option-list";
     list.setAttribute("role", "group");
     list.append(
-      createModeOption("auto", true),
-      createModeOption("fast", false),
-      createModeOption("balanced", false),
-      createModeOption("deep", false),
+      createModeOption("plus"),
+      createModeOption("pro"),
     );
 
     const truth = document.createElement("p");
@@ -544,8 +547,10 @@
       return publicState();
     },
   });
-  window.PadiemModePresentation = Object.freeze({
-    get: () => MODE_PRESENTATION,
+  window.PadiemTierSelection = Object.freeze({
+    get: () => selectedTier,
+    set: (tier) => selectTier(String(tier || "").toLowerCase()),
+    available: () => AVAILABLE_TIERS.slice(),
     open: openModePanel,
     close: () => closeModePanel({ restoreFocus: true }),
   });
