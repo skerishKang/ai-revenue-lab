@@ -49,6 +49,10 @@ async def _open_claw(page: Page, *, width: int) -> None:
     await page.locator("#clawNavButton").click()
     await page.locator('.app-shell[data-state="claw"]').wait_for(state="attached")
     await page.locator("#clawManualForm").wait_for(state="visible")
+    # The preceding Chat fixture is intentionally long and may leave the page
+    # scrolled. Geometry parity must compare each surface from the same origin.
+    await page.evaluate("window.scrollTo(0, 0)")
+    await page.wait_for_timeout(80)
 
 
 async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[str, Any]:
