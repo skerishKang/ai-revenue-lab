@@ -425,9 +425,20 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             raise AssertionError(
                 f"Glass shell recovery did not begin after activity: active={active_shell}, settled={settled_shell}"
             )
-        # The approved recovery is deliberately slow: the answer envelope itself
-        # decays for ~1.76s, then the shell continues easing toward rest.
-        await page.wait_for_timeout(900)
+        # The approved recovery is deliberately slow and rAF cadence varies
+        # under CI. Wait on the actual visible state rather than a wall-clock guess.
+        await page.wait_for_function(
+            """() => {
+              const frags = [...document.querySelectorAll('.glass-shell-frag')];
+              const maxOpacity = frags.length
+                ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
+                : 0;
+              const portal = document.querySelector('.glass-shell-portrait');
+              const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+              return maxOpacity <= .05 && portalOpacity <= .05;
+            }""",
+            timeout=5_000,
+        )
         recovered_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "recovered", "shell": recovered_shell})
         if recovered_shell["progress"] >= settled_shell["progress"]:
