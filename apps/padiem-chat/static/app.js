@@ -1277,7 +1277,7 @@
   const clawExecuteHint = document.getElementById("clawExecuteHint");
 
   let clawInFlight = false;
-  let clawLastAction = null;
+  let clawLastAction = clawAction?.value || "quote";
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
