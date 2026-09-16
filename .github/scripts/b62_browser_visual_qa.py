@@ -351,6 +351,63 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     }
 
 
+async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
+    name = "claw-tablet-820"
+    await page.set_viewport_size({"width": 820, "height": 900})
+    await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
+    await page.locator("#messageInput").wait_for(state="visible")
+    await page.wait_for_timeout(500)
+
+    if not await page.locator("#mobileMenu").is_visible():
+        raise AssertionError("shared shell must expose the mobile menu at 820px")
+    await page.locator("#mobileMenu").click()
+    await page.locator("#clawNavButton").wait_for(state="visible")
+    await page.locator("#clawNavButton").click()
+
+    await page.locator('.app-shell[data-state="claw"]').wait_for(state="attached")
+    for selector in ("#clawWorkspace", "#clawManualForm", "#composerForm", "#messageInput"):
+        if not await page.locator(selector).is_visible():
+            raise AssertionError(f"{selector} must stay visible in Claw at 820px")
+
+    await _assert_no_horizontal_overflow(page, name)
+    workspace_box = await _assert_in_viewport(page, "#clawWorkspace")
+    composer_box = await _assert_in_viewport(page, "#composerForm")
+
+    direction = await page.locator(".claw-mode-bar-row").evaluate(
+        "el => getComputedStyle(el).flexDirection"
+    )
+    if direction != "column":
+        raise AssertionError(f"Claw mode bar must stack at shared mobile breakpoint: {direction!r}")
+
+    target_heights: dict[str, float] = {}
+    for selector in ("#clawGenerateBtn", "#clawExecuteButton"):
+        box = await page.locator(selector).bounding_box()
+        if not box or box["height"] < 44:
+            raise AssertionError(f"Claw touch target too small at 820px: {selector}={box}")
+        target_heights[selector] = box["height"]
+
+    input_font_px = await page.locator("#messageInput").evaluate(
+        "el => parseFloat(getComputedStyle(el).fontSize)"
+    )
+    if input_font_px < 16:
+        raise AssertionError(f"Claw shared composer input must remain iOS-zoom safe: {input_font_px}")
+
+    await page.screenshot(path=str(OUT_DIR / f"{name}.png"), full_page=True)
+    return {
+        "viewport": {"width": 820, "height": 900},
+        "shared_shell_mobile_menu": True,
+        "claw_workspace_visible": True,
+        "shared_composer_visible": True,
+        "mode_bar_direction": direction,
+        "touch_target_heights": target_heights,
+        "input_font_px": input_font_px,
+        "workspace_box": workspace_box,
+        "composer_box": composer_box,
+        "horizontal_overflow": False,
+        "status": "PASS",
+    }
+
+
 async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: bool) -> dict[str, Any]:
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30_000)
@@ -507,6 +564,10 @@ async def main() -> None:
                 mobile_page, name="mobile", width=390, height=844, mobile=True
             )
             await mobile_page.close()
+
+            claw_tablet_page = await browser.new_page()
+            report["views"]["claw-tablet-820"] = await _run_claw_intermediate(claw_tablet_page)
+            await claw_tablet_page.close()
 
             for variant in ("female", "male"):
                 glass_page = await browser.new_page()
