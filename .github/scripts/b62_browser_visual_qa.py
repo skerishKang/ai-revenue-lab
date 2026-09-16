@@ -306,7 +306,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         "() => { window.__padiemTheme.applyGlassSpeed(300, false); window.__padiemTheme.applyGlassMask('on', false); }"
     )
     await page.wait_for_function(
-        "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) > .94",
+        "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-dissolve')) || 0) >= .55",
         timeout=4_000,
     )
     shell_on = await _glass_shell_snapshot(page)
