@@ -331,7 +331,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
 
     home_before_pointer = await _glass_motion_snapshot(page)
     await page.mouse.move(1180, 180)
-    await page.wait_for_timeout(320)
+    await page.wait_for_timeout(700)
     home_after_pointer = await _glass_motion_snapshot(page)
     home_shell_pointer = await _glass_shell_snapshot(page)
     if home_after_pointer["pointerX"] in {"", "0px", "0.0px"} and home_after_pointer["pointerY"] in {"", "0px", "0.0px"}:
@@ -369,6 +369,9 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         )
         await _assert_no_horizontal_overflow(page, f"glass-{variant}-turn-{turn}")
         active = await _glass_motion_snapshot(page)
+        # The source fragment loader intentionally eases twice; sample the shell
+        # after the cinematic plates have had time to become visibly opaque.
+        await page.wait_for_timeout(420)
         active_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "active", "shell": active_shell, **active})
 
@@ -432,7 +435,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # fully settled.
     reading_rest = await _glass_motion_snapshot(page)
     await page.mouse.move(1180, 180)
-    await page.wait_for_timeout(320)
+    await page.wait_for_timeout(700)
     pointer_only = await _glass_motion_snapshot(page)
     pointer_only_shell = await _glass_shell_snapshot(page)
     if pointer_only["reveal"] < 0.20:
