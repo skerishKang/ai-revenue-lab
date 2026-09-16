@@ -71,3 +71,12 @@ def test_gate_does_not_deploy_code_or_attempt_login_phase_b():
     assert "LOGIN_ATTEMPT=0" in WORKFLOW
     assert "PHASE_B_REQUEST=0" in WORKFLOW
     assert "B62_GOOGLE_AUTH_PRODUCTION_ACTIVATION=PASS" in WORKFLOW
+
+
+def test_activation_readiness_checks_protected_sources_without_mutation():
+    assert "activation_readiness" in WORKFLOW
+    assert "GOOGLE_CLIENT_ID_SOURCE_READY" in WORKFLOW
+    assert "GOOGLE_CLIENT_SECRET_SOURCE_READY" in WORKFLOW
+    assert "SESSION_SECRET_SOURCE_READY" in WORKFLOW
+    assert "AUTH_ACTIVATION_READINESS=PASS" in WORKFLOW
+    assert "AUTH_SOURCE_VALUES_OUTPUT=0" in WORKFLOW
