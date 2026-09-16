@@ -2,6 +2,8 @@
   "use strict";
   const VALID=["light","dark","cinematic","padiem-home","padiem-glass"];
   const GLASS_VARIANTS=["female","male"];
+  const GLASS_MASK_MODES=["auto","on","off"];
+  const GLASS_SPEED_MIN=20, GLASS_SPEED_MAX=300, GLASS_SPEED_DEFAULT=100;
   const THEME_COLORS={light:"#f8f8fb",dark:"#131417",cinematic:"#04070d","padiem-home":"#e6e9ee","padiem-glass":"#aeb6bf"};
   const COLOR_SCHEMES={light:"light",dark:"dark",cinematic:"dark","padiem-home":"light","padiem-glass":"light"};
   var glassMotionFrame=0;
@@ -54,6 +56,69 @@
     return getUrlGlassVariant()||"female";
   }
 
+  /* Shell mask + motion speed are URL-authoritative like the glass variant:
+   * ?mask=auto|on|off and ?speed=20..300 (percent). No browser storage. */
+  function isGlassMaskMode(v){return GLASS_MASK_MODES.indexOf(v)!==-1;}
+
+  function getUrlGlassMask(){
+    try{
+      var v=new URLSearchParams(location.search).get("mask");
+      if(isGlassMaskMode(v)) return v;
+    }catch(e){}
+    return null;
+  }
+
+  function getGlassMaskMode(){
+    var cur=document.documentElement.getAttribute("data-glass-mask");
+    if(isGlassMaskMode(cur)) return cur;
+    return getUrlGlassMask()||"auto";
+  }
+
+  function clampGlassSpeed(v){
+    v=Math.round(Number(v));
+    if(!(v>=GLASS_SPEED_MIN&&v<=GLASS_SPEED_MAX)) return GLASS_SPEED_DEFAULT;
+    return v;
+  }
+
+  function getUrlGlassSpeed(){
+    try{
+      var v=parseInt(new URLSearchParams(location.search).get("speed"),10);
+      if(v>=GLASS_SPEED_MIN&&v<=GLASS_SPEED_MAX) return v;
+    }catch(e){}
+    return null;
+  }
+
+  function getGlassSpeed(){
+    var cur=parseInt(document.documentElement.getAttribute("data-glass-speed")||"",10);
+    if(cur>=GLASS_SPEED_MIN&&cur<=GLASS_SPEED_MAX) return cur;
+    return getUrlGlassSpeed()||GLASS_SPEED_DEFAULT;
+  }
+
+  function setGlassUrlParam(key,value){
+    try{
+      var url=new URL(location.href);
+      if(value===null) url.searchParams.delete(key);
+      else url.searchParams.set(key,value);
+      history.replaceState(null,"",url.toString());
+    }catch(e){}
+  }
+
+  function applyGlassMask(mode,persist){
+    if(!isGlassMaskMode(mode)) return;
+    document.documentElement.setAttribute("data-glass-mask",mode);
+    if(document.body) document.body.setAttribute("data-glass-mask",mode);
+    if(persist) setGlassUrlParam("mask",mode==="auto"?null:mode);
+    syncGlassShellControl();
+  }
+
+  function applyGlassSpeed(pct,persist){
+    pct=clampGlassSpeed(pct);
+    document.documentElement.setAttribute("data-glass-speed",String(pct));
+    if(document.body) document.body.setAttribute("data-glass-speed",String(pct));
+    if(persist) setGlassUrlParam("speed",pct===GLASS_SPEED_DEFAULT?null:String(pct));
+    syncGlassShellControl();
+  }
+
   function glassMode(){
     var shell=document.querySelector(".app-shell");
     return shell && shell.dataset.state==="chat" ? "reading" : "home";
@@ -73,6 +138,7 @@
   function syncGlassVariant(variant,theme){
     var control=document.querySelector(".glass-variant-control");
     if(control) control.hidden=theme!=="padiem-glass";
+    syncGlassShellControl();
     document.querySelectorAll("[data-glass-variant-value]").forEach(function(btn){
       var active=btn.getAttribute("data-glass-variant-value")===variant;
       btn.setAttribute("aria-pressed",active?"true":"false");
@@ -134,6 +200,84 @@
       applyGlassVariant(variant,true);
     });
     syncGlassVariant(getGlassVariant(),getCurrent());
+    ensureGlassShellControl(control);
+  }
+
+  /* Shell mask mode (Auto/On/Off) + motion speed bar, next to the variant picker. */
+  function ensureGlassShellControl(anchor){
+    if(!anchor || !anchor.parentNode || document.querySelector(".glass-shell-control")) return;
+    var control=document.createElement("div");
+    control.className="glass-shell-control";
+    control.hidden=true;
+
+    var label=document.createElement("p");
+    label.className="glass-variant-label";
+    label.textContent="Shell mask";
+    control.appendChild(label);
+
+    var group=document.createElement("div");
+    group.className="glass-variant-picker glass-mask-picker";
+    group.setAttribute("role","group");
+    group.setAttribute("aria-label","Shell mask mode");
+
+    [["auto","Auto"],["on","On"],["off","Off"]].forEach(function(item){
+      var button=document.createElement("button");
+      button.type="button";
+      button.className="glass-variant-option";
+      button.setAttribute("data-glass-mask-value",item[0]);
+      button.setAttribute("aria-pressed","false");
+      button.textContent=item[1];
+      group.appendChild(button);
+    });
+    control.appendChild(group);
+
+    var speedRow=document.createElement("div");
+    speedRow.className="glass-speed-row";
+    var speedLabel=document.createElement("label");
+    speedLabel.className="glass-speed-label";
+    speedLabel.setAttribute("for","glassSpeedRange");
+    speedLabel.textContent="Motion speed";
+    var range=document.createElement("input");
+    range.type="range";
+    range.id="glassSpeedRange";
+    range.className="glass-speed-range";
+    range.min=String(GLASS_SPEED_MIN);
+    range.max=String(GLASS_SPEED_MAX);
+    range.step="10";
+    var val=document.createElement("span");
+    val.className="glass-speed-value";
+    speedRow.appendChild(speedLabel);
+    speedRow.appendChild(range);
+    speedRow.appendChild(val);
+    control.appendChild(speedRow);
+
+    anchor.parentNode.insertBefore(control,anchor.nextSibling);
+    control.addEventListener("click",function(e){
+      var btn=e.target.closest("[data-glass-mask-value]");
+      if(!btn) return;
+      applyGlassMask(btn.getAttribute("data-glass-mask-value"),true);
+    });
+    range.addEventListener("input",function(){
+      applyGlassSpeed(parseInt(range.value,10),true);
+    });
+    syncGlassShellControl();
+  }
+
+  function syncGlassShellControl(){
+    var control=document.querySelector(".glass-shell-control");
+    if(!control) return;
+    control.hidden=getCurrent()!=="padiem-glass";
+    var mode=getGlassMaskMode();
+    control.querySelectorAll("[data-glass-mask-value]").forEach(function(btn){
+      var active=btn.getAttribute("data-glass-mask-value")===mode;
+      btn.setAttribute("aria-pressed",active?"true":"false");
+      if(active) btn.setAttribute("aria-current","true"); else btn.removeAttribute("aria-current");
+    });
+    var range=control.querySelector(".glass-speed-range");
+    var val=control.querySelector(".glass-speed-value");
+    var pct=getGlassSpeed();
+    if(range && range.value!==String(pct)) range.value=String(pct);
+    if(val) val.textContent=(pct/100).toFixed(1)+"\u00d7";
   }
 
   function getSystemFallback(){
@@ -251,6 +395,8 @@
       root.style.setProperty("--glass-mask-start","6%");
       root.style.setProperty("--glass-mask-full","24%");
       root.style.setProperty("--glass-reveal","0.8");
+      root.style.setProperty("--glass-pointer-reveal","0");
+      root.style.setProperty("--glass-answer-reveal","0");
       root.style.setProperty("--glass-reading-art-opacity","0.28");
       glassAnswerLastActivity=0;
       resetGlassPointer();
@@ -303,6 +449,9 @@
     var scaleGain=reading?.012:.018;
 
     root.style.setProperty("--glass-reveal",reveal.toFixed(3));
+    /* Shell layer drivers (read by padiem-glass-shell.js). */
+    root.style.setProperty("--glass-pointer-reveal",pointerReveal.toFixed(3));
+    root.style.setProperty("--glass-answer-reveal",answerReveal.toFixed(3));
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
     root.style.setProperty("--glass-art-x",(-9*reveal).toFixed(1)+"px");
@@ -390,6 +539,8 @@
     if(cur==="padiem-glass"){
       ensureGlassStyles();
       applyGlassVariant(getUrlGlassVariant()||getGlassVariant(),false);
+      applyGlassMask(getUrlGlassMask()||getGlassMaskMode(),false);
+      applyGlassSpeed(getUrlGlassSpeed()||getGlassSpeed(),false);
     }
     if(!isValid(cur)){
       var url=getUrlTheme();
@@ -414,6 +565,8 @@
       var url=getUrlTheme();
       if(url) applyTheme(url,false);
       if(url==="padiem-glass") applyGlassVariant(getUrlGlassVariant()||"female",false);
+      applyGlassMask(getUrlGlassMask()||"auto",false);
+      applyGlassSpeed(getUrlGlassSpeed()||GLASS_SPEED_DEFAULT,false);
     });
     window.addEventListener("scroll",queueGlassMotion,{passive:true});
     window.addEventListener("resize",queueGlassMotion);
@@ -452,7 +605,11 @@
     getCurrent:getCurrent,
     applyTheme:applyTheme,
     getGlassVariant:getGlassVariant,
-    applyGlassVariant:applyGlassVariant
+    applyGlassVariant:applyGlassVariant,
+    getGlassMaskMode:getGlassMaskMode,
+    applyGlassMask:applyGlassMask,
+    getGlassSpeed:getGlassSpeed,
+    applyGlassSpeed:applyGlassSpeed
   };
   if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);} else {init();}
 })();
