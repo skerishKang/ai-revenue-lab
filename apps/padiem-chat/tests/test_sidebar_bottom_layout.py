@@ -43,10 +43,14 @@ def test_topbar_not_prominent_settings_login() -> None:
     topbar_start = HTML.index('<header class="topbar"')
     topbar_end = HTML.index('</header>', topbar_start)
     topbar_html = HTML[topbar_start:topbar_end]
+    composer_start = HTML.index('<div class="composer-tools"')
+    composer_end = HTML.index('</div>', composer_start)
+    composer_tools_html = HTML[composer_start:composer_end]
     assert "settingsButton" not in topbar_html
     assert "loginButton" not in topbar_html
     assert "accountName" not in topbar_html
-    assert 'class="model-pill"' in topbar_html
+    assert 'class="model-pill' not in topbar_html
+    assert 'class="model-pill composer-tier-trigger"' in composer_tools_html
 
 
 def test_settings_dialog_still_present() -> None:
