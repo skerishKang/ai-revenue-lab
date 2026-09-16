@@ -100,7 +100,7 @@ jobs:
           root = Path("packages/padiem-control-plane")
           workflow_text = Path(".github/workflows/b54-google-oauth-production-gate.yml").read_text(encoding="utf-8")
           assert "\n          - account_readonly\n" in workflow_text
-          assert "MODE: ${{ inputs.mode }}" in workflow_text
+          assert "MODE:" in workflow_text and "inputs.mode" in workflow_text
           assert "ACCOUNT_ONLY_READONLY=PASS" in workflow_text
           assert "WORKER_ROUTE_AUDIT=SKIPPED_ACCOUNT_ONLY" in workflow_text
           assert "ACCOUNT_ONLY_ZONE_API_CALLS=0" in workflow_text
@@ -319,26 +319,26 @@ jobs:
             jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
             zone_id="$(jq -r '.result[0].id' "${zones}")"
             test -n "${zone_id}"
-  
+
             routes="${RUNNER_TEMP}/routes.json"
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
               -o "${routes}"
             jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
             python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
-            import json
-            import sys
-            routes_path, host = sys.argv[1:]
-            data = json.load(open(routes_path, encoding="utf-8"))
-            suspicious = []
-            for row in data.get("result", []):
-                pattern = str(row.get("pattern", ""))
-                if host in pattern or "*.padiem.net" in pattern or "*padiem.net" in pattern:
-                    suspicious.append(pattern)
-            if suspicious:
-                raise SystemExit("Refusing candidate hostname: overlapping Worker route exists")
-            print("WORKER_ROUTE_COLLISION=NO")
-            PY
+          import json
+          import sys
+          routes_path, host = sys.argv[1:]
+          data = json.load(open(routes_path, encoding="utf-8"))
+          suspicious = []
+          for row in data.get("result", []):
+              pattern = str(row.get("pattern", ""))
+              if host in pattern or "*.padiem.net" in pattern or "*padiem.net" in pattern:
+                  suspicious.append(pattern)
+          if suspicious:
+              raise SystemExit("Refusing candidate hostname: overlapping Worker route exists")
+          print("WORKER_ROUTE_COLLISION=NO")
+          PY
             echo "WORKER_ROUTE_AUDIT=CHECKED_NO_COLLISION"
           fi
           inspect_worker() {
