@@ -5,6 +5,7 @@ import sqlite3
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+WORKFLOW = ROOT / ".github/workflows/b62-auth-d1-migration-012-gate.yml"
 HELPER = ROOT / ".github/scripts/b62_d1_migration_012_schema.py"
 MIGRATION = ROOT / "apps/padiem-chat/migrations/012_password_auth.sql"
 
@@ -167,8 +168,39 @@ def test_migration_is_bounded_to_users_rebuild_and_password_credentials() -> Non
         assert f"DROP TABLE {unrelated}" not in sql
 
 
+def test_workflow_is_exact_main_migration_specific_and_fail_closed() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in workflow
+    assert "environment: production" in workflow
+    assert "APPLY_B62_AUTH_D1_MIGRATION_012_FROM_EXACT_MAIN" in workflow
+    assert "apps/padiem-chat/migrations/012_password_auth.sql" in workflow
+    assert "B62_D1_MIGRATION_012_POST_READBACK=PASS" in workflow
+    assert "B62_D1_MIGRATION_012_FOREIGN_KEY_CHECK=PASS" in workflow
+    assert "SKIPPED_ALREADY_APPLIED" in workflow
+    assert "exact|legacy" in workflow
+    assert "existing migration 012 schema is structurally different" in workflow
+    assert "D1_IDENTIFIER_OUTPUT=0" in workflow
+    assert "ROW_DATA_READ=0" in workflow
+    assert "WORKER_DEPLOYED=0" in workflow
+    assert "BINDING_MUTATION=0" in workflow
+    assert "UNRELATED_MIGRATION_APPLY=0" in workflow
+    assert "github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_012'" in workflow
+
+    for forbidden in (
+        "wrangler d1 create",
+        "d1 migrations apply",
+        "pywrangler deploy",
+        "wrangler deploy",
+        "DROP TABLE conversations",
+        "DROP TABLE projects",
+        "DROP TABLE claw_run_history",
+    ):
+        assert forbidden not in workflow
+
+
 if __name__ == "__main__":
     test_schema_classifier_legacy_exact_drift()
     test_migration_preserves_google_users_and_existing_foreign_keys()
     test_migration_is_bounded_to_users_rebuild_and_password_credentials()
+    test_workflow_is_exact_main_migration_specific_and_fail_closed()
     print("B62_D1_MIGRATION_012_GATE_TESTS=PASS")
