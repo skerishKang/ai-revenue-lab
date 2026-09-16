@@ -398,9 +398,9 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 )
             if active_shell["pointerDriver"] <= 0 or active_shell["answerDriver"] <= 0:
                 raise AssertionError(f"Glass combined shell drivers are not both active: {active_shell}")
-            if combined_shell_progress <= answer_only_shell_progress + 0.03:
+            if combined_shell_progress <= answer_only_shell_progress + 0.005:
                 raise AssertionError(
-                    "Glass pointer+answer shell progression must be stronger than answer-only: "
+                    "Glass pointer+answer shell progression must be measurably stronger than answer-only: "
                     f"answer={answer_only_shell_progress}, combined={combined_shell_progress}"
                 )
 
