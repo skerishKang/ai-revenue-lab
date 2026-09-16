@@ -365,12 +365,17 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
     await page.locator("#clawNavButton").click()
 
     await page.locator('.app-shell[data-state="claw"]').wait_for(state="attached")
-    for selector in ("#clawWorkspace", "#clawManualForm", "#composerForm", "#messageInput"):
+    workspace = page.locator("#clawWorkspace")
+    if await workspace.get_attribute("data-view") != "manual":
+        raise AssertionError("Claw navigation must enter the manual shared-conversation view")
+    if await workspace.is_visible():
+        raise AssertionError("manual Claw workspace header canvas must stay hidden under #2532 continuity")
+    for selector in (".conversation", "#clawManualForm", "#composerForm", "#messageInput"):
         if not await page.locator(selector).is_visible():
-            raise AssertionError(f"{selector} must stay visible in Claw at 820px")
+            raise AssertionError(f"{selector} must stay visible in manual Claw at 820px")
 
     await _assert_no_horizontal_overflow(page, name)
-    workspace_box = await _assert_in_viewport(page, "#clawWorkspace")
+    conversation_box = await _assert_in_viewport(page, ".conversation")
     composer_box = await _assert_in_viewport(page, "#composerForm")
 
     direction = await page.locator(".claw-mode-bar-row").evaluate(
@@ -396,12 +401,13 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
     return {
         "viewport": {"width": 820, "height": 900},
         "shared_shell_mobile_menu": True,
-        "claw_workspace_visible": True,
+        "manual_workspace_header_hidden": True,
+        "shared_conversation_visible": True,
         "shared_composer_visible": True,
         "mode_bar_direction": direction,
         "touch_target_heights": target_heights,
         "input_font_px": input_font_px,
-        "workspace_box": workspace_box,
+        "conversation_box": conversation_box,
         "composer_box": composer_box,
         "horizontal_overflow": False,
         "status": "PASS",
