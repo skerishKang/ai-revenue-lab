@@ -499,7 +499,7 @@ class DraftFlowTests(unittest.TestCase):
             payload = json.loads(sent["body"].decode("utf-8"))
             self.assertEqual(
                 payload["agent"]["model_policy"],
-                {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+                {"model": "b-ai/qwen3.8-flash"},
             )
             self.assertNotIn("provider", json.dumps(payload).lower())
             self.assertNotIn("credential", payload["agent"])

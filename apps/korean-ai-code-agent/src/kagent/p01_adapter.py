@@ -136,8 +136,8 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PRO) -> Age
     declaration (padiem_control_plane.product_tier_routes), shared with
     B62 Padiem Chat.  B14 remains provider/model execution authority.
 
-    Plus → kilo/poolside-laguna-s-2.1-free
-    Pro  → kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+    Plus → sensenova/sensenova-6.8-flash-lite
+    Pro  → b-ai/qwen3.8-flash
     Max  → HOLD / fail-closed (no executable route)
     """
     try:

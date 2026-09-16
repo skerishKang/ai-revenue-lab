@@ -77,7 +77,7 @@ def test_live_completed_default_pro_reaches_service_binding_with_exact_default_r
         assert (
             DEFAULT_B14_MODEL_ID
             == MEDIUM_B14_MODEL_ID
-            == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+            == "b-ai/qwen3.8-flash"
         )
         assert calls == 1
         assert store.refunds == []

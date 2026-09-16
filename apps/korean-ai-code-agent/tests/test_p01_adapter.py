@@ -139,10 +139,10 @@ class P01RequestFactoryTests(unittest.TestCase):
         self.assertEqual(run.status, ClawRunStatus.PREPARING)
         self.assertEqual(bundle.orchestration_request.app_id, P01_APP_ID)
         self.assertEqual(bundle.execution_request.agent.id, P01_AGENT_ID)
-        # Default tier is Pro → kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+        # Default tier is Pro → b-ai/qwen3.8-flash
         self.assertEqual(
             dict(bundle.execution_request.agent.model_policy),
-            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+            {"model": "b-ai/qwen3.8-flash"},
         )
         self.assertEqual(bundle.execution_request.messages[0]["role"], "user")
         self.assertIn("provider=caller-model", bundle.execution_request.messages[0]["content"])
@@ -158,14 +158,14 @@ class P01RequestFactoryTests(unittest.TestCase):
         )
         self.assertEqual(
             dict(plus_bundle.execution_request.agent.model_policy),
-            {"model": "kilo/poolside-laguna-s-2.1-free"},
+            {"model": "sensenova/sensenova-6.8-flash-lite"},
         )
 
         pro_run = self.local_run("run_default_after_plus")
         pro_bundle = P01RequestFactory().build(pro_run)
         self.assertEqual(
             dict(pro_bundle.execution_request.agent.model_policy),
-            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+            {"model": "b-ai/qwen3.8-flash"},
         )
 
     def test_factory_does_not_promote_repository_reference_to_system_context(self):
@@ -422,23 +422,23 @@ class ClawP01ProfileContractTests(unittest.TestCase):
 
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
-        self.assertEqual(model, "kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        self.assertEqual(model, "b-ai/qwen3.8-flash")
         self.assertIn(routing.task_type, _TASK_TYPES)
         self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
 
     def test_profile_pins_pro_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
-        self.assertEqual(profile.model_policy, {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
+        self.assertEqual(profile.model_policy, {"model": "b-ai/qwen3.8-flash"})
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
-    def test_plus_tier_resolves_to_poolside_laguna(self) -> None:
+    def test_plus_tier_resolves_to_sensenova(self) -> None:
         profile = _agent_profile(ProductTierLabel.PLUS)
-        self.assertEqual(profile.model_policy, {"model": "kilo/poolside-laguna-s-2.1-free"})
+        self.assertEqual(profile.model_policy, {"model": "sensenova/sensenova-6.8-flash-lite"})
 
-    def test_pro_tier_resolves_to_nemotron(self) -> None:
+    def test_pro_tier_resolves_to_bai_qwen(self) -> None:
         profile = _agent_profile(ProductTierLabel.PRO)
-        self.assertEqual(profile.model_policy, {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
+        self.assertEqual(profile.model_policy, {"model": "b-ai/qwen3.8-flash"})
 
     def test_max_tier_fails_closed(self) -> None:
         with self.assertRaises(P01AdapterError) as caught:

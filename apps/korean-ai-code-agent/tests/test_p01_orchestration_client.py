@@ -165,7 +165,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
+        self.assertEqual(payload["agent"]["model_policy"], {"model": "b-ai/qwen3.8-flash"})
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())
@@ -193,7 +193,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         bad_agent = replace(
             request.execution_request.agent,
             model_policy={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "b-ai/qwen3.8-flash",
                 "provider": "caller-provider",
             },
         )

@@ -43,7 +43,7 @@ async def test_identity_questions_answer_with_padiem_tier_without_provider_call(
     assert payload["answer"] == expected
     assert calls == 0
     serialized = json.dumps(payload, ensure_ascii=False).lower()
-    for hidden in ("kilo", "poolside", "laguna", "nvidia", "nemotron", "tencent", "hy3", "minimax"):
+    for hidden in ("kilo", "poolside", "laguna", "nvidia", "nemotron", "tencent", "hy3", "minimax", "sensenova", "b-ai", "b.ai", "qwen"):
         assert hidden not in serialized
 
 

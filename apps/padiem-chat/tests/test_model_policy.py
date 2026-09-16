@@ -40,8 +40,8 @@ def test_three_product_tier_identities_remain_known_and_pro_is_default():
     policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
 
     assert DEFAULT_CHAT_PROFILE == "medium"
-    assert LOW_B14_MODEL_ID == "kilo/poolside-laguna-s-2.1-free"
-    assert MEDIUM_B14_MODEL_ID == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert LOW_B14_MODEL_ID == "sensenova/sensenova-6.8-flash-lite"
+    assert MEDIUM_B14_MODEL_ID == "b-ai/qwen3.8-flash"
     assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
     assert "hy3" not in HIGH_B14_MODEL_ID
@@ -225,11 +225,15 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
     for executable_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
         assert executable_id not in RETIRED_B14_MODEL_IDS
 
-    for profile_id in ("low", "medium"):
+    expected_routes = {
+        "low": "sensenova/sensenova-6.8-flash-lite",
+        "medium": "b-ai/qwen3.8-flash",
+    }
+    for profile_id, expected_model in expected_routes.items():
         model_id = PROFILE_MODEL_IDS[profile_id]
         assert model_policy_is_executable(model_id) is True
         assert model_id not in RETIRED_B14_MODEL_IDS
-        assert model_id.startswith("kilo/")
+        assert model_id == expected_model
         assert model_id.count("/") == 1
         assert model_id != AUTO_B14_MODEL_ID
 

@@ -95,17 +95,15 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
 }
 EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
 
-# Current source posture after bounded activation/benchmark evidence (#2099
-# STEP-2: all route identities below are derived from the shared contract):
+# Current source posture after owner remap #2571. Route identities remain
+# derived from the shared control-plane contract:
 #
-#   Padiem Plus -> Kilo-hosted Poolside Laguna S 2.1 free
-#   Padiem Pro  -> Kilo-hosted NVIDIA Nemotron 3 Ultra free (default, general
-#                  answers; remapped from the retired MiniMax M3 free lane in
-#                  #2094/#2096 after Kilo removed minimax/minimax-m3:free)
-#   Padiem Max  -> HOLD (Hy3 is inactive after HTTP 404; no replacement is
-#                  auto-promoted from volatile free availability)
+#   Padiem Plus -> direct SenseNova 6.8 Flash Lite
+#   Padiem Pro  -> B.AI Qwen3.8 Flash
+#   Padiem Max  -> HOLD
 #
-# `b14/auto` and provider-side `kilo-auto/free` remain disabled.
+# The historical Kilo lanes are not product fallbacks. `b14/auto` and
+# provider-side auto/fallback behavior remain disabled for product routing.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
 # Slash selectors are hidden/operator test controls. Normal UI can later expose
