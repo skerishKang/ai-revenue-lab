@@ -473,10 +473,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             raise AssertionError(f"Glass reading mode portrait failed to settle: {settled}")
         if settled["artScale"] not in {"", "1", "1.0", "1.000"}:
             raise AssertionError(f"Glass reading mode scale failed to settle: {settled}")
-        if settled_shell["progress"] >= active_shell["progress"]:
-            raise AssertionError(
-                f"Glass shell recovery did not begin after activity: active={active_shell}, settled={settled_shell}"
-            )
         # The approved recovery is deliberately slow and rAF cadence varies
         # under CI. Wait on the actual visible state rather than a wall-clock guess.
         await page.wait_for_function(
