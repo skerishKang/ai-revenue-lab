@@ -96,7 +96,7 @@ from kagent.p01_adapter import (
 )
 from kagent.p01_run_flow import create_claw_run
 from .worker_config import P01_COMPOSITION_DIAGNOSTICS
-from .workspace_storage import WorkspaceStorageAccessError
+from .workspace_storage import WorkspaceStorageAccessError, WorkspaceStorageError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CONTENT_CHARS = 4_000
@@ -189,6 +189,22 @@ def _safe_composition_diagnostic(request: Request) -> str:
         return diagnostic
     return "composition_unavailable"
 
+
+_WORKSPACE_READ_DETAIL_METADATA_INVALID = "metadata_invalid"
+_WORKSPACE_READ_DETAIL_R2_READ_FAILED = "r2_read_failed"
+_WORKSPACE_READ_DETAIL_BYTE_LENGTH_MISMATCH = "byte_length_mismatch"
+_WORKSPACE_READ_DETAIL_UNKNOWN = "storage_unknown"
+
+
+def _safe_workspace_read_failure_detail(exc: Exception) -> str:
+    """Project storage read failures to a closed, non-secret public vocabulary."""
+    if not isinstance(exc, WorkspaceStorageError):
+        return _WORKSPACE_READ_DETAIL_UNKNOWN
+    return {
+        "workspace document metadata is invalid": _WORKSPACE_READ_DETAIL_METADATA_INVALID,
+        "workspace document read failed": _WORKSPACE_READ_DETAIL_R2_READ_FAILED,
+        "workspace document length mismatch": _WORKSPACE_READ_DETAIL_BYTE_LENGTH_MISMATCH,
+    }.get(str(exc), _WORKSPACE_READ_DETAIL_UNKNOWN)
 
 def _usage_denied_response(decision) -> JSONResponse:
     headers = dict(_NO_STORE_HEADERS)
@@ -621,8 +637,19 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
         # still raises (tenant enforcement unchanged) — only the projection is
         # normalized.
         return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
-    except Exception:
-        return _error(503, "workspace_document_read_failed", "문서 읽기 중 오류가 발생했습니다.")
+    except Exception as exc:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "workspace_document_read_failed",
+                    "message": "문서 읽기 중 오류가 발생했습니다.",
+                    "detail": _safe_workspace_read_failure_detail(exc),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
 
     if result is None:
         return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
