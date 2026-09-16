@@ -30,7 +30,7 @@
   var progress=0, raf=0;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
-  var fieldW=0, fieldTop=68;
+  var fieldW=0, fieldH=0, fieldTop=68;
   var lastVariant="";
 
   function root(){return document.documentElement;}
@@ -144,7 +144,7 @@
     portal.style.backgroundPosition=cs.backgroundPosition;
 
     fieldW=parseFloat(cs.width);
-    var fieldH=parseFloat(cs.height);
+    fieldH=parseFloat(cs.height);
     fieldTop=parseFloat(cs.top)||68;
     if(!(fieldW>0&&fieldH>0)) return;
     var m=/auto\s+([0-9.]+)px/.exec(cs.backgroundSize||"");
@@ -209,6 +209,7 @@
       f.el.style.transform="translate3d("+x+"px,"+y+"px,"+depth+"px) rotate("+rot+"deg) scale("+(0.72+local*.28)+")";
       f.el.style.filter="saturate("+(0.65+local*.45)+") blur("+((1-local)*1.4)+"px)";
     }
+    root().style.setProperty("--glass-shell-progress",clamp(p,0,1).toFixed(3));
     root().style.setProperty("--glass-shell-dissolve",clamp(dissolve*1.15,0,1).toFixed(3));
     if(veinLayer&&veinLayer.parentNode){
       veinLayer.parentNode.style.opacity=String(clamp(.1+p*.6,0,.7)*(1-dissolve*.5));
@@ -243,11 +244,18 @@
   }
 
   function onPointer(e){
-    /* parallax is relative to the portrait image box, like the source field */
-    var fieldLeft=window.innerWidth-fieldW;
-    if(imgW>0&&imgH>0){
-      mx=(e.clientX-(fieldLeft+imgL))/imgW;
-      my=(e.clientY-(fieldTop+imgT))/imgH;
+    /* Resolve against the actual live field rect. Breakpoints can move the
+     * portrait with positive/negative right offsets and transforms, so
+     * window.innerWidth-fieldW is not an exact origin. */
+    var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
+    if(rect&&fieldW>0&&fieldH>0&&imgW>0&&imgH>0){
+      var scaleX=rect.width/fieldW, scaleY=rect.height/fieldH;
+      if(!(scaleX>0)) scaleX=1;
+      if(!(scaleY>0)) scaleY=1;
+      var imageLeft=rect.left+imgL*scaleX;
+      var imageTop=rect.top+imgT*scaleY;
+      mx=(e.clientX-imageLeft)/(imgW*scaleX);
+      my=(e.clientY-imageTop)/(imgH*scaleY);
     }
     wake();
   }

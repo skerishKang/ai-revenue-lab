@@ -258,3 +258,10 @@ def test_glass_shell_respects_reduced_motion_and_theme_gate() -> None:
     # layers stay invisible off-theme
     assert 'html:not([data-theme="padiem-glass"]) .glass-shell-portrait' in PORTRAIT_CSS
     assert 'html:not([data-theme="padiem-glass"]) .glass-shell-field' in PORTRAIT_CSS
+
+
+def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
+    """Parallax origin must follow the transformed breakpoint-specific portrait field."""
+    assert "getBoundingClientRect" in SHELL_JS
+    assert "window.innerWidth-fieldW" not in SHELL_JS
+    assert "--glass-shell-progress" in SHELL_JS
