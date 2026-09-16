@@ -22,6 +22,7 @@ on:
         options:
           - repository_preflight
           - cloudflare_readonly
+          - account_readonly
           - activate_private_workers
           - activate_custom_domain
           - rollback_custom_domain
@@ -97,6 +98,12 @@ jobs:
           from pathlib import Path
 
           root = Path("packages/padiem-control-plane")
+          workflow_text = Path(".github/workflows/b54-google-oauth-production-gate.yml").read_text(encoding="utf-8")
+          assert "\n          - account_readonly\n" in workflow_text
+          assert "MODE:" in workflow_text and "inputs.mode" in workflow_text
+          assert "ACCOUNT_ONLY_READONLY=PASS" in workflow_text
+          assert "WORKER_ROUTE_AUDIT=SKIPPED_ACCOUNT_ONLY" in workflow_text
+          assert "ACCOUNT_ONLY_ZONE_API_CALLS=0" in workflow_text
           identity = json.loads((root / "wrangler.identity-authority.jsonc").read_text(encoding="utf-8"))
           state = json.loads((root / "wrangler.google-oauth.jsonc").read_text(encoding="utf-8"))
           edge = json.loads((root / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
@@ -253,6 +260,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          MODE: ${{ inputs.mode }}
         run: |
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN}"
@@ -283,20 +291,41 @@ jobs:
             exit 1
           fi
 
-          zones="${RUNNER_TEMP}/zones.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
-            -o "${zones}"
-          jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
-          zone_id="$(jq -r '.result[0].id' "${zones}")"
-          test -n "${zone_id}"
+          if [ "${MODE}" = "account_readonly" ]; then
+            test "${domain_count}" -eq 0
+            if python - "${PUBLIC_HOSTNAME}" <<'PY'
+          import socket
+          import sys
+          host = sys.argv[1]
+          try:
+              socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+          except socket.gaierror:
+              raise SystemExit(1)
+          raise SystemExit(0)
+          PY
+            then
+              echo "Refusing account-only probe: public DNS resolves without expected Custom Domain" >&2
+              exit 1
+            else
+              echo "PUBLIC_DNS=NXDOMAIN_OR_UNRESOLVED"
+            fi
+            echo "WORKER_ROUTE_AUDIT=SKIPPED_ACCOUNT_ONLY"
+            echo "ACCOUNT_ONLY_ZONE_API_CALLS=0"
+          else
+            zones="${RUNNER_TEMP}/zones.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
+              -o "${zones}"
+            jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
+            zone_id="$(jq -r '.result[0].id' "${zones}")"
+            test -n "${zone_id}"
 
-          routes="${RUNNER_TEMP}/routes.json"
-          curl -fsS "${auth[@]}" \
-            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
-            -o "${routes}"
-          jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
-          python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
+            routes="${RUNNER_TEMP}/routes.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
+              -o "${routes}"
+            jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
+            python - "${routes}" "${PUBLIC_HOSTNAME}" <<'PY'
           import json
           import sys
           routes_path, host = sys.argv[1:]
@@ -310,7 +339,8 @@ jobs:
               raise SystemExit("Refusing candidate hostname: overlapping Worker route exists")
           print("WORKER_ROUTE_COLLISION=NO")
           PY
-
+            echo "WORKER_ROUTE_AUDIT=CHECKED_NO_COLLISION"
+          fi
           inspect_worker() {
             worker="$1"
             output_name="$2"
@@ -323,6 +353,10 @@ jobs:
             fi
             test "${code}" = "200"
             jq -e '.success == true' "${settings}" >/dev/null
+            if [ "${MODE}" = "account_readonly" ]; then
+              echo "${output_name}=present" >> "${GITHUB_OUTPUT}"
+              return 0
+            fi
             subdomain="${RUNNER_TEMP}/${worker}-subdomain.json"
             deployments="${RUNNER_TEMP}/${worker}-deployments.json"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${subdomain}"
@@ -355,7 +389,7 @@ jobs:
             echo "B62_IDENTITY_SERVICE_BINDING=ABSENT"
           fi
 
-          if [ "${domain_count}" -eq 0 ]; then
+          if [ "${MODE}" != "account_readonly" ] && [ "${domain_count}" -eq 0 ]; then
             if python - "${PUBLIC_HOSTNAME}" <<'PY'
           import socket
           import sys
@@ -374,7 +408,12 @@ jobs:
             fi
           fi
 
-          echo "OAUTH_HOST_COLLISION_AUDITED=YES"
+          if [ "${MODE}" = "account_readonly" ]; then
+            echo "OAUTH_HOST_COLLISION_AUDITED=PARTIAL_ACCOUNT_ONLY"
+            echo "ACCOUNT_ONLY_READONLY=PASS"
+          else
+            echo "OAUTH_HOST_COLLISION_AUDITED=YES"
+          fi
           echo "PRIVATE_WORKER_CUSTOM_DOMAIN=NO"
           echo "CLOUDFLARE_READONLY=PASS"
           echo "PRODUCTION_MUTATION=0"
