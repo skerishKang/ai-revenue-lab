@@ -61,10 +61,10 @@ def test_glass_reveal_keeps_variant_rest_masks_legible():
     # reading mode may use its calmer rest posture before pointer/answer reveal.
     assert 'var variant=getGlassVariant();' in THEME_JS
     assert 'var reading=mode==="reading";' in THEME_JS
-    assert 'var restMaskStart=reading?(variant==="male"?28:30):(variant==="male"?0:2);' in THEME_JS
-    assert 'var restMaskFull=reading?(variant==="male"?50:54):(variant==="male"?22:26);' in THEME_JS
-    assert 'var openMaskStart=reading?(variant==="male"?3:5):0;' in THEME_JS
-    assert 'var openMaskFull=reading?(variant==="male"?20:24):(variant==="male"?12:14);' in THEME_JS
+    assert 'var restMaskStart=reading?(variant==="male"?30:34):(variant==="male"?14:18);' in THEME_JS
+    assert 'var restMaskFull=reading?(variant==="male"?58:62):(variant==="male"?42:46);' in THEME_JS
+    assert 'var openMaskStart=reading?(variant==="male"?4:5):0;' in THEME_JS
+    assert 'var openMaskFull=reading?(variant==="male"?20:22):(variant==="male"?8:10);' in THEME_JS
     assert 'var maskStart=restMaskStart-((restMaskStart-openMaskStart)*reveal);' in THEME_JS
     assert 'var maskFull=restMaskFull-((restMaskFull-openMaskFull)*reveal);' in THEME_JS
     assert 'var maskStart=24*(1-reveal);' not in THEME_JS
