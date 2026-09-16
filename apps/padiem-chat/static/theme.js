@@ -177,9 +177,6 @@
       var requested=getUrlGlassVariant()||getGlassVariant();
       applyGlassVariant(requested,false);
     } else {
-      document.documentElement.removeAttribute("data-glass-cyber-active");
-      document.documentElement.removeAttribute("data-glass-cyber-state");
-      document.documentElement.style.removeProperty("--glass-cyber-intensity");
       syncGlassVariant(getGlassVariant(),theme);
     }
     syncGlassMode();
@@ -232,7 +229,7 @@
   function glassAnswerReveal(now){
     if(!glassAnswerLastActivity) return 0;
     var age=Math.max(0,now-glassAnswerLastActivity);
-    var envelope=age<=260?1:Math.max(0,1-(age-260)/1200);
+    var envelope=age<=260?1:Math.max(0,1-(age-260)/1500);
     if(envelope<=0){
       glassAnswerLastActivity=0;
       return 0;
@@ -254,11 +251,6 @@
       root.style.setProperty("--glass-mask-start","6%");
       root.style.setProperty("--glass-mask-full","24%");
       root.style.setProperty("--glass-reveal","0.8");
-      root.style.setProperty("--glass-cyber-intensity","0.32");
-      root.style.setProperty("--glass-cyber-y","0px");
-      root.style.setProperty("--glass-cyber-scale","1");
-      root.setAttribute("data-glass-cyber-active","static");
-      root.setAttribute("data-glass-cyber-state","static");
       root.style.setProperty("--glass-reading-art-opacity","0.28");
       glassAnswerLastActivity=0;
       resetGlassPointer();
@@ -310,18 +302,7 @@
     var travelY=reading?-14:-24;
     var scaleGain=reading?.012:.018;
 
-    var cyberIntensity=Math.max(0,Math.min(1,reveal));
     root.style.setProperty("--glass-reveal",reveal.toFixed(3));
-    root.style.setProperty("--glass-cyber-intensity",cyberIntensity.toFixed(3));
-    root.style.setProperty("--glass-cyber-y",(8*(1-cyberIntensity)).toFixed(1)+"px");
-    root.style.setProperty("--glass-cyber-scale",(.96+.04*cyberIntensity).toFixed(3));
-    var cyberHasPointer=pointerReveal>.08;
-    var cyberHasAnswer=answerReveal>.08;
-    var cyberState=cyberHasPointer&&cyberHasAnswer
-      ?"combined"
-      :(cyberHasAnswer?"answer":(cyberHasPointer?"pointer":"idle"));
-    root.setAttribute("data-glass-cyber-state",cyberState);
-    root.setAttribute("data-glass-cyber-active",cyberState==="idle"?"false":"true");
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
     root.style.setProperty("--glass-art-x",(-9*reveal).toFixed(1)+"px");
