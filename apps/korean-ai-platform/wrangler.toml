@@ -19,4 +19,4 @@ B14_PROVIDER_MODE = "live"
 [[secrets_store_secrets]]
 binding = "PADIEM_B_AI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
-secret_name = "b.ai"
+secret_name = "PADIEM_B_AI_API_KEY"

@@ -92,7 +92,7 @@ class TestWranglerConfig:
         assert '[[secrets_store_secrets]]' in content
         assert 'binding = "PADIEM_B_AI_API_KEY"' in content
         assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
-        assert 'secret_name = "b.ai"' in content
+        assert 'secret_name = "PADIEM_B_AI_API_KEY"' in content
         assert "PADIEM_B_AI_API_KEY =" not in content
 
 
