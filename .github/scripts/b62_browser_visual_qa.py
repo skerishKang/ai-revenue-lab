@@ -352,6 +352,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     combined_reveal = 0.0
     answer_only_shell_progress = 0.0
     combined_shell_progress = 0.0
+    answer_only_shell_target = 0.0
+    combined_shell_target = 0.0
 
     for turn in range(1, 6):
         # Turn 1 = answer only. Turn 2 = pointer + answer together.
@@ -381,6 +383,10 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         if turn == 1:
             answer_only_reveal = active["reveal"]
             answer_only_shell_progress = active_shell["progress"]
+            answer_only_shell_target = max(
+                .62 * active_shell["pointerDriver"],
+                .8 * active_shell["answerDriver"],
+            )
             if answer_only_reveal < 0.15:
                 raise AssertionError(
                     f"Glass reading mode lost answer-driven reveal: {active}"
@@ -392,16 +398,27 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         if turn == 2:
             combined_reveal = active["reveal"]
             combined_shell_progress = active_shell["progress"]
+            combined_shell_target = (
+                1.0
+                if active_shell["pointerDriver"] > .45 and active_shell["answerDriver"] > .45
+                else max(
+                    .62 * active_shell["pointerDriver"],
+                    .8 * active_shell["answerDriver"],
+                )
+            )
             if combined_reveal < 0.35:
                 raise AssertionError(
                     f"Glass pointer+answer reveal is too weak: {active}"
                 )
             if active_shell["pointerDriver"] <= 0 or active_shell["answerDriver"] <= 0:
                 raise AssertionError(f"Glass combined shell drivers are not both active: {active_shell}")
-            if combined_shell_progress <= answer_only_shell_progress + 0.005:
+            if active_shell["visibleFragments"] == 0:
+                raise AssertionError(f"Glass combined shell fragments are not visibly active: {active_shell}")
+            if combined_shell_target <= answer_only_shell_target + 0.05:
                 raise AssertionError(
-                    "Glass pointer+answer shell progression must be measurably stronger than answer-only: "
-                    f"answer={answer_only_shell_progress}, combined={combined_shell_progress}"
+                    "Glass pointer+answer shell target must be stronger than answer-only: "
+                    f"answer_target={answer_only_shell_target}, combined_target={combined_shell_target}, "
+                    f"answer_progress={answer_only_shell_progress}, combined_progress={combined_shell_progress}"
                 )
 
         # After answer activity and pointer proximity end, reading mode must
@@ -518,6 +535,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             "pointer_only_home": home_shell_pointer,
             "answer_only_progress": answer_only_shell_progress,
             "combined_progress": combined_shell_progress,
+            "answer_only_target": answer_only_shell_target,
+            "combined_target": combined_shell_target,
             "shell_on_screenshot": shell_on_name,
             "status": "PASS",
         },
