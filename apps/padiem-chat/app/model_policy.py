@@ -74,8 +74,6 @@ PADIEM_PRO = "Padiem Pro"
 PADIEM_MAX = "Padiem Max"
 
 # Compatibility alias retained for the Kilo free test lane.
-KILO_B14_MODEL_ID = MEDIUM_B14_MODEL_ID
-
 # Historical sentinel retained for older adapters/tests that import it. It is
 # not part of the active product-tier mapping.
 UNASSIGNED_B14_MODEL_ID = "padiem-profile/medium-unassigned"
@@ -125,8 +123,11 @@ MODEL_ALIASES: dict[str, str] = {
 # can change independently of the Padiem product tier. HOLD has no executable
 # capabilities.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
-    MEDIUM_B14_MODEL_ID: frozenset({"chat", "long_context"}),
+    # B62 uses this local product capability map only for browser-side feature
+    # gating (currently image attachment). Provider/model capabilities remain
+    # authoritative in B14's catalog and must not be duplicated here.
+    LOW_B14_MODEL_ID: frozenset({"chat"}),
+    MEDIUM_B14_MODEL_ID: frozenset({"chat"}),
     HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
