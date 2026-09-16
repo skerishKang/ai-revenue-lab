@@ -1065,7 +1065,7 @@
 
   function selectedProductTier() {
     const tier = window.PadiemTierSelection?.get?.();
-    return tier === "plus" ? "plus" : "plus";
+    return "plus";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
