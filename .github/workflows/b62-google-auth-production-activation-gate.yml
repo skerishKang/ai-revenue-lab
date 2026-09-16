@@ -30,7 +30,7 @@ on:
       expected_public_base_url:
         description: "Expected canonical B62 origin"
         required: false
-        default: "https://padiem-chat.charliekant.workers.dev"
+        default: "https://chat.padiem.net"
         type: string
 
 permissions:
