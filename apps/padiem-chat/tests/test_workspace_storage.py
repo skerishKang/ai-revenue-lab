@@ -113,6 +113,83 @@ async def test_same_canonical_tenant_can_read_but_cross_tenant_is_denied() -> No
         )
 
 
+class _UnreadableStreamBody:
+    def __bytes__(self):
+        raise AssertionError("stream body must not be converted directly")
+
+
+class _ArrayBufferValue:
+    def __init__(self, payload: bytes) -> None:
+        self.payload = payload
+
+    def to_bytes(self) -> bytes:
+        return self.payload
+
+
+class _ObjectBodyShape:
+    def __init__(self, payload: bytes) -> None:
+        self.body = _UnreadableStreamBody()
+        self.payload = payload
+        self.array_buffer_calls = 0
+
+    async def arrayBuffer(self):
+        self.array_buffer_calls += 1
+        return _ArrayBufferValue(self.payload)
+
+
+async def test_r2_objectbody_arraybuffer_is_used_before_stream_body() -> None:
+    storage, _, r2 = store()
+    saved = await storage.put_generated_docx(
+        tenant_id=TENANT,
+        filename="quote.docx",
+        body=b"PK-real-r2-shape",
+        now=NOW,
+    )
+    runtime_obj = _ObjectBodyShape(b"PK-real-r2-shape")
+
+    async def runtime_get(key):
+        assert key == saved.object_key
+        return runtime_obj
+
+    r2.get = runtime_get
+    _, payload = await storage.get_for_tenant(
+        tenant_id=TENANT,
+        document_id=saved.document_id,
+        now=NOW + timedelta(minutes=1),
+    )
+
+    assert payload == b"PK-real-r2-shape"
+    assert runtime_obj.array_buffer_calls == 1
+
+
+async def test_r2_objectbody_arraybuffer_failure_does_not_fall_back_to_body() -> None:
+    storage, _, r2 = store()
+    saved = await storage.put_generated_docx(
+        tenant_id=TENANT,
+        filename="quote.docx",
+        body=b"PK-no-fallback",
+        now=NOW,
+    )
+
+    class FailingObject:
+        body = b"would-hide-runtime-failure"
+
+        async def arrayBuffer(self):
+            raise RuntimeError("synthetic arrayBuffer failure")
+
+    async def runtime_get(key):
+        assert key == saved.object_key
+        return FailingObject()
+
+    r2.get = runtime_get
+    with pytest.raises(WorkspaceStorageError, match="workspace document read failed"):
+        await storage.get_for_tenant(
+            tenant_id=TENANT,
+            document_id=saved.document_id,
+            now=NOW + timedelta(minutes=1),
+        )
+
+
 async def test_expired_generated_document_is_deleted_and_not_returned() -> None:
     storage, metadata, r2 = store()
     saved = await storage.put_generated_docx(
