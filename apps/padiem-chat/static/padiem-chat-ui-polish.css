@@ -78,46 +78,6 @@ html[data-theme="padiem-glass"] body .sidebar-bottom .settings-button > span:fir
   }
 }
 
-/* The active Chat lane authority is also the Claw manual lane authority. */
-html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] {
-  --padiem-chat-inner-gutter: clamp(22px, 2vw, 30px);
-  --padiem-chat-active-lane-width: min(
-    820px,
-    calc(
-      100vw
-      - var(--workspace-rail, 252px)
-      - clamp(250px, 25vw, 360px)
-      - 68px
-    )
-  );
-  --padiem-chat-active-lane-offset: clamp(28px, 2.5vw, 42px);
-}
-
-@media (min-width: 1440px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] {
-    --padiem-chat-active-lane-width: min(
-      1080px,
-      calc(100vw - var(--workspace-rail, 252px) - 100px)
-    );
-  }
-}
-
-@media (min-width: 1024px) {
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
-    width: var(--padiem-chat-active-lane-width) !important;
-    margin-left: var(--padiem-chat-active-lane-offset) !important;
-    margin-right: 0 !important;
-    padding-inline: var(--padiem-chat-inner-gutter) !important;
-  }
-
-  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
-    left: calc(var(--workspace-rail, 252px) + var(--padiem-chat-active-lane-offset)) !important;
-    width: var(--padiem-chat-active-lane-width) !important;
-    transform: none !important;
-    padding-inline: 0 !important;
-  }
-}
-
 /* The mode bar belongs to the same composer surface. Avoid a second floating
  * card language above the shared text field. */
 html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-bar {
