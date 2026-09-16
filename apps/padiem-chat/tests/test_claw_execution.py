@@ -594,7 +594,7 @@ def test_browser_plus_tier_is_forwarded_to_claw_p01_adapter() -> None:
     assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
 
 
-def test_browser_default_tier_is_pro_when_omitted() -> None:
+def test_browser_default_tier_is_plus_when_omitted() -> None:
     adapter = _make_adapter()
     with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
         resp = client.post(
@@ -602,7 +602,7 @@ def test_browser_default_tier_is_pro_when_omitted() -> None:
             json={"content": "기본 등급 실행 테스트", "channel": "sms", "action": "reply"},
         )
     assert resp.status_code == 200
-    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PRO
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
 
 
 def test_browser_max_tier_fails_closed_before_claw_dispatch() -> None:
