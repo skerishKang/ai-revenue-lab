@@ -66,15 +66,17 @@ CAPABILITY_MATRIX = (
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "mode_auto",
+        "surface": "tier_plus_pro",
         "presentation": "ACTIVE",
-        "backend_active": "AUTO_REQUEST_CONTRACT_ACTIVE",
+        "default_tier": "pro",
+        "browser_visible": ["plus", "pro"],
+        "backend_active": "SERVER_RESOLVED_SHARED_TIER_CONTRACT",
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "mode_fast_balanced_deep",
-        "presentation": "PREVIEW_ONLY",
-        "backend_active": "NO_TRUSTED_MAPPING_YET",
+        "surface": "tier_max",
+        "presentation": "BROWSER_HIDDEN",
+        "backend_active": "HOLD",
         "production_active": "NO",
     },
     {
@@ -95,9 +97,9 @@ CAPABILITY_MATRIX = (
 
 BACKEND_DEPENDENCIES = (
     {
-        "capability": "Fast / Balanced / Deep trusted execution mapping",
-        "owner": "B14 / IP-ENGINE",
-        "b62_action": "presentation only; do not implement provider routing",
+        "capability": "Plus / Pro product-tier resolution",
+        "owner": "shared Padiem product-tier contract / B14",
+        "b62_action": "send bounded tier ids only; do not expose provider/model routing authority",
     },
     {
         "capability": "live Agent / Tool / Approval / Evidence / Memory authority",
@@ -256,16 +258,21 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 4:
-        raise AssertionError(f"mode matrix incomplete at {label}")
-    if await panel.locator('[data-mode-value="auto"]').get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Auto not selected at {label}")
-    for mode in ("fast", "balanced", "deep"):
-        if not await panel.locator(f'[data-mode-value="{mode}"]').is_disabled():
-            raise AssertionError(f"{mode} must remain preview-only at {label}")
+    if await options.count() != 2:
+        raise AssertionError(f"tier matrix incomplete at {label}")
+    plus = panel.locator('[data-mode-value="plus"]')
+    pro = panel.locator('[data-mode-value="pro"]')
+    if await plus.is_disabled() or await pro.is_disabled():
+        raise AssertionError(f"Plus and Pro must be selectable at {label}")
+    if await pro.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Pro not selected by default at {label}")
+    if await plus.get_attribute("aria-pressed") != "false":
+        raise AssertionError(f"Plus must start unselected at {label}")
+    if await panel.locator('[data-mode-value="max"]').count() != 0:
+        raise AssertionError(f"Max must remain browser-hidden at {label}")
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
-        raise AssertionError(f"mode panel did not close at {label}")
+        raise AssertionError(f"tier panel did not close at {label}")
 
     await page.locator("#attachmentFileInput").set_input_files(
         {
@@ -364,8 +371,8 @@ async def _english_probe(browser) -> dict[str, Any]:
             raise AssertionError(f"English account truth missing: {account_text!r}")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
-        if "cannot be selected until trusted backend mappings are active" not in truth:
-            raise AssertionError(f"English mode truth boundary missing: {truth!r}")
+        if "Provider and model routing stays server-managed" not in truth:
+            raise AssertionError(f"English tier truth boundary missing: {truth!r}")
         return {
             "status": "PASS",
             "locale": "en",
