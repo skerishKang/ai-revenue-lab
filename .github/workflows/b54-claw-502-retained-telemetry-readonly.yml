@@ -43,6 +43,8 @@ jobs:
           text = p.read_text(encoding="utf-8")
           required = [
               "/workers/observability/telemetry/query",
+              "/client/v4/graphql",
+              "WORKERS_ANALYTICS_RAW_OUTPUT=0",
               "padiem-chat",
               "padiem-ai-engine",
               "ai-revenue-korean-ai-platform",
@@ -335,3 +337,191 @@ jobs:
           echo "CONFIG_MUTATION=0"
           echo "SECRET_MUTATION=0"
           echo "PRODUCTION_MUTATION=0"
+
+
+      - name: Query retained Workers invocation metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/workers-analytics-query.json"
+          response="${RUNNER_TEMP}/workers-analytics-response.json"
+
+          python - "${payload}" "${CLOUDFLARE_ACCOUNT_ID}" "${CANARY_FROM_MS}" "${CANARY_TO_MS}" <<'PY'
+          import datetime as dt
+          import json
+          import sys
+
+          out, account, start_ms, end_ms = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+          iso = lambda ms: dt.datetime.fromtimestamp(ms / 1000, tz=dt.timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+          query = """
+          query ClawCanaryWorkers($accountTag: string, $datetimeStart: string, $datetimeEnd: string) {
+            viewer {
+              accounts(filter: {accountTag: $accountTag}) {
+                b62: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-chat",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+                engine: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-ai-engine",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+                b14: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "ai-revenue-korean-ai-platform",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+              }
+            }
+          }
+          """
+          with open(out, "w", encoding="utf-8") as fh:
+              json.dump(
+                  {
+                      "query": query,
+                      "variables": {
+                          "accountTag": account,
+                          "datetimeStart": iso(start_ms),
+                          "datetimeEnd": iso(end_ms),
+                      },
+                  },
+                  fh,
+              )
+          PY
+
+          http="$(curl -sS -o "${response}" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/graphql" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${payload}")"
+          echo "WORKERS_ANALYTICS_HTTP=${http}"
+
+          python - "${response}" <<'PY'
+          import datetime as dt
+          import json
+          import sys
+
+          try:
+              payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          except Exception:
+              print("WORKERS_ANALYTICS=UNAVAILABLE")
+              print("WORKERS_ANALYTICS_PARSE=FAIL")
+              raise SystemExit(0)
+
+          errors = payload.get("errors")
+          accounts = (
+              payload.get("data", {})
+              .get("viewer", {})
+              .get("accounts", [])
+          )
+          if errors or not isinstance(accounts, list) or len(accounts) != 1:
+              print("WORKERS_ANALYTICS=UNAVAILABLE")
+              print("WORKERS_ANALYTICS_QUERY=DENIED_OR_INVALID")
+              raise SystemExit(0)
+
+          account = accounts[0]
+          if not isinstance(account, dict):
+              print("WORKERS_ANALYTICS=UNAVAILABLE")
+              raise SystemExit(0)
+
+          print("WORKERS_ANALYTICS=AVAILABLE")
+
+          def normalize(rows):
+              out = []
+              if not isinstance(rows, list):
+                  return out
+              for row in rows:
+                  if not isinstance(row, dict):
+                      continue
+                  dim = row.get("dimensions")
+                  sums = row.get("sum")
+                  if not isinstance(dim, dict) or not isinstance(sums, dict):
+                      continue
+                  when = dim.get("datetime")
+                  status = dim.get("status")
+                  requests = sums.get("requests")
+                  errors = sums.get("errors")
+                  subrequests = sums.get("subrequests")
+                  if not isinstance(when, str) or not isinstance(requests, (int, float)):
+                      continue
+                  out.append(
+                      {
+                          "when": when,
+                          "status": status if isinstance(status, str) else "unknown",
+                          "requests": int(requests),
+                          "errors": int(errors) if isinstance(errors, (int, float)) else 0,
+                          "subrequests": int(subrequests) if isinstance(subrequests, (int, float)) else 0,
+                      }
+                  )
+              return out
+
+          series = {
+              "B62": normalize(account.get("b62")),
+              "ENGINE": normalize(account.get("engine")),
+              "B14": normalize(account.get("b14")),
+          }
+
+          for label, rows in series.items():
+              print(f"{label}_ANALYTICS_REQUESTS={sum(r['requests'] for r in rows)}")
+              print(f"{label}_ANALYTICS_ERRORS={sum(r['errors'] for r in rows)}")
+              print(f"{label}_ANALYTICS_SUBREQUESTS={sum(r['subrequests'] for r in rows)}")
+              active = sorted({r["when"] for r in rows if r["requests"] > 0})
+              print(f"{label}_ACTIVE_SECOND_COUNT={len(active)}")
+              if label in {"ENGINE", "B14"}:
+                  print(f"{label}_ACTIVE_SECONDS={','.join(active) if active else 'NONE'}")
+                  statuses = sorted({r["status"] for r in rows})
+                  print(f"{label}_WORKER_OUTCOMES={','.join(statuses) if statuses else 'NONE'}")
+
+          def epoch_seconds(value):
+              try:
+                  return int(dt.datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp())
+              except Exception:
+                  return None
+
+          engine_times = {
+              epoch_seconds(r["when"])
+              for r in series["ENGINE"]
+              if r["requests"] > 0
+          }
+          b14_times = {
+              epoch_seconds(r["when"])
+              for r in series["B14"]
+              if r["requests"] > 0
+          }
+          engine_times.discard(None)
+          b14_times.discard(None)
+
+          near = sorted(
+              e
+              for e in engine_times
+              if any(abs(e - b) <= 2 for b in b14_times)
+          )
+          print(f"ENGINE_B14_NEAR_SECOND_COUNT={len(near)}")
+          if near:
+              rendered = [
+                  dt.datetime.fromtimestamp(value, tz=dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+                  for value in near
+              ]
+              print(f"ENGINE_B14_NEAR_SECONDS={','.join(rendered)}")
+          else:
+              print("ENGINE_B14_NEAR_SECONDS=NONE")
+
+          print("WORKERS_ANALYTICS_RAW_OUTPUT=0")
+          print("PROMPT_OUTPUT=0")
+          print("RESPONSE_BODY_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          print("PRODUCT_REQUESTS=0")
+          print("PROVIDER_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
