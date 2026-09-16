@@ -26,7 +26,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .app-shell::before {
 }
 
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
-  opacity: .28;
+  opacity: var(--glass-reading-art-opacity, .28);
   filter: saturate(.42) contrast(.90) brightness(1.10) blur(.35px);
 }
 
