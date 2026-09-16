@@ -265,3 +265,30 @@ def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
     assert "getBoundingClientRect" in SHELL_JS
     assert "window.innerWidth-fieldW" not in SHELL_JS
     assert "--glass-shell-progress" in SHELL_JS
+
+
+def _jpeg_size(path: Path) -> tuple[int, int]:
+    """stdlib-only JPEG SOF0/2 scan -> (width, height)."""
+    data = path.read_bytes()
+    i = 2
+    while i + 9 < len(data):
+        if data[i] != 0xFF:
+            i += 1
+            continue
+        marker = data[i + 1]
+        if marker in (0xC0, 0xC1, 0xC2):
+            height = int.from_bytes(data[i + 5 : i + 7], "big")
+            width = int.from_bytes(data[i + 7 : i + 9], "big")
+            return width, height
+        seg = int.from_bytes(data[i + 2 : i + 4], "big")
+        i += 2 + seg
+    raise AssertionError(f"no JPEG SOF marker in {path.name}")
+
+
+def test_glass_shell_assets_share_exact_clean_canvas() -> None:
+    """Same-face contract floor: shell renders sit on the identical canvas as the
+    adopted clean portraits (mask-object transplant only, no re-render)."""
+    for variant in ("female", "male"):
+        clean = STATIC / f"assets/padiem-glass-{variant}.jpg"
+        shell = STATIC / f"assets/padiem-glass-{variant}-shell.jpg"
+        assert _jpeg_size(clean) == _jpeg_size(shell) == (900, 1200)

@@ -27,7 +27,7 @@
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
-  var progress=0, raf=0;
+  var progress=0, raf=0, lastT=0;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
   var fieldW=0, fieldH=0, fieldTop=68;
@@ -66,6 +66,13 @@
   function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
 
   function driver(name){
+    /* Prefer the live synchronous driver readout from theme.js exports;
+     * CSS variables are the deferred (rAF-gated) fallback. */
+    var api=window.__padiemTheme;
+    if(api&&api.glassMotionDrivers){
+      var d=api.glassMotionDrivers();
+      return clamp(name==="--glass-pointer-reveal"?d.pointer:d.answer,0,1);
+    }
     var v=parseFloat(getComputedStyle(root()).getPropertyValue(name));
     return isNaN(v)?0:clamp(v,0,1);
   }
@@ -216,8 +223,12 @@
     }
   }
 
-  function tick(){
+  function tick(now){
     raf=0;
+    step(now);
+  }
+
+  function step(now){
     if(!isGlass()) return;
     if(!ensureLayer()){schedule();return;}
     var v=variant();
@@ -226,7 +237,13 @@
     if(reducedMotion()){
       progress=t;
     }else{
-      var rate=(t>progress?RATE_UP:RATE_DOWN)*speedMul();
+      /* frame-rate independent exponential approach: the source rates are
+       * normalized to a 60fps step so 120Hz/headless/low-power renders the
+       * same wall-clock speed. */
+      var dt=lastT?Math.max(0,Math.min(100,now-lastT)):16.7;
+      lastT=now;
+      var base=(t>progress?RATE_UP:RATE_DOWN)*speedMul();
+      var rate=1-Math.pow(1-Math.min(.95,base),dt/16.7);
       progress+=(t-progress)*rate;
       if(Math.abs(t-progress)<.001) progress=t;
     }
@@ -278,7 +295,26 @@
     window.addEventListener("pointermove",onPointer,{passive:true});
     window.addEventListener("resize",function(){layout();wake();},{passive:true});
     document.addEventListener("visibilitychange",function(){if(!document.hidden)wake();});
+    /* Convergence watchdog: timers still fire under rAF starvation, so a
+     * stalled loop steps manually and always finishes its transition. */
+    setInterval(function(){
+      if(!isGlass()) return;
+      if(!field&&ensureLayer()) layout();
+      var t=reducedMotion()?(maskMode()==="on"?1:0):target();
+      if(progress===t) return;
+      var now=performance.now();
+      if(now-lastT<300) return; /* live rAF stream already stepping */
+      if(raf){cancelAnimationFrame(raf);raf=0;}
+      step(now);
+    },150);
+    /* Read-only QA/state handle (progress, target, mode). */
+    window.__padiemGlassShell={
+      progress:function(){return progress;},
+      target:function(){return reducedMotion()?(maskMode()==="on"?1:0):target();},
+      mode:function(){return maskMode();}
+    };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){layout();});
+    if(isGlass()&&ensureLayer()) layout(); /* fragments exist even if rAF never fires */
     layout();
     wake();
   }

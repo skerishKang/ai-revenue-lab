@@ -609,7 +609,17 @@
     getGlassMaskMode:getGlassMaskMode,
     applyGlassMask:applyGlassMask,
     getGlassSpeed:getGlassSpeed,
-    applyGlassSpeed:applyGlassSpeed
+    applyGlassSpeed:applyGlassSpeed,
+    /* Live driver readout for the shell layer: computed synchronously so the
+     * shell loop stays correct even when this module's own rAF is starved
+     * (occluded/headless/low-power rendering). */
+    glassMotionDrivers:function(){
+      var reading=syncGlassMode()==="reading";
+      return {
+        pointer:prefersReducedMotion()?0:glassPointerReveal,
+        answer:reading?glassAnswerReveal(currentGlassTime()):0
+      };
+    }
   };
   if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);} else {init();}
 })();
