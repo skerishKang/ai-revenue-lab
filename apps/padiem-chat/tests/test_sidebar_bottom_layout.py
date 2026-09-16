@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
 UI_POLISH = (ROOT / "static" / "padiem-chat-ui-polish.css").read_text(encoding="utf-8")
+ACCESSIBILITY_POLISH = (ROOT / "static" / "accessibility-polish.css").read_text(encoding="utf-8")
 
 
 def test_settings_in_sidebar_bottom() -> None:
@@ -105,3 +106,31 @@ def test_glass_home_composer_vertical_padding_is_balanced() -> None:
     assert 'padding: 12px 12px 11px !important' in UI_POLISH
     assert '.app-shell[data-state="home"] .composer textarea {' in UI_POLISH
     assert 'padding: 9px 9px 7px !important' in UI_POLISH
+
+
+def test_padiem_home_glass_utility_is_one_centered_row() -> None:
+    start = ACCESSIBILITY_POLISH.index(
+        'html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link {'
+    )
+    end = ACCESSIBILITY_POLISH.index("}", start)
+    rule = ACCESSIBILITY_POLISH[start:end]
+    assert "display: flex !important;" in rule
+    assert "align-items: center !important;" in rule
+    assert "justify-content: flex-start !important;" in rule
+    assert "flex-wrap: nowrap !important;" in rule
+    assert "place-items: initial !important;" not in rule
+
+
+def test_padiem_home_glass_label_cannot_wrap() -> None:
+    marker_rule = ACCESSIBILITY_POLISH.split(
+        'html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link .home-link-mark {',
+        1,
+    )[1].split("}", 1)[0]
+    label_rule = ACCESSIBILITY_POLISH.split(
+        'html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data-locale-key="home-link"] {',
+        1,
+    )[1].split("}", 1)[0]
+    assert "line-height: 1 !important;" in marker_rule
+    assert "white-space: nowrap !important;" in label_rule
+    assert "line-height: 1.2 !important;" in label_rule
+    assert "white-space: normal !important;" not in label_rule
