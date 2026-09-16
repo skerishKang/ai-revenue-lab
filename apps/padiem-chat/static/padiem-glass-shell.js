@@ -30,6 +30,7 @@
   var progress=0, raf=0, lastT=0;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
+  var fieldW=0, fieldH=0, fieldTop=68;
   var lastVariant="";
 
   function root(){return document.documentElement;}
@@ -149,8 +150,9 @@
     portal.style.backgroundSize=cs.backgroundSize;
     portal.style.backgroundPosition=cs.backgroundPosition;
 
-    var fieldW=parseFloat(cs.width);
-    var fieldH=parseFloat(cs.height);
+    fieldW=parseFloat(cs.width);
+    fieldH=parseFloat(cs.height);
+    fieldTop=parseFloat(cs.top)||68;
     if(!(fieldW>0&&fieldH>0)) return;
     var m=/auto\s+([0-9.]+)px/.exec(cs.backgroundSize||"");
     imgH=m?parseFloat(m[1]):fieldH;
@@ -192,10 +194,7 @@
     if(mode==="off") return 0;
     var p=driver("--glass-pointer-reveal"), a=driver("--glass-answer-reveal");
     var t=Math.max(.62*p,.8*a);       /* pointer assembles, answer drives deeper */
-    /* pointer + active answer envelope → full shell reveal. The answer
-     * envelope decays (~1.8s), so the combined gate uses a low threshold
-     * to keep the completed state observable for the whole envelope. */
-    if(p>.35&&a>.12) t=1;
+    if(p>.45&&a>.45) t=1;             /* pointer + answer → full shell reveal */
     return t;
   }
 
@@ -217,6 +216,7 @@
       f.el.style.transform="translate3d("+x+"px,"+y+"px,"+depth+"px) rotate("+rot+"deg) scale("+(0.72+local*.28)+")";
       f.el.style.filter="saturate("+(0.65+local*.45)+") blur("+((1-local)*1.4)+"px)";
     }
+    root().style.setProperty("--glass-shell-progress",clamp(p,0,1).toFixed(3));
     root().style.setProperty("--glass-shell-dissolve",clamp(dissolve*1.15,0,1).toFixed(3));
     if(veinLayer&&veinLayer.parentNode){
       veinLayer.parentNode.style.opacity=String(clamp(.1+p*.6,0,.7)*(1-dissolve*.5));
@@ -240,7 +240,7 @@
       /* frame-rate independent exponential approach: the source rates are
        * normalized to a 60fps step so 120Hz/headless/low-power renders the
        * same wall-clock speed. */
-      var dt=lastT?Math.min(100,now-lastT):16.7;
+      var dt=lastT?Math.max(0,Math.min(100,now-lastT)):16.7;
       lastT=now;
       var base=(t>progress?RATE_UP:RATE_DOWN)*speedMul();
       var rate=1-Math.pow(1-Math.min(.95,base),dt/16.7);
@@ -261,13 +261,18 @@
   }
 
   function onPointer(e){
-    /* parallax is relative to the portrait image box, like the source field.
-     * Use the live field rect: the portrait zone can have right != 0
-     * at some breakpoints, so innerWidth-fieldW would misplace the origin. */
-    if(field&&imgW>0&&imgH>0){
-      var r=field.getBoundingClientRect();
-      mx=(e.clientX-(r.left+imgL))/imgW;
-      my=(e.clientY-(r.top+imgT))/imgH;
+    /* Resolve against the actual live field rect. Breakpoints can move the
+     * portrait with positive/negative right offsets and transforms, so
+     * viewport-width subtraction is not an exact origin. */
+    var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
+    if(rect&&fieldW>0&&fieldH>0&&imgW>0&&imgH>0){
+      var scaleX=rect.width/fieldW, scaleY=rect.height/fieldH;
+      if(!(scaleX>0)) scaleX=1;
+      if(!(scaleY>0)) scaleY=1;
+      var imageLeft=rect.left+imgL*scaleX;
+      var imageTop=rect.top+imgT*scaleY;
+      mx=(e.clientX-imageLeft)/(imgW*scaleX);
+      my=(e.clientY-imageTop)/(imgH*scaleY);
     }
     wake();
   }
@@ -294,6 +299,7 @@
      * stalled loop steps manually and always finishes its transition. */
     setInterval(function(){
       if(!isGlass()) return;
+      if(!field&&ensureLayer()) layout();
       var t=reducedMotion()?(maskMode()==="on"?1:0):target();
       if(progress===t) return;
       var now=performance.now();
@@ -301,17 +307,17 @@
       if(raf){cancelAnimationFrame(raf);raf=0;}
       step(now);
     },150);
+    /* Read-only QA/state handle (progress, target, mode). */
+    window.__padiemGlassShell={
+      progress:function(){return progress;},
+      target:function(){return reducedMotion()?(maskMode()==="on"?1:0):target();},
+      mode:function(){return maskMode();}
+    };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){layout();});
+    if(isGlass()&&ensureLayer()) layout(); /* fragments exist even if rAF never fires */
     layout();
     wake();
   }
-
-  /* bounded debug/QA handle: read-only state, no behavior authority */
-  window.__padiemGlassShell={
-    progress:function(){return progress;},
-    target:function(){return target();},
-    mode:maskMode
-  };
 
   if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",init);

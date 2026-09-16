@@ -260,6 +260,13 @@ def test_glass_shell_respects_reduced_motion_and_theme_gate() -> None:
     assert 'html:not([data-theme="padiem-glass"]) .glass-shell-field' in PORTRAIT_CSS
 
 
+def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
+    """Parallax origin must follow the transformed breakpoint-specific portrait field."""
+    assert "getBoundingClientRect" in SHELL_JS
+    assert "window.innerWidth-fieldW" not in SHELL_JS
+    assert "--glass-shell-progress" in SHELL_JS
+
+
 def _jpeg_size(path: Path) -> tuple[int, int]:
     """stdlib-only JPEG SOF0/2 scan -> (width, height)."""
     data = path.read_bytes()
