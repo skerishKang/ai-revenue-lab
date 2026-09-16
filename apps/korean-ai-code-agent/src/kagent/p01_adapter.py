@@ -210,7 +210,13 @@ class P01RequestFactory:
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._product_tier = product_tier
 
-    def build(self, run: ClawRun, *, lease: SandboxLease | None = None) -> P01RequestBundle:
+    def build(
+        self,
+        run: ClawRun,
+        *,
+        lease: SandboxLease | None = None,
+        product_tier: ProductTierLabel | None = None,
+    ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
                 "terminal_run",
@@ -244,7 +250,7 @@ class P01RequestFactory:
 
         trace_id = _trace_id_for(run)
         execution_request = ExecutionRequest(
-            agent=_agent_profile(self._product_tier),
+            agent=_agent_profile(product_tier or self._product_tier),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
             additional_system_context=None,
@@ -472,9 +478,14 @@ class P01CoreOrchestrationAdapter:
         run: ClawRun,
         *,
         lease: SandboxLease | None = None,
+        product_tier: ProductTierLabel | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
-            bundle = self._factory.build(run, lease=lease)
+            bundle = self._factory.build(
+                run,
+                lease=lease,
+                product_tier=product_tier,
+            )
             projector = ClawOrchestrationProjector(
                 run,
                 trace_id=bundle.context.trace_id,

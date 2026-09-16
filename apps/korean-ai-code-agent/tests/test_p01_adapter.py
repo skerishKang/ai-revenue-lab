@@ -150,6 +150,24 @@ class P01RequestFactoryTests(unittest.TestCase):
         self.assertEqual(bundle.execution_request.trace_id, bundle.context.trace_id)
         self.assertEqual(bundle.execution_request.session_id, run.run_id)
 
+    def test_factory_allows_per_run_plus_tier_without_mutating_default(self):
+        plus_run = self.local_run("run_plus")
+        plus_bundle = P01RequestFactory().build(
+            plus_run,
+            product_tier=ProductTierLabel.PLUS,
+        )
+        self.assertEqual(
+            dict(plus_bundle.execution_request.agent.model_policy),
+            {"model": "kilo/poolside-laguna-s-2.1-free"},
+        )
+
+        pro_run = self.local_run("run_default_after_plus")
+        pro_bundle = P01RequestFactory().build(pro_run)
+        self.assertEqual(
+            dict(pro_bundle.execution_request.agent.model_policy),
+            {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"},
+        )
+
     def test_factory_does_not_promote_repository_reference_to_system_context(self):
         run = self.local_run("run_repo_context")
         run.intent = ClawTaskIntent(

@@ -10,7 +10,7 @@ Guards the KILO4 #2322 audit fixes:
   error / cleared otherwise.
 
 Also re-asserts the preserved mobile contracts (44/48px touch targets, 16px
-iOS zoom safety, 720px breakpoint) and the execute/result/artifact frontend
+iOS zoom safety, shared 920px shell breakpoint) and the execute/result/artifact frontend
 contract so this slice cannot regress them.
 """
 
@@ -101,7 +101,7 @@ def test_mobile_zoom_safety_preserved() -> None:
 
 
 def test_mobile_breakpoint_preserved() -> None:
-    assert "@media (max-width: 720px)" in WORKSPACE_CSS
+    assert "@media (max-width: 920px)" in WORKSPACE_CSS
 
 
 # ── preserved execute/result/artifact frontend contract ──────────────────

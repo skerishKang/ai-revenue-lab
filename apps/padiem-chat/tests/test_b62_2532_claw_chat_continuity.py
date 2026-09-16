@@ -122,7 +122,7 @@ def test_typography_reuses_chat_scale() -> None:
 def test_workspace_reserves_room_for_fixed_composer() -> None:
     layout = WORKSPACE_CSS.split("/* ── Workspace layout", 1)[1]
     assert "padding: clamp(20px, 5vh, 48px) 0 280px" in layout.split("}", 1)[0]
-    mobile = WORKSPACE_CSS.split("@media (max-width: 720px)", 1)[1]
+    mobile = WORKSPACE_CSS.split("@media (max-width: 920px)", 1)[1]
     assert "padding: 16px 0 260px" in mobile
 
 

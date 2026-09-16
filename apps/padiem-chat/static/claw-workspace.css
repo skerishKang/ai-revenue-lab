@@ -748,7 +748,7 @@
  */
 
 /* ── Mobile: single column, composer mode bar stacks ───────────────────── */
-@media (max-width: 720px) {
+@media (max-width: 920px) {
   .claw-workspace {
     width: calc(100% - 28px);
     padding: 16px 0 260px;
@@ -831,7 +831,7 @@
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
-@media (max-width: 760px) {
+@media (max-width: 920px) {
   .claw-inbox { padding: 14px; }
   .claw-inbox-header,
   .claw-inbox-item { align-items: stretch; flex-direction: column; }

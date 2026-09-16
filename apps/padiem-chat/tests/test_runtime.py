@@ -346,11 +346,14 @@ def test_runtime_frontend_keeps_simple_anchor_and_truth_labels():
     js = (root / "static/app.js").read_text(encoding="utf-8")
     locale = (root / "static/locale.js").read_text(encoding="utf-8")
     capabilities = (root / "static/attachment-capabilities.js").read_text(encoding="utf-8")
+    product_capabilities = (root / "static/product-capabilities.js").read_text(encoding="utf-8")
     transport = (root / "static/chat-transport.js").read_text(encoding="utf-8")
     conversation_state = (root / "static/conversation-state.js").read_text(encoding="utf-8")
     assert "무엇을 도와드릴까요" in html
     assert "무엇이든 물어보세요" in html
-    assert "자동 추천" in html
+    assert "자동 추천" not in html
+    assert 'AVAILABLE_TIERS = Object.freeze(["plus", "pro"])' in product_capabilities
+    assert 'let selectedTier = "pro";' in product_capabilities
     assert '<div class="starter-grid" aria-label="추천 질문">' in html
     assert 'data-skill="explain"' in html
     assert 'data-skill="plan"' in html
