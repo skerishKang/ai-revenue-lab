@@ -16,6 +16,7 @@ on:
         default: preflight_only
         options:
           - preflight_only
+          - activation_readiness
           - activate_production
       target_sha:
         description: "Exact current main SHA"
@@ -110,6 +111,57 @@ jobs:
           python .github/scripts/b62_google_auth_activation.py prereq             --settings "${settings}"             --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}"
           echo 'BINDING_NAME_TYPE_STATE_ONLY=YES'
           echo 'SECRET_VALUES_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  activation-readiness:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activation_readiness' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      GOOGLE_CLIENT_ID_SOURCE: ${{ secrets.PADIEM_CHAT_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET_SOURCE: ${{ secrets.PADIEM_CHAT_GOOGLE_CLIENT_SECRET }}
+      SESSION_SECRET_SOURCE: ${{ secrets.PADIEM_CHAT_SESSION_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READINESS_EXACT_MAIN_SHA=PASS'
+
+      - name: Check protected auth source quality without mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          cid = os.environ.get("GOOGLE_CLIENT_ID_SOURCE", "").strip()
+          csecret = os.environ.get("GOOGLE_CLIENT_SECRET_SOURCE", "").strip()
+          ssecret = os.environ.get("SESSION_SECRET_SOURCE", "").strip()
+          checks = {
+              "GOOGLE_CLIENT_ID_SOURCE_READY": bool(cid) and len(cid) <= 512,
+              "GOOGLE_CLIENT_SECRET_SOURCE_READY": bool(csecret) and len(csecret) <= 4096,
+              "SESSION_SECRET_SOURCE_READY": 32 <= len(ssecret) <= 4096,
+          }
+          for name, ready in checks.items():
+              print(f"{name}={'YES' if ready else 'NO'}")
+          print("AUTH_SOURCE_VALUES_OUTPUT=0")
+          if not all(checks.values()):
+              raise SystemExit(2)
+          PY
+          echo 'AUTH_ACTIVATION_READINESS=PASS'
+          echo 'SECRET_VALUES_READBACK=0'
+          echo 'SECRET_VALUES_OUTPUT=0'
           echo 'PRODUCTION_MUTATION=0'
 
   activate-production-auth:
