@@ -166,6 +166,10 @@ def test_glass_has_explicit_same_identity_cyber_overlay_state() -> None:
     assert ".main-panel::after" in PORTRAIT_CSS
     assert "--glass-cyber-intensity" in PORTRAIT_CSS
     assert "data-glass-cyber-active" in PORTRAIT_CSS
+    assert "data-glass-cyber-state" in PORTRAIT_CSS
+    assert 'data-glass-cyber-state="answer"' in PORTRAIT_CSS
+    assert 'data-glass-cyber-state="pointer"' in PORTRAIT_CSS
+    assert 'data-glass-cyber-state="combined"' in PORTRAIT_CSS
     assert "same-identity material layer" in PORTRAIT_CSS
     assert "clip-path: polygon(" in PORTRAIT_CSS
     assert "opacity: .94" in PORTRAIT_CSS
