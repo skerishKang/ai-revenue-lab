@@ -474,6 +474,46 @@ async def test_artifact_route_real_storage_failure_returns_503() -> None:
 
     assert resp.status_code == 503
     assert resp.json()["error"]["code"] == "workspace_document_read_failed"
+    assert resp.json()["error"]["detail"] == "r2_read_failed"
+
+
+@pytest.mark.parametrize(
+    ("exc", "expected_detail"),
+    [
+        (WorkspaceStorageError("workspace document metadata is invalid"), "metadata_invalid"),
+        (WorkspaceStorageError("workspace document read failed"), "r2_read_failed"),
+        (WorkspaceStorageError("workspace document length mismatch"), "byte_length_mismatch"),
+        (WorkspaceStorageError("internal storage detail must not leak"), "storage_unknown"),
+        (RuntimeError("workspaces/tenant-secret/private-object-key"), "storage_unknown"),
+    ],
+)
+async def test_artifact_route_storage_failure_detail_is_closed_and_non_secret(
+    exc: Exception,
+    expected_detail: str,
+) -> None:
+    store = _real_workspace_store()
+    saved = await store.put_generated_docx(
+        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+    )
+
+    async def fail_get_for_tenant(**kwargs):
+        raise exc
+
+    store.get_for_tenant = fail_get_for_tenant
+    client = _artifact_route_client(OWNER_TENANT, store)
+
+    resp = client.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id))
+
+    assert resp.status_code == 503
+    error = resp.json()["error"]
+    assert error == {
+        "code": "workspace_document_read_failed",
+        "message": "문서 읽기 중 오류가 발생했습니다.",
+        "detail": expected_detail,
+    }
+    assert str(exc) not in resp.text
+    assert OWNER_TENANT not in resp.text
+    assert "workspaces/" not in resp.text
 
 
 async def test_artifact_route_error_json_discloses_no_internal_material() -> None:
