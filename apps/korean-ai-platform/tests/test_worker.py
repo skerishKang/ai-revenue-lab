@@ -81,14 +81,19 @@ class TestWranglerConfig:
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
             assert word.lower() not in content.lower()
-        # #1961: the vestigial Poolside Secrets Store binding is retired. The
-        # store item no longer exists and its authorization check (Cloudflare
-        # 10021) blocked every gated deploy. No unsafe bindings may return
-        # without a fresh owner decision.
+        # #1961: the vestigial Poolside binding remains retired. #2571
+        # authorizes only the existing account-level B.AI secret projection.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert "store_id" not in content
         assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' not in content
+
+    def test_bai_secret_store_binding_is_metadata_only_and_exact(self):
+        content = WRANGLER_TOML.read_text()
+        assert '[[secrets_store_secrets]]' in content
+        assert 'binding = "PADIEM_B_AI_API_KEY"' in content
+        assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
+        assert 'secret_name = "PADIEM_B_AI_API_KEY"' in content
+        assert "PADIEM_B_AI_API_KEY =" not in content
 
 
 class TestEnvBridge:
