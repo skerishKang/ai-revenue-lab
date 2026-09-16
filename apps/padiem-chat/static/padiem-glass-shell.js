@@ -27,10 +27,9 @@
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
-  var progress=0, raf=0;
+  var progress=0, raf=0, lastT=0;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
-  var fieldW=0, fieldTop=68;
   var lastVariant="";
 
   function root(){return document.documentElement;}
@@ -66,6 +65,13 @@
   function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
 
   function driver(name){
+    /* Prefer the live synchronous driver readout from theme.js exports;
+     * CSS variables are the deferred (rAF-gated) fallback. */
+    var api=window.__padiemTheme;
+    if(api&&api.glassMotionDrivers){
+      var d=api.glassMotionDrivers();
+      return clamp(name==="--glass-pointer-reveal"?d.pointer:d.answer,0,1);
+    }
     var v=parseFloat(getComputedStyle(root()).getPropertyValue(name));
     return isNaN(v)?0:clamp(v,0,1);
   }
@@ -143,9 +149,8 @@
     portal.style.backgroundSize=cs.backgroundSize;
     portal.style.backgroundPosition=cs.backgroundPosition;
 
-    fieldW=parseFloat(cs.width);
+    var fieldW=parseFloat(cs.width);
     var fieldH=parseFloat(cs.height);
-    fieldTop=parseFloat(cs.top)||68;
     if(!(fieldW>0&&fieldH>0)) return;
     var m=/auto\s+([0-9.]+)px/.exec(cs.backgroundSize||"");
     imgH=m?parseFloat(m[1]):fieldH;
@@ -187,7 +192,10 @@
     if(mode==="off") return 0;
     var p=driver("--glass-pointer-reveal"), a=driver("--glass-answer-reveal");
     var t=Math.max(.62*p,.8*a);       /* pointer assembles, answer drives deeper */
-    if(p>.45&&a>.45) t=1;             /* pointer + answer → full shell reveal */
+    /* pointer + active answer envelope → full shell reveal. The answer
+     * envelope decays (~1.8s), so the combined gate uses a low threshold
+     * to keep the completed state observable for the whole envelope. */
+    if(p>.35&&a>.12) t=1;
     return t;
   }
 
@@ -215,8 +223,12 @@
     }
   }
 
-  function tick(){
+  function tick(now){
     raf=0;
+    step(now);
+  }
+
+  function step(now){
     if(!isGlass()) return;
     if(!ensureLayer()){schedule();return;}
     var v=variant();
@@ -225,7 +237,13 @@
     if(reducedMotion()){
       progress=t;
     }else{
-      var rate=(t>progress?RATE_UP:RATE_DOWN)*speedMul();
+      /* frame-rate independent exponential approach: the source rates are
+       * normalized to a 60fps step so 120Hz/headless/low-power renders the
+       * same wall-clock speed. */
+      var dt=lastT?Math.min(100,now-lastT):16.7;
+      lastT=now;
+      var base=(t>progress?RATE_UP:RATE_DOWN)*speedMul();
+      var rate=1-Math.pow(1-Math.min(.95,base),dt/16.7);
       progress+=(t-progress)*rate;
       if(Math.abs(t-progress)<.001) progress=t;
     }
@@ -243,11 +261,13 @@
   }
 
   function onPointer(e){
-    /* parallax is relative to the portrait image box, like the source field */
-    var fieldLeft=window.innerWidth-fieldW;
-    if(imgW>0&&imgH>0){
-      mx=(e.clientX-(fieldLeft+imgL))/imgW;
-      my=(e.clientY-(fieldTop+imgT))/imgH;
+    /* parallax is relative to the portrait image box, like the source field.
+     * Use the live field rect: the portrait zone can have right != 0
+     * at some breakpoints, so innerWidth-fieldW would misplace the origin. */
+    if(field&&imgW>0&&imgH>0){
+      var r=field.getBoundingClientRect();
+      mx=(e.clientX-(r.left+imgL))/imgW;
+      my=(e.clientY-(r.top+imgT))/imgH;
     }
     wake();
   }
@@ -270,10 +290,28 @@
     window.addEventListener("pointermove",onPointer,{passive:true});
     window.addEventListener("resize",function(){layout();wake();},{passive:true});
     document.addEventListener("visibilitychange",function(){if(!document.hidden)wake();});
+    /* Convergence watchdog: timers still fire under rAF starvation, so a
+     * stalled loop steps manually and always finishes its transition. */
+    setInterval(function(){
+      if(!isGlass()) return;
+      var t=reducedMotion()?(maskMode()==="on"?1:0):target();
+      if(progress===t) return;
+      var now=performance.now();
+      if(now-lastT<300) return; /* live rAF stream already stepping */
+      if(raf){cancelAnimationFrame(raf);raf=0;}
+      step(now);
+    },150);
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){layout();});
     layout();
     wake();
   }
+
+  /* bounded debug/QA handle: read-only state, no behavior authority */
+  window.__padiemGlassShell={
+    progress:function(){return progress;},
+    target:function(){return target();},
+    mode:maskMode
+  };
 
   if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",init);
