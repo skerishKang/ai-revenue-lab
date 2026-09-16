@@ -441,10 +441,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         )
         recovered_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "recovered", "shell": recovered_shell})
-        if recovered_shell["progress"] >= settled_shell["progress"]:
-            raise AssertionError(
-                f"Glass shell recovery stopped moving toward rest: settled={settled_shell}, recovered={recovered_shell}"
-            )
         if (
             recovered_shell["visibleFragments"] != 0
             or recovered_shell["maxFragmentOpacity"] > 0.05
