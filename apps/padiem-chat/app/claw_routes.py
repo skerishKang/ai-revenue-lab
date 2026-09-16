@@ -419,6 +419,26 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     except Exception as exc:
         return _error(400, "invalid_input", str(exc))
 
+    # Artifact-producing actions require canonical tenant + storage authority
+    # before quota consumption or any P01/Engine/B14 dispatch (#2583).
+    artifact_tenant_id: str | None = None
+    artifact_store: Any = None
+    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
+        artifact_tenant_id = await _resolve_canonical_tenant(request)
+        if artifact_tenant_id is None:
+            return _error(
+                503,
+                "workspace_scope_unavailable",
+                "문서 저장 권한을 확인할 수 없습니다.",
+            )
+        artifact_store = getattr(request.app.state, "workspace_document_store", None)
+        if artifact_store is None:
+            return _error(
+                503,
+                "workspace_storage_unavailable",
+                "문서 저장소가 설정되지 않았습니다.",
+            )
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
@@ -502,23 +522,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
 
     title = f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
 
-    # Artifact-producing actions (quote/order) require canonical tenant resolution.
+    # Artifact authority was preflighted before quota/P01 dispatch above.
     artifact_descriptor: dict[str, Any] | None = None
-    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
-        tenant_id = await _resolve_canonical_tenant(request)
-        if tenant_id is None:
-            return _error(
-                503,
-                "workspace_scope_unavailable",
-                "문서 저장 권한을 확인할 수 없습니다.",
-            )
-        workspace_store: Any = getattr(request.app.state, "workspace_document_store", None)
-        if workspace_store is None:
-            return _error(
-                503,
-                "workspace_storage_unavailable",
-                "문서 저장소가 설정되지 않았습니다.",
-            )
+    if artifact_tenant_id is not None and artifact_store is not None:
         try:
             artifact = build_document_artifact(
                 document_type=action.value.replace("_draft", ""),
@@ -535,8 +541,8 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 total="",
                 markdown_fallback_text=outcome.answer or "",
             )
-            metadata = await workspace_store.put_generated_docx(
-                tenant_id=tenant_id,
+            metadata = await artifact_store.put_generated_docx(
+                tenant_id=artifact_tenant_id,
                 filename=artifact.filename,
                 body=artifact.content_bytes(),
             )
