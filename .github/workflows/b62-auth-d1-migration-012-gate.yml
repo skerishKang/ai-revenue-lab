@@ -1,9 +1,9 @@
-name: B62 Claw D1 Migration 012 Gate
+name: B62 Auth D1 Migration 012 Gate
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/b62-claw-d1-migration-012-gate.yml"
+      - ".github/workflows/b62-auth-d1-migration-012-gate.yml"
       - ".github/scripts/b62_d1_migration_012_schema.py"
       - ".github/tests/test_b62_d1_migration_012_gate.py"
       - "apps/padiem-chat/migrations/012_password_auth.sql"
@@ -32,7 +32,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: b62-claw-d1-migration-012-gate
+  group: b62-auth-d1-migration-012-gate
   cancel-in-progress: false
 
 env:
@@ -154,9 +154,10 @@ jobs:
           query="${RUNNER_TEMP}/b62-d1-012-schema-query.json"
           python - "${query}" <<'PY'
           import json, sys
-          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('users/password_credentials','idx_users/password_credentials_owner_workspace_created') ORDER BY name;
-          PRAGMA table_info(users/password_credentials);
-          PRAGMA index_info(idx_users/password_credentials_owner_workspace_created);"""
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('users','password_credentials','idx_password_credentials_username') ORDER BY name;
+          PRAGMA table_info(users);
+          PRAGMA table_info(password_credentials);
+          PRAGMA index_info(idx_password_credentials_username);"""
           with open(sys.argv[1], 'w', encoding='utf-8') as handle:
               json.dump({'sql': sql}, handle)
           PY
@@ -249,7 +250,7 @@ jobs:
           echo 'PREMUTATION_LIVE_PADIEM_CHAT_DB_DERIVED=PASS'
           echo 'D1_IDENTIFIER_OUTPUT=0'
 
-      - name: Apply only migration 012 when absent
+      - name: Apply migration 012 only from reviewed legacy schema
         if: ${{ env.READONLY_SCHEMA_STATE == 'legacy' }}
         shell: bash
         run: |
@@ -260,10 +261,25 @@ jobs:
           python - "${migration}" "${payload}" <<'PY'
           import json, sys
           sql = open(sys.argv[1], encoding='utf-8').read()
-          if 'CREATE TABLE IF NOT EXISTS users/password_credentials' not in sql:
-              raise SystemExit('migration 012 table contract missing')
-          if 'CREATE INDEX IF NOT EXISTS idx_users/password_credentials_owner_workspace_created' not in sql:
-              raise SystemExit('migration 012 index contract missing')
+          required = (
+              'CREATE TABLE users_012',
+              'INSERT INTO users_012',
+              'DROP TABLE users',
+              'ALTER TABLE users_012 RENAME TO users',
+              'CREATE TABLE password_credentials',
+              'CREATE INDEX idx_password_credentials_username',
+              'PRAGMA foreign_key_check',
+          )
+          if any(token not in sql for token in required):
+              raise SystemExit('migration 012 contract missing')
+          for forbidden in (
+              'DROP TABLE conversations',
+              'DROP TABLE projects',
+              'DROP TABLE claw_run_history',
+              'DROP TABLE claw_approved_memory',
+          ):
+              if forbidden in sql:
+                  raise SystemExit('migration 012 touches unrelated ownership tables')
           with open(sys.argv[2], 'w', encoding='utf-8') as handle:
               json.dump({'sql': sql}, handle)
           PY
@@ -289,9 +305,10 @@ jobs:
           query="${RUNNER_TEMP}/b62-d1-012-schema-query-after.json"
           python - "${query}" <<'PY'
           import json, sys
-          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('users/password_credentials','idx_users/password_credentials_owner_workspace_created') ORDER BY name;
-          PRAGMA table_info(users/password_credentials);
-          PRAGMA index_info(idx_users/password_credentials_owner_workspace_created);"""
+          sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('users','password_credentials','idx_password_credentials_username') ORDER BY name;
+          PRAGMA table_info(users);
+          PRAGMA table_info(password_credentials);
+          PRAGMA index_info(idx_password_credentials_username);"""
           with open(sys.argv[1], 'w', encoding='utf-8') as handle:
               json.dump({'sql': sql}, handle)
           PY
