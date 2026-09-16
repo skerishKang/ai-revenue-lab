@@ -532,6 +532,7 @@ html[data-theme="padiem-glass"] .main-panel::after {
 }
 
 html[data-theme="padiem-glass"][data-glass-cyber-active="true"] .main-panel::after {
+  opacity: .94;
   transition-duration: 220ms, 420ms, 280ms, 320ms;
 }
 
