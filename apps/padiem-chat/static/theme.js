@@ -232,7 +232,7 @@
   function glassAnswerReveal(now){
     if(!glassAnswerLastActivity) return 0;
     var age=Math.max(0,now-glassAnswerLastActivity);
-    var envelope=age<=260?1:Math.max(0,1-(age-260)/1500);
+    var envelope=age<=260?1:Math.max(0,1-(age-260)/1200);
     if(envelope<=0){
       glassAnswerLastActivity=0;
       return 0;
