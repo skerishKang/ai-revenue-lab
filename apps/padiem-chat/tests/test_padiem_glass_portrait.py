@@ -170,3 +170,98 @@ def test_glass_rejects_synthetic_cyan_visor_regression() -> None:
     assert "data-glass-cyber-active" not in THEME_JS
     assert "data-glass-cyber-state" not in THEME_JS
     assert "--glass-cyber-intensity" not in THEME_JS
+
+SHELL_JS = (STATIC / "padiem-glass-shell.js").read_text(encoding="utf-8")
+
+
+def test_glass_shell_assets_are_local_paired_and_adopted() -> None:
+    """Shell states reuse the adopted faces; only the mask object is transplanted
+    from the approved sibling renders (cyber-08 visor, cyber-04 face shell)."""
+    female = STATIC / "assets/padiem-glass-female-shell.jpg"
+    male = STATIC / "assets/padiem-glass-male-shell.jpg"
+    assert female.is_file()
+    assert male.is_file()
+    assert female.stat().st_size > 1_000
+    assert male.stat().st_size > 1_000
+    assert './assets/padiem-glass-female-shell.jpg' in PORTRAIT_CSS
+    assert './assets/padiem-glass-male-shell.jpg' in PORTRAIT_CSS
+    assert 'drive.google.com' not in PORTRAIT_CSS
+
+
+def test_glass_shell_layer_script_is_loaded() -> None:
+    assert 'src="./padiem-glass-shell.js"' in HTML
+    assert 'glass-shell-portrait' in SHELL_JS
+    assert 'glass-shell-field' in SHELL_JS
+    assert 'glass-shell-frag' in SHELL_JS
+
+
+def test_glass_shell_ports_source_fragment_assembly() -> None:
+    """The plate-assembly math is the source loader's, not an invented overlay."""
+    # original clipShapes verbatim
+    assert 'polygon(8% 0,100% 7%,91% 100%,0 88%)' in SHELL_JS
+    assert 'polygon(6% 0,100% 11%,93% 92%,0 100%)' in SHELL_JS
+    # golden-angle scatter ring, assemble easing, dissolve->portal swap
+    assert 'i*2.399' in SHELL_JS
+    assert 'ASSEMBLE_START' in SHELL_JS and 'DISSOLVE_AT' in SHELL_JS
+    assert 'requestAnimationFrame' in SHELL_JS
+    # shell geometry mirrors the live ::before portrait box
+    assert 'getComputedStyle(panel,"::before")' in SHELL_JS
+    # fragments carry jigsaw slices of the shell image
+    assert 'backgroundPosition' in SHELL_JS
+    assert 'padiem-glass-' in SHELL_JS and '-shell.jpg' in SHELL_JS
+
+
+def test_glass_shell_drivers_are_pointer_and_answer_not_scroll() -> None:
+    assert '--glass-pointer-reveal' in SHELL_JS
+    assert '--glass-answer-reveal' in SHELL_JS
+    assert '--glass-pointer-reveal' in THEME_JS
+    assert '--glass-answer-reveal' in THEME_JS
+
+
+def test_glass_shell_mode_and_speed_are_url_authoritative() -> None:
+    assert 'GLASS_MASK_MODES=["auto","on","off"]' in THEME_JS
+    assert 'data-glass-mask' in THEME_JS
+    assert 'data-glass-mask' in THEME_INIT
+    assert 'data-glass-speed' in THEME_JS
+    assert 'data-glass-speed' in THEME_INIT
+    assert 'get("mask")' in THEME_JS
+    assert 'get("mask")' in THEME_INIT
+    assert 'get("speed")' in THEME_JS
+    assert 'get("speed")' in THEME_INIT
+    # browser storage stays forbidden across every glass runtime file
+    for forbidden in [
+        "localStorage",
+        "sessionStorage",
+        "indexedDB",
+        "document.cookie",
+        "cookieStore",
+    ]:
+        assert forbidden not in SHELL_JS
+
+
+def test_glass_shell_controls_live_in_appearance_settings() -> None:
+    assert 'data-glass-mask-value' in THEME_JS
+    assert '"auto","Auto"' in THEME_JS
+    assert '"on","On"' in THEME_JS
+    assert '"off","Off"' in THEME_JS
+    assert 'glass-speed-range' in THEME_JS
+    assert 'Motion speed' in THEME_JS
+    assert 'Shell mask' in THEME_JS
+    assert '.glass-mask-picker' in PORTRAIT_CSS
+    assert '.glass-speed-range' in PORTRAIT_CSS
+
+
+def test_glass_shell_respects_reduced_motion_and_theme_gate() -> None:
+    assert 'prefers-reduced-motion: reduce' in SHELL_JS
+    assert 'data-theme' in SHELL_JS
+    assert 'padiem-glass' in SHELL_JS
+    # layers stay invisible off-theme
+    assert 'html:not([data-theme="padiem-glass"]) .glass-shell-portrait' in PORTRAIT_CSS
+    assert 'html:not([data-theme="padiem-glass"]) .glass-shell-field' in PORTRAIT_CSS
+
+
+def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
+    """Parallax origin must follow the transformed breakpoint-specific portrait field."""
+    assert "getBoundingClientRect" in SHELL_JS
+    assert "window.innerWidth-fieldW" not in SHELL_JS
+    assert "--glass-shell-progress" in SHELL_JS
