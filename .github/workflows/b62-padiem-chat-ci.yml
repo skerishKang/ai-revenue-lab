@@ -242,6 +242,66 @@ jobs:
               )
           print("WORKER_P01_BINDING_COMPOSITION_PASS")
           PY
+      - name: Real Worker/Pyodide R2 ObjectBody read probe
+        run: |
+          set -euo pipefail
+          cat > .runtime-r2-read-probe.toml <<'EOF'
+          name = "padiem-chat-runtime-r2-read-probe"
+          main = "worker_runtime_r2_read_probe.py"
+          compatibility_date = "2026-08-25"
+          compatibility_flags = ["python_workers"]
+          workers_dev = true
+          EOF
+
+          npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 > /tmp/b62-r2-read-workerd.log 2>&1 &
+          WORKER_PID=$!
+
+          cleanup() {
+            kill "$WORKER_PID" 2>/dev/null || true
+            rm -f .runtime-r2-read-probe.toml
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8790/ready >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/b62-r2-read-workerd.log
+            exit 1
+          fi
+
+          HTTP_CODE="$(curl -sS -o /tmp/b62-r2-read-result.json -w '%{http_code}' http://127.0.0.1:8790/probe)"
+          cat /tmp/b62-r2-read-result.json
+          if [ "$HTTP_CODE" != "200" ]; then
+            cat /tmp/b62-r2-read-workerd.log
+            exit 1
+          fi
+
+          uv run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/b62-r2-read-result.json").read_text())
+          required = (
+              "js_arraybuffer_to_bytes",
+              "object_arraybuffer_called_once",
+              "bucket_get_called_once",
+              "stream_body_not_used",
+              "payload_matches",
+          )
+          failed = [name for name in required if data.get(name) is not True]
+          if failed or data.get("unexpected_exception") is not False:
+              raise SystemExit(
+                  f"Worker R2 ObjectBody read probe failed: {failed}; "
+                  f"error_type={data.get('error_type', 'NONE')}"
+              )
+          print("WORKER_R2_OBJECTBODY_READ_PASS")
+          PY
       - name: Prove Core vendored for Python Worker
         run: |
           set -euo pipefail
