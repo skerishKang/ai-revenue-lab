@@ -246,7 +246,7 @@
   function onPointer(e){
     /* Resolve against the actual live field rect. Breakpoints can move the
      * portrait with positive/negative right offsets and transforms, so
-     * window.innerWidth-fieldW is not an exact origin. */
+     * viewport-width subtraction is not an exact origin. */
     var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
     if(rect&&fieldW>0&&fieldH>0&&imgW>0&&imgH>0){
       var scaleX=rect.width/fieldW, scaleY=rect.height/fieldH;
