@@ -8,6 +8,12 @@ STATIC = ROOT / "static"
 CAPABILITIES = (STATIC / "product-capabilities.js").read_text(encoding="utf-8")
 APP = (STATIC / "app.js").read_text(encoding="utf-8")
 CSS = (STATIC / "mode-presentation.css").read_text(encoding="utf-8")
+INDEX = (STATIC / "index.html").read_text(encoding="utf-8")
+LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
+THEMES = (STATIC / "padiem-themes.css").read_text(encoding="utf-8")
+GLASS = (STATIC / "padiem-glass.css").read_text(encoding="utf-8")
+GLASS_READING = (STATIC / "padiem-glass-reading.css").read_text(encoding="utf-8")
+CERT_QA = (ROOT.parent.parent / ".github" / "scripts" / "b62_product_surface_certification_browser_qa.py").read_text(encoding="utf-8")
 
 
 def test_browser_exposes_only_plus_and_pro_tiers() -> None:
@@ -62,3 +68,21 @@ def test_tier_controls_are_keyboard_and_touch_ready() -> None:
     assert 'event.key === "Escape"' in CAPABILITIES
     assert "min-height: 48px" in CSS
     assert "@media (max-width: 720px)" in CSS
+
+
+def test_browser_never_renders_internal_provider_or_model_route_metadata() -> None:
+    assert "route-details" not in APP
+    assert '"route-question"' not in LOCALE
+    assert '"provider-route"' not in LOCALE
+    assert '"model-label"' not in LOCALE
+    for stylesheet in (THEMES, GLASS, GLASS_READING):
+        assert ".route-details" not in stylesheet
+
+
+def test_legacy_mode_qa_and_html_markers_are_removed() -> None:
+    assert "Legacy regression marker only" not in INDEX
+    assert "mode_fast_balanced_deep" not in CERT_QA
+    assert "Fast / Balanced / Deep trusted execution mapping" not in CERT_QA
+    assert '"surface": "tier_plus_pro"' in CERT_QA
+    assert '"surface": "tier_max"' in CERT_QA
+    assert '"presentation": "BROWSER_HIDDEN"' in CERT_QA
