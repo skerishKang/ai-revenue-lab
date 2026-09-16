@@ -306,10 +306,15 @@ class D1HistoryStore:
         uid = _password_user_id(username)
         now = _now_iso()
         display = (name.strip() or username)[:160]
+        # The v1 users table has a historical google-only CHECK constraint.
+        # Keep this row as storage compatibility only; password_credentials is
+        # the product-local auth-method authority, while the Control Plane is
+        # explicitly bridged with auth_provider='password'.
+        compatibility_subject = "password:" + username
         user_statement = self.db.prepare(
             "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
-            "VALUES (?, 'password', ?, ?, ?, '', ?, ?)"
-        ).bind(uid, username, email, display, now, now)
+            "VALUES (?, 'google', ?, ?, ?, '', ?, ?)"
+        ).bind(uid, compatibility_subject, email, display, now, now)
         credential_statement = self.db.prepare(
             "INSERT INTO password_credentials "
             "(user_id, username, password_hash, failed_attempts, locked_until, created_at, updated_at) "
@@ -330,7 +335,7 @@ class D1HistoryStore:
                 "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
                 "c.failed_attempts, c.locked_until "
                 "FROM password_credentials c JOIN users u ON u.id=c.user_id "
-                "WHERE u.auth_provider='password' AND lower(u.email)=lower(?) LIMIT 1",
+                "WHERE lower(u.email)=lower(?) LIMIT 1",
                 identifier,
             )
         else:
@@ -338,7 +343,7 @@ class D1HistoryStore:
                 "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
                 "c.failed_attempts, c.locked_until "
                 "FROM password_credentials c JOIN users u ON u.id=c.user_id "
-                "WHERE u.auth_provider='password' AND c.username=? COLLATE NOCASE LIMIT 1",
+                "WHERE c.username=? COLLATE NOCASE LIMIT 1",
                 identifier,
             )
         if row is None:
@@ -380,7 +385,7 @@ class D1HistoryStore:
     async def get_user(self, user_id: str) -> UserProfile | None:
         row = await self._first(
             "SELECT id, email, display_name, picture_url FROM users "
-            "WHERE id=? AND auth_provider IN ('google','password')",
+            "WHERE id=?",
             user_id,
         )
         if not row:
