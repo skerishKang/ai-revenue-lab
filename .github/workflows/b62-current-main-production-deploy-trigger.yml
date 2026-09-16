@@ -1,0 +1,113 @@
+name: B62 Current Main Production Deploy Trigger
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-current-main-production-deploy-trigger.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b62-current-main-production-deploy-trigger.yml"
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: b62-current-main-production-deploy-trigger
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate bounded trigger contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text = Path(".github/workflows/b62-current-main-production-deploy-trigger.yml").read_text(encoding="utf-8")
+          required = [
+              "b62-production-code-deploy-gate.yml",
+              "deploy_production_code",
+              "DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN",
+              "gh workflow run",
+              "gh run watch",
+              "actions: write",
+              "PRODUCTION_MUTATION=0",
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f"missing deploy-trigger invariant: {token}")
+          print("B62_CURRENT_MAIN_DEPLOY_TRIGGER_SOURCE=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  deploy-production:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    environment: production
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout exact merged main revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "DEPLOY_TRIGGER_EXACT_MAIN=PASS"
+
+      - name: Dispatch canonical B62 Production deploy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow="b62-production-code-deploy-gate.yml"
+
+          gh workflow run "${workflow}" --ref main \
+            -f mode=deploy_production_code \
+            -f target_sha="${GITHUB_SHA}" \
+            -f confirmation=DEPLOY_B62_PRODUCTION_CODE_FROM_EXACT_MAIN
+
+          run_id=""
+          for _ in $(seq 1 40); do
+            run_id="$(gh run list --workflow "${workflow}" --branch main --event workflow_dispatch --limit 20 \
+              --json databaseId,headSha \
+              --repo "${GITHUB_REPOSITORY}" \
+              | python -c 'import json,os,sys; d=json.load(sys.stdin); print(next((str(x["databaseId"]) for x in d if x.get("headSha")==os.environ["GITHUB_SHA"]), ""))')"
+            if [ -n "${run_id}" ]; then break; fi
+            sleep 2
+          done
+
+          test -n "${run_id}"
+          echo "B62_DEPLOY_RUN_ID=${run_id}"
+          gh run watch "${run_id}" --repo "${GITHUB_REPOSITORY}" --exit-status
+          echo "B62_PRODUCTION_CODE_DEPLOY=PASS"
+
+      - name: Reconfirm main did not drift during deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "POSTDEPLOY_EXACT_MAIN=PASS"
