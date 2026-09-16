@@ -526,8 +526,13 @@ def test_quote_artifact_failure_fail_closed() -> None:
     assert data["error"]["code"] == "artifact_generation_failed"
 
 
-def test_quote_no_tenant_fails_closed(client: TestClient) -> None:
-    with _injected_adapter(client, _make_adapter()):
+def test_quote_no_tenant_fails_closed_before_quota_or_p01(client: TestClient) -> None:
+    adapter = _make_adapter()
+    usage_gate = MagicMock()
+    usage_gate.authorize = AsyncMock(return_value=UsageDecision(allowed=True, subject_type="anonymous"))
+    client.app.state.usage_gate = usage_gate
+    client.app.state.usage_gate_enforced = True
+    with _injected_adapter(client, adapter):
         payload = {
             "content": "가상 테스트: A업체 견적서 요청.",
             "channel": "kakao",
@@ -537,12 +542,15 @@ def test_quote_no_tenant_fails_closed(client: TestClient) -> None:
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
     data = resp.json()
-    assert data["error"]["code"] in ("workspace_scope_unavailable", "workspace_storage_unavailable")
+    assert data["error"]["code"] == "workspace_scope_unavailable"
+    usage_gate.authorize.assert_not_awaited()
+    adapter.execute.assert_not_called()
 
 
-def test_quote_workspace_store_unavailable_fails_closed() -> None:
+def test_quote_workspace_store_unavailable_fails_closed_before_p01() -> None:
     app = _app_with_identity()
     del app.state.workspace_document_store
+    adapter = _make_adapter()
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
@@ -550,13 +558,14 @@ def test_quote_workspace_store_unavailable_fails_closed() -> None:
             domain="chat.example.test",
             path="/",
         )
-        with _injected_adapter(test_client, _make_adapter()):
+        with _injected_adapter(test_client, adapter):
             resp = test_client.post(
                 EXECUTE_ROUTE_PATH,
                 json={"content": "test", "channel": "kakao", "action": "quote"},
             )
     assert resp.status_code == 503
     assert resp.json()["error"]["code"] == "workspace_storage_unavailable"
+    adapter.execute.assert_not_called()
 
 
 def test_browser_plus_tier_is_forwarded_to_claw_p01_adapter() -> None:
@@ -1132,7 +1141,7 @@ PREVIEW_ROUTE_PATH = "/api/claw/manual-intake/preview"
 GATE_PAYLOAD = {
     "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
     "channel": "kakao",
-    "action": "quote",
+    "action": "reply",
     "sender_hint": "A업체",
 }
 
@@ -1331,6 +1340,9 @@ def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     execute_handler = source.split("async def claw_manual_intake_execute", 1)[1]
     assert "_usage_gate_denial(request)" in execute_handler
     assert "claw_p01_adapter" in execute_handler
+    assert execute_handler.index(
+        "artifact_tenant_id = await _resolve_canonical_tenant(request)"
+    ) < execute_handler.index("_usage_gate_denial(request)")
     assert execute_handler.index("_usage_gate_denial(request)") < execute_handler.index(
         'request.app.state, "claw_p01_adapter"'
     )
