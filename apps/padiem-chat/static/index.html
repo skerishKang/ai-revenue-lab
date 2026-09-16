@@ -81,6 +81,41 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
       </header>
+      <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
+        <div class="auth-panel">
+          <div class="auth-header">
+            <div><p data-locale-key="auth-kicker">PADIEM ACCOUNT</p><h2 id="authDialogTitle" data-locale-key="auth-title">로그인 / 회원가입</h2></div>
+            <button class="auth-close" id="authDialogClose" type="button" data-locale-aria-label="auth-close" aria-label="로그인 창 닫기">×</button>
+          </div>
+          <button class="auth-google" id="googleLoginButton" type="button" data-locale-key="auth-google">Google 계정으로 계속</button>
+          <div class="auth-divider" id="authDivider"><span data-locale-key="auth-or">또는</span></div>
+          <form class="auth-form" id="passwordLoginForm">
+            <h3 data-locale-key="auth-password-login">아이디로 로그인</h3>
+            <label for="passwordLoginIdentifier" data-locale-key="auth-identifier">아이디 또는 이메일</label>
+            <input id="passwordLoginIdentifier" name="identifier" type="text" autocomplete="username" maxlength="320" required>
+            <label for="passwordLoginPassword" data-locale-key="auth-password">비밀번호</label>
+            <input id="passwordLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+            <p class="auth-error" id="passwordLoginError" role="alert" hidden></p>
+            <button class="auth-primary" id="passwordLoginSubmit" type="submit" data-locale-key="auth-login">로그인</button>
+          </form>
+          <details class="auth-register" id="passwordRegisterSection">
+            <summary data-locale-key="auth-create-account">새 계정 만들기</summary>
+            <form class="auth-form" id="passwordRegisterForm">
+              <label for="passwordRegisterUsername" data-locale-key="auth-username">아이디</label>
+              <input id="passwordRegisterUsername" name="username" type="text" autocomplete="username" minlength="4" maxlength="32" pattern="[a-z0-9][a-z0-9._-]{3,31}" required>
+              <label for="passwordRegisterEmail" data-locale-key="auth-email">이메일</label>
+              <input id="passwordRegisterEmail" name="email" type="email" autocomplete="email" maxlength="320" required>
+              <label for="passwordRegisterName" data-locale-key="auth-name">이름</label>
+              <input id="passwordRegisterName" name="name" type="text" autocomplete="name" maxlength="160">
+              <label for="passwordRegisterPassword" data-locale-key="auth-password">비밀번호</label>
+              <input id="passwordRegisterPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+              <small data-locale-key="auth-password-rule">12자 이상, 아이디 전체를 포함하지 않도록 설정해 주세요.</small>
+              <p class="auth-error" id="passwordRegisterError" role="alert" hidden></p>
+              <button class="auth-primary" id="passwordRegisterSubmit" type="submit" data-locale-key="auth-register">회원가입</button>
+            </form>
+          </details>
+        </div>
+      </dialog>
       <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
         <form class="settings-panel" method="dialog">
           <div class="settings-header">
