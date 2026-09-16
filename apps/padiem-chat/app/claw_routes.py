@@ -389,7 +389,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
         sender_hint = raw_sender or None
 
-    raw_tier = data.get("tier", "pro")
+    raw_tier = data.get("tier", "plus")
     if not isinstance(raw_tier, str):
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())

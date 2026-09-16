@@ -32,6 +32,7 @@ from enum import Enum
 
 SCHEMA_VERSION = "b14.tier_registry.v1"
 POLICY_ID = "explicit_tier_selection_v1"
+PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _CREDENTIAL_BINDING_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
@@ -207,19 +208,30 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PRO,
         routes=(
             TierRoute(
+                route_id="pro.hold.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="pro",
+                model_id=PRO_HOLD_MODEL_ID,
+                hold_reason=(
+                    "Owner decision #2601: Padiem Pro is temporarily disabled while its "
+                    "provider route is replaced or re-verified."
+                ),
+                evidence="#2601 temporary Plus-only product posture.",
+            ),
+            TierRoute(
                 route_id="pro.b-ai-qwen3.8-flash.v1",
-                status=RouteStatus.EXECUTABLE,
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="qwen3.8-flash",
                 provider_id="b-ai",
                 model_id="b-ai/qwen3.8-flash",
                 upstream_model="qwen3.8-flash",
                 credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B_AI_API_KEY",
-                evidence=(
-                    "Owner selection #2571; exact model authority and B14 registration "
-                    "in app/pilot/bai_provider.py (#2133). Production activation is gated "
-                    "on fresh b-ai credential/route readiness."
+                hold_reason=(
+                    "Temporarily removed from executable Padiem Pro by owner decision #2601 "
+                    "after provider/model instability. Historical data only."
                 ),
+                evidence="Historical #2571/#2133 route; execution disabled by #2601.",
             ),
             TierRoute(
                 route_id="pro.kilo-nemotron-3-ultra-free.v1",

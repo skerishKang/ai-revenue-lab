@@ -12,6 +12,7 @@ from padiem_control_plane.product_tier_routes import (
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
+    PRO_HOLD_MODEL_ID as _CONTRACT_PRO_HOLD_MODEL_ID,
 )
 
 # #2099 STEP-2: the Plus/Pro/Max route IDs are no longer literals owned here.
@@ -31,7 +32,7 @@ def _contract_route_id(label: ProductTierLabel) -> str:
     return route.model_id
 
 
-DEFAULT_CHAT_PROFILE = "medium"
+DEFAULT_CHAT_PROFILE = "low"
 AUTO_B14_MODEL_ID = "b14/auto"
 
 TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
@@ -54,7 +55,7 @@ _REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
 LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)
-MEDIUM_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PRO)
+MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID
 MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
 
 # Kilo Gateway free lanes that are no longer offered upstream. Re-checked
@@ -93,13 +94,12 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
     MEDIUM_B14_MODEL_ID: PADIEM_PRO,
     HIGH_B14_MODEL_ID: PADIEM_MAX,
 }
-EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
+EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID})
 
-# Current source posture after owner remap #2571. Route identities remain
-# derived from the shared control-plane contract:
+# Current source posture after owner decision #2601:
 #
-#   Padiem Plus -> direct SenseNova 6.8 Flash Lite
-#   Padiem Pro  -> B.AI Qwen3.8 Flash
+#   Padiem Plus -> direct SenseNova 6.8 Flash Lite (only executable tier)
+#   Padiem Pro  -> HOLD
 #   Padiem Max  -> HOLD
 #
 # The historical Kilo lanes are not product fallbacks. `b14/auto` and
@@ -124,7 +124,7 @@ MODEL_ALIASES: dict[str, str] = {
 # capabilities.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
-    MEDIUM_B14_MODEL_ID: frozenset({"chat", "long_context"}),
+    MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
@@ -194,7 +194,12 @@ def resolve_tier_policy(
                 "tier_unavailable",
                 "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
             )
-        model_id = MAX_HOLD_MODEL_ID if label is ProductTierLabel.MAX else ""
+        if label is ProductTierLabel.PRO:
+            model_id = MEDIUM_B14_MODEL_ID
+        elif label is ProductTierLabel.MAX:
+            model_id = MAX_HOLD_MODEL_ID
+        else:
+            model_id = ""
     else:
         model_id = route.model_id
 
@@ -248,7 +253,7 @@ def resolve_model_policy(
 ) -> ResolvedModelPolicy:
     """Resolve ordinary B62 chat to a Padiem product tier.
 
-    Ordinary chat defaults to executable Padiem Pro. Hidden ``/plus``, ``/pro``
+    Ordinary chat defaults to executable Padiem Plus. Hidden ``/plus``, ``/pro``
     and ``/max`` selectors are owner/test controls. Callers that only need to
     recognize product identity may set ``require_executable=False``; every path
     that can reach B14 execution must retain the default fail-closed gate.
