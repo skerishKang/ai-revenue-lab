@@ -369,8 +369,8 @@ async def _english_probe(browser) -> dict[str, Any]:
             raise AssertionError(f"English account truth missing: {account_text!r}")
         await page.locator(".model-pill").click()
         truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
-        if "cannot be selected until trusted backend mappings are active" not in truth:
-            raise AssertionError(f"English mode truth boundary missing: {truth!r}")
+        if "Provider and model routing stays server-managed" not in truth:
+            raise AssertionError(f"English tier truth boundary missing: {truth!r}")
         return {
             "status": "PASS",
             "locale": "en",
