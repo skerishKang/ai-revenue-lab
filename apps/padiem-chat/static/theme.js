@@ -178,6 +178,7 @@
       applyGlassVariant(requested,false);
     } else {
       document.documentElement.removeAttribute("data-glass-cyber-active");
+      document.documentElement.removeAttribute("data-glass-cyber-state");
       document.documentElement.style.removeProperty("--glass-cyber-intensity");
       syncGlassVariant(getGlassVariant(),theme);
     }
@@ -257,6 +258,7 @@
       root.style.setProperty("--glass-cyber-y","0px");
       root.style.setProperty("--glass-cyber-scale","1");
       root.setAttribute("data-glass-cyber-active","static");
+      root.setAttribute("data-glass-cyber-state","static");
       root.style.setProperty("--glass-reading-art-opacity","0.28");
       glassAnswerLastActivity=0;
       resetGlassPointer();
@@ -313,7 +315,13 @@
     root.style.setProperty("--glass-cyber-intensity",cyberIntensity.toFixed(3));
     root.style.setProperty("--glass-cyber-y",(8*(1-cyberIntensity)).toFixed(1)+"px");
     root.style.setProperty("--glass-cyber-scale",(.96+.04*cyberIntensity).toFixed(3));
-    root.setAttribute("data-glass-cyber-active",cyberIntensity>.08?"true":"false");
+    var cyberHasPointer=pointerReveal>.08;
+    var cyberHasAnswer=answerReveal>.08;
+    var cyberState=cyberHasPointer&&cyberHasAnswer
+      ?"combined"
+      :(cyberHasAnswer?"answer":(cyberHasPointer?"pointer":"idle"));
+    root.setAttribute("data-glass-cyber-state",cyberState);
+    root.setAttribute("data-glass-cyber-active",cyberState==="idle"?"false":"true");
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
     root.style.setProperty("--glass-art-x",(-9*reveal).toFixed(1)+"px");
