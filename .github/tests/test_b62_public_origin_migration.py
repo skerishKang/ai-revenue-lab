@@ -124,7 +124,7 @@ def test_target_origin_smoke_checks_login_start_without_exposing_state() -> None
     assert "AUTH_START_REDIRECT_URI_CANONICAL=PASS" in WORKFLOW
     assert "AUTH_START_STATE_COOKIE_CONTRACT=PASS" in WORKFLOW
     assert "OAUTH_STATE_VALUE_OUTPUT=0" in WORKFLOW
-    assert 'jq -e '.ready == true and .authenticated == false and .session_state == "guest"'' in WORKFLOW
+    assert "jq -e '.ready == true and .authenticated == false and .session_state == \"guest\"'" in WORKFLOW
 
 
 def test_canonical_origin_is_updated_in_existing_auth_and_deploy_gates() -> None:
