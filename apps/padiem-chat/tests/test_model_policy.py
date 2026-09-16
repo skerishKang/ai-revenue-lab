@@ -160,15 +160,14 @@ def test_explicit_alias_without_prompt_fails_closed_before_tier_availability_che
 
 def test_tier_capabilities_are_conservative_and_hold_claims_none():
     assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding", "long_context"})
-    assert MODEL_CAPABILITIES[MEDIUM_B14_MODEL_ID] == frozenset({"chat", "long_context"})
+    assert MODEL_CAPABILITIES[MEDIUM_B14_MODEL_ID] == frozenset()
     assert MODEL_CAPABILITIES[HIGH_B14_MODEL_ID] == frozenset()
 
-    for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
-        assert model_supports(model_id, "chat") is True
-        assert model_supports(model_id, "free") is False
-        assert model_supports(model_id, "image") is False
+    assert model_supports(LOW_B14_MODEL_ID, "chat") is True
+    assert model_supports(LOW_B14_MODEL_ID, "free") is False
+    assert model_supports(LOW_B14_MODEL_ID, "image") is False
 
-    for model_id in (HIGH_B14_MODEL_ID, AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
+    for model_id in (MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID, AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
         assert model_supports(model_id, "chat") is False
         assert model_supports(model_id, "free") is False
         assert model_supports(model_id, "image") is False
@@ -178,9 +177,8 @@ def test_tier_assignment_is_distinct_from_route_executability():
     for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID):
         assert model_profile_is_assigned(model_id) is True
 
-    for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
-        assert model_policy_is_executable(model_id) is True
-
+    assert model_policy_is_executable(LOW_B14_MODEL_ID) is True
+    assert model_policy_is_executable(MEDIUM_B14_MODEL_ID) is False
     assert model_policy_is_executable(HIGH_B14_MODEL_ID) is False
 
     for model_id in (AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
