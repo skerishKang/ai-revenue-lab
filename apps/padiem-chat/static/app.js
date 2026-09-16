@@ -210,19 +210,6 @@
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
     const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : uiT("ai-response");
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
-    if (result.runtime === "b14" && result.route && (result.route.model || result.route.provider)) {
-      const details = document.createElement("details");
-      details.className = "route-details";
-      const summary = document.createElement("summary");
-      summary.textContent = uiT("route-question");
-      const meta = document.createElement("p");
-      const pieces = [];
-      if (result.route.provider) pieces.push(uiT("provider-route", { provider: result.route.provider }));
-      if (result.route.model) pieces.push(uiT("model-label", { model: result.route.model }));
-      meta.textContent = pieces.join(" · ");
-      details.append(summary, meta);
-      content.appendChild(details);
-    }
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
