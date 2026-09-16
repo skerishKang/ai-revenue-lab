@@ -126,7 +126,7 @@ def test_auth_status_controls_account_session_visibility_while_health_controls_c
     assert 'Route("/health", health, methods=["GET"])' in server
     assert '"web_tools_ready": web_ready' in server
     assert '"deep_research_ready": settings.runtime_mode == "b14" and web_ready' in server
-    assert '"auth_configured": settings.auth_mode == "google"' in server
+    assert '"auth_configured": settings.auth_mode != "off"' in server
     assert '"history_store_bound": request.app.state.history_store is not None' in server
 
 

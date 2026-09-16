@@ -25,6 +25,23 @@
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
+  const authDialog = document.getElementById("authDialog");
+  const authDialogClose = document.getElementById("authDialogClose");
+  const googleLoginButton = document.getElementById("googleLoginButton");
+  const authDivider = document.getElementById("authDivider");
+  const passwordLoginForm = document.getElementById("passwordLoginForm");
+  const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
+  const passwordLoginPassword = document.getElementById("passwordLoginPassword");
+  const passwordLoginError = document.getElementById("passwordLoginError");
+  const passwordLoginSubmit = document.getElementById("passwordLoginSubmit");
+  const passwordRegisterSection = document.getElementById("passwordRegisterSection");
+  const passwordRegisterForm = document.getElementById("passwordRegisterForm");
+  const passwordRegisterUsername = document.getElementById("passwordRegisterUsername");
+  const passwordRegisterEmail = document.getElementById("passwordRegisterEmail");
+  const passwordRegisterName = document.getElementById("passwordRegisterName");
+  const passwordRegisterPassword = document.getElementById("passwordRegisterPassword");
+  const passwordRegisterError = document.getElementById("passwordRegisterError");
+  const passwordRegisterSubmit = document.getElementById("passwordRegisterSubmit");
   const accountName = document.getElementById("accountName");
   const accountContainer = document.querySelector(".sidebar-account");
   const historySection = document.getElementById("historySection");
@@ -802,6 +819,7 @@
     }
     loginButton.hidden = sessionState === "unavailable";
     loginButton.disabled = !ready;
+    syncAuthDialogMethods();
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
 
     if (sessionState === "unavailable") {
@@ -842,6 +860,120 @@
     clearHistoryUI();
     clearProjectsUI();
   }
+  function authMethodEnabled(name) {
+    return Boolean(authState && authState.methods && authState.methods[name] === true);
+  }
+
+  function setAuthFormError(node, message = "") {
+    if (!node) return;
+    node.textContent = message;
+    node.hidden = !message;
+  }
+
+  function syncAuthDialogMethods() {
+    if (!authDialog) return;
+    const googleEnabled = authMethodEnabled("google");
+    const passwordEnabled = authMethodEnabled("password");
+    if (googleLoginButton) googleLoginButton.hidden = !googleEnabled;
+    if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
+    if (passwordLoginForm) passwordLoginForm.hidden = !passwordEnabled;
+    if (passwordRegisterSection) passwordRegisterSection.hidden = !passwordEnabled;
+  }
+
+  function openAuthDialog() {
+    if (!authDialog) {
+      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+      return;
+    }
+    syncAuthDialogMethods();
+    setAuthFormError(passwordLoginError);
+    setAuthFormError(passwordRegisterError);
+    if (typeof authDialog.showModal === "function") {
+      authDialog.showModal();
+    } else {
+      authDialog.setAttribute("open", "");
+    }
+    if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
+  }
+
+  function closeAuthDialog() {
+    if (!authDialog) return;
+    if (typeof authDialog.close === "function") authDialog.close();
+    else authDialog.removeAttribute("open");
+  }
+
+  async function passwordAuthRequest(path, payload) {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_) {}
+    if (!response.ok) {
+      const message = data && data.error && typeof data.error.message === "string"
+        ? data.error.message
+        : uiT("auth-error-generic");
+      const error = new Error(message);
+      error.code = data && data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
+      throw error;
+    }
+    return data;
+  }
+
+  async function submitPasswordLogin(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordLoginForm) return;
+    setAuthFormError(passwordLoginError);
+    passwordLoginSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/login", {
+        identifier: passwordLoginIdentifier.value,
+        password: passwordLoginPassword.value,
+      });
+      passwordLoginPassword.value = "";
+      closeAuthDialog();
+      await loadAuthStatus();
+    } catch (error) {
+      setAuthFormError(
+        passwordLoginError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordLoginSubmit.disabled = false;
+    }
+  }
+
+  async function submitPasswordRegister(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordRegisterForm) return;
+    setAuthFormError(passwordRegisterError);
+    passwordRegisterSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/register", {
+        username: passwordRegisterUsername.value,
+        email: passwordRegisterEmail.value,
+        name: passwordRegisterName.value,
+        password: passwordRegisterPassword.value,
+      });
+      passwordRegisterPassword.value = "";
+      closeAuthDialog();
+      await loadAuthStatus();
+    } catch (error) {
+      setAuthFormError(
+        passwordRegisterError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordRegisterSubmit.disabled = false;
+    }
+  }
+
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {
       clearHistoryUI();
@@ -1201,7 +1333,7 @@
   loginButton.addEventListener("click", async () => {
     if (!authState.ready) return;
     if (!authState.authenticated) {
-      window.location.assign("/auth/google/start");
+      openAuthDialog();
       return;
     }
     try {
@@ -1212,6 +1344,20 @@
       await loadAuthStatus();
     }
   });
+  if (authDialogClose) authDialogClose.addEventListener("click", closeAuthDialog);
+  if (authDialog) {
+    authDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeAuthDialog();
+    });
+  }
+  if (googleLoginButton) {
+    googleLoginButton.addEventListener("click", () => {
+      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+    });
+  }
+  if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
+  if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     closeSidebar();
