@@ -45,9 +45,9 @@ def test_home_cinematic_reveal_and_variants_are_preserved() -> None:
         'var messageTravel=messageCount*.28;',
         'var travel=messageTravel+overflowTravel+scrollTravel;',
         'baseReveal=smoothstep(pingPong(travel));',
-        'var restMaskStart=reading?(variant==="male"?28:30):(variant==="male"?0:2);',
-        'var restMaskFull=reading?(variant==="male"?50:54):(variant==="male"?22:26);',
-        'var openMaskFull=reading?(variant==="male"?20:24):(variant==="male"?12:14);',
+        'var restMaskStart=reading?(variant==="male"?30:34):(variant==="male"?14:18);',
+        'var restMaskFull=reading?(variant==="male"?58:62):(variant==="male"?42:46);',
+        'var openMaskFull=reading?(variant==="male"?20:22):(variant==="male"?8:10);',
     ]:
         assert token in THEME
     assert 'padiem-glass-female.jpg' in PORTRAIT
@@ -57,8 +57,8 @@ def test_home_cinematic_reveal_and_variants_are_preserved() -> None:
 def test_pointer_and_answer_reveal_are_composed_together_boundedly() -> None:
     assert 'var pointerReveal=glassHoverCapable()?glassPointerReveal:0;' in THEME
     assert 'var answerReveal=mode==="reading"?glassAnswerReveal(now):0;' in THEME
-    assert '*(1-pointerReveal*.78)' in THEME
-    assert '*(1-answerReveal*.86);' in THEME
+    assert '*(1-pointerReveal*.94)' in THEME
+    assert '*(1-answerReveal*.90);' in THEME
     assert 'reveal=Math.max(0,Math.min(1,reveal));' in THEME
 
 
@@ -68,9 +68,10 @@ def test_reading_css_is_glass_only_and_reduces_visual_noise() -> None:
     assert 'body::after' in READING
     assert 'opacity: .025;' in READING
     assert '.main-panel::before' in READING
-    # #2093-4: reading-mode hero presence was rebalanced .14 -> .28 so the
-    # brand visual stays calm but visible behind the conversation.
-    assert 'opacity: .28;' in READING
+    # #2573: desktop reading presence now follows the bounded reveal variable,
+    # while retaining .28 as the calm fallback.
+    assert 'opacity: var(--glass-reading-art-opacity, .28);' in READING
+    assert 'root.style.setProperty("--glass-reading-art-opacity"' in THEME
     assert '.conversation' in READING
     assert 'rgba(251, 252, 253, .97)' in READING
     for other_theme in ['data-theme="light"', 'data-theme="dark"', 'data-theme="cinematic"', 'data-theme="padiem-home"']:

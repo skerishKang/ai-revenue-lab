@@ -63,12 +63,28 @@ def test_glass_reserves_right_portrait_zone_and_opaque_chat_surface() -> None:
 def test_glass_mask_is_dynamic_not_fixed() -> None:
     assert '@property --glass-mask-start' in PORTRAIT_CSS
     assert '@property --glass-mask-full' in PORTRAIT_CSS
-    assert '--glass-mask-start: 24%' in PORTRAIT_CSS
-    assert '--glass-mask-full: 58%' in PORTRAIT_CSS
+    assert '--glass-mask-start: 20%' in PORTRAIT_CSS
+    assert '--glass-mask-full: 48%' in PORTRAIT_CSS
+    assert 'to left,' in PORTRAIT_CSS
     assert 'transparent var(--glass-mask-start)' in PORTRAIT_CSS
     assert '#000 var(--glass-mask-full)' in PORTRAIT_CSS
-    assert '--glass-mask-start 900ms' in PORTRAIT_CSS
-    assert '--glass-mask-full 900ms' in PORTRAIT_CSS
+    assert '--glass-mask-start 560ms' in PORTRAIT_CSS
+    assert '--glass-mask-full 560ms' in PORTRAIT_CSS
+
+
+
+
+
+def test_glass_face_reveal_targets_right_aligned_portrait_zone() -> None:
+    assert 'to left,' in PORTRAIT_CSS
+    assert '--glass-mask-start: 18%' in PORTRAIT_CSS
+    assert '--glass-mask-full: 46%' in PORTRAIT_CSS
+    assert '--glass-mask-start: 14%' in PORTRAIT_CSS
+    assert '--glass-mask-full: 42%' in PORTRAIT_CSS
+    assert 'var restMaskStart=reading?(variant==="male"?30:34):(variant==="male"?14:18);' in THEME_JS
+    assert 'var restMaskFull=reading?(variant==="male"?58:62):(variant==="male"?42:46);' in THEME_JS
+    assert 'var openMaskFull=reading?(variant==="male"?20:22):(variant==="male"?8:10);' in THEME_JS
+    assert 'root.style.setProperty("--glass-reading-art-opacity"' in THEME_JS
 
 
 def test_glass_mobile_keeps_chat_primary_and_art_subordinate() -> None:
@@ -93,8 +109,8 @@ def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_acti
     assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
     assert 'function glassAnswerReveal(now)' in THEME_JS
     assert 'noteGlassAnswerActivity()' in THEME_JS
-    assert '*(1-pointerReveal*.78)' in THEME_JS
-    assert '*(1-answerReveal*.86);' in THEME_JS
+    assert '*(1-pointerReveal*.94)' in THEME_JS
+    assert '*(1-answerReveal*.90);' in THEME_JS
     assert '--glass-mask-start' in THEME_JS
     assert '--glass-mask-full' in THEME_JS
     assert '--glass-reveal' in THEME_JS
