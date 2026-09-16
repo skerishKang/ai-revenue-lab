@@ -66,10 +66,10 @@ CAPABILITY_MATRIX = (
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "tier_plus_pro",
+        "surface": "tier_plus_only",
         "presentation": "ACTIVE",
-        "default_tier": "pro",
-        "browser_visible": ["plus", "pro"],
+        "default_tier": "plus",
+        "browser_visible": ["plus"],
         "backend_active": "SERVER_RESOLVED_SHARED_TIER_CONTRACT",
         "production_active": "NOT_CLAIMED",
     },
@@ -97,7 +97,7 @@ CAPABILITY_MATRIX = (
 
 BACKEND_DEPENDENCIES = (
     {
-        "capability": "Plus / Pro product-tier resolution",
+        "capability": "Plus product-tier resolution; Pro/Max HOLD",
         "owner": "shared Padiem product-tier contract / B14",
         "b62_action": "send bounded tier ids only; do not expose provider/model routing authority",
     },
@@ -258,16 +258,15 @@ async def _exercise_view(page: Page, *, theme: str, viewport_name: str, query: s
     panel = page.locator("#modePresentationPanel")
     await panel.wait_for(state="visible")
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 2:
-        raise AssertionError(f"tier matrix incomplete at {label}")
+    if await options.count() != 1:
+        raise AssertionError(f"Plus-only tier matrix incomplete at {label}")
     plus = panel.locator('[data-mode-value="plus"]')
-    pro = panel.locator('[data-mode-value="pro"]')
-    if await plus.is_disabled() or await pro.is_disabled():
-        raise AssertionError(f"Plus and Pro must be selectable at {label}")
-    if await pro.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Pro not selected by default at {label}")
-    if await plus.get_attribute("aria-pressed") != "false":
-        raise AssertionError(f"Plus must start unselected at {label}")
+    if await plus.is_disabled():
+        raise AssertionError(f"Plus must be selectable at {label}")
+    if await plus.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Plus not selected by default at {label}")
+    if await panel.locator('[data-mode-value="pro"]').count() != 0:
+        raise AssertionError(f"Pro must remain browser-hidden while HOLD at {label}")
     if await panel.locator('[data-mode-value="max"]').count() != 0:
         raise AssertionError(f"Max must remain browser-hidden at {label}")
     await page.keyboard.press("Escape")

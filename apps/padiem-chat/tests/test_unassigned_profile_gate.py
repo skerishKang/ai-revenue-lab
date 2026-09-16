@@ -12,7 +12,7 @@ from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
     _refund_active_reservation,
 )
-from app.model_policy import DEFAULT_B14_MODEL_ID, DEFAULT_CHAT_PROFILE, MEDIUM_B14_MODEL_ID
+from app.model_policy import DEFAULT_B14_MODEL_ID, DEFAULT_CHAT_PROFILE, LOW_B14_MODEL_ID
 from app.usage_gate import UsageDecision
 
 
@@ -51,7 +51,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_default_pro_reaches_service_binding_with_exact_default_route():
+def test_live_completed_default_plus_reaches_service_binding_with_exact_default_route():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -61,7 +61,7 @@ def test_live_completed_default_pro_reaches_service_binding_with_exact_default_r
             async def post_json(self, url, payload):
                 nonlocal calls
                 calls += 1
-                assert payload["model"] == MEDIUM_B14_MODEL_ID
+                assert payload["model"] == LOW_B14_MODEL_ID
                 return 503, b'{"error":{"code":"upstream_error"}}'
 
         client = DispatchAwareB14Client(
@@ -73,11 +73,11 @@ def test_live_completed_default_pro_reaches_service_binding_with_exact_default_r
         with pytest.raises(ChatRuntimeError):
             await client.complete(MESSAGES)
 
-        assert DEFAULT_CHAT_PROFILE == "medium"
+        assert DEFAULT_CHAT_PROFILE == "low"
         assert (
             DEFAULT_B14_MODEL_ID
-            == MEDIUM_B14_MODEL_ID
-            == "b-ai/qwen3.8-flash"
+            == LOW_B14_MODEL_ID
+            == "sensenova/sensenova-6.8-flash-lite"
         )
         assert calls == 1
         assert store.refunds == []
@@ -86,7 +86,7 @@ def test_live_completed_default_pro_reaches_service_binding_with_exact_default_r
     asyncio.run(scenario())
 
 
-def test_live_stream_default_pro_reaches_manual_stream_transport_without_pre_dispatch_refund():
+def test_live_stream_default_plus_reaches_manual_stream_transport_without_pre_dispatch_refund():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -98,7 +98,7 @@ def test_live_stream_default_pro_reaches_manual_stream_transport_without_pre_dis
             assert request.url.path.endswith("/stream-preview")
             assert not request.url.path.endswith("/auto-stream-preview")
             body = __import__("json").loads(request.content)
-            assert body["model"] == MEDIUM_B14_MODEL_ID
+            assert body["model"] == LOW_B14_MODEL_ID
             return httpx.Response(500, content=b"upstream failure")
 
         client = DispatchAwareB14Client(
@@ -118,7 +118,7 @@ def test_live_stream_default_pro_reaches_manual_stream_transport_without_pre_dis
     asyncio.run(scenario())
 
 
-def test_non_live_b14_preflight_remains_available_for_exact_default_pro_regression():
+def test_non_live_b14_preflight_remains_available_for_exact_default_plus_regression():
     async def scenario():
         calls = 0
 
@@ -126,7 +126,7 @@ def test_non_live_b14_preflight_remains_available_for_exact_default_pro_regressi
             async def post_json(self, url, payload):
                 nonlocal calls
                 calls += 1
-                assert payload["model"] == MEDIUM_B14_MODEL_ID
+                assert payload["model"] == LOW_B14_MODEL_ID
                 return 503, b'{"error":{"code":"upstream_error"}}'
 
         client = DispatchAwareB14Client(
@@ -156,7 +156,7 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == MEDIUM_B14_MODEL_ID
+        assert result["route"]["model"] == LOW_B14_MODEL_ID
         assert calls == 0
 
     asyncio.run(scenario())

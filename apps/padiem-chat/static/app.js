@@ -1065,7 +1065,7 @@
 
   function selectedProductTier() {
     const tier = window.PadiemTierSelection?.get?.();
-    return tier === "plus" ? "plus" : "pro";
+    return "plus";
   }
 
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
@@ -1277,7 +1277,7 @@
   const clawExecuteHint = document.getElementById("clawExecuteHint");
 
   let clawInFlight = false;
-  let clawLastAction = null;
+  let clawLastAction = clawAction?.value || "quote";
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",

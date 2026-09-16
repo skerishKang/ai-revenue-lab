@@ -53,6 +53,42 @@ html[data-theme="padiem-glass"] body .sidebar-bottom .settings-button > span:fir
   }
 }
 
+
+/* Chat / Claw shared frame ------------------------------------------------
+ * #2594: Claw manual intake is an extension of the Chat composer, not a
+ * separate visual product. Reuse the same desktop breathing-room contract. */
+@media (min-width: 921px) {
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .conversation {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer-wrap {
+    bottom: 16px !important;
+    padding-top: 20px !important;
+    padding-bottom: 16px !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer {
+    padding: 12px 12px 11px !important;
+  }
+
+  html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .composer textarea {
+    padding: 9px 9px 7px !important;
+  }
+}
+
+/* The mode bar belongs to the same composer surface. Avoid a second floating
+ * card language above the shared text field. */
+html[data-theme="padiem-glass"] body .app-shell[data-state="claw"] .claw-mode-bar {
+  margin-bottom: 8px !important;
+  border-color: rgba(255,255,255,.62) !important;
+  background: rgba(249,251,252,.78) !important;
+  box-shadow: 0 10px 32px rgba(28,36,44,.08) !important;
+  backdrop-filter: blur(24px) saturate(104%);
+  -webkit-backdrop-filter: blur(24px) saturate(104%);
+}
+
 /* Settings dialog -------------------------------------------------------- */
 .settings-dialog {
   width: min(620px, calc(100vw - 32px));

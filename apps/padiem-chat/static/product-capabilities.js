@@ -35,7 +35,7 @@
     displayName: "",
   });
 
-  const AVAILABLE_TIERS = Object.freeze(["plus", "pro"]);
+  const AVAILABLE_TIERS = Object.freeze(["plus"]);
 
   const TIER_COPY = Object.freeze({
     ko: Object.freeze({
@@ -45,7 +45,6 @@
       truth: "모델·제공자 선택은 파디엠 서버가 관리하며 브라우저에는 노출하지 않습니다.",
       available: "사용 가능",
       plus: ["Padiem Plus", "일상 대화와 일반 작업"],
-      pro: ["Padiem Pro", "더 복잡한 대화와 업무"],
     }),
     en: Object.freeze({
       label: "AI tier",
@@ -54,11 +53,10 @@
       truth: "Provider and model routing stays server-managed and is not browser-selectable.",
       available: "Available",
       plus: ["Padiem Plus", "Everyday chat and general tasks"],
-      pro: ["Padiem Pro", "More complex chat and work"],
     }),
   });
 
-  let selectedTier = "pro";
+  let selectedTier = "plus";
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -412,7 +410,6 @@
     list.setAttribute("role", "group");
     list.append(
       createModeOption("plus"),
-      createModeOption("pro"),
     );
 
     const truth = document.createElement("p");
