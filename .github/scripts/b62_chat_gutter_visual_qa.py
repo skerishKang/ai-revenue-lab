@@ -38,6 +38,19 @@ def _assert_close(a: float, b: float, *, name: str, tolerance: float = 1.5) -> N
         raise AssertionError(f"{name} mismatch: {a} vs {b}")
 
 
+def _bottom_inset(box: dict[str, float], viewport_height: int) -> float:
+    return round(float(viewport_height - (box["y"] + box["height"])), 2)
+
+
+async def _open_claw(page: Page, *, width: int) -> None:
+    if width <= 920:
+        await page.locator("#mobileMenu").click()
+        await page.locator("#clawNavButton").wait_for(state="visible")
+    await page.locator("#clawNavButton").click()
+    await page.locator('.app-shell[data-state="claw"]').wait_for(state="attached")
+    await page.locator("#clawManualForm").wait_for(state="visible")
+
+
 async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[str, Any]:
     await page.set_viewport_size({"width": width, "height": height})
     await page.goto(
@@ -46,6 +59,22 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         timeout=30_000,
     )
     await page.locator("#messageInput").wait_for(state="visible")
+
+    home_conversation = await _box(page, ".conversation")
+    home_composer = await _box(page, ".composer-wrap")
+    home_placeholder = await page.locator("#messageInput").get_attribute("placeholder")
+    home_composer_padding = await page.locator("#composerForm").evaluate(
+        """el => {
+          const s = getComputedStyle(el);
+          return {
+            top: parseFloat(s.paddingTop) || 0,
+            right: parseFloat(s.paddingRight) || 0,
+            bottom: parseFloat(s.paddingBottom) || 0,
+            left: parseFloat(s.paddingLeft) || 0,
+          };
+        }"""
+    )
+
     await page.locator("#messageInput").fill("공유 대화폭 반응형 검증")
     await page.locator("#sendButton").click()
     await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
@@ -217,11 +246,66 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
     if html_metrics["scrollWidth"] > html_metrics["innerWidth"] + 1:
         raise AssertionError(f"{name} horizontal overflow: {html_metrics}")
 
+    # Owner-facing parity contract (#2594): the manual Claw surface must reuse
+    # the same outer frame/composer geometry and initial input copy as Chat Home.
+    await _open_claw(page, width=width)
+    claw_conversation = await _box(page, ".conversation")
+    claw_composer = await _box(page, ".composer-wrap")
+    claw_placeholder = await page.locator("#messageInput").get_attribute("placeholder")
+    claw_composer_padding = await page.locator("#composerForm").evaluate(
+        """el => {
+          const s = getComputedStyle(el);
+          return {
+            top: parseFloat(s.paddingTop) || 0,
+            right: parseFloat(s.paddingRight) || 0,
+            bottom: parseFloat(s.paddingBottom) || 0,
+            left: parseFloat(s.paddingLeft) || 0,
+          };
+        }"""
+    )
+
+    _assert_close(home_conversation["x"], claw_conversation["x"], name=f"{name} home/claw conversation left", tolerance=2)
+    _assert_close(_right(home_conversation), _right(claw_conversation), name=f"{name} home/claw conversation right", tolerance=2)
+    _assert_close(home_composer["x"], claw_composer["x"], name=f"{name} home/claw composer left", tolerance=2)
+    _assert_close(_right(home_composer), _right(claw_composer), name=f"{name} home/claw composer right", tolerance=2)
+    _assert_close(home_conversation["y"], claw_conversation["y"], name=f"{name} home/claw top breathing room", tolerance=2)
+    _assert_close(
+        _bottom_inset(home_composer, height),
+        _bottom_inset(claw_composer, height),
+        name=f"{name} home/claw composer bottom inset",
+        tolerance=2,
+    )
+
+    for side in ("top", "right", "bottom", "left"):
+        _assert_close(
+            float(home_composer_padding[side]),
+            float(claw_composer_padding[side]),
+            name=f"{name} home/claw composer padding {side}",
+            tolerance=0.5,
+        )
+
+    if claw_placeholder != home_placeholder:
+        raise AssertionError(
+            f"{name} Claw placeholder diverged from Chat Home: {claw_placeholder!r} vs {home_placeholder!r}"
+        )
+    if await page.locator("#clawQuoteCard").get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"{name} default quote action must be visibly selected")
+
     screenshot = f"{name}-shared-gutter.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)
 
     return {
         "viewport": {"width": width, "height": height},
+        "home_conversation": home_conversation,
+        "home_composer": home_composer,
+        "claw_conversation": claw_conversation,
+        "claw_composer": claw_composer,
+        "home_claw_outer_parity": True,
+        "home_claw_top_breathing_room_parity": True,
+        "home_claw_bottom_inset_parity": True,
+        "home_claw_composer_padding_parity": True,
+        "home_claw_placeholder_parity": True,
+        "claw_default_quote_selected": True,
         "conversation": conversation,
         "composer": composer,
         "inner_gutter_left_px": inner_gutter_left,
