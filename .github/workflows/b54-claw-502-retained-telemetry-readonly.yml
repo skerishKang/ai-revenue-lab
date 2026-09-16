@@ -56,16 +56,23 @@ jobs:
           for token in required:
               if token not in text:
                   raise SystemExit(f"missing readonly invariant: {token}")
-          forbidden = [
-              "/api/claw/manual-intake/execute",
-              "/api/chat/stream",
-              "/api/chat\"",
-              "/internal/v1/orchestrate\"",
+          # Route names may legitimately appear below as retained-log comparison
+          # values. Guard actual network targets instead: this workflow may
+          # talk only to the Cloudflare account API, never Product/Engine/B14
+          # runtime or provider origins.
+          forbidden_network_targets = [
+              "chat.padiem.net",
+              "engine.padiem.net",
+              "padiem-ai-engine.workers.dev",
+              "ai-revenue-korean-ai-platform.workers.dev",
+              "token.sensenova.ai",
           ]
-          query_region = text.split("Query retained Workers telemetry", 1)[-1]
-          for token in forbidden:
-              if token in query_region:
-                  raise SystemExit(f"product/runtime endpoint forbidden in telemetry job: {token}")
+          for token in forbidden_network_targets:
+              if token in text:
+                  raise SystemExit(f"runtime/provider network target forbidden: {token}")
+          cloudflare_account_api = 'api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"'
+          if cloudflare_account_api not in text:
+              raise SystemExit("Cloudflare account API authority missing")
           print("B54_CLAW_502_TELEMETRY_SOURCE=PASS")
           print("PRODUCT_REQUESTS=0")
           print("PROVIDER_CALLS=0")
