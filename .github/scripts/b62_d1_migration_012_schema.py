@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Classify the B62 users/password-auth migration 012 schema without row-data access."""
+"""Classify additive B62 password-auth migration 012 without row-data access."""
 
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ def _normalized_sql(value: object) -> str:
 
 
 def classify_schema(payload: object) -> str:
-    """Return legacy, exact or drift from bounded schema-only evidence."""
+    """Return missing, exact or drift from bounded schema-only evidence."""
     if not isinstance(payload, dict) or payload.get("success") is not True:
         raise SchemaEvidenceError("Cloudflare D1 response is not successful")
     result = payload.get("result")
@@ -81,20 +81,14 @@ def classify_schema(payload: object) -> str:
         return "drift"
 
     users_sql = _normalized_sql(users.get("sql"))
-    legacy_provider = "check (auth_provider = 'google')" in users_sql
-    exact_provider = (
-        "check (auth_provider in ('google', 'password'))" in users_sql
-        or 'check (auth_provider in ("google", "password"))' in users_sql
-    )
+    if "check (auth_provider = 'google')" not in users_sql:
+        return "drift"
 
     if credentials is None and password_index is None and not password_columns and not index_columns:
-        return "legacy" if legacy_provider else "drift"
-
+        return "missing"
     if credentials is None or credentials.get("type") != "table":
         return "drift"
     if password_index is None or password_index.get("type") != "index":
-        return "drift"
-    if not exact_provider:
         return "drift"
     if tuple(str(row.get("name", "")) for row in password_columns) != PASSWORD_COLUMNS:
         return "drift"
