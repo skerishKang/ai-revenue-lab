@@ -532,8 +532,19 @@ html[data-theme="padiem-glass"] .main-panel::after {
 }
 
 html[data-theme="padiem-glass"][data-glass-cyber-active="true"] .main-panel::after {
-  opacity: .94;
   transition-duration: 0ms, 420ms, 280ms, 320ms;
+}
+
+html[data-theme="padiem-glass"][data-glass-cyber-state="answer"] .main-panel::after {
+  opacity: .68;
+}
+
+html[data-theme="padiem-glass"][data-glass-cyber-state="pointer"] .main-panel::after {
+  opacity: .94;
+}
+
+html[data-theme="padiem-glass"][data-glass-cyber-state="combined"] .main-panel::after {
+  opacity: .99;
 }
 
 html[data-theme="padiem-glass"][data-glass-variant="male"] .main-panel::after {
