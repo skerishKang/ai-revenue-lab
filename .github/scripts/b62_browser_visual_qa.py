@@ -303,7 +303,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
 
     # Forced On/Off verifies the actual shell portal/fragments, not only driver CSS vars.
     await page.evaluate(
-        "() => { window.PadiemTheme.applyGlassSpeed(300, false); window.PadiemTheme.applyGlassMask('on', false); }"
+        "() => { window.__padiemTheme.applyGlassSpeed(300, false); window.__padiemTheme.applyGlassMask('on', false); }"
     )
     await page.wait_for_function(
         "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) > .94",
@@ -315,7 +315,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     shell_on_name = f"desktop-glass-{variant}-shell-on.png"
     await page.screenshot(path=str(OUT_DIR / shell_on_name), full_page=True)
 
-    await page.evaluate("() => window.PadiemTheme.applyGlassMask('off', false)")
+    await page.evaluate("() => window.__padiemTheme.applyGlassMask('off', false)")
     await page.wait_for_function(
         "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) < .05",
         timeout=4_000,
@@ -325,7 +325,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         raise AssertionError(f"Glass mask=off did not fully cover shell: {shell_off}")
 
     await page.evaluate(
-        "() => { window.PadiemTheme.applyGlassSpeed(100, false); window.PadiemTheme.applyGlassMask('auto', false); }"
+        "() => { window.__padiemTheme.applyGlassSpeed(100, false); window.__padiemTheme.applyGlassMask('auto', false); }"
     )
     await page.wait_for_timeout(120)
 
@@ -761,7 +761,7 @@ async def main() -> None:
             reduced_auto = await _glass_shell_snapshot(reduced_page)
             if reduced_auto["progress"] > 0.01 or reduced_auto["pointerDriver"] > 0.01:
                 raise AssertionError(f"reduced-motion Auto shell must remain static: {reduced_auto}")
-            await reduced_page.evaluate("() => window.PadiemTheme.applyGlassMask('on', false)")
+            await reduced_page.evaluate("() => window.__padiemTheme.applyGlassMask('on', false)")
             await reduced_page.wait_for_timeout(80)
             reduced_on = await _glass_shell_snapshot(reduced_page)
             if reduced_on["progress"] < 0.99 or reduced_on["portalOpacity"] < 0.35:
