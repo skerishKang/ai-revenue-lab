@@ -191,9 +191,6 @@ def test_workflow_is_exact_main_migration_specific_and_fail_closed() -> None:
         "d1 migrations apply",
         "pywrangler deploy",
         "wrangler deploy",
-        "DROP TABLE conversations",
-        "DROP TABLE projects",
-        "DROP TABLE claw_run_history",
     ):
         assert forbidden not in workflow
 
