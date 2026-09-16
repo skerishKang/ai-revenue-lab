@@ -160,3 +160,19 @@ def test_glass_portrait_has_no_provider_core_or_production_behavior() -> None:
         "wrangler deploy",
     ]:
         assert forbidden not in combined
+
+
+def test_glass_has_explicit_same_identity_cyber_overlay_state() -> None:
+    assert ".main-panel::after" in PORTRAIT_CSS
+    assert "--glass-cyber-intensity" in PORTRAIT_CSS
+    assert "data-glass-cyber-active" in PORTRAIT_CSS
+    assert "same-identity material layer" in PORTRAIT_CSS
+    assert "clip-path: polygon(" in PORTRAIT_CSS
+    assert "transition-duration: 220ms, 420ms, 280ms, 320ms" in PORTRAIT_CSS
+    assert 'root.style.setProperty("--glass-cyber-intensity"' in THEME_JS
+    assert 'root.style.setProperty("--glass-cyber-y"' in THEME_JS
+    assert 'root.style.setProperty("--glass-cyber-scale"' in THEME_JS
+    assert 'root.setAttribute("data-glass-cyber-active",cyberIntensity>.08?"true":"false")' in THEME_JS
+    assert 'root.style.setProperty("--glass-cyber-intensity","0.32")' in THEME_JS
+    assert "padiem-glass-female-shell" not in PORTRAIT_CSS
+    assert "padiem-glass-male-shell" not in PORTRAIT_CSS
