@@ -36,12 +36,12 @@ from app.model_policy import (
 )
 
 
-def test_three_product_tier_identities_remain_known_and_pro_is_default():
+def test_three_product_tier_identities_remain_known_and_plus_is_default():
     policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
 
-    assert DEFAULT_CHAT_PROFILE == "medium"
+    assert DEFAULT_CHAT_PROFILE == "low"
     assert LOW_B14_MODEL_ID == "sensenova/sensenova-6.8-flash-lite"
-    assert MEDIUM_B14_MODEL_ID == "b-ai/qwen3.8-flash"
+    assert MEDIUM_B14_MODEL_ID == "padiem-profile/pro-hold"
     assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
     assert "hy3" not in HIGH_B14_MODEL_ID
@@ -56,15 +56,15 @@ def test_three_product_tier_identities_remain_known_and_pro_is_default():
         MEDIUM_B14_MODEL_ID: PADIEM_PRO,
         HIGH_B14_MODEL_ID: PADIEM_MAX,
     }
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID})
     assert product_tier_name(HIGH_B14_MODEL_ID) == PADIEM_MAX
     assert model_profile_is_assigned(HIGH_B14_MODEL_ID) is True
     assert model_policy_is_executable(HIGH_B14_MODEL_ID) is False
 
-    assert DEFAULT_B14_MODEL_ID == MEDIUM_B14_MODEL_ID
-    assert policy.profile == "medium"
-    assert policy.model_id == MEDIUM_B14_MODEL_ID
-    assert product_tier_name(policy.model_id) == "Padiem Pro"
+    assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
+    assert policy.profile == "low"
+    assert policy.model_id == LOW_B14_MODEL_ID
+    assert product_tier_name(policy.model_id) == "Padiem Plus"
     assert model_profile_is_assigned(policy.model_id) is True
     assert model_policy_is_executable(policy.model_id) is True
     assert policy.messages == [{"role": "user", "content": "안녕하세요"}]
@@ -75,7 +75,6 @@ def test_three_product_tier_identities_remain_known_and_pro_is_default():
     ("alias", "model_id", "profile", "tier_name"),
     [
         ("/plus", LOW_B14_MODEL_ID, "low", PADIEM_PLUS),
-        ("/pro", MEDIUM_B14_MODEL_ID, "medium", PADIEM_PRO),
     ],
 )
 def test_executable_product_tier_aliases_select_exact_routes_and_are_stripped(
@@ -100,7 +99,15 @@ def test_executable_product_tier_aliases_select_exact_routes_and_are_stripped(
     assert model_policy_is_executable(policy.model_id) is True
 
 
-def test_max_product_identity_is_preserved_but_hold_fails_before_b14():
+def test_pro_and_max_product_identities_are_preserved_but_hold_fails_before_b14():
+    assert MODEL_ALIASES["/pro"] == MEDIUM_B14_MODEL_ID
+    assert product_tier_name(MEDIUM_B14_MODEL_ID) == PADIEM_PRO
+    assert model_policy_is_executable(MEDIUM_B14_MODEL_ID) is False
+    with pytest.raises(ModelPolicyError) as pro_info:
+        resolve_model_policy([{"role": "user", "content": "/pro 테스트 질문입니다"}])
+    assert pro_info.value.code == "tier_unavailable"
+
+
     assert MODEL_ALIASES["/max"] == HIGH_B14_MODEL_ID
     assert product_tier_name(HIGH_B14_MODEL_ID) == PADIEM_MAX
     assert model_profile_is_assigned(HIGH_B14_MODEL_ID) is True
@@ -121,10 +128,10 @@ def test_legacy_hidden_test_aliases_do_not_change_product_identity():
     assert MODEL_ALIASES["/kilo"] == MEDIUM_B14_MODEL_ID
     assert MODEL_ALIASES["/poolside"] == LOW_B14_MODEL_ID
 
-    kilo = resolve_model_policy([{"role": "user", "content": "/kilo 질문"}])
+    with pytest.raises(ModelPolicyError) as kilo_info:
+        resolve_model_policy([{"role": "user", "content": "/kilo 질문"}])
+    assert kilo_info.value.code == "tier_unavailable"
     poolside = resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
-
-    assert product_tier_name(kilo.model_id) == PADIEM_PRO
     assert product_tier_name(poolside.model_id) == PADIEM_PLUS
 
 
@@ -153,15 +160,14 @@ def test_explicit_alias_without_prompt_fails_closed_before_tier_availability_che
 
 def test_tier_capabilities_are_conservative_and_hold_claims_none():
     assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding", "long_context"})
-    assert MODEL_CAPABILITIES[MEDIUM_B14_MODEL_ID] == frozenset({"chat", "long_context"})
+    assert MODEL_CAPABILITIES[MEDIUM_B14_MODEL_ID] == frozenset()
     assert MODEL_CAPABILITIES[HIGH_B14_MODEL_ID] == frozenset()
 
-    for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
-        assert model_supports(model_id, "chat") is True
-        assert model_supports(model_id, "free") is False
-        assert model_supports(model_id, "image") is False
+    assert model_supports(LOW_B14_MODEL_ID, "chat") is True
+    assert model_supports(LOW_B14_MODEL_ID, "free") is False
+    assert model_supports(LOW_B14_MODEL_ID, "image") is False
 
-    for model_id in (HIGH_B14_MODEL_ID, AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
+    for model_id in (MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID, AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
         assert model_supports(model_id, "chat") is False
         assert model_supports(model_id, "free") is False
         assert model_supports(model_id, "image") is False
@@ -171,9 +177,8 @@ def test_tier_assignment_is_distinct_from_route_executability():
     for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID):
         assert model_profile_is_assigned(model_id) is True
 
-    for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
-        assert model_policy_is_executable(model_id) is True
-
+    assert model_policy_is_executable(LOW_B14_MODEL_ID) is True
+    assert model_policy_is_executable(MEDIUM_B14_MODEL_ID) is False
     assert model_policy_is_executable(HIGH_B14_MODEL_ID) is False
 
     for model_id in (AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
@@ -188,6 +193,7 @@ def test_route_identities_are_derived_from_shared_contract():
     """#2099 STEP-2: Chat no longer owns duplicate route literals."""
     from padiem_control_plane.product_tier_routes import (
         MAX_HOLD_MODEL_ID as CONTRACT_MAX_HOLD_MODEL_ID,
+        PRO_HOLD_MODEL_ID as CONTRACT_PRO_HOLD_MODEL_ID,
     )
     from padiem_control_plane.product_tier_routes import (
         RETIRED_PRODUCT_MODEL_IDS as CONTRACT_RETIRED_MODEL_IDS,
@@ -200,7 +206,8 @@ def test_route_identities_are_derived_from_shared_contract():
     )
 
     assert LOW_B14_MODEL_ID == contract_active_route_for(ContractTierLabel.PLUS).model_id
-    assert MEDIUM_B14_MODEL_ID == contract_active_route_for(ContractTierLabel.PRO).model_id
+    assert contract_active_route_for(ContractTierLabel.PRO) is None
+    assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
     assert MAX_HOLD_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
     assert RETIRED_B14_MODEL_IDS == frozenset(CONTRACT_RETIRED_MODEL_IDS)
 
@@ -210,6 +217,7 @@ def test_model_policy_source_contains_no_route_id_literals_after_derivation():
     assert '"kilo/' not in source
     assert "'kilo/" not in source
     assert '"padiem-profile/max-hold"' not in source
+    assert '"padiem-profile/pro-hold"' not in source
     assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
 
 
@@ -222,12 +230,11 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
         }
     )
 
-    for executable_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID):
+    for executable_id in (LOW_B14_MODEL_ID,):
         assert executable_id not in RETIRED_B14_MODEL_IDS
 
     expected_routes = {
         "low": "sensenova/sensenova-6.8-flash-lite",
-        "medium": "b-ai/qwen3.8-flash",
     }
     for profile_id, expected_model in expected_routes.items():
         model_id = PROFILE_MODEL_IDS[profile_id]
@@ -237,6 +244,8 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
         assert model_id.count("/") == 1
         assert model_id != AUTO_B14_MODEL_ID
 
+    assert PROFILE_MODEL_IDS["medium"] == MEDIUM_B14_MODEL_ID
+    assert model_policy_is_executable(MEDIUM_B14_MODEL_ID) is False
     assert PROFILE_MODEL_IDS["high"] == MAX_HOLD_MODEL_ID
     assert model_policy_is_executable(MAX_HOLD_MODEL_ID) is False
 
@@ -249,7 +258,6 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
     ("tier_id", "expected_model", "expected_profile"),
     [
         ("plus", LOW_B14_MODEL_ID, "low"),
-        ("pro", MEDIUM_B14_MODEL_ID, "medium"),
     ],
 )
 def test_explicit_browser_tier_resolves_through_shared_contract(
@@ -266,10 +274,11 @@ def test_explicit_browser_tier_resolves_through_shared_contract(
     assert policy.alias is None
 
 
-def test_explicit_browser_max_stays_fail_closed_while_hold() -> None:
-    messages = [{"role": "user", "content": "Max 테스트"}]
+@pytest.mark.parametrize("tier_id", ["pro", "max"])
+def test_explicit_browser_held_tiers_fail_closed(tier_id: str) -> None:
+    messages = [{"role": "user", "content": "HOLD 등급 테스트"}]
     with pytest.raises(ModelPolicyError) as info:
-        resolve_tier_policy(messages, "max")
+        resolve_tier_policy(messages, tier_id)
     assert info.value.code == "tier_unavailable"
 
 
@@ -283,7 +292,7 @@ def test_browser_tier_rejects_non_product_values(tier_id: str) -> None:
 def test_request_tier_context_is_request_scoped_and_resets_to_default() -> None:
     messages = [{"role": "user", "content": "등급 컨텍스트 테스트"}]
 
-    assert resolve_request_model_policy(messages).model_id == MEDIUM_B14_MODEL_ID
+    assert resolve_request_model_policy(messages).model_id == LOW_B14_MODEL_ID
     with request_tier_context("plus"):
         assert resolve_request_model_policy(messages).model_id == LOW_B14_MODEL_ID
-    assert resolve_request_model_policy(messages).model_id == MEDIUM_B14_MODEL_ID
+    assert resolve_request_model_policy(messages).model_id == LOW_B14_MODEL_ID

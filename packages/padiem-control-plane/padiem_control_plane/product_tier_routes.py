@@ -60,9 +60,10 @@ class ProductCredentialMode(str, Enum):
     ANONYMOUS = "anonymous"
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
-# Product-level sentinel for the Padiem Max tier (#1397 evidence pending). It
-# mirrors apps/padiem-chat/app/model_policy.py MAX_HOLD_MODEL_ID verbatim and
-# is deliberately NOT a B14 catalog model ID.
+# Product-level HOLD sentinels are product identities, not B14 catalog model IDs.
+# Pro is temporarily disabled by owner decision #2601 while its provider route
+# is replaced/re-verified. Max remains HOLD under the existing #1397 gate.
+PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
 
 # Retired upstream free lanes (#2094 gateway-list evidence, #2096/#2097
@@ -236,18 +237,32 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
+                route_id="pro.hold.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="pro",
+                model_id=PRO_HOLD_MODEL_ID,
+                hold_reason=(
+                    "Owner decision #2601: Padiem Pro is temporarily disabled while the "
+                    "B.AI-backed route is unstable and a replacement/verified route is pending."
+                ),
+                evidence="#2601 temporary Plus-only product posture.",
+            ),
+            ProductTierRoute(
                 route_id="pro.b-ai-qwen3.8-flash.v1",
-                status=ProductRouteStatus.EXECUTABLE,
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="qwen3.8-flash",
                 provider_id="b-ai",
                 model_id="b-ai/qwen3.8-flash",
                 upstream_model="qwen3.8-flash",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_B_AI_API_KEY",
+                hold_reason=(
+                    "Temporarily removed from executable Padiem Pro by owner decision #2601 "
+                    "after provider/model instability. Retained as historical route data only."
+                ),
                 evidence=(
-                    "Owner selection #2571; B.AI official exact model authority and "
-                    "B14 registration #2133; Production merge/deploy remains gated on "
-                    "fresh b-ai credential_ready=true and route_ready=true evidence."
+                    "Historical owner selection #2571 and B14 registration #2133; "
+                    "execution disabled by #2601."
                 ),
             ),
             ProductTierRoute(

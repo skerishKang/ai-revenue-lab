@@ -16,6 +16,7 @@ import pytest
 
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID,
+    PRO_HOLD_MODEL_ID,
     PRODUCT_TIER_POLICY_VERSION,
     PRODUCT_TIER_ROUTES,
     RETIRED_PRODUCT_MODEL_IDS,
@@ -55,11 +56,17 @@ def test_contract_defines_exactly_three_padiem_tiers() -> None:
     ]
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_current_truth_plus_sensenova_pro_qwen_max_hold() -> None:
+def test_current_truth_plus_only_with_pro_and_max_hold() -> None:
     executables = _executables()
+    assert executables == {
+        ProductTierLabel.PLUS: active_route_for(ProductTierLabel.PLUS)
+    }
     assert executables[ProductTierLabel.PLUS].model_id == "sensenova/sensenova-6.8-flash-lite"
-    assert executables[ProductTierLabel.PRO].model_id == "b-ai/qwen3.8-flash"
+    assert active_route_for(ProductTierLabel.PRO) is None
     assert active_route_for(ProductTierLabel.MAX) is None
+    pro_routes = get_tier(ProductTierLabel.PRO).routes
+    assert any(r.model_id == PRO_HOLD_MODEL_ID for r in pro_routes)
+    assert all(r.status is not ProductRouteStatus.EXECUTABLE for r in pro_routes)
 
 def test_no_user_visible_auto_or_fallback_anywhere() -> None:
     for tier in PRODUCT_TIER_ROUTES:
@@ -73,7 +80,6 @@ def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
     executables = _executables()
     expected_bindings = {
         ProductTierLabel.PLUS: "PADIEM_SENSENOVA_API_KEY",
-        ProductTierLabel.PRO: "PADIEM_B_AI_API_KEY",
     }
     for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
@@ -219,16 +225,11 @@ def test_parity_with_b14_tier_registry_active_routes() -> None:
     registry = _registry_executable_model_ids()
     assert sorted(registry) == [
         "plus.sensenova-6.8-flash-lite.v1",
-        "pro.b-ai-qwen3.8-flash.v1",
     ]
     executables = _executables()
     assert (
         registry["plus.sensenova-6.8-flash-lite.v1"]
         == executables[ProductTierLabel.PLUS].model_id
-    )
-    assert (
-        registry["pro.b-ai-qwen3.8-flash.v1"]
-        == executables[ProductTierLabel.PRO].model_id
     )
 
 
@@ -241,7 +242,7 @@ def test_parity_with_chat_model_policy_derivation() -> None:
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
     assert "from padiem_control_plane.product_tier_routes import (" in source
     assert "LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)" in source
-    assert "MEDIUM_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PRO)" in source
+    assert "MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID" in source
     assert "MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID" in source
     assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
     assert '"kilo/' not in source
@@ -264,9 +265,12 @@ def test_selected_routes_match_registered_provider_constants() -> None:
 
     assert sense_model and bai_model and sense_binding and bai_binding
     assert sense_model.group(1) == executables[ProductTierLabel.PLUS].model_id
-    assert bai_model.group(1) == executables[ProductTierLabel.PRO].model_id
     assert sense_binding.group(1) == executables[ProductTierLabel.PLUS].credential_binding
-    assert bai_binding.group(1) == executables[ProductTierLabel.PRO].credential_binding
+    pro_routes = get_tier(ProductTierLabel.PRO).routes
+    held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")
+    assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bai_model.group(1) == held_bai.model_id
+    assert bai_binding.group(1) == held_bai.credential_binding
 
 
 def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:

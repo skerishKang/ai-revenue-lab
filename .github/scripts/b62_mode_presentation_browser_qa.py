@@ -33,7 +33,7 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     pill = page.locator(".model-pill")
     await pill.wait_for(state="visible")
     await page.wait_for_function(
-        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Pro'"
+        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
     )
 
     if await pill.get_attribute("role") != "button":
@@ -47,17 +47,16 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     await panel.wait_for(state="visible")
 
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 2:
-        raise AssertionError(f"expected two product tier rows at {name}")
+    if await options.count() != 1:
+        raise AssertionError(f"expected exactly one product tier row at {name}")
 
     plus = panel.locator('[data-mode-value="plus"]')
-    pro = panel.locator('[data-mode-value="pro"]')
-    if await plus.is_disabled() or await pro.is_disabled():
-        raise AssertionError(f"Plus and Pro must both be selectable at {name}")
-    if await pro.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Pro must be the default selected tier at {name}")
-    if await plus.get_attribute("aria-pressed") != "false":
-        raise AssertionError(f"Plus must start unselected at {name}")
+    if await plus.is_disabled():
+        raise AssertionError(f"Plus must be selectable at {name}")
+    if await plus.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Plus must be the default selected tier at {name}")
+    if await panel.locator('[data-mode-value="pro"]').count() != 0:
+        raise AssertionError(f"Pro must remain browser-hidden at {name}")
     if await panel.locator('[data-mode-value="max"]').count() != 0:
         raise AssertionError(f"Max must remain browser-hidden at {name}")
 
@@ -65,14 +64,11 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     if "모델·제공자 선택은 파디엠 서버가 관리" not in truth:
         raise AssertionError(f"server-authority truth copy missing at {name}: {truth!r}")
 
-    pro_box = await pro.bounding_box()
-    if not pro_box or pro_box["height"] < 44:
-        raise AssertionError(f"Pro tier target too small at {name}: {pro_box}")
+    plus_box = await plus.bounding_box()
+    if not plus_box or plus_box["height"] < 44:
+        raise AssertionError(f"Plus tier target too small at {name}: {plus_box}")
 
     await plus.click()
-    await page.wait_for_function(
-        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
-    )
     if not await panel.is_hidden():
         raise AssertionError(f"tier selection must close panel at {name}")
 
@@ -81,7 +77,7 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     await panel.wait_for(state="visible")
     plus = panel.locator('[data-mode-value="plus"]')
     if await plus.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Plus selection did not become active at {name}")
+        raise AssertionError(f"Plus selection did not remain active at {name}")
 
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
@@ -92,17 +88,16 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
 
     await _no_horizontal_overflow(page, name)
     return {
-        "default_tier": "pro",
+        "default_tier": "plus",
         "selected_tier": "plus",
         "plus": "available",
-        "pro": "available",
+        "pro": "browser_hidden",
         "max": "browser_hidden",
         "server_authority_copy": True,
         "escape_focus_return": True,
         "horizontal_overflow": False,
         "status": "PASS",
     }
-
 
 async def main() -> None:
     report: dict[str, Any] = {"base_url": BASE_URL, "views": {}}
@@ -146,20 +141,21 @@ async def _english_probe() -> dict[str, Any]:
             await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
             await page.locator("#messageInput").wait_for(state="visible")
             await page.wait_for_function(
-                "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Pro'"
+                "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
             )
             await page.locator(".model-pill").click()
             panel = page.locator("#modePresentationPanel")
             await panel.wait_for(state="visible")
-            if await panel.locator("[data-mode-value]").count() != 2:
-                raise AssertionError("English tier panel must expose exactly Plus and Pro")
+            if await panel.locator("[data-mode-value]").count() != 1:
+                raise AssertionError("English tier panel must expose exactly Plus")
+            if await panel.locator('[data-mode-value="pro"]').count() != 0:
+                raise AssertionError("English tier panel must keep Pro browser-hidden")
             truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
             if "Provider and model routing stays server-managed" not in truth:
                 raise AssertionError(f"English tier truth copy missing: {truth!r}")
-            return {"locale": "en", "default_tier": "pro", "status": "PASS"}
+            return {"locale": "en", "default_tier": "plus", "status": "PASS"}
         finally:
             await browser.close()
-
 
 
 if __name__ == "__main__":

@@ -31,8 +31,8 @@ def test_certification_preserves_ui_backend_production_truth_boundary() -> None:
 
 def test_capability_matrix_routes_non_b62_authority_to_owners() -> None:
     source = CERTIFICATION.read_text(encoding="utf-8")
-    assert '"surface": "tier_plus_pro"' in source
-    assert '"browser_visible": ["plus", "pro"]' in source
+    assert '"surface": "tier_plus_only"' in source
+    assert '"browser_visible": ["plus"]' in source
     assert '"surface": "tier_max"' in source
     assert '"presentation": "BROWSER_HIDDEN"' in source
     assert '"guest_state": "HIDDEN"' in source

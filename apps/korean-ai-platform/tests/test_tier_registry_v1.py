@@ -98,7 +98,7 @@ def test_executable_routes_have_explicit_provider_and_model() -> None:
         assert route.evidence
 
     assert active_route_for(TierLabel.PLUS) is not None
-    assert active_route_for(TierLabel.PRO) is not None
+    assert active_route_for(TierLabel.PRO) is None
     assert active_route_for(TierLabel.MAX) is None
 
 def _contract_executable_model_ids() -> dict[str, str]:
@@ -119,15 +119,10 @@ def test_plus_pro_registry_routes_match_shared_contract() -> None:
     contract = _contract_executable_model_ids()
     assert sorted(contract) == [
         "plus.sensenova-6.8-flash-lite.v1",
-        "pro.b-ai-qwen3.8-flash.v1",
     ]
     assert (
         contract["plus.sensenova-6.8-flash-lite.v1"]
         == active_route_for(TierLabel.PLUS).model_id
-    )
-    assert (
-        contract["pro.b-ai-qwen3.8-flash.v1"]
-        == active_route_for(TierLabel.PRO).model_id
     )
 
 
