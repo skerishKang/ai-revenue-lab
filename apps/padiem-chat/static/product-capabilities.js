@@ -13,6 +13,7 @@
   const messageInput = document.getElementById("messageInput");
   const mobileClose = document.getElementById("mobileClose");
   const modePill = document.querySelector(".model-pill");
+  const modeHost = document.querySelector(".composer-tools");
 
   const SESSION_STATES = new Set(["unavailable", "guest", "signed_in", "expired"]);
   const EMPTY_DEPLOYMENT = Object.freeze({
@@ -380,9 +381,10 @@
   }
 
   function installModePresentation() {
-    if (!modePill || modePill.dataset.modeControl === "true") return;
+    if (!modePill || !modeHost || modePill.dataset.modeControl === "true") return;
     ensureModeStyles();
     modePill.dataset.modeControl = "true";
+    modeHost.classList.add("tier-control-host");
     modePill.setAttribute("role", "button");
     modePill.setAttribute("tabindex", "0");
     modePill.setAttribute("aria-haspopup", "dialog");
@@ -417,7 +419,7 @@
     truth.className = "mode-presentation-truth";
     truth.dataset.modeTruth = "true";
     modePanel.append(header, list, truth);
-    document.body.appendChild(modePanel);
+    modeHost.appendChild(modePanel);
     syncModeCopy();
 
     modePill.addEventListener("click", toggleModePanel);

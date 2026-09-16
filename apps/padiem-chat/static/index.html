@@ -80,7 +80,6 @@
     <main class="main-panel">
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button" aria-controls="sidebar" aria-expanded="false" data-locale-aria-label="open-menu" aria-label="메뉴 열기">☰</button>
-        <div class="model-pill" data-locale-aria-label="mode" aria-label="대화 모드"><span class="status-spark" aria-hidden="true">✦</span><span>기본 대화</span></div>
       </header>
       <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
         <form class="settings-panel" method="dialog">
@@ -306,6 +305,7 @@
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
+              <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="mode" aria-label="AI 등급"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Pro</span></button>
               <input id="attachmentFileInput" type="file" hidden />
               <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
               <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>

@@ -86,3 +86,20 @@ def test_legacy_mode_qa_and_html_markers_are_removed() -> None:
     assert '"surface": "tier_plus_pro"' in CERT_QA
     assert '"surface": "tier_max"' in CERT_QA
     assert '"presentation": "BROWSER_HIDDEN"' in CERT_QA
+
+
+def test_tier_trigger_and_popover_are_composer_anchored() -> None:
+    topbar = INDEX.split('<header class="topbar"', 1)[1].split("</header>", 1)[0]
+    composer_tools = INDEX.split('<div class="composer-tools">', 1)[1].split("</div>", 1)[0]
+    assert 'model-pill' not in topbar
+    assert 'model-pill composer-tier-trigger' in composer_tools
+    assert 'type="button"' in composer_tools
+    assert 'const modeHost = document.querySelector(".composer-tools");' in CAPABILITIES
+    assert 'modeHost.classList.add("tier-control-host")' in CAPABILITIES
+    assert "modeHost.appendChild(modePanel)" in CAPABILITIES
+    assert "document.body.appendChild(modePanel)" not in CAPABILITIES
+    assert ".tier-control-host" in CSS
+    assert "position: absolute" in CSS
+    assert "bottom: calc(100% + 12px)" in CSS
+    assert "position: fixed" not in CSS
+    assert "top: 68px" not in CSS

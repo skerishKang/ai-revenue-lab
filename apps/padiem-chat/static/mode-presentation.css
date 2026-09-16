@@ -1,7 +1,20 @@
+.tier-control-host {
+  position: relative;
+}
+
 .model-pill[data-mode-control="true"] {
   display: inline-flex !important;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   appearance: none;
+  background: rgba(255, 255, 255, .68);
+  color: var(--text);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .model-pill[data-mode-control="true"]:focus-visible {
@@ -10,11 +23,12 @@
 }
 
 .mode-presentation-panel {
-  position: fixed;
-  z-index: 90;
-  top: 68px;
-  right: 24px;
-  width: min(360px, calc(100vw - 32px));
+  position: absolute;
+  z-index: 110;
+  right: auto;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: min(340px, calc(100vw - 48px));
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -111,10 +125,15 @@ html[data-theme="padiem-glass"] .mode-option {
 }
 
 @media (max-width: 720px) {
+  .model-pill[data-mode-control="true"] {
+    min-height: 44px;
+    padding: 0 10px;
+  }
+
   .mode-presentation-panel {
-    top: 60px;
-    right: 12px;
-    left: 12px;
-    width: auto;
+    right: auto;
+    bottom: calc(100% + 10px);
+    left: 0;
+    width: min(320px, calc(100vw - 36px));
   }
 }
