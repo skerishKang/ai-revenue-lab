@@ -525,7 +525,7 @@ html[data-theme="padiem-glass"] .main-panel::after {
     scale(var(--glass-cyber-scale));
   transform-origin: center;
   transition:
-    opacity 900ms cubic-bezier(.16,.72,.22,1),
+    opacity 700ms cubic-bezier(.16,.72,.22,1),
     transform 980ms cubic-bezier(.16,.72,.22,1),
     filter 900ms ease,
     box-shadow 900ms ease;
