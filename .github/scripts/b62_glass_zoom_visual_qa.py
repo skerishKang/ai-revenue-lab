@@ -192,12 +192,26 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     await page.evaluate(
         "window.scrollTo(0, Math.max(document.documentElement.scrollHeight, document.body.scrollHeight))"
     )
-    await page.wait_for_timeout(180)
-    resumed = await page.evaluate(
-        "window.__padiemConversationMotion.isFollowingLatest()"
-    )
-    if not resumed:
-        raise AssertionError(f"returning to conversation end did not resume follow at {name}")
+    try:
+        await page.wait_for_function(
+            "() => window.__padiemConversationMotion && window.__padiemConversationMotion.isFollowingLatest()",
+            timeout=2_500,
+            polling=50,
+        )
+    except Exception as exc:
+        resumed_state = await page.evaluate(
+            """
+            () => ({
+              following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
+              y: window.scrollY,
+              remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+                - (window.scrollY + window.innerHeight),
+            })
+            """
+        )
+        raise AssertionError(
+            f"returning to conversation end did not resume follow at {name}: {resumed_state}"
+        ) from exc
 
     await page.evaluate(
         """
