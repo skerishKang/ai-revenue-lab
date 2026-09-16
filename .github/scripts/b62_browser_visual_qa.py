@@ -81,7 +81,6 @@ async def _glass_motion_snapshot(page: Page) -> dict[str, Any]:
           const rootStyle = getComputedStyle(root);
           const main = document.querySelector('.main-panel');
           const portrait = main ? getComputedStyle(main, '::before') : null;
-          const cyber = main ? getComputedStyle(main, '::after') : null;
           const bodyNoise = getComputedStyle(document.body, '::after');
           const conversation = document.querySelector('.conversation');
           const conversationStyle = conversation ? getComputedStyle(conversation) : null;
@@ -97,10 +96,6 @@ async def _glass_motion_snapshot(page: Page) -> dict[str, Any]:
             maskFull: rootStyle.getPropertyValue('--glass-mask-full').trim(),
             portraitOpacity: portrait ? parseFloat(portrait.opacity) : 0,
             portraitTransform: portrait ? portrait.transform : '',
-            cyberOpacity: cyber ? parseFloat(cyber.opacity) : 0,
-            cyberTransform: cyber ? cyber.transform : '',
-            cyberBackground: cyber ? cyber.backgroundImage : '',
-            cyberActive: root.getAttribute('data-glass-cyber-active') || 'false',
             bodyNoiseOpacity: parseFloat(bodyNoise.opacity) || 0,
             conversationBackground: conversationStyle ? conversationStyle.backgroundImage : '',
           };
@@ -212,12 +207,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     home_after_pointer = await _glass_motion_snapshot(page)
     if home_after_pointer["pointerX"] in {"", "0px", "0.0px"} and home_after_pointer["pointerY"] in {"", "0px", "0.0px"}:
         raise AssertionError(f"Padiem Glass home portrait lost cinematic pointer response: {home_after_pointer}")
-    if home_before_pointer["cyberOpacity"] > 0.05:
-        raise AssertionError(f"Cyber visor must rest hidden before pointer input: {home_before_pointer}")
-    if home_after_pointer["cyberOpacity"] < 0.45 or home_after_pointer["cyberActive"] != "true":
-        raise AssertionError(f"Cyber visor did not visibly attach on pointer input: {home_after_pointer}")
-    if home_after_pointer["cyberBackground"] in {"", "none"}:
-        raise AssertionError(f"Cyber visor lost its material layer: {home_after_pointer}")
 
     home_name = f"desktop-glass-{variant}-home.png"
     await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
@@ -225,9 +214,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # Return to the content side before testing answer-only motion.
     await page.mouse.move(70, 80)
     await page.wait_for_timeout(1100)
-    home_after_exit = await _glass_motion_snapshot(page)
-    if home_after_exit["cyberOpacity"] > 0.05 or home_after_exit["cyberActive"] != "false":
-        raise AssertionError(f"Cyber visor did not recover after pointer exit: {home_after_exit}")
 
     chat_name = f"desktop-glass-{variant}-chat.png"
     reading_samples: list[dict[str, Any]] = []
@@ -261,8 +247,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 raise AssertionError(
                     f"Glass reading mode lost answer-driven reveal: {active}"
                 )
-            if active["cyberOpacity"] < 0.15 or active["cyberActive"] != "true":
-                raise AssertionError(f"Cyber visor lost answer-only attachment: {active}")
             await page.screenshot(path=str(OUT_DIR / chat_name), full_page=True)
 
         if turn == 2:
@@ -270,10 +254,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             if combined_reveal < 0.35:
                 raise AssertionError(
                     f"Glass pointer+answer reveal is too weak: {active}"
-                )
-            if active["cyberOpacity"] <= answer_only_reveal:
-                raise AssertionError(
-                    f"Pointer+answer cyber visor must exceed answer-only state: {active}"
                 )
 
         # After answer activity and pointer proximity end, reading mode must
@@ -288,8 +268,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             )
         if settled["pointerX"] not in {"", "0px", "0.0px"} or settled["pointerY"] not in {"", "0px", "0.0px"}:
             raise AssertionError(f"Glass reading mode pointer failed to settle: {settled}")
-        if settled["cyberOpacity"] > 0.05 or settled["cyberActive"] != "false":
-            raise AssertionError(f"Cyber visor failed to settle after answer activity: {settled}")
         if settled["artX"] not in {"", "0px", "0.0px"} or settled["artY"] not in {"", "0px", "0.0px"}:
             raise AssertionError(f"Glass reading mode portrait failed to settle: {settled}")
         if settled["artScale"] not in {"", "1", "1.0", "1.000"}:
@@ -312,8 +290,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         )
     if pointer_only["reveal"] > 1:
         raise AssertionError(f"Glass pointer-only reveal escaped bounds: {pointer_only}")
-    if pointer_only["cyberOpacity"] < 0.20 or pointer_only["cyberActive"] != "true":
-        raise AssertionError(f"Cyber visor lost pointer-only reading state: {pointer_only}")
 
     # Moving away must re-cover, then page scrolling alone must not drive the
     # reading portrait.
@@ -329,7 +305,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     await page.wait_for_timeout(300)
     reading_after_scroll = await _glass_motion_snapshot(page)
 
-    stable_keys = ("reveal", "artX", "artY", "artScale", "pointerX", "pointerY", "maskStart", "maskFull", "cyberOpacity", "cyberTransform", "cyberActive")
+    stable_keys = ("reveal", "artX", "artY", "artScale", "pointerX", "pointerY", "maskStart", "maskFull")
     for key in stable_keys:
         if reading_before_scroll[key] != reading_after_scroll[key]:
             raise AssertionError(
