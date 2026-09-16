@@ -9,7 +9,14 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
-from .auth_routes import auth_status, google_callback, google_start, logout
+from .auth_routes import (
+    auth_status,
+    google_callback,
+    google_start,
+    logout,
+    password_login,
+    password_register,
+)
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
 from .claw_routes import (
@@ -62,7 +69,7 @@ async def health(request: Request) -> JSONResponse:
         "deep_research_ready": settings.runtime_mode == "b14" and web_ready,
         "image_attachment_ready": True,
         "text_document_attachment_ready": True,
-        "auth_configured": settings.auth_mode == "google",
+        "auth_configured": settings.auth_mode != "off",
         "history_store_bound": request.app.state.history_store is not None,
         "projects_code_ready": True,
         "project_files_code_ready": True,
@@ -108,6 +115,8 @@ def create_app(
         Route("/api/auth/status", auth_status, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
+        Route("/api/auth/password/register", password_register, methods=["POST"]),
+        Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),

@@ -155,6 +155,24 @@ def test_product_user_rebind_to_different_provider_subject_is_forbidden_and_roll
     assert current == original.canonical_subject_id
 
 
+def test_password_provider_is_reviewed_and_hmac_fingerprinted() -> None:
+    store, storage = fixture()
+    result = store.resolve_or_create_product_link(
+        product_id="b62",
+        product_user_id="usr_password_1",
+        auth_provider="password",
+        provider_subject="owner.test",
+        now=NOW,
+    )
+
+    assert result.product_id == "b62"
+    assert result.product_user_id == "usr_password_1"
+    assert result.state is IdentityLinkState.ACTIVE
+    persisted = storage.all_text()
+    assert "owner.test" not in persisted
+    assert "password" in persisted
+
+
 def test_unreviewed_product_and_provider_fail_closed_before_authority_mutation():
     store, storage = fixture()
     with pytest.raises(ControlPlaneContractError) as product_exc:
