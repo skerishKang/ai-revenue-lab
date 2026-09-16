@@ -66,15 +66,17 @@ CAPABILITY_MATRIX = (
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "mode_auto",
+        "surface": "tier_plus_pro",
         "presentation": "ACTIVE",
-        "backend_active": "AUTO_REQUEST_CONTRACT_ACTIVE",
+        "default_tier": "pro",
+        "browser_visible": ["plus", "pro"],
+        "backend_active": "SERVER_RESOLVED_SHARED_TIER_CONTRACT",
         "production_active": "NOT_CLAIMED",
     },
     {
-        "surface": "mode_fast_balanced_deep",
-        "presentation": "PREVIEW_ONLY",
-        "backend_active": "NO_TRUSTED_MAPPING_YET",
+        "surface": "tier_max",
+        "presentation": "BROWSER_HIDDEN",
+        "backend_active": "HOLD",
         "production_active": "NO",
     },
     {
@@ -95,9 +97,9 @@ CAPABILITY_MATRIX = (
 
 BACKEND_DEPENDENCIES = (
     {
-        "capability": "Fast / Balanced / Deep trusted execution mapping",
-        "owner": "B14 / IP-ENGINE",
-        "b62_action": "presentation only; do not implement provider routing",
+        "capability": "Plus / Pro product-tier resolution",
+        "owner": "shared Padiem product-tier contract / B14",
+        "b62_action": "send bounded tier ids only; do not expose provider/model routing authority",
     },
     {
         "capability": "live Agent / Tool / Approval / Evidence / Memory authority",
