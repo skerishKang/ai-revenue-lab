@@ -421,9 +421,18 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             raise AssertionError(f"Glass reading mode portrait failed to settle: {settled}")
         if settled["artScale"] not in {"", "1", "1.0", "1.000"}:
             raise AssertionError(f"Glass reading mode scale failed to settle: {settled}")
-        if settled_shell["progress"] > max(0.12, active_shell["progress"] * 0.55):
+        if settled_shell["progress"] >= active_shell["progress"]:
             raise AssertionError(
-                f"Glass shell did not make cinematic recovery after activity: active={active_shell}, settled={settled_shell}"
+                f"Glass shell recovery did not begin after activity: active={active_shell}, settled={settled_shell}"
+            )
+        # The approved recovery is deliberately slow: the answer envelope itself
+        # decays for ~1.76s, then the shell continues easing toward rest.
+        await page.wait_for_timeout(900)
+        recovered_shell = await _glass_shell_snapshot(page)
+        reading_samples.append({"turn": turn, "phase": "recovered", "shell": recovered_shell})
+        if recovered_shell["progress"] > 0.12:
+            raise AssertionError(
+                f"Glass shell did not complete cinematic recovery: settled={settled_shell}, recovered={recovered_shell}"
             )
 
     if answer_only_reveal <= 0:
