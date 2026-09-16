@@ -53,7 +53,7 @@ env:
   IDENTITY_WORKER: padiem-control-plane-identity
   IDENTITY_BINDING: IDENTITY_AUTHORITY_SERVICE
   B14_WORKER: ai-revenue-korean-ai-platform
-  B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev
+  B62_PUBLIC_BASE_URL: https://chat.padiem.net
   P01_ENGINE_WORKER: padiem-ai-engine
   WORKSPACE_R2_BUCKET: padiem-workspace-files
   D1_BINDING: PADIEM_CHAT_DB
@@ -129,8 +129,8 @@ jobs:
           assert "connector_ticket_origin_rejected" in workflow
           assert "B62_PRODUCTION_SMOKE=PASS" in workflow
           assert "PRODUCTION_MUTATION=0" in workflow
-          assert "PADIEM_CHAT_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev" in workflow or \
-              "B62_PUBLIC_BASE_URL: https://padiem-chat.charliekant.workers.dev" in workflow
+          assert "PADIEM_CHAT_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow or \
+              "B62_PUBLIC_BASE_URL: https://chat.padiem.net" in workflow
           assert "python .github/scripts/b62_binding_state_guard.py" in workflow
           assert "b62-settings-before-normalized.json" in workflow
           assert "PUBLIC_BASE_URL_NORMALIZATION=ALREADY_EXPECTED" in workflow
@@ -283,7 +283,7 @@ jobs:
           subdomain="${RUNNER_TEMP}/b62-subdomain-readonly.json"
           curl -fsS "${auth[@]}" "${api}/subdomain" -o "${subdomain}"
           jq -e '.success == true and .result.enabled == true' "${subdomain}" >/dev/null
-          echo "B62_PUBLIC_ORIGIN=WORKERS_DEV"
+          echo "B62_PUBLIC_ORIGIN=CHAT_PADIEM_NET"
 
           echo "B62_CODE_DEPLOY_READONLY=PASS"
           echo "PRODUCTION_MUTATION=0"
