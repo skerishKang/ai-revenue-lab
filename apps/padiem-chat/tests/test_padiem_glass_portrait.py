@@ -168,7 +168,8 @@ def test_glass_has_explicit_same_identity_cyber_overlay_state() -> None:
     assert "data-glass-cyber-active" in PORTRAIT_CSS
     assert "same-identity material layer" in PORTRAIT_CSS
     assert "clip-path: polygon(" in PORTRAIT_CSS
-    assert "transition-duration: 220ms, 420ms, 280ms, 320ms" in PORTRAIT_CSS
+    assert "opacity: .94" in PORTRAIT_CSS
+    assert "transition-duration: 0ms, 420ms, 280ms, 320ms" in PORTRAIT_CSS
     assert 'root.style.setProperty("--glass-cyber-intensity"' in THEME_JS
     assert 'root.style.setProperty("--glass-cyber-y"' in THEME_JS
     assert 'root.style.setProperty("--glass-cyber-scale"' in THEME_JS
