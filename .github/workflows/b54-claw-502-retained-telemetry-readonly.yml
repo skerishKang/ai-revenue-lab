@@ -1,0 +1,329 @@
+name: B54 Claw 502 Retained Telemetry Readonly Diagnostic
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-claw-502-retained-telemetry-readonly.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-claw-502-retained-telemetry-readonly.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-claw-502-retained-telemetry-readonly
+  cancel-in-progress: false
+
+env:
+  CANARY_FROM_MS: "1789584300000"
+  CANARY_TO_MS: "1789585800000"
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate read-only telemetry contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path(".github/workflows/b54-claw-502-retained-telemetry-readonly.yml")
+          text = p.read_text(encoding="utf-8")
+          required = [
+              "/workers/observability/telemetry/query",
+              "padiem-chat",
+              "padiem-ai-engine",
+              "ai-revenue-korean-ai-platform",
+              "RAW_LOG_OUTPUT=0",
+              "PROMPT_OUTPUT=0",
+              "RESPONSE_BODY_OUTPUT=0",
+              "PRODUCT_REQUESTS=0",
+              "PROVIDER_CALLS=0",
+              "PRODUCTION_MUTATION=0",
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f"missing readonly invariant: {token}")
+          forbidden = [
+              "/api/claw/manual-intake/execute",
+              "/api/chat/stream",
+              "/api/chat\"",
+              "/internal/v1/orchestrate\"",
+          ]
+          query_region = text.split("Query retained Workers telemetry", 1)[-1]
+          for token in forbidden:
+              if token in query_region:
+                  raise SystemExit(f"product/runtime endpoint forbidden in telemetry job: {token}")
+          print("B54_CLAW_502_TELEMETRY_SOURCE=PASS")
+          print("PRODUCT_REQUESTS=0")
+          print("PROVIDER_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  retained-telemetry:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Read active served versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          for worker in padiem-chat padiem-ai-engine ai-revenue-korean-ai-platform; do
+            out="${RUNNER_TEMP}/deploy-${worker}.json"
+            curl -fsS "${auth[@]}" "${api}/workers/scripts/${worker}/deployments" -o "${out}"
+            python - "${worker}" "${out}" <<'PY'
+          import json, re, sys
+          worker, path = sys.argv[1], sys.argv[2]
+          payload = json.load(open(path, encoding="utf-8"))
+          deps = payload.get("result", {}).get("deployments", []) if payload.get("success") is True else []
+          if not deps:
+              raise SystemExit(f"{worker}: no active deployment")
+          versions = deps[0].get("versions", [])
+          if len(versions) != 1 or versions[0].get("percentage") != 100:
+              raise SystemExit(f"{worker}: active deployment is not exactly one version at 100%")
+          version = versions[0].get("version_id") or versions[0].get("version")
+          if not isinstance(version, str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,128}", version):
+              raise SystemExit(f"{worker}: unsafe version id")
+          label = {
+              "padiem-chat": "B62_ACTIVE_VERSION",
+              "padiem-ai-engine": "ENGINE_ACTIVE_VERSION",
+              "ai-revenue-korean-ai-platform": "B14_ACTIVE_VERSION",
+          }[worker]
+          print(f"{label}={version}")
+          PY
+          done
+          echo "SERVED_VERSION_READBACK=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Query retained Workers telemetry
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          payload="${RUNNER_TEMP}/telemetry-query.json"
+          response="${RUNNER_TEMP}/telemetry-response.json"
+
+          python - "${payload}" "${CANARY_FROM_MS}" "${CANARY_TO_MS}" <<'PY'
+          import json, sys
+          out, start, end = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+          query = {
+              "queryId": "b54-claw-502-2617-readonly",
+              "timeframe": {"from": start, "to": end},
+              "view": "events",
+              "limit": 1000,
+              "filterCombination": "and",
+              "filters": [
+                  {
+                      "key": "$metadata.service",
+                      "operation": "in",
+                      "type": "string",
+                      "value": "padiem-chat,padiem-ai-engine,ai-revenue-korean-ai-platform",
+                  }
+              ],
+          }
+          with open(out, "w", encoding="utf-8") as fh:
+              json.dump(query, fh)
+          PY
+
+          http="$(curl -sS -o "${response}" -w '%{http_code}' -X POST "${auth[@]}"             "${api}/workers/observability/telemetry/query"             --data-binary "@${payload}")"
+          echo "OBSERVABILITY_QUERY_HTTP=${http}"
+
+          python - "${response}" <<'PY'
+          import hashlib, json, sys
+          from collections import defaultdict
+          from urllib.parse import urlparse
+
+          path = sys.argv[1]
+          try:
+              payload = json.load(open(path, encoding="utf-8"))
+          except Exception:
+              print("RETAINED_LOG_EVIDENCE=NO")
+              print("OBSERVABILITY_PARSE=FAIL")
+              raise SystemExit(0)
+
+          if payload.get("success") is not True:
+              print("RETAINED_LOG_EVIDENCE=NO")
+              print("OBSERVABILITY_QUERY=UNAVAILABLE")
+              errors = payload.get("errors")
+              if isinstance(errors, list) and errors:
+                  msg = errors[0].get("message") if isinstance(errors[0], dict) else None
+                  if isinstance(msg, str):
+                      safe = "".join(ch for ch in msg if ch.isalnum() or ch in " _.-:/")[:160]
+                      print(f"OBSERVABILITY_ERROR_BOUNDED={safe}")
+              raise SystemExit(0)
+
+          events_obj = payload.get("result", {}).get("events", {})
+          events = events_obj.get("events", []) if isinstance(events_obj, dict) else []
+          known = {"padiem-chat", "padiem-ai-engine", "ai-revenue-korean-ai-platform"}
+
+          clean = []
+          for ev in events:
+              if not isinstance(ev, dict):
+                  continue
+              md = ev.get("$metadata")
+              if not isinstance(md, dict):
+                  continue
+              service = md.get("service")
+              if service not in known:
+                  continue
+              status = md.get("statusCode")
+              trace = md.get("traceId")
+              start = md.get("startTime") or ev.get("timestamp")
+              trigger = md.get("trigger") if isinstance(md.get("trigger"), str) else ""
+              url = md.get("url") if isinstance(md.get("url"), str) else ""
+              workers = ev.get("$workers") if isinstance(ev.get("$workers"), dict) else {}
+              outcome = workers.get("outcome") if isinstance(workers.get("outcome"), str) else None
+              event_type = workers.get("eventType") if isinstance(workers.get("eventType"), str) else None
+              clean.append({
+                  "service": service,
+                  "status": status if isinstance(status, int) else None,
+                  "trace": trace if isinstance(trace, str) else None,
+                  "start": start if isinstance(start, (int, float)) else None,
+                  "trigger": trigger,
+                  "path": urlparse(url).path if url else "",
+                  "has_error": isinstance(md.get("error"), str) and bool(md.get("error")),
+                  "outcome": outcome,
+                  "event_type": event_type,
+              })
+
+          print("RETAINED_LOG_EVIDENCE=YES")
+          print(f"TELEMETRY_EVENT_COUNT={len(clean)}")
+
+          # Bounded distribution only — never log source/message/error/prompt/body.
+          dist = defaultdict(int)
+          for e in clean:
+              dist[(e["service"], e["status"])] += 1
+          for (service, status), count in sorted(dist.items()):
+              s = "NONE" if status is None else str(status)
+              label = service.upper().replace("-", "_")
+              print(f"STATUS_COUNT_{label}_{s}={count}")
+
+          candidates = [
+              e for e in clean
+              if e["service"] == "padiem-chat"
+              and e["status"] == 502
+              and (
+                  e["path"] == "/api/claw/manual-intake/execute"
+                  or "/api/claw/manual-intake/execute" in e["trigger"]
+              )
+          ]
+          # Some invocation metadata omits URL/route; bounded fallback permits
+          # exactly one B62 502 in the narrow canary window.
+          if not candidates:
+              b62_502 = [e for e in clean if e["service"] == "padiem-chat" and e["status"] == 502]
+              if len(b62_502) == 1:
+                  candidates = b62_502
+
+          print(f"CANARY_CANDIDATE_COUNT={len(candidates)}")
+          if len(candidates) != 1:
+              print("FIRST_FAIL_CLASS=UNKNOWN_WITH_EVIDENCE")
+              print("TRACE_CORRELATION=AMBIGUOUS")
+              raise SystemExit(0)
+
+          root = candidates[0]
+          trace = root["trace"]
+          if not trace:
+              print("FIRST_FAIL_CLASS=UNKNOWN_WITH_EVIDENCE")
+              print("TRACE_CORRELATION=NO_TRACE_ID")
+              raise SystemExit(0)
+
+          linked = [e for e in clean if e["trace"] == trace]
+          trace_fp = hashlib.sha256(trace.encode()).hexdigest()[:12]
+          print(f"TRACE_FINGERPRINT={trace_fp}")
+          print(f"TRACE_EVENT_COUNT={len(linked)}")
+
+          by_service = defaultdict(list)
+          for e in linked:
+              by_service[e["service"]].append(e)
+
+          def statuses(service):
+              return sorted({e["status"] for e in by_service.get(service, []) if e["status"] is not None})
+
+          def outcomes(service):
+              return sorted({e["outcome"] for e in by_service.get(service, []) if e["outcome"]})
+
+          for service, label in (
+              ("padiem-chat", "B62"),
+              ("padiem-ai-engine", "ENGINE"),
+              ("ai-revenue-korean-ai-platform", "B14"),
+          ):
+              ss = statuses(service)
+              oo = outcomes(service)
+              print(f"{label}_TRACE_PRESENT={'YES' if by_service.get(service) else 'NO'}")
+              print(f"{label}_TRACE_STATUS={','.join(map(str,ss)) if ss else 'NONE'}")
+              print(f"{label}_TRACE_OUTCOME={','.join(oo) if oo else 'NONE'}")
+              print(f"{label}_TRACE_ERROR_PRESENT={'YES' if any(e['has_error'] for e in by_service.get(service, [])) else 'NO'}")
+
+          eng = statuses("padiem-ai-engine")
+          b14 = statuses("ai-revenue-korean-ai-platform")
+
+          if 401 in eng:
+              cls = "P01_ENGINE_CALLER_AUTH"
+          elif 403 in eng:
+              cls = "P01_ENGINE_CALLER_AUTHORIZATION"
+          elif eng and all(200 <= s < 300 for s in eng) and not b14:
+              cls = "P01_OR_ENGINE_CONTRACT_AFTER_RESPONSE"
+          elif eng and all(200 <= s < 300 for s in eng) and b14 and all(200 <= s < 300 for s in b14):
+              cls = "P01_CONTRACT_AFTER_ENGINE_COMPLETION"
+          elif any(s >= 500 for s in b14):
+              cls = "B14_PROVIDER_OR_GATEWAY_DOWNSTREAM"
+          elif any(400 <= s < 500 for s in b14):
+              cls = "B14_REQUEST_OR_AUTH_BOUNDARY"
+          elif any(s >= 500 for s in eng) and not b14:
+              cls = "ENGINE_PRE_B14_OR_UNTRACED_DOWNSTREAM"
+          elif any(s >= 500 for s in eng):
+              cls = "ENGINE_DOWNSTREAM_EXECUTION"
+          else:
+              cls = "UNKNOWN_WITH_EVIDENCE"
+
+          print(f"FIRST_FAIL_CLASS={cls}")
+          print("RAW_LOG_OUTPUT=0")
+          print("PROMPT_OUTPUT=0")
+          print("RESPONSE_BODY_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
+
+          echo "PRODUCT_REQUESTS=0"
+          echo "PROVIDER_CALLS=0"
+          echo "SOURCE_MUTATION=0"
+          echo "CONFIG_MUTATION=0"
+          echo "SECRET_MUTATION=0"
+          echo "PRODUCTION_MUTATION=0"
