@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CANARY_FROM_MS: "1789584300000"
-  CANARY_TO_MS: "1789585800000"
+  CANARY_FROM_MS: "1789586610000"
+  CANARY_TO_MS: "1789587750000"
 
 jobs:
   source-contract:
