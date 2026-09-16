@@ -684,7 +684,7 @@ def test_missing_engine_configuration_fails_closed(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
@@ -702,7 +702,7 @@ def test_engine_failure_projects_safe_error(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 502
@@ -738,7 +738,7 @@ def test_engine_failure_detail_is_closed_vocabulary(
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     data = resp.json()
     assert resp.status_code == 502
@@ -757,7 +757,7 @@ def test_unexpected_exception_projects_unknown_engine_detail(client: TestClient)
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     data = resp.json()
     assert resp.status_code == 502
@@ -780,7 +780,7 @@ def test_unrecognized_p01_error_code_projects_unknown_engine_detail(client: Test
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     data = resp.json()
     assert resp.status_code == 502
@@ -799,7 +799,7 @@ def test_p01_execution_failure_detail_is_unknown(client: TestClient) -> None:
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     assert resp.status_code == 502
     assert resp.json()["error"]["detail"] == "unknown_engine_failure"
@@ -819,7 +819,7 @@ def test_transport_adapter_failures_project_transport_detail(
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     assert resp.status_code == 502
     assert resp.json()["error"]["detail"] == "engine_transport_or_response_failed"
@@ -832,7 +832,7 @@ def test_no_silent_preview_fallback_after_execute(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 502
@@ -960,7 +960,7 @@ def test_engine_not_configured_returns_503(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
@@ -991,7 +991,7 @@ def test_engine_not_configured_503_carries_bounded_safe_detail(
         with _injected_adapter(client, None):
             resp = client.post(
                 "/api/claw/manual-intake/execute",
-                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+                json={"content": "테스트", "channel": "kakao", "action": "reply"},
             )
     finally:
         client.app.state.claw_p01_composition_diagnostic = previous
@@ -1010,7 +1010,7 @@ def test_engine_not_configured_503_detail_defaults_when_diagnostic_unset(
         with _injected_adapter(client, None):
             resp = client.post(
                 "/api/claw/manual-intake/execute",
-                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+                json={"content": "테스트", "channel": "kakao", "action": "reply"},
             )
     finally:
         client.app.state.claw_p01_composition_diagnostic = previous
@@ -1027,7 +1027,7 @@ def test_engine_not_configured_503_rejects_out_of_allowlist_detail(
         with _injected_adapter(client, None):
             resp = client.post(
                 "/api/claw/manual-intake/execute",
-                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+                json={"content": "테스트", "channel": "kakao", "action": "reply"},
             )
     finally:
         client.app.state.claw_p01_composition_diagnostic = previous
@@ -1066,7 +1066,7 @@ def test_engine_timeout_projects_safe_error(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 502
@@ -1080,7 +1080,7 @@ def test_no_credential_raw_text_in_response(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
