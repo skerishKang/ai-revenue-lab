@@ -146,7 +146,7 @@ class Authority:
 
 def test_password_hash_roundtrip_and_validation() -> None:
     encoded = hash_password("correct horse battery staple")
-    assert encoded.startswith("pbkdf2_sha512$210000$")
+    assert encoded.startswith("pbkdf2_sha512$220000$")
     assert "correct horse battery staple" not in encoded
     assert verify_password("correct horse battery staple", encoded) is True
     assert verify_password("wrong password value", encoded) is False
