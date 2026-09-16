@@ -104,7 +104,7 @@ def hash_password(password: str) -> str:
         PBKDF2_ITERATIONS,
         dklen=PBKDF2_DKLEN,
     )
-    return f"{PASSWORD_HASH_PREFIX}${PBKDF2_ITERATIONS}${_b64(salt)}${_b64(derived)}".replace("\\$", "$")
+    return f"{PASSWORD_HASH_PREFIX}${PBKDF2_ITERATIONS}${_b64(salt)}${_b64(derived)}"
 
 
 def verify_password(password: object, encoded: str | None) -> bool:
