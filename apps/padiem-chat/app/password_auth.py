@@ -14,7 +14,7 @@ DISPLAY_NAME_MAX_CHARS = 160
 EMAIL_MAX_CHARS = 320
 
 PBKDF2_ALGORITHM = "sha512"
-PBKDF2_ITERATIONS = 210_000
+PBKDF2_ITERATIONS = 220_000
 PBKDF2_SALT_BYTES = 16
 PBKDF2_DKLEN = 32
 PASSWORD_HASH_PREFIX = "pbkdf2_sha512"
@@ -24,7 +24,7 @@ _EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 
 # Fixed, non-secret dummy verifier used only to equalize missing-account work.
 _DUMMY_HASH = (
-    "pbkdf2_sha512$210000$"
+    "pbkdf2_sha512$220000$"
     "cGFkaWVtLWR1bW15LXNhbHQtMDE="
     "$RsPCZ1wcH0+GxN9zW+zqsNlwPiylbJdzVeHjLxWd7Yw="
 )
