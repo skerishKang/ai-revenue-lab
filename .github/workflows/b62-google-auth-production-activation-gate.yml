@@ -307,12 +307,31 @@ jobs:
 
           after_secret="${RUNNER_TEMP}/b62-google-auth-after-secret.json"
           curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${after_secret}"
-          jq -e '
-            [.result.bindings[] | select(.name == "PADIEM_CHAT_GOOGLE_CLIENT_SECRET" and .type == "secret_text")] | length == 1
-            and
-            [.result.bindings[] | select(.name == "PADIEM_CHAT_SESSION_SECRET" and .type == "secret_text")] | length == 1
-          ' "${after_secret}" >/dev/null
-          echo 'AUTH_SECRET_NAME_TYPE_READBACK=PASS'
+          AFTER_SECRET_FILE="${after_secret}" python - <<'PY'
+          import json
+          import os
+
+          payload = json.load(open(os.environ["AFTER_SECRET_FILE"], encoding="utf-8"))
+          result = payload.get("result")
+          if not isinstance(result, dict):
+              raise SystemExit("AUTH_SECRET_READBACK_RESULT_SHAPE=FAIL")
+          bindings = result.get("bindings")
+          if not isinstance(bindings, list):
+              raise SystemExit("AUTH_SECRET_READBACK_BINDINGS_SHAPE=FAIL")
+
+          required = (
+              "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
+              "PADIEM_CHAT_SESSION_SECRET",
+          )
+          for name in required:
+              matches = [b for b in bindings if isinstance(b, dict) and b.get("name") == name]
+              if len(matches) != 1 or matches[0].get("type") != "secret_text":
+                  raise SystemExit(f"AUTH_SECRET_READBACK_{name}=FAIL")
+
+          print("AUTH_SECRET_NAME_TYPE_READBACK=PASS")
+          print("SECRET_VALUES_READBACK=0")
+          print("SECRET_VALUES_OUTPUT=0")
+          PY
 
           patch="${RUNNER_TEMP}/b62-google-auth-activation.json"
           python - "${after_secret}" "${patch}" <<'PY'

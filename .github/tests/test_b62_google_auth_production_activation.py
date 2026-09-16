@@ -80,3 +80,14 @@ def test_activation_readiness_checks_protected_sources_without_mutation():
     assert "SESSION_SECRET_SOURCE_READY" in WORKFLOW
     assert "AUTH_ACTIVATION_READINESS=PASS" in WORKFLOW
     assert "AUTH_SOURCE_VALUES_OUTPUT=0" in WORKFLOW
+
+
+def test_secret_readback_avoids_ambiguous_jq_pipe_precedence():
+    assert 'Cannot index array with string "result"' not in WORKFLOW
+    assert 'AFTER_SECRET_FILE="${after_secret}" python - <<\'PY\'' in WORKFLOW
+    assert 'AUTH_SECRET_READBACK_RESULT_SHAPE=FAIL' in WORKFLOW
+    assert 'AUTH_SECRET_READBACK_BINDINGS_SHAPE=FAIL' in WORKFLOW
+    assert 'AUTH_SECRET_NAME_TYPE_READBACK=PASS' in WORKFLOW
+    assert 'SECRET_VALUES_READBACK=0' in WORKFLOW
+    assert 'SECRET_VALUES_OUTPUT=0' in WORKFLOW
+    assert '[.result.bindings[] | select(.name == "PADIEM_CHAT_GOOGLE_CLIENT_SECRET"' not in WORKFLOW
