@@ -576,6 +576,7 @@ html[data-theme="padiem-glass"][data-glass-variant="male"] .main-panel::after {
 
 @media (prefers-reduced-transparency: reduce) {
   html[data-theme="padiem-glass"] .main-panel::after {
-    opacity: 0;
+    opacity: var(--glass-cyber-intensity);
+    background-color: color-mix(in srgb, #112736 88%, var(--glass-cyber-accent));
   }
 }
