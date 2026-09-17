@@ -116,7 +116,7 @@ def _orchestrate_payload() -> dict[str, Any]:
     fields — the Engine wire contract (orchestration_wire._ORCHESTRATE_ALLOWED)
     rejects them; the pin rides on agent.model_policy and max_steps is pinned to
     1 server-side (service.build_execution_request)."""
-    return {
+    fixed_payload = {
         "app_id": "b54-padiem-claw",
         "agent": {
             "id": "agent:padiem:orchestrator_1",
@@ -137,6 +137,16 @@ def _orchestrate_payload() -> dict[str, Any]:
             "idempotency_key": IDEMPOTENCY_KEY,
         },
     }
+    custom_payload = os.environ.get("CUSTOM_PAYLOAD_JSON", "").strip()
+    if not custom_payload:
+        return fixed_payload
+    try:
+        parsed = json.loads(custom_payload)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"CUSTOM_PAYLOAD_JSON is invalid JSON: {exc.msg}") from exc
+    if not isinstance(parsed, dict):
+        raise RuntimeError("CUSTOM_PAYLOAD_JSON must decode to a JSON object")
+    return parsed
 
 
 def _bound_fingerprint(s1_body: dict[str, Any]) -> str | None:
