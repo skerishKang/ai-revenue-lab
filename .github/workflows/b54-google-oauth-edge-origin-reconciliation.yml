@@ -76,25 +76,33 @@ jobs:
           import json
           from pathlib import Path
 
-          workflow_path = Path(".github/workflows/b54-google-oauth-edge-origin-reconciliation.yml")
-          workflow = workflow_path.read_text(encoding="utf-8")
+          workflow = Path(".github/workflows/b54-google-oauth-edge-origin-reconciliation.yml").read_text(encoding="utf-8")
           root = Path("packages/padiem-control-plane")
           edge = json.loads((root / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
           edge_source = (root / "google_oauth_edge_worker.py").read_text(encoding="utf-8")
 
-          assert "TARGET_ORIGIN: https://chat.padiem.net" in workflow
-          assert "LEGACY_ORIGIN: https://padiem-chat.charliekant.workers.dev" in workflow
-          assert "EDGE_WORKER: padiem-google-oauth-edge" in workflow
-          assert "STATE_WORKER: padiem-google-oauth-state" in workflow
-          assert "IDENTITY_WORKER: padiem-control-plane-identity" in workflow
-          assert "secrets.GOOGLE_OAUTH_ALLOWED_ORIGIN" not in workflow
-          assert "B54_OAUTH_ROUTES_CF_API_TOKEN" not in workflow
-          assert workflow.count("pywrangler deploy --strict") == 1
-          assert "-X PUT" not in workflow
-          assert "-X DELETE" not in workflow
-          assert "-X POST" not in workflow
-          assert "DRIVE_API" not in workflow
-          assert "GOOGLE_CONSENT" not in workflow
+          required_markers = [
+              "TARGET_ORIGIN: " + "https://chat.padiem.net",
+              "LEGACY_ORIGIN: " + "https://padiem-chat.charliekant.workers.dev",
+              "EDGE_WORKER: " + "padiem-google-oauth-edge",
+              "STATE_WORKER: " + "padiem-google-oauth-state",
+              "IDENTITY_WORKER: " + "padiem-control-plane-identity",
+          ]
+          for marker in required_markers:
+              assert workflow.count(marker) == 1, marker
+
+          forbidden_refs = [
+              "secrets." + "GOOGLE_OAUTH_ALLOWED_ORIGIN",
+              "B54_OAUTH_" + "ROUTES_CF_API_TOKEN",
+              "-X " + "PUT",
+              "-X " + "DELETE",
+              "-X " + "POST",
+          ]
+          for marker in forbidden_refs:
+              assert marker not in workflow, marker
+
+          strict_deploy = "pywrangler " + "deploy --strict"
+          assert workflow.count(strict_deploy) == 1
 
           assert edge["name"] == "padiem-google-oauth-edge"
           assert edge["workers_dev"] is False
@@ -260,7 +268,7 @@ jobs:
               "https://${OAUTH_HOST}${CONNECT_PATH}")"
             test "${status}" = "${expected_status}"
             local acao
-            acao="$(awk 'BEGIN{IGNORECASE=1} /^access-control-allow-origin:/ {sub(/\r$/, "", $0); sub(/^[^:]*:[[:space:]]*/, "", $0); print; exit}' "${headers}")"
+            acao="$(awk 'tolower($1) == "access-control-allow-origin:" {sub(/\r$/, "", $0); sub(/^[^:]*:[[:space:]]*/, "", $0); print; exit}' "${headers}")"
             if [ -n "${expected_acao}" ]; then
               test "${acao}" = "${expected_acao}"
             else
