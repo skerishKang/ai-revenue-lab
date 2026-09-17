@@ -15,6 +15,23 @@ from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.service import ServiceContractError
 
 
+class FakeJsResults:
+    """Mimics the Python Worker JS proxy exposed at ``D1Result.results``."""
+
+    def __init__(self, rows: list[Mapping[str, Any]]) -> None:
+        self._rows = rows
+
+    def to_py(self) -> list[dict[str, Any]]:
+        return [dict(row) for row in self._rows]
+
+
+class FakeD1Result:
+    """Mimics Cloudflare's D1Result object returned by ``all()``/``run()``."""
+
+    def __init__(self, rows: list[Mapping[str, Any]]) -> None:
+        self.results = FakeJsResults(rows)
+
+
 class FakeD1Binding:
     """Mimics a Cloudflare D1 binding: ``prepare(sql).bind(...).all()``."""
 
@@ -45,11 +62,11 @@ class FakeD1Statement:
         self._owner.params = params
         return self
 
-    def all(self) -> list[Mapping[str, Any]]:
+    def all(self) -> FakeD1Result:
         if self._fail:
             raise RuntimeError("d1 transport failure")
         rows = self._rows or []
-        return [dict(r) for r in rows if r.get("active", 1) == 1]
+        return FakeD1Result([dict(r) for r in rows if r.get("active", 1) == 1])
 
     def first(self) -> Mapping[str, Any] | None:
         if self._fail:
