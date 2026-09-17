@@ -125,6 +125,21 @@ jobs:
           skipped = 0
           def wrun(args):
               return subprocess.run(args, capture_output=True, text=True)
+          import time
+          def download_with_retry(drive_id, dest, label):
+              last = ''
+              for attempt in range(1, 4):
+                  if os.path.exists(dest):
+                      os.remove(dest)
+                  r = wrun(['gdown', drive_id, '-O', dest])
+                  if r.returncode == 0 and os.path.exists(dest):
+                      return True
+                  last = (r.stderr or '')[-1500:]
+                  print(f'DOWNLOAD_RETRY {label} attempt={attempt} err={last[:200]}',
+                        flush=True)
+                  time.sleep(20 * attempt)
+              print(f'DOWNLOAD_FAIL {label}\n{last}', file=sys.stderr)
+              return False
           for o in objs:
               dest = os.path.join(workdir, o['file'])
               # API-side idempotency: same bytes -> SKIP_IDENTICAL,
@@ -143,10 +158,7 @@ jobs:
                         f"manifest_bytes={o['bytes']}", file=sys.stderr)
                   sys.exit(1)
               print(f'DOWNLOAD {o["file"]}', flush=True)
-              r = subprocess.run(['gdown', o['drive_id'], '-O', dest],
-                                 capture_output=True, text=True)
-              if r.returncode != 0 or not os.path.exists(dest):
-                  print(f'DOWNLOAD_FAIL {o["file"]}\n{r.stderr[-2000:]}', file=sys.stderr)
+              if not download_with_retry(o['drive_id'], dest, o['file']):
                   sys.exit(1)
               actual = os.path.getsize(dest)
               if actual != o['bytes']:
