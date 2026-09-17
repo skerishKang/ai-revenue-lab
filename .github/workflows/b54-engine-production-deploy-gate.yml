@@ -72,7 +72,7 @@ jobs:
           test -n "${active_version}"
           version_detail="${RUNNER_TEMP}/version-pre.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
-          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}")"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}" --require-drive-runtime-bindings)"
           printf '%s\n' "${verify_out}"
           overlay_expected="$(printf '%s\n' "${verify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_EXPECTED=//p')"
           test "${overlay_expected}" = 'YES' || test "${overlay_expected}" = 'NO'
@@ -128,6 +128,7 @@ jobs:
           python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
             --active-version "${active_version}" \
+            --require-drive-runtime-bindings \
             "${overlay_args[@]}"
           echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
           # Final deploy PASS only after served-version evidence above: the
