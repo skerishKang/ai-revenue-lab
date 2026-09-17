@@ -70,8 +70,8 @@ jobs:
                   raise SystemExit(f'Missing state-only invariant: {token}')
           forbidden = [
               'secrets.' + 'GOOGLE_OAUTH_ALLOWED_ORIGIN',
-              'wrangler.google-oauth-edge.jsonc',
-              'wrangler.identity-authority.jsonc',
+              'wrangler.google-oauth-' + 'edge.jsonc',
+              'wrangler.identity-' + 'authority.jsonc',
               '/workers/' + 'routes',
               '-X ' + 'POST',
               '-X ' + 'PUT',
