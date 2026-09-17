@@ -79,7 +79,7 @@ jobs:
            if [ "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}" ]; then
              echo 'WORKFLOW_SOURCE_REF=origin/main'
            else
-             git merge-base --is-ancestor origin/main HEAD
+             git rev-list --parents -n 1 HEAD | tr ' ' '\n' | grep -qx "$(git rev-parse origin/main)"
              echo 'WORKFLOW_SOURCE_REF=main-derived-branch'
            fi
           echo "WORKFLOW_SOURCE_SHA=$(git rev-parse HEAD)"
