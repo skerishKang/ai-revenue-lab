@@ -40,7 +40,9 @@ class DriveReadProductionCanaryTests(unittest.TestCase):
                         "result_count": 1,
                         "more_results_available": False,
                         "page_followed": False,
-                        "raw_credentials_present": False,
+                        # Engine's generic redactor treats credential-shaped
+                        # keys as secret-shaped even when their Core value is False.
+                        "raw_credentials_present": "[redacted]",
                     },
                 },
             },
@@ -81,6 +83,7 @@ class DriveReadProductionCanaryTests(unittest.TestCase):
         output = stdout.getvalue()
         self.assertIn("DRIVE_READ_CANARY=PASS", output)
         self.assertIn("DRIVE_RESULT_ITEM_COUNT=1", output)
+        self.assertIn("DRIVE_MORE_RESULTS_AVAILABLE=NO", output)
         self.assertIn("ENGINE_TOOL_EXECUTE_POST_COUNT=1", output)
         self.assertIn("NETWORK_RETRY_COUNT=0", output)
         self.assertIn("DRIVE_PROVIDER_READ_BUDGET_MAX=2", output)
@@ -93,6 +96,20 @@ class DriveReadProductionCanaryTests(unittest.TestCase):
             "owner@example.com",
         ):
             self.assertNotIn(forbidden, output)
+
+    def test_engine_node_bound_can_preserve_count_by_list_length(self) -> None:
+        payload = json.loads(self._success_body().decode("utf-8"))
+        payload["tool"]["output_truncated"] = True
+        payload["tool"]["output"]["files"] = [None for _ in range(25)]
+        payload["tool"]["output"]["result_count"] = None
+        payload["tool"]["output"]["more_results_available"] = None
+        payload["tool"]["output"]["page_followed"] = None
+        payload["tool"]["output"]["raw_credentials_present"] = None
+
+        count, pagination, truncated = canary.classify_success(payload)
+        self.assertEqual(count, 25)
+        self.assertEqual(pagination, "UNKNOWN_DUE_TO_ENGINE_BOUND")
+        self.assertTrue(truncated)
 
     def test_headers_keep_credential_private(self) -> None:
         credential = "private-value"
@@ -135,6 +152,12 @@ class DriveReadProductionCanaryTests(unittest.TestCase):
             canary.classify_success(payload)
         payload["tool"]["output"]["result_count"] = 26
         payload["tool"]["output"]["files"] = [{} for _ in range(26)]
+        with self.assertRaises(ValueError):
+            canary.classify_success(payload)
+
+    def test_missing_post_list_facts_require_engine_truncation(self) -> None:
+        payload = json.loads(self._success_body().decode("utf-8"))
+        payload["tool"]["output"]["more_results_available"] = None
         with self.assertRaises(ValueError):
             canary.classify_success(payload)
 
