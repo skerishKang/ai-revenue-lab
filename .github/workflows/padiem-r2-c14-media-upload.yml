@@ -122,8 +122,26 @@ jobs:
           objs = [o for o in man['objects'] if not limit or o['file'] in limit]
           workdir = os.environ['WORKDIR']
           done = 0
+          skipped = 0
+          def wrun(args):
+              return subprocess.run(args, capture_output=True, text=True)
           for o in objs:
               dest = os.path.join(workdir, o['file'])
+              # API-side idempotency: same bytes -> SKIP_IDENTICAL,
+              # different bytes -> STOP (no overwrite).
+              probe = os.path.join(workdir, 'probe-' + o['file'])
+              r = wrun(['npx', '--yes', 'wrangler@4.130.0', 'r2', 'object', 'get',
+                        f"padiem-media/{o['r2_key']}", '--file', probe])
+              if r.returncode == 0 and os.path.exists(probe):
+                  psize = os.path.getsize(probe)
+                  os.remove(probe)
+                  if psize == o['bytes']:
+                      skipped += 1
+                      print(f'SKIP_IDENTICAL {o["r2_key"]}', flush=True)
+                      continue
+                  print(f"CONTENT_CONFLICT {o['r2_key']} r2_bytes={psize} "
+                        f"manifest_bytes={o['bytes']}", file=sys.stderr)
+                  sys.exit(1)
               print(f'DOWNLOAD {o["file"]}', flush=True)
               r = subprocess.run(['gdown', o['drive_id'], '-O', dest],
                                  capture_output=True, text=True)
@@ -185,6 +203,76 @@ jobs:
               done += 1
               print(f'OK {done}/{len(objs)} {o["r2_key"]}', flush=True)
           print(f'UPLOAD_COUNT={done}')
+          print(f'SKIP_IDENTICAL_COUNT={skipped}')
+          EOF
+
+      - name: Purge CDN cache and verify public convergence
+        if: ${{ !inputs.dry_run }}
+        shell: bash
+        env:
+          LIMIT: ${{ inputs.limit }}
+          MANIFEST: ${{ github.workspace }}/ops/padiem-r2-c14-upload-manifest.json
+        run: |
+          set -euo pipefail
+          python - <<'EOF'
+          import json, os, subprocess, sys, time
+          man = json.load(open(os.environ['MANIFEST'], encoding='utf-8'))
+          limit = {s.strip() for s in os.environ.get('LIMIT', '').split(',') if s.strip()}
+          objs = [o for o in man['objects'] if not limit or o['file'] in limit]
+          token = os.environ.get('CLOUDFLARE_API_TOKEN', '')
+          acct = os.environ.get('CLOUDFLARE_ACCOUNT_ID', '')
+          urls = ['https://media.padiem.net/' + o['r2_key'] for o in objs]
+          # Best-effort single-URL purge (tolerate missing permission).
+          try:
+              z = subprocess.run(
+                  ['curl', '-s', '--max-time', '30', '-H',
+                   f'Authorization: Bearer {token}',
+                   'https://api.cloudflare.com/client/v4/zones?name=padiem.net'],
+                  capture_output=True, text=True)
+              zid = (json.loads(z.stdout).get('result') or [{}])[0].get('id', '')
+              if zid:
+                  for i in range(0, len(urls), 30):
+                      p = subprocess.run(
+                          ['curl', '-s', '--max-time', '60', '-X', 'POST',
+                           f'https://api.cloudflare.com/client/v4/zones/{zid}/purge_cache',
+                           '-H', f'Authorization: Bearer {token}',
+                           '-H', 'Content-Type: application/json',
+                           '--data', json.dumps({'files': urls[i:i + 30]})],
+                          capture_output=True, text=True)
+                      ok = json.loads(p.stdout).get('success', False)
+                      print(f'PURGE_BATCH {i // 30 + 1} success={ok}', flush=True)
+              else:
+                  print('PURGE_SKIPPED=ZONE_LOOKUP_EMPTY', flush=True)
+          except Exception as e:
+              print(f'PURGE_SKIPPED={e}', flush=True)
+          # Poll public HEAD until all converge (20 rounds x 60s).
+          for rnd in range(1, 21):
+              pending = []
+              for o in objs:
+                  url = 'https://media.padiem.net/' + o['r2_key']
+                  code = subprocess.run(
+                      ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+                       '--max-time', '30', '-I', url],
+                      capture_output=True, text=True).stdout.strip()
+                  if code != '200':
+                      pending.append(o['r2_key'])
+              print(f'CONVERGE_ROUND {rnd} pending={len(pending)}', flush=True)
+              if not pending:
+                  print('PUBLIC_CONVERGENCE=ALL_200', flush=True)
+                  break
+              time.sleep(60)
+          else:
+              print(f'PUBLIC_CONVERGENCE=PENDING remaining={len(pending)}', file=sys.stderr)
+              sys.exit(1)
+          # Range spot-check on first key.
+          rng = subprocess.run(
+              ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+               '--max-time', '60', '-r', '0-1023', urls[0]],
+              capture_output=True, text=True).stdout.strip()
+          if rng != '206':
+              print(f'PUBLIC_RANGE_FAIL {urls[0]} range={rng}', file=sys.stderr)
+              sys.exit(1)
+          print('PUBLIC_RANGE=206', flush=True)
           EOF
 
       - name: Mutation contract
