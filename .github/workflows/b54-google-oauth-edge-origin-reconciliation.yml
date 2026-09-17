@@ -1,4 +1,4 @@
-name: B54 Google OAuth Edge Origin Reconciliation
+name: B54 Google OAuth Edge Origin Production Reconciliation
 
 on:
   pull_request:
