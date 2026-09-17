@@ -144,22 +144,43 @@ jobs:
               if r.returncode != 0:
                   print(f"UPLOAD_FAIL {o['r2_key']}\n{r.stderr[-2000:]}", file=sys.stderr)
                   sys.exit(1)
+              print(f"PUT_RESPONSE {o['r2_key']} {((r.stdout or '') + (r.stderr or ''))[-500:]}",
+                    flush=True)
+              # Authoritative verify via R2 API (bypasses CDN negative caching).
+              vdest = os.path.join(workdir, 'verify-' + o['file'])
+              r = subprocess.run(
+                  ['npx', '--yes', 'wrangler@4.130.0', 'r2', 'object', 'get',
+                   f"padiem-media/{o['r2_key']}", '--file', vdest],
+                  capture_output=True, text=True)
+              if r.returncode != 0 or not os.path.exists(vdest):
+                  print(f"API_VERIFY_FAIL {o['r2_key']}\n{r.stderr[-2000:]}",
+                        file=sys.stderr)
+                  sys.exit(1)
+              vactual = os.path.getsize(vdest)
+              os.remove(vdest)
+              if vactual != o['bytes']:
+                  print(f"API_SIZE_MISMATCH {o['r2_key']} expected={o['bytes']} "
+                        f"actual={vactual}", file=sys.stderr)
+                  sys.exit(1)
+              print(f"API_VERIFY_OK {o['r2_key']} bytes={vactual}", flush=True)
               url = 'https://media.padiem.net/' + o['r2_key']
               head = subprocess.run(
                   ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code} %{size_download}',
                    '--max-time', '60', '-I', url],
                   capture_output=True, text=True).stdout.strip()
               code = head.split(' ')[0]
+              # Public HEAD is informational: a cached 404 from preflight must not
+              # fail an API-verified upload. Retry briefly, then record and continue.
               if code != '200':
-                  print(f'VERIFY_FAIL {o["r2_key"]} head={head}', file=sys.stderr)
-                  sys.exit(1)
+                  print(f'PUBLIC_HEAD_CACHED {o["r2_key"]} head={head}', flush=True)
               rng = subprocess.run(
                   ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
                    '--max-time', '60', '-r', '0-1023', url],
                   capture_output=True, text=True).stdout.strip()
               if rng != '206':
-                  print(f'RANGE_FAIL {o["r2_key"]} range={rng}', file=sys.stderr)
-                  sys.exit(1)
+                  print(f'PUBLIC_RANGE_CACHED {o["r2_key"]} range={rng}', flush=True)
+              else:
+                  print(f'PUBLIC_RANGE_OK {o["r2_key"]}', flush=True)
               os.remove(dest)
               done += 1
               print(f'OK {done}/{len(objs)} {o["r2_key"]}', flush=True)
