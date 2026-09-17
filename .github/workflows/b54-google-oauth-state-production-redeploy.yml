@@ -1,0 +1,323 @@
+name: B54 Google OAuth State Production Redeploy
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-google-oauth-state-production-redeploy.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact Production mutation confirmation phrase"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-google-oauth-state-production-redeploy
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  STATE_WORKER: padiem-google-oauth-state
+  EDGE_WORKER: padiem-google-oauth-edge
+  IDENTITY_WORKER: padiem-control-plane-identity
+  PUBLIC_HOSTNAME: oauth.padiem.net
+  STATE_CONFIG: wrangler.google-oauth.jsonc
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate state-only Production redeploy contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/b54-google-oauth-state-production-redeploy.yml').read_text(encoding='utf-8')
+          required = [
+              'environment: production',
+              'padiem-google-oauth-state',
+              'STATE_WORKER_REDEPLOY=1',
+              'EDGE_WORKER_REDEPLOY=0',
+              'IDENTITY_WORKER_REDEPLOY=0',
+              'CUSTOM_DOMAIN_MUTATION=0',
+              'DNS_MUTATION=0',
+              'B62_MUTATION=0',
+              'TICKET_POST=0',
+              'CONNECT_POST=0',
+              'GOOGLE_CONSENT=0',
+              'CALLBACK=0',
+              'DRIVE_GRANT_SEED=0',
+              'DRIVE_API_CALLS=0',
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f'Missing state-only invariant: {token}')
+          forbidden = [
+              'secrets.' + 'GOOGLE_OAUTH_ALLOWED_ORIGIN',
+              'wrangler.google-oauth-edge.jsonc',
+              'wrangler.identity-authority.jsonc',
+              '/workers/' + 'routes',
+              '-X ' + 'POST',
+              '-X ' + 'PUT',
+              '-X ' + 'PATCH',
+              '-X ' + 'DELETE',
+          ]
+          for token in forbidden:
+              if token in text:
+                  raise SystemExit(f'Forbidden broad/topology mutation token: {token}')
+          deploy_lines = [line for line in text.splitlines() if 'pywrangler deploy' in line and '--dry-run' not in line]
+          if len(deploy_lines) != 1:
+              raise SystemExit(f'Expected exactly one non-dry-run deploy command, got {len(deploy_lines)}')
+          print('STATE_ONLY_SOURCE_CONTRACT=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Dry-run package exact state Worker
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          secret_file="${RUNNER_TEMP}/oauth-state-dry-run.env"
+          trap 'rm -f "${temp_config}" "${secret_file}"' EXIT
+          python - <<'PY' > "${secret_file}"
+          import base64, os
+          def b64url(n):
+              return base64.urlsafe_b64encode(os.urandom(n)).decode().rstrip('=')
+          print('GOOGLE_CONNECT_TICKET_KEY=' + b64url(32))
+          print('GOOGLE_OAUTH_SEAL_KEY=' + b64url(32))
+          print('GOOGLE_OAUTH_CLIENT_SECRET=ci-only-placeholder')
+          PY
+          chmod 600 "${secret_file}"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          source = json.loads(Path('wrangler.google-oauth.jsonc').read_text(encoding='utf-8'))
+          source.setdefault('vars', {})['GOOGLE_OAUTH_CLIENT_ID'] = 'ci.apps.googleusercontent.com'
+          source['vars']['GOOGLE_OAUTH_REDIRECT_URI'] = 'https://oauth.padiem.net/v1/google/callback'
+          Path('wrangler.jsonc').write_text(json.dumps(source, indent=2) + '\n', encoding='utf-8')
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/oauth-state-redeploy-dry-run"
+          rm -f "${temp_config}"
+          echo "STATE_WORKER_PACKAGE_DRY_RUN=PASS"
+
+  redeploy-state-worker:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main and explicit authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          CONNECT_TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+          OAUTH_SEAL_KEY: ${{ secrets.GOOGLE_OAUTH_SEAL_KEY }}
+          OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test "${CONFIRMATION}" = "REDEPLOY_PADIEM_GOOGLE_OAUTH_STATE_ROWSWRITTEN_FIX"
+          for name in CONNECT_TICKET_KEY OAUTH_SEAL_KEY OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET; do
+            test -n "${!name}"
+          done
+          python - <<'PY'
+          import base64, os
+          def require_key(name):
+              value = os.environ[name]
+              padding = '=' * (-len(value) % 4)
+              raw = base64.urlsafe_b64decode(value + padding)
+              if len(raw) != 32:
+                  raise SystemExit(f'{name} must decode to 32 bytes')
+          require_key('CONNECT_TICKET_KEY')
+          require_key('OAUTH_SEAL_KEY')
+          if not os.environ['OAUTH_CLIENT_ID'].endswith('.apps.googleusercontent.com'):
+              raise SystemExit('OAuth client id shape is not reviewed')
+          PY
+          echo "EXACT_CURRENT_MAIN=PASS"
+          echo "PRODUCTION_AUTHORIZATION=PASS"
+
+      - name: Snapshot exact Production topology and active versions
+        id: before
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains-before.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $state or .service == $identity)] | length == 0' "${domains}" >/dev/null
+
+          snapshot_worker() {
+            worker="$1"
+            prefix="$2"
+            settings="${RUNNER_TEMP}/${worker}-settings-before.json"
+            sub="${RUNNER_TEMP}/${worker}-sub-before.json"
+            dep="${RUNNER_TEMP}/${worker}-dep-before.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
+            version="$(jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}")"
+            test -n "${version}"
+            echo "${prefix}_version=${version}" >> "${GITHUB_OUTPUT}"
+          }
+
+          snapshot_worker "${STATE_WORKER}" "state"
+          snapshot_worker "${EDGE_WORKER}" "edge"
+          snapshot_worker "${IDENTITY_WORKER}" "identity"
+
+          jq -e --arg state "${STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .type == "service" and .service == $state)' "${RUNNER_TEMP}/${EDGE_WORKER}-settings-before.json" >/dev/null
+          jq -e '.result.bindings | any(.name == "GOOGLE_CONNECT_TICKET_KEY") and any(.name == "GOOGLE_OAUTH_SEAL_KEY") and any(.name == "GOOGLE_OAUTH_CLIENT_SECRET")' "${RUNNER_TEMP}/${STATE_WORKER}-settings-before.json" >/dev/null
+          echo "PREMUTATION_TOPOLOGY=PASS"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Reconfirm exact main immediately before the only mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "IMMEDIATE_PREMUTATION_EXACT_MAIN=PASS"
+
+      - name: Redeploy only Google OAuth state Worker
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CONNECT_TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+          OAUTH_SEAL_KEY: ${{ secrets.GOOGLE_OAUTH_SEAL_KEY }}
+          OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/oauth-state-production-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          printf 'GOOGLE_CONNECT_TICKET_KEY=%s\nGOOGLE_OAUTH_SEAL_KEY=%s\nGOOGLE_OAUTH_CLIENT_SECRET=%s\n' "${CONNECT_TICKET_KEY}" "${OAUTH_SEAL_KEY}" "${OAUTH_CLIENT_SECRET}" > "${secret_file}"
+          chmod 600 "${secret_file}"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          source = json.loads(Path('wrangler.google-oauth.jsonc').read_text(encoding='utf-8'))
+          if source.get('name') != 'padiem-google-oauth-state':
+              raise SystemExit('state worker name drift')
+          source.setdefault('vars', {})['GOOGLE_OAUTH_CLIENT_ID'] = os.environ['OAUTH_CLIENT_ID']
+          source['vars']['GOOGLE_OAUTH_REDIRECT_URI'] = 'https://oauth.padiem.net/v1/google/callback'
+          Path('wrangler.jsonc').write_text(json.dumps(source, indent=2) + '\n', encoding='utf-8')
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B54 OAuth state rowsWritten fix ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "STATE_WORKER_REDEPLOY=1"
+
+      - name: Read back state-only mutation and preserved topology
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          STATE_BEFORE: ${{ steps.before.outputs.state_version }}
+          EDGE_BEFORE: ${{ steps.before.outputs.edge_version }}
+          IDENTITY_BEFORE: ${{ steps.before.outputs.identity_version }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          domains="${RUNNER_TEMP}/domains-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg host "${PUBLIC_HOSTNAME}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $state or .service == $identity)] | length == 0' "${domains}" >/dev/null
+
+          current_version() {
+            worker="$1"
+            dep="${RUNNER_TEMP}/${worker}-dep-after.json"
+            sub="${RUNNER_TEMP}/${worker}-sub-after.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
+            jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}"
+          }
+
+          STATE_AFTER="$(current_version "${STATE_WORKER}")"
+          EDGE_AFTER="$(current_version "${EDGE_WORKER}")"
+          IDENTITY_AFTER="$(current_version "${IDENTITY_WORKER}")"
+          test -n "${STATE_AFTER}" && test -n "${EDGE_AFTER}" && test -n "${IDENTITY_AFTER}"
+          test "${STATE_AFTER}" != "${STATE_BEFORE}"
+          test "${EDGE_AFTER}" = "${EDGE_BEFORE}"
+          test "${IDENTITY_AFTER}" = "${IDENTITY_BEFORE}"
+
+          state_settings="${RUNNER_TEMP}/state-settings-after.json"
+          edge_settings="${RUNNER_TEMP}/edge-settings-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${STATE_WORKER}/settings" -o "${state_settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" -o "${edge_settings}"
+          jq -e '.result.bindings | any(.name == "GOOGLE_CONNECT_TICKET_KEY") and any(.name == "GOOGLE_OAUTH_SEAL_KEY") and any(.name == "GOOGLE_OAUTH_CLIENT_SECRET")' "${state_settings}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .type == "service" and .service == $state)' "${edge_settings}" >/dev/null
+
+          echo "STATE_ACTIVE_VERSION_CHANGED=PASS"
+          echo "EDGE_WORKER_REDEPLOY=0"
+          echo "IDENTITY_WORKER_REDEPLOY=0"
+          echo "CUSTOM_DOMAIN_MUTATION=0"
+          echo "DNS_MUTATION=0"
+          echo "B62_MUTATION=0"
+          echo "TICKET_POST=0"
+          echo "CONNECT_POST=0"
+          echo "GOOGLE_CONSENT=0"
+          echo "CALLBACK=0"
+          echo "DRIVE_GRANT_SEED=0"
+          echo "DRIVE_API_CALLS=0"
