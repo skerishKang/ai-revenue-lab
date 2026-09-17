@@ -152,11 +152,14 @@ jobs:
               return False
           for o in objs:
               dest = os.path.join(workdir, o['file'])
+              # NOTE: wrangler r2 object commands default to a LOCAL simulator.
+              # --remote is REQUIRED to touch the real padiem-media bucket.
               # API-side idempotency: same bytes -> SKIP_IDENTICAL,
               # different bytes -> STOP (no overwrite).
               probe = os.path.join(workdir, 'probe-' + o['file'])
               r = wrun(['npx', '--yes', 'wrangler@4.130.0', 'r2', 'object', 'get',
-                        f"padiem-media/{o['r2_key']}", '--file', probe])
+                        f"padiem-media/{o['r2_key']}", '--file', probe,
+                        '--remote'])
               if r.returncode == 0 and os.path.exists(probe):
                   psize = os.path.getsize(probe)
                   os.remove(probe)
@@ -181,18 +184,19 @@ jobs:
               r = subprocess.run(
                   ['npx', '--yes', 'wrangler@4.130.0', 'r2', 'object', 'put',
                    f"padiem-media/{o['r2_key']}", '--file', dest,
-                   '--content-type', 'video/mp4'],
+                   '--content-type', 'video/mp4', '--remote'],
                   capture_output=True, text=True)
               if r.returncode != 0:
                   print(f"UPLOAD_FAIL {o['r2_key']}\n{r.stderr[-2000:]}", file=sys.stderr)
                   sys.exit(1)
               print(f"PUT_RESPONSE {o['r2_key']} {((r.stdout or '') + (r.stderr or ''))[-500:]}",
                     flush=True)
-              # Authoritative verify via R2 API (bypasses CDN negative caching).
+              # Authoritative verify via remote R2 API (bypasses CDN caching).
               vdest = os.path.join(workdir, 'verify-' + o['file'])
               r = subprocess.run(
                   ['npx', '--yes', 'wrangler@4.130.0', 'r2', 'object', 'get',
-                   f"padiem-media/{o['r2_key']}", '--file', vdest],
+                   f"padiem-media/{o['r2_key']}", '--file', vdest,
+                   '--remote'],
                   capture_output=True, text=True)
               if r.returncode != 0 or not os.path.exists(vdest):
                   print(f"API_VERIFY_FAIL {o['r2_key']}\n{r.stderr[-2000:]}",
