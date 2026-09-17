@@ -1,0 +1,199 @@
+name: B54 Engine Google OAuth Binding Read-only Attestation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-google-oauth-binding-readonly.yml"
+      - "apps/padiem-ai-engine/wrangler.toml"
+      - ".github/scripts/b54_engine_served_version_guard.py"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-engine-google-oauth-binding-readonly.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-google-oauth-binding-readonly-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  OAUTH_WORKER: padiem-google-oauth-state
+  OAUTH_BINDING: CONTROL_PLANE_GOOGLE_OAUTH
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Engine Google OAuth binding read-only contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          config = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
+          expected = (
+              '[[services]]\n'
+              'binding = "CONTROL_PLANE_GOOGLE_OAUTH"\n'
+              'service = "padiem-google-oauth-state"'
+          )
+          if expected not in config:
+              raise SystemExit("canonical Engine Google OAuth Service Binding missing or drifted")
+
+          workflow = Path(".github/workflows/b54-engine-google-oauth-binding-readonly.yml").read_text(encoding="utf-8")
+          required = (
+              "/workers/scripts/${ENGINE_WORKER}",
+              "${base}/deployments",
+              "${base}/versions/${active_version}",
+              "b54_engine_served_version_guard.py resolve-active",
+              "ENGINE_GOOGLE_OAUTH_SERVED_BINDING=PRESENT_EXPECTED",
+              "BINDING_NAME_TYPE_SERVICE_ONLY=YES",
+              "RAW_VERSION_DETAIL_OUTPUT=0",
+              "SECRET_VALUE_OUTPUT=0",
+              "PRODUCTION_MUTATION=0",
+          )
+          for marker in required:
+              if marker not in workflow:
+                  raise SystemExit(f"missing read-only attestation marker: {marker}")
+
+          print("ENGINE_GOOGLE_OAUTH_BINDING_SOURCE_CONTRACT=PASS")
+          print("ENGINE_DEPLOY=0")
+          print("D1_MUTATION=0")
+          print("GOOGLE_PROVIDER_CALLS=0")
+          print("OAUTH_CONNECT=0")
+          print("PUBLIC_INGRESS_MUTATION=0")
+          print("DRIVE_GRANT_SEED=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Require exact current main on push
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+  served-binding-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact current main before live GETs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve served Engine version and attest Google OAuth Service Binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+
+          deployments="${RUNNER_TEMP}/engine-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+
+          version_detail="${RUNNER_TEMP}/engine-version-detail.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+
+          python3 - "${version_detail}" "${active_version}" "${OAUTH_BINDING}" "${OAUTH_WORKER}" <<'PY'
+          import json
+          import re
+          import sys
+
+          path, active_version, binding_name, service_name = sys.argv[1:]
+          if not re.fullmatch(r"[A-Za-z0-9._-]{1,64}", active_version):
+              raise SystemExit("unsafe active version id")
+
+          payload = json.load(open(path, encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("version detail response not successful")
+          result = payload.get("result")
+          if not isinstance(result, dict) or result.get("id") != active_version:
+              raise SystemExit("served version identity mismatch")
+
+          resources = result.get("resources")
+          if not isinstance(resources, dict):
+              raise SystemExit("served version resources missing")
+          raw = resources.get("bindings")
+
+          if isinstance(raw, list):
+              entries = raw
+          elif isinstance(raw, dict):
+              entries = []
+              for key, value in raw.items():
+                  if not isinstance(value, dict):
+                      raise SystemExit("malformed binding metadata")
+                  if isinstance(value.get("name"), str) and value["name"] != key:
+                      raise SystemExit("binding key/name mismatch")
+                  entries.append({**value, "name": key})
+          else:
+              raise SystemExit("served bindings collection malformed")
+
+          if any(not isinstance(entry, dict) for entry in entries):
+              raise SystemExit("served binding entry malformed")
+
+          matches = [entry for entry in entries if entry.get("name") == binding_name]
+          if len(matches) != 1:
+              raise SystemExit("expected exactly one Google OAuth Service Binding")
+
+          binding = matches[0]
+          if binding.get("type") != "service":
+              raise SystemExit("Google OAuth binding type drift")
+          if binding.get("service") != service_name:
+              raise SystemExit("Google OAuth service target drift")
+
+          print("ENGINE_GOOGLE_OAUTH_SERVED_BINDING=PRESENT_EXPECTED")
+          print(f"ENGINE_GOOGLE_OAUTH_TARGET={service_name}")
+          print("BINDING_NAME_TYPE_SERVICE_ONLY=YES")
+          print("RAW_VERSION_DETAIL_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          print("ENGINE_DEPLOY=0")
+          print("D1_MUTATION=0")
+          print("GOOGLE_PROVIDER_CALLS=0")
+          print("OAUTH_CONNECT=0")
+          print("PUBLIC_INGRESS_MUTATION=0")
+          print("DRIVE_GRANT_SEED=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
