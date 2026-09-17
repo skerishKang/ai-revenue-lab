@@ -104,6 +104,9 @@ jobs:
           assert "ACCOUNT_ONLY_READONLY=PASS" in workflow_text
           assert "WORKER_ROUTE_AUDIT=SKIPPED_ACCOUNT_ONLY" in workflow_text
           assert "ACCOUNT_ONLY_ZONE_API_CALLS=0" in workflow_text
+          assert "B54_OAUTH_ROUTES_CF_API_TOKEN" in workflow_text
+          assert "OAUTH_ROUTES_API_TOKEN" in workflow_text
+          assert "SHARED_TOKEN_SCOPE_WIDENING=NO" in workflow_text
           identity = json.loads((root / "wrangler.identity-authority.jsonc").read_text(encoding="utf-8"))
           state = json.loads((root / "wrangler.google-oauth.jsonc").read_text(encoding="utf-8"))
           edge = json.loads((root / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
@@ -259,6 +262,7 @@ jobs:
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          OAUTH_ROUTES_API_TOKEN: ${{ secrets.B54_OAUTH_ROUTES_CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           MODE: ${{ inputs.mode }}
         run: |
@@ -266,6 +270,11 @@ jobs:
           test -n "${CLOUDFLARE_API_TOKEN}"
           test -n "${CLOUDFLARE_ACCOUNT_ID}"
           auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          if [ "${MODE}" != "account_readonly" ]; then
+            test -n "${OAUTH_ROUTES_API_TOKEN}"
+            route_auth=( -H "Authorization: Bearer ${OAUTH_ROUTES_API_TOKEN}" -H "Content-Type: application/json" )
+          fi
+          echo "SHARED_TOKEN_SCOPE_WIDENING=NO"
 
           domains="${RUNNER_TEMP}/domains.json"
           curl -fsS "${auth[@]}" \
@@ -313,7 +322,7 @@ jobs:
             echo "ACCOUNT_ONLY_ZONE_API_CALLS=0"
           else
             zones="${RUNNER_TEMP}/zones.json"
-            curl -fsS "${auth[@]}" \
+            curl -fsS "${route_auth[@]}" \
               "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
               -o "${zones}"
             jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
@@ -321,7 +330,7 @@ jobs:
             test -n "${zone_id}"
 
             routes="${RUNNER_TEMP}/routes.json"
-            curl -fsS "${auth[@]}" \
+            curl -fsS "${route_auth[@]}" \
               "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
               -o "${routes}"
             jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null
@@ -417,6 +426,7 @@ jobs:
           echo "PRIVATE_WORKER_CUSTOM_DOMAIN=NO"
           echo "CLOUDFLARE_READONLY=PASS"
           echo "PRODUCTION_MUTATION=0"
+          echo "SHARED_TOKEN_SCOPE_WIDENING=NO"
 
   activate-private-workers:
     needs: [source-contract, cloudflare-readonly]
@@ -652,6 +662,7 @@ jobs:
           OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
           OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           OAUTH_ALLOWED_ORIGIN: ${{ secrets.GOOGLE_OAUTH_ALLOWED_ORIGIN }}
+          OAUTH_ROUTES_API_TOKEN: ${{ secrets.B54_OAUTH_ROUTES_CF_API_TOKEN }}
         run: |
           set -euo pipefail
           test "${CONFIRMATION}" = "ACTIVATE_PADIEM_GOOGLE_OAUTH_PUBLIC_INGRESS_OAUTH_PADIEM_NET"
@@ -663,6 +674,7 @@ jobs:
           test -n "${OAUTH_CLIENT_ID}"
           test -n "${OAUTH_CLIENT_SECRET}"
           test -n "${OAUTH_ALLOWED_ORIGIN}"
+          test -n "${OAUTH_ROUTES_API_TOKEN}"
           echo "PUBLIC_OAUTH_INGRESS_AUTHORIZATION=PASS"
 
       - name: Checkout exact approved main SHA
@@ -709,14 +721,14 @@ jobs:
         id: attach
         shell: bash
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          OAUTH_ROUTES_API_TOKEN: ${{ secrets.B54_OAUTH_ROUTES_CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
           response="${RUNNER_TEMP}/attach-domain.json"
           payload="$(jq -nc --arg hostname "${PUBLIC_HOSTNAME}" --arg service "${OAUTH_EDGE_WORKER}" --arg zone_name "${ZONE_NAME}" '{hostname:$hostname,service:$service,zone_name:$zone_name}')"
           curl -fsS -X PUT \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Authorization: Bearer ${OAUTH_ROUTES_API_TOKEN}" \
             -H "Content-Type: application/json" \
             --data "${payload}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
@@ -809,14 +821,14 @@ jobs:
       - name: Detach OAuth Custom Domain only
         shell: bash
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          OAUTH_ROUTES_API_TOKEN: ${{ secrets.B54_OAUTH_ROUTES_CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           DOMAIN_ID: ${{ needs.cloudflare-readonly.outputs.candidate_domain_id }}
         run: |
           set -euo pipefail
           response="${RUNNER_TEMP}/delete-domain.json"
           curl -fsS -X DELETE \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Authorization: Bearer ${OAUTH_ROUTES_API_TOKEN}" \
             -H "Content-Type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains/${DOMAIN_ID}" \
             -o "${response}"
