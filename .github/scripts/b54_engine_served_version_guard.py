@@ -35,6 +35,12 @@ from pathlib import Path
 REGISTRY_SECRET_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_SECRET_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
 REQUIRED_BINDING_TYPE = "secret_text"
+CONNECTOR_GRANTS_BINDING_NAME = "ENGINE_CONNECTOR_GRANTS"
+CONNECTOR_GRANTS_BINDING_TYPE = "d1"
+CONNECTOR_GRANTS_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE = "service"
+CONTROL_PLANE_GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
 
 # Version ids are echoed to stdout/GITHUB_ENV; keep them to a safe charset.
 _VERSION_ID_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
@@ -197,7 +203,52 @@ def _classify(bindings: list[dict], name: str) -> str:
     return f"PRESENT:{binding_type.strip()}"
 
 
-def verify_served(payload: object, active_version: str, expect_overlay: bool) -> dict[str, str]:
+def _single_binding(bindings: list[dict], name: str) -> dict:
+    matches = [binding for binding in bindings if binding.get("name") == name]
+    if len(matches) > 1:
+        raise ServedVersionGuardError(f"duplicate binding name on served version: {name}")
+    if not matches:
+        raise ServedVersionGuardError(f"required served binding is missing: {name}")
+    return matches[0]
+
+
+def _verify_drive_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require the non-secret bindings needed to compose the Drive runtime.
+
+    This checks only binding name/type and the reviewed D1/service identities;
+    no binding value is read or emitted.
+    """
+    grants = _single_binding(bindings, CONNECTOR_GRANTS_BINDING_NAME)
+    if grants.get("type") != CONNECTOR_GRANTS_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served connector grants binding type is not d1"
+        )
+    if grants.get("id") != CONNECTOR_GRANTS_DATABASE_ID:
+        raise ServedVersionGuardError(
+            "served connector grants binding database identity drift"
+        )
+
+    oauth = _single_binding(bindings, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if oauth.get("type") != CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served Google OAuth binding type is not service"
+        )
+    if oauth.get("service") != CONTROL_PLANE_GOOGLE_OAUTH_SERVICE:
+        raise ServedVersionGuardError(
+            "served Google OAuth service target drift"
+        )
+    return {
+        "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING": "PRESENT:d1",
+        "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING": "PRESENT:service",
+    }
+
+
+def verify_served(
+    payload: object,
+    active_version: str,
+    expect_overlay: bool,
+    require_drive_runtime_bindings: bool = False,
+) -> dict[str, str]:
     """Return NAME -> state for the registry and overlay secrets on the version.
 
     Fails closed on: unproven version identity, version id mismatch, duplicate
@@ -222,11 +273,15 @@ def verify_served(payload: object, active_version: str, expect_overlay: bool) ->
         raise ServedVersionGuardError("expected overlay binding is missing on served version")
 
     overlay_state = overlay if overlay != "ABSENT" else "NOT_EXPECTED"
-    return {
+    states = {
         "ENGINE_V1_SERVED_BINDING": registry,
         "ENGINE_OVERLAY_SERVED_BINDING": overlay_state,
         "B54_ENGINE_OVERLAY_EXPECTED": "YES" if overlay != "ABSENT" else "NO",
     }
+    if require_drive_runtime_bindings:
+        states.update(_verify_drive_runtime_bindings(bindings))
+        states["DRIVE_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    return states
 
 
 def _run_resolve(args: argparse.Namespace) -> int:
@@ -241,10 +296,24 @@ def _run_resolve(args: argparse.Namespace) -> int:
 
 
 def _run_verify(args: argparse.Namespace) -> int:
-    states = verify_served(_load(args.version_settings), args.active_version, args.expect_overlay)
+    states = verify_served(
+        _load(args.version_settings),
+        args.active_version,
+        args.expect_overlay,
+        args.require_drive_runtime_bindings,
+    )
     print("B54_ENGINE_SERVED_VERSION_GUARD=PASS")
     print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
-    for key in ("ENGINE_V1_SERVED_BINDING", "ENGINE_OVERLAY_SERVED_BINDING", "B54_ENGINE_OVERLAY_EXPECTED"):
+    for key in (
+        "ENGINE_V1_SERVED_BINDING",
+        "ENGINE_OVERLAY_SERVED_BINDING",
+        "B54_ENGINE_OVERLAY_EXPECTED",
+        "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING",
+        "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING",
+        "DRIVE_RUNTIME_BINDINGS_VALIDATED",
+    ):
+        if key not in states:
+            continue
         print(f"{key}={states[key]}")
     print("SERVED_VERSION_SECRET_SET_VALIDATION=YES")
     print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
@@ -271,6 +340,11 @@ def main(argv: list[str] | None = None) -> int:
         "--expect-overlay",
         action="store_true",
         help="require the overlay secret to be present on the served version",
+    )
+    verify.add_argument(
+        "--require-drive-runtime-bindings",
+        action="store_true",
+        help="require the reviewed D1 and Google OAuth service bindings",
     )
     verify.set_defaults(handler=_run_verify)
 
