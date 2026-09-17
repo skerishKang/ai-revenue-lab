@@ -48,16 +48,19 @@ jobs:
           from pathlib import Path
 
           config = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
-          expected = """[[services]]
-          binding = "CONTROL_PLANE_GOOGLE_OAUTH"
-          service = "padiem-google-oauth-state""""
+          expected = (
+              '[[services]]\n'
+              'binding = "CONTROL_PLANE_GOOGLE_OAUTH"\n'
+              'service = "padiem-google-oauth-state"'
+          )
           if expected not in config:
               raise SystemExit("canonical Engine Google OAuth Service Binding missing or drifted")
 
           workflow = Path(".github/workflows/b54-engine-google-oauth-binding-readonly.yml").read_text(encoding="utf-8")
           required = (
-              "/workers/scripts/${ENGINE_WORKER}/deployments",
-              "/workers/scripts/${ENGINE_WORKER}/versions/${active_version}",
+              "/workers/scripts/${ENGINE_WORKER}",
+              "${base}/deployments",
+              "${base}/versions/${active_version}",
               "b54_engine_served_version_guard.py resolve-active",
               "ENGINE_GOOGLE_OAUTH_SERVED_BINDING=PRESENT_EXPECTED",
               "BINDING_NAME_TYPE_SERVICE_ONLY=YES",
