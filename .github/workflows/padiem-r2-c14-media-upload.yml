@@ -1,0 +1,176 @@
+name: PADIEM R2 C14 Media Upload (dispatch-only)
+
+# Publishes the Rotating Memory Index (C14) runtime media set to the
+# padiem-media R2 bucket. Dispatch-only: nothing runs on push/PR.
+# Uses the established dedicated R2 credential authority (#2377/#2388/#2394,
+# #2652 family). Existing keys are NEVER overwritten: any pre-existing key
+# stops the run before any download or upload.
+#
+# Manifest: ops/padiem-r2-c14-upload-manifest.json (89 objects).
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preflight only (no download, no upload)'
+        type: boolean
+        default: true
+      limit:
+        description: 'Optional comma-separated filenames for canary (default: all 89)'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: padiem-r2-c14-upload
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      # Dedicated R2 credential authority established by #2377/#2388/#2394.
+      # Do not fall back to the shared Engine/Worker deployment credential.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Preflight existing keys (no overwrite)
+        id: preflight
+        shell: bash
+        env:
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          set -euo pipefail
+          python - <<'EOF'
+          import json, os, subprocess, sys
+          man = json.load(open('ops/padiem-r2-c14-upload-manifest.json', encoding='utf-8'))
+          limit = {s.strip() for s in os.environ.get('LIMIT', '').split(',') if s.strip()}
+          objs = [o for o in man['objects'] if not limit or o['file'] in limit]
+          existing = []
+          for o in objs:
+              url = 'https://media.padiem.net/' + o['r2_key']
+              code = subprocess.run(
+                  ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+                   '--max-time', '30', '-I', url],
+                  capture_output=True, text=True).stdout.strip()
+              print(f"PREFLIGHT {code} {o['r2_key']}")
+              if code == '200':
+                  existing.append(o['r2_key'])
+          print(f"PREFLIGHT_COUNT={len(objs)}")
+          print(f"PREFLIGHT_EXISTING={len(existing)}")
+          if existing:
+              print('NO_OVERWRITE_STOP=YES', file=sys.stderr)
+              for k in existing:
+                  print(f'EXISTING_KEY={k}', file=sys.stderr)
+              sys.exit(1)
+          print('NO_OVERWRITE_STOP=NO')
+          EOF
+
+      - name: Upload plan (dry run)
+        if: ${{ inputs.dry_run }}
+        shell: bash
+        env:
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          set -euo pipefail
+          python - <<'EOF'
+          import json, os
+          man = json.load(open('ops/padiem-r2-c14-upload-manifest.json', encoding='utf-8'))
+          limit = {s.strip() for s in os.environ.get('LIMIT', '').split(',') if s.strip()}
+          objs = [o for o in man['objects'] if not limit or o['file'] in limit]
+          print(f"DRY_RUN=YES")
+          print(f"PLAN_COUNT={len(objs)}")
+          print(f"PLAN_BYTES={sum(o['bytes'] for o in objs)}")
+          print('R2_MUTATION=NONE')
+          print('PRODUCTION_MUTATION=NONE')
+          print('SECRET_VALUE_OUTPUT=0')
+          EOF
+
+      - name: Download from Drive and upload to R2
+        if: ${{ !inputs.dry_run }}
+        shell: bash
+        env:
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo 'R2_CREDENTIAL_PRESENT=NO'; exit 1; }
+          echo 'R2_CREDENTIAL_PRESENT=YES'
+          pip install --quiet gdown
+          export MANIFEST="${GITHUB_WORKSPACE}/ops/padiem-r2-c14-upload-manifest.json"
+          export WORKDIR="${RUNNER_TEMP}/c14-upload"
+          mkdir -p "${WORKDIR}"
+          python - <<'EOF'
+          import json, os, subprocess, sys
+          man = json.load(open(os.environ['MANIFEST'], encoding='utf-8'))
+          limit = {s.strip() for s in os.environ.get('LIMIT', '').split(',') if s.strip()}
+          objs = [o for o in man['objects'] if not limit or o['file'] in limit]
+          workdir = os.environ['WORKDIR']
+          done = 0
+          for o in objs:
+              dest = os.path.join(workdir, o['file'])
+              print(f'DOWNLOAD {o["file"]}', flush=True)
+              r = subprocess.run(['gdown', o['drive_id'], '-O', dest],
+                                 capture_output=True, text=True)
+              if r.returncode != 0 or not os.path.exists(dest):
+                  print(f'DOWNLOAD_FAIL {o["file"]}\n{r.stderr[-2000:]}', file=sys.stderr)
+                  sys.exit(1)
+              actual = os.path.getsize(dest)
+              if actual != o['bytes']:
+                  print(f"SIZE_MISMATCH {o['file']} expected={o['bytes']} actual={actual}",
+                        file=sys.stderr)
+                  sys.exit(1)
+              print(f"PUT padiem-media/{o['r2_key']}", flush=True)
+              r = subprocess.run(
+                  ['npx', '--yes', 'wrangler@4.130.0', 'r2', 'object', 'put',
+                   f"padiem-media/{o['r2_key']}", '--file', dest,
+                   '--content-type', 'video/mp4'],
+                  capture_output=True, text=True)
+              if r.returncode != 0:
+                  print(f"UPLOAD_FAIL {o['r2_key']}\n{r.stderr[-2000:]}", file=sys.stderr)
+                  sys.exit(1)
+              url = 'https://media.padiem.net/' + o['r2_key']
+              head = subprocess.run(
+                  ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code} %{size_download}',
+                   '--max-time', '60', '-I', url],
+                  capture_output=True, text=True).stdout.strip()
+              code = head.split(' ')[0]
+              if code != '200':
+                  print(f'VERIFY_FAIL {o["r2_key"]} head={head}', file=sys.stderr)
+                  sys.exit(1)
+              rng = subprocess.run(
+                  ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+                   '--max-time', '60', '-r', '0-1023', url],
+                  capture_output=True, text=True).stdout.strip()
+              if rng != '206':
+                  print(f'RANGE_FAIL {o["r2_key"]} range={rng}', file=sys.stderr)
+                  sys.exit(1)
+              os.remove(dest)
+              done += 1
+              print(f'OK {done}/{len(objs)} {o["r2_key"]}', flush=True)
+          print(f'UPLOAD_COUNT={done}')
+          EOF
+
+      - name: Mutation contract
+        if: always()
+        shell: bash
+        run: |
+          if [ '${{ inputs.dry_run }}' = 'true' ]; then echo 'R2_MUTATION=NONE'; else echo 'R2_MUTATION=APPEND_NEW_KEYS_ONLY'; fi
+          echo 'R2_OVERWRITE=NO'
+          echo 'PRODUCTION_MUTATION=NONE'
+          echo 'SECRET_VALUE_OUTPUT=0'
