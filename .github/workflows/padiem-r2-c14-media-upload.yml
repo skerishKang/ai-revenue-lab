@@ -135,9 +135,19 @@ jobs:
                   if r.returncode == 0 and os.path.exists(dest):
                       return True
                   last = (r.stderr or '')[-1500:]
-                  print(f'DOWNLOAD_RETRY {label} attempt={attempt} err={last[:200]}',
-                        flush=True)
+                  print(f'DOWNLOAD_RETRY {label} gdown attempt={attempt} '
+                        f'err={last[:200]}', flush=True)
                   time.sleep(20 * attempt)
+              # Fallback: direct usercontent download (proven 206 for these IDs).
+              if os.path.exists(dest):
+                  os.remove(dest)
+              r = wrun(['curl', '-sS', '-L', '--max-time', '600', '-o', dest,
+                        f'https://drive.usercontent.google.com/download'
+                        f'?id={drive_id}&export=download&confirm=t'])
+              if r.returncode == 0 and os.path.exists(dest):
+                  print(f'DOWNLOAD_FALLBACK_OK {label}', flush=True)
+                  return True
+              last = (r.stderr or '')[-1500:]
               print(f'DOWNLOAD_FAIL {label}\n{last}', file=sys.stderr)
               return False
           for o in objs:
@@ -157,6 +167,8 @@ jobs:
                   print(f"CONTENT_CONFLICT {o['r2_key']} r2_bytes={psize} "
                         f"manifest_bytes={o['bytes']}", file=sys.stderr)
                   sys.exit(1)
+              print(f"PROBE_MISS {o['r2_key']} rc={r.returncode} "
+                    f"err={((r.stderr or '')[-200:])}", flush=True)
               print(f'DOWNLOAD {o["file"]}', flush=True)
               if not download_with_retry(o['drive_id'], dest, o['file']):
                   sys.exit(1)
