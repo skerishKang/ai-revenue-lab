@@ -74,9 +74,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
-          git fetch origin main
-          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+           test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+           git fetch origin main
+           if [ "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}" ]; then
+             echo 'WORKFLOW_SOURCE_REF=origin/main'
+           else
+             git merge-base --is-ancestor origin/main HEAD
+             echo 'WORKFLOW_SOURCE_REF=main-derived-branch'
+           fi
           echo "WORKFLOW_SOURCE_SHA=$(git rev-parse HEAD)"
           echo "DEPLOYED_ENGINE_SOURCE_SHA=${DEPLOYED_ENGINE_SOURCE_SHA}"
           echo "EXPECTED_SERVED_VERSION=${EXPECTED_SERVED_VERSION}"
