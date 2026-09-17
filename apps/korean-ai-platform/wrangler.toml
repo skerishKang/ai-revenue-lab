@@ -20,3 +20,17 @@ B14_PROVIDER_MODE = "live"
 binding = "PADIEM_B_AI_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_B_AI_API_KEY"
+
+# Owner decision 2026-09-18: Agnes plus-pool credential projection. The Secrets
+# Store value remains owner-managed; only the binding metadata is committed here.
+[[secrets_store_secrets]]
+binding = "PADIEM_AGNES_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_AGNES_API_KEY"
+
+# Owner decision 2026-09-18: Poolside credential re-registration. The Secrets
+# Store value remains owner-managed; only the binding metadata is committed here.
+[[secrets_store_secrets]]
+binding = "PADIEM_POOLSIDE_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_POOLSIDE_API_KEY"

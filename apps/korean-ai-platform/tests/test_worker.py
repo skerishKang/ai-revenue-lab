@@ -81,11 +81,19 @@ class TestWranglerConfig:
         content = WRANGLER_TOML.read_text()
         for word in ("api_token", "CLOUDFLARE", "account_id"):
             assert word.lower() not in content.lower()
-        # #1961: the vestigial Poolside binding remains retired. #2571
-        # authorizes only the existing account-level B.AI secret projection.
+        # Owner decision 2026-09-18: Agnes+Poolside Secrets Store bindings
+        # re-registered; both declarations are metadata-only (store_id,
+        # secret_name) with no secret values committed here.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' not in content
+        assert content.count("[[secrets_store_secrets]]") == 3
+        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 3
+        assert 'binding = "PADIEM_AGNES_API_KEY"' in content
+        assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
+        assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content
+        assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in content
+        assert "PADIEM_AGNES_API_KEY =" not in content
+        assert "PADIEM_POOLSIDE_API_KEY =" not in content
 
     def test_bai_secret_store_binding_is_metadata_only_and_exact(self):
         content = WRANGLER_TOML.read_text()
