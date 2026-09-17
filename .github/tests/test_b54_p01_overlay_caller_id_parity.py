@@ -9,8 +9,10 @@ Proves statically and locally (no network) that:
      authority (case-insensitive scan), so the overlay no longer collides with
      the base V1 caller and the runtime ``duplicate_service_caller`` guard is
      never tripped by this pairing;
-  3. the overlay app authority is unchanged: ``allowed_app_ids`` stays exactly
-     ``["b54-padiem-claw"]``;
+  3. the overlay app authority is exactly the canonical pair: ``allowed_app_ids``
+     is exactly ``["b54-padiem-claw", "b54-padiem-claw-drive"]`` — the Claw app
+     authority is preserved and the canonical Drive app is added (#2645), while
+     any third app id remains rejected by the Engine runtime;
   4. the credential authority is unchanged: the rotation still consumes ONLY
      ``B62_P01_ENGINE_CREDENTIAL`` and the Chat credential binding stays
      ``P01_ENGINE_CREDENTIAL`` (secret_text semantics untouched);
@@ -83,6 +85,9 @@ SMOKE_CALLER_ENV_PATTERN = r"^\s*(CALLER_ID|PADIEM_ENGINE_SMOKE_CALLER_ID): (\S+
 NEW_CALLER_ID = "b54-p01-overlay-20260914-a1"
 OLD_CALLER_ID = "b54-kagent"
 ALLOWED_APP = "b54-padiem-claw"
+DRIVE_APP = "b54-padiem-claw-drive"
+# #2645: the canonical overlay app authority is exactly this pair, in order.
+ALLOWED_APPS = (ALLOWED_APP, DRIVE_APP)
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
 
@@ -138,9 +143,13 @@ def test_old_caller_id_no_longer_emitted_by_either_authority() -> None:
 def test_allowed_app_and_credential_authority_unchanged() -> None:
     rotation = _load_rotation()
     b62 = _load_b62()
-    assert rotation.ALLOWED_APP_IDS == (ALLOWED_APP,)
+    # #2645: exactly the canonical Claw + Drive pair, in order, no duplicates.
+    assert rotation.ALLOWED_APP_IDS == ALLOWED_APPS
+    assert rotation.ALLOWED_APP_IDS == (ALLOWED_APP, DRIVE_APP)
+    assert len(rotation.ALLOWED_APP_IDS) == 2
+    assert len(set(rotation.ALLOWED_APP_IDS)) == 2
     payload = rotation.build_overlay_payload(credential="n" * 40)
-    assert payload["caller"]["allowed_app_ids"] == [ALLOWED_APP]
+    assert payload["caller"]["allowed_app_ids"] == [ALLOWED_APP, DRIVE_APP]
     assert payload["caller"]["caller_id"] == NEW_CALLER_ID
     # Credential authority names are unchanged (values are never touched here).
     rotation_text = ROTATION.read_text(encoding="utf-8")
@@ -150,6 +159,81 @@ def test_allowed_app_and_credential_authority_unchanged() -> None:
     # Overlay/base secret authority names are unchanged.
     assert rotation.OVERLAY_SECRET_NAME == OVERLAY_NAME
     assert rotation.REGISTRY_SECRET_NAME == BASE_NAME
+
+
+def test_2645_both_canonical_apps_authenticate_and_third_app_is_rejected() -> None:
+    """#2645: Claw PASS, Drive PASS, arbitrary third app REJECT.
+
+    Runs the Engine's own authenticator over the exact overlay payload the
+    rotation gate PUTs, so this is behavioural proof rather than a text scan.
+    """
+    rotation = _load_rotation()
+    identity = _load_engine_identity()
+    credential = "n" * 40
+    overlay_text = rotation.build_overlay_put_body(
+        rotation.build_overlay_payload(credential=credential)
+    )["text"]
+    base_registry = {
+        "version": 1,
+        "callers": [
+            {
+                "caller_id": "storymemory-b61",
+                "credential": "b" * 40,
+                "allowed_app_ids": ["b61"],
+            }
+        ],
+    }
+    env = type(
+        "Env",
+        (),
+        {
+            identity.CALLER_REGISTRY_V1_ENV: json.dumps(base_registry),
+            identity.CALLER_REGISTRY_V1_OVERLAY_ENV: overlay_text,
+        },
+    )()
+
+    def _authenticate(app_id: str) -> None:
+        identity.authenticate_request(
+            env=env,
+            headers={
+                identity.CALLER_ID_HEADER: NEW_CALLER_ID,
+                identity.CALLER_CREDENTIAL_HEADER: credential,
+            },
+            requested_app_id=app_id,
+        )
+
+    # Existing Claw authority PASS.
+    _authenticate(ALLOWED_APP)
+    # Canonical Drive authority PASS.
+    _authenticate(DRIVE_APP)
+
+    # Arbitrary third apps REJECT, including near-miss lookalikes so a prefix or
+    # substring match can never widen the authority.
+    for foreign in (
+        "b62",
+        "b61",
+        f"{DRIVE_APP}-write",
+        f"{DRIVE_APP}2",
+        f"{ALLOWED_APP}x",
+    ):
+        try:
+            _authenticate(foreign)
+        except identity.ServiceIdentityError as exc:
+            assert exc.code == "service_app_not_authorized", (foreign, exc.code)
+        else:
+            raise AssertionError(f"third app must be rejected: {foreign!r}")
+
+
+def test_2645_runtime_identity_modules_stay_app_agnostic() -> None:
+    """#2645: the Drive app is authorized as registry DATA, never runtime code."""
+    for path in (
+        IDENTITY,
+        ROOT / "apps/padiem-ai-engine/app/service_identity.py",
+    ):
+        text = path.read_text(encoding="utf-8")
+        assert DRIVE_APP not in text, f"{path.name} hardcodes the Drive app id"
+        # The runtime still authorizes purely from the registry payload.
+        assert "allowed_app_ids" in text, f"{path.name} lost the data-driven app check"
 
 
 def test_runtime_duplicate_service_caller_rejection_unchanged() -> None:
