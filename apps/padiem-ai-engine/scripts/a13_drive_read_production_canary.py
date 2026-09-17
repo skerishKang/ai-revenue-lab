@@ -95,11 +95,16 @@ def _parse_json(raw: bytes) -> Any:
         return None
 
 
-def classify_success(payload: Any) -> tuple[int, bool, bool]:
-    """Return (item_count, more_results, engine_output_truncated).
+def classify_success(payload: Any) -> tuple[int, str, bool]:
+    """Return (item_count, pagination_state, engine_output_truncated).
 
     The file metadata list is inspected only for its bounded length; no file
-    value is printed or returned by this function.
+    value is printed or returned. Engine's generic redactor deliberately turns
+    secret-shaped fields such as ``raw_credentials_present`` into ``[redacted]``.
+    Its node bound can also replace fields that occur after the file list with
+    ``None`` while preserving the bounded file-list length. Those two canonical
+    redaction behaviours are accepted only when their corresponding truncation
+    facts are consistent.
     """
     if not isinstance(payload, Mapping) or payload.get("ok") is not True:
         raise ValueError("noncanonical success envelope")
@@ -118,23 +123,39 @@ def classify_success(payload: Any) -> tuple[int, bool, bool]:
         raise ValueError("unexpected provider operation")
     if output.get("result_status") not in {"OK", "UNKNOWN", "REVIEW_REQUIRED"}:
         raise ValueError("unexpected Drive result status")
+
     files = output.get("files")
     if not isinstance(files, list) or len(files) > MAX_RESULT_ITEMS:
         raise ValueError("Drive result list is not bounded")
     item_count = len(files)
+
     declared_count = output.get("result_count")
-    if declared_count is not None and declared_count != item_count:
-        raise ValueError("Drive result count mismatch")
+    if isinstance(declared_count, int) and not isinstance(declared_count, bool):
+        if declared_count != item_count:
+            raise ValueError("Drive result count mismatch")
+    elif not (output_truncated and declared_count is None):
+        raise ValueError("missing Drive result count")
+
     more = output.get("more_results_available")
-    if not isinstance(more, bool):
+    if isinstance(more, bool):
+        pagination_state = "YES" if more else "NO"
+    elif output_truncated and more is None:
+        pagination_state = "UNKNOWN_DUE_TO_ENGINE_BOUND"
+    else:
         raise ValueError("missing pagination fact")
-    if output.get("page_followed") is not False:
+
+    page_followed = output.get("page_followed")
+    if page_followed is not False and not (output_truncated and page_followed is None):
         raise ValueError("unexpected pagination follow")
-    if output.get("raw_credentials_present") is not False:
+
+    credential_projection = output.get("raw_credentials_present")
+    if credential_projection not in (False, "[redacted]") and not (
+        output_truncated and credential_projection is None
+    ):
         raise ValueError("unexpected credential projection")
     if "content" in output:
         raise ValueError("content unexpectedly present in list result")
-    return item_count, more, output_truncated
+    return item_count, pagination_state, output_truncated
 
 
 def run(
@@ -163,7 +184,7 @@ def run(
         return 1
 
     try:
-        item_count, more, output_truncated = classify_success(payload)
+        item_count, pagination_state, output_truncated = classify_success(payload)
     except ValueError:
         print("DRIVE_READ_CANARY=FAIL_NONCANONICAL_SUCCESS")
         print("ENGINE_TOOL_EXECUTE_HTTP=200")
@@ -176,7 +197,7 @@ def run(
     print("ENGINE_TOOL_RESULT=PASS")
     print(f"DRIVE_RESULT_ITEM_COUNT={item_count}")
     print("DRIVE_RESULT_BOUNDED=YES")
-    print(f"DRIVE_MORE_RESULTS_AVAILABLE={'YES' if more else 'NO'}")
+    print(f"DRIVE_MORE_RESULTS_AVAILABLE={pagination_state}")
     print(f"ENGINE_OUTPUT_TRUNCATED={'YES' if output_truncated else 'NO'}")
     print("ACCOUNT_IDENTITY_AMBIGUOUS=YES")
     print(f"ENGINE_TOOL_EXECUTE_POST_COUNT={post_count}")
