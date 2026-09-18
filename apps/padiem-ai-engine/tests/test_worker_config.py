@@ -70,14 +70,15 @@ def test_worker_source_has_no_browser_cors_or_public_b14_fallback() -> None:
     assert 'B14_INTERNAL_ORIGIN = "https://b14.internal"' in transport
 
 
-def test_engine_production_depends_on_core_tools_extra() -> None:
+def test_engine_production_uses_worker_native_tool_runtime_validation() -> None:
     pyproject = tomllib.loads((APP_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     dependencies = pyproject["project"]["dependencies"]
     assert any(
-        isinstance(item, str) and item.startswith("padiem-ai-core[tools] @ ")
+        isinstance(item, str) and item.startswith("padiem-ai-core @ ")
         for item in dependencies
     )
-    assert "jsonschema==4.23.0" in dependencies
-    assert "jsonschema-specifications==2024.10.1" in dependencies
-    assert "referencing==0.36.2" in dependencies
-    assert "rpds-py==0.23.1" in dependencies
+    forbidden = ("jsonschema", "referencing", "rpds-py")
+    assert all(
+        not any(str(item).startswith(prefix) for prefix in forbidden)
+        for item in dependencies
+    )
