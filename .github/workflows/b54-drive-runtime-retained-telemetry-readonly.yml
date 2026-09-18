@@ -62,7 +62,10 @@ jobs:
               if token not in text:
                   raise SystemExit(f"missing readonly invariant: {token}")
 
-          network_region = text.split("  retained-telemetry:", 1)[-1]
+          job_marker = "\n  " + "retained-telemetry:\n"
+          if job_marker not in text:
+              raise SystemExit("retained telemetry job marker missing")
+          network_region = text.split(job_marker, 1)[1]
           forbidden_network_targets = [
               "engine.padiem.net",
               "oauth.padiem.net",
