@@ -23,7 +23,7 @@
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
-  var RATE_UP=.0075, RATE_DOWN=.0065;        /* measured ~2–3 s cinematic peel/reassembly at 1× */
+  var RATE_UP=.024, RATE_DOWN=.018;          /* exponential settle: ~2.1s assemble / ~2.8s peel at 1× */
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
@@ -216,7 +216,7 @@
      * time-driven dissolve of ALIGNED portrait tiles — never a pointer-scrubbed
      * scatter ring. This prevents duplicated/displaced eyes and face chunks. */
     var phase=peeling?1-p:p; /* 0→1 for either direction */
-    var portal=ease(clamp(p,0,1));
+    var portal=clamp((p-.04)/.96,0,1); /* keep shell visibly present through the cinematic mid-transition */
 
     for(var i=0;i<FRAG_COUNT;i++){
       var f=frags[i]; if(!f.d) continue;
