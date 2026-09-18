@@ -474,13 +474,23 @@
       return;
     }
     var root=document.documentElement;
-    var portraitWidth=Math.min(window.innerWidth*.48,680);
-    var portraitLeft=window.innerWidth-portraitWidth;
-    var proximity=Math.max(0,Math.min(1,(event.clientX-(portraitLeft-140))/180));
+    var field=document.querySelector(".glass-shell-field");
+    var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
+    var portraitLeft=rect&&rect.width>0?rect.left:window.innerWidth-Math.min(window.innerWidth*.48,680);
+    var portraitTop=rect&&rect.height>0?rect.top:68;
+    var portraitBottom=rect&&rect.height>0?rect.bottom:window.innerHeight;
+    var verticalActive=event.clientY>=portraitTop-36&&event.clientY<=portraitBottom+36;
+    var proximity=verticalActive
+      ?Math.max(0,Math.min(1,(event.clientX-(portraitLeft-120))/120))
+      :0;
     glassPointerReveal=smoothstep(proximity);
 
-    var nx=Math.max(-1,Math.min(1,(event.clientX/window.innerWidth-.5)*2));
-    var ny=Math.max(-1,Math.min(1,(event.clientY/window.innerHeight-.5)*2));
+    var basisX=rect&&rect.width>0?rect.left+rect.width/2:window.innerWidth/2;
+    var basisY=rect&&rect.height>0?rect.top+rect.height/2:window.innerHeight/2;
+    var spanX=rect&&rect.width>0?Math.max(1,rect.width/2):Math.max(1,window.innerWidth/2);
+    var spanY=rect&&rect.height>0?Math.max(1,rect.height/2):Math.max(1,window.innerHeight/2);
+    var nx=Math.max(-1,Math.min(1,(event.clientX-basisX)/spanX));
+    var ny=Math.max(-1,Math.min(1,(event.clientY-basisY)/spanY));
     root.style.setProperty("--glass-pointer-x",(nx*8*glassPointerReveal).toFixed(1)+"px");
     root.style.setProperty("--glass-pointer-y",(ny*5*glassPointerReveal).toFixed(1)+"px");
     queueGlassMotion();
