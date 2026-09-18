@@ -100,6 +100,7 @@ _TOOL_ERROR_STATUS: dict[str, int] = {
     "google_drive_access_lease_mismatch": 503,
     "google_drive_provider_unavailable": 503,
     "google_drive_provider_credential_rejected": 503,
+    "google_drive_response_contract_mismatch": 502,
 }
 
 _TOOL_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
