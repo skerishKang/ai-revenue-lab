@@ -248,7 +248,10 @@ async def _send_glass_turn(page: Page, *, variant: str, turn: int) -> None:
     await page.locator("#messageInput").fill(f"Padiem Glass {variant} 시각 검수 대화 {turn}")
     if await page.locator("#sendButton").is_disabled():
         raise AssertionError("Padiem Glass preview send button stayed disabled")
-    await page.locator("#sendButton").click()
+    # Preserve the pointer position under test. Clicking the Send button moves
+    # the mouse and contaminates answer-only / pointer+answer Glass scenarios.
+    # Enter is the product's canonical non-shift submit path (form.requestSubmit).
+    await page.locator("#messageInput").press("Enter")
     await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
     await page.wait_for_function(
         "expected => document.querySelectorAll('#messageList .assistant-message').length >= expected",
