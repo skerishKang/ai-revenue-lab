@@ -221,8 +221,10 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(
             f"{name}: timed peel did not continue while moving horizontally: left={left_transition}, right={right_transition}"
         )
-    if not 0.45 <= right_transition["progress"] <= 0.80:
+    if not 0.25 <= right_transition["progress"] <= 0.65:
         raise AssertionError(f"{name}: ~900ms sample is not a visible mid-transition state: {right_transition}")
+    if right_transition["portalOpacity"] <= 0.18 or right_transition["fragVisible"] <= 0:
+        raise AssertionError(f"{name}: shell/ribbons disappeared before the ~900ms mid-transition sample: {right_transition}")
     if right_transition["fragMaxHeightRatio"] > 0.075 or right_transition["fragMaxAreaRatio"] > 0.075:
         raise AssertionError(f"{name}: mid transition contains oversized mosaic fragments: {right_transition}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-mid.png"), full_page=False)
