@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CANARY_FROM_MS: "1789734830000"
-  CANARY_TO_MS: "1789734850000"
+  CANARY_FROM_MS: "1789739217000"
+  CANARY_TO_MS: "1789739226000"
 
 jobs:
   source-contract:
@@ -44,8 +44,8 @@ jobs:
           text = p.read_text(encoding="utf-8")
           required = [
               "/workers/observability/telemetry/query",
-              "1789734830000",
-              "1789734850000",
+              "1789739217000",
+              "1789739226000",
               "padiem-ai-engine",
               "padiem-google-oauth-state",
               "/internal/v1/tools/execute",
@@ -231,20 +231,20 @@ jobs:
               event
               for event in clean
               if event["service"] == "padiem-ai-engine"
-              and event["status"] == 503
+              and event["status"] == 500
               and (
                   event["path"] == "/internal/v1/tools/execute"
                   or "/internal/v1/tools/execute" in event["trigger"]
               )
           ]
           if not candidates:
-              engine_503 = [
+              engine_500 = [
                   event
                   for event in clean
-                  if event["service"] == "padiem-ai-engine" and event["status"] == 503
+                  if event["service"] == "padiem-ai-engine" and event["status"] == 500
               ]
-              if len(engine_503) == 1:
-                  candidates = engine_503
+              if len(engine_500) == 1:
+                  candidates = engine_500
 
           print(f"ENGINE_CANARY_CANDIDATE_COUNT={len(candidates)}")
           if len(candidates) != 1:
@@ -463,10 +463,10 @@ jobs:
           oauth_times.discard(None)
 
           canary_start = int(
-              dt.datetime.fromisoformat("2026-09-18T12:33:56+00:00").timestamp()
+              dt.datetime.fromisoformat("2026-09-18T13:46:58+00:00").timestamp()
           )
           canary_end = int(
-              dt.datetime.fromisoformat("2026-09-18T12:34:00+00:00").timestamp()
+              dt.datetime.fromisoformat("2026-09-18T13:47:05+00:00").timestamp()
           )
           canary_engine = sorted(
               second for second in engine_times
