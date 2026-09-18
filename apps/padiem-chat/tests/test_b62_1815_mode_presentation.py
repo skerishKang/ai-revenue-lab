@@ -105,6 +105,15 @@ def test_tier_trigger_and_popover_are_composer_anchored() -> None:
     assert "top: 68px" not in CSS
 
 
+def test_glass_tier_trigger_stays_visible_on_bright_composer() -> None:
+    selector = 'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] {'
+    assert selector in CSS
+    block = CSS.split(selector, 1)[1].split("}", 1)[0]
+    assert "background: rgba(255, 255, 255, .62)" in block
+    assert "color: #25333e" in block
+    assert 'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:hover {' in CSS
+
+
 def test_glass_tier_popover_uses_bright_frosted_surface_not_dark_group() -> None:
     assert 'html[data-theme="padiem-glass"] .mode-presentation-panel {' in CSS
     glass_block = CSS.split('html[data-theme="padiem-glass"] .mode-presentation-panel {', 1)[1].split("}", 1)[0]
