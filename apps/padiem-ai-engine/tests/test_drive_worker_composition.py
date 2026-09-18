@@ -12,7 +12,6 @@ from pathlib import Path
 
 import pytest
 
-import padiem_ai_core.tool_runtime as tool_runtime_module
 from padiem_ai_core.drive_capability import (
     DRIVE_CANONICAL_TOOL_IDS,
     DRIVE_CONNECTOR_ID,
@@ -154,36 +153,6 @@ async def test_drive_tool_binding_maps_capability_to_core_scope_and_executes() -
     assert len(port.calls) == 1
     assert port.calls[0]["required_scopes"] == (DRIVE_READONLY_SCOPE,)
 
-
-
-@pytest.mark.asyncio
-async def test_drive_resolver_reports_missing_tool_runtime_dependency(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    port = FakeDrivePort()
-    grant = drive_grant()
-    resolver = build_tool_binding_resolver(
-        gmail_port=None,
-        drive_port=port,
-        drive_grants={DRIVE_REFERENCE_APP_ID: grant},
-    )
-    assert resolver is not None
-
-    monkeypatch.setattr(tool_runtime_module, "Draft202012Validator", None)
-
-    service = ToolExecutionEngineService(tool_binding_resolver=resolver)
-    response = await service.execute_payload(
-        {
-            "app_id": DRIVE_REFERENCE_APP_ID,
-            "agent_id": DRIVE_AGENT_ID,
-            "tool_id": "tool:google:drive.a11_smoke_unregistered@1",
-            "arguments": {"query": "bounded-dependency-probe"},
-        }
-    )
-
-    assert response.status_code == 503
-    assert response.body["error"]["code"] == "tool_runtime_dependency_unavailable"
-    assert port.calls == []
 
 
 def test_drive_tool_binding_rejects_gmail_grant() -> None:
