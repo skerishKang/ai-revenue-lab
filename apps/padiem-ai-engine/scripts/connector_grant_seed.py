@@ -19,6 +19,7 @@ import argparse
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -171,10 +172,25 @@ def build_list_sql() -> str:
     )
 
 
+def _resolve_npx_executable() -> str | None:
+    """Resolve the platform launcher explicitly.
+
+    On Windows, npx is commonly installed as npx.cmd. Passing the bare name
+    in a list-form subprocess.run call can fail before Wrangler starts.
+    shutil.which resolves PATHEXT on Windows while still returning the
+    ordinary executable path on POSIX.
+    """
+    return shutil.which("npx") or shutil.which("npx.cmd")
+
+
 def run_d1(sql: str) -> int:
     """Execute one reviewed D1 statement through wrangler."""
+    npx_executable = _resolve_npx_executable()
+    if npx_executable is None:
+        print("connector_grant_seed: npx executable not found on PATH", file=sys.stderr)
+        return 127
     cmd = [
-        "npx", "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
+        npx_executable, "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
         "--remote", "--json", "--command", sql,
     ]
     proc = subprocess.run(cmd, text=True, capture_output=True)
