@@ -113,7 +113,6 @@ MAX_FILE_REFS = PAGE_SIZE
 MAX_NAME_CHARS = 512
 MAX_MIME_CHARS = 255
 MAX_WEB_VIEW_LINK_CHARS = 2_048
-_WEB_VIEW_LINK_HOSTS = frozenset({"drive.google.com", "docs.google.com"})
 MAX_PROVIDER_LIST_BYTES = 256_000
 MAX_PROVIDER_METADATA_BYTES = 128_000
 MAX_PROVIDER_CONTENT_BYTES = 1_000_000
@@ -305,9 +304,10 @@ def _optional_https_google_url(value: str | None, field_name: str) -> str | None
     if not normalized or len(normalized) > MAX_WEB_VIEW_LINK_CHARS:
         raise DriveContractError(f"{field_name} must be a bounded Google HTTPS URL")
     parsed = urlsplit(normalized)
+    host = parsed.hostname or ""
     if (
         parsed.scheme != "https"
-        or parsed.hostname not in _WEB_VIEW_LINK_HOSTS
+        or not (host == "google.com" or host.endswith(".google.com"))
         or parsed.username is not None
         or parsed.password is not None
     ):
