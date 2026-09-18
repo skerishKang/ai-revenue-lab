@@ -44,6 +44,7 @@ from app.tool_projection import (
     TOOL_EXECUTE_PATH,
     TOOL_RESUME_PATH,
     EngineToolBinding,
+    EngineToolProjectionError,
     TrustedToolAuthority,
 )
 
@@ -416,6 +417,21 @@ async def test_unprovisioned_app_fails_closed(fx: Fixture):
     response = await fx.service.execute_payload(execute_payload(app_id=OTHER_APP))
     assert response.status_code == 503
     assert response.body["error"]["code"] == "tool_runtime_unavailable"
+    assert fx.total() == 0
+
+
+async def test_resolver_projection_error_preserves_bounded_code(fx: Fixture):
+    def invalid_binding(_app_id: str):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Trusted tool binding is invalid.",
+            status_code=503,
+        )
+
+    service = ToolExecutionEngineService(tool_binding_resolver=invalid_binding)
+    response = await service.execute_payload(execute_payload())
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "invalid_tool_binding"
     assert fx.total() == 0
 
 
