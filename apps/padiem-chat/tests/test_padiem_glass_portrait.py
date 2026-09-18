@@ -206,14 +206,17 @@ def test_glass_shell_ports_source_fragment_assembly() -> None:
     # original clipShapes verbatim
     assert 'polygon(8% 0,100% 7%,91% 100%,0 88%)' in SHELL_JS
     assert 'polygon(6% 0,100% 11%,93% 92%,0 100%)' in SHELL_JS
-    # golden-angle scatter ring, assemble easing, dissolve->portal swap
-    assert 'i*2.399' in SHELL_JS
-    assert 'ASSEMBLE_START' in SHELL_JS and 'DISSOLVE_AT' in SHELL_JS
+    # timed staggered dissolve stays frame-rate independent
     assert 'requestAnimationFrame' in SHELL_JS
+    assert 'var order=((i*7)%FRAG_COUNT)/(FRAG_COUNT-1);' in SHELL_JS
     # shell geometry mirrors the live ::before portrait box
     assert 'getComputedStyle(panel,"::before")' in SHELL_JS
-    # fragments carry jigsaw slices of the shell image
-    assert 'backgroundPosition' in SHELL_JS
+    # fragments carry pixel-registered jigsaw slices of the shell image:
+    # placement is field-relative, while source crop is image-local.
+    assert 'var cropX=col*cellW, cropY=row*cellH;' in SHELL_JS
+    assert 'var fx=imgL+cropX, fy=imgT+cropY;' in SHELL_JS
+    assert 'backgroundPosition=(-cropX)+"px "+(-cropY)+"px";' in SHELL_JS
+    assert 'backgroundPosition=(-fx)' not in SHELL_JS
     assert 'padiem-glass-' in SHELL_JS and '-shell.jpg' in SHELL_JS
 
 
@@ -228,7 +231,9 @@ def test_glass_shell_auto_is_reverse_pointer_reveal_not_partial_assembly() -> No
     assert 'function render(p,peeling)' in SHELL_JS
     assert 'var phase=peeling?1-p:p;' in SHELL_JS
     assert 'var portal=ease(clamp((p-.66)/.34,0,1));' in SHELL_JS
-    assert 'var drift=(1-Math.abs(p-.5)*2)*6;' in SHELL_JS
+    assert 'var x=d.fx, y=d.fy;' in SHELL_JS
+    assert 'rotate(0deg) scale(1)' in SHELL_JS
+    assert 'var drift=' not in SHELL_JS
     assert 'd.sx+(d.fx-d.sx)' not in SHELL_JS
     assert 'var peeling=t<progress;' in SHELL_JS
     assert '--glass-pointer-reveal' in THEME_JS
