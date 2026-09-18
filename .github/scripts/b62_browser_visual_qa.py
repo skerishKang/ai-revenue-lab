@@ -485,7 +485,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 : 0;
               const portal = document.querySelector('.glass-shell-portrait');
               const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
-              return progress >= .95 && maxOpacity <= .05 && portalOpacity >= .80;
+              /* Reading mode intentionally caps --glass-shell-max at .62. */
+              return progress >= .95 && maxOpacity <= .05 && portalOpacity >= .45;
             }""",
             timeout=5_000,
         )
@@ -495,7 +496,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             recovered_shell["progress"] < 0.95
             or recovered_shell["visibleFragments"] != 0
             or recovered_shell["maxFragmentOpacity"] > 0.05
-            or recovered_shell["portalOpacity"] < 0.80
+            or recovered_shell["portalOpacity"] < 0.45
         ):
             raise AssertionError(
                 f"Glass reverse shell did not reassemble after pointer recovery: settled={settled_shell}, recovered={recovered_shell}"
