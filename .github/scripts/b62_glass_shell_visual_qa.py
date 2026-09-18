@@ -75,6 +75,41 @@ async def _wait_progress_below(page: Page, value: float, name: str, timeout: flo
         raise AssertionError(f"{name}: progress never fell below {value}: {state}") from exc
 
 
+async def _wait_completed_shell(
+    page: Page,
+    name: str,
+    *,
+    min_portal_opacity: float = 0.80,
+    timeout: float = 12_000,
+) -> None:
+    """Wait for the reverse shell to finish visually, not just numerically.
+
+    Progress reaches .95 before the fragment dissolve has completed.  The
+    product contract is the completed portal with no fragment plates left
+    hanging over the portrait, so certify that rendered state directly.
+    """
+    try:
+        await page.wait_for_function(
+            """minPortal => {
+              const shell = window.__padiemGlassShell;
+              if (!shell || shell.progress() < .99) return false;
+              const frags = [...document.querySelectorAll('.glass-shell-frag')];
+              const maxOpacity = frags.length
+                ? Math.max(...frags.map((el) => parseFloat(getComputedStyle(el).opacity) || 0))
+                : 0;
+              const portal = document.querySelector('.glass-shell-portrait');
+              const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+              return maxOpacity <= .05 && portalOpacity >= minPortal;
+            }""",
+            arg=min_portal_opacity,
+            timeout=timeout,
+            polling=100,
+        )
+    except Exception as exc:
+        state = await _shell_state(page)
+        raise AssertionError(f"{name}: completed shell visual state never settled: {state}") from exc
+
+
 async def _goto_glass(page: Page, *, variant: str, extra: str = "") -> None:
     await page.goto(
         f"{BASE_URL}/?theme=padiem-glass&glass={variant}{extra}",
@@ -123,7 +158,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     await _goto_glass(page, variant=variant, extra="&mask=auto")
 
     # Reverse contract: Auto rests on the completed shell portrait.
-    await _wait_progress_at_least(page, 0.95, f"{name}-idle")
+    await _wait_completed_shell(page, f"{name}-idle")
     idle = await _shell_state(page)
     if idle["fragCount"] != 20:
         raise AssertionError(f"{name}: expected 20 shell fragments, got {idle['fragCount']}")
@@ -157,7 +192,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(
             f"{name}: reverse recovery did not begin after pointer exit: peeled={peeled}, mid={mid}"
         )
-    await _wait_progress_at_least(page, 0.95, f"{name}-recover")
+    await _wait_completed_shell(page, f"{name}-recover")
     recovered = await _shell_state(page)
     if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
         raise AssertionError(f"{name}: shell did not reassemble after pointer exit: {recovered}")
@@ -195,7 +230,11 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     await page.screenshot(path=str(OUT_DIR / f"{name}-combined.png"), full_page=False)
 
     await page.mouse.move(70, 90)
-    await _wait_progress_at_least(page, 0.95, f"{name}-final-recover")
+    await _wait_completed_shell(
+        page,
+        f"{name}-final-recover",
+        min_portal_opacity=0.35,
+    )
     final_recovered = await _shell_state(page)
     if final_recovered["fragVisible"] > 0:
         raise AssertionError(f"{name}: final shell recovery left fragment plates visible: {final_recovered}")
