@@ -77,3 +77,7 @@ def test_engine_production_depends_on_core_tools_extra() -> None:
         isinstance(item, str) and item.startswith("padiem-ai-core[tools] @ ")
         for item in dependencies
     )
+    assert "jsonschema==4.23.0" in dependencies
+    assert "jsonschema-specifications==2024.10.1" in dependencies
+    assert "referencing==0.36.2" in dependencies
+    assert "rpds-py==0.23.1" in dependencies
