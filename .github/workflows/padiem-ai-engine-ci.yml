@@ -121,6 +121,17 @@ jobs:
           test -f python_modules/padiem_ai_core/b14_execution.py
           echo 'PADIEM_AI_ENGINE_CORE_VENDORED=PASS'
 
+      - name: Prove ToolRuntime production dependencies vendored
+        if: steps.engine-source.outputs.present == 'true'
+        working-directory: apps/padiem-ai-engine
+        run: |
+          set -euo pipefail
+          test -f python_modules/padiem_ai_core/tool_runtime.py
+          jsonschema_path="$(find .venv-workers python_modules -path '*/jsonschema/__init__.py' -print -quit 2>/dev/null || true)"
+          test -n "${jsonschema_path}"
+          referencing_path="$(find .venv-workers python_modules -path '*/referencing/__init__.py' -print -quit 2>/dev/null || true)"
+          test -n "${referencing_path}"
+          echo 'PADIEM_AI_ENGINE_TOOL_RUNTIME_DEPENDENCIES_VENDORED=PASS'
       - name: Python Worker bundle dry-run
         if: steps.engine-source.outputs.present == 'true'
         working-directory: apps/padiem-ai-engine
