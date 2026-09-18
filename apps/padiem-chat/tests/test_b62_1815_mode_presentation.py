@@ -112,6 +112,11 @@ def test_glass_tier_trigger_stays_visible_on_bright_composer() -> None:
     assert "background: rgba(255, 255, 255, .62)" in block
     assert "color: #25333e" in block
     assert 'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:hover {' in CSS
+    spark_selector = 'html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] .status-spark {'
+    assert spark_selector in CSS
+    spark_block = CSS.split(spark_selector, 1)[1].split("}", 1)[0]
+    assert "color: #4f86ad" in spark_block
+    assert "opacity: 1" in spark_block
 
 
 def test_glass_tier_popover_uses_bright_frosted_surface_not_dark_group() -> None:
