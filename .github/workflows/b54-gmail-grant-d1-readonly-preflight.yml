@@ -122,7 +122,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --quiet pytest
+          python -m pip install --quiet pytest pytest-asyncio
+          python -m pip install --quiet -e packages/padiem-ai-core
           python -m pytest -q apps/padiem-ai-engine/tests/test_connector_grant_seed_script.py
 
   production-readonly:
