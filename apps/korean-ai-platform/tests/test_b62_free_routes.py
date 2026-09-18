@@ -150,7 +150,7 @@ def test_free_first_default_routing_selects_evidenced_free_models_only():
 
 def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, monkeypatch):
     """D14 (#2044): /api/pilot/router/resolve b14/auto ignores allow_paid (fixed chain)."""
-    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     resp_default = client.post(
         "/api/pilot/router/resolve",
@@ -162,7 +162,7 @@ def test_gateway_resolve_endpoint_ignores_allow_paid_for_fixed_chain(client, mon
     )
     assert resp_default.status_code == 200
     data_default = resp_default.json()
-    assert data_default["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert data_default["selected_model"] == "agnes-ai/agnes-3.0-flash"
     assert "routing_policy:fixed_chain_v1" in data_default["reason_codes"]
 
     # Explicit allow_paid=True changes nothing: same chain head, recorded as ignored.
@@ -195,4 +195,3 @@ def test_gateway_allow_paid_must_be_boolean_422(client):
     )
     assert resp.status_code == 422
     assert "business14.allow_paid must be a boolean" in resp.json()["error"]["message"]
-

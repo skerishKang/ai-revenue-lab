@@ -160,17 +160,17 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PLUS,
         routes=(
             TierRoute(
-                route_id="plus.sensenova-6.8-flash-lite.v1",
+                route_id="plus.agnes-3.0-flash.v1",
                 status=RouteStatus.EXECUTABLE,
-                model_family="sensenova",
-                provider_id="sensenova",
-                model_id="sensenova/sensenova-6.8-flash-lite",
-                upstream_model="sensenova-6.8-flash-lite",
+                model_family="agnes-3.0-flash",
+                provider_id="agnes-ai",
+                model_id="agnes-ai/agnes-3.0-flash",
+                upstream_model="agnes-3.0-flash",
                 credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_SENSENOVA_API_KEY",
+                credential_binding="PADIEM_AGNES_API_KEY",
                 evidence=(
-                    "Owner selection #2571; app/pilot/sensenova_provider.py registration; "
-                    "Production stream evidence #2150/#2155/#2161."
+                    "Owner Plus swap handoff; app/pilot/agnes_provider.py registration; "
+                    "exact 3.0 live measurement is separately blocked by the work order."
                 ),
             ),
             TierRoute(
@@ -182,8 +182,7 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
                 upstream_model="poolside/laguna-s-2.1:free",
                 credential_mode=CredentialMode.ANONYMOUS,
                 hold_reason=(
-                    "Superseded by owner-selected SenseNova Plus route in #2571; "
-                    "historical data only and never a silent fallback."
+                    "Historical Kilo free lane retained as data only; never a silent fallback."
                 ),
                 evidence="Historical app/pilot/kilo_provider.py KILO_LAGUNA_MODEL_ID (#956).",
             ),

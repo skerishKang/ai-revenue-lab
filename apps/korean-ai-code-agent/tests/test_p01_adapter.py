@@ -142,7 +142,7 @@ class P01RequestFactoryTests(unittest.TestCase):
         # Default tier is Plus while Pro is HOLD (#2601).
         self.assertEqual(
             dict(bundle.execution_request.agent.model_policy),
-            {"model": "sensenova/sensenova-6.8-flash-lite"},
+            {"model": "agnes-ai/agnes-3.0-flash"},
         )
         self.assertEqual(bundle.execution_request.messages[0]["role"], "user")
         self.assertIn("provider=caller-model", bundle.execution_request.messages[0]["content"])
@@ -158,14 +158,14 @@ class P01RequestFactoryTests(unittest.TestCase):
         )
         self.assertEqual(
             dict(plus_bundle.execution_request.agent.model_policy),
-            {"model": "sensenova/sensenova-6.8-flash-lite"},
+            {"model": "agnes-ai/agnes-3.0-flash"},
         )
 
         default_run = self.local_run("run_default_after_plus")
         default_bundle = P01RequestFactory().build(default_run)
         self.assertEqual(
             dict(default_bundle.execution_request.agent.model_policy),
-            {"model": "sensenova/sensenova-6.8-flash-lite"},
+            {"model": "agnes-ai/agnes-3.0-flash"},
         )
 
     def test_factory_does_not_promote_repository_reference_to_system_context(self):
@@ -422,19 +422,19 @@ class ClawP01ProfileContractTests(unittest.TestCase):
 
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
-        self.assertEqual(model, "sensenova/sensenova-6.8-flash-lite")
+        self.assertEqual(model, "agnes-ai/agnes-3.0-flash")
         self.assertIn(routing.task_type, _TASK_TYPES)
         self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
 
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
-        self.assertEqual(profile.model_policy, {"model": "sensenova/sensenova-6.8-flash-lite"})
+        self.assertEqual(profile.model_policy, {"model": "agnes-ai/agnes-3.0-flash"})
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
-    def test_plus_tier_resolves_to_sensenova(self) -> None:
+    def test_plus_tier_resolves_to_agnes(self) -> None:
         profile = _agent_profile(ProductTierLabel.PLUS)
-        self.assertEqual(profile.model_policy, {"model": "sensenova/sensenova-6.8-flash-lite"})
+        self.assertEqual(profile.model_policy, {"model": "agnes-ai/agnes-3.0-flash"})
 
     def test_pro_tier_fails_closed_while_hold(self) -> None:
         with self.assertRaises(P01AdapterError) as caught:

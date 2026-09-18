@@ -118,10 +118,10 @@ def test_plus_pro_registry_routes_match_shared_contract() -> None:
     """Registry and shared contract must name the same explicit active routes."""
     contract = _contract_executable_model_ids()
     assert sorted(contract) == [
-        "plus.sensenova-6.8-flash-lite.v1",
+        "plus.agnes-3.0-flash.v1",
     ]
     assert (
-        contract["plus.sensenova-6.8-flash-lite.v1"]
+        contract["plus.agnes-3.0-flash.v1"]
         == active_route_for(TierLabel.PLUS).model_id
     )
 

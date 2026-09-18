@@ -165,7 +165,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "sensenova/sensenova-6.8-flash-lite"})
+        self.assertEqual(payload["agent"]["model_policy"], {"model": "agnes-ai/agnes-3.0-flash"})
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())

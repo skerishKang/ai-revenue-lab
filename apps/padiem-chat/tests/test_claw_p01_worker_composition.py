@@ -193,7 +193,7 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     assert payload["app_id"] == P01_APP_ID
     assert payload["agent"]["id"] == P01_AGENT_ID
     assert payload["agent"]["model_policy"] == {
-        "model": "sensenova/sensenova-6.8-flash-lite"
+        "model": "agnes-ai/agnes-3.0-flash"
     }
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []

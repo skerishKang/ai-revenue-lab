@@ -98,7 +98,7 @@ EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID})
 
 # Current source posture after owner decision #2601:
 #
-#   Padiem Plus -> direct SenseNova 6.8 Flash Lite (only executable tier)
+#   Padiem Plus -> direct Agnes 3.0 Flash (only executable tier)
 #   Padiem Pro  -> HOLD
 #   Padiem Max  -> HOLD
 #

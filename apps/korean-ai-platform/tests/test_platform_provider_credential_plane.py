@@ -140,12 +140,12 @@ def test_agnes_route_reonboarded_as_manual_pin_candidate():
 
     from app.pilot.agnes_provider import CATALOG_BY_ID as _REAL_BY_ID
 
-    model = _REAL_BY_ID.get("agnes-ai/agnes-2.5-flash")
+    model = _REAL_BY_ID.get("agnes-ai/agnes-3.0-flash")
     assert model is not None
     assert model.platform_provider_id == "agnes-ai"
 
     public_ids = {m.model_id for m in _test_catalog_route_model_list()}
-    assert "agnes-ai/agnes-2.5-flash" not in public_ids
+    assert "agnes-ai/agnes-3.0-flash" not in public_ids
 
 
 def _test_catalog_route_model_list():
