@@ -348,7 +348,7 @@ def test_main_defers_honestly_when_runtime_is_unbound(capsys: pytest.CaptureFixt
     assert rc == 0
     out = capsys.readouterr().out
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
-    assert "REASON=DRIVE_DRIVE_PORT_UNAVAILABLE" in out
+    assert "REASON=DRIVE_PORT_UNAVAILABLE" in out
     assert "ROUTE_AVAILABLE=1" in out
     assert "ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING" in out
 
@@ -367,7 +367,7 @@ def test_main_defers_when_s1_hits_parse_guard_but_s2_finds_runtime_unbound(
     assert rc == 0
     out = capsys.readouterr().out
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
-    assert "REASON=DRIVE_DRIVE_GRANT_UNAVAILABLE" in out
+    assert "REASON=DRIVE_GRANT_UNAVAILABLE" in out
     assert "S1_CLASSIFICATION=TOOL_CONTRACT_LIVE" in out
     assert "S2_CLASSIFICATION=RUNTIME_UNAVAILABLE" in out
     assert "S4_DRIVE_CODE=drive_grant_unavailable" in out
