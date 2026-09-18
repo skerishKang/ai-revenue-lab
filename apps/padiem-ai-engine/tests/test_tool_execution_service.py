@@ -447,6 +447,18 @@ async def test_unexpected_resolver_failure_has_distinct_bounded_code(fx: Fixture
     assert fx.total() == 0
 
 
+async def test_missing_tool_runtime_dependency_has_distinct_bounded_code(fx: Fixture):
+    def missing_dependency(_app_id: str):
+        raise ImportError("private dependency import detail")
+
+    service = ToolExecutionEngineService(tool_binding_resolver=missing_dependency)
+    response = await service.execute_payload(execute_payload())
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "tool_runtime_dependency_unavailable"
+    assert "private dependency import detail" not in json.dumps(response.body)
+    assert fx.total() == 0
+
+
 async def test_missing_auth_scope_fails_closed(fx: Fixture):
     fx.scopes = ()
     response = await fx.service.execute_payload(execute_payload())
