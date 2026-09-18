@@ -103,6 +103,9 @@ FOREIGN_APP_ID = "b62"
 GMAIL_AGENT_ID = "agent:padiem:claw_mail_reader@1"
 GMAIL_TOOL_ID = "tool:google:gmail.search_messages@1"
 UNREGISTERED_TOOL_ID = "tool:google:gmail.a11_smoke_unregistered@1"
+DRIVE_APP_ID = "b54-padiem-claw-drive"
+DRIVE_AGENT_ID = "agent:padiem:claw_drive_reader@1"
+DRIVE_UNREGISTERED_TOOL_ID = "tool:google:drive.a11_smoke_unregistered@1"
 BOUNDED_UNREGISTERED_QUERY = "a11-smoke-unregistered-probe"
 REQUEST_TIMEOUT_SECONDS = 60
 
@@ -121,7 +124,13 @@ UNEXPECTED = "UNEXPECTED"
 
 _ROUTE_NOT_FOUND_CODES = frozenset({"not_found"})
 _RUNTIME_UNAVAILABLE_CODES = frozenset(
-    {"tool_runtime_unavailable", "connector_grants_unavailable"}
+    {
+        "tool_runtime_unavailable",
+        "connector_grants_unavailable",
+        "drive_port_unavailable",
+        "drive_grant_unavailable",
+        "tool_binding_resolution_failed",
+    }
 )
 _TOOL_NOT_ALLOWED_CODES = frozenset(
     {
@@ -233,6 +242,7 @@ def _execute_probe(
     app_id: str,
     tool_id: str,
     *,
+    agent_id: str = GMAIL_AGENT_ID,
     query: str = OVERSIZED_ARGUMENT,
 ) -> tuple[int, dict[str, Any] | str]:
     """POST one tool-execution probe with an explicit query fixture.
@@ -244,7 +254,7 @@ def _execute_probe(
     """
     body = {
         "app_id": app_id,
-        "agent_id": GMAIL_AGENT_ID,
+        "agent_id": agent_id,
         "tool_id": tool_id,
         "arguments": {"query": query},
     }
@@ -344,6 +354,49 @@ def s3_cross_app_isolation() -> None:
     print(f"[S3] cross-app isolation OK: {status} {_error_code(body)!r}")
 
 
+def s4_drive_resolution_probe() -> tuple[str, str | None]:
+    """Resolve the canonical Drive binding without invoking any registered tool.
+
+    The unregistered tool id forces rejection after trusted app/Agent binding
+    resolution but before Core handler execution, OAuth lease issuance, or any
+    Google Drive provider call.
+    """
+    status, body = _execute_probe(
+        DRIVE_APP_ID,
+        DRIVE_UNREGISTERED_TOOL_ID,
+        agent_id=DRIVE_AGENT_ID,
+        query=BOUNDED_UNREGISTERED_QUERY,
+    )
+    code = _error_code(body)
+    if status == 403 and code == "tool_not_registered":
+        print("[S4] Drive resolver OK: trusted binding + Agent reached; unregistered tool rejected")
+        print("DRIVE_RUNTIME_RESOLUTION=BOUND")
+        print("DRIVE_PROVIDER_CALLS=0")
+        return "DRIVE_REGISTRY_PROVEN", code
+
+    if status == 503 and code in _RUNTIME_UNAVAILABLE_CODES:
+        print(f"[S4] Drive resolver deferred at bounded stage: {code}")
+        print(f"DRIVE_RUNTIME_RESOLUTION={code}")
+        print("DRIVE_PROVIDER_CALLS=0")
+        return "DRIVE_RUNTIME_UNAVAILABLE", code
+
+    if status == 403 and code == "tool_agent_not_bound":
+        print("[S4] Drive resolver reached binding but canonical Agent is not bound")
+        print("DRIVE_RUNTIME_RESOLUTION=tool_agent_not_bound")
+        print("DRIVE_PROVIDER_CALLS=0")
+        return "DRIVE_AGENT_UNAVAILABLE", code
+
+    if 200 <= status < 300:
+        _fail("S4", f"unregistered Drive tool executed unexpectedly (status={status})", body)
+    else:
+        _fail(
+            "S4",
+            f"unexpected Drive resolver result (status={status}, code={code!r})",
+            body,
+        )
+    return "FAIL", code
+
+
 def main() -> int:
     if not _require_env():
         return 1
@@ -356,13 +409,18 @@ def main() -> int:
     s1_verdict = s1_canonical_gmail_probe()
     route_available = s1_verdict != ROUTE_UNAVAILABLE
     s2_verdict = "NOT_RUN"
+    s4_verdict = "NOT_RUN"
+    s4_code: str | None = None
 
-    # S2 provides the registry/Agent evidence. It intentionally does not depend
-    # on S1's oversized-payload classification because S1 stops at the global
-    # parser ceiling before binding or trusted-tool resolution.
+    # S2 provides the Gmail registry/Agent evidence. S4 then uses the same
+    # protected caller credential against the canonical Drive app with an
+    # unregistered tool id, proving the Drive resolver stage with zero provider
+    # calls. Both probes are bounded below the global argument ceiling.
     if route_available and not _failures:
         s2_verdict = s2_unregistered_tool_probe()
         s3_cross_app_isolation()
+        if not _failures:
+            s4_verdict, s4_code = s4_drive_resolution_probe()
 
     if _failures:
         print(
@@ -371,15 +429,24 @@ def main() -> int:
         )
         return 1
 
-    if s1_verdict == TOOL_CONTRACT_LIVE and s2_verdict == "REGISTRY_PROVEN":
+    if (
+        s1_verdict == TOOL_CONTRACT_LIVE
+        and s2_verdict == "REGISTRY_PROVEN"
+        and s4_verdict == "DRIVE_REGISTRY_PROVEN"
+    ):
         print(
             "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS "
             f"{ZERO_SIDE_EFFECT_TOKENS} ROUTE_AVAILABLE=1 "
-            "TOOL_REGISTRY_LIVE=PASS AGENT_BOUND=PASS CROSS_APP=PASS"
+            "TOOL_REGISTRY_LIVE=PASS AGENT_BOUND=PASS CROSS_APP=PASS "
+            "DRIVE_RESOLVER=PASS DRIVE_PROVIDER_CALLS=0"
         )
         return 0
 
-    if s2_verdict == "RUNTIME_UNAVAILABLE":
+    if s4_verdict == "DRIVE_RUNTIME_UNAVAILABLE":
+        reason = f"DRIVE_{s4_code or 'RUNTIME_UNAVAILABLE'}".upper()
+    elif s4_verdict == "DRIVE_AGENT_UNAVAILABLE":
+        reason = "DRIVE_TOOL_AGENT_NOT_BOUND"
+    elif s2_verdict == "RUNTIME_UNAVAILABLE":
         reason = "TOOL_RUNTIME_UNAVAILABLE"
     elif s2_verdict == "AGENT_UNAVAILABLE":
         reason = "TOOL_AGENT_NOT_BOUND"
@@ -392,7 +459,9 @@ def main() -> int:
         f"A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED REASON={reason} "
         f"ROUTE_AVAILABLE={1 if route_available else 0} "
         f"ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING {ZERO_SIDE_EFFECT_TOKENS} "
-        f"S1_CLASSIFICATION={s1_verdict} S2_CLASSIFICATION={s2_verdict}"
+        f"S1_CLASSIFICATION={s1_verdict} S2_CLASSIFICATION={s2_verdict} "
+        f"S4_DRIVE_CLASSIFICATION={s4_verdict} "
+        f"S4_DRIVE_CODE={s4_code or 'NONE'} DRIVE_PROVIDER_CALLS=0"
     )
     return 0
 
