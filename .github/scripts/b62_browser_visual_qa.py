@@ -328,6 +328,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     attachment_hover_color = await attachment_button.evaluate("el => getComputedStyle(el).color")
     if attachment_hover_color != "rgb(23, 33, 42)":
         raise AssertionError(f"Glass file hover lost dark foreground contrast: {attachment_hover_color}")
+    attachment_hover_name = f"desktop-glass-{variant}-attachment-hover.png"
+    await page.screenshot(path=str(OUT_DIR / attachment_hover_name), full_page=True)
     await page.mouse.move(70, 80)
 
     # APPEARANCE controls must expose the approved 3-mode mask and speed bar.
@@ -692,6 +694,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         },
         "home_screenshot": home_name,
         "chat_screenshot": chat_name,
+        "attachment_hover_screenshot": attachment_hover_name,
         "home_cinematic": {
             "before_pointer": home_before_pointer,
             "after_pointer": home_after_pointer,
