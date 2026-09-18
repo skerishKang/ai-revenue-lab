@@ -422,9 +422,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         raise AssertionError(f"Glass shell teardown is too fast at 260ms: {early_shell}")
     if early_shell["portalOpacity"] < 0.55:
         raise AssertionError(f"Glass shell portal faded too early at 260ms: {early_shell}")
-    early_name = f"desktop-glass-{variant}-transition-early.png"
-    await page.screenshot(path=str(OUT_DIR / early_name), full_page=False)
-
     # Move across the portrait while the SAME time-driven peel continues.
     # Around 900ms we require a genuine intermediate state: shell/ribbons are
     # still visible, but progress has advanced substantially from the 260ms
@@ -450,10 +447,6 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             f"Glass mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
         )
     mid_shell = await _glass_shell_snapshot(page)
-    # Always preserve the real ~900ms frame before numeric assertions so a
-    # failed contract remains visually diagnosable from the artifact.
-    mid_name = f"desktop-glass-{variant}-transition-mid.png"
-    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=False)
     if mid_shell["pointerDriver"] < 0.80:
         raise AssertionError(f"Glass right-side hover lost the binary peel target: {mid_shell}")
     if mid_shell["progress"] > early_shell["progress"] + 0.02:
@@ -527,6 +520,57 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         raise AssertionError(f"Glass shell did not fully reassemble after pointer exit: {recovered_shell}")
     recovered_name = f"desktop-glass-{variant}-recovered.png"
     await page.screenshot(path=str(OUT_DIR / recovered_name), full_page=False)
+
+    # Evidence captures run in isolated cycles *after* the timing contract.
+    # Screenshot encoding can take >1s on a loaded CI runner while the live
+    # animation correctly keeps advancing, so never put capture I/O between
+    # the 260ms and ~900ms timing samples above.
+    early_name = f"desktop-glass-{variant}-transition-early.png"
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.18,
+        portrait_y,
+    )
+    await page.wait_for_timeout(260)
+    early_evidence_shell = await _glass_shell_snapshot(page)
+    if early_evidence_shell["progress"] < 0.68 or early_evidence_shell["portalOpacity"] < 0.55:
+        raise AssertionError(f"Glass early evidence cycle is not shell-visible: {early_evidence_shell}")
+    await page.screenshot(path=str(OUT_DIR / early_name), full_page=False)
+    await page.mouse.move(70, 80)
+    await page.wait_for_function(
+        "() => { const s=getComputedStyle(document.documentElement); const p=parseFloat(s.getPropertyValue('--glass-shell-progress'))||0; const el=document.querySelector('.glass-shell-portrait'); const o=el?(parseFloat(getComputedStyle(el).opacity)||0):0; return p>=.95&&o>=.80; }",
+        timeout=5_000,
+    )
+
+    mid_name = f"desktop-glass-{variant}-transition-mid.png"
+    evidence_started = await page.evaluate("performance.now()")
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.18,
+        portrait_y,
+    )
+    await page.wait_for_timeout(260)
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.82,
+        portrait_y,
+    )
+    evidence_elapsed = float(
+        await page.evaluate("started => performance.now() - started", evidence_started)
+    )
+    evidence_wait = max(0, int(900 - evidence_elapsed))
+    if evidence_wait:
+        await page.wait_for_timeout(evidence_wait)
+    mid_evidence_shell = await _glass_shell_snapshot(page)
+    if (
+        not 0.15 <= mid_evidence_shell["progress"] <= 0.65
+        or mid_evidence_shell["portalOpacity"] <= 0.18
+        or mid_evidence_shell["visibleFragments"] <= 0
+    ):
+        raise AssertionError(f"Glass mid evidence cycle is not visibly transitional: {mid_evidence_shell}")
+    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=False)
+    await page.mouse.move(70, 80)
+    await page.wait_for_function(
+        "() => { const s=getComputedStyle(document.documentElement); const p=parseFloat(s.getPropertyValue('--glass-shell-progress'))||0; const el=document.querySelector('.glass-shell-portrait'); const o=el?(parseFloat(getComputedStyle(el).opacity)||0):0; return p>=.95&&o>=.80; }",
+        timeout=5_000,
+    )
 
     chat_name = f"desktop-glass-{variant}-chat.png"
     reading_samples: list[dict[str, Any]] = []
@@ -801,6 +845,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             "transition_early": early_shell,
             "transition_mid": mid_shell,
             "transition_mid_elapsed_ms": mid_elapsed_ms,
+            "transition_early_evidence": early_evidence_shell,
+            "transition_mid_evidence": mid_evidence_shell,
             "recovered": recovered_shell,
             "peel_elapsed_ms": peel_elapsed_ms,
             "recover_elapsed_ms": recover_elapsed_ms,
