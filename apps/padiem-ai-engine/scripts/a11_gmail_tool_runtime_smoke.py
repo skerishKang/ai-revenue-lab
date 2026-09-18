@@ -358,7 +358,7 @@ def s4_drive_resolution_probe() -> tuple[str, str | None]:
     """Resolve the canonical Drive binding without invoking any registered tool.
 
     The unregistered tool id forces rejection after trusted app/Agent binding
-    resolution but before Core handler execution, OAuth lease issuance, or any
+    resolution but before Core handler execution, access-lease issuance, or any
     Google Drive provider call.
     """
     status, body = _execute_probe(
@@ -443,7 +443,7 @@ def main() -> int:
         return 0
 
     if s4_verdict == "DRIVE_RUNTIME_UNAVAILABLE":
-        reason = f"DRIVE_{s4_code or 'RUNTIME_UNAVAILABLE'}".upper()
+        reason = (s4_code or "drive_runtime_unavailable").upper()
     elif s4_verdict == "DRIVE_AGENT_UNAVAILABLE":
         reason = "DRIVE_TOOL_AGENT_NOT_BOUND"
     elif s2_verdict == "RUNTIME_UNAVAILABLE":
