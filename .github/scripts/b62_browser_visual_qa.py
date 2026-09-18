@@ -312,6 +312,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     tier_color = await tier_trigger.evaluate("el => getComputedStyle(el).color")
     if tier_color != "rgb(37, 51, 62)":
         raise AssertionError(f"Glass tier trigger lost dark foreground contrast: {tier_color}")
+    spark = tier_trigger.locator(".status-spark")
+    spark_color = await spark.evaluate("el => getComputedStyle(el).color")
+    spark_opacity = float(await spark.evaluate("el => getComputedStyle(el).opacity"))
+    if spark_color != "rgb(79, 134, 173)" or spark_opacity < 0.99:
+        raise AssertionError(
+            f"Glass Plus spark is not visibly colored: color={spark_color}, opacity={spark_opacity}"
+        )
 
     attachment_button = page.locator("#attachmentButton")
     await attachment_button.hover()
