@@ -98,8 +98,40 @@ async def test_drive_worker_transport_uses_fetch_with_bounded_get() -> None:
     assert seen["init"]["method"] == "GET"
     assert seen["init"]["redirect"] == "manual"
     assert seen["init"]["headers"]["authorization"] == "Bearer private-token"
+    assert seen["init"]["headers"]["accept-encoding"] == "identity"
     assert abort.calls == [7000]
     assert body.reader.release_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_drive_worker_transport_normalizes_fetch_decoded_encoding_headers() -> None:
+    body = Body([b'{"files":[]}'])
+
+    async def fetch(_url, _init):
+        # Production-shaped Fetch behavior: body bytes are already decoded,
+        # while stale origin encoding/length metadata can remain visible.
+        return SimpleNamespace(
+            status=200,
+            headers=Headers(
+                {
+                    "content-type": "application/json",
+                    "content-encoding": "gzip",
+                    "content-length": "999",
+                }
+            ),
+            body=body,
+        )
+
+    transport = CloudflareExternalHttpTransport(
+        allowed_hosts=frozenset({"www.googleapis.com"}),
+        fetch_impl=fetch,
+        abort_signal_api=Abort(),
+    )
+    async with httpx.AsyncClient(transport=transport) as client:
+        response = await client.get("https://www.googleapis.com/drive/v3/files")
+        assert await response.aread() == b'{"files":[]}'
+        assert "content-encoding" not in response.headers
+        assert "content-length" not in response.headers
 
 
 @pytest.mark.asyncio
