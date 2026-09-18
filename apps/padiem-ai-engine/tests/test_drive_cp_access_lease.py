@@ -302,6 +302,36 @@ def test_provider_transport_failure_preserves_bounded_provider_stage() -> None:
     assert "private network detail" not in caught.value.safe_message
 
 
+def test_provider_content_decoding_failure_preserves_bounded_provider_stage() -> None:
+    class StaleEncodingTransport(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200,
+                headers={"Content-Encoding": "gzip"},
+                content=b"already-decoded-json",
+                request=request,
+            )
+
+    port = ControlPlaneLeaseDriveReadPort(
+        lease_client=FakeLeaseClient(),
+        transport=StaleEncodingTransport(),
+    )
+    with pytest.raises(ToolHandlerError) as caught:
+        run(
+            port.get_json(
+                binding_ref=BINDING_REF,
+                actor_ref=ACTOR_REF,
+                required_scopes=(DRIVE_READONLY_SCOPE,),
+                base_url="https://www.googleapis.com",
+                path="/drive/v3/files",
+                query={},
+                timeout_seconds=10,
+                max_response_bytes=10000,
+            )
+        )
+    assert caught.value.code == "google_drive_provider_unavailable"
+
+
 def test_write_scope_and_non_google_host_are_rejected_before_provider_call() -> None:
     provider_calls = 0
 
