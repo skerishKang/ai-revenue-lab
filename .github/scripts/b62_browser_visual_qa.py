@@ -401,7 +401,57 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     )
 
     home_before_pointer = await _glass_motion_snapshot(page)
-    await _move_into_glass_portrait(page)
+    portrait_rect = await page.evaluate(
+        "() => window.__padiemGlassShell && window.__padiemGlassShell.imageRect && window.__padiemGlassShell.imageRect()"
+    )
+    if not portrait_rect:
+        raise AssertionError("Glass portrait image rect unavailable for transition QA")
+    portrait_y = portrait_rect["top"] + portrait_rect["height"] * 0.44
+    peel_started = await page.evaluate("performance.now()")
+
+    # Enter from the LEFT. At 260ms the shell must still be clearly present;
+    # a clean-looking face this early is a visual regression even if the
+    # internal progress variable is still moving.
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.18,
+        portrait_y,
+    )
+    await page.wait_for_timeout(260)
+    early_shell = await _glass_shell_snapshot(page)
+    if early_shell["pointerDriver"] < 0.80 or early_shell["progress"] < 0.68:
+        raise AssertionError(f"Glass shell teardown is too fast at 260ms: {early_shell}")
+    if early_shell["portalOpacity"] < 0.55:
+        raise AssertionError(f"Glass shell portal faded too early at 260ms: {early_shell}")
+    early_name = f"desktop-glass-{variant}-transition-early.png"
+    await page.screenshot(path=str(OUT_DIR / early_name), full_page=True)
+
+    # Move across the portrait while the SAME time-driven peel continues.
+    # Around 900ms we require a genuine intermediate state: shell/ribbons are
+    # still visible, but progress has advanced substantially from the 260ms
+    # sample. Pointer X must not scrub or reverse the animation.
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.82,
+        portrait_y,
+    )
+    await page.wait_for_timeout(650)
+    mid_shell = await _glass_shell_snapshot(page)
+    if mid_shell["pointerDriver"] < 0.80:
+        raise AssertionError(f"Glass right-side hover lost the binary peel target: {mid_shell}")
+    if mid_shell["progress"] > early_shell["progress"] + 0.02:
+        raise AssertionError(
+            f"Glass horizontal motion reversed/scrubbed progress: early={early_shell}, mid={mid_shell}"
+        )
+    if mid_shell["progress"] >= early_shell["progress"] - 0.10:
+        raise AssertionError(
+            f"Glass timed peel did not continue across horizontal motion: early={early_shell}, mid={mid_shell}"
+        )
+    if not 0.25 <= mid_shell["progress"] <= 0.65:
+        raise AssertionError(f"Glass ~900ms sample is not a visible mid-transition state: {mid_shell}")
+    if mid_shell["portalOpacity"] <= 0.18 or mid_shell["visibleFragments"] <= 0:
+        raise AssertionError(f"Glass shell/ribbons disappeared before the mid-transition sample: {mid_shell}")
+    mid_name = f"desktop-glass-{variant}-transition-mid.png"
+    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=True)
+
     await page.wait_for_function(
         """() => {
           const rootStyle = getComputedStyle(document.documentElement);
@@ -417,6 +467,10 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         }""",
         timeout=5_000,
     )
+    peel_elapsed_ms = float(await page.evaluate("started => performance.now() - started", peel_started))
+    if not 1_800 <= peel_elapsed_ms <= 3_600:
+        raise AssertionError(f"Glass 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms")
+
     home_after_pointer = await _glass_motion_snapshot(page)
     home_shell_pointer = await _glass_shell_snapshot(page)
     if home_after_pointer["pointerX"] not in {"", "0px", "0.0px"} or home_after_pointer["pointerY"] not in {"", "0px", "0.0px"}:
@@ -432,12 +486,31 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     home_name = f"desktop-glass-{variant}-home.png"
     await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
 
-    # Return to the content side and require the resting shell to reassemble.
+    # Pointer exit must visibly reassemble and finish on the completed shell.
+    recover_started = await page.evaluate("performance.now()")
     await page.mouse.move(70, 80)
+    await page.wait_for_timeout(250)
+    recover_early = await _glass_shell_snapshot(page)
+    if recover_early["progress"] <= home_shell_pointer["progress"]:
+        raise AssertionError(f"Glass reverse recovery did not begin after pointer exit: {recover_early}")
     await page.wait_for_function(
-        "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) >= .95",
+        """() => {
+          const style = getComputedStyle(document.documentElement);
+          const progress = parseFloat(style.getPropertyValue('--glass-shell-progress')) || 0;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return progress >= .95 && portalOpacity >= .80;
+        }""",
         timeout=5_000,
     )
+    recover_elapsed_ms = float(await page.evaluate("started => performance.now() - started", recover_started))
+    if not 1_600 <= recover_elapsed_ms <= 3_600:
+        raise AssertionError(f"Glass 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms")
+    recovered_shell = await _glass_shell_snapshot(page)
+    if recovered_shell["portalOpacity"] < 0.80 or recovered_shell["visibleFragments"] != 0:
+        raise AssertionError(f"Glass shell did not fully reassemble after pointer exit: {recovered_shell}")
+    recovered_name = f"desktop-glass-{variant}-recovered.png"
+    await page.screenshot(path=str(OUT_DIR / recovered_name), full_page=True)
 
     chat_name = f"desktop-glass-{variant}-chat.png"
     reading_samples: list[dict[str, Any]] = []
@@ -706,6 +779,14 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             "answer_only_target": answer_only_shell_target,
             "combined_target": combined_shell_target,
             "shell_on_screenshot": shell_on_name,
+            "transition_early_screenshot": early_name,
+            "transition_mid_screenshot": mid_name,
+            "recovered_screenshot": recovered_name,
+            "transition_early": early_shell,
+            "transition_mid": mid_shell,
+            "recovered": recovered_shell,
+            "peel_elapsed_ms": peel_elapsed_ms,
+            "recover_elapsed_ms": recover_elapsed_ms,
             "status": "PASS",
         },
         "home_screenshot": home_name,
