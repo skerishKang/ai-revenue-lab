@@ -51,6 +51,9 @@ _FAIL_CLOSED_CODES = frozenset(
         "idempotency_unavailable",
         "b14_service_unavailable",
         "connector_grants_unavailable",
+        "drive_port_unavailable",
+        "drive_grant_unavailable",
+        "tool_binding_resolution_failed",
     }
 )
 
@@ -120,6 +123,38 @@ class _StubEnv:
         self.PADIEM_ENGINE_WEB_PROVIDER = "mock"
         for name, value in extra.items():
             setattr(self, name, value)
+
+
+class _DriveGrantStatement:
+    def __init__(self, rows: list[dict[str, Any]], params: tuple[Any, ...] = ()) -> None:
+        self._rows = rows
+        self._params = params
+
+    def bind(self, *params: Any) -> "_DriveGrantStatement":
+        return _DriveGrantStatement(self._rows, tuple(params))
+
+    def all(self) -> list[dict[str, Any]]:
+        connector_id = self._params[0] if self._params else None
+        if connector_id != "connector:google:drive@1":
+            return []
+        return [dict(row) for row in self._rows]
+
+
+class _DriveGrantBinding:
+    def __init__(self) -> None:
+        self._rows = [
+            {
+                "app_id": "b54-padiem-claw-drive",
+                "canonical_agent_id": "agent:padiem:claw_drive_reader@1",
+                "connector_id": "connector:google:drive@1",
+                "binding_ref": "bind:drive_prod_probe",
+                "actor_ref": "actor:drive_prod_probe",
+                "granted_capabilities_json": "[\"read\"]",
+            }
+        ]
+
+    def prepare(self, _sql: str) -> _DriveGrantStatement:
+        return _DriveGrantStatement(self._rows)
 
 
 class _FailingGrantsBinding:
@@ -209,6 +244,17 @@ def _tool_payload() -> bytes:
             "agent_id": "agent:padiem:agent_1@1",
             "tool_id": "tool:padiem:noop_1@1",
             "arguments": {},
+        }
+    ).encode("utf-8")
+
+
+def _drive_tool_payload() -> bytes:
+    return json.dumps(
+        {
+            "app_id": "b54-padiem-claw-drive",
+            "agent_id": "agent:padiem:claw_drive_reader@1",
+            "tool_id": "tool:google:drive.a11_smoke_unregistered@1",
+            "arguments": {"query": "bounded-drive-resolution-probe"},
         }
     ).encode("utf-8")
 
@@ -495,6 +541,58 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     # PR-C activation gate: the resolver is wired through env-derived
     # secrets + D1 grant references. No static truth flag remains.
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
+
+
+@pytest.mark.asyncio
+async def test_drive_runtime_reports_missing_port_before_grant_or_provider() -> None:
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(_StubEnv())
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_drive_tool_payload(),
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "drive_port_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_drive_runtime_reports_missing_grant_after_port_is_bound() -> None:
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(CONTROL_PLANE_GOOGLE_OAUTH=object())
+    )
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_drive_tool_payload(),
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "drive_grant_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_drive_runtime_unregistered_probe_proves_binding_without_provider_call() -> None:
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(
+            CONTROL_PLANE_GOOGLE_OAUTH=object(),
+            ENGINE_CONNECTOR_GRANTS=_DriveGrantBinding(),
+        )
+    )
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_drive_tool_payload(),
+    )
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "tool_not_registered"
 
 
 @pytest.mark.asyncio
