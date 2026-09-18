@@ -734,6 +734,13 @@ def _provider_response_contract_mismatch() -> ToolHandlerError:
     )
 
 
+def _provider_boundary_failed() -> ToolHandlerError:
+    return ToolHandlerError(
+        "google_drive_provider_boundary_failed",
+        "Google Drive provider boundary failed before a reviewed response was available.",
+    )
+
+
 def _bounded_envelope(envelope: dict[str, Any]) -> dict[str, Any]:
     """Bound the final JSON output to Core MAX_TOOL_OUTPUT_BYTES.
 
@@ -788,16 +795,13 @@ async def _port_json(
         # All arbitrary port exceptions remain sanitized below.
         raise
     except Exception:
-        # The trusted port boundary is the only place that may surface
-        # diagnostics; Core must not propagate its exception message, the
-        # cause chain, or the implicit context chain.
-        sanitized = DriveContractError("The Google Drive provider port failed.")
+        # Preserve only a reviewed stage code. Raw provider/lease exception
+        # messages and cause chains never cross the Core boundary.
+        raise _provider_boundary_failed() from None
     else:
         if not isinstance(result, dict):
-            raise DriveContractError("The Google Drive provider port returned an invalid body.")
+            raise _provider_boundary_failed() from None
         return result
-
-    raise sanitized
 
 
 async def _port_text(
@@ -828,13 +832,11 @@ async def _port_text(
     except ToolHandlerError:
         raise
     except Exception:
-        sanitized = DriveContractError("The Google Drive provider port failed.")
+        raise _provider_boundary_failed() from None
     else:
         if not isinstance(result, str):
-            raise DriveContractError("The Google Drive provider port returned an invalid body.")
+            raise _provider_boundary_failed() from None
         return result
-
-    raise sanitized
 
 
 def _string_arg(args: dict[str, Any], key: str, *, limit: int = 1_024) -> str | None:
