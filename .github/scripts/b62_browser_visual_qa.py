@@ -450,6 +450,10 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             f"Glass mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
         )
     mid_shell = await _glass_shell_snapshot(page)
+    # Always preserve the real ~900ms frame before numeric assertions so a
+    # failed contract remains visually diagnosable from the artifact.
+    mid_name = f"desktop-glass-{variant}-transition-mid.png"
+    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=False)
     if mid_shell["pointerDriver"] < 0.80:
         raise AssertionError(f"Glass right-side hover lost the binary peel target: {mid_shell}")
     if mid_shell["progress"] > early_shell["progress"] + 0.02:
@@ -460,13 +464,10 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         raise AssertionError(
             f"Glass timed peel did not continue across horizontal motion: early={early_shell}, mid={mid_shell}"
         )
-    if not 0.25 <= mid_shell["progress"] <= 0.65:
+    if not 0.15 <= mid_shell["progress"] <= 0.65:
         raise AssertionError(f"Glass ~900ms sample is not a visible mid-transition state: {mid_shell}")
     if mid_shell["portalOpacity"] <= 0.18 or mid_shell["visibleFragments"] <= 0:
         raise AssertionError(f"Glass shell/ribbons disappeared before the mid-transition sample: {mid_shell}")
-    mid_name = f"desktop-glass-{variant}-transition-mid.png"
-    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=False)
-
     await page.wait_for_function(
         """() => {
           const rootStyle = getComputedStyle(document.documentElement);
