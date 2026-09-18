@@ -54,6 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m pip install --quiet pytest
           python -m pytest -q .github/tests/test_b14_agnes_production_smoke.py
 
       - name: Pin exact Agnes contract
