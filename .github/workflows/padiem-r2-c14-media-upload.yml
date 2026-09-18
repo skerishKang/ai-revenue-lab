@@ -20,6 +20,10 @@ on:
         type: string
         default: ''
 
+  pull_request:
+    branches:
+      - main
+
 permissions:
   contents: read
 
@@ -29,6 +33,7 @@ concurrency:
 
 jobs:
   upload:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
@@ -311,3 +316,208 @@ jobs:
           echo 'R2_OVERWRITE=NO'
           echo 'PRODUCTION_MUTATION=NONE'
           echo 'SECRET_VALUE_OUTPUT=0'
+
+
+  publish-approved-featured-four:
+    name: Publish owner-approved RMI featured four
+    if: github.event_name == 'pull_request' && github.head_ref == 'ops/c14-featured4-r2-publish-20260919'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
+      BUCKET: padiem-media
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+
+      - name: Verify bounded authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_HEAD_REF" = "ops/c14-featured4-r2-publish-20260919"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          echo "AUTHORITY=FEATURED4_ONLY"
+          echo "R2_TARGET_BUCKET=${BUCKET}"
+          echo "APPROVED_OBJECT_COUNT=4"
+          echo "SHARED_85_INCLUDED=NO"
+          echo "SECRET_VALUE_OUTPUT=0"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Preflight immutable keys before any mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, sys
+          objects=[
+            {"file":"memory-024.mp4","drive_id":"1AuFs4vw4SDRA-AMjg7XigeVWvbX2-syS","key":"design/rotating-memory-index/memory-024-v1.mp4","bytes":342637,"sha256":"03168db15bea1746e246ec43c10adb5ac4c48c231a1b661064abc0efae5c0294"},
+            {"file":"memory-046.mp4","drive_id":"1P8z1BVnQCnYdGrH7nxfmqX1vlTWhZlGH","key":"design/rotating-memory-index/memory-046-v1.mp4","bytes":1414476,"sha256":"37814d80eb36cd072ff638e18e654662e51b5a59c61fff4416e62a7cbc46e214"},
+            {"file":"memory-047.mp4","drive_id":"1Ac9Nh0I9etmzvWQOK3Wj4JDUlpIQK0oV","key":"design/rotating-memory-index/memory-047-v1.mp4","bytes":1751705,"sha256":"ac7fe01a7b6e268f7976e4eb6af9840a43ef7df58adeb99bd431d01e06aceb30"},
+            {"file":"memory-071.mp4","drive_id":"16pO1z-ZtQER3dQWdvZk2QrB9YUkpdY3N","key":"design/rotating-memory-index/memory-071-v1.mp4","bytes":975752,"sha256":"e2f37582ae56649d8699570f933a91e0a2f711e51887695143509916369871ff"},
+          ]
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"c14-featured4"
+          root.mkdir(parents=True,exist_ok=True)
+          states=[]
+          conflict=False
+          for o in objects:
+              dest=root/("remote-"+o["file"])
+              r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","get",f'{os.environ["BUCKET"]}/{o["key"]}',"--file",str(dest),"--remote"],capture_output=True,text=True)
+              if r.returncode!=0 or not dest.exists():
+                  states.append({**o,"state":"MISS"})
+                  print(f'PREFLIGHT_MISS {o["key"]}')
+                  continue
+              data=dest.read_bytes()
+              sha=hashlib.sha256(data).hexdigest()
+              dest.unlink(missing_ok=True)
+              if len(data)==o["bytes"] and sha==o["sha256"]:
+                  states.append({**o,"state":"IDENTICAL"})
+                  print(f'PREFLIGHT_IDENTICAL {o["key"]}')
+              else:
+                  states.append({**o,"state":"CONFLICT"})
+                  conflict=True
+                  print(f'PREFLIGHT_CONFLICT {o["key"]}',file=sys.stderr)
+          (root/"state.json").write_text(json.dumps(states),encoding="utf-8")
+          print("PREFLIGHT_COUNT=4")
+          print("SHARED_85_INCLUDED=NO")
+          if conflict:
+              print("NO_OVERWRITE_STOP=YES",file=sys.stderr)
+              sys.exit(1)
+          print("NO_OVERWRITE_STOP=NO")
+          PY
+
+      - name: Download and verify only missing approved sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet gdown
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, sys, time
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"c14-featured4"
+          states=json.loads((root/"state.json").read_text())
+          def run(cmd):
+              return subprocess.run(cmd,capture_output=True,text=True)
+          for o in states:
+              if o["state"]=="IDENTICAL":
+                  continue
+              dest=root/o["file"]
+              ok=False
+              for attempt in range(1,4):
+                  dest.unlink(missing_ok=True)
+                  r=run(["gdown",o["drive_id"],"-O",str(dest)])
+                  if r.returncode==0 and dest.exists():
+                      ok=True
+                      break
+                  print(f'DOWNLOAD_RETRY {o["file"]} attempt={attempt}')
+                  time.sleep(10*attempt)
+              if not ok:
+                  dest.unlink(missing_ok=True)
+                  r=run(["curl","-sS","-L","--max-time","600","-o",str(dest),f'https://drive.usercontent.google.com/download?id={o["drive_id"]}&export=download&confirm=t'])
+                  ok=r.returncode==0 and dest.exists()
+              if not ok:
+                  print(f'DOWNLOAD_FAIL {o["file"]}',file=sys.stderr)
+                  sys.exit(1)
+              data=dest.read_bytes()
+              sha=hashlib.sha256(data).hexdigest()
+              if len(data)!=o["bytes"] or sha!=o["sha256"]:
+                  print(f'SOURCE_PARITY_FAIL {o["file"]}',file=sys.stderr)
+                  sys.exit(1)
+              print(f'SOURCE_PARITY_PASS {o["file"]} bytes={len(data)}')
+          PY
+
+      - name: Append missing objects and verify R2 readback parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, sys
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])/"c14-featured4"
+          states=json.loads((root/"state.json").read_text())
+          uploaded=0
+          identical=0
+          for o in states:
+              if o["state"]=="IDENTICAL":
+                  identical+=1
+                  continue
+              src=root/o["file"]
+              r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","put",f'{os.environ["BUCKET"]}/{o["key"]}',"--file",str(src),"--content-type","video/mp4","--cache-control","public, max-age=31536000, immutable","--remote"],capture_output=True,text=True)
+              if r.returncode!=0:
+                  print(f'R2_PUT_FAIL {o["key"]} err={(r.stderr or "")[-800:]}',file=sys.stderr)
+                  sys.exit(1)
+              verify=root/("verify-"+o["file"])
+              r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","get",f'{os.environ["BUCKET"]}/{o["key"]}',"--file",str(verify),"--remote"],capture_output=True,text=True)
+              if r.returncode!=0 or not verify.exists():
+                  print(f'R2_READBACK_FAIL {o["key"]}',file=sys.stderr)
+                  sys.exit(1)
+              data=verify.read_bytes()
+              sha=hashlib.sha256(data).hexdigest()
+              verify.unlink(missing_ok=True)
+              if len(data)!=o["bytes"] or sha!=o["sha256"]:
+                  print(f'R2_PARITY_FAIL {o["key"]}',file=sys.stderr)
+                  sys.exit(1)
+              uploaded+=1
+              print(f'R2_PARITY_PASS {o["key"]} bytes={len(data)}')
+          print(f'R2_UPLOAD_COUNT={uploaded}')
+          print(f'R2_IDENTICAL_SKIP_COUNT={identical}')
+          print('R2_OVERWRITE=NO')
+          print('SHARED_85_MUTATION=0')
+          PY
+
+      - name: Verify public convergence and Range support
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import subprocess,time,sys
+          keys=[
+            "design/rotating-memory-index/memory-024-v1.mp4",
+            "design/rotating-memory-index/memory-046-v1.mp4",
+            "design/rotating-memory-index/memory-047-v1.mp4",
+            "design/rotating-memory-index/memory-071-v1.mp4",
+          ]
+          for key in keys:
+              url="https://media.padiem.net/"+key
+              headers=""
+              ok=False
+              for attempt in range(1,21):
+                  r=subprocess.run(["curl","-sS","-D","-","-o","/dev/null","--max-time","30",url],capture_output=True,text=True)
+                  headers=r.stdout.lower()
+                  code=""
+                  for line in r.stdout.splitlines():
+                      if line.startswith("HTTP/"):
+                          parts=line.split()
+                          if len(parts)>1: code=parts[1]
+                  if code=="200" and "content-type: video/mp4" in headers:
+                      ok=True
+                      break
+                  print(f'PUBLIC_WAIT {key} attempt={attempt} code={code or "NONE"}')
+                  time.sleep(15)
+              if not ok:
+                  print(f'PUBLIC_HTTP_FAIL {key}',file=sys.stderr)
+                  sys.exit(1)
+              rr=subprocess.run(["curl","-sS","-D","-","-o","/dev/null","--max-time","30","-H","Range: bytes=0-1023",url],capture_output=True,text=True)
+              rh=rr.stdout.lower()
+              rcode=""
+              for line in rr.stdout.splitlines():
+                  if line.startswith("HTTP/"):
+                      parts=line.split()
+                      if len(parts)>1: rcode=parts[1]
+              if rcode!="206" or "content-range: bytes 0-1023/" not in rh:
+                  print(f'PUBLIC_RANGE_FAIL {key} code={rcode}',file=sys.stderr)
+                  sys.exit(1)
+              if "cache-control:" not in headers or "immutable" not in headers:
+                  print(f'PUBLIC_CACHE_FAIL {key}',file=sys.stderr)
+                  sys.exit(1)
+              print(f'PUBLIC_VERIFY_PASS {key} HTTP=200 RANGE=206 CACHE=IMMUTABLE TYPE=video/mp4')
+          print('PUBLIC_FEATURED4=PASS')
+          print('SHARED_85_INCLUDED=NO')
+          print('SECRET_VALUE_OUTPUT=0')
+          PY
