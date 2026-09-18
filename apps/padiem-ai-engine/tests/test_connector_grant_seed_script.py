@@ -241,8 +241,9 @@ def test_credential_argument_is_rejected() -> None:
     assert exc.value.code == 2
 
 
-def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_execute_mode_uses_resolved_wrangler_launcher(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, object] = {}
+    resolved_npx = r"C:\\Program Files\\nodejs\\npx.cmd"
 
     class _FakeResult:
         returncode = 0
@@ -253,6 +254,7 @@ def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.
         captured["cmd"] = cmd
         return _FakeResult()
 
+    monkeypatch.setattr(_MODULE.shutil, "which", lambda name: resolved_npx if name == "npx" else None)
     monkeypatch.setattr(_MODULE.subprocess, "run", _fake_run)
     rc = _MODULE.main([
         "--action", "seed", "--execute",
@@ -263,9 +265,36 @@ def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.
     cmd = captured["cmd"]
     assert isinstance(cmd, list)
     assert cmd[:9] == [
-        "npx", "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
+        resolved_npx, "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
         "--remote", "--json", "--command",
     ]
     sql = cmd[9]
     assert isinstance(sql, str)
     assert sql.startswith("INSERT INTO padiem_engine_connector_grants")
+
+
+def test_npx_cmd_fallback_is_resolved_before_subprocess(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    resolved_npx_cmd = r"C:\\Node\\npx.cmd"
+
+    def _which(name: str) -> str | None:
+        calls.append(name)
+        return resolved_npx_cmd if name == "npx.cmd" else None
+
+    monkeypatch.setattr(_MODULE.shutil, "which", _which)
+    assert _MODULE._resolve_npx_executable() == resolved_npx_cmd
+    assert calls == ["npx", "npx.cmd"]
+
+
+def test_missing_npx_fails_before_subprocess(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed", "--execute",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
+    assert rc == 127
+    assert "npx executable not found on PATH" in capsys.readouterr().err
