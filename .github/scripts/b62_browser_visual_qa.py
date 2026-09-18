@@ -442,12 +442,26 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             timeout=5_000,
         )
         await _assert_no_horizontal_overflow(page, f"glass-{variant}-turn-{turn}")
+        combined_answer_shell = None
         if turn == 2:
+            # The shell intentionally peels for ~2–3 s, while the answer pulse is
+            # shorter. Certify the overlap first, then certify the clean hover
+            # end-state separately; requiring both simultaneously made a valid
+            # slow cinematic transition impossible.
             await page.wait_for_function(
                 """() => {
                   const rootStyle = getComputedStyle(document.documentElement);
                   const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
                   const answer = parseFloat(rootStyle.getPropertyValue('--glass-answer-reveal')) || 0;
+                  return pointer > .80 && answer > .45;
+                }""",
+                timeout=5_000,
+            )
+            combined_answer_shell = await _glass_shell_snapshot(page)
+            await page.wait_for_function(
+                """() => {
+                  const rootStyle = getComputedStyle(document.documentElement);
+                  const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
                   const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
                   const frags = [...document.querySelectorAll('.glass-shell-frag')];
                   const maxOpacity = frags.length
@@ -455,9 +469,9 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                     : 0;
                   const portal = document.querySelector('.glass-shell-portrait');
                   const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
-                  return pointer > .80 && answer > .45 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
+                  return pointer > .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
                 }""",
-                timeout=5_000,
+                timeout=8_000,
             )
         elif turn == 1:
             await page.wait_for_function(
@@ -504,8 +518,14 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 raise AssertionError(
                     f"Glass pointer+answer reveal is too weak: {active}"
                 )
-            if active_shell["pointerDriver"] <= 0 or active_shell["answerDriver"] <= 0:
-                raise AssertionError(f"Glass combined shell drivers are not both active: {active_shell}")
+            if (
+                not combined_answer_shell
+                or combined_answer_shell["pointerDriver"] <= 0.80
+                or combined_answer_shell["answerDriver"] <= 0.45
+            ):
+                raise AssertionError(
+                    f"Glass combined shell drivers were never simultaneously active: {combined_answer_shell}"
+                )
             if (
                 combined_shell_progress > 0.08
                 or active_shell["visibleFragments"] != 0
