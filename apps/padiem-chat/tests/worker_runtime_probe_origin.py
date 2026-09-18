@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -43,6 +44,17 @@ class Handler(BaseHTTPRequestHandler):
             payload = b"normal-ok"
             self._headers(len(payload))
             self._write(payload)
+            return
+
+        if self.path == "/gzip-json":
+            payload = b'{"files":[]}'
+            encoded = gzip.compress(payload)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Encoding", "gzip")
+            self.send_header("Content-Length", str(len(encoded)))
+            self.end_headers()
+            self._write(encoded)
             return
 
         if self.path == "/chunks":
