@@ -112,6 +112,18 @@ async def _glass_shell_snapshot(page: Page) -> dict[str, Any]:
     )
 
 
+async def _move_into_glass_portrait(page: Page, *, x_fraction: float = 0.68, y_fraction: float = 0.44) -> None:
+    rect = await page.evaluate(
+        "() => window.__padiemGlassShell && window.__padiemGlassShell.imageRect && window.__padiemGlassShell.imageRect()"
+    )
+    if not rect:
+        raise AssertionError("Glass portrait image rect unavailable")
+    await page.mouse.move(
+        rect["left"] + rect["width"] * x_fraction,
+        rect["top"] + rect["height"] * y_fraction,
+    )
+
+
 async def _glass_motion_snapshot(page: Page) -> dict[str, Any]:
     return await page.evaluate(
         """
@@ -361,7 +373,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     )
 
     home_before_pointer = await _glass_motion_snapshot(page)
-    await page.mouse.move(1180, 180)
+    await _move_into_glass_portrait(page)
     await page.wait_for_function(
         """() => {
           const rootStyle = getComputedStyle(document.documentElement);
@@ -379,8 +391,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     )
     home_after_pointer = await _glass_motion_snapshot(page)
     home_shell_pointer = await _glass_shell_snapshot(page)
-    if home_after_pointer["pointerX"] in {"", "0px", "0.0px"} and home_after_pointer["pointerY"] in {"", "0px", "0.0px"}:
-        raise AssertionError(f"Padiem Glass home portrait lost cinematic pointer response: {home_after_pointer}")
+    if home_after_pointer["pointerX"] not in {"", "0px", "0.0px"} or home_after_pointer["pointerY"] not in {"", "0px", "0.0px"}:
+        raise AssertionError(f"Padiem Glass hover must not parallax the portrait: {home_after_pointer}")
     if (
         home_shell_pointer["pointerDriver"] < 0.80
         or home_shell_pointer["progress"] > 0.08
@@ -411,7 +423,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     for turn in range(1, 6):
         # Turn 1 = answer only. Turn 2 = pointer + answer together.
         if turn == 2:
-            await page.mouse.move(1180, 180)
+            await _move_into_glass_portrait(page)
             await page.wait_for_timeout(120)
         else:
             await page.mouse.move(70, 80)
@@ -551,7 +563,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # Pointer-only reading interaction remains cinematic after the answer has
     # fully settled.
     reading_rest = await _glass_motion_snapshot(page)
-    await page.mouse.move(1180, 180)
+    await _move_into_glass_portrait(page)
     await page.wait_for_function(
         """() => {
           const rootStyle = getComputedStyle(document.documentElement);
@@ -899,7 +911,7 @@ async def main() -> None:
                 timeout=30_000,
             )
             await reduced_page.locator(".glass-shell-portrait").wait_for(state="attached")
-            await reduced_page.mouse.move(1180, 180)
+            await _move_into_glass_portrait(reduced_page)
             await reduced_page.wait_for_timeout(160)
             reduced_auto = await _glass_shell_snapshot(reduced_page)
             if (
