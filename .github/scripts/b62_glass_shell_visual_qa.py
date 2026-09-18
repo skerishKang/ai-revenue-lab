@@ -209,7 +209,19 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
 
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition.png"), full_page=False)
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
-    await page.wait_for_timeout(650)
+    elapsed_before_mid = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    remaining_to_mid = max(0, int(900 - elapsed_before_mid))
+    if remaining_to_mid:
+        await page.wait_for_timeout(remaining_to_mid)
+    mid_elapsed_ms = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    if not 800 <= mid_elapsed_ms <= 1_300:
+        raise AssertionError(
+            f"{name}: mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
+        )
     right_transition = await _shell_state(page)
     if right_transition["ptr"] < 0.99 or right_transition["target"] > 0.01:
         raise AssertionError(f"{name}: right-edge hover changed the binary peel target: {right_transition}")
@@ -359,6 +371,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     return {
         "idle": idle,
         "pointer_only": pointer_only,
+        "mid_elapsed_ms": mid_elapsed_ms,
         "peel_elapsed_ms": peel_elapsed_ms,
         "recover_elapsed_ms": recover_elapsed_ms,
         "answer_only": answer_only,
