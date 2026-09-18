@@ -202,10 +202,10 @@ def test_glass_shell_layer_script_is_loaded() -> None:
 
 
 def test_glass_shell_ports_source_fragment_assembly() -> None:
-    """The plate-assembly math is the source loader's, not an invented overlay."""
-    # original clipShapes verbatim
-    assert 'polygon(8% 0,100% 7%,91% 100%,0 88%)' in SHELL_JS
-    assert 'polygon(6% 0,100% 11%,93% 92%,0 100%)' in SHELL_JS
+    """The shell keeps the source fragment idea but uses thin registered ribbons."""
+    assert 'FRAG_COUNT=20, COLS=1, ROWS=20' in SHELL_JS
+    assert 'polygon(0 10%,100% 0,100% 90%,0 100%)' in SHELL_JS
+    assert 'polygon(0 6%,100% 0,100% 94%,0 100%)' in SHELL_JS
     # timed staggered dissolve stays frame-rate independent
     assert 'requestAnimationFrame' in SHELL_JS
     assert 'var order=((i*7)%FRAG_COUNT)/(FRAG_COUNT-1);' in SHELL_JS
@@ -230,7 +230,7 @@ def test_glass_shell_auto_is_reverse_pointer_reveal_not_partial_assembly() -> No
     assert 'RATE_UP=.024' in SHELL_JS
     assert 'function render(p,peeling)' in SHELL_JS
     assert 'var phase=peeling?1-p:p;' in SHELL_JS
-    assert 'var portal=ease(clamp((p-.66)/.34,0,1));' in SHELL_JS
+    assert 'var portal=ease(clamp(p,0,1));' in SHELL_JS
     assert 'var x=d.fx, y=d.fy;' in SHELL_JS
     assert 'rotate(0deg) scale(1)' in SHELL_JS
     assert 'var drift=' not in SHELL_JS

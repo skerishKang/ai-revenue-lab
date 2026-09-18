@@ -324,10 +324,23 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         )
 
     attachment_button = page.locator("#attachmentButton")
+    attachment_rest_background = await attachment_button.evaluate("el => getComputedStyle(el).backgroundColor")
     await attachment_button.hover()
     attachment_hover_color = await attachment_button.evaluate("el => getComputedStyle(el).color")
+    attachment_hover_background = await attachment_button.evaluate("el => getComputedStyle(el).backgroundColor")
+    attachment_hover_border = await attachment_button.evaluate("el => getComputedStyle(el).borderTopWidth")
+    attachment_hover_shadow = await attachment_button.evaluate("el => getComputedStyle(el).boxShadow")
     if attachment_hover_color != "rgb(23, 33, 42)":
         raise AssertionError(f"Glass file hover lost dark foreground contrast: {attachment_hover_color}")
+    if attachment_hover_background == attachment_rest_background:
+        raise AssertionError(
+            f"Glass file hover is not visually distinct from rest: {attachment_hover_background}"
+        )
+    if attachment_hover_border != "1px" or attachment_hover_shadow == "none":
+        raise AssertionError(
+            "Glass file hover must expose a bordered elevated pill: "
+            f"border={attachment_hover_border}, shadow={attachment_hover_shadow}"
+        )
     attachment_hover_name = f"desktop-glass-{variant}-attachment-hover.png"
     await page.screenshot(path=str(OUT_DIR / attachment_hover_name), full_page=True)
     await page.mouse.move(70, 80)

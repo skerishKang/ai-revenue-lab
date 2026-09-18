@@ -27,6 +27,10 @@ async def _shell_state(page: Page) -> dict[str, Any]:
           const portal = document.querySelector('.glass-shell-portrait');
           const portalStyle = portal ? getComputedStyle(portal) : null;
           const shell = window.__padiemGlassShell || {};
+          const imageRect = shell.imageRect ? shell.imageRect() : null;
+          const fragRects = frags.map((f) => f.getBoundingClientRect());
+          const visibleRects = fragRects.filter((_, i) => opacities[i] > 0.08);
+          const imageArea = imageRect ? imageRect.width * imageRect.height : 0;
           return {
             theme: root.getAttribute('data-theme'),
             variant: root.getAttribute('data-glass-variant'),
@@ -42,6 +46,12 @@ async def _shell_state(page: Page) -> dict[str, Any]:
             fragCount: frags.length,
             fragVisible: opacities.filter((o) => o > 0.08).length,
             fragMaxOpacity: opacities.length ? Math.max(...opacities) : 0,
+            fragMaxHeightRatio: imageRect && visibleRects.length
+              ? Math.max(...visibleRects.map((r) => r.height / imageRect.height))
+              : 0,
+            fragMaxAreaRatio: imageArea > 0 && visibleRects.length
+              ? Math.max(...visibleRects.map((r) => (r.width * r.height) / imageArea))
+              : 0,
             portalPresent: Boolean(portal),
             portalOpacity: portalStyle ? parseFloat(portalStyle.opacity) || 0 : 0,
             portalImage: portalStyle ? portalStyle.backgroundImage : '',
@@ -189,12 +199,16 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
     if left_transition["progress"] < 0.40:
         raise AssertionError(f"{name}: shell teardown is too fast at 1x: {left_transition}")
+    if left_transition["portalOpacity"] < 0.55:
+        raise AssertionError(f"{name}: shell portal faded too early at 260ms: {left_transition}")
+    if left_transition["fragMaxHeightRatio"] > 0.075 or left_transition["fragMaxAreaRatio"] > 0.075:
+        raise AssertionError(f"{name}: transition contains oversized mosaic fragments: {left_transition}")
     if left_transition["pointerX"] not in {"", "0px", "0.0px"} or left_transition["pointerY"] not in {"", "0px", "0.0px"}:
         raise AssertionError(f"{name}: hover must not parallax the portrait: {left_transition}")
 
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition.png"), full_page=False)
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
-    await page.wait_for_timeout(260)
+    await page.wait_for_timeout(650)
     right_transition = await _shell_state(page)
     if right_transition["ptr"] < 0.99 or right_transition["target"] > 0.01:
         raise AssertionError(f"{name}: right-edge hover changed the binary peel target: {right_transition}")
@@ -202,6 +216,13 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(
             f"{name}: horizontal motion scrubbed/reversed time progress: left={left_transition}, right={right_transition}"
         )
+    if right_transition["progress"] >= left_transition["progress"] - 0.10:
+        raise AssertionError(
+            f"{name}: timed peel did not continue while moving horizontally: left={left_transition}, right={right_transition}"
+        )
+    if right_transition["fragMaxHeightRatio"] > 0.075 or right_transition["fragMaxAreaRatio"] > 0.075:
+        raise AssertionError(f"{name}: mid transition contains oversized mosaic fragments: {right_transition}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-mid.png"), full_page=False)
 
     await _wait_progress_below(page, 0.05, f"{name}-pointer")
     pointer_only = await _shell_state(page)
@@ -239,6 +260,10 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(f"{name}: right-edge reverse sweep did not latch binary peel target: {reverse_right}")
     if reverse_right["progress"] < 0.40:
         raise AssertionError(f"{name}: reverse-direction teardown is too fast at 1x: {reverse_right}")
+    if reverse_right["portalOpacity"] < 0.55:
+        raise AssertionError(f"{name}: reverse-direction shell portal faded too early at 260ms: {reverse_right}")
+    if reverse_right["fragMaxHeightRatio"] > 0.075 or reverse_right["fragMaxAreaRatio"] > 0.075:
+        raise AssertionError(f"{name}: reverse transition contains oversized mosaic fragments: {reverse_right}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-reverse.png"), full_page=False)
 
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)

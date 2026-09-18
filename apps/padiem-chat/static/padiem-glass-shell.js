@@ -1,9 +1,9 @@
 /* Padiem Glass shell layer.
  *
  * Port of the Drive 원본 "Identity Fragment Loader V2" (버전2/최종본.html)
- * mechanics onto the chat portrait: 20 clip-path plate fragments of the shell
- * portrait (same adopted face + transplanted mask asset) scatter, assemble
- * over the CLEAN portrait, then dissolve into the completed shell portrait.
+ * mechanics onto the chat portrait, adapted to the reviewed product contract:
+ * 20 thin, pixel-registered shell ribbons fade in place over the CLEAN portrait.
+ * There is no scatter ring, large mosaic tile, pointer scrub, or face duplication.
  *
  * Drivers come from theme.js CSS variables: --glass-pointer-reveal and
  * --glass-answer-reveal. Mode/speed come from data-glass-mask /
@@ -13,13 +13,13 @@
 (function(){
   "use strict";
 
-  var FRAG_COUNT=20, COLS=4, ROWS=5; /* source loader: 20 fragments; portrait grid 4x5 */
+  var FRAG_COUNT=20, COLS=1, ROWS=20; /* 20 thin registered shell ribbons */
   var CLIP_SHAPES=[
-    "polygon(8% 0,100% 7%,91% 100%,0 88%)",
-    "polygon(0 11%,88% 0,100% 91%,13% 100%)",
-    "polygon(13% 0,100% 16%,86% 100%,0 91%)",
-    "polygon(0 4%,95% 0,100% 84%,8% 100%)",
-    "polygon(6% 0,100% 11%,93% 92%,0 100%)"
+    "polygon(0 10%,100% 0,100% 90%,0 100%)",
+    "polygon(0 0,100% 9%,100% 100%,0 91%)",
+    "polygon(0 7%,100% 2%,100% 93%,0 98%)",
+    "polygon(0 2%,100% 8%,100% 98%,0 92%)",
+    "polygon(0 6%,100% 0,100% 94%,0 100%)"
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
@@ -216,16 +216,16 @@
      * time-driven dissolve of ALIGNED portrait tiles — never a pointer-scrubbed
      * scatter ring. This prevents duplicated/displaced eyes and face chunks. */
     var phase=peeling?1-p:p; /* 0→1 for either direction */
-    var portal=ease(clamp((p-.66)/.34,0,1));
+    var portal=ease(clamp(p,0,1));
 
     for(var i=0;i<FRAG_COUNT;i++){
       var f=frags[i]; if(!f.d) continue;
       var d=f.d;
       var order=((i*7)%FRAG_COUNT)/(FRAG_COUNT-1);
-      var delay=order*.18;
-      var appear=ease(clamp((phase-delay)/.16,0,1));
-      var disappear=1-ease(clamp((phase-(.34+delay))/.48,0,1));
-      var fragOpacity=.42*appear*disappear;
+      var delay=order*.16;
+      var appear=ease(clamp((phase-delay)/.20,0,1));
+      var disappear=1-ease(clamp((phase-(.50+delay))/.28,0,1));
+      var fragOpacity=.24*appear*disappear;
 
       /* Keep every tile exactly registered over the same portrait pixels.
        * The cinematic effect comes from staggered opacity only: no scatter,
