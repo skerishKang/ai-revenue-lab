@@ -42,6 +42,7 @@ from app.cloudflare_transport import (
 from app.connector_bindings import (
     build_tool_binding_resolver,
     CalendarGrant,
+    DRIVE_REFERENCE_APP_ID,
     DriveGrant,
     GmailGrant,
     SlackGrant,
@@ -81,6 +82,7 @@ from app.service import EngineService, ServiceContractError, ServiceResponse
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
+    EngineToolProjectionError,
     TOOL_CANCEL_PATH,
     TOOL_EXECUTE_PATH,
     TOOL_RESUME_PATH,
@@ -201,7 +203,19 @@ async def _tool_binding_resolver_for_env(env: Any):
         and slack_port is None
         and calendar_port is None
     ):
-        return None
+        # Preserve a bounded Drive-specific activation diagnostic instead of
+        # collapsing the canonical Drive app into generic
+        # tool_runtime_unavailable. This resolver performs no provider call.
+        def no_provider_resolver(app_id: str):
+            if app_id == DRIVE_REFERENCE_APP_ID:
+                raise EngineToolProjectionError(
+                    "drive_port_unavailable",
+                    "The Engine Drive provider port is not provisioned.",
+                    status_code=503,
+                )
+            return None
+
+        return no_provider_resolver
     try:
         (
             gmail_grants,
@@ -223,15 +237,7 @@ async def _tool_binding_resolver_for_env(env: Any):
             raise grant_error
 
         return unavailable
-    if (
-        not gmail_grants
-        and not drive_grants
-        and not telegram_grants
-        and not slack_grants
-        and not calendar_grants
-    ):
-        return None
-    return build_tool_binding_resolver(
+    resolver = build_tool_binding_resolver(
         gmail_port=gmail_port,
         grants=gmail_grants or None,
         drive_port=drive_port,
@@ -243,6 +249,31 @@ async def _tool_binding_resolver_for_env(env: Any):
         calendar_port=calendar_port,
         calendar_grants=calendar_grants or None,
     )
+
+    def production_resolver(app_id: str):
+        # The canonical Drive app has enough deployment-owned identity to
+        # distinguish activation stages without exposing any binding value,
+        # grant reference, actor reference, OAuth material, or user data.
+        # An unregistered-tool probe can therefore prove composition with
+        # zero provider calls.
+        if app_id == DRIVE_REFERENCE_APP_ID:
+            if drive_port is None:
+                raise EngineToolProjectionError(
+                    "drive_port_unavailable",
+                    "The Engine Drive provider port is not provisioned.",
+                    status_code=503,
+                )
+            if not drive_grants or DRIVE_REFERENCE_APP_ID not in drive_grants:
+                raise EngineToolProjectionError(
+                    "drive_grant_unavailable",
+                    "The Engine Drive capability grant is not provisioned.",
+                    status_code=503,
+                )
+        if resolver is None:
+            return None
+        return resolver(app_id)
+
+    return production_resolver
 
 
 def _gmail_port_for_env(env: Any) -> HttpxGmailReadPort | None:
