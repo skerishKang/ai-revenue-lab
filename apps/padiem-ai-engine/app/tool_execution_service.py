@@ -100,6 +100,7 @@ _TOOL_ERROR_STATUS: dict[str, int] = {
     "google_drive_access_lease_mismatch": 503,
     "google_drive_provider_unavailable": 503,
     "google_drive_provider_credential_rejected": 503,
+    "google_drive_provider_boundary_failed": 503,
     "google_drive_response_contract_mismatch": 502,
 }
 
