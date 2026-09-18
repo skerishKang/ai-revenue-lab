@@ -248,14 +248,28 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     if answer_only["portalOpacity"] < 0.35:
         raise AssertionError(f"{name}: reading shell lost its reduced-prominence portal: {answer_only}")
 
-    # Pointer + answer: pointer remains the sole shell-peel authority even
-    # while answer activity is present.
+    # Pointer + answer: the answer pulse is shorter than the deliberate
+    # 2–3 s peel. Prove the drivers overlap first, then prove pointer hover
+    # alone carries the shell all the way to the clean end-state.
     await _hover_portrait(page)
     await _send_answer_turn(page, f"{variant}-combined")
+    await page.wait_for_function(
+        """() => {
+          const style = getComputedStyle(document.documentElement);
+          const pointer = parseFloat(style.getPropertyValue('--glass-pointer-reveal')) || 0;
+          const answer = parseFloat(style.getPropertyValue('--glass-answer-reveal')) || 0;
+          return pointer > .8 && answer > .05;
+        }""",
+        timeout=5_000,
+    )
+    combined_overlap = await _shell_state(page)
+    if combined_overlap["ptr"] <= 0.8 or combined_overlap["ans"] <= 0.05:
+        raise AssertionError(f"{name}: combined drivers never overlapped: {combined_overlap}")
+
     await _wait_progress_below(page, 0.05, f"{name}-combined")
     combined = await _shell_state(page)
-    if combined["ptr"] <= 0.8 or combined["ans"] <= 0.05:
-        raise AssertionError(f"{name}: combined drivers are not both active: {combined}")
+    if combined["ptr"] <= 0.8:
+        raise AssertionError(f"{name}: pointer did not remain authoritative through clean settle: {combined}")
     if combined["progress"] > 0.08:
         raise AssertionError(f"{name}: pointer did not fully peel shell during answer activity: {combined}")
     if combined["fragVisible"] > 0 or combined["fragMaxOpacity"] > 0.05 or combined["portalOpacity"] > 0.05:
@@ -277,6 +291,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         "idle": idle,
         "pointer_only": pointer_only,
         "answer_only": answer_only,
+        "combined_overlap": combined_overlap,
         "combined": combined,
         "recovered": recovered,
         "final_recovered": final_recovered,
