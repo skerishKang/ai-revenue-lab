@@ -57,6 +57,8 @@ jobs:
               "PRODUCT_REQUESTS=0",
               "DRIVE_PROVIDER_CALLS=0",
               "PRODUCTION_MUTATION=0",
+              "/client/v4/graphql",
+              "WORKERS_ANALYTICS_RAW_OUTPUT=0",
           ]
           for token in required:
               if token not in text:
@@ -304,3 +306,207 @@ jobs:
           echo "ENGINE_DEPLOY=0"
           echo "SECRET_MUTATION=0"
           echo "PRODUCTION_MUTATION=0"
+
+      - name: Query retained Workers invocation metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/drive-runtime-workers-analytics-query.json"
+          response="${RUNNER_TEMP}/drive-runtime-workers-analytics-response.json"
+
+          python - "${payload}" "${CLOUDFLARE_ACCOUNT_ID}" "${CANARY_FROM_MS}" "${CANARY_TO_MS}" <<'PY'
+          import datetime as dt
+          import json
+          import sys
+
+          out, account, start_ms, end_ms = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+          iso = lambda ms: dt.datetime.fromtimestamp(
+              ms / 1000, tz=dt.timezone.utc
+          ).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+          query = """
+          query DriveRuntimeCanaryWorkers(
+            $accountTag: string,
+            $datetimeStart: string,
+            $datetimeEnd: string
+          ) {
+            viewer {
+              accounts(filter: {accountTag: $accountTag}) {
+                engine: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-ai-engine",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+                oauth: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-google-oauth-state",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+              }
+            }
+          }
+          """
+          with open(out, "w", encoding="utf-8") as fh:
+              json.dump(
+                  {
+                      "query": query,
+                      "variables": {
+                          "accountTag": account,
+                          "datetimeStart": iso(start_ms),
+                          "datetimeEnd": iso(end_ms),
+                      },
+                  },
+                  fh,
+              )
+          PY
+
+          http="$(curl -sS -o "${response}" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/graphql" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${payload}")"
+          echo "WORKERS_ANALYTICS_HTTP=${http}"
+
+          python - "${response}" <<'PY'
+          import datetime as dt
+          import json
+          import sys
+
+          try:
+              payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          except Exception:
+              print("WORKERS_ANALYTICS=UNAVAILABLE")
+              print("WORKERS_ANALYTICS_PARSE=FAIL")
+              raise SystemExit(0)
+
+          errors = payload.get("errors")
+          accounts = payload.get("data", {}).get("viewer", {}).get("accounts", [])
+          if errors or not isinstance(accounts, list) or len(accounts) != 1:
+              print("WORKERS_ANALYTICS=UNAVAILABLE")
+              print("WORKERS_ANALYTICS_QUERY=DENIED_OR_INVALID")
+              raise SystemExit(0)
+
+          account = accounts[0]
+          if not isinstance(account, dict):
+              print("WORKERS_ANALYTICS=UNAVAILABLE")
+              raise SystemExit(0)
+
+          print("WORKERS_ANALYTICS=AVAILABLE")
+
+          def normalize(rows):
+              result = []
+              if not isinstance(rows, list):
+                  return result
+              for row in rows:
+                  if not isinstance(row, dict):
+                      continue
+                  dimensions = row.get("dimensions")
+                  sums = row.get("sum")
+                  if not isinstance(dimensions, dict) or not isinstance(sums, dict):
+                      continue
+                  when = dimensions.get("datetime")
+                  status = dimensions.get("status")
+                  requests = sums.get("requests")
+                  errors = sums.get("errors")
+                  subrequests = sums.get("subrequests")
+                  if not isinstance(when, str) or not isinstance(requests, (int, float)):
+                      continue
+                  result.append(
+                      {
+                          "when": when,
+                          "status": status if isinstance(status, str) else "unknown",
+                          "requests": int(requests),
+                          "errors": int(errors) if isinstance(errors, (int, float)) else 0,
+                          "subrequests": int(subrequests) if isinstance(subrequests, (int, float)) else 0,
+                      }
+                  )
+              return result
+
+          series = {
+              "ENGINE": normalize(account.get("engine")),
+              "OAUTH": normalize(account.get("oauth")),
+          }
+
+          for label, rows in series.items():
+              print(f"{label}_ANALYTICS_REQUESTS={sum(row['requests'] for row in rows)}")
+              print(f"{label}_ANALYTICS_ERRORS={sum(row['errors'] for row in rows)}")
+              print(f"{label}_ANALYTICS_SUBREQUESTS={sum(row['subrequests'] for row in rows)}")
+              active = sorted({row["when"] for row in rows if row["requests"] > 0})
+              print(f"{label}_ACTIVE_SECOND_COUNT={len(active)}")
+              print(f"{label}_ACTIVE_SECONDS={','.join(active) if active else 'NONE'}")
+              outcomes = sorted({row["status"] for row in rows})
+              print(f"{label}_WORKER_OUTCOMES={','.join(outcomes) if outcomes else 'NONE'}")
+
+          def epoch_second(value):
+              try:
+                  return int(dt.datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp())
+              except Exception:
+                  return None
+
+          engine_times = {
+              epoch_second(row["when"])
+              for row in series["ENGINE"]
+              if row["requests"] > 0
+          }
+          oauth_times = {
+              epoch_second(row["when"])
+              for row in series["OAUTH"]
+              if row["requests"] > 0
+          }
+          engine_times.discard(None)
+          oauth_times.discard(None)
+
+          canary_start = int(
+              dt.datetime.fromisoformat("2026-09-17T17:11:06+00:00").timestamp()
+          )
+          canary_end = int(
+              dt.datetime.fromisoformat("2026-09-17T17:11:10+00:00").timestamp()
+          )
+          canary_engine = sorted(
+              second for second in engine_times
+              if canary_start - 1 <= second <= canary_end + 1
+          )
+          near = sorted(
+              second
+              for second in canary_engine
+              if any(abs(second - oauth) <= 2 for oauth in oauth_times)
+          )
+
+          def render(values):
+              if not values:
+                  return "NONE"
+              return ",".join(
+                  dt.datetime.fromtimestamp(value, tz=dt.timezone.utc)
+                  .isoformat(timespec="seconds")
+                  .replace("+00:00", "Z")
+                  for value in values
+              )
+
+          print(f"CANARY_ENGINE_ACTIVE_SECOND_COUNT={len(canary_engine)}")
+          print(f"CANARY_ENGINE_ACTIVE_SECONDS={render(canary_engine)}")
+          print(f"CANARY_ENGINE_OAUTH_NEAR_SECOND_COUNT={len(near)}")
+          print(f"CANARY_ENGINE_OAUTH_NEAR_SECONDS={render(near)}")
+          if canary_engine and not near:
+              print("ANALYTICS_RUNTIME_BOUNDARY=ENGINE_ACTIVE_WITHOUT_NEAR_OAUTH")
+          elif canary_engine and near:
+              print("ANALYTICS_RUNTIME_BOUNDARY=ENGINE_AND_OAUTH_TEMPORALLY_NEAR")
+          else:
+              print("ANALYTICS_RUNTIME_BOUNDARY=CANARY_ENGINE_SECOND_NOT_ISOLATED")
+
+          print("WORKERS_ANALYTICS_RAW_OUTPUT=0")
+          print("RAW_LOG_OUTPUT=0")
+          print("RAW_ERROR_OUTPUT=0")
+          print("PROMPT_OUTPUT=0")
+          print("RESPONSE_BODY_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          print("PRODUCT_REQUESTS=0")
+          print("DRIVE_PROVIDER_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
