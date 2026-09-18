@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CANARY_FROM_MS: "1789665030000"
-  CANARY_TO_MS: "1789665090000"
+  CANARY_FROM_MS: "1789734830000"
+  CANARY_TO_MS: "1789734850000"
 
 jobs:
   source-contract:
@@ -44,8 +44,8 @@ jobs:
           text = p.read_text(encoding="utf-8")
           required = [
               "/workers/observability/telemetry/query",
-              "1789665030000",
-              "1789665090000",
+              "1789734830000",
+              "1789734850000",
               "padiem-ai-engine",
               "padiem-google-oauth-state",
               "/internal/v1/tools/execute",
@@ -463,10 +463,10 @@ jobs:
           oauth_times.discard(None)
 
           canary_start = int(
-              dt.datetime.fromisoformat("2026-09-17T17:11:06+00:00").timestamp()
+              dt.datetime.fromisoformat("2026-09-18T12:33:56+00:00").timestamp()
           )
           canary_end = int(
-              dt.datetime.fromisoformat("2026-09-17T17:11:10+00:00").timestamp()
+              dt.datetime.fromisoformat("2026-09-18T12:34:00+00:00").timestamp()
           )
           canary_engine = sorted(
               second for second in engine_times
