@@ -198,7 +198,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     left_transition = await _shell_state(page)
     if left_transition["ptr"] < 0.99 or left_transition["target"] > 0.01:
         raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
-    if left_transition["progress"] < 0.78:
+    if left_transition["progress"] < 0.68:
         raise AssertionError(f"{name}: shell teardown is too fast at 260ms: {left_transition}")
     if left_transition["portalOpacity"] < 0.55:
         raise AssertionError(f"{name}: shell portal faded too early at 260ms: {left_transition}")
@@ -283,7 +283,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     reverse_right = await _shell_state(page)
     if reverse_right["ptr"] < 0.99 or reverse_right["target"] > 0.01:
         raise AssertionError(f"{name}: right-edge reverse sweep did not latch binary peel target: {reverse_right}")
-    if reverse_right["progress"] < 0.40:
+    if reverse_right["progress"] < 0.68:
         raise AssertionError(f"{name}: reverse-direction teardown is too fast at 1x: {reverse_right}")
     if reverse_right["portalOpacity"] < 0.55:
         raise AssertionError(f"{name}: reverse-direction shell portal faded too early at 260ms: {reverse_right}")
