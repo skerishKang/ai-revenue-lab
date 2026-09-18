@@ -82,3 +82,8 @@ def test_engine_production_uses_worker_native_tool_runtime_validation() -> None:
         not any(str(item).startswith(prefix) for prefix in forbidden)
         for item in dependencies
     )
+    dev_dependencies = pyproject["project"]["optional-dependencies"]["dev"]
+    assert all(
+        not any(str(item).startswith(prefix) for prefix in forbidden)
+        for item in dev_dependencies
+    )
