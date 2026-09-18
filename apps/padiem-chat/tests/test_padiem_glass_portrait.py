@@ -96,7 +96,7 @@ def test_glass_mobile_keeps_chat_primary_and_art_subordinate() -> None:
     assert 'opacity: .16' in PORTRAIT_CSS
 
 
-def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_activity() -> None:
+def test_glass_portrait_mask_combines_home_travel_pointer_and_live_answer_activity() -> None:
     assert 'function pingPong(value)' in THEME_JS
     assert 'phase<=1?phase:2-phase' in THEME_JS
     assert 'list.children.length' in THEME_JS
@@ -106,7 +106,7 @@ def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_acti
     assert 'messageTravel=messageCount*.28' in THEME_JS
     assert 'var travel=messageTravel+overflowTravel+scrollTravel' in THEME_JS
     assert 'baseReveal=smoothstep(pingPong(travel))' in THEME_JS
-    assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
+    assert 'glassPointerReveal=inside?1:0;' in THEME_JS
     assert 'function glassAnswerReveal(now)' in THEME_JS
     assert 'noteGlassAnswerActivity()' in THEME_JS
     assert '*(1-pointerReveal*.94)' in THEME_JS
@@ -118,15 +118,21 @@ def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_acti
     assert 'requestAnimationFrame' in THEME_JS
 
 
-def test_glass_pointer_is_subtle_and_also_drives_reveal() -> None:
+def test_glass_pointer_is_binary_hover_state_not_horizontal_scrubber_or_parallax() -> None:
     assert 'window.addEventListener("pointermove",updateGlassPointer' in THEME_JS
-    assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
-    assert '(nx*8*glassPointerReveal)' in THEME_JS
-    assert '(ny*5*glassPointerReveal)' in THEME_JS
-    assert '--glass-pointer-x' in THEME_JS
-    assert '--glass-pointer-y' in THEME_JS
-    assert 'calc(var(--glass-art-x) + var(--glass-pointer-x))' in PORTRAIT_CSS
-    assert 'calc(var(--glass-art-y) + var(--glass-pointer-y))' in PORTRAIT_CSS
+    assert 'shellApi&&shellApi.imageRect?shellApi.imageRect():null' in THEME_JS
+    assert 'event.clientX>=rect.left&&event.clientX<=rect.right' in THEME_JS
+    assert 'event.clientY>=rect.top&&event.clientY<=rect.bottom' in THEME_JS
+    assert 'glassPointerReveal=inside?1:0;' in THEME_JS
+    assert 'hoverRamp' not in THEME_JS
+    assert 'smoothstep(proximity)' not in THEME_JS
+    assert 'root.style.setProperty("--glass-pointer-x","0px")' in THEME_JS
+    assert 'root.style.setProperty("--glass-pointer-y","0px")' in THEME_JS
+    assert '(nx*8*glassPointerReveal)' not in THEME_JS
+    assert '(ny*5*glassPointerReveal)' not in THEME_JS
+    assert 'var motionReveal=1' in THEME_JS
+    assert '(-9*motionReveal)' in THEME_JS
+    assert 'travelY*motionReveal' in THEME_JS
 
 
 def test_glass_reduced_motion_freezes_to_readable_reveal() -> None:
@@ -217,9 +223,13 @@ def test_glass_shell_auto_is_reverse_pointer_reveal_not_partial_assembly() -> No
     assert 'Math.max(.62*p,.8*a)' not in SHELL_JS
     assert 'var progress=1, raf=0, lastT=0;' in SHELL_JS
     assert 'progress=maskMode()==="off"?0:1;' in SHELL_JS
-    assert 'RATE_DOWN=.09' in SHELL_JS
+    assert 'RATE_DOWN=.018' in SHELL_JS
+    assert 'RATE_UP=.024' in SHELL_JS
     assert 'function render(p,peeling)' in SHELL_JS
-    assert 'fragOpacity*=peelWindow*.18;' in SHELL_JS
+    assert 'var phase=peeling?1-p:p;' in SHELL_JS
+    assert 'var portal=ease(clamp((p-.66)/.34,0,1));' in SHELL_JS
+    assert 'var drift=(1-Math.abs(p-.5)*2)*6;' in SHELL_JS
+    assert 'd.sx+(d.fx-d.sx)' not in SHELL_JS
     assert 'var peeling=t<progress;' in SHELL_JS
     assert '--glass-pointer-reveal' in THEME_JS
 
@@ -272,10 +282,11 @@ def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
     assert "window.innerWidth-fieldW" not in SHELL_JS
     assert "--glass-shell-progress" in SHELL_JS
     assert 'document.querySelector(".glass-shell-field")' in THEME_JS
-    assert "rect&&rect.width>0?rect.left" in THEME_JS
-    assert "verticalActive" in THEME_JS
-    assert "(event.clientX-portraitLeft)/hoverRamp" in THEME_JS
-    assert "portraitLeft-120" not in THEME_JS
+    assert "shellApi&&shellApi.imageRect?shellApi.imageRect():null" in THEME_JS
+    assert "event.clientX>=rect.left&&event.clientX<=rect.right" in THEME_JS
+    assert "hoverRamp" not in THEME_JS
+    assert "imageRect:function()" in SHELL_JS
+    assert "var left=rect.left+imgL*scaleX;" in SHELL_JS
 
 
 def test_glass_shell_background_position_parser_keeps_fragments_on_portrait_canvas() -> None:
