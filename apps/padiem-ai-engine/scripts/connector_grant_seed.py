@@ -1,13 +1,15 @@
 """Connector grant seed/revoke/list script for Engine D1 references only.
 
-Supports the reviewed Gmail READ grant and Google Drive READ capability grant.
-Credential material is never accepted as an argument and never read here.
+Supports the reviewed Gmail READ grant plus Google Drive and Telegram READ
+capability grants. Credential material is never accepted as an argument and
+never read here.
 
-Both Gmail and Drive seeding are fail-closed: the caller must provide the
-canonical OAuth ``binding_ref`` and ``actor_ref`` produced by the trusted
-connection flow. Gmail accepts only the reviewed readonly scope; Drive accepts
-only the reviewed ``read`` capability. No mutation/write capability can be
-seeded and no synthetic/default OAuth refs are accepted.
+All connector seeding is fail-closed: the caller must provide trusted
+``binding_ref`` and ``actor_ref`` values produced by the connector's
+server-side authority flow. Gmail accepts only the reviewed readonly scope;
+Drive and Telegram accept only the reviewed ``read`` capability. No
+mutation/write capability can be seeded and no synthetic/default refs are
+accepted.
 
 Default run (no ``--execute``) prints SQL for review. ``--execute`` is a
 separate Production mutation action and remains outside source/CI work.
@@ -36,8 +38,11 @@ from app.connector_bindings import (
     GMAIL_CONNECTOR_ID,
     GMAIL_MAIL_READER_AGENT_ID,
     GMAIL_REFERENCE_APP_ID,
+    TELEGRAM_AGENT_ID,
+    TELEGRAM_REFERENCE_APP_ID,
 )
 from padiem_ai_core.drive_capability import DRIVE_CONNECTOR_ID, DriveCapability
+from padiem_ai_core.telegram_capability import TELEGRAM_CONNECTOR_ID, TelegramCapability
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _AGENT_ID_RE = re.compile(
@@ -48,22 +53,40 @@ _CORE_GMAIL_READONLY_SCOPE = "gmail.readonly"
 _PROVIDER_GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 _ALLOWED_GMAIL_SCOPES = (_CORE_GMAIL_READONLY_SCOPE, _PROVIDER_GMAIL_READONLY_SCOPE)
 _ALLOWED_DRIVE_CAPABILITIES = (DriveCapability.READ.value,)
+_ALLOWED_TELEGRAM_CAPABILITIES = (TelegramCapability.READ.value,)
 
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+_CONNECTOR_IDS = {
+    "gmail": GMAIL_CONNECTOR_ID,
+    "drive": DRIVE_CONNECTOR_ID,
+    "telegram": TELEGRAM_CONNECTOR_ID,
+}
+_APP_IDS = {
+    "gmail": GMAIL_REFERENCE_APP_ID,
+    "drive": DRIVE_REFERENCE_APP_ID,
+    "telegram": TELEGRAM_REFERENCE_APP_ID,
+}
+_AGENT_IDS = {
+    "gmail": GMAIL_MAIL_READER_AGENT_ID,
+    "drive": DRIVE_AGENT_ID,
+    "telegram": TELEGRAM_AGENT_ID,
+}
+
+
 def _connector_id(args: argparse.Namespace) -> str:
-    return GMAIL_CONNECTOR_ID if args.connector == "gmail" else DRIVE_CONNECTOR_ID
+    return _CONNECTOR_IDS[args.connector]
 
 
 def _expected_app_id(args: argparse.Namespace) -> str:
-    return GMAIL_REFERENCE_APP_ID if args.connector == "gmail" else DRIVE_REFERENCE_APP_ID
+    return _APP_IDS[args.connector]
 
 
 def _expected_agent_id(args: argparse.Namespace) -> str:
-    return GMAIL_MAIL_READER_AGENT_ID if args.connector == "gmail" else DRIVE_AGENT_ID
+    return _AGENT_IDS[args.connector]
 
 
 def _apply_connector_defaults(args: argparse.Namespace) -> None:
@@ -95,7 +118,7 @@ def validate_args(args: argparse.Namespace) -> list[str]:
         if not isinstance(args.binding_ref, str) or not _IDENTIFIER_RE.fullmatch(args.binding_ref):
             if args.binding_ref is None:
                 errors.append(
-                    f"{args.connector} binding_ref is required and must come from the trusted OAuth connection"
+                    f"{args.connector} binding_ref is required and must come from trusted server authority"
                 )
             else:
                 errors.append("binding_ref contains characters outside the trusted identifier charset")
@@ -113,11 +136,16 @@ def validate_args(args: argparse.Namespace) -> list[str]:
             errors.append(f"scopes must be one of {_ALLOWED_GMAIL_SCOPES!r}; got {unknown_scopes!r}")
         if args.capabilities:
             errors.append("capabilities are not accepted for Gmail grants")
-    else:
+    elif args.connector == "drive":
         if args.scopes:
             errors.append("scopes are not accepted for Drive grants; use --capabilities read")
         if tuple(args.capabilities) != _ALLOWED_DRIVE_CAPABILITIES:
             errors.append("Drive capabilities must be exactly ('read',); mutation/write is forbidden")
+    else:
+        if args.scopes:
+            errors.append("scopes are not accepted for Telegram grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_TELEGRAM_CAPABILITIES:
+            errors.append("Telegram capabilities must be exactly ('read',); send/write is forbidden")
 
     return errors
 
@@ -204,7 +232,7 @@ def run_d1(sql: str) -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--action", choices=("seed", "revoke", "list"), required=True)
-    parser.add_argument("--connector", choices=("gmail", "drive"), default="gmail")
+    parser.add_argument("--connector", choices=("gmail", "drive", "telegram"), default="gmail")
     parser.add_argument("--app-id", default=None)
     parser.add_argument("--agent-id", default=None)
     parser.add_argument("--binding-ref", default=None)
@@ -218,7 +246,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.scopes is None:
         args.scopes = [_PROVIDER_GMAIL_READONLY_SCOPE] if args.connector == "gmail" else []
     if args.capabilities is None:
-        args.capabilities = [DriveCapability.READ.value] if args.connector == "drive" else []
+        args.capabilities = (
+            [DriveCapability.READ.value]
+            if args.connector == "drive"
+            else [TelegramCapability.READ.value]
+            if args.connector == "telegram"
+            else []
+        )
 
     # List is read-only and does not require a connection-specific binding ref.
     if args.action == "list":
