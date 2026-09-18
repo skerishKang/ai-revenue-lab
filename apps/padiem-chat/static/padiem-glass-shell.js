@@ -23,7 +23,7 @@
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
-  var RATE_UP=.075, RATE_DOWN=.09;            /* peel quickly to the clean portrait; reassembly stays cinematic */
+  var RATE_UP=.024, RATE_DOWN=.018;           /* ~2–3 s cinematic peel/reassembly at 1× */
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
@@ -213,36 +213,41 @@
   }
 
   function render(p,peeling){
-    var assemble=ease(clamp((p-ASSEMBLE_START)/ASSEMBLE_SPAN,0,1));
-    var dissolve=clamp((p-DISSOLVE_AT)/DISSOLVE_SPAN,0,1);
-    var parX=(mx-.5), parY=(my-.5);
+    /* The clean portrait is always underneath. The shell transition is a
+     * time-driven dissolve of ALIGNED portrait tiles — never a pointer-scrubbed
+     * scatter ring. This prevents duplicated/displaced eyes and face chunks. */
+    var phase=peeling?1-p:p; /* 0→1 for either direction */
+    var portal=ease(clamp((p-.66)/.34,0,1));
+
     for(var i=0;i<FRAG_COUNT;i++){
       var f=frags[i]; if(!f.d) continue;
-      var d=f.d, delay=(i%7)*.014;
-      var local=ease(clamp((assemble-delay)/(1-delay),0,1));
-      var x=d.sx+(d.fx-d.sx)*local+parX*(1-local)*(18+(i%5)*6);
-      var y=d.sy+(d.fy-d.sy)*local+parY*(1-local)*(14+(i%4)*7);
-      var w=d.sw+(d.fw-d.sw)*local, h=d.sh+(d.fh-d.sh)*local;
-      var rot=d.sr+(d.fr-d.sr)*local, depth=(1-local)*(40+(i%4)*22);
-      f.el.style.width=w+"px";
-      f.el.style.height=h+"px";
-      var fragOpacity=clamp(local*1.15-dissolve*1.3,0,1);
-      /* Reverse hover is a reveal interaction, not a persistent mosaic.
-       * During 1→0 peel, fragments only ghost near the assembled endpoint and
-       * disappear before they can cover the face as large scattered plates.
-       * 0→1 pointer-exit recovery keeps the full fragment assembly sequence. */
-      if(peeling){
-        var peelWindow=clamp((p-.78)/.12,0,1);
-        fragOpacity*=peelWindow*.18;
-      }
-      f.el.style.opacity=String(fragOpacity);
-      f.el.style.transform="translate3d("+x+"px,"+y+"px,"+depth+"px) rotate("+rot+"deg) scale("+(0.72+local*.28)+")";
-      f.el.style.filter="saturate("+(0.65+local*.45)+") blur("+((1-local)*1.4)+"px)";
+      var d=f.d;
+      var order=((i*7)%FRAG_COUNT)/(FRAG_COUNT-1);
+      var delay=order*.18;
+      var appear=ease(clamp((phase-delay)/.16,0,1));
+      var disappear=1-ease(clamp((phase-(.34+delay))/.48,0,1));
+      var fragOpacity=.42*appear*disappear;
+
+      /* Keep every tile registered over the same portrait pixels. A tiny
+       * sub-6px drift gives the impression of plates releasing without ever
+       * creating a second displaced face. */
+      var angle=i*2.399;
+      var drift=(1-Math.abs(p-.5)*2)*6;
+      var x=d.fx+Math.cos(angle)*drift;
+      var y=d.fy+Math.sin(angle)*drift;
+
+      f.el.style.width=d.fw+"px";
+      f.el.style.height=d.fh+"px";
+      f.el.style.opacity=String(clamp(fragOpacity,0,.42));
+      f.el.style.transform="translate3d("+x+"px,"+y+"px,0) rotate("+d.fr+"deg) scale(1)";
+      f.el.style.filter="saturate(1) blur(0px)";
     }
+
     root().style.setProperty("--glass-shell-progress",clamp(p,0,1).toFixed(3));
-    root().style.setProperty("--glass-shell-dissolve",clamp(dissolve*1.15,0,1).toFixed(3));
+    root().style.setProperty("--glass-shell-dissolve",clamp(portal,0,1).toFixed(3));
     if(veinLayer&&veinLayer.parentNode){
-      veinLayer.parentNode.style.opacity=String(clamp(.1+p*.6,0,.7)*(1-dissolve*.5));
+      var transitionBand=1-Math.abs(p-.5)*2;
+      veinLayer.parentNode.style.opacity=String(clamp(transitionBand*.16,0,.16));
     }
   }
 
@@ -335,7 +340,19 @@
     window.__padiemGlassShell={
       progress:function(){return progress;},
       target:function(){return reducedMotion()?(maskMode()==="off"?0:1):target();},
-      mode:function(){return maskMode();}
+      mode:function(){return maskMode();},
+      imageRect:function(){
+        var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
+        if(!rect||!(fieldW>0&&fieldH>0&&imgW>0&&imgH>0)) return null;
+        var scaleX=rect.width/fieldW, scaleY=rect.height/fieldH;
+        if(!(scaleX>0)) scaleX=1;
+        if(!(scaleY>0)) scaleY=1;
+        var left=rect.left+imgL*scaleX;
+        var top=rect.top+imgT*scaleY;
+        var width=imgW*scaleX;
+        var height=imgH*scaleY;
+        return {left:left,top:top,right:left+width,bottom:top+height,width:width,height:height};
+      }
     };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){layout();});
     progress=maskMode()==="off"?0:1;
