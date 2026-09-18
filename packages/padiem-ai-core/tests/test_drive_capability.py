@@ -290,6 +290,13 @@ def test_projection_accepts_bounded_google_web_view_link_query_and_fragment() ->
     assert projection.safe_dict()["web_view_link"] == metadata["webViewLink"]
 
 
+def test_projection_accepts_other_bounded_google_editor_web_view_link() -> None:
+    metadata = file_metadata()
+    metadata["webViewLink"] = "https://script.google.com/d/file_1/edit?usp=drivesdk"
+    projection = project_drive_file(metadata)
+    assert projection.safe_dict()["web_view_link"] == metadata["webViewLink"]
+
+
 def test_projection_rejects_non_google_web_view_link_host() -> None:
     metadata = file_metadata()
     metadata["webViewLink"] = "https://evil.example/file_1?token=not-trusted"
