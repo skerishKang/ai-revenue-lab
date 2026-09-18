@@ -148,7 +148,7 @@ jobs:
           workers_dev = true
           EOF
 
-          uv run python ../padiem-chat/tests/worker_runtime_probe_origin.py --port 9101 > /tmp/engine-drive-origin.log 2>&1 &
+          uv run python worker_runtime_drive_probe_origin.py --port 9101 > /tmp/engine-drive-origin.log 2>&1 &
           ORIGIN_PID=$!
           npx --yes wrangler@4.130.0 dev --config .runtime-drive-transport-probe.toml --port 8793 > /tmp/engine-drive-workerd.log 2>&1 &
           WORKER_PID=$!

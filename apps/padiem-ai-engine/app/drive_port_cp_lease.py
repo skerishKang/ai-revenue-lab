@@ -132,7 +132,10 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
                     return response.status_code, bytes(chunks)
         except ToolHandlerError:
             raise
-        except (httpx.TimeoutException, httpx.TransportError):
+        except httpx.HTTPError:
+            # Includes transport, timeout and content-decoding failures. Never
+            # let an HTTPX implementation detail fall through Core as an
+            # unclassified provider-boundary exception.
             raise _provider_unavailable("Google Drive provider request failed.") from None
 
     async def _request(

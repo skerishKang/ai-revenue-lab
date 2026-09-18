@@ -225,6 +225,10 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
             for key, value in request.headers.items()
             if str(key).lower() not in transport_managed
         }
+        # The Workers Fetch API owns transfer/content decoding. Do not ask the
+        # origin for a compressed representation that HTTPX may try to decode
+        # a second time after Fetch has already exposed decoded body bytes.
+        headers["accept-encoding"] = "identity"
         init: dict[str, Any] = {
             "method": "GET",
             "headers": headers,
@@ -269,6 +273,15 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         try:
             status_code = int(js_response.status)
             response_headers = await self._headers(js_response.headers, request=request)
+            # Fetch may expose a decoded body while retaining origin encoding
+            # metadata. HTTPX would then apply Content-Encoding again when
+            # callers iterate response.aiter_bytes(). The body size can also
+            # differ from the origin Content-Length after Fetch processing.
+            response_headers = {
+                key: value
+                for key, value in response_headers.items()
+                if key.lower() not in {"content-encoding", "content-length"}
+            }
             body = getattr(js_response, "body", None)
         except httpx.ProtocolError:
             raise
