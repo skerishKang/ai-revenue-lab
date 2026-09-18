@@ -230,6 +230,37 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
         raise AssertionError(f"{name}: shell did not reassemble after pointer exit: {recovered}")
 
+    # Repeat the same contract RIGHT -> LEFT. Pointer X may change where the
+    # cursor is, but must never scrub, reverse, or retarget the timed peel.
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
+    await page.wait_for_timeout(260)
+    reverse_right = await _shell_state(page)
+    if reverse_right["ptr"] < 0.99 or reverse_right["target"] > 0.01:
+        raise AssertionError(f"{name}: right-edge reverse sweep did not latch binary peel target: {reverse_right}")
+    if reverse_right["progress"] < 0.40:
+        raise AssertionError(f"{name}: reverse-direction teardown is too fast at 1x: {reverse_right}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-reverse.png"), full_page=False)
+
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)
+    await page.wait_for_timeout(260)
+    reverse_left = await _shell_state(page)
+    if reverse_left["ptr"] < 0.99 or reverse_left["target"] > 0.01:
+        raise AssertionError(f"{name}: left-edge reverse sweep changed the binary peel target: {reverse_left}")
+    if reverse_left["progress"] > reverse_right["progress"] + 0.02:
+        raise AssertionError(
+            f"{name}: right-to-left motion scrubbed/reversed time progress: right={reverse_right}, left={reverse_left}"
+        )
+    if reverse_left["pointerX"] not in {"", "0px", "0.0px"} or reverse_left["pointerY"] not in {"", "0px", "0.0px"}:
+        raise AssertionError(f"{name}: reverse sweep must not parallax the portrait: {reverse_left}")
+
+    await _wait_progress_below(page, 0.05, f"{name}-pointer-reverse")
+    reverse_clean = await _shell_state(page)
+    if reverse_clean["fragVisible"] > 0 or reverse_clean["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: reverse sweep did not settle on the clean portrait: {reverse_clean}")
+    await page.mouse.move(70, 90)
+    await _wait_completed_shell(page, f"{name}-reverse-recover")
+    reverse_recovered = await _shell_state(page)
+
     # Answer-only remains visually stable: answer activity may drive the
     # atmospheric portrait motion, but it must not peel the shell by itself.
     await page.mouse.move(70, 90)
@@ -294,6 +325,10 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         "combined_overlap": combined_overlap,
         "combined": combined,
         "recovered": recovered,
+        "reverse_right": reverse_right,
+        "reverse_left": reverse_left,
+        "reverse_clean": reverse_clean,
+        "reverse_recovered": reverse_recovered,
         "final_recovered": final_recovered,
     }
 
