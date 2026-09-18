@@ -7,6 +7,7 @@ import httpx
 import pytest
 
 from padiem_ai_core.drive_capability import DRIVE_READONLY_SCOPE
+from padiem_ai_core.tool_runtime import ToolHandlerError
 
 from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
 from app.google_oauth_access_lease import (
@@ -189,7 +190,7 @@ def test_lease_binding_or_actor_mismatch_blocks_provider_call() -> None:
         lease_client=FakeLeaseClient(leases=[lease(actor_ref="actor_other")]),
         transport=httpx.MockTransport(handler),
     )
-    with pytest.raises(ServiceContractError):
+    with pytest.raises(ToolHandlerError) as caught:
         run(
             port.get_json(
                 binding_ref=BINDING_REF,
@@ -202,6 +203,7 @@ def test_lease_binding_or_actor_mismatch_blocks_provider_call() -> None:
                 max_response_bytes=10000,
             )
         )
+    assert caught.value.code == "google_drive_access_lease_mismatch"
     assert provider_calls == 0
 
 
@@ -224,7 +226,7 @@ def test_cp_lease_failure_fails_closed_without_provider_call() -> None:
         lease_client=lease_client,
         transport=httpx.MockTransport(handler),
     )
-    with pytest.raises(ServiceContractError):
+    with pytest.raises(ToolHandlerError) as caught:
         run(
             port.get_json(
                 binding_ref=BINDING_REF,
@@ -237,6 +239,7 @@ def test_cp_lease_failure_fails_closed_without_provider_call() -> None:
                 max_response_bytes=10000,
             )
         )
+    assert caught.value.code == "google_oauth_access_lease_unavailable"
     assert provider_calls == 0
 
 
@@ -273,6 +276,32 @@ def test_provider_401_requests_one_fresh_cp_lease_and_retries_once() -> None:
     assert len(lease_client.calls) == 2
 
 
+def test_provider_transport_failure_preserves_bounded_provider_stage() -> None:
+    class FailingTransport(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+            raise httpx.ConnectError("private network detail", request=request)
+
+    port = ControlPlaneLeaseDriveReadPort(
+        lease_client=FakeLeaseClient(),
+        transport=FailingTransport(),
+    )
+    with pytest.raises(ToolHandlerError) as caught:
+        run(
+            port.get_json(
+                binding_ref=BINDING_REF,
+                actor_ref=ACTOR_REF,
+                required_scopes=(DRIVE_READONLY_SCOPE,),
+                base_url="https://www.googleapis.com",
+                path="/drive/v3/files",
+                query={},
+                timeout_seconds=10,
+                max_response_bytes=10000,
+            )
+        )
+    assert caught.value.code == "google_drive_provider_unavailable"
+    assert "private network detail" not in caught.value.safe_message
+
+
 def test_write_scope_and_non_google_host_are_rejected_before_provider_call() -> None:
     provider_calls = 0
 
@@ -285,7 +314,7 @@ def test_write_scope_and_non_google_host_are_rejected_before_provider_call() -> 
         lease_client=FakeLeaseClient(),
         transport=httpx.MockTransport(handler),
     )
-    with pytest.raises(ServiceContractError):
+    with pytest.raises(ToolHandlerError) as scope_error:
         run(
             port.get_json(
                 binding_ref=BINDING_REF,
@@ -298,7 +327,8 @@ def test_write_scope_and_non_google_host_are_rejected_before_provider_call() -> 
                 max_response_bytes=10000,
             )
         )
-    with pytest.raises(ServiceContractError):
+    assert scope_error.value.code == "google_drive_access_lease_mismatch"
+    with pytest.raises(ToolHandlerError) as host_error:
         run(
             port.get_json(
                 binding_ref=BINDING_REF,
@@ -311,6 +341,7 @@ def test_write_scope_and_non_google_host_are_rejected_before_provider_call() -> 
                 max_response_bytes=10000,
             )
         )
+    assert host_error.value.code == "google_drive_provider_unavailable"
     assert provider_calls == 0
 
 

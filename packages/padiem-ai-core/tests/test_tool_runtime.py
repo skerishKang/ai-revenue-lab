@@ -18,6 +18,7 @@ from padiem_ai_core.tool_runtime import (
     MAX_TOOL_OUTPUT_BYTES,
     ToolAuthorizationContext,
     ToolExecutionResult,
+    ToolHandlerError,
     ToolInvocation,
     ToolRuntime,
     ToolRuntimeError,
@@ -574,6 +575,31 @@ def test_timeout_is_normalized_and_not_retried() -> None:
         status=RunStatus.TIMEOUT,
         error_class=ErrorClass.TOOL_RUNTIME_ERROR,
     )
+    assert calls == 1
+
+
+def test_bounded_handler_error_preserves_reviewed_stage_without_raw_detail() -> None:
+    runtime = ToolRuntime()
+    calls = 0
+
+    async def handler(arguments):
+        nonlocal calls
+        calls += 1
+        raise ToolHandlerError(
+            "google_drive_provider_unavailable",
+            "The trusted Google Drive provider request is unavailable.",
+        )
+
+    runtime.register(spec(), handler)
+    with pytest.raises(ToolRuntimeError) as info:
+        run(runtime.execute(ToolInvocation("core.echo", {"value": "x"}), profile("core.echo"), auth()))
+    assert_error(
+        info.value,
+        code="google_drive_provider_unavailable",
+        status=RunStatus.FAILED,
+        error_class=ErrorClass.TOOL_RUNTIME_ERROR,
+    )
+    assert info.value.safe_message == "The trusted Google Drive provider request is unavailable."
     assert calls == 1
 
 

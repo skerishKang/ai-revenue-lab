@@ -39,6 +39,7 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.cloudflare_external_transport import drive_worker_transport
 from app.connector_bindings import (
     build_tool_binding_resolver,
     CalendarGrant,
@@ -321,8 +322,11 @@ def _drive_port_for_env(env: Any) -> ControlPlaneLeaseDriveReadPort | None:
         return None
     try:
         lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
-        return ControlPlaneLeaseDriveReadPort(lease_client=lease_client)
-    except (TypeError, ValueError):
+        return ControlPlaneLeaseDriveReadPort(
+            lease_client=lease_client,
+            transport=drive_worker_transport(),
+        )
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 

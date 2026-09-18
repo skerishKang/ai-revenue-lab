@@ -371,6 +371,22 @@ class ToolExecutionResult:
         }
 
 
+class ToolHandlerError(RuntimeError):
+    """Bounded trusted-adapter failure safe to preserve through ToolRuntime.
+
+    Handler adapters may use this only for reviewed non-secret stage codes and
+    messages. Raw provider bodies, credentials and user data must never enter
+    either field.
+    """
+
+    def __init__(self, code: str, safe_message: str) -> None:
+        super().__init__(safe_message)
+        self.code = _identifier("tool handler error code", code)
+        if not isinstance(safe_message, str) or not safe_message.strip():
+            raise ValueError("tool handler safe_message must be non-empty")
+        self.safe_message = safe_message.strip()
+
+
 class ToolRuntimeError(RuntimeError):
     def __init__(
         self,
@@ -572,6 +588,16 @@ class ToolRuntime:
             ) from exc
         except asyncio.CancelledError:
             raise
+        except ToolHandlerError as exc:
+            duration_ms = max(0, int((time.monotonic() - started) * 1000))
+            raise self._error(
+                invocation.tool_id,
+                exc.code,
+                exc.safe_message,
+                status=RunStatus.FAILED,
+                error_class=ErrorClass.TOOL_RUNTIME_ERROR,
+                duration_ms=duration_ms,
+            ) from exc
         except Exception as exc:
             duration_ms = max(0, int((time.monotonic() - started) * 1000))
             raise self._error(
