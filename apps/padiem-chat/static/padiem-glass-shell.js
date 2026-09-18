@@ -27,7 +27,7 @@
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
-  var progress=0, raf=0, lastT=0;
+  var progress=1, raf=0, lastT=0;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
   var fieldW=0, fieldH=0, fieldTop=68;
@@ -162,10 +162,24 @@
       var parts=(cs.backgroundPosition||"100% 52%").split(/\s+/);
       bpx=parts[0]; bpy=parts[1]||"52%";
     }
-    var px=parseFloat(bpx), py=parseFloat(bpy);
-    px=isNaN(px)?1:px/100; py=isNaN(py)?.52:py/100;
-    imgL=(fieldW-imgW)*px;
-    imgT=(fieldH-imgH)*py;
+    function axisOffset(value, freeSpace, fallbackFraction){
+      var raw=String(value||"").trim().toLowerCase();
+      if(raw==="left"||raw==="top") return 0;
+      if(raw==="center") return freeSpace*.5;
+      if(raw==="right"||raw==="bottom") return freeSpace;
+      if(raw.endsWith("%")){
+        var pct=parseFloat(raw);
+        return isNaN(pct)?freeSpace*fallbackFraction:freeSpace*(pct/100);
+      }
+      if(raw.endsWith("px")){
+        var px=parseFloat(raw);
+        return isNaN(px)?freeSpace*fallbackFraction:px;
+      }
+      var n=parseFloat(raw);
+      return isNaN(n)?freeSpace*fallbackFraction:freeSpace*(n/100);
+    }
+    imgL=axisOffset(bpx,fieldW-imgW,1);
+    imgT=axisOffset(bpy,fieldH-imgH,.52);
 
     var cellW=imgW/COLS, cellH=imgH/ROWS;
     var cx=imgL+imgW/2, cy=imgT+imgH/2;
@@ -192,10 +206,10 @@
     var mode=maskMode();
     if(mode==="on") return 1;
     if(mode==="off") return 0;
-    var p=driver("--glass-pointer-reveal"), a=driver("--glass-answer-reveal");
-    var t=Math.max(.62*p,.8*a);       /* pointer assembles, answer drives deeper */
-    if(p>.45&&a>.45) t=1;             /* pointer + answer → full shell reveal */
-    return t;
+    /* Auto is intentionally reverse: the completed shell is the resting state
+     * and pointer proximity peels it away to reveal the clean portrait. */
+    var p=driver("--glass-pointer-reveal");
+    return 1-clamp(p,0,1);
   }
 
   function render(p){
@@ -233,7 +247,7 @@
     if(!ensureLayer()){schedule();return;}
     var v=variant();
     if(v!==lastVariant) layout();
-    var t=reducedMotion()?(maskMode()==="on"?1:0):target();
+    var t=reducedMotion()?(maskMode()==="off"?0:1):target();
     if(reducedMotion()){
       progress=t;
     }else{
@@ -300,7 +314,7 @@
     setInterval(function(){
       if(!isGlass()) return;
       if(!field&&ensureLayer()) layout();
-      var t=reducedMotion()?(maskMode()==="on"?1:0):target();
+      var t=reducedMotion()?(maskMode()==="off"?0:1):target();
       if(progress===t) return;
       var now=performance.now();
       if(now-lastT<300) return; /* live rAF stream already stepping */
@@ -310,11 +324,15 @@
     /* Read-only QA/state handle (progress, target, mode). */
     window.__padiemGlassShell={
       progress:function(){return progress;},
-      target:function(){return reducedMotion()?(maskMode()==="on"?1:0):target();},
+      target:function(){return reducedMotion()?(maskMode()==="off"?0:1):target();},
       mode:function(){return maskMode();}
     };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){layout();});
-    if(isGlass()&&ensureLayer()) layout(); /* fragments exist even if rAF never fires */
+    progress=maskMode()==="off"?0:1;
+    if(isGlass()&&ensureLayer()){
+      layout(); /* fragments exist even if rAF never fires */
+      render(progress);
+    }
     layout();
     wake();
   }
