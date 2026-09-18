@@ -29,7 +29,7 @@ jobs:
       - name: Checkout exact event revision
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -73,7 +73,7 @@ jobs:
               if token in network_region:
                   raise SystemExit(f"runtime/provider network target forbidden: {token}")
 
-          account_api = 'api="https://api.cloudflare.com/client/v4/accounts/\${CLOUDFLARE_ACCOUNT_ID}"'
+          account_api = 'api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"'
           if account_api not in network_region:
               raise SystemExit("Cloudflare account API authority missing")
 
@@ -85,17 +85,17 @@ jobs:
 
   retained-telemetry:
     needs: source-contract
-    if: \${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
-      CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout exact merged main
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -104,23 +104,23 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse HEAD)" = "\${GITHUB_SHA}"
-          test "$(git rev-parse origin/main)" = "\${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
           echo "READONLY_EXACT_MAIN_SHA=PASS"
 
       - name: Query retained Engine and OAuth telemetry
         shell: bash
         run: |
           set -euo pipefail
-          test -n "\${CLOUDFLARE_API_TOKEN}"
-          test -n "\${CLOUDFLARE_ACCOUNT_ID}"
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
 
-          auth=(-H "Authorization: Bearer \${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
-          api="https://api.cloudflare.com/client/v4/accounts/\${CLOUDFLARE_ACCOUNT_ID}"
-          request="\${RUNNER_TEMP}/drive-runtime-telemetry-query.json"
-          response="\${RUNNER_TEMP}/drive-runtime-telemetry-response.json"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          request="${RUNNER_TEMP}/drive-runtime-telemetry-query.json"
+          response="${RUNNER_TEMP}/drive-runtime-telemetry-response.json"
 
-          python - "\${request}" "\${CANARY_FROM_MS}" "\${CANARY_TO_MS}" <<'PY'
+          python - "${request}" "${CANARY_FROM_MS}" "${CANARY_TO_MS}" <<'PY'
           import json
           import sys
 
@@ -144,12 +144,12 @@ jobs:
               json.dump(query, fh)
           PY
 
-          http="$(curl -sS -o "\${response}" -w '%{http_code}' -X POST "\${auth[@]}" \
-            "\${api}/workers/observability/telemetry/query" \
-            --data-binary "@\${request}")"
-          echo "OBSERVABILITY_QUERY_HTTP=\${http}"
+          http="$(curl -sS -o "${response}" -w '%{http_code}' -X POST "${auth[@]}" \
+            "${api}/workers/observability/telemetry/query" \
+            --data-binary "@${request}")"
+          echo "OBSERVABILITY_QUERY_HTTP=${http}"
 
-          python - "\${response}" <<'PY'
+          python - "${response}" <<'PY'
           import hashlib
           import json
           import sys
