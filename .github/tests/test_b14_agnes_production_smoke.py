@@ -57,7 +57,7 @@ def _chat() -> bytes:
             "choices": [
                 {
                     "index": 0,
-                    "message": {"role": "assistant", "content": "OK"},
+                    "message": {"role": "assistant", "content": "PRIVATE_ANSWER_SENTINEL_42"},
                     "finish_reason": "stop",
                 }
             ],
@@ -128,7 +128,7 @@ def test_success_uses_two_gets_and_exactly_one_chat_post() -> None:
     assert "NETWORK_RETRY_COUNT=0" in output
     assert "RAW_RESPONSE_CONTENT_OUTPUT=0" in output
     assert "SECRET_VALUE_OUTPUT=0" in output
-    assert "OK" not in output
+    assert "PRIVATE_ANSWER_SENTINEL_42" not in output
 
 
 def test_missing_credential_fails_before_chat_post() -> None:
