@@ -10,14 +10,6 @@ import time
 from types import MappingProxyType
 from typing import Any, Awaitable, Callable, Mapping, Protocol
 
-try:
-    from jsonschema import Draft202012Validator
-    from jsonschema.exceptions import SchemaError, ValidationError
-except ModuleNotFoundError:
-    Draft202012Validator = None  # type: ignore[assignment]
-    SchemaError = Exception  # type: ignore[assignment,misc]
-    ValidationError = Exception  # type: ignore[assignment,misc]
-
 from .contracts import (
     AgentProfile,
     ApprovalPolicy,
@@ -30,6 +22,197 @@ from .contracts import (
 MAX_TOOL_ARGUMENT_BYTES = 65_536
 MAX_TOOL_OUTPUT_BYTES = 262_144
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+
+_SCHEMA_META_KEYS = frozenset({"description", "title", "default", "examples"})
+_SCHEMA_VALUE_KEYS = frozenset(
+    {
+        "type",
+        "properties",
+        "required",
+        "additionalProperties",
+        "minimum",
+        "maximum",
+        "minLength",
+        "maxLength",
+        "pattern",
+        "enum",
+        "items",
+        "minItems",
+        "maxItems",
+        "uniqueItems",
+    }
+)
+_SCHEMA_TYPES = frozenset({"object", "string", "integer", "number", "boolean", "array", "null"})
+
+
+class _SchemaDefinitionError(ValueError):
+    pass
+
+
+class _SchemaValidationError(ValueError):
+    pass
+
+
+def _schema_type_matches(expected: str, value: Any) -> bool:
+    if expected == "object":
+        return isinstance(value, dict)
+    if expected == "string":
+        return isinstance(value, str)
+    if expected == "integer":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if expected == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if expected == "boolean":
+        return isinstance(value, bool)
+    if expected == "array":
+        return isinstance(value, list)
+    if expected == "null":
+        return value is None
+    return False
+
+
+def _compile_bounded_schema(schema: Any, *, path: str = "$") -> dict[str, Any]:
+    if not isinstance(schema, dict):
+        raise _SchemaDefinitionError(f"{path} schema must be an object")
+    unsupported = set(schema) - _SCHEMA_VALUE_KEYS - _SCHEMA_META_KEYS
+    if unsupported:
+        raise _SchemaDefinitionError(f"{path} contains unsupported schema keywords")
+
+    compiled = dict(schema)
+    schema_type = compiled.get("type")
+    if schema_type is not None:
+        if not isinstance(schema_type, str) or schema_type not in _SCHEMA_TYPES:
+            raise _SchemaDefinitionError(f"{path}.type is unsupported")
+
+    properties = compiled.get("properties", {})
+    if not isinstance(properties, dict):
+        raise _SchemaDefinitionError(f"{path}.properties must be an object")
+    compiled_properties: dict[str, dict[str, Any]] = {}
+    for key, child in properties.items():
+        if not isinstance(key, str) or not key:
+            raise _SchemaDefinitionError(f"{path}.properties keys must be non-empty strings")
+        compiled_properties[key] = _compile_bounded_schema(child, path=f"{path}.{key}")
+    compiled["properties"] = compiled_properties
+
+    required = compiled.get("required", [])
+    if not isinstance(required, list) or any(
+        not isinstance(item, str) or not item for item in required
+    ):
+        raise _SchemaDefinitionError(f"{path}.required must be a string list")
+    if len(required) != len(set(required)):
+        raise _SchemaDefinitionError(f"{path}.required must not contain duplicates")
+    if any(item not in compiled_properties for item in required):
+        raise _SchemaDefinitionError(f"{path}.required must reference declared properties")
+    compiled["required"] = tuple(required)
+
+    additional = compiled.get("additionalProperties", True)
+    if not isinstance(additional, bool):
+        raise _SchemaDefinitionError(f"{path}.additionalProperties must be boolean")
+    compiled["additionalProperties"] = additional
+
+    for key in ("minimum", "maximum"):
+        if key in compiled:
+            value = compiled[key]
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise _SchemaDefinitionError(f"{path}.{key} must be numeric")
+    if "minimum" in compiled and "maximum" in compiled and compiled["minimum"] > compiled["maximum"]:
+        raise _SchemaDefinitionError(f"{path} has inverted numeric bounds")
+
+    for key in ("minLength", "maxLength", "minItems", "maxItems"):
+        if key in compiled:
+            value = compiled[key]
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise _SchemaDefinitionError(f"{path}.{key} must be a non-negative integer")
+    for lo, hi in (("minLength", "maxLength"), ("minItems", "maxItems")):
+        if lo in compiled and hi in compiled and compiled[lo] > compiled[hi]:
+            raise _SchemaDefinitionError(f"{path} has inverted bounds")
+
+    if "pattern" in compiled:
+        pattern = compiled["pattern"]
+        if not isinstance(pattern, str):
+            raise _SchemaDefinitionError(f"{path}.pattern must be a string")
+        try:
+            compiled["pattern"] = re.compile(pattern)
+        except re.error as exc:
+            raise _SchemaDefinitionError(f"{path}.pattern is invalid") from exc
+
+    if "enum" in compiled:
+        enum = compiled["enum"]
+        if not isinstance(enum, list) or not enum:
+            raise _SchemaDefinitionError(f"{path}.enum must be a non-empty list")
+        compiled["enum"] = tuple(enum)
+
+    if "items" in compiled:
+        compiled["items"] = _compile_bounded_schema(compiled["items"], path=f"{path}[]")
+
+    if "uniqueItems" in compiled and not isinstance(compiled["uniqueItems"], bool):
+        raise _SchemaDefinitionError(f"{path}.uniqueItems must be boolean")
+
+    return compiled
+
+
+def _validate_bounded_value(schema: Mapping[str, Any], value: Any, *, path: str = "$") -> None:
+    expected = schema.get("type")
+    if expected is not None and not _schema_type_matches(str(expected), value):
+        raise _SchemaValidationError(f"{path} has the wrong type")
+
+    if "enum" in schema and value not in schema["enum"]:
+        raise _SchemaValidationError(f"{path} is outside the allowed values")
+
+    if isinstance(value, dict):
+        properties = schema.get("properties", {})
+        required = schema.get("required", ())
+        for key in required:
+            if key not in value:
+                raise _SchemaValidationError(f"{path} is missing a required property")
+        if schema.get("additionalProperties", True) is False:
+            unexpected = set(value) - set(properties)
+            if unexpected:
+                raise _SchemaValidationError(f"{path} contains an unsupported property")
+        for key, child in properties.items():
+            if key in value:
+                _validate_bounded_value(child, value[key], path=f"{path}.{key}")
+
+    if isinstance(value, str):
+        if "minLength" in schema and len(value) < schema["minLength"]:
+            raise _SchemaValidationError(f"{path} is shorter than allowed")
+        if "maxLength" in schema and len(value) > schema["maxLength"]:
+            raise _SchemaValidationError(f"{path} is longer than allowed")
+        pattern = schema.get("pattern")
+        if pattern is not None and pattern.search(value) is None:
+            raise _SchemaValidationError(f"{path} does not match the required pattern")
+
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if "minimum" in schema and value < schema["minimum"]:
+            raise _SchemaValidationError(f"{path} is below the minimum")
+        if "maximum" in schema and value > schema["maximum"]:
+            raise _SchemaValidationError(f"{path} is above the maximum")
+
+    if isinstance(value, list):
+        if "minItems" in schema and len(value) < schema["minItems"]:
+            raise _SchemaValidationError(f"{path} has too few items")
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            raise _SchemaValidationError(f"{path} has too many items")
+        if schema.get("uniqueItems") is True:
+            encoded = [json.dumps(item, sort_keys=True, separators=(",", ":")) for item in value]
+            if len(encoded) != len(set(encoded)):
+                raise _SchemaValidationError(f"{path} contains duplicate items")
+        item_schema = schema.get("items")
+        if item_schema is not None:
+            for index, item in enumerate(value):
+                _validate_bounded_value(item_schema, item, path=f"{path}[{index}]")
+
+
+@dataclass(frozen=True, slots=True)
+class _BoundedSchemaValidator:
+    schema: Mapping[str, Any]
+
+    @classmethod
+    def compile(cls, schema: Any) -> "_BoundedSchemaValidator":
+        return cls(_compile_bounded_schema(schema))
+
+    def validate(self, value: Any) -> None:
+        _validate_bounded_value(self.schema, value)
 
 
 def _identifier(name: str, value: str) -> str:
@@ -213,7 +396,7 @@ class ToolRuntimeError(RuntimeError):
 class _RegisteredTool:
     spec: ToolSpec
     handler: Callable[[dict[str, Any]], Awaitable[Any]]
-    validator: Draft202012Validator
+    validator: _BoundedSchemaValidator
 
 
 class ToolRuntime:
@@ -239,15 +422,9 @@ class ToolRuntime:
             raise ValueError("handler must be an async callable")
 
         schema = _thaw_json(spec.input_schema)
-        if Draft202012Validator is None:
-            raise ImportError(
-                "Tool Runtime requires the optional 'tools' dependency: "
-                "install padiem-ai-core[tools]."
-            )
         try:
-            Draft202012Validator.check_schema(schema)
-            validator = Draft202012Validator(schema)
-        except SchemaError as exc:
+            validator = _BoundedSchemaValidator.compile(schema)
+        except _SchemaDefinitionError as exc:
             raise ToolRuntimeError(
                 "invalid_tool_schema",
                 "The registered tool input schema is invalid.",
@@ -368,7 +545,7 @@ class ToolRuntime:
         arguments = invocation.arguments_copy()
         try:
             registered.validator.validate(arguments)
-        except ValidationError as exc:
+        except _SchemaValidationError as exc:
             raise self._error(
                 invocation.tool_id,
                 "invalid_tool_arguments",
