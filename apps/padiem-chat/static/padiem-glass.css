@@ -270,6 +270,20 @@ html[data-theme="padiem-glass"] .tool-button {
   border-color: rgba(255, 255, 255, .38);
 }
 
+/* Shared surface hover turns tool labels white. On the bright Glass composer
+ * that makes + File effectively disappear, so keep a dark foreground across
+ * pointer, keyboard, and pressed interaction states. */
+html[data-theme="padiem-glass"] .composer .tool-button:hover:not(:disabled),
+html[data-theme="padiem-glass"] .composer .tool-button:focus-visible:not(:disabled) {
+  background: rgba(255, 255, 255, .58);
+  color: #17212a;
+  border-color: rgba(45, 69, 87, .18);
+}
+html[data-theme="padiem-glass"] .composer .tool-button:active:not(:disabled) {
+  background: rgba(255, 255, 255, .72);
+  color: #17212a;
+}
+
 html[data-theme="padiem-glass"] .message-bubble {
   background: rgba(31, 43, 54, .74);
   color: #ffffff;
