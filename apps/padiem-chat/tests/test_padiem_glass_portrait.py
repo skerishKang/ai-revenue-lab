@@ -211,11 +211,13 @@ def test_glass_shell_ports_source_fragment_assembly() -> None:
     assert 'padiem-glass-' in SHELL_JS and '-shell.jpg' in SHELL_JS
 
 
-def test_glass_shell_drivers_are_pointer_and_answer_not_scroll() -> None:
+def test_glass_shell_auto_is_reverse_pointer_reveal_not_partial_assembly() -> None:
     assert '--glass-pointer-reveal' in SHELL_JS
-    assert '--glass-answer-reveal' in SHELL_JS
+    assert 'return 1-clamp(p,0,1);' in SHELL_JS
+    assert 'Math.max(.62*p,.8*a)' not in SHELL_JS
+    assert 'var progress=1, raf=0, lastT=0;' in SHELL_JS
+    assert 'progress=maskMode()==="off"?0:1;' in SHELL_JS
     assert '--glass-pointer-reveal' in THEME_JS
-    assert '--glass-answer-reveal' in THEME_JS
 
 
 def test_glass_shell_mode_and_speed_are_url_authoritative() -> None:
@@ -261,10 +263,21 @@ def test_glass_shell_respects_reduced_motion_and_theme_gate() -> None:
 
 
 def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
-    """Parallax origin must follow the transformed breakpoint-specific portrait field."""
+    """Parallax and hover origin must follow the transformed live portrait field."""
     assert "getBoundingClientRect" in SHELL_JS
     assert "window.innerWidth-fieldW" not in SHELL_JS
     assert "--glass-shell-progress" in SHELL_JS
+    assert 'document.querySelector(".glass-shell-field")' in THEME_JS
+    assert "rect&&rect.width>0?rect.left" in THEME_JS
+    assert "verticalActive" in THEME_JS
+
+
+def test_glass_shell_background_position_parser_keeps_fragments_on_portrait_canvas() -> None:
+    assert "function axisOffset(value, freeSpace, fallbackFraction)" in SHELL_JS
+    assert 'raw.endsWith("%")' in SHELL_JS
+    assert 'raw.endsWith("px")' in SHELL_JS
+    assert "imgL=axisOffset(bpx,fieldW-imgW,1);" in SHELL_JS
+    assert "imgT=axisOffset(bpy,fieldH-imgH,.52);" in SHELL_JS
 
 
 def _jpeg_size(path: Path) -> tuple[int, int]:
