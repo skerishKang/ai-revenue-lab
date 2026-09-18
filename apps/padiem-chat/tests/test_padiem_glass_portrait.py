@@ -270,6 +270,8 @@ def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
     assert 'document.querySelector(".glass-shell-field")' in THEME_JS
     assert "rect&&rect.width>0?rect.left" in THEME_JS
     assert "verticalActive" in THEME_JS
+    assert "(event.clientX-portraitLeft)/hoverRamp" in THEME_JS
+    assert "portraitLeft-120" not in THEME_JS
 
 
 def test_glass_shell_background_position_parser_keeps_fragments_on_portrait_canvas() -> None:
