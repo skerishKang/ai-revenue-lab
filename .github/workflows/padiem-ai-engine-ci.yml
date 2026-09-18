@@ -128,9 +128,9 @@ jobs:
           set -euo pipefail
           test -f python_modules/padiem_ai_core/tool_runtime.py
           grep -q 'class _BoundedSchemaValidator' python_modules/padiem_ai_core/tool_runtime.py
-          jsonschema_path="$(find .venv-workers/pyodide-venv python_modules -path '*/jsonschema/__init__.py' -print -quit 2>/dev/null || true)"
-          referencing_path="$(find .venv-workers/pyodide-venv python_modules -path '*/referencing/__init__.py' -print -quit 2>/dev/null || true)"
-          rpds_path="$(find .venv-workers/pyodide-venv python_modules -path '*/rpds/__init__.py' -print -quit 2>/dev/null || true)"
+          jsonschema_path="$(find .venv .venv-workers python_modules -path '*/jsonschema/__init__.py' -print -quit 2>/dev/null || true)"
+          referencing_path="$(find .venv .venv-workers python_modules -path '*/referencing/__init__.py' -print -quit 2>/dev/null || true)"
+          rpds_path="$(find .venv .venv-workers python_modules -path '*/rpds/__init__.py' -print -quit 2>/dev/null || true)"
           test -z "${jsonschema_path}"
           test -z "${referencing_path}"
           test -z "${rpds_path}"
