@@ -292,6 +292,22 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     ):
         raise AssertionError(f"Glass reverse shell must start fully assembled: {shell_initial}")
 
+    # First-use composer controls must remain visibly discoverable on the bright
+    # Glass surface. DOM visibility alone is insufficient: the old regression
+    # rendered the tier trigger as near-white text on near-white glass.
+    tier_trigger = page.locator(".composer .model-pill[data-mode-control='true']")
+    await tier_trigger.wait_for(state="visible", timeout=5_000)
+    tier_color = await tier_trigger.evaluate("el => getComputedStyle(el).color")
+    if tier_color != "rgb(37, 51, 62)":
+        raise AssertionError(f"Glass tier trigger lost dark foreground contrast: {tier_color}")
+
+    attachment_button = page.locator("#attachmentButton")
+    await attachment_button.hover()
+    attachment_hover_color = await attachment_button.evaluate("el => getComputedStyle(el).color")
+    if attachment_hover_color != "rgb(23, 33, 42)":
+        raise AssertionError(f"Glass file hover lost dark foreground contrast: {attachment_hover_color}")
+    await page.mouse.move(70, 80)
+
     # APPEARANCE controls must expose the approved 3-mode mask and speed bar.
     await page.locator("#settingsButton").click()
     control = page.locator(".glass-shell-control")
@@ -351,7 +367,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
           const rootStyle = getComputedStyle(document.documentElement);
           const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
           const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
-          return pointer >= .20 && progress < .85;
+          const frags = [...document.querySelectorAll('.glass-shell-frag')];
+          const maxOpacity = frags.length
+            ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
+            : 0;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return pointer >= .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
         }""",
         timeout=5_000,
     )
@@ -359,8 +381,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     home_shell_pointer = await _glass_shell_snapshot(page)
     if home_after_pointer["pointerX"] in {"", "0px", "0.0px"} and home_after_pointer["pointerY"] in {"", "0px", "0.0px"}:
         raise AssertionError(f"Padiem Glass home portrait lost cinematic pointer response: {home_after_pointer}")
-    if home_shell_pointer["pointerDriver"] < 0.20 or home_shell_pointer["progress"] >= 0.90:
-        raise AssertionError(f"Glass pointer did not peel the reverse shell: {home_shell_pointer}")
+    if (
+        home_shell_pointer["pointerDriver"] < 0.80
+        or home_shell_pointer["progress"] > 0.08
+        or home_shell_pointer["visibleFragments"] != 0
+        or home_shell_pointer["portalOpacity"] > 0.05
+    ):
+        raise AssertionError(f"Glass portrait hover must settle on the clean portrait: {home_shell_pointer}")
 
     home_name = f"desktop-glass-{variant}-home.png"
     await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
@@ -403,7 +430,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                   const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
                   const answer = parseFloat(rootStyle.getPropertyValue('--glass-answer-reveal')) || 0;
                   const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
-                  return pointer > .45 && answer > .45 && progress < .80;
+                  const frags = [...document.querySelectorAll('.glass-shell-frag')];
+                  const maxOpacity = frags.length
+                    ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
+                    : 0;
+                  const portal = document.querySelector('.glass-shell-portrait');
+                  const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+                  return pointer > .80 && answer > .45 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
                 }""",
                 timeout=5_000,
             )
@@ -454,11 +487,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 )
             if active_shell["pointerDriver"] <= 0 or active_shell["answerDriver"] <= 0:
                 raise AssertionError(f"Glass combined shell drivers are not both active: {active_shell}")
-            if combined_shell_progress >= answer_only_shell_progress - 0.05:
+            if (
+                combined_shell_progress > 0.08
+                or active_shell["visibleFragments"] != 0
+                or active_shell["portalOpacity"] > 0.05
+            ):
                 raise AssertionError(
-                    "Glass pointer must peel the shell even while an answer is active: "
+                    "Glass pointer must settle on a clean portrait even while an answer is active: "
                     f"answer_target={answer_only_shell_target}, combined_target={combined_shell_target}, "
-                    f"answer_progress={answer_only_shell_progress}, combined_progress={combined_shell_progress}"
+                    f"answer_progress={answer_only_shell_progress}, combined={active_shell}"
                 )
 
         # After answer activity and pointer proximity end, reading mode must
@@ -520,7 +557,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
           const rootStyle = getComputedStyle(document.documentElement);
           const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
           const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
-          return pointer >= .20 && progress < .85;
+          const frags = [...document.querySelectorAll('.glass-shell-frag')];
+          const maxOpacity = frags.length
+            ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
+            : 0;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return pointer >= .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
         }""",
         timeout=5_000,
     )
@@ -532,8 +575,12 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         )
     if pointer_only["reveal"] > 1:
         raise AssertionError(f"Glass pointer-only reveal escaped bounds: {pointer_only}")
-    if pointer_only_shell["progress"] >= 0.90:
-        raise AssertionError(f"Glass reading pointer did not peel the reverse shell: {pointer_only_shell}")
+    if (
+        pointer_only_shell["progress"] > 0.08
+        or pointer_only_shell["visibleFragments"] != 0
+        or pointer_only_shell["portalOpacity"] > 0.05
+    ):
+        raise AssertionError(f"Glass reading pointer must settle on the clean portrait: {pointer_only_shell}")
 
     # Moving away must re-cover, then page scrolling alone must not drive the
     # reading portrait.
