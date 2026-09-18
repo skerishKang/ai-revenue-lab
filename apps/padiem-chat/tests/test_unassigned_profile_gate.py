@@ -77,7 +77,7 @@ def test_live_completed_default_plus_reaches_service_binding_with_exact_default_
         assert (
             DEFAULT_B14_MODEL_ID
             == LOW_B14_MODEL_ID
-            == "sensenova/sensenova-6.8-flash-lite"
+            == "agnes-ai/agnes-3.0-flash"
         )
         assert calls == 1
         assert store.refunds == []

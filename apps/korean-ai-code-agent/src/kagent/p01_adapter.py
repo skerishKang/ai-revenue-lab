@@ -136,7 +136,7 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
     declaration (padiem_control_plane.product_tier_routes), shared with
     B62 Padiem Chat.  B14 remains provider/model execution authority.
 
-    Plus → sensenova/sensenova-6.8-flash-lite
+    Plus → agnes-ai/agnes-3.0-flash
     Pro  → HOLD / fail-closed
     Max  → HOLD / fail-closed
     """
