@@ -8,7 +8,12 @@ import pytest
 from app.cloudflare_external_transport import (
     CloudflareExternalHttpTransport,
     drive_worker_transport,
+    gmail_worker_transport,
 )
+
+
+def test_gmail_worker_transport_is_disabled_outside_worker_runtime() -> None:
+    assert gmail_worker_transport() is None
 
 
 class Headers:

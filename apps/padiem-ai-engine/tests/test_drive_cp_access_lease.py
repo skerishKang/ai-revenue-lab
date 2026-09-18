@@ -137,11 +137,11 @@ def test_private_client_rejects_wrong_scope_binding_and_expiry() -> None:
             run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="google-drive"))
 
 
-def test_private_client_rejects_non_drive_connector_without_rpc_call() -> None:
+def test_private_client_rejects_unreviewed_connector_without_rpc_call() -> None:
     binding = FakeServiceBinding()
     client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding, clock=lambda: NOW)
     with pytest.raises(ServiceContractError):
-        run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="gmail"))
+        run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="google-calendar"))
     assert binding.calls == []
 
 

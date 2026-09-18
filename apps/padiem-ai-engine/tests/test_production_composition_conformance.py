@@ -160,8 +160,9 @@ class _DriveGrantBinding:
 class _FailingGrantsBinding:
     """D1-like connector-grant binding whose ``prepare()`` always fails.
 
-    Simulates a grant store outage: the port (three Worker secrets) and the
-    ENGINE_CONNECTOR_GRANTS binding exist, but storage cannot be read. The
+    Simulates a grant store outage: the canonical CP Google OAuth Service
+    Binding and ENGINE_CONNECTOR_GRANTS binding exist, but storage cannot be
+    read. The
     composition must NOT collapse this into a \"grant missed\" fail-closed
     misread; it must surface 503 ``connector_grants_unavailable``.
     """
@@ -538,8 +539,9 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     # in the bound branch may still pass ``None`` literally.
     assert source.count("ToolExecutionEngineService(tool_binding_resolver=None)") == 0
     assert "CanonicalIdempotencyOrchestrationEngineService(" in source
-    # PR-C activation gate: the resolver is wired through env-derived
-    # secrets + D1 grant references. No static truth flag remains.
+    # Canonical connector activation is wired through deployment-owned
+    # authorities (including CP Google OAuth Service Binding) + D1 grant
+    # references. No static truth flag remains.
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
 
 
@@ -599,8 +601,9 @@ async def test_drive_runtime_unregistered_probe_proves_binding_without_provider_
 async def test_grant_store_failure_surfaces_503_connector_grants_unavailable() -> None:
     """A grant store outage is NOT a \"grant missed\".
 
-    When the three Worker secrets and the ENGINE_CONNECTOR_GRANTS binding are
-    present but storage fails, every TOOL_EXECUTE_PATH request must answer
+    When the canonical CP Google OAuth Service Binding and the
+    ENGINE_CONNECTOR_GRANTS binding are present but storage fails, every
+    TOOL_EXECUTE_PATH request must answer
     503 ``connector_grants_unavailable`` — distinct from the fail-closed
     ``tool_runtime_unavailable`` posture used when the port/binding are simply
     absent.
@@ -615,9 +618,7 @@ async def test_grant_store_failure_surfaces_503_connector_grants_unavailable() -
                 # (the same workers-stub surface _load_composition installs);
                 # importing worker_identity directly would hit the real
                 # ``workers`` package, which needs the Cloudflare ``js`` runtime.
-                "ENGINE_GOOGLE_OAUTH_CLIENT_ID": "client_1",
-                "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET": "secret_1",
-                "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN": "refresh_1",
+                "CONTROL_PLANE_GOOGLE_OAUTH": object(),
                 "ENGINE_CONNECTOR_GRANTS": _FailingGrantsBinding(),
             }
         )
