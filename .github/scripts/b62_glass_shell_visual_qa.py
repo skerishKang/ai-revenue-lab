@@ -169,17 +169,19 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     if idle["portalOpacity"] < 0.80 or idle["fragVisible"] > 0:
         raise AssertionError(f"{name}: reverse idle must show the completed shell: {idle}")
 
-    # Pointer-only: entering the real portrait field peels the completed shell
-    # back through the source fragment sequence toward the clean portrait.
+    # Pointer-only: entering the real portrait field must finish on the clean
+    # base portrait. Intermediate shard motion is not the acceptance state.
     await _hover_portrait(page)
-    await _wait_progress_below(page, 0.55, f"{name}-pointer")
+    await _wait_progress_below(page, 0.05, f"{name}-pointer")
     pointer_only = await _shell_state(page)
-    if pointer_only["ptr"] <= 0.4:
-        raise AssertionError(f"{name}: pointer driver did not engage: {pointer_only}")
-    if pointer_only["progress"] >= idle["progress"] - 0.20:
-        raise AssertionError(f"{name}: portrait hover did not peel the shell: {pointer_only}")
-    if pointer_only["fragVisible"] < 1:
-        raise AssertionError(f"{name}: reverse peel never exposed source fragments: {pointer_only}")
+    if pointer_only["ptr"] <= 0.8:
+        raise AssertionError(f"{name}: pointer driver did not fully engage: {pointer_only}")
+    if pointer_only["progress"] > 0.08:
+        raise AssertionError(f"{name}: portrait hover did not reach clean end-state: {pointer_only}")
+    if pointer_only["fragVisible"] > 0 or pointer_only["fragMaxOpacity"] > 0.05:
+        raise AssertionError(f"{name}: hover left mosaic fragments over the clean portrait: {pointer_only}")
+    if pointer_only["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: completed shell portal remained visible during clean hover: {pointer_only}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer.png"), full_page=False)
 
     # Pointer exit reassembles rather than snapping: it must travel back to the
@@ -219,14 +221,14 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # while answer activity is present.
     await _hover_portrait(page)
     await _send_answer_turn(page, f"{variant}-combined")
-    await _wait_progress_below(page, 0.55, f"{name}-combined")
+    await _wait_progress_below(page, 0.05, f"{name}-combined")
     combined = await _shell_state(page)
-    if combined["ptr"] <= 0.4 or combined["ans"] <= 0.05:
+    if combined["ptr"] <= 0.8 or combined["ans"] <= 0.05:
         raise AssertionError(f"{name}: combined drivers are not both active: {combined}")
-    if combined["progress"] >= answer_only["progress"] - 0.20:
-        raise AssertionError(f"{name}: pointer did not peel shell during answer activity: {combined}")
-    if combined["fragVisible"] < 1:
-        raise AssertionError(f"{name}: combined reverse peel did not expose fragments: {combined}")
+    if combined["progress"] > 0.08:
+        raise AssertionError(f"{name}: pointer did not fully peel shell during answer activity: {combined}")
+    if combined["fragVisible"] > 0 or combined["fragMaxOpacity"] > 0.05 or combined["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: combined hover did not settle on clean portrait: {combined}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-combined.png"), full_page=False)
 
     await page.mouse.move(70, 90)
