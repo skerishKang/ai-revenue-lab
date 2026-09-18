@@ -21,6 +21,7 @@ class Default(WorkerEntrypoint):
         result = {
             "real_httpx_transport_class": False,
             "worker_fetch_get": False,
+            "fetch_decoded_gzip_normalized": False,
             "incremental_body": False,
             "timeout_enforced": False,
             "host_gate": False,
@@ -37,6 +38,14 @@ class Default(WorkerEntrypoint):
                 normal = await client.get("http://127.0.0.1:9101/normal")
                 result["worker_fetch_get"] = (
                     normal.status_code == 200 and normal.content == b"normal-ok"
+                )
+
+                compressed = await client.get("http://127.0.0.1:9101/gzip-json")
+                result["fetch_decoded_gzip_normalized"] = (
+                    compressed.status_code == 200
+                    and compressed.content == b'{"files":[]}'
+                    and "content-encoding" not in compressed.headers
+                    and "content-length" not in compressed.headers
                 )
 
                 started = time.monotonic()
@@ -73,6 +82,7 @@ class Default(WorkerEntrypoint):
         ok = all(result.get(key) is True for key in (
             "real_httpx_transport_class",
             "worker_fetch_get",
+            "fetch_decoded_gzip_normalized",
             "incremental_body",
             "timeout_enforced",
             "host_gate",
