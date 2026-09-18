@@ -112,16 +112,50 @@
 
 html[data-theme="dark"] .mode-presentation-panel,
 html[data-theme="cinematic"] .mode-presentation-panel,
-html[data-theme="padiem-home"] .mode-presentation-panel,
-html[data-theme="padiem-glass"] .mode-presentation-panel {
+html[data-theme="padiem-home"] .mode-presentation-panel {
   background: rgba(14, 18, 26, .94);
 }
 
 html[data-theme="dark"] .mode-option,
 html[data-theme="cinematic"] .mode-option,
-html[data-theme="padiem-home"] .mode-option,
-html[data-theme="padiem-glass"] .mode-option {
+html[data-theme="padiem-home"] .mode-option {
   background: rgba(255, 255, 255, .06);
+}
+
+/* Glass is a bright frosted surface. Do not inherit the dark/cinematic tier
+ * popover treatment: that produced a nearly black island over the light home. */
+html[data-theme="padiem-glass"] .mode-presentation-panel {
+  border-color: rgba(255, 255, 255, .72);
+  background:
+    linear-gradient(155deg, rgba(252, 253, 254, .96), rgba(232, 238, 242, .92));
+  color: #17212a;
+  box-shadow:
+    0 24px 70px rgba(24, 33, 42, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .90);
+  backdrop-filter: blur(28px) saturate(108%);
+  -webkit-backdrop-filter: blur(28px) saturate(108%);
+}
+
+html[data-theme="padiem-glass"] .mode-presentation-header small,
+html[data-theme="padiem-glass"] .mode-option small,
+html[data-theme="padiem-glass"] .mode-presentation-truth {
+  color: #53606c;
+}
+
+html[data-theme="padiem-glass"] .mode-option {
+  border-color: rgba(42, 55, 66, .12);
+  background: rgba(255, 255, 255, .66);
+  color: #17212a;
+}
+
+html[data-theme="padiem-glass"] .mode-option[aria-pressed="true"] {
+  border-color: rgba(45, 69, 87, .34);
+  background: rgba(255, 255, 255, .84);
+}
+
+html[data-theme="padiem-glass"] .mode-option-state {
+  background: rgba(45, 69, 87, .10);
+  color: #40515f;
 }
 
 @media (max-width: 720px) {
