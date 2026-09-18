@@ -435,6 +435,18 @@ async def test_resolver_projection_error_preserves_bounded_code(fx: Fixture):
     assert fx.total() == 0
 
 
+async def test_unexpected_resolver_failure_has_distinct_bounded_code(fx: Fixture):
+    def broken_binding(_app_id: str):
+        raise RuntimeError("private resolver detail must not cross the boundary")
+
+    service = ToolExecutionEngineService(tool_binding_resolver=broken_binding)
+    response = await service.execute_payload(execute_payload())
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "tool_binding_resolution_failed"
+    assert "private resolver detail" not in json.dumps(response.body)
+    assert fx.total() == 0
+
+
 async def test_missing_auth_scope_fails_closed(fx: Fixture):
     fx.scopes = ()
     response = await fx.service.execute_payload(execute_payload())
