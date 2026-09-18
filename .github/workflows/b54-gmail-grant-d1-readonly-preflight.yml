@@ -1,0 +1,273 @@
+name: B54 Gmail Grant D1 Read-only Preflight
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-gmail-grant-d1-readonly-preflight.yml"
+      - "apps/padiem-ai-engine/scripts/connector_grant_seed.py"
+      - "apps/padiem-ai-engine/tests/test_connector_grant_seed_script.py"
+      - "apps/padiem-ai-engine/wrangler.toml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-gmail-grant-d1-readonly-preflight.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA for read-only Gmail grant preflight'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_GMAIL_GRANT_READONLY_PREFLIGHT'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-gmail-grant-d1-readonly-preflight
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  D1_BINDING: ENGINE_CONNECTOR_GRANTS
+  EXPECTED_D1_ID: 6b77ad02-bc27-488f-bb97-6325f6750cba
+  GMAIL_APP_ID: b54-padiem-claw
+  GMAIL_CONNECTOR_ID: connector:google:gmail@1
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Gmail grant preflight source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b54-gmail-grant-d1-readonly-preflight.yml").read_text(encoding="utf-8")
+          seed = Path("apps/padiem-ai-engine/scripts/connector_grant_seed.py").read_text(encoding="utf-8")
+          wrangler = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
+
+          required = (
+              "b54-padiem-claw",
+              "connector:google:gmail@1",
+              "ENGINE_CONNECTOR_GRANTS",
+              "6b77ad02-bc27-488f-bb97-6325f6750cba",
+              "GMAIL_GRANT_TOTAL_ROWS=",
+              "GMAIL_GRANT_ACTIVE_COUNT=",
+              "GMAIL_GRANT_INACTIVE_COUNT=",
+              "GMAIL_GRANT_PREFLIGHT=PASS_ZERO_ACTIVE",
+              "RAW_BINDING_REF_OUTPUT=0",
+              "RAW_ACTOR_REF_OUTPUT=0",
+              "ROW_VALUE_OUTPUT=AGGREGATES_ONLY",
+              "D1_QUERY_MODE=READ_ONLY",
+              "D1_MUTATION=0",
+              "GOOGLE_PROVIDER_CALLS=0",
+              "OAUTH_CONNECT=0",
+              "GMAIL_API_CALLS=0",
+              "PRODUCTION_MUTATION=0",
+          )
+          for marker in required:
+              if marker not in workflow:
+                  raise SystemExit(f"missing Gmail grant readonly invariant: {marker}")
+
+          if '_DEFAULT_GMAIL_BINDING_REF' in seed or '_DEFAULT_GMAIL_ACTOR_REF' in seed:
+              raise SystemExit("synthetic Gmail OAuth ref defaults must not exist")
+          if 'args.action == "seed"' not in seed:
+              raise SystemExit("Gmail/Drive seed must require explicit connection refs")
+          if 'binding = "ENGINE_CONNECTOR_GRANTS"' not in wrangler:
+              raise SystemExit("Engine connector grants D1 binding missing")
+          if 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' not in wrangler:
+              raise SystemExit("Engine connector grants D1 identity drifted")
+
+          live_region = workflow.split("Read exact canonical Gmail grant preflight", 1)[-1].upper()
+          forbidden_sql = (
+              "INSERT " + "INTO",
+              "UP" + "DATE ",
+              "DE" + "LETE FROM",
+              "RE" + "PLACE INTO",
+              "DR" + "OP TABLE",
+              "AL" + "TER TABLE",
+              "CREATE " + "TABLE",
+              "CREATE " + "INDEX",
+          )
+          for token in forbidden_sql:
+              if token in live_region:
+                  raise SystemExit(f"mutation SQL forbidden in Gmail grant readonly preflight: {token}")
+
+          print("B54_GMAIL_GRANT_D1_READONLY_SOURCE_CONTRACT=PASS")
+          print("D1_QUERY_MODE=READ_ONLY")
+          print("D1_MUTATION=0")
+          print("GOOGLE_PROVIDER_CALLS=0")
+          print("OAUTH_CONNECT=0")
+          print("GMAIL_API_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Test explicit trusted-ref seed contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pytest
+          python -m pytest -q apps/padiem-ai-engine/tests/test_connector_grant_seed_script.py
+
+  production-readonly:
+    needs: source-contract
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirmation == 'RUN_B54_GMAIL_GRANT_READONLY_PREFLIGHT')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact authorized revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "${expected}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${expected}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+          echo "READONLY_TARGET_SHA=${expected}"
+
+      - name: Resolve live Engine connector-grants D1 binding without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/engine-settings-gmail-grant-readonly.json"
+          curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings"             -o "${settings}"
+
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" "${EXPECTED_D1_ID}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = payload.get("result", {}).get("bindings", []) if payload.get("success") is True else []
+          hits = [b for b in bindings if b.get("type") == "d1" and b.get("name") == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit("expected exactly one live ENGINE_CONNECTOR_GRANTS binding")
+          database_id = hits[0].get("id")
+          if not isinstance(database_id, str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}", database_id):
+              raise SystemExit("live Engine connector-grants D1 binding has invalid database id")
+          if database_id.lower() != sys.argv[3].lower():
+              raise SystemExit("live Engine connector-grants D1 identity drifted")
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_ENGINE_CONNECTOR_GRANTS_D1_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - name: Read exact canonical Gmail grant preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+
+          query_payload="${RUNNER_TEMP}/gmail-grant-readonly-query.json"
+          python - "${query_payload}" "${GMAIL_APP_ID}" "${GMAIL_CONNECTOR_ID}" <<'PY'
+          import json, sys
+          app_id, connector_id = sys.argv[2:4]
+          sql = """
+          SELECT
+            COUNT(*) AS total_rows,
+            SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) AS active_count,
+            SUM(CASE WHEN active = 0 THEN 1 ELSE 0 END) AS inactive_count
+          FROM padiem_engine_connector_grants
+          WHERE app_id = ? AND connector_id = ?;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql, "params": [app_id, connector_id]}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/gmail-grant-readonly-response.json"
+          curl -fsS -X POST "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"             --data-binary "@${query_payload}" -o "${response}"
+
+          python - "${response}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("Gmail grant D1 read-only query failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("Gmail grant D1 read-only result envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("Gmail grant D1 read-only aggregate row invalid")
+
+          row = rows[0]
+          total_rows = int(row.get("total_rows") or 0)
+          active_count = int(row.get("active_count") or 0)
+          inactive_count = int(row.get("inactive_count") or 0)
+
+          print(f"GMAIL_GRANT_TOTAL_ROWS={total_rows}")
+          print(f"GMAIL_GRANT_ACTIVE_COUNT={active_count}")
+          print(f"GMAIL_GRANT_INACTIVE_COUNT={inactive_count}")
+
+          if total_rows not in (0, 1):
+              raise SystemExit("canonical Gmail grant row is duplicated")
+          if active_count != 0:
+              raise SystemExit("active canonical Gmail grant already exists; seed must stop")
+          if inactive_count not in (0, 1):
+              raise SystemExit("canonical Gmail inactive-row cardinality invalid")
+
+          print("GMAIL_GRANT_PREFLIGHT=PASS_ZERO_ACTIVE")
+          PY
+
+          echo "RAW_BINDING_REF_OUTPUT=0"
+          echo "RAW_ACTOR_REF_OUTPUT=0"
+          echo "ROW_VALUE_OUTPUT=AGGREGATES_ONLY"
+          echo "PROVIDER_CREDENTIAL_OUTPUT=0"
+          echo "D1_QUERY_MODE=READ_ONLY"
+          echo "D1_MUTATION=0"
+          echo "GMAIL_GRANT_SEED=0"
+          echo "GOOGLE_PROVIDER_CALLS=0"
+          echo "OAUTH_CONNECT=0"
+          echo "GMAIL_API_CALLS=0"
+          echo "GMAIL_WRITE=0"
+          echo "GMAIL_DRAFT=0"
+          echo "GMAIL_SEND=0"
+          echo "ENGINE_DEPLOY=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Publish bounded preflight evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B54 Gmail grant D1 read-only preflight"
+            echo
+            echo "- SQL mode: SELECT-only"
+            echo "- raw binding/actor refs emitted: no"
+            echo "- Google/Gmail provider calls: 0"
+            echo "- D1 mutation: 0"
+            echo "- Production mutation: 0"
+          } >> "${GITHUB_STEP_SUMMARY}"
