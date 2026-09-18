@@ -280,6 +280,23 @@ def test_search_query_escapes_reviewed_b54_form() -> None:
 # --- promoted safety bounds ---
 
 
+def test_projection_accepts_bounded_google_web_view_link_query_and_fragment() -> None:
+    metadata = file_metadata()
+    metadata["webViewLink"] = (
+        "https://docs.google.com/document/d/file_1/edit"
+        "?usp=drivesdk&resourcekey=0-example#heading=h.test"
+    )
+    projection = project_drive_file(metadata)
+    assert projection.safe_dict()["web_view_link"] == metadata["webViewLink"]
+
+
+def test_projection_rejects_non_google_web_view_link_host() -> None:
+    metadata = file_metadata()
+    metadata["webViewLink"] = "https://evil.example/file_1?token=not-trusted"
+    with pytest.raises(DriveContractError, match="Google HTTPS URL"):
+        project_drive_file(metadata)
+
+
 def test_projection_preserves_shared_drive_identity_and_version_evidence() -> None:
     projection = project_drive_file(file_metadata(drive_id="shared_drive_42"))
     payload = projection.safe_dict()
