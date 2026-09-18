@@ -38,6 +38,7 @@ from app.connector_bindings import (
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.drive_port_httpx import HttpxDriveReadPort
+from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import EngineToolProjectionError
 
 BINDING_REF = "bind:drive_engine"
@@ -124,6 +125,33 @@ def test_drive_tool_binding_assembles_engine_tool_binding() -> None:
     assert set(binding.tool_runtime.registered_tool_ids) == set(DRIVE_READ_TOOL_IDS)
     assert DRIVE_AGENT_ID in binding.authorities
     assert isinstance(binding.tool_runtime, ToolRuntime)
+
+
+@pytest.mark.asyncio
+async def test_drive_tool_binding_maps_capability_to_core_scope_and_executes() -> None:
+    port = FakeDrivePort()
+    binding = drive_tool_binding(grant=drive_grant(), port=port)
+    authority = binding.authorities[DRIVE_AGENT_ID]
+    assert authority.authorization.granted_auth_scopes == ("drive.readonly",)
+
+    service = ToolExecutionEngineService(
+        tool_binding_resolver=lambda app_id: (
+            binding if app_id == DRIVE_REFERENCE_APP_ID else None
+        )
+    )
+    response = await service.execute_payload(
+        {
+            "app_id": DRIVE_REFERENCE_APP_ID,
+            "agent_id": DRIVE_AGENT_ID,
+            "tool_id": "tool:google:drive.list_recent_files@1",
+            "arguments": {},
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.body["tool"]["status"] == "completed"
+    assert len(port.calls) == 1
+    assert port.calls[0]["required_scopes"] == (DRIVE_READONLY_SCOPE,)
 
 
 def test_drive_tool_binding_rejects_gmail_grant() -> None:
