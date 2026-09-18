@@ -1,7 +1,7 @@
 """Connector grant seed script contract tests (#2222).
 
 Covers both reviewed READ connector grant paths:
-- Gmail readonly scope grant (backwards-compatible default);
+- Gmail readonly scope grant with trusted binding/actor refs;
 - Google Drive READ capability grant with trusted binding/actor refs.
 
 All tests are network-free. Invalid authority input must fail before any D1
@@ -37,22 +37,30 @@ def _run_with_d1_probe(argv: list[str], monkeypatch: pytest.MonkeyPatch) -> tupl
     return _MODULE.main(argv), calls
 
 
-# --- Gmail regression / backwards-compatible default -----------------------
+# --- Gmail READ-only grant path ---------------------------------------------
+
+_GMAIL_BINDING = "google-gmail-binding-owner-1"
+_GMAIL_ACTOR = "actor:owner-1"
+
 
 def test_gmail_seed_dry_run_emits_scope_and_empty_capability_columns(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
     monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-07T00:00:00+00:00")
-    rc = _MODULE.main(["--action", "seed"])
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
     assert rc == 0
     out = capsys.readouterr().out
     assert out.startswith("INSERT INTO padiem_engine_connector_grants")
     assert "granted_scopes_json, granted_capabilities_json" in out
     assert (
         "'b54-padiem-claw', 'agent:padiem:claw_mail_reader@1', "
-        "'connector:google:gmail@1', 'bind:b54-padiem-claw:claw_mail_reader', "
-        "'actor:b54-padiem-claw:claw_mail_reader', '[\"gmail.readonly\"]', "
+        "'connector:google:gmail@1', 'google-gmail-binding-owner-1', "
+        "'actor:owner-1', '[\"gmail.readonly\"]', "
         "'[]', 1, '2026-09-07T00:00:00+00:00', '2026-09-07T00:00:00+00:00'"
     ) in out
     assert "ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1" in out
@@ -71,6 +79,15 @@ def test_gmail_revoke_dry_run_targets_gmail_row(
     out = capsys.readouterr().out
     assert out.startswith("UPDATE padiem_engine_connector_grants SET active=0")
     assert "WHERE app_id='b54-padiem-claw' AND connector_id='connector:google:gmail@1';" in out
+
+
+def test_gmail_missing_binding_and_actor_fail_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "gmail", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
 
 
 def test_list_dry_run_emits_read_only_select_without_invoking_wrangler(
@@ -237,7 +254,11 @@ def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.
         return _FakeResult()
 
     monkeypatch.setattr(_MODULE.subprocess, "run", _fake_run)
-    rc = _MODULE.main(["--action", "seed", "--execute"])
+    rc = _MODULE.main([
+        "--action", "seed", "--execute",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
     assert rc == 0
     cmd = captured["cmd"]
     assert isinstance(cmd, list)
