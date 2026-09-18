@@ -57,6 +57,7 @@ from padiem_ai_core.drive_capability import (
 from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
 from padiem_ai_core.tool_runtime import (
     ToolAuthorizationContext,
+    ToolHandlerError,
     ToolInvocation,
     ToolRuntime,
     ToolRuntimeError,
@@ -595,7 +596,7 @@ def test_unknown_drive_tool_is_not_registered() -> None:
     assert port.calls == []
 
 
-def test_port_failure_is_wrapped_and_never_leaks_refs() -> None:
+def test_port_failure_is_bounded_and_never_leaks_refs() -> None:
     class LeakyPort(FakeDrivePort):
         def get_json(self, **kwargs):
             self.calls.append(kwargs)
@@ -605,12 +606,25 @@ def test_port_failure_is_wrapped_and_never_leaks_refs() -> None:
 
     port = LeakyPort()
     handlers = drive_handlers(port)
-    with pytest.raises(DriveContractError) as info:
+    with pytest.raises(ToolHandlerError) as info:
         run(handlers[DRIVE_GET_FILE_METADATA_TOOL_ID]({"fileId": "file_1"}))
+    assert info.value.code == "google_drive_provider_boundary_failed"
     message = str(info.value)
     assert "SECRET123" not in message
     assert BINDING_REF not in message
     assert ACTOR_REF not in message
+
+
+def test_invalid_port_body_is_bounded_provider_boundary_failure() -> None:
+    class InvalidBodyPort(FakeDrivePort):
+        def get_json(self, **kwargs):
+            self.calls.append(kwargs)
+            return []  # type: ignore[return-value]
+
+    handlers = drive_handlers(InvalidBodyPort())
+    with pytest.raises(ToolHandlerError) as info:
+        run(handlers[DRIVE_LIST_RECENT_FILES_TOOL_ID]({}))
+    assert info.value.code == "google_drive_provider_boundary_failed"
 
 
 def test_module_owns_no_network_or_credential_surface() -> None:
