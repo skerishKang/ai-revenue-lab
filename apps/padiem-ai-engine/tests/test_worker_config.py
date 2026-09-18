@@ -68,3 +68,12 @@ def test_worker_source_has_no_browser_cors_or_public_b14_fallback() -> None:
     assert "workers.dev" not in transport
     assert 'B14_SERVICE_BINDING_NAME = "B14_SERVICE"' in source
     assert 'B14_INTERNAL_ORIGIN = "https://b14.internal"' in transport
+
+
+def test_engine_production_depends_on_core_tools_extra() -> None:
+    pyproject = tomllib.loads((APP_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    dependencies = pyproject["project"]["dependencies"]
+    assert any(
+        isinstance(item, str) and item.startswith("padiem-ai-core[tools] @ ")
+        for item in dependencies
+    )
