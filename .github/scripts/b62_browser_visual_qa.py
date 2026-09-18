@@ -474,15 +474,26 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 timeout=8_000,
             )
         elif turn == 1:
+            # Certify answer activity independently, then sample the shell at
+            # that exact moment. Keeping both predicates inside one wait hid
+            # whether a failure came from the answer pulse or shell assembly.
             await page.wait_for_function(
                 """() => {
                   const rootStyle = getComputedStyle(document.documentElement);
                   const answer = parseFloat(rootStyle.getPropertyValue('--glass-answer-reveal')) || 0;
-                  const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
-                  return answer > 0 && progress >= .90;
+                  return answer > 0;
                 }""",
                 timeout=5_000,
             )
+            answer_only_shell_live = await _glass_shell_snapshot(page)
+            if (
+                answer_only_shell_live["progress"] < 0.90
+                or answer_only_shell_live["portalOpacity"] < 0.60
+            ):
+                raise AssertionError(
+                    "Glass answer-only activity must keep the resting shell assembled "
+                    f"while the answer pulse is live: {answer_only_shell_live}"
+                )
         else:
             # Later turns exercise accumulated reading stability. Shell recovery
             # is certified explicitly at the end of every turn below.
