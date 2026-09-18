@@ -34,8 +34,11 @@ async def _shell_state(page: Page) -> dict[str, Any]:
             speed: root.getAttribute('data-glass-speed'),
             ptr: parseFloat(style.getPropertyValue('--glass-pointer-reveal')) || 0,
             ans: parseFloat(style.getPropertyValue('--glass-answer-reveal')) || 0,
+            pointerX: style.getPropertyValue('--glass-pointer-x').trim(),
+            pointerY: style.getPropertyValue('--glass-pointer-y').trim(),
             dissolve: parseFloat(style.getPropertyValue('--glass-shell-dissolve')) || 0,
             progress: shell.progress ? shell.progress() : -1,
+            target: shell.target ? shell.target() : -1,
             fragCount: frags.length,
             fragVisible: opacities.filter((o) => o > 0.08).length,
             fragMaxOpacity: opacities.length ? Math.max(...opacities) : 0,
@@ -169,9 +172,37 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     if idle["portalOpacity"] < 0.80 or idle["fragVisible"] > 0:
         raise AssertionError(f"{name}: reverse idle must show the completed shell: {idle}")
 
-    # Pointer-only: entering the real portrait field must finish on the clean
-    # base portrait. Intermediate shard motion is not the acceptance state.
-    await _hover_portrait(page)
+    # Pointer-only: hover is a binary state transition, not an X-axis scrub.
+    # Enter near the LEFT side of the actual image, sample the slow transition,
+    # then move to the RIGHT side and require the same target with monotonic
+    # time-driven progress.
+    shell_rect = await page.evaluate(
+        "() => window.__padiemGlassShell && window.__padiemGlassShell.imageRect && window.__padiemGlassShell.imageRect()"
+    )
+    if not shell_rect:
+        raise AssertionError(f"{name}: missing live portrait image rect")
+    y = shell_rect["top"] + shell_rect["height"] * 0.44
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)
+    await page.wait_for_timeout(260)
+    left_transition = await _shell_state(page)
+    if left_transition["ptr"] < 0.99 or left_transition["target"] > 0.01:
+        raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
+    if left_transition["progress"] < 0.40:
+        raise AssertionError(f"{name}: shell teardown is too fast at 1x: {left_transition}")
+    if left_transition["pointerX"] not in {"", "0px", "0.0px"} or left_transition["pointerY"] not in {"", "0px", "0.0px"}:
+        raise AssertionError(f"{name}: hover must not parallax the portrait: {left_transition}")
+
+    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition.png"), full_page=False)
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
+    await page.wait_for_timeout(260)
+    right_transition = await _shell_state(page)
+    if right_transition["ptr"] < 0.99 or right_transition["target"] > 0.01:
+        raise AssertionError(f"{name}: right-edge hover changed the binary peel target: {right_transition}")
+    if right_transition["progress"] > left_transition["progress"] + 0.02:
+        raise AssertionError(
+            f"{name}: horizontal motion scrubbed/reversed time progress: left={left_transition}, right={right_transition}"
+        )
+
     await _wait_progress_below(page, 0.05, f"{name}-pointer")
     pointer_only = await _shell_state(page)
     if pointer_only["ptr"] <= 0.8:
