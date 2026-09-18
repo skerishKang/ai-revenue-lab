@@ -480,8 +480,13 @@
     var portraitTop=rect&&rect.height>0?rect.top:68;
     var portraitBottom=rect&&rect.height>0?rect.bottom:window.innerHeight;
     var verticalActive=event.clientY>=portraitTop-36&&event.clientY<=portraitBottom+36;
+    var hoverRamp=rect&&rect.width>0
+      ?Math.max(120,Math.min(220,rect.width*.45))
+      :180;
+    /* Reverse shell starts only after the pointer enters the live portrait
+     * field. Composer/send interactions to the left must not peel the face. */
     var proximity=verticalActive
-      ?Math.max(0,Math.min(1,(event.clientX-(portraitLeft-120))/120))
+      ?Math.max(0,Math.min(1,(event.clientX-portraitLeft)/hoverRamp))
       :0;
     glassPointerReveal=smoothstep(proximity);
 
