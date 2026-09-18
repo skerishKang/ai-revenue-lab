@@ -242,7 +242,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(f"{name}: shell/ribbons disappeared before the ~900ms mid-transition sample: {right_transition}")
     if right_transition["fragMaxHeightRatio"] > 0.075 or right_transition["fragMaxAreaRatio"] > 0.075:
         raise AssertionError(f"{name}: mid transition contains oversized mosaic fragments: {right_transition}")
-    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-mid.png"), full_page=False)
+    # Primary browser QA owns the ~900ms visual evidence. Keep this focused
+    # timing contract free of screenshot I/O until peel elapsed is measured.
 
     await _wait_progress_below(page, 0.05, f"{name}-pointer")
     peel_elapsed_ms = await page.evaluate("started => performance.now() - started", peel_started)
