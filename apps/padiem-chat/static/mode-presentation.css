@@ -37,6 +37,13 @@ html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"]:
   color: #17212a;
 }
 
+html[data-theme="padiem-glass"] .composer .model-pill[data-mode-control="true"] .status-spark {
+  color: #4f86ad;
+  opacity: 1;
+  font-size: 13px;
+  text-shadow: 0 0 10px rgba(79, 134, 173, .28);
+}
+
 .model-pill[data-mode-control="true"]:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 3px;
