@@ -207,7 +207,10 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     if left_transition["pointerX"] not in {"", "0px", "0.0px"} or left_transition["pointerY"] not in {"", "0px", "0.0px"}:
         raise AssertionError(f"{name}: hover must not parallax the portrait: {left_transition}")
 
-    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition.png"), full_page=False)
+    # Do not screenshot here: capture I/O can consume >1s on CI while the
+    # animation correctly keeps running. The primary browser QA already saves
+    # the 260ms early frame; this focused shell QA must preserve the ~900ms
+    # timing window for its next sample.
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
     elapsed_before_mid = float(
         await page.evaluate("started => performance.now() - started", peel_started)
@@ -370,6 +373,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     await _assert_no_horizontal_overflow(page, name)
     return {
         "idle": idle,
+        "left_transition": left_transition,
+        "right_transition": right_transition,
         "pointer_only": pointer_only,
         "mid_elapsed_ms": mid_elapsed_ms,
         "peel_elapsed_ms": peel_elapsed_ms,
