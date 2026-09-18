@@ -423,7 +423,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     if early_shell["portalOpacity"] < 0.55:
         raise AssertionError(f"Glass shell portal faded too early at 260ms: {early_shell}")
     early_name = f"desktop-glass-{variant}-transition-early.png"
-    await page.screenshot(path=str(OUT_DIR / early_name), full_page=True)
+    await page.screenshot(path=str(OUT_DIR / early_name), full_page=False)
 
     # Move across the portrait while the SAME time-driven peel continues.
     # Around 900ms we require a genuine intermediate state: shell/ribbons are
@@ -433,7 +433,22 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         portrait_rect["left"] + portrait_rect["width"] * 0.82,
         portrait_y,
     )
-    await page.wait_for_timeout(650)
+    # Screenshot capture itself consumes wall-clock time while the product
+    # animation continues. Anchor the mid sample to performance.now() rather
+    # than blindly sleeping another 650ms after the early screenshot.
+    elapsed_before_mid = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    remaining_to_mid = max(0, int(900 - elapsed_before_mid))
+    if remaining_to_mid:
+        await page.wait_for_timeout(remaining_to_mid)
+    mid_elapsed_ms = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    if not 800 <= mid_elapsed_ms <= 1_300:
+        raise AssertionError(
+            f"Glass mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
+        )
     mid_shell = await _glass_shell_snapshot(page)
     if mid_shell["pointerDriver"] < 0.80:
         raise AssertionError(f"Glass right-side hover lost the binary peel target: {mid_shell}")
@@ -450,7 +465,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     if mid_shell["portalOpacity"] <= 0.18 or mid_shell["visibleFragments"] <= 0:
         raise AssertionError(f"Glass shell/ribbons disappeared before the mid-transition sample: {mid_shell}")
     mid_name = f"desktop-glass-{variant}-transition-mid.png"
-    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=True)
+    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=False)
 
     await page.wait_for_function(
         """() => {
@@ -510,7 +525,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     if recovered_shell["portalOpacity"] < 0.80 or recovered_shell["visibleFragments"] != 0:
         raise AssertionError(f"Glass shell did not fully reassemble after pointer exit: {recovered_shell}")
     recovered_name = f"desktop-glass-{variant}-recovered.png"
-    await page.screenshot(path=str(OUT_DIR / recovered_name), full_page=True)
+    await page.screenshot(path=str(OUT_DIR / recovered_name), full_page=False)
 
     chat_name = f"desktop-glass-{variant}-chat.png"
     reading_samples: list[dict[str, Any]] = []
@@ -784,6 +799,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             "recovered_screenshot": recovered_name,
             "transition_early": early_shell,
             "transition_mid": mid_shell,
+            "transition_mid_elapsed_ms": mid_elapsed_ms,
             "recovered": recovered_shell,
             "peel_elapsed_ms": peel_elapsed_ms,
             "recover_elapsed_ms": recover_elapsed_ms,
