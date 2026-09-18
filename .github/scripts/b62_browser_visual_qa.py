@@ -407,7 +407,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 }""",
                 timeout=5_000,
             )
-        else:
+        elif turn == 1:
             await page.wait_for_function(
                 """() => {
                   const rootStyle = getComputedStyle(document.documentElement);
@@ -415,6 +415,11 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                   const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
                   return answer > 0 && progress >= .90;
                 }""",
+                timeout=5_000,
+            )
+        else:
+            await page.wait_for_function(
+                "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) >= .90",
                 timeout=5_000,
             )
         active = await _glass_motion_snapshot(page)
