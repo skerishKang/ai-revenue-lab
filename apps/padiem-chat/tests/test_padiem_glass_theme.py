@@ -84,3 +84,9 @@ def test_glass_theme_has_no_provider_or_core_behavior() -> None:
     combined = THEME_JS + THEME_INIT + GLASS_CSS
     for forbidden in ["provider_id", "selected_provider", "selected_model", "B14", "padiem-ai-core", "control-plane"]:
         assert forbidden not in combined
+
+
+def test_glass_second_home_headline_line_stays_readable_on_bright_surface() -> None:
+    assert 'html[data-theme="padiem-glass"] .empty-state h1 br + span' in GLASS_CSS
+    block = GLASS_CSS.split('html[data-theme="padiem-glass"] .empty-state h1 br + span {', 1)[1].split("}", 1)[0]
+    assert "color: #66737e" in block
