@@ -182,22 +182,21 @@
     imgT=axisOffset(bpy,fieldH-imgH,.52);
 
     var cellW=imgW/COLS, cellH=imgH/ROWS;
-    var cx=imgL+imgW/2, cy=imgT+imgH/2;
     var url=shellUrl();
     lastVariant=variant();
     for(var i=0;i<FRAG_COUNT;i++){
       var f=frags[i], col=i%COLS, row=Math.floor(i/COLS);
-      /* source: golden-angle scatter ring + per-plate size/rotation deltas */
-      var angle=i*2.399, ring=Math.min(imgW,imgH)*(.42+(i%5)*.07);
-      var sx=cx+Math.cos(angle)*ring, sy=cy+Math.sin(angle)*ring;
-      var fx=imgL+col*cellW, fy=imgT+row*cellH;
-      f.d={sx:sx,sy:sy,fx:fx,fy:fy,
-           sw:cellW*(.5+(i%4)*.12), sh:cellH*(.44+((i+2)%4)*.12),
-           fw:cellW+1, fh:cellH+1,
-           sr:-68+(i*37)%136, fr:(i%3-1)*2.2};
+      /*
+       * Position is field-relative, but the fragment's background crop is
+       * image-local. Including imgL/imgT in the crop offset double-shifts the
+       * source pixels and creates displaced duplicate eyes/face pieces.
+       */
+      var cropX=col*cellW, cropY=row*cellH;
+      var fx=imgL+cropX, fy=imgT+cropY;
+      f.d={fx:fx,fy:fy,fw:cellW+1,fh:cellH+1,cropX:cropX,cropY:cropY};
       f.el.style.backgroundImage='url("'+url+'")';
       f.el.style.backgroundSize=imgW+"px "+imgH+"px";
-      f.el.style.backgroundPosition=(-fx)+"px "+(-fy)+"px";
+      f.el.style.backgroundPosition=(-cropX)+"px "+(-cropY)+"px";
       f.el.style.clipPath=CLIP_SHAPES[i%CLIP_SHAPES.length];
     }
   }
@@ -228,18 +227,15 @@
       var disappear=1-ease(clamp((phase-(.34+delay))/.48,0,1));
       var fragOpacity=.42*appear*disappear;
 
-      /* Keep every tile registered over the same portrait pixels. A tiny
-       * sub-6px drift gives the impression of plates releasing without ever
-       * creating a second displaced face. */
-      var angle=i*2.399;
-      var drift=(1-Math.abs(p-.5)*2)*6;
-      var x=d.fx+Math.cos(angle)*drift;
-      var y=d.fy+Math.sin(angle)*drift;
+      /* Keep every tile exactly registered over the same portrait pixels.
+       * The cinematic effect comes from staggered opacity only: no scatter,
+       * parallax, rotation, or drift that can duplicate facial features. */
+      var x=d.fx, y=d.fy;
 
       f.el.style.width=d.fw+"px";
       f.el.style.height=d.fh+"px";
       f.el.style.opacity=String(clamp(fragOpacity,0,.42));
-      f.el.style.transform="translate3d("+x+"px,"+y+"px,0) rotate("+d.fr+"deg) scale(1)";
+      f.el.style.transform="translate3d("+x+"px,"+y+"px,0) rotate(0deg) scale(1)";
       f.el.style.filter="saturate(1) blur(0px)";
     }
 
