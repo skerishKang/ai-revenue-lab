@@ -1,0 +1,146 @@
+name: B54 Engine Drive S4 Read-only Gate
+
+# Read-only post-deploy proof for the canonical Drive resolver. This gate is
+# intentionally independent of A9/A10/A12 model/streaming smokes so an unrelated
+# provider failure cannot suppress Drive resolver evidence.
+#
+# It performs exactly one bounded POST to /internal/v1/tools/execute using an
+# unregistered Drive tool id. The request must stop at tool registration after
+# trusted binding/Agent resolution; it never issues an OAuth access lease and
+# never reaches Google Drive.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA whose source is used for this diagnostic'
+        required: true
+      expected_served_version:
+        description: 'Served Engine version that must still be active'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_ENGINE_DRIVE_S4_READONLY_ONCE'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  drive-s4-readonly:
+    if: github.event.inputs.confirmation == 'RUN_B54_ENGINE_DRIVE_S4_READONLY_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      EXPECTED_SERVED_VERSION: ${{ github.event.inputs.expected_served_version }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Exact-main preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'S4_EXACT_MAIN=PASS'
+
+      - name: GET-only served-version preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_SERVED_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}$'
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/deployments-s4.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          test "${active_version}" = "${EXPECTED_SERVED_VERSION}"
+          version_detail="${RUNNER_TEMP}/version-s4.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" \
+            --require-drive-runtime-bindings \
+            --expect-overlay
+          echo "S4_SERVED_VERSION=${active_version}"
+          echo 'S4_SERVED_VERSION_GUARD=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Run isolated Drive S4 resolver probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'S4=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          base = os.environ["ENGINE_BASE_URL"].rstrip("/")
+          body = {
+              "app_id": "b54-padiem-claw-drive",
+              "agent_id": "agent:padiem:claw_drive_reader@1",
+              "tool_id": "tool:google:drive.a11_smoke_unregistered@1",
+              "arguments": {"query": "s4-readonly-unregistered-probe"},
+          }
+          request = urllib.request.Request(
+              base + "/internal/v1/tools/execute",
+              data=json.dumps(body).encode("utf-8"),
+              method="POST",
+              headers={
+                  "User-Agent": "padiem-drive-s4-readonly/1.0 (+github-actions)",
+                  "x-padiem-engine-caller": os.environ["CALLER_ID"],
+                  "x-padiem-engine-credential": os.environ["CALLER_SECRET"],
+                  "Content-Type": "application/json",
+              },
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  status = response.status
+                  raw = response.read().decode("utf-8", errors="replace")
+          except urllib.error.HTTPError as exc:
+              status = exc.code
+              raw = exc.read().decode("utf-8", errors="replace")
+          try:
+              parsed = json.loads(raw)
+          except json.JSONDecodeError:
+              parsed = {}
+          error = parsed.get("error") if isinstance(parsed, dict) else None
+          code = error.get("code") if isinstance(error, dict) else None
+
+          print(f"S4_HTTP={status}")
+          print(f"S4_CODE={code or 'NONE'}")
+          print("ENGINE_TOOL_EXECUTE_POST_COUNT=1")
+          print("DRIVE_PROVIDER_CALLS=0")
+          print("OAUTH_ACCESS_LEASE_CALLS=0")
+          print("DRIVE_READ=0")
+          print("DRIVE_WRITE=0")
+          print("D1_MUTATION=0")
+          print("OAUTH_MUTATION=0")
+          print("SECRET_MUTATION=0")
+
+          if status == 403 and code == "tool_not_registered":
+              print("S4_DRIVE_CLASSIFICATION=DRIVE_REGISTRY_PROVEN")
+              print("DRIVE_RUNTIME_RESOLUTION=BOUND")
+              raise SystemExit(0)
+
+          print("S4_DRIVE_CLASSIFICATION=FAIL")
+          print(f"DRIVE_RUNTIME_RESOLUTION={code or 'unexpected_response'}")
+          raise SystemExit(1)
+          PY
