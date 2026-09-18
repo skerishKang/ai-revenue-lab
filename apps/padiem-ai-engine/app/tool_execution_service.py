@@ -96,6 +96,10 @@ _TOOL_ERROR_STATUS: dict[str, int] = {
     "tool_timeout": 504,
     "tool_execution_failed": 500,
     "invalid_tool_output": 500,
+    "google_oauth_access_lease_unavailable": 503,
+    "google_drive_access_lease_mismatch": 503,
+    "google_drive_provider_unavailable": 503,
+    "google_drive_provider_credential_rejected": 503,
 }
 
 _TOOL_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
