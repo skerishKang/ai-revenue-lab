@@ -1,9 +1,9 @@
 name: PADIEM C14 featured-4 R2 publish (one-shot)
 
 on:
-  push:
+  pull_request:
     branches:
-      - ops/c14-featured4-r2-publish-20260919
+      - main
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/ops/c14-featured4-r2-publish-20260919'
+    if: github.event_name == 'pull_request' && github.head_ref == 'ops/c14-featured4-r2-publish-20260919'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -25,13 +25,15 @@ jobs:
       - name: Checkout exact operational head
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
 
       - name: Verify bounded authority
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_REF" = "refs/heads/ops/c14-featured4-r2-publish-20260919"
+          test "$GITHUB_HEAD_REF" = "ops/c14-featured4-r2-publish-20260919"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           test -n "${CLOUDFLARE_API_TOKEN:-}"
           echo "AUTHORITY_BRANCH=PASS"
           echo "R2_TARGET_BUCKET=${BUCKET}"
