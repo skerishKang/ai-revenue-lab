@@ -186,6 +186,47 @@ async def test_drive_bounded_handler_failure_survives_core_and_engine_projection
     assert response.body["error"]["code"] == "google_oauth_access_lease_unavailable"
 
 
+@pytest.mark.asyncio
+async def test_drive_provider_projection_failure_has_bounded_engine_taxonomy() -> None:
+    class InvalidProjectionDrivePort:
+        def get_json(self, **kwargs: object) -> dict:
+            return {
+                "files": [
+                    {
+                        "id": "file_1",
+                        "name": "Roadmap",
+                        "mimeType": "application/vnd.google-apps.document",
+                        "trashed": False,
+                        "webViewLink": "https://evil.example/file_1?token=not-trusted",
+                    }
+                ]
+            }
+
+        def get_text(self, **kwargs: object) -> str:
+            raise AssertionError("not reached")
+
+    binding = drive_tool_binding(
+        grant=drive_grant(),
+        port=InvalidProjectionDrivePort(),
+    )
+    service = ToolExecutionEngineService(
+        tool_binding_resolver=lambda app_id: (
+            binding if app_id == DRIVE_REFERENCE_APP_ID else None
+        )
+    )
+    response = await service.execute_payload(
+        {
+            "app_id": DRIVE_REFERENCE_APP_ID,
+            "agent_id": DRIVE_AGENT_ID,
+            "tool_id": "tool:google:drive.list_recent_files@1",
+            "arguments": {},
+        }
+    )
+
+    assert response.status_code == 502
+    assert response.body["error"]["code"] == "google_drive_response_contract_mismatch"
+
+
 def test_drive_tool_binding_rejects_gmail_grant() -> None:
     port = FakeDrivePort()
     grant = GmailGrant(
