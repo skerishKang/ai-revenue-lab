@@ -326,6 +326,9 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     attachment_button = page.locator("#attachmentButton")
     attachment_rest_background = await attachment_button.evaluate("el => getComputedStyle(el).backgroundColor")
     await attachment_button.hover()
+    # The product uses a short 180ms hover transition. Sample the settled
+    # interaction state rather than a compositor/interpolation midpoint.
+    await page.wait_for_timeout(220)
     attachment_hover_color = await attachment_button.evaluate("el => getComputedStyle(el).color")
     attachment_hover_background = await attachment_button.evaluate("el => getComputedStyle(el).backgroundColor")
     attachment_hover_border = await attachment_button.evaluate("el => getComputedStyle(el).borderTopWidth")
