@@ -187,6 +187,38 @@ async def test_drive_bounded_handler_failure_survives_core_and_engine_projection
 
 
 @pytest.mark.asyncio
+async def test_drive_unclassified_port_failure_has_bounded_engine_taxonomy() -> None:
+    class UnexpectedFailingDrivePort:
+        def get_json(self, **kwargs: object) -> dict:
+            raise RuntimeError("secret-shaped internal provider failure")
+
+        def get_text(self, **kwargs: object) -> str:
+            raise AssertionError("not reached")
+
+    binding = drive_tool_binding(
+        grant=drive_grant(),
+        port=UnexpectedFailingDrivePort(),
+    )
+    service = ToolExecutionEngineService(
+        tool_binding_resolver=lambda app_id: (
+            binding if app_id == DRIVE_REFERENCE_APP_ID else None
+        )
+    )
+    response = await service.execute_payload(
+        {
+            "app_id": DRIVE_REFERENCE_APP_ID,
+            "agent_id": DRIVE_AGENT_ID,
+            "tool_id": "tool:google:drive.list_recent_files@1",
+            "arguments": {},
+        }
+    )
+
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "google_drive_provider_boundary_failed"
+    assert "secret-shaped" not in str(response.body)
+
+
+@pytest.mark.asyncio
 async def test_drive_provider_projection_failure_has_bounded_engine_taxonomy() -> None:
     class InvalidProjectionDrivePort:
         def get_json(self, **kwargs: object) -> dict:
