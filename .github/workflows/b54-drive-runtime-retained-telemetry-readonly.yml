@@ -1,0 +1,303 @@
+name: B54 Drive Runtime Retained Telemetry Readonly Diagnostic
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-drive-runtime-retained-telemetry-readonly.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-drive-runtime-retained-telemetry-readonly.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-drive-runtime-retained-telemetry-readonly
+  cancel-in-progress: false
+
+env:
+  CANARY_FROM_MS: "1789665030000"
+  CANARY_TO_MS: "1789665090000"
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate read-only telemetry contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path(".github/workflows/b54-drive-runtime-retained-telemetry-readonly.yml")
+          text = p.read_text(encoding="utf-8")
+          required = [
+              "/workers/observability/telemetry/query",
+              "1789665030000",
+              "1789665090000",
+              "padiem-ai-engine",
+              "padiem-google-oauth-state",
+              "/internal/v1/tools/execute",
+              "RAW_LOG_OUTPUT=0",
+              "RAW_ERROR_OUTPUT=0",
+              "PROMPT_OUTPUT=0",
+              "RESPONSE_BODY_OUTPUT=0",
+              "SECRET_VALUE_OUTPUT=0",
+              "PRODUCT_REQUESTS=0",
+              "DRIVE_PROVIDER_CALLS=0",
+              "PRODUCTION_MUTATION=0",
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f"missing readonly invariant: {token}")
+
+          network_region = text.split("  retained-telemetry:", 1)[-1]
+          forbidden_network_targets = [
+              "engine.padiem.net",
+              "oauth.padiem.net",
+              "www.googleapis.com",
+              "googleapis.com/drive",
+          ]
+          for token in forbidden_network_targets:
+              if token in network_region:
+                  raise SystemExit(f"runtime/provider network target forbidden: {token}")
+
+          account_api = 'api="https://api.cloudflare.com/client/v4/accounts/\${CLOUDFLARE_ACCOUNT_ID}"'
+          if account_api not in network_region:
+              raise SystemExit("Cloudflare account API authority missing")
+
+          print("B54_DRIVE_RETAINED_TELEMETRY_SOURCE=PASS")
+          print("PRODUCT_REQUESTS=0")
+          print("DRIVE_PROVIDER_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  retained-telemetry:
+    needs: source-contract
+    if: \${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "\${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "\${GITHUB_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Query retained Engine and OAuth telemetry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "\${CLOUDFLARE_API_TOKEN}"
+          test -n "\${CLOUDFLARE_ACCOUNT_ID}"
+
+          auth=(-H "Authorization: Bearer \${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          api="https://api.cloudflare.com/client/v4/accounts/\${CLOUDFLARE_ACCOUNT_ID}"
+          request="\${RUNNER_TEMP}/drive-runtime-telemetry-query.json"
+          response="\${RUNNER_TEMP}/drive-runtime-telemetry-response.json"
+
+          python - "\${request}" "\${CANARY_FROM_MS}" "\${CANARY_TO_MS}" <<'PY'
+          import json
+          import sys
+
+          out, start, end = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+          query = {
+              "queryId": "b54-drive-runtime-2644-readonly",
+              "timeframe": {"from": start, "to": end},
+              "view": "events",
+              "limit": 1000,
+              "filterCombination": "and",
+              "filters": [
+                  {
+                      "key": "$metadata.service",
+                      "operation": "in",
+                      "type": "string",
+                      "value": "padiem-ai-engine,padiem-google-oauth-state",
+                  }
+              ],
+          }
+          with open(out, "w", encoding="utf-8") as fh:
+              json.dump(query, fh)
+          PY
+
+          http="$(curl -sS -o "\${response}" -w '%{http_code}' -X POST "\${auth[@]}" \
+            "\${api}/workers/observability/telemetry/query" \
+            --data-binary "@\${request}")"
+          echo "OBSERVABILITY_QUERY_HTTP=\${http}"
+
+          python - "\${response}" <<'PY'
+          import hashlib
+          import json
+          import sys
+          from collections import defaultdict
+          from urllib.parse import urlparse
+
+          path = sys.argv[1]
+          try:
+              payload = json.load(open(path, encoding="utf-8"))
+          except Exception:
+              print("RETAINED_LOG_EVIDENCE=NO")
+              print("OBSERVABILITY_PARSE=FAIL")
+              raise SystemExit(0)
+
+          if payload.get("success") is not True:
+              print("RETAINED_LOG_EVIDENCE=NO")
+              print("OBSERVABILITY_QUERY=UNAVAILABLE")
+              errors = payload.get("errors")
+              if isinstance(errors, list) and errors and isinstance(errors[0], dict):
+                  code = errors[0].get("code")
+                  if isinstance(code, (int, str)):
+                      safe = "".join(ch for ch in str(code) if ch.isalnum() or ch in "._-")[:64]
+                      print(f"OBSERVABILITY_ERROR_CODE={safe or 'UNKNOWN'}")
+              raise SystemExit(0)
+
+          events_obj = payload.get("result", {}).get("events", {})
+          events = events_obj.get("events", []) if isinstance(events_obj, dict) else []
+          known = {"padiem-ai-engine", "padiem-google-oauth-state"}
+
+          clean = []
+          for event in events:
+              if not isinstance(event, dict):
+                  continue
+              md = event.get("$metadata")
+              if not isinstance(md, dict):
+                  continue
+              service = md.get("service")
+              if service not in known:
+                  continue
+              status = md.get("statusCode")
+              if isinstance(status, str) and status.isdigit():
+                  status = int(status)
+              if not isinstance(status, int):
+                  status = None
+              trace = md.get("traceId")
+              trigger = md.get("trigger") if isinstance(md.get("trigger"), str) else ""
+              url = md.get("url") if isinstance(md.get("url"), str) else ""
+              workers = event.get("$workers") if isinstance(event.get("$workers"), dict) else {}
+              clean.append(
+                  {
+                      "service": service,
+                      "status": status,
+                      "trace": trace if isinstance(trace, str) and trace else None,
+                      "path": urlparse(url).path if url else "",
+                      "trigger": trigger,
+                      "has_error": isinstance(md.get("error"), str) and bool(md.get("error")),
+                      "outcome": workers.get("outcome") if isinstance(workers.get("outcome"), str) else None,
+                      "event_type": workers.get("eventType") if isinstance(workers.get("eventType"), str) else None,
+                  }
+              )
+
+          print("RETAINED_LOG_EVIDENCE=YES")
+          print(f"TELEMETRY_EVENT_COUNT={len(clean)}")
+
+          dist = defaultdict(int)
+          for event in clean:
+              dist[(event["service"], event["status"])] += 1
+          for (service, status), count in sorted(dist.items(), key=lambda item: (item[0][0], str(item[0][1]))):
+              label = "ENGINE" if service == "padiem-ai-engine" else "OAUTH"
+              rendered = "NONE" if status is None else str(status)
+              print(f"STATUS_COUNT_{label}_{rendered}={count}")
+
+          candidates = [
+              event
+              for event in clean
+              if event["service"] == "padiem-ai-engine"
+              and event["status"] == 503
+              and (
+                  event["path"] == "/internal/v1/tools/execute"
+                  or "/internal/v1/tools/execute" in event["trigger"]
+              )
+          ]
+          if not candidates:
+              engine_503 = [
+                  event
+                  for event in clean
+                  if event["service"] == "padiem-ai-engine" and event["status"] == 503
+              ]
+              if len(engine_503) == 1:
+                  candidates = engine_503
+
+          print(f"ENGINE_CANARY_CANDIDATE_COUNT={len(candidates)}")
+          if len(candidates) != 1:
+              print("TRACE_CORRELATION=AMBIGUOUS")
+              print("RUNTIME_BOUNDARY=UNKNOWN_WITH_RETAINED_EVIDENCE")
+              raise SystemExit(0)
+
+          root = candidates[0]
+          trace = root["trace"]
+          print(f"ENGINE_CANARY_ERROR_PRESENT={'YES' if root['has_error'] else 'NO'}")
+          if not trace:
+              print("TRACE_CORRELATION=NO_TRACE_ID")
+              print("RUNTIME_BOUNDARY=ENGINE_PRE_OAUTH_UNRESOLVED")
+              raise SystemExit(0)
+
+          linked = [event for event in clean if event["trace"] == trace]
+          print(f"TRACE_FINGERPRINT={hashlib.sha256(trace.encode()).hexdigest()[:12]}")
+          print(f"TRACE_EVENT_COUNT={len(linked)}")
+          print("TRACE_CORRELATION=EXACT")
+
+          by_service = defaultdict(list)
+          for event in linked:
+              by_service[event["service"]].append(event)
+
+          for service, label in (
+              ("padiem-ai-engine", "ENGINE"),
+              ("padiem-google-oauth-state", "OAUTH"),
+          ):
+              values = by_service.get(service, [])
+              statuses = sorted({event["status"] for event in values if event["status"] is not None})
+              outcomes = sorted({event["outcome"] for event in values if event["outcome"]})
+              types = sorted({event["event_type"] for event in values if event["event_type"]})
+              print(f"{label}_TRACE_PRESENT={'YES' if values else 'NO'}")
+              print(f"{label}_TRACE_STATUS={','.join(map(str, statuses)) if statuses else 'NONE'}")
+              print(f"{label}_TRACE_OUTCOME={','.join(outcomes) if outcomes else 'NONE'}")
+              print(f"{label}_TRACE_EVENT_TYPE={','.join(types) if types else 'NONE'}")
+              print(f"{label}_TRACE_ERROR_PRESENT={'YES' if any(event['has_error'] for event in values) else 'NO'}")
+
+          if by_service.get("padiem-google-oauth-state"):
+              print("OAUTH_RPC_REACHED=YES")
+              print("RUNTIME_BOUNDARY=POST_BINDING_RESOLUTION_OR_CORRELATED_OAUTH")
+          else:
+              print("OAUTH_RPC_REACHED=NO")
+              print("RUNTIME_BOUNDARY=PRE_OAUTH_OR_UNTRACED")
+
+          print("RAW_LOG_OUTPUT=0")
+          print("RAW_ERROR_OUTPUT=0")
+          print("PROMPT_OUTPUT=0")
+          print("RESPONSE_BODY_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
+
+          echo "PRODUCT_REQUESTS=0"
+          echo "DRIVE_PROVIDER_CALLS=0"
+          echo "OAUTH_CONNECT=0"
+          echo "OAUTH_CALLBACK=0"
+          echo "DRIVE_GRANT_SEED=0"
+          echo "D1_MUTATION=0"
+          echo "ENGINE_DEPLOY=0"
+          echo "SECRET_MUTATION=0"
+          echo "PRODUCTION_MUTATION=0"
