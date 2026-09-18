@@ -39,7 +39,7 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
-from app.cloudflare_external_transport import drive_worker_transport
+from app.cloudflare_external_transport import drive_worker_transport, gmail_worker_transport
 from app.connector_bindings import (
     build_tool_binding_resolver,
     CalendarGrant,
@@ -55,7 +55,7 @@ from app.calendar_port_httpx import (
     HttpxGoogleCalendarReadPort,
     parse_calendar_ids,
 )
-from app.gmail_port_httpx import HttpxGmailReadPort
+from app.gmail_port_cp_lease import ControlPlaneLeaseGmailReadPort
 from app.slack_port_httpx import HttpxSlackReadPort, parse_slack_channel_ids
 from app.telegram_port_httpx import HttpxTelegramReadPort, parse_paired_chat_ids
 from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
@@ -178,10 +178,10 @@ def _research_service_for_env(
 async def _tool_binding_resolver_for_env(env: Any):
     """Compose the Engine Gmail + Drive + Telegram + Slack + Calendar tool binding resolver.
 
-    Gmail keeps its existing compatibility secret seam. Drive is canonicalized
-    through the private ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the
-    Engine receives only short-lived access leases and never a long-lived
-    refresh credential. Telegram (#2353) uses its own bot-token secret plus a
+    Gmail and Drive are canonicalized through the private
+    ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the Engine receives only
+    short-lived access leases and never a long-lived Google refresh credential.
+    Telegram (#2353) uses its own bot-token secret plus a
     server-derived paired-chat allowlist and has no Google OAuth dependency.
     Slack (#2356) uses its own bot-token secret plus a server-derived channel
     allowlist and is READ-only: outbound posting stays behind the P01
@@ -277,19 +277,23 @@ async def _tool_binding_resolver_for_env(env: Any):
     return production_resolver
 
 
-def _gmail_port_for_env(env: Any) -> HttpxGmailReadPort | None:
-    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
-    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
-    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
-    if not client_id or not client_secret or not refresh_token:
+def _gmail_port_for_env(env: Any) -> ControlPlaneLeaseGmailReadPort | None:
+    """Resolve canonical Gmail READ via the private CP OAuth authority.
+
+    There is deliberately no Production fallback to Engine-owned Google
+    client-secret or refresh-token values. Missing/malformed CP authority keeps
+    Gmail unavailable rather than silently widening credential ownership.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
         return None
     try:
-        return HttpxGmailReadPort(
-            client_id=client_id,
-            client_secret=client_secret,
-            refresh_token=refresh_token,
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseGmailReadPort(
+            lease_client=lease_client,
+            transport=gmail_worker_transport(),
         )
-    except Exception:
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 
