@@ -190,7 +190,7 @@ class ToolExecutionEngineService:
             raise
         except Exception as exc:
             raise EngineToolProjectionError(
-                "tool_runtime_unavailable",
+                "tool_binding_resolution_failed",
                 "The Engine Tool runtime binding resolver failed.",
                 status_code=503,
             ) from exc
