@@ -855,8 +855,12 @@ async def main() -> None:
             await reduced_page.mouse.move(1180, 180)
             await reduced_page.wait_for_timeout(160)
             reduced_auto = await _glass_shell_snapshot(reduced_page)
-            if reduced_auto["progress"] > 0.01 or reduced_auto["pointerDriver"] > 0.01:
-                raise AssertionError(f"reduced-motion Auto shell must remain static: {reduced_auto}")
+            if (
+                reduced_auto["progress"] < 0.99
+                or reduced_auto["pointerDriver"] > 0.01
+                or reduced_auto["portalOpacity"] < 0.80
+            ):
+                raise AssertionError(f"reduced-motion Auto must keep the resting shell static: {reduced_auto}")
             await reduced_page.evaluate("() => window.__padiemTheme.applyGlassMask('on', false)")
             await reduced_page.wait_for_timeout(80)
             reduced_on = await _glass_shell_snapshot(reduced_page)
@@ -890,8 +894,12 @@ async def main() -> None:
             await touch_page.touchscreen.tap(330, 180)
             await touch_page.wait_for_timeout(320)
             touch_shell = await _glass_shell_snapshot(touch_page)
-            if touch_shell["pointerDriver"] > 0.01 or touch_shell["progress"] > 0.05:
-                raise AssertionError(f"touch input synthesized forbidden shell hover: {touch_shell}")
+            if (
+                touch_shell["pointerDriver"] > 0.01
+                or touch_shell["progress"] < 0.95
+                or touch_shell["portalOpacity"] < 0.80
+            ):
+                raise AssertionError(f"touch input must preserve the resting shell without hover: {touch_shell}")
             await _assert_no_horizontal_overflow(touch_page, "glass-touch-mobile")
             report["padiem_glass_touch"] = {
                 "hover_capable": hover_capable,
