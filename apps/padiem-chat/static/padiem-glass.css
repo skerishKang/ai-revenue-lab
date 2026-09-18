@@ -217,6 +217,9 @@ html[data-theme="padiem-glass"] .empty-state {
   text-shadow: 0 2px 18px rgba(255, 255, 255, .22);
 }
 html[data-theme="padiem-glass"] .empty-state h1 { color: #16212a; letter-spacing: -.04em; }
+/* The shared dark-surface rule tints the post-<br> headline white.
+ * Glass is a bright surface, so keep the second line readable here. */
+html[data-theme="padiem-glass"] .empty-state h1 br + span { color: #66737e; }
 html[data-theme="padiem-glass"] .empty-copy { color: #44515d; }
 html[data-theme="padiem-glass"] .eyebrow { color: #334a5b; letter-spacing: .16em; }
 html[data-theme="padiem-glass"] .eyebrow::before { background: rgba(121, 188, 231, .95); box-shadow: 0 0 12px rgba(121, 188, 231, .32); }
@@ -236,6 +239,12 @@ html[data-theme="padiem-glass"] .starter:not(:disabled):hover {
 }
 html[data-theme="padiem-glass"] .starter strong { color: #17212a; }
 html[data-theme="padiem-glass"] .starter small { color: #53606c; overflow-wrap: anywhere; }
+/* Supported format names are tokens, not arbitrary prose. Never split JSON/XLSX
+ * in the middle; locale.js inserts explicit break opportunities at separators. */
+html[data-theme="padiem-glass"] #documentStarterButton small {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
 html[data-theme="padiem-glass"] .starter-icon {
   background: rgba(34, 46, 57, .10);
   color: #2d4557;

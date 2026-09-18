@@ -352,7 +352,10 @@
     if (!attachmentCapabilities) return;
     const capabilityCopy = attachmentCapabilities.copy(lang);
     const documentCopy = document.querySelector(".starter:nth-child(3) small");
-    if (documentCopy) documentCopy.textContent = capabilityCopy.documentFormats;
+    if (documentCopy) {
+      const formats = capabilityCopy.documentFormats;
+      documentCopy.textContent = lang === "en" ? formats : formats.split("·").join(" · \u200b");
+    }
     const attachmentInput = document.getElementById("attachmentFileInput");
     if (attachmentInput) attachmentInput.accept = attachmentCapabilities.accept;
     const attachmentButton = document.getElementById("attachmentButton");
