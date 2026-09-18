@@ -120,7 +120,7 @@ class GmailReadProductionCanaryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             canary.classify_success(payload)
 
-    def test_no_message_content_surface_is_accepted() -> None:
+    def test_no_message_content_surface_is_accepted(self) -> None:
         for forbidden_key in (
             "projection",
             "body",
