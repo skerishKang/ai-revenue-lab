@@ -129,6 +129,7 @@ _RUNTIME_UNAVAILABLE_CODES = frozenset(
         "connector_grants_unavailable",
         "drive_port_unavailable",
         "drive_grant_unavailable",
+        "tool_runtime_dependency_unavailable",
         "tool_binding_resolution_failed",
     }
 )
