@@ -226,8 +226,8 @@ def test_glass_shell_auto_is_reverse_pointer_reveal_not_partial_assembly() -> No
     assert 'Math.max(.62*p,.8*a)' not in SHELL_JS
     assert 'var progress=1, raf=0, lastT=0;' in SHELL_JS
     assert 'progress=maskMode()==="off"?0:1;' in SHELL_JS
-    assert 'RATE_DOWN=.018' in SHELL_JS
-    assert 'RATE_UP=.024' in SHELL_JS
+    assert 'RATE_DOWN=.0065' in SHELL_JS
+    assert 'RATE_UP=.0075' in SHELL_JS
     assert 'function render(p,peeling)' in SHELL_JS
     assert 'var phase=peeling?1-p:p;' in SHELL_JS
     assert 'var portal=ease(clamp(p,0,1));' in SHELL_JS

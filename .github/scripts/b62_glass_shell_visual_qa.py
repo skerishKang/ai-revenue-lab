@@ -192,13 +192,14 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     if not shell_rect:
         raise AssertionError(f"{name}: missing live portrait image rect")
     y = shell_rect["top"] + shell_rect["height"] * 0.44
+    peel_started = await page.evaluate("performance.now()")
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)
     await page.wait_for_timeout(260)
     left_transition = await _shell_state(page)
     if left_transition["ptr"] < 0.99 or left_transition["target"] > 0.01:
         raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
-    if left_transition["progress"] < 0.40:
-        raise AssertionError(f"{name}: shell teardown is too fast at 1x: {left_transition}")
+    if left_transition["progress"] < 0.78:
+        raise AssertionError(f"{name}: shell teardown is too fast at 260ms: {left_transition}")
     if left_transition["portalOpacity"] < 0.55:
         raise AssertionError(f"{name}: shell portal faded too early at 260ms: {left_transition}")
     if left_transition["fragMaxHeightRatio"] > 0.075 or left_transition["fragMaxAreaRatio"] > 0.075:
@@ -220,11 +221,16 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(
             f"{name}: timed peel did not continue while moving horizontally: left={left_transition}, right={right_transition}"
         )
+    if not 0.45 <= right_transition["progress"] <= 0.80:
+        raise AssertionError(f"{name}: ~900ms sample is not a visible mid-transition state: {right_transition}")
     if right_transition["fragMaxHeightRatio"] > 0.075 or right_transition["fragMaxAreaRatio"] > 0.075:
         raise AssertionError(f"{name}: mid transition contains oversized mosaic fragments: {right_transition}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-mid.png"), full_page=False)
 
     await _wait_progress_below(page, 0.05, f"{name}-pointer")
+    peel_elapsed_ms = await page.evaluate("started => performance.now() - started", peel_started)
+    if not 1_800 <= peel_elapsed_ms <= 3_600:
+        raise AssertionError(f"{name}: 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms")
     pointer_only = await _shell_state(page)
     if pointer_only["ptr"] <= 0.8:
         raise AssertionError(f"{name}: pointer driver did not fully engage: {pointer_only}")
@@ -239,6 +245,7 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # Pointer exit reassembles rather than snapping: it must travel back to the
     # completed portal and leave no fragment plates hanging over the face.
     peeled = pointer_only["progress"]
+    recover_started = await page.evaluate("performance.now()")
     await page.mouse.move(70, 90)
     await page.wait_for_timeout(250)
     mid = await _shell_state(page)
@@ -247,9 +254,13 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
             f"{name}: reverse recovery did not begin after pointer exit: peeled={peeled}, mid={mid}"
         )
     await _wait_completed_shell(page, f"{name}-recover")
+    recover_elapsed_ms = await page.evaluate("started => performance.now() - started", recover_started)
+    if not 1_600 <= recover_elapsed_ms <= 3_600:
+        raise AssertionError(f"{name}: 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms")
     recovered = await _shell_state(page)
     if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
         raise AssertionError(f"{name}: shell did not reassemble after pointer exit: {recovered}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-recovered.png"), full_page=False)
 
     # Repeat the same contract RIGHT -> LEFT. Pointer X may change where the
     # cursor is, but must never scrub, reverse, or retarget the timed peel.
@@ -346,6 +357,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     return {
         "idle": idle,
         "pointer_only": pointer_only,
+        "peel_elapsed_ms": peel_elapsed_ms,
+        "recover_elapsed_ms": recover_elapsed_ms,
         "answer_only": answer_only,
         "combined_overlap": combined_overlap,
         "combined": combined,

@@ -23,7 +23,7 @@
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
-  var RATE_UP=.024, RATE_DOWN=.018;           /* ~2–3 s cinematic peel/reassembly at 1× */
+  var RATE_UP=.0075, RATE_DOWN=.0065;        /* measured ~2–3 s cinematic peel/reassembly at 1× */
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
