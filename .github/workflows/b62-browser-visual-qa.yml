@@ -125,3 +125,107 @@ jobs:
           path: .tmp/b62-browser-qa
           if-no-files-found: error
           retention-days: 14
+
+
+  public-product-film-capture:
+    name: Capture real public Padiem Chat product film
+    if: github.event_name == 'pull_request' && github.head_ref == 'ops/b62-padiem-chat-product-film-capture'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+
+      - name: Verify exact capture authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -f .github/scripts/b62_public_product_film_capture.py
+          test -f apps/padiem-chat/static/index.html
+          grep -F 'Padiem Plus' apps/padiem-chat/static/index.html >/dev/null
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned Playwright
+        run: python -m pip install --disable-pip-version-check 'playwright==1.55.0'
+
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Capture exact public product UI
+        run: python .github/scripts/b62_public_product_film_capture.py
+
+      - name: Encode review master and Album still
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -loglevel error -y \
+            -i .tmp/b62-public-product-film/padiem-chat-product-film-v1.webm \
+            -an -c:v libx264 -pix_fmt yuv420p -preset medium -crf 20 -movflags +faststart \
+            .tmp/b62-public-product-film/padiem-chat-product-film-v1.mp4
+          ffmpeg -hide_banner -loglevel error -y \
+            -i .tmp/b62-public-product-film/padiem-chat-product-still-v1.png \
+            -c:v libwebp -quality 84 \
+            .tmp/b62-public-product-film/padiem-chat-product-still-v1.webp
+          sha256sum \
+            .tmp/b62-public-product-film/padiem-chat-product-film-v1.mp4 \
+            .tmp/b62-public-product-film/padiem-chat-product-still-v1.webp \
+            > .tmp/b62-public-product-film/SHA256SUMS.txt
+          ffprobe -v error \
+            -show_entries format=duration,size,format_name \
+            -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate \
+            -of json \
+            .tmp/b62-public-product-film/padiem-chat-product-film-v1.mp4 \
+            > .tmp/b62-public-product-film/film-metadata.json
+
+      - name: Enforce bounded public-media contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path(".tmp/b62-public-product-film")
+          metadata = json.loads((root / "film-metadata.json").read_text())
+          evidence = json.loads((root / "capture-evidence.json").read_text())
+          duration = float(metadata["format"]["duration"])
+          video = next(stream for stream in metadata["streams"] if stream.get("codec_name") == "h264")
+
+          assert 15 <= duration <= 40, f"duration outside 15-40s contract: {duration}"
+          assert (video.get("width"), video.get("height")) == (1440, 900), video
+          assert video.get("pix_fmt") == "yuv420p", video
+          assert evidence["final_url"].startswith("https://chat.padiem.net/")
+          assert "padiem plus" in evidence["tier_text"].lower()
+          assert evidence["prompt_submitted"] is False
+          assert evidence["login_performed"] is False
+          assert evidence["file_picker_opened"] is False
+          assert evidence["claw_opened"] is False
+
+          print(f"PUBLIC_CAPTURE_CONTRACT=PASS duration={duration:.2f}s size=1440x900")
+          print(f"CONSOLE_ERROR_COUNT={len(evidence['console_errors'])}")
+          print(f"PAGE_ERROR_COUNT={len(evidence['page_errors'])}")
+          PY
+
+      - name: Upload private review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: padiem-chat-product-film-v1-review
+          path: |
+            .tmp/b62-public-product-film/padiem-chat-product-film-v1.mp4
+            .tmp/b62-public-product-film/padiem-chat-product-still-v1.webp
+            .tmp/b62-public-product-film/capture-evidence.json
+            .tmp/b62-public-product-film/film-metadata.json
+            .tmp/b62-public-product-film/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
