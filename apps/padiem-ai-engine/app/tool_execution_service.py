@@ -188,6 +188,12 @@ class ToolExecutionEngineService:
             # reviewed code/status instead of flattening it into the generic
             # tool_runtime_unavailable posture.
             raise
+        except ImportError as exc:
+            raise EngineToolProjectionError(
+                "tool_runtime_dependency_unavailable",
+                "The Engine Tool runtime production dependency is unavailable.",
+                status_code=503,
+            ) from exc
         except Exception as exc:
             raise EngineToolProjectionError(
                 "tool_binding_resolution_failed",
