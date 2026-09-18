@@ -3,10 +3,11 @@
 Supports the reviewed Gmail READ grant and Google Drive READ capability grant.
 Credential material is never accepted as an argument and never read here.
 
-Default connector is Gmail for backwards compatibility. Drive seeding is
-fail-closed: the caller must provide the canonical OAuth ``binding_ref`` and
-``actor_ref`` produced by the trusted connection flow, and the only accepted
-Drive capability is ``read``. No mutation/write capability can be seeded.
+Both Gmail and Drive seeding are fail-closed: the caller must provide the
+canonical OAuth ``binding_ref`` and ``actor_ref`` produced by the trusted
+connection flow. Gmail accepts only the reviewed readonly scope; Drive accepts
+only the reviewed ``read`` capability. No mutation/write capability can be
+seeded and no synthetic/default OAuth refs are accepted.
 
 Default run (no ``--execute``) prints SQL for review. ``--execute`` is a
 separate Production mutation action and remains outside source/CI work.
@@ -18,6 +19,7 @@ import argparse
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -47,9 +49,6 @@ _PROVIDER_GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly
 _ALLOWED_GMAIL_SCOPES = (_CORE_GMAIL_READONLY_SCOPE, _PROVIDER_GMAIL_READONLY_SCOPE)
 _ALLOWED_DRIVE_CAPABILITIES = (DriveCapability.READ.value,)
 
-_DEFAULT_GMAIL_BINDING_REF = "bind:b54-padiem-claw:claw_mail_reader"
-_DEFAULT_GMAIL_ACTOR_REF = "actor:b54-padiem-claw:claw_mail_reader"
-
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -72,11 +71,6 @@ def _apply_connector_defaults(args: argparse.Namespace) -> None:
         args.app_id = _expected_app_id(args)
     if args.agent_id is None:
         args.agent_id = _expected_agent_id(args)
-    if args.connector == "gmail":
-        if args.binding_ref is None:
-            args.binding_ref = _DEFAULT_GMAIL_BINDING_REF
-        if args.actor_ref is None:
-            args.actor_ref = _DEFAULT_GMAIL_ACTOR_REF
 
 
 def validate_args(args: argparse.Namespace) -> list[str]:
@@ -95,16 +89,23 @@ def validate_args(args: argparse.Namespace) -> list[str]:
     elif not _AGENT_ID_RE.fullmatch(args.agent_id):
         errors.append("agent_id does not match the canonical agent-id grammar")
 
-    if not isinstance(args.binding_ref, str) or not _IDENTIFIER_RE.fullmatch(args.binding_ref):
-        if args.connector == "drive" and args.binding_ref is None:
-            errors.append("Drive binding_ref is required and must come from the trusted OAuth connection")
-        else:
-            errors.append("binding_ref contains characters outside the trusted identifier charset")
-    if not isinstance(args.actor_ref, str) or not _IDENTIFIER_RE.fullmatch(args.actor_ref):
-        if args.connector == "drive" and args.actor_ref is None:
-            errors.append("Drive actor_ref is required and must come from trusted server identity")
-        else:
-            errors.append("actor_ref contains characters outside the trusted identifier charset")
+    # Seed authority must always come from the just-completed trusted connection.
+    # Revoke targets only (app_id, connector_id), so it does not need raw refs.
+    if args.action == "seed":
+        if not isinstance(args.binding_ref, str) or not _IDENTIFIER_RE.fullmatch(args.binding_ref):
+            if args.binding_ref is None:
+                errors.append(
+                    f"{args.connector} binding_ref is required and must come from the trusted OAuth connection"
+                )
+            else:
+                errors.append("binding_ref contains characters outside the trusted identifier charset")
+        if not isinstance(args.actor_ref, str) or not _IDENTIFIER_RE.fullmatch(args.actor_ref):
+            if args.actor_ref is None:
+                errors.append(
+                    f"{args.connector} actor_ref is required and must come from trusted server identity"
+                )
+            else:
+                errors.append("actor_ref contains characters outside the trusted identifier charset")
 
     if args.connector == "gmail":
         unknown_scopes = [scope for scope in args.scopes if scope not in _ALLOWED_GMAIL_SCOPES]
@@ -171,10 +172,25 @@ def build_list_sql() -> str:
     )
 
 
+def _resolve_npx_executable() -> str | None:
+    """Resolve the platform launcher explicitly.
+
+    On Windows, npx is commonly installed as npx.cmd. Passing the bare name
+    in a list-form subprocess.run call can fail before Wrangler starts.
+    shutil.which resolves PATHEXT on Windows while still returning the
+    ordinary executable path on POSIX.
+    """
+    return shutil.which("npx") or shutil.which("npx.cmd")
+
+
 def run_d1(sql: str) -> int:
     """Execute one reviewed D1 statement through wrangler."""
+    npx_executable = _resolve_npx_executable()
+    if npx_executable is None:
+        print("connector_grant_seed: npx executable not found on PATH", file=sys.stderr)
+        return 127
     cmd = [
-        "npx", "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
+        npx_executable, "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
         "--remote", "--json", "--command", sql,
     ]
     proc = subprocess.run(cmd, text=True, capture_output=True)

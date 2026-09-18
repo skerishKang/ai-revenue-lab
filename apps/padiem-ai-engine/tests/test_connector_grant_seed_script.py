@@ -1,7 +1,7 @@
 """Connector grant seed script contract tests (#2222).
 
 Covers both reviewed READ connector grant paths:
-- Gmail readonly scope grant (backwards-compatible default);
+- Gmail readonly scope grant with trusted binding/actor refs;
 - Google Drive READ capability grant with trusted binding/actor refs.
 
 All tests are network-free. Invalid authority input must fail before any D1
@@ -37,22 +37,30 @@ def _run_with_d1_probe(argv: list[str], monkeypatch: pytest.MonkeyPatch) -> tupl
     return _MODULE.main(argv), calls
 
 
-# --- Gmail regression / backwards-compatible default -----------------------
+# --- Gmail READ-only grant path ---------------------------------------------
+
+_GMAIL_BINDING = "google-gmail-binding-owner-1"
+_GMAIL_ACTOR = "actor:owner-1"
+
 
 def test_gmail_seed_dry_run_emits_scope_and_empty_capability_columns(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
     monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-07T00:00:00+00:00")
-    rc = _MODULE.main(["--action", "seed"])
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
     assert rc == 0
     out = capsys.readouterr().out
     assert out.startswith("INSERT INTO padiem_engine_connector_grants")
     assert "granted_scopes_json, granted_capabilities_json" in out
     assert (
         "'b54-padiem-claw', 'agent:padiem:claw_mail_reader@1', "
-        "'connector:google:gmail@1', 'bind:b54-padiem-claw:claw_mail_reader', "
-        "'actor:b54-padiem-claw:claw_mail_reader', '[\"gmail.readonly\"]', "
+        "'connector:google:gmail@1', 'google-gmail-binding-owner-1', "
+        "'actor:owner-1', '[\"gmail.readonly\"]', "
         "'[]', 1, '2026-09-07T00:00:00+00:00', '2026-09-07T00:00:00+00:00'"
     ) in out
     assert "ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1" in out
@@ -71,6 +79,15 @@ def test_gmail_revoke_dry_run_targets_gmail_row(
     out = capsys.readouterr().out
     assert out.startswith("UPDATE padiem_engine_connector_grants SET active=0")
     assert "WHERE app_id='b54-padiem-claw' AND connector_id='connector:google:gmail@1';" in out
+
+
+def test_gmail_missing_binding_and_actor_fail_before_d1(monkeypatch: pytest.MonkeyPatch) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "gmail", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
 
 
 def test_list_dry_run_emits_read_only_select_without_invoking_wrangler(
@@ -224,8 +241,9 @@ def test_credential_argument_is_rejected() -> None:
     assert exc.value.code == 2
 
 
-def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_execute_mode_uses_resolved_wrangler_launcher(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: dict[str, object] = {}
+    resolved_npx = r"C:\\Program Files\\nodejs\\npx.cmd"
 
     class _FakeResult:
         returncode = 0
@@ -236,15 +254,47 @@ def test_execute_mode_uses_exact_wrangler_d1_argument_array(monkeypatch: pytest.
         captured["cmd"] = cmd
         return _FakeResult()
 
+    monkeypatch.setattr(_MODULE.shutil, "which", lambda name: resolved_npx if name == "npx" else None)
     monkeypatch.setattr(_MODULE.subprocess, "run", _fake_run)
-    rc = _MODULE.main(["--action", "seed", "--execute"])
+    rc = _MODULE.main([
+        "--action", "seed", "--execute",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
     assert rc == 0
     cmd = captured["cmd"]
     assert isinstance(cmd, list)
     assert cmd[:9] == [
-        "npx", "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
+        resolved_npx, "--yes", "wrangler@4", "d1", "execute", "padiem-engine",
         "--remote", "--json", "--command",
     ]
     sql = cmd[9]
     assert isinstance(sql, str)
     assert sql.startswith("INSERT INTO padiem_engine_connector_grants")
+
+
+def test_npx_cmd_fallback_is_resolved_before_subprocess(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+    resolved_npx_cmd = r"C:\\Node\\npx.cmd"
+
+    def _which(name: str) -> str | None:
+        calls.append(name)
+        return resolved_npx_cmd if name == "npx.cmd" else None
+
+    monkeypatch.setattr(_MODULE.shutil, "which", _which)
+    assert _MODULE._resolve_npx_executable() == resolved_npx_cmd
+    assert calls == ["npx", "npx.cmd"]
+
+
+def test_missing_npx_fails_before_subprocess(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed", "--execute",
+        "--binding-ref", _GMAIL_BINDING,
+        "--actor-ref", _GMAIL_ACTOR,
+    ])
+    assert rc == 127
+    assert "npx executable not found on PATH" in capsys.readouterr().err
