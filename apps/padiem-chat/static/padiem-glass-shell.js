@@ -23,7 +23,7 @@
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
-  var RATE_UP=.075, RATE_DOWN=.03;            /* source exponential approach */
+  var RATE_UP=.075, RATE_DOWN=.09;            /* peel quickly to the clean portrait; reassembly stays cinematic */
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
@@ -212,7 +212,7 @@
     return 1-clamp(p,0,1);
   }
 
-  function render(p){
+  function render(p,peeling){
     var assemble=ease(clamp((p-ASSEMBLE_START)/ASSEMBLE_SPAN,0,1));
     var dissolve=clamp((p-DISSOLVE_AT)/DISSOLVE_SPAN,0,1);
     var parX=(mx-.5), parY=(my-.5);
@@ -226,7 +226,16 @@
       var rot=d.sr+(d.fr-d.sr)*local, depth=(1-local)*(40+(i%4)*22);
       f.el.style.width=w+"px";
       f.el.style.height=h+"px";
-      f.el.style.opacity=String(clamp(local*1.15-dissolve*1.3,0,1));
+      var fragOpacity=clamp(local*1.15-dissolve*1.3,0,1);
+      /* Reverse hover is a reveal interaction, not a persistent mosaic.
+       * During 1→0 peel, fragments only ghost near the assembled endpoint and
+       * disappear before they can cover the face as large scattered plates.
+       * 0→1 pointer-exit recovery keeps the full fragment assembly sequence. */
+      if(peeling){
+        var peelWindow=clamp((p-.78)/.12,0,1);
+        fragOpacity*=peelWindow*.18;
+      }
+      f.el.style.opacity=String(fragOpacity);
       f.el.style.transform="translate3d("+x+"px,"+y+"px,"+depth+"px) rotate("+rot+"deg) scale("+(0.72+local*.28)+")";
       f.el.style.filter="saturate("+(0.65+local*.45)+") blur("+((1-local)*1.4)+"px)";
     }
@@ -248,6 +257,7 @@
     var v=variant();
     if(v!==lastVariant) layout();
     var t=reducedMotion()?(maskMode()==="off"?0:1):target();
+    var peeling=t<progress;
     if(reducedMotion()){
       progress=t;
     }else{
@@ -261,7 +271,7 @@
       progress+=(t-progress)*rate;
       if(Math.abs(t-progress)<.001) progress=t;
     }
-    render(progress);
+    render(progress,peeling);
     /* keep animating while transitioning; drivers re-arm via wake() */
     if(progress!==t) schedule();
   }
@@ -331,7 +341,7 @@
     progress=maskMode()==="off"?0:1;
     if(isGlass()&&ensureLayer()){
       layout(); /* fragments exist even if rAF never fires */
-      render(progress);
+      render(progress,false);
     }
     layout();
     wake();
