@@ -59,6 +59,7 @@ def test_require_env_skips_honestly(capsys: pytest.CaptureFixture[str]) -> None:
         (503, "connector_grants_unavailable", smoke.RUNTIME_UNAVAILABLE),
         (503, "drive_port_unavailable", smoke.RUNTIME_UNAVAILABLE),
         (503, "drive_grant_unavailable", smoke.RUNTIME_UNAVAILABLE),
+        (503, "tool_runtime_dependency_unavailable", smoke.RUNTIME_UNAVAILABLE),
         (503, "tool_binding_resolution_failed", smoke.RUNTIME_UNAVAILABLE),
         (403, "tool_not_registered", smoke.TOOL_NOT_ALLOWED),
         (403, "tool_agent_not_bound", smoke.TOOL_NOT_ALLOWED),
@@ -298,7 +299,12 @@ def test_s4_drive_probe_proves_binding_without_provider_call(
 
 @pytest.mark.parametrize(
     "code",
-    ["drive_port_unavailable", "drive_grant_unavailable", "tool_binding_resolution_failed"],
+    [
+        "drive_port_unavailable",
+        "drive_grant_unavailable",
+        "tool_runtime_dependency_unavailable",
+        "tool_binding_resolution_failed",
+    ],
 )
 def test_s4_drive_probe_surfaces_bounded_runtime_stage(
     code: str, capsys: pytest.CaptureFixture[str]
