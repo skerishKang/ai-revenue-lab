@@ -328,6 +328,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     if shell_off["portalOpacity"] > 0.05 or shell_off["maxFragmentOpacity"] > 0.10:
         raise AssertionError(f"Glass mask=off did not fully cover shell: {shell_off}")
 
+    # Auto's resting state is evaluated with the pointer outside the portrait.
+    await page.mouse.move(70, 80)
     await page.evaluate(
         "() => { window.__padiemTheme.applyGlassSpeed(100, false); window.__padiemTheme.applyGlassMask('auto', false); }"
     )
