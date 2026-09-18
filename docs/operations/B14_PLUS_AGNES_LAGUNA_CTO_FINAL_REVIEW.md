@@ -5,7 +5,7 @@
 - Repository: `skerishKang/ai-revenue-lab`
 - Current `main` SHA: `616f4015c3d214f27bf00f1ebb060e3376d1b299`
 - PR: not created
-- Exact reviewed head: uncommitted worktree after retry-budget fix; no commit SHA exists
+- Exact reviewed head: pending commit after mock-mode route-resolution fix
 - Base / merge-base: `616f4015c3d214f27bf00f1ebb060e3376d1b299`
 - Changed files: 26 implementation/test files plus work order and reports
 - Review threads/comments checked: no PR exists; current remote state re-read before review
@@ -30,6 +30,7 @@
 | Control-plane stdlib-only/side-effect-free contract | yes | control-plane suite, 466 passed | PASS |
 | Exact Agnes 3.0 live measurement before swap | yes | Production endpoint returned HTTP 403; deployed version was 2.5 | FAIL/BLOCKED |
 | Auto-chain total upstream-attempt budget | yes | Independent 5xx probe reproduced 6 calls; fix now limits auto chain to 2 total calls; B14 889 passed | PASS after fix |
+| Mock mode resolves route without credentials and still makes zero upstream calls | yes | B14 890 passed; desktop 28/28 and mobile 6/6 browser smoke | PASS after fix |
 | Independent exact-head validation | yes | no commit SHA and no independent validator | PENDING |
 
 ## Evidence sufficiency
@@ -47,10 +48,10 @@
 
 1. The currently deployed Production Worker advertises `agnes-ai/agnes-2.5-flash`, so it cannot provide evidence for the requested 3.0 model.
 2. All three approved synthetic fixture requests to the public Worker endpoint returned HTTP 403 before provider execution.
-3. The implementation is uncommitted, so exact-head evidence cannot yet be pinned.
-4. Independent validation of the post-fix revision has not been performed by a different actor.
+3. The post-fix implementation requires a new commit and exact-head independent validation.
+4. The current independent validation applies to the previous head, not the post-fix revision.
 
-The previously reported fallback-budget defect is fixed in the current worktree and covered by regression tests; it must be revalidated on the committed head.
+The previously reported fallback-budget defect and the mock-mode credential-readiness defect are fixed in the current worktree and covered by regression tests; both must be revalidated on the new committed head.
 
 ## Owner-only decisions
 
@@ -64,7 +65,7 @@ The previously reported fallback-budget defect is fixed in the current worktree 
 NOT_READY
 ```
 
-Reason: the deterministic implementation defect found by independent review has been fixed, but the required live provider evidence, independent validation of the post-fix exact head, and committed revision identity are incomplete.
+Reason: deterministic defects found by CI/independent review are fixed, but the required live provider evidence, independent validation of the post-fix exact head, and new committed revision identity are incomplete.
 
 ## Merge / deployment disposition
 

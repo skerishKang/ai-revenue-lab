@@ -76,6 +76,7 @@ def test_full_chain_selects_agnes_first(monkeypatch):
 
 
 def test_missing_agnes_secret_selects_poolside_and_excludes(monkeypatch):
+    rcfg.provider_mode = "live"
     monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
     d = rp.resolve_chain_route()
     assert d.selected_model == POOLSIDE_MODEL_ID
@@ -86,10 +87,20 @@ def test_missing_agnes_secret_selects_poolside_and_excludes(monkeypatch):
 
 
 def test_no_secrets_raises_no_safe_route():
+    rcfg.provider_mode = "live"
     with pytest.raises(NoSafeRoute) as exc_info:
         rp.resolve_chain_route()
     assert exc_info.value.reason_code == "no_chain_candidate_available"
     assert exc_info.value.upstream_called is False
+
+
+def test_mock_mode_resolves_fixed_chain_without_provider_secrets():
+    d = rp.resolve_chain_route()
+    assert d.selected_model == AGNES_MODEL_ID
+    assert d.max_attempts == 2
+    assert d.eligible_fallback[0]["model_id"] == POOLSIDE_MODEL_ID
+    assert d.credential_available is False
+    assert d.evidence_status == "resolved_not_called"
 
 
 def test_allow_external_fallback_false_is_single_attempt(monkeypatch):
@@ -152,6 +163,7 @@ def test_disabled_chain_model_fails_closed(monkeypatch):
 
 
 def test_zero_usable_candidates_raises_no_safe_route(monkeypatch):
+    rcfg.provider_mode = "live"
     monkeypatch.setattr(rp, "_platform_secret_present", lambda m: False)
     with pytest.raises(NoSafeRoute) as exc_info:
         rp.resolve_chain_route()

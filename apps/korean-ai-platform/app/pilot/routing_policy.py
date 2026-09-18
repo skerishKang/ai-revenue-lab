@@ -110,7 +110,13 @@ def resolve_chain_route(
     excluded: list[dict[str, str]] = []
     candidates: list[CatalogModel] = []
     for m in models:
-        if m.credential_source == "platform_secret" and not _platform_secret_present(m):
+        # Mock mode deliberately has no credential requirement: it must prove
+        # route resolution and response shape without making upstream calls.
+        if (
+            not runtime_config.is_mock
+            and m.credential_source == "platform_secret"
+            and not _platform_secret_present(m)
+        ):
             excluded.append({
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,

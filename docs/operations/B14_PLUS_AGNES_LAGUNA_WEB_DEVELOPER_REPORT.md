@@ -30,14 +30,15 @@
 
 | Command / check | Result | Pass / fail / skip |
 |---|---:|---|
-| `uv run pytest -q` in `apps/korean-ai-platform` | 889 passed | PASS |
+| `uv run pytest -q` in `apps/korean-ai-platform` | 890 passed | PASS |
+| `uv run python browser_tests/alpha1_start_screen_smoke.py` | desktop 28/28, mobile 6/6 | PASS |
 | `uv run pytest -q` in `packages/padiem-control-plane` | 466 passed | PASS |
 | Chat focused suite with target worktree `PYTHONPATH` | 53 passed | PASS |
 | Claw focused suite with target source paths | 90 passed | PASS |
 | `uv run python -m compileall -q app tests` in B14 | exit 0 | PASS |
 | `git diff --check` | exit 0 | PASS |
 
-The first Chat collection attempt loaded a stale globally installed control-plane package and failed collection; rerun with the target worktree dependency paths passed 53 tests. The first B14 run exposed two stale Kilo keyless expectations; tests were updated to the new credential-bound Agnes chain and the rerun passed 888 tests. Independent review then found that auto-chain 5xx calls could multiply same-route retries; the fix disables same-route retries in `route_mode == "auto"`, adds a regression assertion, and the full B14 rerun passes 889 tests.
+The first Chat collection attempt loaded a stale globally installed control-plane package and failed collection; rerun with the target worktree dependency paths passed 53 tests. The first B14 run exposed two stale Kilo keyless expectations; tests were updated to the new credential-bound Agnes chain and the rerun passed 888 tests. Independent review then found that auto-chain 5xx calls could multiply same-route retries; the fix disables same-route retries in `route_mode == "auto"`, adds a regression assertion, and the full B14 rerun passed 889 tests. CI then exposed that mock browser smoke required provider credentials during route resolution; mock mode now resolves the fixed chain without credentials while live mode remains fail-closed, and the final B14 rerun passes 890 tests with desktop/mobile browser smoke passing.
 
 ## Independent finding response
 
