@@ -418,10 +418,9 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 timeout=5_000,
             )
         else:
-            await page.wait_for_function(
-                "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) >= .90",
-                timeout=5_000,
-            )
+            # Later turns exercise accumulated reading stability. Shell recovery
+            # is certified explicitly at the end of every turn below.
+            await page.wait_for_timeout(120)
         active = await _glass_motion_snapshot(page)
         active_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "active", "shell": active_shell, **active})
