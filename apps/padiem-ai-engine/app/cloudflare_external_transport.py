@@ -308,6 +308,18 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
         )
 
 
+def gmail_worker_transport() -> httpx.AsyncBaseTransport | None:
+    """Return the Worker-native bounded Gmail GET transport in Pyodide."""
+
+    import sys
+
+    if sys.platform != "emscripten":
+        return None
+    return CloudflareExternalHttpTransport(
+        allowed_hosts=frozenset({"gmail.googleapis.com"}),
+    )
+
+
 def drive_worker_transport() -> httpx.AsyncBaseTransport | None:
     """Return JS-fetch transport only inside the Pyodide Worker runtime.
 
@@ -323,4 +335,8 @@ def drive_worker_transport() -> httpx.AsyncBaseTransport | None:
     )
 
 
-__all__ = ["CloudflareExternalHttpTransport", "drive_worker_transport"]
+__all__ = [
+    "CloudflareExternalHttpTransport",
+    "drive_worker_transport",
+    "gmail_worker_transport",
+]
