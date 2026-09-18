@@ -292,6 +292,22 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     ):
         raise AssertionError(f"Glass reverse shell must start fully assembled: {shell_initial}")
 
+    # First-use composer controls must remain visibly discoverable on the bright
+    # Glass surface. DOM visibility alone is insufficient: the old regression
+    # rendered the tier trigger as near-white text on near-white glass.
+    tier_trigger = page.locator(".composer .model-pill[data-mode-control='true']")
+    await tier_trigger.wait_for(state="visible", timeout=5_000)
+    tier_color = await tier_trigger.evaluate("el => getComputedStyle(el).color")
+    if tier_color != "rgb(37, 51, 62)":
+        raise AssertionError(f"Glass tier trigger lost dark foreground contrast: {tier_color}")
+
+    attachment_button = page.locator("#attachmentButton")
+    await attachment_button.hover()
+    attachment_hover_color = await attachment_button.evaluate("el => getComputedStyle(el).color")
+    if attachment_hover_color != "rgb(23, 33, 42)":
+        raise AssertionError(f"Glass file hover lost dark foreground contrast: {attachment_hover_color}")
+    await page.mouse.move(70, 80)
+
     # APPEARANCE controls must expose the approved 3-mode mask and speed bar.
     await page.locator("#settingsButton").click()
     control = page.locator(".glass-shell-control")
