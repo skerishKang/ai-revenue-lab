@@ -47,7 +47,7 @@ from urllib.parse import quote
 
 from .connector_registry import ConnectorDescriptor
 from .contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
-from .tool_runtime import MAX_TOOL_OUTPUT_BYTES, ToolHandler, ToolRuntime
+from .tool_runtime import MAX_TOOL_OUTPUT_BYTES, ToolHandler, ToolHandlerError, ToolRuntime
 
 
 class DriveContractError(ValueError):
@@ -755,6 +755,10 @@ async def _port_json(
         result = _call()
         if inspect.isawaitable(result):
             result = await result
+    except ToolHandlerError:
+        # Only the explicit bounded adapter error type may cross this seam.
+        # All arbitrary port exceptions remain sanitized below.
+        raise
     except Exception:
         # The trusted port boundary is the only place that may surface
         # diagnostics; Core must not propagate its exception message, the
@@ -793,6 +797,8 @@ async def _port_text(
         result = _call()
         if inspect.isawaitable(result):
             result = await result
+    except ToolHandlerError:
+        raise
     except Exception:
         sanitized = DriveContractError("The Google Drive provider port failed.")
     else:
