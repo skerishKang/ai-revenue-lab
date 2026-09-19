@@ -67,7 +67,19 @@ from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
 from app.google_oauth_access_lease import (
     CloudflareControlPlaneGoogleOAuthAccessLeaseClient,
 )
-from app.document_context_service import DOCUMENT_CONTEXT_PATH
+from app.document_admission_service import (
+    DOCUMENT_ADMISSION_PATH,
+    DocumentAdmissionEngineService,
+)
+from app.document_byte_store import (
+    CloudflareD1DocumentByteStore,
+    ScopedDocumentByteStore,
+)
+from app.document_context_service import (
+    DOCUMENT_CONTEXT_PATH,
+    DocumentContextEngineService,
+)
+from app.document_reference import DOCUMENT_STORE_BINDING_NAME
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.authority_diagnostic import (
@@ -97,6 +109,7 @@ from app.auth_session_scope_authority import (
     AuthSessionScopeAuthority,
     CloudflareControlPlaneAuthSessionClient,
 )
+from app.trusted_document_resolver import DurableDocumentStoragePort, TrustedDocumentResolver
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
 ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
@@ -159,6 +172,45 @@ def _multimodal_authorities_for_env(
     env: Any,
 ) -> tuple[ScopedImageByteStore | None, AuthSessionScopeAuthority | None]:
     return _image_byte_store_for_env(env), _scope_authority_for_env(env)
+
+
+def _document_byte_store_for_env(env: Any) -> ScopedDocumentByteStore | None:
+    """Resolve the deployment-owned scoped document byte store (#2764).
+
+    Mirrors the image store boundary: the ``ENGINE_DOCUMENT_STORE`` D1 binding
+    and the ``0006_engine_document_bytes`` schema are provisioned by the
+    deployment owner; app code never creates or mutates schema. A missing or
+    unusable binding yields ``None`` so the admission and context routes keep
+    failing closed instead of reading an in-memory stand-in.
+    """
+    binding = legacy_worker._binding_value(env, DOCUMENT_STORE_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        return ScopedDocumentByteStore(port=CloudflareD1DocumentByteStore(binding))
+    except (TypeError, ValueError):
+        return None
+
+
+def _document_authorities_for_env(
+    env: Any,
+) -> tuple[ScopedDocumentByteStore | None, TrustedDocumentResolver | None]:
+    """Compose the one canonical durable document lineage per request (#2764).
+
+    ``ENGINE_DOCUMENT_STORE -> CloudflareD1DocumentByteStore ->
+    ScopedDocumentByteStore -> DurableDocumentStoragePort -> TrustedDocumentResolver``
+    is built exactly once and shared by document admission and document
+    context; there is deliberately no second document store or resolver
+    registry. Missing binding yields ``(None, None)``.
+    """
+    store = _document_byte_store_for_env(env)
+    if store is None:
+        return None, None
+    try:
+        resolver = TrustedDocumentResolver(storage=DurableDocumentStoragePort(store))
+    except (TypeError, ValueError):
+        return None, None
+    return store, resolver
 
 
 def _research_service_for_env(
@@ -528,6 +580,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     scope_authority = _scope_authority_for_env(env)
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
+    document_byte_store, document_resolver = _document_authorities_for_env(env)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
             RuntimeError("unreachable without B14 service binding")
@@ -561,6 +614,18 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             ),
             attachment_admission=AttachmentAdmissionEngineService(
                 image_byte_store=image_byte_store,
+                scope_authority=scope_authority,
+            ),
+            # #2764 durable document lineage: the context service consumes the
+            # composed resolver and the admission service the same scoped
+            # store; both fail closed on every missing authority. Evidence
+            # retention stays separately gated (document_projection DEFERRED).
+            documents=DocumentContextEngineService(
+                scope_authority=scope_authority,
+                document_resolver=document_resolver,
+            ),
+            document_admission=DocumentAdmissionEngineService(
+                document_byte_store=document_byte_store,
                 scope_authority=scope_authority,
             ),
             # E7 tool execution/continuation: the resolver factory below composes
@@ -654,6 +719,18 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             image_byte_store=image_byte_store,
             scope_authority=scope_authority,
         ),
+        # #2764 durable document lineage: the context service consumes the
+        # composed resolver and the admission service the same scoped store;
+        # both fail closed on every missing authority. Evidence retention
+        # stays separately gated (document_projection DEFERRED).
+        documents=DocumentContextEngineService(
+            scope_authority=scope_authority,
+            document_resolver=document_resolver,
+        ),
+        document_admission=DocumentAdmissionEngineService(
+            document_byte_store=document_byte_store,
+            scope_authority=scope_authority,
+        ),
         # E7 tool execution/continuation: the resolver factory below composes
         # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
         # #2738). With no port/grant every request still fails closed: the
@@ -705,6 +782,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_multimodal_stream(request, path)
         if path == ATTACHMENT_ADMISSION_PATH:
             return await self._fetch_attachment_admission(request, path)
+        if path == DOCUMENT_ADMISSION_PATH:
+            return await self._fetch_document_admission(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
@@ -828,6 +907,62 @@ class Default(legacy_worker.Default):
                 503,
             )
         result = await services.attachment_admission.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_document_admission(self, request: Any, path: str) -> Any:
+        """E8C-B trusted document admission route (#2764): source-wired, fail-closed.
+
+        Same body-read/service-auth boundary as attachment admission; the
+        canonical scoped document byte store remains the sole size/media/
+        receipt authority and no storage resolver or alternate authentication
+        mechanism lives here.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                body = str(text).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(
+                        status_code=400,
+                        body={
+                            "ok": False,
+                            "error": {
+                                "code": "invalid_request",
+                                "message": "Request body could not be read.",
+                                "retryable": False,
+                                "metadata": None,
+                            },
+                        },
+                    )
+                )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = await self.engine_services_factory(self.env)
+        if services.document_admission is None:
+            return legacy_worker._error_response(
+                "document_admission_unavailable",
+                "Trusted document admission authority is unavailable.",
+                503,
+            )
+        result = await services.document_admission.handle(
             method=method,
             path=path,
             content_type=content_type,
