@@ -566,6 +566,7 @@ def build_telegram_read_handlers(
                 "bot_token_present": False,
                 "mints_approval_authority": False,
                 "write_capability_granted": False,
+                "raw_credentials_present": False,
             }
         )
 
@@ -600,6 +601,7 @@ def build_telegram_read_handlers(
                 "bot_token_present": False,
                 "mints_approval_authority": False,
                 "write_capability_granted": False,
+                "raw_credentials_present": False,
             }
         )
 

@@ -272,3 +272,42 @@ def test_readonly_grant_executes_bot_info_tool_through_runtime() -> None:
     assert len(port.calls) == 1
     assert port.calls[0]["path"] == "/getMe"
     assert port.calls[0]["required_scopes"] == (TELEGRAM_READONLY_AUTH_SCOPE,)
+
+
+def test_real_getme_envelope_classifies_as_canary_canonical() -> None:
+    # Cross-layer contract (#2712): the production read canary classifies the
+    # EXACT Core envelope; the source round shipped them drifting (missing
+    # raw_credentials_present) and every layer's own tests stayed green.
+    import importlib.util
+    from pathlib import Path
+
+    from padiem_ai_core.tool_runtime import ToolInvocation
+
+    script = Path(__file__).resolve().parents[1] / "scripts" / "a15_telegram_read_production_canary.py"
+    spec = importlib.util.spec_from_file_location("a15_read_canary_contract", script)
+    assert spec is not None and spec.loader is not None
+    canary = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(canary)
+
+    port = FakeTelegramPort()
+    binding = telegram_tool_binding(grant=telegram_grant(), port=port)
+    authority = binding.authorities[TELEGRAM_AGENT_ID]
+    result = run(
+        binding.tool_runtime.execute(
+            ToolInvocation(tool_id=TELEGRAM_GET_BOT_INFO_TOOL_ID, arguments={}),
+            authority.compiled.runtime_profile,
+            authority.authorization,
+        )
+    )
+    payload = {
+        "ok": True,
+        "tool": {
+            "canonical_tool_id": canary.TOOL_ID,
+            "status": "completed",
+            "output": result.output,
+            "output_truncated": False,
+        },
+    }
+    bot_identity_present, truncated = canary.classify_success(payload)
+    assert bot_identity_present is True
+    assert truncated is False
