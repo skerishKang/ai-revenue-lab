@@ -171,6 +171,17 @@ def test_create_path_refuses_preexisting_target_bindings_before_put() -> None:
     assert 'token != "ABSENT" or allowlist != "ABSENT"' in text
 
 
+def test_secret_put_requires_cloudflare_success_body() -> None:
+    text = provision_job_text()
+    guard = """if ! jq -e '.success == true' "${response}" >/dev/null; then"""
+    assert guard in text
+    guard_index = text.index(guard)
+    pass_index = text.index('echo "${binding_name}_PUT=PASS"', guard_index)
+    assert guard_index < pass_index
+    assert "CLOUDFLARE_API_SUCCESS=FAIL" in text[guard_index:pass_index]
+    assert "return 1" in text[guard_index:pass_index]
+
+
 def test_cloudflare_error_body_is_never_emitted() -> None:
     text = provision_job_text()
     assert "CLOUDFLARE_ERROR_BODY_OUTPUT=0" in text
