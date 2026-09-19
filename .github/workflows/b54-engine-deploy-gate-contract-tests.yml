@@ -2,9 +2,10 @@ name: B54 Engine Deploy Gate Contract Tests
 
 # WO-8 PR-B — CI for the deploy gate's smoke-idempotency job contract. The
 # gate workflow stays dispatch-only, so its static contract tests run here on
-# pull requests that touch the gate, the smoke script, or these tests. This
-# workflow never deploys and never calls production: it only parses YAML and
-# runs pytest.
+# pull requests that touch the gate, the smoke script, or these tests. Since
+# #2737 this job also runs the shared canonical served-version resolver matrix,
+# which has no other always-on host. This workflow never deploys and never
+# calls production: it only parses YAML and runs pytest.
 
 on:
   pull_request:
@@ -14,7 +15,9 @@ on:
       - ".github/workflows/b54-engine-deploy-gate-contract-tests.yml"
       - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
       - ".github/tests/test_b54_engine_served_version_guard.py"
+      - ".github/tests/test_cloudflare_served_version.py"
       - ".github/scripts/b54_engine_served_version_guard.py"
+      - ".github/scripts/cloudflare_served_version.py"
       - "apps/padiem-ai-engine/scripts/a9_production_smoke.py"
       - "apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py"
   workflow_dispatch:
@@ -40,7 +43,7 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py
 
       - name: Record no deploy performed
         run: |

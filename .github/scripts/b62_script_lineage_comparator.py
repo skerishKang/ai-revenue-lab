@@ -37,6 +37,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# The scripts directory is not a package, so make the canonical resolver
+# importable whether this comparator runs directly or is loaded through
+# importlib in a test.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from cloudflare_served_version import (  # noqa: E402
+    ServedVersionReason,
+    ServedVersionResolutionError,
+    resolve_served_version_id as _resolve_canonical_served_version_id,
+)
+
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 
@@ -54,36 +67,44 @@ def require_uuid(value: str, label: str) -> str:
     return value
 
 
+# Canonical resolver failure codes published under this comparator's own
+# wording. The deployments shape rules live in cloudflare_served_version.py.
+_RESOLVER_REASONS = {
+    ServedVersionReason.ENVELOPE: "deployments response was not successful",
+    ServedVersionReason.RESULT_OBJECT: "deployments result is missing",
+    ServedVersionReason.DEPLOYMENT_RECORDS: "no deployment records returned",
+    ServedVersionReason.DEPLOYMENT_ENTRY: "expected exactly one served version",
+    ServedVersionReason.VERSION_COUNT: "expected exactly one served version",
+    ServedVersionReason.VERSION_ENTRY: "served version entry is malformed",
+    ServedVersionReason.TRAFFIC: "served version traffic share is not exactly 100",
+    ServedVersionReason.VERSION_ID: "served version id is missing or malformed",
+}
+
+
 def resolve_active_version(deployments_payload: object) -> str:
     """Extract the single 100%-traffic served version id, fail closed.
 
-    The Cloudflare deployments endpoint returns deployment history and
-    documents that the first entry is the latest deployment actively
-    serving traffic (same semantics as b62_served_version_secret_guard),
-    so later entries are previous deployments and are not ambiguity.
+    The canonical deployments envelope contract is shared through
+    cloudflare_served_version.py: the endpoint returns deployment history and
+    documents the first entry as the latest deployment actively serving traffic
+    (same semantics as b62_served_version_secret_guard), so later entries are
+    previous deployments and are not ambiguity.
+
+    This comparator then applies its own stricter precondition on the resolved
+    id: lineage evidence is only meaningful for an exact lowercase version UUID,
+    which is narrower than the canonical safe-charset rule.
     """
-    if not isinstance(deployments_payload, dict):
-        raise LineageError("deployments payload must be a JSON object")
-    if deployments_payload.get("success") is not True:
-        raise LineageError("deployments response was not successful")
-    result = deployments_payload.get("result")
-    if not isinstance(result, dict):
-        raise LineageError("deployments result is missing")
-    deployments = result.get("deployments")
-    if not isinstance(deployments, list) or len(deployments) == 0:
-        raise LineageError("no deployment records returned")
-    versions = deployments[0].get("versions") if isinstance(deployments[0], dict) else None
-    if not isinstance(versions, list) or len(versions) != 1:
-        raise LineageError("expected exactly one served version")
-    entry = versions[0]
-    if not isinstance(entry, dict):
-        raise LineageError("served version entry is malformed")
-    if entry.get("percentage") != 100:
-        raise LineageError("served version traffic share is not exactly 100")
-    version_id = entry.get("version_id")
+    try:
+        version_id = _resolve_canonical_served_version_id(deployments_payload)
+    except ServedVersionResolutionError as exc:
+        raise LineageError(
+            _RESOLVER_REASONS.get(
+                exc.reason, "deployments payload is not a canonical envelope"
+            )
+        ) from exc
     if not _is_uuid(version_id):
         raise LineageError("served version id is missing or malformed")
-    return str(version_id)
+    return version_id
 
 
 def extract_script_identity(version_detail_payload: object, label: str) -> str:

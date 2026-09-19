@@ -15,10 +15,13 @@ identity is ``result.id`` and bindings are ``result.resources.bindings``
 served-version proof.
 
 ``resolve-active`` accepts ONLY the canonical Cloudflare deployments envelope,
-converged under #2452 with the #2427 B62 contract: object ``result``, active
-deployment ``result.deployments[0]``, exactly one version at 100 percent, safe
-``version_id``. Raw top-level lists, list-shaped ``result`` values, and the
-``result.versions`` shortcut are refused with no ordering fallback.
+converged under #2452 with the #2427 B62 contract and shared as one
+implementation since #2737 through ``cloudflare_served_version.py``: object
+``result``, active deployment ``result.deployments[0]``, exactly one version at
+100 percent, safe ``version_id``. Raw top-level lists, list-shaped ``result``
+values, and the ``result.versions`` shortcut are refused with no ordering
+fallback. This guard publishes that resolver's reason codes under its own
+established wording.
 
 Emits NAME/TYPE state only. Never reads or prints any binding value, raw
 settings JSON, or the Cloudflare account id. Performs no mutation.
@@ -28,9 +31,22 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
+
+# The scripts directory is not a package, so make the canonical resolver
+# importable whether this guard runs directly or is loaded through importlib in
+# a test.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from cloudflare_served_version import (  # noqa: E402
+    ServedVersionReason,
+    ServedVersionResolutionError,
+    is_safe_version_id,
+    resolve_served_version_id,
+)
 
 REGISTRY_SECRET_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_SECRET_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
@@ -42,8 +58,27 @@ CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE = "service"
 CONTROL_PLANE_GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
 
-# Version ids are echoed to stdout/GITHUB_ENV; keep them to a safe charset.
-_VERSION_ID_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+# Canonical resolver failure codes published under this guard's established
+# wording. The rules live in ``cloudflare_served_version.py``; only the text is
+# local, because deploy-gate regressions assert these phrases on this output.
+_RESOLVER_REASONS = {
+    ServedVersionReason.ENVELOPE:
+        "deployments payload is not a successful Cloudflare API envelope",
+    ServedVersionReason.RESULT_OBJECT:
+        "ambiguous active deployment: deployments payload has no result object",
+    ServedVersionReason.DEPLOYMENT_RECORDS:
+        "ambiguous active deployment: no deployment records returned",
+    ServedVersionReason.DEPLOYMENT_ENTRY:
+        "ambiguous active deployment: deployment entry is not an object",
+    ServedVersionReason.VERSION_COUNT:
+        "ambiguous active deployment: expected exactly one served version",
+    ServedVersionReason.VERSION_ENTRY:
+        "ambiguous active deployment: served version entry is not an object",
+    ServedVersionReason.TRAFFIC:
+        "ambiguous active deployment: served version traffic split is not 100",
+    ServedVersionReason.VERSION_ID:
+        "active version id is missing or unsafe",
+}
 
 
 class ServedVersionGuardError(RuntimeError):
@@ -65,78 +100,31 @@ def _success_result(payload: object, what: str) -> object:
     return payload.get("result")
 
 
-def _version_id_of(entry: dict) -> str:
-    """Return the served version id of an active-deployment version entry.
-
-    The deployments history shape names the field ``version_id``; a bare ``id``
-    is a version-list/detail field and is not accepted here, so a payload from
-    an endpoint other than ``/deployments`` can never resolve as served version.
-    """
-    raw = entry.get("version_id")
-    if not isinstance(raw, str) or not _VERSION_ID_RE.match(raw):
-        raise ServedVersionGuardError("active version id is missing or unsafe")
-    return raw
-
-
 def resolve_active(payload: object) -> str:
     """Return the served version id from a canonical Cloudflare deployments envelope.
 
-    Contract (converged with the #2427 B62 canonical resolver under #2452):
+    The rules are the shared canonical contract in
+    ``cloudflare_served_version.py``: a successful envelope with an object
+    ``result``, ``result.deployments[0]`` as the actively serving deployment,
+    exactly one version at 100 percent traffic, and a safe ``version_id`` read
+    from the ``version_id`` field only — a bare ``id`` is a version-list/detail
+    field, so a payload from an endpoint other than ``/deployments`` can never
+    resolve as served version. Raw top-level lists, list-shaped ``result``
+    values and the ``result.versions`` shortcut are refused with no ordering
+    guess and no fallback.
 
-    - input is a successful Cloudflare API envelope with an object ``result``;
-    - the active deployment is ``result.deployments[0]`` — the endpoint returns
-      deployment history and documents the first entry as the latest deployment
-      actively serving traffic, so later entries are previous deployments and
-      are not ambiguity;
-    - that deployment serves exactly one version, at 100 percent traffic;
-    - the version id must be present and carry a safe charset.
-
-    Refused, with no ordering guess and no fallback: a raw top-level list (the
-    wrangler CLI shape, whose entry order is not a documented served-version
-    authority), a list-shaped ``result``, and a ``result.versions`` shortcut.
-    Each of those can resolve a stale version as served — a descending
-    (newest-first) raw list makes any last-entry rule pick the oldest deployment.
-    A caller that holds wrangler raw-list output must convert it behind an
-    explicitly named adapter with its own ordering contract before it reaches
-    this resolver; no repository caller does today.
-
-    Fails closed on empty, ambiguous, or malformed input. Performs no mutation
-    and reads no binding value.
+    Each canonical reason is published in this guard's own wording. Fails closed
+    on empty, ambiguous, or malformed input. Performs no mutation and reads no
+    binding value.
     """
-    if not isinstance(payload, dict) or payload.get("success") is not True:
+    try:
+        return resolve_served_version_id(payload)
+    except ServedVersionResolutionError as exc:
         raise ServedVersionGuardError(
-            "deployments payload is not a successful Cloudflare API envelope"
-        )
-    result = payload.get("result")
-    if not isinstance(result, dict):
-        raise ServedVersionGuardError(
-            "ambiguous active deployment: deployments payload has no result object"
-        )
-    deployments = result.get("deployments")
-    if not isinstance(deployments, list) or not deployments:
-        raise ServedVersionGuardError(
-            "ambiguous active deployment: no deployment records returned"
-        )
-    first = deployments[0]
-    if not isinstance(first, dict):
-        raise ServedVersionGuardError(
-            "ambiguous active deployment: deployment entry is not an object"
-        )
-    versions = first.get("versions")
-    if not isinstance(versions, list) or len(versions) != 1:
-        raise ServedVersionGuardError(
-            "ambiguous active deployment: expected exactly one served version"
-        )
-    entry = versions[0]
-    if not isinstance(entry, dict):
-        raise ServedVersionGuardError(
-            "ambiguous active deployment: served version entry is not an object"
-        )
-    if entry.get("percentage") != 100:
-        raise ServedVersionGuardError(
-            "ambiguous active deployment: served version traffic split is not 100"
-        )
-    return _version_id_of(entry)
+            _RESOLVER_REASONS.get(
+                exc.reason, f"ambiguous active deployment: {exc.reason}"
+            )
+        ) from exc
 
 
 def _binding_entries(bindings: object) -> list[dict]:
@@ -180,7 +168,7 @@ def _version_bindings(payload: object, active_version: str) -> list[dict]:
     identity = result.get("id")
     if not isinstance(identity, str) or not identity.strip():
         raise ServedVersionGuardError("served version identity unproven")
-    if not _VERSION_ID_RE.match(identity):
+    if not is_safe_version_id(identity):
         raise ServedVersionGuardError("version id is unsafe")
     if identity != active_version:
         raise ServedVersionGuardError("version detail id does not match active version")
@@ -254,7 +242,7 @@ def verify_served(
     Fails closed on: unproven version identity, version id mismatch, duplicate
     binding names, missing V1, expected overlay missing, and any type drift.
     """
-    if not _VERSION_ID_RE.match(active_version):
+    if not is_safe_version_id(active_version):
         raise ServedVersionGuardError("active version id is unsafe")
     bindings = _version_bindings(payload, active_version)
 
