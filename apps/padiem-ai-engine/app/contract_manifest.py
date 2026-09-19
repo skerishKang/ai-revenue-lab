@@ -16,6 +16,7 @@ from .agent_skill_service import (
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
 )
+from .attachment_admission_service import ATTACHMENT_ADMISSION_PATH
 from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
@@ -147,8 +148,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_CANCEL_PATH, "POST", "application/json"),
-            # E5A completed one-image source route. Trusted storage resolution is
-            # intentionally not Production-wired yet, so capability stays DEFERRED.
+            # E5C (#2728) adds the authenticated source route that admits bounded
+            # image bytes and returns a server-minted opaque att_* reference. Route
+            # declaration does not imply Production authority/binding activation.
+            EngineEndpointContract(ATTACHMENT_ADMISSION_PATH, "POST", "application/json"),
             EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
             EngineEndpointContract(MULTIMODAL_STREAM_PATH, "POST", "application/x-ndjson"),
             # #1964 source slice: the replay route is declared but the feature
@@ -191,12 +194,14 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
+            # E5C (#2728): the admission route is source-complete. It remains
+            # DEFERRED until the separately gated Production image-store and
+            # Control Plane session authorities are activated and proven live.
+            EngineFeatureContract("attachment_admission", EngineFeatureState.DEFERRED),
             EngineFeatureContract("multimodal_completed_run", EngineFeatureState.DEFERRED),
-            # #1972: the streaming route and shared stream state machine are
-            # source-complete, but the Production composition injects no
-            # trusted attachment resolver (fail-closed 503), so — per the
-            # tool_runtime_projection audit precedent — the claim stays
-            # DEFERRED until resolver activation is separately authorized.
+            # Execute/stream are source-complete and share the accepted resolver /
+            # scope composition. Their Production availability still requires the
+            # separately gated deployment, bindings and live evidence.
             EngineFeatureContract("multimodal_streaming_run", EngineFeatureState.DEFERRED),
             EngineFeatureContract("document_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("public_browser_api", EngineFeatureState.UNAVAILABLE),
