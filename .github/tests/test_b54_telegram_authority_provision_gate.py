@@ -191,7 +191,7 @@ def test_pending_version_activation_is_not_reported_as_success() -> None:
     assert pending in text
     tail = text.partition(pending)[2]
     assert "TELEGRAM_ACTIVE_VERSION_OWNS_AUTHORITY=FAIL" in tail
-    assert "raise SystemExit(1)" in tail
+    assert "exit 1" in tail
 
 
 def test_rollback_is_bounded_to_partial_put_only() -> None:
