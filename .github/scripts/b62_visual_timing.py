@@ -246,6 +246,11 @@ async def with_timing_retries(
             record = {"label": label, "attempt": attempt, "outcome": "OVERSHOOT"}
             record.update(exc.evidence)
             evidence_log.append(record)
+            if attempt < attempts:
+                # Give a starved browser process one event-loop interval to
+                # recover before the next isolated sample. This does not
+                # change any product threshold or increase the attempt bound.
+                await asyncio.sleep(0.25 * attempt)
     assert last is not None
     raise TimingOvershoot(
         f"{label}: timing sampling overshot the requested window on all attempts "

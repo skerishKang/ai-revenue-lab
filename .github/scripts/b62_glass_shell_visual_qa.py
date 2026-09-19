@@ -569,16 +569,27 @@ async def _check_touch(browser: Any) -> dict[str, Any]:
 async def _run_checks(report: dict[str, Any]) -> None:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch()
-        page = await browser.new_page(viewport={"width": 1600, "height": 1000})
         for variant in VARIANTS:
+            async def _variant_cycle(variant: str = variant) -> dict[str, Any]:
+                # A retry must isolate browser rendering state as well as
+                # navigation state; the prior page may retain a starved
+                # compositor after a timing overshoot.
+                context = await browser.new_context(viewport={"width": 1600, "height": 1000})
+                page = await context.new_page()
+                try:
+                    return await _check_variant(page, variant)
+                finally:
+                    await context.close()
+
             # A TimingOvershoot only happens when the in-page measurement
             # proves the runner overshot the requested sample window; the
-            # retry repeats the identical thresholds from a fresh cycle.
+            # retry repeats the identical thresholds from a fresh context.
             report["views"][f"variant-{variant}"] = await with_timing_retries(
-                lambda: _check_variant(page, variant),
+                _variant_cycle,
                 label=f"glass-shell-{variant}",
                 evidence_log=TIMING_EVIDENCE,
             )
+        page = await browser.new_page(viewport={"width": 1600, "height": 1000})
         report["views"]["mask-modes"] = await _check_mask_modes(page)
         report["views"]["controls"] = await _check_controls(page)
         await page.close()
