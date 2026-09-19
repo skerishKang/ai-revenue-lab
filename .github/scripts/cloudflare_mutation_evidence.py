@@ -42,6 +42,18 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+# The scripts directory is not a package, so make the canonical resolver
+# importable whether this module is used directly or loaded through importlib in
+# a test.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+# Reuse the canonical safe-version-id contract (#2740) rather than deriving a
+# second regex: an id this resolver would refuse must never become evidence, an
+# output token, or a log line here.
+from cloudflare_served_version import is_safe_version_id  # noqa: E402
+
 CODE_DEPLOY = "CODE_DEPLOY"
 SECRET_PUT = "SECRET_PUT"
 ROLLBACK = "ROLLBACK"
@@ -62,9 +74,32 @@ REQUIRES_CHANGE = {
 MIN_SAME_VERSION_OBSERVATIONS = 15
 POLL_ATTEMPTS = 30
 
+# The read window is a ceiling, not a suggestion. It equals the 30-attempt
+# polling contract the gates implement, and it is deliberately NOT a parameter:
+# a caller must not be able to widen the evidence window by handing over a
+# longer sequence.
+MAX_OBSERVATIONS = POLL_ATTEMPTS
+
 YES = "YES"
 NO = "NO"
 FAIL = "FAIL"
+
+# Closed, bounded reason codes. Reasons are never free prose and never carry a
+# version id, so no input string can be reflected into stdout/stderr through
+# them (#2752 review blocker 3).
+REASON_CODES = (
+    "ROLLBACK_TARGET_OBSERVED",
+    "ROLLBACK_TARGET_NOT_OBSERVED",
+    "CODE_DEPLOY_DIVERGED",
+    "SECRET_PUT_DIVERGED",
+    "SECRET_PUT_NO_DIVERGENCE_STABLE",
+    "CODE_DEPLOY_DID_NOT_DIVERGE",
+    "BELOW_STABLE_OBSERVATION_FLOOR",
+    "NO_ACCEPTABLE_OBSERVATION",
+    "INVALID_VERSION_ID",
+    "UNUSABLE_ACCEPTED_OBSERVATION_ID",
+    "OBSERVATION_LIMIT_EXCEEDED",
+)
 
 
 class EvidenceInputError(ValueError):
@@ -82,7 +117,7 @@ class Evidence:
 
     __slots__ = (
         "verdict", "final", "post_version_id", "observations",
-        "same_observations", "diverged_at", "reason",
+        "same_observations", "rejected_observations", "diverged_at", "reason",
     )
 
     def __init__(
@@ -92,6 +127,7 @@ class Evidence:
         post_version_id: "str | None",
         observations: int,
         same_observations: int,
+        rejected_observations: int,
         diverged_at: "int | None",
         reason: str,
     ) -> None:
@@ -100,6 +136,7 @@ class Evidence:
         self.post_version_id = post_version_id
         self.observations = observations
         self.same_observations = same_observations
+        self.rejected_observations = rejected_observations
         self.diverged_at = diverged_at
         self.reason = reason
 
@@ -110,11 +147,21 @@ class Evidence:
             "POST_MUTATION_SERVED_VERSION_ID": self.post_version_id or "NONE",
             "MUTATION_EVIDENCE_OBSERVATIONS": str(self.observations),
             "MUTATION_EVIDENCE_SAME_OBSERVATIONS": str(self.same_observations),
+            "MUTATION_EVIDENCE_REJECTED_OBSERVATIONS": str(self.rejected_observations),
             "MUTATION_EVIDENCE_DIVERGED_AT": (
                 "NONE" if self.diverged_at is None else str(self.diverged_at)
             ),
             "MUTATION_EVIDENCE_REASON": self.reason,
         }
+
+
+def _counts(observations: Sequence[tuple[bool, object]], acceptable: "list[tuple[int, str]]",
+            pre_version_id: str) -> "dict[str, int]":
+    return {
+        "observations": len(observations),
+        "same_observations": sum(1 for _, value in acceptable if value == pre_version_id),
+        "rejected_observations": sum(1 for accepted, _ in observations if not accepted),
+    }
 
 
 def _fail(reason: str, *, final: bool, **observed: object) -> Evidence:
@@ -124,6 +171,7 @@ def _fail(reason: str, *, final: bool, **observed: object) -> Evidence:
         post_version_id=observed.get("post_version_id", None),  # type: ignore[arg-type]
         observations=int(observed.get("observations", 0)),  # type: ignore[arg-type,call-overload]
         same_observations=int(observed.get("same_observations", 0)),  # type: ignore[arg-type,call-overload]
+        rejected_observations=int(observed.get("rejected_observations", 0)),  # type: ignore[arg-type,call-overload]
         diverged_at=observed.get("diverged_at", None),  # type: ignore[arg-type]
         reason=reason,
     )
@@ -143,18 +191,36 @@ def decide(
     ``window_open`` says whether the caller can still read again. With it set, an
     undecided verdict is reported as ``final=False`` so a poll keeps going
     instead of closing early on a slow propagation.
+
+    Every version id is validated against the canonical safe-id contract before
+    it can be evidence, and the returned ``post_version_id`` is therefore always
+    a value that passed that contract. No reason string interpolates an id.
     """
     if mutation_class not in MUTATION_CLASSES:
         raise EvidenceInputError("mutation class is not one of the closed vocabulary")
-    if not isinstance(pre_version_id, str) or not pre_version_id.strip():
-        raise EvidenceInputError("pre-mutation served version id is missing or empty")
     if min_same_observations < 1:
         raise EvidenceInputError("minimum same-version observation floor must be positive")
-    if mutation_class == ROLLBACK and (
-        not isinstance(target_version_id, str) or not target_version_id.strip()
-    ):
+    if min_same_observations > MAX_OBSERVATIONS:
+        raise EvidenceInputError("stable-observation floor exceeds the canonical read window")
+    if not is_safe_version_id(pre_version_id):
+        # Raised, not classified: the caller cannot ask a well-formed evidence
+        # question about a pre-state this module would not accept as served.
+        raise EvidenceInputError("pre-mutation version id is not a canonical safe version id")
+    if mutation_class == ROLLBACK and not is_safe_version_id(target_version_id):
         raise EvidenceInputError(
-            "rollback evidence requires an explicit target version id"
+            "rollback requires an explicit canonical target version id"
+        )
+
+    if len(observations) > MAX_OBSERVATIONS:
+        # The window is a ceiling. Over-window input is refused closed instead
+        # of being quietly classified, so a caller cannot widen the evidence
+        # window by handing over more reads than the gate contract allows.
+        return _fail(
+            "OBSERVATION_LIMIT_EXCEEDED",
+            final=True,
+            observations=len(observations),
+            same_observations=0,
+            rejected_observations=0,
         )
 
     acceptable: list[tuple[int, str]] = []
@@ -165,65 +231,67 @@ def decide(
             raise EvidenceInputError("each observation must be an (acceptable, version) pair")
         if not accepted:
             continue  # a rejected read never finalizes anything
-        if not isinstance(value, str) or not value.strip():
-            # Claimed acceptable but carries no usable id: that is a caller bug,
-            # and it must not be able to satisfy an equality or change claim.
+        if value is None or (isinstance(value, str) and not value.strip()):
             return _fail(
-                "an acceptable observation carried no usable served version id",
+                "UNUSABLE_ACCEPTED_OBSERVATION_ID",
                 final=True,
-                observations=len(observations),
+                **_counts(observations, acceptable, pre_version_id),
             )
-        acceptable.append((index, value))
+        if not is_safe_version_id(value):
+            # Claimed acceptable but unsafe: it must not satisfy an equality or
+            # change claim, and its value is deliberately never echoed.
+            return _fail(
+                "INVALID_VERSION_ID",
+                final=True,
+                **_counts(observations, acceptable, pre_version_id),
+            )
+        acceptable.append((index, str(value)))
 
-    counts = {
-        "observations": len(observations),
-        "same_observations": sum(1 for _, v in acceptable if v == pre_version_id),
-    }
+    counts = _counts(observations, acceptable, pre_version_id)
 
     if not acceptable:
         return _fail(
-            "no acceptable canonical served-version observation yet",
+            "NO_ACCEPTABLE_OBSERVATION",
             final=not window_open,
             **counts,
         )
 
     if mutation_class == ROLLBACK:
-        for index, value in acceptable:
+        for _, value in acceptable:
             if value == target_version_id:
                 return Evidence(
                     verdict=YES,
                     final=True,
                     post_version_id=value,
                     diverged_at=None,
-                    reason="served version equals the explicit rollback target",
+                    reason="ROLLBACK_TARGET_OBSERVED",
                     **counts,
                 )
-        last = acceptable[-1][1]
         return _fail(
-            f"served version {last!r} is not the rollback target",
+            "ROLLBACK_TARGET_NOT_OBSERVED",
             final=not window_open,
-            post_version_id=last,
+            post_version_id=acceptable[-1][1],
             **counts,
         )
 
     for index, value in acceptable:
         if value != pre_version_id:
+            diverged_at = index + 1
             if mutation_class == SECRET_PUT:
                 return Evidence(
                     verdict=YES,
                     final=True,
                     post_version_id=value,
-                    diverged_at=index + 1,
-                    reason="mutation observed: served version changed",
+                    diverged_at=diverged_at,
+                    reason="SECRET_PUT_DIVERGED",
                     **counts,
                 )
-            # CODE_DEPLOY: a change is exactly what must be proven.
             return Evidence(
                 verdict=YES,
                 final=True,
                 post_version_id=value,
-                diverged_at=index + 1,
-                reason="code deploy converged: served version differs from pre-deploy",
+                diverged_at=diverged_at,
+                reason="CODE_DEPLOY_DIVERGED",
                 **counts,
             )
 
@@ -235,21 +303,18 @@ def decide(
                 final=True,
                 post_version_id=acceptable[-1][1],
                 diverged_at=None,
-                reason=(
-                    "no divergence across the stable-observation floor; a secret PUT is "
-                    "not required to roll a version, so this is evidence only"
-                ),
+                reason="SECRET_PUT_NO_DIVERGENCE_STABLE",
                 **counts,
             )
         return _fail(
-            "no divergence yet and below the stable-observation floor",
+            "BELOW_STABLE_OBSERVATION_FLOOR",
             final=not window_open,
             post_version_id=acceptable[-1][1],
             **counts,
         )
 
     return _fail(
-        "served version still equals the pre-mutation version",
+        "CODE_DEPLOY_DID_NOT_DIVERGE",
         final=not window_open,
         post_version_id=acceptable[-1][1],
         **counts,
