@@ -12,6 +12,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/b54-telegram-grant-seed-gate.yml'
+      - '.github/tests/test_b54_telegram_grant_seed_gate.py'
       - 'apps/padiem-ai-engine/scripts/connector_grant_seed.py'
   workflow_dispatch:
     inputs:
@@ -70,6 +71,14 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet pytest pytest-asyncio
           python -m pip install --disable-pip-version-check --quiet -e packages/padiem-ai-core
           python -m pytest -q apps/padiem-ai-engine/tests/test_connector_grant_seed_script.py
+
+      - name: Run Telegram grant seed gate contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7'
+          python -m pytest -q .github/tests/test_b54_telegram_grant_seed_gate.py
+          echo 'B54_TELEGRAM_GRANT_SEED_GATE_SOURCE_CONTRACT=PASS'
 
       - name: Prove reviewed Telegram seed SQL without executing it
         shell: bash
@@ -263,7 +272,7 @@ jobs:
             echo 'TELEGRAM_PRE_SEED_STATE=ABSENT_ZERO'
             echo 'TELEGRAM_SEED_SKIPPED_ALREADY_SEEDED=NO'
           fi
-          echo "TELEGRAM_SEED_GATE_PRE_STATE=${state}"
+          echo "TELEGRAM_SEED_GATE_PRE_STATE=${state}" >> "${GITHUB_ENV}"
 
       - name: Execute exactly one reviewed Telegram READ grant INSERT
         shell: bash
