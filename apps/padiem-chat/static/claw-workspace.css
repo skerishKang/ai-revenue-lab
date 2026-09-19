@@ -39,6 +39,7 @@
 .app-shell:not([data-state="claw"]) .claw-run-history,
 .app-shell:not([data-state="claw"]) .claw-request-echo,
 .app-shell:not([data-state="claw"]) .claw-retry,
+.app-shell:not([data-state="claw"]) .claw-wait,
 .app-shell:not([data-state="claw"]) .claw-recovery-hint,
 .app-shell:not([data-state="claw"]) .claw-disabled-controls {
   display: none !important;
@@ -336,6 +337,23 @@
   background: var(--danger-surface);
   border: 1px solid var(--danger-border);
   color: var(--danger);
+}
+
+/* ── #2763 in-flight elapsed wait: truthful local wait state only ──────── */
+/* Elapsed time only: no bar and no completion estimate exist here because the
+ * server exposes no such truth, so this stays a plain text readout. */
+.claw-wait {
+  margin: 0;
+  justify-self: start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── #2760 execute recovery: pre-dispatch cooldown + ambiguous-failure hint ── */
