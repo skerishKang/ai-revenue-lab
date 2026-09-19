@@ -58,6 +58,12 @@ SOURCE_PRESENT
 
 For an exact current capability decision, inspect the merged capability/contract manifest, composition/worker code and tests for that revision. Dated architecture tables and issue reports are evidence snapshots.
 
+## Trusted image attachment admission
+
+The E5C source route `POST /internal/v1/multimodal/attachments` accepts bounded trusted image bytes behind the Engine service-auth boundary, derives app/tenant/subject scope from the canonical Control Plane auth session authority, reuses the canonical scoped image byte store, and returns only a server-minted opaque `att_*` reference plus bounded media facts.
+
+The route is not a browser storage API. Callers cannot mint attachment refs, choose storage locators, or assert tenant/subject scope. Source presence also does not claim Production activation: the `attachment_admission` manifest feature remains `DEFERRED` until the separately gated image-store and Control Plane authorities are deployed/bound and proven live.
+
 ## Ownership rules
 
 Engine may:

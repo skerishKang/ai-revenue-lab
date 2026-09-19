@@ -5,6 +5,7 @@ from app.agent_skill_service import (
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
 )
+from app.attachment_admission_service import ATTACHMENT_ADMISSION_PATH
 from app.contract_manifest import (
     ENGINE_CONTRACT_FAMILY,
     ENGINE_CONTRACT_MAJOR,
@@ -48,6 +49,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RUN_PATH),
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
+        ("POST", ATTACHMENT_ADMISSION_PATH),
         ("POST", MULTIMODAL_EXECUTE_PATH),
         ("POST", MULTIMODAL_STREAM_PATH),
         ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH),
@@ -104,6 +106,7 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "skill_runtime_projection",
         "agent_runtime_projection",
         "memory_rag_projection",
+        "attachment_admission",
         "multimodal_completed_run",
         "multimodal_streaming_run",
         "document_projection",
@@ -130,8 +133,10 @@ def test_multimodal_route_is_declared_but_capabilities_stay_deferred() -> None:
     manifest = current_engine_contract_manifest()
     endpoints = {(item.method, item.path) for item in manifest.endpoints}
 
+    assert ("POST", ATTACHMENT_ADMISSION_PATH) in endpoints
     assert ("POST", MULTIMODAL_EXECUTE_PATH) in endpoints
     assert ("POST", MULTIMODAL_STREAM_PATH) in endpoints
+    assert manifest.feature_state("attachment_admission") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("multimodal_completed_run") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("multimodal_streaming_run") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
@@ -164,6 +169,7 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
         "memory_rag_projection",
         "agent_runtime_projection",
         "skill_runtime_projection",
+        "attachment_admission",
         "multimodal_completed_run",
         "multimodal_streaming_run",
         "document_projection",
