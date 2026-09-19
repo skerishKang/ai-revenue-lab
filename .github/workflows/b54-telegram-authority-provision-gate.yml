@@ -274,6 +274,7 @@ jobs:
               echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
               return 1
             fi
+            touch "${RUNNER_TEMP}/telegram-pushed-${binding_name}"
             echo "${binding_name}_PUT=PASS"
             return 0
           }
@@ -445,38 +446,26 @@ jobs:
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
-          settings="${RUNNER_TEMP}/telegram-rollback-settings.json"
-          if ! curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"; then
+          pushed_names=()
+          for name in "${TELEGRAM_BOT_TOKEN_BINDING}" "${TELEGRAM_PAIRED_CHAT_BINDING}"; do
+            marker="${RUNNER_TEMP}/telegram-pushed-${name}"
+            if [ -f "${marker}" ]; then
+              pushed_names+=("${name}")
+            fi
+          done
+          if [ "${#pushed_names[@]}" -eq 0 ]; then
             echo 'ROLLBACK_ATTEMPTED=NO'
-            echo 'ROLLBACK_REASON=SETTINGS_UNAVAILABLE'
+            echo 'ROLLBACK_REASON=NO_CONFIRMED_SUCCESSFUL_PUT'
+            echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
             exit 0
           fi
-          pushed="$(python - "${settings}" "${TELEGRAM_BOT_TOKEN_BINDING}" "${TELEGRAM_PAIRED_CHAT_BINDING}" <<'PY'
-          import json, sys
-
-          payload = json.load(open(sys.argv[1], encoding="utf-8"))
-          result = payload.get("result") if payload.get("success") is True else None
-          bindings = result.get("bindings") if isinstance(result, dict) else None
-          if not isinstance(bindings, list):
-              print("")
-              raise SystemExit(0)
-          names = {b.get("name") for b in bindings if isinstance(b, dict)}
-          print(",".join(name for name in sys.argv[2:4] if name in names))
-          PY
-          )"
-          if [ -z "${pushed}" ]; then
-            echo 'ROLLBACK_ATTEMPTED=NO'
-            echo 'ROLLBACK_REASON=NOTHING_PUSHED'
-            echo 'ROLLBACK_SCOPE=CREATE_ONLY_PARTIAL_PUT'
-            exit 0
-          fi
-          IFS=',' read -ra pushed_names <<< "${pushed}"
           for name in "${pushed_names[@]}"; do
             curl -sS -X DELETE "${auth[@]}" "${base}/secrets/${name}" \
               -o "${RUNNER_TEMP}/telegram-rollback-response.json" >/dev/null 2>&1 || true
+            rm -f "${RUNNER_TEMP}/telegram-pushed-${name}"
           done
           echo 'ROLLBACK_ATTEMPTED=YES'
-          echo 'ROLLBACK_SCOPE=PARTIAL_PUT_ONLY'
+          echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
           echo 'ROLLBACK_SECRET_VALUE_OUTPUT=0'
 
       - name: Record immutable execution locks
@@ -498,7 +487,7 @@ jobs:
           echo 'D1_MUTATION=0'
           echo 'ENGINE_CODE_DEPLOY=0'
           echo 'ENGINE_DEPLOY=0'
-          echo 'ROLLBACK_SCOPE=CREATE_ONLY_PARTIAL_PUT'
+          echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
           echo 'VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED'
 
       - name: Publish bounded provision evidence
@@ -512,6 +501,6 @@ jobs:
             echo "- binding inspection: NAME/TYPE only; secret values never read back"
             echo "- Telegram provider calls: 0"
             echo "- D1 writes: 0 | Worker code deploy: 0"
-            echo "- rollback scope: partial PUT only"
+            echo "- rollback scope: confirmed successful partial PUT only"
             echo "- next step: bounded live getMe READ canary under a separate authority"
           } >> "${GITHUB_STEP_SUMMARY}"
