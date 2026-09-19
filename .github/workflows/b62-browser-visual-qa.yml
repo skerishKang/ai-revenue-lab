@@ -163,7 +163,10 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
           ffmpeg -hide_banner -loglevel error -y -i .tmp/b61-public-product-film/storymemory-product-film-v1.webm -an -c:v libx264 -pix_fmt yuv420p -preset medium -crf 20 -movflags +faststart .tmp/b61-public-product-film/storymemory-product-film-v1.mp4
-          ffmpeg -hide_banner -loglevel error -y -i .tmp/b61-public-product-film/storymemory-product-still-v1.png -c:v libwebp -quality 84 .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+          # Final Album still: real frame from the accepted film after the actual
+          # Library carousel has moved to Iliad. This is more representative than
+          # the initial default Bible frame and remains part of the same real capture.
+          ffmpeg -hide_banner -loglevel error -y -ss 13 -i .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 -frames:v 1 -an -c:v libwebp -quality 84 .tmp/b61-public-product-film/storymemory-product-still-v1.webp
           sha256sum .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 .tmp/b61-public-product-film/storymemory-product-still-v1.webp > .tmp/b61-public-product-film/SHA256SUMS.txt
           ffprobe -v error -show_entries format=duration,size,format_name -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate -of json .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 > .tmp/b61-public-product-film/film-metadata.json
       - name: Enforce bounded public-media contract
@@ -206,6 +209,31 @@ jobs:
           print(f"READER_TITLE={evidence['reader_title']}")
           print(f"CONSOLE_ERROR_COUNT={len(evidence['console_errors'])}")
           print(f"PAGE_ERROR_COUNT={len(evidence['page_errors'])}")
+
+          import hashlib
+          def sha256(path):
+              h=hashlib.sha256()
+              with path.open("rb") as fh:
+                  for chunk in iter(lambda: fh.read(1024*1024), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          final_manifest={
+              "source_capture_run": "${{ github.run_id }}",
+              "source_capture_head": "${{ github.event.pull_request.head.sha }}",
+              "film_sha256": sha256(root/"storymemory-product-film-v1.mp4"),
+              "film_duration_seconds": duration,
+              "poster_source_time_seconds": 13,
+              "poster_sha256": sha256(root/"storymemory-product-still-v1.webp"),
+              "poster_selection": "real Iliad Library frame from accepted film",
+              "sensitive_data": "NONE_OBSERVED",
+              "note_saved": False,
+              "ai_prompt_submitted": False,
+          }
+          (root/"final-media-manifest.json").write_text(
+              json.dumps(final_manifest,ensure_ascii=False,indent=2)+"\\n",
+              encoding="utf-8",
+          )
           PY
       - name: Upload private review artifact
         uses: actions/upload-artifact@v4
@@ -217,5 +245,16 @@ jobs:
             .tmp/b61-public-product-film/capture-evidence.json
             .tmp/b61-public-product-film/film-metadata.json
             .tmp/b61-public-product-film/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload accepted final media package
+        uses: actions/upload-artifact@v4
+        with:
+          name: storymemory-product-film-v1-final-package
+          path: |
+            .tmp/b61-public-product-film/storymemory-product-film-v1.mp4
+            .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+            .tmp/b61-public-product-film/final-media-manifest.json
           if-no-files-found: error
           retention-days: 7
