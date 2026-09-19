@@ -34,6 +34,10 @@ import worker as legacy_worker
 from app.agent_skill_service import AgentSkillEngineService
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
+from app.attachment_admission_service import (
+    ATTACHMENT_ADMISSION_PATH,
+    AttachmentAdmissionEngineService,
+)
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
@@ -539,6 +543,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 image_byte_store=image_byte_store,
                 scope_authority=scope_authority,
             ),
+            attachment_admission=AttachmentAdmissionEngineService(
+                image_byte_store=image_byte_store,
+                scope_authority=scope_authority,
+            ),
             # E7 tool execution/continuation remains a source seam: the
             # resolver factory below returns None until a real port and grant
             # store are bound (PR-C). With no port/grant every request still
@@ -623,6 +631,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             image_byte_store=image_byte_store,
             scope_authority=scope_authority,
         ),
+        attachment_admission=AttachmentAdmissionEngineService(
+            image_byte_store=image_byte_store,
+            scope_authority=scope_authority,
+        ),
         # E7 tool execution/continuation remains a source seam: the
         # resolver factory below returns None until a real port and grant
         # store are bound (PR-C). With no port/grant every request still
@@ -668,6 +680,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_multimodal(request, path)
         if path == MULTIMODAL_STREAM_PATH:
             return await self._fetch_multimodal_stream(request, path)
+        if path == ATTACHMENT_ADMISSION_PATH:
+            return await self._fetch_attachment_admission(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
@@ -735,6 +749,62 @@ class Default(legacy_worker.Default):
                 503,
             )
         result = await services.multimodal.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_attachment_admission(self, request: Any, path: str) -> Any:
+        """E5C trusted admission route: source-wired, fail-closed.
+
+        This repeats only the same body-read/service-auth boundary before
+        invoking the named admission service; the canonical scoped byte store
+        remains the sole size/media/receipt authority and no storage resolver
+        or alternate authentication mechanism lives here.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                body = str(text).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(
+                        status_code=400,
+                        body={
+                            "ok": False,
+                            "error": {
+                                "code": "invalid_request",
+                                "message": "Request body could not be read.",
+                                "retryable": False,
+                                "metadata": None,
+                            },
+                        },
+                    )
+                )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = await self.engine_services_factory(self.env)
+        if services.attachment_admission is None:
+            return legacy_worker._error_response(
+                "attachment_admission_unavailable",
+                "Trusted attachment admission authority is unavailable.",
+                503,
+            )
+        result = await services.attachment_admission.handle(
             method=method,
             path=path,
             content_type=content_type,
