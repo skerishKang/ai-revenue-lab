@@ -184,8 +184,26 @@ jobs:
           assert evidence["final_url"].startswith("https://storymemory-padiem-567.pages.dev/")
           assert evidence["visible_email"] is False
           assert evidence["login_performed"] is False
+          assert evidence["note_saved"] is False
+          assert evidence["ai_prompt_submitted"] is False
+          assert evidence["initial_screen"] == "library"
+          assert evidence["selected_book"] == "일리아드"
+          assert evidence["final_screen"] == "reader"
+          assert evidence["reader_title"] == "일리아드"
+          assert evidence["interaction_count"] >= 9, evidence["interactions"]
+          required = {
+              "open_iliad_reader",
+              "reader_next_page",
+              "memory_note_open",
+              "memory_note_draft",
+              "memory_note_cancel",
+              "ai_prompt_draft_no_submit",
+          }
+          assert required.issubset(set(evidence["interactions"])), evidence["interactions"]
           print(f"STORYMEMORY_PUBLIC_CAPTURE_CONTRACT=PASS duration={duration:.2f}s")
-          print(f"INTERACTION_COUNT={len(evidence['interactions'])}")
+          print(f"INTERACTION_COUNT={evidence['interaction_count']}")
+          print(f"FINAL_SCREEN={evidence['final_screen']}")
+          print(f"READER_TITLE={evidence['reader_title']}")
           print(f"CONSOLE_ERROR_COUNT={len(evidence['console_errors'])}")
           print(f"PAGE_ERROR_COUNT={len(evidence['page_errors'])}")
           PY
