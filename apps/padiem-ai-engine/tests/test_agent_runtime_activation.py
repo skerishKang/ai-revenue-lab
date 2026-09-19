@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -20,6 +21,7 @@ from app.agent_runtime_activation import (
     verify_confirmation_token,
     verify_exact_main,
 )
+from app.agent_runtime_activation import ReferenceParityResult
 
 MAIN = "5d152fdc6fd008eed44a8e7b638e4c165917340b"
 SOURCE = "f7c52ce1245f16db7a9961a203915b0fd11fab34"
@@ -155,6 +157,39 @@ def test_evaluate_activation_records_pending_secret_free_evidence() -> None:
     assert "private" not in serialized
     assert all(item.error_code is None for item in evidence.reference_parity)
     assert all(item.ok for item in evidence.reference_parity)
+
+
+@pytest.mark.parametrize("consumer", ["b54-padiem-claw", "b62-padiem-chat"])
+def test_reference_parity_failure_blocks_readiness(consumer: str) -> None:
+    forced_failure = ReferenceParityResult(
+        consumer=consumer,
+        ok=False,
+        error_code="synthetic_probe_failed",
+        finding="forced parity failure",
+    )
+    parity = tuple(
+        forced_failure if item != consumer else ReferenceParityResult(
+            consumer=item,
+            ok=True,
+            error_code=None,
+            finding="bounded Agent contract completed",
+        )
+        for item in AGENT_REFERENCE_CONSUMERS
+    )
+    with patch(
+        "app.agent_runtime_activation.run_reference_parity_probe",
+        new=AsyncMock(return_value=parity),
+    ):
+        with pytest.raises(ActivationError) as caught:
+            run(
+                evaluate_activation(
+                    confirmation_token=CONFIRMATION_TOKEN,
+                    current_main=MAIN,
+                    accepted_source_head=SOURCE,
+                    readiness_metadata=metadata(),
+                )
+            )
+    assert caught.value.code == "reference_parity_failed"
 
 
 def test_manifest_and_skill_are_not_activated_by_gate_source() -> None:

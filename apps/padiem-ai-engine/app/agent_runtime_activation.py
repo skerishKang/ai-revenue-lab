@@ -386,6 +386,11 @@ async def evaluate_activation(
     failed = [probe for probe in synthetic if not probe.ok]
     if failed:
         raise ActivationError("synthetic_probe_failed", "A5-Agent synthetic probes must all pass.")
+    if any(not result.ok for result in parity):
+        raise ActivationError(
+            "reference_parity_failed",
+            "A5-Agent reference parity probes must all pass.",
+        )
     return AgentActivationEvidence(
         current_main=current_main,
         accepted_source_head=accepted_source_head,
