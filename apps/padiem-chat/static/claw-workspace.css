@@ -38,6 +38,8 @@
 .app-shell:not([data-state="claw"]) .claw-approved-memory,
 .app-shell:not([data-state="claw"]) .claw-run-history,
 .app-shell:not([data-state="claw"]) .claw-request-echo,
+.app-shell:not([data-state="claw"]) .claw-retry,
+.app-shell:not([data-state="claw"]) .claw-recovery-hint,
 .app-shell:not([data-state="claw"]) .claw-disabled-controls {
   display: none !important;
 }
@@ -334,6 +336,66 @@
   background: var(--danger-surface);
   border: 1px solid var(--danger-border);
   color: var(--danger);
+}
+
+/* ── #2760 execute recovery: pre-dispatch cooldown + ambiguous-failure hint ── */
+.claw-recovery-hint {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--accent-soft);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.claw-retry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+}
+.claw-retry-copy {
+  flex: 1 1 220px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+}
+.claw-retry-button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+}
+.claw-retry-button:not(:disabled) {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.claw-retry-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.claw-retry-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+@media (max-width: 920px) {
+  .claw-retry { align-items: stretch; flex-direction: column; }
+  .claw-retry-button { width: 100%; justify-content: center; }
 }
 .claw-result[data-claw-state="error"] .claw-result-empty {
   border-color: rgba(220, 62, 62, 0.22);
