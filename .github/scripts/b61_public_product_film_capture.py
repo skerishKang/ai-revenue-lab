@@ -17,10 +17,17 @@ page_errors: list[str] = []
 interactions: list[str] = []
 
 
-def click(page, selector: str, label: str, *, pause_ms: int = 1200) -> None:
+def click(
+    page,
+    selector: str,
+    label: str,
+    *,
+    pause_ms: int = 1200,
+    force: bool = False,
+) -> None:
     loc = page.locator(selector)
     loc.wait_for(state="visible", timeout=8000)
-    loc.click(timeout=5000)
+    loc.click(timeout=5000, force=force)
     interactions.append(label)
     page.wait_for_timeout(pause_ms)
 
@@ -110,7 +117,10 @@ with sync_playwright() as p:
         raise RuntimeError("Reader entered but visible reading content is empty")
 
     # Demonstrate real reading progression.
-    click(page, "#pageTurnNext", "reader_next_page", pause_ms=1800)
+    # The page-turn control has intentional continuous motion. Playwright's normal
+    # stability gate never settles, so force only bypasses the automation
+    # stability check; the real button click handler still receives the event.
+    click(page, "#pageTurnNext", "reader_next_page", pause_ms=1800, force=True)
 
     # Demonstrate Memory UI without persisting a note.
     click(page, "#newFreeNote", "memory_note_open", pause_ms=1200)
