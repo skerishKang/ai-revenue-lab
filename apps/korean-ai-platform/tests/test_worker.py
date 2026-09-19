@@ -86,14 +86,24 @@ class TestWranglerConfig:
         # secret_name) with no secret values committed here.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert content.count("[[secrets_store_secrets]]") == 3
-        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 3
+        assert content.count("[[secrets_store_secrets]]") == 7
+        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 7
         assert 'binding = "PADIEM_AGNES_API_KEY"' in content
         assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
         assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content
         assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in content
         assert "PADIEM_AGNES_API_KEY =" not in content
         assert "PADIEM_POOLSIDE_API_KEY =" not in content
+
+        for binding in (
+            "PADIEM_INFRON_API_KEY",
+            "PADIEM_INCEPTION_MERCURY_API_KEY",
+            "PADIEM_ATRIA_API_KEY",
+            "PADIEM_EXLAB_API_KEY",
+        ):
+            assert f'binding = "{binding}"' in content
+            assert f'secret_name = "{binding}"' in content
+            assert f"{binding} =" not in content
 
     def test_bai_secret_store_binding_is_metadata_only_and_exact(self):
         content = WRANGLER_TOML.read_text()
