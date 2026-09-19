@@ -40,7 +40,7 @@
         <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span data-locale-key="projects">프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
         <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="saved">저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
-        <button class="side-item" id="connectorsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
+        <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
       <nav class="side-nav" id="workspaceNav" data-locale-aria-label="workspace-menu" aria-label="워크스페이스 메뉴">
@@ -148,14 +148,14 @@
           <div><p class="capability-kicker" data-locale-key="connectors-kicker">CONNECTORS</p><h2 class="capability-title" id="connectorsDialogTitle" data-locale-key="connectors-title">Connectors</h2></div>
           <button class="capability-close" id="connectorsDialogClose" type="button" data-locale-aria-label="capability-close-aria" aria-label="닫기">×</button>
         </div>
-        <p class="capability-tagline" data-locale-key="connectors-note">커넥터는 아직 연결되지 않았습니다. 연결 예정입니다.</p>
-        <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="연결 예정 커넥터">
-          <div class="capability-card" data-connector="google-drive"><strong>Google Drive</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="gmail"><strong>Gmail</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="discord"><strong>Discord</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="telegram"><strong>Telegram</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="slack"><strong>Slack</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
-          <div class="capability-card" data-connector="kakao-business"><strong>Kakao Business</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
+        <p class="capability-tagline" data-locale-key="connectors-note">커넥터 지원 여부와 이 워크스페이스의 연결 상태는 다를 수 있습니다. 현재 이 화면에서는 연결 상태를 확인하거나 새 연결을 설정하지 않습니다.</p>
+        <div class="capability-grid" data-locale-aria-label="connectors-grid-aria" aria-label="커넥터 지원 현황">
+          <div class="capability-card" data-connector="google-drive" data-connector-status="read-supported"><strong>Google Drive</strong><span class="capability-read" data-locale-key="connectors-status-read">읽기 지원 · 워크스페이스 연결 상태는 별도</span></div>
+          <div class="capability-card" data-connector="gmail" data-connector-status="read-supported"><strong>Gmail</strong><span class="capability-read" data-locale-key="connectors-status-read">읽기 지원 · 워크스페이스 연결 상태는 별도</span></div>
+          <div class="capability-card" data-connector="telegram" data-connector-status="read-supported"><strong>Telegram</strong><span class="capability-read" data-locale-key="connectors-status-read">읽기 지원 · 워크스페이스 연결 상태는 별도</span></div>
+          <div class="capability-card" data-connector="slack" data-connector-status="preparing"><strong>Slack</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="discord" data-connector-status="preparing"><strong>Discord</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
+          <div class="capability-card" data-connector="kakao-business" data-connector-status="preparing"><strong>Kakao Business</strong><span class="capability-soon" data-locale-key="coming-soon">준비 중</span></div>
         </div>
       </dialog>
       <dialog class="capability-dialog" id="skillsDialog" aria-labelledby="skillsDialogTitle">
