@@ -51,7 +51,7 @@ DOC_REF = "att_e5bRoutefixture01"
 DOC_LOCATOR = "opaque-document-locator-e5b"
 BODY_SHORT = "quarterly revenue projections for beta-corp"
 SECRET_TAIL = "TAILNEVERMOUNTEDINCONTEXT-88091"
-SCOPE = {"app_id": "app.revenue", "subject_id": "user.42", "tenant_id": "tenant.a"}
+SCOPE = {"app_id": "b62", "subject_id": "user.42", "tenant_id": "tenant.a"}
 
 MULTIMODAL_PATH = "/internal/v1/multimodal/execute"
 
@@ -106,17 +106,17 @@ class _FakeScopeAuthority:
         self._reject = reject
         self.calls: list[tuple[str, str]] = []
 
-    def scope_for_caller(
-        self, *, caller_id: str, credential: str
+    async def scope_for_request(
+        self, *, app_id: str, auth_session_id: str
     ) -> TrustedCallerScope:
-        self.calls.append((caller_id, credential))
+        self.calls.append((app_id, auth_session_id))
         if self._reject is not None:
             raise self._reject
-        if caller_id != CALLER_ID or credential != CALLER_SECRET:
+        if app_id != SCOPE["app_id"] or auth_session_id != "sess.document-context-01":
             raise DocumentAuthorityError(
-                "caller_not_bound_to_session",
-                "Caller is not bound to a trusted document session.",
-                status_code=401,
+                "auth_scope_mismatch",
+                "Control Plane auth session does not match this request.",
+                status_code=403,
             )
         return self._scope
 
@@ -139,7 +139,11 @@ def _service(
 
 
 def _request_body(**fields: object) -> bytes:
-    payload: dict[str, object] = {"document_ref": DOC_REF}
+    payload: dict[str, object] = {
+        "app_id": "b62",
+        "session_id": "sess.document-context-01",
+        "document_ref": DOC_REF,
+    }
     payload.update(fields)
     return json.dumps(payload).encode("utf-8")
 
@@ -148,8 +152,6 @@ def _handle(
     service: DocumentContextEngineService,
     body: bytes,
     *,
-    caller: str = CALLER_ID,
-    credential: str = CALLER_SECRET,
     method: str = "POST",
     ctype: str | None = "application/json",
     path: str = DOCUMENT_CONTEXT_PATH,
@@ -160,8 +162,6 @@ def _handle(
             path=path,
             content_type=ctype,
             body=body,
-            caller_id=caller,
-            credential=credential,
         )
     )
 
@@ -195,7 +195,7 @@ def test_a_trusted_scope_and_valid_reference_return_bounded_projection() -> None
     assert retained.att_ref == DOC_REF
     assert retained.storage_locator == f"evidence://{DOC_REF}"
     assert port.stored == [evidence_id]
-    assert authority.calls == [(CALLER_ID, CALLER_SECRET)]
+    assert authority.calls == [("b62", "sess.document-context-01")]
     assert [call[1] for call in resolver.calls] == [SCOPE]
     assert "document_ref" not in json.dumps(body)
 
@@ -238,38 +238,27 @@ def test_b_canonical_composition_leaves_documents_seam_uninjected(
 # --- C: identity before any trusted port --------------------------------------
 
 
-@pytest.mark.parametrize(
-    ("caller", "credential"),
-    [("", CALLER_SECRET), (CALLER_ID, ""), ("   ", CALLER_SECRET)],
-)
-def test_c_anonymous_caller_is_rejected_before_any_port(
-    caller: str, credential: str
-) -> None:
+def test_c_authority_receives_only_app_and_opaque_session_id() -> None:
     service, resolver, port, _ = _service()
 
-    response = _handle(
-        service, _request_body(), caller=caller, credential=credential
-    )
+    response = _handle(service, _request_body())
 
-    assert response.status_code == 401
-    assert response.body["error"]["code"] == "service_authentication_failed"
-    assert resolver.calls == []
-    assert port.stored == []
+    assert response.status_code == 200
+    assert resolver.calls
+    assert port.stored
 
 
-def test_c_mismatched_caller_rejected_by_authority_without_port_touch() -> None:
+def test_c_mismatched_session_scope_rejected_by_authority_without_port_touch() -> None:
     service, resolver, port, authority = _service()
 
     response = _handle(
         service,
-        _request_body(),
-        caller="attacker-caller",
-        credential=CALLER_SECRET,
+        _request_body(session_id="sess.other"),
     )
 
-    assert response.status_code == 401
-    assert response.body["error"]["code"] == "caller_not_bound_to_session"
-    assert authority.calls == [("attacker-caller", CALLER_SECRET)]
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "auth_scope_mismatch"
+    assert authority.calls == [("b62", "sess.other")]
     assert resolver.calls == []
     assert port.stored == []
 
@@ -317,7 +306,7 @@ def test_d_invalid_references_are_rejected(bad_ref: object) -> None:
         assert bad_ref not in json.dumps(response.body)
 
 
-@pytest.mark.parametrize("scope_field", ["app_id", "subject_id", "tenant_id"])
+@pytest.mark.parametrize("scope_field", ["subject_id", "tenant_id"])
 def test_d_scope_fields_are_never_request_inputs(scope_field: str) -> None:
     service, resolver, port, _ = _service()
 
@@ -326,6 +315,18 @@ def test_d_scope_fields_are_never_request_inputs(scope_field: str) -> None:
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_request"
     assert "selfasserted" not in json.dumps(response.body)
+    assert resolver.calls == []
+    assert port.stored == []
+
+
+def test_d_application_id_is_authenticated_input_not_server_scope() -> None:
+    service, resolver, port, authority = _service()
+
+    response = _handle(service, _request_body(app_id="app.other"))
+
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "auth_scope_mismatch"
+    assert authority.calls == [("app.other", "sess.document-context-01")]
     assert resolver.calls == []
     assert port.stored == []
 
@@ -515,16 +516,14 @@ class _Request:
         *,
         method: str = "POST",
         body: bytes = b"{}",
-        caller_id: str | None = CALLER_ID,
-        credential: str | None = CALLER_SECRET,
+        authenticated: bool = True,
     ) -> None:
         self.url = f"https://engine.internal{path}"
         self.method = method
         headers: dict[str, str] = {"content-type": "application/json"}
-        if caller_id is not None:
-            headers["x-padiem-engine-caller"] = caller_id
-        if credential is not None:
-            headers["x-padiem-engine-credential"] = credential
+        if authenticated:
+            headers["x-padiem-engine-caller"] = CALLER_ID
+            headers["x-padiem-engine-credential"] = CALLER_SECRET
         self.headers = headers
         self._text = body.decode("utf-8")
 
@@ -589,13 +588,11 @@ def test_injected_documents_service_serves_trusted_caller(
             _Request(
                 DOCUMENT_CONTEXT_PATH,
                 body=_request_body(),
-                caller_id=CALLER_ID,
-                credential=CALLER_SECRET,
             ),
         )
         assert response.status == 200
         assert _body(response)["ok"] is True
-        assert authority.calls[-1] == (CALLER_ID, CALLER_SECRET)
+        assert authority.calls[-1] == ("b62", "sess.document-context-01")
         assert len(port.stored) == 1
         # One successful through-line = one resolver.resolve call (S4b
         # single-resolve; the S4 double-resolve debt is now closed).
@@ -607,8 +604,7 @@ def test_injected_documents_service_serves_trusted_caller(
             _Request(
                 DOCUMENT_CONTEXT_PATH,
                 body=_request_body(),
-                caller_id=None,
-                credential=None,
+                authenticated=False,
             ),
         )
         assert anonymous.status == 401

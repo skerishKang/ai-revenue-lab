@@ -557,9 +557,13 @@ async def test_document_context_fail_closed_without_authority() -> None:
         method="POST",
         path=DOCUMENT_CONTEXT_PATH,
         content_type="application/json",
-        body=json.dumps({"document_ref": "doc-conformance"}).encode(),
-        caller_id="engine-fixture-caller",
-        credential="fixture-credential-value",
+        body=json.dumps(
+            {
+                "app_id": "b62",
+                "session_id": "session-conformance",
+                "document_ref": "doc-conformance",
+            }
+        ).encode(),
     )
 
     assert response.status_code == 503
