@@ -137,23 +137,57 @@ BOUNDARY_POSITIVES = (
 # Detector AND redactor: benign prose that must not be treated as credential material
 # ---------------------------------------------------------------------------
 
-BENIGN_PROSE = (
+# Verbatim from issue #2784. These six sentences are the stated acceptance requirement, so
+# they are kept as-written rather than paraphrased, and a change here needs a reason.
+ISSUE_BENIGN_PROSE = (
     "the api_key parameter is optional",
     "password must be at least 8 characters",
     "Authorization Bearer token is required here",
     "set token in the dashboard to continue",
     "the secret of the story is the island",
     "use sk- prefix for keys",
+)
+
+# Additional prose the grammar must not touch. What each has in common is that no value
+# slot is opened: no `=` or `:` after a credential keyword, and no scheme word standing
+# alone on its own line.
+ADDITIONAL_BENIGN_PROSE = (
     "rotate your API key regularly",
     "tokens are split on whitespace",
-    "the password: at least eight characters is the rule",
     "credentials should never be committed",
     "we call the credential helper once",
     "the private_key field name is documented below",
     "pwd is the shell builtin for print working directory",
     "sk- is only a prefix, not a secret",
     "this document explains bearer tokens",
+    "Bearer tokens are opaque.",
+    "Basic configuration follows below",
     "please provide a passphrase when prompted",
+)
+
+BENIGN_PROSE = ISSUE_BENIGN_PROSE + ADDITIONAL_BENIGN_PROSE
+
+# Sentences that read like documentation but do open a value slot, so they are credential
+# material and are rejected. An earlier revision of this module passed the second one as
+# prose by ignoring 1-2 character values; the #2787 review ruled that length is not
+# evidence of prose, and these cases are positives ever since.
+ASSIGNMENT_POSITION_BEATS_PROSE = (
+    "password: ab in the config file",
+    "the password: at least eight characters is the rule",
+    "token: x",
+    "passphrase: 1234 then press enter",
+    "credential=1",
+)
+
+# A scheme word with nothing but its value on the line is a field, not a sentence, at any
+# length. Contrast with "Bearer tokens are opaque." above, which is a sentence. Each entry
+# is (label, text, something that must disappear from the redacted copy).
+STANDALONE_SCHEME_POSITIVES = (
+    ("short bearer value", "Bearer short", "short"),
+    ("two character bearer value", "Bearer ab", "Bearer ab"),
+    ("basic value", "Basic Zm9v", "Zm9v"),
+    ("digest value", "Digest x", "Digest x"),
+    ("bearer line inside a log", "header line\nBearer zz\ntrailer line", "Bearer zz"),
 )
 
 
@@ -180,15 +214,49 @@ class DetectorPositiveTests(unittest.TestCase):
         for label, build in BOUNDARY_POSITIVES:
             self.assert_detected(label, build(secret_value("glue")))
 
-    def test_every_benign_prose_rejected_by_detector(self):
+    def test_short_assignment_values_stay_fail_closed(self):
+        # CENTRAL blocker 1 on #2787: an assignment position is identified by syntax, so a
+        # short value is not evidence of prose. Every one of these was passing as prose when
+        # the rule consulted a length floor.
+        for text in ASSIGNMENT_POSITION_BEATS_PROSE:
+            with self.subTest(text=text):
+                self.assertTrue(contains_credential_material(text), text)
+                out = redact_secrets(text)
+                self.assertIn("[REDACTED]", out)
+                self.assertEqual(out, redact_secrets(out))
+
+    def test_standalone_bare_scheme_field_detected_at_any_length(self):
+        # CENTRAL blocker 2 on #2787: `Bearer short` was rejected by main's egress grammar
+        # and this module weakened it to a 16-character minimum. It is now rejected because
+        # the scheme owns the line, while the prose in test_benign_prose_rejected_by_detector
+        # stays clean for the opposite reason.
+        for label, text, value in STANDALONE_SCHEME_POSITIVES:
+            with self.subTest(case=label):
+                self.assertTrue(contains_credential_material(text), text)
+                out = redact_secrets(text)
+                self.assertNotIn(value, out)
+                self.assertIn("[REDACTED]", out)
+                self.assertEqual(out, redact_secrets(out))
+        self.assertIn("Bearer", redact_secrets("Bearer short"), "the scheme word is context")
+
+    def test_benign_prose_rejected_by_detector(self):
         for text in BENIGN_PROSE:
             with self.subTest(prose=text):
                 self.assertFalse(contains_credential_material(text), text)
 
-    def test_short_values_in_credential_positions_stay_clean(self):
-        # A cookie header is a credential position, but a preference cookie is not a
-        # credential. Without the length floor this line is masked and any run carrying it
-        # is rejected, which is the false-positive class #2784 exists to remove.
+    def test_issue_listed_benign_prose_rejected_by_detector(self):
+        # The same corpus as the test above, run separately and by name, because these six
+        # sentences are what #2784 requires to stay acceptable. If this one goes red the
+        # detector has started rejecting the issue's own examples.
+        for text in ISSUE_BENIGN_PROSE:
+            with self.subTest(prose=text):
+                self.assertFalse(contains_credential_material(text), text)
+                self.assertEqual(redact_secrets(text), text)
+
+    def test_preference_cookie_values_stay_clean(self):
+        # A cookie header is a credential position, but a UI preference is not a credential.
+        # This is the one place a size test survives, and it is on the *value* shape rather
+        # than an assignment slot: `sid=<opaque>` counts, `theme=light` does not.
         for text in (
             "Set-Cookie: theme=light; Path=/",
             "Set-Cookie: locale=ko_KR; Max-Age=86400",
@@ -218,7 +286,7 @@ class DetectorPositiveTests(unittest.TestCase):
 
 
 class RedactorTests(unittest.TestCase):
-    """redact_secrets stays presentation-oriented: narrow, marker-stable, idempotent."""
+    """redact_secrets stays presentation-oriented: value-shaped, marker-stable, idempotent."""
 
     def test_marker_vocabulary_unchanged(self):
         self.assertIn("[REDACTED]", redact_secrets(f"password={secret_value()}"))
@@ -251,6 +319,8 @@ class RedactorTests(unittest.TestCase):
         cases += [build(secret_value("i")) for _l, build in HEADER_POSITIVES]
         cases += [build() for _l, build in PROVIDER_POSITIVES]
         cases += [build(secret_value("i3")) for _l, build in BOUNDARY_POSITIVES]
+        cases += list(ASSIGNMENT_POSITION_BEATS_PROSE)
+        cases += [text for _l, text, _v in STANDALONE_SCHEME_POSITIVES]
         cases += list(BENIGN_PROSE)
         for text in cases:
             with self.subTest(text=text[:48]):
@@ -268,11 +338,6 @@ class RedactorTests(unittest.TestCase):
         self.assertNotIn("word secret", out)
         self.assertIn('"api_key"', out, "only the value is masked, the structure stays")
         self.assertEqual(out, redact_secrets(out))
-
-    def test_short_value_terminated_by_field_boundary_is_detected(self):
-        for text in ("pwd=ab", "password: ab", "api_key=xy"):
-            with self.subTest(text=text):
-                self.assertTrue(contains_credential_material(text), text)
 
     def test_truncated_json_fragment_is_detected(self):
         # Excerpts reach the redactor already cut: a bounded read can stop inside a value,
@@ -300,6 +365,19 @@ class RedactorTests(unittest.TestCase):
         self.assertNotIn("multi", out)
         self.assertNotIn("word value", out)
         self.assertIn("[REDACTED]", out)
+        self.assertEqual(out, redact_secrets(out))
+
+    def test_nested_assignment_inside_a_quoted_value_is_masked_once(self):
+        # A quoted value that itself holds an assignment makes the two rules return spans
+        # containing one another. Masked independently, the inner replacement moves the
+        # outer offsets and part of the value survives, so overlapping spans are merged
+        # before anything is replaced.
+        inner = secret_value("nest")
+        text = '{"api_key": "password=%s"}' % inner
+        out = redact_secrets(text)
+        self.assertNotIn(inner, out)
+        self.assertNotIn("password=", out)
+        self.assertEqual(out, '{"api_key": "[REDACTED]"}')
         self.assertEqual(out, redact_secrets(out))
 
     def test_pem_body_not_only_the_header_is_masked(self):
@@ -357,26 +435,32 @@ class EgressGateMigrationTests(unittest.TestCase):
         plan = self.plan()
         self.assertEqual(plan.title, "fix: repair bounded task")
 
-    def test_benign_prose_in_body_still_accepted(self):
-        for prose in (
-            "password must be at least 8 characters",
-            "the api_key parameter is optional",
-            "use sk- prefix for keys",
-            # The removed local grammar rejected this exact sentence, because `bearer \\S+`
-            # matched the word after the scheme. Issue #2784 lists it as prose that must stay
-            # acceptable, so accepting it here is the intended behaviour change, not drift.
-            "Authorization Bearer token is required here",
-            "set token in the dashboard to continue",
-        ):
+    def test_issue_benign_prose_in_body_still_accepted(self):
+        # The #2784 corpus, at the egress boundary that actually rejects run output. This is
+        # the acceptance line CENTRAL drew: these sentences must pass, and nothing here may
+        # trade them for breadth.
+        for prose in ISSUE_BENIGN_PROSE:
+            with self.subTest(prose=prose):
+                self.assertEqual(self.plan(body=prose).body, prose)
+        for prose in ADDITIONAL_BENIGN_PROSE:
             with self.subTest(prose=prose):
                 self.assertEqual(self.plan(body=prose).body, prose)
 
-    def test_short_bare_scheme_value_is_no_longer_an_egress_rejection(self):
-        # Documented narrowing of the deleted grammar, which flagged any `bearer <word>`.
-        # A scheme word without a token-shaped value carries no credential material.
-        self.assertFalse(contains_credential_material("Bearer short"))
-        self.assertEqual(self.plan(body="Bearer short").body, "Bearer short")
-        self.assertTrue(contains_credential_material("Bearer " + secret_value("bs")))
+    def test_standalone_short_bearer_rejected_at_egress(self):
+        # CENTRAL blocker 2 regression. main's deleted local grammar rejected `Bearer short`
+        # and the first revision of this module let it through on a length floor, which made
+        # the egress gate weaker than the code it replaced. It is rejected again, and by line
+        # position rather than size — while the issue's own sentence still passes above.
+        for text in ("Bearer short", "Digest x", "Bearer ab"):
+            with self.subTest(text=text):
+                self.assertTrue(contains_credential_material(text), text)
+                with self.assertRaises(ContractError):
+                    self.plan(body=text)
+                with self.assertRaises(ContractError):
+                    self.plan(title=text)
+        # A multi-line body is gated per line, so one credential line fails the whole body.
+        with self.assertRaises(ContractError):
+            self.plan(body="verified against bounded tests\nBearer short\n")
 
     def test_credential_forms_rejected_in_body(self):
         cases = (
@@ -385,9 +469,14 @@ class EgressGateMigrationTests(unittest.TestCase):
             ("basic auth", "Authorization: Basic " + secret_value("eg3")),
             ("password assign", "password=" + secret_value("eg4")),
             ("pem", PROVIDER_POSITIVES[-1][1]()),
+            # CENTRAL blocker 1 regression: a two-character value in an assignment position
+            # is rejected at egress, prose continuation included.
+            ("short assignment in prose", "password: ab in the config file"),
+            ("single character value", "token: x"),
         )
         for label, value in cases:
             with self.subTest(case=label):
+                self.assertTrue(contains_credential_material(value), value)
                 with self.assertRaises(ContractError):
                     self.plan(body=value)
 
@@ -420,7 +509,10 @@ class GrammarAttributionTests(unittest.TestCase):
 
         cases = (
             ("auth header", "Authorization: Bearer " + secret_value("at2")),
-            ("bare scheme", "Bearer " + secret_value("at3")),
+            ("scheme field line", "Bearer short"),
+            # Kept mid-sentence on purpose: as a whole line this would also satisfy the
+            # scheme-field rule, and the pairing below has to be one shape per rule.
+            ("bare scheme", "the gateway replied Bearer " + secret_value("at3") + " today"),
             ("cookie", "Set-Cookie: sid=" + secret_value("at4") + "; HttpOnly"),
             ("url credentials", "postgres://admin:" + secret_value("at5") + "@db/app"),
             ("xml tag", "<password>" + secret_value("at6") + "</password>"),
@@ -470,32 +562,41 @@ class GrammarAttributionTests(unittest.TestCase):
         # proof the gate is shape-driven, which is the property that keeps prose acceptable.
         keyword_words = (
             "password", "passwd", "pwd", "passphrase", "token", "secret", "api", "key",
-            "bearer", "credential", "private_key", "sk-",
+            "bearer", "credential", "private_key", "sk-", "basic", "digest",
         )
         for text in BENIGN_PROSE:
             with self.subTest(text=text):
                 self.assertTrue(any(w in text.lower() for w in keyword_words), text)
                 self.assertFalse(contains_credential_material(text), text)
 
-    def test_value_position_is_the_assignment_boundary(self):
-        # Documented, not hidden: a 1-2 character value inside a sentence is now read as
-        # prose, where the replaced implementation flagged it. This is the exact shape
-        # #2784 requires to stay acceptable, so the narrowing is intentional and bounded.
-        self.assertTrue(contains_credential_material("password: " + secret_value("bnd")))
-        self.assertTrue(contains_credential_material("password: ab"))
-        self.assertTrue(contains_credential_material("password=ab"))
-        self.assertFalse(contains_credential_material("password: ab in the config file"))
-        longest_missed = max(
-            len(word) for word in ("ab",) if not contains_credential_material(f"password: {word} tail")
-        )
-        self.assertLessEqual(longest_missed, 2)
+    def test_value_slot_is_the_boundary_not_value_length(self):
+        # The line CENTRAL drew under blocker 1: what makes text a credential is that a
+        # keyword opened a value slot, never how big the thing in the slot is.
+        for text in (
+            "password: ab",
+            "password: ab in the config file",
+            "some prefix password: ab more words",
+            "token: x",
+            "credential=1",
+            "password: " + secret_value("bnd"),
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(contains_credential_material(text), text)
+        for text in (
+            "password must be at least 8 characters",
+            "the api_key parameter is optional",
+            "password:",
+            "password= ",
+            "no separator here at all",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(contains_credential_material(text), text)
 
     def test_detector_never_narrower_than_replaced_grammar_on_field_shapes(self):
         # Parity as a property, not a hand-picked list: the three patterns this module
         # replaces are reproduced here only as an oracle, and every field shape they caught
-        # must still be caught. Cases they missed are gaps closed by the tests above and
-        # below; the single intentional narrowing, a 1-2 character value inside a sentence,
-        # is pinned by test_value_position_is_the_assignment_boundary.
+        # must still be caught. Cases they missed are the gaps the other tests in this
+        # module exist to prove closed.
         def legacy_catches(text: str) -> bool:
             return any(pattern.search(text) for pattern in _LEGACY_PATTERNS)
 
@@ -507,6 +608,7 @@ class GrammarAttributionTests(unittest.TestCase):
             + [
                 "password=ab",
                 "token=ab",
+                "password: ab in the config file",
                 "api_key = 'multi word value'",
                 "password = 'short'",
                 "the token: 'quoted value' is set",

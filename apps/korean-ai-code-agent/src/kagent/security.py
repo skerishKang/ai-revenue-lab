@@ -17,16 +17,12 @@ The grammar is shape-based, never keyword-presence-based: naming ``password`` in
 sentence is not a credential, so benign documentation prose stays both unflagged and
 byte-identical. ``tests/test_security.py`` pins both directions.
 
-Relative to the three patterns this replaces, detection is broader on every credential
-shape they matched (verified case by case, including the glued ``Authorization:Bearer``
-and quoted-value cases those patterns only partly masked), and it closes the JSON quoted
-assignment and truncated-excerpt shapes they missed entirely.
-
-Two deliberate narrowings are pinned by test. A 1-2 character value inside a sentence
-(``password: ab in the config``) now reads as prose, against the trio. And a scheme word
-with nothing token-shaped after it (``Bearer short``) now reads as prose, against the
-stricter duplicate grammar this module replaces at the GitHub draft-PR gate. Both shapes
-are named as acceptable prose in #2784.
+What separates a credential from a sentence is *position*, not size. A keyword followed by
+``=`` or ``:`` opens a value slot and everything in that slot counts, one character or
+forty; a scheme word that owns its own line is a field, while the same word inside a
+sentence needs a token-shaped value to count. Value length is never used to reinterpret an
+assignment as prose — a two-character password is still a password, and the shorter one is
+the one worth rejecting.
 """
 
 from __future__ import annotations
@@ -49,9 +45,7 @@ _KEYWORD = (
 # The quoted shape is deliberately tolerant at both ends, because both truncations occur in
 # this product's inputs: an excerpt can start mid-object, so the key loses its opening
 # quote, and a bounded read can stop inside a value, so the value never gets a closing one.
-# Either cut used to hide a complete credential. What stays required is a quote immediately
-# after the separator — that is the mark of a value rather than a sentence, and it is what
-# keeps the benign-prose corpus clean.
+# Either cut used to hide a complete credential.
 _QUOTED_ASSIGN_RE = re.compile(
     r"""(?xi)
     ["']?            # opening quote of the key, absent when the text starts mid-object
@@ -64,15 +58,12 @@ _QUOTED_ASSIGN_RE = re.compile(
     """
     % _KEYWORD
 )
-_PLAIN_ASSIGN_RE = re.compile(
-    r"(?i)(?:%s)\s*([=:])([ \t]*)([\"']?)([^\s\"']{1,})" % _KEYWORD
-)
-# A value is credential material when it is quoted, tightly attached to an `=`, long
-# enough not to be an English word, or terminated like a field rather than followed by
-# more sentence. That last test keeps "pwd=ab" caught, as it was before, while
-# "the password: at least eight characters is the rule" stays clean.
-_VALUE_LENGTH_FLOOR = 6
-_FIELD_END_RE = re.compile(r"""(?:[;,)}\]"']|\r?\n|&|\Z)""")
+# Value position is decided by syntax alone: a keyword followed by `=` or `:` and then any
+# non-space token *is* an assignment, and `password: ab in the config file` is credential
+# material. Length, tightness and what follows the value were tried here first and are not
+# evidence of prose — a two-character password is still a password. This matches the
+# assignment grammar on main, widened only by adding the alias keywords above.
+_PLAIN_ASSIGN_RE = re.compile(r"(?i)(?:%s)\s*[:=]\s*([^\s\"']{1,})" % _KEYWORD)
 
 
 def _merge_spans(spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
@@ -97,22 +88,23 @@ def _assignment_spans(text: str) -> list[tuple[int, int]]:
     for match in _QUOTED_ASSIGN_RE.finditer(text):
         spans.append(match.span(2))
     for match in _PLAIN_ASSIGN_RE.finditer(text):
-        sep, gap, quote, value = match.groups()
-        terminated = bool(_FIELD_END_RE.match(text[match.end(4) :]))
-        tight = sep == "=" and gap == ""
-        if bool(quote) or terminated or tight or len(value) >= _VALUE_LENGTH_FLOOR:
-            spans.append(match.span(4))
+        spans.append(match.span(1))
     return _merge_spans(spans)
 
 
 _TAG_RE = re.compile(r"(?i)<(%s)>\s*(\S{6,}?)\s*</\1>" % _KEYWORD)
 
 # An explicit authorization header name carries its own credential context, so any value
-# there counts, as it did before. A bare scheme word is ordinary vocabulary and must be
-# followed by something token-shaped, so "this document explains bearer tokens" is clean.
+# there counts, as it did before.
 _AUTH_HEADER_RE = re.compile(
     r"(?i)(\b(?:proxy-)?authorization\s*:\s*(?:bearer|basic|digest)\s*)([^\s]+)"
 )
+# A scheme word that owns the whole line is a field, not a sentence: there is nothing
+# around it but the value, so `Bearer ab` is credential material at any length. Inside a
+# sentence the same word is vocabulary, and there only a token-shaped value counts — which
+# is what keeps "Authorization Bearer token is required here" and "this document explains
+# bearer tokens" clean. Context decides; length decides nothing on its own.
+_SCHEME_FIELD_RE = re.compile(r"(?im)^[ \t]*(bearer|basic|digest)[ \t]+(\S+)[ \t]*$")
 _BARE_SCHEME_RE = re.compile(
     r"(?i)\b(bearer|basic|digest)\s+([A-Za-z0-9+/=_\-.]{16,})"
 )
@@ -156,11 +148,13 @@ _REDACTION_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
     (_TAG_RE, lambda m: f"<{m.group(1)}>{_REDACTED}</{m.group(1)}>"),
     (_PEM_BLOCK_RE, lambda m: _REDACTED_KEY),
     (_PROVIDER_RE, _REDACTED_KEY),
+    (_SCHEME_FIELD_RE, r"\1 " + _REDACTED),
     (_BARE_SCHEME_RE, r"\1 " + _REDACTED),
 )
 
 _DETECTION_PATTERNS: tuple[re.Pattern[str], ...] = (
     _AUTH_HEADER_RE,
+    _SCHEME_FIELD_RE,
     _BARE_SCHEME_RE,
     _COOKIE_RE,
     _URL_CREDENTIALS_RE,
