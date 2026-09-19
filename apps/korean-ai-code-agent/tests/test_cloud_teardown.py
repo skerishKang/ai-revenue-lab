@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import json
 import unittest
 
 from kagent.cloud_execution_plan import CloudM1ExecutionPlan, CloudM1Stage
@@ -9,6 +10,7 @@ from kagent.cloud_teardown import (
     REAL_TEARDOWN_PROBE_CONFIGURED,
     CloudM1TeardownReceipt,
     TrustedTeardownObservation,
+    VERIFICATION_TICKET,
     verify_teardown_evidence,
 )
 from kagent.cloud_stage_receipts import CloudStageOutcome
@@ -301,6 +303,81 @@ class TeardownEvidenceVerificationTests(unittest.TestCase):
         self.assertIn("LEASE_NOT_TERMINAL", blocked["verification_blockers"])
         # the digest must cover the verification, or it fingerprints only the claim
         self.assertNotEqual(r.evidence_sha256, blocked["evidence_sha256"])
+
+
+class VerifiedFactoryOnlyTests(unittest.TestCase):
+    """#2785 review: the public constructor must not be able to mint clean=True."""
+
+    def direct(self, **overrides):
+        values = dict(
+            receipt_id="teardown_direct",
+            plan_id="plan_1",
+            plan_fingerprint="a" * 64,
+            run_id="run_1",
+            observation_id="obs_1",
+            observed_at=NOW,
+            clean=True,
+            evidence_sha256="b" * 64,
+            lease_state_verified="RELEASED",
+            artifact_collection_id="col_1",
+            verification_blockers=(),
+        )
+        values.update(overrides)
+        return CloudM1TeardownReceipt(**values)
+
+    def test_direct_construction_cannot_synthesize_a_clean_verdict(self):
+        # Every field is shaped exactly like a verified terminal teardown. That is
+        # no longer sufficient: nothing resolved the lease or the collection.
+        with self.assertRaises(ContractError) as caught:
+            self.direct()
+        self.assertIn("verified factory", str(caught.exception))
+
+    def test_diagnostic_non_clean_receipt_is_still_constructible(self):
+        # Closing the clean bypass must not remove the ability to record a stuck
+        # teardown for diagnosis.
+        blocked = self.direct(
+            clean=False,
+            lease_state_verified="RESERVED",
+            verification_blockers=("LEASE_NOT_TERMINAL",),
+        )
+        self.assertFalse(blocked.clean)
+        self.assertIn("LEASE_NOT_TERMINAL", blocked.safe_dict()["verification_blockers"])
+
+    def test_factory_path_still_issues_clean_for_both_terminal_states(self):
+        for state in (SandboxLeaseState.RELEASED, SandboxLeaseState.EXPIRED):
+            with self.subTest(state=state.value):
+                r = CloudM1TeardownReceipt.from_observation(
+                    receipt_id="teardown_ok", plan=plan(), observation=observation(),
+                    lease_lookup=fixed_lease(lease(state=state)), artifact_collection=collection(),
+                )
+                self.assertTrue(r.clean)
+
+    def test_unsafe_artifact_collection_id_is_rejected_by_the_receipt(self):
+        for unsafe in ("", "  ", "col 1", "col;rm -rf /", "col" + "x" * 600, "token:gho_secret"):
+            with self.subTest(collection_id=unsafe[:20]):
+                with self.assertRaises(ContractError):
+                    self.direct(artifact_collection_id=unsafe, clean=False)
+
+    def test_unsafe_directly_built_collection_cannot_reach_the_projection(self):
+        # ArtifactCandidateCollection does not police its own collection_id, so the
+        # teardown boundary must refuse it rather than project it downstream.
+        smuggled = collection(collection_id="col 1")
+        with self.assertRaises(ContractError):
+            CloudM1TeardownReceipt.from_observation(
+                receipt_id="teardown_smuggle", plan=plan(), observation=observation(),
+                lease_lookup=fixed_lease(), artifact_collection=smuggled,
+            )
+
+    def test_verification_ticket_is_not_projected(self):
+        r = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_proj", plan=plan(), observation=observation(),
+            lease_lookup=fixed_lease(), artifact_collection=collection(),
+        )
+        # The ticket guards construction; it is not operator-facing evidence and
+        # must not leak into the projection that becomes run history.
+        projected = r.safe_dict()
+        self.assertNotIn("verification_ticket", projected)
+        self.assertNotIn(VERIFICATION_TICKET, json.dumps(projected))
 
 
 if __name__ == "__main__":

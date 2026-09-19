@@ -118,6 +118,14 @@ LEASE_TERMINAL_STATES = frozenset(
 )
 LEASE_TERMINAL_STATE_TOKENS = frozenset(state.value.upper() for state in LEASE_TERMINAL_STATES)
 
+# Only ``from_observation`` can issue this, so a clean verdict cannot be minted by
+# naming terminal-looking values alone (#2785 review). It is a module-private
+# structural guard, not a capability token: it closes accidental and
+# field-synthesizing construction, and it makes a deliberate bypass require
+# importing a private name rather than simply calling the public constructor.
+_VERIFIED_TEARDOWN_ISSUER = "claw-m1-teardown-verified-factory/v1"
+VERIFICATION_TICKET = hashlib.sha256(_VERIFIED_TEARDOWN_ISSUER.encode("utf-8")).hexdigest()
+
 
 @dataclass(frozen=True, slots=True)
 class TeardownVerification:
@@ -233,6 +241,9 @@ class CloudM1TeardownReceipt:
     lease_state_verified: str
     artifact_collection_id: str | None
     verification_blockers: tuple[str, ...]
+    # Issued by from_observation only. Defaults to the unverified value so a
+    # diagnostic non-clean receipt stays constructible, and a clean one is not.
+    verification_ticket: str = ""
 
     @classmethod
     def from_observation(
@@ -285,6 +296,7 @@ class CloudM1TeardownReceipt:
             lease_state_verified=verification.lease_state or "UNRESOLVED",
             artifact_collection_id=verification.artifact_collection_id,
             verification_blockers=blockers,
+            verification_ticket=VERIFICATION_TICKET,
         )
 
     def __post_init__(self) -> None:
@@ -307,12 +319,28 @@ class CloudM1TeardownReceipt:
         for reason in self.verification_blockers:
             if not isinstance(reason, str) or not re.fullmatch(r"[A-Z0-9_]{1,64}", reason):
                 raise ContractError("verification blocker must be a bounded reason token")
+        # An artifact collection id must satisfy the same bounded safe-reference
+        # rule as every other projected reference (#2785 review). The collection
+        # contract does not validate its own id, so the teardown boundary refuses
+        # to carry an unsafe one into the receipt or its projection.
+        if self.artifact_collection_id is not None:
+            object.__setattr__(
+                self,
+                "artifact_collection_id",
+                _ref(self.artifact_collection_id, "artifact_collection_id"),
+            )
         if self.clean and self.verification_blockers:
             raise ContractError("clean teardown receipt cannot carry a verification blocker")
         if self.clean and self.lease_state_verified not in LEASE_TERMINAL_STATE_TOKENS:
             raise ContractError("clean teardown receipt requires a terminal verified lease")
         if self.clean and not self.artifact_collection_id:
             raise ContractError("clean teardown receipt requires artifact collection evidence")
+        # Field-shaped values are not proof of verification: only the factory that
+        # actually resolved the lease and the collection may assert clean.
+        if self.clean and self.verification_ticket != VERIFICATION_TICKET:
+            raise ContractError(
+                "clean teardown receipt must be issued by the verified factory path"
+            )
 
     def as_stage_receipt(self, *, event_id: str) -> CloudM1StageReceipt:
         return CloudM1StageReceipt(
