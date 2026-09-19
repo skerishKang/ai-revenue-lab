@@ -100,7 +100,7 @@ def test_attachment_wiring_is_a_repo_owned_d1_binding_only() -> None:
     wrangler = _text(WRANGLER)
 
     assert wrangler.count('binding = "ENGINE_IMAGE_STORE"') == 1
-    assert wrangler.count("[[d1_databases]]") == 4
+    assert wrangler.count("[[d1_databases]]") == 5
     for forbidden in (
         "[[r2_buckets]]",
         "[[kv_namespaces]]",

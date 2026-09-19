@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import dataclasses
+from datetime import datetime, timedelta, timezone
 import hashlib
 import importlib
 import importlib.util
@@ -39,19 +40,25 @@ from app.document_evidence_projection import (  # noqa: E402
     InMemoryEvidenceStoragePort,
 )
 from app.engine_composition import EngineServices  # noqa: E402
+from app.document_byte_store import (  # noqa: E402
+    InMemoryDocumentByteStore,
+    ScopedDocumentByteStore,
+    StoredDocumentRecord,
+)
 from app.trusted_document_resolver import (  # noqa: E402
-    InMemoryStoragePort,
+    DurableDocumentStoragePort,
     ResolvedDocumentMeta,
     TrustedDocumentResolver,
 )
 
 CALLER_ID = "e5b-route-caller"
 CALLER_SECRET = "e5b-route-secret-0123456789abcdef-0123456789abcdef"
-DOC_REF = "att_e5bRoutefixture01"
+DOC_REF = "doc_e5bRoutefixture01"
 DOC_LOCATOR = "opaque-document-locator-e5b"
 BODY_SHORT = "quarterly revenue projections for beta-corp"
 SECRET_TAIL = "TAILNEVERMOUNTEDINCONTEXT-88091"
 SCOPE = {"app_id": "b62", "subject_id": "user.42", "tenant_id": "tenant.a"}
+BASE_TIME_DOC = datetime(2026, 9, 19, 12, 0, 0, tzinfo=timezone.utc)
 
 MULTIMODAL_PATH = "/internal/v1/multimodal/execute"
 
@@ -63,7 +70,11 @@ def _document_text() -> str:
 
 
 def _meta(**overrides: object) -> ResolvedDocumentMeta:
-    values: dict[str, object] = {"media_type": "text/plain", "name": "notes.txt"}
+    values: dict[str, object] = {
+        "media_type": "text/plain",
+        "name": "notes.txt",
+        "byte_size": len(BODY_SHORT.encode("utf-8")),
+    }
     values.update(SCOPE)
     values.update(overrides)
     return ResolvedDocumentMeta(**values)  # type: ignore[arg-type]
@@ -71,16 +82,33 @@ def _meta(**overrides: object) -> ResolvedDocumentMeta:
 
 class _RecordingResolver(TrustedDocumentResolver):
     def __init__(self, text: str) -> None:
-        storage = InMemoryStoragePort()
         payload = text.encode("utf-8")
-        storage.store(DOC_LOCATOR, payload, _meta(byte_size=len(payload)))
-        super().__init__(storage=storage)
-        self.register(DOC_REF, DOC_LOCATOR)
+        port = InMemoryDocumentByteStore()
+
+        async def bind() -> None:
+            await port.put(
+                StoredDocumentRecord(
+                    document_ref=DOC_REF,
+                    app_id=SCOPE["app_id"],
+                    tenant_id=SCOPE["tenant_id"],
+                    subject_id=SCOPE["subject_id"],
+                    media_type="text/plain",
+                    name="notes.txt",
+                    byte_size=len(payload),
+                    created_at=BASE_TIME_DOC,
+                    expires_at=BASE_TIME_DOC + timedelta(hours=24),
+                ),
+                payload,
+            )
+
+        asyncio.run(bind())
+        scoped = ScopedDocumentByteStore(port=port, clock=lambda: BASE_TIME_DOC)
+        super().__init__(storage=DurableDocumentStoragePort(scoped))
         self.calls: list[Any] = []
 
-    def resolve(self, att_ref: object, **scope: str):
-        self.calls.append((att_ref, scope))
-        return super().resolve(att_ref, **scope)
+    async def resolve(self, doc_ref: object, **scope: str):
+        self.calls.append((doc_ref, scope))
+        return await super().resolve(doc_ref, **scope)
 
 
 class _RecordingEvidencePort(InMemoryEvidenceStoragePort):
@@ -360,7 +388,7 @@ def test_d_cross_scope_triple_is_unauthorized_and_never_retained() -> None:
 def test_d_unknown_but_well_formed_reference_is_not_found() -> None:
     service, resolver, port, _ = _service()
 
-    response = _handle(service, _request_body(document_ref="att_neverminted0001"))
+    response = _handle(service, _request_body(document_ref="doc_neverminted000001"))
 
     assert response.status_code == 404
     assert response.body["error"]["code"] == "not_found"
