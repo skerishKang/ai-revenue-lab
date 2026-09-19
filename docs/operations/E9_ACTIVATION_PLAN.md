@@ -230,6 +230,7 @@ CROSS_PRODUCT_AUTHORITY_BOUNDARIES = PRESERVED
 - [x] A2 disposition recorded (AVAILABLE per manifest, no activation needed)
 - [x] A3 activation prep merged — gate + tests + rollback anchor; owner-authorized dispatch pending
 - [x] A3 bounded Production activation dispatched and manifest flipped to `AVAILABLE` (§13)
+- [x] A3 re-activation truth reconciled (LOCAL 3, #2738) — composed resolver + accepted Production READ evidence (§13.1)
 - [ ] A4-A6, A7, A9 activation dispositions
 - [ ] `E9_ACTIVATION_PLAN.md` reviewed and merged
 
@@ -347,30 +348,38 @@ REACTIVATION_PRECONDITIONS = real tool binding resolver wired in the Production
 PRIOR_RECORD = preserved above unmodified; this amendment supersedes FINAL_DISPOSITION only
 ```
 
-### §13.1 current-truth addendum — A3 composition precondition satisfied (LOCAL 3, #2738)
+### §13.1 re-activation addendum — A3 truth reconciled with accepted Production evidence (LOCAL 3, #2738)
 
 Independent re-verification on current main (fresh `git fetch origin --prune`; SHA
-not pinned) shows precondition 1 of the §13 amendment is now satisfied, while the
-manifest state stays `DEFERRED`:
+not pinned) reconciled the §13 revert with the bounded Production evidence that
+already exists, and re-activated A3. The §13 CTO-audit record above is preserved
+unmodified; this addendum supersedes only its `FINAL_DISPOSITION`.
 
 ```text
-COMPOSITION_TRUTH        = worker_identity.py injects the real
-                           `_tool_binding_resolver_for_env` resolver on both
-                           Engine composition paths (local-bound + canonical Production)
-CONFORMANCE_GATE         = WO-2 production composition conformance gate passes
-                           (tests/test_production_composition_conformance.py)
-FAIL_CLOSED              = preserved (`drive_port_unavailable` /
-                           `tool_runtime_unavailable`, HTTP 503) while the CP OAuth
-                           port or the ENGINE_CONNECTOR_GRANTS D1 grant store is absent
-MANIFEST_TRUTH           = tool_runtime DEFERRED / tool_runtime_projection DEFERRED (unchanged)
-REACTIVATION_BLOCKER     = live_production_execute_evidence
-OUTSTANDING_PRECONDITION = separately authorized activation PR carrying exact-SHA
-                           Production execute evidence
-REAL_PROVIDER_CALLS      = 0
-PRODUCTION_MUTATION      = 0
+1 REAL_RESOLVER_COMPOSED         = YES  both Engine composition paths inject
+                                        `_tool_binding_resolver_for_env`
+2 WO2_CONFORMANCE_GATE           = PASS tests/test_production_composition_conformance.py
+3 SEPARATELY_AUTHORIZED_EVIDENCE = YES  bounded Production READ canaries on main
 ```
 
-The §13 CTO-audit record above is preserved unmodified. This addendum supersedes
-only the composition clause of `REACTIVATION_PRECONDITIONS`, which is now met on
-current main; the manifest states stay `DEFERRED` until the live-evidence
-precondition lands.
+Accepted Production evidence, re-used read-only (no new dispatch, no provider
+call, `PRODUCTION_MUTATION=0`):
+
+```text
+Drive    #2644  run 35389368273  ENGINE_TOOL_EXECUTE_HTTP=200  POST_COUNT=1
+Gmail    #2657  run 35403110197  ENGINE_TOOL_EXECUTE_HTTP=200  POST_COUNT=1
+Telegram #2712  run 35420061464  ENGINE_TOOL_EXECUTE_HTTP=200  POST_COUNT=1
+```
+
+Drift check performed before re-activation:
+
+```text
+CANARY_SHAS_ANCESTORS_OF_CURRENT_MAIN     = YES
+RESOLVER_LINE_DRIFT_SINCE_TELEGRAM_CANARY = NONE
+POST_CANARY_WORKER_IDENTITY_CHANGES       = #2727 attachment admission, #2733 document context
+FINAL_DISPOSITION                         = ACTIVATED (manifest AVAILABLE on current main)
+MANIFEST_STATE_AFTER_REACTIVATION         = tool_runtime AVAILABLE / tool_runtime_projection AVAILABLE
+ACTIVATION_EVIDENCE_SOURCE                = accepted bounded canaries (no synthetic probe)
+RESIDUAL                                  = Slack/Calendar READ ports are composed without a live
+                                            canary; bounded and fail-closed per grant
+```

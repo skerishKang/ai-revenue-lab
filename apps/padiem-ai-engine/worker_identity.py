@@ -546,10 +546,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 image_byte_store=image_byte_store,
                 scope_authority=scope_authority,
             ),
-            # E7 tool execution/continuation remains a source seam: the
-            # resolver factory below returns None until a real port and grant
-            # store are bound (PR-C). With no port/grant every request still
-            # fails closed as `tool_runtime_unavailable` exactly as before.
+            # E7 tool execution/continuation: the resolver factory below composes
+            # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
+            # #2738). With no port/grant every request still fails closed: the
+            # Drive reference app raises `drive_port_unavailable` /
+            # `drive_grant_unavailable`, every other tool stays
+            # `tool_runtime_unavailable`.
             tool_execution=ToolExecutionEngineService(
                 tool_binding_resolver=await _tool_binding_resolver_for_env(env)
             ),
@@ -634,10 +636,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             image_byte_store=image_byte_store,
             scope_authority=scope_authority,
         ),
-        # E7 tool execution/continuation remains a source seam: the
-        # resolver factory below returns None until a real port and grant
-        # store are bound (PR-C). With no port/grant every request still
-        # fails closed as `tool_runtime_unavailable` exactly as before.
+        # E7 tool execution/continuation: the resolver factory below composes
+        # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
+        # #2738). With no port/grant every request still fails closed: the
+        # Drive reference app raises `drive_port_unavailable` /
+        # `drive_grant_unavailable`, every other tool stays
+        # `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(
             tool_binding_resolver=await _tool_binding_resolver_for_env(env)
         ),

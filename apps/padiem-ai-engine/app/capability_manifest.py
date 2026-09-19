@@ -460,15 +460,18 @@ def current_capability_manifest() -> CapabilityManifest:
             # Production composition (worker_identity.py) injected no tool
             # binding resolver, so every request failed closed 503
             # tool_runtime_unavailable. Reverted to DEFERRED per CTO audit
-            # 2026-09-06 (SOURCE_PRESENT != AVAILABLE). Current main composes the
-            # real `_tool_binding_resolver_for_env` resolver on both composition
-            # paths and the WO-2 conformance gate passes, so the remaining
-            # precondition is no longer composition. It is live evidence:
-            # REACTIVATION_BLOCKER=live_production_execute_evidence
-            # (E9_ACTIVATION_PLAN.md §13).
+            # 2026-09-06 (SOURCE_PRESENT != AVAILABLE).
+            # Re-activated (LOCAL 3, #2738): current main composes the real
+            # `_tool_binding_resolver_for_env` resolver on both composition paths,
+            # the WO-2 conformance gate passes, and accepted bounded Production
+            # READ canaries prove live execution through /internal/v1/tools/execute
+            # (Drive #2644 / Gmail #2657 / Telegram #2712; HTTP 200, one POST each).
+            # Slack/Calendar READ ports are composed without a live canary and stay
+            # bounded/fail-closed per grant.
+            # TOOL_RUNTIME_ACTIVATION_EVIDENCE=drive-35389368273,gmail-35403110197,telegram-35420061464
             CapabilityDeclaration(
                 id="tool_runtime",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH),
                 scope=_row(
                     tenant_scope="bounded",

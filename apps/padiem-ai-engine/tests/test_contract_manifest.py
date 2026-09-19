@@ -136,7 +136,7 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
 
 
-def test_tool_and_document_routes_are_declared_without_activation_or_diagnostic_advertisement() -> None:
+def test_tool_projection_is_activated_and_document_route_stays_deferred() -> None:
     manifest = current_engine_contract_manifest()
     endpoints = {(item.method, item.path) for item in manifest.endpoints}
     advertised_paths = {item.path for item in manifest.endpoints}
@@ -144,7 +144,10 @@ def test_tool_and_document_routes_are_declared_without_activation_or_diagnostic_
     for path in (TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH):
         assert ("POST", path) in endpoints
     assert ("POST", DOCUMENT_CONTEXT_PATH) in endpoints
-    assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.DEFERRED
+    # A3 re-activated (#2738): the Production composition composes the real tool
+    # binding resolver and the accepted Drive/Gmail/Telegram READ canaries prove
+    # live /internal/v1/tools/execute execution. Document projection stays DEFERRED.
+    assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.AVAILABLE
     assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
     assert AUTHORITY_DIAGNOSTIC_PATH not in advertised_paths
 
