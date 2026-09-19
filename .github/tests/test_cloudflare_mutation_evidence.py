@@ -128,6 +128,85 @@ def test_ceiling_is_not_widenable_through_the_public_surface() -> None:
         mod.decide(mod.SECRET_PUT, A, ok(A), min_same_observations=31)
 
 
+# --- the #2453 stable-observation floor cannot be lowered ---------------------
+
+@pytest.mark.parametrize("floor", [0, 1, 2, 7, 14, -5])
+def test_floor_below_the_canonical_minimum_is_refused(floor: int) -> None:
+    # floor=1 was the reported blocker: it let a single unchanged canonical read
+    # finalize a secret-PUT NO. The floor is a contract minimum, not a default.
+    with pytest.raises(mod.EvidenceInputError):
+        mod.decide(mod.SECRET_PUT, A, ok(A), min_same_observations=floor)
+    with pytest.raises(mod.EvidenceInputError):
+        mod.decide(mod.CODE_DEPLOY, A, ok(A), min_same_observations=floor)
+
+
+@pytest.mark.parametrize("floor", [15, 16, 29, 30])
+def test_floor_at_or_above_the_canonical_minimum_is_allowed(floor: int) -> None:
+    # Raising the floor is permitted: it demands more stability, never less.
+    verdict = mod.decide(
+        mod.SECRET_PUT, A, ok(*[A] * floor), min_same_observations=floor
+    )
+    assert (verdict.verdict, verdict.final) == ("NO", True)
+
+
+def test_default_floor_is_the_canonical_15() -> None:
+    import inspect
+
+    default = inspect.signature(mod.decide).parameters["min_same_observations"].default
+    assert default == mod.MIN_SAME_VERSION_OBSERVATIONS == 15
+
+
+def test_one_unchanged_read_cannot_finalize_a_secret_put_no() -> None:
+    # The exact shape the lowerable floor allowed: with the floor pinned at 15,
+    # one canonical unchanged read is undecided while the window is open and a
+    # closed failure once it is not.
+    assert mod.decide(mod.SECRET_PUT, A, ok(A), window_open=True).verdict == mod.FAIL
+    assert mod.decide(mod.SECRET_PUT, A, ok(A)).verdict == mod.FAIL
+    assert mod.decide(mod.SECRET_PUT, A, ok(*[A] * 14)).verdict != mod.NO
+
+
+def test_fourteen_same_reads_cannot_finalize_a_no_but_fifteen_can() -> None:
+    below = mod.decide(mod.SECRET_PUT, A, ok(*[A] * 14))
+    assert (below.verdict, below.reason) == ("FAIL", "BELOW_STABLE_OBSERVATION_FLOOR")
+    at_floor = mod.decide(mod.SECRET_PUT, A, ok(*[A] * 15))
+    assert (at_floor.verdict, at_floor.reason) == ("NO", "SECRET_PUT_NO_DIVERGENCE_STABLE")
+
+
+def test_floor_lowering_is_not_reachable_through_the_cli() -> None:
+    # The override flag is gone, so a dispatch cannot weaken the bar it enforces.
+    # Scanned on executable lines only: the module documents why the flag was
+    # removed, and a comment naming a removed option is not a reachable surface.
+    code = SCRIPT.read_text(encoding="utf-8")
+    executable = "\n".join(
+        line for line in code.splitlines() if not line.strip().startswith("#")
+    )
+    assert "--min-same-observations" not in executable
+    assert "min_same_observations=" not in executable.split("def main(")[-1]
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp)
+        path.joinpath("obs.txt").write_text(f"ok {A}\n", encoding="utf-8")
+        with pytest.raises(SystemExit) as exc:
+            run([
+                "evaluate", "--class", mod.SECRET_PUT, "--pre-version", A,
+                "--observations", str(path / "obs.txt"), "--min-same-observations", "1",
+            ])
+    assert exc.value.code != 0
+    # Same input without the flag is refused on its merits, not silently eased.
+    with tempfile.TemporaryDirectory() as tmp:
+        code_out, out = evaluate(Path(tmp), [f"ok {A}"], [mod.SECRET_PUT], False)
+    assert code_out == 1
+    assert "MUTATION_CLASS_VERDICT=FAIL" in out
+
+
+def test_divergence_is_terminal_yes_regardless_of_floor_headroom() -> None:
+    # A canonical divergence closes the question immediately; the floor only
+    # governs whether an all-unchanged window may say NO.
+    verdict = mod.decide(mod.SECRET_PUT, A, ok(A, B))
+    assert (verdict.verdict, verdict.final, verdict.reason) == (
+        "YES", True, "SECRET_PUT_DIVERGED",
+    )
+
+
 # --- blocker 2: every version id meets the canonical safe-id contract ----------
 
 @pytest.mark.parametrize("pre_version", ["", "   ", None, HOSTILE, "a:b", 12345, "9" * 65])

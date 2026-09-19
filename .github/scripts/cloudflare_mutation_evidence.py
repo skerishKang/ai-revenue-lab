@@ -198,10 +198,15 @@ def decide(
     """
     if mutation_class not in MUTATION_CLASSES:
         raise EvidenceInputError("mutation class is not one of the closed vocabulary")
-    if min_same_observations < 1:
-        raise EvidenceInputError("minimum same-version observation floor must be positive")
-    if min_same_observations > MAX_OBSERVATIONS:
-        raise EvidenceInputError("stable-observation floor exceeds the canonical read window")
+    # The #2453 stable-observation floor is a canonical MINIMUM, not a default.
+    # A caller may raise it (demand more stability before a secret-PUT NO) but
+    # can never lower it below 15, and it cannot exceed the 30-read window it is
+    # judged in. This is what stops one canonical unchanged read from
+    # manufacturing a NO.
+    if not MIN_SAME_VERSION_OBSERVATIONS <= min_same_observations <= MAX_OBSERVATIONS:
+        raise EvidenceInputError(
+            "stable-observation floor must stay within the canonical 15..30 band"
+        )
     if not is_safe_version_id(pre_version_id):
         # Raised, not classified: the caller cannot ask a well-formed evidence
         # question about a pre-state this module would not accept as served.
@@ -353,8 +358,9 @@ def main(argv: list[str] | None = None) -> int:
                           help="file of ordered observations, one 'ok <id>' / 'reject -' per line")
     evaluate.add_argument("--window-open", action="store_true",
                           help="the caller may still poll again")
-    evaluate.add_argument("--min-same-observations", type=int,
-                          default=MIN_SAME_VERSION_OBSERVATIONS)
+    # Deliberately no --min-same-observations flag: the 15-observation floor is
+    # part of the contract, and exposing it as input would let a dispatch lower
+    # the evidence bar it is supposed to enforce (#2752 review blocker).
 
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     try:
@@ -364,7 +370,6 @@ def main(argv: list[str] | None = None) -> int:
             _parse_observations(args.observations),
             target_version_id=args.target_version,
             window_open=args.window_open,
-            min_same_observations=args.min_same_observations,
         )
     except EvidenceInputError as exc:
         print("MUTATION_CLASS_EVIDENCE=INPUT_ERROR", file=sys.stderr)
