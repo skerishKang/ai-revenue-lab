@@ -201,7 +201,7 @@ class DocumentContextEngineService:
             )
 
         try:
-            context_projection, evidence_projection = att_to_context_evidence(
+            context_projection, evidence_projection = await att_to_context_evidence(
                 self._document_resolver,
                 data["document_ref"],
                 app_id=scope.app_id,

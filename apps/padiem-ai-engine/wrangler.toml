@@ -52,3 +52,14 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 binding = "ENGINE_IMAGE_STORE"
 database_name = "padiem-engine"
 database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# #2741 (E8C-B): Engine-owned document byte retention for the doc_* resolver.
+# Same provisioned database as the other Engine D1 bindings. Schema 0006
+# (0006_engine_document_bytes.sql) is applied by the D1 provision gate; app
+# code never creates or mutates it. This declares the repo-owned binding
+# only - it does not provision, migrate or activate storage, and the
+# composition wiring (LOCAL3) is a separately gated later slice.
+[[d1_databases]]
+binding = "ENGINE_DOCUMENT_STORE"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"

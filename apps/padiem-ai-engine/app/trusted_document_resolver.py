@@ -1,18 +1,27 @@
-"""Server-owned trusted document resolver for Engine E5B-S2 (#1750).
+"""Server-owned trusted document resolver for Engine E5B-S2 (#1750),
+async durable seam modernized for E8C-B (#2741).
 
-The wire carries only an opaque ``att_*`` reference. The reference is never a
-storage locator: a deployment-owned ref-to-locator map plus a storage port
-resolve real bytes privately behind a scope check. Text/binary decoding and
-document semantics stay in Core (HYBRID_C); this module only resolves trusted
-inputs, bridges them into the canonical ``NormalizedDocument`` and projects a
-safe metadata view. Raw bytes and locators never appear in any projection.
+The wire carries only an opaque ``doc_*`` reference (grammar owned by
+``app.document_reference``, shared with nothing else: image ``att_*``
+references are a different namespace and can never resolve here). The
+reference is never a storage locator: the durable document byte store
+keys records by the minted ref itself, so no ref-to-locator map, no
+deployment-side ``register()`` hook and no in-memory locator binding
+remain on this path — the store IS the binding, owned by admission.
+Text/binary decoding and document semantics stay in Core (HYBRID_C); this
+module only resolves trusted inputs through the async storage seam, bridges
+them into the canonical ``NormalizedDocument`` and projects a safe metadata
+view. Raw bytes and storage state never appear in any projection.
+
+The storage port is async end to end (mirroring the image lane); sync callers
+cross it only via their own event loop (``asyncio.run`` in tests) — there is
+no sync-over-async shim here.
 """
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass, fields
-import re
+from re import compile as _compile
 from typing import Protocol
 
 from padiem_ai_core.document_normalization import (
@@ -23,32 +32,26 @@ from padiem_ai_core.document_normalization import (
     normalize_text_document,
 )
 
-ATT_REFERENCE_PATTERN = re.compile(r"^att_[a-zA-Z0-9_\-]{8,128}$")
-_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
-
-RESOLUTION_ERROR_CODES = frozenset(
-    {
-        "invalid_reference",
-        "invalid_scope",
-        "unauthorized",
-        "not_found",
-        "integrity_mismatch",
-        "decode_failed",
-        "unsupported_media_type",
-    }
+from app.document_reference import (
+    DOC_REFERENCE_PATTERN,
+    RESOLUTION_ERROR_CODES,
+    DocumentResolutionError,
+    require_document_reference,
 )
 
-
-class DocumentResolutionError(ValueError):
-    """Fail-closed document resolution error safe for first-party products."""
-
-    def __init__(self, code: str, safe_message: str, *, status_code: int = 400) -> None:
-        super().__init__(safe_message)
-        if not isinstance(code, str) or code not in RESOLUTION_ERROR_CODES:
-            raise ValueError("document resolution error code must be a known safe code")
-        self.code = code
-        self.safe_message = safe_message
-        self.status_code = status_code
+__all__ = [
+    "DOC_REFERENCE_PATTERN",
+    "DocumentResolutionError",
+    "RESOLUTION_ERROR_CODES",
+    "ResolvedDocumentMeta",
+    "DurableDocumentStoragePort",
+    "StoragePort",
+    "TrustedDocumentResolver",
+    "normalize_resolved_document",
+    "require_document_reference",
+    "resolve_and_normalize",
+    "SafeDocumentProjection",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -100,67 +103,139 @@ class ResolvedDocumentMeta:
 
 
 class StoragePort(Protocol):
-    """Deployment-owned blob storage behind opaque locators.
+    """Deployment-owned async byte retention keyed by the opaque document ref.
 
-    Implementations translate locators into real storage addresses. Locators
-    never cross this boundary towards callers, and callers never reach this
-    port without a prior scope-validated resolve.
+    Implementations translate references into real storage reads. No storage
+    locator ever crosses this boundary towards callers, and callers never
+    reach this port without a prior scope-validated resolve.
     """
 
-    def fetch_meta(self, locator: str) -> "ResolvedDocumentMeta | None": ...
+    async def fetch_document(
+        self,
+        *,
+        document_ref: str,
+        app_id: str,
+        tenant_id: str,
+        subject_id: str,
+    ) -> tuple[ResolvedDocumentMeta, bytes]: ...
 
-    def fetch_bytes(self, locator: str) -> bytes | None: ...
+
+_SAFE_ID_RE = _compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+# Store failure codes mapped into the single resolver authority vocabulary
+# (one language, no competing vocabularies — #2741 failure-semantics note).
+_STORE_ERROR_CODES: dict[str, tuple[str, str, int]] = {
+    "invalid_document_reference": (
+        "invalid_reference",
+        "Document reference is invalid.",
+        400,
+    ),
+    "invalid_scope": ("invalid_scope", "Caller document scope is invalid.", 400),
+    "not_found": ("not_found", "Document reference is unknown.", 404),
+    "unauthorized": (
+        "unauthorized",
+        "Document scope does not match the request.",
+        403,
+    ),
+    "expired": ("expired", "Document reference has expired.", 410),
+    "terminal": ("terminal", "Document reference is no longer active.", 410),
+    "integrity_mismatch": (
+        "integrity_mismatch",
+        "Document payload does not match its recorded size.",
+        503,
+    ),
+    "store_unavailable": (
+        "store_unavailable",
+        "Document storage is unavailable.",
+        503,
+    ),
+    "empty_payload": (
+        "integrity_mismatch",
+        "Document payload does not match its recorded size.",
+        503,
+    ),
+    "ref_conflict": (
+        "store_unavailable",
+        "Document storage is unavailable.",
+        503,
+    ),
+    "unsupported_media_type": (
+        "unsupported_media_type",
+        "Document media type is not supported for normalization.",
+        415,
+    ),
+    "document_too_large": (
+        "integrity_mismatch",
+        "Document payload does not match its recorded size.",
+        503,
+    ),
+}
 
 
-class InMemoryStoragePort:
-    """Test/demo storage port; no network, filesystem or provider access."""
+class DurableDocumentStoragePort:
+    """Adapt the #2741 scoped document byte store to the resolver's port.
 
-    def __init__(self) -> None:
-        self._payloads: dict[str, bytes] = {}
-        self._metas: dict[str, ResolvedDocumentMeta] = {}
+    Records are keyed by their minted ``doc_*`` reference inside the store,
+    so this adapter adds no binding state of its own: it translates the
+    record into ``ResolvedDocumentMeta`` and maps the store's fail-closed
+    errors into the resolver vocabulary above.
+    """
 
-    def store(self, locator: str, payload: bytes, meta: ResolvedDocumentMeta) -> None:
-        if not isinstance(locator, str) or not locator or len(locator) > 256:
-            raise ValueError("storage locator must be a non-empty bounded server token")
-        if not isinstance(payload, bytes) or not payload:
-            raise ValueError("stored document payload must be non-empty bytes")
-        if not isinstance(meta, ResolvedDocumentMeta):
-            raise ValueError("stored document meta must be a ResolvedDocumentMeta")
-        self._payloads[locator] = payload
-        self._metas[locator] = meta
+    def __init__(self, store: object) -> None:
+        if store is None or not callable(getattr(store, "fetch_document", None)):
+            raise ValueError("store must expose async fetch_document")
+        self._store = store
 
-    def fetch_meta(self, locator: str) -> ResolvedDocumentMeta | None:
-        return self._metas.get(locator)
+    def __repr__(self) -> str:
+        return "DurableDocumentStoragePort(configured)"
 
-    def fetch_bytes(self, locator: str) -> bytes | None:
-        return self._payloads.get(locator)
+    async def fetch_document(
+        self, *, document_ref: str, app_id: str, tenant_id: str, subject_id: str
+    ) -> tuple[ResolvedDocumentMeta, bytes]:
+        from app.document_byte_store import DocumentByteStoreError
+
+        try:
+            record, raw = await self._store.fetch_document(  # type: ignore[attr-defined]
+                document_ref=document_ref,
+                app_id=app_id,
+                tenant_id=tenant_id,
+                subject_id=subject_id,
+            )
+        except DocumentByteStoreError as exc:
+            mapped = _STORE_ERROR_CODES.get(exc.code)
+            if mapped is None:  # defensive: unknown store code stays closed
+                raise DocumentResolutionError(
+                    "store_unavailable",
+                    "Document storage is unavailable.",
+                    status_code=503,
+                ) from None
+            code, message, status = mapped
+            raise DocumentResolutionError(code, message, status_code=status) from None
+        meta = ResolvedDocumentMeta(
+            media_type=record.media_type,
+            name=record.name,
+            byte_size=record.byte_size,
+            app_id=record.app_id,
+            subject_id=record.subject_id,
+            tenant_id=record.tenant_id,
+        )
+        return meta, raw
 
 
 class TrustedDocumentResolver:
-    """Resolve an opaque ``att_*`` reference into trusted local bytes + meta."""
+    """Resolve an opaque ``doc_*`` reference into trusted bytes + meta."""
 
-    def __init__(
-        self,
-        *,
-        storage: StoragePort,
-        locators: Mapping[str, str] | None = None,
-    ) -> None:
-        if not hasattr(storage, "fetch_meta") or not hasattr(storage, "fetch_bytes"):
-            raise ValueError("storage port must implement fetch_meta and fetch_bytes")
+    def __init__(self, *, storage: StoragePort | DurableDocumentStoragePort) -> None:
+        if storage is None or not callable(getattr(storage, "fetch_document", None)):
+            raise ValueError("storage port must implement async fetch_document")
         self._storage = storage
-        self._locators: dict[str, str] = dict(locators or {})
 
-    def register(self, att_ref: str, locator: str) -> None:
-        """Server-side admission hook: bind a minted ref to a storage locator."""
+    def __repr__(self) -> str:
+        return "TrustedDocumentResolver(configured)"
 
-        reference = require_document_reference(att_ref)
-        if not isinstance(locator, str) or not locator or len(locator) > 256:
-            raise ValueError("storage locator must be a non-empty bounded server token")
-        self._locators[reference] = locator
-
-    def resolve(
+    async def resolve(
         self,
-        att_ref: object,
+        document_ref: object,
         *,
         app_id: str,
         subject_id: str,
@@ -168,7 +243,7 @@ class TrustedDocumentResolver:
     ) -> tuple[bytes, ResolvedDocumentMeta]:
         """Fail-closed resolve: grammar, existence, scope and integrity only."""
 
-        reference = require_document_reference(att_ref)
+        reference = require_document_reference(document_ref)
         for label, value in (
             ("app_id", app_id),
             ("subject_id", subject_id),
@@ -179,15 +254,18 @@ class TrustedDocumentResolver:
                     "invalid_scope",
                     f"Caller {label} is invalid.",
                 )
-        locator = self._locators.get(reference)
-        if locator is None:
-            raise DocumentResolutionError("not_found", "Document reference is unknown.", status_code=404)
-        meta = self._storage.fetch_meta(locator)
-        if meta is None:
-            raise DocumentResolutionError("not_found", "Document reference is unknown.", status_code=404)
-        raw = self._storage.fetch_bytes(locator)
-        if raw is None:
-            raise DocumentResolutionError("not_found", "Document payload is unavailable.", status_code=404)
+        meta, raw = await self._storage.fetch_document(
+            document_ref=reference,
+            app_id=app_id,
+            tenant_id=tenant_id,
+            subject_id=subject_id,
+        )
+        if not isinstance(meta, ResolvedDocumentMeta) or not isinstance(raw, bytes):
+            raise DocumentResolutionError(
+                "integrity_mismatch",
+                "Document payload does not match its recorded size.",
+                status_code=503,
+            )
         if (app_id, subject_id, tenant_id) != (meta.app_id, meta.subject_id, meta.tenant_id):
             raise DocumentResolutionError(
                 "unauthorized",
@@ -201,17 +279,6 @@ class TrustedDocumentResolver:
                 status_code=503,
             )
         return raw, meta
-
-
-def require_document_reference(value: object) -> str:
-    """Accept only non-locator opaque references matching the ``att_*`` grammar."""
-
-    if not isinstance(value, str) or not ATT_REFERENCE_PATTERN.fullmatch(value):
-        raise DocumentResolutionError(
-            "invalid_reference",
-            "Document reference is invalid.",
-        )
-    return value
 
 
 def normalize_resolved_document(
@@ -256,9 +323,9 @@ def normalize_resolved_document(
     )
 
 
-def resolve_and_normalize(
+async def resolve_and_normalize(
     resolver: TrustedDocumentResolver,
-    att_ref: object,
+    document_ref: object,
     *,
     app_id: str,
     subject_id: str,
@@ -266,13 +333,13 @@ def resolve_and_normalize(
 ) -> NormalizedDocument:
     """Bridge trusted bytes into the canonical Core ``NormalizedDocument``.
 
-    Thin wrapper: one fail-closed resolve followed by the shared
+    Thin wrapper: one fail-closed async resolve followed by the shared
     ``normalize_resolved_document`` dispatch. A failed resolve or decode
     raises — it never produces a degraded document.
     """
 
-    raw, meta = resolver.resolve(
-        att_ref,
+    raw, meta = await resolver.resolve(
+        document_ref,
         app_id=app_id,
         subject_id=subject_id,
         tenant_id=tenant_id,
@@ -285,7 +352,7 @@ class SafeDocumentProjection:
     """Public-safe metadata view of a resolved document.
 
     Only Core-validated metadata appears here: never raw text, never bytes,
-    never an ``att_*`` reference and never a storage locator.
+    never a ``doc_*``/``att_*`` reference and never a storage locator.
     """
 
     kind: str | None
