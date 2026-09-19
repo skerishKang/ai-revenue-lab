@@ -329,12 +329,12 @@ jobs:
           ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-          # #2748: rollback is its own mutation class. A code deploy must prove
-          # the served version CHANGED; a rollback must prove the served version
-          # EQUALS the one target the owner named. A bare `wrangler rollback`
-          # lets Wrangler implicitly pick a previous upload, so its exit zero
-          # would name no version at all and the PASS marker would be unearned.
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
           if [ -z "${ROLLBACK_TARGET:-}" ]; then
             echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
             echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
@@ -348,51 +348,72 @@ jobs:
           echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
           echo 'ROLLBACK_TARGET_EXPLICIT=YES'
           echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
           cd apps/padiem-ai-engine
           npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
             --message "B54 engine production rollback to explicit target (owner-authorized gate)"
           echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
-          # Rollback is not proven by the command. Re-read the served deployment
-          # on a bounded window and converge only on the named target; every
-          # read resolves through the canonical shared resolver, so no envelope
-          # rule is re-implemented in this workflow.
           cd "$GITHUB_WORKSPACE"
-          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
-          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
           rollback_reads=0
           for attempt in $(seq 1 30); do
             rollback_reads="${attempt}"
             deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
-            curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
-            # A non-canonical or ambiguous read is a closed failure, never a
-            # reason to keep polling toward a PASS.
-            if ! resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
-              echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
-              echo 'REASON=canonical resolver rejected a rollback readback' >&2
-              printf '%s\n' "${resolve_out}" >&2
-              exit 1
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
             fi
-            served_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
-            if [ -z "${served_version}" ]; then
-              echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
-              echo 'REASON=canonical resolver returned no served version id' >&2
-              exit 1
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
             fi
-            if [ "${served_version}" = "${ROLLBACK_TARGET}" ]; then
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
               break
             fi
-            served_version=''
             sleep 2
           done
-          if [ -z "${served_version}" ]; then
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
             echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
-            echo "REASON=served version never equalled the rollback target within ${rollback_reads} bounded canonical reads" >&2
+            printf '%s\n' "${final_out}" >&2
             echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
             exit 1
           fi
-          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
           echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
-          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
           echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
           echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
           echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
