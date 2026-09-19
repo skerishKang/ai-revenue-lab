@@ -38,7 +38,7 @@ from kagent.sandbox_policy import (
     CloudWorkspacePathRule,
     WorkspacePathOperation,
 )
-from kagent.security import redact_secrets
+from kagent.security import contains_credential_material, redact_secrets
 
 DIGEST = "a" * 64
 OTHER_DIGEST = "b" * 64
@@ -318,16 +318,17 @@ class SecretRedactionTests(unittest.TestCase):
         self.assertNotIn("fake-api-key-value-10", entry.text_excerpt or "")
         self.assertEqual(entry.candidate.sha256, DIGEST)
 
-    def test_known_limitation_of_the_shared_redaction_primitive(self):
-        # Recorded, not hidden: redact_secrets anchors on word boundaries, so a
-        # credential concatenated straight onto alphanumerics is not recognised. This
-        # collector reuses that primitive rather than inventing a competing pattern set,
-        # so the gap is inherited and must be closed in security.py, not patched around.
+    def test_glued_boundary_gap_is_closed(self):
+        # Inverted from a pinned limitation. This asserted redact_secrets(glued) == glued
+        # to document that the shared primitive anchored sk- at a word boundary, so a
+        # credential concatenated onto alphanumerics was invisible. #2784 removed that
+        # anchor, so the repaired behaviour is now what is asserted here.
         glued = "y" * 20 + "sk-" + "X" * 14
-        self.assertEqual(redact_secrets(glued), glued)
+        self.assertNotEqual(redact_secrets(glued), glued)
+        self.assertTrue(contains_credential_material(glued))
         entry = exportable_for(collecting(candidate("out/a.md", text_excerpt=glued)), "out/a.md")
-        self.assertFalse(entry.excerpt_redacted)
-        self.assertIn("sk-XXX", entry.text_excerpt or "")
+        self.assertTrue(entry.excerpt_redacted)
+        self.assertNotIn("sk-XXX", entry.text_excerpt or "")
 
 
 class WorkspaceArtifactCollectorCoreTests(unittest.TestCase):
