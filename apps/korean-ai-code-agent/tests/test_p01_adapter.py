@@ -129,7 +129,7 @@ class P01RequestFactoryTests(unittest.TestCase):
             task="클라우드에서 테스트까지 수행해줘",
             repository_ref="skerishKang/example",
             execution_mode=ExecutionMode.CLOUD,
-            requested_revision="abc123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
         )
         return ClawRun.create(run_id, intent)
 

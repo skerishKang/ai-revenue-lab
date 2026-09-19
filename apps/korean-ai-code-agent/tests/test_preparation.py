@@ -6,6 +6,7 @@ import unittest
 from kagent.contracts import (
     ClawRunStatus,
     ClawTaskIntent,
+    ContractError,
     ExecutionMode,
     NetworkPolicy,
     ResourceClass,
@@ -25,7 +26,7 @@ class CloudWorkspacePreparationTests(unittest.TestCase):
             task_id=f"task_{run_id}",
             task="로그인 오류를 수정해줘",
             repository_ref="skerishKang/example",
-            requested_revision="abc123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             execution_mode=ExecutionMode.CLOUD,
         )
         return ClawRun.create(run_id, intent)
@@ -89,6 +90,55 @@ class CloudWorkspacePreparationTests(unittest.TestCase):
         run.transition(ClawRunStatus.RUNNING, summary="P01 handoff accepted")
         with self.assertRaises(RunStateError):
             preparer.prepare(run)
+
+
+class ExactRevisionReachesLeaseTests(unittest.TestCase):
+    """#2775: an unpinned revision must never reach a provider allocation."""
+
+    SHA = "abcdef1234567890abcdef1234567890abcdef12"
+
+    class RecordingProvider(DeterministicFakeSandboxProvider):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.allocate_calls = []
+
+        def allocate(self, request):
+            self.allocate_calls.append(request)
+            return super().allocate(request)
+
+    def intent(self, revision):
+        return ClawTaskIntent(
+            task_id="task_2775",
+            task="특정 커밋에서 준비해줘",
+            repository_ref="skerishKang/example",
+            requested_revision=revision,
+            execution_mode=ExecutionMode.CLOUD,
+        )
+
+    def test_pinned_revision_reaches_the_lease_request_without_drift(self):
+        provider = self.RecordingProvider()
+        run = ClawRun.create("run_2775_ok", self.intent(self.SHA))
+        CloudWorkspacePreparer(provider).prepare(run)
+        self.assertEqual(len(provider.allocate_calls), 1)
+        self.assertEqual(provider.allocate_calls[0].requested_revision, self.SHA)
+
+    def test_revision_is_normalized_once_and_not_rewritten_later(self):
+        provider = self.RecordingProvider()
+        run = ClawRun.create("run_2775_case", self.intent(self.SHA.upper()))
+        CloudWorkspacePreparer(provider).prepare(run)
+        self.assertEqual(provider.allocate_calls[0].requested_revision, self.SHA)
+
+    def test_mutable_revision_never_reaches_allocate(self):
+        # The lease contract rejects before the port is touched, so a branch
+        # name cannot allocate a sandbox even from the product preparer.
+        for index, revision in enumerate(("main", "refs/heads/main", "v1.2.3", "abcdef1", None)):
+            with self.subTest(revision=revision):
+                provider = self.RecordingProvider()
+                run = ClawRun.create(f"run_2775_bad_{index}", self.intent(revision))
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePreparer(provider).prepare(run)
+                self.assertEqual(provider.allocate_calls, [])
+                self.assertEqual(run.status, ClawRunStatus.PREPARING)
 
 
 if __name__ == "__main__":
