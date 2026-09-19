@@ -66,11 +66,13 @@ SERVICE_IDENTITY_MODULE = ENGINE_APP / "service_identity.py"
 SENTINEL = "sentinel-raw-value-must-never-appear"
 CREDENTIAL_ENV = "B54_TEST_OVERLAY_ROTATION_CREDENTIAL"
 CONFIRM_PHRASE = "ROTATE_B54_KAGENT_ENGINE_OVERLAY_FROM_EXACT_MAIN"
-# #2645 canonical app authority: the single overlay caller is authorized for the
-# Claw app AND the canonical Drive app, and for nothing else.
+# #2645 + #2721 (Telegram reader): the single overlay caller is authorized for
+# the Claw app, the canonical Drive app, and the canonical Telegram reader app,
+# and for nothing else.
 CLAW_APP_ID = "b54-padiem-claw"
 DRIVE_APP_ID = "b54-padiem-claw-drive"
-CANONICAL_APP_IDS = (CLAW_APP_ID, DRIVE_APP_ID)
+TELEGRAM_APP_ID = "b54-padiem-claw-telegram"
+CANONICAL_APP_IDS = (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
 FOREIGN_APP_ID = "b62"
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
@@ -221,9 +223,10 @@ def test_script_constants_exact() -> None:
     assert helper.REQUIRED_BINDING_TYPE == "secret_text"
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
-    # #2645: exactly two canonical apps — Claw and Drive — and nothing else.
+    # #2645 + #2721: exactly three canonical apps — Claw, Drive, and the
+    # Telegram reader — and nothing else.
     assert helper.ALLOWED_APP_IDS == CANONICAL_APP_IDS
-    assert helper.ALLOWED_APP_IDS == (CLAW_APP_ID, DRIVE_APP_ID)
+    assert helper.ALLOWED_APP_IDS == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
     assert helper.ALLOWED_APP_IDS[0] == CLAW_APP_ID
     assert helper.OVERLAY_VERSION == 1
     assert helper.MIN_CREDENTIAL_BYTES == 32
@@ -330,7 +333,7 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
         "caller": {
             "caller_id": "b54-p01-overlay-20260914-a1",
             "credential": credential,
-            "allowed_app_ids": [CLAW_APP_ID, DRIVE_APP_ID],
+            "allowed_app_ids": [CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID],
         },
     }
     # Credential byte boundaries are enforced before any payload is returned.
@@ -453,9 +456,10 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
     assert parsed.allowed_app_ids == CANONICAL_APP_IDS
     assert parsed.credential_sha256 == identity.caller_secret_digest(new_cred)
 
-    # #2645: BOTH canonical apps authenticate with the RAW new credential (never
-    # pre-hashed) — the pre-existing Claw authority is preserved and the
-    # canonical Drive app is newly authorized by the same single overlay caller.
+    # #2645 + #2721: ALL canonical apps authenticate with the RAW new credential
+    # (never pre-hashed) — the pre-existing Claw authority is preserved, the
+    # canonical Drive app stays authorized, and the canonical Telegram reader
+    # app is newly authorized by the same single overlay caller.
     for app_id in CANONICAL_APP_IDS:
         identity.authenticate_request(
             env=env,
@@ -547,13 +551,13 @@ def test_2645_canonical_app_authority_contract() -> None:
     payload = helper.build_overlay_payload(credential=credential)
     overlay_text = helper.build_overlay_put_body(payload)["text"]
 
-    # Caller id unchanged; exactly the canonical pair, in order, no duplicates.
+    # Caller id unchanged; exactly the canonical trio, in order, no duplicates.
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     parsed = identity.parse_caller_registry_v1_overlay(overlay_text)
     assert parsed.caller_id == helper.CALLER_ID
-    assert parsed.allowed_app_ids == (CLAW_APP_ID, DRIVE_APP_ID)
-    assert len(parsed.allowed_app_ids) == 2
-    assert len(set(parsed.allowed_app_ids)) == 2
+    assert parsed.allowed_app_ids == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
+    assert len(parsed.allowed_app_ids) == 3
+    assert len(set(parsed.allowed_app_ids)) == 3
 
     base_registry = {
         "version": 1,
