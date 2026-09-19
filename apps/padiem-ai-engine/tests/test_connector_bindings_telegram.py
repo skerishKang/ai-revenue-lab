@@ -19,6 +19,7 @@ from padiem_ai_core.telegram_capability import (
     TELEGRAM_GET_BOT_INFO_TOOL_ID,
     TELEGRAM_GET_CHAT_INFO_TOOL_ID,
     TELEGRAM_READONLY_AUTH_SCOPE,
+    TELEGRAM_SEND_AUTH_SCOPE,
     TelegramCapability,
     TelegramContractError,
 )
@@ -243,5 +244,31 @@ def test_binding_authority_carries_readonly_scope_only() -> None:
     binding = telegram_tool_binding(grant=telegram_grant(), port=port)
     authority = binding.authorities[TELEGRAM_AGENT_ID]
     scopes = tuple(authority.authorization.granted_auth_scopes)
-    assert scopes == (TelegramCapability.READ,)
-    assert all(str(scope) != TELEGRAM_READONLY_AUTH_SCOPE + ".send" for scope in scopes)
+    # The runtime compares spec.auth_scope tokens ("telegram.readonly"), not the
+    # raw capability value ("read"); granting READ must project exactly the
+    # readonly scope and never the send scope.
+    assert scopes == (TELEGRAM_READONLY_AUTH_SCOPE,)
+    assert TELEGRAM_SEND_AUTH_SCOPE not in scopes
+
+
+def test_readonly_grant_executes_bot_info_tool_through_runtime() -> None:
+    # Canary blocker regression (#2712): the runtime compares spec.auth_scope
+    # tokens, so a READ grant must reach the trusted port instead of failing
+    # with tool_auth_scope_missing at the scope gate.
+    from padiem_ai_core.tool_runtime import ToolInvocation
+
+    port = FakeTelegramPort()
+    binding = telegram_tool_binding(grant=telegram_grant(), port=port)
+    authority = binding.authorities[TELEGRAM_AGENT_ID]
+    result = run(
+        binding.tool_runtime.execute(
+            ToolInvocation(tool_id=TELEGRAM_GET_BOT_INFO_TOOL_ID, arguments={}),
+            authority.compiled.runtime_profile,
+            authority.authorization,
+        )
+    )
+    assert result.tool_id == TELEGRAM_GET_BOT_INFO_TOOL_ID
+    assert result.output["result_status"] == "OK"
+    assert len(port.calls) == 1
+    assert port.calls[0]["path"] == "/getMe"
+    assert port.calls[0]["required_scopes"] == (TELEGRAM_READONLY_AUTH_SCOPE,)
