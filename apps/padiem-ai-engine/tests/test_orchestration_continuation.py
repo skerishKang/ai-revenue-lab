@@ -140,7 +140,10 @@ def test_release_returns_record_to_active():
 
 def test_release_of_expired_pause_marks_expired():
     store = InMemoryContinuationStore()
-    ref = _issue(store, pause=_pause(expires_at=_NOW + timedelta(seconds=5)))
+    # The claim must happen while the pause is live; the expiry under test is
+    # forced by the mutation below, so the live headroom is the file idiom
+    # (wall-clock drift since import has no bearing on the assertions).
+    ref = _issue(store, pause=_pause(expires_at=_NOW + timedelta(hours=1)))
     claimed = store.claim(app_id="app_a", continuation_ref=ref)
     store._records[ref] = store._copy(claimed, pause=_pause(expires_at=_NOW - timedelta(seconds=1)))
 
@@ -194,7 +197,8 @@ def test_release_cancel_restores_active_and_clears_cancel_fields():
 
 def test_release_cancel_of_expired_pause_marks_expired():
     store = InMemoryContinuationStore()
-    ref = _issue(store, pause=_pause(expires_at=_NOW + timedelta(seconds=5)))
+    # Live at claim time (see the release variant above); expiry is forced below.
+    ref = _issue(store, pause=_pause(expires_at=_NOW + timedelta(hours=1)))
     cancelling = store.claim_cancel(app_id="app_a", continuation_ref=ref, reason="user_abort")
     store._records[ref] = store._copy(cancelling, pause=_pause(expires_at=_NOW - timedelta(seconds=1)))
 

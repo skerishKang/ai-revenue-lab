@@ -180,17 +180,22 @@ def test_binding_alias_is_exact() -> None:
     assert DOCUMENT_STORE_BINDING_NAME == "ENGINE_DOCUMENT_STORE"
 
 
-def test_binding_declared_in_wrangler_but_composed_nowhere_yet() -> None:
+def test_binding_alias_exact_and_store_import_polarity_composed_in_identity_only() -> None:
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
     assert 'binding = "ENGINE_DOCUMENT_STORE"' in wrangler
     assert (
         wrangler.count('database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"') == 5
     ), "all five Engine D1 aliases share the one provisioned database"
-    # Declaration only: neither composition root may import the new modules.
-    for name in ("worker_identity.py", "worker.py"):
-        source = (APP_ROOT / name).read_text(encoding="utf-8")
-        assert "ENGINE_DOCUMENT_STORE" not in source
-        assert "document_byte_store" not in source
+    # #2764: the canonical composition moved INTO the identity worker; the
+    # legacy worker stays unwidened. Only worker_identity may reference the
+    # durable document store, and app-layer modules still never hard-code the
+    # binding: it is deployment env supplied.
+    identity_source = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
+    assert "ENGINE_DOCUMENT_STORE" in identity_source
+    assert "document_byte_store" in identity_source
+    legacy_source = (APP_ROOT / "worker.py").read_text(encoding="utf-8")
+    assert "ENGINE_DOCUMENT_STORE" not in legacy_source
+    assert "document_byte_store" not in legacy_source
     for name in ("engine_composition.py", "capability_manifest.py", "contract_manifest.py"):
         source = (APP_ROOT / "app" / name).read_text(encoding="utf-8")
         assert "ENGINE_DOCUMENT_STORE" not in source

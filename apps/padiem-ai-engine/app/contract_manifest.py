@@ -17,6 +17,7 @@ from .agent_skill_service import (
     AGENT_SKILL_RUN_PATH,
 )
 from .attachment_admission_service import ATTACHMENT_ADMISSION_PATH
+from .document_admission_service import DOCUMENT_ADMISSION_PATH
 from .document_context_service import DOCUMENT_CONTEXT_PATH
 from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
@@ -158,6 +159,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             # image bytes and returns a server-minted opaque att_* reference. Route
             # declaration does not imply Production authority/binding activation.
             EngineEndpointContract(ATTACHMENT_ADMISSION_PATH, "POST", "application/json"),
+            # #2764 (E8C-B): source-routed document admission over the canonical
+            # scoped document byte store. Declaration does not imply Production
+            # binding provisioning, applied migration 0006, or activation.
+            EngineEndpointContract(DOCUMENT_ADMISSION_PATH, "POST", "application/json"),
             EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
             EngineEndpointContract(MULTIMODAL_STREAM_PATH, "POST", "application/x-ndjson"),
             # #1964 source slice: the replay route is declared but the feature
@@ -215,6 +220,11 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             # DEFERRED until the separately gated Production image-store and
             # Control Plane session authorities are activated and proven live.
             EngineFeatureContract("attachment_admission", EngineFeatureState.DEFERRED),
+            # #2764: the document admission route is source-complete and composed
+            # over the durable deployment-owned document-store lineage, but
+            # Production provisioning of the binding, applied migration 0006
+            # and live evidence are separately gated. Stays truthfully DEFERRED.
+            EngineFeatureContract("document_admission", EngineFeatureState.DEFERRED),
             EngineFeatureContract("multimodal_completed_run", EngineFeatureState.DEFERRED),
             # Execute/stream are source-complete and share the accepted resolver /
             # scope composition. Their Production availability still requires the

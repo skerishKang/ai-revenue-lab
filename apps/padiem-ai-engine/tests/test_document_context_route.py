@@ -248,7 +248,7 @@ def test_b_each_missing_trusted_port_fails_closed_without_calls(omit: str) -> No
     assert port.stored == []
 
 
-def test_b_canonical_composition_leaves_documents_seam_uninjected(
+def test_b_canonical_composition_injects_documents_over_the_durable_lineage(
     identity_modules,
 ) -> None:
     _legacy, identity = identity_modules
@@ -256,11 +256,61 @@ def test_b_canonical_composition_leaves_documents_seam_uninjected(
     for env in (_identity_env(), _identity_env(B14_SERVICE=object())):
         services = asyncio.run(identity._engine_services_for_env(env))
         assert isinstance(services, EngineServices)
-        assert services.documents is None
+        # #2764: the seam is canonically injected, but with neither
+        # ENGINE_DOCUMENT_STORE nor a CP authority every internal object
+        # stays None, so each request still fails closed without faked storage.
+        assert isinstance(services.documents, DocumentContextEngineService)
+        assert services.documents._scope_authority is None
+        assert services.documents._document_resolver is None
         with pytest.raises(ValueError, match="'documents'"):
             dataclasses.replace(services, documents=object())
         injected = DocumentContextEngineService()
         assert dataclasses.replace(services, documents=injected).documents is injected
+
+
+class _FakeD1Statement:
+    def bind(self, *_params: Any) -> "_FakeD1Statement":
+        return self
+
+    async def first(self) -> None:
+        raise AssertionError("no D1 read may occur without a trusted scope")
+
+    async def run(self) -> None:
+        raise AssertionError("no D1 byte write may occur without a trusted scope")
+
+
+class _FakeD1Binding:
+    def prepare(self, _sql: str) -> _FakeD1Statement:
+        return _FakeD1Statement()
+
+
+def test_b2_bound_document_store_composes_one_shared_lineage(identity_modules) -> None:
+    from app.document_byte_store import CloudflareD1DocumentByteStore
+
+    _legacy, identity = identity_modules
+    env = _identity_env(ENGINE_DOCUMENT_STORE=_FakeD1Binding())
+    services = asyncio.run(identity._engine_services_for_env(env))
+
+    resolver = services.documents._document_resolver
+    assert resolver is not None
+    store = resolver._storage._store
+    assert isinstance(store, ScopedDocumentByteStore)
+    assert isinstance(store._port, CloudflareD1DocumentByteStore)
+    # one composition per request: admission and context share the same store
+    assert store is services.document_admission._document_byte_store
+    assert services.document_admission._scope_authority is None  # CP gated
+
+
+def test_b3_malformed_document_store_binding_composes_no_lineage(identity_modules) -> None:
+    _legacy, identity = identity_modules
+    for malformed in (object(), "", 0, {"binding": "ENGINE_DOCUMENT_STORE"}, [], b"d1"):
+        services = asyncio.run(
+            identity._engine_services_for_env(
+                _identity_env(ENGINE_DOCUMENT_STORE=malformed)
+            )
+        )
+        assert services.documents._document_resolver is None, repr(malformed)
+        assert services.document_admission._document_byte_store is None, repr(malformed)
 
 
 # --- C: identity before any trusted port --------------------------------------
@@ -591,7 +641,10 @@ def test_document_route_fails_closed_on_canonical_fetch(
     assert response.status == 503
     payload = _body(response)
     assert payload["ok"] is False
-    assert payload["error"]["code"] == "document_context_unavailable"
+    # #2764 keeps the service canonically composed; the fail-closed answer now
+    # names the missing authority itself (no CP session authority on this env)
+    # instead of the pre-composition seam gap.
+    assert payload["error"]["code"] == "document_authority_unavailable"
     assert DOC_REF not in str(response.body)
 
 
