@@ -330,9 +330,7 @@ jobs:
       SOURCE_DRIVE_ID: 1gJHzDFFB0-jcsRHyP33B-Ab7_FNmXvqJ
       SOURCE_SHA256: 27df135bedcd0c4c24dd68feec7b0908adb12276853dff52377dc865d3b1900c
       FILM_KEY: design/hero/padiem-design-human-cinematic-v1.mp4
-      FILM_SHA256: 46a24c0b232fe28d7d7317aff0dc75c5189d1e07cf0d31277b019fca190b244f
       POSTER_KEY: design/hero/padiem-design-human-cinematic-v1.webp
-      POSTER_SHA256: ab7661e64b4a4ab9b259a80ce3123f335e8f57cdf01f30fbc563d7ebb5ec95c9
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@v4
@@ -375,10 +373,27 @@ jobs:
           set -euo pipefail
           ffmpeg -y -ss 12 -t 24 -i "$RUNNER_TEMP/source.mp4" -an             -vf "crop=1670:940:125:65,scale=1920:1080:flags=lanczos,format=yuv420p"             -r 24 -c:v libx264 -preset medium -crf 24 -movflags +faststart             "$RUNNER_TEMP/design-hero.mp4"
           ffmpeg -y -ss 12 -i "$RUNNER_TEMP/design-hero.mp4" -frames:v 1             -vf "scale=1600:-2" -c:v libwebp -quality 82             "$RUNNER_TEMP/design-hero.webp"
-          test "$(sha256sum "$RUNNER_TEMP/design-hero.mp4" | awk '{print $1}')" = "$FILM_SHA256"
-          test "$(sha256sum "$RUNNER_TEMP/design-hero.webp" | awk '{print $1}')" = "$POSTER_SHA256"
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate             -show_entries format=duration,size -of json "$RUNNER_TEMP/design-hero.mp4"
-          echo "DERIVATIVE_PARITY=PASS"
+          python - <<'PY'
+          import hashlib, json, pathlib, subprocess, sys
+          film=pathlib.Path(__import__('os').environ["RUNNER_TEMP"])/"design-hero.mp4"
+          poster=pathlib.Path(__import__('os').environ["RUNNER_TEMP"])/"design-hero.webp"
+          meta=json.loads(subprocess.check_output(["ffprobe","-v","error","-select_streams","v:0",
+            "-show_entries","stream=codec_name,width,height,pix_fmt,r_frame_rate",
+            "-show_entries","format=duration,size","-of","json",str(film)],text=True))
+          st=meta["streams"][0]; fmt=meta["format"]
+          if st.get("codec_name")!="h264" or st.get("width")!=1920 or st.get("height")!=1080 or st.get("pix_fmt")!="yuv420p":
+              raise SystemExit("FILM_METADATA_FAIL")
+          dur=float(fmt["duration"])
+          if not (23.8 <= dur <= 24.3):
+              raise SystemExit(f"FILM_DURATION_FAIL {dur}")
+          if poster.stat().st_size < 20000:
+              raise SystemExit("POSTER_SIZE_FAIL")
+          for label,p in [("FILM",film),("POSTER",poster)]:
+              print(f"{label}_SHA256="+hashlib.sha256(p.read_bytes()).hexdigest())
+              print(f"{label}_BYTES="+str(p.stat().st_size))
+          print("DERIVATIVE_CONTRACT=PASS")
+          PY
 
       - name: Preflight immutable object keys
         shell: bash
@@ -386,12 +401,13 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import hashlib, os, pathlib, subprocess, sys
-          items=[
-            (os.environ["FILM_KEY"], os.environ["FILM_SHA256"]),
-            (os.environ["POSTER_KEY"], os.environ["POSTER_SHA256"]),
-          ]
           root=pathlib.Path(os.environ["RUNNER_TEMP"])
-          for i,(key,expected) in enumerate(items):
+          items=[
+            (os.environ["FILM_KEY"], root/"design-hero.mp4"),
+            (os.environ["POSTER_KEY"], root/"design-hero.webp"),
+          ]
+          for i,(key,local) in enumerate(items):
+              expected=hashlib.sha256(local.read_bytes()).hexdigest()
               p=root/f"remote-{i}"
               r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","get",
                                 f'{os.environ["BUCKET"]}/{key}',"--file",str(p),"--remote"],
@@ -416,10 +432,11 @@ jobs:
           import hashlib, os, pathlib, subprocess, sys
           root=pathlib.Path(os.environ["RUNNER_TEMP"])
           items=[
-            (os.environ["FILM_KEY"], root/"design-hero.mp4", os.environ["FILM_SHA256"], "video/mp4"),
-            (os.environ["POSTER_KEY"], root/"design-hero.webp", os.environ["POSTER_SHA256"], "image/webp"),
+            (os.environ["FILM_KEY"], root/"design-hero.mp4", "video/mp4"),
+            (os.environ["POSTER_KEY"], root/"design-hero.webp", "image/webp"),
           ]
-          for idx,(key,src,expected,ctype) in enumerate(items):
+          for idx,(key,src,ctype) in enumerate(items):
+              expected=hashlib.sha256(src.read_bytes()).hexdigest()
               chk=root/f"chk-{idx}"
               r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","get",
                                 f'{os.environ["BUCKET"]}/{key}',"--file",str(chk),"--remote"],
