@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import unittest
 
 from kagent.cloud_execution_plan import CloudM1ExecutionPlan, CloudM1Stage
@@ -9,9 +9,19 @@ from kagent.cloud_teardown import (
     REAL_TEARDOWN_PROBE_CONFIGURED,
     CloudM1TeardownReceipt,
     TrustedTeardownObservation,
+    verify_teardown_evidence,
 )
 from kagent.cloud_stage_receipts import CloudStageOutcome
-from kagent.contracts import ContractError
+from kagent.contracts import (
+    ContractError,
+    ExecutionMode,
+    NetworkPolicy,
+    ResourceClass,
+    SandboxLease,
+    SandboxLeaseState,
+)
+from kagent.sandbox import SandboxLeaseError
+from kagent.sandbox_artifact_collection import ArtifactCandidateCollection
 
 
 NOW = datetime(2026, 9, 3, 6, 0, tzinfo=timezone.utc)
@@ -51,13 +61,46 @@ def observation(**kwargs):
     values.update(kwargs)
     return TrustedTeardownObservation(**values)
 
+def lease(state=SandboxLeaseState.RELEASED, *, run_id="run_1", lease_id="sandbox:1"):
+    return SandboxLease(
+        lease_id=lease_id,
+        run_id=run_id,
+        execution_mode=ExecutionMode.CLOUD,
+        resource_class=ResourceClass.STANDARD,
+        network_policy=NetworkPolicy.OFF,
+        writable_workspace=True,
+        created_at=NOW,
+        expires_at=NOW + timedelta(seconds=900),
+        state=state,
+    )
+
+
+def fixed_lease(candidate=None):
+    """Stand in for the trusted lease lookup the receipt depends on."""
+    target = candidate if candidate is not None else lease()
+    return lambda ref: target if ref == target.lease_id else None
+
+
+def raising_lease_lookup(_ref):
+    raise SandboxLeaseError("unknown lease")
+
+
+def collection(**kwargs):
+    values = dict(collection_id="col_1", run_id="run_1", lease_id="sandbox:1")
+    values.update(kwargs)
+    return ArtifactCandidateCollection(**values)
+
+
 
 class CloudTeardownTests(unittest.TestCase):
     def test_all_required_controls_produce_clean_success_stage_receipt(self):
         p = plan()
         obs = observation()
         self.assertTrue(obs.clean)
-        receipt = CloudM1TeardownReceipt.from_observation(receipt_id="teardown_1", plan=p, observation=obs)
+        receipt = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_1", plan=p, observation=obs,
+            lease_lookup=fixed_lease(), artifact_collection=collection(),
+        )
         self.assertTrue(receipt.clean)
         stage = receipt.as_stage_receipt(event_id="event_teardown_1")
         self.assertEqual(stage.stage, CloudM1Stage.TEARDOWN)
@@ -80,16 +123,25 @@ class CloudTeardownTests(unittest.TestCase):
             with self.subTest(changes=changes):
                 obs = observation(observation_id=f"obs_{index}", **changes)
                 self.assertFalse(obs.clean)
-                receipt = CloudM1TeardownReceipt.from_observation(receipt_id=f"receipt_{index}", plan=p, observation=obs)
+                receipt = CloudM1TeardownReceipt.from_observation(
+                receipt_id=f"receipt_{index}", plan=p, observation=obs,
+                lease_lookup=fixed_lease(), artifact_collection=collection(),
+            )
                 self.assertFalse(receipt.clean)
                 self.assertEqual(receipt.as_stage_receipt(event_id=f"event_{index}").outcome, CloudStageOutcome.FAILED)
 
     def test_observation_identity_must_match_plan(self):
         p = plan()
         with self.assertRaises(ContractError):
-            CloudM1TeardownReceipt.from_observation(receipt_id="r1", plan=p, observation=observation(plan_id="other_plan"))
+            CloudM1TeardownReceipt.from_observation(
+                receipt_id="r1", plan=p, observation=observation(plan_id="other_plan"),
+                lease_lookup=fixed_lease(), artifact_collection=collection(),
+            )
         with self.assertRaises(ContractError):
-            CloudM1TeardownReceipt.from_observation(receipt_id="r2", plan=p, observation=observation(run_id="other_run"))
+            CloudM1TeardownReceipt.from_observation(
+                receipt_id="r2", plan=p, observation=observation(run_id="other_run"),
+                lease_lookup=fixed_lease(), artifact_collection=collection(),
+            )
 
     def test_child_process_count_is_bounded_and_boolean_rejected(self):
         for value in (-1, True, 1_000_001):
@@ -104,7 +156,10 @@ class CloudTeardownTests(unittest.TestCase):
         self.assertTrue(obs.clean)
 
     def test_safe_receipt_contains_hash_and_no_raw_provider_or_credential_payload(self):
-        receipt = CloudM1TeardownReceipt.from_observation(receipt_id="teardown_1", plan=plan(), observation=observation())
+        receipt = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_1", plan=plan(), observation=observation(),
+            lease_lookup=fixed_lease(), artifact_collection=collection(),
+        )
         rendered = receipt.safe_dict()
         self.assertEqual(len(rendered["evidence_sha256"]), 64)
         self.assertFalse(rendered["raw_runtime_payload"])
@@ -113,6 +168,139 @@ class CloudTeardownTests(unittest.TestCase):
         self.assertFalse(rendered["false_clean_teardown_supported"])
         self.assertFalse(REAL_TEARDOWN_PROBE_CONFIGURED)
         self.assertFalse(FALSE_CLEAN_TEARDOWN_SUPPORTED)
+
+
+class TeardownEvidenceVerificationTests(unittest.TestCase):
+    """#2783: lease terminality and artifact finalization must be verified."""
+
+    def receipt(self, *, obs=None, lease_state=None, lease_obj=None, coll=None):
+        resolved_lease = lease_obj if lease_obj is not None else lease(state=lease_state or SandboxLeaseState.RELEASED)
+        return CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_verify_1",
+            plan=plan(),
+            observation=obs if obs is not None else observation(),
+            lease_lookup=fixed_lease(resolved_lease),
+            artifact_collection=coll if coll is not None else collection(),
+        )
+
+    # 1
+    def test_reserved_lease_blocks_a_clean_teardown(self):
+        r = self.receipt(lease_state=SandboxLeaseState.RESERVED)
+        self.assertFalse(r.clean)
+        self.assertIn("LEASE_NOT_TERMINAL", r.verification_blockers)
+        self.assertEqual(r.as_stage_receipt(event_id="e1").outcome, CloudStageOutcome.FAILED)
+
+    # 2
+    def test_terminal_lease_of_another_run_blocks_a_clean_teardown(self):
+        r = self.receipt(lease_obj=lease(run_id="someone_elses_run"))
+        self.assertFalse(r.clean)
+        self.assertIn("LEASE_RUN_MISMATCH", r.verification_blockers)
+
+    # 3
+    def test_unresolvable_lease_blocks_a_clean_teardown(self):
+        r = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_unknown", plan=plan(), observation=observation(),
+            lease_lookup=lambda ref: None, artifact_collection=collection(),
+        )
+        self.assertFalse(r.clean)
+        self.assertIn("LEASE_UNRESOLVED", r.verification_blockers)
+        self.assertEqual(r.lease_state_verified, "UNRESOLVED")
+
+    def test_lookup_raising_unknown_lease_fails_closed(self):
+        r = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_raises", plan=plan(), observation=observation(),
+            lease_lookup=raising_lease_lookup, artifact_collection=collection(),
+        )
+        self.assertFalse(r.clean)
+        self.assertIn("LEASE_UNRESOLVED", r.verification_blockers)
+
+    # 4
+    def test_expired_lease_and_matching_collection_satisfy_both_components(self):
+        for state in (SandboxLeaseState.RELEASED, SandboxLeaseState.EXPIRED):
+            with self.subTest(state=state.value):
+                r = self.receipt(lease_state=state)
+                self.assertTrue(r.clean)
+                self.assertEqual(r.verification_blockers, ())
+                self.assertEqual(r.lease_state_verified, state.value.upper())
+                self.assertEqual(r.artifact_collection_id, "col_1")
+
+    # 5, 6
+    def test_artifact_collection_must_correlate_to_run_and_lease(self):
+        wrong_run = self.receipt(coll=collection(run_id="other_run"))
+        self.assertFalse(wrong_run.clean)
+        self.assertIn("ARTIFACT_COLLECTION_RUN_MISMATCH", wrong_run.verification_blockers)
+        wrong_lease = self.receipt(coll=collection(lease_id="sandbox:other"))
+        self.assertFalse(wrong_lease.clean)
+        self.assertIn("ARTIFACT_COLLECTION_LEASE_MISMATCH", wrong_lease.verification_blockers)
+
+    # 7
+    def test_missing_collection_blocks_and_empty_collection_is_explicit(self):
+        absent = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_no_collection", plan=plan(), observation=observation(),
+            lease_lookup=fixed_lease(), artifact_collection=None,
+        )
+        self.assertFalse(absent.clean)
+        self.assertIn("ARTIFACT_COLLECTION_ABSENT", absent.verification_blockers)
+        # A bounded, empty collection is explicit evidence of "nothing to
+        # publish"; it is not the free boolean this child removes.
+        empty = self.receipt(coll=collection(changed_files=()))
+        self.assertTrue(empty.clean)
+        self.assertEqual(empty.artifact_collection_id, "col_1")
+
+    def test_free_boolean_can_no_longer_claim_clean_alone(self):
+        # artifacts_finalized stays on the observation as an attested fact, but
+        # with the collection withheld the attestation is not sufficient.
+        r = CloudM1TeardownReceipt.from_observation(
+            receipt_id="teardown_attest_only", plan=plan(),
+            observation=observation(artifacts_finalized=True),
+            lease_lookup=fixed_lease(), artifact_collection=None,
+        )
+        self.assertFalse(r.clean)
+
+    # 8
+    def test_existing_attested_controls_still_block_clean(self):
+        for kwargs in (
+            {"process_tree_killed": False},
+            {"active_child_process_count": 3},
+            {"workspace_destroyed": False},
+            {"sandbox_terminal": False},
+            {"preview_shares_terminal": False},
+            {"human_control_terminal": False},
+        ):
+            with self.subTest(**kwargs):
+                r = self.receipt(obs=observation(**kwargs))
+                self.assertFalse(r.clean)
+                self.assertEqual(r.verification_blockers, ())
+
+    def test_verifier_rejects_structural_nonsense(self):
+        with self.assertRaises(ContractError):
+            verify_teardown_evidence(observation=observation(), lease_lookup="not-callable", artifact_collection=None)
+        with self.assertRaises(ContractError):
+            verify_teardown_evidence(
+                observation=observation(), lease_lookup=fixed_lease(), artifact_collection={"not": "a collection"},
+            )
+
+    def test_no_network_or_provider_surface_is_reachable(self):
+        import inspect
+
+        from kagent import cloud_teardown
+
+        source = inspect.getsource(cloud_teardown)
+        for forbidden in ("urllib", "requests", "subprocess", "httpx", "curl", "socket"):
+            self.assertNotIn(forbidden, source)
+
+    # 10 (mutation targets; see also the two dedicated guards below)
+    def test_evidence_fields_are_part_of_the_receipt_record(self):
+        r = self.receipt()
+        payload = r.safe_dict()
+        self.assertEqual(payload["lease_state_verified"], "RELEASED")
+        self.assertEqual(payload["artifact_collection_id"], "col_1")
+        self.assertEqual(payload["verification_blockers"], [])
+        blocked = self.receipt(lease_state=SandboxLeaseState.RESERVED).safe_dict()
+        self.assertEqual(blocked["lease_state_verified"], "RESERVED")
+        self.assertIn("LEASE_NOT_TERMINAL", blocked["verification_blockers"])
+        # the digest must cover the verification, or it fingerprints only the claim
+        self.assertNotEqual(r.evidence_sha256, blocked["evidence_sha256"])
 
 
 if __name__ == "__main__":
