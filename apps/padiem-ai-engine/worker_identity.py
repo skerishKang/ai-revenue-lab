@@ -32,6 +32,7 @@ from workers import Request
 
 import worker as legacy_worker
 from app.agent_skill_service import AgentSkillEngineService
+from app.agent_skill_authority import build_agent_skill_binding_resolver
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
@@ -276,6 +277,22 @@ async def _tool_binding_resolver_for_env(env: Any):
         if resolver is None:
             return None
         return resolver(app_id)
+
+    def subject_for_app(app_id: str) -> str | None:
+        for grants in (
+            gmail_grants,
+            drive_grants,
+            telegram_grants,
+            slack_grants,
+            calendar_grants,
+        ):
+            grant = grants.get(app_id)
+            actor_ref = getattr(grant, "actor_ref", None)
+            if isinstance(actor_ref, str):
+                return actor_ref
+        return None
+
+    production_resolver.subject_for_app = subject_for_app  # type: ignore[attr-defined]
 
     return production_resolver
 
@@ -555,7 +572,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             tool_execution=ToolExecutionEngineService(
                 tool_binding_resolver=await _tool_binding_resolver_for_env(env)
             ),
-            # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
+            # Agent authority reuses the trusted Tool binding; Skill authority remains deferred.
             agent_skill=AgentSkillEngineService(
                 runtime_factory=unavailable,
                 binding_resolver=None,
@@ -594,6 +611,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             b14_stream_client=b14_stream_client,
         )
 
+    tool_binding_resolver = await _tool_binding_resolver_for_env(env)
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -610,7 +628,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
-            tool_binding_resolver=await _tool_binding_resolver_for_env(env),
+            tool_binding_resolver=tool_binding_resolver,
         ),
         research=_research_service_for_env(
             env,
@@ -643,17 +661,19 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         # `drive_grant_unavailable`, every other tool stays
         # `tool_runtime_unavailable`.
         tool_execution=ToolExecutionEngineService(
-            tool_binding_resolver=await _tool_binding_resolver_for_env(env)
+            tool_binding_resolver=tool_binding_resolver
         ),
         # #1964 source slice: replay composes only the same trusted durable
         # adapter as execution; without it the route fails closed (503).
         idempotency_replay=IdempotencyReplayEngineService(
             idempotency_adapter=idempotency_adapter,
         ),
-        # binding_resolver stays None until a trusted Agent/Skill registry source exists (#1969); every request fails closed 503 agent_skill_runtime_unavailable.
         agent_skill=AgentSkillEngineService(
             runtime_factory=runtime_factory,
-            binding_resolver=None,
+            binding_resolver=build_agent_skill_binding_resolver(
+                tool_binding_resolver,
+                getattr(tool_binding_resolver, "subject_for_app", None),
+            ),
             idempotency_adapter=idempotency_adapter,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
             continuation_store=continuation_store,

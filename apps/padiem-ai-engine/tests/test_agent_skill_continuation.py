@@ -145,7 +145,6 @@ class ContinuationFixture:
                 registry=self.registry,
                 authorities={AGENT_ID: authority},
             ),
-            agent_plans={AGENT_ID: self.plan},
         )
 
     def approve_pause_tool(self, *extra_tools: str) -> None:
@@ -156,6 +155,7 @@ class ContinuationFixture:
             "app_id": APP_ID,
             "agent_id": AGENT_ID,
             "messages": [{"role": "user", "content": "Execute approved action."}],
+            "agent_plan": self.plan.to_public_dict(),
             "tool_arguments": {"confirm1": {"query": PRIVATE_ARGUMENT}},
         }
         value.update(overrides)
