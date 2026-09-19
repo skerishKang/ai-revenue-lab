@@ -20,6 +20,10 @@ from padiem_ai_engine_client import (
     EngineTransportResponse,
     PadiemAiEngineClient,
 )
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
 
 from kagent import review_flow as review_flow_module
 from kagent.cli import main, parser
@@ -499,7 +503,7 @@ class DraftFlowTests(unittest.TestCase):
             payload = json.loads(sent["body"].decode("utf-8"))
             self.assertEqual(
                 payload["agent"]["model_policy"],
-                {"model": "agnes-ai/agnes-3.0-flash"},
+                {"model": active_route_for(ProductTierLabel.PLUS).model_id},
             )
             self.assertNotIn("provider", json.dumps(payload).lower())
             self.assertNotIn("credential", payload["agent"])

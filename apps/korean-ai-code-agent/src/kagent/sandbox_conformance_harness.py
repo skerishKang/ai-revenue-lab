@@ -6,9 +6,10 @@ evidence contracts, and lifecycle invariants without network calls or real cloud
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass, field, replace
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+import hashlib
 import re
 from typing import Any, Callable, Sequence
 
@@ -24,6 +25,7 @@ from .contracts import (
 from .sandbox import (
     SandboxLeaseError,
     SandboxLeasePort,
+    supports_lease_reclamation,
     supports_workload_cancellation,
 )
 from .sandbox_conformance import (
@@ -43,6 +45,20 @@ from .security import redact_secrets
 
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_RECLAMATION_PROBE_LABEL = "sandbox-conformance-reclamation"
+
+
+def reclamation_probe_run_id(run_id: str) -> str:
+    """The probe run identity the reclamation exercise reserves under.
+
+    Appending a suffix to the caller's id would overrun the canonical 128-character
+    identifier contract for any run already at that bound, so the exercise would fail
+    on id shape instead of on provider behaviour. A digest keeps the result fixed
+    length, canonical-safe and deterministic, and always distinct from the run it
+    mirrors. It reuses the contract's grammar; it does not define another one.
+    """
+    digest = hashlib.sha256(run_id.encode("utf-8")).hexdigest()[:16]
+    return f"{_RECLAMATION_PROBE_LABEL}-{digest}"
 
 
 class ConformanceStatus(str, Enum):
@@ -297,12 +313,109 @@ class SandboxProviderConformanceHarness:
         except (SandboxLeaseError, ContractError):
             return False
 
+    def evaluate_reclamation(
+        self,
+        provider: SandboxLeasePort,
+        request: SandboxLeaseRequest,
+    ) -> bool:
+        """Exercise TTL reclamation instead of trusting a declared ``ttl_enforced``.
+
+        A provider claiming it enforces lease lifetimes has to survive being asked:
+        the capability must exist, a lease must refuse reclamation before its TTL, for
+        another run, as an unknown id, and twice; an accepted reclamation must really
+        end the reservation, drop it from the provider's own inventory, refuse every
+        later operation, and still let the run allocate again.
+
+        The inventory is checked rather than swept: a conformance exercise that ran a
+        full sweep would reclaim leases belonging to whoever else was using the
+        provider, which is not its evidence to consume.
+
+        The probe run is a bounded digest-derived identity rather than an appended
+        suffix, so a run id already at the canonical maximum still exercises
+        reclamation instead of failing on identifier shape — and this exercise cannot
+        be confused by the lease the cancellation step deliberately leaves active.
+        """
+        if not supports_lease_reclamation(provider):
+            return False
+        probe = replace(request, run_id=reclamation_probe_run_id(request.run_id))
+        try:
+            lease = provider.allocate(probe)
+            if lease.lease_id not in {
+                entry.lease_id for entry in provider.active_leases()  # type: ignore[attr-defined]
+            }:
+                return False
+
+            # Another run may not reclaim it, and a lease that has not reached its
+            # TTL may not be reclaimed at all.
+            refusals = (
+                lambda: provider.expire(  # type: ignore[attr-defined]
+                    lease.lease_id, run_id="run_someone_else", now=lease.expires_at
+                ),
+                lambda: provider.expire(  # type: ignore[attr-defined]
+                    lease.lease_id,
+                    run_id=probe.run_id,
+                    now=lease.expires_at - timedelta(seconds=1),
+                ),
+                lambda: provider.expire(  # type: ignore[attr-defined]
+                    "lease_does_not_exist", run_id=probe.run_id, now=lease.expires_at
+                ),
+            )
+            for refusal in refusals:
+                try:
+                    refusal()
+                    return False
+                except SandboxLeaseError:
+                    pass
+
+            expired = provider.expire(  # type: ignore[attr-defined]
+                lease.lease_id, run_id=probe.run_id, now=lease.expires_at
+            )
+            if not isinstance(expired, SandboxLease) or expired.state is not SandboxLeaseState.EXPIRED:
+                return False
+
+            # The provider must stop holding the reservation it just reclaimed.
+            if lease.lease_id in {
+                entry.lease_id for entry in provider.active_leases()  # type: ignore[attr-defined]
+            }:
+                return False
+
+            follow_ups = [
+                lambda: provider.expire(  # type: ignore[attr-defined]
+                    lease.lease_id, run_id=probe.run_id, now=lease.expires_at
+                ),
+                lambda: provider.renew(lease.lease_id, run_id=probe.run_id, ttl_seconds=900),
+                lambda: provider.release(lease.lease_id, run_id=probe.run_id),
+            ]
+            if supports_workload_cancellation(provider):
+                follow_ups.append(
+                    lambda: provider.cancel(lease.lease_id, run_id=probe.run_id)  # type: ignore[attr-defined]
+                )
+            for attempt in follow_ups:
+                try:
+                    attempt()
+                    return False
+                except SandboxLeaseError:
+                    pass
+
+            # Reading it back must not make the reservation live again.
+            if provider.get(lease.lease_id).state is not SandboxLeaseState.EXPIRED:
+                return False
+
+            # Reclamation is not a lock: the run may reserve again.
+            revived = provider.allocate(probe)
+            if revived.state is not SandboxLeaseState.RESERVED:
+                return False
+            released = provider.release(revived.lease_id, run_id=probe.run_id)
+            return released.state is SandboxLeaseState.RELEASED
+        except (SandboxLeaseError, ContractError):
+            return False
+
     def evaluate_lease_lifecycle(
         self,
         provider: SandboxLeasePort,
         request: SandboxLeaseRequest,
     ) -> bool:
-        """Verifies single active lease per run, release, cancellation, and terminal non-resurrection.
+        """Verifies single active lease per run, release, cancellation, reclamation, and terminal non-resurrection.
 
         Typed to the port, not to the fake, so a real provider can be evaluated
         here once one exists (#1405).
@@ -334,7 +447,11 @@ class SandboxProviderConformanceHarness:
             pass
 
         # 5. Cancellation is exercised, not declared (#1405).
-        return self.evaluate_cancellation(provider, request)
+        if not self.evaluate_cancellation(provider, request):
+            return False
+
+        # 6. TTL reclamation is exercised, not declared (#2803).
+        return self.evaluate_reclamation(provider, request)
 
     def evaluate_artifact_manifest(self, manifest: SandboxArtifactManifest) -> bool:
         """Verifies artifact counts, bounds, and terminal sanitization."""
