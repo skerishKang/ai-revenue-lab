@@ -645,6 +645,8 @@
     messageList.hidden = true;
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    // Leaving for home drops any pending Claw execute recovery timer/state.
+    clearClawRecovery({ syncControls: true });
     setNavActive();
     input.value = "";
     renderProjectState();
@@ -814,6 +816,8 @@
         delete workspace.dataset.inboxKind;
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
       }
+      // Auth loss tears down any pending execute recovery: no timer outlives the session.
+      clearClawRecovery({ syncControls: true });
     }
     const sessionState = !ready
       ? "unavailable"
@@ -1424,6 +1428,10 @@
   const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawStatus = document.getElementById("clawStatus");
+  const clawRetryBox = document.getElementById("clawRetryBox");
+  const clawRetryCopy = document.getElementById("clawRetryCopy");
+  const clawRetryButton = document.getElementById("clawRetryButton");
+  const clawRetryHint = document.getElementById("clawRetryHint");
   const clawRequestEcho = document.getElementById("clawRequestEcho");
   const clawRequestEchoText = document.getElementById("clawRequestEchoText");
   const clawArtifactMeta = document.getElementById("clawArtifactMeta");
@@ -1435,6 +1443,9 @@
 
   let clawInFlight = false;
   let clawLastAction = clawAction?.value || "quote";
+  // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
+  let clawRetrySeconds = 0;
+  let clawRetryTimer = null;
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -1448,6 +1459,10 @@
     "claw-error-too-large": "Request is too long. Please shorten it and try again.",
     "claw-error-invalid": "Please check your input and try again.",
     "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
+    "claw-btn-retry": "Try again",
+    "claw-retry-waiting": "Requests are temporarily limited. You can try again in {seconds}s. Nothing is sent automatically.",
+    "claw-retry-ready": "You can try again now. Sending uses what is currently in the form.",
+    "claw-error-check-runs": "A run may already have started. Nothing was re-run automatically — check Recent runs first.",
     "claw-error-auth-needed": "Please sign in again to continue.",
     "claw-error-auth-unavailable": "This feature isn't available because the workspace sign-in state can't be verified. Please check the workspace configuration.",
     "claw-error-storage": "Could not save the document. Please try again shortly.",
@@ -1478,14 +1493,16 @@
     "claw-runs-status-completed": "Completed",
   };
 
-  function clawT(key) {
+  function clawT(key, variables = null) {
     try {
       if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
-        const v = window.__padiemLocale.text(key);
+        const v = window.__padiemLocale.text(key, variables);
         if (v && v !== key) return v;
       }
     } catch (_) {}
-    return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
+    if (!variables || typeof variables !== "object") return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
+    const template = clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
+    return Object.keys(variables).reduce((out, name) => out.split(`{${name}}`).join(String(variables[name])), template);
   }
 
   function localeOr(key, fallback) {
@@ -1544,10 +1561,139 @@
       clawGenerateBtn.setAttribute("aria-disabled", String(busy));
     }
     if (clawExecuteButton) {
-      clawExecuteButton.disabled = busy;
+      // A running pre-dispatch cooldown also blocks the primary button, so the
+      // surface never offers a dispatch the server has already refused.
+      const blocked = busy || clawRetryRemaining() > 0;
+      clawExecuteButton.disabled = blocked;
       clawExecuteButton.setAttribute("aria-busy", busyVal);
-      clawExecuteButton.setAttribute("aria-disabled", String(busy));
+      clawExecuteButton.setAttribute("aria-disabled", String(blocked));
     }
+  }
+
+  // ── Pre-dispatch execute recovery (#2760) ───────────────────────────────
+  //
+  // Dispatch certainty decides retryability. The server-side UsageGate runs
+  // BEFORE P01/Engine dispatch, so a 429 that carries a bounded numeric
+  // Retry-After is a known pre-dispatch denial: the browser may offer an
+  // explicit, user-pressed retry once that cooldown expires. Failures where a
+  // dispatch may already have happened (browser network error, the engine
+  // execution-failure family) are ambiguous, so they get a "check Recent runs
+  // first" hint and never a retry affordance.
+  //
+  // Retry target: the CURRENT VISIBLE FORM, re-read at click time. No hidden
+  // payload snapshot is stored, so a stale request cannot be replayed. Nothing
+  // in this block submits on a timer; the ticker only re-renders copy and
+  // control state. No auto-retry, no provider retry, no server policy change.
+  const CLAW_RETRY_AFTER_MAX_SECONDS = 900; // documented UI ceiling; larger server values clamp here
+
+  function clawRetryRemaining() {
+    return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
+  }
+
+  // Closed parse: integer seconds only, positive, clamped to one documented
+  // ceiling. Missing, non-integer, zero and negative values make no countdown claim.
+  function parseClawRetryAfter(value) {
+    if (typeof value !== "string") return null;
+    const raw = value.trim();
+    if (!/^[0-9]+$/.test(raw)) return null;
+    const seconds = Number.parseInt(raw, 10);
+    if (!Number.isFinite(seconds) || seconds < 1) return null;
+    return Math.min(seconds, CLAW_RETRY_AFTER_MAX_SECONDS);
+  }
+
+  function clawRetryAfterFromResponse(response) {
+    try {
+      const headers = response && response.headers;
+      if (!headers || typeof headers.get !== "function") return null;
+      return parseClawRetryAfter(headers.get("Retry-After"));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // Ambiguous = the request may already have reached the engine, so a second
+  // POST could double-run it. This is a closed allowlist: on this route the
+  // adapter reports Engine unbound/timeout/unreachable and malformed P01
+  // responses as `engine_execution_failed` with status 502, and the #830
+  // invariant keeps a dispatched or ambiguous failure counted rather than
+  // refunded. Every other bounded failure (input, auth, limit, storage,
+  // run-history, tier) is a pre-dispatch denial or a post-run persistence
+  // problem with its own copy, so it must never claim a possible dispatch.
+  function isAmbiguousClawFailure(data, response) {
+    const status = response ? response.status : 0;
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    return status === 502 || code === "engine_execution_failed";
+  }
+
+  function stopClawRetryTimer() {
+    if (clawRetryTimer) {
+      clearInterval(clawRetryTimer);
+      clawRetryTimer = null;
+    }
+  }
+
+  function clearClawRecovery(options = {}) {
+    stopClawRetryTimer();
+    clawRetrySeconds = 0;
+    if (clawRetryBox) clawRetryBox.hidden = true;
+    if (clawRetryCopy) clawRetryCopy.textContent = "";
+    if (clawRetryButton) {
+      clawRetryButton.disabled = true;
+      clawRetryButton.setAttribute("aria-disabled", "true");
+    }
+    if (clawRetryHint) {
+      clawRetryHint.hidden = true;
+      clawRetryHint.textContent = "";
+      delete clawRetryHint.dataset.localeKey;
+    }
+    if (options.syncControls) setClawButtonsBusy(clawInFlight);
+  }
+
+  function renderClawRetryBox() {
+    const remaining = clawRetryRemaining();
+    if (clawRetryCopy) {
+      clawRetryCopy.textContent = remaining > 0
+        ? clawT("claw-retry-waiting", { seconds: remaining })
+        : clawT("claw-retry-ready");
+    }
+    if (clawRetryButton) {
+      clawRetryButton.disabled = remaining > 0;
+      clawRetryButton.setAttribute("aria-disabled", remaining > 0 ? "true" : "false");
+    }
+  }
+
+  function beginClawRetryCooldown(seconds) {
+    stopClawRetryTimer();
+    clawRetrySeconds = seconds;
+    if (clawRetryHint) {
+      clawRetryHint.hidden = true;
+      clawRetryHint.textContent = "";
+      delete clawRetryHint.dataset.localeKey;
+    }
+    if (clawRetryBox) clawRetryBox.hidden = false;
+    renderClawRetryBox();
+    setClawButtonsBusy(clawInFlight);
+    clawRetryTimer = setInterval(() => {
+      clawRetrySeconds = clawRetrySeconds > 0 ? clawRetrySeconds - 1 : 0;
+      if (clawRetrySeconds === 0) stopClawRetryTimer();
+      renderClawRetryBox();
+      setClawButtonsBusy(clawInFlight);
+    }, 1000);
+  }
+
+  function showClawAmbiguousRecoveryHint() {
+    if (!clawRetryHint) return;
+    stopClawRetryTimer();
+    clawRetrySeconds = 0;
+    if (clawRetryBox) clawRetryBox.hidden = true;
+    if (clawRetryCopy) clawRetryCopy.textContent = "";
+    if (clawRetryButton) {
+      clawRetryButton.disabled = true;
+      clawRetryButton.setAttribute("aria-disabled", "true");
+    }
+    clawRetryHint.dataset.localeKey = "claw-error-check-runs";
+    clawRetryHint.textContent = clawT("claw-error-check-runs");
+    clawRetryHint.hidden = false;
   }
 
   function clearClawArtifact() {
@@ -1745,6 +1891,8 @@
     clawInbox.hidden = false;
     if (clawManualForm) clawManualForm.hidden = true;
     if (clawResultArea) clawResultArea.hidden = true;
+    // Inbox navigation leaves the manual form: drop the pending recovery timer/state.
+    clearClawRecovery({ syncControls: true });
     if (clawInboxTitle) {
       clawInboxTitle.dataset.localeKey = kind === "tasks" ? "claw-inbox-tasks-title" : "claw-inbox-alerts-title";
       clawInboxTitle.textContent = uiT(clawInboxTitle.dataset.localeKey);
@@ -1918,6 +2066,12 @@
     if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
       clawStatus.textContent = clawT(clawStatus.dataset.localeKey);
     }
+    // Recovery copy carries runtime values, so it is re-rendered from state
+    // instead of being re-resolved from a locale key.
+    if (clawRetryBox && !clawRetryBox.hidden) renderClawRetryBox();
+    if (clawRetryHint && !clawRetryHint.hidden && clawRetryHint.dataset.localeKey) {
+      clawRetryHint.textContent = clawT(clawRetryHint.dataset.localeKey);
+    }
     // Re-apply badge text to current card state if visible
     if (clawResultCard && !clawResultCard.hidden && clawResultBadge) {
       const isExecuted = clawResultBadge.dataset.localeKey === "claw-result-badge-run";
@@ -1933,88 +2087,110 @@
   setClawAreaState("idle");
   clearClawArtifact();
 
-  if (clawExecuteButton) {
-    clawExecuteButton.addEventListener("click", async () => {
-      if (clawInFlight) return;
-      const body = (input.value || "").trim();
-      if (!body) {
-        clearClawArtifact();
-        if (clawResultCard) clawResultCard.hidden = true;
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = clawT("claw-error-empty");
-        }
-        setClawStatus(clawT("claw-error-empty"), "error");
-        setClawAreaState("error");
-        input.focus();
-        return;
-      }
-      if (body.length > 4000) {
-        setClawStatus(clawT("claw-error-too-large"), "error");
-        setClawAreaState("error");
-        return;
-      }
-      const channelValue = clawChannel?.value || "other";
-      const actionValue = clawAction?.value || "quote";
-      const senderText = (clawSender?.value || "").trim();
-
-      renderClawRequestEcho(body);
-      setClawButtonsBusy(true);
-      setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
-      setClawAreaState("submitting");
-      if (clawResultCard) clawResultCard.hidden = true;
+  // Single execute entry point. The primary button and the post-cooldown retry
+  // button both funnel through here, so a retry can never bypass the
+  // single-flight or pre-dispatch cooldown guards and the payload is always
+  // rebuilt from the currently visible form at click time.
+  async function runClawExecution() {
+    if (clawInFlight) return;
+    if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown
+    const body = (input.value || "").trim();
+    if (!body) {
       clearClawArtifact();
+      if (clawResultCard) clawResultCard.hidden = true;
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = clawT("claw-status-execute-running");
+        clawResultEmpty.textContent = clawT("claw-error-empty");
       }
+      setClawStatus(clawT("claw-error-empty"), "error");
+      setClawAreaState("error");
+      input.focus();
+      return;
+    }
+    if (body.length > 4000) {
+      setClawStatus(clawT("claw-error-too-large"), "error");
+      setClawAreaState("error");
+      return;
+    }
+    const channelValue = clawChannel?.value || "other";
+    const actionValue = clawAction?.value || "quote";
+    const senderText = (clawSender?.value || "").trim();
 
-      try {
-        const response = await fetch("/api/claw/manual-intake/execute", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({
-            content: body,
-            channel: channelValue,
-            action: actionValue,
-            sender_hint: senderText || null,
-            tier: selectedProductTier(),
-          }),
-        });
-        const data = await response.json().catch(() => null);
-        if (data && data.ok && data.result && typeof data.result.result_text === "string") {
-          const result = data.result;
-          const safeText = String(result.result_text);
-          revealClawCard(result.title, true);
-          if (clawResultPreview) clawResultPreview.textContent = safeText;
-          if (clawResultEmpty) clawResultEmpty.hidden = true;
-          const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
-          const hasArtifact = !!(artifact && artifact.document_id);
-          if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
-          setClawStatus(clawT("claw-status-execute-success"), "success", "claw-status-execute-success");
-          setClawAreaState("success");
-          if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
-          else if (clawResultPreview) clawResultPreview.focus?.();
-          return;
-        }
-        const safeMsg = safeClawErrorMessage(data, response);
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = safeMsg;
-        }
-        setClawStatus(safeMsg, "error");
-        setClawAreaState("error");
-      } catch {
-        const fallback = clawT("claw-error-generic");
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = fallback;
-        }
-        setClawStatus(fallback, "error");
-        setClawAreaState("error");
-      } finally {
-        setClawButtonsBusy(false);
+    clearClawRecovery();
+    renderClawRequestEcho(body);
+    setClawButtonsBusy(true);
+    setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
+    setClawAreaState("submitting");
+    if (clawResultCard) clawResultCard.hidden = true;
+    clearClawArtifact();
+    if (clawResultEmpty) {
+      clawResultEmpty.hidden = false;
+      clawResultEmpty.textContent = clawT("claw-status-execute-running");
+    }
+
+    try {
+      const response = await fetch("/api/claw/manual-intake/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          content: body,
+          channel: channelValue,
+          action: actionValue,
+          sender_hint: senderText || null,
+          tier: selectedProductTier(),
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (data && data.ok && data.result && typeof data.result.result_text === "string") {
+        const result = data.result;
+        const safeText = String(result.result_text);
+        revealClawCard(result.title, true);
+        if (clawResultPreview) clawResultPreview.textContent = safeText;
+        if (clawResultEmpty) clawResultEmpty.hidden = true;
+        const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
+        const hasArtifact = !!(artifact && artifact.document_id);
+        if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
+        setClawStatus(clawT("claw-status-execute-success"), "success", "claw-status-execute-success");
+        setClawAreaState("success");
+        if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
+        else if (clawResultPreview) clawResultPreview.focus?.();
+        return;
       }
+      const safeMsg = safeClawErrorMessage(data, response);
+      if (clawResultEmpty) {
+        clawResultEmpty.hidden = false;
+        clawResultEmpty.textContent = safeMsg;
+      }
+      setClawStatus(safeMsg, "error");
+      setClawAreaState("error");
+      // A 429 usage denial happens before dispatch, so its Retry-After may be
+      // honored as a cooldown. Anything ambiguous gets guidance, never a retry.
+      const retryAfter = response.status === 429 ? clawRetryAfterFromResponse(response) : null;
+      if (retryAfter !== null) beginClawRetryCooldown(retryAfter);
+      else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
+    } catch {
+      const fallback = clawT("claw-error-generic");
+      if (clawResultEmpty) {
+        clawResultEmpty.hidden = false;
+        clawResultEmpty.textContent = fallback;
+      }
+      setClawStatus(fallback, "error");
+      setClawAreaState("error");
+      // The request may have reached the engine before the connection died.
+      showClawAmbiguousRecoveryHint();
+    } finally {
+      setClawButtonsBusy(false);
+    }
+  }
+
+  if (clawExecuteButton) {
+    clawExecuteButton.addEventListener("click", () => {
+      void runClawExecution();
+    });
+  }
+  if (clawRetryButton) {
+    clawRetryButton.addEventListener("click", () => {
+      void runClawExecution();
     });
   }
   // Approved-memory review UI (#2340)

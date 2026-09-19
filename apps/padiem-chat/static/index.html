@@ -340,6 +340,11 @@
           </select>
           <p class="claw-actions-hint" data-locale-key="claw-actions-hint">미리보기: 저장 없이 바로 확인 · 실제 실행: AI가 완성하고 필요하면 문서로 저장</p>
           <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
+          <p class="claw-recovery-hint" id="clawRetryHint" hidden></p>
+          <div class="claw-retry" id="clawRetryBox" hidden>
+            <p class="claw-retry-copy" id="clawRetryCopy"></p>
+            <button type="button" class="claw-retry-button" id="clawRetryButton" data-locale-key="claw-btn-retry" disabled aria-disabled="true">다시 시도</button>
+          </div>
         </form>
         <form class="composer" id="composerForm">
           <div class="attachment-tray" id="attachmentTray" hidden>
