@@ -7,10 +7,14 @@ from kagent.contracts import (
     ContractError,
     ExecutionMode,
     NetworkPolicy,
+    SandboxLease,
     SandboxLeaseRequest,
     SandboxLeaseState,
 )
-from kagent.sandbox import DeterministicFakeSandboxProvider
+from kagent.sandbox import (
+    DeterministicFakeSandboxProvider,
+    SandboxLeaseError,
+)
 from kagent.sandbox_conformance import (
     IsolationPrimitive,
     SandboxArtifactManifest,
@@ -211,6 +215,118 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
         self.assertEqual(safe["run_id"], "run_vde_1")
         self.assertFalse(safe["raw_diff_in_projection"])
         self.assertFalse(safe["raw_terminal_output_in_projection"])
+
+
+CANCEL_START = datetime(2026, 9, 8, 0, 0, tzinfo=timezone.utc)
+
+
+class NoCancelProvider(DeterministicFakeSandboxProvider):
+    """Satisfies ``SandboxLeasePort`` and exposes no cancel operation at all."""
+
+    cancel = None  # type: ignore[assignment]
+
+
+class DeclarationOnlyCancelProvider(DeterministicFakeSandboxProvider):
+    """Reports a cancellation it did not perform: the lease stays RESERVED."""
+
+    def cancel(self, lease_id: str, *, run_id: str) -> SandboxLease:
+        lease = self.get(lease_id)
+        if lease.run_id != run_id:
+            raise SandboxLeaseError("lease belongs to a different run")
+        return lease
+
+
+class CrossRunCancelProvider(DeterministicFakeSandboxProvider):
+    """Cancels any lease, ignoring which run owns it."""
+
+    def cancel(self, lease_id: str, *, run_id: str) -> SandboxLease:
+        return super().cancel(lease_id, run_id=self.get(lease_id).run_id)
+
+
+class RepeatableCancelProvider(DeterministicFakeSandboxProvider):
+    """Answers a second cancel of a terminal lease with another success."""
+
+    def cancel(self, lease_id: str, *, run_id: str) -> SandboxLease:
+        lease = self.get(lease_id)
+        if lease.state is not SandboxLeaseState.RESERVED:
+            return lease
+        return super().cancel(lease_id, run_id=run_id)
+
+
+class CancellationConformanceTests(unittest.TestCase):
+    """#1405 / #2790: conformance drives ``cancel``; it does not read a claim."""
+
+    def harness(self) -> SandboxProviderConformanceHarness:
+        return SandboxProviderConformanceHarness()
+
+    def request(self, run_id: str = "run_cancel_conformance") -> SandboxLeaseRequest:
+        return SandboxLeaseRequest(
+            run_id=run_id,
+            execution_mode=ExecutionMode.CLOUD,
+            repository_ref="skerishKang/ai-revenue-lab",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
+            ttl_seconds=900,
+            network_policy=NetworkPolicy.OFF,
+        )
+
+    def fake(self, provider_type=DeterministicFakeSandboxProvider):
+        return provider_type(clock=lambda: CANCEL_START)
+
+    def test_deterministic_fake_passes_the_cancellation_exercise(self):
+        self.assertTrue(
+            self.harness().evaluate_cancellation(self.fake(), self.request())
+        )
+
+    def test_missing_cancel_operation_fails_closed(self):
+        harness = self.harness()
+        provider = self.fake(NoCancelProvider)
+        self.assertFalse(harness.evaluate_cancellation(provider, self.request()))
+        # The rest of the lifecycle is sound; the absent operation is what fails
+        # the run, so a provider cannot conform on the strength of its claim.
+        self.assertTrue(harness.evaluate_lease_lifecycle(self.fake(), self.request()))
+        self.assertFalse(harness.evaluate_lease_lifecycle(provider, self.request()))
+
+    def test_cancel_that_leaves_the_lease_reserved_fails_closed(self):
+        harness = self.harness()
+        provider = self.fake(DeclarationOnlyCancelProvider)
+        self.assertFalse(harness.evaluate_cancellation(provider, self.request()))
+        # …and the lease it "cancelled" is still an active lease for that run.
+        lease = provider.allocate(self.request("run_still_live"))
+        provider.cancel(lease.lease_id, run_id="run_still_live")
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def test_cancel_that_ignores_the_owning_run_fails_closed(self):
+        self.assertFalse(
+            self.harness().evaluate_cancellation(
+                self.fake(CrossRunCancelProvider), self.request()
+            )
+        )
+
+    def test_cancel_that_can_be_repeated_fails_closed(self):
+        self.assertFalse(
+            self.harness().evaluate_cancellation(
+                self.fake(RepeatableCancelProvider), self.request()
+            )
+        )
+
+    def test_declared_capability_alone_does_not_make_a_provider_conform(self):
+        """The declaration path and the operation path must not be confused."""
+        harness = self.harness()
+        declared = SandboxProviderCapabilities(
+            provider_id="declaring_provider",
+            isolation_primitive=IsolationPrimitive.MICROVM,
+            **{
+                name: True
+                for name in SandboxProviderCapabilities.__dataclass_fields__
+                if name not in {"provider_id", "isolation_primitive"}
+            },
+        )
+        # Every control is claimed true, so the boolean report conforms…
+        self.assertTrue(harness.evaluate_capabilities(declared).overall_conforming)
+        # …which is exactly why the lifecycle has to call cancel() itself.
+        self.assertFalse(
+            harness.evaluate_lease_lifecycle(self.fake(NoCancelProvider), self.request())
+        )
 
 
 if __name__ == "__main__":
