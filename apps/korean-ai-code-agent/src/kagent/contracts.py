@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import re
 from typing import Any, TypeVar
@@ -47,6 +47,10 @@ class SandboxLeaseState(str, Enum):
     RESERVED = "reserved"
     RELEASED = "released"
     EXPIRED = "expired"
+
+
+SANDBOX_LEASE_MIN_TTL_SECONDS = 60
+SANDBOX_LEASE_MAX_TTL_SECONDS = 3_600
 
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
@@ -201,7 +205,12 @@ class SandboxLeaseRequest:
         object.__setattr__(
             self,
             "ttl_seconds",
-            _bounded_int(self.ttl_seconds, "ttl_seconds", minimum=60, maximum=3_600),
+            _bounded_int(
+                self.ttl_seconds,
+                "ttl_seconds",
+                minimum=SANDBOX_LEASE_MIN_TTL_SECONDS,
+                maximum=SANDBOX_LEASE_MAX_TTL_SECONDS,
+            ),
         )
         object.__setattr__(
             self,
@@ -291,6 +300,36 @@ class SandboxLease:
             created_at=self.created_at,
             expires_at=self.expires_at,
             state=normalized_state,
+        )
+
+    def with_expiry(self, expires_at: datetime) -> "SandboxLease":
+        """Return this lease with an extended expiry, within the bounded-lifetime gate.
+
+        The ceiling is enforced here rather than at the call site so renewal can never
+        hold a sandbox longer than a single lease request is already allowed to, which
+        is the property the provider conformance gate records as ttl_enforced.
+        """
+        if self.state is not SandboxLeaseState.RESERVED:
+            raise ContractError("only a reserved lease may be extended")
+        extended = _aware_utc(expires_at, "expires_at")
+        if extended <= self.expires_at:
+            raise ContractError("lease extension must move expires_at forward")
+        lifetime = extended - self.created_at
+        if lifetime > timedelta(seconds=SANDBOX_LEASE_MAX_TTL_SECONDS):
+            raise ContractError(
+                "lease lifetime may not exceed "
+                f"{SANDBOX_LEASE_MAX_TTL_SECONDS} seconds from creation"
+            )
+        return SandboxLease(
+            lease_id=self.lease_id,
+            run_id=self.run_id,
+            execution_mode=self.execution_mode,
+            resource_class=self.resource_class,
+            network_policy=self.network_policy,
+            writable_workspace=self.writable_workspace,
+            created_at=self.created_at,
+            expires_at=extended,
+            state=self.state,
         )
 
     def safe_dict(self) -> dict[str, Any]:

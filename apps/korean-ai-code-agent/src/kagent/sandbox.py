@@ -4,6 +4,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Callable, Protocol
 
 from .contracts import (
+    SANDBOX_LEASE_MAX_TTL_SECONDS,
+    SANDBOX_LEASE_MIN_TTL_SECONDS,
+    ContractError,
     SandboxLease,
     SandboxLeaseRequest,
     SandboxLeaseState,
@@ -25,6 +28,8 @@ class SandboxLeasePort(Protocol):
 
     def get(self, lease_id: str) -> SandboxLease: ...
 
+    def renew(self, lease_id: str, *, run_id: str, ttl_seconds: int) -> SandboxLease: ...
+
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease: ...
 
 
@@ -38,6 +43,11 @@ class UnconfiguredSandboxProvider:
 
     def get(self, lease_id: str) -> SandboxLease:
         raise SandboxUnavailableError("sandbox provider is not configured")
+
+    def renew(self, lease_id: str, *, run_id: str, ttl_seconds: int) -> SandboxLease:
+        raise SandboxUnavailableError(
+            "sandbox provider is not configured; sandbox lifetime remains unextended"
+        )
 
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease:
         raise SandboxUnavailableError("sandbox provider is not configured")
@@ -93,6 +103,33 @@ class DeterministicFakeSandboxProvider:
             self._active_by_run.pop(lease.run_id, None)
         return lease
 
+    def renew(self, lease_id: str, *, run_id: str, ttl_seconds: int) -> SandboxLease:
+        if (
+            isinstance(ttl_seconds, bool)
+            or not isinstance(ttl_seconds, int)
+            or not SANDBOX_LEASE_MIN_TTL_SECONDS <= ttl_seconds <= SANDBOX_LEASE_MAX_TTL_SECONDS
+        ):
+            raise SandboxLeaseError(
+                "ttl_seconds must be between "
+                f"{SANDBOX_LEASE_MIN_TTL_SECONDS} and {SANDBOX_LEASE_MAX_TTL_SECONDS}"
+            )
+        lease = self.get(lease_id)
+        if lease.run_id != run_id:
+            raise SandboxLeaseError("lease belongs to a different run")
+        # get() is what flips a lapsed lease to EXPIRED, so this RESERVED check is
+        # the guard that keeps renewal from resurrecting a released sandbox.
+        if lease.state is not SandboxLeaseState.RESERVED:
+            raise SandboxLeaseError(f"lease is not active: {lease.state.value}")
+        now = self._clock().astimezone(timezone.utc)
+        try:
+            renewed = lease.with_expiry(now + timedelta(seconds=ttl_seconds))
+        except ContractError as exc:
+            # Keeps the port boundary uniform with release(): a rejected renewal is
+            # always a SandboxLeaseError, while the contract still owns the reason.
+            raise SandboxLeaseError(f"lease cannot be renewed: {exc}") from exc
+        self._leases[lease_id] = renewed
+        return renewed
+
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease:
         lease = self.get(lease_id)
         if lease.run_id != run_id:
@@ -103,3 +140,9 @@ class DeterministicFakeSandboxProvider:
         self._leases[lease_id] = released
         self._active_by_run.pop(run_id, None)
         return released
+
+
+REAL_SANDBOX_LEASE_RENEWAL_PROVIDER_CONFIGURED = False
+SANDBOX_LEASE_RENEWAL_PERFORMS_NO_CLOUD_CALL = True
+SANDBOX_LEASE_RENEWAL_MINTS_NO_ADDITIONAL_LEASE = True
+SANDBOX_LEASE_LIFETIME_CAP_ENFORCED_BY_CONTRACT = True
