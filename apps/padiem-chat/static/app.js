@@ -798,8 +798,18 @@
       const inbox = document.getElementById("clawInbox");
       const inboxList = document.getElementById("clawInboxList");
       const workspace = document.getElementById("clawWorkspace");
+      const runHistory = document.getElementById("clawRunHistory");
+      const runHistoryList = document.getElementById("clawRunHistoryList");
+      const runHistoryError = document.getElementById("clawRunHistoryError");
       if (inbox) inbox.hidden = true;
       if (inboxList) inboxList.replaceChildren();
+      if (runHistory) runHistory.hidden = true;
+      if (runHistoryList) runHistoryList.replaceChildren();
+      if (runHistoryError) {
+        runHistoryError.hidden = true;
+        runHistoryError.textContent = "";
+        runHistoryError.removeAttribute("data-state");
+      }
       if (workspace) {
         delete workspace.dataset.inboxKind;
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
@@ -1053,6 +1063,7 @@
         await loadRecentConversations();
       }
       syncApprovedMemoryVisibility();
+      syncClawRunHistoryVisibility();
     } catch (_) {
       applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false });
     }
@@ -1460,6 +1471,11 @@
     "claw-memory-error-unavailable": "Approved memory is unavailable.",
     "claw-memory-error-not-found": "Memory was not found.",
     "claw-memory-error-generic": "Approved memory could not be processed.",
+    "claw-runs-title": "Recent runs",
+    "claw-runs-empty": "No recent runs.",
+    "claw-runs-error": "Could not load run history. Please try again.",
+    "claw-runs-download": "Download document again",
+    "claw-runs-status-completed": "Completed",
   };
 
   function clawT(key) {
@@ -1736,6 +1752,7 @@
     setNavActive();
     closeSidebar();
     syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
     loadClawInbox(kind);
   }
 
@@ -1751,6 +1768,7 @@
     input.focus();
     closeSidebar();
     syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
@@ -2290,5 +2308,150 @@
 
   if (clawApprovedRefresh) {
     clawApprovedRefresh.addEventListener("click", () => loadApprovedMemoryList());
+  }
+
+  // Claw recent-run presentation (#2317 owner-scoped run history route).
+  // Presentation only: the browser renders what GET /api/claw/runs already
+  // exposes to the signed-in owner and never mints its own run/history truth.
+  const clawRunHistory = document.getElementById("clawRunHistory");
+  const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
+  const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
+  const clawRunHistoryError = document.getElementById("clawRunHistoryError");
+  const clawRunHistoryList = document.getElementById("clawRunHistoryList");
+  const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
+
+  let clawRunHistoryInFlight = false;
+
+  function setClawRunHistoryStatus(message) {
+    if (!clawRunHistoryError) return;
+    if (!message) {
+      clawRunHistoryError.hidden = true;
+      clawRunHistoryError.textContent = "";
+      clawRunHistoryError.removeAttribute("data-state");
+      return;
+    }
+    clawRunHistoryError.hidden = false;
+    clawRunHistoryError.textContent = message;
+    clawRunHistoryError.dataset.state = "error";
+  }
+
+  function clawRunHistoryErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const status = response ? response.status : 0;
+    if (code === "unauthorized" || status === 401) return clawT("claw-error-auth-needed");
+    return clawT("claw-runs-error");
+  }
+
+  // Unknown status tokens stay raw rather than being invented, so presentation
+  // can never claim a completion the server did not report.
+  function clawRunStatusLabel(status) {
+    const raw = String(status || "");
+    const key = `claw-runs-status-${raw}`;
+    const text = uiT(key);
+    return text === key ? raw : text;
+  }
+
+  function renderClawRunCard(run) {
+    const card = document.createElement("div");
+    card.className = "claw-run-card";
+    card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
+
+    const head = document.createElement("div");
+    head.className = "claw-run-card-head";
+    const title = document.createElement("strong");
+    title.className = "claw-run-card-title";
+    title.textContent = typeof run.title === "string" ? run.title : "";
+    const badge = document.createElement("span");
+    badge.className = "claw-run-card-badge";
+    badge.textContent = clawRunStatusLabel(run.status);
+    head.append(title, badge);
+
+    const meta = document.createElement("div");
+    meta.className = "claw-run-card-meta";
+    meta.textContent = [run.channel, run.action, run.created_at]
+      .map((value) => (typeof value === "string" ? value : ""))
+      .filter(Boolean)
+      .join(" · ");
+
+    const summary = document.createElement("p");
+    summary.className = "claw-run-card-summary";
+    summary.textContent = typeof run.result_summary === "string" ? run.result_summary : "";
+
+    card.append(head, meta, summary);
+
+    const artifact = run.artifact && typeof run.artifact.document_id === "string" ? run.artifact : null;
+    if (artifact) {
+      const artifactRow = document.createElement("div");
+      artifactRow.className = "claw-run-card-artifact";
+      const filename = document.createElement("span");
+      filename.className = "claw-run-card-filename";
+      filename.textContent = typeof artifact.filename === "string" ? artifact.filename : "";
+      const downloadBtn = document.createElement("button");
+      downloadBtn.type = "button";
+      downloadBtn.className = "claw-run-card-download";
+      downloadBtn.textContent = clawT("claw-runs-download");
+      downloadBtn.addEventListener("click", () => {
+        // Reuses the existing bounded artifact route through its single owner.
+        if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
+      });
+      artifactRow.append(filename, downloadBtn);
+      card.appendChild(artifactRow);
+    }
+    return card;
+  }
+
+  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
+  async function fetchClawRunHistory() {
+    if (!clawRunHistory) return;
+    setClawRunHistoryStatus("");
+    if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
+    if (clawRunHistoryList) clawRunHistoryList.hidden = true;
+    if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+    if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
+    try {
+      const response = await fetch("/api/claw/runs?limit=10", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
+        throw new Error(clawRunHistoryErrorMessage(data, response));
+      }
+      if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      if (data.runs.length === 0) {
+        // Empty history must not leave an empty list container visible.
+        if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = false;
+        return;
+      }
+      if (clawRunHistoryList) clawRunHistoryList.hidden = false;
+      data.runs.forEach((run) => {
+        if (!run || typeof run.run_id !== "string") return;
+        clawRunHistoryList?.appendChild(renderClawRunCard(run));
+      });
+    } catch (error) {
+      if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
+    }
+  }
+
+  async function loadClawRunHistory() {
+    if (clawRunHistoryInFlight) return;
+    clawRunHistoryInFlight = true;
+    try {
+      await fetchClawRunHistory();
+    } finally {
+      clawRunHistoryInFlight = false;
+    }
+  }
+
+  function syncClawRunHistoryVisibility() {
+    if (!clawRunHistory) return;
+    // Owner-authenticated surface only, and never inside the inbox view.
+    const show = authState.authenticated === true
+      && shell.dataset.state === "claw"
+      && clawWorkspace?.dataset.view !== "inbox";
+    clawRunHistory.hidden = !show;
+    if (show) loadClawRunHistory();
+  }
+
+  if (clawRunHistoryRefresh) {
+    clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
   }
 })();
