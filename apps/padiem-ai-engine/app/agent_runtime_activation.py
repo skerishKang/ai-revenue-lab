@@ -9,12 +9,12 @@ deferred until a separate trusted registry/install/policy source exists.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import json
+from enum import Enum
 import re
 from typing import Any, Mapping
 
 from padiem_ai_core.agent_definition import AgentExecutionBudget, BoundedAgentDefinition
-from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep, AgentPlannerError, validate_agent_plan
+from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
 from padiem_ai_core.agent_profile_adapter import (
     ToolRuntimeBinding,
     TrustedAgentRuntimePolicy,
@@ -52,19 +52,46 @@ class ActivationError(ValueError):
         self.safe_message = safe_message
 
 
+class EvidenceState(str, Enum):
+    UNRESOLVED_FOR_LIVE_AUTHORITY = "UNRESOLVED_FOR_LIVE_AUTHORITY"
+    NONE = "NONE"
+    CHANGED = "CHANGED"
+    UNCHANGED = "UNCHANGED"
+
+
 @dataclass(frozen=True, slots=True)
 class RollbackReadinessMetadata:
     current_deployed_version: str = UNRESOLVED_FOR_LIVE_AUTHORITY
     rollback_version: str = UNRESOLVED_FOR_LIVE_AUTHORITY
-    rollback_config: str = UNRESOLVED_FOR_LIVE_AUTHORITY
-    config_binding_diff: str = UNRESOLVED_FOR_LIVE_AUTHORITY
-    secret_name_diff: str = UNRESOLVED_FOR_LIVE_AUTHORITY
+    rollback_config: EvidenceState = EvidenceState.UNRESOLVED_FOR_LIVE_AUTHORITY
+    config_binding_diff: EvidenceState = EvidenceState.UNRESOLVED_FOR_LIVE_AUTHORITY
+    secret_name_diff: EvidenceState = EvidenceState.UNRESOLVED_FOR_LIVE_AUTHORITY
 
     def __post_init__(self) -> None:
-        for name in ("current_deployed_version", "rollback_version", "rollback_config", "config_binding_diff", "secret_name_diff"):
+        for name in ("current_deployed_version", "rollback_version"):
             value = getattr(self, name)
-            if not isinstance(value, str) or not value.strip() or len(value) > 256:
-                raise ActivationError("invalid_readiness_metadata", f"{name} must be bounded evidence text.")
+            if value != UNRESOLVED_FOR_LIVE_AUTHORITY and (
+                not isinstance(value, str) or not _SHA_RE.fullmatch(value)
+            ):
+                raise ActivationError(
+                    "invalid_readiness_metadata",
+                    f"{name} must be a commit SHA or unresolved sentinel.",
+                )
+        for name in ("rollback_config", "config_binding_diff", "secret_name_diff"):
+            if not isinstance(getattr(self, name), EvidenceState):
+                raise ActivationError(
+                    "invalid_readiness_metadata",
+                    f"{name} must use the closed evidence-state vocabulary.",
+                )
+
+    def to_public_dict(self) -> dict[str, str]:
+        return {
+            "current_deployed_version": self.current_deployed_version,
+            "rollback_version": self.rollback_version,
+            "rollback_config": self.rollback_config.value,
+            "config_binding_diff": self.config_binding_diff.value,
+            "secret_name_diff": self.secret_name_diff.value,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,6 +105,24 @@ class ProbeResult:
 
 
 @dataclass(frozen=True, slots=True)
+class ReferenceParityResult:
+    consumer: str
+    ok: bool
+    error_code: str | None
+    finding: str
+    rejected_authority_keys: tuple[str, ...] = ()
+
+    def to_public_dict(self) -> dict[str, Any]:
+        return {
+            "consumer": self.consumer,
+            "ok": self.ok,
+            "error_code": self.error_code,
+            "finding": self.finding,
+            "rejected_authority_keys": list(self.rejected_authority_keys),
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class AgentActivationEvidence:
     current_main: str
     accepted_source_head: str
@@ -85,6 +130,7 @@ class AgentActivationEvidence:
     metadata: RollbackReadinessMetadata
     reference_consumers: tuple[str, ...]
     synthetic_cases: tuple[ProbeResult, ...]
+    reference_parity: tuple[ReferenceParityResult, ...]
     real_provider_call_count: int = 0
     real_user_data: int = 0
     mutation_scope: str = "A5-Agent activation only"
@@ -96,13 +142,10 @@ class AgentActivationEvidence:
             "current_main": self.current_main,
             "accepted_source_head": self.accepted_source_head,
             "deployment_target": self.deployment_target,
-            "current_deployed_version": self.metadata.current_deployed_version,
-            "rollback_version": self.metadata.rollback_version,
-            "rollback_config": self.metadata.rollback_config,
-            "config_binding_diff": self.metadata.config_binding_diff,
-            "secret_name_diff": self.metadata.secret_name_diff,
+            **self.metadata.to_public_dict(),
             "reference_consumers": list(self.reference_consumers),
             "synthetic_cases": [case.to_public_dict() for case in self.synthetic_cases],
+            "reference_parity": [result.to_public_dict() for result in self.reference_parity],
             "real_provider_call_count": self.real_provider_call_count,
             "real_user_data": self.real_user_data,
             "mutation_scope": self.mutation_scope,
@@ -136,7 +179,10 @@ class _NoProviderRuntime:
 
 
 class _Fixture:
-    def __init__(self) -> None:
+    def __init__(self, app_id: str = _APP_ID) -> None:
+        if not _ID_RE.fullmatch(app_id):
+            raise ActivationError("invalid_probe_identity", "synthetic app identity is invalid.")
+        self.app_id = app_id
         self.provider = _NoProviderRuntime()
         self.tool_calls = 0
         self.tool_runtime = ToolRuntime()
@@ -193,13 +239,13 @@ class _Fixture:
             canonical_agent_id=_AGENT_ID,
             definition=definition,
             compiled=compiled,
-            authorization=ToolAuthorizationContext(app_id=_APP_ID, agent_id=compiled.runtime_profile.id),
+            authorization=ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id),
         )
         self.binding = EngineAgentSkillBinding(
-            app_id=_APP_ID,
+            app_id=app_id,
             subject_id=_SUBJECT_ID,
             tool_binding=EngineToolBinding(
-                app_id=_APP_ID,
+                app_id=app_id,
                 tool_runtime=self.tool_runtime,
                 registry=registry,
                 authorities={_AGENT_ID: authority},
@@ -211,12 +257,12 @@ class _Fixture:
         )
         self.service = AgentSkillEngineService(
             runtime_factory=lambda _app_id: self.provider,
-            binding_resolver=lambda app_id: self.binding if app_id == _APP_ID else None,
+            binding_resolver=lambda requested_app_id: self.binding if requested_app_id == app_id else None,
         )
 
     def payload(self, **overrides: Any) -> dict[str, Any]:
         payload: dict[str, Any] = {
-            "app_id": _APP_ID,
+            "app_id": self.app_id,
             "agent_id": _AGENT_ID,
             "messages": [{"role": "user", "content": "synthetic"}],
             "agent_plan": self.plan.to_public_dict(),
@@ -267,11 +313,62 @@ def _error_code(body: Mapping[str, Any]) -> str | None:
     return error.get("code") if isinstance(error, Mapping) else None
 
 
-def run_reference_parity_probe() -> tuple[ProbeResult, ...]:
-    return tuple(
-        ProbeResult(consumer, True, "bounded Agent-only contract; no product source imported")
-        for consumer in AGENT_REFERENCE_CONSUMERS
+_AUTHORITY_PROBE_KEYS = (
+    "subject_id",
+    "tool_authorization",
+    "authorization",
+    "connector_grants",
+    "provider",
+    "provider_route",
+    "policy",
+    "model_policy",
+    "entitlement",
+    "skill_registry",
+    "skill_installations",
+    "skill_runtime_policy",
+    "skill_id",
+)
+
+
+async def _run_reference_parity(consumer: str) -> ReferenceParityResult:
+    fixture = _Fixture(f"{consumer}-a5-parity")
+    response = await fixture.service.run_payload(fixture.payload())
+    body = response.body if isinstance(response.body, Mapping) else {}
+    if response.status_code != 200 or body.get("ok") is not True:
+        return ReferenceParityResult(
+            consumer=consumer,
+            ok=False,
+            error_code=_error_code(body) or "unexpected_status",
+            finding="bounded Agent contract did not complete for consumer identity",
+        )
+
+    rejected: list[str] = []
+    for key in _AUTHORITY_PROBE_KEYS:
+        payload = fixture.payload(**{key: _APP_ID if key != "skill_id" else _SKILL_ID})
+        response = await fixture.service.run_payload(payload)
+        body = response.body if isinstance(response.body, Mapping) else {}
+        expected = "skill_not_allowed" if key == "skill_id" else "caller_agent_authority_not_allowed"
+        if _error_code(body) == expected:
+            rejected.append(key)
+        else:
+            return ReferenceParityResult(
+                consumer=consumer,
+                ok=False,
+                error_code=_error_code(body) or "authority_probe_not_rejected",
+                finding=f"caller authority key was not rejected: {key}",
+                rejected_authority_keys=tuple(rejected),
+            )
+    return ReferenceParityResult(
+        consumer=consumer,
+        ok=True,
+        error_code=None,
+        finding="bounded Agent contract completed and caller authority was rejected",
+        rejected_authority_keys=tuple(rejected),
     )
+
+
+async def run_reference_parity_probe() -> tuple[ReferenceParityResult, ...]:
+    return tuple([await _run_reference_parity(consumer) for consumer in AGENT_REFERENCE_CONSUMERS])
 
 
 async def evaluate_activation(
@@ -285,7 +382,7 @@ async def evaluate_activation(
     verify_exact_main(current_main)
     _verify_source_head(accepted_source_head)
     synthetic = await run_synthetic_probes()
-    parity = run_reference_parity_probe()
+    parity = await run_reference_parity_probe()
     failed = [probe for probe in synthetic if not probe.ok]
     if failed:
         raise ActivationError("synthetic_probe_failed", "A5-Agent synthetic probes must all pass.")
@@ -295,7 +392,8 @@ async def evaluate_activation(
         deployment_target=DEPLOYMENT_TARGET,
         metadata=readiness_metadata,
         reference_consumers=AGENT_REFERENCE_CONSUMERS,
-        synthetic_cases=synthetic + parity,
+        synthetic_cases=synthetic,
+        reference_parity=parity,
         real_provider_call_count=0,
         real_user_data=0,
         skill_activation="DEFERRED",

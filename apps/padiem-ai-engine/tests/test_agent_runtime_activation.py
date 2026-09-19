@@ -11,6 +11,7 @@ from app.agent_runtime_activation import (
     AGENT_REFERENCE_CONSUMERS,
     CONFIRMATION_TOKEN,
     DEPLOYMENT_TARGET,
+    EvidenceState,
     RollbackReadinessMetadata,
     ActivationError,
     evaluate_activation,
@@ -46,6 +47,47 @@ def test_exact_main_rejects_non_sha(value: str) -> None:
     assert caught.value.code == "invalid_sha"
 
 
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("current_deployed_version", "secret=value"),
+        ("rollback_version", "Bearer token"),
+        ("current_deployed_version", "sk-live-value"),
+        ("rollback_version", "provider://route/private"),
+        ("current_deployed_version", "line1\nline2"),
+        ("rollback_version", '{"secret":"value"}'),
+        ("current_deployed_version", "bad\x00control"),
+        ("rollback_version", "x" * 1000),
+    ],
+)
+def test_hostile_readiness_versions_are_rejected(field: str, value: str) -> None:
+    with pytest.raises(ActivationError) as caught:
+        RollbackReadinessMetadata(**{field: value})
+    assert caught.value.code == "invalid_readiness_metadata"
+
+
+@pytest.mark.parametrize("field", ["rollback_config", "config_binding_diff", "secret_name_diff"])
+def test_free_text_readiness_states_are_rejected(field: str) -> None:
+    with pytest.raises(ActivationError) as caught:
+        RollbackReadinessMetadata(**{field: "secret=value"})
+    assert caught.value.code == "invalid_readiness_metadata"
+
+
+def test_closed_readiness_states_and_unresolved_sentinel_serialize_safely() -> None:
+    value = RollbackReadinessMetadata(
+        rollback_config=EvidenceState.NONE,
+        config_binding_diff=EvidenceState.UNCHANGED,
+        secret_name_diff=EvidenceState.CHANGED,
+    ).to_public_dict()
+    assert value == {
+        "current_deployed_version": "UNRESOLVED_FOR_LIVE_AUTHORITY",
+        "rollback_version": "UNRESOLVED_FOR_LIVE_AUTHORITY",
+        "rollback_config": "NONE",
+        "config_binding_diff": "UNCHANGED",
+        "secret_name_diff": "CHANGED",
+    }
+
+
 def test_synthetic_agent_only_probes_are_network_free() -> None:
     results = run(run_synthetic_probes())
     assert results
@@ -62,14 +104,34 @@ def test_synthetic_agent_only_probes_are_network_free() -> None:
     }
 
 
-def test_reference_parity_is_opaque_and_agent_only() -> None:
-    results = run_reference_parity_probe()
-    assert tuple(item.case for item in results) == AGENT_REFERENCE_CONSUMERS
+def test_reference_parity_is_real_agent_contract_and_agent_only() -> None:
+    results = run(run_reference_parity_probe())
+    assert tuple(item.consumer for item in results) == AGENT_REFERENCE_CONSUMERS
+    assert all(item.ok for item in results)
+    assert all(item.error_code is None for item in results)
+    assert all(len(item.rejected_authority_keys) == 13 for item in results)
     serialized = json.dumps([item.to_public_dict() for item in results], sort_keys=True)
     assert "padiem-chat" in serialized
     assert "padiem-claw" in serialized
-    assert "route" not in serialized
-    assert "provider" not in serialized
+    assert "provider://" not in serialized
+    assert "route=" not in serialized
+    assert "authority key was not rejected" not in serialized
+    expected_keys = {
+        "subject_id",
+        "tool_authorization",
+        "authorization",
+        "connector_grants",
+        "provider",
+        "provider_route",
+        "policy",
+        "model_policy",
+        "entitlement",
+        "skill_registry",
+        "skill_installations",
+        "skill_runtime_policy",
+        "skill_id",
+    }
+    assert all(set(item.rejected_authority_keys) == expected_keys for item in results)
 
 
 def test_evaluate_activation_records_pending_secret_free_evidence() -> None:
@@ -91,6 +153,8 @@ def test_evaluate_activation_records_pending_secret_free_evidence() -> None:
     serialized = json.dumps(public, sort_keys=True).lower()
     assert "secret-value" not in serialized
     assert "private" not in serialized
+    assert all(item.error_code is None for item in evidence.reference_parity)
+    assert all(item.ok for item in evidence.reference_parity)
 
 
 def test_manifest_and_skill_are_not_activated_by_gate_source() -> None:

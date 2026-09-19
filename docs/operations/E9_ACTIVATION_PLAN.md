@@ -399,9 +399,13 @@ ROLLBACK_VERSION       = UNRESOLVED_FOR_LIVE_AUTHORITY
 ROLLBACK_CONFIG        = UNRESOLVED_FOR_LIVE_AUTHORITY
 CONFIG_BINDING_DIFF    = UNRESOLVED_FOR_LIVE_AUTHORITY
 SECRET_NAME_DIFF       = UNRESOLVED_FOR_LIVE_AUTHORITY
-REFERENCE_CONSUMERS    = b54-padiem-claw, b62-padiem-chat (structural opaque identifiers)
+REFERENCE_CONSUMERS    = b54-padiem-claw, b62-padiem-chat (opaque synthetic app identities)
 SYNTHETIC_CASES       = Agent-only run, unknown Agent, plan identity/tool bounds,
                         caller authority rejection, unsafe subject, Skill deferred
+PARITY_EXECUTION       = each reference identity executes the shared Agent contract
+                         through AgentSkillEngineService/Core ToolRuntime; each
+                         authority-shaped caller field is rejected
+PARITY_SUCCESS_SHAPE   = ok=true, error_code=None, bounded finding
 REAL_PROVIDER_CALLS   = 0
 REAL_USER_DATA        = 0
 MUTATION_SCOPE        = A5-Agent activation only
