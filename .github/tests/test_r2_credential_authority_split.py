@@ -10,7 +10,7 @@ The split being enforced:
 ```text
 read-only R2 metadata/probe   -> B62_R2_READONLY_API_TOKEN
 R2 object mutation            -> B62_R2_OPS_API_TOKEN
-zone lookup / CDN purge       -> its own authority question, NOT R2 OPS
+public CDN convergence read   -> no Cloudflare credential
 ```
 
 Why it is asserted structurally: the defect being fixed was a single job-level
@@ -37,7 +37,7 @@ OPS_SECRET = "B62_R2_OPS_API_TOKEN"
 SHARED_DEPLOYMENT_SECRET = "CLOUDFLARE_API_TOKEN"  # the generic Engine/Worker token
 
 MUTATION_STEP = "Download from Drive and upload to R2"
-PURGE_STEP = "Purge CDN cache and verify public convergence"
+CONVERGENCE_STEP = "Verify public convergence"
 DRY_RUN_STEP = "Upload plan (dry run)"
 PREFLIGHT_STEP = "Preflight existing keys (no overwrite)"
 CONTRACT_STEP = "Mutation contract"
@@ -144,12 +144,11 @@ def test_no_readonly_to_ops_or_ops_to_readonly_fallback_exists() -> None:
     ):
         for line in text.splitlines():
             assert not re.search(pattern, line), f"{pattern} in: {line.strip()}"
-    # Exactly the two intended bindings exist, each naming one credential.
-    assert text.count("CLOUDFLARE_API_TOKEN: ${{ secrets.") == 2, (
-        "one binding per privileged step, no alternates"
-    )
+    # The upload workflow has exactly one privileged binding: R2 OPS on the
+    # object mutation step. READONLY stays in the separate metadata probe.
+    assert text.count("CLOUDFLARE_API_TOKEN: ${{ secrets.") == 1
     assert _binding(OPS_SECRET) in text
-    assert _binding(READONLY_SECRET) in text
+    assert _binding(READONLY_SECRET) not in text
     assert _binding(SHARED_DEPLOYMENT_SECRET) not in text
 
 
@@ -166,7 +165,7 @@ def test_each_credential_is_bound_to_exactly_one_step() -> None:
     ops_steps = [n for n, v in bindings.items() if OPS_SECRET in v]
     readonly_steps = [n for n, v in bindings.items() if READONLY_SECRET in v]
     assert ops_steps == [MUTATION_STEP]
-    assert readonly_steps == [PURGE_STEP]
+    assert readonly_steps == []
 
 
 # --- OPS token absent fails closed before any write ---------------------------
@@ -217,55 +216,46 @@ def test_dry_run_step_holds_no_credential_and_claims_no_mutation() -> None:
     assert dry["if"] == "${{ inputs.dry_run }}"
 
 
-def test_mutation_and_purge_steps_are_gated_off_for_dry_run() -> None:
+def test_mutation_and_convergence_steps_are_gated_off_for_dry_run() -> None:
     steps = _steps(_load(UPLOAD))
-    for name in (MUTATION_STEP, PURGE_STEP):
+    for name in (MUTATION_STEP, CONVERGENCE_STEP):
         assert steps[name]["if"] == "${{ !inputs.dry_run }}", name
 
 
 def test_read_only_steps_need_no_credential() -> None:
     steps = _steps(_load(UPLOAD))
-    for name in (PREFLIGHT_STEP, CONTRACT_STEP):
+    for name in (PREFLIGHT_STEP, CONVERGENCE_STEP, CONTRACT_STEP):
         assert "CLOUDFLARE_API_TOKEN" not in _env(steps[name]), name
 
 
-# --- cache purge must not quietly widen the R2 OPS contract -------------------
+# --- public convergence is credential-free -------------------------------------
 
-def test_purge_step_never_receives_r2_ops_authority() -> None:
-    # The point of #2768's authority check: zone/cache purge is not R2
-    # authority, so the R2 OPS token must not be quietly pressed into service
-    # there just because a token was handy.
+
+def test_public_convergence_step_receives_no_cloudflare_credential() -> None:
     steps = _steps(_load(UPLOAD))
-    purge = steps[PURGE_STEP]
-    assert OPS_SECRET not in _env(purge).get("CLOUDFLARE_API_TOKEN", "")
-    assert OPS_SECRET not in _run(purge)
+    convergence = steps[CONVERGENCE_STEP]
+    assert "CLOUDFLARE_API_TOKEN" not in _env(convergence)
+    assert READONLY_SECRET not in _run(convergence)
+    assert OPS_SECRET not in _run(convergence)
 
 
-def test_purge_stays_best_effort_and_is_not_marked_as_r2_authority() -> None:
-    body = _run(_steps(_load(UPLOAD))[PURGE_STEP])
-    assert "purge_cache" in body
-    assert "PURGE_SKIPPED=" in body, "a purge without proper authority must not fail the R2 write"
-    # The purge step must not also be an R2 object verb site.
-    assert "'r2'" not in body
-    assert "object', 'put'" not in body
-
-
-def test_purge_authority_gap_is_documented_in_place() -> None:
-    # If someone later deletes the comment that records this gap, the audit
-    # trail is gone; the comment is therefore part of the contract.
+def test_upload_workflow_contains_no_authenticated_cache_purge_or_zone_api() -> None:
     text = UPLOAD.read_text(encoding="utf-8")
-    assert "PRE-EXISTING AUTHORITY, UNCHANGED BY #2768" in text
-    assert "no accepted cache-purge credential" in text
+    assert "purge_cache" not in text
+    assert "/client/v4/zones" not in text
+    assert "Authorization: Bearer" not in text
 
 
-def test_only_one_purge_site_exists_repo_wide() -> None:
-    # Guards the premise of the report: cache purge has exactly one consumer, so
-    # a cache-purge authority boundary is a single-site decision, not a rollout.
-    sites = [p for p in WORKFLOWS.glob("*.yml") if "purge_cache" in p.read_text(encoding="utf-8")]
-    assert [p.name for p in sites] == [UPLOAD.name]
+def test_readonly_secret_is_confined_to_the_separate_probe_workflow() -> None:
+    assert READONLY_SECRET not in UPLOAD.read_text(encoding="utf-8")
+    assert f"secrets.{READONLY_SECRET}" in PROBE.read_text(encoding="utf-8")
 
 
-def test_zone_api_reachable_steps_are_limited_to_the_purge_step() -> None:
-    steps = _steps(_load(UPLOAD))
-    zone_steps = [n for n, s in steps.items() if "/client/v4/zones" in _run(s)]
-    assert zone_steps == [PURGE_STEP]
+def test_public_convergence_keeps_bounded_read_only_verification() -> None:
+    body = _run(_steps(_load(UPLOAD))[CONVERGENCE_STEP])
+    assert "CONVERGE_ROUND" in body
+    assert "PUBLIC_CONVERGENCE=ALL_200" in body
+    assert "PUBLIC_RANGE=206" in body
+    assert "-I" in body
+    assert "-r" in body
+    assert "-X" not in body

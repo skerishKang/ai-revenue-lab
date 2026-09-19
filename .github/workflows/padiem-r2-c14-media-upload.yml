@@ -32,14 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      # #2768: the credential is bound per step, NOT here. A single job-level
-      # token silently granted whichever authority the job happened to need, and
-      # here the two needs differ in kind: the R2 object write path needs R2
-      # read/write OPS authority, while the best-effort CDN zone/purge step is
-      # not R2 authority at all. Binding it once at job level would have pushed
-      # the R2 OPS token into zone/cache scope, or let an R2 write fall back to a
-      # read-only token. Each step below names exactly the one credential it may
-      # use, with no fallback in either direction.
+      # #2768: privileged credentials are never job-scoped. The R2 mutation
+      # step below receives only the dedicated R2 OPS token. Read-only metadata
+      # authority stays in the separate probe workflow, and public convergence
+      # verification requires no Cloudflare credential.
       # Do not reintroduce a shared Engine/Worker deployment credential here.
       CLOUDFLARE_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
     steps:
@@ -245,20 +241,12 @@ jobs:
           print(f'SKIP_IDENTICAL_COUNT={skipped}')
           EOF
 
-      - name: Purge CDN cache and verify public convergence
+      - name: Verify public convergence
         if: ${{ !inputs.dry_run }}
         shell: bash
         env:
           LIMIT: ${{ inputs.limit }}
           MANIFEST: ${{ github.workspace }}/ops/padiem-r2-c14-upload-manifest.json
-          # PRE-EXISTING AUTHORITY, UNCHANGED BY #2768. This step calls the
-          # Cloudflare zone API and purge_cache, which is DNS/cache authority,
-          # NOT R2 authority. It is pinned to the credential this workflow
-          # already used before the split rather than widened onto
-          # B62_R2_OPS_API_TOKEN, because no accepted cache-purge credential
-          # boundary exists in this repository and #2768 explicitly forbids
-          # inventing one here. Reported as an open authority gap.
-          CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
         run: |
           set -euo pipefail
           python - <<'EOF'
@@ -266,33 +254,12 @@ jobs:
           man = json.load(open(os.environ['MANIFEST'], encoding='utf-8'))
           limit = {s.strip() for s in os.environ.get('LIMIT', '').split(',') if s.strip()}
           objs = [o for o in man['objects'] if not limit or o['file'] in limit]
-          token = os.environ.get('CLOUDFLARE_API_TOKEN', '')
-          acct = os.environ.get('CLOUDFLARE_ACCOUNT_ID', '')
           urls = ['https://media.padiem.net/' + o['r2_key'] for o in objs]
-          # Best-effort single-URL purge (tolerate missing permission).
-          try:
-              z = subprocess.run(
-                  ['curl', '-s', '--max-time', '30', '-H',
-                   f'Authorization: Bearer {token}',
-                   'https://api.cloudflare.com/client/v4/zones?name=padiem.net'],
-                  capture_output=True, text=True)
-              zid = (json.loads(z.stdout).get('result') or [{}])[0].get('id', '')
-              if zid:
-                  for i in range(0, len(urls), 30):
-                      p = subprocess.run(
-                          ['curl', '-s', '--max-time', '60', '-X', 'POST',
-                           f'https://api.cloudflare.com/client/v4/zones/{zid}/purge_cache',
-                           '-H', f'Authorization: Bearer {token}',
-                           '-H', 'Content-Type: application/json',
-                           '--data', json.dumps({'files': urls[i:i + 30]})],
-                          capture_output=True, text=True)
-                      ok = json.loads(p.stdout).get('success', False)
-                      print(f'PURGE_BATCH {i // 30 + 1} success={ok}', flush=True)
-              else:
-                  print('PURGE_SKIPPED=ZONE_LOOKUP_EMPTY', flush=True)
-          except Exception as e:
-              print(f'PURGE_SKIPPED={e}', flush=True)
-          # Poll public HEAD until all converge (20 rounds x 60s).
+          # #2768: no accepted cache-purge credential boundary exists. Do not
+          # borrow either R2 credential for zone/cache mutation. The R2 upload
+          # is already verified through the remote R2 API above; this step only
+          # waits for the public CDN surface to converge using credential-free
+          # HEAD/Range reads.
           for rnd in range(1, 21):
               pending = []
               for o in objs:
