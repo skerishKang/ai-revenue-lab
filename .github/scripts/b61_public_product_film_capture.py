@@ -131,16 +131,23 @@ with sync_playwright() as p:
     page.wait_for_timeout(1100)
     click(page, "#cancelMemoryNote", "memory_note_cancel", pause_ms=1000)
 
-    # Open the real AI Companion context surface, but do not submit any request.
-    ai_tab = page.locator("#aiRailTab")
-    ai_tab.wait_for(state="visible", timeout=5000)
-    if ai_tab.get_attribute("aria-expanded") != "true":
-        click(page, "#aiRailTab", "ai_companion_open", pause_ms=1300)
-    else:
+    # Use the real AI Companion context surface, but do not submit any request.
+    # On desktop the panel can already be open, in which case its rail tab is
+    # intentionally hidden. Prefer the visible composer as the state authority.
+    ask = page.locator("#askInput")
+    if ask.is_visible():
         interactions.append("ai_companion_already_open")
         page.wait_for_timeout(1300)
-
-    ask = page.locator("#askInput")
+    else:
+        ai_tab = page.locator("#aiRailTab")
+        if ai_tab.is_visible():
+            click(page, "#aiRailTab", "ai_companion_open", pause_ms=1300)
+        else:
+            mobile_ai = page.locator('#mobileDock [data-mobile="ai"]')
+            if mobile_ai.is_visible():
+                click(page, '#mobileDock [data-mobile="ai"]', "ai_companion_open_mobile", pause_ms=1300)
+            else:
+                raise RuntimeError("AI Companion is neither open nor reachable through a visible UI control")
     ask.wait_for(state="visible", timeout=5000)
     ask.fill("이 장면의 맥락은?")
     interactions.append("ai_prompt_draft_no_submit")
