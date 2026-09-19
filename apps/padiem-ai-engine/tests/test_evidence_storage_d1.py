@@ -31,7 +31,7 @@ from padiem_ai_core.document_semantics import (  # noqa: E402
     LocatorPrecision,
 )
 
-REF = "att_s4bdoc000000000c"
+REF = "doc_s4bdoc000000000c"
 LOCATOR = "opaque-blob-locator-101"
 EVIDENCE_ID = "s4bevidence0000001"
 BODY = "durable evidence body with a tail marker TAILNOTINREPR-44120"
