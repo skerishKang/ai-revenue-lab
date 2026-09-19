@@ -8,6 +8,13 @@ from typing import Any
 
 from playwright.async_api import Page, async_playwright
 
+from b62_visual_timing import (
+    TimingOvershoot,
+    check_settle_window,
+    sample_at_page_clock,
+    wait_state_settled,
+    with_timing_retries,
+)
 
 BASE_URL = os.environ.get("B62_QA_BASE_URL", "http://127.0.0.1:8765")
 OUT_DIR = Path(os.environ.get("B62_QA_OUT_DIR", ".tmp/b62-browser-qa"))
@@ -15,11 +22,14 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 VARIANTS = ("female", "male")
 
+# Every overshoot sample retried by the runner is appended here and persisted
+# with the report (PASS and FAIL alike), so failure evidence records the
+# actually-sampled page-clock elapsed for each timing window.
+TIMING_EVIDENCE: list[dict[str, Any]] = []
 
-async def _shell_state(page: Page) -> dict[str, Any]:
-    return await page.evaluate(
-        """
-        () => {
+
+_SHELL_STATE_EXPR = """
+() => {
           const root = document.documentElement;
           const style = getComputedStyle(root);
           const frags = [...document.querySelectorAll('.glass-shell-frag')];
@@ -57,9 +67,39 @@ async def _shell_state(page: Page) -> dict[str, Any]:
             portalImage: portalStyle ? portalStyle.backgroundImage : '',
             portalDisplay: portalStyle ? portalStyle.display : '',
           };
-        }
-        """
+}
+"""
+
+
+async def _shell_state(page: Page) -> dict[str, Any]:
+    return await page.evaluate(_SHELL_STATE_EXPR)
+
+
+async def _sample_shell_at(page: Page, started_ms: float, target_ms: float, label: str) -> dict[str, Any]:
+    """Boundary shell QA sample resolved on the page clock, not host sleeps."""
+    return await sample_at_page_clock(
+        page,
+        started_ms=started_ms,
+        target_ms=target_ms,
+        read_expr=_SHELL_STATE_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=label,
     )
+
+
+_SHELL_COMPLETED_EXPR = """
+() => {
+  const shell = window.__padiemGlassShell;
+  if (!shell || shell.progress() < .99) return false;
+  const frags = [...document.querySelectorAll('.glass-shell-frag')];
+  const maxOpacity = frags.length
+    ? Math.max(...frags.map((el) => parseFloat(getComputedStyle(el).opacity) || 0))
+    : 0;
+  const portal = document.querySelector('.glass-shell-portrait');
+  const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+  return maxOpacity <= .05 && portalOpacity >= .80;
+}
+"""
 
 
 async def _wait_progress_at_least(page: Page, value: float, name: str, timeout: float = 12_000) -> None:
@@ -194,8 +234,13 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     y = shell_rect["top"] + shell_rect["height"] * 0.44
     peel_started = await page.evaluate("performance.now()")
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)
-    await page.wait_for_timeout(260)
-    left_transition = await _shell_state(page)
+    # The 260ms boundary sample is pinned to the page clock inside one
+    # in-page evaluation: a loaded CI runner can no longer deliver the read
+    # hundreds of milliseconds after the transition advanced.  An overshoot
+    # of the requested window itself is treated as an invalid sample and
+    # retried with identical thresholds (with_timing_retries in main).
+    left_sample = await _sample_shell_at(page, peel_started, 260, f"{name}-left-260ms")
+    left_transition = left_sample["state"]
     if left_transition["ptr"] < 0.99 or left_transition["target"] > 0.01:
         raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
     if left_transition["progress"] < 0.68:
@@ -212,20 +257,16 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # the 260ms early frame; this focused shell QA must preserve the ~900ms
     # timing window for its next sample.
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
-    elapsed_before_mid = float(
-        await page.evaluate("started => performance.now() - started", peel_started)
-    )
-    remaining_to_mid = max(0, int(900 - elapsed_before_mid))
-    if remaining_to_mid:
-        await page.wait_for_timeout(remaining_to_mid)
-    mid_elapsed_ms = float(
-        await page.evaluate("started => performance.now() - started", peel_started)
-    )
+    # Same page-clock anchoring for the ~900ms mid sample: the requested
+    # sample point is honored inside the page, while the recorded
+    # mid_elapsed_ms keeps the original [800, 1300] contract window.
+    mid_sample = await _sample_shell_at(page, peel_started, 900, f"{name}-mid-900ms")
+    right_transition = mid_sample["state"]
+    mid_elapsed_ms = mid_sample["sampled_ms"]
     if not 800 <= mid_elapsed_ms <= 1_300:
         raise AssertionError(
             f"{name}: mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
         )
-    right_transition = await _shell_state(page)
     if right_transition["ptr"] < 0.99 or right_transition["target"] > 0.01:
         raise AssertionError(f"{name}: right-edge hover changed the binary peel target: {right_transition}")
     if right_transition["progress"] > left_transition["progress"] + 0.02:
@@ -245,11 +286,30 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # Primary browser QA owns the ~900ms visual evidence. Keep this focused
     # timing contract free of screenshot I/O until peel elapsed is measured.
 
-    await _wait_progress_below(page, 0.05, f"{name}-pointer")
-    peel_elapsed_ms = await page.evaluate("started => performance.now() - started", peel_started)
-    if not 1_800 <= peel_elapsed_ms <= 3_600:
-        raise AssertionError(f"{name}: 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms")
-    pointer_only = await _shell_state(page)
+    # Peel settle window: the first-satisfied frame is observed in-page at
+    # frame granularity, so host-side polling lag can never inflate the
+    # measured elapsed time.  An over-cap result is retried only when the
+    # runner's rendering frame rate proves starvation, with identical
+    # thresholds on the fresh attempt.
+    peel_settle = await wait_state_settled(
+        page,
+        started_ms=peel_started,
+        done_expr="() => window.__padiemGlassShell && window.__padiemGlassShell.progress() <= .05",
+        timeout_ms=15_000,
+        read_expr=_SHELL_STATE_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-peel-settle",
+    )
+    peel_elapsed_ms = peel_settle["elapsed_ms"]
+    check_settle_window(
+        f"{name}: 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms",
+        peel_settle,
+        lo_ms=1_800,
+        hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-peel-settle",
+    )
+    pointer_only = peel_settle["state"]
     if pointer_only["ptr"] <= 0.8:
         raise AssertionError(f"{name}: pointer driver did not fully engage: {pointer_only}")
     if pointer_only["progress"] > 0.08:
@@ -271,20 +331,35 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(
             f"{name}: reverse recovery did not begin after pointer exit: peeled={peeled}, mid={mid}"
         )
-    await _wait_completed_shell(page, f"{name}-recover")
-    recover_elapsed_ms = await page.evaluate("started => performance.now() - started", recover_started)
-    if not 1_600 <= recover_elapsed_ms <= 3_600:
-        raise AssertionError(f"{name}: 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms")
-    recovered = await _shell_state(page)
+    recover_settle = await wait_state_settled(
+        page,
+        started_ms=recover_started,
+        done_expr=_SHELL_COMPLETED_EXPR,
+        timeout_ms=12_000,
+        read_expr=_SHELL_STATE_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-recover-settle",
+    )
+    recover_elapsed_ms = recover_settle["elapsed_ms"]
+    check_settle_window(
+        f"{name}: 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms",
+        recover_settle,
+        lo_ms=1_600,
+        hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-recover-settle",
+    )
+    recovered = recover_settle["state"]
     if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
         raise AssertionError(f"{name}: shell did not reassemble after pointer exit: {recovered}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-recovered.png"), full_page=False)
 
     # Repeat the same contract RIGHT -> LEFT. Pointer X may change where the
     # cursor is, but must never scrub, reverse, or retarget the timed peel.
+    rev_right_started = await page.evaluate("performance.now()")
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
-    await page.wait_for_timeout(260)
-    reverse_right = await _shell_state(page)
+    reverse_right_sample = await _sample_shell_at(page, rev_right_started, 260, f"{name}-reverse-right-260ms")
+    reverse_right = reverse_right_sample["state"]
     if reverse_right["ptr"] < 0.99 or reverse_right["target"] > 0.01:
         raise AssertionError(f"{name}: right-edge reverse sweep did not latch binary peel target: {reverse_right}")
     if reverse_right["progress"] < 0.68:
@@ -380,6 +455,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         "mid_elapsed_ms": mid_elapsed_ms,
         "peel_elapsed_ms": peel_elapsed_ms,
         "recover_elapsed_ms": recover_elapsed_ms,
+        "peel_settle_fps": round(peel_settle["fps"], 1),
+        "recover_settle_fps": round(recover_settle["fps"], 1),
         "answer_only": answer_only,
         "combined_overlap": combined_overlap,
         "combined": combined,
@@ -489,13 +566,30 @@ async def _check_touch(browser: Any) -> dict[str, Any]:
     return {"touch": state}
 
 
-async def main() -> None:
-    report: dict[str, Any] = {"base_url": BASE_URL, "views": {}}
+async def _run_checks(report: dict[str, Any]) -> None:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch()
-        page = await browser.new_page(viewport={"width": 1600, "height": 1000})
         for variant in VARIANTS:
-            report["views"][f"variant-{variant}"] = await _check_variant(page, variant)
+            async def _variant_cycle(variant: str = variant) -> dict[str, Any]:
+                # A retry must isolate browser rendering state as well as
+                # navigation state; the prior page may retain a starved
+                # compositor after a timing overshoot.
+                context = await browser.new_context(viewport={"width": 1600, "height": 1000})
+                page = await context.new_page()
+                try:
+                    return await _check_variant(page, variant)
+                finally:
+                    await context.close()
+
+            # A TimingOvershoot only happens when the in-page measurement
+            # proves the runner overshot the requested sample window; the
+            # retry repeats the identical thresholds from a fresh context.
+            report["views"][f"variant-{variant}"] = await with_timing_retries(
+                _variant_cycle,
+                label=f"glass-shell-{variant}",
+                evidence_log=TIMING_EVIDENCE,
+            )
+        page = await browser.new_page(viewport={"width": 1600, "height": 1000})
         report["views"]["mask-modes"] = await _check_mask_modes(page)
         report["views"]["controls"] = await _check_controls(page)
         await page.close()
@@ -503,7 +597,23 @@ async def main() -> None:
         report["views"]["touch"] = await _check_touch(browser)
         await browser.close()
 
+
+async def main() -> None:
+    report: dict[str, Any] = {"base_url": BASE_URL, "views": {}}
     out = OUT_DIR / "glass-shell-report.json"
+    try:
+        await _run_checks(report)
+    except Exception as exc:
+        status = "OVERSHOOT-EXHAUSTED" if isinstance(exc, TimingOvershoot) else "FAIL"
+        report["status"] = status
+        report["error"] = str(exc)
+        if TIMING_EVIDENCE:
+            report["timing_evidence"] = TIMING_EVIDENCE
+        out.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        raise
+    report["status"] = "PASS"
+    if TIMING_EVIDENCE:
+        report["timing_evidence"] = TIMING_EVIDENCE
     out.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"B62 Glass shell visual QA: PASS -> {out}")
 

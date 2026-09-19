@@ -9,10 +9,81 @@ from typing import Any
 
 from playwright.async_api import Page, async_playwright
 
+from b62_visual_timing import (
+    TimingOvershoot,
+    check_settle_window,
+    sample_at_page_clock,
+    wait_state_settled,
+    with_timing_retries,
+)
 
 BASE_URL = os.environ.get("B62_QA_BASE_URL", "http://127.0.0.1:8765")
 OUT_DIR = Path(os.environ.get("B62_QA_OUT_DIR", ".tmp/b62-browser-qa"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+TIMING_EVIDENCE: list[dict[str, Any]] = []
+
+_GLASS_SHELL_EXPR = """
+() => {
+  const root = document.documentElement;
+  const style = getComputedStyle(root);
+  const portal = document.querySelector('.glass-shell-portrait');
+  const field = document.querySelector('.glass-shell-field');
+  const frags = [...document.querySelectorAll('.glass-shell-frag')];
+  const fragmentOpacities = frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0);
+  const control = document.querySelector('.glass-shell-control');
+  const fieldRect = field ? field.getBoundingClientRect() : null;
+  return {
+    mask: root.getAttribute('data-glass-mask'),
+    speed: root.getAttribute('data-glass-speed'),
+    progress: parseFloat(style.getPropertyValue('--glass-shell-progress')) || 0,
+    dissolve: parseFloat(style.getPropertyValue('--glass-shell-dissolve')) || 0,
+    pointerDriver: parseFloat(style.getPropertyValue('--glass-pointer-reveal')) || 0,
+    answerDriver: parseFloat(style.getPropertyValue('--glass-answer-reveal')) || 0,
+    portalOpacity: portal ? parseFloat(getComputedStyle(portal).opacity) || 0 : 0,
+    fragmentCount: frags.length,
+    visibleFragments: fragmentOpacities.filter(v => v > .05).length,
+    maxFragmentOpacity: fragmentOpacities.length ? Math.max(...fragmentOpacities) : 0,
+    fieldRect: fieldRect ? {
+      x: fieldRect.x, y: fieldRect.y, width: fieldRect.width, height: fieldRect.height
+    } : null,
+    controls: {
+      exists: Boolean(control),
+      buttons: control ? [...control.querySelectorAll('[data-glass-mask-value]')].map(
+        el => ({ value: el.getAttribute('data-glass-mask-value'), pressed: el.getAttribute('aria-pressed') })
+      ) : [],
+      speedValue: control?.querySelector('.glass-speed-value')?.textContent || '',
+    },
+  };
+}
+"""
+
+_GLASS_MOTION_EXPR = """
+() => {
+  const root = document.documentElement;
+  const rootStyle = getComputedStyle(root);
+  const main = document.querySelector('.main-panel');
+  const portrait = main ? getComputedStyle(main, '::before') : null;
+  const bodyNoise = getComputedStyle(document.body, '::after');
+  const conversation = document.querySelector('.conversation');
+  const conversationStyle = conversation ? getComputedStyle(conversation) : null;
+  return {
+    mode: root.getAttribute('data-glass-mode'),
+    reveal: parseFloat(rootStyle.getPropertyValue('--glass-reveal')) || 0,
+    artX: rootStyle.getPropertyValue('--glass-art-x').trim(),
+    artY: rootStyle.getPropertyValue('--glass-art-y').trim(),
+    artScale: rootStyle.getPropertyValue('--glass-art-scale').trim(),
+    pointerX: rootStyle.getPropertyValue('--glass-pointer-x').trim(),
+    pointerY: rootStyle.getPropertyValue('--glass-pointer-y').trim(),
+    maskStart: rootStyle.getPropertyValue('--glass-mask-start').trim(),
+    maskFull: rootStyle.getPropertyValue('--glass-mask-full').trim(),
+    portraitOpacity: portrait ? parseFloat(portrait.opacity) : 0,
+    portraitTransform: portrait ? portrait.transform : '',
+    bodyNoiseOpacity: parseFloat(bodyNoise.opacity) || 0,
+    conversationBackground: conversationStyle ? conversationStyle.backgroundImage : '',
+  };
+}
+"""
 
 
 async def _visible_count(page: Page, selector: str) -> int:
@@ -74,42 +145,7 @@ async def _glass_reveal(page: Page) -> float:
 
 
 async def _glass_shell_snapshot(page: Page) -> dict[str, Any]:
-    return await page.evaluate(
-        """
-        () => {
-          const root = document.documentElement;
-          const style = getComputedStyle(root);
-          const portal = document.querySelector('.glass-shell-portrait');
-          const field = document.querySelector('.glass-shell-field');
-          const frags = [...document.querySelectorAll('.glass-shell-frag')];
-          const fragmentOpacities = frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0);
-          const control = document.querySelector('.glass-shell-control');
-          const fieldRect = field ? field.getBoundingClientRect() : null;
-          return {
-            mask: root.getAttribute('data-glass-mask'),
-            speed: root.getAttribute('data-glass-speed'),
-            progress: parseFloat(style.getPropertyValue('--glass-shell-progress')) || 0,
-            dissolve: parseFloat(style.getPropertyValue('--glass-shell-dissolve')) || 0,
-            pointerDriver: parseFloat(style.getPropertyValue('--glass-pointer-reveal')) || 0,
-            answerDriver: parseFloat(style.getPropertyValue('--glass-answer-reveal')) || 0,
-            portalOpacity: portal ? parseFloat(getComputedStyle(portal).opacity) || 0 : 0,
-            fragmentCount: frags.length,
-            visibleFragments: fragmentOpacities.filter(v => v > .05).length,
-            maxFragmentOpacity: fragmentOpacities.length ? Math.max(...fragmentOpacities) : 0,
-            fieldRect: fieldRect ? {
-              x: fieldRect.x, y: fieldRect.y, width: fieldRect.width, height: fieldRect.height
-            } : null,
-            controls: {
-              exists: Boolean(control),
-              buttons: control ? [...control.querySelectorAll('[data-glass-mask-value]')].map(
-                el => ({ value: el.getAttribute('data-glass-mask-value'), pressed: el.getAttribute('aria-pressed') })
-              ) : [],
-              speedValue: control?.querySelector('.glass-speed-value')?.textContent || '',
-            },
-          };
-        }
-        """
-    )
+    return await page.evaluate(_GLASS_SHELL_EXPR)
 
 
 async def _move_into_glass_portrait(page: Page, *, x_fraction: float = 0.68, y_fraction: float = 0.44) -> None:
@@ -416,8 +452,22 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         portrait_rect["left"] + portrait_rect["width"] * 0.18,
         portrait_y,
     )
-    await page.wait_for_timeout(260)
-    early_shell = await _glass_shell_snapshot(page)
+    # The 260ms boundary sample is pinned to the page clock inside one
+    # in-page evaluation so a loaded CI runner cannot deliver the read
+    # late (which previously let the time-driven peel advance past the
+    # sampled instant and made the same product state fail 0.68/0.55).
+    # An overshoot of the requested window itself is a runner artifact:
+    # it retries the identical sample from a fresh cycle at identical
+    # thresholds instead of relaxing anything.
+    early_sample = await sample_at_page_clock(
+        page,
+        started_ms=peel_started,
+        target_ms=260,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-early-260ms",
+    )
+    early_shell = early_sample["state"]
     if early_shell["pointerDriver"] < 0.80 or early_shell["progress"] < 0.68:
         raise AssertionError(f"Glass shell teardown is too fast at 260ms: {early_shell}")
     if early_shell["portalOpacity"] < 0.55:
@@ -430,23 +480,23 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         portrait_rect["left"] + portrait_rect["width"] * 0.82,
         portrait_y,
     )
-    # Screenshot capture itself consumes wall-clock time while the product
-    # animation continues. Anchor the mid sample to performance.now() rather
-    # than blindly sleeping another 650ms after the early screenshot.
-    elapsed_before_mid = float(
-        await page.evaluate("started => performance.now() - started", peel_started)
+    # The mid sample resolves at ~900ms of page time inside the same
+    # evaluation that reads the state, then the recorded elapsed keeps the
+    # original [800, 1300] contract window for evidence.
+    mid_sample = await sample_at_page_clock(
+        page,
+        started_ms=peel_started,
+        target_ms=900,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-mid-900ms",
     )
-    remaining_to_mid = max(0, int(900 - elapsed_before_mid))
-    if remaining_to_mid:
-        await page.wait_for_timeout(remaining_to_mid)
-    mid_elapsed_ms = float(
-        await page.evaluate("started => performance.now() - started", peel_started)
-    )
+    mid_shell = mid_sample["state"]
+    mid_elapsed_ms = mid_sample["sampled_ms"]
     if not 800 <= mid_elapsed_ms <= 1_300:
         raise AssertionError(
             f"Glass mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
         )
-    mid_shell = await _glass_shell_snapshot(page)
     if mid_shell["pointerDriver"] < 0.80:
         raise AssertionError(f"Glass right-side hover lost the binary peel target: {mid_shell}")
     if mid_shell["progress"] > early_shell["progress"] + 0.02:
@@ -461,8 +511,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         raise AssertionError(f"Glass ~900ms sample is not a visible mid-transition state: {mid_shell}")
     if mid_shell["portalOpacity"] <= 0.18 or mid_shell["visibleFragments"] <= 0:
         raise AssertionError(f"Glass shell/ribbons disappeared before the mid-transition sample: {mid_shell}")
-    await page.wait_for_function(
-        """() => {
+    # First-satisfied-frame settle detection runs inside the page, so the
+    # measured peel time is the real transition time rather than "whenever a
+    # host poll noticed it".  The window [1800, 3600] is unchanged; a cap
+    # breach is retried only when the page's frame rate proves the runner
+    # starved the animation, and is otherwise a hard failure.
+    peel_settle = await wait_state_settled(
+        page,
+        started_ms=peel_started,
+        done_expr="""() => {
           const rootStyle = getComputedStyle(document.documentElement);
           const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
           const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
@@ -474,11 +531,19 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
           const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
           return pointer >= .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
         }""",
-        timeout=5_000,
+        timeout_ms=5_000,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-peel-settle",
     )
-    peel_elapsed_ms = float(await page.evaluate("started => performance.now() - started", peel_started))
-    if not 1_800 <= peel_elapsed_ms <= 3_600:
-        raise AssertionError(f"Glass 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms")
+    peel_elapsed_ms = peel_settle["elapsed_ms"]
+    check_settle_window(
+        f"Glass 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms",
+        peel_settle,
+        lo_ms=1_800,
+        hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-peel-settle",
+    )
 
     home_after_pointer = await _glass_motion_snapshot(page)
     home_shell_pointer = await _glass_shell_snapshot(page)
@@ -502,19 +567,29 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     recover_early = await _glass_shell_snapshot(page)
     if recover_early["progress"] <= home_shell_pointer["progress"]:
         raise AssertionError(f"Glass reverse recovery did not begin after pointer exit: {recover_early}")
-    await page.wait_for_function(
-        """() => {
+    recover_settle = await wait_state_settled(
+        page,
+        started_ms=recover_started,
+        done_expr="""() => {
           const style = getComputedStyle(document.documentElement);
           const progress = parseFloat(style.getPropertyValue('--glass-shell-progress')) || 0;
           const portal = document.querySelector('.glass-shell-portrait');
           const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
           return progress >= .95 && portalOpacity >= .80;
         }""",
-        timeout=5_000,
+        timeout_ms=5_000,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-recover-settle",
     )
-    recover_elapsed_ms = float(await page.evaluate("started => performance.now() - started", recover_started))
-    if not 1_600 <= recover_elapsed_ms <= 3_600:
-        raise AssertionError(f"Glass 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms")
+    recover_elapsed_ms = recover_settle["elapsed_ms"]
+    check_settle_window(
+        f"Glass 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms",
+        recover_settle,
+        lo_ms=1_600,
+        hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-recover-settle",
+    )
     recovered_shell = await _glass_shell_snapshot(page)
     if recovered_shell["portalOpacity"] < 0.80 or recovered_shell["visibleFragments"] != 0:
         raise AssertionError(f"Glass shell did not fully reassemble after pointer exit: {recovered_shell}")
@@ -526,12 +601,20 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # animation correctly keeps advancing, so never put capture I/O between
     # the 260ms and ~900ms timing samples above.
     early_name = f"desktop-glass-{variant}-transition-early.png"
+    early_cycle_started = await page.evaluate("performance.now()")
     await page.mouse.move(
         portrait_rect["left"] + portrait_rect["width"] * 0.18,
         portrait_y,
     )
-    await page.wait_for_timeout(260)
-    early_evidence_shell = await _glass_shell_snapshot(page)
+    early_evidence_sample = await sample_at_page_clock(
+        page,
+        started_ms=early_cycle_started,
+        target_ms=260,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-evidence-early-260ms",
+    )
+    early_evidence_shell = early_evidence_sample["state"]
     if early_evidence_shell["progress"] < 0.68 or early_evidence_shell["portalOpacity"] < 0.55:
         raise AssertionError(f"Glass early evidence cycle is not shell-visible: {early_evidence_shell}")
     await page.screenshot(path=str(OUT_DIR / early_name), full_page=False)
@@ -552,13 +635,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         portrait_rect["left"] + portrait_rect["width"] * 0.82,
         portrait_y,
     )
-    evidence_elapsed = float(
-        await page.evaluate("started => performance.now() - started", evidence_started)
+    mid_evidence_sample = await sample_at_page_clock(
+        page,
+        started_ms=evidence_started,
+        target_ms=900,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-evidence-mid-900ms",
     )
-    evidence_wait = max(0, int(900 - evidence_elapsed))
-    if evidence_wait:
-        await page.wait_for_timeout(evidence_wait)
-    mid_evidence_shell = await _glass_shell_snapshot(page)
+    mid_evidence_shell = mid_evidence_sample["state"]
     if (
         not 0.15 <= mid_evidence_shell["progress"] <= 0.65
         or mid_evidence_shell["portalOpacity"] <= 0.18
@@ -704,9 +789,42 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
 
         # After answer activity and pointer proximity end, reading mode must
         # return to its calm rest posture rather than accumulating travel.
+        # Detection runs in-page at frame granularity within the original
+        # 1900ms budget; a cap breach is retried only when the runner's own
+        # frame rate during the wait proves starvation.
         await page.mouse.move(70, 80)
-        await page.wait_for_timeout(1900)
-        settled = await _glass_motion_snapshot(page)
+        calm_started = await page.evaluate("performance.now()")
+        calm_wait = await wait_state_settled(
+            page,
+            started_ms=calm_started,
+            done_expr="""() => {
+              const s = getComputedStyle(document.documentElement);
+              const reveal = parseFloat(s.getPropertyValue('--glass-reveal')) || 0;
+              const zero = ['', '0px', '0.0px'];
+              const unit = ['', '1', '1.0', '1.000'];
+              const artX = s.getPropertyValue('--glass-art-x').trim();
+              const artY = s.getPropertyValue('--glass-art-y').trim();
+              const artScale = s.getPropertyValue('--glass-art-scale').trim();
+              const pointerX = s.getPropertyValue('--glass-pointer-x').trim();
+              const pointerY = s.getPropertyValue('--glass-pointer-y').trim();
+              return reveal <= .03 && zero.includes(artX) && zero.includes(artY)
+                && unit.includes(artScale) && zero.includes(pointerX) && zero.includes(pointerY);
+            }""",
+            timeout_ms=1_900,
+            read_expr=_GLASS_MOTION_EXPR,
+            evidence_log=TIMING_EVIDENCE,
+            label=f"glass-{variant}-calm-settle",
+        )
+        settled = calm_wait["state"]
+        if not calm_wait["done"]:
+            check_settle_window(
+                f"Glass reading mode did not settle after answer activity: {settled}",
+                calm_wait,
+                lo_ms=0,
+                hi_ms=1_900,
+                evidence_log=TIMING_EVIDENCE,
+                label=f"glass-{variant}-calm-settle",
+            )
         settled_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "settled", "shell": settled_shell, **settled})
         if settled["reveal"] > 0.03:
@@ -1071,14 +1189,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     }
 
 
-async def main() -> None:
-    report: dict[str, Any] = {
-        "base_url": BASE_URL,
-        "runtime_expectation": "mock",
-        "provider_calls_expected": 0,
-        "views": {},
-        "padiem_glass_preview": {},
-    }
+async def _run_checks(report: dict[str, Any]) -> None:
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         try:
@@ -1099,11 +1210,21 @@ async def main() -> None:
             await claw_tablet_page.close()
 
             for variant in ("female", "male"):
-                glass_page = await browser.new_page()
-                report["padiem_glass_preview"][variant] = await _capture_glass_preview(
-                    glass_page, variant=variant
+                async def _preview_cycle(variant: str = variant) -> dict[str, Any]:
+                    glass_page = await browser.new_page()
+                    try:
+                        return await _capture_glass_preview(glass_page, variant=variant)
+                    finally:
+                        await glass_page.close()
+
+                # A TimingOvershoot only occurs when the in-page measurement
+                # proves the runner overshot the requested sampling window;
+                # the retry repeats the identical thresholds on a fresh cycle.
+                report["padiem_glass_preview"][variant] = await with_timing_retries(
+                    _preview_cycle,
+                    label=f"glass-preview-{variant}",
+                    evidence_log=TIMING_EVIDENCE,
                 )
-                await glass_page.close()
 
             # Reduced-motion: Auto/touch-style motion stays static, while an
             # explicit On state resolves immediately without animation.
@@ -1174,25 +1295,46 @@ async def main() -> None:
         finally:
             await browser.close()
 
-    female_home = OUT_DIR / report["padiem_glass_preview"]["female"]["home_screenshot"]
-    male_home = OUT_DIR / report["padiem_glass_preview"]["male"]["home_screenshot"]
-    female_hash = _sha256_file(female_home)
-    male_hash = _sha256_file(male_home)
-    if female_hash == male_hash:
-        raise AssertionError(
-            "Padiem Glass Female/Male variants rendered pixel-identical home screenshots; portrait layer is not visibly contributing"
-        )
-    report["padiem_glass_visual_distinction"] = {
-        "female_home_sha256": female_hash,
-        "male_home_sha256": male_hash,
-        "different": True,
-        "status": "PASS",
-    }
 
-    report["status"] = "PASS"
-    (OUT_DIR / "report.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+async def main() -> None:
+    report: dict[str, Any] = {
+        "base_url": BASE_URL,
+        "runtime_expectation": "mock",
+        "provider_calls_expected": 0,
+        "views": {},
+        "padiem_glass_preview": {},
+    }
+    out = OUT_DIR / "report.json"
+    try:
+        await _run_checks(report)
+        female_home = OUT_DIR / report["padiem_glass_preview"]["female"]["home_screenshot"]
+        male_home = OUT_DIR / report["padiem_glass_preview"]["male"]["home_screenshot"]
+        female_hash = _sha256_file(female_home)
+        male_hash = _sha256_file(male_home)
+        if female_hash == male_hash:
+            raise AssertionError(
+                "Padiem Glass Female/Male variants rendered pixel-identical home screenshots; portrait layer is not visibly contributing"
+            )
+        report["padiem_glass_visual_distinction"] = {
+            "female_home_sha256": female_hash,
+            "male_home_sha256": male_hash,
+            "different": True,
+            "status": "PASS",
+        }
+        report["status"] = "PASS"
+        if TIMING_EVIDENCE:
+            report["timing_evidence"] = TIMING_EVIDENCE
+    except Exception as exc:
+        report["status"] = (
+            "OVERSHOOT-EXHAUSTED" if isinstance(exc, TimingOvershoot) else "FAIL"
+        )
+        report["error"] = str(exc)[:2000]
+        if TIMING_EVIDENCE:
+            report["timing_evidence"] = TIMING_EVIDENCE
+        out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        raise
+
+    out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 
