@@ -562,7 +562,90 @@ def test_post_deploy_guard_requires_overlay_when_predeploy_had_it() -> None:
     assert "B54_ENGINE_OVERLAY_EXPECTED=${overlay_expected}" in block
 
 
-def test_rollback_job_is_untouched_by_the_guard() -> None:
+def test_rollback_job_proves_served_version_equals_the_explicit_target() -> None:
+    # #2748 deliberately SUPERSEDES the earlier "rollback job is untouched by
+    # the guard" contract, which was correct only while the guard was
+    # deploy-scoped. Rollback is now its own mutation class: a code deploy must
+    # prove the served version CHANGED, a rollback must prove the served version
+    # EQUALS the target the owner named. Wrangler's exit zero alone is not that
+    # proof, because a bare `wrangler rollback` implicitly selects a previous
+    # upload that no evidence names.
     text = _workflow_text()
     rollback_block = text.split("rollback-production-engine:", 1)[1]
-    assert "b54_engine_served_version_guard.py" not in rollback_block
+
+    # The target must be named by the operator, never inferred.
+    assert "rollback_version_id" in text
+    assert 'ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}' in rollback_block
+    assert 'REASON=rollback_version_id is required; implicit previous-version selection is refused' in rollback_block
+    assert 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO' in rollback_block
+
+    # Wrangler receives the explicit target; the bare form is gone.
+    assert 'npx wrangler@4 rollback "${ROLLBACK_TARGET}"' in rollback_block
+    assert "rollback --message" not in rollback_block
+
+    # Readback uses the canonical resolver, and asserts equality with the target.
+    assert "b54_engine_served_version_guard.py resolve-active" in rollback_block
+    assert 'validate-version-id --version-id "${ROLLBACK_TARGET}"' in rollback_block
+    assert 'if [ "${served_version}" = "${ROLLBACK_TARGET}" ]; then' in rollback_block
+    assert "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS" in rollback_block
+
+    # No envelope rule may be re-implemented in the workflow (#2740 contract).
+    for forbidden in ("jq ", ".result.deployments", "versions[0]", "percentage"):
+        assert forbidden not in rollback_block, f"inline envelope rule: {forbidden}"
+
+    # Evidence order: command exit is never the final claim; served==target and
+    # the explicit no-earned-pass marker both precede the rollback PASS.
+    assert rollback_block.index("POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS") < rollback_block.index(
+        "B54_ENGINE_PRODUCTION_ROLLBACK=PASS"
+    )
+    assert rollback_block.index("B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO") < rollback_block.index(
+        "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS"
+    )
+    assert "ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO" in rollback_block
+    assert rollback_block.index("ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO") < rollback_block.index(
+        "B54_ENGINE_PRODUCTION_ROLLBACK=PASS"
+    )
+
+    # Readback stays GET-only.
+    for line in rollback_block.splitlines():
+        if "curl " in line:
+            assert "-fsS" in line and "--data" not in line
+
+
+def test_bare_rollback_pass_marker_appears_exactly_once() -> None:
+    text = _workflow_text()
+    assert text.count("echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'") == 1
+
+
+# --- validate-version-id: the canonical charset rule as a CLI surface (#2748) ---
+
+def _validate(helper, version_id: str) -> tuple[int, str]:
+    import contextlib
+    import io
+
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+        code = helper.main(["validate-version-id", "--version-id", version_id])
+    return code, stdout.getvalue() + stderr.getvalue()
+
+
+def test_validate_version_id_accepts_canonical_ids() -> None:
+    helper = _load_helper()
+    for version_id in ("ver-A", "a", "9" * 64, "11111111-1111-1111-1111-111111111111"):
+        code, out = _validate(helper, version_id)
+        assert code == 0, version_id
+        assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" in out
+        assert "VERSION_ID_SAFE_CHARSET=YES" in out
+
+
+def test_validate_version_id_rejects_unsafe_ids_without_echoing_them() -> None:
+    # An unsafe id is the exact untrusted string this rule exists to keep out of
+    # CI logs and GITHUB_ENV, so the rejection must not print the value back.
+    helper = _load_helper()
+    for version_id in ("", "   ", "ver A; rm -rf /", "a:b", "9" * 65, "ver\nPASS"):
+        code, out = _validate(helper, version_id)
+        assert code == 1, version_id
+        assert "unsafe charset" in out
+        if version_id:
+            assert version_id not in out
+        assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" not in out
