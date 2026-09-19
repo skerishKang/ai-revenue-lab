@@ -24,7 +24,12 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 #   {"version": 1,
 #    "caller": {"caller_id": "b54-p01-overlay-20260914-a1",
 #               "credential": <raw B62_P01_ENGINE_CREDENTIAL>,
-#               "allowed_app_ids": ["b54-padiem-claw"]}}
+#               "allowed_app_ids": ["b54-padiem-claw", "b54-padiem-claw-drive",
+#                                   "b54-padiem-claw-telegram"]}}
+#
+# The app list started as the single Claw reader (#2375), gained the canonical
+# Drive reader (#2645), and gains the canonical Telegram reader (#2721); each
+# extension is additive and re-proven by the P01 caller-id parity contract.
 #
 # Served-version proof (not the settings plane): a secret PUT may create or
 # activate a NEW Worker version, so pre- and post-mutation readback is proven on
@@ -64,6 +69,7 @@ on:
       - ".github/scripts/b54_engine_caller_registry_overlay_rotation.py"
       - ".github/scripts/b54_engine_served_version_guard.py"
       - ".github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py"
+      - ".github/tests/test_b54_p01_overlay_caller_id_parity.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -134,6 +140,12 @@ jobs:
 
       - name: Run engine overlay rotation gate contract tests
         run: python .github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py
+
+      # The canonical app set lives both in this gate's payload builder and in
+      # the P01 caller_id/credential parity contract (#2523); overlay app-list
+      # edits must keep parity green here, not only in the provisioning gate.
+      - name: Run P01 overlay caller-id parity contract
+        run: python .github/tests/test_b54_p01_overlay_caller_id_parity.py
 
       - name: Source-only evidence
         run: |
