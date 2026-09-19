@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - "apps/padiem-chat/**"
-      - ".github/workflows/b62-pr-preview.yml"
+      - ".github/workflows/b62-pr-preview.yml"\n      - ".github/scripts/b62_pr_preview_glass_qa.py"
 
 permissions:
   contents: read
@@ -136,6 +136,36 @@ jobs:
 
           echo "url=${IMMUTABLE_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
           echo "alias_url=${ALIAS_URL}/?theme=padiem-glass&glass=female" >> "${GITHUB_OUTPUT}"
+
+      - name: Set up Python for immutable Preview smoke
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned Playwright for immutable Preview smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'playwright==1.55.0'
+          python -m playwright install --with-deps chromium
+
+      - name: Browser-smoke immutable Glass Preview
+        shell: bash
+        env:
+          B62_QA_BASE_URL: ${{ steps.deploy.outputs.immutable_url }}
+          B62_QA_OUT_DIR: .tmp/b62-preview-browser-qa
+        run: |
+          set -euo pipefail
+          python .github/scripts/b62_pr_preview_glass_qa.py
+
+      - name: Upload immutable Preview browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-pr-preview-browser-qa
+          path: .tmp/b62-preview-browser-qa
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Publish preview URL
         shell: bash
