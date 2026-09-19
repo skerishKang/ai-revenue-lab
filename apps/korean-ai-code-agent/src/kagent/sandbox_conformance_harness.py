@@ -21,7 +21,11 @@ from .contracts import (
     SandboxLeaseRequest,
     SandboxLeaseState,
 )
-from .sandbox import DeterministicFakeSandboxProvider, SandboxLeaseError
+from .sandbox import (
+    SandboxLeaseError,
+    SandboxLeasePort,
+    supports_workload_cancellation,
+)
 from .sandbox_conformance import (
     IsolationPrimitive,
     SandboxArtifactManifest,
@@ -232,12 +236,77 @@ class SandboxProviderConformanceHarness:
             policy_version=assessment.policy_version,
         )
 
-    def evaluate_lease_lifecycle(
+    def evaluate_cancellation(
         self,
-        provider: DeterministicFakeSandboxProvider,
+        provider: SandboxLeasePort,
         request: SandboxLeaseRequest,
     ) -> bool:
-        """Verifies single active lease per run, release, and terminal non-resurrection."""
+        """Exercise cancellation instead of trusting a declared capability boolean.
+
+        ``cancellation_kills_workload`` is a provider's own assertion. This drives
+        the operation: the capability must exist at all, a cancel must terminate the
+        lease, wrong-run / unknown-lease / double-cancel must each fail closed, a
+        cancelled lease must refuse renew and release, and the run must still be able
+        to allocate again under the existing one-active-lease rule.
+
+        A missing capability returns False rather than raising, so a provider that
+        cannot cancel fails Cloud M1 conformance instead of being scored on the
+        strength of its claim.
+        """
+        if not supports_workload_cancellation(provider):
+            return False
+        cancellation = provider.cancel  # type: ignore[attr-defined]
+        try:
+            lease = provider.allocate(request)
+
+            # Another run must not be able to cancel this lease.
+            try:
+                cancellation(lease.lease_id, run_id="run_someone_else")
+                return False
+            except SandboxLeaseError:
+                pass
+
+            # An unknown lease must not report a cancellation.
+            try:
+                cancellation("lease_does_not_exist", run_id=request.run_id)
+                return False
+            except SandboxLeaseError:
+                pass
+
+            cancelled = cancellation(lease.lease_id, run_id=request.run_id)
+            if not isinstance(cancelled, SandboxLease) or cancelled.state is not SandboxLeaseState.RELEASED:
+                return False
+
+            # Double cancel fails closed, and nothing may revive the lease afterwards.
+            follow_ups = (
+                lambda: cancellation(lease.lease_id, run_id=request.run_id),
+                lambda: provider.renew(lease.lease_id, run_id=request.run_id, ttl_seconds=900),
+                lambda: provider.release(lease.lease_id, run_id=request.run_id),
+            )
+            for attempt in follow_ups:
+                try:
+                    attempt()
+                    return False
+                except SandboxLeaseError:
+                    pass
+
+            # The run owns no active lease now, so the one-active-lease rule must
+            # let it allocate again rather than treat cancellation as a lock.
+            provider.allocate(request)
+            return True
+        except (SandboxLeaseError, ContractError):
+            return False
+
+    def evaluate_lease_lifecycle(
+        self,
+        provider: SandboxLeasePort,
+        request: SandboxLeaseRequest,
+    ) -> bool:
+        """Verifies single active lease per run, release, cancellation, and terminal non-resurrection.
+
+        Typed to the port, not to the fake, so a real provider can be evaluated
+        here once one exists (#1405).
+        """
         self.gate.validate_lease_request(request)
 
         # 1. First allocation succeeds
@@ -264,7 +333,8 @@ class SandboxProviderConformanceHarness:
         except SandboxLeaseError:
             pass
 
-        return True
+        # 5. Cancellation is exercised, not declared (#1405).
+        return self.evaluate_cancellation(provider, request)
 
     def evaluate_artifact_manifest(self, manifest: SandboxArtifactManifest) -> bool:
         """Verifies artifact counts, bounds, and terminal sanitization."""
