@@ -12,6 +12,12 @@ from kagent.contracts import (
 )
 from kagent.sandbox import DeterministicFakeSandboxProvider, SandboxLeaseError
 from kagent.sandbox_policy import (
+    CLOUD_WORKSPACE_PATH_POLICY_DEFAULT_DENY,
+    CLOUD_WORKSPACE_ROOT_WILDCARD_EXPRESSIBLE,
+    CLOUD_WORKSPACE_WRITABLE_WORKSPACE_BOOL_IS_AUTHORITY,
+    CloudWorkspacePathDecision,
+    CloudWorkspacePathPolicy,
+    CloudWorkspacePathRule,
     IsolationPrimitive,
     PRODUCTION_SANDBOX_CLAIM,
     REAL_SANDBOX_PROVIDER_CALLS,
@@ -27,6 +33,7 @@ from kagent.sandbox_policy import (
     SandboxProviderCapabilities,
     SandboxResourceLimits,
     VerifiedDiffEvidenceContract,
+    WorkspacePathOperation,
 )
 
 
@@ -169,6 +176,379 @@ class SandboxPolicyContractTests(unittest.TestCase):
         self.assertFalse(REAL_SANDBOX_PROVIDER_SELECTED)
         self.assertEqual(REAL_SANDBOX_PROVIDER_CALLS, 0)
         self.assertFalse(PRODUCTION_SANDBOX_CLAIM)
+
+
+class CloudWorkspacePathRuleTests(unittest.TestCase):
+    """#2755 invariants 1-3, 5: what a single rule is even allowed to say."""
+
+    def test_canonical_relative_read_only_rule_accepted(self):
+        rule = CloudWorkspacePathRule("src/app.py", readable=True)
+        self.assertEqual(rule.path_prefix_relative, "src/app.py")
+        self.assertEqual(rule.granted_operations, frozenset({WorkspacePathOperation.READ}))
+
+    def test_canonical_relative_write_rule_accepted(self):
+        rule = CloudWorkspacePathRule(
+            "src",
+            readable=True,
+            writable=True,
+            create_allowed=True,
+            delete_allowed=True,
+        )
+        self.assertEqual(
+            rule.granted_operations,
+            frozenset(WorkspacePathOperation),
+        )
+
+    def test_rule_normalizes_outer_whitespace_only(self):
+        self.assertEqual(
+            CloudWorkspacePathRule("  src/lib  ", readable=True).path_prefix_relative, "src/lib"
+        )
+
+    def test_rule_requiring_at_least_one_grant(self):
+        with self.assertRaises(ContractError):
+            CloudWorkspacePathRule("src")
+
+    def test_rule_rejects_non_boolean_flags(self):
+        for flag in ("readable", "writable", "create_allowed", "delete_allowed"):
+            with self.subTest(flag=flag):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule("src", **{flag: 1})
+
+    def test_absolute_posix_and_home_paths_rejected(self):
+        for value in ("/abs/path", "/src", "~/secrets", "~"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+    def test_windows_drive_and_unc_forms_rejected(self):
+        for value in ("C:/Windows", "d:/repo/src", "C:\\Users", "//server/share/x"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+    def test_parent_traversal_rejected(self):
+        for value in ("..", "../out", "src/../../etc/passwd", "a/../b"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+    def test_backslash_and_control_characters_rejected_under_posix_wire_contract(self):
+        for value in ("src\\app.py", "a/b\\c", "src\\sub\\x", "src/app\x00py", "src/app\npy", "src/app\tpy"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+    def test_empty_and_redundant_segments_rejected(self):
+        # PurePosixPath would silently collapse these; refusing them is the point.
+        for value in ("", "   ", "a//b", "./a", "a/.", "a/", "src//app.py"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+    def test_wildcards_rejected_so_root_wide_grant_is_not_expressible(self):
+        for value in ("*", "src/*", "*/app.py", "src/?.py", "src/[a]pp", "src/{app}", "."):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, writable=True)
+        self.assertFalse(CLOUD_WORKSPACE_ROOT_WILDCARD_EXPRESSIBLE)
+
+    def test_credential_sensitive_material_rejected_case_insensitively(self):
+        for value in (
+            "src/.env",
+            "src/.ENV",
+            "repo/.git/config",
+            "keys/id_rsa",
+            "a/credentials.json",
+            "x/service.pem",
+            "x/SERVICE.PEM",
+            "deploy/tls.key",
+            "cfg/.aws/credentials",
+        ):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+    def test_path_length_bounded(self):
+        CloudWorkspacePathRule("a" * 512, readable=True)
+        with self.assertRaises(ContractError):
+            CloudWorkspacePathRule("a" * 513, readable=True)
+
+    def test_non_string_path_rejected(self):
+        for value in (None, 123, b"src", ["src"], ("src",)):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(value, readable=True)
+
+
+class CloudWorkspacePathPolicyTests(unittest.TestCase):
+    """#2755 invariants 4, 6-11 and the minimum-test matrix."""
+
+    READ = WorkspacePathOperation.READ
+    WRITE = WorkspacePathOperation.WRITE
+    CREATE = WorkspacePathOperation.CREATE
+    DELETE = WorkspacePathOperation.DELETE
+
+    def policy(self, *rules: CloudWorkspacePathRule) -> CloudWorkspacePathPolicy:
+        return CloudWorkspacePathPolicy(rules=tuple(rules))
+
+    def test_default_policy_denies_everything(self):
+        policy = CloudWorkspacePathPolicy()
+        for operation in (self.READ, self.WRITE, self.CREATE, self.DELETE):
+            with self.subTest(operation=operation):
+                self.assertFalse(policy.authorize("src/app.py", operation))
+        self.assertTrue(CLOUD_WORKSPACE_PATH_POLICY_DEFAULT_DENY)
+
+    def test_unmatched_path_denied_while_matched_path_allowed(self):
+        policy = self.policy(CloudWorkspacePathRule("src", readable=True))
+        self.assertTrue(policy.authorize("src/app.py", self.READ))
+        self.assertFalse(policy.authorize("docs/readme.md", self.READ))
+
+    def test_read_only_rule_denies_write_create_delete(self):
+        policy = self.policy(CloudWorkspacePathRule("src", readable=True))
+        decision = policy.decide("src/app.py")
+        self.assertTrue(decision.readable)
+        self.assertFalse(decision.writable)
+        self.assertFalse(decision.create_allowed)
+        self.assertFalse(decision.delete_allowed)
+        self.assertEqual(
+            decision.denied_operations, frozenset({self.WRITE, self.CREATE, self.DELETE})
+        )
+
+    def test_write_rule_does_not_imply_delete_unless_explicit(self):
+        write_only = self.policy(CloudWorkspacePathRule("out", readable=True, writable=True))
+        self.assertTrue(write_only.authorize("out/report.txt", self.WRITE))
+        self.assertFalse(write_only.authorize("out/report.txt", self.DELETE))
+        self.assertFalse(write_only.authorize("out/report.txt", self.CREATE))
+
+        with_delete = self.policy(
+            CloudWorkspacePathRule("out", readable=True, writable=True, delete_allowed=True)
+        )
+        self.assertTrue(with_delete.authorize("out/report.txt", self.DELETE))
+
+    def test_create_is_independent_of_write(self):
+        write_only = self.policy(CloudWorkspacePathRule("out", writable=True))
+        self.assertTrue(write_only.authorize("out/existing.txt", self.WRITE))
+        self.assertFalse(write_only.authorize("out/new.txt", self.CREATE))
+
+    def test_writable_workspace_true_grants_no_path_write_authority(self):
+        fs = SandboxFilesystemPolicy()
+        self.assertTrue(fs.writable_workspace)
+
+        lease = SandboxLeaseSecurityPolicy()
+        self.assertTrue(lease.filesystem_policy.writable_workspace)
+        self.assertEqual(lease.path_policy.rules, ())
+        for operation in (self.READ, self.WRITE, self.CREATE, self.DELETE):
+            with self.subTest(operation=operation):
+                self.assertFalse(lease.path_policy.authorize("src/app.py", operation))
+
+        self.assertFalse(CLOUD_WORKSPACE_WRITABLE_WORKSPACE_BOOL_IS_AUTHORITY)
+
+    def test_existing_filesystem_threat_model_booleans_still_enforced(self):
+        for kwargs in (
+            {"host_mounts_allowed": True},
+            {"runtime_socket_exposed": True},
+            {"workspace_reuse_allowed": True},
+            {"checkout_hooks_disabled": False},
+        ):
+            with self.subTest(**kwargs):
+                with self.assertRaises(ContractError):
+                    SandboxFilesystemPolicy(**kwargs)
+        with self.assertRaises(ContractError):
+            SandboxLeaseSecurityPolicy(path_policy="not-a-policy")
+
+    def test_duplicate_prefix_rules_rejected(self):
+        with self.assertRaises(ContractError):
+            self.policy(
+                CloudWorkspacePathRule("src", readable=True),
+                CloudWorkspacePathRule("src", writable=True),
+            )
+
+    def test_duplicate_rejected_after_normalization(self):
+        with self.assertRaises(ContractError):
+            self.policy(
+                CloudWorkspacePathRule("  src  ", readable=True),
+                CloudWorkspacePathRule("src", writable=True),
+            )
+
+    def test_nested_rule_may_narrow_but_never_widen(self):
+        narrowed = self.policy(
+            CloudWorkspacePathRule("src", readable=True, writable=True),
+            CloudWorkspacePathRule("src/vendor", readable=True),
+        )
+        self.assertTrue(narrowed.authorize("src/app.py", self.WRITE))
+        self.assertFalse(narrowed.authorize("src/vendor/lib.js", self.WRITE))
+        self.assertTrue(narrowed.authorize("src/vendor/lib.js", self.READ))
+
+        with self.assertRaises(ContractError) as caught:
+            self.policy(
+                CloudWorkspacePathRule("src", readable=True),
+                CloudWorkspacePathRule("src/secret", writable=True),
+            )
+        self.assertIn("may not grant", str(caught.exception))
+
+    def test_sibling_rules_do_not_constrain_each_other(self):
+        policy = self.policy(
+            CloudWorkspacePathRule("src", readable=True),
+            CloudWorkspacePathRule("out", writable=True),
+        )
+        self.assertTrue(policy.authorize("src/app.py", self.READ))
+        self.assertTrue(policy.authorize("out/report.txt", self.WRITE))
+        self.assertFalse(policy.authorize("out/report.txt", self.READ))
+
+    def test_prefix_matching_is_segment_aware(self):
+        policy = self.policy(CloudWorkspacePathRule("src", readable=True))
+        self.assertFalse(policy.authorize("srcdir/app.py", self.READ))
+        self.assertFalse(policy.authorize("notsrc/x", self.READ))
+        self.assertTrue(policy.authorize("src/a/b/c", self.READ))
+
+    def test_rule_count_bounded(self):
+        at_limit = tuple(
+            CloudWorkspacePathRule(f"dir{index}", readable=True) for index in range(64)
+        )
+        CloudWorkspacePathPolicy(rules=at_limit)
+        with self.assertRaises(ContractError):
+            CloudWorkspacePathPolicy(rules=at_limit + (CloudWorkspacePathRule("dir999", readable=True),))
+
+    def test_rules_must_be_rule_objects(self):
+        with self.assertRaises(ContractError):
+            CloudWorkspacePathPolicy(rules=("src",))
+        with self.assertRaises(ContractError):
+            CloudWorkspacePathPolicy(rules=[CloudWorkspacePathRule("src", readable=True)])
+
+    def test_denied_defaults_are_not_escalatable(self):
+        for kwargs in (
+            {"default_read": True},
+            {"default_write": True},
+            {"default_create": True},
+            {"default_delete": True},
+        ):
+            with self.subTest(**kwargs):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathPolicy(**kwargs)
+
+    def test_identical_input_produces_identical_decision(self):
+        rules = (
+            CloudWorkspacePathRule("src", readable=True, writable=True),
+            CloudWorkspacePathRule("src/vendor", readable=True),
+        )
+        first = self.policy(*rules).decide("src/vendor/a.js")
+        second = self.policy(*rules).decide("src/vendor/a.js")
+        self.assertEqual(first, second)
+        self.assertEqual(first.safe_dict(), second.safe_dict())
+
+    def test_resolution_is_independent_of_rule_declaration_order(self):
+        forward = (
+            CloudWorkspacePathRule("src", readable=True, writable=True, delete_allowed=True),
+            CloudWorkspacePathRule("src/vendor", readable=True, writable=True),
+            CloudWorkspacePathRule("src/vendor/lock", readable=True),
+        )
+        reversed_ = tuple(reversed(forward))
+        for path in ("src/app.py", "src/vendor/a.js", "src/vendor/lock/x"):
+            for operation in (self.READ, self.WRITE, self.CREATE, self.DELETE):
+                with self.subTest(path=path, operation=operation):
+                    self.assertEqual(
+                        self.policy(*forward).authorize(path, operation),
+                        self.policy(*reversed_).authorize(path, operation),
+                    )
+
+    def test_deep_nesting_intersects_every_covering_rule(self):
+        policy = self.policy(
+            CloudWorkspacePathRule("a", readable=True, writable=True, create_allowed=True),
+            CloudWorkspacePathRule("a/b", readable=True, create_allowed=True),
+            CloudWorkspacePathRule("a/b/c", readable=True),
+        )
+        decision = policy.decide("a/b/c/d.txt")
+        self.assertTrue(decision.readable)
+        self.assertFalse(decision.writable)
+        self.assertFalse(decision.create_allowed)
+        self.assertFalse(decision.delete_allowed)
+        self.assertEqual(decision.matched_rule_prefixes, ("a", "a/b", "a/b/c"))
+
+        # Each level really is consulted: the middle grant survives its own narrowing.
+        self.assertTrue(policy.authorize("a/b/direct.txt", self.CREATE))
+        self.assertTrue(policy.authorize("a/top.txt", self.WRITE))
+
+    def test_a_descendant_may_not_add_an_operation_its_ancestor_denies(self):
+        # Deliberate strictness (#2755 invariant 7): write authority is only ever
+        # expressed top-down, so a nested rule cannot smuggle an operation back in.
+        for ancestor_grants, descendant_grants in (
+            ({"readable": True}, {"create_allowed": True}),
+            ({"readable": True}, {"delete_allowed": True}),
+            ({"readable": True, "writable": True}, {"delete_allowed": True}),
+        ):
+            with self.subTest(ancestor=ancestor_grants, descendant=descendant_grants):
+                with self.assertRaises(ContractError):
+                    self.policy(
+                        CloudWorkspacePathRule("a", **ancestor_grants),
+                        CloudWorkspacePathRule("a/b", **descendant_grants),
+                    )
+
+    def test_authorize_rejects_non_enum_operation(self):
+        policy = self.policy(CloudWorkspacePathRule("src", readable=True))
+        for invalid in ("read", None, 1):
+            with self.subTest(operation=invalid):
+                with self.assertRaises(ContractError):
+                    policy.authorize("src/app.py", invalid)
+
+    def test_decide_rejects_unsafe_path(self):
+        policy = self.policy(CloudWorkspacePathRule("src", readable=True))
+        for invalid in ("/etc/passwd", "../outside", "src/../../x", "C:/x", "src//x"):
+            with self.subTest(path=invalid):
+                with self.assertRaises(ContractError):
+                    policy.decide(invalid)
+
+    def test_safe_projection_contains_only_relative_paths_and_booleans(self):
+        policy = self.policy(
+            CloudWorkspacePathRule("src", readable=True, writable=True),
+            CloudWorkspacePathRule("src/vendor", readable=True),
+        )
+        projections = {
+            "policy": policy.safe_dict(),
+            "rule": policy.rules[0].safe_dict(),
+            "decision": policy.decide("src/vendor/a.js").safe_dict(),
+        }
+        forbidden = (
+            "host",
+            "mount",
+            "endpoint",
+            "credential",
+            "socket",
+            "secret",
+            "password",
+            "token",
+            "device",
+            "driver",
+            "image",
+            "abs",
+        )
+
+        def walk(node: object, trail: str) -> None:
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    self.assertIsInstance(key, str)
+                    leaked = [token for token in forbidden if token in key.lower()]
+                    self.assertEqual(leaked, [], f"{trail}.{key}")
+                    walk(value, f"{trail}.{key}")
+            elif isinstance(node, (list, tuple)):
+                for item in node:
+                    walk(item, trail)
+            elif isinstance(node, str):
+                self.assertFalse(node.startswith("/"))
+                self.assertNotIn("\\", node)
+                self.assertNotIn("..", node)
+                self.assertNotIn(":", node)
+            else:
+                self.assertIsInstance(node, bool, trail)
+
+        for name, projection in projections.items():
+            with self.subTest(projection=name):
+                walk(projection, name)
+
+    def test_decision_is_a_frozen_value_object(self):
+        decision = self.policy(CloudWorkspacePathRule("src", readable=True)).decide("src/a.py")
+        self.assertIsInstance(decision, CloudWorkspacePathDecision)
+        with self.assertRaises(AttributeError):
+            decision.readable = False
 
 
 if __name__ == "__main__":
