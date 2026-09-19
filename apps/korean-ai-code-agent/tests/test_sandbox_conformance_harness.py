@@ -329,5 +329,117 @@ class CancellationConformanceTests(unittest.TestCase):
         )
 
 
+class NoReclaimProvider(DeterministicFakeSandboxProvider):
+    """Reserves, renews, releases and cancels, but cannot reclaim a lapsed lease."""
+
+    active_leases = None  # type: ignore[assignment]
+    expire = None  # type: ignore[assignment]
+
+
+class DeclarationOnlyExpireProvider(DeterministicFakeSandboxProvider):
+    """Accepts a reclamation it does not perform: the lease stays reserved."""
+
+    def expire(self, lease_id: str, *, run_id: str, now) -> SandboxLease:
+        lease = self._recorded(lease_id)
+        if lease.run_id != run_id:
+            raise SandboxLeaseError("lease belongs to a different run")
+        return lease
+
+
+class BlindInventoryProvider(DeterministicFakeSandboxProvider):
+    """Reports an empty inventory while it still holds reservations."""
+
+    def active_leases(self):
+        return ()
+
+
+class StaleInventoryProvider(DeterministicFakeSandboxProvider):
+    """Keeps listing a lease it already reclaimed."""
+
+    def active_leases(self):
+        return tuple(self._leases.values())
+
+
+class ReclamationConformanceTests(unittest.TestCase):
+    """#1405 / #2803: conformance drives reclamation; it does not read ``ttl_enforced``."""
+
+    def harness(self) -> SandboxProviderConformanceHarness:
+        return SandboxProviderConformanceHarness()
+
+    def request(self, run_id: str = "run_reclaim_conformance") -> SandboxLeaseRequest:
+        return SandboxLeaseRequest(
+            run_id=run_id,
+            execution_mode=ExecutionMode.CLOUD,
+            repository_ref="skerishKang/ai-revenue-lab",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
+            ttl_seconds=900,
+            network_policy=NetworkPolicy.OFF,
+        )
+
+    def fake(self, provider_type=DeterministicFakeSandboxProvider):
+        return provider_type(clock=lambda: CANCEL_START)
+
+    def test_deterministic_fake_passes_the_reclamation_exercise(self):
+        self.assertTrue(
+            self.harness().evaluate_reclamation(self.fake(), self.request())
+        )
+
+    def test_missing_reclamation_capability_fails_closed(self):
+        harness = self.harness()
+        # Cancellation alone is no longer enough to conform: step 6 is its own gate.
+        # Fresh providers, because each step exercises a live reservation.
+        self.assertTrue(
+            harness.evaluate_cancellation(self.fake(NoReclaimProvider), self.request())
+        )
+        self.assertFalse(
+            harness.evaluate_lease_lifecycle(self.fake(NoReclaimProvider), self.request())
+        )
+        self.assertTrue(
+            harness.evaluate_lease_lifecycle(self.fake(), self.request())
+        )
+        self.assertFalse(
+            harness.evaluate_reclamation(self.fake(NoReclaimProvider), self.request())
+        )
+
+    def test_expire_that_leaves_the_lease_reserved_fails_closed(self):
+        self.assertFalse(
+            self.harness().evaluate_reclamation(
+                self.fake(DeclarationOnlyExpireProvider), self.request()
+            )
+        )
+
+    def test_an_inventory_that_loses_a_reservation_fails_closed(self):
+        self.assertFalse(
+            self.harness().evaluate_reclamation(
+                self.fake(BlindInventoryProvider), self.request()
+            )
+        )
+
+    def test_an_inventory_that_holds_a_reclaimed_lease_fails_closed(self):
+        self.assertFalse(
+            self.harness().evaluate_reclamation(
+                self.fake(StaleInventoryProvider), self.request()
+            )
+        )
+
+    def test_declared_ttl_enforcement_alone_does_not_make_a_provider_conform(self):
+        harness = self.harness()
+        declared = SandboxProviderCapabilities(
+            provider_id="declaring_provider",
+            isolation_primitive=IsolationPrimitive.MICROVM,
+            **{
+                name: True
+                for name in SandboxProviderCapabilities.__dataclass_fields__
+                if name not in {"provider_id", "isolation_primitive"}
+            },
+        )
+        # ``ttl_enforced`` is claimed true, so the boolean report conforms…
+        self.assertTrue(harness.evaluate_capabilities(declared).overall_conforming)
+        # …while a provider that cannot reclaim a lapsed lease fails the lifecycle.
+        self.assertFalse(
+            harness.evaluate_lease_lifecycle(self.fake(NoReclaimProvider), self.request())
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
