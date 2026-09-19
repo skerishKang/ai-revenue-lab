@@ -17,6 +17,7 @@ on:
       - ".github/scripts/b62_product_surface_certification_evidence_qa.py"
       - ".github/scripts/b62_post_certification_browser_qa.py"
       - ".github/scripts/b62_visual_timing.py"
+      - ".github/scripts/b61_public_product_film_capture.py"
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
@@ -126,3 +127,76 @@ jobs:
           path: .tmp/b62-browser-qa
           if-no-files-found: error
           retention-days: 14
+
+  storymemory-public-product-film-capture:
+    name: Capture public StoryMemory product film
+    if: github.event_name == 'pull_request' && github.head_ref == 'feat/2797-storymemory-film-capture-current-main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Verify capture source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -f .github/scripts/b61_public_product_film_capture.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Playwright
+        run: python -m pip install --disable-pip-version-check 'playwright==1.55.0'
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Capture public StoryMemory UI
+        run: python .github/scripts/b61_public_product_film_capture.py
+      - name: Encode review artifacts
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -loglevel error -y -i .tmp/b61-public-product-film/storymemory-product-film-v1.webm -an -c:v libx264 -pix_fmt yuv420p -preset medium -crf 20 -movflags +faststart .tmp/b61-public-product-film/storymemory-product-film-v1.mp4
+          ffmpeg -hide_banner -loglevel error -y -ss 12 -i .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 -frames:v 1 -an -c:v libwebp -quality 84 .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+          sha256sum .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 .tmp/b61-public-product-film/storymemory-product-still-v1.webp > .tmp/b61-public-product-film/SHA256SUMS.txt
+          ffprobe -v error -show_entries format=duration,size,format_name -show_entries stream=codec_name,width,height,pix_fmt -of json .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 > .tmp/b61-public-product-film/film-metadata.json
+      - name: Enforce review-only contract
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('.tmp/b61-public-product-film')
+          metadata = json.loads((root / 'film-metadata.json').read_text())
+          evidence = json.loads((root / 'capture-evidence.json').read_text())
+          duration = float(metadata['format']['duration'])
+          video = next(stream for stream in metadata['streams'] if stream.get('codec_name') == 'h264')
+          assert 15 <= duration <= 40
+          assert (video.get('width'), video.get('height')) == (1440, 900)
+          assert video.get('pix_fmt') == 'yuv420p'
+          assert evidence['login_performed'] is False
+          assert evidence['note_saved'] is False
+          assert evidence['ai_prompt_submitted'] is False
+          assert evidence['visible_email'] is False
+          assert evidence['selected_book'] == '일리아드'
+          assert evidence['final_screen'] == 'reader'
+          assert evidence['reader_title'] == '일리아드'
+          assert evidence['interaction_count'] >= 9
+          required = {'open_iliad_reader', 'reader_next_page', 'memory_note_cancel', 'ai_prompt_draft_no_submit'}
+          assert required.issubset(set(evidence['interactions']))
+          print('STORYMEMORY_PUBLIC_CAPTURE_CONTRACT=PASS')
+          print(f"INTERACTION_COUNT={evidence['interaction_count']}")
+          print(f"CONSOLE_ERROR_COUNT={evidence['console_error_count']}")
+          print(f"PAGE_ERROR_COUNT={evidence['page_error_count']}")
+          PY
+      - name: Upload private review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: storymemory-product-film-v1-review
+          path: .tmp/b61-public-product-film
+          if-no-files-found: error
+          retention-days: 7
