@@ -16,8 +16,10 @@ on:
       - ".github/tests/test_b54_engine_deploy_gate_smoke.py"
       - ".github/tests/test_b54_engine_served_version_guard.py"
       - ".github/tests/test_cloudflare_served_version.py"
+      - ".github/tests/test_cloudflare_mutation_evidence.py"
       - ".github/scripts/b54_engine_served_version_guard.py"
       - ".github/scripts/cloudflare_served_version.py"
+      - ".github/scripts/cloudflare_mutation_evidence.py"
       - "apps/padiem-ai-engine/scripts/a9_production_smoke.py"
       - "apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py"
   workflow_dispatch:
@@ -43,7 +45,7 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py
 
       - name: Record no deploy performed
         run: |
