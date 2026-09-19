@@ -32,9 +32,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      # Dedicated R2 credential authority established by #2377/#2388/#2394.
-      # Do not fall back to the shared Engine/Worker deployment credential.
-      CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
+      # #2768: the credential is bound per step, NOT here. A single job-level
+      # token silently granted whichever authority the job happened to need, and
+      # here the two needs differ in kind: the R2 object write path needs R2
+      # read/write OPS authority, while the best-effort CDN zone/purge step is
+      # not R2 authority at all. Binding it once at job level would have pushed
+      # the R2 OPS token into zone/cache scope, or let an R2 write fall back to a
+      # read-only token. Each step below names exactly the one credential it may
+      # use, with no fallback in either direction.
+      # Do not reintroduce a shared Engine/Worker deployment credential here.
       CLOUDFLARE_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
     steps:
       - name: Checkout
@@ -107,6 +113,11 @@ jobs:
         shell: bash
         env:
           LIMIT: ${{ inputs.limit }}
+          # R2 object read/write authority only (#2768). This is the one step
+          # that mutates bucket contents, so it is the one step that may hold OPS
+          # authority. There is no fallback to the read-only credential: if this
+          # secret is absent the step fails closed on its presence guard.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_OPS_API_TOKEN }}
         run: |
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo 'R2_CREDENTIAL_PRESENT=NO'; exit 1; }
@@ -240,6 +251,14 @@ jobs:
         env:
           LIMIT: ${{ inputs.limit }}
           MANIFEST: ${{ github.workspace }}/ops/padiem-r2-c14-upload-manifest.json
+          # PRE-EXISTING AUTHORITY, UNCHANGED BY #2768. This step calls the
+          # Cloudflare zone API and purge_cache, which is DNS/cache authority,
+          # NOT R2 authority. It is pinned to the credential this workflow
+          # already used before the split rather than widened onto
+          # B62_R2_OPS_API_TOKEN, because no accepted cache-purge credential
+          # boundary exists in this repository and #2768 explicitly forbids
+          # inventing one here. Reported as an open authority gap.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
         run: |
           set -euo pipefail
           python - <<'EOF'
