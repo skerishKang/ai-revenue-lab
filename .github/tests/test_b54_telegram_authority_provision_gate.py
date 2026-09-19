@@ -154,6 +154,37 @@ def test_readback_is_name_type_only() -> None:
     assert "SECRET_VALUES_READBACK=0" in text
 
 
+def test_source_shape_gate_matches_engine_runtime_contract() -> None:
+    text = provision_job_text()
+    assert r'[0-9]{6,64}:[A-Za-z0-9_-]{20,128}' in text
+    assert 'chat_id == 0 or not -(2**63) < chat_id < 2**63' in text
+    assert 'TELEGRAM_PAIRED_CHAT_ID_DUPLICATE=FAIL' in text
+
+
+def test_create_path_refuses_preexisting_target_bindings_before_put() -> None:
+    text = provision_job_text()
+    precheck = text.index("Require create-only Telegram target state immediately before mutation")
+    push = text.index("Push the two Telegram Engine secrets")
+    assert precheck < push
+    assert 'TELEGRAM_PREMUTATION_TARGETS_ABSENT=PASS' in text
+    assert 'TELEGRAM_PROVISION_MODE=CREATE_ONLY_REFUSE_EXISTING' in text
+    assert 'token != "ABSENT" or allowlist != "ABSENT"' in text
+
+
+def test_cloudflare_error_body_is_never_emitted() -> None:
+    text = provision_job_text()
+    assert "CLOUDFLARE_ERROR_BODY_OUTPUT=0" in text
+    assert "errors: [(.errors // [])[] | {code, message}]" not in text
+
+
+def test_served_version_check_uses_bounded_convergence_poll() -> None:
+    text = provision_job_text()
+    assert "for _ in $(seq 1 30)" in text
+    assert "sleep 2" in text
+    assert "TELEGRAM_SERVED_VERSION_CONVERGENCE_MAX_ATTEMPTS=30" in text
+    assert "TELEGRAM_ACTIVE_VERSION_OWNS_AUTHORITY=PASS" in text
+
+
 def test_pending_version_activation_is_not_reported_as_success() -> None:
     text = provision_job_text()
     pending = "TELEGRAM_RUNTIME_AUTHORITY=PROVISIONED_PENDING_VERSION_ACTIVATION"
@@ -166,9 +197,9 @@ def test_pending_version_activation_is_not_reported_as_success() -> None:
 def test_rollback_is_bounded_to_partial_put_only() -> None:
     text = provision_job_text()
     assert "steps.push.outcome == 'failure'" in text
-    assert "ROLLBACK_SCOPE=PARTIAL_PUT_ONLY" in text
+    assert "ROLLBACK_SCOPE=CREATE_ONLY_PARTIAL_PUT" in text
     assert "base}/secrets/${name}" in text
-    assert "VERSION_ACTIVATION=SEPARATE_AUTHORITY" in text
+    assert "VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED" in text
 
 
 def test_locks_are_recorded() -> None:
