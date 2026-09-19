@@ -224,29 +224,39 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         )
 
     # Returning to the end restores normal progressive-follow behavior.
+    resume_started = await page.evaluate("performance.now()")
     await page.evaluate(
         "window.scrollTo(0, Math.max(document.documentElement.scrollHeight, document.body.scrollHeight))"
     )
-    try:
-        await page.wait_for_function(
-            "() => window.__padiemConversationMotion && window.__padiemConversationMotion.isFollowingLatest()",
-            timeout=2_500,
-            polling=50,
+    resume_wait = await wait_state_settled(
+        page,
+        started_ms=resume_started,
+        done_expr="""() => {
+          const motion = window.__padiemConversationMotion;
+          const remaining = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight);
+          return Boolean(motion && motion.isFollowingLatest()) && remaining <= 4;
+        }""",
+        timeout_ms=2_500,
+        read_expr="""() => ({
+          following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
+          y: window.scrollY,
+          remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight),
+        })""",
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-resume-end",
+    )
+    resumed_state = resume_wait["state"]
+    if not resume_wait["done"]:
+        check_settle_window(
+            f"returning to conversation end did not resume follow at {name}: {resumed_state}",
+            resume_wait,
+            lo_ms=0,
+            hi_ms=2_500,
+            evidence_log=TIMING_EVIDENCE,
+            label=f"{name}-resume-end",
         )
-    except Exception as exc:
-        resumed_state = await page.evaluate(
-            """
-            () => ({
-              following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
-              y: window.scrollY,
-              remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
-                - (window.scrollY + window.innerHeight),
-            })
-            """
-        )
-        raise AssertionError(
-            f"returning to conversation end did not resume follow at {name}: {resumed_state}"
-        ) from exc
 
     await page.evaluate(
         """
