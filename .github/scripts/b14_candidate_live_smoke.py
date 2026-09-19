@@ -32,9 +32,25 @@ Authority boundaries (see #2676):
 from __future__ import annotations
 
 import json
+import sys
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable
+
+# The scripts directory is not a package, so make the canonical served-version
+# resolver importable whether this module runs directly or is loaded through
+# importlib in a test. This gate deliberately reuses the canonical resolver
+# rather than growing a fifth independent implementation (see #2451 / #2737).
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from cloudflare_served_version import (  # noqa: E402
+    ServedVersionReason,
+    ServedVersionResolutionError,
+    resolve_served_version_id,
+)
 
 # --------------------------------------------------------------------------
 # Shared transport / response bounds (identical posture to the Agnes gate).
@@ -267,12 +283,57 @@ def canonical_chat_body(spec: CandidateSpec) -> dict[str, Any]:
     }
 
 
+# --------------------------------------------------------------------------
+# Closed safe error-code vocabulary (BLOCKER 2).
+#
+# Only these local, gate-owned codes may ever be projected to stdout. An
+# upstream ``error.code`` is untrusted diagnostic input and is never echoed
+# verbatim; anything outside this set becomes "unknown". "unparseable" is a
+# local classification, not a provider value.
+# --------------------------------------------------------------------------
+
+SAFE_ENGINE_ERROR_CODES: frozenset[str] = frozenset(
+    {
+        "invalid_request_error",
+        "authentication_error",
+        "permission_error",
+        "not_found_error",
+        "rate_limit_error",
+        "quota_exceeded",
+        "overloaded_error",
+        "api_error",
+        "timeout_error",
+        "upstream_error",
+        "no_safe_route",
+        "provider_error",
+        "unavailable",
+        "unparseable",
+        "unknown",
+    }
+)
+
+
 def _safe_error_code(payload: dict[str, Any]) -> str:
+    """Project an untrusted provider error onto a closed local vocabulary.
+
+    ``error.code`` and ``error.message`` arrive from a provider/B14 response
+    body and are therefore untrusted diagnostic input: an upstream can put a
+    credential, a private prompt fragment, or any other secret in either field.
+    Echoing the raw value would turn this gate into a disclosure channel, so
+    only a value drawn from :data:`SAFE_ENGINE_ERROR_CODES` is projected; every
+    other value -- including a well-formed but unrecognized code -- collapses to
+    ``"unknown"``.
+
+    ``unparseable`` is added locally when the body is not a JSON object at all.
+    """
+
     error = payload.get("error")
     if not isinstance(error, dict):
         return "unknown"
     code = error.get("code")
-    return code if isinstance(code, str) and 1 <= len(code) <= 96 else "unknown"
+    if not isinstance(code, str):
+        return "unknown"
+    return code if code in SAFE_ENGINE_ERROR_CODES else "unknown"
 
 
 def _classify_latency(latency_ms: int) -> str:
@@ -506,6 +567,46 @@ def run(
     return 0
 
 
+# --------------------------------------------------------------------------
+# Served-version guard (BLOCKER 1).
+#
+# The canonical rule is NOT reimplemented here. The whole Cloudflare
+# deployments envelope is handed to the shared canonical resolver
+# (``cloudflare_served_version.resolve_served_version_id``), which enforces:
+# a successful envelope, ``result.deployments[0]`` as the active deployment,
+# exactly one version on it, ``traffic = 100``, and a safe ``version_id``.
+#
+# Scanning every deployment in history -- the shape this gate used before --
+# lets a superseded deployment that once served 100% satisfy the guard. The
+# canonical resolver refuses that by construction, so a historical match can
+# never pass here.
+# --------------------------------------------------------------------------
+
+
+def resolve_active_served_version(payload: object) -> str:
+    """Return the active served version id using the canonical resolver.
+
+    Re-raises the resolver's own ``ServedVersionResolutionError`` (carrying its
+    closed ``reason`` code) so the caller keeps a single failure vocabulary.
+    """
+
+    return resolve_served_version_id(payload)
+
+
+def assert_served_version(payload: object, expected_version: str) -> str:
+    """Return the served version id only when it equals ``expected_version``.
+
+    Fails closed on an unresolvable envelope, on an unsafe id, and on any
+    mismatch -- including the case where ``expected_version`` appears only in a
+    non-active (historical) deployment.
+    """
+
+    served = resolve_served_version_id(payload)
+    if served != expected_version:
+        raise ServedVersionResolutionError(ServedVersionReason.VERSION_ID)
+    return served
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point.
 
@@ -513,8 +614,6 @@ def main(argv: list[str] | None = None) -> int:
     Without both, this exits non-zero and never constructs a transport, so a
     bare default invocation cannot reach Production.
     """
-
-    import sys
 
     args = list(sys.argv[1:] if argv is None else argv)
     if not args:
@@ -530,6 +629,4 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main())

@@ -18,6 +18,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / ".github" / "scripts" / "b14_candidate_live_smoke.py"
+WORKFLOW = ROOT / ".github" / "workflows" / "b14-candidate-live-smoke.yml"
 
 spec = importlib.util.spec_from_file_location("b14_candidate_live_smoke", SCRIPT)
 assert spec is not None and spec.loader is not None
@@ -466,3 +467,256 @@ def test_neutral_module_does_not_duplicate_agnes_only_literals_as_globals() -> N
     assert not any(line.startswith("UPSTREAM_MODEL = ") for line in lines)
     # The Agnes-only model literal must not be re-globalized here either.
     assert 'PROVIDER_NAME = "Agnes AI"' not in source
+
+
+# --------------------------------------------------------------------------
+# BLOCKER 1 -- canonical served-version resolver reuse
+#
+# The gate must NOT scan the deployment history. It must hand the whole
+# Cloudflare envelope to the shared canonical resolver, which pins the active
+# deployment to result.deployments[0].
+# --------------------------------------------------------------------------
+
+ACTIVE_VERSION = "11111111-1111-1111-1111-111111111111"
+HISTORICAL_VERSION = "22222222-2222-2222-2222-222222222222"
+
+
+def _cf_envelope(*deployments, success: bool = True) -> dict:
+    return {"success": success, "result": {"deployments": list(deployments)}}
+
+
+def _cf_deployment(*versions) -> dict:
+    return {"versions": list(versions)}
+
+
+def _cf_served(version_id: object = ACTIVE_VERSION, percentage: object = 100) -> dict:
+    return {"version_id": version_id, "percentage": percentage}
+
+
+def test_canonical_resolver_is_reused_not_reimplemented() -> None:
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert "from cloudflare_served_version import" in source
+    assert "resolve_served_version_id" in source
+    assert "ServedVersionReason" in source
+    # A local history walk is exactly the defect this replaces.
+    assert "for deployment in deployments" not in source
+    assert "cloudflare_served_version" in source
+
+
+def test_active_first_deployment_expected_version_passes() -> None:
+    payload = _cf_envelope(
+        _cf_deployment(_cf_served(ACTIVE_VERSION)),
+        _cf_deployment(_cf_served(HISTORICAL_VERSION, 0)),
+    )
+    assert smoke.assert_served_version(payload, ACTIVE_VERSION) == ACTIVE_VERSION
+
+
+def test_expected_version_only_in_historical_deployment_fails() -> None:
+    # The active deployment serves a *different* version; the expected id shows
+    # up only in the previous deployment. Scanning history would pass this.
+    payload = _cf_envelope(
+        _cf_deployment(_cf_served(ACTIVE_VERSION)),
+        _cf_deployment(_cf_served(HISTORICAL_VERSION)),
+    )
+    with pytest.raises(smoke.ServedVersionResolutionError):
+        smoke.assert_served_version(payload, HISTORICAL_VERSION)
+
+
+def test_historical_deployment_matching_100_percent_never_passes() -> None:
+    # Both deployments claim 100 percent, but only the first is active.
+    payload = _cf_envelope(
+        _cf_deployment(_cf_served(ACTIVE_VERSION)),
+        _cf_deployment(_cf_served(HISTORICAL_VERSION, 100)),
+    )
+    assert smoke.assert_served_version(payload, ACTIVE_VERSION) == ACTIVE_VERSION
+    with pytest.raises(smoke.ServedVersionResolutionError):
+        smoke.assert_served_version(payload, HISTORICAL_VERSION)
+
+
+def test_multiple_active_versions_fails() -> None:
+    payload = _cf_envelope(
+        _cf_deployment(_cf_served(ACTIVE_VERSION), _cf_served(HISTORICAL_VERSION)),
+    )
+    with pytest.raises(smoke.ServedVersionResolutionError) as exc:
+        smoke.assert_served_version(payload, ACTIVE_VERSION)
+    assert exc.value.reason == smoke.ServedVersionReason.VERSION_COUNT
+
+
+def test_active_version_fifty_fifty_fails() -> None:
+    # A single version at 50 percent is not the canonical shape.
+    payload = _cf_envelope(_cf_deployment({"version_id": ACTIVE_VERSION, "percentage": 50}))
+    with pytest.raises(smoke.ServedVersionResolutionError) as exc:
+        smoke.assert_served_version(payload, ACTIVE_VERSION)
+    assert exc.value.reason == smoke.ServedVersionReason.TRAFFIC
+
+
+def test_missing_or_unsafe_version_id_fails() -> None:
+    for bad in (None, "", "   ", 12345, "ver A; rm -rf /", "a:b", "9" * 65):
+        payload = _cf_envelope(_cf_deployment(_cf_served(bad)))
+        with pytest.raises(smoke.ServedVersionResolutionError) as exc:
+            smoke.resolve_active_served_version(payload)
+        assert exc.value.reason == smoke.ServedVersionReason.VERSION_ID
+
+
+def test_raw_list_and_result_versions_shortcut_fail() -> None:
+    raw_list = [
+        {"versions": [{"version_id": ACTIVE_VERSION, "percentage": 100}]},
+        {"versions": [{"version_id": HISTORICAL_VERSION, "percentage": 100}]},
+    ]
+    with pytest.raises(smoke.ServedVersionResolutionError) as exc:
+        smoke.resolve_active_served_version(raw_list)
+    assert exc.value.reason == smoke.ServedVersionReason.ENVELOPE
+
+    shortcut = {
+        "success": True,
+        "result": {"versions": [{"version_id": ACTIVE_VERSION, "percentage": 100}]},
+    }
+    with pytest.raises(smoke.ServedVersionResolutionError) as exc:
+        smoke.resolve_active_served_version(shortcut)
+    assert exc.value.reason == smoke.ServedVersionReason.DEPLOYMENT_RECORDS
+
+
+def test_unsuccessful_envelope_fails() -> None:
+    payload = _cf_envelope(_cf_deployment(_cf_served(ACTIVE_VERSION)), success=False)
+    with pytest.raises(smoke.ServedVersionResolutionError) as exc:
+        smoke.resolve_active_served_version(payload)
+    assert exc.value.reason == smoke.ServedVersionReason.ENVELOPE
+
+
+def test_workflow_uses_canonical_resolver_and_no_history_scan() -> None:
+    wf = WORKFLOW.read_text(encoding="utf-8")
+    assert "resolve_served_version_id(payload)" in wf
+    assert "from cloudflare_served_version import" in wf
+    assert "CANONICAL_SERVED_VERSION_REUSED=YES" in wf
+    assert "HISTORICAL_DEPLOYMENT_ACCEPTED=NO" in wf
+
+    # The workflow's own guard step quotes the forbidden shapes as grep
+    # patterns and documents them in comments, so a plain substring check would
+    # false-positive. Inspect only the executable Python embedded in the
+    # resolver step: there must be no local loop over deployment history, no
+    # entry-position selection, and no envelope re-serialization.
+    resolver_step = wf.split("GET-only B14 served-version guard")[1]
+    resolver_step = resolver_step.split("Execute exactly one bounded candidate")[0]
+    code_lines = []
+    for line in resolver_step.splitlines():
+        stripped = line.strip()
+        if "grep" in line or stripped.startswith("#"):
+            continue
+        code_lines.append(line)
+    code = "\n".join(code_lines)
+    assert "for deployment in deployments" not in code
+    assert "deployments[0]" not in code  # the resolver owns entry selection
+    assert 'result", {}).get("deployments"' not in code
+
+
+# --------------------------------------------------------------------------
+# BLOCKER 2 -- untrusted provider error.code must be redacted
+#
+# error.code and error.message are untrusted diagnostic input from an upstream
+# provider body. Only a closed local vocabulary may reach stdout.
+# --------------------------------------------------------------------------
+
+SECRET_SENTINEL = "SECRET_SENTINEL_123"
+PRIVATE_SENTINEL = "PRIVATE_SENTINEL"
+
+
+def test_arbitrary_error_code_is_redacted() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
+
+    def transport(method: str, path: str, body: dict | None):
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        return 503, _json({"error": {"code": SECRET_SENTINEL, "message": PRIVATE_SENTINEL}})
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run("agnes", transport=transport)
+
+    output = stdout.getvalue()
+    assert rc == 1
+    assert SECRET_SENTINEL not in output
+    assert PRIVATE_SENTINEL not in output
+    assert "ENGINE_ERROR_CODE=unknown" in output
+    assert "FAIL_CHAT_HTTP_503" in output
+
+
+def test_canonical_safe_error_code_is_projected() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
+
+    def transport(method: str, path: str, body: dict | None):
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        return 429, _json({"error": {"code": "rate_limit_error", "message": PRIVATE_SENTINEL}})
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        smoke.run("agnes", transport=transport)
+
+    output = stdout.getvalue()
+    assert "ENGINE_ERROR_CODE=rate_limit_error" in output
+    assert PRIVATE_SENTINEL not in output
+
+
+def test_unparseable_body_is_locally_classified() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
+
+    def transport(method: str, path: str, body: dict | None):
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        return 500, b"not json at all " + PRIVATE_SENTINEL.encode()
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        smoke.run("agnes", transport=transport)
+
+    output = stdout.getvalue()
+    assert "ENGINE_ERROR_CODE=unparseable" in output
+    assert PRIVATE_SENTINEL not in output
+
+
+@pytest.mark.parametrize(
+    "payload,expected",
+    [
+        ({"error": {"code": SECRET_SENTINEL}}, "unknown"),
+        ({"error": {"code": "rate_limit_error"}}, "rate_limit_error"),
+        ({"error": {"code": "totally_made_up"}}, "unknown"),
+        ({"error": {"code": 42}}, "unknown"),
+        ({"error": {"code": None}}, "unknown"),
+        ({"error": "not-a-dict"}, "unknown"),
+        ({}, "unknown"),
+        ({"error": {"message": PRIVATE_SENTINEL}}, "unknown"),
+    ],
+)
+def test_safe_error_code_projection_is_closed(payload: dict, expected: str) -> None:
+    projected = smoke._safe_error_code(payload)
+    assert projected == expected
+    assert projected in smoke.SAFE_ENGINE_ERROR_CODES
+    assert SECRET_SENTINEL not in projected
+    assert PRIVATE_SENTINEL not in projected
+
+
+def test_error_code_vocabulary_is_closed_and_bounded() -> None:
+    assert "unknown" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "unparseable" in smoke.SAFE_ENGINE_ERROR_CODES
+    for code in smoke.SAFE_ENGINE_ERROR_CODES:
+        assert code == code.strip().lower()
+        assert " " not in code
+        assert 1 <= len(code) <= 64
+
+
+def test_source_contract_forbids_raw_error_code_echo() -> None:
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert "SAFE_ENGINE_ERROR_CODES" in source
+    # The pre-fix shape returned an arbitrary bounded-length string verbatim.
+    legacy = (
+        "return code if isinstance(code, str) "
+        'and 1 <= len(code) <= 96 else "unknown"'
+    )
+    assert legacy not in source
+    assert 'return code if code in SAFE_ENGINE_ERROR_CODES else "unknown"' in source
