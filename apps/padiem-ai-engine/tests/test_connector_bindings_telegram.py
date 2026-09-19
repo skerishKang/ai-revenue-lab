@@ -36,7 +36,11 @@ from app.connector_bindings import (
     gmail_tool_binding,
     telegram_tool_binding,
 )
-from app.tool_projection import EngineToolBinding, EngineToolProjectionError
+from app.tool_projection import (
+    EngineToolBinding,
+    EngineToolProjectionError,
+    project_redacted_tool_output,
+)
 
 BINDING_REF = "bind:telegram_engine"
 ACTOR_REF = "actor_1"
@@ -299,15 +303,21 @@ def test_real_getme_envelope_classifies_as_canary_canonical() -> None:
             authority.authorization,
         )
     )
+    # Same public projection the production route applies: secret-shaped keys
+    # such as bot_token_present come back as the canonical [redacted] marker,
+    # which the canary classifier must accept.
+    redacted, truncated = project_redacted_tool_output(result.output_copy())
     payload = {
         "ok": True,
         "tool": {
             "canonical_tool_id": canary.TOOL_ID,
             "status": "completed",
-            "output": result.output,
-            "output_truncated": False,
+            "output": redacted,
+            "output_truncated": truncated,
         },
     }
-    bot_identity_present, truncated = canary.classify_success(payload)
+    bot_identity_present, truncated_fact = canary.classify_success(payload)
     assert bot_identity_present is True
-    assert truncated is False
+    assert truncated_fact is False
+    assert redacted["bot"]["bot_token_present"] == "[redacted]"
+    assert redacted["raw_credentials_present"] == "[redacted]"
