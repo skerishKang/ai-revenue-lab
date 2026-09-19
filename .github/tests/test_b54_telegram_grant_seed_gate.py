@@ -76,6 +76,15 @@ def test_live_job_requires_exact_current_main() -> None:
     assert "persist-credentials: false" in text
 
 
+def test_live_job_installs_seed_script_runtime_dependencies_before_execute() -> None:
+    text = live_job_text()
+    assert "actions/setup-python@v5" in text
+    install = "-e packages/padiem-ai-core"
+    assert install in text
+    assert text.index(install) < text.index("Execute exactly one")
+    assert "TELEGRAM_SEED_SCRIPT_DEPS=INSTALLED" in text
+
+
 def test_pre_state_handoff_publishes_to_github_env() -> None:
     text = live_job_text()
     assignment = f'echo "{PRE_STATE_ENV}=${{state}}" >> "${{GITHUB_ENV}}"'
