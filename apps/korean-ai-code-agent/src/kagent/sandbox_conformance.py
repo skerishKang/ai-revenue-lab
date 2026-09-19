@@ -5,7 +5,12 @@ from enum import Enum
 import re
 from typing import Any
 
-from .contracts import ContractError, NetworkPolicy, SandboxLeaseRequest
+from .contracts import (
+    ContractError,
+    NetworkPolicy,
+    SandboxLeaseRequest,
+    exact_commit_revision,
+)
 from .security import redact_secrets
 
 
@@ -222,6 +227,10 @@ class SandboxProviderConformanceGate:
             raise ContractError("Cloud M1 lease request exceeds policy TTL")
         if not request.requested_revision:
             raise ContractError("Cloud M1 requires an exact immutable requested_revision")
+        # Truthiness alone let a mutable ref such as "main" through while this
+        # gate claimed exact immutability (#2775). Reuse the canonical contract
+        # predicate so the gate and the lease request cannot drift apart.
+        exact_commit_revision(request.requested_revision, "requested_revision")
 
 
 @dataclass(frozen=True, slots=True)

@@ -33,7 +33,7 @@ def lease(**kwargs):
         run_id="run-fixture",
         execution_mode=ExecutionMode.CLOUD,
         repository_ref="repo:fixture",
-        requested_revision="0123456789abcdef",
+        requested_revision="abcdef1234567890abcdef1234567890abcdef12",
         ttl_seconds=900,
         network_policy=NetworkPolicy.OFF,
     )

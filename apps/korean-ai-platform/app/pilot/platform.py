@@ -516,9 +516,17 @@ from app.pilot.kilo_provider import register_kilo_provider
 from app.pilot.sensenova_provider import register_sensenova_provider
 from app.pilot.agnes_provider import register_agnes_provider
 from app.pilot.bai_provider import register_bai_provider
+from app.pilot.infron_provider import register_infron_provider
+from app.pilot.inception_provider import register_inception_provider
+from app.pilot.atria_provider import register_atria_provider
+from app.pilot.experiential_provider import register_experiential_provider
 
 register_poolside_provider()
 register_kilo_provider()
 register_sensenova_provider()
 register_agnes_provider()
 register_bai_provider()
+register_infron_provider()
+register_inception_provider()
+register_atria_provider()
+register_experiential_provider()
