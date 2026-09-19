@@ -16,6 +16,7 @@ from app.contract_manifest import (
     current_engine_contract_manifest,
     require_compatible_engine_contract,
 )
+from app.document_admission_service import DOCUMENT_ADMISSION_PATH
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -57,6 +58,7 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", TOOL_CANCEL_PATH),
         ("POST", DOCUMENT_CONTEXT_PATH),
         ("POST", ATTACHMENT_ADMISSION_PATH),
+        ("POST", DOCUMENT_ADMISSION_PATH),
         ("POST", MULTIMODAL_EXECUTE_PATH),
         ("POST", MULTIMODAL_STREAM_PATH),
         ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH),
@@ -114,6 +116,8 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "agent_runtime_projection",
         "memory_rag_projection",
         "attachment_admission",
+        # #2764: routed source truth only; never AVAILABLE in this revision.
+        "document_admission",
         "multimodal_completed_run",
         "multimodal_streaming_run",
         "document_projection",
@@ -196,6 +200,7 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
         "multimodal_completed_run",
         "multimodal_streaming_run",
         "document_projection",
+        "document_admission",
         "public_browser_api",
         "provider_selection",
     ):
