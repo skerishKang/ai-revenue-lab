@@ -16,6 +16,7 @@ on:
       - ".github/scripts/b62_product_surface_certification_browser_qa.py"
       - ".github/scripts/b62_product_surface_certification_evidence_qa.py"
       - ".github/scripts/b62_post_certification_browser_qa.py"
+      - ".github/scripts/b61_public_product_film_capture.py"
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
@@ -125,3 +126,135 @@ jobs:
           path: .tmp/b62-browser-qa
           if-no-files-found: error
           retention-days: 14
+
+
+  storymemory-public-product-film-capture:
+    name: Capture real public StoryMemory product film
+    if: github.event_name == 'pull_request' && github.head_ref == 'ops/b61-storymemory-product-film-capture'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - name: Verify bounded capture authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -f .github/scripts/b61_public_product_film_capture.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned Playwright
+        run: python -m pip install --disable-pip-version-check 'playwright==1.55.0'
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Capture exact public StoryMemory UI
+        run: python .github/scripts/b61_public_product_film_capture.py
+      - name: Encode review master and Album still
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -loglevel error -y -i .tmp/b61-public-product-film/storymemory-product-film-v1.webm -an -c:v libx264 -pix_fmt yuv420p -preset medium -crf 20 -movflags +faststart .tmp/b61-public-product-film/storymemory-product-film-v1.mp4
+          # Final Album still: real frame from the accepted film after the actual
+          # Library carousel has moved to Iliad. This is more representative than
+          # the initial default Bible frame and remains part of the same real capture.
+          ffmpeg -hide_banner -loglevel error -y -ss 12 -i .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 -frames:v 1 -an -c:v libwebp -quality 84 .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+          sha256sum .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 .tmp/b61-public-product-film/storymemory-product-still-v1.webp > .tmp/b61-public-product-film/SHA256SUMS.txt
+          ffprobe -v error -show_entries format=duration,size,format_name -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate -of json .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 > .tmp/b61-public-product-film/film-metadata.json
+      - name: Enforce bounded public-media contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path(".tmp/b61-public-product-film")
+          metadata=json.loads((root/"film-metadata.json").read_text())
+          evidence=json.loads((root/"capture-evidence.json").read_text())
+          duration=float(metadata["format"]["duration"])
+          video=next(s for s in metadata["streams"] if s.get("codec_name")=="h264")
+          assert 15 <= duration <= 40, duration
+          assert (video.get("width"),video.get("height")) == (1440,900), video
+          assert video.get("pix_fmt") == "yuv420p", video
+          assert evidence["final_url"].startswith("https://storymemory-padiem-567.pages.dev/")
+          assert evidence["visible_email"] is False
+          assert evidence["login_performed"] is False
+          assert evidence["note_saved"] is False
+          assert evidence["ai_prompt_submitted"] is False
+          assert evidence["initial_screen"] == "library"
+          assert evidence["selected_book"] == "일리아드"
+          assert evidence["final_screen"] == "reader"
+          assert evidence["reader_title"] == "일리아드"
+          assert evidence["interaction_count"] >= 9, evidence["interactions"]
+          required = {
+              "open_iliad_reader",
+              "reader_next_page",
+              "memory_note_open",
+              "memory_note_draft",
+              "memory_note_cancel",
+              "ai_prompt_draft_no_submit",
+          }
+          assert required.issubset(set(evidence["interactions"])), evidence["interactions"]
+          print(f"STORYMEMORY_PUBLIC_CAPTURE_CONTRACT=PASS duration={duration:.2f}s")
+          print(f"INTERACTION_COUNT={evidence['interaction_count']}")
+          print(f"FINAL_SCREEN={evidence['final_screen']}")
+          print(f"READER_TITLE={evidence['reader_title']}")
+          print(f"CONSOLE_ERROR_COUNT={len(evidence['console_errors'])}")
+          print(f"PAGE_ERROR_COUNT={len(evidence['page_errors'])}")
+
+          import hashlib
+          def sha256(path):
+              h=hashlib.sha256()
+              with path.open("rb") as fh:
+                  for chunk in iter(lambda: fh.read(1024*1024), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          final_manifest={
+              "source_capture_run": "${{ github.run_id }}",
+              "source_capture_head": "${{ github.event.pull_request.head.sha }}",
+              "film_sha256": sha256(root/"storymemory-product-film-v1.mp4"),
+              "film_duration_seconds": duration,
+              "poster_source_time_seconds": 12,
+              "poster_sha256": sha256(root/"storymemory-product-still-v1.webp"),
+              "poster_selection": "clean real Iliad Library frame from accepted film",
+              "sensitive_data": "NONE_OBSERVED",
+              "note_saved": False,
+              "ai_prompt_submitted": False,
+          }
+          (root/"final-media-manifest.json").write_text(
+              json.dumps(final_manifest,ensure_ascii=False,indent=2)+"\\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Upload private review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: storymemory-product-film-v1-review
+          path: |
+            .tmp/b61-public-product-film/storymemory-product-film-v1.mp4
+            .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+            .tmp/b61-public-product-film/capture-evidence.json
+            .tmp/b61-public-product-film/film-metadata.json
+            .tmp/b61-public-product-film/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload accepted final media package
+        uses: actions/upload-artifact@v4
+        with:
+          name: storymemory-product-film-v1-final-package
+          path: |
+            .tmp/b61-public-product-film/storymemory-product-film-v1.mp4
+            .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+            .tmp/b61-public-product-film/final-media-manifest.json
+          if-no-files-found: error
+          retention-days: 7
