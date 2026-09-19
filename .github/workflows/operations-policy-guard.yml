@@ -6,7 +6,8 @@ name: Operations Policy Guard
 #
 # This workflow proves only what it executes:
 #   1. the operating-policy consistency tests pass (blocking);
-#   2. the pull request body carries the contract fields the review chain
+#   2. security-sensitive repository operations contracts stay fail-closed;
+#   3. the pull request body carries the contract fields the review chain
 #      depends on (report by default; blocking only when `enforce` is set).
 #
 # It does not review a change, does not assign a CTO readiness verdict and does
@@ -48,14 +49,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install pytest
-        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10'
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7'
 
       - name: Run operating policy consistency tests
         run: python -m pytest -q docs/operations/tests
 
       - name: Run pull request contract guard tests
         run: python -m pytest -q .github/tests/test_pr_contract_guard.py
+
+      - name: Run R2 credential authority split contract tests
+        run: python -m pytest -q .github/tests/test_r2_credential_authority_split.py
 
       - name: Record guard scope
         run: |

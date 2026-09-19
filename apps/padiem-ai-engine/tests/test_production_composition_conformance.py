@@ -51,6 +51,9 @@ _FAIL_CLOSED_CODES = frozenset(
         "idempotency_unavailable",
         "b14_service_unavailable",
         "connector_grants_unavailable",
+        "drive_port_unavailable",
+        "drive_grant_unavailable",
+        "tool_binding_resolution_failed",
     }
 )
 
@@ -122,11 +125,44 @@ class _StubEnv:
             setattr(self, name, value)
 
 
+class _DriveGrantStatement:
+    def __init__(self, rows: list[dict[str, Any]], params: tuple[Any, ...] = ()) -> None:
+        self._rows = rows
+        self._params = params
+
+    def bind(self, *params: Any) -> "_DriveGrantStatement":
+        return _DriveGrantStatement(self._rows, tuple(params))
+
+    def all(self) -> list[dict[str, Any]]:
+        connector_id = self._params[0] if self._params else None
+        if connector_id != "connector:google:drive@1":
+            return []
+        return [dict(row) for row in self._rows]
+
+
+class _DriveGrantBinding:
+    def __init__(self) -> None:
+        self._rows = [
+            {
+                "app_id": "b54-padiem-claw-drive",
+                "canonical_agent_id": "agent:padiem:claw_drive_reader@1",
+                "connector_id": "connector:google:drive@1",
+                "binding_ref": "bind:drive_prod_probe",
+                "actor_ref": "actor:drive_prod_probe",
+                "granted_capabilities_json": "[\"read\"]",
+            }
+        ]
+
+    def prepare(self, _sql: str) -> _DriveGrantStatement:
+        return _DriveGrantStatement(self._rows)
+
+
 class _FailingGrantsBinding:
     """D1-like connector-grant binding whose ``prepare()`` always fails.
 
-    Simulates a grant store outage: the port (three Worker secrets) and the
-    ENGINE_CONNECTOR_GRANTS binding exist, but storage cannot be read. The
+    Simulates a grant store outage: the canonical CP Google OAuth Service
+    Binding and ENGINE_CONNECTOR_GRANTS binding exist, but storage cannot be
+    read. The
     composition must NOT collapse this into a \"grant missed\" fail-closed
     misread; it must surface 503 ``connector_grants_unavailable``.
     """
@@ -213,6 +249,17 @@ def _tool_payload() -> bytes:
     ).encode("utf-8")
 
 
+def _drive_tool_payload() -> bytes:
+    return json.dumps(
+        {
+            "app_id": "b54-padiem-claw-drive",
+            "agent_id": "agent:padiem:claw_drive_reader@1",
+            "tool_id": "tool:google:drive.a11_smoke_unregistered@1",
+            "arguments": {"query": "bounded-drive-resolution-probe"},
+        }
+    ).encode("utf-8")
+
+
 def _memory_payload() -> bytes:
     return json.dumps(
         {
@@ -285,17 +332,24 @@ async def test_tool_runtime_tracks_manifest_state() -> None:
     while the Production composition injected ``tool_binding_resolver=None``,
     so this probe returned 503 ``tool_runtime_unavailable`` — exactly the
     false-AVAILABLE defect the CTO audit found (F1). After the WO-1 revert the
-    capability is DEFERRED, so the composition MUST fail closed; when a future
-    activation PR flips the manifest back to AVAILABLE it must also wire a
-    real resolver, and the assertion below flips with the manifest.
+    capability was DEFERRED and the composition had to fail closed.
+
+    E9 A3 re-activation (#2738): the resolver is composed on both paths and the
+    accepted Production READ canaries prove live execution, so the manifest is
+    AVAILABLE again. Like the web-research probe below, this probe now uses the
+    env shape that matches each state:
+
+    - AVAILABLE: the connector authorities exist (CP Google OAuth Service
+      Binding + ENGINE_CONNECTOR_GRANTS binding), so the seam must resolve the
+      deployment-owned binding instead of failing closed. The
+      unregistered-tool probe answers bounded 403 ``tool_not_registered`` with
+      zero provider calls — the same observable the Drive probes rely on.
+    - DEFERRED: the unbound env must fail closed.
     """
     from app.capability_manifest import CapabilityState, current_capability_manifest
     from app.tool_projection import TOOL_EXECUTE_PATH
 
     compose = _load_composition()
-    services = await compose(_StubEnv())
-    assert services.tool_execution is not None
-    response = await _call(services.tool_execution, path=TOOL_EXECUTE_PATH, payload=_tool_payload())
 
     manifest_state = None
     for declaration in current_capability_manifest().capabilities:
@@ -305,11 +359,30 @@ async def test_tool_runtime_tracks_manifest_state() -> None:
     assert manifest_state is not None
 
     if manifest_state is CapabilityState.AVAILABLE:
+        services = await compose(
+            _StubEnv(
+                CONTROL_PLANE_GOOGLE_OAUTH=object(),
+                ENGINE_CONNECTOR_GRANTS=_DriveGrantBinding(),
+            )
+        )
+        response = await _call(
+            services.tool_execution,
+            path=TOOL_EXECUTE_PATH,
+            payload=_drive_tool_payload(),
+        )
         assert not _is_fail_closed(response), (
             "tool_runtime is manifest-AVAILABLE but the Production composition "
             f"fails closed: {response.status_code} {response.body}"
         )
+        assert response.status_code == 403
+        assert response.body["error"]["code"] == "tool_not_registered"
     else:
+        services = await compose(_StubEnv())
+        response = await _call(
+            services.tool_execution,
+            path=TOOL_EXECUTE_PATH,
+            payload=_tool_payload(),
+        )
         assert _is_fail_closed(response), (
             "tool_runtime is manifest-DEFERRED but the Production composition "
             f"did not fail closed: {response.status_code} {response.body}"
@@ -467,6 +540,24 @@ async def test_agent_skill_composition_fails_closed_without_binding() -> None:
     assert _is_fail_closed(response)
 
 
+@pytest.mark.asyncio
+async def test_agent_skill_composition_derives_binding_from_trusted_grant() -> None:
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(
+            CONTROL_PLANE_GOOGLE_OAUTH=object(),
+            ENGINE_CONNECTOR_GRANTS=_DriveGrantBinding(),
+        )
+    )
+
+    assert services.agent_skill is not None
+    resolver = services.agent_skill._binding_resolver  # type: ignore[attr-defined]
+    assert callable(resolver)
+    binding = resolver("b54-padiem-claw-drive")
+    assert binding is not None
+    assert binding.subject_id == "actor:drive_prod_probe"
+
+
 # --- WO-10 PR-B composition seam source assertion --------------------------
 
 
@@ -492,17 +583,71 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     # in the bound branch may still pass ``None`` literally.
     assert source.count("ToolExecutionEngineService(tool_binding_resolver=None)") == 0
     assert "CanonicalIdempotencyOrchestrationEngineService(" in source
-    # PR-C activation gate: the resolver is wired through env-derived
-    # secrets + D1 grant references. No static truth flag remains.
+    # Canonical connector activation is wired through deployment-owned
+    # authorities (including CP Google OAuth Service Binding) + D1 grant
+    # references. No static truth flag remains.
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
+
+
+@pytest.mark.asyncio
+async def test_drive_runtime_reports_missing_port_before_grant_or_provider() -> None:
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(_StubEnv())
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_drive_tool_payload(),
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "drive_port_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_drive_runtime_reports_missing_grant_after_port_is_bound() -> None:
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(CONTROL_PLANE_GOOGLE_OAUTH=object())
+    )
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_drive_tool_payload(),
+    )
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "drive_grant_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_drive_runtime_unregistered_probe_proves_binding_without_provider_call() -> None:
+    from app.tool_projection import TOOL_EXECUTE_PATH
+
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(
+            CONTROL_PLANE_GOOGLE_OAUTH=object(),
+            ENGINE_CONNECTOR_GRANTS=_DriveGrantBinding(),
+        )
+    )
+    response = await _call(
+        services.tool_execution,
+        path=TOOL_EXECUTE_PATH,
+        payload=_drive_tool_payload(),
+    )
+    assert response.status_code == 403
+    assert response.body["error"]["code"] == "tool_not_registered"
 
 
 @pytest.mark.asyncio
 async def test_grant_store_failure_surfaces_503_connector_grants_unavailable() -> None:
     """A grant store outage is NOT a \"grant missed\".
 
-    When the three Worker secrets and the ENGINE_CONNECTOR_GRANTS binding are
-    present but storage fails, every TOOL_EXECUTE_PATH request must answer
+    When the canonical CP Google OAuth Service Binding and the
+    ENGINE_CONNECTOR_GRANTS binding are present but storage fails, every
+    TOOL_EXECUTE_PATH request must answer
     503 ``connector_grants_unavailable`` — distinct from the fail-closed
     ``tool_runtime_unavailable`` posture used when the port/binding are simply
     absent.
@@ -517,9 +662,7 @@ async def test_grant_store_failure_surfaces_503_connector_grants_unavailable() -
                 # (the same workers-stub surface _load_composition installs);
                 # importing worker_identity directly would hit the real
                 # ``workers`` package, which needs the Cloudflare ``js`` runtime.
-                "ENGINE_GOOGLE_OAUTH_CLIENT_ID": "client_1",
-                "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET": "secret_1",
-                "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN": "refresh_1",
+                "CONTROL_PLANE_GOOGLE_OAUTH": object(),
                 "ENGINE_CONNECTOR_GRANTS": _FailingGrantsBinding(),
             }
         )

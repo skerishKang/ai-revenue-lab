@@ -114,7 +114,7 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
             run_id="run_lifecycle_test",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/ai-revenue-lab",
-            requested_revision="1234567890abcdef",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             ttl_seconds=900,
             network_policy=NetworkPolicy.OFF,
         )
@@ -128,7 +128,7 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
             run_id="run_req_1",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/ai-revenue-lab",
-            requested_revision="abcdef1234567890",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             ttl_seconds=1800,
             network_policy=NetworkPolicy.OFF,
         )
@@ -141,7 +141,7 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
                     run_id="run_req_2",
                     execution_mode=ExecutionMode.LOCAL,
                     repository_ref="skerishKang/ai-revenue-lab",
-                    requested_revision="abcdef1234567890",
+                    requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                     ttl_seconds=1800,
                     network_policy=NetworkPolicy.OFF,
                 )
@@ -166,7 +166,7 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
                     run_id="run_req_4",
                     execution_mode=ExecutionMode.CLOUD,
                     repository_ref="skerishKang/ai-revenue-lab",
-                    requested_revision="abcdef1234567890",
+                    requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                     network_policy=NetworkPolicy.RESTRICTED,
                 )
             )

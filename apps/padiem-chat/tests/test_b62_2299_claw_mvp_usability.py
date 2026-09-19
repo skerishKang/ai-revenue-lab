@@ -165,9 +165,13 @@ def test_result_text_is_readable_and_separated_from_input() -> None:
 
 
 def test_safe_artifact_action_without_raw_bytes_or_secrets() -> None:
-    # Single handler per button, reading dataset at click time (no per-result leak)
+    # Single handler, reading dataset at click time (no per-result leak)
     assert INDEX.count('id="clawResultDocx"') == 1
-    assert INDEX.count('id="clawResultOpen"') == 1
+    # Exactly one document action (#2771): the bounded download. There is no
+    # in-browser open/preview capability, so no second control may exist that
+    # would only repeat that same route behind a false "open" label.
+    assert INDEX.count('id="clawResultOpen"') == 0
+    assert "claw-result-open" not in INDEX
     # Download uses /artifact/{documentId} with encoded id, blob, object URL, anchor
     assert "/api/claw/manual-intake/artifact/" in APP
     assert "URL.createObjectURL" in APP

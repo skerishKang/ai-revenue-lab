@@ -229,11 +229,10 @@
               <span class="claw-artifact-size" id="clawArtifactSize"></span>
             </div>
             <div class="claw-result-actions">
-              <button type="button" id="clawResultOpen" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">▤</span><span data-locale-key="claw-result-open">문서 열기</span></button>
               <button type="button" id="clawResultDocx" class="claw-result-action" disabled aria-disabled="true"><span aria-hidden="true">↓</span><span data-locale-key="claw-result-docx">DOCX 다운로드</span></button>
             </div>
             <p class="claw-result-note" data-locale-key="claw-result-note">미리보기는 저장되지 않습니다. 실제 실행 결과에는 문서가 포함될 수 있습니다.</p>
-            <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 열어보거나 다운로드할 수 있습니다.</p>
+            <p class="claw-result-success-note" id="clawResultSuccessNote" hidden data-locale-key="claw-artifact-ready">문서가 준비되었습니다. 아래에서 다운로드할 수 있습니다.</p>
           </article>
         </section>
         <section class="claw-memory-review" id="clawMemoryReview" data-locale-aria-label="claw-memory-review-aria" aria-label="메모리 저장 검토" hidden></section>
@@ -250,6 +249,20 @@
           <p class="claw-approved-error" id="clawApprovedError" role="alert" hidden></p>
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
+        </section>
+        <section class="claw-run-history" id="clawRunHistory" aria-labelledby="clawRunHistoryTitle" hidden>
+          <header class="claw-run-history-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-runs-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawRunHistoryTitle" data-locale-key="claw-runs-title">최근 실행 기록</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawRunHistoryRefresh" data-locale-aria-label="claw-runs-refresh-aria" aria-label="기록 새로고침">↻</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-runs-tagline">실제 실행한 기록만 표시됩니다. 결과 요약을 확인하고 생성된 문서를 다시 다운로드할 수 있습니다.</p>
+          <div class="claw-run-history-loading" id="clawRunHistoryLoading" data-locale-key="claw-runs-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <p class="claw-run-history-error" id="clawRunHistoryError" role="alert" hidden></p>
+          <div class="claw-run-history-list" id="clawRunHistoryList" hidden></div>
+          <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
         </section>
         <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
           <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
@@ -326,6 +339,12 @@
           </select>
           <p class="claw-actions-hint" data-locale-key="claw-actions-hint">미리보기: 저장 없이 바로 확인 · 실제 실행: AI가 완성하고 필요하면 문서로 저장</p>
           <p class="claw-status" id="clawStatus" role="status" aria-live="polite" hidden></p>
+          <p class="claw-wait" id="clawWait" role="timer" aria-live="off" hidden></p>
+          <p class="claw-recovery-hint" id="clawRetryHint" hidden></p>
+          <div class="claw-retry" id="clawRetryBox" hidden>
+            <p class="claw-retry-copy" id="clawRetryCopy"></p>
+            <button type="button" class="claw-retry-button" id="clawRetryButton" data-locale-key="claw-btn-retry" disabled aria-disabled="true">다시 시도</button>
+          </div>
         </form>
         <form class="composer" id="composerForm">
           <div class="attachment-tray" id="attachmentTray" hidden>

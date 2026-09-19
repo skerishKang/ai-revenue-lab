@@ -3,18 +3,15 @@
 Owner decision 2026-09-07: ``b14/auto`` performs **no scorer-based automatic
 routing**. It resolves to a fixed chain, in exactly this order:
 
-  1. ``sensenova/sensenova-6.8-flash-lite``
-  2. ``kilo/nvidia-nemotron-3-ultra-550b-a55b-free``
-  3. ``poolside/laguna-s-2.1``          (spare)
+  1. ``agnes-ai/agnes-3.0-flash``
+  2. ``poolside/laguna-s-2.1``          (spare)
 
-#2097 refresh (2026-09-08): the retired lane ``kilo/minimax-minimax-m3-free``
-was removed from the chain and unregistered from the catalog together with
-``kilo/tencent-hy3-free``; both return ``unsupported_model`` fail-closed now.
-The chain is a legacy internal compatibility path only and must never become a
-user-visible automatic selector (#2085 no-auto policy).
+#2097 refresh (2026-09-08): retired Kilo free lanes remain historical metadata
+only and are not candidates here. The chain is an internal compatibility path
+only and must never become a user-visible automatic selector (#2085 no-auto
+policy).
 
-SenseNova leads the chain because the Kilo free routes carry a ~200 req/hour
-budget. A chain position advances only on the existing fallback-allowed error
+A chain position advances only on the existing fallback-allowed error
 classes (``upstream_timeout`` / ``upstream_server_error`` /
 ``upstream_rate_limited`` — see ``router_core.is_error_fallback_allowed``).
 
@@ -38,7 +35,7 @@ from typing import Any
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.catalog import CatalogModel, get_catalog_by_id
 from app.pilot.errors import NoSafeRoute, RoutingError
-from app.pilot.kilo_provider import KILO_NEMOTRON_MODEL_ID
+from app.pilot.agnes_provider import AGNES_MODEL_ID
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 from app.pilot.router_core import (
     EvidenceStatus,
@@ -48,13 +45,11 @@ from app.pilot.router_core import (
     _new_request_id,
     _platform_secret_present,
 )
-from app.pilot.sensenova_provider import SENSENOVA_MODEL_ID
 
 ROUTING_POLICY_ID = "fixed_chain_v1"
 
 B14_AUTO_CHAIN: tuple[str, ...] = (
-    SENSENOVA_MODEL_ID,
-    KILO_NEMOTRON_MODEL_ID,
+    AGNES_MODEL_ID,
     POOLSIDE_MODEL_ID,
 )
 
@@ -115,7 +110,13 @@ def resolve_chain_route(
     excluded: list[dict[str, str]] = []
     candidates: list[CatalogModel] = []
     for m in models:
-        if m.credential_source == "platform_secret" and not _platform_secret_present(m):
+        # Mock mode deliberately has no credential requirement: it must prove
+        # route resolution and response shape without making upstream calls.
+        if (
+            not runtime_config.is_mock
+            and m.credential_source == "platform_secret"
+            and not _platform_secret_present(m)
+        ):
             excluded.append({
                 "model_id": m.model_id,
                 "upstream_model": m.upstream_model,

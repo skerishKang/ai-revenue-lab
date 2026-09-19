@@ -16,6 +16,9 @@ from .agent_skill_service import (
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
 )
+from .attachment_admission_service import ATTACHMENT_ADMISSION_PATH
+from .document_admission_service import DOCUMENT_ADMISSION_PATH
+from .document_context_service import DOCUMENT_CONTEXT_PATH
 from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
@@ -28,6 +31,7 @@ from .orchestration_service import (
 )
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
+from .tool_projection import TOOL_CANCEL_PATH, TOOL_EXECUTE_PATH, TOOL_RESUME_PATH
 from .web_research_service import RESEARCH_PATH
 
 ENGINE_CONTRACT_FAMILY = "padiem-ai-engine"
@@ -147,8 +151,18 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_CANCEL_PATH, "POST", "application/json"),
-            # E5A completed one-image source route. Trusted storage resolution is
-            # intentionally not Production-wired yet, so capability stays DEFERRED.
+            EngineEndpointContract(TOOL_EXECUTE_PATH, "POST", "application/json"),
+            EngineEndpointContract(TOOL_RESUME_PATH, "POST", "application/json"),
+            EngineEndpointContract(TOOL_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(DOCUMENT_CONTEXT_PATH, "POST", "application/json"),
+            # E5C (#2728) adds the authenticated source route that admits bounded
+            # image bytes and returns a server-minted opaque att_* reference. Route
+            # declaration does not imply Production authority/binding activation.
+            EngineEndpointContract(ATTACHMENT_ADMISSION_PATH, "POST", "application/json"),
+            # #2764 (E8C-B): source-routed document admission over the canonical
+            # scoped document byte store. Declaration does not imply Production
+            # binding provisioning, applied migration 0006, or activation.
+            EngineEndpointContract(DOCUMENT_ADMISSION_PATH, "POST", "application/json"),
             EngineEndpointContract(MULTIMODAL_EXECUTE_PATH, "POST", "application/json"),
             EngineEndpointContract(MULTIMODAL_STREAM_PATH, "POST", "application/x-ndjson"),
             # #1964 source slice: the replay route is declared but the feature
@@ -183,20 +197,38 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("web_search_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("web_fetch_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("deep_research_projection", EngineFeatureState.DEFERRED),
-            # E9 A3 (#1746): reverted to DEFERRED per CTO audit 2026-09-06 —
-            # the Production composition injects no tool binding resolver, so
-            # the earlier AVAILABLE claim was not production truth. Re-activation
-            # requires the WO-2 composition conformance gate + real resolver.
-            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
+            # E9 A3 (#1746): re-activated (LOCAL 3, #2738) on current main. The
+            # 2026-09-06 CTO audit correctly reverted the earlier AVAILABLE claim
+            # because the Production composition then injected no tool binding
+            # resolver. That source gap is closed: both Engine composition paths
+            # compose the real `_tool_binding_resolver_for_env` resolver and the
+            # WO-2 production composition conformance gate pins the seam.
+            # Accepted Production evidence (read-only re-use, no new dispatch):
+            # Drive #2644 run 35389368273, Gmail #2657 run 35403110197 and Telegram
+            # #2712 run 35420061464 each answered ENGINE_TOOL_EXECUTE_HTTP=200 on
+            # /internal/v1/tools/execute with ENGINE_TOOL_EXECUTE_POST_COUNT=1.
+            # Those canary SHAs are ancestors of this revision and the resolver
+            # lines are unchanged since, so the evidence still describes it.
+            # Slack/Calendar READ ports are composed without a live canary and
+            # stay bounded/fail-closed per grant.
+            # TOOL_RUNTIME_ACTIVATION_EVIDENCE=drive-35389368273,gmail-35403110197,telegram-35420061464
+            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
+            # E5C (#2728): the admission route is source-complete. It remains
+            # DEFERRED until the separately gated Production image-store and
+            # Control Plane session authorities are activated and proven live.
+            EngineFeatureContract("attachment_admission", EngineFeatureState.DEFERRED),
+            # #2764: the document admission route is source-complete and composed
+            # over the durable deployment-owned document-store lineage, but
+            # Production provisioning of the binding, applied migration 0006
+            # and live evidence are separately gated. Stays truthfully DEFERRED.
+            EngineFeatureContract("document_admission", EngineFeatureState.DEFERRED),
             EngineFeatureContract("multimodal_completed_run", EngineFeatureState.DEFERRED),
-            # #1972: the streaming route and shared stream state machine are
-            # source-complete, but the Production composition injects no
-            # trusted attachment resolver (fail-closed 503), so — per the
-            # tool_runtime_projection audit precedent — the claim stays
-            # DEFERRED until resolver activation is separately authorized.
+            # Execute/stream are source-complete and share the accepted resolver /
+            # scope composition. Their Production availability still requires the
+            # separately gated deployment, bindings and live evidence.
             EngineFeatureContract("multimodal_streaming_run", EngineFeatureState.DEFERRED),
             EngineFeatureContract("document_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("public_browser_api", EngineFeatureState.UNAVAILABLE),

@@ -201,6 +201,66 @@ def test_default_provenance_is_safe_id_unique_and_reused_contract() -> None:
     asyncio.run(scenario())
 
 
+def test_default_provenance_normalizes_urlsafe_leading_punctuation(
+    monkeypatch,
+) -> None:
+    import app.attachment_resolver as attachment_resolver
+
+    store, _, _ = _pair()
+    # Admit first: the canonical byte store also uses token_urlsafe for att_*
+    # references, and this regression is intentionally scoped only to the
+    # resolver provenance generator.
+    record = asyncio.run(_admit(store))
+    monkeypatch.setattr(
+        attachment_resolver.secrets,
+        "token_urlsafe",
+        lambda _n: "-unsafe-leading",
+    )
+    resolver = ByteStoreTrustedAttachmentResolver(store=store, scope=SCOPE)
+
+    async def scenario() -> None:
+        resolved = await resolver.resolve_image(
+            app_id=APP_ID,
+            attachment_ref=record.attachment_ref,
+        )
+        assert resolved.provenance_id == "prov_p-unsafe-leading"
+
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize(
+    "minted_provenance",
+    [
+        # Exact suffix shape that probabilistically broke the pre-#2660
+        # suffix-first-alphanumeric test assertion.
+        "prov_-LaR6UCgVs8dNi3H6yqglw",
+        "prov__xY3aQ8sT0uV1wB2cD-e",
+        "prov_p9qR2sT4uV6wX8yZ0aB",
+    ],
+)
+def test_full_id_contract_accepts_dash_or_underscore_leading_token_suffix(
+    minted_provenance: str,
+) -> None:
+    # #2660 deterministic regression: the provenance contract is validated on
+    # the FULL ``prov_`` id, so a token that starts with '-' or '_' is
+    # contract-valid, resolves, and must be returned unchanged. No assertion
+    # may depend on random url-safe leading characters.
+    store, _, _ = _pair()
+    resolver = ByteStoreTrustedAttachmentResolver(
+        store=store, scope=SCOPE, provenance_factory=lambda record: minted_provenance
+    )
+
+    async def scenario() -> None:
+        record = await _admit(store)
+        resolved = await resolver.resolve_image(
+            app_id=APP_ID, attachment_ref=record.attachment_ref
+        )
+        assert resolved.provenance_id == minted_provenance
+        assert resolved.to_public_dict()["provenance_id"] == minted_provenance
+
+    asyncio.run(scenario())
+
+
 # --- fail-closed matrix -------------------------------------------------------------------
 
 
@@ -583,7 +643,7 @@ def test_resolver_is_wired_only_through_the_trusted_authority_seam() -> None:
 
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
     assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
-    assert wrangler.count('database_id = "') == 4
+    assert wrangler.count('database_id = "') == 5
 
     store_source = (APP_ROOT / "app" / "attachment_byte_store.py").read_text(encoding="utf-8")
     assert "CREATE TABLE" not in store_source.upper()

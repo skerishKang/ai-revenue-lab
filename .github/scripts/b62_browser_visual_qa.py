@@ -112,6 +112,18 @@ async def _glass_shell_snapshot(page: Page) -> dict[str, Any]:
     )
 
 
+async def _move_into_glass_portrait(page: Page, *, x_fraction: float = 0.68, y_fraction: float = 0.44) -> None:
+    rect = await page.evaluate(
+        "() => window.__padiemGlassShell && window.__padiemGlassShell.imageRect && window.__padiemGlassShell.imageRect()"
+    )
+    if not rect:
+        raise AssertionError("Glass portrait image rect unavailable")
+    await page.mouse.move(
+        rect["left"] + rect["width"] * x_fraction,
+        rect["top"] + rect["height"] * y_fraction,
+    )
+
+
 async def _glass_motion_snapshot(page: Page) -> dict[str, Any]:
     return await page.evaluate(
         """
@@ -236,7 +248,10 @@ async def _send_glass_turn(page: Page, *, variant: str, turn: int) -> None:
     await page.locator("#messageInput").fill(f"Padiem Glass {variant} 시각 검수 대화 {turn}")
     if await page.locator("#sendButton").is_disabled():
         raise AssertionError("Padiem Glass preview send button stayed disabled")
-    await page.locator("#sendButton").click()
+    # Preserve the pointer position under test. Clicking the Send button moves
+    # the mouse and contaminates answer-only / pointer+answer Glass scenarios.
+    # Enter is the product's canonical non-shift submit path (form.requestSubmit).
+    await page.locator("#messageInput").press("Enter")
     await page.locator('.app-shell[data-state="chat"]').wait_for(state="attached")
     await page.wait_for_function(
         "expected => document.querySelectorAll('#messageList .assistant-message').length >= expected",
@@ -285,8 +300,53 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     shell_initial = await _glass_shell_snapshot(page)
     if shell_initial["fragmentCount"] != 20:
         raise AssertionError(f"Glass shell must render exactly 20 source fragments: {shell_initial}")
-    if shell_initial["progress"] > 0.05 or shell_initial["portalOpacity"] > 0.05:
-        raise AssertionError(f"Glass shell must start covered: {shell_initial}")
+    if (
+        shell_initial["progress"] < 0.95
+        or shell_initial["portalOpacity"] < 0.80
+        or shell_initial["visibleFragments"] != 0
+    ):
+        raise AssertionError(f"Glass reverse shell must start fully assembled: {shell_initial}")
+
+    # First-use composer controls must remain visibly discoverable on the bright
+    # Glass surface. DOM visibility alone is insufficient: the old regression
+    # rendered the tier trigger as near-white text on near-white glass.
+    tier_trigger = page.locator(".composer .model-pill[data-mode-control='true']")
+    await tier_trigger.wait_for(state="visible", timeout=5_000)
+    tier_color = await tier_trigger.evaluate("el => getComputedStyle(el).color")
+    if tier_color != "rgb(37, 51, 62)":
+        raise AssertionError(f"Glass tier trigger lost dark foreground contrast: {tier_color}")
+    spark = tier_trigger.locator(".status-spark")
+    spark_color = await spark.evaluate("el => getComputedStyle(el).color")
+    spark_opacity = float(await spark.evaluate("el => getComputedStyle(el).opacity"))
+    if spark_color != "rgb(79, 134, 173)" or spark_opacity < 0.99:
+        raise AssertionError(
+            f"Glass Plus spark is not visibly colored: color={spark_color}, opacity={spark_opacity}"
+        )
+
+    attachment_button = page.locator("#attachmentButton")
+    attachment_rest_background = await attachment_button.evaluate("el => getComputedStyle(el).backgroundColor")
+    await attachment_button.hover()
+    # The product uses a short 180ms hover transition. Sample the settled
+    # interaction state rather than a compositor/interpolation midpoint.
+    await page.wait_for_timeout(220)
+    attachment_hover_color = await attachment_button.evaluate("el => getComputedStyle(el).color")
+    attachment_hover_background = await attachment_button.evaluate("el => getComputedStyle(el).backgroundColor")
+    attachment_hover_border = await attachment_button.evaluate("el => getComputedStyle(el).borderTopWidth")
+    attachment_hover_shadow = await attachment_button.evaluate("el => getComputedStyle(el).boxShadow")
+    if attachment_hover_color != "rgb(23, 33, 42)":
+        raise AssertionError(f"Glass file hover lost dark foreground contrast: {attachment_hover_color}")
+    if attachment_hover_background == attachment_rest_background:
+        raise AssertionError(
+            f"Glass file hover is not visually distinct from rest: {attachment_hover_background}"
+        )
+    if attachment_hover_border != "1px" or attachment_hover_shadow == "none":
+        raise AssertionError(
+            "Glass file hover must expose a bordered elevated pill: "
+            f"border={attachment_hover_border}, shadow={attachment_hover_shadow}"
+        )
+    attachment_hover_name = f"desktop-glass-{variant}-attachment-hover.png"
+    await page.screenshot(path=str(OUT_DIR / attachment_hover_name), full_page=True)
+    await page.mouse.move(70, 80)
 
     # APPEARANCE controls must expose the approved 3-mode mask and speed bar.
     await page.locator("#settingsButton").click()
@@ -324,38 +384,193 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     if shell_off["portalOpacity"] > 0.05 or shell_off["maxFragmentOpacity"] > 0.10:
         raise AssertionError(f"Glass mask=off did not fully cover shell: {shell_off}")
 
+    # Auto's resting state is evaluated with the pointer outside the portrait.
+    await page.mouse.move(70, 80)
     await page.evaluate(
         "() => { window.__padiemTheme.applyGlassSpeed(100, false); window.__padiemTheme.applyGlassMask('auto', false); }"
     )
-    await page.wait_for_timeout(120)
+    await page.wait_for_function(
+        """() => {
+          const rootStyle = getComputedStyle(document.documentElement);
+          const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return progress >= .95 && portalOpacity >= .80;
+        }""",
+        timeout=5_000,
+    )
 
     home_before_pointer = await _glass_motion_snapshot(page)
-    await page.mouse.move(1180, 180)
+    portrait_rect = await page.evaluate(
+        "() => window.__padiemGlassShell && window.__padiemGlassShell.imageRect && window.__padiemGlassShell.imageRect()"
+    )
+    if not portrait_rect:
+        raise AssertionError("Glass portrait image rect unavailable for transition QA")
+    portrait_y = portrait_rect["top"] + portrait_rect["height"] * 0.44
+    peel_started = await page.evaluate("performance.now()")
+
+    # Enter from the LEFT. At 260ms the shell must still be clearly present;
+    # a clean-looking face this early is a visual regression even if the
+    # internal progress variable is still moving.
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.18,
+        portrait_y,
+    )
+    await page.wait_for_timeout(260)
+    early_shell = await _glass_shell_snapshot(page)
+    if early_shell["pointerDriver"] < 0.80 or early_shell["progress"] < 0.68:
+        raise AssertionError(f"Glass shell teardown is too fast at 260ms: {early_shell}")
+    if early_shell["portalOpacity"] < 0.55:
+        raise AssertionError(f"Glass shell portal faded too early at 260ms: {early_shell}")
+    # Move across the portrait while the SAME time-driven peel continues.
+    # Around 900ms we require a genuine intermediate state: shell/ribbons are
+    # still visible, but progress has advanced substantially from the 260ms
+    # sample. Pointer X must not scrub or reverse the animation.
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.82,
+        portrait_y,
+    )
+    # Screenshot capture itself consumes wall-clock time while the product
+    # animation continues. Anchor the mid sample to performance.now() rather
+    # than blindly sleeping another 650ms after the early screenshot.
+    elapsed_before_mid = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    remaining_to_mid = max(0, int(900 - elapsed_before_mid))
+    if remaining_to_mid:
+        await page.wait_for_timeout(remaining_to_mid)
+    mid_elapsed_ms = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    if not 800 <= mid_elapsed_ms <= 1_300:
+        raise AssertionError(
+            f"Glass mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
+        )
+    mid_shell = await _glass_shell_snapshot(page)
+    if mid_shell["pointerDriver"] < 0.80:
+        raise AssertionError(f"Glass right-side hover lost the binary peel target: {mid_shell}")
+    if mid_shell["progress"] > early_shell["progress"] + 0.02:
+        raise AssertionError(
+            f"Glass horizontal motion reversed/scrubbed progress: early={early_shell}, mid={mid_shell}"
+        )
+    if mid_shell["progress"] >= early_shell["progress"] - 0.10:
+        raise AssertionError(
+            f"Glass timed peel did not continue across horizontal motion: early={early_shell}, mid={mid_shell}"
+        )
+    if not 0.15 <= mid_shell["progress"] <= 0.65:
+        raise AssertionError(f"Glass ~900ms sample is not a visible mid-transition state: {mid_shell}")
+    if mid_shell["portalOpacity"] <= 0.18 or mid_shell["visibleFragments"] <= 0:
+        raise AssertionError(f"Glass shell/ribbons disappeared before the mid-transition sample: {mid_shell}")
     await page.wait_for_function(
         """() => {
           const rootStyle = getComputedStyle(document.documentElement);
           const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
+          const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
           const frags = [...document.querySelectorAll('.glass-shell-frag')];
           const maxOpacity = frags.length
             ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
             : 0;
-          return pointer >= .20 && maxOpacity > .05;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return pointer >= .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
         }""",
         timeout=5_000,
     )
+    peel_elapsed_ms = float(await page.evaluate("started => performance.now() - started", peel_started))
+    if not 1_800 <= peel_elapsed_ms <= 3_600:
+        raise AssertionError(f"Glass 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms")
+
     home_after_pointer = await _glass_motion_snapshot(page)
     home_shell_pointer = await _glass_shell_snapshot(page)
-    if home_after_pointer["pointerX"] in {"", "0px", "0.0px"} and home_after_pointer["pointerY"] in {"", "0px", "0.0px"}:
-        raise AssertionError(f"Padiem Glass home portrait lost cinematic pointer response: {home_after_pointer}")
-    if home_shell_pointer["pointerDriver"] < 0.20 or home_shell_pointer["progress"] < 0.08 or home_shell_pointer["visibleFragments"] == 0:
-        raise AssertionError(f"Glass pointer-only shell assembly is not visibly active: {home_shell_pointer}")
+    if home_after_pointer["pointerX"] not in {"", "0px", "0.0px"} or home_after_pointer["pointerY"] not in {"", "0px", "0.0px"}:
+        raise AssertionError(f"Padiem Glass hover must not parallax the portrait: {home_after_pointer}")
+    if (
+        home_shell_pointer["pointerDriver"] < 0.80
+        or home_shell_pointer["progress"] > 0.08
+        or home_shell_pointer["visibleFragments"] != 0
+        or home_shell_pointer["portalOpacity"] > 0.05
+    ):
+        raise AssertionError(f"Glass portrait hover must settle on the clean portrait: {home_shell_pointer}")
 
     home_name = f"desktop-glass-{variant}-home.png"
     await page.screenshot(path=str(OUT_DIR / home_name), full_page=True)
 
-    # Return to the content side before testing answer-only motion.
+    # Pointer exit must visibly reassemble and finish on the completed shell.
+    recover_started = await page.evaluate("performance.now()")
     await page.mouse.move(70, 80)
-    await page.wait_for_timeout(1100)
+    await page.wait_for_timeout(250)
+    recover_early = await _glass_shell_snapshot(page)
+    if recover_early["progress"] <= home_shell_pointer["progress"]:
+        raise AssertionError(f"Glass reverse recovery did not begin after pointer exit: {recover_early}")
+    await page.wait_for_function(
+        """() => {
+          const style = getComputedStyle(document.documentElement);
+          const progress = parseFloat(style.getPropertyValue('--glass-shell-progress')) || 0;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return progress >= .95 && portalOpacity >= .80;
+        }""",
+        timeout=5_000,
+    )
+    recover_elapsed_ms = float(await page.evaluate("started => performance.now() - started", recover_started))
+    if not 1_600 <= recover_elapsed_ms <= 3_600:
+        raise AssertionError(f"Glass 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms")
+    recovered_shell = await _glass_shell_snapshot(page)
+    if recovered_shell["portalOpacity"] < 0.80 or recovered_shell["visibleFragments"] != 0:
+        raise AssertionError(f"Glass shell did not fully reassemble after pointer exit: {recovered_shell}")
+    recovered_name = f"desktop-glass-{variant}-recovered.png"
+    await page.screenshot(path=str(OUT_DIR / recovered_name), full_page=False)
+
+    # Evidence captures run in isolated cycles *after* the timing contract.
+    # Screenshot encoding can take >1s on a loaded CI runner while the live
+    # animation correctly keeps advancing, so never put capture I/O between
+    # the 260ms and ~900ms timing samples above.
+    early_name = f"desktop-glass-{variant}-transition-early.png"
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.18,
+        portrait_y,
+    )
+    await page.wait_for_timeout(260)
+    early_evidence_shell = await _glass_shell_snapshot(page)
+    if early_evidence_shell["progress"] < 0.68 or early_evidence_shell["portalOpacity"] < 0.55:
+        raise AssertionError(f"Glass early evidence cycle is not shell-visible: {early_evidence_shell}")
+    await page.screenshot(path=str(OUT_DIR / early_name), full_page=False)
+    await page.mouse.move(70, 80)
+    await page.wait_for_function(
+        "() => { const s=getComputedStyle(document.documentElement); const p=parseFloat(s.getPropertyValue('--glass-shell-progress'))||0; const el=document.querySelector('.glass-shell-portrait'); const o=el?(parseFloat(getComputedStyle(el).opacity)||0):0; return p>=.95&&o>=.80; }",
+        timeout=5_000,
+    )
+
+    mid_name = f"desktop-glass-{variant}-transition-mid.png"
+    evidence_started = await page.evaluate("performance.now()")
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.18,
+        portrait_y,
+    )
+    await page.wait_for_timeout(260)
+    await page.mouse.move(
+        portrait_rect["left"] + portrait_rect["width"] * 0.82,
+        portrait_y,
+    )
+    evidence_elapsed = float(
+        await page.evaluate("started => performance.now() - started", evidence_started)
+    )
+    evidence_wait = max(0, int(900 - evidence_elapsed))
+    if evidence_wait:
+        await page.wait_for_timeout(evidence_wait)
+    mid_evidence_shell = await _glass_shell_snapshot(page)
+    if (
+        not 0.15 <= mid_evidence_shell["progress"] <= 0.65
+        or mid_evidence_shell["portalOpacity"] <= 0.18
+        or mid_evidence_shell["visibleFragments"] <= 0
+    ):
+        raise AssertionError(f"Glass mid evidence cycle is not visibly transitional: {mid_evidence_shell}")
+    await page.screenshot(path=str(OUT_DIR / mid_name), full_page=False)
+    await page.mouse.move(70, 80)
+    await page.wait_for_function(
+        "() => { const s=getComputedStyle(document.documentElement); const p=parseFloat(s.getPropertyValue('--glass-shell-progress'))||0; const el=document.querySelector('.glass-shell-portrait'); const o=el?(parseFloat(getComputedStyle(el).opacity)||0):0; return p>=.95&&o>=.80; }",
+        timeout=5_000,
+    )
 
     chat_name = f"desktop-glass-{variant}-chat.png"
     reading_samples: list[dict[str, Any]] = []
@@ -369,7 +584,7 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     for turn in range(1, 6):
         # Turn 1 = answer only. Turn 2 = pointer + answer together.
         if turn == 2:
-            await page.mouse.move(1180, 180)
+            await _move_into_glass_portrait(page)
             await page.wait_for_timeout(120)
         else:
             await page.mouse.move(70, 80)
@@ -381,33 +596,62 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             timeout=5_000,
         )
         await _assert_no_horizontal_overflow(page, f"glass-{variant}-turn-{turn}")
+        combined_answer_shell = None
         if turn == 2:
+            # The shell intentionally peels for ~2–3 s, while the answer pulse is
+            # shorter. Certify the overlap first, then certify the clean hover
+            # end-state separately; requiring both simultaneously made a valid
+            # slow cinematic transition impossible.
             await page.wait_for_function(
                 """() => {
                   const rootStyle = getComputedStyle(document.documentElement);
                   const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
                   const answer = parseFloat(rootStyle.getPropertyValue('--glass-answer-reveal')) || 0;
+                  return pointer > .80 && answer > .45;
+                }""",
+                timeout=5_000,
+            )
+            combined_answer_shell = await _glass_shell_snapshot(page)
+            await page.wait_for_function(
+                """() => {
+                  const rootStyle = getComputedStyle(document.documentElement);
+                  const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
+                  const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
                   const frags = [...document.querySelectorAll('.glass-shell-frag')];
                   const maxOpacity = frags.length
                     ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
                     : 0;
-                  return pointer > .45 && answer > .45 && maxOpacity > .05;
+                  const portal = document.querySelector('.glass-shell-portrait');
+                  const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+                  return pointer > .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
                 }""",
-                timeout=5_000,
+                timeout=8_000,
             )
-        else:
+        elif turn == 1:
+            # Certify answer activity independently, then sample the shell at
+            # that exact moment. Keeping both predicates inside one wait hid
+            # whether a failure came from the answer pulse or shell assembly.
             await page.wait_for_function(
                 """() => {
                   const rootStyle = getComputedStyle(document.documentElement);
                   const answer = parseFloat(rootStyle.getPropertyValue('--glass-answer-reveal')) || 0;
-                  const frags = [...document.querySelectorAll('.glass-shell-frag')];
-                  const maxOpacity = frags.length
-                    ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
-                    : 0;
-                  return answer > 0 && maxOpacity > .05;
+                  return answer > 0;
                 }""",
                 timeout=5_000,
             )
+            answer_only_shell_live = await _glass_shell_snapshot(page)
+            if (
+                answer_only_shell_live["progress"] < 0.90
+                or answer_only_shell_live["portalOpacity"] < 0.60
+            ):
+                raise AssertionError(
+                    "Glass answer-only activity must keep the resting shell assembled "
+                    f"while the answer pulse is live: {answer_only_shell_live}"
+                )
+        else:
+            # Later turns exercise accumulated reading stability. Shell recovery
+            # is certified explicitly at the end of every turn below.
+            await page.wait_for_timeout(120)
         active = await _glass_motion_snapshot(page)
         active_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "active", "shell": active_shell, **active})
@@ -418,42 +662,44 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         if turn == 1:
             answer_only_reveal = active["reveal"]
             answer_only_shell_progress = active_shell["progress"]
-            answer_only_shell_target = max(
-                .62 * active_shell["pointerDriver"],
-                .8 * active_shell["answerDriver"],
-            )
+            answer_only_shell_target = 1.0
             if answer_only_reveal < 0.15:
                 raise AssertionError(
                     f"Glass reading mode lost answer-driven reveal: {active}"
                 )
-            if active_shell["answerDriver"] <= 0 or answer_only_shell_progress < 0.05 or active_shell["visibleFragments"] == 0:
-                raise AssertionError(f"Glass answer-only shell progression is not visible: {active_shell}")
+            if (
+                active_shell["answerDriver"] <= 0
+                or answer_only_shell_progress < 0.90
+                or active_shell["portalOpacity"] < 0.60
+            ):
+                raise AssertionError(f"Glass answer-only activity must keep the resting shell assembled: {active_shell}")
             await page.screenshot(path=str(OUT_DIR / chat_name), full_page=True)
 
         if turn == 2:
             combined_reveal = active["reveal"]
             combined_shell_progress = active_shell["progress"]
-            combined_shell_target = (
-                1.0
-                if active_shell["pointerDriver"] > .45 and active_shell["answerDriver"] > .45
-                else max(
-                    .62 * active_shell["pointerDriver"],
-                    .8 * active_shell["answerDriver"],
-                )
-            )
+            combined_shell_target = 1.0 - active_shell["pointerDriver"]
             if combined_reveal < 0.35:
                 raise AssertionError(
                     f"Glass pointer+answer reveal is too weak: {active}"
                 )
-            if active_shell["pointerDriver"] <= 0 or active_shell["answerDriver"] <= 0:
-                raise AssertionError(f"Glass combined shell drivers are not both active: {active_shell}")
-            if active_shell["visibleFragments"] == 0:
-                raise AssertionError(f"Glass combined shell fragments are not visibly active: {active_shell}")
-            if combined_shell_target <= answer_only_shell_target + 0.05:
+            if (
+                not combined_answer_shell
+                or combined_answer_shell["pointerDriver"] <= 0.80
+                or combined_answer_shell["answerDriver"] <= 0.45
+            ):
                 raise AssertionError(
-                    "Glass pointer+answer shell target must be stronger than answer-only: "
+                    f"Glass combined shell drivers were never simultaneously active: {combined_answer_shell}"
+                )
+            if (
+                combined_shell_progress > 0.08
+                or active_shell["visibleFragments"] != 0
+                or active_shell["portalOpacity"] > 0.05
+            ):
+                raise AssertionError(
+                    "Glass pointer must settle on a clean portrait even while an answer is active: "
                     f"answer_target={answer_only_shell_target}, combined_target={combined_shell_target}, "
-                    f"answer_progress={answer_only_shell_progress}, combined_progress={combined_shell_progress}"
+                    f"answer_progress={answer_only_shell_progress}, combined={active_shell}"
                 )
 
         # After answer activity and pointer proximity end, reading mode must
@@ -473,29 +719,32 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             raise AssertionError(f"Glass reading mode portrait failed to settle: {settled}")
         if settled["artScale"] not in {"", "1", "1.0", "1.000"}:
             raise AssertionError(f"Glass reading mode scale failed to settle: {settled}")
-        # The approved recovery is deliberately slow and rAF cadence varies
-        # under CI. Wait on the actual visible state rather than a wall-clock guess.
+        # Reverse mode settles back to the completed shell when pointer proximity ends.
         await page.wait_for_function(
             """() => {
+              const rootStyle = getComputedStyle(document.documentElement);
+              const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
               const frags = [...document.querySelectorAll('.glass-shell-frag')];
               const maxOpacity = frags.length
                 ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
                 : 0;
               const portal = document.querySelector('.glass-shell-portrait');
               const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
-              return maxOpacity <= .05 && portalOpacity <= .05;
+              /* Reading mode intentionally caps --glass-shell-max at .62. */
+              return progress >= .95 && maxOpacity <= .05 && portalOpacity >= .45;
             }""",
             timeout=5_000,
         )
         recovered_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "recovered", "shell": recovered_shell})
         if (
-            recovered_shell["visibleFragments"] != 0
+            recovered_shell["progress"] < 0.95
+            or recovered_shell["visibleFragments"] != 0
             or recovered_shell["maxFragmentOpacity"] > 0.05
-            or recovered_shell["portalOpacity"] > 0.05
+            or recovered_shell["portalOpacity"] < 0.45
         ):
             raise AssertionError(
-                f"Glass shell remained visibly attached after cinematic recovery: settled={settled_shell}, recovered={recovered_shell}"
+                f"Glass reverse shell did not reassemble after pointer recovery: settled={settled_shell}, recovered={recovered_shell}"
             )
 
     if answer_only_reveal <= 0:
@@ -506,16 +755,19 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # Pointer-only reading interaction remains cinematic after the answer has
     # fully settled.
     reading_rest = await _glass_motion_snapshot(page)
-    await page.mouse.move(1180, 180)
+    await _move_into_glass_portrait(page)
     await page.wait_for_function(
         """() => {
           const rootStyle = getComputedStyle(document.documentElement);
           const pointer = parseFloat(rootStyle.getPropertyValue('--glass-pointer-reveal')) || 0;
+          const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
           const frags = [...document.querySelectorAll('.glass-shell-frag')];
           const maxOpacity = frags.length
             ? Math.max(...frags.map(el => parseFloat(getComputedStyle(el).opacity) || 0))
             : 0;
-          return pointer >= .20 && maxOpacity > .05;
+          const portal = document.querySelector('.glass-shell-portrait');
+          const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+          return pointer >= .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
         }""",
         timeout=5_000,
     )
@@ -527,13 +779,20 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         )
     if pointer_only["reveal"] > 1:
         raise AssertionError(f"Glass pointer-only reveal escaped bounds: {pointer_only}")
-    if pointer_only_shell["progress"] < 0.08 or pointer_only_shell["visibleFragments"] == 0:
-        raise AssertionError(f"Glass reading pointer-only shell assembly is not visible: {pointer_only_shell}")
+    if (
+        pointer_only_shell["progress"] > 0.08
+        or pointer_only_shell["visibleFragments"] != 0
+        or pointer_only_shell["portalOpacity"] > 0.05
+    ):
+        raise AssertionError(f"Glass reading pointer must settle on the clean portrait: {pointer_only_shell}")
 
     # Moving away must re-cover, then page scrolling alone must not drive the
     # reading portrait.
     await page.mouse.move(70, 80)
-    await page.wait_for_timeout(1100)
+    await page.wait_for_function(
+        "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-progress')) || 0) >= .95",
+        timeout=5_000,
+    )
     reading_before_scroll = await _glass_motion_snapshot(page)
     if reading_before_scroll["reveal"] > 0.03:
         raise AssertionError(
@@ -580,10 +839,22 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             "answer_only_target": answer_only_shell_target,
             "combined_target": combined_shell_target,
             "shell_on_screenshot": shell_on_name,
+            "transition_early_screenshot": early_name,
+            "transition_mid_screenshot": mid_name,
+            "recovered_screenshot": recovered_name,
+            "transition_early": early_shell,
+            "transition_mid": mid_shell,
+            "transition_mid_elapsed_ms": mid_elapsed_ms,
+            "transition_early_evidence": early_evidence_shell,
+            "transition_mid_evidence": mid_evidence_shell,
+            "recovered": recovered_shell,
+            "peel_elapsed_ms": peel_elapsed_ms,
+            "recover_elapsed_ms": recover_elapsed_ms,
             "status": "PASS",
         },
         "home_screenshot": home_name,
         "chat_screenshot": chat_name,
+        "attachment_hover_screenshot": attachment_hover_name,
         "home_cinematic": {
             "before_pointer": home_before_pointer,
             "after_pointer": home_after_pointer,
@@ -844,11 +1115,15 @@ async def main() -> None:
                 timeout=30_000,
             )
             await reduced_page.locator(".glass-shell-portrait").wait_for(state="attached")
-            await reduced_page.mouse.move(1180, 180)
+            await _move_into_glass_portrait(reduced_page)
             await reduced_page.wait_for_timeout(160)
             reduced_auto = await _glass_shell_snapshot(reduced_page)
-            if reduced_auto["progress"] > 0.01 or reduced_auto["pointerDriver"] > 0.01:
-                raise AssertionError(f"reduced-motion Auto shell must remain static: {reduced_auto}")
+            if (
+                reduced_auto["progress"] < 0.99
+                or reduced_auto["pointerDriver"] > 0.01
+                or reduced_auto["portalOpacity"] < 0.80
+            ):
+                raise AssertionError(f"reduced-motion Auto must keep the resting shell static: {reduced_auto}")
             await reduced_page.evaluate("() => window.__padiemTheme.applyGlassMask('on', false)")
             await reduced_page.wait_for_timeout(80)
             reduced_on = await _glass_shell_snapshot(reduced_page)
@@ -882,8 +1157,12 @@ async def main() -> None:
             await touch_page.touchscreen.tap(330, 180)
             await touch_page.wait_for_timeout(320)
             touch_shell = await _glass_shell_snapshot(touch_page)
-            if touch_shell["pointerDriver"] > 0.01 or touch_shell["progress"] > 0.05:
-                raise AssertionError(f"touch input synthesized forbidden shell hover: {touch_shell}")
+            if (
+                touch_shell["pointerDriver"] > 0.01
+                or touch_shell["progress"] < 0.95
+                or touch_shell["portalOpacity"] < 0.80
+            ):
+                raise AssertionError(f"touch input must preserve the resting shell without hover: {touch_shell}")
             await _assert_no_horizontal_overflow(touch_page, "glass-touch-mobile")
             report["padiem_glass_touch"] = {
                 "hover_capable": hover_capable,

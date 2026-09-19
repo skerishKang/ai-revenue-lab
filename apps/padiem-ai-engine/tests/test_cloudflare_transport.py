@@ -66,6 +66,45 @@ class FakeResponse:
         self.body = FakeBody(chunks)
 
 
+class FakeJsProxyChunk:
+    def __init__(self, values):
+        self._values = values
+
+    def to_py(self):
+        return list(self._values)
+
+
+class FakeJSTypedArrayChunk:
+    """Production-shaped workerd chunk with no conversion helper.
+
+    A workerd ``Uint8Array`` proxy is not Python ``bytes``, has no
+    ``to_py()``/``to_bytes()`` method, and is not a native memoryview. It only
+    exposes integer iteration plus ``len``/indexing, exactly like the shared
+    chat streaming adapter shape.
+    """
+
+    def __init__(self, data):
+        self._data = data
+
+    def __len__(self):
+        return len(self._data)
+
+    def __getitem__(self, index):
+        return self._data[index]
+
+    def __iter__(self):
+        return iter(self._data)
+
+
+class FakeUnsupportedChunk:
+    """A chunk shape the adapter must refuse without leaking its detail."""
+
+    secret_detail = "PRIVATE_CHUNK_DETAIL"
+
+    def to_py(self):
+        raise RuntimeError(self.secret_detail)
+
+
 class FakeBinding:
     def __init__(self, response=None, error=None):
         self.response = response
@@ -133,6 +172,89 @@ async def test_fixed_target_uses_binding_once_and_delivers_progressive_bytes() -
     assert response.body.reader.read_calls == 3
     assert response.body.reader.cancel_calls == 0
     assert response.body.reader.release_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_fixed_target_decodes_to_py_jsproxy_chunks() -> None:
+    response = FakeResponse(
+        chunks=[FakeJsProxyChunk(b'{"ok":true}')],
+    )
+    transport, binding, _ = transport_for(response=response)
+
+    async with httpx.AsyncClient(transport=transport) as client:
+        result = await client.post(
+            B14_INTERNAL_ORIGIN + "/api/pilot/v1/chat/completions",
+            json={"hello": "world"},
+        )
+
+    assert result.status_code == 200
+    assert result.content == b'{"ok":true}'
+    assert len(binding.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_fixed_target_decodes_typed_array_proxy_chunks_progressively() -> None:
+    response = FakeResponse(
+        chunks=[FakeJSTypedArrayChunk(b'{"part":'), FakeJSTypedArrayChunk(b'"two"}')],
+    )
+    transport, binding, _ = transport_for(response=response)
+
+    async with httpx.AsyncClient(transport=transport) as client:
+        async with client.stream(
+            "POST",
+            B14_INTERNAL_ORIGIN + "/api/pilot/v1/chat/completions",
+            json={"hello": "world"},
+        ) as result:
+            chunks = [chunk async for chunk in result.aiter_bytes()]
+
+    assert result.status_code == 200
+    assert b"".join(chunks) == b'{"part":"two"}'
+    assert len(binding.calls) == 1
+    assert response.body.reader.read_calls == 3
+    assert response.body.reader.release_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_fixed_target_mixes_proxy_chunk_shapes_without_buffering() -> None:
+    response = FakeResponse(
+        chunks=[
+            b'{"mixed":',
+            FakeJsProxyChunk(b'"a'),
+            FakeJSTypedArrayChunk(b'b"}'),
+        ],
+    )
+    transport, binding, _ = transport_for(response=response)
+
+    async with httpx.AsyncClient(transport=transport) as client:
+        result = await client.post(
+            B14_INTERNAL_ORIGIN + "/api/pilot/v1/chat/completions",
+            json={"hello": "world"},
+        )
+
+    assert result.status_code == 200
+    assert result.content == b'{"mixed":"ab"}'
+    assert len(binding.calls) == 1
+    assert response.body.reader.read_calls == 4
+
+
+@pytest.mark.asyncio
+async def test_unsupported_chunk_fails_closed_without_detail_leak() -> None:
+    response = FakeResponse(chunks=[FakeUnsupportedChunk()])
+    transport, binding, _ = transport_for(response=response)
+    request = httpx.Request(
+        "POST",
+        B14_INTERNAL_ORIGIN + "/api/pilot/v1/chat/completions",
+        json={"x": 1},
+    )
+
+    result = await transport.handle_async_request(request)
+    with pytest.raises(httpx.ReadError) as captured:
+        _ = [chunk async for chunk in result.aiter_bytes()]
+
+    assert "unsupported response chunk" in str(captured.value)
+    assert FakeUnsupportedChunk.secret_detail not in str(captured.value)
+    assert len(binding.calls) == 1
+    await result.aclose()
 
 
 @pytest.mark.asyncio

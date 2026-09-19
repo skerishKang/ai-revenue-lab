@@ -645,6 +645,9 @@
     messageList.hidden = true;
     emptyState.hidden = false;
     shell.dataset.state = "home";
+    // Leaving for home drops any pending Claw execute recovery timer/state.
+    clearClawRecovery({ syncControls: true });
+    clearClawWait();
     setNavActive();
     input.value = "";
     renderProjectState();
@@ -798,12 +801,25 @@
       const inbox = document.getElementById("clawInbox");
       const inboxList = document.getElementById("clawInboxList");
       const workspace = document.getElementById("clawWorkspace");
+      const runHistory = document.getElementById("clawRunHistory");
+      const runHistoryList = document.getElementById("clawRunHistoryList");
+      const runHistoryError = document.getElementById("clawRunHistoryError");
       if (inbox) inbox.hidden = true;
       if (inboxList) inboxList.replaceChildren();
+      if (runHistory) runHistory.hidden = true;
+      if (runHistoryList) runHistoryList.replaceChildren();
+      if (runHistoryError) {
+        runHistoryError.hidden = true;
+        runHistoryError.textContent = "";
+        runHistoryError.removeAttribute("data-state");
+      }
       if (workspace) {
         delete workspace.dataset.inboxKind;
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
       }
+      // Auth loss tears down any pending execute recovery: no timer outlives the session.
+      clearClawRecovery({ syncControls: true });
+      clearClawWait();
     }
     const sessionState = !ready
       ? "unavailable"
@@ -1053,6 +1069,7 @@
         await loadRecentConversations();
       }
       syncApprovedMemoryVisibility();
+      syncClawRunHistoryVisibility();
     } catch (_) {
       applyAuthState({ ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false });
     }
@@ -1410,9 +1427,12 @@
   const clawGenerateBtn = document.getElementById("clawGenerateBtn");
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
-  const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawStatus = document.getElementById("clawStatus");
+  const clawRetryBox = document.getElementById("clawRetryBox");
+  const clawRetryCopy = document.getElementById("clawRetryCopy");
+  const clawRetryButton = document.getElementById("clawRetryButton");
+  const clawRetryHint = document.getElementById("clawRetryHint");
   const clawRequestEcho = document.getElementById("clawRequestEcho");
   const clawRequestEchoText = document.getElementById("clawRequestEchoText");
   const clawArtifactMeta = document.getElementById("clawArtifactMeta");
@@ -1421,9 +1441,18 @@
   const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
   const clawResultHint = document.getElementById("clawResultHint");
   const clawExecuteHint = document.getElementById("clawExecuteHint");
+  const clawWait = document.getElementById("clawWait");
 
   let clawInFlight = false;
   let clawLastAction = clawAction?.value || "quote";
+  // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
+  let clawRetrySeconds = 0;
+  let clawRetryTimer = null;
+  // In-flight elapsed wait state (#2763). Owned by the wait block below.
+  let clawWaitStartedAt = 0;
+  let clawWaitTimer = null;
+  let clawWaitRevealed = false;
+  let clawWaitAnnouncedStage = 0;
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -1432,11 +1461,18 @@
     "claw-status-execute-running": "Running... please wait a moment.",
     "claw-status-preview-success": "Preview is ready.",
     "claw-status-execute-success": "Done.",
+    "claw-wait-elapsed": "Elapsed {seconds}s",
+    "claw-wait-long": "Still running. The result will appear here when it is ready.",
+    "claw-wait-very-long": "This is taking longer than usual. The request is still running and nothing is sent twice.",
     "claw-error-preview": "Preview could not be loaded. Please try again shortly.",
     "claw-error-empty": "Paste your request before running.",
     "claw-error-too-large": "Request is too long. Please shorten it and try again.",
     "claw-error-invalid": "Please check your input and try again.",
     "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
+    "claw-btn-retry": "Try again",
+    "claw-retry-waiting": "Requests are temporarily limited. You can try again in {seconds}s. Nothing is sent automatically.",
+    "claw-retry-ready": "You can try again now. Sending uses what is currently in the form.",
+    "claw-error-check-runs": "A run may already have started. Nothing was re-run automatically — check Recent runs first.",
     "claw-error-auth-needed": "Please sign in again to continue.",
     "claw-error-auth-unavailable": "This feature isn't available because the workspace sign-in state can't be verified. Please check the workspace configuration.",
     "claw-error-storage": "Could not save the document. Please try again shortly.",
@@ -1460,16 +1496,23 @@
     "claw-memory-error-unavailable": "Approved memory is unavailable.",
     "claw-memory-error-not-found": "Memory was not found.",
     "claw-memory-error-generic": "Approved memory could not be processed.",
+    "claw-runs-title": "Recent runs",
+    "claw-runs-empty": "No recent runs.",
+    "claw-runs-error": "Could not load run history. Please try again.",
+    "claw-runs-download": "Download document again",
+    "claw-runs-status-completed": "Completed",
   };
 
-  function clawT(key) {
+  function clawT(key, variables = null) {
     try {
       if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
-        const v = window.__padiemLocale.text(key);
+        const v = window.__padiemLocale.text(key, variables);
         if (v && v !== key) return v;
       }
     } catch (_) {}
-    return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
+    if (!variables || typeof variables !== "object") return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
+    const template = clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
+    return Object.keys(variables).reduce((out, name) => out.split(`{${name}}`).join(String(variables[name])), template);
   }
 
   function localeOr(key, fallback) {
@@ -1528,10 +1571,247 @@
       clawGenerateBtn.setAttribute("aria-disabled", String(busy));
     }
     if (clawExecuteButton) {
-      clawExecuteButton.disabled = busy;
+      // A running pre-dispatch cooldown also blocks the primary button, so the
+      // surface never offers a dispatch the server has already refused.
+      const blocked = busy || clawRetryRemaining() > 0;
+      clawExecuteButton.disabled = blocked;
       clawExecuteButton.setAttribute("aria-busy", busyVal);
-      clawExecuteButton.setAttribute("aria-disabled", String(busy));
+      clawExecuteButton.setAttribute("aria-disabled", String(blocked));
     }
+  }
+
+  // ── Pre-dispatch execute recovery (#2760) ───────────────────────────────
+  //
+  // Dispatch certainty decides retryability. The server-side UsageGate runs
+  // BEFORE P01/Engine dispatch, so a 429 that carries a bounded numeric
+  // Retry-After is a known pre-dispatch denial: the browser may offer an
+  // explicit, user-pressed retry once that cooldown expires. Failures where a
+  // dispatch may already have happened (browser network error, the engine
+  // execution-failure family) are ambiguous, so they get a "check Recent runs
+  // first" hint and never a retry affordance.
+  //
+  // Retry target: the CURRENT VISIBLE FORM, re-read at click time. No hidden
+  // payload snapshot is stored, so a stale request cannot be replayed. Nothing
+  // in this block submits on a timer; the ticker only re-renders copy and
+  // control state. No auto-retry, no provider retry, no server policy change.
+  const CLAW_RETRY_AFTER_MAX_SECONDS = 900; // documented UI ceiling; larger server values clamp here
+
+  function clawRetryRemaining() {
+    return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
+  }
+
+  // Closed parse: integer seconds only, positive, clamped to one documented
+  // ceiling. Missing, non-integer, zero and negative values make no countdown claim.
+  function parseClawRetryAfter(value) {
+    if (typeof value !== "string") return null;
+    const raw = value.trim();
+    if (!/^[0-9]+$/.test(raw)) return null;
+    const seconds = Number.parseInt(raw, 10);
+    if (!Number.isFinite(seconds) || seconds < 1) return null;
+    return Math.min(seconds, CLAW_RETRY_AFTER_MAX_SECONDS);
+  }
+
+  function clawRetryAfterFromResponse(response) {
+    try {
+      const headers = response && response.headers;
+      if (!headers || typeof headers.get !== "function") return null;
+      return parseClawRetryAfter(headers.get("Retry-After"));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // Ambiguous = the request may already have reached the engine, so a second
+  // POST could double-run it. This is a closed allowlist: on this route the
+  // adapter reports Engine unbound/timeout/unreachable and malformed P01
+  // responses as `engine_execution_failed` with status 502, and the #830
+  // invariant keeps a dispatched or ambiguous failure counted rather than
+  // refunded. Every other bounded failure (input, auth, limit, storage,
+  // run-history, tier) is a pre-dispatch denial or a post-run persistence
+  // problem with its own copy, so it must never claim a possible dispatch.
+  function isAmbiguousClawFailure(data, response) {
+    const status = response ? response.status : 0;
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    return status === 502 || code === "engine_execution_failed";
+  }
+
+  function stopClawRetryTimer() {
+    if (clawRetryTimer) {
+      clearInterval(clawRetryTimer);
+      clawRetryTimer = null;
+    }
+  }
+
+  function clearClawRecovery(options = {}) {
+    stopClawRetryTimer();
+    clawRetrySeconds = 0;
+    if (clawRetryBox) clawRetryBox.hidden = true;
+    if (clawRetryCopy) clawRetryCopy.textContent = "";
+    if (clawRetryButton) {
+      clawRetryButton.disabled = true;
+      clawRetryButton.setAttribute("aria-disabled", "true");
+    }
+    if (clawRetryHint) {
+      clawRetryHint.hidden = true;
+      clawRetryHint.textContent = "";
+      delete clawRetryHint.dataset.localeKey;
+    }
+    if (options.syncControls) setClawButtonsBusy(clawInFlight);
+  }
+
+  function renderClawRetryBox() {
+    const remaining = clawRetryRemaining();
+    if (clawRetryCopy) {
+      clawRetryCopy.textContent = remaining > 0
+        ? clawT("claw-retry-waiting", { seconds: remaining })
+        : clawT("claw-retry-ready");
+    }
+    if (clawRetryButton) {
+      clawRetryButton.disabled = remaining > 0;
+      clawRetryButton.setAttribute("aria-disabled", remaining > 0 ? "true" : "false");
+    }
+  }
+
+  function beginClawRetryCooldown(seconds) {
+    stopClawRetryTimer();
+    clawRetrySeconds = seconds;
+    if (clawRetryHint) {
+      clawRetryHint.hidden = true;
+      clawRetryHint.textContent = "";
+      delete clawRetryHint.dataset.localeKey;
+    }
+    if (clawRetryBox) clawRetryBox.hidden = false;
+    renderClawRetryBox();
+    setClawButtonsBusy(clawInFlight);
+    clawRetryTimer = setInterval(() => {
+      clawRetrySeconds = clawRetrySeconds > 0 ? clawRetrySeconds - 1 : 0;
+      if (clawRetrySeconds === 0) stopClawRetryTimer();
+      renderClawRetryBox();
+      setClawButtonsBusy(clawInFlight);
+    }, 1000);
+  }
+
+  function showClawAmbiguousRecoveryHint() {
+    if (!clawRetryHint) return;
+    stopClawRetryTimer();
+    clawRetrySeconds = 0;
+    if (clawRetryBox) clawRetryBox.hidden = true;
+    if (clawRetryCopy) clawRetryCopy.textContent = "";
+    if (clawRetryButton) {
+      clawRetryButton.disabled = true;
+      clawRetryButton.setAttribute("aria-disabled", "true");
+    }
+    clawRetryHint.dataset.localeKey = "claw-error-check-runs";
+    clawRetryHint.textContent = clawT("claw-error-check-runs");
+    clawRetryHint.hidden = false;
+  }
+
+  // ── In-flight elapsed wait (#2763) ──────────────────────────────────────
+  //
+  // The execute POST is a single synchronous browser request: no server-side
+  // progress, phase, or completion-percentage source exists, and B54 owns no
+  // cancellation authority. So this surface shows only what the browser truly
+  // knows — how long the user has been waiting. It never polls the run-history
+  // route, never re-dispatches, never infers an Engine/P01 stage, and shows no
+  // percentage, phase list, or Cancel control.
+  //
+  // One 1000ms ticker per in-flight request, started only by explicit user
+  // dispatch. A tick re-renders copy from state; it issues no network call and
+  // cannot reach the execute entry point. The ticking value is a role="timer"
+  // region (implicitly aria-live off), readable on demand without announcing
+  // every second; only the two bounded long-wait states are announced, through
+  // the single canonical polite status region.
+  const CLAW_WAIT_TICK_MS = 1000;
+  const CLAW_WAIT_REVEAL_MS = 3000;
+  const CLAW_WAIT_LONG_SECONDS = 10;
+  const CLAW_WAIT_VERY_LONG_SECONDS = 30;
+
+  function clawWaitElapsedSeconds() {
+    if (!clawWaitStartedAt) return 0;
+    const elapsed = Date.now() - clawWaitStartedAt;
+    return elapsed > 0 ? Math.floor(elapsed / 1000) : 0;
+  }
+
+  function clawWaitStageFor(elapsedSeconds) {
+    if (elapsedSeconds >= CLAW_WAIT_VERY_LONG_SECONDS) return 2;
+    if (elapsedSeconds >= CLAW_WAIT_LONG_SECONDS) return 1;
+    return 0;
+  }
+
+  function clawWaitStageKey(stage) {
+    return stage >= 2 ? "claw-wait-very-long" : "claw-wait-long";
+  }
+
+  // Bounded reassurance copy: at most two announcements per request, and the
+  // copy carries no elapsed value so the live region is never re-announced once
+  // per second.
+  function applyClawWaitStageCopy() {
+    if (clawWaitAnnouncedStage < 1) return;
+    const key = clawWaitStageKey(clawWaitAnnouncedStage);
+    setClawStatus(clawT(key), "running", key);
+  }
+
+  // Presentation only. Returns true while it owns the status region, so a locale
+  // switch re-renders from state (elapsed value preserved) instead of resolving
+  // a stale key on its own.
+  function renderClawWait() {
+    if (!clawWaitStartedAt) return false;
+    const elapsed = clawWaitElapsedSeconds();
+    if (!clawWaitRevealed && elapsed * 1000 >= CLAW_WAIT_REVEAL_MS) clawWaitRevealed = true;
+    if (clawWait) {
+      clawWait.hidden = !clawWaitRevealed;
+      if (clawWaitRevealed) clawWait.textContent = clawT("claw-wait-elapsed", { seconds: elapsed });
+    }
+    const stage = clawWaitStageFor(elapsed);
+    if (stage > clawWaitAnnouncedStage) {
+      clawWaitAnnouncedStage = stage;
+      applyClawWaitStageCopy();
+    }
+    return clawWaitAnnouncedStage > 0;
+  }
+
+  function beginClawWait() {
+    clearClawWait();
+    clawWaitStartedAt = Date.now();
+    clawWaitTimer = setInterval(() => {
+      renderClawWait();
+    }, CLAW_WAIT_TICK_MS);
+  }
+
+  // Idempotent teardown: it only ever stops, never starts, so a completion that
+  // arrives after a clear can never resurrect a wait.
+  function clearClawWait() {
+    if (clawWaitTimer) {
+      clearInterval(clawWaitTimer);
+      clawWaitTimer = null;
+    }
+    clawWaitStartedAt = 0;
+    clawWaitRevealed = false;
+    clawWaitAnnouncedStage = 0;
+    if (clawWait) {
+      clawWait.hidden = true;
+      clawWait.textContent = "";
+    }
+  }
+
+  // A generated document exposes exactly one action: the bounded download.
+  // There is no in-browser open/preview capability, so no second control may
+  // exist that would only repeat this same route behind a false "open" label (#2771).
+  function setClawDocumentAction(enabled, documentId, filename) {
+    const btn = clawResultDocx;
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.setAttribute("aria-disabled", enabled ? "false" : "true");
+    btn.classList.toggle("is-prominent", enabled);
+    if (enabled) {
+      btn.dataset.documentId = documentId;
+      if (filename) btn.dataset.filename = filename;
+      return;
+    }
+    // Clearing drops the descriptor with the result, so a later click can never
+    // replay a previous run's artifact id or filename hint.
+    delete btn.dataset.documentId;
+    delete btn.dataset.filename;
   }
 
   function clearClawArtifact() {
@@ -1539,13 +1819,7 @@
     if (clawArtifactName) clawArtifactName.textContent = "";
     if (clawArtifactSize) clawArtifactSize.textContent = "";
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
-    [clawResultOpen, clawResultDocx].forEach((btn) => {
-      if (!btn) return;
-      btn.disabled = true;
-      btn.setAttribute("aria-disabled", "true");
-      btn.classList.remove("is-prominent");
-      delete btn.dataset.documentId;
-    });
+    setClawDocumentAction(false);
   }
 
   function formatClawBytes(bytes) {
@@ -1566,14 +1840,7 @@
     if (clawArtifactSize) clawArtifactSize.textContent = byteLength != null ? formatClawBytes(byteLength) : "";
     if (clawArtifactMeta) clawArtifactMeta.hidden = false;
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
-    [clawResultOpen, clawResultDocx].forEach((btn) => {
-      if (!btn) return;
-      btn.disabled = false;
-      btn.setAttribute("aria-disabled", "false");
-      btn.dataset.documentId = artifact.document_id;
-      if (artifact.filename) btn.dataset.filename = artifact.filename;
-    });
-    if (clawResultDocx) clawResultDocx.classList.add("is-prominent");
+    setClawDocumentAction(true, artifact.document_id, artifact.filename);
   }
 
   function safeClawErrorMessage(data, response) {
@@ -1729,6 +1996,9 @@
     clawInbox.hidden = false;
     if (clawManualForm) clawManualForm.hidden = true;
     if (clawResultArea) clawResultArea.hidden = true;
+    // Inbox navigation leaves the manual form: drop the pending recovery timer/state.
+    clearClawRecovery({ syncControls: true });
+    clearClawWait();
     if (clawInboxTitle) {
       clawInboxTitle.dataset.localeKey = kind === "tasks" ? "claw-inbox-tasks-title" : "claw-inbox-alerts-title";
       clawInboxTitle.textContent = uiT(clawInboxTitle.dataset.localeKey);
@@ -1736,6 +2006,7 @@
     setNavActive();
     closeSidebar();
     syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
     loadClawInbox(kind);
   }
 
@@ -1751,6 +2022,7 @@
     input.focus();
     closeSidebar();
     syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
@@ -1797,16 +2069,12 @@
     clawRequestEcho.hidden = false;
   }
 
-  // Single artifact handlers: read current dataset at click time (no per-result listener leak).
+  // Single artifact handler: reads the current dataset at click time (no
+  // per-result listener leak), and is the only control wired to the download.
   if (clawResultDocx) clawResultDocx.addEventListener("click", () => {
     const docId = clawResultDocx.dataset.documentId;
     const fname = clawResultDocx.dataset.filename;
     if (docId && !clawResultDocx.disabled) downloadClawArtifact(docId, fname);
-  });
-  if (clawResultOpen) clawResultOpen.addEventListener("click", () => {
-    const docId = clawResultOpen.dataset.documentId;
-    const fname = clawResultOpen.dataset.filename;
-    if (docId && !clawResultOpen.disabled) downloadClawArtifact(docId, fname);
   });
 
   if (clawManualForm) {
@@ -1897,8 +2165,18 @@
   // Keep preview/execute hints in sync with locale switches (data-locale-key auto-syncs static text,
   // but status and dynamic card chrome need manual refresh when language toggles).
   window.addEventListener("padiem:localechange", () => {
-    if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
+    // Wait state owns the status region while a long-wait stage is announced:
+    // re-render its copy from state so the elapsed value is preserved rather
+    // than reset by a language switch.
+    if (clawWaitStartedAt && renderClawWait()) applyClawWaitStageCopy();
+    else if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
       clawStatus.textContent = clawT(clawStatus.dataset.localeKey);
+    }
+    // Recovery copy carries runtime values, so it is re-rendered from state
+    // instead of being re-resolved from a locale key.
+    if (clawRetryBox && !clawRetryBox.hidden) renderClawRetryBox();
+    if (clawRetryHint && !clawRetryHint.hidden && clawRetryHint.dataset.localeKey) {
+      clawRetryHint.textContent = clawT(clawRetryHint.dataset.localeKey);
     }
     // Re-apply badge text to current card state if visible
     if (clawResultCard && !clawResultCard.hidden && clawResultBadge) {
@@ -1915,88 +2193,115 @@
   setClawAreaState("idle");
   clearClawArtifact();
 
-  if (clawExecuteButton) {
-    clawExecuteButton.addEventListener("click", async () => {
-      if (clawInFlight) return;
-      const body = (input.value || "").trim();
-      if (!body) {
-        clearClawArtifact();
-        if (clawResultCard) clawResultCard.hidden = true;
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = clawT("claw-error-empty");
-        }
-        setClawStatus(clawT("claw-error-empty"), "error");
-        setClawAreaState("error");
-        input.focus();
-        return;
-      }
-      if (body.length > 4000) {
-        setClawStatus(clawT("claw-error-too-large"), "error");
-        setClawAreaState("error");
-        return;
-      }
-      const channelValue = clawChannel?.value || "other";
-      const actionValue = clawAction?.value || "quote";
-      const senderText = (clawSender?.value || "").trim();
-
-      renderClawRequestEcho(body);
-      setClawButtonsBusy(true);
-      setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
-      setClawAreaState("submitting");
-      if (clawResultCard) clawResultCard.hidden = true;
+  // Single execute entry point. The primary button and the post-cooldown retry
+  // button both funnel through here, so a retry can never bypass the
+  // single-flight or pre-dispatch cooldown guards and the payload is always
+  // rebuilt from the currently visible form at click time.
+  async function runClawExecution() {
+    if (clawInFlight) return;
+    if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown
+    const body = (input.value || "").trim();
+    if (!body) {
       clearClawArtifact();
+      if (clawResultCard) clawResultCard.hidden = true;
       if (clawResultEmpty) {
         clawResultEmpty.hidden = false;
-        clawResultEmpty.textContent = clawT("claw-status-execute-running");
+        clawResultEmpty.textContent = clawT("claw-error-empty");
       }
+      setClawStatus(clawT("claw-error-empty"), "error");
+      setClawAreaState("error");
+      input.focus();
+      return;
+    }
+    if (body.length > 4000) {
+      setClawStatus(clawT("claw-error-too-large"), "error");
+      setClawAreaState("error");
+      return;
+    }
+    const channelValue = clawChannel?.value || "other";
+    const actionValue = clawAction?.value || "quote";
+    const senderText = (clawSender?.value || "").trim();
 
-      try {
-        const response = await fetch("/api/claw/manual-intake/execute", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({
-            content: body,
-            channel: channelValue,
-            action: actionValue,
-            sender_hint: senderText || null,
-            tier: selectedProductTier(),
-          }),
-        });
-        const data = await response.json().catch(() => null);
-        if (data && data.ok && data.result && typeof data.result.result_text === "string") {
-          const result = data.result;
-          const safeText = String(result.result_text);
-          revealClawCard(result.title, true);
-          if (clawResultPreview) clawResultPreview.textContent = safeText;
-          if (clawResultEmpty) clawResultEmpty.hidden = true;
-          const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
-          const hasArtifact = !!(artifact && artifact.document_id);
-          if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
-          setClawStatus(clawT("claw-status-execute-success"), "success", "claw-status-execute-success");
-          setClawAreaState("success");
-          if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
-          else if (clawResultPreview) clawResultPreview.focus?.();
-          return;
-        }
-        const safeMsg = safeClawErrorMessage(data, response);
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = safeMsg;
-        }
-        setClawStatus(safeMsg, "error");
-        setClawAreaState("error");
-      } catch {
-        const fallback = clawT("claw-error-generic");
-        if (clawResultEmpty) {
-          clawResultEmpty.hidden = false;
-          clawResultEmpty.textContent = fallback;
-        }
-        setClawStatus(fallback, "error");
-        setClawAreaState("error");
-      } finally {
-        setClawButtonsBusy(false);
+    clearClawRecovery();
+    renderClawRequestEcho(body);
+    setClawButtonsBusy(true);
+    // Explicit user dispatch is the only thing that may start a wait timer.
+    beginClawWait();
+    setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
+    setClawAreaState("submitting");
+    if (clawResultCard) clawResultCard.hidden = true;
+    clearClawArtifact();
+    if (clawResultEmpty) {
+      clawResultEmpty.hidden = false;
+      clawResultEmpty.textContent = clawT("claw-status-execute-running");
+    }
+
+    try {
+      const response = await fetch("/api/claw/manual-intake/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          content: body,
+          channel: channelValue,
+          action: actionValue,
+          sender_hint: senderText || null,
+          tier: selectedProductTier(),
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (data && data.ok && data.result && typeof data.result.result_text === "string") {
+        const result = data.result;
+        const safeText = String(result.result_text);
+        revealClawCard(result.title, true);
+        if (clawResultPreview) clawResultPreview.textContent = safeText;
+        if (clawResultEmpty) clawResultEmpty.hidden = true;
+        const artifact = result.artifact && typeof result.artifact.document_id === "string" ? result.artifact : null;
+        const hasArtifact = !!(artifact && artifact.document_id);
+        if (hasArtifact) renderClawArtifactMeta(artifact); else clearClawArtifact();
+        setClawStatus(clawT("claw-status-execute-success"), "success", "claw-status-execute-success");
+        setClawAreaState("success");
+        if (hasArtifact && clawResultDocx) clawResultDocx.focus?.();
+        else if (clawResultPreview) clawResultPreview.focus?.();
+        return;
       }
+      const safeMsg = safeClawErrorMessage(data, response);
+      if (clawResultEmpty) {
+        clawResultEmpty.hidden = false;
+        clawResultEmpty.textContent = safeMsg;
+      }
+      setClawStatus(safeMsg, "error");
+      setClawAreaState("error");
+      // A 429 usage denial happens before dispatch, so its Retry-After may be
+      // honored as a cooldown. Anything ambiguous gets guidance, never a retry.
+      const retryAfter = response.status === 429 ? clawRetryAfterFromResponse(response) : null;
+      if (retryAfter !== null) beginClawRetryCooldown(retryAfter);
+      else if (isAmbiguousClawFailure(data, response)) showClawAmbiguousRecoveryHint();
+    } catch {
+      const fallback = clawT("claw-error-generic");
+      if (clawResultEmpty) {
+        clawResultEmpty.hidden = false;
+        clawResultEmpty.textContent = fallback;
+      }
+      setClawStatus(fallback, "error");
+      setClawAreaState("error");
+      // The request may have reached the engine before the connection died.
+      showClawAmbiguousRecoveryHint();
+    } finally {
+      // The owning request always tears its wait timer down: success, known
+      // pre-dispatch denial, ambiguous failure, and auth loss all clear it.
+      clearClawWait();
+      setClawButtonsBusy(false);
+    }
+  }
+
+  if (clawExecuteButton) {
+    clawExecuteButton.addEventListener("click", () => {
+      void runClawExecution();
+    });
+  }
+  if (clawRetryButton) {
+    clawRetryButton.addEventListener("click", () => {
+      void runClawExecution();
     });
   }
   // Approved-memory review UI (#2340)
@@ -2290,5 +2595,150 @@
 
   if (clawApprovedRefresh) {
     clawApprovedRefresh.addEventListener("click", () => loadApprovedMemoryList());
+  }
+
+  // Claw recent-run presentation (#2317 owner-scoped run history route).
+  // Presentation only: the browser renders what GET /api/claw/runs already
+  // exposes to the signed-in owner and never mints its own run/history truth.
+  const clawRunHistory = document.getElementById("clawRunHistory");
+  const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
+  const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
+  const clawRunHistoryError = document.getElementById("clawRunHistoryError");
+  const clawRunHistoryList = document.getElementById("clawRunHistoryList");
+  const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
+
+  let clawRunHistoryInFlight = false;
+
+  function setClawRunHistoryStatus(message) {
+    if (!clawRunHistoryError) return;
+    if (!message) {
+      clawRunHistoryError.hidden = true;
+      clawRunHistoryError.textContent = "";
+      clawRunHistoryError.removeAttribute("data-state");
+      return;
+    }
+    clawRunHistoryError.hidden = false;
+    clawRunHistoryError.textContent = message;
+    clawRunHistoryError.dataset.state = "error";
+  }
+
+  function clawRunHistoryErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const status = response ? response.status : 0;
+    if (code === "unauthorized" || status === 401) return clawT("claw-error-auth-needed");
+    return clawT("claw-runs-error");
+  }
+
+  // Unknown status tokens stay raw rather than being invented, so presentation
+  // can never claim a completion the server did not report.
+  function clawRunStatusLabel(status) {
+    const raw = String(status || "");
+    const key = `claw-runs-status-${raw}`;
+    const text = uiT(key);
+    return text === key ? raw : text;
+  }
+
+  function renderClawRunCard(run) {
+    const card = document.createElement("div");
+    card.className = "claw-run-card";
+    card.dataset.runId = typeof run.run_id === "string" ? run.run_id : "";
+
+    const head = document.createElement("div");
+    head.className = "claw-run-card-head";
+    const title = document.createElement("strong");
+    title.className = "claw-run-card-title";
+    title.textContent = typeof run.title === "string" ? run.title : "";
+    const badge = document.createElement("span");
+    badge.className = "claw-run-card-badge";
+    badge.textContent = clawRunStatusLabel(run.status);
+    head.append(title, badge);
+
+    const meta = document.createElement("div");
+    meta.className = "claw-run-card-meta";
+    meta.textContent = [run.channel, run.action, run.created_at]
+      .map((value) => (typeof value === "string" ? value : ""))
+      .filter(Boolean)
+      .join(" · ");
+
+    const summary = document.createElement("p");
+    summary.className = "claw-run-card-summary";
+    summary.textContent = typeof run.result_summary === "string" ? run.result_summary : "";
+
+    card.append(head, meta, summary);
+
+    const artifact = run.artifact && typeof run.artifact.document_id === "string" ? run.artifact : null;
+    if (artifact) {
+      const artifactRow = document.createElement("div");
+      artifactRow.className = "claw-run-card-artifact";
+      const filename = document.createElement("span");
+      filename.className = "claw-run-card-filename";
+      filename.textContent = typeof artifact.filename === "string" ? artifact.filename : "";
+      const downloadBtn = document.createElement("button");
+      downloadBtn.type = "button";
+      downloadBtn.className = "claw-run-card-download";
+      downloadBtn.textContent = clawT("claw-runs-download");
+      downloadBtn.addEventListener("click", () => {
+        // Reuses the existing bounded artifact route through its single owner.
+        if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
+      });
+      artifactRow.append(filename, downloadBtn);
+      card.appendChild(artifactRow);
+    }
+    return card;
+  }
+
+  // Unguarded fetch: callers hold the single-flight flag while awaiting this.
+  async function fetchClawRunHistory() {
+    if (!clawRunHistory) return;
+    setClawRunHistoryStatus("");
+    if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
+    if (clawRunHistoryList) clawRunHistoryList.hidden = true;
+    if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+    if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
+    try {
+      const response = await fetch("/api/claw/runs?limit=10", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
+        throw new Error(clawRunHistoryErrorMessage(data, response));
+      }
+      if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      if (data.runs.length === 0) {
+        // Empty history must not leave an empty list container visible.
+        if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = false;
+        return;
+      }
+      if (clawRunHistoryList) clawRunHistoryList.hidden = false;
+      data.runs.forEach((run) => {
+        if (!run || typeof run.run_id !== "string") return;
+        clawRunHistoryList?.appendChild(renderClawRunCard(run));
+      });
+    } catch (error) {
+      if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
+    }
+  }
+
+  async function loadClawRunHistory() {
+    if (clawRunHistoryInFlight) return;
+    clawRunHistoryInFlight = true;
+    try {
+      await fetchClawRunHistory();
+    } finally {
+      clawRunHistoryInFlight = false;
+    }
+  }
+
+  function syncClawRunHistoryVisibility() {
+    if (!clawRunHistory) return;
+    // Owner-authenticated surface only, and never inside the inbox view.
+    const show = authState.authenticated === true
+      && shell.dataset.state === "claw"
+      && clawWorkspace?.dataset.view !== "inbox";
+    clawRunHistory.hidden = !show;
+    if (show) loadClawRunHistory();
+  }
+
+  if (clawRunHistoryRefresh) {
+    clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
   }
 })();

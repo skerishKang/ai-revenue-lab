@@ -96,7 +96,7 @@ def test_glass_mobile_keeps_chat_primary_and_art_subordinate() -> None:
     assert 'opacity: .16' in PORTRAIT_CSS
 
 
-def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_activity() -> None:
+def test_glass_portrait_mask_combines_home_travel_pointer_and_live_answer_activity() -> None:
     assert 'function pingPong(value)' in THEME_JS
     assert 'phase<=1?phase:2-phase' in THEME_JS
     assert 'list.children.length' in THEME_JS
@@ -106,7 +106,7 @@ def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_acti
     assert 'messageTravel=messageCount*.28' in THEME_JS
     assert 'var travel=messageTravel+overflowTravel+scrollTravel' in THEME_JS
     assert 'baseReveal=smoothstep(pingPong(travel))' in THEME_JS
-    assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
+    assert 'glassPointerReveal=inside?1:0;' in THEME_JS
     assert 'function glassAnswerReveal(now)' in THEME_JS
     assert 'noteGlassAnswerActivity()' in THEME_JS
     assert '*(1-pointerReveal*.94)' in THEME_JS
@@ -118,15 +118,21 @@ def test_glass_portrait_reveal_combines_home_travel_pointer_and_live_answer_acti
     assert 'requestAnimationFrame' in THEME_JS
 
 
-def test_glass_pointer_is_subtle_and_also_drives_reveal() -> None:
+def test_glass_pointer_is_binary_hover_state_not_horizontal_scrubber_or_parallax() -> None:
     assert 'window.addEventListener("pointermove",updateGlassPointer' in THEME_JS
-    assert 'glassPointerReveal=smoothstep(proximity);' in THEME_JS
-    assert '(nx*8*glassPointerReveal)' in THEME_JS
-    assert '(ny*5*glassPointerReveal)' in THEME_JS
-    assert '--glass-pointer-x' in THEME_JS
-    assert '--glass-pointer-y' in THEME_JS
-    assert 'calc(var(--glass-art-x) + var(--glass-pointer-x))' in PORTRAIT_CSS
-    assert 'calc(var(--glass-art-y) + var(--glass-pointer-y))' in PORTRAIT_CSS
+    assert 'shellApi&&shellApi.imageRect?shellApi.imageRect():null' in THEME_JS
+    assert 'event.clientX>=rect.left&&event.clientX<=rect.right' in THEME_JS
+    assert 'event.clientY>=rect.top&&event.clientY<=rect.bottom' in THEME_JS
+    assert 'glassPointerReveal=inside?1:0;' in THEME_JS
+    assert 'hoverRamp' not in THEME_JS
+    assert 'smoothstep(proximity)' not in THEME_JS
+    assert 'root.style.setProperty("--glass-pointer-x","0px")' in THEME_JS
+    assert 'root.style.setProperty("--glass-pointer-y","0px")' in THEME_JS
+    assert '(nx*8*glassPointerReveal)' not in THEME_JS
+    assert '(ny*5*glassPointerReveal)' not in THEME_JS
+    assert 'var motionReveal=1' in THEME_JS
+    assert '(-9*motionReveal)' in THEME_JS
+    assert 'travelY*motionReveal' in THEME_JS
 
 
 def test_glass_reduced_motion_freezes_to_readable_reveal() -> None:
@@ -196,26 +202,41 @@ def test_glass_shell_layer_script_is_loaded() -> None:
 
 
 def test_glass_shell_ports_source_fragment_assembly() -> None:
-    """The plate-assembly math is the source loader's, not an invented overlay."""
-    # original clipShapes verbatim
-    assert 'polygon(8% 0,100% 7%,91% 100%,0 88%)' in SHELL_JS
-    assert 'polygon(6% 0,100% 11%,93% 92%,0 100%)' in SHELL_JS
-    # golden-angle scatter ring, assemble easing, dissolve->portal swap
-    assert 'i*2.399' in SHELL_JS
-    assert 'ASSEMBLE_START' in SHELL_JS and 'DISSOLVE_AT' in SHELL_JS
+    """The shell keeps the source fragment idea but uses thin registered ribbons."""
+    assert 'FRAG_COUNT=20, COLS=1, ROWS=20' in SHELL_JS
+    assert 'polygon(0 10%,100% 0,100% 90%,0 100%)' in SHELL_JS
+    assert 'polygon(0 6%,100% 0,100% 94%,0 100%)' in SHELL_JS
+    # timed staggered dissolve stays frame-rate independent
     assert 'requestAnimationFrame' in SHELL_JS
+    assert 'var order=((i*7)%FRAG_COUNT)/(FRAG_COUNT-1);' in SHELL_JS
     # shell geometry mirrors the live ::before portrait box
     assert 'getComputedStyle(panel,"::before")' in SHELL_JS
-    # fragments carry jigsaw slices of the shell image
-    assert 'backgroundPosition' in SHELL_JS
+    # fragments carry pixel-registered jigsaw slices of the shell image:
+    # placement is field-relative, while source crop is image-local.
+    assert 'var cropX=col*cellW, cropY=row*cellH;' in SHELL_JS
+    assert 'var fx=imgL+cropX, fy=imgT+cropY;' in SHELL_JS
+    assert 'backgroundPosition=(-cropX)+"px "+(-cropY)+"px";' in SHELL_JS
+    assert 'backgroundPosition=(-fx)' not in SHELL_JS
     assert 'padiem-glass-' in SHELL_JS and '-shell.jpg' in SHELL_JS
 
 
-def test_glass_shell_drivers_are_pointer_and_answer_not_scroll() -> None:
+def test_glass_shell_auto_is_reverse_pointer_reveal_not_partial_assembly() -> None:
     assert '--glass-pointer-reveal' in SHELL_JS
-    assert '--glass-answer-reveal' in SHELL_JS
+    assert 'return 1-clamp(p,0,1);' in SHELL_JS
+    assert 'Math.max(.62*p,.8*a)' not in SHELL_JS
+    assert 'var progress=1, raf=0, lastT=0;' in SHELL_JS
+    assert 'progress=maskMode()==="off"?0:1;' in SHELL_JS
+    assert 'RATE_DOWN=.018' in SHELL_JS
+    assert 'RATE_UP=.024' in SHELL_JS
+    assert 'function render(p,peeling)' in SHELL_JS
+    assert 'var phase=peeling?1-p:p;' in SHELL_JS
+    assert 'var portal=clamp((p-.04)/.96,0,1);' in SHELL_JS
+    assert 'var x=d.fx, y=d.fy;' in SHELL_JS
+    assert 'rotate(0deg) scale(1)' in SHELL_JS
+    assert 'var drift=' not in SHELL_JS
+    assert 'd.sx+(d.fx-d.sx)' not in SHELL_JS
+    assert 'var peeling=t<progress;' in SHELL_JS
     assert '--glass-pointer-reveal' in THEME_JS
-    assert '--glass-answer-reveal' in THEME_JS
 
 
 def test_glass_shell_mode_and_speed_are_url_authoritative() -> None:
@@ -261,10 +282,24 @@ def test_glass_shell_respects_reduced_motion_and_theme_gate() -> None:
 
 
 def test_glass_shell_pointer_geometry_uses_live_field_rect() -> None:
-    """Parallax origin must follow the transformed breakpoint-specific portrait field."""
+    """Parallax and hover origin must follow the transformed live portrait field."""
     assert "getBoundingClientRect" in SHELL_JS
     assert "window.innerWidth-fieldW" not in SHELL_JS
     assert "--glass-shell-progress" in SHELL_JS
+    assert 'document.querySelector(".glass-shell-field")' in THEME_JS
+    assert "shellApi&&shellApi.imageRect?shellApi.imageRect():null" in THEME_JS
+    assert "event.clientX>=rect.left&&event.clientX<=rect.right" in THEME_JS
+    assert "hoverRamp" not in THEME_JS
+    assert "imageRect:function()" in SHELL_JS
+    assert "var left=rect.left+imgL*scaleX;" in SHELL_JS
+
+
+def test_glass_shell_background_position_parser_keeps_fragments_on_portrait_canvas() -> None:
+    assert "function axisOffset(value, freeSpace, fallbackFraction)" in SHELL_JS
+    assert 'raw.endsWith("%")' in SHELL_JS
+    assert 'raw.endsWith("px")' in SHELL_JS
+    assert "imgL=axisOffset(bpx,fieldW-imgW,1);" in SHELL_JS
+    assert "imgT=axisOffset(bpy,fieldH-imgH,.52);" in SHELL_JS
 
 
 def _jpeg_size(path: Path) -> tuple[int, int]:

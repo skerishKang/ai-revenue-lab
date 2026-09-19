@@ -200,35 +200,35 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.sensenova-6.8-flash-lite.v1",
+                route_id="plus.agnes-3.0-flash.v1",
                 status=ProductRouteStatus.EXECUTABLE,
-                model_family="sensenova",
-                provider_id="sensenova",
-                model_id="sensenova/sensenova-6.8-flash-lite",
-                upstream_model="sensenova-6.8-flash-lite",
+                model_family="agnes-3.0-flash",
+                provider_id="agnes-ai",
+                model_id="agnes-ai/agnes-3.0-flash",
+                upstream_model="agnes-3.0-flash",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_SENSENOVA_API_KEY",
+                credential_binding="PADIEM_AGNES_API_KEY",
                 evidence=(
-                    "Owner selection #2571; B14 provider registration #955/#2003; "
-                    "Production bounded direct-route evidence #2150/#2155/#2161 "
-                    "including HTTP 200 streaming with visible delta and DONE."
+                    "Owner Plus swap handoff; B14 Agnes provider registration; exact 3.0 "
+                    "live measurement remains blocked as documented in the work order."
                 ),
             ),
             ProductTierRoute(
-                route_id="plus.kilo-laguna-s-2.1-free.v1",
+                route_id="plus.poolside-laguna-direct.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="poolside-laguna",
-                provider_id="kilo",
-                model_id="kilo/poolside-laguna-s-2.1-free",
-                upstream_model="poolside/laguna-s-2.1:free",
-                credential_mode=ProductCredentialMode.ANONYMOUS,
+                provider_id="poolside",
+                model_id="poolside/laguna-s-2.1",
+                upstream_model="poolside/laguna-s-2.1",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_POOLSIDE_API_KEY",
                 hold_reason=(
-                    "Superseded as the active Padiem Plus route by owner decision #2571. "
-                    "Retained as historical data only; no silent fallback is allowed."
+                    "Poolside Laguna is the owner-designated second fixed-chain position; "
+                    "retained as data only in the product-tier declaration and never a "
+                    "silent fallback."
                 ),
                 evidence=(
-                    "Historical B14 Kilo free lane (#956/#2099); replaced by direct "
-                    "SenseNova selection on 2026-09-16."
+                    "B14 app/pilot/poolside_provider.py registration (#954)."
                 ),
             ),
         ),

@@ -77,10 +77,10 @@ from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
 _UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
-# Retryable transport classes retried on the SAME route once no fallback
-# candidate remains. Hourly-quota 429s are excluded (Kilo free is an hourly
-# quota); the SenseNova transient-busy 429 (#2003) IS included — it is
-# capacity pressure with UpstreamTimeout-equivalent semantics.
+# Retryable transport classes may be retried on a SAME route for explicit
+# manual routes. The owner-designated auto chain has a total upstream-attempt
+# budget equal to ``decision.max_attempts``: each chain candidate gets at most
+# one call so that Agnes -> Poolside remains a two-call maximum.
 _SAME_ROUTE_RETRYABLE_CODES = frozenset({
     "upstream_timeout",
     "upstream_server_error",
@@ -868,11 +868,15 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "actual_response_model": None,
             })
 
-            # Same-route bounded retry for retryable transport failures
-            # (#1982). Non-retryable classes (auth, bad request) never reach
-            # a retry: they are not in _SAME_ROUTE_RETRYABLE_CODES and the
+            # Same-route bounded retry for explicit manual routes (#1982).
+            # fixed_chain_v1 treats max_attempts as the total upstream call
+            # budget, so auto candidates advance without a same-route retry.
+            # Non-retryable classes (auth, bad request) never reach a retry:
+            # they are not in _SAME_ROUTE_RETRYABLE_CODES and the
             # fallback-prohibited check below breaks on the first attempt.
             if (
+                decision.route_mode != "auto"
+                and
                 error.code in _SAME_ROUTE_RETRYABLE_CODES
                 and retry_index < _UPSTREAM_RETRY_MAX_RETRIES
             ):

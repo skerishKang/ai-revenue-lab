@@ -369,6 +369,7 @@ class TestErrorRedaction:
         """The gateway must not depend on Starlette Request.json() in Workers."""
         from app.pilot import gateway
 
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
         original = gateway.Request.json
 
         async def broken_json(_request):

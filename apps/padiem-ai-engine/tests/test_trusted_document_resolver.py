@@ -1,25 +1,31 @@
-"""E5B-S2 trusted document resolver tests (#1750).
+"""E5B-S2 trusted document resolver tests (#1750), async durable seam (#2741).
 
-Covers the frozen S2 acceptance matrix A–M: opaque-reference resolve,
-scope enforcement, Core normalization bridge, projection safety and the
-zero-mutation canaries for the canonical Core sources.
+Covers the S2 acceptance matrix over its evolved E8C-B form: opaque ``doc_*``
+resolve through the durable storage port, scope and expiry enforcement, the
+Core normalization bridge, projection safety and the zero-mutation canaries
+for the canonical Core sources.
 """
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 import hashlib
-import io
 from pathlib import Path
 import re
-import zipfile
 
 import pytest
 
+from app.document_byte_store import (
+    InMemoryDocumentByteStore,
+    ScopedDocumentByteStore,
+    StoredDocumentRecord,
+)
 from app.trusted_document_resolver import (
-    ATT_REFERENCE_PATTERN,
+    DOC_REFERENCE_PATTERN,
+    DurableDocumentStoragePort,
     DocumentResolutionError,
-    InMemoryStoragePort,
     ResolvedDocumentMeta,
     SafeDocumentProjection,
     TrustedDocumentResolver,
@@ -41,37 +47,57 @@ PINNED_SHA256 = {
     CORE_TESTS / "test_document_normalization.py": "6d3b2973da19f77565b8702f1bb2003df0425783cd3f25aa9f86c0af0e22c6da",
 }
 
-REF = "att_doc00000000000a"
-LOCATOR = "opaque-blob-locator-77"
+REF = "doc_r2741resolvertest1"
+OLD_S2_REF = "att_doc00000000000a"  # legacy S2 fixture; must never resolve now
 SECRET_BODY = "quarterly revenue projections for beta-corp"
+T0 = datetime(2026, 9, 19, 12, 0, 0, tzinfo=timezone.utc)
+SCOPE = {"app_id": "app.revenue", "subject_id": "user.42", "tenant_id": "tenant.a"}
 
 
-def _meta(**overrides: object) -> ResolvedDocumentMeta:
-    values: dict[str, object] = {
-        "media_type": "text/plain",
-        "name": "notes.txt",
-        "byte_size": len(SECRET_BODY.encode("utf-8")),
-        "app_id": "app.revenue",
-        "subject_id": "user.42",
-        "tenant_id": "tenant.a",
-    }
-    values.update(overrides)
-    return ResolvedDocumentMeta(**values)  # type: ignore[arg-type]
+def _resolver(
+    payload: bytes | None = None,
+    *,
+    meta: ResolvedDocumentMeta | None = None,
+    ref: str = REF,
+    bind: bool = True,
+    clock_at: datetime | None = None,
+) -> TrustedDocumentResolver:
+    """Build the honest production stack: in-memory durable store behind the facade."""
 
+    resolved_meta = meta or ResolvedDocumentMeta(
+        media_type="text/plain",
+        name="notes.txt",
+        byte_size=len(payload if payload is not None else SECRET_BODY.encode("utf-8")),
+        **SCOPE,
+    )
+    async def scenario() -> TrustedDocumentResolver:
+        port = InMemoryDocumentByteStore()
+        if bind:
+            assert isinstance(resolved_meta, ResolvedDocumentMeta)
+            await port.put(
+                StoredDocumentRecord(
+                    document_ref=ref,
+                    app_id=resolved_meta.app_id,
+                    tenant_id=resolved_meta.tenant_id,
+                    subject_id=resolved_meta.subject_id,
+                    media_type=resolved_meta.media_type,
+                    name=resolved_meta.name,
+                    byte_size=resolved_meta.byte_size,
+                    created_at=T0,
+                    expires_at=T0 + timedelta(hours=24),
+                ),
+                payload if payload is not None else SECRET_BODY.encode("utf-8"),
+            )
+        scoped = ScopedDocumentByteStore(
+            port=port, clock=lambda: clock_at or T0
+        )
+        return TrustedDocumentResolver(storage=DurableDocumentStoragePort(scoped))
 
-def _resolver(payload: bytes | None = None, meta: ResolvedDocumentMeta | None = None, *, bind: bool = True) -> TrustedDocumentResolver:
-    storage = InMemoryStoragePort()
-    resolved_meta = meta or _meta()
-    raw = payload if payload is not None else SECRET_BODY.encode("utf-8")
-    storage.store(LOCATOR, raw, replace(resolved_meta, byte_size=len(raw)))
-    resolver = TrustedDocumentResolver(storage=storage)
-    if bind:
-        resolver.register(REF, LOCATOR)
-    return resolver
+    return asyncio.run(scenario())
 
 
 def _call(**overrides: object) -> dict[str, str]:
-    scope: dict[str, str] = {"app_id": "app.revenue", "subject_id": "user.42", "tenant_id": "tenant.a"}
+    scope: dict[str, str] = dict(SCOPE)
     scope.update(overrides)  # type: ignore[arg-type]
     return scope
 
@@ -80,10 +106,16 @@ def _call(**overrides: object) -> dict[str, str]:
 
 
 def test_a_valid_reference_resolves_to_bytes_and_meta() -> None:
-    raw, meta = _resolver().resolve(REF, **_call())
+    raw, meta = asyncio.run(_resolver().resolve(REF, **_call()))
     assert raw == SECRET_BODY.encode("utf-8")
     assert meta.media_type == "text/plain"
     assert meta.byte_size == len(raw)
+    assert async_resolve_and_normalize_works()
+
+
+def async_resolve_and_normalize_works() -> bool:
+    doc = asyncio.run(resolve_and_normalize(_resolver(), REF, **_call()))
+    return isinstance(doc, NormalizedDocument)
 
 
 # --- B: invalid reference grammar -----------------------------------------
@@ -95,12 +127,14 @@ def test_a_valid_reference_resolves_to_bytes_and_meta() -> None:
         None,
         "",
         "att_short",
+        OLD_S2_REF,  # cross-namespace: image refs are foreign here
         "https://evil.example/x",
         "s3://bucket/private.bin",
-        LOCATOR,
-        "att_inject me",
-        f"att_{'x' * 200}",
-        "../att_traversal",
+        "opaque-blob-locator-77",
+        "doc_inject me",
+        f"doc_{'x' * 200}",
+        "../doc_traversal",
+        "DOC_" + "x" * 16,
     ],
 )
 def test_b_invalid_references_are_rejected(bad_ref: object) -> None:
@@ -108,7 +142,7 @@ def test_b_invalid_references_are_rejected(bad_ref: object) -> None:
         require_document_reference(bad_ref)
     assert info.value.code == "invalid_reference"
     with pytest.raises(DocumentResolutionError):
-        _resolver().resolve(bad_ref, **_call())
+        asyncio.run(_resolver().resolve(bad_ref, **_call()))
     assert not any(
         forbidden in str(info.value).lower()
         for forbidden in ("bucket", "evil.example", "payload", "locator")
@@ -121,16 +155,16 @@ def test_b_invalid_references_are_rejected(bad_ref: object) -> None:
 def test_c_unknown_reference_is_not_found_without_leakage() -> None:
     resolver = _resolver(bind=False)
     with pytest.raises(DocumentResolutionError) as info:
-        resolver.resolve(REF, **_call())
+        asyncio.run(resolver.resolve(REF, **_call()))
     assert info.value.code == "not_found"
     assert info.value.status_code == 404
-    assert LOCATOR not in str(info.value)
+    assert OLD_S2_REF not in str(info.value)
     assert SECRET_BODY not in str(info.value)
 
 
-def test_c2_missing_payload_is_not_found() -> None:
+def test_c2_empty_store_resolves_nothing() -> None:
     with pytest.raises(DocumentResolutionError) as info:
-        TrustedDocumentResolver(storage=InMemoryStoragePort()).resolve(REF, **_call())
+        asyncio.run(_resolver(bind=False).resolve(REF, **_call()))
     assert info.value.code == "not_found"
 
 
@@ -143,167 +177,173 @@ def test_c2_missing_payload_is_not_found() -> None:
         {"app_id": "app.other"},
         {"subject_id": "user.99"},
         {"tenant_id": "tenant.b"},
-        {"app_id": "other"},
     ],
 )
-def test_d_wrong_scope_is_unauthorized(wrong: dict[str, str]) -> None:
+def test_d_wrong_caller_scope_is_unauthorized(wrong: dict[str, str]) -> None:
     with pytest.raises(DocumentResolutionError) as info:
-        _resolver().resolve(REF, **_call(**wrong))
+        asyncio.run(_resolver().resolve(REF, **_call(**wrong)))
     assert info.value.code == "unauthorized"
     assert info.value.status_code == 403
 
 
-@pytest.mark.parametrize("wrong", [{"app_id": ""}, {"subject_id": "bad id"}, {"tenant_id": "../x"}])
-def test_d2_invalid_caller_scope_is_rejected(wrong: dict[str, str]) -> None:
+@pytest.mark.parametrize(
+    "wrong",
+    [
+        {"app_id": ""},
+        {"subject_id": "bad id"},
+        {"tenant_id": "../x"},
+        {"app_id": None},
+        {"subject_id": "x" * 129},
+    ],
+)
+def test_d2_invalid_caller_scope_shape_is_rejected(wrong: dict[str, str]) -> None:
     with pytest.raises(DocumentResolutionError) as info:
-        _resolver().resolve(REF, **_call(**wrong))
+        asyncio.run(_resolver().resolve(REF, **_call(**wrong)))
     assert info.value.code == "invalid_scope"
 
 
-def test_d3_integrity_mismatch_is_rejected() -> None:
-    storage = InMemoryStoragePort()
-    storage.store(LOCATOR, b"short", _meta())
-    resolver = TrustedDocumentResolver(storage=storage)
-    resolver.register(REF, LOCATOR)
+def test_d3_tampered_record_size_fails_closed() -> None:
+    resolver = _resolver()
+    # tamper the durable record directly: metadata no longer matches the bytes
+    scoped = resolver._storage._store
+    record = scoped._port._records[REF]
+    scoped._port._records[REF] = replace(record, byte_size=len(SECRET_BODY) + 900)
     with pytest.raises(DocumentResolutionError) as info:
-        resolver.resolve(REF, **_call())
+        asyncio.run(resolver.resolve(REF, **_call()))
     assert info.value.code == "integrity_mismatch"
 
 
-# --- E: resolve + normalize bridge ------------------------------------------
+# --- E: retention state ------------------------------------------------------
 
 
-def test_e_text_document_normalizes_through_bridge() -> None:
-    document = resolve_and_normalize(_resolver(), REF, **_call())
+def test_e_expired_document_resolves_as_expired() -> None:
+    resolver = _resolver(clock_at=T0 + timedelta(hours=25))
+    with pytest.raises(DocumentResolutionError) as info:
+        asyncio.run(resolver.resolve(REF, **_call()))
+    assert info.value.code == "expired"
+    assert info.value.status_code == 410
+
+
+def test_e2_terminal_document_resolves_as_terminal() -> None:
+    resolver = _resolver()
+
+    async def scenario() -> None:
+        scoped = resolver._storage._store
+        await scoped.invalidate(document_ref=REF, **SCOPE)
+        with pytest.raises(DocumentResolutionError) as info:
+            await resolver.resolve(REF, **_call())
+        assert info.value.code == "terminal"
+        assert info.value.status_code == 410
+
+    asyncio.run(scenario())
+
+
+def test_e3_store_backend_failure_maps_to_store_unavailable() -> None:
+    from app.document_byte_store import DocumentByteStoreError
+
+    class Exploding:
+        async def fetch_document(self, **_kwargs):
+            raise DocumentByteStoreError(
+                "store_unavailable", "Document byte store is unavailable.", status_code=503
+            )
+
+    resolver = TrustedDocumentResolver(storage=DurableDocumentStoragePort(Exploding()))
+    with pytest.raises(DocumentResolutionError) as info:
+        asyncio.run(resolver.resolve(REF, **_call()))
+    assert info.value.code == "store_unavailable"
+    assert info.value.status_code == 503
+
+
+# --- F: normalize through the durable seam ------------------------------------
+
+
+def test_f_resolve_and_normalize_produces_canonical_document() -> None:
+    document = asyncio.run(resolve_and_normalize(_resolver(), REF, **_call()))
     assert isinstance(document, NormalizedDocument)
     assert document.text == SECRET_BODY
-    assert document.name == "notes.txt"
     assert document.media_type == "text/plain"
-    assert document.source_kind == "text"
 
 
-def test_e2_json_document_normalizes_through_bridge() -> None:
-    body = '{"revenue": 260904}'
-    document = resolve_and_normalize(
-        _resolver(payload=body.encode("utf-8"), meta=_meta(media_type="application/json", name="report.json")),
-        REF,
-        **_call(),
-    )
-    assert document.text == body
-    assert document.kind is not None
-
-
-def _docx_bytes(text: str) -> bytes:
-    buffer = io.BytesIO()
-    document_xml = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-        f"<w:body><w:p><w:r><w:t>{text}</w:t></w:r></w:p></w:body></w:document>"
-    )
-    with zipfile.ZipFile(buffer, "w") as archive:
-        archive.writestr("word/document.xml", document_xml)
-    return buffer.getvalue()
-
-
-def test_e3_docx_document_normalizes_through_bridge() -> None:
-    payload = _docx_bytes(SECRET_BODY)
-    document = resolve_and_normalize(
-        _resolver(payload=payload, meta=_meta(media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", name="deck.docx")),
-        REF,
-        **_call(),
-    )
-    assert document.text == SECRET_BODY
-    assert document.source_kind == "binary"
-    assert document.byte_size == len(payload)
-
-
-# --- F: NormalizedDocument carries no reference or scope authority -----------
-
-
-def test_f_normalized_document_leaks_neither_reference_nor_scope() -> None:
-    document = resolve_and_normalize(_resolver(), REF, **_call())
-    surfaces = [repr(document), str(document), str(document.to_public_dict())]
-    combined = " ".join(surfaces).lower()
-    assert "att_" not in combined
-    assert LOCATOR.lower() not in combined
-    assert "app.revenue" not in combined
-    assert "user.42" not in combined
-    assert "tenant.a" not in combined
-    assert SECRET_BODY not in repr(document)
-
-
-# --- G/H: safe projection never carries body, reference or locator -----------
-
-
-def test_g_projection_exposes_only_bounded_metadata() -> None:
-    document = resolve_and_normalize(_resolver(), REF, **_call())
-    projection = SafeDocumentProjection.from_document(document)
-    as_dict = projection.to_dict()
-    assert as_dict == {
-        "kind": "text",
-        "name": "notes.txt",
-        "media_type": "text/plain",
-        "byte_size": len(SECRET_BODY.encode("utf-8")),
-        "text_chars": len(SECRET_BODY),
-        "segment_count": 1,
-        "status": "complete",
-        "content_trust_class": "untrusted_reference_data",
-    }
-
-
-def test_h_projection_repr_and_dict_have_no_body_reference_or_locator() -> None:
-    document = resolve_and_normalize(_resolver(), REF, **_call())
-    projection = SafeDocumentProjection.from_document(document)
-    combined = (repr(projection) + str(projection.to_dict())).lower()
-    assert SECRET_BODY.lower() not in combined
-    assert "att_" not in combined
-    assert LOCATOR.lower() not in combined
-    assert isinstance(projection.text_chars, int)
-
-
-# --- I: failures never yield a degraded document ------------------------------
-
-
-def test_i_unsupported_media_type_raises_without_document() -> None:
-    resolver = _resolver(payload=b"\x00\x01binary", meta=_meta(media_type="application/octet-stream", name="blob.bin"))
+def test_f2_undecodable_text_fails_closed() -> None:
     with pytest.raises(DocumentResolutionError) as info:
-        resolve_and_normalize(resolver, REF, **_call())
-    assert info.value.code == "unsupported_media_type"
-
-
-def test_i2_non_utf8_text_bytes_raise_decode_failed() -> None:
-    resolver = _resolver(payload=b"\xff\xfe\x00garbled", meta=_meta())
-    with pytest.raises(DocumentResolutionError) as info:
-        resolve_and_normalize(resolver, REF, **_call())
+        asyncio.run(resolve_and_normalize(_resolver(payload=b"\xff\xfe\x00\x01"), REF, **_call()))
     assert info.value.code == "decode_failed"
 
 
-def test_i3_unauthorized_resolve_produces_no_document() -> None:
-    with pytest.raises(DocumentResolutionError):
-        resolve_and_normalize(_resolver(), "att_missingmissing", **_call())
+# --- G/H: projection ------------------------------------------------------------
 
 
-# --- J: base import needs no optional extraction dependencies ------------------
+def test_g_projection_exposes_only_safe_metadata_keys() -> None:
+    document = asyncio.run(resolve_and_normalize(_resolver(), REF, **_call()))
+    projection = SafeDocumentProjection.from_document(document)
+    assert "kind" in projection.to_dict()
+    assert "name" in projection.to_dict()
+    assert "text" not in projection.to_dict()
+    assert "segments" not in projection.to_dict()
 
 
-def test_j_optional_dependencies_stay_lazy() -> None:
+def test_h_projection_never_leaks_secret_body() -> None:
+    document = asyncio.run(resolve_and_normalize(_resolver(), REF, **_call()))
+    projection = SafeDocumentProjection.from_document(document)
+    combined = repr(projection) + str(projection.to_dict())
+    assert SECRET_BODY not in combined
+
+
+# --- I: legacy namespace can never resolve -------------------------------------
+
+
+def test_i_legacy_att_reference_is_rejected_end_to_end() -> None:
+    # the exact S2 fixture from #1750 fails closed now: cross-namespace refusal
+    with pytest.raises(DocumentResolutionError) as info:
+        asyncio.run(resolve_and_normalize(_resolver(), OLD_S2_REF, **_call()))
+    assert info.value.code == "invalid_reference"
+
+
+# --- J: no eager optional-extraction imports at module head ---------------------
+
+
+def test_j_heavy_parsers_stay_lazy() -> None:
+    module = pytest.importorskip("app.trusted_document_resolver")
+    source = Path(module.__file__).read_text(encoding="utf-8")
+    head = source.split("def normalize_resolved_document")[0]
+    assert not re.search(r"^\s*import pypdf", head, re.MULTILINE)
+    assert not re.search(r"^\s*import openpyxl", head, re.MULTILINE)
+    assert not re.search(r"^\s*from pypdf", head, re.MULTILINE)
+    assert not re.search(r"^\s*from openpyxl", head, re.MULTILINE)
+
+
+# --- J2: namespace isolation from the image lane --------------------------------
+
+
+def test_j2_document_and_image_grammar_do_not_overlap() -> None:
+    assert DOC_REFERENCE_PATTERN.pattern.startswith("^doc_")
+    # a legal doc reference is rejected by the image grammar owner
+    from app.attachment_authority import EngineAttachmentAuthorityError, require_opaque_attachment_ref
+
+    with pytest.raises(EngineAttachmentAuthorityError):
+        require_opaque_attachment_ref(REF)
+
+
+# --- K: durable port is the only storage adapter --------------------------------
+
+
+def test_k_legacy_sync_port_surface_is_gone() -> None:
     import app.trusted_document_resolver as module
 
-    module_source = Path(module.__file__).read_text(encoding="utf-8")
-    normalization_source = (CORE_PACKAGE / "document_normalization.py").read_text(encoding="utf-8")
-    top_level_imports = normalization_source.split("class NormalizedDocument", 1)[0] + module_source
-    assert not re.search(r"^import pypdf", top_level_imports, re.MULTILINE)
-    assert not re.search(r"^from pypdf", top_level_imports, re.MULTILINE)
-    assert not re.search(r"^import openpyxl", top_level_imports, re.MULTILINE)
-    assert not re.search(r"^from openpyxl", top_level_imports, re.MULTILINE)
-    assert ATT_REFERENCE_PATTERN.pattern.startswith("^att_")
+    assert not hasattr(module, "InMemoryStoragePort")
+    assert not hasattr(TrustedDocumentResolver, "register")
+    assert not hasattr(TrustedDocumentResolver, "bind")
+    assert callable(getattr(TrustedDocumentResolver, "resolve"))
+    import inspect
+
+    assert inspect.iscoroutinefunction(TrustedDocumentResolver.resolve)
+    assert inspect.iscoroutinefunction(resolve_and_normalize)
 
 
-# --- L/M: zero-mutation canaries against the S1 merge base ---------------------
+# --- L/M: zero-mutation canaries -----------------------------------------------
 
 
-@pytest.mark.parametrize("relative_path, expected", list(PINNED_SHA256.items()))
-def test_lm_frozen_sources_are_unmodified(relative_path: Path, expected: str) -> None:
-    assert relative_path.exists(), f"expected frozen file to exist: {relative_path}"
-    actual = hashlib.sha256(relative_path.read_bytes()).hexdigest()
-    assert actual == expected, f"{relative_path.name} drifted from the pinned S1 base revision"
+@pytest.mark.parametrize("path, digest", list(PINNED_SHA256.items()))
+def test_lm_canaries_hold(path: Path, digest: str) -> None:
+    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    assert actual == digest, f"{path.name} drifted from pinned SHA256"

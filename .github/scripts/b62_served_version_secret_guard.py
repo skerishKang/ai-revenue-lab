@@ -19,6 +19,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# The scripts directory is not a package, so make the canonical resolver
+# importable whether this guard runs directly or is loaded through importlib in
+# a test or by b62_claw_live_config_activation.py.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from cloudflare_served_version import (  # noqa: E402
+    ServedVersionReason,
+    ServedVersionResolutionError,
+    resolve_served_version_id as _resolve_canonical_served_version_id,
+)
+
 SECRET_TYPE = "secret_text"
 REQUIRED_SECRETS = {
     "PADIEM_CHAT_QUOTA_SALT": SECRET_TYPE,
@@ -40,32 +53,47 @@ def _success_result(payload: object, label: str) -> dict[str, Any]:
     return result
 
 
+# Canonical resolver failure codes published under this guard's established
+# wording. The rules live in ``cloudflare_served_version.py``; only the text is
+# local, because b62-production-code-deploy-gate.yml asserts these phrases
+# against this file's source.
+_RESOLVER_REASONS = {
+    ServedVersionReason.ENVELOPE:
+        "deployments payload is not a successful Cloudflare API response",
+    ServedVersionReason.RESULT_OBJECT:
+        "deployments payload has no result object",
+    ServedVersionReason.DEPLOYMENT_RECORDS:
+        "ambiguous active deployment: no deployment records returned",
+    ServedVersionReason.DEPLOYMENT_ENTRY:
+        "ambiguous active deployment: deployment entry is not an object",
+    ServedVersionReason.VERSION_COUNT:
+        "ambiguous active deployment: expected exactly one served version",
+    ServedVersionReason.VERSION_ENTRY:
+        "ambiguous active deployment: served version entry is not an object",
+    ServedVersionReason.TRAFFIC:
+        "ambiguous active deployment: served version traffic split is not 100",
+    ServedVersionReason.VERSION_ID:
+        "served version id is missing or unsafe",
+}
+
+
 def resolve_served_version_id(deployments_payload: object) -> str:
     """Return the 100%-traffic served version id of the active deployment or fail closed.
 
     The Cloudflare deployments endpoint returns deployment history and documents
     that the first entry is the latest deployment actively serving traffic, so
-    later entries are previous deployments and are not ambiguity.
+    later entries are previous deployments and are not ambiguity. That contract
+    is the shared canonical resolver; this guard publishes its reason codes in
+    the vocabulary its gate contract pins.
     """
-    result = _success_result(deployments_payload, "deployments payload")
-    deployments = result.get("deployments")
-    if not isinstance(deployments, list) or len(deployments) == 0:
-        raise ServedVersionGuardError("ambiguous active deployment: no deployment records returned")
-    first = deployments[0]
-    if not isinstance(first, dict):
-        raise ServedVersionGuardError("ambiguous active deployment: deployment entry is not an object")
-    versions = first.get("versions")
-    if not isinstance(versions, list) or len(versions) != 1:
-        raise ServedVersionGuardError("ambiguous active deployment: expected exactly one served version")
-    entry = versions[0]
-    if not isinstance(entry, dict):
-        raise ServedVersionGuardError("ambiguous active deployment: served version entry is not an object")
-    if entry.get("percentage") != 100:
-        raise ServedVersionGuardError("ambiguous active deployment: served version traffic split is not 100")
-    version_id = entry.get("version_id")
-    if not isinstance(version_id, str) or not version_id.strip():
-        raise ServedVersionGuardError("served version id is missing")
-    return version_id
+    try:
+        return _resolve_canonical_served_version_id(deployments_payload)
+    except ServedVersionResolutionError as exc:
+        raise ServedVersionGuardError(
+            _RESOLVER_REASONS.get(
+                exc.reason, f"ambiguous active deployment: {exc.reason}"
+            )
+        ) from exc
 
 
 def _binding_entries(bindings: object) -> list[dict]:

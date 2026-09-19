@@ -6,7 +6,7 @@ import re
 from typing import Any
 
 from .contracts import ContractError
-from .security import redact_secrets
+from .security import contains_credential_material
 
 
 class OpsDeliveryMode(str, Enum):
@@ -30,7 +30,6 @@ class OnboardingStatus(str, Enum):
 
 
 _REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
-_SECRET_PREFIXES = ("sk-", "bearer ", "api_key=", "apikey=", "token=", "secret=", "password=")
 
 
 def _ref(value: str | None, field_name: str, *, required: bool = True) -> str | None:
@@ -45,8 +44,7 @@ def _ref(value: str | None, field_name: str, *, required: bool = True) -> str | 
         if required:
             raise ContractError(f"{field_name} is required")
         return None
-    lower = value.lower()
-    if lower.startswith(_SECRET_PREFIXES) or redact_secrets(value) != value:
+    if contains_credential_material(value):
         raise ContractError(f"{field_name} must be an opaque reference, never a raw secret")
     if not _REF_RE.fullmatch(value):
         raise ContractError(f"{field_name} has invalid reference syntax")

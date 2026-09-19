@@ -1,80 +1,145 @@
-# WO-10 PR-C (D28): Engine Gmail OAuth port + D1 connector grant activation
+# P01 Engine Gmail READ activation — Control Plane access-lease architecture
 
-## Status: FAIL-CLOSED (Production not yet activated)
+## Status
 
-Production remains fail-closed until the activation gate below is satisfied.
-No real user data is read in this PR. The owner-only test mailbox grant
-insertion into D1 is a **separate dispatch** after this PR merges.
+```text
+SOURCE_CONVERGENCE=#2657 / PR #2699
+PRODUCTION_DEPLOY=NOT_AUTHORIZED_BY_THIS_DOCUMENT
+LIVE_GMAIL_READ=NOT_YET_PROVEN
+GMAIL_WRITE=0
+GMAIL_SEND=0
+```
+
+Google Drive #2644 is the accepted precedent. Long-lived Google refresh
+credentials remain owned by Control Plane. The canonical Engine Gmail path
+must receive only a short-lived `gmail.readonly` access lease over the private
+`CONTROL_PLANE_GOOGLE_OAUTH` Service Binding.
+
+## Canonical authority path
+
+```text
+server-derived Gmail grant
+→ binding_ref + actor_ref
+→ Engine CONTROL_PLANE_GOOGLE_OAUTH private RPC
+→ connector=gmail
+→ short-lived gmail.readonly access lease
+→ bounded Gmail provider GET
+```
+
+The browser, model/task payload and product consumer never receive or choose
+the provider credential, binding reference or OAuth scope.
 
 ## Components
 
-### 1. `app/gmail_port_httpx.py` — HttpxGmailReadPort
-- Fetch-based `GmailReadPort` over `httpx.AsyncClient`. The Engine runs as a
-  Python Worker (Pyodide) where `urllib.request` is unavailable, so every
-  outbound HTTP call is async through `httpx`.
-- OAuth token refresh is implemented here (~60 lines). The three OAuth
-  credentials are injected as constructor arguments:
-  - `client_id` ← `ENGINE_GOOGLE_OAUTH_CLIENT_ID` Worker secret
-  - `client_secret` ← `ENGINE_GOOGLE_OAUTH_CLIENT_SECRET` Worker secret
-  - `refresh_token` ← `ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN` Worker secret
-- Token refresh POSTs to `https://oauth2.googleapis.com/token`
-  (`grant_type=refresh_token`), caches the access token for
-  `expires_in - 60s`, and re-refreshes on 401 (exactly one retry).
-- Scope gate: `required_scopes ⊆ {gmail.readonly}`. Host gate: only
-  `gmail.googleapis.com`. Byte bound enforced by streaming read.
-- Exceptions carry no token/secret/binding_ref material.
+### 1. Control Plane access-lease authority
 
-### 2. `migrations/0003_engine_connector_grants.sql` + `app/connector_grants_d1.py`
-- D1 table `padiem_engine_connector_grants` stores **grant references only**:
-  app_id, canonical_agent_id, connector_id, binding_ref, actor_ref,
-  granted_scopes_json, active, created_at, updated_at.
-- `CloudflareD1ConnectorGrantStore.load_gmail_grants()` returns
-  `dict[app_id, GmailGrant]`. On any parse/binding error it raises
-  `ServiceContractError("connector_grants_unavailable", 503)` — fail-closed.
-- **No credential material is stored in D1.**
+`packages/padiem-control-plane/google_oauth_access_lease.py` owns the
+long-lived credential boundary. It accepts only reviewed connector/scope
+pairs, unseals the refresh credential inside Control Plane, refreshes the
+provider token there, and returns a bounded private access lease.
 
-### 3. `app/connector_bindings.py` + `worker_identity.py`
-- `GMAIL_PORT_BOUND_IN_PRODUCTION` flag removed. The resolver is now built
-  from env-derived secrets + D1 grant references.
-- `_tool_binding_resolver_for_env(env)`:
-  - `_gmail_port_for_env(env)`: builds `HttpxGmailReadPort` only when all
-    three Worker secrets are present, else `None`.
-  - `_gmail_grants_for_env(env)`: loads grants from the
-    `ENGINE_CONNECTOR_GRANTS` D1 binding, else `{}`.
-  - Returns `None` (fail-closed) if either piece is missing.
-- `_engine_services_for_env` is now `async` (the D1 grant load is async).
+Reviewed Gmail scope:
 
-### 4. `wrangler.toml` + `.github/workflows/b54-engine-d1-provision-gate.yml`
-- D1 binding `ENGINE_CONNECTOR_GRANTS` points at the same provisioned
-  `padiem-engine` database (`6b77ad02-bc27-488f-bb97-6325f6750cba`).
-- Provision gate applies migration 0003 and asserts the new table exists.
+```text
+connector_id=gmail
+scope=https://www.googleapis.com/auth/gmail.readonly
+```
 
-## Activation gate (BLOCKER_G1_OWNER_OAUTH_CLIENT = OPEN)
+### 2. Engine access-lease client
 
-1. `0003` migration provisioned (D1 provision gate).
-2. Three Worker secrets put (`ENGINE_GOOGLE_OAUTH_CLIENT_ID`,
-   `ENGINE_GOOGLE_OAUTH_CLIENT_SECRET`,
-   `ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN`) — values never in source.
-3. Owner-only test mailbox grant: 1 row inserted into
-   `padiem_engine_connector_grants` via `scripts/` (separate dispatch).
-4. A11 smoke: grant-less app → 403 `tool_agent_not_bound`; owner app → real
-   Gmail API call (1 `search_messages`) → 200 + projection verified.
-5. Manifest state flip is a **separate PR** after the above.
+`app/google_oauth_access_lease.py` validates the private RPC result and
+accepts only the explicit reviewed connector map for Gmail and Google Drive.
+The lease schema rejects extra fields such as refresh credentials.
 
-## Secrets (names only)
+### 3. Canonical Gmail provider port
 
-| Name | Source | Stored? |
-|---|---|---|
-| `ENGINE_GOOGLE_OAUTH_CLIENT_ID` | Worker secret | No |
-| `ENGINE_GOOGLE_OAUTH_CLIENT_SECRET` | Worker secret | No |
-| `ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN` | Worker secret | No |
+`app/gmail_port_cp_lease.py` implements the trusted `GmailReadPort` using
+the short-lived lease.
 
-## Test coverage
+Properties:
 
-- `tests/test_gmail_port_httpx.py` (12 tests, `httpx.MockTransport`):
-  token refresh/caching, expiry re-refresh, 401 retry, scope/host gates,
-  byte bound, 5xx mapping, secret-free error strings, authorization header.
-- `tests/test_connector_grants_d1.py` (6 tests): hit/miss, inactive rows,
-  malformed JSON → 503, binding exception → 503, None binding rejection.
-- `tests/test_d1_binding_config.py` (4 tests): 3 D1 bindings, same DB,
-  ENGINE_CONNECTOR_GRANTS binding, entrypoint/app surface untouched.
+- exact Gmail readonly scope only;
+- exact `gmail.googleapis.com` HTTPS host;
+- bounded GET response;
+- no redirects;
+- no refresh-token field;
+- no access-token cache;
+- provider HTTP 401 permits one fresh CP lease and one retry only;
+- no Gmail write/draft/send capability.
+
+The older `app/gmail_port_httpx.py` direct-refresh implementation may remain
+as legacy/test source, but it is not the canonical Production Worker
+composition and must never become a silent fallback.
+
+### 4. Worker composition
+
+`worker_identity._gmail_port_for_env()` uses
+`CONTROL_PLANE_GOOGLE_OAUTH`. It does not read
+`ENGINE_GOOGLE_OAUTH_CLIENT_ID`,
+`ENGINE_GOOGLE_OAUTH_CLIENT_SECRET` or
+`ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN` for canonical Gmail execution.
+
+`ENGINE_CONNECTOR_GRANTS` remains the D1 authority for server-side Gmail
+grant references. D1 contains no provider credential material.
+
+### 5. Worker-native external transport
+
+`app/cloudflare_external_transport.py` provides a Gmail-specific Worker
+transport restricted to `gmail.googleapis.com`. The Worker Fetch boundary
+normalizes response encoding metadata using the same reviewed transport
+mechanism proven by Drive.
+
+## Source acceptance
+
+Before merge:
+
+```text
+EXACT_HEAD_ENGINE_CI=PASS
+P01_DEPLOYMENT_BOUNDARY=PASS
+OPERATIONS_POLICY_GUARD=PASS
+DRIVE_REGRESSION=PASS
+RAW_REFRESH_TOKEN_TO_ENGINE_CANONICAL_PATH=NO
+ENGINE_GMAIL_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO
+```
+
+## Production sequencing
+
+Source merge does **not** authorize Production mutation.
+
+After merge, CENTRAL must fresh-read exact `main` and then use separately
+authorized gates in this order:
+
+1. deploy the exact-main Engine source;
+2. prove the served version and health;
+3. run provider-free ToolRuntime/registry evidence where applicable;
+4. verify the canonical Gmail D1 grant and Control Plane credential binding
+   without exposing binding/token values;
+5. issue a separate single-use live Gmail READ canary authority;
+6. execute at most one bounded provider READ according to that authority;
+7. only after PASS may Gmail Production READ acceptance be claimed.
+
+## Hard locks
+
+```text
+LONG_LIVED_REFRESH_TOKEN_OWNER=CONTROL_PLANE
+RAW_REFRESH_TOKEN_TO_ENGINE=NO_CANONICAL_PATH
+RAW_REFRESH_TOKEN_TO_BROWSER_MODEL_TASK=NO
+CALLER_MINTED_BINDING_REF=NO
+CALLER_MINTED_SCOPE=NO
+GMAIL_SCOPE=gmail.readonly_ONLY
+GMAIL_WRITE=0
+GMAIL_CREATE_DRAFT=0
+GMAIL_SEND=0
+PUBLIC_OAUTH_ROUTE_CHANGE=NO
+NEW_OAUTH_STACK=NO
+SCHEMA_MIGRATION=NO_FOR_2657
+PRODUCTION_MUTATION_REQUIRES_SEPARATE_AUTHORITY=YES
+```
+
+## Historical note
+
+The original D28 activation design used three Engine-owned Google OAuth secret
+values and refreshed tokens inside `HttpxGmailReadPort`. That architecture is
+historical compatibility evidence only and is superseded for canonical
+Production Gmail by #2657. Do not provision those legacy Engine secret values
+as a way to activate the current Gmail path.

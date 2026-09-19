@@ -1,9 +1,9 @@
 /* Padiem Glass shell layer.
  *
  * Port of the Drive 원본 "Identity Fragment Loader V2" (버전2/최종본.html)
- * mechanics onto the chat portrait: 20 clip-path plate fragments of the shell
- * portrait (same adopted face + transplanted mask asset) scatter, assemble
- * over the CLEAN portrait, then dissolve into the completed shell portrait.
+ * mechanics onto the chat portrait, adapted to the reviewed product contract:
+ * 20 thin, pixel-registered shell ribbons fade in place over the CLEAN portrait.
+ * There is no scatter ring, large mosaic tile, pointer scrub, or face duplication.
  *
  * Drivers come from theme.js CSS variables: --glass-pointer-reveal and
  * --glass-answer-reveal. Mode/speed come from data-glass-mask /
@@ -13,21 +13,21 @@
 (function(){
   "use strict";
 
-  var FRAG_COUNT=20, COLS=4, ROWS=5; /* source loader: 20 fragments; portrait grid 4x5 */
+  var FRAG_COUNT=20, COLS=1, ROWS=20; /* 20 thin registered shell ribbons */
   var CLIP_SHAPES=[
-    "polygon(8% 0,100% 7%,91% 100%,0 88%)",
-    "polygon(0 11%,88% 0,100% 91%,13% 100%)",
-    "polygon(13% 0,100% 16%,86% 100%,0 91%)",
-    "polygon(0 4%,95% 0,100% 84%,8% 100%)",
-    "polygon(6% 0,100% 11%,93% 92%,0 100%)"
+    "polygon(0 10%,100% 0,100% 90%,0 100%)",
+    "polygon(0 0,100% 9%,100% 100%,0 91%)",
+    "polygon(0 7%,100% 2%,100% 93%,0 98%)",
+    "polygon(0 2%,100% 8%,100% 98%,0 92%)",
+    "polygon(0 6%,100% 0,100% 94%,0 100%)"
   ];
   var ASSEMBLE_START=.02, ASSEMBLE_SPAN=.80;  /* source: ease(clamp((p-.08)/.78)) */
   var DISSOLVE_AT=.90, DISSOLVE_SPAN=.10;     /* source: fragments dissolve ~89% */
-  var RATE_UP=.075, RATE_DOWN=.03;            /* source exponential approach */
+  var RATE_UP=.024, RATE_DOWN=.018;          /* exponential settle: ~2.1s assemble / ~2.8s peel at 1× */
 
   var field=null, portal=null, veinLayer=null;
   var frags=[];
-  var progress=0, raf=0, lastT=0;
+  var progress=1, raf=0, lastT=0;
   var mx=.5, my=.5;
   var imgL=0, imgT=0, imgW=0, imgH=0;
   var fieldW=0, fieldH=0, fieldTop=68;
@@ -162,28 +162,41 @@
       var parts=(cs.backgroundPosition||"100% 52%").split(/\s+/);
       bpx=parts[0]; bpy=parts[1]||"52%";
     }
-    var px=parseFloat(bpx), py=parseFloat(bpy);
-    px=isNaN(px)?1:px/100; py=isNaN(py)?.52:py/100;
-    imgL=(fieldW-imgW)*px;
-    imgT=(fieldH-imgH)*py;
+    function axisOffset(value, freeSpace, fallbackFraction){
+      var raw=String(value||"").trim().toLowerCase();
+      if(raw==="left"||raw==="top") return 0;
+      if(raw==="center") return freeSpace*.5;
+      if(raw==="right"||raw==="bottom") return freeSpace;
+      if(raw.endsWith("%")){
+        var pct=parseFloat(raw);
+        return isNaN(pct)?freeSpace*fallbackFraction:freeSpace*(pct/100);
+      }
+      if(raw.endsWith("px")){
+        var px=parseFloat(raw);
+        return isNaN(px)?freeSpace*fallbackFraction:px;
+      }
+      var n=parseFloat(raw);
+      return isNaN(n)?freeSpace*fallbackFraction:freeSpace*(n/100);
+    }
+    imgL=axisOffset(bpx,fieldW-imgW,1);
+    imgT=axisOffset(bpy,fieldH-imgH,.52);
 
     var cellW=imgW/COLS, cellH=imgH/ROWS;
-    var cx=imgL+imgW/2, cy=imgT+imgH/2;
     var url=shellUrl();
     lastVariant=variant();
     for(var i=0;i<FRAG_COUNT;i++){
       var f=frags[i], col=i%COLS, row=Math.floor(i/COLS);
-      /* source: golden-angle scatter ring + per-plate size/rotation deltas */
-      var angle=i*2.399, ring=Math.min(imgW,imgH)*(.42+(i%5)*.07);
-      var sx=cx+Math.cos(angle)*ring, sy=cy+Math.sin(angle)*ring;
-      var fx=imgL+col*cellW, fy=imgT+row*cellH;
-      f.d={sx:sx,sy:sy,fx:fx,fy:fy,
-           sw:cellW*(.5+(i%4)*.12), sh:cellH*(.44+((i+2)%4)*.12),
-           fw:cellW+1, fh:cellH+1,
-           sr:-68+(i*37)%136, fr:(i%3-1)*2.2};
+      /*
+       * Position is field-relative, but the fragment's background crop is
+       * image-local. Including imgL/imgT in the crop offset double-shifts the
+       * source pixels and creates displaced duplicate eyes/face pieces.
+       */
+      var cropX=col*cellW, cropY=row*cellH;
+      var fx=imgL+cropX, fy=imgT+cropY;
+      f.d={fx:fx,fy:fy,fw:cellW+1,fh:cellH+1,cropX:cropX,cropY:cropY};
       f.el.style.backgroundImage='url("'+url+'")';
       f.el.style.backgroundSize=imgW+"px "+imgH+"px";
-      f.el.style.backgroundPosition=(-fx)+"px "+(-fy)+"px";
+      f.el.style.backgroundPosition=(-cropX)+"px "+(-cropY)+"px";
       f.el.style.clipPath=CLIP_SHAPES[i%CLIP_SHAPES.length];
     }
   }
@@ -192,34 +205,45 @@
     var mode=maskMode();
     if(mode==="on") return 1;
     if(mode==="off") return 0;
-    var p=driver("--glass-pointer-reveal"), a=driver("--glass-answer-reveal");
-    var t=Math.max(.62*p,.8*a);       /* pointer assembles, answer drives deeper */
-    if(p>.45&&a>.45) t=1;             /* pointer + answer → full shell reveal */
-    return t;
+    /* Auto is intentionally reverse: the completed shell is the resting state
+     * and pointer proximity peels it away to reveal the clean portrait. */
+    var p=driver("--glass-pointer-reveal");
+    return 1-clamp(p,0,1);
   }
 
-  function render(p){
-    var assemble=ease(clamp((p-ASSEMBLE_START)/ASSEMBLE_SPAN,0,1));
-    var dissolve=clamp((p-DISSOLVE_AT)/DISSOLVE_SPAN,0,1);
-    var parX=(mx-.5), parY=(my-.5);
+  function render(p,peeling){
+    /* The clean portrait is always underneath. The shell transition is a
+     * time-driven dissolve of ALIGNED portrait tiles — never a pointer-scrubbed
+     * scatter ring. This prevents duplicated/displaced eyes and face chunks. */
+    var phase=peeling?1-p:p; /* 0→1 for either direction */
+    var portal=clamp((p-.04)/.96,0,1); /* keep shell visibly present through the cinematic mid-transition */
+
     for(var i=0;i<FRAG_COUNT;i++){
       var f=frags[i]; if(!f.d) continue;
-      var d=f.d, delay=(i%7)*.014;
-      var local=ease(clamp((assemble-delay)/(1-delay),0,1));
-      var x=d.sx+(d.fx-d.sx)*local+parX*(1-local)*(18+(i%5)*6);
-      var y=d.sy+(d.fy-d.sy)*local+parY*(1-local)*(14+(i%4)*7);
-      var w=d.sw+(d.fw-d.sw)*local, h=d.sh+(d.fh-d.sh)*local;
-      var rot=d.sr+(d.fr-d.sr)*local, depth=(1-local)*(40+(i%4)*22);
-      f.el.style.width=w+"px";
-      f.el.style.height=h+"px";
-      f.el.style.opacity=String(clamp(local*1.15-dissolve*1.3,0,1));
-      f.el.style.transform="translate3d("+x+"px,"+y+"px,"+depth+"px) rotate("+rot+"deg) scale("+(0.72+local*.28)+")";
-      f.el.style.filter="saturate("+(0.65+local*.45)+") blur("+((1-local)*1.4)+"px)";
+      var d=f.d;
+      var order=((i*7)%FRAG_COUNT)/(FRAG_COUNT-1);
+      var delay=order*.16;
+      var appear=ease(clamp((phase-delay)/.20,0,1));
+      var disappear=1-ease(clamp((phase-(.50+delay))/.28,0,1));
+      var fragOpacity=.24*appear*disappear;
+
+      /* Keep every tile exactly registered over the same portrait pixels.
+       * The cinematic effect comes from staggered opacity only: no scatter,
+       * parallax, rotation, or drift that can duplicate facial features. */
+      var x=d.fx, y=d.fy;
+
+      f.el.style.width=d.fw+"px";
+      f.el.style.height=d.fh+"px";
+      f.el.style.opacity=String(clamp(fragOpacity,0,.42));
+      f.el.style.transform="translate3d("+x+"px,"+y+"px,0) rotate(0deg) scale(1)";
+      f.el.style.filter="saturate(1) blur(0px)";
     }
+
     root().style.setProperty("--glass-shell-progress",clamp(p,0,1).toFixed(3));
-    root().style.setProperty("--glass-shell-dissolve",clamp(dissolve*1.15,0,1).toFixed(3));
+    root().style.setProperty("--glass-shell-dissolve",clamp(portal,0,1).toFixed(3));
     if(veinLayer&&veinLayer.parentNode){
-      veinLayer.parentNode.style.opacity=String(clamp(.1+p*.6,0,.7)*(1-dissolve*.5));
+      var transitionBand=1-Math.abs(p-.5)*2;
+      veinLayer.parentNode.style.opacity=String(clamp(transitionBand*.16,0,.16));
     }
   }
 
@@ -233,7 +257,8 @@
     if(!ensureLayer()){schedule();return;}
     var v=variant();
     if(v!==lastVariant) layout();
-    var t=reducedMotion()?(maskMode()==="on"?1:0):target();
+    var t=reducedMotion()?(maskMode()==="off"?0:1):target();
+    var peeling=t<progress;
     if(reducedMotion()){
       progress=t;
     }else{
@@ -247,7 +272,7 @@
       progress+=(t-progress)*rate;
       if(Math.abs(t-progress)<.001) progress=t;
     }
-    render(progress);
+    render(progress,peeling);
     /* keep animating while transitioning; drivers re-arm via wake() */
     if(progress!==t) schedule();
   }
@@ -300,7 +325,7 @@
     setInterval(function(){
       if(!isGlass()) return;
       if(!field&&ensureLayer()) layout();
-      var t=reducedMotion()?(maskMode()==="on"?1:0):target();
+      var t=reducedMotion()?(maskMode()==="off"?0:1):target();
       if(progress===t) return;
       var now=performance.now();
       if(now-lastT<300) return; /* live rAF stream already stepping */
@@ -310,11 +335,27 @@
     /* Read-only QA/state handle (progress, target, mode). */
     window.__padiemGlassShell={
       progress:function(){return progress;},
-      target:function(){return reducedMotion()?(maskMode()==="on"?1:0):target();},
-      mode:function(){return maskMode();}
+      target:function(){return reducedMotion()?(maskMode()==="off"?0:1):target();},
+      mode:function(){return maskMode();},
+      imageRect:function(){
+        var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
+        if(!rect||!(fieldW>0&&fieldH>0&&imgW>0&&imgH>0)) return null;
+        var scaleX=rect.width/fieldW, scaleY=rect.height/fieldH;
+        if(!(scaleX>0)) scaleX=1;
+        if(!(scaleY>0)) scaleY=1;
+        var left=rect.left+imgL*scaleX;
+        var top=rect.top+imgT*scaleY;
+        var width=imgW*scaleX;
+        var height=imgH*scaleY;
+        return {left:left,top:top,right:left+width,bottom:top+height,width:width,height:height};
+      }
     };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){layout();});
-    if(isGlass()&&ensureLayer()) layout(); /* fragments exist even if rAF never fires */
+    progress=maskMode()==="off"?0:1;
+    if(isGlass()&&ensureLayer()){
+      layout(); /* fragments exist even if rAF never fires */
+      render(progress,false);
+    }
     layout();
     wake();
   }

@@ -5,6 +5,8 @@ from app.agent_skill_service import (
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
 )
+from app.attachment_admission_service import ATTACHMENT_ADMISSION_PATH
+from app.authority_diagnostic import AUTHORITY_DIAGNOSTIC_PATH
 from app.contract_manifest import (
     ENGINE_CONTRACT_FAMILY,
     ENGINE_CONTRACT_MAJOR,
@@ -14,17 +16,20 @@ from app.contract_manifest import (
     current_engine_contract_manifest,
     require_compatible_engine_contract,
 )
+from app.document_admission_service import DOCUMENT_ADMISSION_PATH
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
     ORCHESTRATE_RESUME_PATH,
     ORCHESTRATION_STREAM_PATH,
 )
+from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH, MULTIMODAL_STREAM_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
+from app.tool_projection import TOOL_CANCEL_PATH, TOOL_EXECUTE_PATH, TOOL_RESUME_PATH
 from app.web_research_service import RESEARCH_PATH
 
 
@@ -48,6 +53,12 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RUN_PATH),
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
+        ("POST", TOOL_EXECUTE_PATH),
+        ("POST", TOOL_RESUME_PATH),
+        ("POST", TOOL_CANCEL_PATH),
+        ("POST", DOCUMENT_CONTEXT_PATH),
+        ("POST", ATTACHMENT_ADMISSION_PATH),
+        ("POST", DOCUMENT_ADMISSION_PATH),
         ("POST", MULTIMODAL_EXECUTE_PATH),
         ("POST", MULTIMODAL_STREAM_PATH),
         ("POST", IDEMPOTENCY_COMPLETED_REPLAY_PATH),
@@ -104,6 +115,9 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "skill_runtime_projection",
         "agent_runtime_projection",
         "memory_rag_projection",
+        "attachment_admission",
+        # #2764: routed source truth only; never AVAILABLE in this revision.
+        "document_admission",
         "multimodal_completed_run",
         "multimodal_streaming_run",
         "document_projection",
@@ -126,12 +140,30 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
 
 
+def test_tool_projection_is_activated_and_document_route_stays_deferred() -> None:
+    manifest = current_engine_contract_manifest()
+    endpoints = {(item.method, item.path) for item in manifest.endpoints}
+    advertised_paths = {item.path for item in manifest.endpoints}
+
+    for path in (TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH):
+        assert ("POST", path) in endpoints
+    assert ("POST", DOCUMENT_CONTEXT_PATH) in endpoints
+    # A3 re-activated (#2738): the Production composition composes the real tool
+    # binding resolver and the accepted Drive/Gmail/Telegram READ canaries prove
+    # live /internal/v1/tools/execute execution. Document projection stays DEFERRED.
+    assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.AVAILABLE
+    assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
+    assert AUTHORITY_DIAGNOSTIC_PATH not in advertised_paths
+
+
 def test_multimodal_route_is_declared_but_capabilities_stay_deferred() -> None:
     manifest = current_engine_contract_manifest()
     endpoints = {(item.method, item.path) for item in manifest.endpoints}
 
+    assert ("POST", ATTACHMENT_ADMISSION_PATH) in endpoints
     assert ("POST", MULTIMODAL_EXECUTE_PATH) in endpoints
     assert ("POST", MULTIMODAL_STREAM_PATH) in endpoints
+    assert manifest.feature_state("attachment_admission") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("multimodal_completed_run") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("multimodal_streaming_run") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
@@ -164,9 +196,11 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
         "memory_rag_projection",
         "agent_runtime_projection",
         "skill_runtime_projection",
+        "attachment_admission",
         "multimodal_completed_run",
         "multimodal_streaming_run",
         "document_projection",
+        "document_admission",
         "public_browser_api",
         "provider_selection",
     ):

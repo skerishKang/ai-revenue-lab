@@ -60,6 +60,7 @@ def _reset_config(monkeypatch):
     documented keyless/mock defaults.
     """
     monkeypatch.delenv("KILO_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
         "provider_mode": rcfg.provider_mode,
@@ -299,7 +300,7 @@ class TestAutoRoute:
 
     def test_auto_route_unknown_capability_is_ignored(self, client, monkeypatch):
         """D14 (#2044): capability options no longer filter b14/auto; they are ignored."""
-        monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -312,7 +313,7 @@ class TestAutoRoute:
         assert resp.status_code == 200
         biz14 = resp.json()["business14"]
         assert biz14["routing_policy"] == "fixed_chain_v1"
-        assert biz14["selected_model"] == KILO_MODEL
+        assert biz14["selected_model"] == "agnes-ai/agnes-3.0-flash"
         assert any(
             rc.startswith("ignored_options:") and "required_capabilities" in rc
             for rc in biz14["reason_codes"]
@@ -330,7 +331,7 @@ class TestAutoRoute:
         assert resp.status_code == 200
         data = resp.json()
         assert data["route_mode"] == "auto"
-        assert data["selected_model"] in {m.model_id for m in CATALOG_MODELS}
+        assert data["selected_model"] == "agnes-ai/agnes-3.0-flash"
         assert data["evidence_status"] == "resolved_not_called"
         assert data["selected_route_id"].startswith("platform:")
         # Single keyless Kilo route: always credential-ready, never fails
@@ -401,7 +402,7 @@ class TestFallbackExecution:
         """Auto route: first chain position 429 → fallback to second (D14 fixed chain)."""
         from app.pilot.errors import UpstreamRateLimited
         _set_live()
-        monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
         monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
         original = plat.call_platform_chat_completions
         calls = []
@@ -437,14 +438,14 @@ class TestFallbackExecution:
         data = resp.json()
         assert data["business14"]["fallback_used"] is True
         assert data["business14"]["attempt_count"] == 2
-        # Chain head is SenseNova; the fallback answer comes from Kilo, each
+        # Chain head is Agnes; the fallback answer comes from Poolside, each
         # attempt using its own candidate's provider binding.
         assert calls[0] == {
-            "model_id": "sensenova/sensenova-6.8-flash-lite",
-            "platform_provider_id": "sensenova",
+            "model_id": "agnes-ai/agnes-3.0-flash",
+            "platform_provider_id": "agnes-ai",
         }
-        assert data["business14"]["selected_model"] == KILO_MODEL
-        assert calls[1]["platform_provider_id"] == "kilo"
+        assert data["business14"]["selected_model"] == "poolside/laguna-s-2.1"
+        assert calls[1]["platform_provider_id"] == "poolside"
         assert data["business14"]["routing_policy"] == "fixed_chain_v1"
 
 
@@ -483,7 +484,8 @@ class TestLiveFailClosed:
         return captured
 
     def test_missing_key_live_allows_keyless_route(self, client, monkeypatch):
-        """Live mode, no key: the keyless Kilo route is allowed and key-free."""
+        """Live mode without active chain credentials fails closed."""
+        monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
         captured = self._install_keyless_live_probe(monkeypatch)
@@ -491,12 +493,12 @@ class TestLiveFailClosed:
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code == 200
-        assert captured["authorization"] is None
-        assert "sk-or-v1" not in resp.text
+        assert resp.status_code == 503
+        assert captured == {}
 
     def test_placeholder_key_live_not_forwarded(self, client, monkeypatch):
-        """A stale OpenRouter placeholder key is never forwarded to Kilo."""
+        """A stale OpenRouter placeholder key does not satisfy Agnes."""
+        monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
         rcfg.provider_mode = "live"
         rcfg.api_key = "sk-your-key-here"
         captured = self._install_keyless_live_probe(monkeypatch)
@@ -504,8 +506,8 @@ class TestLiveFailClosed:
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code == 200
-        assert captured["authorization"] is None
+        assert resp.status_code == 503
+        assert captured == {}
         assert "sk-your-key-here" not in resp.text
 
 
@@ -526,7 +528,7 @@ class TestMockMode:
         assert data["choices"][0]["message"]["content"].startswith("이것은 Mock 응답")
 
     def test_mock_mode_auto_model(self, client, monkeypatch):
-        monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
@@ -537,10 +539,10 @@ class TestMockMode:
         assert data["business14"]["provider_mode"] == "mock"
         assert data["business14"]["route_mode"] == "auto"
         assert "selected_model" in data["business14"]
-        # D14 (#2044): mock auto resolves the fixed chain head (no secrets →
-        # keyless Kilo) and reports the routing policy.
+        # D14 (#2044): mock auto resolves the Agnes-headed fixed chain and
+        # reports the routing policy.
         assert data["business14"]["routing_policy"] == "fixed_chain_v1"
-        assert data["business14"]["selected_model"] == KILO_MODEL
+        assert data["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
 
     def test_mock_mode_zero_upstream(self, client):
         """Mock mode must never reach an upstream transport."""
@@ -1284,6 +1286,41 @@ class TestFallbackFailClosed:
 
 
 class TestFallbackActualEvidence:
+    def test_auto_chain_total_attempt_budget_is_not_multiplied_by_same_route_retries(
+        self, client, monkeypatch
+    ):
+        _set_live()
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
+        monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", "sk-chain-unit-poolside-0123456789")
+        from app.pilot.errors import UpstreamServerError
+
+        calls = []
+        original = plat.call_platform_chat_completions
+
+        async def fake(*, model_id, upstream_model, provider, platform_provider_id,
+                       messages, temperature=0.2, max_tokens=300, transport=None):
+            calls.append(model_id)
+            raise UpstreamServerError()
+
+        plat.call_platform_chat_completions = fake
+        try:
+            resp = client.post(
+                "/api/pilot/v1/chat/completions",
+                json={
+                    "model": "b14/auto",
+                    "messages": [{"role": "user", "content": "hi"}],
+                },
+            )
+        finally:
+            plat.call_platform_chat_completions = original
+
+        assert resp.status_code == 502
+        assert calls == [
+            "agnes-ai/agnes-3.0-flash",
+            "poolside/laguna-s-2.1",
+        ]
+        assert resp.json()["error"]["attempt_count"] == 2
+
     def test_fallback_metadata_describes_actual_success_candidate(self, client, monkeypatch):
         _set_live()
         monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", "sk-chain-unit-sensenova-0123456789")
@@ -1398,7 +1435,7 @@ class TestOptionEnforcement:
 
     def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
         """D14 (#2044): provider_order is accepted but does not change b14/auto."""
-        monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
         resp = client.post(
             "/api/pilot/router/resolve",
@@ -1410,7 +1447,7 @@ class TestOptionEnforcement:
         )
         assert resp.status_code == 200
         body = resp.json()
-        assert body["selected_model"] == KILO_MODEL
+        assert body["selected_model"] == "agnes-ai/agnes-3.0-flash"
         assert any(
             rc.startswith("ignored_options:") and "provider_order" in rc
             for rc in body["reason_codes"]

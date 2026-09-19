@@ -40,7 +40,7 @@ def test_three_product_tier_identities_remain_known_and_plus_is_default():
     policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
 
     assert DEFAULT_CHAT_PROFILE == "low"
-    assert LOW_B14_MODEL_ID == "sensenova/sensenova-6.8-flash-lite"
+    assert LOW_B14_MODEL_ID == "agnes-ai/agnes-3.0-flash"
     assert MEDIUM_B14_MODEL_ID == "padiem-profile/pro-hold"
     assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
@@ -234,7 +234,7 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
         assert executable_id not in RETIRED_B14_MODEL_IDS
 
     expected_routes = {
-        "low": "sensenova/sensenova-6.8-flash-lite",
+        "low": "agnes-ai/agnes-3.0-flash",
     }
     for profile_id, expected_model in expected_routes.items():
         model_id = PROFILE_MODEL_IDS[profile_id]

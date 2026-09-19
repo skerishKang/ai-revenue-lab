@@ -274,6 +274,10 @@ def test_capability_states_match_routed_truth() -> None:
         "evidence_citations",
         # WO-8 activation: D1 bound b3c18c06, A9 smoke run 34070150768 on bd02bde0
         "idempotency",
+        # A3 re-activated (#2738): the Production composition composes the real
+        # tool binding resolver and accepted bounded Production READ canaries
+        # (Drive #2644 / Gmail #2657 / Telegram #2712) prove live execution.
+        "tool_runtime",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
@@ -282,10 +286,6 @@ def test_capability_states_match_routed_truth() -> None:
         "agent_skill_runtime",
         "file_document_multimodal",
         "tenant_entitlement_usage_admission",
-        # E9 A3: reverted to DEFERRED per CTO audit 2026-09-06 — the Production
-        # composition injects no tool binding resolver, so the AVAILABLE claim
-        # was not production truth (WO-2 gate must pass before re-activation).
-        "tool_runtime",
         # E9 A1: reverted to DEFERRED per owner decision D2 (WO-7) — wrangler.toml
         # has no [vars]/keep_vars, so the web provider var cannot survive a deploy
         # and the composition fails closed 503 web_tools_off (not production truth).
@@ -296,6 +296,26 @@ def test_capability_states_match_routed_truth() -> None:
         assert state_of[capability_id] is CapabilityState.DEFERRED
     for capability_id in ("public_browser_api", "provider_selection"):
         assert state_of[capability_id] is CapabilityState.UNAVAILABLE
+
+
+def test_tool_runtime_manifest_truth_tracks_composition_and_evidence() -> None:
+    """A3 (LOCAL 3, #2738): `tool_runtime` manifest truth must stay auditable.
+
+    The 2026-09-06 CTO audit reverted the entry because the Production
+    composition injected no tool binding resolver. That justification is
+    superseded on current main, and the re-activation rests on accepted
+    Production evidence rather than on a synthetic probe. This guard fails if
+    the superseded claim returns to either manifest, or if the recorded
+    activation-evidence marker disappears, so the activation story cannot
+    silently drift again.
+    """
+    for relative in (
+        "app/capability_manifest.py",
+        "app/contract_manifest.py",
+    ):
+        source = (APP_ROOT / relative).read_text(encoding="utf-8")
+        assert "injects no tool binding resolver" not in source, relative
+        assert "TOOL_RUNTIME_ACTIVATION_EVIDENCE=" in source, relative
 
 
 def test_manifest_routes_match_route_constants() -> None:
@@ -557,9 +577,13 @@ async def test_document_context_fail_closed_without_authority() -> None:
         method="POST",
         path=DOCUMENT_CONTEXT_PATH,
         content_type="application/json",
-        body=json.dumps({"document_ref": "doc-conformance"}).encode(),
-        caller_id="engine-fixture-caller",
-        credential="fixture-credential-value",
+        body=json.dumps(
+            {
+                "app_id": "b62",
+                "session_id": "session-conformance",
+                "document_ref": "doc-conformance",
+            }
+        ).encode(),
     )
 
     assert response.status_code == 503

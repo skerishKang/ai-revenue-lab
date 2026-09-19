@@ -30,12 +30,15 @@ def test_glass_reading_suppresses_old_scroll_travel_but_accepts_answer_activity(
     assert 'mutations.some(mutationTouchesAssistant)' in THEME
 
 
-def test_pointer_motion_drives_reveal_in_home_and_reading_modes() -> None:
+def test_pointer_hover_is_binary_in_home_and_reading_modes() -> None:
     pointer = THEME.split("function updateGlassPointer(event){", 1)[1].split("function resetGlassPointer", 1)[0]
     assert 'if(glassMode()==="reading")' not in pointer
-    assert 'glassPointerReveal=smoothstep(proximity);' in pointer
-    assert 'root.style.setProperty("--glass-pointer-x",(nx*8*glassPointerReveal).toFixed(1)+"px");' in pointer
-    assert 'root.style.setProperty("--glass-pointer-y",(ny*5*glassPointerReveal).toFixed(1)+"px");' in pointer
+    assert 'shellApi&&shellApi.imageRect?shellApi.imageRect():null' in pointer
+    assert 'glassPointerReveal=inside?1:0;' in pointer
+    assert 'smoothstep(proximity)' not in pointer
+    assert 'hoverRamp' not in pointer
+    assert 'root.style.setProperty("--glass-pointer-x","0px");' in pointer
+    assert 'root.style.setProperty("--glass-pointer-y","0px");' in pointer
     assert 'queueGlassMotion();' in pointer
 
 

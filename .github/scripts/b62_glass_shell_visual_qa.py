@@ -27,6 +27,10 @@ async def _shell_state(page: Page) -> dict[str, Any]:
           const portal = document.querySelector('.glass-shell-portrait');
           const portalStyle = portal ? getComputedStyle(portal) : null;
           const shell = window.__padiemGlassShell || {};
+          const imageRect = shell.imageRect ? shell.imageRect() : null;
+          const fragRects = frags.map((f) => f.getBoundingClientRect());
+          const visibleRects = fragRects.filter((_, i) => opacities[i] > 0.08);
+          const imageArea = imageRect ? imageRect.width * imageRect.height : 0;
           return {
             theme: root.getAttribute('data-theme'),
             variant: root.getAttribute('data-glass-variant'),
@@ -34,11 +38,20 @@ async def _shell_state(page: Page) -> dict[str, Any]:
             speed: root.getAttribute('data-glass-speed'),
             ptr: parseFloat(style.getPropertyValue('--glass-pointer-reveal')) || 0,
             ans: parseFloat(style.getPropertyValue('--glass-answer-reveal')) || 0,
+            pointerX: style.getPropertyValue('--glass-pointer-x').trim(),
+            pointerY: style.getPropertyValue('--glass-pointer-y').trim(),
             dissolve: parseFloat(style.getPropertyValue('--glass-shell-dissolve')) || 0,
             progress: shell.progress ? shell.progress() : -1,
+            target: shell.target ? shell.target() : -1,
             fragCount: frags.length,
             fragVisible: opacities.filter((o) => o > 0.08).length,
             fragMaxOpacity: opacities.length ? Math.max(...opacities) : 0,
+            fragMaxHeightRatio: imageRect && visibleRects.length
+              ? Math.max(...visibleRects.map((r) => r.height / imageRect.height))
+              : 0,
+            fragMaxAreaRatio: imageArea > 0 && visibleRects.length
+              ? Math.max(...visibleRects.map((r) => (r.width * r.height) / imageArea))
+              : 0,
             portalPresent: Boolean(portal),
             portalOpacity: portalStyle ? parseFloat(portalStyle.opacity) || 0 : 0,
             portalImage: portalStyle ? portalStyle.backgroundImage : '',
@@ -75,6 +88,41 @@ async def _wait_progress_below(page: Page, value: float, name: str, timeout: flo
         raise AssertionError(f"{name}: progress never fell below {value}: {state}") from exc
 
 
+async def _wait_completed_shell(
+    page: Page,
+    name: str,
+    *,
+    min_portal_opacity: float = 0.80,
+    timeout: float = 12_000,
+) -> None:
+    """Wait for the reverse shell to finish visually, not just numerically.
+
+    Progress reaches .95 before the fragment dissolve has completed.  The
+    product contract is the completed portal with no fragment plates left
+    hanging over the portrait, so certify that rendered state directly.
+    """
+    try:
+        await page.wait_for_function(
+            """minPortal => {
+              const shell = window.__padiemGlassShell;
+              if (!shell || shell.progress() < .99) return false;
+              const frags = [...document.querySelectorAll('.glass-shell-frag')];
+              const maxOpacity = frags.length
+                ? Math.max(...frags.map((el) => parseFloat(getComputedStyle(el).opacity) || 0))
+                : 0;
+              const portal = document.querySelector('.glass-shell-portrait');
+              const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+              return maxOpacity <= .05 && portalOpacity >= minPortal;
+            }""",
+            arg=min_portal_opacity,
+            timeout=timeout,
+            polling=100,
+        )
+    except Exception as exc:
+        state = await _shell_state(page)
+        raise AssertionError(f"{name}: completed shell visual state never settled: {state}") from exc
+
+
 async def _goto_glass(page: Page, *, variant: str, extra: str = "") -> None:
     await page.goto(
         f"{BASE_URL}/?theme=padiem-glass&glass={variant}{extra}",
@@ -86,10 +134,14 @@ async def _goto_glass(page: Page, *, variant: str, extra: str = "") -> None:
 
 
 async def _hover_portrait(page: Page) -> None:
-    viewport = page.viewport_size
-    assert viewport is not None
-    await page.mouse.move(viewport["width"] - 90, int(viewport["height"] * 0.42))
-    await page.mouse.move(viewport["width"] - 70, int(viewport["height"] * 0.44))
+    field = page.locator(".glass-shell-field")
+    await field.wait_for(state="attached", timeout=5_000)
+    box = await field.bounding_box()
+    if not box:
+        raise AssertionError("Glass shell field has no live bounding box")
+    # Enter the actual portrait field, not a viewport approximation.
+    await page.mouse.move(box["x"] + box["width"] * 0.55, box["y"] + box["height"] * 0.42)
+    await page.mouse.move(box["x"] + box["width"] * 0.82, box["y"] + box["height"] * 0.44)
 
 
 async def _send_answer_turn(page: Page, tag: str) -> None:
@@ -118,7 +170,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     name = f"glass-shell-{variant}"
     await _goto_glass(page, variant=variant, extra="&mask=auto")
 
-    # idle: clean portrait only — no fragments, no shell dissolve
+    # Reverse contract: Auto rests on the completed shell portrait.
+    await _wait_completed_shell(page, f"{name}-idle")
     idle = await _shell_state(page)
     if idle["fragCount"] != 20:
         raise AssertionError(f"{name}: expected 20 shell fragments, got {idle['fragCount']}")
@@ -126,72 +179,216 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         raise AssertionError(f"{name}: shell portal layer missing")
     if f"padiem-glass-{variant}-shell.jpg" not in idle["portalImage"]:
         raise AssertionError(f"{name}: portal is not the {variant} shell asset: {idle['portalImage']}")
-    if idle["fragVisible"] > 0 or idle["dissolve"] > 0:
-        raise AssertionError(f"{name}: idle state must stay clean: {idle}")
+    if idle["portalOpacity"] < 0.80 or idle["fragVisible"] > 0:
+        raise AssertionError(f"{name}: reverse idle must show the completed shell: {idle}")
 
-    # pointer-only: fragment assembly becomes visible, portal not yet swapped
-    await _hover_portrait(page)
-    await _wait_progress_at_least(page, 0.45, f"{name}-pointer")
+    # Pointer-only: hover is a binary state transition, not an X-axis scrub.
+    # Enter near the LEFT side of the actual image, sample the slow transition,
+    # then move to the RIGHT side and require the same target with monotonic
+    # time-driven progress.
+    shell_rect = await page.evaluate(
+        "() => window.__padiemGlassShell && window.__padiemGlassShell.imageRect && window.__padiemGlassShell.imageRect()"
+    )
+    if not shell_rect:
+        raise AssertionError(f"{name}: missing live portrait image rect")
+    y = shell_rect["top"] + shell_rect["height"] * 0.44
+    peel_started = await page.evaluate("performance.now()")
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)
+    await page.wait_for_timeout(260)
+    left_transition = await _shell_state(page)
+    if left_transition["ptr"] < 0.99 or left_transition["target"] > 0.01:
+        raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
+    if left_transition["progress"] < 0.68:
+        raise AssertionError(f"{name}: shell teardown is too fast at 260ms: {left_transition}")
+    if left_transition["portalOpacity"] < 0.55:
+        raise AssertionError(f"{name}: shell portal faded too early at 260ms: {left_transition}")
+    if left_transition["fragMaxHeightRatio"] > 0.075 or left_transition["fragMaxAreaRatio"] > 0.075:
+        raise AssertionError(f"{name}: transition contains oversized mosaic fragments: {left_transition}")
+    if left_transition["pointerX"] not in {"", "0px", "0.0px"} or left_transition["pointerY"] not in {"", "0px", "0.0px"}:
+        raise AssertionError(f"{name}: hover must not parallax the portrait: {left_transition}")
+
+    # Do not screenshot here: capture I/O can consume >1s on CI while the
+    # animation correctly keeps running. The primary browser QA already saves
+    # the 260ms early frame; this focused shell QA must preserve the ~900ms
+    # timing window for its next sample.
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
+    elapsed_before_mid = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    remaining_to_mid = max(0, int(900 - elapsed_before_mid))
+    if remaining_to_mid:
+        await page.wait_for_timeout(remaining_to_mid)
+    mid_elapsed_ms = float(
+        await page.evaluate("started => performance.now() - started", peel_started)
+    )
+    if not 800 <= mid_elapsed_ms <= 1_300:
+        raise AssertionError(
+            f"{name}: mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
+        )
+    right_transition = await _shell_state(page)
+    if right_transition["ptr"] < 0.99 or right_transition["target"] > 0.01:
+        raise AssertionError(f"{name}: right-edge hover changed the binary peel target: {right_transition}")
+    if right_transition["progress"] > left_transition["progress"] + 0.02:
+        raise AssertionError(
+            f"{name}: horizontal motion scrubbed/reversed time progress: left={left_transition}, right={right_transition}"
+        )
+    if right_transition["progress"] >= left_transition["progress"] - 0.10:
+        raise AssertionError(
+            f"{name}: timed peel did not continue while moving horizontally: left={left_transition}, right={right_transition}"
+        )
+    if not 0.15 <= right_transition["progress"] <= 0.65:
+        raise AssertionError(f"{name}: ~900ms sample is not a visible mid-transition state: {right_transition}")
+    if right_transition["portalOpacity"] <= 0.18 or right_transition["fragVisible"] <= 0:
+        raise AssertionError(f"{name}: shell/ribbons disappeared before the ~900ms mid-transition sample: {right_transition}")
+    if right_transition["fragMaxHeightRatio"] > 0.075 or right_transition["fragMaxAreaRatio"] > 0.075:
+        raise AssertionError(f"{name}: mid transition contains oversized mosaic fragments: {right_transition}")
+    # Primary browser QA owns the ~900ms visual evidence. Keep this focused
+    # timing contract free of screenshot I/O until peel elapsed is measured.
+
+    await _wait_progress_below(page, 0.05, f"{name}-pointer")
+    peel_elapsed_ms = await page.evaluate("started => performance.now() - started", peel_started)
+    if not 1_800 <= peel_elapsed_ms <= 3_600:
+        raise AssertionError(f"{name}: 1x peel must settle in about 2–3s, got {peel_elapsed_ms:.0f}ms")
     pointer_only = await _shell_state(page)
-    if pointer_only["ptr"] <= 0.4:
-        raise AssertionError(f"{name}: pointer driver did not engage: {pointer_only}")
-    if pointer_only["fragVisible"] < 8:
-        raise AssertionError(f"{name}: pointer hover did not assemble shell fragments: {pointer_only}")
+    if pointer_only["ptr"] <= 0.8:
+        raise AssertionError(f"{name}: pointer driver did not fully engage: {pointer_only}")
+    if pointer_only["progress"] > 0.08:
+        raise AssertionError(f"{name}: portrait hover did not reach clean end-state: {pointer_only}")
+    if pointer_only["fragVisible"] > 0 or pointer_only["fragMaxOpacity"] > 0.05:
+        raise AssertionError(f"{name}: hover left mosaic fragments over the clean portrait: {pointer_only}")
+    if pointer_only["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: completed shell portal remained visible during clean hover: {pointer_only}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-pointer.png"), full_page=False)
 
-    # leave portrait: recovery must be cinematic — state persists briefly,
-    # then falls back to clean rather than snapping off
-    peak = pointer_only["progress"]
+    # Pointer exit reassembles rather than snapping: it must travel back to the
+    # completed portal and leave no fragment plates hanging over the face.
+    peeled = pointer_only["progress"]
+    recover_started = await page.evaluate("performance.now()")
     await page.mouse.move(70, 90)
     await page.wait_for_timeout(250)
     mid = await _shell_state(page)
-    if mid["progress"] < peak * 0.35:
+    if mid["progress"] <= peeled:
         raise AssertionError(
-            f"{name}: recovery snapped off instead of cinematic decay: peak={peak}, mid={mid}"
+            f"{name}: reverse recovery did not begin after pointer exit: peeled={peeled}, mid={mid}"
         )
-    await _wait_progress_below(page, 0.05, f"{name}-recover")
+    await _wait_completed_shell(page, f"{name}-recover")
+    recover_elapsed_ms = await page.evaluate("started => performance.now() - started", recover_started)
+    if not 1_600 <= recover_elapsed_ms <= 3_600:
+        raise AssertionError(f"{name}: 1x reassembly must settle slowly, got {recover_elapsed_ms:.0f}ms")
     recovered = await _shell_state(page)
-    if recovered["fragVisible"] > 2 or recovered["dissolve"] > 0.05:
-        raise AssertionError(f"{name}: shell did not recover to clean after pointer exit: {recovered}")
+    if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
+        raise AssertionError(f"{name}: shell did not reassemble after pointer exit: {recovered}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-recovered.png"), full_page=False)
 
-    # answer-only: assistant activity must drive shell progression.
-    # Proof = progress rises with pointer driver at zero; fragment opacity
-    # lags progress (assemble×local double easing) so assert its motion start.
+    # Repeat the same contract RIGHT -> LEFT. Pointer X may change where the
+    # cursor is, but must never scrub, reverse, or retarget the timed peel.
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
+    await page.wait_for_timeout(260)
+    reverse_right = await _shell_state(page)
+    if reverse_right["ptr"] < 0.99 or reverse_right["target"] > 0.01:
+        raise AssertionError(f"{name}: right-edge reverse sweep did not latch binary peel target: {reverse_right}")
+    if reverse_right["progress"] < 0.68:
+        raise AssertionError(f"{name}: reverse-direction teardown is too fast at 1x: {reverse_right}")
+    if reverse_right["portalOpacity"] < 0.55:
+        raise AssertionError(f"{name}: reverse-direction shell portal faded too early at 260ms: {reverse_right}")
+    if reverse_right["fragMaxHeightRatio"] > 0.075 or reverse_right["fragMaxAreaRatio"] > 0.075:
+        raise AssertionError(f"{name}: reverse transition contains oversized mosaic fragments: {reverse_right}")
+    await page.screenshot(path=str(OUT_DIR / f"{name}-pointer-transition-reverse.png"), full_page=False)
+
+    await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.18, y)
+    await page.wait_for_timeout(260)
+    reverse_left = await _shell_state(page)
+    if reverse_left["ptr"] < 0.99 or reverse_left["target"] > 0.01:
+        raise AssertionError(f"{name}: left-edge reverse sweep changed the binary peel target: {reverse_left}")
+    if reverse_left["progress"] > reverse_right["progress"] + 0.02:
+        raise AssertionError(
+            f"{name}: right-to-left motion scrubbed/reversed time progress: right={reverse_right}, left={reverse_left}"
+        )
+    if reverse_left["pointerX"] not in {"", "0px", "0.0px"} or reverse_left["pointerY"] not in {"", "0px", "0.0px"}:
+        raise AssertionError(f"{name}: reverse sweep must not parallax the portrait: {reverse_left}")
+
+    await _wait_progress_below(page, 0.05, f"{name}-pointer-reverse")
+    reverse_clean = await _shell_state(page)
+    if reverse_clean["fragVisible"] > 0 or reverse_clean["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: reverse sweep did not settle on the clean portrait: {reverse_clean}")
+    await page.mouse.move(70, 90)
+    await _wait_completed_shell(page, f"{name}-reverse-recover")
+    reverse_recovered = await _shell_state(page)
+
+    # Answer-only remains visually stable: answer activity may drive the
+    # atmospheric portrait motion, but it must not peel the shell by itself.
+    await page.mouse.move(70, 90)
     await _send_answer_turn(page, f"{variant}-answer")
-    await _wait_progress_at_least(page, 0.35, f"{name}-answer")
+    await page.wait_for_function(
+        "() => (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-answer-reveal')) || 0) > .05",
+        timeout=5_000,
+    )
     answer_only = await _shell_state(page)
     if answer_only["ptr"] > 0.1:
         raise AssertionError(f"{name}: answer-only phase polluted by pointer: {answer_only}")
     if answer_only["ans"] <= 0.05:
         raise AssertionError(f"{name}: answer driver did not engage: {answer_only}")
-    if answer_only["fragMaxOpacity"] <= 0.02:
-        raise AssertionError(f"{name}: answer activity did not move shell fragments: {answer_only}")
+    if answer_only["progress"] < 0.90:
+        raise AssertionError(f"{name}: answer activity peeled the shell without portrait hover: {answer_only}")
+    if answer_only["portalOpacity"] < 0.35:
+        raise AssertionError(f"{name}: reading shell lost its reduced-prominence portal: {answer_only}")
 
-    # pointer + answer together: strictly stronger — dissolve portal engages.
-    # The answer envelope decays (~1.8s), so send a fresh turn while hovering.
+    # Pointer + answer: the answer pulse is shorter than the deliberate
+    # 2–3 s peel. Prove the drivers overlap first, then prove pointer hover
+    # alone carries the shell all the way to the clean end-state.
     await _hover_portrait(page)
     await _send_answer_turn(page, f"{variant}-combined")
-    try:
-        await page.wait_for_function(
-            "parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-shell-dissolve')) > 0.05",
-            timeout=10_000,
-            polling=100,
-        )
-    except Exception as exc:
-        state = await _shell_state(page)
-        raise AssertionError(f"{name}: pointer+answer never reached dissolve: {state}") from exc
+    await page.wait_for_function(
+        """() => {
+          const style = getComputedStyle(document.documentElement);
+          const pointer = parseFloat(style.getPropertyValue('--glass-pointer-reveal')) || 0;
+          const answer = parseFloat(style.getPropertyValue('--glass-answer-reveal')) || 0;
+          return pointer > .8 && answer > .05;
+        }""",
+        timeout=5_000,
+    )
+    combined_overlap = await _shell_state(page)
+    if combined_overlap["ptr"] <= 0.8 or combined_overlap["ans"] <= 0.05:
+        raise AssertionError(f"{name}: combined drivers never overlapped: {combined_overlap}")
+
+    await _wait_progress_below(page, 0.05, f"{name}-combined")
     combined = await _shell_state(page)
-    if combined["portalOpacity"] <= 0.02:
-        raise AssertionError(f"{name}: completed shell portrait not visible: {combined}")
+    if combined["ptr"] <= 0.8:
+        raise AssertionError(f"{name}: pointer did not remain authoritative through clean settle: {combined}")
+    if combined["progress"] > 0.08:
+        raise AssertionError(f"{name}: pointer did not fully peel shell during answer activity: {combined}")
+    if combined["fragVisible"] > 0 or combined["fragMaxOpacity"] > 0.05 or combined["portalOpacity"] > 0.05:
+        raise AssertionError(f"{name}: combined hover did not settle on clean portrait: {combined}")
     await page.screenshot(path=str(OUT_DIR / f"{name}-combined.png"), full_page=False)
+
+    await page.mouse.move(70, 90)
+    await _wait_completed_shell(
+        page,
+        f"{name}-final-recover",
+        min_portal_opacity=0.35,
+    )
+    final_recovered = await _shell_state(page)
+    if final_recovered["fragVisible"] > 0:
+        raise AssertionError(f"{name}: final shell recovery left fragment plates visible: {final_recovered}")
 
     await _assert_no_horizontal_overflow(page, name)
     return {
         "idle": idle,
+        "left_transition": left_transition,
+        "right_transition": right_transition,
         "pointer_only": pointer_only,
+        "mid_elapsed_ms": mid_elapsed_ms,
+        "peel_elapsed_ms": peel_elapsed_ms,
+        "recover_elapsed_ms": recover_elapsed_ms,
         "answer_only": answer_only,
+        "combined_overlap": combined_overlap,
         "combined": combined,
         "recovered": recovered,
+        "reverse_right": reverse_right,
+        "reverse_left": reverse_left,
+        "reverse_clean": reverse_clean,
+        "reverse_recovered": reverse_recovered,
+        "final_recovered": final_recovered,
     }
 
 
@@ -285,8 +482,8 @@ async def _check_touch(browser: Any) -> dict[str, Any]:
     await page.wait_for_timeout(700)
     state = await _shell_state(page)
     await ctx.close()
-    # Touch must never synthesize a hover driver. Answer-activity progression
-    # is genuine product behavior (not synthetic hover) and stays allowed.
+    # Touch must never synthesize a hover driver. Auto therefore remains in
+    # its completed-shell resting state unless the explicit mask mode changes.
     if state["ptr"] != 0:
         raise AssertionError(f"touch synthesized pointer hover: {state}")
     return {"touch": state}

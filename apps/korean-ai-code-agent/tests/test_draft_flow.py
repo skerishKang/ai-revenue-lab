@@ -499,7 +499,7 @@ class DraftFlowTests(unittest.TestCase):
             payload = json.loads(sent["body"].decode("utf-8"))
             self.assertEqual(
                 payload["agent"]["model_policy"],
-                {"model": "sensenova/sensenova-6.8-flash-lite"},
+                {"model": "agnes-ai/agnes-3.0-flash"},
             )
             self.assertNotIn("provider", json.dumps(payload).lower())
             self.assertNotIn("credential", payload["agent"])

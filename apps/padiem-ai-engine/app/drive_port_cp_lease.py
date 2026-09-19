@@ -9,6 +9,7 @@ from padiem_ai_core.drive_capability import (
     DRIVE_READONLY_SCOPE,
     DriveReadPort,
 )
+from padiem_ai_core.tool_runtime import ToolHandlerError
 
 from app.google_oauth_access_lease import (
     CloudflareControlPlaneGoogleOAuthAccessLeaseClient,
@@ -21,12 +22,16 @@ DRIVE_API_HOST = "www.googleapis.com"
 MAX_GOOGLE_API_RESPONSE_BYTES = 4_000_000
 
 
-def _unavailable(message: str) -> ServiceContractError:
-    return ServiceContractError(
-        "google_drive_access_unavailable",
-        message,
-        status_code=503,
-    )
+def _lease_mismatch(message: str) -> ToolHandlerError:
+    return ToolHandlerError("google_drive_access_lease_mismatch", message)
+
+
+def _provider_unavailable(message: str) -> ToolHandlerError:
+    return ToolHandlerError("google_drive_provider_unavailable", message)
+
+
+def _provider_credential_rejected(message: str) -> ToolHandlerError:
+    return ToolHandlerError("google_drive_provider_credential_rejected", message)
 
 
 class ControlPlaneLeaseDriveReadPort(DriveReadPort):
@@ -56,31 +61,34 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
         required_scopes: tuple[str, ...],
     ) -> EngineGoogleOAuthAccessLease:
         if tuple(required_scopes) != (DRIVE_READONLY_SCOPE,):
-            raise _unavailable("Google Drive scope is not the reviewed readonly scope.")
+            raise _lease_mismatch("Google Drive scope is not the reviewed readonly scope.")
         try:
             lease = await self._lease_client.issue_access_lease(
                 binding_ref=binding_ref,
                 connector_id="google-drive",
             )
-        except ServiceContractError:
-            raise
+        except ServiceContractError as exc:
+            raise ToolHandlerError(exc.code, exc.safe_message) from exc
         except Exception:
-            raise _unavailable("Control Plane Google OAuth access lease could not be issued.") from None
+            raise ToolHandlerError(
+                "google_oauth_access_lease_unavailable",
+                "Control Plane Google OAuth access lease could not be issued.",
+            ) from None
         if lease.binding_ref != binding_ref or lease.actor_ref != actor_ref:
-            raise _unavailable("Google Drive access lease does not match the trusted grant.")
+            raise _lease_mismatch("Google Drive access lease does not match the trusted grant.")
         if lease.scopes != (DRIVE_READONLY_SCOPE,):
-            raise _unavailable("Google Drive access lease scope mismatch.")
+            raise _lease_mismatch("Google Drive access lease scope mismatch.")
         return lease
 
     @staticmethod
     def _url(*, base_url: str, path: str) -> str:
         if not isinstance(base_url, str) or not base_url.startswith("https://"):
-            raise _unavailable("Google Drive base URL is invalid.")
+            raise _provider_unavailable("Google Drive base URL is invalid.")
         host = base_url.split("://", 1)[-1].split("/", 1)[0]
         if host != DRIVE_API_HOST:
-            raise _unavailable("Google Drive host is not permitted.")
+            raise _provider_unavailable("Google Drive host is not permitted.")
         if not isinstance(path, str) or not path.startswith("/"):
-            raise _unavailable("Google Drive path is invalid.")
+            raise _provider_unavailable("Google Drive path is invalid.")
         return f"{base_url.rstrip('/')}{path}"
 
     async def _get_bytes(
@@ -97,13 +105,13 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
             or not isinstance(max_response_bytes, int)
             or not 1 <= max_response_bytes <= MAX_GOOGLE_API_RESPONSE_BYTES
         ):
-            raise _unavailable("Google Drive response bound is invalid.")
+            raise _provider_unavailable("Google Drive response bound is invalid.")
         if (
             isinstance(timeout_seconds, bool)
             or not isinstance(timeout_seconds, int)
             or not 1 <= timeout_seconds <= 60
         ):
-            raise _unavailable("Google Drive timeout is invalid.")
+            raise _provider_unavailable("Google Drive timeout is invalid.")
         try:
             async with httpx.AsyncClient(
                 transport=self._transport,
@@ -120,12 +128,15 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
                     async for chunk in response.aiter_bytes():
                         chunks.extend(chunk)
                         if len(chunks) > max_response_bytes:
-                            raise _unavailable("Google Drive response exceeded the trusted bound.")
+                            raise _provider_unavailable("Google Drive response exceeded the trusted bound.")
                     return response.status_code, bytes(chunks)
-        except ServiceContractError:
+        except ToolHandlerError:
             raise
-        except (httpx.TimeoutException, httpx.TransportError):
-            raise _unavailable("Google Drive provider request failed.") from None
+        except httpx.HTTPError:
+            # Includes transport, timeout and content-decoding failures. Never
+            # let an HTTPX implementation detail fall through Core as an
+            # unclassified provider-boundary exception.
+            raise _provider_unavailable("Google Drive provider request failed.") from None
 
     async def _request(
         self,
@@ -158,9 +169,9 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
                 # retry the same bounded GET exactly once.
                 continue
             if status < 200 or status >= 300:
-                raise _unavailable(f"Google Drive provider returned HTTP {status}.")
+                raise _provider_unavailable(f"Google Drive provider returned HTTP {status}.")
             return body
-        raise _unavailable("Google Drive provider rejected refreshed access credentials.")
+        raise _provider_credential_rejected("Google Drive provider rejected refreshed access credentials.")
 
     async def get_json(
         self,
@@ -187,9 +198,9 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
         try:
             payload = json.loads(body.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError):
-            raise _unavailable("Google Drive provider response is invalid JSON.") from None
+            raise _provider_unavailable("Google Drive provider response is invalid JSON.") from None
         if not isinstance(payload, dict):
-            raise _unavailable("Google Drive provider response must be an object.")
+            raise _provider_unavailable("Google Drive provider response must be an object.")
         return payload
 
     async def get_text(
@@ -217,7 +228,7 @@ class ControlPlaneLeaseDriveReadPort(DriveReadPort):
         try:
             return body.decode("utf-8")
         except UnicodeDecodeError:
-            raise _unavailable("Google Drive provider response is not UTF-8 text.") from None
+            raise _provider_unavailable("Google Drive provider response is not UTF-8 text.") from None
 
 
 RAW_REFRESH_TOKEN_ACCEPTED = False

@@ -72,6 +72,42 @@ class OpsDeliveryModeTests(unittest.TestCase):
             with self.assertRaises(ContractError):
                 SecretReference(value, "model-provider")
 
+    def test_legacy_credential_prefix_rejection_parity(self):
+        for value in (
+            "sk" + "-fixturevalue",
+            "Bearer" + " fixturevalue",
+            "api_key" + "=fixturevalue",
+            "apikey" + "=fixturevalue",
+            "token" + "=fixturevalue",
+            "secret" + "=fixturevalue",
+            "password" + "=fixturevalue",
+        ):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    SecretReference(value, "model-provider")
+
+    def test_canonical_detector_aliases_and_short_assignments_are_rejected(self):
+        for value in (
+            "pwd=ab",
+            "passphrase=x",
+            "private_key=z",
+            "credential=q",
+            "token=x",
+        ):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    SecretReference(value, "model-provider")
+
+    def test_opaque_references_still_pass_and_reference_syntax_stays_strict(self):
+        for value in ("vault:model:key1", "secret-ref_01", "account:primary/model"):
+            with self.subTest(value=value):
+                self.assertEqual(SecretReference(value, "model-provider").secret_ref, value)
+        for value in ("vault ref", "vault?model", "vault=model"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError) as caught:
+                    SecretReference(value, "model-provider")
+                self.assertIn("invalid reference syntax", str(caught.exception))
+
     def test_byok_requires_secret_reference(self):
         with self.assertRaises(ContractError):
             OpsExecutionProfile(

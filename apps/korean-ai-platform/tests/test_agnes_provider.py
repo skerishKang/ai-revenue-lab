@@ -178,7 +178,7 @@ async def test_agnes_streaming_contract_via_generic_adapter(monkeypatch):
     monkeypatch.setenv(AGNES_CREDENTIAL_BINDING, secret)
 
     payload = (
-        b'data: {"id":"a1","model":"agnes-2.5-flash","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
+        b'data: {"id":"a1","model":"agnes-3.0-flash","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
         b"data: [DONE]\n\n"
     )
 
