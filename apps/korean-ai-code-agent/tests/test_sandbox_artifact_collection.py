@@ -239,29 +239,34 @@ class SecretRedactionTests(unittest.TestCase):
         return exportable_for(result, "out/report.md").text_excerpt
 
     def test_credential_shapes_never_survive_into_the_projection(self):
-        hostile = {
-            "bearer": "Authorization: Bearer supersecrettoken123456",
-            "sk": "key sk-ABCDEFGHIJKLMNOPQRST",
-            "sk_or_v1": "openai sk-or-v1-ABCDEFGHIJKLMNOPQRST",
-            "api_key": "api_key=AIzaSyDEADBEEFDEADBEEF",
-            "token": "token: ghp_ABCDEFGHIJKLMNOPQRSTUV",
-            "secret": "client_secret=sq3CDEADBEEFDEADBEEF",
-            "password": "db_password=Str0ngPassw0rd!",
-        }
-        for label, body in hostile.items():
+        # Fixture policy: low-entropy hyphenated placeholders only, and no provider's real
+        # key format is imitated. An earlier revision used ghp_/AIzaSy/sk-or-v1- shaped
+        # values and GitGuardian flagged this test file as a hardcoded secret — exactly the
+        # noise a redaction test must not generate. The assignment grammar still matches, so
+        # all three shapes security.redact_secrets handles are exercised.
+        hostile = (
+            ("bearer", "Authorization: Bearer fake-bearer-value-1", "fake-bearer-value-1"),
+            ("sk", "key sk-fake-key-value-2", "sk-fake-key-value-2"),
+            ("sk_or_v1", "issuer sk-or-v1-fake-key-value-3", "sk-or-v1-fake-key-value-3"),
+            ("api_key", "api_key=fake-api-key-value-4", "fake-api-key-value-4"),
+            ("token", "token: fake-token-value-5", "fake-token-value-5"),
+            ("secret", "client_secret=fake-secret-value-6", "fake-secret-value-6"),
+            ("password", "db_password=fake-password-value-7", "fake-password-value-7"),
+        )
+        for label, body, secret_value in hostile:
             with self.subTest(secret=label):
-                secret_value = body.split()[-1].split("=")[-1].split(":")[-1]
+                self.assertIn(secret_value, body)
                 projected = self.projecting(body) or ""
                 self.assertNotIn(secret_value, projected)
-                self.assertNotIn("[REDACTED]", "", "sentinel")
+                self.assertIn("[REDACTED", projected)
 
     def test_redaction_is_applied_and_reported(self):
         result = collecting(
-            candidate("out/report.md", text_excerpt="token=SECRETVALUE123456")
+            candidate("out/report.md", text_excerpt="token=fake-token-value-8")
         )
         entry = exportable_for(result, "out/report.md")
         self.assertTrue(entry.excerpt_redacted)
-        self.assertNotIn("SECRETVALUE123456", entry.text_excerpt or "")
+        self.assertNotIn("fake-token-value-8", entry.text_excerpt or "")
         self.assertIn("[REDACTED]", entry.text_excerpt or "")
         self.assertTrue(TEXT_EXCERPT_REDACTED_BEFORE_PROJECTION)
 
@@ -303,9 +308,9 @@ class SecretRedactionTests(unittest.TestCase):
         self.assertTrue(entry.excerpt_truncated)
 
     def test_digest_still_describes_the_whole_file_after_redaction(self):
-        result = collecting(candidate("out/a.md", text_excerpt="api_key=LEAKME12345678"))
+        result = collecting(candidate("out/a.md", text_excerpt="api_key=fake-api-key-value-10"))
         entry = exportable_for(result, "out/a.md")
-        self.assertNotIn("LEAKME12345678", entry.text_excerpt or "")
+        self.assertNotIn("fake-api-key-value-10", entry.text_excerpt or "")
         self.assertEqual(entry.candidate.sha256, DIGEST)
 
     def test_known_limitation_of_the_shared_redaction_primitive(self):
@@ -533,7 +538,7 @@ class ProjectionSafetyTests(unittest.TestCase):
             candidate("C:/Windows/x.md"),
             candidate("out/link.md", symlink_or_reparse=True),
             candidate("notes/hidden.md"),
-            candidate("src/app.py", text_excerpt="token=SUPERSECRETVALUE999"),
+            candidate("src/app.py", text_excerpt="token=fake-token-value-11"),
         )
         projection = result.safe_dict()
         for key in projection:
@@ -546,7 +551,7 @@ class ProjectionSafetyTests(unittest.TestCase):
                 self.assertEqual([t for t in self.FORBIDDEN_KEYS if t in key.lower()], [], key)
 
         dumped = repr(projection)
-        for leak in ("/etc", "C:", "\\\\", "://", "passwd", "SUPERSECRETVALUE999"):
+        for leak in ("/etc", "C:", "\\\\", "://", "passwd", "fake-token-value-11"):
             self.assertNotIn(leak, dumped)
         self.assertIs(projection["unredacted_excerpt_in_projection"], False)
         self.assertIs(projection["filesystem_scan_performed"], False)
