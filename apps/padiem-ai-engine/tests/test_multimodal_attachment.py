@@ -336,11 +336,16 @@ async def test_trusted_opaque_reference_resolves_and_projects_provenance_only() 
     assert isinstance(runtime.requests[0], MultimodalExecutionRequest)
     attachment = response.body["attachment"]
     # Provenance is minted per request by the composed resolver, never echoed
-    # from caller-supplied content.
+    # from caller-supplied content. The runtime contract validates the FULL
+    # provenance id (#2660): both attachment_resolver._PROVENANCE_RE and
+    # attachment_authority._SAFE_ID_RE match ^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$
+    # against the whole value. Re-applying that grammar to the ``prov_``-stripped
+    # suffix would demand an alphanumeric first suffix character, which the
+    # url-safe token never guarantees, and made this assertion a CI flake.
     provenance_id = attachment["provenance_id"]
     assert isinstance(provenance_id, str)
     assert provenance_id.startswith("prov_")
-    assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}", provenance_id[5:])
+    assert re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}", provenance_id)
     assert attachment == {
         "kind": "image",
         "media_type": "image/png",
