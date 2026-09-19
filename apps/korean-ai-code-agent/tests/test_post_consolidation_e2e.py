@@ -19,6 +19,14 @@ from kagent.cloud_stage_receipts import (
     CloudStageOutcome,
 )
 from kagent.cloud_teardown import CloudM1TeardownReceipt, TrustedTeardownObservation
+from kagent.contracts import (
+    ExecutionMode,
+    NetworkPolicy,
+    ResourceClass,
+    SandboxLease,
+    SandboxLeaseState,
+)
+from kagent.sandbox_artifact_collection import ArtifactCandidateCollection
 from kagent.github_draft_pr import (
     DeterministicFakeGitHubDraftPullRequestPort,
     DraftPrApprovalBinding,
@@ -339,10 +347,32 @@ class PostConsolidationCloudE2ETests(unittest.TestCase):
                     artifacts_finalized=True,
                     authority_ref="provider-attestation:e2e",
                 )
+                # #2783: a clean teardown is no longer derivable from the
+                # observation alone. The end-to-end path must present the same
+                # terminal lease and finalized artifact collection a real
+                # orchestrator would, so this proves the verified route works and
+                # not only the unit-level one.
+                teardown_lease = SandboxLease(
+                    lease_id="sandbox:e2e",
+                    run_id=cloud_plan.run_id,
+                    execution_mode=ExecutionMode.CLOUD,
+                    resource_class=ResourceClass.STANDARD,
+                    network_policy=NetworkPolicy.OFF,
+                    writable_workspace=True,
+                    created_at=observed_at - timedelta(seconds=900),
+                    expires_at=observed_at,
+                    state=SandboxLeaseState.RELEASED,
+                )
                 teardown = CloudM1TeardownReceipt.from_observation(
                     receipt_id="teardown-receipt:e2e",
                     plan=cloud_plan,
                     observation=teardown_observation,
+                    lease_lookup=lambda ref: teardown_lease if ref == "sandbox:e2e" else None,
+                    artifact_collection=ArtifactCandidateCollection(
+                        collection_id="collection:e2e",
+                        run_id=cloud_plan.run_id,
+                        lease_id="sandbox:e2e",
+                    ),
                 )
                 self.assertTrue(teardown.clean)
                 stage_receipt = teardown.as_stage_receipt(event_id="event:teardown:e2e")
