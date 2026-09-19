@@ -6,6 +6,9 @@ on:
       - 'apps/korean-ai-code-agent/**'
       - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker.py'
       - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker_rpc.py'
+      # Claw derives its P01 model policy from the shared product-tier declaration,
+      # so a declaration change has to run this suite even when no Claw file moves.
+      - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b54-kagent.yml'
   workflow_dispatch:
 

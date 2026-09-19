@@ -34,15 +34,27 @@ from app.model_policy import (
     resolve_tier_policy,
     request_tier_context,
 )
+from padiem_control_plane.product_tier_routes import (
+    MAX_HOLD_MODEL_ID as CONTRACT_MAX_HOLD_MODEL_ID,
+    PRO_HOLD_MODEL_ID as CONTRACT_PRO_HOLD_MODEL_ID,
+    ProductTierLabel,
+    active_route_for,
+)
+
+# #2800: Chat is a consumer of the shared product-tier declaration. These tests compare
+# Chat's derived identity against what the declaration says instead of restating a model id
+# here, so an owner tier switch proves the wiring instead of tripping a literal that this
+# suite's CI would not even have run.
+PLUS_ROUTE_MODEL_ID = active_route_for(ProductTierLabel.PLUS).model_id
 
 
 def test_three_product_tier_identities_remain_known_and_plus_is_default():
     policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
 
     assert DEFAULT_CHAT_PROFILE == "low"
-    assert LOW_B14_MODEL_ID == "agnes-ai/agnes-3.0-flash"
-    assert MEDIUM_B14_MODEL_ID == "padiem-profile/pro-hold"
-    assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
+    assert LOW_B14_MODEL_ID == PLUS_ROUTE_MODEL_ID
+    assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
+    assert MAX_HOLD_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
     assert "hy3" not in HIGH_B14_MODEL_ID
     assert KILO_B14_MODEL_ID == MEDIUM_B14_MODEL_ID
@@ -234,7 +246,7 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
         assert executable_id not in RETIRED_B14_MODEL_IDS
 
     expected_routes = {
-        "low": "agnes-ai/agnes-3.0-flash",
+        "low": PLUS_ROUTE_MODEL_ID,
     }
     for profile_id, expected_model in expected_routes.items():
         model_id = PROFILE_MODEL_IDS[profile_id]

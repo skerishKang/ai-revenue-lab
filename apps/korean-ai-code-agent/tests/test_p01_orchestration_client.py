@@ -19,6 +19,11 @@ from padiem_ai_engine_client import (
     PadiemAiEngineClientError,
 )
 
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
+
 from kagent.contracts import ClawRunStatus, ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import (
     P01_AGENT_ID,
@@ -165,7 +170,11 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "agnes-ai/agnes-3.0-flash"})
+        # #2800: derived from the shared declaration, not restated as a model literal.
+        self.assertEqual(
+            payload["agent"]["model_policy"],
+            {"model": active_route_for(ProductTierLabel.PLUS).model_id},
+        )
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())

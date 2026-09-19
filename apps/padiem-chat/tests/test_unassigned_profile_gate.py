@@ -14,6 +14,10 @@ from app.dispatch_quota import (
 )
 from app.model_policy import DEFAULT_B14_MODEL_ID, DEFAULT_CHAT_PROFILE, LOW_B14_MODEL_ID
 from app.usage_gate import UsageDecision
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -77,7 +81,7 @@ def test_live_completed_default_plus_reaches_service_binding_with_exact_default_
         assert (
             DEFAULT_B14_MODEL_ID
             == LOW_B14_MODEL_ID
-            == "agnes-ai/agnes-3.0-flash"
+            == active_route_for(ProductTierLabel.PLUS).model_id
         )
         assert calls == 1
         assert store.refunds == []
