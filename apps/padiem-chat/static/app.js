@@ -1427,7 +1427,6 @@
   const clawGenerateBtn = document.getElementById("clawGenerateBtn");
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
-  const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawStatus = document.getElementById("clawStatus");
   const clawRetryBox = document.getElementById("clawRetryBox");
@@ -1795,18 +1794,32 @@
     }
   }
 
+  // A generated document exposes exactly one action: the bounded download.
+  // There is no in-browser open/preview capability, so no second control may
+  // exist that would only repeat this same route behind a false "open" label (#2771).
+  function setClawDocumentAction(enabled, documentId, filename) {
+    const btn = clawResultDocx;
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.setAttribute("aria-disabled", enabled ? "false" : "true");
+    btn.classList.toggle("is-prominent", enabled);
+    if (enabled) {
+      btn.dataset.documentId = documentId;
+      if (filename) btn.dataset.filename = filename;
+      return;
+    }
+    // Clearing drops the descriptor with the result, so a later click can never
+    // replay a previous run's artifact id or filename hint.
+    delete btn.dataset.documentId;
+    delete btn.dataset.filename;
+  }
+
   function clearClawArtifact() {
     if (clawArtifactMeta) clawArtifactMeta.hidden = true;
     if (clawArtifactName) clawArtifactName.textContent = "";
     if (clawArtifactSize) clawArtifactSize.textContent = "";
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
-    [clawResultOpen, clawResultDocx].forEach((btn) => {
-      if (!btn) return;
-      btn.disabled = true;
-      btn.setAttribute("aria-disabled", "true");
-      btn.classList.remove("is-prominent");
-      delete btn.dataset.documentId;
-    });
+    setClawDocumentAction(false);
   }
 
   function formatClawBytes(bytes) {
@@ -1827,14 +1840,7 @@
     if (clawArtifactSize) clawArtifactSize.textContent = byteLength != null ? formatClawBytes(byteLength) : "";
     if (clawArtifactMeta) clawArtifactMeta.hidden = false;
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
-    [clawResultOpen, clawResultDocx].forEach((btn) => {
-      if (!btn) return;
-      btn.disabled = false;
-      btn.setAttribute("aria-disabled", "false");
-      btn.dataset.documentId = artifact.document_id;
-      if (artifact.filename) btn.dataset.filename = artifact.filename;
-    });
-    if (clawResultDocx) clawResultDocx.classList.add("is-prominent");
+    setClawDocumentAction(true, artifact.document_id, artifact.filename);
   }
 
   function safeClawErrorMessage(data, response) {
@@ -2063,16 +2069,12 @@
     clawRequestEcho.hidden = false;
   }
 
-  // Single artifact handlers: read current dataset at click time (no per-result listener leak).
+  // Single artifact handler: reads the current dataset at click time (no
+  // per-result listener leak), and is the only control wired to the download.
   if (clawResultDocx) clawResultDocx.addEventListener("click", () => {
     const docId = clawResultDocx.dataset.documentId;
     const fname = clawResultDocx.dataset.filename;
     if (docId && !clawResultDocx.disabled) downloadClawArtifact(docId, fname);
-  });
-  if (clawResultOpen) clawResultOpen.addEventListener("click", () => {
-    const docId = clawResultOpen.dataset.documentId;
-    const fname = clawResultOpen.dataset.filename;
-    if (docId && !clawResultOpen.disabled) downloadClawArtifact(docId, fname);
   });
 
   if (clawManualForm) {
