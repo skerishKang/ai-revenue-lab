@@ -138,7 +138,7 @@ def test_media_outside_core_document_allowlists_is_rejected(media_type: Any) -> 
 
 
 def test_document_media_allowlist_matches_core() -> None:
-    from padiem_ai_core import document_normalization as core
+    import padiem_ai_core.document_normalization as core
 
     expected = frozenset(core.TEXT_DOCUMENT_MEDIA) | frozenset(core.BINARY_DOCUMENT_MEDIA)
     assert SUPPORTED_DOCUMENT_MEDIA_TYPES == expected
