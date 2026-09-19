@@ -2025,6 +2025,39 @@
     syncClawRunHistoryVisibility();
   }
 
+  // Connectors informational surface (#2779). This dialog reports what Padiem
+  // supports at the shared platform layer; it never reads, infers or claims this
+  // workspace's connection state, and it issues no request of any kind.
+  const connectorsNavButton = document.getElementById("connectorsNavButton");
+  const connectorsDialog = document.getElementById("connectorsDialog");
+  const connectorsDialogClose = document.getElementById("connectorsDialogClose");
+  function openConnectorsDialog() {
+    if (!connectorsDialog) return;
+    if (typeof connectorsDialog.showModal === "function") connectorsDialog.showModal();
+    else connectorsDialog.setAttribute("open", "");
+    if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "true");
+    closeSidebar();
+  }
+  function closeConnectorsDialog() {
+    if (!connectorsDialog) return;
+    if (connectorsDialog.open && typeof connectorsDialog.close === "function") connectorsDialog.close();
+    else connectorsDialog.removeAttribute("open");
+    if (connectorsNavButton) {
+      connectorsNavButton.setAttribute("aria-expanded", "false");
+      // Return focus to the sidebar entry that opened the dialog.
+      if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
+    }
+  }
+  if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
+  if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
+  if (connectorsDialog) {
+    connectorsDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeConnectorsDialog();
+    });
+    connectorsDialog.addEventListener("close", () => connectorsNavButton?.setAttribute("aria-expanded", "false"));
+  }
+
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
