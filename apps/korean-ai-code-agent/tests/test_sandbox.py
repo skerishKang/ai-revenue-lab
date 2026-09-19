@@ -18,6 +18,7 @@ from kagent.sandbox import (
     SandboxLeaseError,
     SandboxUnavailableError,
     UnconfiguredSandboxProvider,
+    supports_workload_cancellation,
 )
 
 
@@ -327,6 +328,118 @@ class SandboxLeaseWithExpiryContractTests(unittest.TestCase):
                 ttl_seconds=SANDBOX_LEASE_MAX_TTL_SECONDS + 1,
             )
         self.assertEqual(request.ttl_seconds, SANDBOX_LEASE_MAX_TTL_SECONDS)
+
+
+class WorkloadCancellationTests(unittest.TestCase):
+    """#1405 / #2790: cancellation must be a real operation, not a declaration."""
+
+    START = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
+
+    def request(self, run_id: str = "run_cancel") -> SandboxLeaseRequest:
+        return SandboxLeaseRequest(
+            run_id=run_id,
+            execution_mode=ExecutionMode.CLOUD,
+            repository_ref="skerishKang/example",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
+            ttl_seconds=900,
+        )
+
+    def provider(self) -> DeterministicFakeSandboxProvider:
+        return DeterministicFakeSandboxProvider(clock=lambda: self.START)
+
+    def test_cancel_terminates_the_lease(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        cancelled = provider.cancel(lease.lease_id, run_id="run_cancel")
+        self.assertIs(cancelled.state, SandboxLeaseState.RELEASED)
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.RELEASED)
+
+    def test_cancel_requires_the_matching_run(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        with self.assertRaises(SandboxLeaseError):
+            provider.cancel(lease.lease_id, run_id="run_someone_else")
+        # a rejected cancellation must not have ended anything
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def test_cancel_of_unknown_lease_fails_closed(self):
+        with self.assertRaises(SandboxLeaseError):
+            self.provider().cancel("fake_lease_missing", run_id="run_cancel")
+
+    def test_double_cancel_fails_closed(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        provider.cancel(lease.lease_id, run_id="run_cancel")
+        with self.assertRaises(SandboxLeaseError):
+            provider.cancel(lease.lease_id, run_id="run_cancel")
+
+    def test_cancelled_lease_cannot_be_renewed_or_released(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        provider.cancel(lease.lease_id, run_id="run_cancel")
+        with self.assertRaises(SandboxLeaseError):
+            provider.renew(lease.lease_id, run_id="run_cancel", ttl_seconds=900)
+        with self.assertRaises(SandboxLeaseError):
+            provider.release(lease.lease_id, run_id="run_cancel")
+
+    def test_cancel_frees_the_run_without_resurrecting_the_lease(self):
+        # Cancellation is not a lock: the one-active-lease rule tracks active
+        # leases, so the run may allocate again...
+        provider = self.provider()
+        first = provider.allocate(self.request())
+        provider.cancel(first.lease_id, run_id="run_cancel")
+        second = provider.allocate(self.request())
+        self.assertNotEqual(first.lease_id, second.lease_id)
+        # ...but the cancelled lease stays dead.
+        with self.assertRaises(SandboxLeaseError):
+            provider.release(first.lease_id, run_id="run_cancel")
+
+    def test_release_and_cancel_share_one_terminal_rule(self):
+        provider = self.provider()
+        released = provider.release(provider.allocate(self.request("run_a")).lease_id, run_id="run_a")
+        provider2 = self.provider()
+        cancelled = provider2.cancel(provider2.allocate(self.request("run_a")).lease_id, run_id="run_a")
+        self.assertIs(released.state, cancelled.state)
+
+    def test_unconfigured_provider_reports_no_cancellation(self):
+        provider = UnconfiguredSandboxProvider()
+        with self.assertRaises(SandboxUnavailableError) as caught:
+            provider.cancel("any_lease", run_id="run_cancel")
+        message = str(caught.exception)
+        self.assertIn("not configured", message)
+        self.assertIn("no workload cancellation was performed", message)
+
+    def test_capability_probe_reads_the_operation_not_a_declaration(self):
+        self.assertTrue(supports_workload_cancellation(self.provider()))
+        # The unconfigured provider exposes cancel too — and refuses it. The probe
+        # answers "is there an operation to call", never "will it succeed"; that
+        # question is answered by exercising it, which is conformance's job.
+        self.assertTrue(supports_workload_cancellation(UnconfiguredSandboxProvider()))
+
+        class LeaseOnlyProvider:
+            """Satisfies SandboxLeasePort but cannot cancel."""
+
+            def allocate(self, request):
+                raise AssertionError("unused")
+
+            def get(self, lease_id):
+                raise AssertionError("unused")
+
+            def renew(self, lease_id, *, run_id, ttl_seconds):
+                raise AssertionError("unused")
+
+            def release(self, lease_id, *, run_id):
+                raise AssertionError("unused")
+
+        self.assertFalse(supports_workload_cancellation(LeaseOnlyProvider()))
+        self.assertFalse(supports_workload_cancellation(object()))
+        # a non-callable attribute named cancel is not an operation, and a
+        # self-declared boolean cannot rescue it — trusting that boolean is exactly
+        # the failure mode #1405 recorded.
+        decoy = self.provider()
+        decoy.cancel = "not callable"  # type: ignore[method-assign]
+        decoy.cancellation_kills_workload = True
+        self.assertFalse(supports_workload_cancellation(decoy))
 
 
 if __name__ == "__main__":
