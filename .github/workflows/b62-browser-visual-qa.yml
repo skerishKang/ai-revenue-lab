@@ -166,7 +166,7 @@ jobs:
           # Final Album still: real frame from the accepted film after the actual
           # Library carousel has moved to Iliad. This is more representative than
           # the initial default Bible frame and remains part of the same real capture.
-          ffmpeg -hide_banner -loglevel error -y -ss 13 -i .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 -frames:v 1 -an -c:v libwebp -quality 84 .tmp/b61-public-product-film/storymemory-product-still-v1.webp
+          ffmpeg -hide_banner -loglevel error -y -ss 12 -i .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 -frames:v 1 -an -c:v libwebp -quality 84 .tmp/b61-public-product-film/storymemory-product-still-v1.webp
           sha256sum .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 .tmp/b61-public-product-film/storymemory-product-still-v1.webp > .tmp/b61-public-product-film/SHA256SUMS.txt
           ffprobe -v error -show_entries format=duration,size,format_name -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate -of json .tmp/b61-public-product-film/storymemory-product-film-v1.mp4 > .tmp/b61-public-product-film/film-metadata.json
       - name: Enforce bounded public-media contract
@@ -223,9 +223,9 @@ jobs:
               "source_capture_head": "${{ github.event.pull_request.head.sha }}",
               "film_sha256": sha256(root/"storymemory-product-film-v1.mp4"),
               "film_duration_seconds": duration,
-              "poster_source_time_seconds": 13,
+              "poster_source_time_seconds": 12,
               "poster_sha256": sha256(root/"storymemory-product-still-v1.webp"),
-              "poster_selection": "real Iliad Library frame from accepted film",
+              "poster_selection": "clean real Iliad Library frame from accepted film",
               "sensitive_data": "NONE_OBSERVED",
               "note_saved": False,
               "ai_prompt_submitted": False,
