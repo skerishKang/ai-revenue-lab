@@ -422,18 +422,22 @@
     }
 
     /*
-     * Three bounded drivers share one reveal envelope:
-     * - existing home scroll/message travel,
-     * - portrait-zone pointer proximity,
-     * - live assistant-answer activity.
-     * Union composition lets pointer + answer strengthen each other without
-     * exceeding 1 or fighting over the same CSS variables.
+     * Pointer hover has two responsibilities only:
+     * 1) open the clean-portrait mask;
+     * 2) drive the shell's timed peel state.
+     *
+     * It must NOT translate/scale/parallax the portrait. Horizontal pointer
+     * motion inside the portrait is therefore visually inert after entry.
      */
     var reveal=1
       -(1-baseReveal)
       *(1-pointerReveal*.94)
       *(1-answerReveal*.90);
     reveal=Math.max(0,Math.min(1,reveal));
+    var motionReveal=1
+      -(1-baseReveal)
+      *(1-answerReveal*.90);
+    motionReveal=Math.max(0,Math.min(1,motionReveal));
 
     var variant=getGlassVariant();
     var reading=mode==="reading";
@@ -454,10 +458,10 @@
     root.style.setProperty("--glass-answer-reveal",answerReveal.toFixed(3));
     root.style.setProperty("--glass-mask-start",maskStart.toFixed(1)+"%");
     root.style.setProperty("--glass-mask-full",maskFull.toFixed(1)+"%");
-    root.style.setProperty("--glass-art-x",(-9*reveal).toFixed(1)+"px");
-    root.style.setProperty("--glass-art-y",(travelY*reveal).toFixed(1)+"px");
-    root.style.setProperty("--glass-art-scale",(1+reveal*scaleGain).toFixed(3));
-    root.style.setProperty("--glass-reading-art-opacity",(0.28+reveal*(variant==="male"?.22:.20)).toFixed(3));
+    root.style.setProperty("--glass-art-x",(-9*motionReveal).toFixed(1)+"px");
+    root.style.setProperty("--glass-art-y",(travelY*motionReveal).toFixed(1)+"px");
+    root.style.setProperty("--glass-art-scale",(1+motionReveal*scaleGain).toFixed(3));
+    root.style.setProperty("--glass-reading-art-opacity",(0.28+motionReveal*(variant==="male"?.22:.20)).toFixed(3));
 
     if(answerReveal>0) queueGlassMotion();
   }
@@ -475,29 +479,22 @@
     }
     var root=document.documentElement;
     var field=document.querySelector(".glass-shell-field");
-    var rect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
-    var portraitLeft=rect&&rect.width>0?rect.left:window.innerWidth-Math.min(window.innerWidth*.48,680);
-    var portraitTop=rect&&rect.height>0?rect.top:68;
-    var portraitBottom=rect&&rect.height>0?rect.bottom:window.innerHeight;
-    var verticalActive=event.clientY>=portraitTop-36&&event.clientY<=portraitBottom+36;
-    var hoverRamp=rect&&rect.width>0
-      ?Math.max(120,Math.min(220,rect.width*.45))
-      :180;
-    /* Reverse shell starts only after the pointer enters the live portrait
-     * field. Composer/send interactions to the left must not peel the face. */
-    var proximity=verticalActive
-      ?Math.max(0,Math.min(1,(event.clientX-portraitLeft)/hoverRamp))
-      :0;
-    glassPointerReveal=smoothstep(proximity);
+    var fieldRect=field&&field.getBoundingClientRect?field.getBoundingClientRect():null;
+    var shellApi=window.__padiemGlassShell;
+    var imageRect=shellApi&&shellApi.imageRect?shellApi.imageRect():null;
+    var rect=imageRect&&imageRect.width>0&&imageRect.height>0?imageRect:fieldRect;
+    var inside=Boolean(
+      rect&&rect.width>0&&rect.height>0
+      &&event.clientX>=rect.left&&event.clientX<=rect.right
+      &&event.clientY>=rect.top&&event.clientY<=rect.bottom
+    );
 
-    var basisX=rect&&rect.width>0?rect.left+rect.width/2:window.innerWidth/2;
-    var basisY=rect&&rect.height>0?rect.top+rect.height/2:window.innerHeight/2;
-    var spanX=rect&&rect.width>0?Math.max(1,rect.width/2):Math.max(1,window.innerWidth/2);
-    var spanY=rect&&rect.height>0?Math.max(1,rect.height/2):Math.max(1,window.innerHeight/2);
-    var nx=Math.max(-1,Math.min(1,(event.clientX-basisX)/spanX));
-    var ny=Math.max(-1,Math.min(1,(event.clientY-basisY)/spanY));
-    root.style.setProperty("--glass-pointer-x",(nx*8*glassPointerReveal).toFixed(1)+"px");
-    root.style.setProperty("--glass-pointer-y",(ny*5*glassPointerReveal).toFixed(1)+"px");
+    /* Hover is a state transition, never an X-axis scrubber. Once the pointer
+     * enters the actual portrait image, the shell owns its own slow timeline.
+     * Moving left/right inside the image does not alter progress or direction. */
+    glassPointerReveal=inside?1:0;
+    root.style.setProperty("--glass-pointer-x","0px");
+    root.style.setProperty("--glass-pointer-y","0px");
     queueGlassMotion();
   }
 
