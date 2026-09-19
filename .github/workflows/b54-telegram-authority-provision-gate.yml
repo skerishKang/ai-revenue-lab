@@ -268,7 +268,12 @@ jobs:
               echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
               return 1
             fi
-            jq -e '.success == true' "${response}" >/dev/null
+            if ! jq -e '.success == true' "${response}" >/dev/null; then
+              echo "${binding_name}_PUT=FAIL"
+              echo 'CLOUDFLARE_API_SUCCESS=FAIL'
+              echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
+              return 1
+            fi
             echo "${binding_name}_PUT=PASS"
             return 0
           }
