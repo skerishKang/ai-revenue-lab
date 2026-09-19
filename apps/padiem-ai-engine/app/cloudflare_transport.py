@@ -56,6 +56,22 @@ class CloudflareReadableByteStream(httpx.AsyncByteStream):
             return bytes(value)
         if isinstance(value, memoryview):
             return value.tobytes()
+        # Workerd/Pyodide hands a stream chunk to Python as a JS proxy, not as
+        # native bytes. ``to_py()`` is the canonical Pyodide bridge back to a
+        # bytes-shaped value; ``to_bytes()`` covers the shape exposed by older
+        # binding stubs. A proxy that only exposes integer iteration/length is
+        # still decodable here, exactly like the shared chat streaming adapter.
+        to_py = getattr(value, "to_py", None)
+        if callable(to_py):
+            try:
+                converted_py = to_py()
+            except Exception:
+                converted_py = None
+            if converted_py is not None:
+                try:
+                    return bytes(converted_py)
+                except Exception:
+                    pass
         to_bytes = getattr(value, "to_bytes", None)
         if callable(to_bytes):
             try:
@@ -65,9 +81,16 @@ class CloudflareReadableByteStream(httpx.AsyncByteStream):
                 raise httpx.ReadError(
                     "Business 14 Service Binding returned unreadable response bytes."
                 ) from exc
-        raise httpx.ReadError(
-            "Business 14 Service Binding returned an unsupported response chunk."
-        )
+        # A JS typed-array proxy exposes neither converter but still supports
+        # integer iteration and length -- the same shape the shared chat
+        # streaming adapter decodes -- so decode it instead of failing the whole
+        # stream closed.
+        try:
+            return bytes(value)
+        except Exception as exc:
+            raise httpx.ReadError(
+                "Business 14 Service Binding returned an unsupported response chunk."
+            ) from exc
 
     async def __aiter__(self):
         reader = self._reader_or_create()
