@@ -32,6 +32,42 @@ class ConsentPollStatus(str, Enum):
     TIMEOUT = "timeout"
 
 
+class AttemptStatus(str, Enum):
+    ACTIVE = "active"
+    FAILED = "failed"
+
+
+_SAFE_STATUSES = frozenset(
+    {"started", "ticketed", "connected", "consent_ready", "completed", "failed", "timeout", "blocked"}
+)
+_SAFE_ERROR_CODES = frozenset(
+    {
+        "action_failed",
+        "callback_failed",
+        "connect_failed",
+        "consent_failed",
+        "consent_timeout",
+        "invalid_request",
+        "transition_invalid",
+        "ticket_failed",
+    }
+)
+_SAFE_PRESENCE_KEYS = frozenset(
+    {
+        "account_ref",
+        "actor_ref",
+        "authorization_code",
+        "authorization_url",
+        "binding_ref",
+        "callback",
+        "consent_target",
+        "cookie_session",
+        "provider_token",
+        "ticket",
+    }
+)
+
+
 @dataclass(frozen=True, slots=True)
 class ConsentPollResult:
     status: ConsentPollStatus
@@ -59,6 +95,18 @@ class SafeDiagnosticProjection:
     transition_location: str | None = None
     presence: Mapping[str, bool] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, str) or self.status not in _SAFE_STATUSES:
+            raise CanaryContractError("status is not a safe diagnostic status")
+        if self.error_code is not None and (
+            not isinstance(self.error_code, str) or self.error_code not in _SAFE_ERROR_CODES
+        ):
+            raise CanaryContractError("error_code is not a safe diagnostic code")
+        if set(self.presence) - _SAFE_PRESENCE_KEYS:
+            raise CanaryContractError("presence contains an unapproved key")
+        if any(not isinstance(value, bool) for value in self.presence.values()):
+            raise CanaryContractError("presence values must be boolean")
+
     def as_dict(self) -> dict[str, object]:
         return {
             "status": self.status,
@@ -78,10 +126,21 @@ class SafeDiagnosticProjection:
 def project_transition_location(url: str) -> str:
     """Return only URL location; query and fragment are never projected."""
 
+    if not isinstance(url, str):
+        raise CanaryContractError("transition URL must be a string")
     parsed = urlsplit(url)
-    if not parsed.scheme or not parsed.netloc or not parsed.path:
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise CanaryContractError("transition URL has an invalid port") from exc
+    hostname = parsed.hostname
+    if parsed.scheme not in {"http", "https"} or not hostname or parsed.username is not None or parsed.password is not None:
         raise CanaryContractError("transition URL must contain scheme, host, and path")
-    return f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+    if not parsed.path or len(parsed.path) > 512 or any(ord(char) < 32 for char in parsed.path):
+        raise CanaryContractError("transition URL path is invalid")
+    host = hostname.lower()
+    location_port = f":{port}" if port is not None else ""
+    return f"{parsed.scheme}://{host}{location_port}{parsed.path}"
 
 
 def poll_consent_target(
@@ -123,13 +182,18 @@ class OAuthCanaryAttempt:
     )
     _next_action: int = 0
     _policy: ConnectRequestPolicy | None = None
+    _status: AttemptStatus = AttemptStatus.ACTIVE
 
     _ORDER = ("ticket_post", "connect_post", "consent", "callback")
 
     def start(self) -> None:
-        if self._started:
+        if self._started or self._status is AttemptStatus.FAILED:
             raise CanaryContractError("canary attempt already started")
         self._started = True
+
+    @property
+    def status(self) -> AttemptStatus:
+        return self._status
 
     @property
     def counts(self) -> Mapping[str, int]:
@@ -142,7 +206,9 @@ class OAuthCanaryAttempt:
         return self._policy
 
     def _consume(self, action: str, callback: Callable[[], None], *, policy: ConnectRequestPolicy | None = None) -> None:
-        if not self._started:
+        if not self._started or self._status is AttemptStatus.FAILED:
+            if self._status is AttemptStatus.FAILED:
+                raise CanaryContractError("canary attempt is terminally failed")
             raise CanaryContractError("canary attempt must start before actions")
         if self._next_action >= len(self._ORDER):
             raise CanaryContractError(f"{action} budget exhausted")
@@ -157,13 +223,20 @@ class OAuthCanaryAttempt:
         # create an implicit retry path for a budgeted operation.
         self._counts[action] += 1
         self._next_action += 1
-        callback()
+        try:
+            callback()
+        except Exception:
+            self._status = AttemptStatus.FAILED
+            raise
 
     def ticket_post(self, action: Callable[[], None]) -> None:
         self._consume("ticket_post", action)
 
-    def connect_post(self, action: Callable[[], None], *, policy: ConnectRequestPolicy | None = None) -> None:
-        self._consume("connect_post", action, policy=policy)
+    def connect_post(self, action: Callable[[ConnectRequestPolicy], None], *, policy: ConnectRequestPolicy | None = None) -> None:
+        if policy is not None and not isinstance(policy, ConnectRequestPolicy):
+            raise CanaryContractError("connect policy must be ConnectRequestPolicy")
+        selected_policy = policy or ConnectRequestPolicy()
+        self._consume("connect_post", lambda: action(selected_policy), policy=selected_policy)
 
     def consent(self, action: Callable[[], None]) -> None:
         self._consume("consent", action)

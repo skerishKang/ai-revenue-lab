@@ -30,20 +30,27 @@ def test_second_begin_fails_before_action() -> None:
     assert called == []
 
 
-@pytest.mark.parametrize("action_name", ["ticket_post", "connect_post", "consent", "callback"])
-def test_duplicate_budgeted_action_fails_before_second_action(action_name: str) -> None:
+@pytest.mark.parametrize("action_name, prior_actions", [
+    ("ticket_post", ("ticket_post",)),
+    ("connect_post", ("ticket_post", "connect_post")),
+    ("consent", ("ticket_post", "connect_post", "consent")),
+    ("callback", ("ticket_post", "connect_post", "consent", "callback")),
+])
+def test_each_action_duplicate_is_blocked_immediately(action_name: str, prior_actions: tuple[str, ...]) -> None:
     attempt = OAuthCanaryAttempt()
     attempt.start()
-    callbacks = {name: (lambda name=name: calls.append(name)) for name in ("ticket_post", "connect_post", "consent", "callback")}
     calls: list[str] = []
-    attempt.ticket_post(callbacks["ticket_post"])
-    attempt.connect_post(callbacks["connect_post"])
-    attempt.consent(callbacks["consent"])
-    attempt.callback(callbacks["callback"])
-    assert attempt.counts == {name: 1 for name in ("ticket_post", "connect_post", "consent", "callback")}
+    callbacks = {
+        "ticket_post": lambda: calls.append("ticket_post"),
+        "connect_post": lambda policy: calls.append("connect_post"),
+        "consent": lambda: calls.append("consent"),
+        "callback": lambda: calls.append("callback"),
+    }
+    for prior in prior_actions:
+        getattr(attempt, prior)(callbacks[prior])
     with pytest.raises(CanaryContractError):
         getattr(attempt, action_name)(callbacks[action_name])
-    assert calls == ["ticket_post", "connect_post", "consent", "callback"]
+    assert calls == list(prior_actions)
 
 
 def test_invalid_order_fails_before_action() -> None:
@@ -68,8 +75,39 @@ def test_failed_action_consumes_budget_and_cannot_retry() -> None:
         attempt.ticket_post(fail_once)
     with pytest.raises(CanaryContractError):
         attempt.ticket_post(lambda: calls.append("retry"))
+    with pytest.raises(CanaryContractError):
+        attempt.connect_post(lambda policy: calls.append("connect"))
     assert calls == ["ticket"]
     assert attempt.counts["ticket_post"] == 1
+    assert attempt.status.value == "failed"
+
+
+@pytest.mark.parametrize("failed_action, blocked_action", [
+    ("connect_post", "consent"),
+    ("consent", "callback"),
+    ("callback", "callback"),
+])
+def test_failed_later_action_is_terminal_and_blocks_followup(failed_action: str, blocked_action: str) -> None:
+    attempt = OAuthCanaryAttempt()
+    attempt.start()
+    attempt.ticket_post(lambda: None)
+
+    if failed_action in {"consent", "callback"}:
+        attempt.connect_post(lambda policy: None)
+    if failed_action == "callback":
+        attempt.consent(lambda: None)
+
+    def fail(*_args: object) -> None:
+        raise RuntimeError(failed_action)
+
+    with pytest.raises(RuntimeError):
+        getattr(attempt, failed_action)(fail)
+    with pytest.raises(CanaryContractError):
+        if blocked_action == "callback":
+            attempt.callback(lambda: None)
+        else:
+            attempt.consent(lambda: None)
+    assert attempt.status.value == "failed"
 
 
 def test_connect_is_structurally_single_call_with_redirect_and_retry_zero() -> None:
@@ -77,8 +115,15 @@ def test_connect_is_structurally_single_call_with_redirect_and_retry_zero() -> N
     attempt.start()
     calls = []
     attempt.ticket_post(lambda: calls.append("ticket"))
-    attempt.connect_post(lambda: calls.append("connect"))
+    received_policies = []
+
+    def connect(policy: ConnectRequestPolicy) -> None:
+        calls.append("connect")
+        received_policies.append(policy)
+
+    attempt.connect_post(connect)
     assert calls == ["ticket", "connect"]
+    assert received_policies == [ConnectRequestPolicy(max_redirects=0, max_retries=0)]
     assert attempt.connect_policy == ConnectRequestPolicy(max_redirects=0, max_retries=0)
     with pytest.raises(CanaryContractError):
         ConnectRequestPolicy(max_redirects=1)
@@ -127,9 +172,22 @@ def test_safe_projection_excludes_oauth_query_and_raw_material() -> None:
     assert all(report[key] is False for key in report if key.startswith("raw_"))
 
 
+@pytest.mark.parametrize("kwargs", [
+    {"status": "token=secret"},
+    {"status": "connected", "error_code": "code=secret"},
+    {"status": "connected", "presence": {"raw-ticket-value": True}},
+    {"status": "connected", "presence": {"ticket": "raw"}},
+])
+def test_safe_projection_rejects_arbitrary_diagnostic_data(kwargs: dict[str, object]) -> None:
+    with pytest.raises(CanaryContractError):
+        OAuthCanaryAttempt().safe_report(**kwargs)
+
+
 def test_safe_projection_rejects_non_location_transition_url() -> None:
     with pytest.raises(CanaryContractError):
         project_transition_location("https://oauth.example.test?state=only")
+    with pytest.raises(CanaryContractError):
+        project_transition_location("https://user:password@example.test/callback")
 
 
 def test_runtime_and_durable_authority_boundaries_are_explicit() -> None:
