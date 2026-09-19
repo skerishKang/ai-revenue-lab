@@ -5,7 +5,8 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - "apps/padiem-chat/**"
-      - ".github/workflows/b62-pr-preview.yml"\n      - ".github/scripts/b62_pr_preview_glass_qa.py"
+      - ".github/workflows/b62-pr-preview.yml"
+      - ".github/scripts/b62_pr_preview_glass_qa.py"
 
 permissions:
   contents: read
