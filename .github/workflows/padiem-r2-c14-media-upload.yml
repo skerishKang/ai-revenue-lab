@@ -20,6 +20,10 @@ on:
         type: string
         default: ''
 
+  pull_request:
+    branches:
+      - main
+
 permissions:
   contents: read
 
@@ -29,6 +33,7 @@ concurrency:
 
 jobs:
   upload:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
@@ -311,3 +316,168 @@ jobs:
           echo 'R2_OVERWRITE=NO'
           echo 'PRODUCTION_MUTATION=NONE'
           echo 'SECRET_VALUE_OUTPUT=0'
+
+
+  publish-design-human-hero-v1:
+    name: Publish Design human cinematic hero v1
+    if: github.event_name == 'pull_request' && github.head_ref == 'ops/padiem-design-human-hero-media-v1-20260919'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
+      BUCKET: padiem-media
+      SOURCE_DRIVE_ID: 1gJHzDFFB0-jcsRHyP33B-Ab7_FNmXvqJ
+      SOURCE_SHA256: 27df135bedcd0c4c24dd68feec7b0908adb12276853dff52377dc865d3b1900c
+      FILM_KEY: design/hero/padiem-design-human-cinematic-v1.mp4
+      FILM_SHA256: 46a24c0b232fe28d7d7317aff0dc75c5189d1e07cf0d31277b019fca190b244f
+      POSTER_KEY: design/hero/padiem-design-human-cinematic-v1.webp
+      POSTER_SHA256: ab7661e64b4a4ab9b259a80ce3123f335e8f57cdf01f30fbc563d7ebb5ec95c9
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+
+      - name: Verify bounded authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_HEAD_REF" = "ops/padiem-design-human-hero-media-v1-20260919"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          echo "AUTHORITY=DESIGN_HERO_V1_ONLY"
+          echo "OBJECT_COUNT=2"
+          echo "OVERWRITE=NO"
+          echo "PRODUCTION_PAGE_MUTATION=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+
+      - name: Setup media tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --quiet gdown
+
+      - name: Download and verify owner source
+        shell: bash
+        run: |
+          set -euo pipefail
+          gdown "$SOURCE_DRIVE_ID" -O "$RUNNER_TEMP/source.mp4"
+          test "$(sha256sum "$RUNNER_TEMP/source.mp4" | awk '{print $1}')" = "$SOURCE_SHA256"
+          echo "SOURCE_PARITY=PASS"
+
+      - name: Build exact cinematic film and poster
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -y -ss 12 -t 24 -i "$RUNNER_TEMP/source.mp4" -an             -vf "crop=1670:940:125:65,scale=1920:1080:flags=lanczos,format=yuv420p"             -r 24 -c:v libx264 -preset medium -crf 24 -movflags +faststart             "$RUNNER_TEMP/design-hero.mp4"
+          ffmpeg -y -ss 12 -i "$RUNNER_TEMP/design-hero.mp4" -frames:v 1             -vf "scale=1600:-2" -c:v libwebp -quality 82             "$RUNNER_TEMP/design-hero.webp"
+          test "$(sha256sum "$RUNNER_TEMP/design-hero.mp4" | awk '{print $1}')" = "$FILM_SHA256"
+          test "$(sha256sum "$RUNNER_TEMP/design-hero.webp" | awk '{print $1}')" = "$POSTER_SHA256"
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt,r_frame_rate             -show_entries format=duration,size -of json "$RUNNER_TEMP/design-hero.mp4"
+          echo "DERIVATIVE_PARITY=PASS"
+
+      - name: Preflight immutable object keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, os, pathlib, subprocess, sys
+          items=[
+            (os.environ["FILM_KEY"], os.environ["FILM_SHA256"]),
+            (os.environ["POSTER_KEY"], os.environ["POSTER_SHA256"]),
+          ]
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          for i,(key,expected) in enumerate(items):
+              p=root/f"remote-{i}"
+              r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","get",
+                                f'{os.environ["BUCKET"]}/{key}',"--file",str(p),"--remote"],
+                               capture_output=True,text=True)
+              if r.returncode!=0 or not p.exists():
+                  print(f"PREFLIGHT_MISS {key}")
+                  continue
+              sha=hashlib.sha256(p.read_bytes()).hexdigest()
+              p.unlink(missing_ok=True)
+              if sha!=expected:
+                  print(f"PREFLIGHT_CONFLICT {key} sha256={sha}",file=sys.stderr)
+                  sys.exit(1)
+              print(f"PREFLIGHT_IDENTICAL {key}")
+          print("PREFLIGHT=PASS")
+          PY
+
+      - name: Append missing exact objects only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, os, pathlib, subprocess, sys
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          items=[
+            (os.environ["FILM_KEY"], root/"design-hero.mp4", os.environ["FILM_SHA256"], "video/mp4"),
+            (os.environ["POSTER_KEY"], root/"design-hero.webp", os.environ["POSTER_SHA256"], "image/webp"),
+          ]
+          for idx,(key,src,expected,ctype) in enumerate(items):
+              chk=root/f"chk-{idx}"
+              r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","get",
+                                f'{os.environ["BUCKET"]}/{key}',"--file",str(chk),"--remote"],
+                               capture_output=True,text=True)
+              if r.returncode==0 and chk.exists():
+                  sha=hashlib.sha256(chk.read_bytes()).hexdigest()
+                  chk.unlink(missing_ok=True)
+                  if sha==expected:
+                      print(f"IDENTICAL_SKIP {key}")
+                      continue
+                  print(f"NO_OVERWRITE_CONFLICT {key}",file=sys.stderr); sys.exit(1)
+              r=subprocess.run(["npx","--yes","wrangler@4.130.0","r2","object","put",
+                                f'{os.environ["BUCKET"]}/{key}',"--file",str(src),
+                                "--content-type",ctype,
+                                "--cache-control","public, max-age=31536000, immutable",
+                                "--remote"],capture_output=True,text=True)
+              if r.returncode!=0:
+                  print(f"PUT_FAIL {key} {(r.stderr or '')[-500:]}",file=sys.stderr); sys.exit(1)
+              print(f"PUT_PASS {key}")
+          print("R2_MUTATION=APPEND_MISSING_ONLY")
+          print("R2_OVERWRITE=NO")
+          PY
+
+      - name: Verify public media contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, subprocess, time, sys
+          film="https://media.padiem.net/"+os.environ["FILM_KEY"]
+          poster="https://media.padiem.net/"+os.environ["POSTER_KEY"]
+          def headers(url):
+              for n in range(1,21):
+                  r=subprocess.run(["curl","-sS","-D","-","-o","/dev/null","--max-time","30",url],
+                                   capture_output=True,text=True)
+                  code=""
+                  for line in r.stdout.splitlines():
+                      if line.startswith("HTTP/"):
+                          p=line.split()
+                          if len(p)>1: code=p[1]
+                  if code=="200":
+                      return r.stdout.lower()
+                  print(f"PUBLIC_WAIT {url} attempt={n} code={code or 'NONE'}")
+                  time.sleep(10)
+              raise SystemExit(f"PUBLIC_200_FAIL {url}")
+          fh=headers(film)
+          ph=headers(poster)
+          if "content-type: video/mp4" not in fh or "immutable" not in fh:
+              raise SystemExit("FILM_HEADER_FAIL")
+          if "content-type: image/webp" not in ph or "immutable" not in ph:
+              raise SystemExit("POSTER_HEADER_FAIL")
+          r=subprocess.run(["curl","-sS","-D","-","-o","/dev/null","--max-time","30",
+                            "-H","Range: bytes=0-1023",film],capture_output=True,text=True)
+          if " 206 " not in (" "+r.stdout.replace("\r","")+" "):
+              # Accept HTTP/2 206 and HTTP/1.1 206 by parsing status lines.
+              ok=any(line.startswith("HTTP/") and len(line.split())>1 and line.split()[1]=="206" for line in r.stdout.splitlines())
+              if not ok: raise SystemExit("FILM_RANGE_FAIL")
+          print("PUBLIC_FILM=HTTP_200_TYPE_MP4_CACHE_IMMUTABLE_RANGE_206")
+          print("PUBLIC_POSTER=HTTP_200_TYPE_WEBP_CACHE_IMMUTABLE")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
