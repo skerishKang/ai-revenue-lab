@@ -36,6 +36,7 @@
 .app-shell:not([data-state="claw"]) .claw-result,
 .app-shell:not([data-state="claw"]) .claw-memory-review,
 .app-shell:not([data-state="claw"]) .claw-approved-memory,
+.app-shell:not([data-state="claw"]) .claw-run-history,
 .app-shell:not([data-state="claw"]) .claw-request-echo,
 .app-shell:not([data-state="claw"]) .claw-disabled-controls {
   display: none !important;
@@ -837,4 +838,130 @@
   .claw-inbox-item { align-items: stretch; flex-direction: column; }
   .claw-inbox-retry,
   .claw-inbox-status-action { width: 100%; }
+}
+
+/* #2317 recent-run presentation: renders only what the owner-scoped
+ * run-history route already returns. Shared theme roles, no Claw palette. */
+.claw-run-history {
+  display: grid;
+  gap: 12px;
+}
+.claw-run-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.claw-run-history-loading {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-run-history-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: none;
+}
+.claw-run-history-error[data-state="error"] {
+  display: block;
+  background: var(--danger-surface);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+.claw-run-history-list {
+  display: grid;
+  gap: 10px;
+}
+.claw-run-history-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.claw-run-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+.claw-run-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.claw-run-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.claw-run-card-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: var(--accent-soft);
+}
+.claw-run-card-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.claw-run-card-summary {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.claw-run-card-artifact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.claw-run-card-filename {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.claw-run-card-download {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.claw-run-card-download:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+@media (max-width: 920px) {
+  .claw-run-history-header,
+  .claw-run-card-artifact { align-items: stretch; flex-direction: column; }
+  .claw-run-card-download { width: 100%; justify-content: center; }
 }

@@ -251,6 +251,20 @@
           <div class="claw-approved-list" id="clawApprovedList" hidden></div>
           <p class="claw-approved-empty" id="clawApprovedEmpty" data-locale-key="claw-approved-empty" hidden>승인된 메모리가 없습니다.</p>
         </section>
+        <section class="claw-run-history" id="clawRunHistory" aria-labelledby="clawRunHistoryTitle" hidden>
+          <header class="claw-run-history-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-runs-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawRunHistoryTitle" data-locale-key="claw-runs-title">최근 실행 기록</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawRunHistoryRefresh" data-locale-aria-label="claw-runs-refresh-aria" aria-label="기록 새로고침">↻</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-runs-tagline">실제 실행한 기록만 표시됩니다. 결과 요약과 문서를 다시 확인할 수 있습니다.</p>
+          <div class="claw-run-history-loading" id="clawRunHistoryLoading" data-locale-key="claw-runs-loading" role="status" aria-live="polite" hidden>불러오는 중…</div>
+          <p class="claw-run-history-error" id="clawRunHistoryError" role="alert" hidden></p>
+          <div class="claw-run-history-list" id="clawRunHistoryList" hidden></div>
+          <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
+        </section>
         <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
           <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
           <div class="claw-disabled-grid">
