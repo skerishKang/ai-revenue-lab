@@ -22,7 +22,10 @@ from padiem_ai_core.orchestration_events import (
     OrchestrationEventKind,
     public_orchestration_event,
 )
-from padiem_control_plane.product_tier_routes import ProductTierLabel
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
 
 from app.claw_p01_composition import (
     build_claw_p01_adapter,
@@ -193,7 +196,7 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     assert payload["app_id"] == P01_APP_ID
     assert payload["agent"]["id"] == P01_AGENT_ID
     assert payload["agent"]["model_policy"] == {
-        "model": "agnes-ai/agnes-3.0-flash"
+        "model": active_route_for(ProductTierLabel.PLUS).model_id
     }
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []

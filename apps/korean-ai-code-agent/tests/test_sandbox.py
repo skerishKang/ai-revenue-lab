@@ -18,6 +18,7 @@ from kagent.sandbox import (
     SandboxLeaseError,
     SandboxUnavailableError,
     UnconfiguredSandboxProvider,
+    supports_lease_reclamation,
     supports_workload_cancellation,
 )
 
@@ -440,6 +441,200 @@ class WorkloadCancellationTests(unittest.TestCase):
         decoy.cancel = "not callable"  # type: ignore[method-assign]
         decoy.cancellation_kills_workload = True
         self.assertFalse(supports_workload_cancellation(decoy))
+
+
+class LeaseReclamationTests(unittest.TestCase):
+    """#1405 / #2803: a lapsed reservation must be reclaimable, not just noticeable."""
+
+    START = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
+
+    def request(self, run_id: str = "run_reap", *, ttl_seconds: int = 900) -> SandboxLeaseRequest:
+        return SandboxLeaseRequest(
+            run_id=run_id,
+            execution_mode=ExecutionMode.CLOUD,
+            repository_ref="skerishKang/example",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
+            ttl_seconds=ttl_seconds,
+        )
+
+    def provider(self) -> DeterministicFakeSandboxProvider:
+        return DeterministicFakeSandboxProvider(clock=lambda: self.START)
+
+    def test_expire_drives_reserved_to_expired_and_frees_the_run(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        expired = provider.expire(lease.lease_id, run_id="run_reap", now=lease.expires_at)
+        self.assertIs(expired.state, SandboxLeaseState.EXPIRED)
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.EXPIRED)
+        self.assertNotIn(lease.lease_id, [entry.lease_id for entry in provider.active_leases()])
+
+    def test_a_lapsed_lease_can_be_reclaimed_without_being_read_first(self):
+        # The gap #2803 closes: previously the only way a lease ever became EXPIRED
+        # was somebody calling get(), and release() then refused it as inactive.
+        provider = self.provider()
+        first = provider.allocate(self.request("run_1"))
+        second = provider.allocate(self.request("run_2"))
+        listed = [entry.lease_id for entry in provider.active_leases()]
+        self.assertEqual(listed, [first.lease_id, second.lease_id])
+        provider.expire(first.lease_id, run_id="run_1", now=first.expires_at)
+        self.assertEqual(
+            [entry.lease_id for entry in provider.active_leases()], [second.lease_id]
+        )
+
+    def test_reclamation_before_the_ttl_fails_closed(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        with self.assertRaises(SandboxLeaseError) as caught:
+            provider.expire(
+                lease.lease_id,
+                run_id="run_reap",
+                now=lease.expires_at - timedelta(seconds=1),
+            )
+        self.assertIn("has not reached its TTL", str(caught.exception))
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def test_reclamation_requires_the_matching_run(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        with self.assertRaises(SandboxLeaseError):
+            provider.expire(lease.lease_id, run_id="run_someone_else", now=lease.expires_at)
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+        # the run still owns its slot, so it cannot be squeezed out by a foreign call
+        with self.assertRaises(SandboxLeaseError):
+            provider.allocate(self.request())
+
+    def test_reclamation_of_an_unknown_lease_fails_closed(self):
+        with self.assertRaises(SandboxLeaseError) as caught:
+            self.provider().expire(
+                "fake_lease_missing", run_id="run_reap", now=self.START + timedelta(seconds=900)
+            )
+        self.assertIn("unknown lease", str(caught.exception))
+
+    def test_double_reclamation_fails_closed(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        provider.expire(lease.lease_id, run_id="run_reap", now=lease.expires_at)
+        with self.assertRaises(SandboxLeaseError):
+            provider.expire(lease.lease_id, run_id="run_reap", now=lease.expires_at)
+
+    def test_terminal_lease_never_reclaims_again(self):
+        for state_maker, label in (
+            (lambda p, lid: p.release(lid, run_id="run_reap"), "released"),
+            (lambda p, lid: p.cancel(lid, run_id="run_reap"), "cancelled"),
+        ):
+            with self.subTest(via=label):
+                provider = self.provider()
+                lease = provider.allocate(self.request())
+                state_maker(provider, lease.lease_id)
+                with self.assertRaises(SandboxLeaseError):
+                    provider.expire(lease.lease_id, run_id="run_reap", now=lease.expires_at)
+
+    def test_reclaimed_lease_refuses_every_later_operation(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        provider.expire(lease.lease_id, run_id="run_reap", now=lease.expires_at)
+        with self.assertRaises(SandboxLeaseError):
+            provider.renew(lease.lease_id, run_id="run_reap", ttl_seconds=900)
+        with self.assertRaises(SandboxLeaseError):
+            provider.release(lease.lease_id, run_id="run_reap")
+        with self.assertRaises(SandboxLeaseError):
+            provider.cancel(lease.lease_id, run_id="run_reap")
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.EXPIRED)
+
+    def test_reclamation_is_not_a_lock(self):
+        provider = self.provider()
+        first = provider.allocate(self.request())
+        provider.expire(first.lease_id, run_id="run_reap", now=first.expires_at)
+        second = provider.allocate(self.request())
+        self.assertNotEqual(first.lease_id, second.lease_id)
+        self.assertIs(second.state, SandboxLeaseState.RESERVED)
+        with self.assertRaises(SandboxLeaseError):
+            provider.expire(first.lease_id, run_id="run_reap", now=first.expires_at)
+
+    def test_naive_or_non_datetime_clock_is_refused(self):
+        provider = self.provider()
+        lease = provider.allocate(self.request())
+        for candidate in (
+            lease.expires_at.replace(tzinfo=None),
+            "2026-09-02T10:15:00Z",
+            None,
+            900,
+        ):
+            with self.subTest(now=candidate):
+                with self.assertRaises(SandboxLeaseError):
+                    provider.expire(lease.lease_id, run_id="run_reap", now=candidate)
+                # a refused clock may not have touched the reservation
+                self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def test_active_leases_reports_recorded_state_not_observed_state(self):
+        # Inventory must not apply get()'s read-flip, or a sweep's own observation
+        # would be indistinguishable from reclamation: the lease has to be reclaimed.
+        clock = [self.START]
+        provider = DeterministicFakeSandboxProvider(clock=lambda: clock[0])
+        lease = provider.allocate(self.request())
+        clock[0] = self.START + timedelta(seconds=901)
+
+        lapsed_but_unread = provider.active_leases()
+        self.assertEqual([entry.lease_id for entry in lapsed_but_unread], [lease.lease_id])
+        self.assertIs(lapsed_but_unread[0].state, SandboxLeaseState.RESERVED)
+        # A read does apply the existing lazy rule, and that is a different fact:
+        # noticing a lapse is not the same as having reclaimed it.
+        self.assertIs(provider.get(lease.lease_id).state, SandboxLeaseState.EXPIRED)
+        self.assertEqual(provider.active_leases(), ())
+        # and the read that noticed the lapse freed the run's slot, so a lapsed
+        # lease is not a lock either.
+        replacement = provider.allocate(self.request())
+        self.assertIs(replacement.state, SandboxLeaseState.RESERVED)
+
+    def test_unconfigured_provider_refuses_reclamation_without_claiming_emptiness(self):
+        provider = UnconfiguredSandboxProvider()
+        with self.assertRaises(SandboxUnavailableError) as caught:
+            provider.active_leases()
+        self.assertIn("not configured", str(caught.exception))
+        self.assertIn("no sandbox lease inventory is available", str(caught.exception))
+        with self.assertRaises(SandboxUnavailableError) as caught:
+            provider.expire(
+                "any", run_id="run_reap", now=self.START + timedelta(seconds=900)
+            )
+        self.assertIn("no sandbox lease was reclaimed", str(caught.exception))
+
+    def test_reclamation_probe_requires_both_operations(self):
+        provider = self.provider()
+        self.assertTrue(supports_lease_reclamation(provider))
+        self.assertTrue(supports_lease_reclamation(UnconfiguredSandboxProvider()))
+
+        class InventoryOnly:
+            def allocate(self, request):
+                raise AssertionError("unused")
+
+            def get(self, lease_id):
+                raise AssertionError("unused")
+
+            def renew(self, lease_id, *, run_id, ttl_seconds):
+                raise AssertionError("unused")
+
+            def release(self, lease_id, *, run_id):
+                raise AssertionError("unused")
+
+            def active_leases(self):
+                return ()
+
+        class ExpireOnly(InventoryOnly):
+            # Can end a lease but cannot say what it holds, so a sweep could never
+            # tell whether it had reached everything.
+            active_leases = None  # type: ignore[assignment]
+
+            def expire(self, lease_id, *, run_id, now):
+                raise AssertionError("unused")
+
+        self.assertFalse(supports_lease_reclamation(InventoryOnly()))
+        self.assertFalse(supports_lease_reclamation(ExpireOnly()))
+        self.assertFalse(supports_lease_reclamation(object()))
+        # a declared boolean, and a non-callable look-alike, are not capabilities
+        decoy = self.provider()
+        decoy.expire = "not callable"  # type: ignore[method-assign]
+        decoy.ttl_enforced = True
+        self.assertFalse(supports_lease_reclamation(decoy))
 
 
 if __name__ == "__main__":
