@@ -347,3 +347,30 @@ REACTIVATION_PRECONDITIONS = real tool binding resolver wired in the Production
 PRIOR_RECORD = preserved above unmodified; this amendment supersedes FINAL_DISPOSITION only
 ```
 
+### §13.1 current-truth addendum — A3 composition precondition satisfied (LOCAL 3, #2738)
+
+Independent re-verification on current main (fresh `git fetch origin --prune`; SHA
+not pinned) shows precondition 1 of the §13 amendment is now satisfied, while the
+manifest state stays `DEFERRED`:
+
+```text
+COMPOSITION_TRUTH        = worker_identity.py injects the real
+                           `_tool_binding_resolver_for_env` resolver on both
+                           Engine composition paths (local-bound + canonical Production)
+CONFORMANCE_GATE         = WO-2 production composition conformance gate passes
+                           (tests/test_production_composition_conformance.py)
+FAIL_CLOSED              = preserved (`drive_port_unavailable` /
+                           `tool_runtime_unavailable`, HTTP 503) while the CP OAuth
+                           port or the ENGINE_CONNECTOR_GRANTS D1 grant store is absent
+MANIFEST_TRUTH           = tool_runtime DEFERRED / tool_runtime_projection DEFERRED (unchanged)
+REACTIVATION_BLOCKER     = live_production_execute_evidence
+OUTSTANDING_PRECONDITION = separately authorized activation PR carrying exact-SHA
+                           Production execute evidence
+REAL_PROVIDER_CALLS      = 0
+PRODUCTION_MUTATION      = 0
+```
+
+The §13 CTO-audit record above is preserved unmodified. This addendum supersedes
+only the composition clause of `REACTIVATION_PRECONDITIONS`, which is now met on
+current main; the manifest states stay `DEFERRED` until the live-evidence
+precondition lands.

@@ -282,9 +282,12 @@ def test_capability_states_match_routed_truth() -> None:
         "agent_skill_runtime",
         "file_document_multimodal",
         "tenant_entitlement_usage_admission",
-        # E9 A3: reverted to DEFERRED per CTO audit 2026-09-06 — the Production
-        # composition injects no tool binding resolver, so the AVAILABLE claim
-        # was not production truth (WO-2 gate must pass before re-activation).
+        # E9 A3: reverted to DEFERRED per CTO audit 2026-09-06, when the
+        # Production composition injected no tool binding resolver. Current main
+        # composes the real `_tool_binding_resolver_for_env` resolver on both
+        # composition paths and the WO-2 gate passes, so the outstanding
+        # re-activation gate is live Production execute evidence
+        # (REACTIVATION_BLOCKER), not source.
         "tool_runtime",
         # E9 A1: reverted to DEFERRED per owner decision D2 (WO-7) — wrangler.toml
         # has no [vars]/keep_vars, so the web provider var cannot survive a deploy
@@ -296,6 +299,27 @@ def test_capability_states_match_routed_truth() -> None:
         assert state_of[capability_id] is CapabilityState.DEFERRED
     for capability_id in ("public_browser_api", "provider_selection"):
         assert state_of[capability_id] is CapabilityState.UNAVAILABLE
+
+
+def test_tool_runtime_deferral_reason_reflects_composed_resolver_truth() -> None:
+    """A3 (LOCAL 3, #2738): the ``tool_runtime`` deferral reason must match
+    current composition truth.
+
+    Current main composes the real tool binding resolver on both Engine
+    composition paths, so neither manifest may keep the superseded CTO audit
+    2026-09-06 justification ("the Production composition injects no tool
+    binding resolver"). The outstanding re-activation blocker is live Production
+    execute evidence, recorded with the stable marker asserted below so the
+    deferral reason cannot silently regress to a source-gap story.
+    """
+    for relative in ("app/capability_manifest.py", "app/contract_manifest.py"):
+        source = (APP_ROOT / relative).read_text(encoding="utf-8")
+        assert "injects no tool binding resolver" not in source, relative
+
+    contract_source = (APP_ROOT / "app" / "contract_manifest.py").read_text(
+        encoding="utf-8"
+    )
+    assert "REACTIVATION_BLOCKER=live_production_execute_evidence" in contract_source
 
 
 def test_manifest_routes_match_route_constants() -> None:

@@ -456,13 +456,16 @@ def current_capability_manifest() -> CapabilityManifest:
                 ),
             ),
             # E9 A3 (#1746): the earlier bounded activation dispatch (main
-            # 1f6220d5) flipped this entry AVAILABLE, but the Production
-            # composition (worker_identity.py) injects no tool binding
-            # resolver, so every request fails closed 503
+            # 1f6220d5) flipped this entry AVAILABLE, but at that time the
+            # Production composition (worker_identity.py) injected no tool
+            # binding resolver, so every request failed closed 503
             # tool_runtime_unavailable. Reverted to DEFERRED per CTO audit
-            # 2026-09-06 (SOURCE_PRESENT != AVAILABLE); re-activation requires
-            # the WO-2 production composition conformance gate plus a real
-            # tool binding resolver in a separately authorized activation PR.
+            # 2026-09-06 (SOURCE_PRESENT != AVAILABLE). Current main composes the
+            # real `_tool_binding_resolver_for_env` resolver on both composition
+            # paths and the WO-2 conformance gate passes, so the remaining
+            # precondition is no longer composition. It is live evidence:
+            # REACTIVATION_BLOCKER=live_production_execute_evidence
+            # (E9_ACTIVATION_PLAN.md §13).
             CapabilityDeclaration(
                 id="tool_runtime",
                 state=CapabilityState.DEFERRED,
