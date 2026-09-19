@@ -107,6 +107,9 @@ def capture() -> None:
         ask.fill("capture-only draft")
         interactions.append("ai_prompt_draft_no_submit")
         ask.fill("")
+        # Hold the final reader frame long enough for the review-film duration
+        # contract without adding another interaction or any network action.
+        page.wait_for_timeout(2_000)
 
         visible_text = body.inner_text()
         if re.search(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", visible_text, re.IGNORECASE):
