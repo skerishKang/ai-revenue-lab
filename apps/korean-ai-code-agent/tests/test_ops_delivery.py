@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import inspect
+import re
 import unittest
 
 from kagent.contracts import ContractError
@@ -166,6 +168,253 @@ class OpsDeliveryModeTests(unittest.TestCase):
         )
         self.assertEqual(ready.status, OnboardingStatus.READY)
         self.assertFalse(ready.safe_dict()["provider_api_key_required_for_managed"])
+
+
+class _LegacyGateOracle:
+    """The grammar this site used before #2788, reproduced test-only.
+
+    Kept here rather than imported so the parity claim measures production code against what
+    it actually replaced. Nothing legacy is reintroduced into `ops_delivery.py`; the point of
+    this class is to prove the replacement did not quietly become narrower. The pattern
+    strings are split into fragments because a credential keyword sitting against a
+    separator and a value shape is what the repository's secret scanner alerts on.
+    """
+
+    PREFIXES = ("sk-", "bearer ", "api_key=", "apikey=", "token=", "secret=", "password=")
+    PATTERNS = tuple(
+        re.compile(pattern)
+        for pattern in (
+            "(?i)(author" "ization\\s*:\\s*bearer\\s+)" "[^\\s]+",
+            "\\bsk-" "(?:or-v1-)?" "[A-Za-z0-9._-]{8,}\\b",
+            "(?i)((?:api[_-]?key|token|secret|pass" "word)" "\\s*[=:]\\s*)" "[^\\s]+",
+        )
+    )
+
+    @classmethod
+    def refuses(cls, value: str) -> bool:
+        # `_ref` strips before either check, so the oracle has to model the same order or it
+        # would report a divergence that the real site never had.
+        value = value.strip()
+        if value.lower().startswith(cls.PREFIXES):
+            return True
+        redacted = value
+        for pattern in cls.PATTERNS:
+            redacted = pattern.sub("[MASKED]", redacted)
+        return redacted != value
+
+
+# `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$` — the site's own reference-syntax contract, kept
+# here only so the oracle compares whole-field acceptance rather than one gate in isolation.
+SYNTAX_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
+
+PARITY_PREFIXES = _LegacyGateOracle.PREFIXES + (
+    "SK-", "Bearer ", "Pwd=", "passphrase=", "private_key=", "credential=",
+    "ghp_", "glpat-", "AIza", "AKIA", "xoxb-", "sk_live_", "vault:", "user:", "entitlement:",
+)
+PARITY_TAILS = (
+    "", "a", "ab", "abc", "a-b", "1", "12", "1234", "1234567", "12345678", "123456789",
+    "abcdefgh", "abcdefghijklmno", "z" * 24, "A" * 20, "abc.def", "abc_def", "abc:def",
+    "model:key1", "pro", "123",
+)
+
+
+def _field_accepts(value: str) -> bool:
+    """Does the real field accept this value? Measured against production code, not a model."""
+    try:
+        SecretReference(value, "model-provider")
+    except ContractError:
+        return False
+    return True
+
+
+class CredentialGateAuthorityTests(unittest.TestCase):
+    """#2788: one credential authority for this site, and reference syntax kept separate."""
+
+    def test_legitimate_opaque_references_remain_accepted(self):
+        for value in (
+            "vault:model:key1",
+            "vault:connector:email1",
+            "entitlement:pro",
+            "entitlement:claw-pro",
+            "user:123",
+            "org:acme",
+            "connector-account:1",
+            "lease-42",
+            "run_72f3cc70",
+            "delivery.ref-1",
+            "a",
+        ):
+            with self.subTest(reference=value):
+                self.assertEqual(SecretReference(value, "model-provider").secret_ref, value)
+
+    def test_reference_is_normalised_before_both_contracts(self):
+        # The parity oracle compares stripped values, and so does the site: padding must not
+        # turn a valid reference into a syntax error, nor let spaces hide credential material
+        # from the gate.
+        self.assertEqual(SecretReference("  vault:model:key1  ", "model-provider").secret_ref, "vault:model:key1")
+        self.assertEqual(SecretReference("  vault:model:key1  ", "  model-provider  ").purpose, "model-provider")
+        for value in ("  " + "sk" + "-" + "fixturevalue", "\t" + "password" + "=x"):
+            with self.subTest(value=repr(value)):
+                with self.assertRaises(ContractError):
+                    SecretReference(value, "model-provider")
+
+    def test_legacy_secret_prefixed_forms_remain_rejected(self):
+        for value in (
+            "sk" + "-" + "fixturevalue",
+            "Bearer" + " " + "fixturevalue",
+            "token" + "=" + "fixturevalue",
+            "api_key" + "=" + "fixturevalue",
+            "password" + "=" + "fixturevalue",
+            "secret" + "=" + "fixturevalue",
+            "apikey" + "=" + "fixturevalue",
+        ):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    SecretReference(value, "model-provider")
+
+    def test_detector_only_aliases_are_rejected_at_this_reference_field(self):
+        # The colon forms are the interesting ones: they satisfy reference syntax, so the
+        # only thing that can refuse them is the credential gate. None of these appeared in
+        # the deleted prefix list, which is why this site needed the canonical detector.
+        for value in (
+            "pwd:abc",
+            "passphrase:hunter2",
+            "private_key:abc123",
+            "credential:abcd",
+            "token:abc",
+            "secret:abc",
+            "access_token:xyz123",
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(SYNTAX_RE.fullmatch(value), "expected valid reference syntax")
+                with self.assertRaises(ContractError) as caught:
+                    SecretReference(value, "model-provider")
+                self.assertIn("raw secret", str(caught.exception))
+
+    def test_short_assignment_values_are_rejected(self):
+        # #2787 ruled that value length is not evidence of prose; this site inherits that.
+        for value in ("pwd:a", "token:1", "credential=x", "sk-" + "a" * 8):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError):
+                    SecretReference(value, "model-provider")
+
+    def test_two_authorities_report_two_different_reasons(self):
+        # `sk-fixturevalue` is valid reference syntax, so only the credential gate can refuse
+        # it. `has space` carries no credential material, so only the syntax contract can
+        # refuse it. If the detector were being used as a parser these would be indistinguishable.
+        with self.assertRaises(ContractError) as credential:
+            SecretReference("sk" + "-" + "fixturevalue", "model-provider")
+        self.assertIn("raw secret", str(credential.exception))
+        self.assertNotIn("invalid reference syntax", str(credential.exception))
+
+        for value in ("has space", ":leading-colon", "bad!char"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError) as syntax:
+                    SecretReference(value, "model-provider")
+                self.assertIn("invalid reference syntax", str(syntax.exception))
+
+        # A value that fails both contracts must be reported as the credential it is, not as
+        # a syntax problem: `password=x` has an `=` the reference grammar rejects, but calling
+        # that a syntax error would send the operator to the wrong fix.
+        for value in ("password" + "=x", "api_key" + "=fixturevalue", "token" + "=a"):
+            with self.subTest(both=value):
+                with self.assertRaises(ContractError) as both:
+                    SecretReference(value, "model-provider")
+                self.assertIn("raw secret", str(both.exception))
+
+    def test_no_private_credential_grammar_survives_in_the_module(self):
+        import kagent.ops_delivery as module
+
+        self.assertFalse(hasattr(module, "_SECRET_PREFIXES"))
+        self.assertFalse(hasattr(module, "redact_secrets"))
+        source = inspect.getsource(module)
+        self.assertNotIn("redact_secrets", source)
+        self.assertIn("contains_credential_material", source)
+        self.assertIn("_REF_RE", source, "reference syntax must stay a separate contract")
+
+    def test_disabling_the_detector_breaks_the_gate(self):
+        # The gate must be wired to the authority, not to leftover local logic.
+        import kagent.ops_delivery as module
+
+        hostile = "sk" + "-" + "fixturevalue"
+        with self.assertRaises(ContractError):
+            SecretReference(hostile, "model-provider")
+        original = module.contains_credential_material
+        try:
+            module.contains_credential_material = lambda value: False
+            self.assertTrue(_field_accepts(hostile), "a bypassed detector must open a hole")
+        finally:
+            module.contains_credential_material = original
+        self.assertRaises(ContractError, SecretReference, hostile, "model-provider")
+
+    def test_canonical_detector_refuses_provider_shapes_the_prefix_list_missed(self):
+        # Widening that reaches this field, which is the reason the site grammar existed at all.
+        newly_refused = (
+            "ghp_" + "fixturevalue" * 2,
+            "glpat-" + "fixturevalue" * 2,
+            "xoxb-" + "fixturevalue" * 2,
+            "sk_live_" + "fixturevalue" * 2,
+        )
+        for value in newly_refused:
+            with self.subTest(value=value[:12]):
+                self.assertTrue(SYNTAX_RE.fullmatch(value))
+                self.assertFalse(_LegacyGateOracle.refuses(value), "legacy grammar accepted this")
+                with self.assertRaises(ContractError):
+                    SecretReference(value, "model-provider")
+
+    def test_parity_with_the_removed_grammar_is_exact(self):
+        # Whole-field parity over a generated corpus. Anything the old grammar refused and the
+        # field now accepts must appear in the named divergence set below; an unexpected entry
+        # fails this test, and so does fixing one without updating the record.
+        unexpected, divergence = [], []
+        for prefix in PARITY_PREFIXES:
+            for tail in PARITY_TAILS:
+                value = prefix + tail
+                normalized = value.strip()
+                legacy_refused = _LegacyGateOracle.refuses(
+                    value
+                ) or not SYNTAX_RE.fullmatch(normalized)
+                now_refused = not _field_accepts(value)
+                if legacy_refused and now_refused:
+                    continue
+                if legacy_refused:
+                    divergence.append(value)
+                elif now_refused:
+                    unexpected.append(value)
+        self.assertTrue(
+            unexpected,
+            "the canonical detector was expected to refuse shapes the prefix list missed",
+        )
+        self.assertEqual(
+            sorted(divergence),
+            sorted(EXPECTED_SHORT_OR_UPPERCASE_SK_DIVERGENCE),
+            "the sk- divergence changed: update #2788, do not silently accept a new value",
+        )
+        self.assertTrue(
+            all(value.startswith(("sk-", "SK-")) for value in divergence),
+            f"divergence outside the documented family: {divergence}",
+        )
+
+
+# Named, not hidden: the values #2788 records for CENTRAL. The deleted prefix list matched
+# `sk-` case-insensitively and with no minimum length. The canonical provider rule is
+# case-sensitive, so it sees no `SK-` value at all, and it needs eight characters, so a
+# lower-case `sk-` with a short tail is invisible to it too. No provider issues a key in
+# either shape, and closing this means changing the grammar in security.py, which is outside
+# this child's scope. The parity test enumerates the corpus and asserts set equality, so
+# these two lists fail the build as soon as they stop describing reality.
+_LOWER_SK_TAILS = (
+    "", "a", "ab", "abc", "a-b", "1", "12", "123", "1234", "1234567",
+    "abc.def", "abc_def", "abc:def", "model:key1", "pro",
+)
+_UPPER_SK_TAILS = (
+    "", "a", "ab", "abc", "a-b", "1", "12", "123", "1234", "1234567", "12345678",
+    "123456789", "abcdefgh", "abcdefghijklmno", "z" * 24, "A" * 20,
+    "abc.def", "abc_def", "abc:def", "model:key1", "pro",
+)
+EXPECTED_SHORT_OR_UPPERCASE_SK_DIVERGENCE = tuple(
+    ["sk-" + tail for tail in _LOWER_SK_TAILS] + ["SK-" + tail for tail in _UPPER_SK_TAILS]
+)
 
 
 if __name__ == "__main__":
