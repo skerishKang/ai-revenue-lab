@@ -90,30 +90,44 @@ async def sample_at_page_clock(
     started_ms: float,
     target_ms: float,
     read_expr: str,
+    evidence_log: list[dict[str, Any]] | None = None,
+    label: str = "",
 ) -> dict[str, Any]:
     """Read the requested product state at exactly ``target_ms`` of page time.
 
     The wait and the read happen inside a single in-page evaluation, so host
     scheduling before or during the sleep cannot make the boundary read land
-    tens or hundreds of milliseconds late.  Only ``state`` is returned; the
-    measured sampling instant guards the caller's window against a runner
-    that overshot the requested window, which is retryable.
+    tens or hundreds of milliseconds late.  The returned envelope contains
+    the product ``state`` plus ``sampled_ms``, ``frames``, and ``fps`` so a
+    later product assertion can still produce durable timing evidence.
     """
     packed = await page.evaluate(_SAMPLE_JS, [float(started_ms), float(target_ms), read_expr])
     sampled_ms = float(packed["sampledMs"])
+    state = dict(packed["state"])
+    evidence = {
+        "label": label,
+        "outcome": "SAMPLE",
+        "requested_ms": target_ms,
+        "sampled_ms": round(sampled_ms, 3),
+        "frames": int(packed["frames"]),
+        "fps": round(float(packed["fps"]), 1),
+        "state": state,
+    }
     if sampled_ms > target_ms + MAX_SAMPLE_SLACK_MS:
-        evidence = {
-            "requested_ms": target_ms,
-            "sampled_ms": round(sampled_ms),
-            "frames": packed["frames"],
-            "fps": round(float(packed["fps"]), 1),
-        }
+        overshoot_evidence = {key: value for key, value in evidence.items() if key != "outcome"}
         raise TimingOvershoot(
             f"timing sample overshot its window: requested {target_ms:.0f}ms, "
             f"sampled at {sampled_ms:.0f}ms",
-            evidence,
+            overshoot_evidence,
         )
-    return dict(packed["state"])
+    if evidence_log is not None:
+        evidence_log.append(evidence)
+    return {
+        "state": state,
+        "sampled_ms": sampled_ms,
+        "frames": int(packed["frames"]),
+        "fps": float(packed["fps"]),
+    }
 
 
 async def wait_state_settled(
@@ -124,6 +138,8 @@ async def wait_state_settled(
     timeout_ms: float = 6_000,
     read_expr: str | None = None,
     fallback_ms: float = 16.0,
+    evidence_log: list[dict[str, Any]] | None = None,
+    label: str = "",
 ) -> dict[str, Any]:
     """Wait for a product state inside the page at frame granularity.
 
@@ -146,16 +162,37 @@ async def wait_state_settled(
             f"in-page timing wait did not return within {timeout_ms:.0f}ms (host round-trip stalled)",
             {"requested_timeout_ms": timeout_ms, "round_trip_stalled": True},
         ) from exc
-    return {
+    result = {
         "done": bool(packed["done"]),
         "elapsed_ms": float(packed["elapsedMs"]),
         "frames": int(packed["frames"]),
         "fps": float(packed["fps"]),
         "state": packed["state"],
     }
+    if evidence_log is not None:
+        evidence_log.append(
+            {
+                "label": label,
+                "outcome": "SETTLE_SAMPLE",
+                "sampled_ms": round(result["elapsed_ms"], 3),
+                "frames": result["frames"],
+                "fps": round(result["fps"], 3),
+                "complete": result["done"],
+                "state": result["state"],
+            }
+        )
+    return result
 
 
-def check_settle_window(message: str, result: dict[str, Any], *, lo_ms: float, hi_ms: float) -> None:
+def check_settle_window(
+    message: str,
+    result: dict[str, Any],
+    *,
+    lo_ms: float,
+    hi_ms: float,
+    evidence_log: list[dict[str, Any]] | None = None,
+    label: str = "",
+) -> None:
     """Apply an unchanged [lo, hi] settle window to a page-clock measurement.
 
     Under-window or never-complete results are a genuine product regression
@@ -169,12 +206,17 @@ def check_settle_window(message: str, result: dict[str, Any], *, lo_ms: float, h
     if done and lo_ms <= elapsed_ms <= hi_ms:
         return
     evidence = {
-        "sampled_ms": round(elapsed_ms),
+        "label": label,
+        "outcome": "ASSERTION_FAILURE",
+        "sampled_ms": round(elapsed_ms, 3),
         "window_ms": [lo_ms, hi_ms],
         "complete": done,
         "settle_fps": round(fps, 1),
+        "state": result.get("state"),
     }
     detail = f"{message} [timing-sample: sampled_ms={elapsed_ms:.0f}, window={lo_ms:.0f}-{hi_ms:.0f}ms, complete={done}, fps={fps:.1f}]"
+    if evidence_log is not None:
+        evidence_log.append(evidence)
     if (not done or elapsed_ms > hi_ms) and fps < STARVED_FLOOR_FPS:
         raise TimingOvershoot(detail, evidence)
     raise AssertionError(detail)

@@ -459,9 +459,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # An overshoot of the requested window itself is a runner artifact:
     # it retries the identical sample from a fresh cycle at identical
     # thresholds instead of relaxing anything.
-    early_shell = await sample_at_page_clock(
-        page, started_ms=peel_started, target_ms=260, read_expr=_GLASS_SHELL_EXPR
+    early_sample = await sample_at_page_clock(
+        page,
+        started_ms=peel_started,
+        target_ms=260,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-early-260ms",
     )
+    early_shell = early_sample["state"]
     if early_shell["pointerDriver"] < 0.80 or early_shell["progress"] < 0.68:
         raise AssertionError(f"Glass shell teardown is too fast at 260ms: {early_shell}")
     if early_shell["portalOpacity"] < 0.55:
@@ -477,12 +483,16 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
     # The mid sample resolves at ~900ms of page time inside the same
     # evaluation that reads the state, then the recorded elapsed keeps the
     # original [800, 1300] contract window for evidence.
-    mid_shell = await sample_at_page_clock(
-        page, started_ms=peel_started, target_ms=900, read_expr=_GLASS_SHELL_EXPR
+    mid_sample = await sample_at_page_clock(
+        page,
+        started_ms=peel_started,
+        target_ms=900,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-mid-900ms",
     )
-    mid_elapsed_ms = float(
-        await page.evaluate("started => performance.now() - started", peel_started)
-    )
+    mid_shell = mid_sample["state"]
+    mid_elapsed_ms = mid_sample["sampled_ms"]
     if not 800 <= mid_elapsed_ms <= 1_300:
         raise AssertionError(
             f"Glass mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
@@ -522,6 +532,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
           return pointer >= .80 && progress <= .05 && maxOpacity <= .05 && portalOpacity <= .05;
         }""",
         timeout_ms=5_000,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-peel-settle",
     )
     peel_elapsed_ms = peel_settle["elapsed_ms"]
     check_settle_window(
@@ -529,6 +541,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         peel_settle,
         lo_ms=1_800,
         hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-peel-settle",
     )
 
     home_after_pointer = await _glass_motion_snapshot(page)
@@ -564,6 +578,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
           return progress >= .95 && portalOpacity >= .80;
         }""",
         timeout_ms=5_000,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-recover-settle",
     )
     recover_elapsed_ms = recover_settle["elapsed_ms"]
     check_settle_window(
@@ -571,6 +587,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         recover_settle,
         lo_ms=1_600,
         hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-recover-settle",
     )
     recovered_shell = await _glass_shell_snapshot(page)
     if recovered_shell["portalOpacity"] < 0.80 or recovered_shell["visibleFragments"] != 0:
@@ -588,9 +606,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         portrait_rect["left"] + portrait_rect["width"] * 0.18,
         portrait_y,
     )
-    early_evidence_shell = await sample_at_page_clock(
-        page, started_ms=early_cycle_started, target_ms=260, read_expr=_GLASS_SHELL_EXPR
+    early_evidence_sample = await sample_at_page_clock(
+        page,
+        started_ms=early_cycle_started,
+        target_ms=260,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-evidence-early-260ms",
     )
+    early_evidence_shell = early_evidence_sample["state"]
     if early_evidence_shell["progress"] < 0.68 or early_evidence_shell["portalOpacity"] < 0.55:
         raise AssertionError(f"Glass early evidence cycle is not shell-visible: {early_evidence_shell}")
     await page.screenshot(path=str(OUT_DIR / early_name), full_page=False)
@@ -611,9 +635,15 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         portrait_rect["left"] + portrait_rect["width"] * 0.82,
         portrait_y,
     )
-    mid_evidence_shell = await sample_at_page_clock(
-        page, started_ms=evidence_started, target_ms=900, read_expr=_GLASS_SHELL_EXPR
+    mid_evidence_sample = await sample_at_page_clock(
+        page,
+        started_ms=evidence_started,
+        target_ms=900,
+        read_expr=_GLASS_SHELL_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"glass-{variant}-evidence-mid-900ms",
     )
+    mid_evidence_shell = mid_evidence_sample["state"]
     if (
         not 0.15 <= mid_evidence_shell["progress"] <= 0.65
         or mid_evidence_shell["portalOpacity"] <= 0.18
@@ -782,6 +812,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
             }""",
             timeout_ms=1_900,
             read_expr=_GLASS_MOTION_EXPR,
+            evidence_log=TIMING_EVIDENCE,
+            label=f"glass-{variant}-calm-settle",
         )
         settled = calm_wait["state"]
         if not calm_wait["done"]:
@@ -790,6 +822,8 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 calm_wait,
                 lo_ms=0,
                 hi_ms=1_900,
+                evidence_log=TIMING_EVIDENCE,
+                label=f"glass-{variant}-calm-settle",
             )
         settled_shell = await _glass_shell_snapshot(page)
         reading_samples.append({"turn": turn, "phase": "settled", "shell": settled_shell, **settled})

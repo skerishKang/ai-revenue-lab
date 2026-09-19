@@ -75,10 +75,15 @@ async def _shell_state(page: Page) -> dict[str, Any]:
     return await page.evaluate(_SHELL_STATE_EXPR)
 
 
-async def _sample_shell_at(page: Page, started_ms: float, target_ms: float) -> dict[str, Any]:
+async def _sample_shell_at(page: Page, started_ms: float, target_ms: float, label: str) -> dict[str, Any]:
     """Boundary shell QA sample resolved on the page clock, not host sleeps."""
     return await sample_at_page_clock(
-        page, started_ms=started_ms, target_ms=target_ms, read_expr=_SHELL_STATE_EXPR
+        page,
+        started_ms=started_ms,
+        target_ms=target_ms,
+        read_expr=_SHELL_STATE_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=label,
     )
 
 
@@ -234,7 +239,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # hundreds of milliseconds after the transition advanced.  An overshoot
     # of the requested window itself is treated as an invalid sample and
     # retried with identical thresholds (with_timing_retries in main).
-    left_transition = await _sample_shell_at(page, peel_started, 260)
+    left_sample = await _sample_shell_at(page, peel_started, 260, f"{name}-left-260ms")
+    left_transition = left_sample["state"]
     if left_transition["ptr"] < 0.99 or left_transition["target"] > 0.01:
         raise AssertionError(f"{name}: left-edge hover did not latch binary peel target: {left_transition}")
     if left_transition["progress"] < 0.68:
@@ -254,10 +260,9 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # Same page-clock anchoring for the ~900ms mid sample: the requested
     # sample point is honored inside the page, while the recorded
     # mid_elapsed_ms keeps the original [800, 1300] contract window.
-    right_transition = await _sample_shell_at(page, peel_started, 900)
-    mid_elapsed_ms = float(
-        await page.evaluate("started => performance.now() - started", peel_started)
-    )
+    mid_sample = await _sample_shell_at(page, peel_started, 900, f"{name}-mid-900ms")
+    right_transition = mid_sample["state"]
+    mid_elapsed_ms = mid_sample["sampled_ms"]
     if not 800 <= mid_elapsed_ms <= 1_300:
         raise AssertionError(
             f"{name}: mid-transition capture missed the ~900ms window: {mid_elapsed_ms:.0f}ms"
@@ -292,6 +297,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         done_expr="() => window.__padiemGlassShell && window.__padiemGlassShell.progress() <= .05",
         timeout_ms=15_000,
         read_expr=_SHELL_STATE_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-peel-settle",
     )
     peel_elapsed_ms = peel_settle["elapsed_ms"]
     check_settle_window(
@@ -299,6 +306,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         peel_settle,
         lo_ms=1_800,
         hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-peel-settle",
     )
     pointer_only = peel_settle["state"]
     if pointer_only["ptr"] <= 0.8:
@@ -328,6 +337,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         done_expr=_SHELL_COMPLETED_EXPR,
         timeout_ms=12_000,
         read_expr=_SHELL_STATE_EXPR,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-recover-settle",
     )
     recover_elapsed_ms = recover_settle["elapsed_ms"]
     check_settle_window(
@@ -335,6 +346,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
         recover_settle,
         lo_ms=1_600,
         hi_ms=3_600,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-recover-settle",
     )
     recovered = recover_settle["state"]
     if recovered["portalOpacity"] < 0.80 or recovered["fragVisible"] > 0:
@@ -345,7 +358,8 @@ async def _check_variant(page: Page, variant: str) -> dict[str, Any]:
     # cursor is, but must never scrub, reverse, or retarget the timed peel.
     rev_right_started = await page.evaluate("performance.now()")
     await page.mouse.move(shell_rect["left"] + shell_rect["width"] * 0.82, y)
-    reverse_right = await _sample_shell_at(page, rev_right_started, 260)
+    reverse_right_sample = await _sample_shell_at(page, rev_right_started, 260, f"{name}-reverse-right-260ms")
+    reverse_right = reverse_right_sample["state"]
     if reverse_right["ptr"] < 0.99 or reverse_right["target"] > 0.01:
         raise AssertionError(f"{name}: right-edge reverse sweep did not latch binary peel target: {reverse_right}")
     if reverse_right["progress"] < 0.68:

@@ -183,6 +183,8 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         pause_wait,
         lo_ms=0,
         hi_ms=200,
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-scroll-pause",
     )
     # Record the paused viewport only once any in-flight wheel scrolling has
     # settled, so the later ±8px comparison measures product behavior and not
