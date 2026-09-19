@@ -134,6 +134,17 @@ jobs:
           test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
           echo 'LIVE_EXACT_MAIN=PASS'
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install reviewed seed script runtime dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet -e packages/padiem-ai-core
+          echo 'TELEGRAM_SEED_SCRIPT_DEPS=INSTALLED'
+
       - name: Resolve actually served Engine version
         shell: bash
         run: |
