@@ -107,6 +107,17 @@ def _parse_json(raw: bytes) -> Any:
         return None
 
 
+def _safe_projection_fact(value: Any) -> bool:
+    """Engine projection fact survived redaction.
+
+    The public tool-output projection replaces values under secret-shaped keys
+    (token/credential/...) with the canonical ``[redacted]`` marker; only a
+    non-false value of any other kind is meaningful for the canary.
+    """
+
+    return value is False or value == "[redacted]"
+
+
 def _bot_identity_shape(bot: Mapping[str, Any]) -> bool:
     """Bot identity shape is valid; values are never returned or printed."""
     bot_id = bot.get("bot_id")
@@ -122,7 +133,7 @@ def _bot_identity_shape(bot: Mapping[str, Any]) -> bool:
         return False
     if bot.get("personal_account") is not False:
         return False
-    if bot.get("bot_token_present") is not False:
+    if not _safe_projection_fact(bot.get("bot_token_present")):
         return False
     return True
 
@@ -157,7 +168,7 @@ def classify_success(payload: Any) -> tuple[bool, bool]:
 
     if output.get("telegram_content_trusted") is not False:
         raise ValueError("unexpected Telegram trust projection")
-    if output.get("bot_token_present") is not False:
+    if not _safe_projection_fact(output.get("bot_token_present")):
         raise ValueError("unexpected bot token projection")
     if output.get("mints_approval_authority") is not False:
         raise ValueError("unexpected approval authority projection")
