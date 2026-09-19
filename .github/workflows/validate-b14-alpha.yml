@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - 'apps/korean-ai-platform/**'
+      # B14 is the final execution authority for product-tier routes: a tier declared in the
+      # shared contract but absent from (or retired in) the B14 catalog is a live routing
+      # failure, and only this suite catches it. Named exactly, not the whole control-plane
+      # package, so the heaviest B14 gate still does not run on unrelated edits.
+      - 'packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py'
       - '.github/workflows/validate-b14-alpha.yml'
   workflow_dispatch:
 
