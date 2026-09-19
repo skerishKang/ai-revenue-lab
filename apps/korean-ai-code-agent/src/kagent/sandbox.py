@@ -33,6 +33,38 @@ class SandboxLeasePort(Protocol):
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease: ...
 
 
+class SandboxWorkloadCancellationPort(Protocol):
+    """Explicit cancellation capability, deliberately kept off ``SandboxLeasePort``.
+
+    Cancellation is a provider capability, not a lease necessity. Holding it in a
+    separate protocol means a provider that cannot cancel still satisfies
+    ``SandboxLeasePort`` and simply does not satisfy this one, so a caller has to
+    ask for the capability instead of assuming it, and Cloud M1 conformance can
+    fail closed on its absence (#1405).
+
+    ``cancel`` ends the lease. It is not proof that a guest process tree died:
+    ``process_tree_killed`` still has no producer, and real teardown evidence
+    remains gated behind provider selection.
+    """
+
+    def cancel(self, lease_id: str, *, run_id: str) -> SandboxLease: ...
+
+
+def supports_workload_cancellation(provider: object) -> bool:
+    """Whether ``provider`` exposes a cancel operation, as opposed to a declared boolean.
+
+    Presence of the callable is not proof the operation works — conformance has to
+    exercise it (#2790). This only answers "is there anything to call", so a caller
+    never reaches for ``cancel`` on a provider that has none.
+
+    Duck-typed because ``SandboxLeasePort`` and this protocol are both structural:
+    an ``isinstance`` check against a bare ``Protocol`` raises ``TypeError``, and
+    copying that failure into a boolean would silently report "no capability" for
+    every provider, including one that supports it.
+    """
+    return callable(getattr(provider, "cancel", None))
+
+
 class UnconfiguredSandboxProvider:
     """Production-safe default until a real sandbox provider is explicitly wired."""
 
@@ -51,6 +83,14 @@ class UnconfiguredSandboxProvider:
 
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease:
         raise SandboxUnavailableError("sandbox provider is not configured")
+
+    def cancel(self, lease_id: str, *, run_id: str) -> SandboxLease:
+        # An unconfigured provider reports no cancellation at all: it has no
+        # workload to stop, and returning anything here would read as evidence
+        # that a cancel succeeded.
+        raise SandboxUnavailableError(
+            "sandbox provider is not configured; no workload cancellation was performed"
+        )
 
 
 class DeterministicFakeSandboxProvider:
@@ -131,6 +171,23 @@ class DeterministicFakeSandboxProvider:
         return renewed
 
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease:
+        return self._terminate(lease_id, run_id)
+
+    def cancel(self, lease_id: str, *, run_id: str) -> SandboxLease:
+        """End the lease for ``run_id`` as a cancellation.
+
+        Shares one termination rule with ``release`` on purpose: both drive
+        ``RESERVED -> RELEASED`` and a terminal lease refuses every later
+        operation. The two verbs stay separate because the *reason* differs; they
+        must not diverge in what "ended" means, and no distinct ``CANCELLED``
+        state is invented to make cancellation look stronger than it is.
+
+        Cancelling releases the run's active slot, so the run may allocate again
+        under ``allocate``'s one-active-lease rule.
+        """
+        return self._terminate(lease_id, run_id)
+
+    def _terminate(self, lease_id: str, run_id: str) -> SandboxLease:
         lease = self.get(lease_id)
         if lease.run_id != run_id:
             raise SandboxLeaseError("lease belongs to a different run")
