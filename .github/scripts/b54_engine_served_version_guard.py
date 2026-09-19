@@ -313,6 +313,29 @@ def _run_verify(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_validate_version_id(args: argparse.Namespace) -> int:
+    """Prove a caller-supplied version id is safe to name as a rollback target.
+
+    This is the canonical charset contract from the shared resolver, reused
+    rather than re-derived (#2748): the same rule that refuses to resolve an
+    unsafe served id must refuse to hand one to Wrangler.
+    """
+    if not is_safe_version_id(args.version_id):
+        # The rejected value is deliberately NOT echoed. An unsafe id is exactly
+        # the untrusted string this rule exists to keep out of CI logs and
+        # GITHUB_ENV, so printing it would defeat the check.
+        raise ServedVersionGuardError(
+            "version id is missing, empty, or carries an unsafe charset"
+        )
+    print("B54_ENGINE_VERSION_ID_VALIDATION=PASS")
+    print("VERSION_ID_SAFE_CHARSET=YES")
+    print("UNSAFE_VERSION_ID_ECHOED=NO")
+    print("BINDING_NAME_AND_TYPE_ONLY=YES")
+    print("RAW_SECRET_OUTPUT=0")
+    print("PRODUCTION_MUTATION=0")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="b54_engine_served_version_guard.py")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -335,6 +358,13 @@ def main(argv: list[str] | None = None) -> int:
         help="require the reviewed D1 and Google OAuth service bindings",
     )
     verify.set_defaults(handler=_run_verify)
+
+    validate = sub.add_parser(
+        "validate-version-id",
+        help="prove a version id is safe to name as an explicit rollback target",
+    )
+    validate.add_argument("--version-id", required=True, help="candidate version id")
+    validate.set_defaults(handler=_run_validate_version_id)
 
     args = parser.parse_args(argv)
     try:
