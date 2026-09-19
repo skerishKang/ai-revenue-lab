@@ -1,0 +1,184 @@
+name: B54 Telegram Read Production Canary
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py'
+      - '.github/tests/test_b54_telegram_read_production_canary.py'
+      - '.github/workflows/b54-telegram-read-production-canary.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA authorized for this one-shot Telegram getMe READ canary'
+        required: true
+      expected_engine_version:
+        description: 'Exact Production Engine version that must still be actively served'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_TELEGRAM_READ_CANARY_ONCE to authorize exactly one Engine tool POST'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-telegram-read-production-canary
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source under review
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Dispatch exact-main preflight
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run bounded canary contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/tests/test_b54_telegram_read_production_canary.py
+
+      - name: Pin canonical getMe read-only semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'TELEGRAM_GET_ME_PATH = "/getMe"' apps/padiem-ai-engine/app/telegram_port_httpx.py
+          grep -Fq 'if not isinstance(arguments, Mapping) or arguments:' packages/padiem-ai-core/padiem_ai_core/telegram_capability.py
+          grep -Fq 'TOOL_ID = "tool:telegram:bot.get_bot_info@1"' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          grep -Fq '"arguments": {}' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          grep -Fq 'PROVIDER_READ_BUDGET_MAX = 1' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          grep -Fq 'RAW_BOT_ID_OUTPUT=0' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          grep -Fq 'RAW_BOT_USERNAME_OUTPUT=0' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          grep -Fq 'RAW_BOT_NAME_OUTPUT=0' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          grep -Fq 'TELEGRAM_SEND=0' apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py
+          echo 'TELEGRAM_PROVIDER_READ_BUDGET_CONTRACT=MAX_1'
+          echo 'TELEGRAM_CANARY_GETME_READ_ONLY_CONTRACT=PASS'
+
+  live-telegram-read:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_B54_TELEGRAM_READ_CANARY_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      PADIEM_ENGINE_TELEGRAM_CANARY_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      EXPECTED_ENGINE_VERSION: ${{ github.event.inputs.expected_engine_version }}
+    steps:
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Re-check exact current main before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'LIVE_EXACT_MAIN=PASS'
+
+      - name: Guard on the served Engine version before the read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test -n "${EXPECTED_ENGINE_VERSION}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/telegram-canary-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"
+          version_detail="${RUNNER_TEMP}/telegram-canary-engine-version.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}" --require-drive-runtime-bindings >/dev/null
+          echo "ENGINE_EXPECTED_VERSION_ACTIVE=PASS"
+          echo "ENGINE_EXPECTED_VERSION=${EXPECTED_ENGINE_VERSION}"
+          echo 'ENGINE_VERSION_ID_OUTPUT=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Fail closed if protected Engine credential is unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${PADIEM_ENGINE_TELEGRAM_CANARY_CREDENTIAL:-}"
+          echo 'ENGINE_CALLER_CREDENTIAL_PRESENT=YES'
+          echo 'PROVIDER_CREDENTIAL_OUTPUT=0'
+
+      - name: Execute exactly one bounded Telegram getMe READ through Engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/telegram-read-canary.log"
+          python apps/padiem-ai-engine/scripts/a15_telegram_read_production_canary.py | tee "${log}"
+          grep -qx 'TELEGRAM_READ_CANARY=PASS' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_HTTP=200' "${log}"
+          grep -qx 'ENGINE_TOOL_RESULT=PASS' "${log}"
+          grep -qx 'TELEGRAM_BOT_IDENTITY_PRESENT=YES' "${log}"
+          grep -qx 'TELEGRAM_BOT_IDENTITY_VALUE_OUTPUT=0' "${log}"
+          grep -qx 'TELEGRAM_GETME_BOUNDED=YES' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_POST_COUNT=1' "${log}"
+          grep -qx 'NETWORK_RETRY_COUNT=0' "${log}"
+          grep -qx 'TELEGRAM_PROVIDER_READ_BUDGET_MAX=1' "${log}"
+          grep -qx 'TELEGRAM_PROVIDER_READ_ACTUAL=UNOBSERVABLE_FROM_ENGINE_BOUNDARY' "${log}"
+          grep -qx 'RAW_BOT_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BOT_USERNAME_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BOT_NAME_OUTPUT=0' "${log}"
+          grep -qx 'RAW_CHAT_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BINDING_REF_OUTPUT=0' "${log}"
+          grep -qx 'RAW_ACTOR_REF_OUTPUT=0' "${log}"
+          grep -qx 'PROVIDER_CREDENTIAL_OUTPUT=0' "${log}"
+          grep -qx 'TELEGRAM_SEND=0' "${log}"
+          grep -qx 'TELEGRAM_EDIT=0' "${log}"
+          grep -qx 'TELEGRAM_CALLBACK_WRITE=0' "${log}"
+          grep -qx 'WEBHOOK_MUTATION=0' "${log}"
+          grep -qx 'TELEGRAM_GRANT_SEED=0' "${log}"
+          grep -qx 'D1_MUTATION=0' "${log}"
+          grep -qx 'ENGINE_DEPLOY=0' "${log}"
+          grep -qx 'SECRET_MUTATION=0' "${log}"
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'WORKFLOW_INTERNAL_RERUN=0'
+          echo 'ENGINE_TOOL_EXECUTE_POST_MAX=1'
+          echo 'CANARY_NETWORK_RETRY=0'
+          echo 'TELEGRAM_PROVIDER_READ_BUDGET_MAX=1'
+          echo 'TELEGRAM_SEND=0'
+          echo 'TELEGRAM_EDIT=0'
+          echo 'TELEGRAM_CALLBACK_WRITE=0'
+          echo 'WEBHOOK_MUTATION=0'
+          echo 'TELEGRAM_GRANT_SEED=0'
+          echo 'D1_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'SECRET_MUTATION=0'
