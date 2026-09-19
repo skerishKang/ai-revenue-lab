@@ -332,17 +332,24 @@ async def test_tool_runtime_tracks_manifest_state() -> None:
     while the Production composition injected ``tool_binding_resolver=None``,
     so this probe returned 503 ``tool_runtime_unavailable`` — exactly the
     false-AVAILABLE defect the CTO audit found (F1). After the WO-1 revert the
-    capability is DEFERRED, so the composition MUST fail closed; when a future
-    activation PR flips the manifest back to AVAILABLE it must also wire a
-    real resolver, and the assertion below flips with the manifest.
+    capability was DEFERRED and the composition had to fail closed.
+
+    E9 A3 re-activation (#2738): the resolver is composed on both paths and the
+    accepted Production READ canaries prove live execution, so the manifest is
+    AVAILABLE again. Like the web-research probe below, this probe now uses the
+    env shape that matches each state:
+
+    - AVAILABLE: the connector authorities exist (CP Google OAuth Service
+      Binding + ENGINE_CONNECTOR_GRANTS binding), so the seam must resolve the
+      deployment-owned binding instead of failing closed. The
+      unregistered-tool probe answers bounded 403 ``tool_not_registered`` with
+      zero provider calls — the same observable the Drive probes rely on.
+    - DEFERRED: the unbound env must fail closed.
     """
     from app.capability_manifest import CapabilityState, current_capability_manifest
     from app.tool_projection import TOOL_EXECUTE_PATH
 
     compose = _load_composition()
-    services = await compose(_StubEnv())
-    assert services.tool_execution is not None
-    response = await _call(services.tool_execution, path=TOOL_EXECUTE_PATH, payload=_tool_payload())
 
     manifest_state = None
     for declaration in current_capability_manifest().capabilities:
@@ -352,11 +359,30 @@ async def test_tool_runtime_tracks_manifest_state() -> None:
     assert manifest_state is not None
 
     if manifest_state is CapabilityState.AVAILABLE:
+        services = await compose(
+            _StubEnv(
+                CONTROL_PLANE_GOOGLE_OAUTH=object(),
+                ENGINE_CONNECTOR_GRANTS=_DriveGrantBinding(),
+            )
+        )
+        response = await _call(
+            services.tool_execution,
+            path=TOOL_EXECUTE_PATH,
+            payload=_drive_tool_payload(),
+        )
         assert not _is_fail_closed(response), (
             "tool_runtime is manifest-AVAILABLE but the Production composition "
             f"fails closed: {response.status_code} {response.body}"
         )
+        assert response.status_code == 403
+        assert response.body["error"]["code"] == "tool_not_registered"
     else:
+        services = await compose(_StubEnv())
+        response = await _call(
+            services.tool_execution,
+            path=TOOL_EXECUTE_PATH,
+            payload=_tool_payload(),
+        )
         assert _is_fail_closed(response), (
             "tool_runtime is manifest-DEFERRED but the Production composition "
             f"did not fail closed: {response.status_code} {response.body}"

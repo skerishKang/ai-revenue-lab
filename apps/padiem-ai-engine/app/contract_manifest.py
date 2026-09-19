@@ -192,11 +192,22 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineFeatureContract("web_search_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("web_fetch_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("deep_research_projection", EngineFeatureState.DEFERRED),
-            # E9 A3 (#1746): reverted to DEFERRED per CTO audit 2026-09-06 —
-            # the Production composition injects no tool binding resolver, so
-            # the earlier AVAILABLE claim was not production truth. Re-activation
-            # requires the WO-2 composition conformance gate + real resolver.
-            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.DEFERRED),
+            # E9 A3 (#1746): re-activated (LOCAL 3, #2738) on current main. The
+            # 2026-09-06 CTO audit correctly reverted the earlier AVAILABLE claim
+            # because the Production composition then injected no tool binding
+            # resolver. That source gap is closed: both Engine composition paths
+            # compose the real `_tool_binding_resolver_for_env` resolver and the
+            # WO-2 production composition conformance gate pins the seam.
+            # Accepted Production evidence (read-only re-use, no new dispatch):
+            # Drive #2644 run 35389368273, Gmail #2657 run 35403110197 and Telegram
+            # #2712 run 35420061464 each answered ENGINE_TOOL_EXECUTE_HTTP=200 on
+            # /internal/v1/tools/execute with ENGINE_TOOL_EXECUTE_POST_COUNT=1.
+            # Those canary SHAs are ancestors of this revision and the resolver
+            # lines are unchanged since, so the evidence still describes it.
+            # Slack/Calendar READ ports are composed without a live canary and
+            # stay bounded/fail-closed per grant.
+            # TOOL_RUNTIME_ACTIVATION_EVIDENCE=drive-35389368273,gmail-35403110197,telegram-35420061464
+            EngineFeatureContract("tool_runtime_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
