@@ -647,6 +647,7 @@
     shell.dataset.state = "home";
     // Leaving for home drops any pending Claw execute recovery timer/state.
     clearClawRecovery({ syncControls: true });
+    clearClawWait();
     setNavActive();
     input.value = "";
     renderProjectState();
@@ -818,6 +819,7 @@
       }
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
+      clearClawWait();
     }
     const sessionState = !ready
       ? "unavailable"
@@ -1440,12 +1442,18 @@
   const clawResultSuccessNote = document.getElementById("clawResultSuccessNote");
   const clawResultHint = document.getElementById("clawResultHint");
   const clawExecuteHint = document.getElementById("clawExecuteHint");
+  const clawWait = document.getElementById("clawWait");
 
   let clawInFlight = false;
   let clawLastAction = clawAction?.value || "quote";
   // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
   let clawRetrySeconds = 0;
   let clawRetryTimer = null;
+  // In-flight elapsed wait state (#2763). Owned by the wait block below.
+  let clawWaitStartedAt = 0;
+  let clawWaitTimer = null;
+  let clawWaitRevealed = false;
+  let clawWaitAnnouncedStage = 0;
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -1454,6 +1462,9 @@
     "claw-status-execute-running": "Running... please wait a moment.",
     "claw-status-preview-success": "Preview is ready.",
     "claw-status-execute-success": "Done.",
+    "claw-wait-elapsed": "Elapsed {seconds}s",
+    "claw-wait-long": "Still running. The result will appear here when it is ready.",
+    "claw-wait-very-long": "This is taking longer than usual. The request is still running and nothing is sent twice.",
     "claw-error-preview": "Preview could not be loaded. Please try again shortly.",
     "claw-error-empty": "Paste your request before running.",
     "claw-error-too-large": "Request is too long. Please shorten it and try again.",
@@ -1696,6 +1707,94 @@
     clawRetryHint.hidden = false;
   }
 
+  // ── In-flight elapsed wait (#2763) ──────────────────────────────────────
+  //
+  // The execute POST is a single synchronous browser request: no server-side
+  // progress, phase, or completion-percentage source exists, and B54 owns no
+  // cancellation authority. So this surface shows only what the browser truly
+  // knows — how long the user has been waiting. It never polls the run-history
+  // route, never re-dispatches, never infers an Engine/P01 stage, and shows no
+  // percentage, phase list, or Cancel control.
+  //
+  // One 1000ms ticker per in-flight request, started only by explicit user
+  // dispatch. A tick re-renders copy from state; it issues no network call and
+  // cannot reach the execute entry point. The ticking value is a role="timer"
+  // region (implicitly aria-live off), readable on demand without announcing
+  // every second; only the two bounded long-wait states are announced, through
+  // the single canonical polite status region.
+  const CLAW_WAIT_TICK_MS = 1000;
+  const CLAW_WAIT_REVEAL_MS = 3000;
+  const CLAW_WAIT_LONG_SECONDS = 10;
+  const CLAW_WAIT_VERY_LONG_SECONDS = 30;
+
+  function clawWaitElapsedSeconds() {
+    if (!clawWaitStartedAt) return 0;
+    const elapsed = Date.now() - clawWaitStartedAt;
+    return elapsed > 0 ? Math.floor(elapsed / 1000) : 0;
+  }
+
+  function clawWaitStageFor(elapsedSeconds) {
+    if (elapsedSeconds >= CLAW_WAIT_VERY_LONG_SECONDS) return 2;
+    if (elapsedSeconds >= CLAW_WAIT_LONG_SECONDS) return 1;
+    return 0;
+  }
+
+  function clawWaitStageKey(stage) {
+    return stage >= 2 ? "claw-wait-very-long" : "claw-wait-long";
+  }
+
+  // Bounded reassurance copy: at most two announcements per request, and the
+  // copy carries no elapsed value so the live region is never re-announced once
+  // per second.
+  function applyClawWaitStageCopy() {
+    if (clawWaitAnnouncedStage < 1) return;
+    const key = clawWaitStageKey(clawWaitAnnouncedStage);
+    setClawStatus(clawT(key), "running", key);
+  }
+
+  // Presentation only. Returns true while it owns the status region, so a locale
+  // switch re-renders from state (elapsed value preserved) instead of resolving
+  // a stale key on its own.
+  function renderClawWait() {
+    if (!clawWaitStartedAt) return false;
+    const elapsed = clawWaitElapsedSeconds();
+    if (!clawWaitRevealed && elapsed * 1000 >= CLAW_WAIT_REVEAL_MS) clawWaitRevealed = true;
+    if (clawWait) {
+      clawWait.hidden = !clawWaitRevealed;
+      if (clawWaitRevealed) clawWait.textContent = clawT("claw-wait-elapsed", { seconds: elapsed });
+    }
+    const stage = clawWaitStageFor(elapsed);
+    if (stage > clawWaitAnnouncedStage) {
+      clawWaitAnnouncedStage = stage;
+      applyClawWaitStageCopy();
+    }
+    return clawWaitAnnouncedStage > 0;
+  }
+
+  function beginClawWait() {
+    clearClawWait();
+    clawWaitStartedAt = Date.now();
+    clawWaitTimer = setInterval(() => {
+      renderClawWait();
+    }, CLAW_WAIT_TICK_MS);
+  }
+
+  // Idempotent teardown: it only ever stops, never starts, so a completion that
+  // arrives after a clear can never resurrect a wait.
+  function clearClawWait() {
+    if (clawWaitTimer) {
+      clearInterval(clawWaitTimer);
+      clawWaitTimer = null;
+    }
+    clawWaitStartedAt = 0;
+    clawWaitRevealed = false;
+    clawWaitAnnouncedStage = 0;
+    if (clawWait) {
+      clawWait.hidden = true;
+      clawWait.textContent = "";
+    }
+  }
+
   function clearClawArtifact() {
     if (clawArtifactMeta) clawArtifactMeta.hidden = true;
     if (clawArtifactName) clawArtifactName.textContent = "";
@@ -1893,6 +1992,7 @@
     if (clawResultArea) clawResultArea.hidden = true;
     // Inbox navigation leaves the manual form: drop the pending recovery timer/state.
     clearClawRecovery({ syncControls: true });
+    clearClawWait();
     if (clawInboxTitle) {
       clawInboxTitle.dataset.localeKey = kind === "tasks" ? "claw-inbox-tasks-title" : "claw-inbox-alerts-title";
       clawInboxTitle.textContent = uiT(clawInboxTitle.dataset.localeKey);
@@ -2063,7 +2163,11 @@
   // Keep preview/execute hints in sync with locale switches (data-locale-key auto-syncs static text,
   // but status and dynamic card chrome need manual refresh when language toggles).
   window.addEventListener("padiem:localechange", () => {
-    if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
+    // Wait state owns the status region while a long-wait stage is announced:
+    // re-render its copy from state so the elapsed value is preserved rather
+    // than reset by a language switch.
+    if (clawWaitStartedAt && renderClawWait()) applyClawWaitStageCopy();
+    else if (clawStatus && !clawStatus.hidden && clawStatus.dataset.localeKey) {
       clawStatus.textContent = clawT(clawStatus.dataset.localeKey);
     }
     // Recovery copy carries runtime values, so it is re-rendered from state
@@ -2119,6 +2223,8 @@
     clearClawRecovery();
     renderClawRequestEcho(body);
     setClawButtonsBusy(true);
+    // Explicit user dispatch is the only thing that may start a wait timer.
+    beginClawWait();
     setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
     setClawAreaState("submitting");
     if (clawResultCard) clawResultCard.hidden = true;
@@ -2179,6 +2285,9 @@
       // The request may have reached the engine before the connection died.
       showClawAmbiguousRecoveryHint();
     } finally {
+      // The owning request always tears its wait timer down: success, known
+      // pre-dispatch denial, ambiguous failure, and auth loss all clear it.
+      clearClawWait();
       setClawButtonsBusy(false);
     }
   }
