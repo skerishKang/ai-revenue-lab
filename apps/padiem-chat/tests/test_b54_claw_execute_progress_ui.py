@@ -16,6 +16,12 @@ Guarded here:
 - success / pre-dispatch 429 / ambiguous 502 / network failure / auth loss /
   navigation all clear the wait, and a cleared wait never returns.
 
+The harness renders against the SHIPPED KO/EN copy parsed straight out of
+locale.js, not a local duplicate. A duplicated table is how a literal
+`{seconds}` placeholder reached the live status region while every test still
+counted green, so the asserted copy and the shipped copy are now the same
+strings by construction.
+
 Static assertions alone do not prove behavior, so this file also runs a Node
 harness that executes the REAL app.js against a minimal DOM shim, a recording
 fetch, and a deterministic virtual clock:
@@ -38,6 +44,7 @@ fetch, and a deterministic virtual clock:
 - STALE_COMPLETION_CANNOT_RESTART_WAIT=PASS
 - EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS=PASS
 - NO_FABRICATED_COPY=PASS
+- NO_PLACEHOLDER_LEAK=PASS
 
 The slice is presentation-only: no route, store, schema, provider call, server
 policy change, fake progress, polling, auto-retry, or cancel authority.
@@ -79,6 +86,31 @@ FORBIDDEN_PROGRESS_TOKENS = (
 
 def _app_source() -> str:
     return APP_JS.read_text(encoding="utf-8")
+
+
+def _locale_table() -> dict[str, dict[str, str]]:
+    """Parse the shipped KO/EN copy out of locale.js.
+
+    The behavioral harness renders against THESE strings rather than a local
+    duplicate, so shipped copy and asserted copy cannot drift apart. A drifted
+    harness is exactly how a literal `{seconds}` placeholder once reached the
+    live status region while every test counted green (#2766 review).
+    """
+    source = LOCALE_JS.read_text(encoding="utf-8")
+    pattern = re.compile(r'"([A-Za-z0-9_\-]+)":\s*"((?:[^"\\]|\\.)*)"')
+
+    def unescape(value: str) -> str:
+        out = value.replace('\\"', '"').replace("\\n", "\n").replace("\\t", "\t")
+        return out.replace("\\\\", "\\")
+
+    def pairs(block: str) -> dict[str, str]:
+        return {key: unescape(value) for key, value in pattern.findall(block)}
+
+    assert "en: {" in source
+    ko_part, en_part = source.split("en: {", 1)
+    table = {"ko": pairs(ko_part), "en": pairs(en_part)}
+    assert table["ko"] and table["en"]
+    return table
 
 
 def _wait_block() -> str:
@@ -174,14 +206,15 @@ def test_wait_timer_lifecycle_is_closed() -> None:
 
 
 def test_wait_copy_makes_no_progress_claim() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
+    table = _locale_table()
     app = _app_source()
-    locale_lines = [ln for ln in locale.splitlines() if any(f'"{key}"' in ln for key in WAIT_KEYS)]
-    assert len(locale_lines) == 6  # three keys in each language
-    for line in locale_lines:
-        lowered = line.lower()
-        for token in FORBIDDEN_PROGRESS_TOKENS:
-            assert token not in lowered, f"{token!r} in Claw wait copy: {line.strip()}"
+    for language, copy in table.items():
+        for key in WAIT_KEYS:
+            value = copy.get(key)
+            assert isinstance(value, str) and value, f"{language}:{key} missing"
+            lowered = value.lower()
+            for token in FORBIDDEN_PROGRESS_TOKENS:
+                assert token not in lowered, f"{token!r} in {language}:{key}: {value}"
     fallback_lines = [
         ln
         for ln in app.splitlines()
@@ -192,10 +225,46 @@ def test_wait_copy_makes_no_progress_claim() -> None:
         lowered = line.lower()
         for token in FORBIDDEN_PROGRESS_TOKENS:
             assert token not in lowered, f"{token!r} in Claw wait fallback copy: {line.strip()}"
-    # Only the clock readout carries a runtime value in either path, so the
-    # threshold copy reads the same whether or not the locale bundle loaded.
-    assert sum("{seconds}" in ln for ln in fallback_lines) == 1
-    assert "{seconds}" in [ln for ln in fallback_lines if '"claw-wait-elapsed"' in ln][0]
+
+
+def test_only_the_clock_readout_carries_a_runtime_value() -> None:
+    """A placeholder in copy that is rendered without variables reaches users raw.
+
+    The threshold status copy is applied with `clawT(key)` (no variables) through
+    the polite region, while only the elapsed readout is rendered with
+    `{ seconds }`. Any `{...}` left in a threshold value would surface as literal
+    text, so only `claw-wait-elapsed` may declare one — in both languages.
+    """
+    table = _locale_table()
+    app = _app_source()
+    for language, copy in table.items():
+        for key in WAIT_KEYS:
+            has_placeholder = "{" in copy[key] or "}" in copy[key]
+            if key == "claw-wait-elapsed":
+                assert copy[key].count("{seconds}") == 1, f"{language}:{key}"
+                assert "seconds" in app and f'"{key}"' in app
+            else:
+                assert not has_placeholder, f"{language}:{key} would render raw: {copy[key]}"
+    # The threshold call site passes no variables, which is why the check above
+    # is the load-bearing one.
+    stage_copy = _wait_block().split("function applyClawWaitStageCopy()", 1)[1]
+    stage_copy = stage_copy.split("// Presentation only.", 1)[0]
+    assert "clawT(key)" in stage_copy
+    assert "seconds" not in stage_copy
+
+
+def test_shipped_threshold_copy_matches_the_no_locale_fallback() -> None:
+    """Both paths must read the same, so a locale failure cannot change meaning."""
+    table = _locale_table()
+    app = _app_source()
+    for key in WAIT_KEYS:
+        fallback = [
+            ln.strip()
+            for ln in app.splitlines()
+            if ln.strip().startswith(f'"{key}":')
+        ]
+        assert len(fallback) == 1, key
+        assert fallback[0] == f'"{key}": "{table["en"][key]}",', key
 
 
 def test_wait_announcements_are_bounded_to_two_thresholds() -> None:
@@ -227,17 +296,14 @@ def test_wait_does_not_add_routes_or_touch_the_server() -> None:
 
 
 def test_locale_keys_are_declared_for_both_languages() -> None:
-    locale = LOCALE_JS.read_text(encoding="utf-8")
-    ko_block = locale.split("en: {", 1)[0]
-    en_block = locale.split("en: {", 1)[1]
+    table = _locale_table()
     for key in WAIT_KEYS:
-        assert f'"{key}"' in ko_block, key
-        assert f'"{key}"' in en_block, key
+        assert key in table["ko"], key
+        assert key in table["en"], key
     # The clock copy is the only wait string with a runtime value, and it uses a
     # named variable rather than string concatenation.
-    for block in (ko_block, en_block):
-        line = [ln for ln in block.splitlines() if '"claw-wait-elapsed"' in ln][0]
-        assert "{seconds}" in line
+    for language in ("ko", "en"):
+        assert table[language]["claw-wait-elapsed"].count("{seconds}") == 1
     app = _app_source()
     for key in WAIT_KEYS:
         assert f'"{key}"' in app  # English fallback copy for the non-locale path
@@ -269,6 +335,9 @@ const fs = require("fs");
 const vm = require("vm");
 const realSetTimeout = setTimeout;
 const APP = fs.readFileSync(process.argv[2], "utf8");
+// The SHIPPED KO/EN copy, parsed from locale.js by the Python side. Rendering
+// against the real strings is what makes a placeholder leak observable here.
+const COPY = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
 
 // ── deterministic virtual clock: every app timer is driven explicitly ──
 let now = 1750000000000;
@@ -368,6 +437,14 @@ Object.defineProperty(byId.clawStatus, "textContent", {
   get() { return statusValue; },
   set(v) { const next = String(v); if (next !== statusValue) { statusValue = next; statusWrites.push(next); } },
 });
+// Record every write to the elapsed readout too, so an unsubstituted
+// placeholder is caught wherever it would have surfaced.
+let waitValue = "";
+const waitWrites = [];
+Object.defineProperty(byId.clawWait, "textContent", {
+  get() { return waitValue; },
+  set(v) { const next = String(v); waitValue = next; waitWrites.push(next); },
+});
 
 const shell = add("app-shell", "div");
 shell.dataset = { state: "home" };
@@ -427,29 +504,6 @@ async function fetchImpl(url, opts) {
 
 // Locale shim with a switchable language so the localechange contract is real.
 let lang = "ko";
-const COPY = {
-  ko: {
-    "claw-status-execute-running": "실행 중... 잠시만 기다려 주세요.",
-    "claw-status-execute-success": "실행이 완료되었습니다.",
-    "claw-wait-elapsed": "경과 {seconds}초",
-    "claw-wait-long": "아직 실행 중입니다. 결과가 준비되면 이 화면에 표시됩니다.",
-    "claw-wait-very-long": "예상보다 오래 걸리고 있습니다. 실행은 계속 진행 중이며 자동으로 다시 보내지 않습니다.",
-    "claw-error-rate-limited": "요청이 잠시 많습니다. 잠시 후 다시 시도해 주세요.",
-    "claw-error-generic": "실행 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
-    "claw-retry-waiting": "요청이 잠시 제한되었습니다. {seconds}초 후 다시 시도할 수 있습니다. 자동으로 전송되지는 않습니다.",
-    "claw-retry-ready": "지금 다시 시도할 수 있습니다. 전송되는 내용은 현재 양식에 보이는 값입니다.",
-    "claw-error-check-runs": "이미 실행이 시작되었을 수 있습니다. 자동으로 다시 실행하지 않았습니다. ‘최근 실행 기록’에서 결과를 먼저 확인해 주세요.",
-  },
-  en: {
-    "claw-status-execute-running": "Running... please wait a moment.",
-    "claw-status-execute-success": "Done.",
-    "claw-wait-elapsed": "Elapsed {seconds}s",
-    "claw-wait-long": "Still running. The result will appear here when it is ready.",
-    "claw-wait-very-long": "This is taking longer than usual. The request is still running and nothing is sent twice.",
-    "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
-    "claw-error-generic": "Something went wrong. Please try again shortly.",
-  },
-};
 function localeText(key, variables) {
   const table = COPY[lang] || COPY.ko;
   const value = table[key] || COPY.ko[key] || key;
@@ -504,6 +558,14 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   const execPosts = () => requests.filter((r) => r.url === "/api/claw/manual-intake/execute" && r.method === "POST");
   const runHistoryGets = () => requests.filter((r) => r.url.indexOf("/api/claw/runs") === 0);
   const knownCopy = new Set([].concat(Object.values(COPY.ko), Object.values(COPY.en)));
+  // Shipped copy may legitimately carry a runtime value, so each template is
+  // matched with its `{variable}` slot filled by any number; anything else the
+  // user could have seen is by definition not declared copy.
+  const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const knownRe = new RegExp(
+    "^(?:" + [].concat([...knownCopy].map((v) => escapeRe(v).replace(/\\\{[a-z]+\\\}/g, "\\d+"))).join("|") + ")$"
+  );
+  const rendersClean = (value) => !/\{|\}/.test(String(value));
   const elapsedCopy = (code, seconds) => COPY[code]["claw-wait-elapsed"].split("{seconds}").join(String(seconds));
   // Any request issued inside a wait window would break the local-only claim,
   // so every wait window snapshots and re-checks the whole traffic picture.
@@ -741,15 +803,23 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   }
   // Every byte the user saw came from declared copy: no invented stage, no
   // completion estimate, no fabricated phase.
-  checks.NO_FABRICATED_COPY = statusWrites.every((w) => knownCopy.has(w)) &&
+  checks.NO_FABRICATED_COPY =
+    statusWrites.every((w) => knownRe.test(w)) &&
     statusWrites.every((w) => w.indexOf("%") < 0 && !/percent|progress|phase|stage|analyzing|finalizing|sandbox/i.test(w));
   if (!checks.NO_FABRICATED_COPY) fail("NO_FABRICATED_COPY: " + JSON.stringify(statusWrites));
+  // Nothing the user can read may contain an unsubstituted placeholder, in the
+  // polite region or in the elapsed readout.
+  checks.NO_PLACEHOLDER_LEAK =
+    statusWrites.every(rendersClean) && waitWrites.every(rendersClean);
+  if (!checks.NO_PLACEHOLDER_LEAK) {
+    fail("NO_PLACEHOLDER_LEAK: " + JSON.stringify({ statusWrites, waitWrites }));
+  }
   // Run history is only ever read while opening the workspace, never as a
   // progress channel: every wait window above proved zero new traffic.
   checks.NO_RUN_HISTORY_POLLING_DURING_WAIT = runHistoryGets().length <= 4 && byId.clawWait.hidden === true;
   if (!checks.NO_RUN_HISTORY_POLLING_DURING_WAIT) fail("NO_RUN_HISTORY_POLLING_DURING_WAIT: " + runHistoryGets().length);
 
-  console.log(JSON.stringify({ ok: true, requests, checks, statusWrites }));
+  console.log(JSON.stringify({ ok: true, requests, checks, statusWrites, waitWrites }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); process.exit(0); });
 """
@@ -759,16 +829,20 @@ def _run_harness() -> dict:
     node = shutil.which("node")
     assert node, "node runtime is required for the behavioral harness"
     harness_path = ROOT / "tests" / "_b54_claw_execute_progress_harness.js"
+    copy_path = ROOT / "tests" / "_b54_claw_execute_progress_copy.json"
     harness_path.write_text(_HARNESS, encoding="utf-8")
+    # The harness renders against the shipped locale strings, not a copy.
+    copy_path.write_text(json.dumps(_locale_table(), ensure_ascii=False), encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS)],
+            [node, str(harness_path), str(APP_JS), str(copy_path)],
             capture_output=True,
             text=True,
             timeout=120,
         )
     finally:
         harness_path.unlink(missing_ok=True)
+        copy_path.unlink(missing_ok=True)
     assert result.returncode == 0, f"harness exited {result.returncode}: {result.stderr}"
     line = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else "{}"
     return json.loads(line)
@@ -813,6 +887,7 @@ def test_behavioral_elapsed_wait_journey() -> None:
         "STALE_COMPLETION_CANNOT_RESTART_WAIT",
         "EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS",
         "NO_FABRICATED_COPY",
+        "NO_PLACEHOLDER_LEAK",
         "NO_RUN_HISTORY_POLLING_DURING_WAIT",
     ):
         assert checks.get(name) is True, name
@@ -821,6 +896,20 @@ def test_behavioral_elapsed_wait_journey() -> None:
     assert writes, writes
     assert all("%" not in w for w in writes)
     assert not any(re.search(r"\d+\s*(?:경과|Elapsed)", w) for w in writes)
+    # The elapsed readout rendered real values from the shipped template.
+    clock_writes = [w for w in payload["waitWrites"] if w]
+    assert clock_writes, payload["waitWrites"]
+    table = _locale_table()
+    templates = [table[language]["claw-wait-elapsed"] for language in ("ko", "en")]
+    expected = re.compile(
+        "^(?:"
+        + "|".join(re.escape(t).replace(re.escape("{seconds}"), r"\d+") for t in templates)
+        + ")$"
+    )
+    # Both languages were exercised, so both templates must have rendered.
+    assert all(expected.match(w) for w in clock_writes), clock_writes
+    assert any("\uac00" <= ch <= "\ud7a3" for w in clock_writes for ch in w)
+    assert any("Elapsed" in w for w in clock_writes)
 
 
 def test_behavioral_wait_stays_within_existing_authority() -> None:
@@ -848,6 +937,8 @@ if __name__ == "__main__":
     test_exactly_one_explicit_dispatch_path_starts_the_wait()
     test_wait_timer_lifecycle_is_closed()
     test_wait_copy_makes_no_progress_claim()
+    test_only_the_clock_readout_carries_a_runtime_value()
+    test_shipped_threshold_copy_matches_the_no_locale_fallback()
     test_wait_announcements_are_bounded_to_two_thresholds()
     test_wait_does_not_add_routes_or_touch_the_server()
     test_locale_keys_are_declared_for_both_languages()
