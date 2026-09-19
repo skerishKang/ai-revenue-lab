@@ -383,3 +383,40 @@ ACTIVATION_EVIDENCE_SOURCE                = accepted bounded canaries (no synthe
 RESIDUAL                                  = Slack/Calendar READ ports are composed without a live
                                             canary; bounded and fail-closed per grant
 ```
+
+## 14. A5-Agent activation readiness source gate (#2754)
+
+The Agent-only readiness gate is source-complete but does not activate
+Production or change manifest truth. Skill runtime is deliberately excluded
+and remains independently deferred.
+
+```text
+ACTIVATION_GATE_MODULE = apps/padiem-ai-engine/app/agent_runtime_activation.py
+CONFIRMATION_TOKEN     = ACTIVATE_ENGINE_A5_AGENT_ONLY
+DEPLOYMENT_TARGET      = Cloudflare Workers (padiem-ai-engine)
+CURRENT_DEPLOYED_VERSION = UNRESOLVED_FOR_LIVE_AUTHORITY
+ROLLBACK_VERSION       = UNRESOLVED_FOR_LIVE_AUTHORITY
+ROLLBACK_CONFIG        = UNRESOLVED_FOR_LIVE_AUTHORITY
+CONFIG_BINDING_DIFF    = UNRESOLVED_FOR_LIVE_AUTHORITY
+SECRET_NAME_DIFF       = UNRESOLVED_FOR_LIVE_AUTHORITY
+REFERENCE_CONSUMERS    = b54-padiem-claw, b62-padiem-chat (opaque synthetic app identities)
+SYNTHETIC_CASES       = Agent-only run, unknown Agent, plan identity/tool bounds,
+                        caller authority rejection, unsafe subject, Skill deferred
+PARITY_EXECUTION       = each reference identity executes the shared Agent contract
+                         through AgentSkillEngineService/Core ToolRuntime; each
+                         authority-shaped caller field is rejected
+PARITY_SUCCESS_SHAPE   = ok=true, error_code=None, bounded finding
+REAL_PROVIDER_CALLS   = 0
+REAL_USER_DATA        = 0
+MUTATION_SCOPE        = A5-Agent activation only
+SKILL_ACTIVATION      = DEFERRED
+MANIFEST_FLIP         = NO
+FINAL_DISPOSITION     = PENDING_PRODUCTION_AUTHORIZATION
+```
+
+The gate requires exact current-main and accepted-source SHAs, receives live
+deployment/rollback facts as injected evidence rather than stale constants,
+and executes only deterministic network-free Core AgentPlan/ToolRuntime
+probes. A future Agent-only activation must remain a separate owner-authorized
+manifest decision; it must not make `skill_runtime_projection` or the combined
+`agent_skill_runtime` available as a shortcut.
