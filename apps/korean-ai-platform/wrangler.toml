@@ -34,3 +34,25 @@ secret_name = "PADIEM_AGNES_API_KEY"
 binding = "PADIEM_POOLSIDE_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_POOLSIDE_API_KEY"
+
+# B14 provider onboarding metadata only. Secret values remain owner-managed in
+# Secrets Store and are never committed to this repository.
+[[secrets_store_secrets]]
+binding = "PADIEM_INFRON_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_INFRON_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_INCEPTION_MERCURY_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_INCEPTION_MERCURY_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_ATRIA_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_ATRIA_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_EXLAB_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_EXLAB_API_KEY"
