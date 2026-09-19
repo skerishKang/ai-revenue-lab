@@ -205,10 +205,15 @@ def test_pending_version_activation_is_not_reported_as_success() -> None:
     assert "exit 1" in tail
 
 
-def test_rollback_is_bounded_to_partial_put_only() -> None:
+def test_rollback_is_bounded_to_confirmed_successful_puts_only() -> None:
     text = provision_job_text()
     assert "steps.push.outcome == 'failure'" in text
-    assert "ROLLBACK_SCOPE=CREATE_ONLY_PARTIAL_PUT" in text
+    assert 'touch "${RUNNER_TEMP}/telegram-pushed-${binding_name}"' in text
+    assert 'marker="${RUNNER_TEMP}/telegram-pushed-${name}"' in text
+    assert 'if [ -f "${marker}" ]; then' in text
+    assert "ROLLBACK_REASON=NO_CONFIRMED_SUCCESSFUL_PUT" in text
+    assert "ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY" in text
+    assert "telegram-rollback-settings.json" not in text
     assert "base}/secrets/${name}" in text
     assert "VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED" in text
 
