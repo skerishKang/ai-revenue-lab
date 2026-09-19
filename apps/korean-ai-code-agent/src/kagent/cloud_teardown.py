@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -118,13 +118,13 @@ LEASE_TERMINAL_STATES = frozenset(
 )
 LEASE_TERMINAL_STATE_TOKENS = frozenset(state.value.upper() for state in LEASE_TERMINAL_STATES)
 
-# Only ``from_observation`` can issue this, so a clean verdict cannot be minted by
-# naming terminal-looking values alone (#2785 review). It is a module-private
-# structural guard, not a capability token: it closes accidental and
-# field-synthesizing construction, and it makes a deliberate bypass require
-# importing a private name rather than simply calling the public constructor.
-_VERIFIED_TEARDOWN_ISSUER = "claw-m1-teardown-verified-factory/v1"
-VERIFICATION_TICKET = hashlib.sha256(_VERIFIED_TEARDOWN_ISSUER.encode("utf-8")).hexdigest()
+# Only ``from_observation`` holds this object, and a clean verdict requires
+# identity with it, not equality or a reproduced value (#2785 round 2). A public
+# or recomputable token -- however it is derived -- is reusable by any caller that
+# can read the module, so it is not a factory-only guard. This is an in-process
+# structural barrier: it makes clean unquotable from the public surface, and it is
+# not a capability or an authentication mechanism.
+_VERIFIED_RECEIPT_SENTINEL = object()
 
 
 @dataclass(frozen=True, slots=True)
@@ -241,9 +241,10 @@ class CloudM1TeardownReceipt:
     lease_state_verified: str
     artifact_collection_id: str | None
     verification_blockers: tuple[str, ...]
-    # Issued by from_observation only. Defaults to the unverified value so a
-    # diagnostic non-clean receipt stays constructible, and a clean one is not.
-    verification_ticket: str = ""
+    # Identity-only, issued by from_observation and never reproduced by value.
+    # Excluded from repr and equality so the sentinel cannot leak into logs,
+    # diffs, or receipts compared as evidence.
+    verification_ticket: Any = field(default=None, repr=False, compare=False)
 
     @classmethod
     def from_observation(
@@ -296,7 +297,7 @@ class CloudM1TeardownReceipt:
             lease_state_verified=verification.lease_state or "UNRESOLVED",
             artifact_collection_id=verification.artifact_collection_id,
             verification_blockers=blockers,
-            verification_ticket=VERIFICATION_TICKET,
+            verification_ticket=_VERIFIED_RECEIPT_SENTINEL,
         )
 
     def __post_init__(self) -> None:
@@ -335,9 +336,10 @@ class CloudM1TeardownReceipt:
             raise ContractError("clean teardown receipt requires a terminal verified lease")
         if self.clean and not self.artifact_collection_id:
             raise ContractError("clean teardown receipt requires artifact collection evidence")
-        # Field-shaped values are not proof of verification: only the factory that
-        # actually resolved the lease and the collection may assert clean.
-        if self.clean and self.verification_ticket != VERIFICATION_TICKET:
+        # Field-shaped values are not proof of verification, and neither is any
+        # value a caller can obtain publicly: only identity with the factory's
+        # private sentinel may assert a clean verdict.
+        if self.clean and self.verification_ticket is not _VERIFIED_RECEIPT_SENTINEL:
             raise ContractError(
                 "clean teardown receipt must be issued by the verified factory path"
             )

@@ -10,7 +10,6 @@ from kagent.cloud_teardown import (
     REAL_TEARDOWN_PROBE_CONFIGURED,
     CloudM1TeardownReceipt,
     TrustedTeardownObservation,
-    VERIFICATION_TICKET,
     verify_teardown_evidence,
 )
 from kagent.cloud_stage_receipts import CloudStageOutcome
@@ -377,7 +376,60 @@ class VerifiedFactoryOnlyTests(unittest.TestCase):
         # must not leak into the projection that becomes run history.
         projected = r.safe_dict()
         self.assertNotIn("verification_ticket", projected)
-        self.assertNotIn(VERIFICATION_TICKET, json.dumps(projected))
+        json.dumps(projected)  # a non-JSON sentinel stored in the projection fails here
+        # and not through repr either, so it cannot reach logs or diffs
+        self.assertNotIn("verification_ticket", repr(r))
+
+
+class FactoryOnlyTicketTests(unittest.TestCase):
+    """#2785 round 2: nothing reachable from the public surface may mint clean."""
+
+    def direct(self, ticket):
+        return CloudM1TeardownReceipt(
+            receipt_id="teardown_ticket_probe",
+            plan_id="plan_1",
+            plan_fingerprint="a" * 64,
+            run_id="run_1",
+            observation_id="obs_1",
+            observed_at=NOW,
+            clean=True,
+            evidence_sha256="b" * 64,
+            lease_state_verified="RELEASED",
+            artifact_collection_id="col_1",
+            verification_blockers=(),
+            verification_ticket=ticket,
+        )
+
+    def test_public_surface_exposes_no_reusable_token(self):
+        from kagent import cloud_teardown as module
+
+        public_values = [
+            getattr(module, name) for name in dir(module) if not name.startswith("_")
+        ]
+        # Every value a caller can reach without touching a private name must fail,
+        # including any string, hash, class, function or sentinel-looking object.
+        minted = []
+        for value in public_values:
+            try:
+                receipt = self.direct(value)
+            except ContractError:
+                continue
+            minted.append((value, receipt.clean))
+        self.assertEqual(minted, [], "a public value was accepted as a verification ticket")
+
+    def test_ordinary_values_cannot_mint_clean(self):
+        import hashlib
+
+        guesses = [
+            None, "", "x" * 64, object(), CloudM1TeardownReceipt,
+            hashlib.sha256(b"claw-m1-teardown-verified-factory/v1").hexdigest(),
+            hashlib.sha256(b"").hexdigest(),
+            frozenset(), (lambda: None),
+        ]
+        for value in guesses:
+            with self.subTest(ticket=type(value).__name__):
+                with self.assertRaises(ContractError):
+                    self.direct(value)
 
 
 if __name__ == "__main__":
