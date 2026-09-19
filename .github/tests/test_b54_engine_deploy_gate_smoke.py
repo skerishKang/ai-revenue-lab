@@ -678,3 +678,81 @@ def test_health_failure_never_prints_response_body() -> None:
         stripped = line.strip()
         if "/tmp/health.json" in stripped:
             assert stripped.startswith("CODE=$(curl") or "grep -q" in stripped, stripped
+
+
+# --- #2742: post-deploy convergence proof + code-deploy new != pre assertion ---
+#
+# A single immediate read is not convergence evidence: while a deployment
+# propagates the endpoint can still name the pre-deploy version, and the
+# version-detail verify then PASSes legitimately against that stale version.
+# These cases pin the bounded poll and the fail-closed change assertion.
+
+_CONVERGENCE_STEP = "Post-deploy served-version secret guard"
+
+
+def test_post_deploy_guard_polls_on_a_bounded_window() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    assert "for attempt in $(seq 1 30)" in guard_run
+    assert "sleep 2" in guard_run
+    # Exactly one textual resolution site, inside the loop: the #2414 test
+    # contract that counts resolve-active invocations stays intact.
+    assert guard_run.count("resolve-active") == 1
+
+
+def test_post_deploy_guard_requires_the_served_version_to_change() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    assert 'pre_version="${B54_ENGINE_ACTIVE_VERSION:-}"' in guard_run
+    assert 'if [ "${candidate}" != "${pre_version}" ]; then' in guard_run
+    assert "SERVED_VERSION_CHANGED_BY_CODE_DEPLOY=YES" in guard_run
+    assert "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}" in guard_run
+    assert "POST_DEPLOY_SERVED_VERSION_ID=${active_version}" in guard_run
+
+
+def test_stale_pre_equal_read_cannot_emit_the_guard_pass() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    # Window exhaustion is a closed failure, and it precedes every PASS marker.
+    assert "POST_DEPLOY_SERVED_VERSION_CONVERGED=FAIL" in guard_run
+    exhaust = guard_run.index("still equals the pre-deploy version")
+    assert exhaust < guard_run.index("POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS")
+    # Evidence order: convergence, then secret-set guard, then final deploy PASS.
+    assert guard_run.index("POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS") < guard_run.index(
+        "POST_DEPLOY_SERVED_VERSION_GUARD=PASS"
+    )
+    assert guard_run.index("POST_DEPLOY_SERVED_VERSION_GUARD=PASS") < guard_run.index(
+        "B54_ENGINE_PRODUCTION_DEPLOY=PASS"
+    )
+
+
+def test_convergence_verifies_secrets_only_on_the_converged_version() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    # The detail read and the verify both key off the converged id, never the
+    # pre-deploy id, so the stale version cannot satisfy the step.
+    detail = guard_run.index("versions/${active_version}")
+    assert guard_run.index("${pre_version}") < detail
+    assert "--active-version \"${active_version}\"" in guard_run
+
+
+def test_post_deploy_guard_reuses_the_canonical_resolver_only() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    assert "b54_engine_served_version_guard.py resolve-active" in guard_run
+    # No Cloudflare envelope shape rule may be re-implemented in the workflow:
+    # #2740 made the resolver canonical and single-sourced.
+    for forbidden in ("jq ", ".result.deployments", "versions[0]", "percentage"):
+        assert forbidden not in guard_run, f"inline envelope rule: {forbidden}"
+
+
+def test_missing_pre_version_fails_closed_before_polling() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    assert "REASON=pre-deploy served version was not recorded" in guard_run
+    assert guard_run.index("REASON=pre-deploy served version was not recorded") < guard_run.index(
+        "for attempt in $(seq 1 30)"
+    )
+
+
+def test_convergence_poll_stays_get_only() -> None:
+    guard_run = _deploy_step_run(_CONVERGENCE_STEP)
+    for line in guard_run.splitlines():
+        if "curl " in line:
+            assert "-fsS" in line or line.strip().startswith("#")
+            assert "--data" not in line and " -X " not in line
+    assert "POST_DEPLOY_CONVERGENCE_READS=" in guard_run

@@ -113,12 +113,54 @@ jobs:
           set -euo pipefail
           auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
-          deployments="${RUNNER_TEMP}/deployments-post.json"
-          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
-          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
-          printf '%s\n' "${resolve_out}"
-          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
-          test -n "${active_version}"
+          # #2742: one immediate read is not convergence evidence. During
+          # propagation the deployments endpoint can still name the PRE-deploy
+          # version, and the version-detail verify below would then PASS
+          # legitimately against that stale version -- emitting the final
+          # deploy PASS marker for code that is not actually serving traffic.
+          # Converge instead: re-read on a bounded window and accept only a
+          # canonical served version that differs from the version recorded
+          # before the mutation. Resolution stays in the canonical shared
+          # resolver; no shape rule is re-implemented here.
+          pre_version="${B54_ENGINE_ACTIVE_VERSION:-}"
+          if [ -z "${pre_version}" ]; then
+            echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=FAIL' >&2
+            echo 'REASON=pre-deploy served version was not recorded' >&2
+            exit 1
+          fi
+          convergence_reads=0
+          active_version=''
+          for attempt in $(seq 1 30); do
+            convergence_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-post-${attempt}.json"
+            curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+            # Single textual invocation inside the poll loop (#2742 contract).
+            resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+            candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+            if [ -z "${candidate}" ]; then
+              echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=FAIL' >&2
+              echo 'REASON=canonical resolver returned no served version id' >&2
+              exit 1
+            fi
+            if [ "${candidate}" != "${pre_version}" ]; then
+              active_version="${candidate}"
+              break
+            fi
+            # Still serving the pre-deploy version: not a failure yet, and not
+            # evidence of success either. Keep the window open.
+            sleep 2
+          done
+          if [ -z "${active_version}" ]; then
+            echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=FAIL' >&2
+            echo "REASON=served version still equals the pre-deploy version after ${convergence_reads} bounded canonical reads" >&2
+            echo "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}" >&2
+            exit 1
+          fi
+          echo "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
+          echo "POST_DEPLOY_SERVED_VERSION_ID=${active_version}"
+          echo 'SERVED_VERSION_CHANGED_BY_CODE_DEPLOY=YES'
+          echo "POST_DEPLOY_CONVERGENCE_READS=${convergence_reads}"
+          echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS'
           version_detail="${RUNNER_TEMP}/version-post.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
           overlay_args=()
