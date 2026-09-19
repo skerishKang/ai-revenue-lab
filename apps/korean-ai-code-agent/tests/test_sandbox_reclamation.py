@@ -121,9 +121,64 @@ class SweepTests(unittest.TestCase):
         self.assertEqual(report.examined, 3)
         self.assertEqual(report.reclaimed_count, 1)
         self.assertEqual(report.unresolved_count, 0)
-        self.assertTrue(report.fully_reclaimed)
+        # Nothing was "fully reclaimed": a live lease is still held and a terminal one
+        # was never this pass's work, whatever the reconciliation count says.
+        self.assertFalse(report.fully_reclaimed)
         # a terminal lease is never handed to the provider at all
         self.assertEqual(provider.calls, ["lease_lapsed"])
+
+    def test_a_live_lease_in_the_way_stops_a_claim_of_full_reclamation(self):
+        # The mixed live+lapsed case #2803 review asked to be pinned: one lease is
+        # reclaimable, one is still inside its TTL, so the pass cannot report that it
+        # finished reclaiming the inventory.
+        lapsed = lease("lease_lapsed")
+        live = lease("lease_live", run_id="run_live", expires_at=START + timedelta(seconds=3_600))
+        provider = StaticProvider(
+            (lapsed, live),
+            expire=lambda lease_id, run_id, now: lease(lease_id).with_state(
+                SandboxLeaseState.EXPIRED
+            ),
+        )
+        report = reap_expired_leases(provider, now=START + timedelta(seconds=901))
+
+        self.assertEqual(report.inventory_size, 2)
+        self.assertEqual(report.reclaimed_count, 1)
+        self.assertEqual(report.unresolved_count, 0)
+        self.assertFalse(report.truncated)
+        self.assertFalse(report.fully_reclaimed)
+        self.assertEqual(
+            self.outcomes(report)["lease_live"], LeaseReclamationOutcome.NOT_YET_LAPSED
+        )
+        self.assertEqual(provider.calls, ["lease_lapsed"])
+
+    def test_full_reclamation_requires_the_whole_inventory_to_be_reclaimed(self):
+        # The one trivially true case CENTRAL allows: an empty inventory.
+        empty = reap_expired_leases(StaticProvider(()), now=START + timedelta(seconds=901))
+        self.assertEqual(empty.examined, 0)
+        self.assertTrue(empty.fully_reclaimed)
+
+        all_lapsed = tuple(lease(f"lease_{index}") for index in range(3))
+        provider = StaticProvider(
+            all_lapsed,
+            expire=lambda lease_id, run_id, now: lease(lease_id).with_state(
+                SandboxLeaseState.EXPIRED
+            ),
+        )
+        swept = reap_expired_leases(provider, now=START + timedelta(seconds=901))
+        self.assertEqual(swept.reclaimed_count, 3)
+        self.assertTrue(swept.fully_reclaimed)
+
+        # ...and one already-terminal lease is enough to make it false.
+        provider = StaticProvider(
+            (all_lapsed[0], lease("lease_done", run_id="run_done",
+                                  state=SandboxLeaseState.RELEASED)),
+            expire=lambda lease_id, run_id, now: lease(lease_id).with_state(
+                SandboxLeaseState.EXPIRED
+            ),
+        )
+        mixed = reap_expired_leases(provider, now=START + timedelta(seconds=901))
+        self.assertEqual(mixed.reclaimed_count, 1)
+        self.assertFalse(mixed.fully_reclaimed)
 
     def test_examines_in_lease_id_order_not_inventory_order(self):
         inventory = tuple(lease(f"lease_{letter}") for letter in ("z", "a", "m"))
@@ -385,15 +440,37 @@ class ReportIntegrityTests(unittest.TestCase):
         # and a reclaimed one does not need a reason
         LeaseReclamationRecord("lease_a", "run_a", LeaseReclamationOutcome.RECLAIMED)
 
-    def test_identifiers_are_bounded_and_outcomes_are_closed(self):
-        for bad_id in ("", "lease a", "lease\na", "x" * 600):
+    def test_identifiers_follow_the_lease_contract_and_no_grammar_of_its_own(self):
+        # The record reuses contracts._safe_id, so anything SandboxLease itself would
+        # refuse has to be refused here too. These are the shapes that a wider local
+        # regex once let through.
+        for bad_id in ("", "lease a", "lease\na", "lease/a", "lease@a", "lease+a", "x" * 129):
             with self.subTest(lease_id=bad_id):
                 with self.assertRaises(ContractError):
                     LeaseReclamationRecord(
                         bad_id, "run_a", LeaseReclamationOutcome.RECLAIMED
                     )
+        for run_id in ("run/a", "run@b", "run+c", "r" * 129):
+            with self.subTest(run_id=run_id):
+                with self.assertRaises(ContractError):
+                    LeaseReclamationRecord(
+                        "lease_a", run_id, LeaseReclamationOutcome.RECLAIMED
+                    )
+        # the canonical maximum stays valid, and separators the contract allows pass
+        LeaseReclamationRecord("x" * 128, "y" * 128, LeaseReclamationOutcome.RECLAIMED)
+        LeaseReclamationRecord(
+            "lease:a.b-c_1", "run:a.b-c_1", LeaseReclamationOutcome.RECLAIMED
+        )
         with self.assertRaises(ContractError):
             LeaseReclamationRecord("lease_a", "run_a", "reclaimed_but_not_quite")
+
+    def test_the_module_defines_no_identifier_grammar(self):
+        # One contract, owned by contracts.py. A second regex here is the drift #2803
+        # review removed, so it is pinned rather than left to convention.
+        source = MODULE.read_text(encoding="utf-8")
+        self.assertNotIn("re.compile", source)
+        self.assertNotIn("_SAFE_ID_RE", source)
+        self.assertIn("_safe_id", source)
 
     def test_projection_reports_reservation_bookkeeping_only(self):
         report = self.report(
@@ -465,9 +542,10 @@ class ModulePurityTests(unittest.TestCase):
                 self.assertNotIn(module, self.imported_modules())
 
     def test_only_the_lease_layer_is_imported(self):
+        # No "re": this module may not grow an identifier grammar of its own (#2803).
         self.assertLessEqual(
             self.imported_modules(),
-            {"__future__", "dataclasses", "datetime", "enum", "re", "kagent"},
+            {"__future__", "dataclasses", "datetime", "enum", "kagent"},
         )
 
     def test_no_clock_or_environment_read(self):

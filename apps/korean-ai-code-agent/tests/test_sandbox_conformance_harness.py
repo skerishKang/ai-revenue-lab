@@ -26,6 +26,7 @@ from kagent.sandbox_conformance import (
 from kagent.sandbox_conformance_harness import (
     ConformanceStatus,
     SandboxProviderConformanceHarness,
+    reclamation_probe_run_id,
     validate_lease_request_against_cloud_m1_policy,
     validate_provider_capabilities_against_cloud_m1_policy,
     validate_verified_diff_evidence,
@@ -421,6 +422,35 @@ class ReclamationConformanceTests(unittest.TestCase):
                 self.fake(StaleInventoryProvider), self.request()
             )
         )
+
+    def test_a_run_id_at_the_canonical_maximum_still_exercises_reclamation(self):
+        """#2803 review: the probe id must stay valid at the bound, not fail on shape.
+
+        Appending a suffix to a 128-character run id would produce a 140-character one
+        and the exercise would report a provider as non-conforming because of an
+        identifier length it never controlled.
+        """
+        harness = self.harness()
+        longest = "r" * 128
+        probe = reclamation_probe_run_id(longest)
+
+        self.assertNotEqual(probe, longest)
+        self.assertLessEqual(len(probe), 128)
+        # validity is proven against the contract that governs run ids, not a new rule
+        SandboxLeaseRequest(
+            run_id=probe,
+            execution_mode=ExecutionMode.CLOUD,
+            repository_ref="skerishKang/ai-revenue-lab",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
+            ttl_seconds=900,
+            network_policy=NetworkPolicy.OFF,
+        )
+        # deterministic, and a different run gets a different probe identity
+        self.assertEqual(probe, reclamation_probe_run_id(longest))
+        self.assertNotEqual(probe, reclamation_probe_run_id("s" * 128))
+
+        self.assertTrue(harness.evaluate_reclamation(self.fake(), self.request(longest)))
+        self.assertTrue(harness.evaluate_lease_lifecycle(self.fake(), self.request(longest)))
 
     def test_declared_ttl_enforcement_alone_does_not_make_a_provider_conform(self):
         harness = self.harness()

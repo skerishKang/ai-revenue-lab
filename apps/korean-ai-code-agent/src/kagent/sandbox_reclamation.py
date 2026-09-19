@@ -19,9 +19,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-import re
 
-from .contracts import ContractError, SandboxLease, SandboxLeaseState, _aware_utc
+from .contracts import (
+    ContractError,
+    SandboxLease,
+    SandboxLeaseState,
+    _aware_utc,
+    _safe_id,
+)
 from .sandbox import (
     SandboxLeaseError,
     SandboxUnavailableError,
@@ -30,7 +35,6 @@ from .sandbox import (
 from .security import redact_secrets
 
 
-_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 _MAX_REASON_CHARS = 512
 
 # One pass is bounded so a sweep cannot be turned into an unbounded scan of a
@@ -46,12 +50,6 @@ class LeaseReclamationOutcome(str, Enum):
     NOT_YET_LAPSED = "not_yet_lapsed"
     ALREADY_TERMINAL = "already_terminal"
     RECONCILIATION_REQUIRED = "reconciliation_required"
-
-
-def _id(value: object, field_name: str) -> str:
-    if not isinstance(value, str) or not _SAFE_ID_RE.fullmatch(value.strip()):
-        raise ContractError(f"{field_name} must be a bounded safe identifier")
-    return value.strip()
 
 
 def _reason(value: object) -> str:
@@ -77,8 +75,9 @@ class LeaseReclamationRecord:
     reason: str | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "lease_id", _id(self.lease_id, "lease_id"))
-        object.__setattr__(self, "run_id", _id(self.run_id, "run_id"))
+        # One identifier contract with the lease itself: no second grammar here.
+        object.__setattr__(self, "lease_id", _safe_id(self.lease_id, "lease_id"))
+        object.__setattr__(self, "run_id", _safe_id(self.run_id, "run_id"))
         if not isinstance(self.outcome, LeaseReclamationOutcome):
             try:
                 object.__setattr__(self, "outcome", LeaseReclamationOutcome(self.outcome))
@@ -177,8 +176,14 @@ class LeaseReclamationReport:
 
     @property
     def fully_reclaimed(self) -> bool:
-        """True only when this pass reached the whole inventory and settled all of it."""
-        return not self.truncated and self.unresolved_count == 0
+        """True only when this pass reached the whole inventory and reclaimed all of it.
+
+        A pass that met a live lease, an already-terminal one, or an unresolved one did
+        not fully reclaim anything, even though it left nothing needing reconciliation:
+        ``not_yet_lapsed`` in particular is a lease still held right now. An empty
+        inventory is the one trivially true case.
+        """
+        return not self.truncated and all(record.reclaimed for record in self.records)
 
     def safe_dict(self) -> dict[str, object]:
         return {

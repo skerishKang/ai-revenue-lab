@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta, timezone
 from enum import Enum
+import hashlib
 import re
 from typing import Any, Callable, Sequence
 
@@ -44,6 +45,20 @@ from .security import redact_secrets
 
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_RECLAMATION_PROBE_LABEL = "sandbox-conformance-reclamation"
+
+
+def reclamation_probe_run_id(run_id: str) -> str:
+    """The probe run identity the reclamation exercise reserves under.
+
+    Appending a suffix to the caller's id would overrun the canonical 128-character
+    identifier contract for any run already at that bound, so the exercise would fail
+    on id shape instead of on provider behaviour. A digest keeps the result fixed
+    length, canonical-safe and deterministic, and always distinct from the run it
+    mirrors. It reuses the contract's grammar; it does not define another one.
+    """
+    digest = hashlib.sha256(run_id.encode("utf-8")).hexdigest()[:16]
+    return f"{_RECLAMATION_PROBE_LABEL}-{digest}"
 
 
 class ConformanceStatus(str, Enum):
@@ -315,12 +330,14 @@ class SandboxProviderConformanceHarness:
         full sweep would reclaim leases belonging to whoever else was using the
         provider, which is not its evidence to consume.
 
-        The probe run is derived from ``request`` so this exercise cannot be confused
-        by the lease the cancellation step deliberately leaves active.
+        The probe run is a bounded digest-derived identity rather than an appended
+        suffix, so a run id already at the canonical maximum still exercises
+        reclamation instead of failing on identifier shape — and this exercise cannot
+        be confused by the lease the cancellation step deliberately leaves active.
         """
         if not supports_lease_reclamation(provider):
             return False
-        probe = replace(request, run_id=f"{request.run_id}_reclamation")
+        probe = replace(request, run_id=reclamation_probe_run_id(request.run_id))
         try:
             lease = provider.allocate(probe)
             if lease.lease_id not in {
