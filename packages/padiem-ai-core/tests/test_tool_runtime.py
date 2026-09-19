@@ -18,6 +18,7 @@ from padiem_ai_core.tool_runtime import (
     MAX_TOOL_OUTPUT_BYTES,
     ToolAuthorizationContext,
     ToolExecutionResult,
+    ToolHandlerError,
     ToolInvocation,
     ToolRuntime,
     ToolRuntimeError,
@@ -217,6 +218,25 @@ def test_registration_rejects_invalid_json_schema() -> None:
         return arguments
 
     broken = spec(input_schema={"type": "definitely-not-a-json-schema-type"})
+    with pytest.raises(ToolRuntimeError) as info:
+        runtime.register(broken, handler)
+    assert info.value.code == "invalid_tool_schema"
+    assert runtime.registered_tool_ids == ()
+
+
+def test_registration_rejects_unsupported_schema_keyword_fail_closed() -> None:
+    runtime = ToolRuntime()
+
+    async def handler(arguments):
+        return arguments
+
+    broken = spec(
+        input_schema={
+            "type": "object",
+            "properties": {"value": {"type": "string"}},
+            "$ref": "#/$defs/not-supported",
+        }
+    )
     with pytest.raises(ToolRuntimeError) as info:
         runtime.register(broken, handler)
     assert info.value.code == "invalid_tool_schema"
@@ -431,6 +451,85 @@ def test_invalid_schema_arguments_rejected_before_handler() -> None:
     assert "123" not in info.value.safe_message
 
 
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"channelId": "C12345", "limit": 0},
+        {"channelId": "C12345", "limit": 101},
+        {"channelId": "C12345", "limit": True},
+        {"channelId": "C12345", "unexpected": "x"},
+        {},
+    ],
+)
+def test_worker_native_schema_validator_rejects_bounded_object_violations(arguments) -> None:
+    runtime = ToolRuntime()
+    calls = 0
+
+    async def handler(payload):
+        nonlocal calls
+        calls += 1
+        return payload
+
+    runtime.register(
+        spec(
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "channelId": {"type": "string", "pattern": "^[A-Z][A-Z0-9]{5,24}$"},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 100},
+                },
+                "required": ["channelId"],
+                "additionalProperties": False,
+            }
+        ),
+        handler,
+    )
+    with pytest.raises(ToolRuntimeError) as info:
+        run(runtime.execute(ToolInvocation("core.echo", arguments), profile("core.echo"), auth()))
+    assert_error(
+        info.value,
+        code="invalid_tool_arguments",
+        status=RunStatus.REJECTED,
+        error_class=ErrorClass.TOOL_VALIDATION_ERROR,
+    )
+    assert calls == 0
+
+
+def test_worker_native_schema_validator_accepts_bounded_array_and_pattern() -> None:
+    runtime = ToolRuntime()
+
+    async def handler(arguments):
+        return arguments
+
+    runtime.register(
+        spec(
+            input_schema={
+                "type": "object",
+                "properties": {
+                    "refs": {
+                        "type": "array",
+                        "items": {"type": "string", "pattern": "^[a-z]+$"},
+                        "minItems": 1,
+                        "maxItems": 3,
+                        "uniqueItems": True,
+                    }
+                },
+                "required": ["refs"],
+                "additionalProperties": False,
+            }
+        ),
+        handler,
+    )
+    result = run(
+        runtime.execute(
+            ToolInvocation("core.echo", {"refs": ["alpha", "beta"]}),
+            profile("core.echo"),
+            auth(),
+        )
+    )
+    assert result.output_copy() == {"refs": ["alpha", "beta"]}
+
+
 def test_valid_arguments_invoke_once_and_handler_receives_isolated_mutable_copy() -> None:
     runtime = ToolRuntime()
     calls = 0
@@ -476,6 +575,31 @@ def test_timeout_is_normalized_and_not_retried() -> None:
         status=RunStatus.TIMEOUT,
         error_class=ErrorClass.TOOL_RUNTIME_ERROR,
     )
+    assert calls == 1
+
+
+def test_bounded_handler_error_preserves_reviewed_stage_without_raw_detail() -> None:
+    runtime = ToolRuntime()
+    calls = 0
+
+    async def handler(arguments):
+        nonlocal calls
+        calls += 1
+        raise ToolHandlerError(
+            "google_drive_provider_unavailable",
+            "The trusted Google Drive provider request is unavailable.",
+        )
+
+    runtime.register(spec(), handler)
+    with pytest.raises(ToolRuntimeError) as info:
+        run(runtime.execute(ToolInvocation("core.echo", {"value": "x"}), profile("core.echo"), auth()))
+    assert_error(
+        info.value,
+        code="google_drive_provider_unavailable",
+        status=RunStatus.FAILED,
+        error_class=ErrorClass.TOOL_RUNTIME_ERROR,
+    )
+    assert info.value.safe_message == "The trusted Google Drive provider request is unavailable."
     assert calls == 1
 
 

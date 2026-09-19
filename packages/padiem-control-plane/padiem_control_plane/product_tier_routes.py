@@ -60,9 +60,10 @@ class ProductCredentialMode(str, Enum):
     ANONYMOUS = "anonymous"
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
-# Product-level sentinel for the Padiem Max tier (#1397 evidence pending). It
-# mirrors apps/padiem-chat/app/model_policy.py MAX_HOLD_MODEL_ID verbatim and
-# is deliberately NOT a B14 catalog model ID.
+# Product-level HOLD sentinels are product identities, not B14 catalog model IDs.
+# Pro is temporarily disabled by owner decision #2601 while its provider route
+# is replaced/re-verified. Max remains HOLD under the existing #1397 gate.
+PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
 
 # Retired upstream free lanes (#2094 gateway-list evidence, #2096/#2097
@@ -199,17 +200,35 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.kilo-laguna-s-2.1-free.v1",
+                route_id="plus.agnes-3.0-flash.v1",
                 status=ProductRouteStatus.EXECUTABLE,
-                model_family="poolside-laguna",
-                provider_id="kilo",
-                model_id="kilo/poolside-laguna-s-2.1-free",
-                upstream_model="poolside/laguna-s-2.1:free",
-                credential_mode=ProductCredentialMode.ANONYMOUS,
+                model_family="agnes-3.0-flash",
+                provider_id="agnes-ai",
+                model_id="agnes-ai/agnes-3.0-flash",
+                upstream_model="agnes-3.0-flash",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_AGNES_API_KEY",
                 evidence=(
-                    "B14 catalog: apps/korean-ai-platform/app/pilot/kilo_provider.py "
-                    "KILO_LAGUNA_MODEL_ID (#956; listed on the 2026-09-08 Kilo Gateway "
-                    "model list); Chat LOW route apps/padiem-chat/app/model_policy.py"
+                    "Owner Plus swap handoff; B14 Agnes provider registration; exact 3.0 "
+                    "live measurement remains blocked as documented in the work order."
+                ),
+            ),
+            ProductTierRoute(
+                route_id="plus.poolside-laguna-direct.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="poolside-laguna",
+                provider_id="poolside",
+                model_id="poolside/laguna-s-2.1",
+                upstream_model="poolside/laguna-s-2.1",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_POOLSIDE_API_KEY",
+                hold_reason=(
+                    "Poolside Laguna is the owner-designated second fixed-chain position; "
+                    "retained as data only in the product-tier declaration and never a "
+                    "silent fallback."
+                ),
+                evidence=(
+                    "B14 app/pilot/poolside_provider.py registration (#954)."
                 ),
             ),
         ),
@@ -218,17 +237,49 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PRO,
         routes=(
             ProductTierRoute(
+                route_id="pro.hold.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="pro",
+                model_id=PRO_HOLD_MODEL_ID,
+                hold_reason=(
+                    "Owner decision #2601: Padiem Pro is temporarily disabled while the "
+                    "B.AI-backed route is unstable and a replacement/verified route is pending."
+                ),
+                evidence="#2601 temporary Plus-only product posture.",
+            ),
+            ProductTierRoute(
+                route_id="pro.b-ai-qwen3.8-flash.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="qwen3.8-flash",
+                provider_id="b-ai",
+                model_id="b-ai/qwen3.8-flash",
+                upstream_model="qwen3.8-flash",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_B_AI_API_KEY",
+                hold_reason=(
+                    "Temporarily removed from executable Padiem Pro by owner decision #2601 "
+                    "after provider/model instability. Retained as historical route data only."
+                ),
+                evidence=(
+                    "Historical owner selection #2571 and B14 registration #2133; "
+                    "execution disabled by #2601."
+                ),
+            ),
+            ProductTierRoute(
                 route_id="pro.kilo-nemotron-3-ultra-free.v1",
-                status=ProductRouteStatus.EXECUTABLE,
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="nemotron-3-ultra",
                 provider_id="kilo",
                 model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
                 credential_mode=ProductCredentialMode.ANONYMOUS,
+                hold_reason=(
+                    "Superseded as the active Padiem Pro route by owner decision #2571. "
+                    "Retained as historical data only; no silent fallback is allowed."
+                ),
                 evidence=(
-                    "B14 catalog: apps/korean-ai-platform/app/pilot/kilo_provider.py "
-                    "KILO_NEMOTRON_MODEL_ID (#956; listed on the 2026-09-08 Kilo Gateway "
-                    "model list); #2096 Chat default/Pro repair; fixed_chain_v1 position 2 (#2097)"
+                    "Historical B14 Kilo Nemotron lane (#956/#2096/#2099); replaced by "
+                    "B.AI Qwen3.8-Flash selection on 2026-09-16."
                 ),
             ),
             ProductTierRoute(
@@ -258,8 +309,8 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="qwen",
                 model_id=MAX_HOLD_MODEL_ID,
                 hold_reason=(
-                    "no B14 provider registration or route evidence exists for any Qwen "
-                    "model; Padiem Max stays unbound pending explicit evidence (#1397)"
+                    "B.AI Qwen3.8-Flash is selected for Padiem Pro, not Max. Padiem "
+                    "Max stays unbound until the owner explicitly selects a Max route (#1397)."
                 ),
             ),
             ProductTierRoute(

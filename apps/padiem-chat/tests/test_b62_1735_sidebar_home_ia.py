@@ -15,7 +15,9 @@ def _sidebar_markup() -> str:
 
 def _sidebar_bottom_markup() -> str:
     sidebar = _sidebar_markup()
-    return sidebar.split('<div class="sidebar-bottom"', 1)[1].split("</div>", 1)[0]
+    # sidebar-bottom is the final sidebar child; keep nested account markup
+    # instead of stopping at the account div's first closing tag.
+    return sidebar.split('<div class="sidebar-bottom"', 1)[1]
 
 
 def test_sidebar_no_longer_duplicates_prompt_discovery() -> None:
@@ -57,7 +59,7 @@ def test_padiem_home_settings_and_account_share_bottom_utility_group() -> None:
     assert 'data-locale-key="home-link"' in bottom
     assert 'id="settingsButton"' in bottom
     assert 'class="sidebar-account account-controls"' in bottom
-    assert bottom.index('class="home-link"') < bottom.index('id="settingsButton"') < bottom.index('class="sidebar-account account-controls"')
+    assert bottom.index('id="settingsButton"') < bottom.index('class="sidebar-account account-controls"') < bottom.index('class="home-link"')
 
 
 def test_sidebar_ia_change_does_not_add_runtime_capability_authority() -> None:

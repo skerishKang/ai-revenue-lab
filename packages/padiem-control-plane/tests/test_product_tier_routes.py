@@ -16,6 +16,7 @@ import pytest
 
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID,
+    PRO_HOLD_MODEL_ID,
     PRODUCT_TIER_POLICY_VERSION,
     PRODUCT_TIER_ROUTES,
     RETIRED_PRODUCT_MODEL_IDS,
@@ -36,6 +37,8 @@ CONTRACT_PATH = PACKAGE_ROOT / "padiem_control_plane" / "product_tier_routes.py"
 CHAT_MODEL_POLICY_PATH = REPO_ROOT / "apps" / "padiem-chat" / "app" / "model_policy.py"
 REGISTRY_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "tier_registry_v1.py"
 KILO_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "kilo_provider.py"
+AGNES_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "agnes_provider.py"
+BAI_PROVIDER_PATH = REPO_ROOT / "apps" / "korean-ai-platform" / "app" / "pilot" / "bai_provider.py"
 
 def _executables() -> dict[ProductTierLabel, ProductTierRoute]:
     found: dict[ProductTierLabel, ProductTierRoute] = {}
@@ -53,11 +56,17 @@ def test_contract_defines_exactly_three_padiem_tiers() -> None:
     ]
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_current_truth_plus_laguna_pro_nemotron_max_hold() -> None:
+def test_current_truth_plus_only_with_pro_and_max_hold() -> None:
     executables = _executables()
-    assert executables[ProductTierLabel.PLUS].model_id == "kilo/poolside-laguna-s-2.1-free"
-    assert executables[ProductTierLabel.PRO].model_id == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert executables == {
+        ProductTierLabel.PLUS: active_route_for(ProductTierLabel.PLUS)
+    }
+    assert executables[ProductTierLabel.PLUS].model_id == "agnes-ai/agnes-3.0-flash"
+    assert active_route_for(ProductTierLabel.PRO) is None
     assert active_route_for(ProductTierLabel.MAX) is None
+    pro_routes = get_tier(ProductTierLabel.PRO).routes
+    assert any(r.model_id == PRO_HOLD_MODEL_ID for r in pro_routes)
+    assert all(r.status is not ProductRouteStatus.EXECUTABLE for r in pro_routes)
 
 def test_no_user_visible_auto_or_fallback_anywhere() -> None:
     for tier in PRODUCT_TIER_ROUTES:
@@ -67,15 +76,19 @@ def test_no_user_visible_auto_or_fallback_anywhere() -> None:
             for route in tier.routes:
                 assert token not in route.route_id.lower()
 
-def test_executable_routes_are_explicit_anonymous_and_unretired() -> None:
-    for tier, route in _executables().items():
+def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
+    executables = _executables()
+    expected_bindings = {
+        ProductTierLabel.PLUS: "PADIEM_AGNES_API_KEY",
+    }
+    for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
         assert route.model_id, f"{tier.value}: explicit model_id required"
         assert route.model_id.startswith(f"{route.provider_id}/")
         assert route.model_id not in RETIRED_PRODUCT_MODEL_IDS
         assert route.evidence
-        assert route.credential_mode is ProductCredentialMode.ANONYMOUS
-        assert route.credential_binding is None
+        assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
+        assert route.credential_binding == expected_bindings[tier]
 
 def test_retired_lanes_are_declared_data_only_with_reasons() -> None:
     retired = [
@@ -211,17 +224,12 @@ def _registry_executable_model_ids() -> dict[str, str]:
 def test_parity_with_b14_tier_registry_active_routes() -> None:
     registry = _registry_executable_model_ids()
     assert sorted(registry) == [
-        "plus.kilo-laguna-s-2.1-free.v1",
-        "pro.kilo-nemotron-3-ultra-free.v1",
+        "plus.agnes-3.0-flash.v1",
     ]
     executables = _executables()
     assert (
-        registry["plus.kilo-laguna-s-2.1-free.v1"]
+        registry["plus.agnes-3.0-flash.v1"]
         == executables[ProductTierLabel.PLUS].model_id
-    )
-    assert (
-        registry["pro.kilo-nemotron-3-ultra-free.v1"]
-        == executables[ProductTierLabel.PRO].model_id
     )
 
 
@@ -234,32 +242,44 @@ def test_parity_with_chat_model_policy_derivation() -> None:
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
     assert "from padiem_control_plane.product_tier_routes import (" in source
     assert "LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)" in source
-    assert "MEDIUM_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PRO)" in source
+    assert "MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID" in source
     assert "MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID" in source
     assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
     assert '"kilo/' not in source
     assert "'kilo/" not in source
 
 
-def test_parity_with_b14_kilo_catalog_and_retirement() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
+def test_selected_routes_match_registered_provider_constants() -> None:
     executables = _executables()
+    agnes_source = AGNES_PROVIDER_PATH.read_text(encoding="utf-8")
+    bai_source = BAI_PROVIDER_PATH.read_text(encoding="utf-8")
 
-    laguna_constant = re.search(r'^KILO_LAGUNA_MODEL_ID = "([^"]+)"$', source, re.MULTILINE)
-    nemotron_constant = re.search(
-        r"^KILO_NEMOTRON_MODEL_ID = \"([^\"]+)\"$", source, re.MULTILINE
+    agnes_model = re.search(r'^AGNES_MODEL_ID = "([^"]+)"$', agnes_source, re.MULTILINE)
+    bai_model = re.search(r'^BAI_QWEN_MODEL_ID = "([^"]+)"$', bai_source, re.MULTILINE)
+    agnes_binding = re.search(
+        r'^AGNES_CREDENTIAL_BINDING = "([^"]+)"$', agnes_source, re.MULTILINE
     )
-    assert laguna_constant and nemotron_constant
-    assert laguna_constant.group(1) == executables[ProductTierLabel.PLUS].model_id
-    assert nemotron_constant.group(1) == executables[ProductTierLabel.PRO].model_id
+    bai_binding = re.search(
+        r'^BAI_CREDENTIAL_BINDING = "([^"]+)"$', bai_source, re.MULTILINE
+    )
 
-    # Both live model IDs must still be assembled into KILO_FREE_ROUTES.
-    routes_block = re.search(r"KILO_FREE_ROUTES = \((.*?)\n\)", source, re.DOTALL)
-    assert routes_block, "KILO_FREE_ROUTES block not found"
-    assert "model_id=KILO_LAGUNA_MODEL_ID" in routes_block.group(1)
-    assert "model_id=KILO_NEMOTRON_MODEL_ID" in routes_block.group(1)
-    assert "KILO_MINIMAX_M3_MODEL_ID," not in routes_block.group(1)
-    assert "KILO_HY3_MODEL_ID," not in routes_block.group(1)
+    assert agnes_model and bai_model and agnes_binding and bai_binding
+    assert agnes_model.group(1) == executables[ProductTierLabel.PLUS].model_id
+    assert agnes_binding.group(1) == executables[ProductTierLabel.PLUS].credential_binding
+    pro_routes = get_tier(ProductTierLabel.PRO).routes
+    held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")
+    assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bai_model.group(1) == held_bai.model_id
+    assert bai_binding.group(1) == held_bai.credential_binding
+
+
+def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
+    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
+
+    for tier in (ProductTierLabel.PRO,):
+        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
+        assert kilo_routes
+        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
 
     retired_block = re.search(
         r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL

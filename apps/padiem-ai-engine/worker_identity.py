@@ -34,25 +34,32 @@ import worker as legacy_worker
 from app.agent_skill_service import AgentSkillEngineService
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
+from app.attachment_admission_service import (
+    ATTACHMENT_ADMISSION_PATH,
+    AttachmentAdmissionEngineService,
+)
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
+from app.cloudflare_external_transport import drive_worker_transport, gmail_worker_transport
 from app.connector_bindings import (
     build_tool_binding_resolver,
     CalendarGrant,
+    DRIVE_REFERENCE_APP_ID,
     DriveGrant,
     GmailGrant,
     SlackGrant,
     TelegramGrant,
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
+from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.calendar_port_httpx import (
     HttpxGoogleCalendarReadPort,
     parse_calendar_ids,
 )
-from app.gmail_port_httpx import HttpxGmailReadPort
+from app.gmail_port_cp_lease import ControlPlaneLeaseGmailReadPort
 from app.slack_port_httpx import HttpxSlackReadPort, parse_slack_channel_ids
 from app.telegram_port_httpx import HttpxTelegramReadPort, parse_paired_chat_ids
 from app.drive_port_cp_lease import ControlPlaneLeaseDriveReadPort
@@ -80,6 +87,7 @@ from app.service import EngineService, ServiceContractError, ServiceResponse
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
+    EngineToolProjectionError,
     TOOL_CANCEL_PATH,
     TOOL_EXECUTE_PATH,
     TOOL_RESUME_PATH,
@@ -174,10 +182,10 @@ def _research_service_for_env(
 async def _tool_binding_resolver_for_env(env: Any):
     """Compose the Engine Gmail + Drive + Telegram + Slack + Calendar tool binding resolver.
 
-    Gmail keeps its existing compatibility secret seam. Drive is canonicalized
-    through the private ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the
-    Engine receives only short-lived access leases and never a long-lived
-    refresh credential. Telegram (#2353) uses its own bot-token secret plus a
+    Gmail and Drive are canonicalized through the private
+    ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding: the Engine receives only
+    short-lived access leases and never a long-lived Google refresh credential.
+    Telegram (#2353) uses its own bot-token secret plus a
     server-derived paired-chat allowlist and has no Google OAuth dependency.
     Slack (#2356) uses its own bot-token secret plus a server-derived channel
     allowlist and is READ-only: outbound posting stays behind the P01
@@ -200,7 +208,19 @@ async def _tool_binding_resolver_for_env(env: Any):
         and slack_port is None
         and calendar_port is None
     ):
-        return None
+        # Preserve a bounded Drive-specific activation diagnostic instead of
+        # collapsing the canonical Drive app into generic
+        # tool_runtime_unavailable. This resolver performs no provider call.
+        def no_provider_resolver(app_id: str):
+            if app_id == DRIVE_REFERENCE_APP_ID:
+                raise EngineToolProjectionError(
+                    "drive_port_unavailable",
+                    "The Engine Drive provider port is not provisioned.",
+                    status_code=503,
+                )
+            return None
+
+        return no_provider_resolver
     try:
         (
             gmail_grants,
@@ -222,15 +242,7 @@ async def _tool_binding_resolver_for_env(env: Any):
             raise grant_error
 
         return unavailable
-    if (
-        not gmail_grants
-        and not drive_grants
-        and not telegram_grants
-        and not slack_grants
-        and not calendar_grants
-    ):
-        return None
-    return build_tool_binding_resolver(
+    resolver = build_tool_binding_resolver(
         gmail_port=gmail_port,
         grants=gmail_grants or None,
         drive_port=drive_port,
@@ -243,20 +255,49 @@ async def _tool_binding_resolver_for_env(env: Any):
         calendar_grants=calendar_grants or None,
     )
 
+    def production_resolver(app_id: str):
+        # The canonical Drive app has enough deployment-owned identity to
+        # distinguish activation stages without exposing any binding value,
+        # grant reference, actor reference, OAuth material, or user data.
+        # An unregistered-tool probe can therefore prove composition with
+        # zero provider calls.
+        if app_id == DRIVE_REFERENCE_APP_ID:
+            if drive_port is None:
+                raise EngineToolProjectionError(
+                    "drive_port_unavailable",
+                    "The Engine Drive provider port is not provisioned.",
+                    status_code=503,
+                )
+            if not drive_grants or DRIVE_REFERENCE_APP_ID not in drive_grants:
+                raise EngineToolProjectionError(
+                    "drive_grant_unavailable",
+                    "The Engine Drive capability grant is not provisioned.",
+                    status_code=503,
+                )
+        if resolver is None:
+            return None
+        return resolver(app_id)
 
-def _gmail_port_for_env(env: Any) -> HttpxGmailReadPort | None:
-    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
-    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
-    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
-    if not client_id or not client_secret or not refresh_token:
+    return production_resolver
+
+
+def _gmail_port_for_env(env: Any) -> ControlPlaneLeaseGmailReadPort | None:
+    """Resolve canonical Gmail READ via the private CP OAuth authority.
+
+    There is deliberately no Production fallback to Engine-owned Google
+    client-secret or refresh-token values. Missing/malformed CP authority keeps
+    Gmail unavailable rather than silently widening credential ownership.
+    """
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
         return None
     try:
-        return HttpxGmailReadPort(
-            client_id=client_id,
-            client_secret=client_secret,
-            refresh_token=refresh_token,
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseGmailReadPort(
+            lease_client=lease_client,
+            transport=gmail_worker_transport(),
         )
-    except Exception:
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 
@@ -289,8 +330,11 @@ def _drive_port_for_env(env: Any) -> ControlPlaneLeaseDriveReadPort | None:
         return None
     try:
         lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
-        return ControlPlaneLeaseDriveReadPort(lease_client=lease_client)
-    except (TypeError, ValueError):
+        return ControlPlaneLeaseDriveReadPort(
+            lease_client=lease_client,
+            transport=drive_worker_transport(),
+        )
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 
@@ -499,6 +543,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 image_byte_store=image_byte_store,
                 scope_authority=scope_authority,
             ),
+            attachment_admission=AttachmentAdmissionEngineService(
+                image_byte_store=image_byte_store,
+                scope_authority=scope_authority,
+            ),
             # E7 tool execution/continuation remains a source seam: the
             # resolver factory below returns None until a real port and grant
             # store are bound (PR-C). With no port/grant every request still
@@ -583,6 +631,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             image_byte_store=image_byte_store,
             scope_authority=scope_authority,
         ),
+        attachment_admission=AttachmentAdmissionEngineService(
+            image_byte_store=image_byte_store,
+            scope_authority=scope_authority,
+        ),
         # E7 tool execution/continuation remains a source seam: the
         # resolver factory below returns None until a real port and grant
         # store are bound (PR-C). With no port/grant every request still
@@ -628,6 +680,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_multimodal(request, path)
         if path == MULTIMODAL_STREAM_PATH:
             return await self._fetch_multimodal_stream(request, path)
+        if path == ATTACHMENT_ADMISSION_PATH:
+            return await self._fetch_attachment_admission(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
         return await super().fetch(request)
@@ -695,6 +749,62 @@ class Default(legacy_worker.Default):
                 503,
             )
         result = await services.multimodal.handle(
+            method=method,
+            path=path,
+            content_type=content_type,
+            body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_attachment_admission(self, request: Any, path: str) -> Any:
+        """E5C trusted admission route: source-wired, fail-closed.
+
+        This repeats only the same body-read/service-auth boundary before
+        invoking the named admission service; the canonical scoped byte store
+        remains the sole size/media/receipt authority and no storage resolver
+        or alternate authentication mechanism lives here.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+
+        body = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                body = str(text).encode("utf-8")
+            except Exception:
+                return legacy_worker._json_response(
+                    ServiceResponse(
+                        status_code=400,
+                        body={
+                            "ok": False,
+                            "error": {
+                                "code": "invalid_request",
+                                "message": "Request body could not be read.",
+                                "retryable": False,
+                                "metadata": None,
+                            },
+                        },
+                    )
+                )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        services = await self.engine_services_factory(self.env)
+        if services.attachment_admission is None:
+            return legacy_worker._error_response(
+                "attachment_admission_unavailable",
+                "Trusted attachment admission authority is unavailable.",
+                503,
+            )
+        result = await services.attachment_admission.handle(
             method=method,
             path=path,
             content_type=content_type,

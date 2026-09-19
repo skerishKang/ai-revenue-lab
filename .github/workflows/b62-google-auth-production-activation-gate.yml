@@ -1,0 +1,421 @@
+name: B62 Google Auth Production Activation Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-google-auth-production-activation-gate.yml"
+      - ".github/tests/test_b62_google_auth_production_activation.py"
+      - ".github/scripts/b62_google_auth_activation.py"
+      - ".github/scripts/b62_binding_state_guard.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Google auth Production gate mode"
+        required: true
+        type: choice
+        default: preflight_only
+        options:
+          - preflight_only
+          - activation_readiness
+          - activate_production
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact activation confirmation"
+        required: false
+        default: ""
+        type: string
+      expected_public_base_url:
+        description: "Expected canonical B62 origin"
+        required: false
+        default: "https://chat.padiem.net"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-google-auth-production-activation-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${{ inputs.target_sha }}
+  EXPECTED_PUBLIC_BASE_URL: ${{ inputs.expected_public_base_url }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install source-test dependency
+        run: python -m pip install --quiet pytest
+
+      - name: Run Google auth Production activation source tests
+        run: python -m pytest .github/tests/test_b62_google_auth_production_activation.py -q
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_GOOGLE_AUTH_PRODUCTION_SOURCE_CONTRACT=PASS'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read auth binding state by name and type only
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          settings="${RUNNER_TEMP}/b62-google-auth-readonly.json"
+          curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${settings}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          python .github/scripts/b62_google_auth_activation.py classify             --settings "${settings}"             --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}"
+          python .github/scripts/b62_google_auth_activation.py prereq             --settings "${settings}"             --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}"
+          echo 'BINDING_NAME_TYPE_STATE_ONLY=YES'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  activation-readiness:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activation_readiness' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      GOOGLE_CLIENT_ID_SOURCE: ${{ secrets.PADIEM_CHAT_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET_SOURCE: ${{ secrets.PADIEM_CHAT_GOOGLE_CLIENT_SECRET }}
+      SESSION_SECRET_SOURCE: ${{ secrets.PADIEM_CHAT_SESSION_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READINESS_EXACT_MAIN_SHA=PASS'
+
+      - name: Check protected auth source quality without mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          cid = os.environ.get("GOOGLE_CLIENT_ID_SOURCE", "").strip()
+          csecret = os.environ.get("GOOGLE_CLIENT_SECRET_SOURCE", "").strip()
+          ssecret = os.environ.get("SESSION_SECRET_SOURCE", "").strip()
+          checks = {
+              "GOOGLE_CLIENT_ID_SOURCE_READY": bool(cid) and len(cid) <= 512,
+              "GOOGLE_CLIENT_SECRET_SOURCE_READY": bool(csecret) and len(csecret) <= 4096,
+              "SESSION_SECRET_SOURCE_READY": 32 <= len(ssecret) <= 4096,
+          }
+          for name, ready in checks.items():
+              print(f"{name}={'YES' if ready else 'NO'}")
+          print("AUTH_SOURCE_VALUES_OUTPUT=0")
+          if not all(checks.values()):
+              raise SystemExit(2)
+          PY
+          echo 'AUTH_ACTIVATION_READINESS=PASS'
+          echo 'SECRET_VALUES_READBACK=0'
+          echo 'SECRET_VALUES_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  activate-production-auth:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_production' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GOOGLE_CLIENT_ID_SOURCE: ${{ secrets.PADIEM_CHAT_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET_SOURCE: ${{ secrets.PADIEM_CHAT_GOOGLE_CLIENT_SECRET }}
+      SESSION_SECRET_SOURCE: ${{ secrets.PADIEM_CHAT_SESSION_SECRET }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Activate Google auth with bounded rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "CONFIRM_ACTIVATE_B62_GOOGLE_AUTH_PRODUCTION"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+          python - <<'PY'
+          import os
+          cid = os.environ.get("GOOGLE_CLIENT_ID_SOURCE", "").strip()
+          csecret = os.environ.get("GOOGLE_CLIENT_SECRET_SOURCE", "").strip()
+          ssecret = os.environ.get("SESSION_SECRET_SOURCE", "").strip()
+          if not cid or len(cid) > 512:
+              raise SystemExit("GOOGLE_CLIENT_ID_QUALITY=FAIL")
+          if not csecret or len(csecret) > 4096:
+              raise SystemExit("GOOGLE_CLIENT_SECRET_QUALITY=FAIL")
+          if len(ssecret) < 32 or len(ssecret) > 4096:
+              raise SystemExit("SESSION_SECRET_QUALITY=FAIL")
+          print("GOOGLE_CLIENT_ID_QUALITY=PASS")
+          print("GOOGLE_CLIENT_SECRET_QUALITY=PASS")
+          print("SESSION_SECRET_QUALITY=PASS")
+          print("AUTH_INPUT_VALUES_OUTPUT=0")
+          PY
+
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          pre="${RUNNER_TEMP}/b62-google-auth-pre.json"
+          pre_deploy="${RUNNER_TEMP}/b62-google-auth-pre-deploy.json"
+          curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${pre}"
+          curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments"             -o "${pre_deploy}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${pre}" >/dev/null
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${pre_deploy}" >/dev/null
+          pre_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${pre_deploy}")"
+          test -n "${pre_version}"
+          echo "PREMUTATION_SERVED_VERSION_ID=${pre_version}"
+
+          python .github/scripts/b62_google_auth_activation.py prereq             --settings "${pre}"             --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}"
+
+          # First-activation gate: refuse to overwrite any existing auth-owned
+          # binding. The canonical public base URL is an existing prerequisite.
+          jq -e '
+            [.result.bindings[] | select(
+              .name == "PADIEM_CHAT_AUTH_MODE" or
+              .name == "PADIEM_CHAT_GOOGLE_CLIENT_ID" or
+              .name == "PADIEM_CHAT_GOOGLE_CLIENT_SECRET" or
+              .name == "PADIEM_CHAT_SESSION_SECRET"
+            )] | length == 0
+          ' "${pre}" >/dev/null
+          echo 'AUTH_FIRST_ACTIVATION_PRESTATE=PASS'
+
+          rollback() {
+            rc="$?"
+            set +e
+            if [ "${rc}" -ne 0 ]; then
+              echo 'B62_GOOGLE_AUTH_ROLLBACK=STARTED'
+
+              curl -sS -X DELETE                 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"                 "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/secrets/PADIEM_CHAT_GOOGLE_CLIENT_SECRET"                 -o "${RUNNER_TEMP}/rollback-delete-google.json" >/dev/null 2>&1 || true
+              curl -sS -X DELETE                 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"                 "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/secrets/PADIEM_CHAT_SESSION_SECRET"                 -o "${RUNNER_TEMP}/rollback-delete-session.json" >/dev/null 2>&1 || true
+
+              restore="${RUNNER_TEMP}/b62-google-auth-restore.json"
+              python - "${pre}" "${restore}" <<'PY'
+          import json, sys
+          before = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = [
+              {"name": b["name"], "type": "inherit", "version_id": "latest"}
+              for b in before["result"]["bindings"]
+          ]
+          payload = {
+              "bindings": bindings,
+              "annotations": {
+                  "workers/message": "B62 Google auth failed activation rollback",
+                  "workers/triggered_by": "b62-google-auth-production-activation-gate",
+              },
+          }
+          json.dump(payload, open(sys.argv[2], "w", encoding="utf-8"), separators=(",", ":"))
+          PY
+              curl -sS -X PATCH                 -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"                 -F "settings=<${restore};type=application/json"                 "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"                 -o "${RUNNER_TEMP}/rollback-settings-response.json" >/dev/null 2>&1 || true
+
+              post_rollback="${RUNNER_TEMP}/b62-google-auth-post-rollback.json"
+              if curl -fsS "${auth[@]}"                 "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"                 -o "${post_rollback}" &&                 python .github/scripts/b62_binding_state_guard.py                   --before "${pre}" --after "${post_rollback}" >/dev/null 2>&1; then
+                echo 'B62_GOOGLE_AUTH_ROLLBACK_READBACK=EXACT'
+              else
+                echo 'B62_GOOGLE_AUTH_ROLLBACK_READBACK=NOT_EXACT'
+              fi
+              echo 'SECRET_VALUES_OUTPUT=0'
+            fi
+            exit "${rc}"
+          }
+          trap rollback EXIT
+
+          put_secret() {
+            name="$1"
+            source_var="$2"
+            payload="${RUNNER_TEMP}/${name}.json"
+            NAME="${name}" SOURCE_VAR="${source_var}" python - "${payload}" <<'PY'
+          import json, os, sys
+          name = os.environ["NAME"]
+          value = os.environ[os.environ["SOURCE_VAR"]]
+          json.dump({"name": name, "type": "secret_text", "text": value},
+                    open(sys.argv[1], "w", encoding="utf-8"),
+                    separators=(",", ":"))
+          PY
+            response="${RUNNER_TEMP}/${name}-response.json"
+            status="$(curl -sS -X PUT "${auth[@]}"               --data-binary "@${payload}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/secrets"               -o "${response}" -w '%{http_code}')"
+            rm -f "${payload}"
+            test "${status}" -ge 200
+            test "${status}" -lt 300
+            jq -e '.success == true' "${response}" >/dev/null
+          }
+
+          put_secret PADIEM_CHAT_GOOGLE_CLIENT_SECRET GOOGLE_CLIENT_SECRET_SOURCE
+          echo 'GOOGLE_CLIENT_SECRET_PUT=PASS'
+          put_secret PADIEM_CHAT_SESSION_SECRET SESSION_SECRET_SOURCE
+          echo 'SESSION_SECRET_PUT=PASS'
+
+          after_secret="${RUNNER_TEMP}/b62-google-auth-after-secret.json"
+          curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${after_secret}"
+          AFTER_SECRET_FILE="${after_secret}" python - <<'PY'
+          import json
+          import os
+
+          payload = json.load(open(os.environ["AFTER_SECRET_FILE"], encoding="utf-8"))
+          result = payload.get("result")
+          if not isinstance(result, dict):
+              raise SystemExit("AUTH_SECRET_READBACK_RESULT_SHAPE=FAIL")
+          bindings = result.get("bindings")
+          if not isinstance(bindings, list):
+              raise SystemExit("AUTH_SECRET_READBACK_BINDINGS_SHAPE=FAIL")
+
+          required = (
+              "PADIEM_CHAT_GOOGLE_CLIENT_SECRET",
+              "PADIEM_CHAT_SESSION_SECRET",
+          )
+          for name in required:
+              matches = [b for b in bindings if isinstance(b, dict) and b.get("name") == name]
+              if len(matches) != 1 or matches[0].get("type") != "secret_text":
+                  raise SystemExit(f"AUTH_SECRET_READBACK_{name}=FAIL")
+
+          print("AUTH_SECRET_NAME_TYPE_READBACK=PASS")
+          print("SECRET_VALUES_READBACK=0")
+          print("SECRET_VALUES_OUTPUT=0")
+          PY
+
+          patch="${RUNNER_TEMP}/b62-google-auth-activation.json"
+          python - "${after_secret}" "${patch}" <<'PY'
+          import json, os, sys
+          current = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = [
+              {"name": b["name"], "type": "inherit", "version_id": "latest"}
+              for b in current["result"]["bindings"]
+          ]
+          bindings.extend([
+              {"name": "PADIEM_CHAT_AUTH_MODE", "type": "plain_text", "text": "google"},
+              {"name": "PADIEM_CHAT_GOOGLE_CLIENT_ID", "type": "plain_text",
+               "text": os.environ["GOOGLE_CLIENT_ID_SOURCE"].strip()},
+          ])
+          payload = {
+              "bindings": bindings,
+              "annotations": {
+                  "workers/message": "B62 Google auth Production activation",
+                  "workers/triggered_by": "b62-google-auth-production-activation-gate",
+              },
+          }
+          json.dump(payload, open(sys.argv[2], "w", encoding="utf-8"), separators=(",", ":"))
+          PY
+
+          response="${RUNNER_TEMP}/b62-google-auth-settings-response.json"
+          status="$(curl -sS -X PATCH             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -F "settings=<${patch};type=application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${response}" -w '%{http_code}')"
+          rm -f "${patch}"
+          test "${status}" -ge 200
+          test "${status}" -lt 300
+          jq -e '.success == true' "${response}" >/dev/null
+          echo 'AUTH_SETTINGS_PATCH=PASS'
+
+          verified=no
+          for _ in $(seq 1 30); do
+            post="${RUNNER_TEMP}/b62-google-auth-post.json"
+            if curl -fsS "${auth[@]}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"               -o "${post}" &&               python .github/scripts/b62_google_auth_activation.py verify                 --settings "${post}"                 --expected-public-base-url "${EXPECTED_PUBLIC_BASE_URL}" >/dev/null 2>&1 &&               POST_FILE="${post}" python - <<'PY'
+          import json, os
+          data = json.load(open(os.environ["POST_FILE"], encoding="utf-8"))
+          bindings = {b["name"]: b for b in data["result"]["bindings"]}
+          if bindings["PADIEM_CHAT_GOOGLE_CLIENT_ID"].get("text", "").strip() != os.environ["GOOGLE_CLIENT_ID_SOURCE"].strip():
+              raise SystemExit(1)
+          PY
+            then
+              verified=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${verified}" = yes
+          echo 'AUTH_BINDING_READBACK=PASS'
+
+          ready=no
+          for _ in $(seq 1 15); do
+            status_json="${RUNNER_TEMP}/b62-auth-status.json"
+            if curl -fsS "${EXPECTED_PUBLIC_BASE_URL}/api/auth/status" -o "${status_json}" &&                jq -e '.ready == true' "${status_json}" >/dev/null 2>&1; then
+              ready=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${ready}" = yes
+          echo 'AUTH_STATUS_READY=PASS'
+
+          served_changed=no
+          for _ in $(seq 1 30); do
+            post_deploy="${RUNNER_TEMP}/b62-google-auth-post-deploy.json"
+            if curl -fsS "${auth[@]}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments"               -o "${post_deploy}" &&               jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${post_deploy}" >/dev/null 2>&1; then
+              post_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${post_deploy}")"
+              if [ -n "${post_version}" ] && [ "${post_version}" != "${pre_version}" ]; then
+                served_changed=yes
+                echo "POST_ACTIVATION_SERVED_VERSION_ID=${post_version}"
+                break
+              fi
+            fi
+            sleep 2
+          done
+          test "${served_changed}" = yes
+          echo 'SERVED_VERSION_CHANGED=PASS'
+
+          trap - EXIT
+          echo 'B62_GOOGLE_AUTH_PRODUCTION_ACTIVATION=PASS'
+          echo 'UNRELATED_BINDING_MUTATION=0'
+          echo 'LOGIN_ATTEMPT=0'
+          echo 'PHASE_B_REQUEST=0'
+          echo 'SECRET_VALUES_READBACK=0'
+          echo 'SECRET_VALUES_OUTPUT=0'
+          echo 'PRODUCTION_MUTATION=1'

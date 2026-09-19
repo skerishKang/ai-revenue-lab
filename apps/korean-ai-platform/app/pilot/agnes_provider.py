@@ -5,7 +5,7 @@ candidate after the #1933 S2-b retirement of the first Agnes integration.
 ACT-0 authority for this route is the repository intake record
 ``docs/providers/AGNES_AI_V1.md`` (research snapshot 2026-08-27): OpenAI-
 compatible fixed origin ``https://apihub.agnes-ai.com/v1``, Bearer auth,
-advertised streaming, model ``agnes-2.5-flash``. The owner-approved credential
+ advertised streaming, model ``agnes-3.0-flash``. The owner-approved credential
 binding name is ``PADIEM_AGNES_API_KEY`` (names only; the value is never read,
 printed, or committed here).
 
@@ -32,14 +32,14 @@ AGNES_BASE_ORIGIN = "https://apihub.agnes-ai.com/v1"
 AGNES_ALLOWED_HOST = "apihub.agnes-ai.com"
 AGNES_CREDENTIAL_BINDING = "PADIEM_AGNES_API_KEY"
 
-AGNES_MODEL_ID = "agnes-ai/agnes-2.5-flash"
-AGNES_UPSTREAM_MODEL = "agnes-2.5-flash"
+AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
+AGNES_UPSTREAM_MODEL = "agnes-3.0-flash"
 # Authority date of the intake record facts this registration reuses (#2133 ACT-0).
 AGNES_SOURCE_CHECKED_AT = "2026-08-27"
 
 
 def register_agnes_provider() -> None:
-    """Idempotently register Agnes AI and the manual-pin agnes-2.5-flash route."""
+    """Idempotently register Agnes AI and the manual-pin agnes-3.0-flash route."""
 
     if get_platform_provider(AGNES_PROVIDER_ID) is None:
         register_platform_provider(
@@ -59,7 +59,7 @@ def register_agnes_provider() -> None:
     model = CatalogModel(
         model_id=AGNES_MODEL_ID,
         upstream_model=AGNES_UPSTREAM_MODEL,
-        display_name="Agnes: 2.5 Flash",
+        display_name="Agnes: 3.0 Flash",
         provider="Agnes AI",
         provider_type="platform",
         # Credits-denominated provider pricing is not a USD rate: never fabricate.

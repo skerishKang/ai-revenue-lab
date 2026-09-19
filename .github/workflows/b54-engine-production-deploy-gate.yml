@@ -72,7 +72,7 @@ jobs:
           test -n "${active_version}"
           version_detail="${RUNNER_TEMP}/version-pre.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
-          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}")"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}" --require-drive-runtime-bindings)"
           printf '%s\n' "${verify_out}"
           overlay_expected="$(printf '%s\n' "${verify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_EXPECTED=//p')"
           test "${overlay_expected}" = 'YES' || test "${overlay_expected}" = 'NO'
@@ -88,20 +88,19 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          # f88 lesson: exit 0 (or wrangler's "No targets deployed" version
+          # report) proves only that the deploy COMMAND ran, never that the
+          # served deployment is healthy. This step therefore emits command
+          # evidence only; the final production PASS marker is emitted by the
+          # post-deploy served-version guard below, after served-version
+          # evidence exists.
           uv run pywrangler deploy
-          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+          echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'
 
-      - name: Post-deploy smoke
-        run: |
-          set -euo pipefail
-          sleep 15
-          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health')
-          test "$CODE" = '200'
-          grep -q '"status":"ok"' /tmp/health.json
-          grep -q '"b14_service_bound":true' /tmp/health.json
-          grep -q 'orchestration_run' /tmp/health.json
-          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
-
+      # f88 lesson: the post-deploy served-version guard runs BEFORE the
+      # health smoke, so the exact served version is recorded as evidence even
+      # when the smoke fails (previously the guard was skipped on smoke
+      # failure and CENTRAL could not tell what version was served).
       # ISSUE #2414: re-resolve the served version AFTER the deploy and require
       # the caller-registry secrets on that exact new version. If the overlay
       # existed on the pre-deploy served version it must survive the deploy.
@@ -129,8 +128,33 @@ jobs:
           python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
             --active-version "${active_version}" \
+            --require-drive-runtime-bindings \
             "${overlay_args[@]}"
           echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
 
   smoke-idempotency:
     # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
@@ -144,15 +168,17 @@ jobs:
     env:
       # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
       # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
-      # identifier b54-kagent and the credential is the SAME secret the B62
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
       # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
       # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
       # authority can no longer drift from the runtime authority. A10 reads only
       # the legacy env NAMES, so those names are re-pointed at the same canonical
       # source; no independent smoke credential secret remains.
-      CALLER_ID: b54-kagent
+      CALLER_ID: b54-p01-overlay-20260914-a1
       CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
-      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-kagent
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
       PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

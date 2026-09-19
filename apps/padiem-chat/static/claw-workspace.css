@@ -1,7 +1,7 @@
-/* claw-workspace.css — Padiem Claw first-class workspace surface (#2114 ACT-1).
- * Replaces the #clawDialog modal-as-primary pattern with an architecture-native
- * data-state="claw" canvas inside the existing shell. Natural-language input is
- * the hero; actions are optional override chips; results render as a compact card.
+/* claw-workspace.css — Padiem Claw workspace canvas (#2114 ACT-1, #2532 continuity).
+ * data-state="claw" owns the content column, but the shared bottom composer stays
+ * visible: #messageInput is the Claw request input and #clawManualForm is a compact
+ * mode bar above it. Chat and Claw share one visual language.
  */
 
 /* ── Shell state visibility ───────────────────────────────────────────── */
@@ -10,18 +10,44 @@
 }
 .app-shell[data-state="claw"] .claw-workspace {
   display: flex;
+  /* Keep the workspace above the fixed portrait layer (padiem-glass-portrait.css). */
+  position: relative;
+  z-index: 2;
 }
-.app-shell[data-state="claw"] .conversation,
-.app-shell[data-state="claw"] .composer-wrap {
+/* #2532 corrective pass (R1): manual Claw keeps the shared conversation column
+ * visible so request → result reads as one continuous Chat interaction. Only the
+ * generic Chat empty-state is replaced; the inbox stays a dedicated workspace view
+ * (hidden conversation), while result / memory / approved-memory render inline. */
+.app-shell[data-state="claw"] .conversation {
+  display: block;
+  padding-bottom: 280px;
+}
+.app-shell[data-state="claw"] .conversation .empty-state {
+  display: none;
+}
+.app-shell[data-state="claw"] .claw-workspace[data-view="manual"] {
+  display: none;
+}
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation {
+  display: none !important;
+}
+/* Claw-only nodes now live inside the shared conversation column: hide them
+ * whenever the shell is not in the Claw state. */
+.app-shell:not([data-state="claw"]) .claw-result,
+.app-shell:not([data-state="claw"]) .claw-memory-review,
+.app-shell:not([data-state="claw"]) .claw-approved-memory,
+.app-shell:not([data-state="claw"]) .claw-request-echo,
+.app-shell:not([data-state="claw"]) .claw-disabled-controls {
   display: none !important;
 }
 
 /* ── Workspace layout ─────────────────────────────────────────────────── */
 .claw-workspace {
   flex: 1;
-  width: min(760px, calc(100% - 40px));
+  width: min(800px, calc(100% - 40px));
   margin: 0 auto;
-  padding: clamp(20px, 5vh, 48px) 0 96px;
+  /* Room for the fixed composer + Claw mode bar (#2532). */
+  padding: clamp(20px, 5vh, 48px) 0 280px;
   flex-direction: column;
   gap: 18px;
   overflow-y: auto;
@@ -37,14 +63,15 @@
 .claw-workspace-kicker {
   margin: 0 0 4px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 800;
+  letter-spacing: 0.13em;
   color: var(--accent);
 }
 .claw-workspace-title {
   margin: 0;
-  font-size: clamp(22px, 4vw, 30px);
-  font-weight: 800;
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 770;
+  letter-spacing: -0.045em;
   color: var(--text);
 }
 .claw-workspace-chip {
@@ -60,43 +87,56 @@
 }
 .claw-workspace-tagline {
   margin: -6px 0 0;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
   color: var(--muted);
 }
 
-/* ── Intake (hero) ────────────────────────────────────────────────────── */
-.claw-intake {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.claw-intake-hero {
+/* ── Composer mode bar (#2532: intake lives above the shared composer) ─── */
+.claw-mode-bar {
   display: grid;
   gap: 8px;
-}
-.claw-intake-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.claw-intake-hero textarea {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 148px;
-  padding: 16px;
+  margin: 0 0 10px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--card-bg);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 16px; /* >=16px: prevents iOS focus auto-zoom */
-  line-height: 1.55;
-  resize: vertical;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
 }
-.claw-intake-hero textarea:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+.claw-mode-bar[hidden] {
+  display: none;
+}
+.claw-mode-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.claw-mode-bar .claw-actions {
+  flex-wrap: nowrap;
+}
+.claw-mode-bar .claw-generate-button,
+.claw-mode-bar .claw-execute-button {
+  min-height: 48px;
+  flex: 0 0 auto;
+  padding: 8px 18px;
+  font-size: 14px;
+}
+.claw-mode-bar .claw-actions-hint {
+  margin: 0;
+}
+.claw-mode-bar .claw-meta {
+  background: transparent;
+}
+/* The composer is the Claw request input: keep >=16px to prevent iOS focus zoom. */
+.app-shell[data-state="claw"] .composer textarea {
+  font-size: 16px;
+}
+.app-shell[data-state="claw"] .composer-tools,
+.app-shell[data-state="claw"] .composer-note {
+  display: none;
 }
 
 /* ── Optional override chips ──────────────────────────────────────────── */
@@ -314,6 +354,27 @@
   display: grid;
   gap: 10px;
 }
+/* #2532 (R2): the request echo + result render inline in the shared
+ * conversation column, so manual Claw reads as one continuous Chat thread. */
+.conversation .claw-request-echo {
+  /* Mirror the .user-message layout (right-aligned bubble) without reusing that
+   * class, which the shared gutter QA selects strictly. */
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 6px;
+}
+.conversation .claw-result {
+  margin-top: 4px;
+}
+.conversation .claw-memory-review {
+  margin-top: 8px;
+}
+.conversation .claw-approved-memory {
+  margin-top: 12px;
+}
+.conversation .claw-disabled-controls {
+  margin-top: 16px;
+}
 .claw-result-empty {
   margin: 0;
   padding: 16px;
@@ -357,7 +418,7 @@
   white-space: pre-wrap;
   word-break: break-word;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px; /* parity with chat .assistant-content */
   line-height: 1.6;
   color: var(--text);
   max-height: 320px;
@@ -396,11 +457,36 @@
   color: var(--text);
 }
 
-/* ── Honest "coming soon" group ───────────────────────────────────────── */
+/* ── Honest "coming soon" group — collapsed disclosure (#2532 R3) ──────── */
 .claw-disabled-controls {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+.claw-disabled-summary {
+  cursor: pointer;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted);
+  list-style: none;
+}
+.claw-disabled-summary::-webkit-details-marker {
+  display: none;
+}
+.claw-disabled-summary::before {
+  content: "▸ ";
+  color: var(--muted);
+}
+.claw-disabled-controls[open] .claw-disabled-summary::before {
+  content: "▾ ";
+}
+.claw-disabled-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  padding: 0 12px 12px;
 }
 .claw-disabled-control {
   text-align: left;
@@ -411,17 +497,16 @@
   color: var(--muted);
   font: inherit;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 .claw-disabled-control strong {
   display: block;
   font-size: 13px;
+  color: var(--text);
 }
 .claw-disabled-control small {
   display: block;
   margin-top: 4px;
   font-size: 11px;
-  opacity: 0.85;
 }
 
 /* ── Guarded buttons: clearer disabled affordance ───────────────────────── */
@@ -662,23 +747,31 @@
  * Shared visual roles inherit the active Padiem Chat theme tokens above.
  */
 
-/* ── Mobile: single column, hero image minimized during active work ───── */
-@media (max-width: 720px) {
+/* ── Mobile: single column, composer mode bar stacks ───────────────────── */
+@media (max-width: 920px) {
   .claw-workspace {
     width: calc(100% - 28px);
-    padding: 16px 0 40px;
+    padding: 16px 0 260px;
     gap: 14px;
   }
   .claw-meta-fields,
-  .claw-disabled-controls {
+  .claw-disabled-grid {
     grid-template-columns: 1fr;
   }
   .claw-result-actions .claw-result-action {
     flex: 1 1 100%;
     justify-content: center;
   }
-  .claw-intake-hero textarea {
-    min-height: 132px;
+  .claw-mode-bar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .claw-mode-bar .claw-actions {
+    flex-wrap: wrap;
+  }
+  .claw-mode-bar .claw-generate-button,
+  .claw-mode-bar .claw-execute-button {
+    flex: 1 1 140px;
   }
   /* Decorative hero must not compete with input/output on mobile. */
   html[data-theme="padiem-glass"] .app-shell[data-state="claw"] .main-panel::before {
@@ -738,7 +831,7 @@
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
-@media (max-width: 760px) {
+@media (max-width: 920px) {
   .claw-inbox { padding: 14px; }
   .claw-inbox-header,
   .claw-inbox-item { align-items: stretch; flex-direction: column; }

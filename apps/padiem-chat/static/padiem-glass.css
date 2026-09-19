@@ -217,6 +217,9 @@ html[data-theme="padiem-glass"] .empty-state {
   text-shadow: 0 2px 18px rgba(255, 255, 255, .22);
 }
 html[data-theme="padiem-glass"] .empty-state h1 { color: #16212a; letter-spacing: -.04em; }
+/* The shared dark-surface rule tints the post-<br> headline white.
+ * Glass is a bright surface, so keep the second line readable here. */
+html[data-theme="padiem-glass"] .empty-state h1 br + span { color: #66737e; }
 html[data-theme="padiem-glass"] .empty-copy { color: #44515d; }
 html[data-theme="padiem-glass"] .eyebrow { color: #334a5b; letter-spacing: .16em; }
 html[data-theme="padiem-glass"] .eyebrow::before { background: rgba(121, 188, 231, .95); box-shadow: 0 0 12px rgba(121, 188, 231, .32); }
@@ -236,6 +239,12 @@ html[data-theme="padiem-glass"] .starter:not(:disabled):hover {
 }
 html[data-theme="padiem-glass"] .starter strong { color: #17212a; }
 html[data-theme="padiem-glass"] .starter small { color: #53606c; overflow-wrap: anywhere; }
+/* Supported format names are tokens, not arbitrary prose. Never split JSON/XLSX
+ * in the middle; locale.js inserts explicit break opportunities at separators. */
+html[data-theme="padiem-glass"] #documentStarterButton small {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
 html[data-theme="padiem-glass"] .starter-icon {
   background: rgba(34, 46, 57, .10);
   color: #2d4557;
@@ -258,7 +267,24 @@ html[data-theme="padiem-glass"] .composer-note { color: rgba(41, 52, 63, .62) !i
 html[data-theme="padiem-glass"] .tool-button {
   background: rgba(255, 255, 255, .26);
   color: #25333e;
-  border-color: rgba(255, 255, 255, .38);
+  border: 1px solid rgba(45, 69, 87, .08);
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
+}
+
+/* Shared surface hover turns tool labels white. On the bright Glass composer
+ * that makes + File effectively disappear, so keep a dark foreground across
+ * pointer, keyboard, and pressed interaction states. */
+html[data-theme="padiem-glass"] .composer .tool-button:hover:not(:disabled),
+html[data-theme="padiem-glass"] .composer .tool-button:focus-visible:not(:disabled) {
+  background: rgba(213, 224, 232, .82);
+  color: #17212a;
+  border-color: rgba(45, 69, 87, .28);
+  box-shadow: 0 4px 12px rgba(34, 49, 61, .12), inset 0 1px 0 rgba(255, 255, 255, .68);
+}
+html[data-theme="padiem-glass"] .composer .tool-button:active:not(:disabled) {
+  background: rgba(202, 217, 228, .90);
+  color: #17212a;
+  border-color: rgba(45, 69, 87, .32);
 }
 
 html[data-theme="padiem-glass"] .message-bubble {
@@ -278,7 +304,6 @@ html[data-theme="padiem-glass"] .document-card,
 html[data-theme="padiem-glass"] .project-card,
 html[data-theme="padiem-glass"] .project-file-card,
 html[data-theme="padiem-glass"] .rich-response,
-html[data-theme="padiem-glass"] .route-details,
 html[data-theme="padiem-glass"] .reference-note {
   background: rgba(244, 247, 249, .52) !important;
   color: #17212a !important;
@@ -294,16 +319,44 @@ html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response
 html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-list,
 html[data-theme="padiem-glass"] .assistant-content .rich-response .rich-response-quote,
 html[data-theme="padiem-glass"] .answer-action,
-html[data-theme="padiem-glass"] .reference-note,
-html[data-theme="padiem-glass"] .route-details {
+html[data-theme="padiem-glass"] .reference-note {
   color: #17212a !important;
+}
+
+/* #2532 Claw ↔ Chat continuity: same eyebrow/card/composer language in the workspace. */
+html[data-theme="padiem-glass"] .claw-workspace-kicker { color: #334a5b; letter-spacing: .16em; }
+html[data-theme="padiem-glass"] .claw-workspace-title { color: #16212a; }
+html[data-theme="padiem-glass"] .claw-workspace-tagline { color: #44515d; }
+html[data-theme="padiem-glass"] .claw-workspace-chip { color: #18232c; }
+html[data-theme="padiem-glass"] .claw-mode-bar {
+  background: linear-gradient(165deg, rgba(249, 251, 252, .68), rgba(226, 232, 236, .42));
+  border: 1px solid rgba(255, 255, 255, .64);
+  box-shadow: var(--composer-shadow);
+  backdrop-filter: blur(30px) saturate(110%);
+  -webkit-backdrop-filter: blur(30px) saturate(110%);
+}
+html[data-theme="padiem-glass"] .claw-result-card,
+html[data-theme="padiem-glass"] .claw-inbox,
+html[data-theme="padiem-glass"] .claw-memory-review {
+  background: linear-gradient(155deg, rgba(248, 250, 251, .56), rgba(228, 234, 238, .32));
+  border-color: rgba(255, 255, 255, .52);
+  backdrop-filter: blur(24px) saturate(108%);
+  -webkit-backdrop-filter: blur(24px) saturate(108%);
+}
+html[data-theme="padiem-glass"] .claw-result-kind,
+html[data-theme="padiem-glass"] .claw-result-body { color: #17212a; }
+html[data-theme="padiem-glass"] .claw-disabled-control { color: #53606c; }
+html[data-theme="padiem-glass"] .claw-disabled-control strong { color: #17212a; }
+html[data-theme="padiem-glass"] .claw-chip {
+  background: rgba(255, 255, 255, .26);
+  color: #25333e;
+  border-color: rgba(255, 255, 255, .38);
 }
 
 html[data-theme="padiem-glass"] .settings-dialog::backdrop {
   background: rgba(22, 30, 38, .32);
   backdrop-filter: blur(8px);
-}
-html[data-theme="padiem-glass"] .settings-panel {
+}html[data-theme="padiem-glass"] .settings-panel {
   background: linear-gradient(160deg, rgba(246, 249, 251, .76), rgba(216, 224, 229, .56));
   color: #17212a;
   border: 1px solid rgba(255, 255, 255, .66);
@@ -347,12 +400,18 @@ html[data-theme="padiem-glass"] :focus-visible {
   html[data-theme="padiem-glass"] .topbar,
   html[data-theme="padiem-glass"] .starter,
   html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .claw-mode-bar,
+  html[data-theme="padiem-glass"] .claw-result-card,
+  html[data-theme="padiem-glass"] .claw-inbox,
   html[data-theme="padiem-glass"] .settings-panel {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
   html[data-theme="padiem-glass"] .starter,
   html[data-theme="padiem-glass"] .composer,
+  html[data-theme="padiem-glass"] .claw-mode-bar,
+  html[data-theme="padiem-glass"] .claw-result-card,
+  html[data-theme="padiem-glass"] .claw-inbox,
   html[data-theme="padiem-glass"] .settings-panel {
     background: rgba(238, 242, 245, .92);
   }

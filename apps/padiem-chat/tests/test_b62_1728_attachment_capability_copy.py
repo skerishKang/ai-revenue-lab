@@ -40,6 +40,7 @@ def test_composer_does_not_hard_code_format_truth_in_html():
 def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in LOCALE_JS
     assert "capabilityCopy.documentFormats" in LOCALE_JS
+    assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS
     assert "attachmentInput.accept = attachmentCapabilities.accept" in LOCALE_JS
     assert "attachmentButton.title = capabilityCopy.fileButtonTitle" in LOCALE_JS
     assert '"document-copy"' not in LOCALE_JS
@@ -98,3 +99,8 @@ def test_no_hidden_browser_persistence_or_interception_added():
     combined = CAPABILITIES_JS + "\n" + APP_JS + "\n" + BINARY_JS + "\n" + LOCALE_JS
     for forbidden in ["localStorage", "sessionStorage", "indexedDB", "cookieStore", "window.fetch =", "MutationObserver"]:
         assert forbidden not in combined
+
+
+def test_document_starter_formats_break_only_at_explicit_separators():
+    assert 'id="documentStarterButton"' in INDEX_HTML
+    assert 'formats.split("·").join(" · \\u200b")' in LOCALE_JS

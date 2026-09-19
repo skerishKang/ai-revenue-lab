@@ -365,6 +365,25 @@ class TestErrorRedaction:
         assert "SECRET_KEY" not in body
         assert resp.json()["error"]["message"] == "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오."
 
+    def test_json_body_uses_explicit_asgi_body_boundary(self, client, monkeypatch):
+        """The gateway must not depend on Starlette Request.json() in Workers."""
+        from app.pilot import gateway
+
+        monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-route-0123456789")
+        original = gateway.Request.json
+
+        async def broken_json(_request):
+            raise RuntimeError("convenience json bridge unavailable")
+
+        monkeypatch.setattr(gateway.Request, "json", broken_json)
+        response = client.post(
+            "/api/pilot/router/resolve",
+            json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
+        )
+        assert response.status_code == 200
+        assert response.json()["selected_model"]
+        monkeypatch.setattr(gateway.Request, "json", original)
+
     def test_api_error_has_request_id(self, client):
         _configure_pilot()
         resp = client.post(

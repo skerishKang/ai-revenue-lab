@@ -34,21 +34,274 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.12.5"
+      - name: Verify committed host lock is current
+        run: uv lock --check
       - name: Resolve B62 with shared Core path dependency
-        run: uv sync --extra dev
+        run: uv sync --locked --extra dev
       - name: Prove shared Core import without PYTHONPATH
-        run: uv run python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
+        run: uv run --locked python -c "import padiem_ai_core, pathlib; print(pathlib.Path(padiem_ai_core.__file__).resolve())"
       - name: Compile B62 and Core
-        run: uv run python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
+        run: uv run --locked python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
         run: node --check static/app.js
       - name: B62 tests
-        run: uv run python -m pytest -q
+        run: uv run --locked python -m pytest -q
       - name: Core tests with Tool Runtime dev dependency
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
-      - name: Pywrangler dependency sync
-        run: uv run pywrangler sync --force
+      - name: Verify locked host dependency versions
+        run: uv run --locked python tests/check_dependency_locks.py --phase host
+      - name: Pywrangler dependency sync from committed pylock
+        run: uv run --locked pywrangler sync --force
+      - name: Verify vendored Worker dependency versions
+        run: uv run --locked python tests/check_dependency_locks.py --phase vendor
+      - name: Prove sync did not mutate committed locks
+        run: git diff --exit-code -- uv.lock pylock.toml
+      - name: Real Worker/Pyodide timeout runtime probe
+        run: |
+          set -euo pipefail
+          cat > .runtime-timeout-probe.toml <<'EOF'
+          name = "padiem-chat-runtime-timeout-probe"
+          main = "worker_runtime_timeout_probe.py"
+          compatibility_date = "2026-08-25"
+          compatibility_flags = ["python_workers"]
+          workers_dev = true
+          EOF
+
+          uv run --locked python tests/worker_runtime_probe_origin.py --port 9099 > /tmp/b62-timeout-origin.log 2>&1 &
+          ORIGIN_PID=$!
+          npx --yes wrangler@4.130.0 dev --config .runtime-timeout-probe.toml --port 8787 > /tmp/b62-timeout-workerd.log 2>&1 &
+          WORKER_PID=$!
+
+          cleanup() {
+            kill "$WORKER_PID" "$ORIGIN_PID" 2>/dev/null || true
+            rm -f .runtime-timeout-probe.toml
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8787/ready >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/b62-timeout-workerd.log
+            exit 1
+          fi
+
+          HTTP_CODE="$(curl -sS -o /tmp/b62-timeout-result.json -w '%{http_code}' http://127.0.0.1:8787/probe)"
+          cat /tmp/b62-timeout-result.json
+          if [ "$HTTP_CODE" != "200" ]; then
+            cat /tmp/b62-timeout-workerd.log
+            exit 1
+          fi
+
+          uv run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/b62-timeout-result.json").read_text())
+          required = (
+              "abortsignal_import",
+              "abortsignal_timeout_call",
+              "fetch_accepts_signal",
+              "local_normal_fetch",
+              "local_post_form",
+              "local_delay_timeout",
+              "local_body_timeout",
+          )
+          failed = [name for name in required if data.get(name) is not True]
+          if failed:
+              raise SystemExit(f"Worker timeout runtime probe failed: {failed}; data={data}")
+          print("WORKER_TIMEOUT_RUNTIME_PASS")
+          PY
+      - name: Real Worker/Pyodide web transport runtime probe
+        run: |
+          set -euo pipefail
+          cat > .runtime-web-transport-probe.toml <<'EOF'
+          name = "padiem-chat-runtime-web-transport-probe"
+          main = "worker_runtime_web_transport_probe.py"
+          compatibility_date = "2026-08-25"
+          compatibility_flags = ["python_workers"]
+          workers_dev = true
+          EOF
+
+          uv run --locked python tests/worker_runtime_probe_origin.py --port 9100 > /tmp/b62-web-origin.log 2>&1 &
+          ORIGIN_PID=$!
+          npx --yes wrangler@4.130.0 dev --config .runtime-web-transport-probe.toml --port 8788 > /tmp/b62-web-workerd.log 2>&1 &
+          WORKER_PID=$!
+
+          cleanup() {
+            kill "$WORKER_PID" "$ORIGIN_PID" 2>/dev/null || true
+            rm -f .runtime-web-transport-probe.toml
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8788/ready >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/b62-web-workerd.log
+            exit 1
+          fi
+
+          HTTP_CODE="$(curl -sS -o /tmp/b62-web-result.json -w '%{http_code}' http://127.0.0.1:8788/probe)"
+          cat /tmp/b62-web-result.json
+          if [ "$HTTP_CODE" != "200" ]; then
+            cat /tmp/b62-web-workerd.log
+            exit 1
+          fi
+
+          uv run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/b62-web-result.json").read_text())
+          required = (
+              "real_httpx_transport_class",
+              "js_fetch_import",
+              "abortsignal_import",
+              "fetch_accepts_signal",
+              "local_normal_fetch",
+              "local_post_body_headers",
+              "local_incremental_body",
+              "local_delay_timeout",
+              "local_body_timeout",
+              "early_close_release",
+          )
+          failed = [name for name in required if data.get(name) is not True]
+          if failed:
+              raise SystemExit(f"Worker web transport runtime probe failed: {failed}; data={data}")
+          print("WORKER_WEB_TRANSPORT_PASS")
+          PY
+      - name: Real Worker/Pyodide P01 Engine-binding composition probe
+        run: |
+          set -euo pipefail
+          cat > .runtime-p01-binding-probe.toml <<'EOF'
+          name = "padiem-chat-runtime-p01-binding-probe"
+          main = "worker_runtime_p01_binding_probe.py"
+          compatibility_date = "2026-08-25"
+          compatibility_flags = ["python_workers"]
+          workers_dev = true
+          EOF
+
+          npx --yes wrangler@4.130.0 dev --config .runtime-p01-binding-probe.toml --port 8789 > /tmp/b62-p01-binding-workerd.log 2>&1 &
+          WORKER_PID=$!
+
+          cleanup() {
+            kill "$WORKER_PID" 2>/dev/null || true
+            rm -f .runtime-p01-binding-probe.toml
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8789/ready >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/b62-p01-binding-workerd.log
+            exit 1
+          fi
+
+          HTTP_CODE="$(curl -sS -o /tmp/b62-p01-binding-result.json -w '%{http_code}' http://127.0.0.1:8789/probe)"
+          cat /tmp/b62-p01-binding-result.json
+          if [ "$HTTP_CODE" != "200" ]; then
+            cat /tmp/b62-p01-binding-workerd.log
+            exit 1
+          fi
+
+          uv run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/b62-p01-binding-result.json").read_text())
+          required = (
+              "adapter_composed",
+              "worker_request_factory_real",
+              "plus_route_entered",
+              "binding_fetch_called_once",
+              "bounded_error_after_fetch",
+          )
+          failed = [name for name in required if data.get(name) is not True]
+          if failed or data.get("unexpected_exception") is not False:
+              raise SystemExit(
+                  f"Worker P01 binding composition probe failed: {failed}; "
+                  f"error_type={data.get('error_type', 'NONE')}"
+              )
+          print("WORKER_P01_BINDING_COMPOSITION_PASS")
+          PY
+      - name: Real Worker/Pyodide R2 ObjectBody read probe
+        run: |
+          set -euo pipefail
+          cat > .runtime-r2-read-probe.toml <<'EOF'
+          name = "padiem-chat-runtime-r2-read-probe"
+          main = "worker_runtime_r2_read_probe.py"
+          compatibility_date = "2026-08-25"
+          compatibility_flags = ["python_workers"]
+          workers_dev = true
+          EOF
+
+          npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 > /tmp/b62-r2-read-workerd.log 2>&1 &
+          WORKER_PID=$!
+
+          cleanup() {
+            kill "$WORKER_PID" 2>/dev/null || true
+            rm -f .runtime-r2-read-probe.toml
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8790/ready >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/b62-r2-read-workerd.log
+            exit 1
+          fi
+
+          HTTP_CODE="$(curl -sS -o /tmp/b62-r2-read-result.json -w '%{http_code}' http://127.0.0.1:8790/probe)"
+          cat /tmp/b62-r2-read-result.json
+          if [ "$HTTP_CODE" != "200" ]; then
+            cat /tmp/b62-r2-read-workerd.log
+            exit 1
+          fi
+
+          uv run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/b62-r2-read-result.json").read_text())
+          required = (
+              "js_arraybuffer_to_bytes",
+              "object_arraybuffer_called_once",
+              "bucket_get_called_once",
+              "stream_body_not_used",
+              "payload_matches",
+          )
+          failed = [name for name in required if data.get(name) is not True]
+          if failed or data.get("unexpected_exception") is not False:
+              raise SystemExit(
+                  f"Worker R2 ObjectBody read probe failed: {failed}; "
+                  f"error_type={data.get('error_type', 'NONE')}"
+              )
+          print("WORKER_R2_OBJECTBODY_READ_PASS")
+          PY
       - name: Prove Core vendored for Python Worker
         run: |
           set -euo pipefail
@@ -59,7 +312,7 @@ jobs:
           test ! -e python_modules/jsonschema
           echo "Padiem AI Core base runtime is vendored without Tool Runtime extras."
       - name: Python Worker bundle dry-run
-        run: uv run pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
+        run: uv run --locked pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
 
   b14-multimodal-test:
     runs-on: ubuntu-latest

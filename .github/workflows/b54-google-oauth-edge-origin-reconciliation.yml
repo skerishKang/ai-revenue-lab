@@ -1,0 +1,397 @@
+name: B54 Google OAuth Edge Origin Production Reconciliation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-google-oauth-edge-origin-reconciliation.yml"
+      - "packages/padiem-control-plane/google_oauth_edge_worker.py"
+      - "packages/padiem-control-plane/wrangler.google-oauth-edge.jsonc"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact one-shot Production reconciliation confirmation"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-google-oauth-edge-origin-reconciliation
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  TARGET_ORIGIN: https://chat.padiem.net
+  LEGACY_ORIGIN: https://padiem-chat.charliekant.workers.dev
+  OAUTH_HOST: oauth.padiem.net
+  CONNECT_PATH: /v1/google/connect
+  EDGE_WORKER: padiem-google-oauth-edge
+  STATE_WORKER: padiem-google-oauth-state
+  IDENTITY_WORKER: padiem-control-plane-identity
+  EDGE_CONFIG: wrangler.google-oauth-edge.jsonc
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+
+      - name: Validate edge-only reconciliation source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b54-google-oauth-edge-origin-reconciliation.yml").read_text(encoding="utf-8")
+          root = Path("packages/padiem-control-plane")
+          edge = json.loads((root / "wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+          edge_source = (root / "google_oauth_edge_worker.py").read_text(encoding="utf-8")
+
+          required_markers = [
+              "TARGET_ORIGIN: " + "https://chat.padiem.net",
+              "LEGACY_ORIGIN: " + "https://padiem-chat.charliekant.workers.dev",
+              "EDGE_WORKER: " + "padiem-google-oauth-edge",
+              "STATE_WORKER: " + "padiem-google-oauth-state",
+              "IDENTITY_WORKER: " + "padiem-control-plane-identity",
+          ]
+          for marker in required_markers:
+              assert workflow.count(marker) == 1, marker
+
+          forbidden_refs = [
+              "secrets." + "GOOGLE_OAUTH_ALLOWED_ORIGIN",
+              "B54_OAUTH_" + "ROUTES_CF_API_TOKEN",
+              "-X " + "PUT",
+              "-X " + "DELETE",
+              "-X " + "POST",
+          ]
+          for marker in forbidden_refs:
+              assert marker not in workflow, marker
+
+          strict_deploy = "pywrangler " + "deploy --strict"
+          assert workflow.count(strict_deploy) == 1
+
+          assert edge["name"] == "padiem-google-oauth-edge"
+          assert edge["workers_dev"] is False
+          assert edge["preview_urls"] is False
+          assert edge["observability"]["enabled"] is False
+          assert "route" not in edge and "routes" not in edge
+          assert edge["services"] == [{
+              "binding": "GOOGLE_OAUTH_SERVICE",
+              "service": "padiem-google-oauth-state",
+          }]
+
+          assert 'CONNECT_PATH = "/v1/google/connect"' in edge_source
+          assert "CONNECT_EXACT_ORIGIN_REQUIRED = True" in edge_source
+          assert "CORS_WILDCARD = False" in edge_source
+          assert "CREDENTIALLED_CORS = False" in edge_source
+          assert "access-control-allow-credentials" not in edge_source
+          assert "RAW_CONNECT_TICKET_LOGGED = False" in edge_source
+          assert "RAW_AUTHORIZATION_CODE_LOGGED = False" in edge_source
+          assert "RAW_REFRESH_TOKEN_RETURNED = False" in edge_source
+
+          print("EDGE_ONLY_RECONCILIATION_SOURCE_CONTRACT=PASS")
+          print("TARGET_ORIGIN=https://chat.padiem.net")
+          print("EDGE_WORKER=padiem-google-oauth-edge")
+          print("STATE_WORKER_REDEPLOY=0")
+          print("IDENTITY_WORKER_REDEPLOY=0")
+          print("CUSTOM_DOMAIN_MUTATION=0")
+          print("DNS_MUTATION=0")
+          print("B62_MUTATION=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          print("TICKET_POST=0")
+          print("OAUTH_CONNECT_POST=0")
+          print("GOOGLE_PROVIDER_CALLS=0")
+          print("DRIVE_GRANT_SEED=0")
+          print("DRIVE_API_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Dry-run exact edge package with canonical source-owned origin
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          python - "${TARGET_ORIGIN}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          target = sys.argv[1]
+          source = json.loads(Path("wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+          source["vars"] = {"GOOGLE_OAUTH_ALLOWED_ORIGIN": target}
+          Path("wrangler.jsonc").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --dry-run --outdir "${RUNNER_TEMP}/oauth-edge-origin-reconcile-dry-run"
+          test -d "${RUNNER_TEMP}/oauth-edge-origin-reconcile-dry-run"
+          echo "EDGE_PACKAGE_DRY_RUN=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  reconcile-edge-origin:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Require explicit one-shot reconciliation authority
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "RECONCILE_PADIEM_GOOGLE_OAUTH_EDGE_ORIGIN_TO_CHAT_PADIEM_NET"
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test "${TARGET_ORIGIN}" = "https://chat.padiem.net"
+          test "${LEGACY_ORIGIN}" = "https://padiem-chat.charliekant.workers.dev"
+          echo "EDGE_ORIGIN_RECONCILIATION_AUTHORITY=PASS"
+          echo "SECRET_VALUE_OUTPUT=0"
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before any Production readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "PREMUTATION_EXACT_MAIN=PASS"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Reconcile only the served OAuth edge origin and prove blast radius
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          active_version() {
+            local worker="$1"
+            local output="$2"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
+              -o "${output}"
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${output}" >/dev/null
+            jq -r '.result.deployments[0].versions[0].version_id' "${output}"
+          }
+
+          require_private_subdomain_disabled() {
+            local worker="$1"
+            local output="${RUNNER_TEMP}/${worker}-subdomain.json"
+            curl -fsS "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" \
+              -o "${output}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${output}" >/dev/null
+          }
+
+          cors_probe() {
+            local origin="$1"
+            local expected_status="$2"
+            local expected_acao="$3"
+            local label="$4"
+            local headers="${RUNNER_TEMP}/cors-${label}.headers"
+            local body="${RUNNER_TEMP}/cors-${label}.body"
+            local status
+            status="$(curl -sS -o "${body}" -D "${headers}" -w '%{http_code}' -X OPTIONS \
+              -H "Origin: ${origin}" \
+              -H "Access-Control-Request-Method: POST" \
+              -H "Access-Control-Request-Headers: content-type" \
+              "https://${OAUTH_HOST}${CONNECT_PATH}")"
+            test "${status}" = "${expected_status}"
+            local acao
+            acao="$(awk 'tolower($1) == "access-control-allow-origin:" {sub(/\r$/, "", $0); sub(/^[^:]*:[[:space:]]*/, "", $0); print; exit}' "${headers}")"
+            if [ -n "${expected_acao}" ]; then
+              test "${acao}" = "${expected_acao}"
+            else
+              test -z "${acao}"
+            fi
+          }
+
+          domains_before="${RUNNER_TEMP}/domains-before.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains_before}"
+          jq -e '.success == true and (.result | type == "array")' "${domains_before}" >/dev/null
+          jq -e --arg host "${OAUTH_HOST}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains_before}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains_before}" >/dev/null
+
+          for worker in "${IDENTITY_WORKER}" "${STATE_WORKER}" "${EDGE_WORKER}"; do
+            require_private_subdomain_disabled "${worker}"
+          done
+
+          edge_settings_before="${RUNNER_TEMP}/edge-settings-before.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" \
+            -o "${edge_settings_before}"
+          jq -e '.success == true' "${edge_settings_before}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${edge_settings_before}" >/dev/null
+
+          identity_before="$(active_version "${IDENTITY_WORKER}" "${RUNNER_TEMP}/identity-before.json")"
+          state_before="$(active_version "${STATE_WORKER}" "${RUNNER_TEMP}/state-before.json")"
+          edge_before="$(active_version "${EDGE_WORKER}" "${RUNNER_TEMP}/edge-before.json")"
+          test -n "${identity_before}" && test -n "${state_before}" && test -n "${edge_before}"
+
+          cors_probe "${TARGET_ORIGIN}" "403" "" "target-before"
+          cors_probe "${LEGACY_ORIGIN}" "204" "${LEGACY_ORIGIN}" "legacy-before"
+          echo "PREMUTATION_LIVE_ORIGIN_MISMATCH=CONFIRMED"
+
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "IMMEDIATE_PREMUTATION_EXACT_MAIN=PASS"
+
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+          python - "${TARGET_ORIGIN}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          target = sys.argv[1]
+          if target != "https://chat.padiem.net":
+              raise SystemExit("Refusing non-canonical OAuth edge origin")
+          source = json.loads(Path("wrangler.google-oauth-edge.jsonc").read_text(encoding="utf-8"))
+          if source.get("name") != "padiem-google-oauth-edge":
+              raise SystemExit("Refusing unexpected edge Worker")
+          if source.get("workers_dev") is not False or source.get("preview_urls") is not False:
+              raise SystemExit("Refusing public workers.dev/preview exposure")
+          if source.get("services") != [{"binding": "GOOGLE_OAUTH_SERVICE", "service": "padiem-google-oauth-state"}]:
+              raise SystemExit("Refusing service-binding drift")
+          source["vars"] = {"GOOGLE_OAUTH_ALLOWED_ORIGIN": target}
+          Path("wrangler.jsonc").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+          PY
+
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --strict \
+            --tag "git-${TARGET_SHA}" \
+            --message "B54 OAuth edge origin reconcile ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          trap - EXIT
+          echo "OAUTH_EDGE_WORKER_DEPLOY=SUCCESS"
+
+          converged=no
+          for _ in $(seq 1 30); do
+            edge_after="$(active_version "${EDGE_WORKER}" "${RUNNER_TEMP}/edge-after.json")"
+            if [ -n "${edge_after}" ] && [ "${edge_after}" != "${edge_before}" ]; then
+              converged=yes
+              break
+            fi
+            sleep 2
+          done
+          test "${converged}" = yes
+
+          identity_after="$(active_version "${IDENTITY_WORKER}" "${RUNNER_TEMP}/identity-after.json")"
+          state_after="$(active_version "${STATE_WORKER}" "${RUNNER_TEMP}/state-after.json")"
+          test "${identity_after}" = "${identity_before}"
+          test "${state_after}" = "${state_before}"
+
+          domains_after="${RUNNER_TEMP}/domains-after.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" \
+            -o "${domains_after}"
+          jq -e '.success == true and (.result | type == "array")' "${domains_after}" >/dev/null
+          jq -e --arg host "${OAUTH_HOST}" --arg edge "${EDGE_WORKER}" '[.result[] | select(.hostname == $host and .service == $edge)] | length == 1' "${domains_after}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" --arg state "${STATE_WORKER}" '[.result[] | select(.service == $identity or .service == $state)] | length == 0' "${domains_after}" >/dev/null
+
+          edge_settings_after="${RUNNER_TEMP}/edge-settings-after.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${EDGE_WORKER}/settings" \
+            -o "${edge_settings_after}"
+          jq -e '.success == true' "${edge_settings_after}" >/dev/null
+          jq -e --arg state "${STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${edge_settings_after}" >/dev/null
+          jq -e --arg target "${TARGET_ORIGIN}" '.result.bindings | any(.name == "GOOGLE_OAUTH_ALLOWED_ORIGIN" and .type == "plain_text" and .text == $target)' "${edge_settings_after}" >/dev/null
+
+          for worker in "${IDENTITY_WORKER}" "${STATE_WORKER}" "${EDGE_WORKER}"; do
+            require_private_subdomain_disabled "${worker}"
+          done
+
+          cors_probe "${TARGET_ORIGIN}" "204" "${TARGET_ORIGIN}" "target-after"
+          cors_probe "${LEGACY_ORIGIN}" "403" "" "legacy-after"
+
+          echo "TARGET_ORIGIN=https://chat.padiem.net"
+          echo "EDGE_WORKER=padiem-google-oauth-edge"
+          echo "EDGE_SERVED_BINDING_READBACK=PASS"
+          echo "TARGET_ORIGIN_CORS=204_EXACT_ACAO"
+          echo "LEGACY_ORIGIN_CORS=403"
+          echo "STATE_WORKER_REDEPLOY=0"
+          echo "IDENTITY_WORKER_REDEPLOY=0"
+          echo "CUSTOM_DOMAIN_MUTATION=0"
+          echo "DNS_MUTATION=0"
+          echo "B62_MUTATION=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+          echo "TICKET_POST=0"
+          echo "OAUTH_CONNECT_POST=0"
+          echo "GOOGLE_CONSENT=0"
+          echo "GOOGLE_PROVIDER_CALLS=0"
+          echo "DRIVE_GRANT_SEED=0"
+          echo "DRIVE_API_CALLS=0"
+          echo "PRODUCTION_MUTATION=EDGE_WORKER_ONLY"

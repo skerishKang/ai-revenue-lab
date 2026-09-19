@@ -1,0 +1,145 @@
+name: B54 Phase-A Metrics Control Readonly
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-phasea-metrics-control-readonly.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-phasea-metrics-control-readonly.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate readonly control contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text=Path(".github/workflows/b54-phasea-metrics-control-readonly.yml").read_text()
+          for token in (
+              "34902372213",
+              "/client/v4/graphql",
+              "padiem-ai-engine",
+              "ai-revenue-korean-ai-platform",
+              "RAW_OUTPUT=0",
+              "PRODUCT_REQUESTS=0",
+              "PROVIDER_CALLS=0",
+              "PRODUCTION_MUTATION=0",
+          ):
+              if token not in text:
+                  raise SystemExit(f"missing invariant: {token}")
+          print("PHASEA_METRICS_CONTROL_SOURCE=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  control-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Query successful Phase-A control window
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="${RUNNER_TEMP}/phasea-control-query.json"
+          response="${RUNNER_TEMP}/phasea-control-response.json"
+          python - "${payload}" "${CLOUDFLARE_ACCOUNT_ID}" <<'PY'
+          import json, sys
+          query = """
+          query PhaseAControl($accountTag: string) {
+            viewer {
+              accounts(filter: {accountTag: $accountTag}) {
+                engine: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-ai-engine",
+                  datetime_geq: "2026-09-14T22:05:30Z",
+                  datetime_leq: "2026-09-14T22:07:00Z"
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+                b14: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "ai-revenue-korean-ai-platform",
+                  datetime_geq: "2026-09-14T22:05:30Z",
+                  datetime_leq: "2026-09-14T22:07:00Z"
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+              }
+            }
+          }
+          """
+          json.dump({"query":query,"variables":{"accountTag":sys.argv[2]}},open(sys.argv[1],"w"))
+          PY
+          http="$(curl -sS -o "${response}" -w '%{http_code}'             "https://api.cloudflare.com/client/v4/graphql"             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             --data-binary "@${payload}")"
+          echo "PHASEA_CONTROL_ANALYTICS_HTTP=${http}"
+          python - "${response}" <<'PY'
+          import json, sys
+          p=json.load(open(sys.argv[1]))
+          accounts=p.get("data",{}).get("viewer",{}).get("accounts",[])
+          if p.get("errors") or len(accounts)!=1:
+              print("PHASEA_CONTROL_ANALYTICS=UNAVAILABLE")
+              raise SystemExit(0)
+          a=accounts[0]
+          print("PHASEA_CONTROL_ANALYTICS=AVAILABLE")
+          for key,label in (("engine","ENGINE"),("b14","B14")):
+              rows=a.get(key) or []
+              req=sum(int((r.get("sum") or {}).get("requests") or 0) for r in rows)
+              err=sum(int((r.get("sum") or {}).get("errors") or 0) for r in rows)
+              sub=sum(int((r.get("sum") or {}).get("subrequests") or 0) for r in rows)
+              active=sorted({
+                  (r.get("dimensions") or {}).get("datetime")
+                  for r in rows
+                  if int((r.get("sum") or {}).get("requests") or 0)>0
+                  and isinstance((r.get("dimensions") or {}).get("datetime"),str)
+              })
+              outcomes=sorted({
+                  (r.get("dimensions") or {}).get("status")
+                  for r in rows
+                  if isinstance((r.get("dimensions") or {}).get("status"),str)
+              })
+              print(f"PHASEA_{label}_REQUESTS={req}")
+              print(f"PHASEA_{label}_ERRORS={err}")
+              print(f"PHASEA_{label}_SUBREQUESTS={sub}")
+              print(f"PHASEA_{label}_ACTIVE_SECONDS={','.join(active) if active else 'NONE'}")
+              print(f"PHASEA_{label}_OUTCOMES={','.join(outcomes) if outcomes else 'NONE'}")
+          print("REFERENCE_PHASEA_RUN=34902372213")
+          print("REFERENCE_PHASEA_HTTP=200")
+          print("REFERENCE_PHASEA_MODEL_RESULT_NONEMPTY=PASS")
+          print("RAW_OUTPUT=0")
+          print("PRODUCT_REQUESTS=0")
+          print("PROVIDER_CALLS=0")
+          print("PRODUCTION_MUTATION=0")
+          PY

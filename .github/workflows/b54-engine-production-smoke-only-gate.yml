@@ -28,6 +28,10 @@ on:
       confirmation:
         description: 'Type RUN_B54_ENGINE_POSTDEPLOY_SMOKE_ONLY to authorize the read-only smoke gate'
         required: true
+      custom_payload_json:
+        description: 'Optional JSON payload for the A9 orchestrate request; blank keeps the fixed synthetic payload'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -40,12 +44,15 @@ jobs:
     environment: production
     env:
       # Canonical B62 -> Engine authority only. CALLER_ID is the fixed non-secret
-      # identifier; the credential is the same secret the B62 worker uses. A10
-      # reads only the legacy env NAMES, so those names are re-pointed at the same
-      # canonical source. No independent smoke credential secret is referenced.
-      CALLER_ID: b54-kagent
+      # identifier; since #2520 the Claw/P01 overlay is served under its own
+      # dedicated overlay-only id (the legacy shared Claw id is no longer
+      # the live Claw caller). The credential is the same secret the B62 worker
+      # uses. A10 reads only the legacy env NAMES, so those names are re-pointed
+      # at the same canonical source. No independent smoke credential secret is
+      # referenced.
+      CALLER_ID: b54-p01-overlay-20260914-a1
       CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
-      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-kagent
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
       PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -55,6 +62,7 @@ jobs:
       # The source the currently served Engine version was deployed from. Fixed
       # literal, deliberately NOT derived from target_sha.
       DEPLOYED_ENGINE_SOURCE_SHA: b0bf34ab90420d6b47070c192e108adf3f4ea76d
+      CUSTOM_PAYLOAD_JSON: ${{ github.event.inputs.custom_payload_json }}
     steps:
       - name: Checkout exact workflow-source SHA
         uses: actions/checkout@v4
@@ -66,9 +74,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
-          git fetch origin main
-          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+           test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+           git fetch origin main
+           test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
           echo "WORKFLOW_SOURCE_SHA=$(git rev-parse HEAD)"
           echo "DEPLOYED_ENGINE_SOURCE_SHA=${DEPLOYED_ENGINE_SOURCE_SHA}"
           echo "EXPECTED_SERVED_VERSION=${EXPECTED_SERVED_VERSION}"

@@ -11,6 +11,7 @@ Supports multi-provider registry and legacy single-provider fallback.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import time
 import uuid
@@ -76,10 +77,10 @@ from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 _UPSTREAM_RETRY_MAX_RETRIES = 2
 _UPSTREAM_RETRY_BACKOFF_SECONDS = (0.5, 1.0)
 _UPSTREAM_RETRY_BUDGET_SECONDS = 45.0
-# Retryable transport classes retried on the SAME route once no fallback
-# candidate remains. Hourly-quota 429s are excluded (Kilo free is an hourly
-# quota); the SenseNova transient-busy 429 (#2003) IS included — it is
-# capacity pressure with UpstreamTimeout-equivalent semantics.
+# Retryable transport classes may be retried on a SAME route for explicit
+# manual routes. The owner-designated auto chain has a total upstream-attempt
+# budget equal to ``decision.max_attempts``: each chain candidate gets at most
+# one call so that Agnes -> Poolside remains a two-call maximum.
 _SAME_ROUTE_RETRYABLE_CODES = frozenset({
     "upstream_timeout",
     "upstream_server_error",
@@ -91,6 +92,32 @@ logger = logging.getLogger("korean-ai-platform.pilot")
 router = Router()
 
 _INVALID_REGISTRY_MESSAGE = "Provider registry 설정이 올바르지 않습니다."
+_INTERNAL_ERROR_MESSAGE = "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오."
+
+
+async def _read_json_body(request: Request) -> Any:
+    """Read JSON through the ASGI body boundary, not Request.json().
+
+    Cloudflare's Python Workers bridge can expose a request object whose
+    convenience ``json()`` path differs from Starlette's CPython behavior.
+    Reading bytes explicitly keeps the production and local paths aligned.
+    """
+    raw = await request.body()
+    try:
+        return json.loads(raw)
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise _InvalidBody("Request body must be valid JSON") from exc
+
+
+def _log_unexpected_error(event: str, request_id: str, exc: Exception) -> None:
+    message = redact_sensitive(str(exc))[:240]
+    logger.error(
+        "%s request_id=%s exception_type=%s exception_message=%s",
+        event,
+        request_id,
+        type(exc).__name__,
+        message,
+    )
 
 
 # Allowed fields for PilotChatRequest (dataclass field names)
@@ -516,7 +543,7 @@ async def pilot_router_resolve(
 
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
-        raw_body = await request.json()
+        raw_body = await _read_json_body(request)
         body = _validate_body(raw_body)
 
         model_id = body["model"]
@@ -581,17 +608,14 @@ async def pilot_router_resolve(
                 }
             },
         )
-    except Exception:
-        logger.error(
-            "pilot_resolve_unexpected_error request_id=%s",
-            request_id,
-        )
+    except Exception as exc:
+        _log_unexpected_error("pilot_resolve_unexpected_error", request_id, exc)
         return JSONResponse(
             status_code=500,
             content={
                 "error": {
                     "code": "internal_error",
-                    "message": "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                    "message": _INTERNAL_ERROR_MESSAGE,
                     "request_id": request_id,
                 }
             },
@@ -844,11 +868,15 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 "actual_response_model": None,
             })
 
-            # Same-route bounded retry for retryable transport failures
-            # (#1982). Non-retryable classes (auth, bad request) never reach
-            # a retry: they are not in _SAME_ROUTE_RETRYABLE_CODES and the
+            # Same-route bounded retry for explicit manual routes (#1982).
+            # fixed_chain_v1 treats max_attempts as the total upstream call
+            # budget, so auto candidates advance without a same-route retry.
+            # Non-retryable classes (auth, bad request) never reach a retry:
+            # they are not in _SAME_ROUTE_RETRYABLE_CODES and the
             # fallback-prohibited check below breaks on the first attempt.
             if (
+                decision.route_mode != "auto"
+                and
                 error.code in _SAME_ROUTE_RETRYABLE_CODES
                 and retry_index < _UPSTREAM_RETRY_MAX_RETRIES
             ):
@@ -1010,7 +1038,7 @@ async def pilot_chat_completions(
 
     try:
         x_business14_provider_key = request.headers.get("x-business14-provider-key")
-        raw_body = await request.json()
+        raw_body = await _read_json_body(request)
 
         body = _validate_body(raw_body)
 
@@ -1101,17 +1129,13 @@ async def pilot_chat_completions(
             },
         )
     except Exception as e:
-        logger.error(
-            "pilot_unexpected_error request_id=%s error=%s",
-            request_id,
-            redact_sensitive(str(e)),
-        )
+        _log_unexpected_error("pilot_unexpected_error", request_id, e)
         return JSONResponse(
             status_code=500,
             content={
                 "error": {
                     "code": "internal_error",
-                    "message": "요청을 처리하는 중 내부 오류가 발생했습니다. Request ID로 관리자에게 문의하십시오.",
+                    "message": _INTERNAL_ERROR_MESSAGE,
                     "request_id": request_id,
                 }
             },

@@ -35,9 +35,9 @@ def test_claw_first_class_entry_via_sidebar_workspace() -> None:
     assert 'class="claw-workspace"' in INDEX
     assert 'shell.dataset.state = "claw"' in APP
     assert '.app-shell[data-state="claw"] .claw-workspace' in WORKSPACE_CSS
-    # Chat/composer hidden when Claw owns the canvas
+    # Chat canvas hidden; the shared bottom composer stays visible (#2532).
     assert '.app-shell[data-state="claw"] .conversation' in WORKSPACE_CSS
-    assert '.app-shell[data-state="claw"] .composer-wrap' in WORKSPACE_CSS
+    assert '.app-shell[data-state="claw"] .composer-wrap' not in WORKSPACE_CSS
     # Not a dialog anymore
     assert 'id="clawDialog"' not in INDEX
     assert "clawDialog" not in APP
@@ -48,9 +48,11 @@ def test_claw_first_class_entry_via_sidebar_workspace() -> None:
 
 def test_manual_intake_is_the_primary_cta() -> None:
     assert 'id="clawManualForm"' in INDEX
-    assert 'id="clawRequestText"' in INDEX
-    assert 'class="claw-intake-hero"' in INDEX
-    assert 'data-locale-key="claw-field-request"' in INDEX
+    # #2532: intake is a composer mode bar; #messageInput is the request input.
+    assert 'class="claw-mode-bar" id="clawManualForm"' in INDEX
+    assert 'id="clawRequestText"' not in INDEX
+    assert 'id="messageInput"' in INDEX
+    assert 'claw-request-placeholder' in APP
     # Two action buttons present, with hint text explaining their difference
     assert 'id="clawGenerateBtn"' in INDEX
     assert 'id="clawExecuteButton"' in INDEX
@@ -150,8 +152,8 @@ def test_result_text_is_readable_and_separated_from_input() -> None:
     assert 'id="clawResultCard"' in INDEX
     assert 'id="clawResultPreview"' in INDEX
     assert 'class="claw-result-body"' in INDEX
-    # Result region is aria-live with a card, not the same textarea
-    assert 'id="clawRequestText"' in INDEX
+    # Result region is aria-live with a card, not the composer input (#2532)
+    assert 'id="clawRequestText"' not in INDEX
     assert "max-height: 320px" in WORKSPACE_CSS
     # Safe sink only
     assert "clawResultPreview.textContent =" in APP
@@ -211,9 +213,9 @@ def test_user_safe_error_copy_without_provider_details() -> None:
 
 def test_keyboard_mobile_a11y_primary_flow() -> None:
     assert 'role="group" aria-label="Claw 작업 선택"' in INDEX
-    # Chips are buttons (keyboard operable), textarea focusable, result aria-live
+    # Chips are buttons (keyboard operable), composer input focusable, result aria-live
     assert 'class="claw-chip"' in INDEX
-    assert 'id="clawRequestText"' in INDEX
+    assert 'id="messageInput"' in INDEX
     assert 'aria-live="polite"' in INDEX
     # 16px input avoids iOS zoom, touch targets >=44px
     assert "font-size: 16px" in WORKSPACE_CSS

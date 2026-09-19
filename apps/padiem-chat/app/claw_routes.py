@@ -55,6 +55,12 @@ import uuid
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    ProductTierRoutesError,
+    active_route_for,
+)
+
 from .auth_routes import auth_ready, current_user_id
 from .control_plane_identity_shadow import (
     IdentityShadowRecord,
@@ -90,7 +96,7 @@ from kagent.p01_adapter import (
 )
 from kagent.p01_run_flow import create_claw_run
 from .worker_config import P01_COMPOSITION_DIAGNOSTICS
-from .workspace_storage import WorkspaceStorageAccessError
+from .workspace_storage import WorkspaceStorageAccessError, WorkspaceStorageError
 
 MAX_MANUAL_INTAKE_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CONTENT_CHARS = 4_000
@@ -113,6 +119,12 @@ _ACTION_MAP: dict[str, ManualIntakeAction] = {
     "reply_draft": ManualIntakeAction.REPLY_DRAFT,
     "summarize_request": ManualIntakeAction.SUMMARIZE_REQUEST,
     "extract_candidates": ManualIntakeAction.EXTRACT_CANDIDATES,
+}
+
+_BROWSER_TIER_MAP: dict[str, ProductTierLabel] = {
+    "plus": ProductTierLabel.PLUS,
+    "pro": ProductTierLabel.PRO,
+    "max": ProductTierLabel.MAX,
 }
 
 _CHANNEL_MAP: dict[str, ManualIntakeChannel] = {
@@ -177,6 +189,22 @@ def _safe_composition_diagnostic(request: Request) -> str:
         return diagnostic
     return "composition_unavailable"
 
+
+_WORKSPACE_READ_DETAIL_METADATA_INVALID = "metadata_invalid"
+_WORKSPACE_READ_DETAIL_R2_READ_FAILED = "r2_read_failed"
+_WORKSPACE_READ_DETAIL_BYTE_LENGTH_MISMATCH = "byte_length_mismatch"
+_WORKSPACE_READ_DETAIL_UNKNOWN = "storage_unknown"
+
+
+def _safe_workspace_read_failure_detail(exc: Exception) -> str:
+    """Project storage read failures to a closed, non-secret public vocabulary."""
+    if not isinstance(exc, WorkspaceStorageError):
+        return _WORKSPACE_READ_DETAIL_UNKNOWN
+    return {
+        "workspace document metadata is invalid": _WORKSPACE_READ_DETAIL_METADATA_INVALID,
+        "workspace document read failed": _WORKSPACE_READ_DETAIL_R2_READ_FAILED,
+        "workspace document length mismatch": _WORKSPACE_READ_DETAIL_BYTE_LENGTH_MISMATCH,
+    }.get(str(exc), _WORKSPACE_READ_DETAIL_UNKNOWN)
 
 def _usage_denied_response(decision) -> JSONResponse:
     headers = dict(_NO_STORE_HEADERS)
@@ -377,6 +405,19 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             return _error(400, "sender_hint_too_long", f"발신자 힌트는 {MAX_SENDER_CHARS}자 이하로 입력해 주세요.")
         sender_hint = raw_sender or None
 
+    raw_tier = data.get("tier", "plus")
+    if not isinstance(raw_tier, str):
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
+    if product_tier is None:
+        return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    try:
+        tier_route = active_route_for(product_tier)
+    except ProductTierRoutesError:
+        return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
+    if tier_route is None or not tier_route.model_id:
+        return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
+
     try:
         intake_req = ManualIntakeRequest(
             request_id=f"exec_{uuid.uuid4().hex[:12]}",
@@ -393,6 +434,26 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         return _error(400, "contract_violation", str(exc))
     except Exception as exc:
         return _error(400, "invalid_input", str(exc))
+
+    # Artifact-producing actions require canonical tenant + storage authority
+    # before quota consumption or any P01/Engine/B14 dispatch (#2583).
+    artifact_tenant_id: str | None = None
+    artifact_store: Any = None
+    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
+        artifact_tenant_id = await _resolve_canonical_tenant(request)
+        if artifact_tenant_id is None:
+            return _error(
+                503,
+                "workspace_scope_unavailable",
+                "문서 저장 권한을 확인할 수 없습니다.",
+            )
+        artifact_store = getattr(request.app.state, "workspace_document_store", None)
+        if artifact_store is None:
+            return _error(
+                503,
+                "workspace_storage_unavailable",
+                "문서 저장소가 설정되지 않았습니다.",
+            )
 
     denial = await _usage_gate_denial(request)
     if denial is not None:
@@ -425,7 +486,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     run = create_claw_run("padiem-chat", task_text)
 
     try:
-        outcome = await adapter.execute(run)
+        outcome = await adapter.execute(run, product_tier=product_tier)
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
         # call was never dispatched. Dispatched/ambiguous failures stay counted.
@@ -477,23 +538,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
 
     title = f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
 
-    # Artifact-producing actions (quote/order) require canonical tenant resolution.
+    # Artifact authority was preflighted before quota/P01 dispatch above.
     artifact_descriptor: dict[str, Any] | None = None
-    if action in (ManualIntakeAction.QUOTE_DRAFT, ManualIntakeAction.ORDER_DRAFT):
-        tenant_id = await _resolve_canonical_tenant(request)
-        if tenant_id is None:
-            return _error(
-                503,
-                "workspace_scope_unavailable",
-                "문서 저장 권한을 확인할 수 없습니다.",
-            )
-        workspace_store: Any = getattr(request.app.state, "workspace_document_store", None)
-        if workspace_store is None:
-            return _error(
-                503,
-                "workspace_storage_unavailable",
-                "문서 저장소가 설정되지 않았습니다.",
-            )
+    if artifact_tenant_id is not None and artifact_store is not None:
         try:
             artifact = build_document_artifact(
                 document_type=action.value.replace("_draft", ""),
@@ -510,8 +557,8 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 total="",
                 markdown_fallback_text=outcome.answer or "",
             )
-            metadata = await workspace_store.put_generated_docx(
-                tenant_id=tenant_id,
+            metadata = await artifact_store.put_generated_docx(
+                tenant_id=artifact_tenant_id,
                 filename=artifact.filename,
                 body=artifact.content_bytes(),
             )
@@ -590,8 +637,19 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
         # still raises (tenant enforcement unchanged) — only the projection is
         # normalized.
         return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
-    except Exception:
-        return _error(503, "workspace_document_read_failed", "문서 읽기 중 오류가 발생했습니다.")
+    except Exception as exc:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "workspace_document_read_failed",
+                    "message": "문서 읽기 중 오류가 발생했습니다.",
+                    "detail": _safe_workspace_read_failure_detail(exc),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
 
     if result is None:
         return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")

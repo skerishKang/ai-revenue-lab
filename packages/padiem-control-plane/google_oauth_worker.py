@@ -11,7 +11,7 @@ from google_oauth_access_lease import (
     CloudflareGoogleOAuthRefreshPort,
     GoogleOAuthAccessLeaseRuntime,
 )
-from google_oauth_durable_store import CloudflareDurableGoogleOAuthStore
+from google_oauth_persisted_store import CloudflareDurableGoogleOAuthStore
 from google_oauth_ingress_runtime import (
     CloudflareGoogleOAuthTokenExchangePort,
     GoogleOAuthIngressConfig,

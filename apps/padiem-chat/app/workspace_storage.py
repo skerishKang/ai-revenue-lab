@@ -163,6 +163,22 @@ class D1ClawDocumentMetadataStore:
         )
 
 
+async def _read_r2_object_bytes(obj: Any) -> bytes:
+    """Read bytes from a real R2ObjectBody or a bytes-shaped test double."""
+    array_buffer = getattr(obj, "arrayBuffer", None)
+    if callable(array_buffer):
+        data = array_buffer()
+        if inspect.isawaitable(data):
+            data = await data
+        to_bytes = getattr(data, "to_bytes", None)
+        if callable(to_bytes):
+            data = to_bytes()
+        return bytes(data)
+
+    body = getattr(obj, "body", obj)
+    return bytes(body)
+
+
 class WorkspaceDocumentStore:
     """#2055 platform/workspace storage projection for generated Claw documents.
 
@@ -251,13 +267,7 @@ class WorkspaceDocumentStore:
                 obj = await obj
             if obj is None:
                 return None
-            body = getattr(obj, "body", obj)
-            array_buffer = getattr(body, "arrayBuffer", None)
-            if callable(array_buffer):
-                body = array_buffer()
-                if inspect.isawaitable(body):
-                    body = await body
-            payload = bytes(body)
+            payload = await _read_r2_object_bytes(obj)
         except Exception as exc:
             raise WorkspaceStorageError("workspace document read failed") from exc
         if len(payload) != metadata.byte_length:

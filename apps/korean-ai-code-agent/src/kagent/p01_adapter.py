@@ -129,16 +129,16 @@ def _trace_id_for(run: ClawRun) -> str:
     return f"claw_{digest}"
 
 
-def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PRO) -> AgentProfile:
+def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
     The model route is derived from the canonical Padiem v1 product-tier
     declaration (padiem_control_plane.product_tier_routes), shared with
     B62 Padiem Chat.  B14 remains provider/model execution authority.
 
-    Plus → kilo/poolside-laguna-s-2.1-free
-    Pro  → kilo/nvidia-nemotron-3-ultra-550b-a55b-free
-    Max  → HOLD / fail-closed (no executable route)
+    Plus → agnes-ai/agnes-3.0-flash
+    Pro  → HOLD / fail-closed
+    Max  → HOLD / fail-closed
     """
     try:
         route = active_route_for(product_tier)
@@ -150,9 +150,10 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PRO) -> Age
         ) from exc
 
     if route is None or route.model_id is None:
+        code = "max_tier_hold" if product_tier is ProductTierLabel.MAX else "tier_hold"
         raise P01AdapterError(
-            "max_tier_hold",
-            "Padiem Max는 현재 실행 가능한 라우트가 없습니다 (HOLD).",
+            code,
+            f"{product_tier.value}은(는) 현재 실행 가능한 라우트가 없습니다 (HOLD).",
             dispatch_class=P01DispatchClass.NOT_DISPATCHED,
         )
 
@@ -183,7 +184,7 @@ class P01RequestFactory:
         *,
         timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
         clock: Callable[[], datetime] | None = None,
-        product_tier: ProductTierLabel = ProductTierLabel.PRO,
+        product_tier: ProductTierLabel = ProductTierLabel.PLUS,
     ) -> None:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise P01AdapterError(
@@ -210,7 +211,13 @@ class P01RequestFactory:
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._product_tier = product_tier
 
-    def build(self, run: ClawRun, *, lease: SandboxLease | None = None) -> P01RequestBundle:
+    def build(
+        self,
+        run: ClawRun,
+        *,
+        lease: SandboxLease | None = None,
+        product_tier: ProductTierLabel | None = None,
+    ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
                 "terminal_run",
@@ -244,7 +251,7 @@ class P01RequestFactory:
 
         trace_id = _trace_id_for(run)
         execution_request = ExecutionRequest(
-            agent=_agent_profile(self._product_tier),
+            agent=_agent_profile(product_tier or self._product_tier),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
             additional_system_context=None,
@@ -472,9 +479,14 @@ class P01CoreOrchestrationAdapter:
         run: ClawRun,
         *,
         lease: SandboxLease | None = None,
+        product_tier: ProductTierLabel | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
-            bundle = self._factory.build(run, lease=lease)
+            bundle = self._factory.build(
+                run,
+                lease=lease,
+                product_tier=product_tier,
+            )
             projector = ClawOrchestrationProjector(
                 run,
                 trace_id=bundle.context.trace_id,

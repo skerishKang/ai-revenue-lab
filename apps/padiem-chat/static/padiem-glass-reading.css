@@ -26,7 +26,7 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .app-shell::before {
 }
 
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .main-panel::before {
-  opacity: .28;
+  opacity: var(--glass-reading-art-opacity, .28);
   filter: saturate(.42) contrast(.90) brightness(1.10) blur(.35px);
 }
 
@@ -56,7 +56,6 @@ html[data-theme="padiem-glass"][data-glass-mode="reading"] .output-card,
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .document-card,
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .project-card,
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .project-file-card,
-html[data-theme="padiem-glass"][data-glass-mode="reading"] .route-details,
 html[data-theme="padiem-glass"][data-glass-mode="reading"] .reference-note {
   background-color: rgba(249, 250, 251, .94) !important;
   border-color: rgba(73, 86, 98, .12) !important;

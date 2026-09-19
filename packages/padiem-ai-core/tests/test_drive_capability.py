@@ -57,6 +57,7 @@ from padiem_ai_core.drive_capability import (
 from padiem_ai_core.tool_registry import RegisteredTool, ToolRegistrySnapshot
 from padiem_ai_core.tool_runtime import (
     ToolAuthorizationContext,
+    ToolHandlerError,
     ToolInvocation,
     ToolRuntime,
     ToolRuntimeError,
@@ -278,6 +279,30 @@ def test_search_query_escapes_reviewed_b54_form() -> None:
 
 
 # --- promoted safety bounds ---
+
+
+def test_projection_accepts_bounded_google_web_view_link_query_and_fragment() -> None:
+    metadata = file_metadata()
+    metadata["webViewLink"] = (
+        "https://docs.google.com/document/d/file_1/edit"
+        "?usp=drivesdk&resourcekey=0-example#heading=h.test"
+    )
+    projection = project_drive_file(metadata)
+    assert projection.safe_dict()["web_view_link"] == metadata["webViewLink"]
+
+
+def test_projection_accepts_other_bounded_google_editor_web_view_link() -> None:
+    metadata = file_metadata()
+    metadata["webViewLink"] = "https://script.google.com/d/file_1/edit?usp=drivesdk"
+    projection = project_drive_file(metadata)
+    assert projection.safe_dict()["web_view_link"] == metadata["webViewLink"]
+
+
+def test_projection_rejects_non_google_web_view_link_host() -> None:
+    metadata = file_metadata()
+    metadata["webViewLink"] = "https://evil.example/file_1?token=not-trusted"
+    with pytest.raises(DriveContractError, match="Google HTTPS URL"):
+        project_drive_file(metadata)
 
 
 def test_projection_preserves_shared_drive_identity_and_version_evidence() -> None:
@@ -571,7 +596,7 @@ def test_unknown_drive_tool_is_not_registered() -> None:
     assert port.calls == []
 
 
-def test_port_failure_is_wrapped_and_never_leaks_refs() -> None:
+def test_port_failure_is_bounded_and_never_leaks_refs() -> None:
     class LeakyPort(FakeDrivePort):
         def get_json(self, **kwargs):
             self.calls.append(kwargs)
@@ -581,12 +606,25 @@ def test_port_failure_is_wrapped_and_never_leaks_refs() -> None:
 
     port = LeakyPort()
     handlers = drive_handlers(port)
-    with pytest.raises(DriveContractError) as info:
+    with pytest.raises(ToolHandlerError) as info:
         run(handlers[DRIVE_GET_FILE_METADATA_TOOL_ID]({"fileId": "file_1"}))
+    assert info.value.code == "google_drive_provider_boundary_failed"
     message = str(info.value)
     assert "SECRET123" not in message
     assert BINDING_REF not in message
     assert ACTOR_REF not in message
+
+
+def test_invalid_port_body_is_bounded_provider_boundary_failure() -> None:
+    class InvalidBodyPort(FakeDrivePort):
+        def get_json(self, **kwargs):
+            self.calls.append(kwargs)
+            return []  # type: ignore[return-value]
+
+    handlers = drive_handlers(InvalidBodyPort())
+    with pytest.raises(ToolHandlerError) as info:
+        run(handlers[DRIVE_LIST_RECENT_FILES_TOOL_ID]({}))
+    assert info.value.code == "google_drive_provider_boundary_failed"
 
 
 def test_module_owns_no_network_or_credential_surface() -> None:

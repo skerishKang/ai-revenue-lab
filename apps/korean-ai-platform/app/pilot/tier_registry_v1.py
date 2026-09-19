@@ -32,6 +32,7 @@ from enum import Enum
 
 SCHEMA_VERSION = "b14.tier_registry.v1"
 POLICY_ID = "explicit_tier_selection_v1"
+PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _CREDENTIAL_BINDING_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
@@ -159,33 +160,31 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PLUS,
         routes=(
             TierRoute(
-                route_id="plus.kilo-laguna-s-2.1-free.v1",
+                route_id="plus.agnes-3.0-flash.v1",
                 status=RouteStatus.EXECUTABLE,
+                model_family="agnes-3.0-flash",
+                provider_id="agnes-ai",
+                model_id="agnes-ai/agnes-3.0-flash",
+                upstream_model="agnes-3.0-flash",
+                credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_AGNES_API_KEY",
+                evidence=(
+                    "Owner Plus swap handoff; app/pilot/agnes_provider.py registration; "
+                    "exact 3.0 live measurement is separately blocked by the work order."
+                ),
+            ),
+            TierRoute(
+                route_id="plus.kilo-laguna-s-2.1-free.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="poolside-laguna",
                 provider_id="kilo",
                 model_id="kilo/poolside-laguna-s-2.1-free",
                 upstream_model="poolside/laguna-s-2.1:free",
                 credential_mode=CredentialMode.ANONYMOUS,
-                evidence=(
-                    "app/pilot/kilo_provider.py KILO_LAGUNA_MODEL_ID (#956 explicit-only "
-                    "free route); current Padiem Chat Plus mapping "
-                    "apps/padiem-chat/app/model_policy.py (read-only reference)"
-                ),
-            ),
-            TierRoute(
-                route_id="plus.sensenova-6.8-flash-lite.v1",
-                status=RouteStatus.CANDIDATE_DATA_ONLY,
-                model_family="sensenova",
-                provider_id="sensenova",
-                model_id="sensenova/sensenova-6.8-flash-lite",
-                upstream_model="sensenova-6.8-flash-lite",
-                credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
-                credential_binding="PADIEM_SENSENOVA_API_KEY",
                 hold_reason=(
-                    "owner-approved candidate for Plus; not promoted to the active Plus "
-                    "route by an explicit selection decision yet"
+                    "Historical Kilo free lane retained as data only; never a silent fallback."
                 ),
-                evidence="app/pilot/sensenova_provider.py (#955 registration)",
+                evidence="Historical app/pilot/kilo_provider.py KILO_LAGUNA_MODEL_ID (#956).",
             ),
             TierRoute(
                 route_id="plus.poolside-laguna-direct.v1",
@@ -208,20 +207,44 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PRO,
         routes=(
             TierRoute(
+                route_id="pro.hold.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="pro",
+                model_id=PRO_HOLD_MODEL_ID,
+                hold_reason=(
+                    "Owner decision #2601: Padiem Pro is temporarily disabled while its "
+                    "provider route is replaced or re-verified."
+                ),
+                evidence="#2601 temporary Plus-only product posture.",
+            ),
+            TierRoute(
+                route_id="pro.b-ai-qwen3.8-flash.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="qwen3.8-flash",
+                provider_id="b-ai",
+                model_id="b-ai/qwen3.8-flash",
+                upstream_model="qwen3.8-flash",
+                credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_B_AI_API_KEY",
+                hold_reason=(
+                    "Temporarily removed from executable Padiem Pro by owner decision #2601 "
+                    "after provider/model instability. Historical data only."
+                ),
+                evidence="Historical #2571/#2133 route; execution disabled by #2601.",
+            ),
+            TierRoute(
                 route_id="pro.kilo-nemotron-3-ultra-free.v1",
-                status=RouteStatus.EXECUTABLE,
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="nemotron-3-ultra",
                 provider_id="kilo",
                 model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
                 upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
                 credential_mode=CredentialMode.ANONYMOUS,
-                evidence=(
-                    "app/pilot/kilo_provider.py KILO_NEMOTRON_MODEL_ID (#956 registration; "
-                    "still listed on the 2026-09-08 Kilo Gateway model list); active Padiem "
-                    "Chat default/Pro route apps/padiem-chat/app/model_policy.py "
-                    "MEDIUM_B14_MODEL_ID (#2096 repair, read-only reference); fixed_chain_v1 "
-                    "position 2 (#2097)"
+                hold_reason=(
+                    "Superseded by owner-selected B.AI Qwen Pro route in #2571; "
+                    "historical data only and never a silent fallback."
                 ),
+                evidence="Historical Kilo Nemotron route (#956/#2096/#2099).",
             ),
             TierRoute(
                 route_id="pro.kilo-minimax-m3-free.v1",
@@ -253,8 +276,8 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
                 status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="qwen",
                 hold_reason=(
-                    "no B14 provider registration or route evidence exists for any Qwen "
-                    "model; Padiem Max stays unbound pending explicit evidence (#1397)"
+                    "B.AI Qwen3.8-Flash is selected for Padiem Pro, not Max. Padiem "
+                    "Max remains unbound pending an explicit owner Max selection (#1397)."
                 ),
             ),
             TierRoute(

@@ -53,6 +53,7 @@ from padiem_ai_core.drive_capability import (
     DriveCapabilityGrant,
     DriveContractError,
     DriveReadPort,
+    core_auth_scopes_for_capability,
     drive_read_tool_specs,
     register_drive_read_tools,
 )
@@ -72,6 +73,7 @@ from padiem_ai_core.telegram_capability import (
     TelegramCapabilityGrant,
     TelegramContractError,
     TelegramReadPort,
+    core_auth_scopes_for_capability as core_auth_scopes_for_telegram_capability,
     register_telegram_read_tools,
     telegram_read_tool_specs,
 )
@@ -691,7 +693,11 @@ def drive_tool_binding(
     authorization = ToolAuthorizationContext(
         app_id=grant.app_id,
         agent_id=compiled.runtime_profile.id,
-        granted_auth_scopes=tuple(grant.granted_capabilities),
+        granted_auth_scopes=tuple(
+            scope
+            for capability in grant.granted_capabilities
+            for scope in core_auth_scopes_for_capability(capability)
+        ),
     )
     authority = TrustedToolAuthority(
         canonical_agent_id=grant.canonical_agent_id,
@@ -786,7 +792,11 @@ def telegram_tool_binding(
     authorization = ToolAuthorizationContext(
         app_id=grant.app_id,
         agent_id=compiled.runtime_profile.id,
-        granted_auth_scopes=tuple(grant.granted_capabilities),
+        granted_auth_scopes=tuple(
+            scope
+            for capability in grant.granted_capabilities
+            for scope in core_auth_scopes_for_telegram_capability(capability)
+        ),
     )
     authority = TrustedToolAuthority(
         canonical_agent_id=grant.canonical_agent_id,

@@ -35,7 +35,12 @@ Proves statically and locally (no network) that the gate:
       workflow or the ``padiem-chat`` worker;
   12. always prints the classify evidence (AUTHORITY_STATE / DISPOSITION /
       LEGACY_PRE_STATE) before evaluating a non-zero exit, so a REFUSE_*
-      disposition can never be swallowed from the log by ``set -e``.
+      disposition can never be swallowed from the log by ``set -e``;
+ 13. (#2645) authorizes exactly the canonical Claw and Drive apps on the single
+      overlay caller: both authenticate, any third app (including near-miss
+      lookalikes) is rejected with ``service_app_not_authorized``, the caller id
+      and the ``B62_P01_ENGINE_CREDENTIAL`` authority are unchanged, and the
+      runtime identity/auth modules stay app-agnostic.
 """
 
 from __future__ import annotations
@@ -54,10 +59,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/b54-engine-caller-registry-overlay-rotation-gate.yml"
 HELPER = ROOT / ".github/scripts/b54_engine_caller_registry_overlay_rotation.py"
+ENGINE_APP = ROOT / "apps/padiem-ai-engine/app"
+IDENTITY_MODULE = ENGINE_APP / "identity_enforcement.py"
+SERVICE_IDENTITY_MODULE = ENGINE_APP / "service_identity.py"
 
 SENTINEL = "sentinel-raw-value-must-never-appear"
 CREDENTIAL_ENV = "B54_TEST_OVERLAY_ROTATION_CREDENTIAL"
 CONFIRM_PHRASE = "ROTATE_B54_KAGENT_ENGINE_OVERLAY_FROM_EXACT_MAIN"
+# #2645 + #2721 (Telegram reader): the single overlay caller is authorized for
+# the Claw app, the canonical Drive app, and the canonical Telegram reader app,
+# and for nothing else.
+CLAW_APP_ID = "b54-padiem-claw"
+DRIVE_APP_ID = "b54-padiem-claw-drive"
+TELEGRAM_APP_ID = "b54-padiem-claw-telegram"
+CANONICAL_APP_IDS = (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
+FOREIGN_APP_ID = "b62"
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
 LEGACY_TRIO_NAMES = (
@@ -206,8 +222,12 @@ def test_script_constants_exact() -> None:
     assert helper.OVERLAY_SECRET_NAME == OVERLAY_NAME
     assert helper.REQUIRED_BINDING_TYPE == "secret_text"
     assert set(helper.LEGACY_TRIO_NAMES) == set(LEGACY_TRIO_NAMES)
-    assert helper.CALLER_ID == "b54-kagent"
-    assert helper.ALLOWED_APP_IDS == ("b54-padiem-claw",)
+    assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
+    # #2645 + #2721: exactly three canonical apps — Claw, Drive, and the
+    # Telegram reader — and nothing else.
+    assert helper.ALLOWED_APP_IDS == CANONICAL_APP_IDS
+    assert helper.ALLOWED_APP_IDS == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
+    assert helper.ALLOWED_APP_IDS[0] == CLAW_APP_ID
     assert helper.OVERLAY_VERSION == 1
     assert helper.MIN_CREDENTIAL_BYTES == 32
     assert helper.MAX_CREDENTIAL_BYTES == 512
@@ -311,9 +331,9 @@ def test_build_overlay_payload_is_canonical_single_caller() -> None:
     assert payload == {
         "version": 1,
         "caller": {
-            "caller_id": "b54-kagent",
+            "caller_id": "b54-p01-overlay-20260914-a1",
             "credential": credential,
-            "allowed_app_ids": ["b54-padiem-claw"],
+            "allowed_app_ids": [CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID],
         },
     }
     # Credential byte boundaries are enforced before any payload is returned.
@@ -342,12 +362,12 @@ def test_overlay_shape_rejects_noncanonical_payloads() -> None:
         },
         "entry missing apps": {
             "version": 1,
-            "caller": {"caller_id": "b54-kagent", "credential": "n" * 40},
+            "caller": {"caller_id": "b54-p01-overlay-20260914-a1", "credential": "n" * 40},
         },
         "empty app list": {
             "version": 1,
             "caller": {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": "n" * 40,
                 "allowed_app_ids": [],
             },
@@ -355,7 +375,7 @@ def test_overlay_shape_rejects_noncanonical_payloads() -> None:
         "duplicate apps": {
             "version": 1,
             "caller": {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": "n" * 40,
                 "allowed_app_ids": ["a", "a"],
             },
@@ -371,7 +391,7 @@ def test_overlay_shape_rejects_noncanonical_payloads() -> None:
         "non-string credential": {
             "version": 1,
             "caller": {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": 12345,
                 "allowed_app_ids": ["b54-padiem-claw"],
             },
@@ -432,25 +452,29 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
 
     # The Engine's own overlay parser accepts the exact serialized PUT text.
     parsed = identity.parse_caller_registry_v1_overlay(body["text"])
-    assert parsed.caller_id == "b54-kagent"
-    assert parsed.allowed_app_ids == ("b54-padiem-claw",)
+    assert parsed.caller_id == "b54-p01-overlay-20260914-a1"
+    assert parsed.allowed_app_ids == CANONICAL_APP_IDS
     assert parsed.credential_sha256 == identity.caller_secret_digest(new_cred)
 
-    # b54-kagent authenticates with the RAW new credential (never pre-hashed).
-    identity.authenticate_request(
-        env=env,
-        headers={
-            identity.CALLER_ID_HEADER: "b54-kagent",
-            identity.CALLER_CREDENTIAL_HEADER: new_cred,
-        },
-        requested_app_id="b54-padiem-claw",
-    )
+    # #2645 + #2721: ALL canonical apps authenticate with the RAW new credential
+    # (never pre-hashed) — the pre-existing Claw authority is preserved, the
+    # canonical Drive app stays authorized, and the canonical Telegram reader
+    # app is newly authorized by the same single overlay caller.
+    for app_id in CANONICAL_APP_IDS:
+        identity.authenticate_request(
+            env=env,
+            headers={
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
+                identity.CALLER_CREDENTIAL_HEADER: new_cred,
+            },
+            requested_app_id=app_id,
+        )
     # The pre-rotation credential no longer authenticates.
     try:
         identity.authenticate_request(
             env=env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: "o" * 40,
             },
             requested_app_id="b54-padiem-claw",
@@ -464,7 +488,7 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
         identity.authenticate_request(
             env=env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: identity.caller_secret_digest(new_cred),
             },
             requested_app_id="b54-padiem-claw",
@@ -483,19 +507,125 @@ def test_overlay_round_trips_through_engine_parser_and_authentication() -> None:
         },
         requested_app_id="b61",
     )
-    try:
+    # #2645: any app outside the canonical pair is REJECTED, even with a fully
+    # valid credential. Near-miss lookalikes must not be admitted by prefix or
+    # substring matching.
+    for foreign in (
+        "b61",
+        FOREIGN_APP_ID,
+        "b54-padiem-claw-drive-write",
+        "b54-padiem-claw-drive2",
+        "b54-padiem-clawx",
+    ):
+        try:
+            identity.authenticate_request(
+                env=env,
+                headers={
+                    identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
+                    identity.CALLER_CREDENTIAL_HEADER: new_cred,
+                },
+                requested_app_id=foreign,
+            )
+        except identity.ServiceIdentityError:
+            continue
+        raise AssertionError(f"overlay caller must not widen apps: {foreign}")
+
+
+def test_2645_canonical_app_authority_contract() -> None:
+    """#2645: the single overlay caller authorizes exactly Claw + Drive.
+
+    Proves, against the Engine's own overlay parser and authenticator, that:
+      * the pre-existing ``b54-padiem-claw`` authority still PASSes;
+      * the canonical ``b54-padiem-claw-drive`` authority PASSes;
+      * an arbitrary third app is REJECTED with ``service_app_not_authorized``;
+      * the caller id is unchanged;
+      * the credential authority (``B62_P01_ENGINE_CREDENTIAL``) is unchanged;
+      * no base V1 mutation path is introduced;
+      * the runtime identity/auth semantics are unchanged (the Drive
+        authorization is registry DATA, never runtime code).
+    """
+    helper = _load_helper()
+    identity = _load_engine_identity()
+    credential = "n" * 40
+
+    payload = helper.build_overlay_payload(credential=credential)
+    overlay_text = helper.build_overlay_put_body(payload)["text"]
+
+    # Caller id unchanged; exactly the canonical trio, in order, no duplicates.
+    assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
+    parsed = identity.parse_caller_registry_v1_overlay(overlay_text)
+    assert parsed.caller_id == helper.CALLER_ID
+    assert parsed.allowed_app_ids == (CLAW_APP_ID, DRIVE_APP_ID, TELEGRAM_APP_ID)
+    assert len(parsed.allowed_app_ids) == 3
+    assert len(set(parsed.allowed_app_ids)) == 3
+
+    base_registry = {
+        "version": 1,
+        "callers": [
+            {
+                "caller_id": "storymemory-b61",
+                "credential": "b" * 40,
+                "allowed_app_ids": ["b61"],
+            }
+        ],
+    }
+    env = type(
+        "Env",
+        (),
+        {
+            identity.CALLER_REGISTRY_V1_ENV: json.dumps(base_registry),
+            identity.CALLER_REGISTRY_V1_OVERLAY_ENV: overlay_text,
+        },
+    )()
+
+    def _authenticate(app_id: str) -> None:
         identity.authenticate_request(
             env=env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
-                identity.CALLER_CREDENTIAL_HEADER: new_cred,
+                identity.CALLER_ID_HEADER: helper.CALLER_ID,
+                identity.CALLER_CREDENTIAL_HEADER: credential,
             },
-            requested_app_id="b61",
+            requested_app_id=app_id,
         )
-    except identity.ServiceIdentityError:
-        pass
-    else:
-        raise AssertionError("overlay caller must not widen apps")
+
+    # Existing Claw authority PASS (unchanged behaviour).
+    _authenticate(CLAW_APP_ID)
+    # Canonical Drive authority PASS (newly authorized by the same caller).
+    _authenticate(DRIVE_APP_ID)
+
+    # Arbitrary third apps REJECT — including near-miss lookalikes, so a prefix
+    # or substring match can never widen the authority.
+    for foreign in (
+        FOREIGN_APP_ID,
+        "b61",
+        "b54-padiem-claw-drive-write",
+        "b54-padiem-claw-drive2",
+        "b54-padiem-clawx",
+    ):
+        try:
+            _authenticate(foreign)
+        except identity.ServiceIdentityError as exc:
+            assert exc.code == "service_app_not_authorized", (foreign, exc.code)
+        else:
+            raise AssertionError(f"third app must be rejected: {foreign!r}")
+
+    # Credential authority unchanged: the credential arrives only as the B62 job
+    # secret, via an environment variable (never argv).
+    workflow_text = WORKFLOW.read_text(encoding="utf-8")
+    assert "secrets.B62_P01_ENGINE_CREDENTIAL" in workflow_text
+    assert "--credential-env ENGINE_CALLER_CREDENTIAL" in workflow_text
+
+    # No base V1 mutation path: the single mutation-shaping primitive is
+    # overlay-only and can never name the base secret.
+    body = helper.build_overlay_put_body(payload)
+    assert body["name"] == OVERLAY_NAME
+    assert body["name"] != BASE_NAME
+    assert body["type"] == "secret_text"
+
+    # Runtime identity/auth semantics unchanged: the Drive app id appears NOWHERE
+    # in the runtime modules — the authorization is registry data only.
+    for module in (IDENTITY_MODULE, SERVICE_IDENTITY_MODULE):
+        assert DRIVE_APP_ID not in module.read_text(encoding="utf-8"), module.name
 
 
 def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
@@ -511,7 +641,7 @@ def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
         identity.authenticate_request(
             env=solo,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: "n" * 40,
             },
             requested_app_id="b54-padiem-claw",
@@ -526,7 +656,7 @@ def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
         "version": 1,
         "callers": [
             {
-                "caller_id": "b54-kagent",
+                "caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": "d" * 40,
                 "allowed_app_ids": ["b54-padiem-claw"],
             }
@@ -544,7 +674,7 @@ def test_engine_overlay_fail_closed_rules_hold_for_gate_payload() -> None:
         identity.authenticate_request(
             env=dup_env,
             headers={
-                identity.CALLER_ID_HEADER: "b54-kagent",
+                identity.CALLER_ID_HEADER: "b54-p01-overlay-20260914-a1",
                 identity.CALLER_CREDENTIAL_HEADER: "n" * 40,
             },
             requested_app_id="b54-padiem-claw",
@@ -701,8 +831,10 @@ def test_plan_cli_writes_overlay_body_and_never_emits_the_credential() -> None:
         assert code == 0
         assert "B54_ENGINE_OVERLAY_ROTATION_PLAN=PASS" in output
         assert f"B54_ENGINE_OVERLAY_TARGET_NAME={OVERLAY_NAME}" in output
-        assert "OVERLAY_CALLER_ID=b54-kagent" in output
-        assert "OVERLAY_ALLOWED_APP_IDS=b54-padiem-claw" in output
+        assert "OVERLAY_CALLER_ID=b54-p01-overlay-20260914-a1" in output
+        assert (
+            f"OVERLAY_ALLOWED_APP_IDS={','.join(CANONICAL_APP_IDS)}" in output
+        )
         assert "CREDENTIAL_BYTES_IN_BOUNDS=PASS" in output
         assert "RAW_CREDENTIAL_PREHASHED=NO" in output
         assert "ENGINE_BASE_V1_MUTATION=0" in output
@@ -720,8 +852,8 @@ def test_plan_cli_writes_overlay_body_and_never_emits_the_credential() -> None:
     assert body["type"] == "secret_text"
     payload = json.loads(body["text"])
     assert payload["caller"]["credential"] == credential
-    assert payload["caller"]["caller_id"] == "b54-kagent"
-    assert payload["caller"]["allowed_app_ids"] == ["b54-padiem-claw"]
+    assert payload["caller"]["caller_id"] == "b54-p01-overlay-20260914-a1"
+    assert payload["caller"]["allowed_app_ids"] == list(CANONICAL_APP_IDS)
 
 
 def test_plan_cli_fails_closed_on_bad_credential_and_existing_output() -> None:

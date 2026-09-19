@@ -30,6 +30,10 @@ WORKFLOW = ROOT / ".github/workflows/b54-engine-production-deploy-gate.yml"
 SENTINEL = "sentinel-secret-value-must-never-appear"
 V1 = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
+GRANTS = "ENGINE_CONNECTOR_GRANTS"
+OAUTH = "CONTROL_PLANE_GOOGLE_OAUTH"
+GRANTS_DB = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+OAUTH_SERVICE = "padiem-google-oauth-state"
 
 
 def _load_helper():
@@ -74,12 +78,20 @@ def _resolve(helper, payload: object) -> tuple[int, str]:
     return _invoke(helper, lambda p: ["resolve-active", "--deployments", p], payload)
 
 
-def _verify(helper, payload: object, active: str = "ver-active", expect_overlay: bool = False) -> tuple[int, str]:
+def _verify(
+    helper,
+    payload: object,
+    active: str = "ver-active",
+    expect_overlay: bool = False,
+    require_drive_runtime: bool = False,
+) -> tuple[int, str]:
     args: list[str]
     def build(p: str) -> list[str]:
         args = ["verify", "--version-settings", p, "--active-version", active]
         if expect_overlay:
             args.append("--expect-overlay")
+        if require_drive_runtime:
+            args.append("--require-drive-runtime-bindings")
         return args
     return _invoke(helper, build, payload)
 
@@ -250,6 +262,54 @@ def test_verify_passes_overlay_when_expected_and_present() -> None:
     assert "B54_ENGINE_OVERLAY_EXPECTED=YES" in out
     assert "SERVED_VERSION_SECRET_SET_VALIDATION=YES" in out
     assert SENTINEL not in out
+
+
+def _drive_runtime_bindings() -> list[dict[str, object]]:
+    return [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(GRANTS, "d1", id=GRANTS_DB),
+        _binding(OAUTH, "service", service=OAUTH_SERVICE),
+    ]
+
+
+def test_verify_requires_drive_runtime_bindings_when_requested() -> None:
+    helper = _load_helper()
+    code, out = _verify(
+        helper,
+        _version_detail(_drive_runtime_bindings()),
+        require_drive_runtime=True,
+    )
+    assert code == 0
+    assert "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING=PRESENT:d1" in out
+    assert "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING=PRESENT:service" in out
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in out
+    assert SENTINEL not in out
+
+
+def test_verify_rejects_missing_drive_runtime_bindings() -> None:
+    helper = _load_helper()
+    for bindings in (
+        [_binding(V1, "secret_text", text=SENTINEL)],
+        [_binding(V1, "secret_text", text=SENTINEL), _binding(GRANTS, "d1", id=GRANTS_DB)],
+    ):
+        code, out = _verify(helper, _version_detail(bindings), require_drive_runtime=True)
+        assert code == 1
+        assert "required served binding is missing" in out
+        assert SENTINEL not in out
+
+
+def test_verify_rejects_drive_runtime_identity_drift() -> None:
+    helper = _load_helper()
+    fixtures = (
+        [_binding(V1, "secret_text"), _binding(GRANTS, "plain_text", id=GRANTS_DB), _binding(OAUTH, "service", service=OAUTH_SERVICE)],
+        [_binding(V1, "secret_text"), _binding(GRANTS, "d1", id="wrong-db"), _binding(OAUTH, "service", service=OAUTH_SERVICE)],
+        [_binding(V1, "secret_text"), _binding(GRANTS, "d1", id=GRANTS_DB), _binding(OAUTH, "service", service="wrong-service")],
+    )
+    for bindings in fixtures:
+        code, out = _verify(helper, _version_detail(bindings), require_drive_runtime=True)
+        assert code == 1
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+        assert "wrong-db" not in out and "wrong-service" not in out
 
 
 def test_verify_passes_name_keyed_binding_map_variant() -> None:
@@ -472,7 +532,10 @@ def test_deploy_job_yaml_exposes_both_guard_steps() -> None:
     assert "Pre-deploy served-version secret guard" in steps
     assert "Post-deploy served-version secret guard" in steps
     assert steps.index("Pre-deploy served-version secret guard") < steps.index("Deploy engine to production")
-    assert steps.index("Post-deploy served-version secret guard") > steps.index("Post-deploy smoke")
+    # f88 (run 34889667189): the post-deploy guard ran AFTER the health smoke,
+    # so a smoke failure skipped the guard and the served version stayed
+    # unknown. The guard is GET-only evidence and must precede the smoke.
+    assert steps.index("Post-deploy served-version secret guard") < steps.index("Post-deploy smoke")
 
 
 def test_guards_run_the_shared_script_in_both_phases() -> None:
@@ -481,6 +544,7 @@ def test_guards_run_the_shared_script_in_both_phases() -> None:
     assert block.count("b54_engine_served_version_guard.py verify") == 2
     assert "PREMUTATION_SERVED_VERSION_GUARD=PASS" in block
     assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in block
+    assert block.count("--require-drive-runtime-bindings") == 2
 
 
 def test_guards_are_get_only_and_never_touch_secrets_or_values() -> None:

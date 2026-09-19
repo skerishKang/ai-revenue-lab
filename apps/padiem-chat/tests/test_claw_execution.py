@@ -25,6 +25,7 @@ from padiem_control_plane import (
     CanonicalSubjectRef,
     SubjectType,
 )
+from padiem_control_plane.product_tier_routes import ProductTierLabel
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 INDEX_HTML = (STATIC / "index.html").read_text(encoding="utf-8")
@@ -473,6 +474,46 @@ async def test_artifact_route_real_storage_failure_returns_503() -> None:
 
     assert resp.status_code == 503
     assert resp.json()["error"]["code"] == "workspace_document_read_failed"
+    assert resp.json()["error"]["detail"] == "r2_read_failed"
+
+
+@pytest.mark.parametrize(
+    ("exc", "expected_detail"),
+    [
+        (WorkspaceStorageError("workspace document metadata is invalid"), "metadata_invalid"),
+        (WorkspaceStorageError("workspace document read failed"), "r2_read_failed"),
+        (WorkspaceStorageError("workspace document length mismatch"), "byte_length_mismatch"),
+        (WorkspaceStorageError("internal storage detail must not leak"), "storage_unknown"),
+        (RuntimeError("workspaces/tenant-secret/private-object-key"), "storage_unknown"),
+    ],
+)
+async def test_artifact_route_storage_failure_detail_is_closed_and_non_secret(
+    exc: Exception,
+    expected_detail: str,
+) -> None:
+    store = _real_workspace_store()
+    saved = await store.put_generated_docx(
+        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+    )
+
+    async def fail_get_for_tenant(**kwargs):
+        raise exc
+
+    store.get_for_tenant = fail_get_for_tenant
+    client = _artifact_route_client(OWNER_TENANT, store)
+
+    resp = client.get(_ARTIFACT_ROUTE.format(document_id=saved.document_id))
+
+    assert resp.status_code == 503
+    error = resp.json()["error"]
+    assert error == {
+        "code": "workspace_document_read_failed",
+        "message": "문서 읽기 중 오류가 발생했습니다.",
+        "detail": expected_detail,
+    }
+    assert str(exc) not in resp.text
+    assert OWNER_TENANT not in resp.text
+    assert "workspaces/" not in resp.text
 
 
 async def test_artifact_route_error_json_discloses_no_internal_material() -> None:
@@ -525,8 +566,13 @@ def test_quote_artifact_failure_fail_closed() -> None:
     assert data["error"]["code"] == "artifact_generation_failed"
 
 
-def test_quote_no_tenant_fails_closed(client: TestClient) -> None:
-    with _injected_adapter(client, _make_adapter()):
+def test_quote_no_tenant_fails_closed_before_quota_or_p01(client: TestClient) -> None:
+    adapter = _make_adapter()
+    usage_gate = MagicMock()
+    usage_gate.authorize = AsyncMock(return_value=UsageDecision(allowed=True, subject_type="anonymous"))
+    client.app.state.usage_gate = usage_gate
+    client.app.state.usage_gate_enforced = True
+    with _injected_adapter(client, adapter):
         payload = {
             "content": "가상 테스트: A업체 견적서 요청.",
             "channel": "kakao",
@@ -536,12 +582,15 @@ def test_quote_no_tenant_fails_closed(client: TestClient) -> None:
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
     data = resp.json()
-    assert data["error"]["code"] in ("workspace_scope_unavailable", "workspace_storage_unavailable")
+    assert data["error"]["code"] == "workspace_scope_unavailable"
+    usage_gate.authorize.assert_not_awaited()
+    adapter.execute.assert_not_called()
 
 
-def test_quote_workspace_store_unavailable_fails_closed() -> None:
+def test_quote_workspace_store_unavailable_fails_closed_before_p01() -> None:
     app = _app_with_identity()
     del app.state.workspace_document_store
+    adapter = _make_adapter()
     with TestClient(app, base_url="https://chat.example.test") as test_client:
         test_client.cookies.set(
             SESSION_COOKIE,
@@ -549,13 +598,75 @@ def test_quote_workspace_store_unavailable_fails_closed() -> None:
             domain="chat.example.test",
             path="/",
         )
-        with _injected_adapter(test_client, _make_adapter()):
+        with _injected_adapter(test_client, adapter):
             resp = test_client.post(
                 EXECUTE_ROUTE_PATH,
                 json={"content": "test", "channel": "kakao", "action": "quote"},
             )
     assert resp.status_code == 503
     assert resp.json()["error"]["code"] == "workspace_storage_unavailable"
+    adapter.execute.assert_not_called()
+
+
+def test_browser_plus_tier_is_forwarded_to_claw_p01_adapter() -> None:
+    app = _app_with_identity()
+    app.state.workspace_document_store = _make_workspace_store()
+    adapter = _make_adapter()
+    with TestClient(app, base_url="https://chat.example.test") as test_client:
+        test_client.cookies.set(
+            SESSION_COOKIE,
+            create_session_token(_google_settings(), SIGNED_IN_USER_ID),
+            domain="chat.example.test",
+            path="/",
+        )
+        with _injected_adapter(test_client, adapter):
+            resp = test_client.post(
+                EXECUTE_ROUTE_PATH,
+                json={
+                    "content": "Plus 등급 실행 테스트",
+                    "channel": "kakao",
+                    "action": "reply",
+                    "tier": "plus",
+                },
+            )
+    assert resp.status_code == 200
+    adapter.execute.assert_awaited_once()
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
+
+
+def test_browser_default_tier_is_plus_when_omitted() -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={"content": "기본 등급 실행 테스트", "channel": "sms", "action": "reply"},
+        )
+    assert resp.status_code == 200
+    assert adapter.execute.await_args.kwargs["product_tier"] is ProductTierLabel.PLUS
+
+
+def test_browser_max_tier_fails_closed_before_claw_dispatch() -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={"content": "Max 등급 테스트", "channel": "sms", "action": "reply", "tier": "max"},
+        )
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "tier_unavailable"
+    adapter.execute.assert_not_called()
+
+
+def test_browser_unknown_tier_fails_closed_before_claw_dispatch() -> None:
+    adapter = _make_adapter()
+    with _injected_adapter(client := TestClient(create_app(settings=Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))), adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={"content": "잘못된 등급 테스트", "channel": "sms", "action": "reply", "tier": "auto"},
+        )
+    assert resp.status_code == 422
+    assert resp.json()["error"]["code"] == "invalid_tier"
+    adapter.execute.assert_not_called()
 
 
 def test_browser_payload_cannot_set_provider_or_model() -> None:
@@ -613,7 +724,7 @@ def test_missing_engine_configuration_fails_closed(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
@@ -631,7 +742,7 @@ def test_engine_failure_projects_safe_error(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 502
@@ -667,7 +778,7 @@ def test_engine_failure_detail_is_closed_vocabulary(
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     data = resp.json()
     assert resp.status_code == 502
@@ -686,7 +797,7 @@ def test_unexpected_exception_projects_unknown_engine_detail(client: TestClient)
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     data = resp.json()
     assert resp.status_code == 502
@@ -709,7 +820,7 @@ def test_unrecognized_p01_error_code_projects_unknown_engine_detail(client: Test
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     data = resp.json()
     assert resp.status_code == 502
@@ -728,7 +839,7 @@ def test_p01_execution_failure_detail_is_unknown(client: TestClient) -> None:
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     assert resp.status_code == 502
     assert resp.json()["error"]["detail"] == "unknown_engine_failure"
@@ -748,7 +859,7 @@ def test_transport_adapter_failures_project_transport_detail(
     with _injected_adapter(client, adapter):
         resp = client.post(
             "/api/claw/manual-intake/execute",
-            json={"content": "테스트", "channel": "kakao", "action": "quote"},
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
         )
     assert resp.status_code == 502
     assert resp.json()["error"]["detail"] == "engine_transport_or_response_failed"
@@ -761,7 +872,7 @@ def test_no_silent_preview_fallback_after_execute(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 502
@@ -889,7 +1000,7 @@ def test_engine_not_configured_returns_503(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
@@ -920,7 +1031,7 @@ def test_engine_not_configured_503_carries_bounded_safe_detail(
         with _injected_adapter(client, None):
             resp = client.post(
                 "/api/claw/manual-intake/execute",
-                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+                json={"content": "테스트", "channel": "kakao", "action": "reply"},
             )
     finally:
         client.app.state.claw_p01_composition_diagnostic = previous
@@ -939,7 +1050,7 @@ def test_engine_not_configured_503_detail_defaults_when_diagnostic_unset(
         with _injected_adapter(client, None):
             resp = client.post(
                 "/api/claw/manual-intake/execute",
-                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+                json={"content": "테스트", "channel": "kakao", "action": "reply"},
             )
     finally:
         client.app.state.claw_p01_composition_diagnostic = previous
@@ -956,7 +1067,7 @@ def test_engine_not_configured_503_rejects_out_of_allowlist_detail(
         with _injected_adapter(client, None):
             resp = client.post(
                 "/api/claw/manual-intake/execute",
-                json={"content": "테스트", "channel": "kakao", "action": "quote"},
+                json={"content": "테스트", "channel": "kakao", "action": "reply"},
             )
     finally:
         client.app.state.claw_p01_composition_diagnostic = previous
@@ -995,7 +1106,7 @@ def test_engine_timeout_projects_safe_error(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 502
@@ -1009,7 +1120,7 @@ def test_no_credential_raw_text_in_response(client: TestClient) -> None:
         payload = {
             "content": "테스트",
             "channel": "kakao",
-            "action": "quote",
+            "action": "reply",
         }
         resp = client.post("/api/claw/manual-intake/execute", json=payload)
     assert resp.status_code == 503
@@ -1070,7 +1181,7 @@ PREVIEW_ROUTE_PATH = "/api/claw/manual-intake/preview"
 GATE_PAYLOAD = {
     "content": "가상 테스트: A업체가 9월 말까지 샘플 20개 견적서를 요청함.",
     "channel": "kakao",
-    "action": "quote",
+    "action": "reply",
     "sender_hint": "A업체",
 }
 
@@ -1269,6 +1380,9 @@ def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     execute_handler = source.split("async def claw_manual_intake_execute", 1)[1]
     assert "_usage_gate_denial(request)" in execute_handler
     assert "claw_p01_adapter" in execute_handler
+    assert execute_handler.index(
+        "artifact_tenant_id = await _resolve_canonical_tenant(request)"
+    ) < execute_handler.index("_usage_gate_denial(request)")
     assert execute_handler.index("_usage_gate_denial(request)") < execute_handler.index(
         'request.app.state, "claw_p01_adapter"'
     )

@@ -63,9 +63,21 @@ DIAGNOSTIC_TOKEN_HEADER = "x-padiem-engine-authority-diagnostic-token"
 MIN_DIAGNOSTIC_TOKEN_BYTES = 32
 MAX_DIAGNOSTIC_TOKEN_BYTES = 512
 
-# The single overlay caller this diagnostic exists to classify. This identifier
-# is already public repository constant material (P01 contract, #2375/#2402).
-EXPECTED_OVERLAY_CALLER_ID = "b54-kagent"
+# The single overlay caller this diagnostic exists to classify. Since #2520 the
+# Claw/P01 overlay no longer shares the opaque base V1 caller id: it has its own
+# dedicated overlay-only id, and this is the CURRENT expected overlay caller.
+# This identifier is already public repository constant material
+# (P01 contract, #2375/#2402/#2520).
+EXPECTED_OVERLAY_CALLER_ID = "b54-p01-overlay-20260914-a1"
+
+# HISTORICAL EVIDENCE ONLY — not a current authority value. This is the legacy
+# shared Claw caller id that the opaque base V1 registry is expected to still
+# contain until a separately-authorized base rewrite happens (#2519 legacy
+# removal). ``BASE_CONTAINS_B54_KAGENT`` keeps this id's original meaning —
+# "does the opaque base still carry the old shared caller?" — so the historical
+# collision question stays answerable and is deliberately NOT renamed or
+# re-pointed at the new dedicated overlay id.
+LEGACY_BASE_CALLER_ID = "b54-kagent"
 
 CLOSED_FIELDS = (
     "BASE_PARSE",
@@ -160,7 +172,7 @@ def classify_authority_payloads(base_raw: Any, overlay_raw: Any) -> dict[str, st
         "BASE_PARSE": _parse_verdict(base_raw, parse_caller_registry_v1),
         "OVERLAY_PARSE": _parse_verdict(overlay_raw, parse_caller_registry_v1_overlay),
         "BASE_CONTAINS_B54_KAGENT": (
-            "YES" if EXPECTED_OVERLAY_CALLER_ID in base_ids else "NO"
+            "YES" if LEGACY_BASE_CALLER_ID in base_ids else "NO"
         ),
         "DUPLICATE_CALLER_ID": (
             "YES" if overlay_id and overlay_id in base_ids else "NO"
