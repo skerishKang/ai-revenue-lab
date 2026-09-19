@@ -9,12 +9,10 @@ Proves statically and locally (no network) that:
      authority (case-insensitive scan), so the overlay no longer collides with
      the base V1 caller and the runtime ``duplicate_service_caller`` guard is
      never tripped by this pairing;
-  3. the overlay app authority is exactly the canonical trio: ``allowed_app_ids``
-     is exactly ``["b54-padiem-claw", "b54-padiem-claw-drive",
-     "b54-padiem-claw-telegram"]`` — the Claw app authority is preserved, the
-     canonical Drive app was added (#2645), and the canonical Telegram reader
-     app is added for the #2712 getMe READ canary, while
-     any further app id remains rejected by the Engine runtime;
+  3. the overlay app authority is exactly the canonical pair: ``allowed_app_ids``
+     is exactly ``["b54-padiem-claw", "b54-padiem-claw-drive"]`` — the Claw app
+     authority is preserved and the canonical Drive app is added (#2645), while
+     any third app id remains rejected by the Engine runtime;
   4. the credential authority is unchanged: the rotation still consumes ONLY
      ``B62_P01_ENGINE_CREDENTIAL`` and the Chat credential binding stays
      ``P01_ENGINE_CREDENTIAL`` (secret_text semantics untouched);
@@ -88,10 +86,8 @@ NEW_CALLER_ID = "b54-p01-overlay-20260914-a1"
 OLD_CALLER_ID = "b54-kagent"
 ALLOWED_APP = "b54-padiem-claw"
 DRIVE_APP = "b54-padiem-claw-drive"
-TELEGRAM_APP = "b54-padiem-claw-telegram"
-# #2645 + the Telegram reader extension: the canonical overlay app authority is
-# exactly this trio, in order.
-ALLOWED_APPS = (ALLOWED_APP, DRIVE_APP, TELEGRAM_APP)
+# #2645: the canonical overlay app authority is exactly this pair, in order.
+ALLOWED_APPS = (ALLOWED_APP, DRIVE_APP)
 BASE_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
 OVERLAY_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY"
 
@@ -144,21 +140,16 @@ def test_old_caller_id_no_longer_emitted_by_either_authority() -> None:
         )
 
 
-def test_canonical_app_and_credential_authority_pinned() -> None:
+def test_allowed_app_and_credential_authority_unchanged() -> None:
     rotation = _load_rotation()
     b62 = _load_b62()
-    # #2645 + the Telegram reader extension: exactly the canonical
-    # Claw + Drive + Telegram trio, in order, no duplicates.
+    # #2645: exactly the canonical Claw + Drive pair, in order, no duplicates.
     assert rotation.ALLOWED_APP_IDS == ALLOWED_APPS
-    assert rotation.ALLOWED_APP_IDS == (ALLOWED_APP, DRIVE_APP, TELEGRAM_APP)
-    assert len(rotation.ALLOWED_APP_IDS) == 3
-    assert len(set(rotation.ALLOWED_APP_IDS)) == 3
+    assert rotation.ALLOWED_APP_IDS == (ALLOWED_APP, DRIVE_APP)
+    assert len(rotation.ALLOWED_APP_IDS) == 2
+    assert len(set(rotation.ALLOWED_APP_IDS)) == 2
     payload = rotation.build_overlay_payload(credential="n" * 40)
-    assert payload["caller"]["allowed_app_ids"] == [
-        ALLOWED_APP,
-        DRIVE_APP,
-        TELEGRAM_APP,
-    ]
+    assert payload["caller"]["allowed_app_ids"] == [ALLOWED_APP, DRIVE_APP]
     assert payload["caller"]["caller_id"] == NEW_CALLER_ID
     # Credential authority names are unchanged (values are never touched here).
     rotation_text = ROTATION.read_text(encoding="utf-8")

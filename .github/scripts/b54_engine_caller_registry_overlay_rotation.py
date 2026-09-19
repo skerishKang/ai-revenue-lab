@@ -21,9 +21,8 @@ Authority model (apps/padiem-ai-engine/app/identity_enforcement.py):
 Because the overlay authority carries a DEDICATED overlay-only caller id that is
 deliberately distinct from every base V1 caller id (so the runtime
 ``duplicate_service_caller`` guard can never fire for it) bound to exactly the
-canonical Claw, Drive, and Telegram-reader applications (``b54-padiem-claw``,
-``b54-padiem-claw-drive``, and ``b54-padiem-claw-telegram``), the
-credential/app-authority rotation remains an
+canonical Claw and Drive applications (``b54-padiem-claw`` and
+``b54-padiem-claw-drive``), the credential/app-authority rotation remains an
 OVERLAY concern, not a base V1 rewrite. This gate therefore requires BOTH the
 base V1 and the overlay to already be present as ``secret_text`` (NAME/TYPE
 only) before it will plan, and it PUTs only the overlay.
@@ -35,8 +34,7 @@ internally via ``caller_secret_digest``):
      "caller": {"caller_id": "b54-p01-overlay-20260914-a1",
                 "credential": <raw B62_P01_ENGINE_CREDENTIAL>,
                 "allowed_app_ids": ["b54-padiem-claw",
-                                    "b54-padiem-claw-drive",
-                                    "b54-padiem-claw-telegram"]}}
+                                    "b54-padiem-claw-drive"]}}
 
 Pre- and post-mutation readback is proven on the ACTUALLY SERVED Worker version
 (deployments API -> ``versions/{active}`` detail -> ``result.resources.bindings``),
@@ -112,7 +110,6 @@ CALLER_ID = "b54-p01-overlay-20260914-a1"
 ALLOWED_APP_IDS = (
     "b54-padiem-claw",
     "b54-padiem-claw-drive",
-    "b54-padiem-claw-telegram",
 )
 OVERLAY_VERSION = 1
 
