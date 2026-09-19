@@ -544,8 +544,8 @@ html[data-theme="padiem-glass"] .glass-shell-frag {
   top: 0;
   background-repeat: no-repeat;
   box-shadow:
-    0 22px 48px rgba(0,0,0,.34),
-    inset 0 0 0 1px rgba(255,255,255,.32);
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(45,69,87,.10);
   will-change: transform, width, height, opacity;
   backface-visibility: hidden;
 }
@@ -621,7 +621,7 @@ html[data-theme="padiem-glass"] .glass-shell-frag::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.24), transparent 28%, rgba(126,89,170,.16) 70%, rgba(255,194,228,.18));
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.12) 42%, rgba(79,134,173,.08) 62%, transparent 100%);
   mix-blend-mode: screen;
 }
 
@@ -629,5 +629,6 @@ html[data-theme="padiem-glass"] .glass-shell-frag::after {
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(255,255,255,.24);
+  border-top: 1px solid rgba(255,255,255,.14);
+  border-bottom: 1px solid rgba(45,69,87,.08);
 }
