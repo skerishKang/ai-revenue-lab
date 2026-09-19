@@ -104,7 +104,7 @@ class SandboxPolicyContractTests(unittest.TestCase):
             run_id="run_101",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/example",
-            requested_revision="1234567890abcdef",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             ttl_seconds=1200,
             network_policy=NetworkPolicy.OFF,
         )
@@ -129,7 +129,7 @@ class SandboxPolicyContractTests(unittest.TestCase):
                     run_id="run_103",
                     execution_mode=ExecutionMode.CLOUD,
                     repository_ref="skerishKang/example",
-                    requested_revision="1234567890abcdef",
+                    requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                     network_policy=NetworkPolicy.RESTRICTED,
                 )
             )
@@ -160,7 +160,7 @@ class SandboxPolicyContractTests(unittest.TestCase):
             run_id="run_lifecycle",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="repo/test",
-            requested_revision="abcdef123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             ttl_seconds=600,
         )
         lease = provider.allocate(req)

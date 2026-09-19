@@ -27,7 +27,7 @@ class SandboxBoundaryTests(unittest.TestCase):
             run_id=run_id,
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/example",
-            requested_revision="abc123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             resource_class=ResourceClass.STANDARD,
             ttl_seconds=ttl_seconds,
         )
@@ -107,7 +107,7 @@ class SandboxLeaseRenewalProviderTests(unittest.TestCase):
             run_id=run_id,
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/example",
-            requested_revision="abc123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             resource_class=ResourceClass.STANDARD,
             ttl_seconds=ttl_seconds,
         )
@@ -315,6 +315,7 @@ class SandboxLeaseWithExpiryContractTests(unittest.TestCase):
             run_id="run_001",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/example",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             ttl_seconds=SANDBOX_LEASE_MAX_TTL_SECONDS,
         )
         with self.assertRaises(ContractError):
@@ -322,6 +323,7 @@ class SandboxLeaseWithExpiryContractTests(unittest.TestCase):
                 run_id="run_001",
                 execution_mode=ExecutionMode.CLOUD,
                 repository_ref="skerishKang/example",
+                requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                 ttl_seconds=SANDBOX_LEASE_MAX_TTL_SECONDS + 1,
             )
         self.assertEqual(request.ttl_seconds, SANDBOX_LEASE_MAX_TTL_SECONDS)

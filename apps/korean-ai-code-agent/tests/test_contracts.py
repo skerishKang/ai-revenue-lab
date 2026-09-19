@@ -23,7 +23,7 @@ class ClawContractTests(unittest.TestCase):
             task="로그인 오류를 분석해줘",
             repository_ref="skerishKang/example",
             execution_mode=ExecutionMode.CLOUD,
-            requested_revision="abc123",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             source_surface="padiem_chat",
             trace_id="trace_001",
         )
@@ -73,6 +73,7 @@ class ClawContractTests(unittest.TestCase):
             run_id="run_wire",
             execution_mode="cloud",  # type: ignore[arg-type]
             repository_ref="repo",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
             resource_class="small",  # type: ignore[arg-type]
             network_policy="restricted",  # type: ignore[arg-type]
         )
@@ -92,6 +93,7 @@ class ClawContractTests(unittest.TestCase):
             run_id="run_001",
             execution_mode=ExecutionMode.CLOUD,
             repository_ref="skerishKang/example",
+            requested_revision="abcdef1234567890abcdef1234567890abcdef12",
         )
         self.assertEqual(request.network_policy, NetworkPolicy.OFF)
         self.assertEqual(request.resource_class, ResourceClass.STANDARD)
@@ -102,6 +104,7 @@ class ClawContractTests(unittest.TestCase):
                 run_id="run_002",
                 execution_mode=ExecutionMode.CLOUD,
                 repository_ref="repo",
+                requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                 ttl_seconds=59,
             )
         with self.assertRaises(ContractError):
@@ -109,6 +112,7 @@ class ClawContractTests(unittest.TestCase):
                 run_id="run_003",
                 execution_mode=ExecutionMode.CLOUD,
                 repository_ref="repo",
+                requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                 ttl_seconds=3601,
             )
         with self.assertRaises(ContractError):
@@ -116,6 +120,7 @@ class ClawContractTests(unittest.TestCase):
                 run_id="run_004",
                 execution_mode=ExecutionMode.CLOUD,
                 repository_ref="repo",
+                requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                 ttl_seconds=True,  # type: ignore[arg-type]
             )
         with self.assertRaises(ContractError):
@@ -123,6 +128,7 @@ class ClawContractTests(unittest.TestCase):
                 run_id="run_005",
                 execution_mode=ExecutionMode.CLOUD,
                 repository_ref="repo",
+                requested_revision="abcdef1234567890abcdef1234567890abcdef12",
                 writable_workspace=1,  # type: ignore[arg-type]
             )
 
