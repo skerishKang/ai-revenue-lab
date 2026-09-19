@@ -2,7 +2,7 @@
 
 Projects the canonical Core ``NormalizedDocument`` into the smallest view that
 is safe to mount in an LLM context window: validated metadata plus a bounded
-prefix preview. Storage locators, ``att_*`` references, caller scope and full
+prefix preview. Storage locators, ``doc_*`` references, caller scope and full
 segment bodies never cross into this projection (evidence retention owns the
 full body). The projection is read-only derivation: it mutates nothing.
 """
@@ -60,7 +60,7 @@ class ContextTruncationPolicy:
 class ContextWindowProjection:
     """Context-window-safe view of one normalized document.
 
-    Never contains: the full segment body, a ``DocumentLocator``, an ``att_*``
+    Never contains: the full segment body, a ``DocumentLocator``, a ``doc_*``
     reference, a storage locator, or any caller scope identifier.
     """
 
