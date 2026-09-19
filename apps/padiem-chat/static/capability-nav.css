@@ -152,3 +152,15 @@ html[data-theme="padiem-glass"] #clawDialog {
   font-size: 11px;
   opacity: 0.5;
 }
+
+/* A connector Padiem supports at the shared platform layer. This states support
+   only — it is deliberately not a per-workspace "connected" badge (#2779). */
+.capability-read {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-strong, #2f6f99);
+}
+
+html[data-theme="padiem-glass"] .capability-read {
+  color: #2a6b93;
+}
