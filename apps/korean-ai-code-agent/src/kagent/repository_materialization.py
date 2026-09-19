@@ -5,12 +5,11 @@ import hashlib
 import re
 from typing import Any, Protocol
 
-from .contracts import ContractError
+from .contracts import ContractError, exact_commit_revision
 from .security import redact_secrets
 
 
 _REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}$")
-_EXACT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
@@ -31,10 +30,9 @@ def _repository(value: str) -> str:
 
 
 def _sha(value: str, field_name: str) -> str:
-    value = value.strip().lower() if isinstance(value, str) else ""
-    if not _EXACT_SHA_RE.fullmatch(value):
-        raise ContractError(f"{field_name} must be an exact 40-hex commit SHA")
-    return value
+    # Delegates to the canonical contract predicate (#2775) so the revision rule
+    # applied here can never drift from the one applied at the lease boundary.
+    return exact_commit_revision(value, field_name)
 
 
 def _digest(value: str, field_name: str) -> str:
