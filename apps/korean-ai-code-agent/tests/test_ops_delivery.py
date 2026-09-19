@@ -204,5 +204,59 @@ class OpsDeliveryModeTests(unittest.TestCase):
         self.assertFalse(ready.safe_dict()["provider_api_key_required_for_managed"])
 
 
+class GateAuthorityRegressionTests(unittest.TestCase):
+    """#2793. Three properties of the reference gate that nothing on main pinned.
+
+    Recovered from the superseded #2792, which measured them while reconciling this site's
+    duplicate credential grammar. They are written against current behaviour only: no legacy
+    grammar, no generated parity corpus, and no introspection of production source, because
+    those would freeze an implementation that has already been replaced.
+    """
+
+    def test_reference_is_normalised_before_either_contract(self):
+        # Padding must not turn a valid reference into a syntax error...
+        self.assertEqual(
+            SecretReference("  vault:model:key1  ", "model-provider").secret_ref,
+            "vault:model:key1",
+        )
+        # ...and must not become an escape hatch around the credential gate.
+        for value in ("  " + "password" + "=x", "\ttoken" + "=fixturevalue"):
+            with self.subTest(value=repr(value)):
+                with self.assertRaises(ContractError) as caught:
+                    SecretReference(value, "model-provider")
+                self.assertIn("raw secret", str(caught.exception))
+
+    def test_credential_error_takes_precedence_over_syntax_error(self):
+        # `password=x` also violates the reference grammar, since `=` is not an allowed
+        # character. Calling that a formatting problem would send an operator to fix the
+        # syntax of a leaked credential, so the credential check answers first.
+        for value in ("password" + "=x", "api_key" + "=fixturevalue", "token" + "=a"):
+            with self.subTest(value=value):
+                with self.assertRaises(ContractError) as caught:
+                    SecretReference(value, "model-provider")
+                self.assertIn("raw secret", str(caught.exception))
+                self.assertNotIn("invalid reference syntax", str(caught.exception))
+        # The other direction still holds: a syntax-only value is not called a secret.
+        with self.assertRaises(ContractError) as syntax:
+            SecretReference("vault ref", "model-provider")
+        self.assertIn("invalid reference syntax", str(syntax.exception))
+        self.assertNotIn("raw secret", str(syntax.exception))
+
+    def test_provider_shaped_values_are_rejected_by_the_detector_at_this_field(self):
+        # Every value below is well-formed reference syntax, so the only thing that can
+        # refuse it is the canonical detector. The deleted site grammar recognised none of
+        # these shapes, which is the coverage that reconciliation was meant to buy.
+        for value in (
+            "ghp" + "_" + "fixturevalue" * 2,
+            "glpat" + "-" + "fixturevalue" * 2,
+            "xoxb" + "-" + "fixturevalue" * 2,
+            "sk_live" + "_" + "fixturevalue" * 2,
+        ):
+            with self.subTest(prefix=value[:6]):
+                with self.assertRaises(ContractError) as caught:
+                    SecretReference(value, "model-provider")
+                self.assertIn("raw secret", str(caught.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
