@@ -17,6 +17,7 @@ from .agent_skill_service import (
     AGENT_SKILL_RUN_PATH,
 )
 from .attachment_admission_service import ATTACHMENT_ADMISSION_PATH
+from .document_context_service import DOCUMENT_CONTEXT_PATH
 from .idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from .memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from .multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH
@@ -29,6 +30,7 @@ from .orchestration_service import (
 )
 from .service import EXECUTE_PATH, HEALTH_PATH
 from .streaming_service import STREAM_PATH
+from .tool_projection import TOOL_CANCEL_PATH, TOOL_EXECUTE_PATH, TOOL_RESUME_PATH
 from .web_research_service import RESEARCH_PATH
 
 ENGINE_CONTRACT_FAMILY = "padiem-ai-engine"
@@ -148,6 +150,10 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             EngineEndpointContract(AGENT_SKILL_RUN_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_RESUME_PATH, "POST", "application/json"),
             EngineEndpointContract(AGENT_SKILL_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(TOOL_EXECUTE_PATH, "POST", "application/json"),
+            EngineEndpointContract(TOOL_RESUME_PATH, "POST", "application/json"),
+            EngineEndpointContract(TOOL_CANCEL_PATH, "POST", "application/json"),
+            EngineEndpointContract(DOCUMENT_CONTEXT_PATH, "POST", "application/json"),
             # E5C (#2728) adds the authenticated source route that admits bounded
             # image bytes and returns a server-minted opaque att_* reference. Route
             # declaration does not imply Production authority/binding activation.

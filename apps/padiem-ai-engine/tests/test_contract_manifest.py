@@ -6,6 +6,7 @@ from app.agent_skill_service import (
     AGENT_SKILL_RUN_PATH,
 )
 from app.attachment_admission_service import ATTACHMENT_ADMISSION_PATH
+from app.authority_diagnostic import AUTHORITY_DIAGNOSTIC_PATH
 from app.contract_manifest import (
     ENGINE_CONTRACT_FAMILY,
     ENGINE_CONTRACT_MAJOR,
@@ -21,11 +22,13 @@ from app.orchestration_service import (
     ORCHESTRATE_RESUME_PATH,
     ORCHESTRATION_STREAM_PATH,
 )
+from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.idempotency_replay_service import IDEMPOTENCY_COMPLETED_REPLAY_PATH
 from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH
 from app.multimodal_attachment_service import MULTIMODAL_EXECUTE_PATH, MULTIMODAL_STREAM_PATH
 from app.service import EXECUTE_PATH, HEALTH_PATH
 from app.streaming_service import STREAM_PATH
+from app.tool_projection import TOOL_CANCEL_PATH, TOOL_EXECUTE_PATH, TOOL_RESUME_PATH
 from app.web_research_service import RESEARCH_PATH
 
 
@@ -49,6 +52,10 @@ def test_manifest_matches_existing_internal_v1_routes() -> None:
         ("POST", AGENT_SKILL_RUN_PATH),
         ("POST", AGENT_SKILL_RESUME_PATH),
         ("POST", AGENT_SKILL_CANCEL_PATH),
+        ("POST", TOOL_EXECUTE_PATH),
+        ("POST", TOOL_RESUME_PATH),
+        ("POST", TOOL_CANCEL_PATH),
+        ("POST", DOCUMENT_CONTEXT_PATH),
         ("POST", ATTACHMENT_ADMISSION_PATH),
         ("POST", MULTIMODAL_EXECUTE_PATH),
         ("POST", MULTIMODAL_STREAM_PATH),
@@ -127,6 +134,19 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
     assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
+
+
+def test_tool_and_document_routes_are_declared_without_activation_or_diagnostic_advertisement() -> None:
+    manifest = current_engine_contract_manifest()
+    endpoints = {(item.method, item.path) for item in manifest.endpoints}
+    advertised_paths = {item.path for item in manifest.endpoints}
+
+    for path in (TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH):
+        assert ("POST", path) in endpoints
+    assert ("POST", DOCUMENT_CONTEXT_PATH) in endpoints
+    assert manifest.feature_state("tool_runtime_projection") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("document_projection") is EngineFeatureState.DEFERRED
+    assert AUTHORITY_DIAGNOSTIC_PATH not in advertised_paths
 
 
 def test_multimodal_route_is_declared_but_capabilities_stay_deferred() -> None:
