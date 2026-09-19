@@ -69,7 +69,6 @@ from app.google_oauth_access_lease import (
 from app.document_context_service import DOCUMENT_CONTEXT_PATH
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
-from app.identity_enforcement import CALLER_CREDENTIAL_HEADER, CALLER_ID_HEADER
 from app.authority_diagnostic import (
     AUTHORITY_DIAGNOSTIC_PATH,
     diagnostic_response,
@@ -903,22 +902,15 @@ class Default(legacy_worker.Default):
     async def _fetch_document_context(self, request: Any, path: str) -> Any:
         """E5B trusted document context route: source-wired, fail-closed.
 
-        The wire carries only an ``att_*`` reference, so the shared body-app
-        authenticator cannot bind it; caller credential verification and the
-        server-owned scope triple are the injected scope authority's job. The
-        canonical composition leaves the whole service uninjected until the
-        Production activation gate provides that authority plus the resolver
-        and evidence port, so every request fails closed before any port is
-        reachable. No storage endpoint may be named by the caller here.
+        This uses the same body-app authentication boundary as multimodal and
+        attachment admission. The request's app id is authenticated before
+        the named document service is reached; its opaque session id is passed
+        only to the server-side Control Plane scope authority. Document
+        resolver/evidence activation remains separately gated.
         """
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        caller_id = headers.get(CALLER_ID_HEADER) if headers is not None else None
-        credential = (
-            headers.get(CALLER_CREDENTIAL_HEADER) if headers is not None else None
-        )
-
         body = b""
         if method.upper() == "POST":
             try:
@@ -940,6 +932,14 @@ class Default(legacy_worker.Default):
                     )
                 )
 
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
         services = await self.engine_services_factory(self.env)
         if services.documents is None:
             return legacy_worker._error_response(
@@ -952,7 +952,5 @@ class Default(legacy_worker.Default):
             path=path,
             content_type=content_type,
             body=body,
-            caller_id=caller_id if isinstance(caller_id, str) else "",
-            credential=credential if isinstance(credential, str) else "",
         )
         return legacy_worker._json_response(result)
