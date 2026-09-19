@@ -9,6 +9,8 @@ single-use confirmation guards.
 from __future__ import annotations
 
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -236,6 +238,29 @@ def test_locks_are_recorded() -> None:
         "ENGINE_DEPLOY=0",
     ):
         assert marker in text
+
+
+def test_provision_bash_blocks_parse() -> None:
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("bash is required for workflow shell syntax validation")
+    for index, step in enumerate(provision_job()["steps"]):
+        script = step.get("run")
+        if not isinstance(script, str):
+            continue
+        shell = str(step.get("shell", "bash"))
+        if not shell.startswith("bash"):
+            continue
+        result = subprocess.run(
+            [bash, "-n"],
+            input=script,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert result.returncode == 0, (
+            f"provision step {index} shell syntax failed: {result.stderr}"
+        )
 
 
 def test_source_contract_job_runs_this_contract() -> None:
