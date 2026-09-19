@@ -153,6 +153,8 @@ class SandboxFilesystemPolicy:
     checkout_hooks_disabled: bool = True
     # Coarse caller intent only. This is NOT path authority: the per-path grants in
     # CloudWorkspacePathPolicy decide reads/writes, and True here implies nothing.
+    # The symlink/reparse following gate lives on that policy too, so look there when
+    # mapping a provider's mount behaviour, not beside this boolean.
     writable_workspace: bool = True
 
     def __post_init__(self) -> None:
@@ -294,9 +296,20 @@ class CloudWorkspacePathPolicy:
     may only subtract from its ancestors. That makes resolution independent of rule
     order and makes it structurally impossible for a narrower rule to widen a
     broader denial.
+
+    Link following is refused here rather than on SandboxFilesystemPolicy because this
+    class is the boundary a provider must consult to reach a decision: an escalation
+    gate that lived beside the coarse writable_workspace bool would be readable as
+    intent instead of authority, which is the confusion that bool already carries.
     """
 
     rules: tuple[CloudWorkspacePathRule, ...] = ()
+
+    # A lexical prefix match cannot see a symlink or a Windows reparse point, so the
+    # only safe contract is that resolution never follows one. These are pinned to
+    # False: they describe a limit of this authority, not a knob.
+    follow_symlinks: bool = False
+    follow_reparse_points: bool = False
 
     default_read: bool = False
     default_write: bool = False
@@ -313,6 +326,17 @@ class CloudWorkspacePathPolicy:
             raise ContractError(
                 f"rules may not exceed {_MAX_WORKSPACE_PATH_RULES} entries"
             )
+        for name, value in (
+            ("follow_symlinks", self.follow_symlinks),
+            ("follow_reparse_points", self.follow_reparse_points),
+        ):
+            # Identity, not truthiness: anything that is not exactly False is refused,
+            # so 1 / "no" / 0 cannot smuggle link following back in.
+            if value is not False:
+                raise ContractError(
+                    f"Cloud M1 {name} must be false; workspace authority may not "
+                    "follow links or reparse points outside the workspace"
+                )
         for name, value in (
             ("default_read", self.default_read),
             ("default_write", self.default_write),
@@ -353,6 +377,13 @@ class CloudWorkspacePathPolicy:
                     )
 
     def decide(self, path: str) -> CloudWorkspacePathDecision:
+        """Resolve authority for one path lexically.
+
+        A permitted decision on ``workspace/link/file.txt`` is not evidence that the
+        path is safe to open: this method compares normalised strings and never
+        resolves what a segment points at. Keeping resolution out is why
+        ``follow_symlinks`` is fixed False rather than merely defaulted False.
+        """
         normalized = _workspace_relative_path(path, "path")
         matched = [rule for rule in self.rules if rule.covers(normalized)]
         granted: frozenset[WorkspacePathOperation] = frozenset()
@@ -376,6 +407,8 @@ class CloudWorkspacePathPolicy:
         return {
             "contract_version": "cloud-workspace-path-policy.v1",
             "rules": [rule.safe_dict() for rule in sorted(self.rules, key=lambda rule: rule.path_prefix_relative)],
+            "follow_symlinks": self.follow_symlinks,
+            "follow_reparse_points": self.follow_reparse_points,
             "default_read": self.default_read,
             "default_write": self.default_write,
             "default_create": self.default_create,
@@ -477,7 +510,12 @@ __all__ = [
 CLOUD_WORKSPACE_PATH_POLICY_DEFAULT_DENY = True
 CLOUD_WORKSPACE_WRITABLE_WORKSPACE_BOOL_IS_AUTHORITY = False
 CLOUD_WORKSPACE_ROOT_WILDCARD_EXPRESSIBLE = False
+CLOUD_WORKSPACE_SYMLINK_TRAVERSAL_ALLOWED = False
+CLOUD_WORKSPACE_REPARSE_TRAVERSAL_ALLOWED = False
+CLOUD_WORKSPACE_TRAVERSAL_FOLLOWING_CONFIGURABLE = False
 CLOUD_WORKSPACE_PATH_POLICY_PERFORMS_NO_FILESYSTEM_IO = True
+CLOUD_WORKSPACE_PATH_POLICY_PERFORMS_NO_FILESYSTEM_RESOLUTION = True
+CLOUD_WORKSPACE_PATH_POLICY_PROVES_SYMLINK_SAFETY = False
 CLOUD_WORKSPACE_PATH_POLICY_GRANTS_NO_P01_AUTHORITY = True
 CLOUD_WORKSPACE_PATH_POLICY_GRANTS_NO_B14_AUTHORITY = True
 REAL_CLOUD_WORKSPACE_PATH_ENFORCEMENT_CONFIGURED = False

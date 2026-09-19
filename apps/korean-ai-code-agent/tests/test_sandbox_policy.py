@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime, timezone
 import unittest
 
@@ -13,7 +14,12 @@ from kagent.contracts import (
 from kagent.sandbox import DeterministicFakeSandboxProvider, SandboxLeaseError
 from kagent.sandbox_policy import (
     CLOUD_WORKSPACE_PATH_POLICY_DEFAULT_DENY,
+    CLOUD_WORKSPACE_PATH_POLICY_PERFORMS_NO_FILESYSTEM_RESOLUTION,
+    CLOUD_WORKSPACE_PATH_POLICY_PROVES_SYMLINK_SAFETY,
+    CLOUD_WORKSPACE_REPARSE_TRAVERSAL_ALLOWED,
     CLOUD_WORKSPACE_ROOT_WILDCARD_EXPRESSIBLE,
+    CLOUD_WORKSPACE_SYMLINK_TRAVERSAL_ALLOWED,
+    CLOUD_WORKSPACE_TRAVERSAL_FOLLOWING_CONFIGURABLE,
     CLOUD_WORKSPACE_WRITABLE_WORKSPACE_BOOL_IS_AUTHORITY,
     CloudWorkspacePathDecision,
     CloudWorkspacePathPolicy,
@@ -549,6 +555,138 @@ class CloudWorkspacePathPolicyTests(unittest.TestCase):
         self.assertIsInstance(decision, CloudWorkspacePathDecision)
         with self.assertRaises(AttributeError):
             decision.readable = False
+
+
+class CloudWorkspacePathTraversalDenyTests(unittest.TestCase):
+    """#2755 review blocker: a lexical prefix match cannot see a symlink.
+
+    ``workspace/link/file.txt`` is unremarkable as a string even when ``link`` points
+    at ``/outside``. These tests pin the contract that Cloud M1 never follows such a
+    link, and that no caller or provider configuration can turn that back on.
+    """
+
+    READ = WorkspacePathOperation.READ
+
+    def policy(self, **kwargs: object) -> CloudWorkspacePathPolicy:
+        return CloudWorkspacePathPolicy(
+            rules=(CloudWorkspacePathRule("workspace", readable=True, writable=True),),
+            **kwargs,
+        )
+
+    def test_traversal_following_defaults_are_deny(self):
+        policy = self.policy()
+        self.assertFalse(policy.follow_symlinks)
+        self.assertFalse(policy.follow_reparse_points)
+
+    def test_enabled_traversal_is_rejected_for_both_flags(self):
+        for flag in ("follow_symlinks", "follow_reparse_points"):
+            with self.subTest(flag=flag):
+                with self.assertRaises(ContractError) as caught:
+                    self.policy(**{flag: True})
+                self.assertIn("must be false", str(caught.exception))
+
+    def test_non_boolean_traversal_values_are_rejected(self):
+        for flag in ("follow_symlinks", "follow_reparse_points"):
+            for value in (1, 0, None, "no", (),):
+                with self.subTest(flag=flag, value=value):
+                    with self.assertRaises(ContractError):
+                        self.policy(**{flag: value})
+
+    def test_replace_cannot_escalate_the_traversal_denial(self):
+        policy = self.policy()
+        for flag in ("follow_symlinks", "follow_reparse_points"):
+            with self.subTest(flag=flag):
+                with self.assertRaises(ContractError):
+                    replace(policy, **{flag: True})
+
+    def test_frozen_policy_rejects_direct_attribute_assignment(self):
+        policy = self.policy()
+        for flag in ("follow_symlinks", "follow_reparse_points"):
+            with self.subTest(flag=flag):
+                with self.assertRaises(AttributeError):
+                    setattr(policy, flag, True)
+
+    def test_explicitly_disabled_traversal_is_accepted(self):
+        policy = CloudWorkspacePathPolicy(
+            follow_symlinks=False, follow_reparse_points=False
+        )
+        self.assertFalse(policy.follow_symlinks)
+        self.assertFalse(policy.follow_reparse_points)
+
+    def test_projection_exposes_only_the_false_traversal_state(self):
+        projection = self.policy().safe_dict()
+        self.assertIs(projection["follow_symlinks"], False)
+        self.assertIs(projection["follow_reparse_points"], False)
+        forbidden = (
+            "host",
+            "mount",
+            "endpoint",
+            "credential",
+            "socket",
+            "secret",
+            "provider",
+            "runtime",
+            "inode",
+            "device",
+            "driver",
+            "resolved",
+            "realpath",
+        )
+        leaked = [key for key in projection if any(t in key.lower() for t in forbidden)]
+        self.assertEqual(leaked, [])
+        for rule in projection["rules"]:
+            leaked = [key for key in rule if any(t in key.lower() for t in forbidden)]
+            self.assertEqual(leaked, [])
+
+    def test_policy_is_link_blind_so_following_cannot_be_judged_per_path(self):
+        # A symlinked segment and an ordinary segment decide identically. The policy
+        # cannot tell them apart, which is exactly why following must be refused
+        # outright instead of evaluated per path.
+        policy = self.policy()
+        ordinary = policy.decide("workspace/dir/file.txt")
+        via_link = policy.decide("workspace/link/file.txt")
+        self.assertEqual(ordinary.readable, via_link.readable)
+        self.assertEqual(ordinary.writable, via_link.writable)
+        self.assertEqual(ordinary.matched_rule_prefixes, via_link.matched_rule_prefixes)
+
+    def test_permitted_lexical_decision_is_not_symlink_safety_proof(self):
+        policy = self.policy()
+        self.assertTrue(policy.authorize("workspace/link/file.txt", self.READ))
+        self.assertFalse(policy.follow_symlinks)
+        self.assertFalse(CLOUD_WORKSPACE_PATH_POLICY_PROVES_SYMLINK_SAFETY)
+        self.assertFalse(CLOUD_WORKSPACE_SYMLINK_TRAVERSAL_ALLOWED)
+        self.assertFalse(CLOUD_WORKSPACE_REPARSE_TRAVERSAL_ALLOWED)
+        self.assertFalse(CLOUD_WORKSPACE_TRAVERSAL_FOLLOWING_CONFIGURABLE)
+        self.assertTrue(CLOUD_WORKSPACE_PATH_POLICY_PERFORMS_NO_FILESYSTEM_RESOLUTION)
+
+    def test_traversal_gate_does_not_change_existing_path_decision_semantics(self):
+        policy = self.policy()
+        self.assertTrue(policy.authorize("workspace/app.py", self.READ))
+        self.assertFalse(policy.authorize("workspace/app.py", WorkspacePathOperation.DELETE))
+        self.assertFalse(policy.authorize("other/app.py", self.READ))
+        self.assertFalse(CloudWorkspacePathPolicy().authorize("workspace/app.py", self.READ))
+
+    def test_traversal_gate_does_not_relax_nested_or_root_rules(self):
+        with self.assertRaises(ContractError):
+            CloudWorkspacePathPolicy(
+                rules=(
+                    CloudWorkspacePathRule("src", readable=True),
+                    CloudWorkspacePathRule("src/x", writable=True),
+                )
+            )
+        for unexpressible in ("*", "/", "."):
+            with self.subTest(prefix=unexpressible):
+                with self.assertRaises(ContractError):
+                    CloudWorkspacePathRule(unexpressible, writable=True)
+
+    def test_writable_workspace_bool_still_grants_no_traversal_either(self):
+        lease = SandboxLeaseSecurityPolicy()
+        self.assertTrue(lease.filesystem_policy.writable_workspace)
+        self.assertFalse(lease.path_policy.follow_symlinks)
+        self.assertFalse(lease.path_policy.follow_reparse_points)
+        self.assertFalse(
+            lease.path_policy.authorize("workspace/link/file.txt", self.READ)
+        )
 
 
 if __name__ == "__main__":
