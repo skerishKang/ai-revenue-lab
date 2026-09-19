@@ -540,6 +540,24 @@ async def test_agent_skill_composition_fails_closed_without_binding() -> None:
     assert _is_fail_closed(response)
 
 
+@pytest.mark.asyncio
+async def test_agent_skill_composition_derives_binding_from_trusted_grant() -> None:
+    compose = _load_composition()
+    services = await compose(
+        _StubEnv(
+            CONTROL_PLANE_GOOGLE_OAUTH=object(),
+            ENGINE_CONNECTOR_GRANTS=_DriveGrantBinding(),
+        )
+    )
+
+    assert services.agent_skill is not None
+    resolver = services.agent_skill._binding_resolver  # type: ignore[attr-defined]
+    assert callable(resolver)
+    binding = resolver("b54-padiem-claw-drive")
+    assert binding is not None
+    assert binding.subject_id == "actor:drive_prod_probe"
+
+
 # --- WO-10 PR-B composition seam source assertion --------------------------
 
 
