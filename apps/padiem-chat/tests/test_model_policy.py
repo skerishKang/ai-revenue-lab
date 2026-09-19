@@ -34,15 +34,27 @@ from app.model_policy import (
     resolve_tier_policy,
     request_tier_context,
 )
+from padiem_control_plane.product_tier_routes import (
+    MAX_HOLD_MODEL_ID as CONTRACT_MAX_HOLD_MODEL_ID,
+    PRO_HOLD_MODEL_ID as CONTRACT_PRO_HOLD_MODEL_ID,
+    ProductTierLabel,
+    active_route_for,
+)
+
+# #2800: Chat is a consumer of the shared product-tier declaration. These tests compare
+# Chat's derived identity against what the declaration says instead of restating a model id
+# here, so an owner tier switch proves the wiring instead of tripping a literal that this
+# suite's CI would not even have run.
+PLUS_ROUTE_MODEL_ID = active_route_for(ProductTierLabel.PLUS).model_id
 
 
 def test_three_product_tier_identities_remain_known_and_plus_is_default():
     policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
 
     assert DEFAULT_CHAT_PROFILE == "low"
-    assert LOW_B14_MODEL_ID == "agnes-ai/agnes-3.0-flash"
-    assert MEDIUM_B14_MODEL_ID == "padiem-profile/pro-hold"
-    assert MAX_HOLD_MODEL_ID == "padiem-profile/max-hold"
+    assert LOW_B14_MODEL_ID == PLUS_ROUTE_MODEL_ID
+    assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
+    assert MAX_HOLD_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
     assert "hy3" not in HIGH_B14_MODEL_ID
     assert KILO_B14_MODEL_ID == MEDIUM_B14_MODEL_ID
@@ -126,13 +138,42 @@ def test_pro_and_max_product_identities_are_preserved_but_hold_fails_before_b14(
 
 def test_legacy_hidden_test_aliases_do_not_change_product_identity():
     assert MODEL_ALIASES["/kilo"] == MEDIUM_B14_MODEL_ID
-    assert MODEL_ALIASES["/poolside"] == LOW_B14_MODEL_ID
 
     with pytest.raises(ModelPolicyError) as kilo_info:
         resolve_model_policy([{"role": "user", "content": "/kilo 질문"}])
     assert kilo_info.value.code == "tier_unavailable"
-    poolside = resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
-    assert product_tier_name(poolside.model_id) == PADIEM_PLUS
+
+
+def test_poolside_alias_does_not_dispatch_agnes():
+    # "/poolside" used to map onto the executable Plus route while the shared declaration
+    # records Poolside Laguna as HOLD_AS_DATA_ONLY, so the selector named one provider and
+    # used another. Removing it sends the alias down the same fail-closed path every other
+    # provider-named alias already takes; Poolside becomes selectable only when an owner
+    # gives it an executable tier route, never through a local Chat alias.
+    assert "/poolside" not in MODEL_ALIASES
+
+    with pytest.raises(ModelPolicyError) as info:
+        resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
+    assert info.value.code == "unknown_model_alias"
+    for hidden_name in ("poolside", "laguna", "agnes"):
+        assert hidden_name not in info.value.message.lower()
+
+    # Nothing else became executable, no fallback appeared, and no Poolside id is routable.
+    assert set(EXECUTABLE_B14_MODEL_IDS) == {PLUS_ROUTE_MODEL_ID}
+    assert model_policy_is_executable("poolside/laguna-s-2.1") is False
+    assert not [m for m in EXECUTABLE_B14_MODEL_IDS if "poolside" in m.lower()]
+    assert not [a for a in MODEL_ALIASES if "auto" in a or "fallback" in a]
+
+    # The three product tiers are exactly as they were before the removal.
+    assert resolve_model_policy([{"role": "user", "content": "안녕하세요"}]).model_id == PLUS_ROUTE_MODEL_ID
+    assert MODEL_ALIASES["/plus"] == PLUS_ROUTE_MODEL_ID
+    assert resolve_model_policy([{"role": "user", "content": "/plus 질문"}]).model_id == PLUS_ROUTE_MODEL_ID
+    assert MODEL_ALIASES["/pro"] == CONTRACT_PRO_HOLD_MODEL_ID
+    assert MODEL_ALIASES["/max"] == CONTRACT_MAX_HOLD_MODEL_ID
+    assert model_policy_is_executable(MEDIUM_B14_MODEL_ID) is False
+    assert model_policy_is_executable(HIGH_B14_MODEL_ID) is False
+    assert model_policy_is_executable(AUTO_B14_MODEL_ID) is False
+    assert AUTO_B14_MODEL_ID not in EXECUTABLE_B14_MODEL_IDS
 
 
 def test_other_provider_aliases_fail_closed_before_b14():
@@ -152,10 +193,16 @@ def test_unknown_alias_fails_closed_without_provider_hint():
 
 
 def test_explicit_alias_without_prompt_fails_closed_before_tier_availability_check():
-    for alias in ("/plus", "/pro", "/max", "/poolside", "/kilo"):
+    for alias in ("/plus", "/pro", "/max", "/kilo"):
         with pytest.raises(ModelPolicyError) as info:
             resolve_model_policy([{"role": "user", "content": alias}])
         assert info.value.code == "model_alias_requires_prompt"
+    # "/poolside" is no longer a known alias, so it fails at identity rather than at the
+    # missing prompt — the alias check runs first and nothing about its removal is bypassed
+    # by omitting a question.
+    with pytest.raises(ModelPolicyError) as removed:
+        resolve_model_policy([{"role": "user", "content": "/poolside"}])
+    assert removed.value.code == "unknown_model_alias"
 
 
 def test_tier_capabilities_are_conservative_and_hold_claims_none():
@@ -234,7 +281,7 @@ def test_executable_profile_routes_are_explicit_registered_and_not_retired():
         assert executable_id not in RETIRED_B14_MODEL_IDS
 
     expected_routes = {
-        "low": "agnes-ai/agnes-3.0-flash",
+        "low": PLUS_ROUTE_MODEL_ID,
     }
     for profile_id, expected_model in expected_routes.items():
         model_id = PROFILE_MODEL_IDS[profile_id]

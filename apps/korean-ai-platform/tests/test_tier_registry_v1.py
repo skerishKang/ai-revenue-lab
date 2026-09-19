@@ -117,13 +117,15 @@ def _contract_executable_model_ids() -> dict[str, str]:
 def test_plus_pro_registry_routes_match_shared_contract() -> None:
     """Registry and shared contract must name the same explicit active routes."""
     contract = _contract_executable_model_ids()
-    assert sorted(contract) == [
-        "plus.agnes-3.0-flash.v1",
-    ]
-    assert (
-        contract["plus.agnes-3.0-flash.v1"]
-        == active_route_for(TierLabel.PLUS).model_id
-    )
+    registry = {
+        route.route_id: route.model_id
+        for _tier, route in all_routes()
+        if route.status is RouteStatus.EXECUTABLE
+    }
+    # Compared file-to-file rather than against a route id typed twice, so switching a tier
+    # route keeps proving parity here without this suite restating the model (#2800).
+    assert registry, "registry must certify at least one explicit executable route"
+    assert contract == registry
 
 
 def test_executable_registry_routes_exist_in_b14_catalog() -> None:
