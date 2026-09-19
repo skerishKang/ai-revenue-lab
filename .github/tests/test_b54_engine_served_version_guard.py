@@ -583,10 +583,22 @@ def test_rollback_job_proves_served_version_equals_the_explicit_target() -> None
     assert 'npx wrangler@4 rollback "${ROLLBACK_TARGET}"' in rollback_block
     assert "rollback --message" not in rollback_block
 
-    # Readback uses the canonical resolver, and asserts equality with the target.
+    # Readback uses the canonical resolver, and the class obligation is decided
+    # by the shared mutation-evidence primitive, never by shell comparison:
+    # #2752 supersedes #2748's inline `[ "${served_version}" = "${TARGET}" ]`.
     assert "b54_engine_served_version_guard.py resolve-active" in rollback_block
     assert 'validate-version-id --version-id "${ROLLBACK_TARGET}"' in rollback_block
-    assert 'if [ "${served_version}" = "${ROLLBACK_TARGET}" ]; then' in rollback_block
+    assert "cloudflare_mutation_evidence.py evaluate" in rollback_block
+    assert "--class ROLLBACK" in rollback_block
+    assert '--target-version "${ROLLBACK_TARGET}"' in rollback_block
+    assert 'if [ "${served_version}" = "${ROLLBACK_TARGET}" ]; then' not in rollback_block
+    # A baseline is taken before the mutation, and the step is settled by a
+    # decision made with the window CLOSED, so a not-yet-final verdict can never
+    # end the step as a PASS.
+    assert "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}" in rollback_block
+    assert rollback_block.index("PRE_ROLLBACK_SERVED_VERSION_ID") < rollback_block.index(
+        "B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO"
+    )
     assert "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS" in rollback_block
 
     # No envelope rule may be re-implemented in the workflow (#2740 contract).
