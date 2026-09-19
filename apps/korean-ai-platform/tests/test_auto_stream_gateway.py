@@ -14,8 +14,8 @@ AUTO_STREAM_URL = "/api/pilot/v1/chat/completions/auto-stream-preview"
 MANUAL_STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
 LIVE_DUMMY_KEY = "unit-live-key-auto-stream-abcdef1234567890"
-KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+AGNES_MODEL = "agnes-ai/agnes-3.0-flash"
+AGNES_UPSTREAM = "agnes-3.0-flash"
 
 
 class _ChunkStream(httpx.AsyncByteStream):
@@ -37,6 +37,7 @@ class _ChunkStream(httpx.AsyncByteStream):
 @pytest.fixture(autouse=True)
 def _reset_runtime_config(monkeypatch):
     monkeypatch.delenv("KILO_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-test-agnes-stream-0123456789")
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
     saved = {
@@ -148,7 +149,7 @@ def _json_data_frames(text: str) -> list[dict]:
 
 
 def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata(monkeypatch):
-    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     response = _client().post(AUTO_STREAM_URL, json=_payload())
 
@@ -161,7 +162,7 @@ def test_mock_auto_preview_accepts_b14_auto_and_preserves_router_metadata(monkey
     first = next(frame for frame in frames if frame["choices"] and frame["choices"][0]["delta"].get("content"))
     meta = first["business14"]
     assert meta["route_mode"] == "auto"
-    assert meta["selected_model"] == KILO_MODEL
+    assert meta["selected_model"] == AGNES_MODEL
     assert meta["fallback_used"] is False
     assert meta["attempt_count"] == 1
     assert meta["committed"] is True
@@ -208,15 +209,15 @@ def test_canonical_endpoint_still_rejects_stream_true_for_b14_auto():
     assert response.json()["error"]["code"] == "stream_not_supported"
 
 
-SENSENOVA_MODEL_ID = "sensenova/sensenova-6.8-flash-lite"
-SENSENOVA_UPSTREAM = "sensenova-6.8-flash-lite"
-SENSENOVA_KEY = "sk-chain-unit-sensenova-0123456789"
+AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
+AGNES_UPSTREAM = "agnes-3.0-flash"
+AGNES_KEY = "sk-chain-unit-agnes-0123456789"
 POOLSIDE_KEY = "sk-chain-unit-poolside-0123456789"
 
 
 def _chain_secrets(monkeypatch):
-    """Opt the deterministic fixed chain into all four positions."""
-    monkeypatch.setenv("PADIEM_SENSENOVA_API_KEY", SENSENOVA_KEY)
+    """Opt the deterministic fixed chain into both positions."""
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", AGNES_KEY)
     monkeypatch.setenv("PADIEM_POOLSIDE_API_KEY", POOLSIDE_KEY)
 
 
@@ -234,9 +235,9 @@ def test_fixed_chain_advances_on_retryable_stream_error(monkeypatch):
         model = body["model"]
         calls.append(model)
         assert body["stream"] is True
-        if model == SENSENOVA_UPSTREAM:
+        if model == AGNES_UPSTREAM:
             return httpx.Response(500, content=b"bounded")
-        assert model == KILO_UPSTREAM
+        assert model == "poolside/laguna-s-2.1"
         return httpx.Response(200, stream=_success_stream(model, "체인 fallback"))
 
     rcfg.provider_mode = "live"
@@ -244,11 +245,11 @@ def test_fixed_chain_advances_on_retryable_stream_error(monkeypatch):
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
-    assert calls == [SENSENOVA_UPSTREAM, KILO_UPSTREAM]
+    assert calls == [AGNES_UPSTREAM, "poolside/laguna-s-2.1"]
     frames = _json_data_frames(response.text)
     visible = next(frame for frame in frames if frame["choices"] and frame["choices"][0]["delta"].get("content"))
     meta = visible["business14"]
-    assert meta["selected_model"] == KILO_MODEL
+    assert meta["selected_model"] == "poolside/laguna-s-2.1"
     assert meta["fallback_used"] is True
     assert meta["attempt_count"] == 2
     assert meta["committed"] is True
@@ -356,12 +357,12 @@ def test_nonretryable_pre_token_errors_stay_json_before_sse_start(
 @pytest.mark.parametrize(
     ("upstream_status", "expected_status", "expected_code", "expected_calls"),
     [
-        # SenseNova 429 (plain quota) falls back to Kilo; the Kilo free-tier
-        # quota is terminal by contract and never advances further. Its
-        # declared 429 status is preserved by the endpoint.
-        (429, 429, "kilo_free_rate_limited", [SENSENOVA_UPSTREAM, KILO_UPSTREAM]),
-        # Any other retryable transport error exhausts the max_attempts bound.
-        (500, 502, "upstream_server_error", [SENSENOVA_UPSTREAM, KILO_UPSTREAM]),
+        # Agnes 429 advances to Poolside, while the declared status is
+        # preserved by the endpoint.
+        (429, 429, "upstream_rate_limited", [AGNES_UPSTREAM, "poolside/laguna-s-2.1"]),
+        # The auto chain's max_attempts is a total upstream-call budget, so
+        # each candidate is called once before the chain is exhausted.
+        (500, 502, "upstream_server_error", [AGNES_UPSTREAM, "poolside/laguna-s-2.1"]),
     ],
 )
 def test_retryable_errors_exhaust_resolved_free_candidates_before_json_failure(
@@ -408,7 +409,7 @@ def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
     assert response.status_code == 200
-    assert calls == [KILO_UPSTREAM]
+    assert calls == [AGNES_UPSTREAM]
     assert len(calls) == 1  # no fallback after a visible token was committed
     assert "부분 응답" in response.text
     assert "event: error" in response.text
@@ -417,16 +418,10 @@ def test_post_visible_token_failure_emits_bounded_error_without_fallback_or_done
     assert secret not in response.text
 
 
-def test_live_keyless_route_sends_no_authorization_and_leaks_nothing(monkeypatch):
-    """Keyless Kilo route: no credential crosses the boundary either way.
-
-    The Kilo provider spec is CredentialSource.NONE, so the outbound request
-    never carries an Authorization header. A stale OpenRouter key configured
-    on the legacy plane must not be forwarded to it, and nothing may leak
-    back to the client.
-    """
+def test_live_missing_agnes_key_fails_closed_without_upstream_call(monkeypatch):
+    """The active Agnes-headed chain requires a platform credential."""
     stale_key = "sk-or-v1-stale-abcdef1234567890"
-    monkeypatch.setenv("KILO_API_KEY", stale_key)
+    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
     seen_auth: list[str | None] = []
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -445,22 +440,14 @@ def test_live_keyless_route_sends_no_authorization_and_leaks_nothing(monkeypatch
         }),
     )
 
-    assert response.status_code == 200
-    assert seen_auth == [None]
+    assert response.status_code == 503
+    assert seen_auth == []
     assert stale_key not in response.text
-    assert "안전한 응답" in response.text
-    assert response.text.count("data: [DONE]") == 1
 
 
-def test_live_missing_key_is_anonymous_with_no_authorization_header():
-    """Keyless Kilo route: no key is required, and none is ever sent.
-
-    Decision #1933 removed the secret-backed routes, so a missing key is not
-    an error here. The security contract becomes "zero key material": exactly
-    one anonymous upstream call, no Authorization header, nothing leaked.
-    The secret-required fail-closed path is covered by
-    test_platform_provider_credential_plane.py (Agnes).
-    """
+def test_live_missing_chain_keys_fails_closed_without_upstream_call(monkeypatch):
+    """Both active chain credentials missing means no route is safe."""
+    monkeypatch.delenv("PADIEM_AGNES_API_KEY", raising=False)
     calls = 0
     seen_auth: list[str | None] = []
 
@@ -475,8 +462,6 @@ def test_live_missing_key_is_anonymous_with_no_authorization_header():
     rcfg.api_key = ""
     response = _client(httpx.MockTransport(handler)).post(AUTO_STREAM_URL, json=_payload())
 
-    assert response.status_code == 200
-    assert calls == 1
-    assert seen_auth == [None]
-    assert "익명 응답" in response.text
-    assert "data: [DONE]" in response.text
+    assert response.status_code == 503
+    assert calls == 0
+    assert seen_auth == []

@@ -53,8 +53,8 @@ class TrustedProductAuthEvidence:
             or len(self.product_user_id) > 80
         ):
             raise ValueError("product_user_id must be a bounded B62 user identifier")
-        if self.provider != "google":
-            raise ValueError("provider must be the trusted B62 Google auth provider")
+        if self.provider not in {"google", "password"}:
+            raise ValueError("provider must be a reviewed trusted B62 auth provider")
         if (
             not isinstance(self.provider_subject, str)
             or not self.provider_subject.strip()
@@ -92,6 +92,16 @@ class TrustedControlPlaneIdentityAuthority(Protocol):
         not_after: datetime,
     ) -> AuthSessionSnapshot: ...
 
+    def create_tenant(self) -> str: ...
+
+    def assign_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str
+    ) -> None: ...
+
+    def resolve_active_memberships(
+        self, *, canonical_subject_id: str
+    ) -> tuple[str, ...]: ...
+
 
 @dataclass(frozen=True, slots=True)
 class BridgedIdentitySession:
@@ -121,6 +131,7 @@ async def bridge_trusted_product_auth(
     evidence: TrustedProductAuthEvidence,
     *,
     now: datetime | None = None,
+    ensure_personal_tenant: bool = False,
 ) -> BridgedIdentitySession:
     """Resolve canonical identity/session from trusted server authentication evidence.
 
@@ -177,6 +188,36 @@ async def bridge_trusted_product_auth(
         subject_type=SubjectType.USER,
         subject_id=link.canonical_subject_id,
     )
+
+    if ensure_personal_tenant:
+        try:
+            memberships = await _maybe_await(
+                authority.resolve_active_memberships(
+                    canonical_subject_id=subject.subject_id,
+                )
+            )
+            if not isinstance(memberships, tuple) or not all(
+                isinstance(item, str) and item for item in memberships
+            ):
+                raise ValueError("invalid tenant membership projection")
+            if len(memberships) == 0:
+                tenant_id = await _maybe_await(authority.create_tenant())
+                if not isinstance(tenant_id, str) or not tenant_id:
+                    raise ValueError("invalid canonical tenant")
+                await _maybe_await(
+                    authority.assign_tenant_membership(
+                        tenant_id=tenant_id,
+                        canonical_subject_id=subject.subject_id,
+                    )
+                )
+            elif len(memberships) > 1:
+                raise ValueError("ambiguous canonical tenant membership")
+        except Exception as exc:
+            raise _bridge_error(
+                "control_plane_tenant_unavailable",
+                "Canonical tenant provisioning is unavailable.",
+            ) from exc
+
     try:
         session = await _maybe_await(
             authority.establish_auth_session(

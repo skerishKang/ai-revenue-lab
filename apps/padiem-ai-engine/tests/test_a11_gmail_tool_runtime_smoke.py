@@ -57,6 +57,10 @@ def test_require_env_skips_honestly(capsys: pytest.CaptureFixture[str]) -> None:
         (404, "not_found", smoke.ROUTE_UNAVAILABLE),
         (503, "tool_runtime_unavailable", smoke.RUNTIME_UNAVAILABLE),
         (503, "connector_grants_unavailable", smoke.RUNTIME_UNAVAILABLE),
+        (503, "drive_port_unavailable", smoke.RUNTIME_UNAVAILABLE),
+        (503, "drive_grant_unavailable", smoke.RUNTIME_UNAVAILABLE),
+        (503, "tool_runtime_dependency_unavailable", smoke.RUNTIME_UNAVAILABLE),
+        (503, "tool_binding_resolution_failed", smoke.RUNTIME_UNAVAILABLE),
         (403, "tool_not_registered", smoke.TOOL_NOT_ALLOWED),
         (403, "tool_agent_not_bound", smoke.TOOL_NOT_ALLOWED),
         (403, "tool_auth_scope_missing", smoke.TOOL_NOT_ALLOWED),
@@ -130,6 +134,11 @@ def test_oversized_argument_exceeds_the_core_ceiling_but_not_the_body_ceiling() 
     }
     assert len(json.dumps(body).encode("utf-8")) < 128 * 1024  # MAX_REQUEST_BODY_BYTES
 
+def test_unregistered_probe_argument_is_bounded_below_core_ceiling() -> None:
+    arguments = {"query": smoke.BOUNDED_UNREGISTERED_QUERY}
+    size = len(json.dumps(arguments, separators=(",", ":")).encode("utf-8"))
+    assert size < 65536
+
 
 # --- step behaviour ---------------------------------------------------------
 
@@ -155,7 +164,10 @@ def test_s1_is_live_on_tool_arguments_too_large(capsys: pytest.CaptureFixture[st
         verdict = smoke.s1_canonical_gmail_probe()
     assert verdict == smoke.TOOL_CONTRACT_LIVE
     assert smoke._failures == []
-    assert "provider never called" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "provider never called" in out
+    assert "runtime bound" not in out
+    assert "Gmail tool registered" not in out
 
 
 def test_s1_fails_when_the_tool_actually_executes() -> None:
@@ -177,32 +189,67 @@ def test_s1_fails_on_unexpected_upstream_5xx() -> None:
     assert len(failures) == 1
 
 
-def test_s2_requires_registry_rejection_when_runtime_is_live() -> None:
+def test_s2_requires_registry_rejection_with_bounded_payload() -> None:
     failures: list[str] = []
-    with patch.object(smoke, "_request", return_value=(403, _error("tool_not_registered"))), patch.object(
-        smoke, "_failures", failures
-    ):
-        smoke.s2_unregistered_tool_probe(smoke.TOOL_CONTRACT_LIVE)
+    captured: dict[str, object] = {}
+
+    def _fake_request(*, method: str, path: str, body: dict[str, object] | None = None) -> tuple[int, dict]:
+        captured["body"] = body
+        return 403, _error("tool_not_registered")
+
+    with patch.object(smoke, "_request", _fake_request), patch.object(smoke, "_failures", failures):
+        verdict = smoke.s2_unregistered_tool_probe()
+
+    assert verdict == "REGISTRY_PROVEN"
     assert failures == []
+    body = captured["body"]
+    assert isinstance(body, dict)
+    arguments = body["arguments"]
+    assert isinstance(arguments, dict)
+    assert arguments["query"] == smoke.BOUNDED_UNREGISTERED_QUERY
+    assert len(json.dumps(arguments, separators=(",", ":")).encode("utf-8")) < 65536
 
 
-def test_s2_fails_if_an_unregistered_tool_is_accepted() -> None:
-    failures: list[str] = []
-    with patch.object(
-        smoke, "_request", return_value=(400, _error("tool_arguments_too_large"))
-    ), patch.object(smoke, "_failures", failures):
-        smoke.s2_unregistered_tool_probe(smoke.TOOL_CONTRACT_LIVE)
-    assert len(failures) == 1
-    assert "unregistered tool" in failures[0]
-
-
-def test_s2_accepts_consistency_with_a_deferred_s1() -> None:
+def test_s2_defers_when_runtime_is_unavailable() -> None:
     failures: list[str] = []
     with patch.object(
         smoke, "_request", return_value=(503, _error("tool_runtime_unavailable"))
     ), patch.object(smoke, "_failures", failures):
-        smoke.s2_unregistered_tool_probe(smoke.RUNTIME_UNAVAILABLE)
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "RUNTIME_UNAVAILABLE"
     assert failures == []
+
+
+def test_s2_defers_when_agent_is_not_bound() -> None:
+    failures: list[str] = []
+    with patch.object(
+        smoke, "_request", return_value=(403, _error("tool_agent_not_bound"))
+    ), patch.object(smoke, "_failures", failures):
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "AGENT_UNAVAILABLE"
+    assert failures == []
+
+
+def test_s2_fails_if_an_unregistered_tool_executes() -> None:
+    failures: list[str] = []
+    with patch.object(smoke, "_request", return_value=(200, {"ok": True})), patch.object(
+        smoke, "_failures", failures
+    ):
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "FAIL"
+    assert len(failures) == 1
+    assert "unregistered tool executed" in failures[0]
+
+
+def test_s2_fails_on_parse_guard_instead_of_misreading_it_as_registry_evidence() -> None:
+    failures: list[str] = []
+    with patch.object(
+        smoke, "_request", return_value=(400, _error("tool_arguments_too_large"))
+    ), patch.object(smoke, "_failures", failures):
+        verdict = smoke.s2_unregistered_tool_probe()
+    assert verdict == "FAIL"
+    assert len(failures) == 1
+    assert "unexpected unregistered-tool result" in failures[0]
 
 
 def test_s3_requires_4xx_cross_app_isolation() -> None:
@@ -222,6 +269,55 @@ def test_s3_fails_on_2xx_cross_app_answer() -> None:
         smoke.s3_cross_app_isolation()
     assert len(failures) == 1
     assert "not 4xx" in failures[0]
+
+
+def test_s4_drive_probe_proves_binding_without_provider_call(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    failures: list[str] = []
+    captured: dict[str, object] = {}
+
+    def _fake_request(*, method: str, path: str, body: dict[str, object] | None = None):
+        captured["body"] = body
+        return 403, _error("tool_not_registered")
+
+    with patch.object(smoke, "_request", _fake_request), patch.object(
+        smoke, "_failures", failures
+    ):
+        verdict, code = smoke.s4_drive_resolution_probe()
+
+    assert verdict == "DRIVE_REGISTRY_PROVEN"
+    assert code == "tool_not_registered"
+    assert failures == []
+    body = captured["body"]
+    assert isinstance(body, dict)
+    assert body["app_id"] == smoke.DRIVE_APP_ID
+    assert body["agent_id"] == smoke.DRIVE_AGENT_ID
+    assert body["tool_id"] == smoke.DRIVE_UNREGISTERED_TOOL_ID
+    assert "DRIVE_RUNTIME_RESOLUTION=BOUND" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "drive_port_unavailable",
+        "drive_grant_unavailable",
+        "tool_runtime_dependency_unavailable",
+        "tool_binding_resolution_failed",
+    ],
+)
+def test_s4_drive_probe_surfaces_bounded_runtime_stage(
+    code: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    failures: list[str] = []
+    with patch.object(smoke, "_request", return_value=(503, _error(code))), patch.object(
+        smoke, "_failures", failures
+    ):
+        verdict, actual_code = smoke.s4_drive_resolution_probe()
+    assert verdict == "DRIVE_RUNTIME_UNAVAILABLE"
+    assert actual_code == code
+    assert failures == []
+    assert f"DRIVE_RUNTIME_RESOLUTION={code}" in capsys.readouterr().out
 
 
 # --- end-to-end verdicts ----------------------------------------------------
@@ -252,14 +348,36 @@ def test_main_defers_honestly_when_runtime_is_unbound(capsys: pytest.CaptureFixt
             (503, _error("tool_runtime_unavailable")),
             (503, _error("tool_runtime_unavailable")),
             (403, _error("service_app_not_authorized")),
+            (503, _error("drive_port_unavailable")),
         ]
     )
     assert rc == 0
     out = capsys.readouterr().out
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
-    assert "REASON=TOOL_RUNTIME_UNAVAILABLE" in out
+    assert "REASON=DRIVE_PORT_UNAVAILABLE" in out
     assert "ROUTE_AVAILABLE=1" in out
     assert "ACTIVATION=ROUTE_WIRED_CREDENTIAL_PENDING" in out
+
+def test_main_defers_when_s1_hits_parse_guard_but_s2_finds_runtime_unbound(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    rc = _run_main(
+        [
+            (200, HEALTH_OK),
+            (400, _error("tool_arguments_too_large")),
+            (503, _error("tool_runtime_unavailable")),
+            (403, _error("service_app_not_authorized")),
+            (503, _error("drive_grant_unavailable")),
+        ]
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=DEFERRED" in out
+    assert "REASON=DRIVE_GRANT_UNAVAILABLE" in out
+    assert "S1_CLASSIFICATION=TOOL_CONTRACT_LIVE" in out
+    assert "S2_CLASSIFICATION=RUNTIME_UNAVAILABLE" in out
+    assert "S4_DRIVE_CODE=drive_grant_unavailable" in out
+    assert "TOOL_REGISTRY_LIVE=PASS" not in out
 
 
 def test_main_passes_when_the_tool_contract_is_live(capsys: pytest.CaptureFixture[str]) -> None:
@@ -269,6 +387,7 @@ def test_main_passes_when_the_tool_contract_is_live(capsys: pytest.CaptureFixtur
             (400, _error("tool_arguments_too_large")),
             (403, _error("tool_not_registered")),
             (403, _error("service_app_not_authorized")),
+            (403, _error("tool_not_registered")),
         ]
     )
     assert rc == 0
@@ -279,6 +398,8 @@ def test_main_passes_when_the_tool_contract_is_live(capsys: pytest.CaptureFixtur
     assert "D1_MUTATION=0" in out
     assert "TOOL_REGISTRY_LIVE=PASS" in out
     assert "CROSS_APP=PASS" in out
+    assert "DRIVE_RESOLVER=PASS" in out
+    assert "DRIVE_PROVIDER_CALLS=0" in out
 
 
 def test_main_fails_on_unexpected_execution(capsys: pytest.CaptureFixture[str]) -> None:
@@ -398,6 +519,7 @@ def test_end_to_end_pass_over_real_urllib(capsys: pytest.CaptureFixture[str]) ->
             (400, _error("tool_arguments_too_large")),
             (403, _error("tool_not_registered")),
             (403, _error("service_app_not_authorized")),
+            (403, _error("tool_not_registered")),
         ]
     )
     try:
@@ -414,12 +536,16 @@ def test_end_to_end_pass_over_real_urllib(capsys: pytest.CaptureFixture[str]) ->
     out = capsys.readouterr().out
     assert "A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS" in out
     assert "REAL_PROVIDER_CALLS=0" in out
-    # S1 canonical, S2 unregistered, S3 cross-app — in that order.
-    assert [str(item["path"]) for item in requests[1:]] == ["/internal/v1/tools/execute"] * 3
+    # S1 canonical, S2 Gmail unregistered, S3 cross-app, S4 Drive unregistered.
+    assert [str(item["path"]) for item in requests[1:]] == ["/internal/v1/tools/execute"] * 4
     bodies = [json.loads(bytes(item["body"]).decode("utf-8")) for item in requests[1:]]
     assert bodies[0]["tool_id"] == "tool:google:gmail.search_messages@1"
     assert bodies[1]["tool_id"] == "tool:google:gmail.a11_smoke_unregistered@1"
+    assert bodies[1]["arguments"]["query"] == smoke.BOUNDED_UNREGISTERED_QUERY
     assert bodies[2]["app_id"] == "b62"
+    assert bodies[3]["app_id"] == smoke.DRIVE_APP_ID
+    assert bodies[3]["agent_id"] == smoke.DRIVE_AGENT_ID
+    assert bodies[3]["tool_id"] == smoke.DRIVE_UNREGISTERED_TOOL_ID
 
 
 # --- source-level safety contract -------------------------------------------
@@ -468,3 +594,9 @@ def test_deploy_gate_workflow_runs_a11_between_a10_and_a12() -> None:
         "- name: Run A11 Gmail tool_runtime smoke",
         "- name: Run A12 streaming idempotency replay smoke",
     ]
+
+def test_s2_source_uses_bounded_fixture_independent_of_s1() -> None:
+    source = SMOKE_PATH.read_text(encoding="utf-8")
+    assert "BOUNDED_UNREGISTERED_QUERY" in source
+    assert "def s2_unregistered_tool_probe() -> str:" in source
+    assert "s2_unregistered_tool_probe(s1_verdict" not in source

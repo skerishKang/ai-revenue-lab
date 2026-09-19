@@ -201,6 +201,33 @@ def test_default_provenance_is_safe_id_unique_and_reused_contract() -> None:
     asyncio.run(scenario())
 
 
+def test_default_provenance_normalizes_urlsafe_leading_punctuation(
+    monkeypatch,
+) -> None:
+    import app.attachment_resolver as attachment_resolver
+
+    store, _, _ = _pair()
+    # Admit first: the canonical byte store also uses token_urlsafe for att_*
+    # references, and this regression is intentionally scoped only to the
+    # resolver provenance generator.
+    record = asyncio.run(_admit(store))
+    monkeypatch.setattr(
+        attachment_resolver.secrets,
+        "token_urlsafe",
+        lambda _n: "-unsafe-leading",
+    )
+    resolver = ByteStoreTrustedAttachmentResolver(store=store, scope=SCOPE)
+
+    async def scenario() -> None:
+        resolved = await resolver.resolve_image(
+            app_id=APP_ID,
+            attachment_ref=record.attachment_ref,
+        )
+        assert resolved.provenance_id == "prov_p-unsafe-leading"
+
+    asyncio.run(scenario())
+
+
 # --- fail-closed matrix -------------------------------------------------------------------
 
 

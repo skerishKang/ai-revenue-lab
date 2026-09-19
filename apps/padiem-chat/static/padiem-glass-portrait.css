@@ -1,7 +1,8 @@
 /* Padiem Glass portrait composition layer.
  * Keeps the chat surface readable while reserving the right side for metallic portrait art.
  * Female uses the Drive-approved cyber-07 derivative; Male uses cyber-03.
- * The portrait mask is conversation-driven: chat travel reveals and re-covers the face in a loop.
+ * The portrait mask is dual-driven: pointer proximity and live answer activity
+ * can reveal/re-cover the portrait together, while home travel remains additive.
  */
 
 @property --glass-mask-start {
@@ -24,8 +25,8 @@ html[data-theme="padiem-glass"] {
   --glass-art-scale: 1;
   --glass-pointer-x: 0px;
   --glass-pointer-y: 0px;
-  --glass-mask-start: 24%;
-  --glass-mask-full: 58%;
+  --glass-mask-start: 20%;
+  --glass-mask-full: 48%;
   --glass-reveal: 0;
   --glass-art-opacity: .58;
   --glass-art-filter: saturate(.68) contrast(.94) brightness(1.08);
@@ -38,8 +39,8 @@ html[data-theme="padiem-glass"] {
 html[data-theme="padiem-glass"][data-glass-variant="female"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-female.jpg");
   --glass-portrait-x: 100%;
-  --glass-mask-start: 2%;
-  --glass-mask-full: 26%;
+  --glass-mask-start: 18%;
+  --glass-mask-full: 46%;
   --glass-art-opacity: .70;
   --glass-art-filter: saturate(.72) contrast(1.01) brightness(1.05);
 }
@@ -47,8 +48,8 @@ html[data-theme="padiem-glass"][data-glass-variant="female"] {
 html[data-theme="padiem-glass"][data-glass-variant="male"] {
   --padiem-glass-portrait-image: url("./assets/padiem-glass-male.jpg");
   --glass-portrait-x: 100%;
-  --glass-mask-start: 0%;
-  --glass-mask-full: 22%;
+  --glass-mask-start: 14%;
+  --glass-mask-full: 42%;
   --glass-art-opacity: .78;
   --glass-art-filter: saturate(.82) contrast(1.12) brightness(1.02);
 }
@@ -82,12 +83,12 @@ html[data-theme="padiem-glass"] .main-panel::before {
     scale(var(--glass-art-scale));
   transform-origin: right center;
   transition:
-    transform 620ms cubic-bezier(.2,.75,.25,1),
+    transform 480ms cubic-bezier(.2,.75,.25,1),
     opacity 240ms ease,
-    --glass-mask-start 900ms cubic-bezier(.22,.7,.2,1),
-    --glass-mask-full 900ms cubic-bezier(.22,.7,.2,1);
+    --glass-mask-start 560ms cubic-bezier(.22,.7,.2,1),
+    --glass-mask-full 560ms cubic-bezier(.22,.7,.2,1);
   -webkit-mask-image: linear-gradient(
-    to right,
+    to left,
     transparent 0%,
     transparent var(--glass-mask-start),
     rgba(0,0,0,.56) calc(var(--glass-mask-start) + 7%),
@@ -95,7 +96,7 @@ html[data-theme="padiem-glass"] .main-panel::before {
     #000 100%
   );
   mask-image: linear-gradient(
-    to right,
+    to left,
     transparent 0%,
     transparent var(--glass-mask-start),
     rgba(0,0,0,.56) calc(var(--glass-mask-start) + 7%),
@@ -105,7 +106,8 @@ html[data-theme="padiem-glass"] .main-panel::before {
 }
 
 html[data-theme="padiem-glass"] .topbar,
-html[data-theme="padiem-glass"] .conversation {
+html[data-theme="padiem-glass"] .conversation,
+html[data-theme="padiem-glass"] .claw-workspace {
   position: relative;
   z-index: 2;
 }
@@ -460,4 +462,173 @@ html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-note {
     background-size: auto min(78vh, 780px) !important;
     opacity: var(--glass-art-opacity) !important;
   }
+}
+
+/* ── Shell layer: source-faithful CLEAN/SHELL ─────────────────────────────
+ * The shell state is the same adopted portrait (cyber-07/cyber-03) plus the
+ * mask object transplanted from its approved sibling renders (cyber-08 /
+ * cyber-04). Identity pixels never change; only the mask arrives.
+ * Mechanics are ported from the Drive 원본 "Identity Fragment Loader V2":
+ * 20 clip-path plate fragments assemble over the face, then dissolve into
+ * the completed shell portrait. No synthetic overlay art. */
+
+html[data-theme="padiem-glass"] {
+  --padiem-glass-shell-image: url("./assets/padiem-glass-female-shell.jpg");
+  --glass-shell-dissolve: 0;
+  --glass-shell-max: 1;
+}
+
+html[data-theme="padiem-glass"][data-glass-variant="male"] {
+  --padiem-glass-shell-image: url("./assets/padiem-glass-male-shell.jpg");
+}
+
+/* Reading mode keeps text primary: the shell stays subordinate like the art. */
+html[data-theme="padiem-glass"][data-glass-mode="reading"] {
+  --glass-shell-max: .62;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-portrait,
+html[data-theme="padiem-glass"] .glass-shell-field {
+  position: fixed;
+  z-index: 1;
+  top: 68px;
+  right: 0;
+  bottom: 0;
+  width: min(48vw, 680px);
+  pointer-events: none;
+  transform:
+    translate3d(
+      calc(var(--glass-art-x, 0px) + var(--glass-pointer-x, 0px)),
+      calc(var(--glass-art-y, 0px) + var(--glass-pointer-y, 0px)),
+      0
+    )
+    scale(var(--glass-art-scale, 1));
+  transform-origin: right center;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-portrait {
+  background-image: var(--padiem-glass-shell-image);
+  background-repeat: no-repeat;
+  background-position: var(--glass-portrait-x) 52%;
+  background-size: auto min(90vh, 900px);
+  filter: var(--glass-art-filter);
+  opacity: calc(var(--glass-shell-dissolve) * var(--glass-shell-max));
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent 0%,
+    transparent var(--glass-mask-start),
+    rgba(0,0,0,.56) calc(var(--glass-mask-start) + 7%),
+    #000 var(--glass-mask-full),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to left,
+    transparent 0%,
+    transparent var(--glass-mask-start),
+    rgba(0,0,0,.56) calc(var(--glass-mask-start) + 7%),
+    #000 var(--glass-mask-full),
+    #000 100%
+  );
+}
+
+html[data-theme="padiem-glass"] .glass-shell-field {
+  overflow: hidden;
+  opacity: var(--glass-shell-max);
+}
+
+/* Fragment plates: geometry/clip-path/background-position are driven in JS,
+ * ported from the source loader. */
+html[data-theme="padiem-glass"] .glass-shell-frag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-repeat: no-repeat;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(45,69,87,.10);
+  will-change: transform, width, height, opacity;
+  backface-visibility: hidden;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-vein {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-vein path {
+  fill: none;
+  stroke-width: 1.1;
+  stroke-dasharray: 4 8;
+  vector-effect: non-scaling-stroke;
+}
+
+html:not([data-theme="padiem-glass"]) .glass-shell-portrait,
+html:not([data-theme="padiem-glass"]) .glass-shell-field {
+  display: none;
+}
+
+/* Shell controls inside the APPEARANCE settings section. */
+html[data-theme="padiem-glass"] .glass-shell-control {
+  margin-top: 12px;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-control[hidden] {
+  display: none !important;
+}
+
+html[data-theme="padiem-glass"] .glass-mask-picker {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+html[data-theme="padiem-glass"] .glass-speed-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+html[data-theme="padiem-glass"] .glass-speed-label {
+  color: #53606c;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+html[data-theme="padiem-glass"] .glass-speed-range {
+  flex: 1;
+  height: 28px;
+  accent-color: rgba(33, 45, 56, .84);
+  cursor: pointer;
+}
+
+html[data-theme="padiem-glass"] .glass-speed-value {
+  min-width: 36px;
+  text-align: right;
+  color: #24313b;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-field {
+  perspective: 1300px; /* source field depth for fragment translateZ */
+}
+
+/* Source fragment sheen + edge definition, kept verbatim from the loader. */
+html[data-theme="padiem-glass"] .glass-shell-frag::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.12) 42%, rgba(79,134,173,.08) 62%, transparent 100%);
+  mix-blend-mode: screen;
+}
+
+html[data-theme="padiem-glass"] .glass-shell-frag::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid rgba(255,255,255,.14);
+  border-bottom: 1px solid rgba(45,69,87,.08);
 }

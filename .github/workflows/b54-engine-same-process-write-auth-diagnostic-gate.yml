@@ -1,0 +1,442 @@
+name: B54 Engine Same-Process Write-Auth Diagnostic Gate
+
+# P0 SAME-PROCESS WRITE->AUTH DIAGNOSTIC — SOURCE ONLY (ACT-1). This file is
+# never executed in ACT-1:
+#   LIVE_DISPATCH=0  SECRET_MUTATION=0  CLOUDFLARE_MUTATION=0
+#   NEW_CREDENTIAL_GENERATION_LIVE=0  PRODUCTION_MUTATION=0  ENGINE_DEPLOY=0
+#
+# Purpose (CENTRAL): the regeneration APPLY failed F4
+# (SYSTEMATIC_WRITE_OR_AUTH_PATH_DEFECT): a credential written through the
+# GitHub repository secret B62_P01_ENGINE_CREDENTIAL and rotated into the served
+# overlay was rejected RAW_MATCH=NO / NEITHER_MATCH by the Engine auth oracle.
+# This gate removes the GitHub repository secret from the path ENTIRELY. Inside
+# ONE shell process it: (1) generates one credential in memory, (2) feeds the
+# SAME value to the existing overlay PUT payload builder via an environment
+# variable (never argv), (3) PUTs it to the Cloudflare overlay, confirms the
+# PUT on the closed contract (HTTP 2xx AND response JSON .success == true,
+# boolean-only, response file deleted before continuing), then bounded-polls
+# the deployments API (POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY: GET-only, 30
+# attempts x 2s, single 100-percent served-version guards reused from the
+# approved rotation gate) until a served version DIFFERENT from the pre-PUT
+# version is confirmed; a valid 100-percent read that still equals the pre-PUT
+# version means propagation has not happened yet and CONTINUES polling (no
+# fail, no break), and only budget exhaustion stops at D5. The pre-PUT served
+# read itself is a single guarded GET (PRE_READ_CONTRACT=SINGLE_GUARDED_GET):
+# only the post-PUT confirmation polls. Then (4) the gate probes the
+# Engine auth oracle ONCE with the SAME in-memory credential before unset.
+#
+# Discriminating verdict (closed, three-way — CENTRAL fix 3):
+#   A) AUTH_PROBE_ACCEPTED=YES
+#      -> DIRECT_WRITE_AND_DIRECT_PROBE=PASS
+#      -> VERDICT=WRITE_AND_READ_HEALTHY_GITHUB_SECRET_PATH_IS_DEFECT
+#   B) HTTP 401 AND error_code service_authentication_failed
+#      -> DIRECT_WRITE_AND_DIRECT_PROBE=FAIL
+#      -> VERDICT=CLOUDFLARE_WRITE_OR_ENGINE_READ_PATH_DEFECT
+#   C) anything else (transport_blocked, status 0, edge 403, unrecognized,
+#      unexpected 5xx)
+#      -> DIRECT_WRITE_AND_DIRECT_PROBE=INCONCLUSIVE
+#      -> VERDICT=AUTH_ORACLE_NOT_REACHED_OR_UNEXPECTED
+# Every branch is terminal: STOP_AND_REPORT, no retry, no second generation,
+# no second PUT, no second probe.
+#
+# Fail-closed pre-probe stops (never consume the probe budget):
+#   D1=STOP_MAIN_DRIFT                      main != exact approved SHA
+#   D2=STOP_GENERATION_FORMAT_DISCARDED     generated value failed format check
+#   D3=STOP_PRECONDITION_SERVED_VERSION     pre served version != expected,
+#                                           not a single 100-percent version, or
+#                                           overlay rotation state refused
+#   D4=STOP_OVERLAY_PUT_FAILED              PUT not (2xx AND .success==true);
+#                                           bounded failure evidence only
+#   D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED  the bounded polling budget was
+#                                           exhausted without a single
+#                                           100-percent served version that
+#                                           differs from the pre-PUT version
+#
+# Reuse (verified components are not duplicated): the overlay PUT body comes
+# from b54_engine_caller_registry_overlay_rotation.py plan (same payload
+# builder the approved rotation gate uses); the bounded post-PUT polling
+# budget (30 attempts x 2s) and the single-100-percent served-version guards
+# follow b54-engine-caller-registry-overlay-rotation-gate.yml, with the
+# same-process addition that the accepted served version must DIFFER from the
+# pre-PUT version (candidate == pre_version continues polling); the served-version
+# reads come from b54_engine_served_version_guard.py (canonical GET-only
+# resolver); the Engine probe reuses
+# b54_engine_credential_equivalence_diagnostic.py semantics (endpoint, headers,
+# idempotency-key validator, response classifier) with the request budget
+# narrowed to exactly ONE raw-credential request.
+#
+# Security contract: the credential never appears in argv, logs, files kept
+# past the PUT, artifacts, GITHUB_ENV, or GITHUB_OUTPUT; the PUT body file is
+# removed immediately after the single PUT and the PUT response file is removed
+# before the polling phase (only bounded booleans are read from it); the
+# credential is unset right after the probe. Output is closed markers and
+# non-secret version metadata only:
+#   SECRET_VALUE_OUTPUT=0 SECRET_HASH_OUTPUT=0 SECRET_LENGTH_OUTPUT=0
+#   SECRET_PREFIX_SUFFIX_OUTPUT=0 SECRET_DERIVED_OUTPUT=0 RAW_REGISTRY_OUTPUT=0
+#   PUT_RESPONSE_BODY_OUTPUT=0
+# The GitHub repository secret B62_P01_ENGINE_CREDENTIAL is never read here and
+# never mutated here; no admin PAT is used; no new repository secret is created.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-same-process-write-auth-diagnostic-gate.yml"
+      - ".github/tests/test_b54_engine_same_process_write_auth_diagnostic_gate.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      expected_served_version:
+        description: "Served Engine version id that MUST be active before the PUT"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact diagnostic confirmation phrase"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-same-process-write-auth-diagnostic-gate
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  OVERLAY_SECRET_NAME: PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY
+  TARGET_SHA: ${{ inputs.target_sha }}
+  EXPECTED_SERVED_VERSION: ${{ inputs.expected_served_version }}
+  CONFIRMATION: ${{ inputs.confirmation }}
+  ROTATION_SCRIPT: .github/scripts/b54_engine_caller_registry_overlay_rotation.py
+  GUARD_SCRIPT: .github/scripts/b54_engine_served_version_guard.py
+  ORACLE_SCRIPT: .github/scripts/b54_engine_credential_equivalence_diagnostic.py
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN_GUARD=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run same-process diagnostic gate contract tests
+        run: python .github/tests/test_b54_engine_same_process_write_auth_diagnostic_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B54_SAME_PROCESS_DIAGNOSTIC_SOURCE_CONTRACT=PASS'
+          echo 'DIAGNOSTIC_EXECUTED=NO'
+          echo 'LIVE_DISPATCH=0'
+          echo 'NEW_CREDENTIAL_GENERATION_LIVE=0'
+          echo 'GITHUB_SECRET_MUTATION=0'
+          echo 'CLOUDFLARE_SECRET_MUTATION=0'
+          echo 'GITHUB_SECRET_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'PHASE_A=0'
+          echo 'D1_WRITE=0'
+          echo 'PROVIDER_CALL=0'
+
+  diagnose:
+    needs: [source-contract]
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Require explicit diagnostic authorization and input shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "RUN_B54_ENGINE_SAME_PROCESS_WRITE_AUTH_DIAGNOSTIC"
+          [[ "${TARGET_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${EXPECTED_SERVED_VERSION}" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]
+          echo 'B54_SAME_PROCESS_DIAGNOSTIC_AUTHORIZATION=PASS'
+          echo 'DIAG_INPUT_SHAPE=PASS'
+          echo 'GITHUB_SECRET_IN_PATH=NO'
+          echo 'ADMIN_PAT_USED=NO'
+          echo 'SECRET_MATERIAL_IN_WORKFLOW_INPUTS=0'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before any mutation (D1)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          if [ "$(git rev-parse origin/main)" != "${TARGET_SHA}" ]; then
+            echo 'D1=STOP_MAIN_DRIFT'
+            exit 1
+          fi
+          echo 'DIAG_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate, overlay PUT, served readback, and in-memory auth probe in ONE process
+        id: diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          body="${RUNNER_TEMP}/b54-same-process-put-body.json"
+          response="${RUNNER_TEMP}/b54-same-process-put-response.json"
+          rm -f "${body}" "${response}"
+          served_guards='(.success == true)
+            and ((.result.deployments | type == "array") and (.result.deployments | length > 0))
+            and ((.result.deployments[0].versions | type == "array") and (.result.deployments[0].versions | length == 1))
+            and (.result.deployments[0].versions[0].percentage == 100)'
+
+          # --- preconditions: single 100% served version == expected, overlay
+          #     rotatable (same guards as the approved rotation gate preflight) ---
+          deployments_pre="${RUNNER_TEMP}/b54-same-process-deployments-pre.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments_pre}"
+          if ! jq -e "${served_guards}" "${deployments_pre}" >/dev/null; then
+            echo 'D3=STOP_PRECONDITION_SERVED_VERSION'
+            echo 'SINGLE_100_PERCENT_SERVED_VERSION=NO'
+            exit 1
+          fi
+          pre_version="$(python3 "${GUARD_SCRIPT}" resolve-active --deployments "${deployments_pre}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${pre_version}"
+          test "${pre_version}" = "$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_pre}")"
+          if [ "${pre_version}" != "${EXPECTED_SERVED_VERSION}" ]; then
+            echo 'D3=STOP_PRECONDITION_SERVED_VERSION'
+            echo "PRE_SERVED_VERSION=${pre_version}"
+            exit 1
+          fi
+          version_pre="${RUNNER_TEMP}/b54-same-process-version-pre.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${pre_version}" -o "${version_pre}"
+          classify_out="$(python3 "${ROTATION_SCRIPT}" classify --version-detail "${version_pre}" --active-version "${pre_version}")" || true
+          disposition="$(printf '%s\n' "${classify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_ROTATION_DISPOSITION=//p')"
+          if [ "${disposition}" != "ROTATION_REQUIRED" ]; then
+            echo 'D3=STOP_PRECONDITION_SERVED_VERSION'
+            echo 'OVERLAY_ROTATION_STATE_REFUSED=YES'
+            exit 1
+          fi
+          echo "PRE_SERVED_VERSION=${pre_version}"
+          echo 'PRECONDITION_SERVED_VERSION_MATCH=YES'
+          echo 'SINGLE_100_PERCENT_SERVED_VERSION=YES'
+          echo 'OVERLAY_ROTATION_STATE_REQUIRED=PASS'
+          echo 'PRE_READ_CONTRACT=SINGLE_GUARDED_GET'
+
+          # --- (1) generate exactly one credential, in-memory only ---
+          NEW_CREDENTIAL="$(python3 -c 'import secrets; print(secrets.token_urlsafe(48), end="")')"
+          if [[ ! "${NEW_CREDENTIAL}" =~ ^[A-Za-z0-9_-]{64}$ ]]; then
+            unset NEW_CREDENTIAL
+            echo 'D2=STOP_GENERATION_FORMAT_DISCARDED'
+            exit 1
+          fi
+          echo 'ONE_GENERATION_MAX=YES'
+          echo 'CREDENTIAL_FORMAT_VALIDATED=PASS'
+          echo 'SAME_PROCESS_CREDENTIAL=YES'
+          # ACT-2 export hotfix (run 34795118387 stopped before the PUT with
+          # B54_ENGINE_OVERLAY_ROTATION_PLAN=FAIL): the plan and probe child
+          # python processes consume the credential via os.environ, so the
+          # validated value must be exported (bare: never on the export line
+          # with a value); the existing unset paths below still apply.
+          export NEW_CREDENTIAL
+
+          # --- (2) build the overlay PUT body from the SAME in-memory value,
+          #     passed ONLY through the environment (never argv), using the
+          #     existing payload builder; target-guard the body with jq ---
+          plan_out="$(python3 "${ROTATION_SCRIPT}" plan --credential-env NEW_CREDENTIAL --output "${body}")"
+          printf '%s\n' "${plan_out}" | grep -q '^B54_ENGINE_OVERLAY_ROTATION_PLAN=PASS$'
+          jq -e --arg name "${OVERLAY_SECRET_NAME}" '.name == $name and .type == "secret_text"' "${body}" >/dev/null
+          echo 'B54_ENGINE_OVERLAY_TARGET_GUARD=PASS'
+
+          # --- single overlay PUT; success contract is HTTP 2xx AND response
+          #     JSON .success == true (bounded boolean only, body never echoed);
+          #     the body and response files die with this phase ---
+          http_status="$(curl -sS -X PUT "${auth[@]}" -H "Content-Type: application/json" --data-binary "@${body}" "${api}/workers/scripts/${ENGINE_WORKER}/secrets" -o "${response}" -w '%{http_code}' || echo 000)"
+          rm -f "${body}"
+          put_ok=NO
+          if [ "${http_status:0:1}" = "2" ] && jq -e '.success == true' "${response}" >/dev/null 2>&1; then put_ok=YES; fi
+          if [ "${put_ok}" != "YES" ]; then
+            python3 "${ROTATION_SCRIPT}" failure-evidence --response "${response}" --http-status "${http_status}" || true
+            rm -f "${response}"
+            unset NEW_CREDENTIAL
+            echo 'D4=STOP_OVERLAY_PUT_FAILED'
+            echo 'ONE_OVERLAY_PUT_MAX=YES'
+            echo 'NO_AUTOMATIC_RETRY=YES'
+            echo 'AUTH_PROBE_REQUESTS_ISSUED=0'
+            exit 1
+          fi
+          rm -f "${response}"
+          echo 'ONE_OVERLAY_PUT_MAX=YES'
+          echo 'OVERLAY_PUT_SUCCESS_CONTRACT=HTTP_2XX_AND_JSON_SUCCESS_TRUE'
+          echo 'PUT_RESPONSE_BODY_OUTPUT=0'
+
+          # --- (3) bounded GET-only propagation polling (POST_PUT_POLLING=
+          #     BOUNDED_30x2S_GET_ONLY): 30 attempts x 2s, rotation gate
+          #     single-100-percent guards; the PUT response is never accepted
+          #     as proof; no mutation of any kind inside the loop. A valid
+          #     served version that still equals pre_version means propagation
+          #     has not happened yet: continue polling (no fail, no break).
+          #     Only a candidate that differs from pre_version is accepted.
+          #     D5 is emitted solely on budget exhaustion. ---
+          new_version=""
+          deployments_post="${RUNNER_TEMP}/b54-same-process-deployments-post.json"
+          for _ in $(seq 1 30); do
+            if curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments_post}" &&
+              jq -e "${served_guards}" "${deployments_post}" >/dev/null; then
+              candidate="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments_post}")"
+              if [ -n "${candidate}" ] && [ "${candidate}" != "null" ] && [ "${candidate}" != "${pre_version}" ]; then
+                new_version="${candidate}"
+                break
+              fi
+            fi
+            sleep 2
+          done
+          if [ -z "${new_version}" ]; then
+            echo 'D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED'
+            echo 'POLLING_ATTEMPTS_EXHAUSTED=YES'
+            echo 'AUTH_PROBE_REQUESTS_ISSUED=0'
+            unset NEW_CREDENTIAL
+            exit 1
+          fi
+          resolve_post="$(python3 "${GUARD_SCRIPT}" resolve-active --deployments "${deployments_post}")"
+          if [ "$(printf '%s\n' "${resolve_post}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')" != "${new_version}" ]; then
+            echo 'D5=STOP_NEW_SERVED_VERSION_UNCONFIRMED'
+            echo 'GUARD_RESOLVE_MISMATCH=YES'
+            echo 'AUTH_PROBE_REQUESTS_ISSUED=0'
+            unset NEW_CREDENTIAL
+            exit 1
+          fi
+          version_post="${RUNNER_TEMP}/b54-same-process-version-post.json"
+          curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${new_version}" -o "${version_post}"
+          python3 "${GUARD_SCRIPT}" verify --version-settings "${version_post}" --active-version "${new_version}" --expect-overlay >/dev/null
+          echo "POST_SERVED_VERSION=${new_version}"
+          echo 'NEW_SERVED_VERSION_CREATED=YES'
+          echo 'POST_PUT_POLLING=BOUNDED_30x2S_GET_ONLY'
+          echo 'SINGLE_100_PERCENT_SERVED_VERSION=YES'
+          echo 'GET_ONLY=PASS'
+          echo 'POLLING_MUTATION=0'
+
+          # --- (4) ONE auth probe with the SAME in-memory credential, using
+          #     the existing oracle semantics (endpoint, headers, key
+          #     validator, classifier); budget narrowed from two to one ---
+          probe_out="$(python3 - <<'PY'
+          import importlib.util, os, secrets
+          spec = importlib.util.spec_from_file_location("b54eq", ".github/scripts/b54_engine_credential_equivalence_diagnostic.py")
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          credential = os.environ["NEW_CREDENTIAL"]
+          key = f"{mod.KEY_PREFIX}-{secrets.token_hex(16)}"
+          assert mod._IDEMPOTENCY_KEY_RE.fullmatch(key)
+          try:
+              status, raw_body = mod._transport_post(mod.build_request(mod.ENGINE_BASE_URL, credential, key))
+              result = mod.classify_response(status, raw_body)
+          except Exception:
+              result = {"http_status": "0", "http_class": "blocked", "error_code": "transport_blocked", "accepted": False}
+          print(f"AUTH_PROBE_HTTP_STATUS={result['http_status']}")
+          print(f"AUTH_PROBE_HTTP_CLASS={result['http_class']}")
+          print(f"AUTH_PROBE_ERROR_CODE={result['error_code']}")
+          print(f"AUTH_PROBE_ACCEPTED={'YES' if result['accepted'] else 'NO'}")
+          print("AUTH_PROBE_REQUESTS_ISSUED=1")
+          PY
+          )"
+          printf '%s\n' "${probe_out}"
+          unset NEW_CREDENTIAL
+          echo 'PROBE_CREDENTIAL_UNSET=YES'
+          probe_accepted="$(printf '%s\n' "${probe_out}" | sed -n 's/^AUTH_PROBE_ACCEPTED=//p')"
+          probe_status="$(printf '%s\n' "${probe_out}" | sed -n 's/^AUTH_PROBE_HTTP_STATUS=//p')"
+          probe_error="$(printf '%s\n' "${probe_out}" | sed -n 's/^AUTH_PROBE_ERROR_CODE=//p')"
+          # --- verdict-begin ---
+          if [ "${probe_accepted}" = "YES" ]; then
+            echo 'DIRECT_WRITE_AND_DIRECT_PROBE=PASS'
+            echo 'VERDICT=WRITE_AND_READ_HEALTHY_GITHUB_SECRET_PATH_IS_DEFECT'
+          elif [ "${probe_status}" = "401" ] && [ "${probe_error}" = "service_authentication_failed" ]; then
+            echo 'DIRECT_WRITE_AND_DIRECT_PROBE=FAIL'
+            echo 'VERDICT=CLOUDFLARE_WRITE_OR_ENGINE_READ_PATH_DEFECT'
+          else
+            echo 'DIRECT_WRITE_AND_DIRECT_PROBE=INCONCLUSIVE'
+            echo 'VERDICT=AUTH_ORACLE_NOT_REACHED_OR_UNEXPECTED'
+          fi
+          echo 'NO_AUTOMATIC_RETRY=YES'
+          echo 'STOP_AND_REPORT=YES'
+          # --- verdict-end ---
+          echo 'GITHUB_SECRET_IN_PATH=NO'
+          echo 'ONE_AUTH_PROBE_MAX=YES'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'SECRET_DERIVED_OUTPUT=0'
+
+      - name: Closed evidence (terminal state, truthful)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          outcome="${{ steps.diagnostic.outcome }}"
+          echo "DIAGNOSTIC_PIPELINE_OUTCOME=${outcome}"
+          if [ "${outcome}" = "success" ]; then
+            echo 'DIAGNOSTIC_TERMINAL_STATE=VERDICT_REPORTED'
+          else
+            echo 'DIAGNOSTIC_TERMINAL_STATE=STOPPED_BEFORE_VERDICT'
+            echo 'EXECUTION_RESULT_MARKERS=NOT_CLAIMED'
+          fi
+          echo 'GENERATION_CAP=1'
+          echo 'OVERLAY_PUT_CAP=1'
+          echo 'AUTH_PROBE_CAP=1'
+          echo 'POLLING_CAP=30_ATTEMPTS_GET_ONLY'
+          echo 'GITHUB_SECRET_IN_PATH=NO'
+          echo 'GITHUB_SECRET_MUTATION=0'
+          echo 'GITHUB_SECRET_READ=0'
+          echo 'ADMIN_PAT_USED=NO'
+          echo 'DOWNSTREAM_DISPATCH=0'
+          echo 'NO_AUTOMATIC_RETRY=YES'
+          echo 'SECRET_VALUE_OUTPUT=0'
+          echo 'SECRET_HASH_OUTPUT=0'
+          echo 'SECRET_LENGTH_OUTPUT=0'
+          echo 'SECRET_PREFIX_SUFFIX_OUTPUT=0'
+          echo 'SECRET_DERIVED_OUTPUT=0'
+          echo 'RAW_REGISTRY_OUTPUT=0'
+          echo 'PUT_RESPONSE_BODY_OUTPUT=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'D1_WRITE=0'
+          echo 'PROVIDER_CALL=0'
+          echo 'PHASE_A=0'

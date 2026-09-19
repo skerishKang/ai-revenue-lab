@@ -13,7 +13,7 @@ from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
     _refund_active_reservation,
 )
-from app.model_policy import DEFAULT_B14_MODEL_ID, MEDIUM_B14_MODEL_ID
+from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
 from app.skills import get_skill
 from app.usage_gate import UsageDecision
 
@@ -21,7 +21,7 @@ from app.usage_gate import UsageDecision
 MANUAL_PATH = "/api/pilot/v1/chat/completions/stream-preview"
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
 REQUEST_MODEL = DEFAULT_B14_MODEL_ID
-OBSERVED_MODEL = MEDIUM_B14_MODEL_ID
+OBSERVED_MODEL = LOW_B14_MODEL_ID
 OBSERVED_PROVIDER = "Kilo Gateway / MiniMax"
 
 
@@ -86,7 +86,7 @@ def _error_frame(code: str = "upstream_rate_limited") -> bytes:
     )
 
 
-def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
+def test_private_compat_stream_uses_manual_endpoint_and_exact_plus_policy():
     async def scenario():
         seen_url = None
         seen = None
@@ -118,7 +118,7 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
         skill = get_skill()
         assert seen_url == "https://b14.internal" + MANUAL_PATH
         assert seen["stream"] is True
-        assert seen["model"] == REQUEST_MODEL == MEDIUM_B14_MODEL_ID
+        assert seen["model"] == REQUEST_MODEL == LOW_B14_MODEL_ID
         assert seen["business14"]["required_capabilities"] == ["chat"]
         assert seen["business14"]["allow_external_fallback"] is False
         assert seen["business14"]["max_attempts"] == 1
@@ -141,30 +141,22 @@ def test_private_compat_stream_uses_manual_endpoint_and_exact_medium_policy():
     asyncio.run(scenario())
 
 
-def test_private_compat_stream_pro_alias_is_stripped_before_manual_route():
+def test_private_compat_stream_pro_alias_fails_closed_before_manual_route():
     async def scenario():
-        seen = None
-        upstream = ChunkStream([_frame("답변"), b"data: [DONE]\n\n"])
+        calls = 0
 
         async def handler(request: httpx.Request) -> httpx.Response:
-            nonlocal seen
-            seen = json.loads(request.content)
-            return httpx.Response(
-                200,
-                headers={"content-type": "text/event-stream"},
-                stream=upstream,
-            )
+            nonlocal calls
+            calls += 1
+            raise AssertionError("held Pro must not reach B14 stream transport")
 
         client = B14Client(_settings(), stream_transport=httpx.MockTransport(handler))
-        events = [
-            event
-            async for event in client.stream_text_auto(
+        with pytest.raises(ChatRuntimeError):
+            async for _ in client.stream_text_auto(
                 [{"role": "user", "content": "/pro 한국어로 답해줘"}]
-            )
-        ]
-        assert seen["model"] == REQUEST_MODEL == MEDIUM_B14_MODEL_ID
-        assert seen["messages"][-1] == {"role": "user", "content": "한국어로 답해줘"}
-        assert events[-1].done is True
+            ):
+                pass
+        assert calls == 0
 
     asyncio.run(scenario())
 

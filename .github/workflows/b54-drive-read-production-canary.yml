@@ -1,0 +1,135 @@
+name: B54 Drive Read Production Canary
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-ai-engine/scripts/a13_drive_read_production_canary.py'
+      - '.github/tests/test_b54_drive_read_production_canary.py'
+      - '.github/workflows/b54-drive-read-production-canary.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA authorized for this one-shot Drive READ canary'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_DRIVE_READ_CANARY_ONCE to authorize exactly one Engine tool POST'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-drive-read-production-canary
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source under review
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Dispatch exact-main preflight
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run bounded canary contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/tests/test_b54_drive_read_production_canary.py
+
+      - name: Pin canonical provider retry semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'for attempt in range(2):' apps/padiem-ai-engine/app/drive_port_cp_lease.py
+          grep -Fq 'if status == 401 and attempt == 0:' apps/padiem-ai-engine/app/drive_port_cp_lease.py
+          grep -Fq 'DRIVE_PROVIDER_READ_BUDGET_MAX=' apps/padiem-ai-engine/scripts/a13_drive_read_production_canary.py
+          echo 'PROVIDER_READ_BUDGET_CONTRACT=MAX_2'
+
+  live-drive-read:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_B54_DRIVE_READ_CANARY_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      PADIEM_ENGINE_DRIVE_CANARY_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+    steps:
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Re-check exact current main before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'LIVE_EXACT_MAIN=PASS'
+
+      - name: Fail closed if protected Engine credential is unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${PADIEM_ENGINE_DRIVE_CANARY_CREDENTIAL:-}"
+          echo 'ENGINE_CALLER_CREDENTIAL_PRESENT=YES'
+          echo 'PROVIDER_CREDENTIAL_OUTPUT=0'
+
+      - name: Execute exactly one bounded Drive READ through Engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/drive-read-canary.log"
+          python apps/padiem-ai-engine/scripts/a13_drive_read_production_canary.py | tee "${log}"
+          grep -qx 'DRIVE_READ_CANARY=PASS' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_POST_COUNT=1' "${log}"
+          grep -qx 'NETWORK_RETRY_COUNT=0' "${log}"
+          grep -qx 'DRIVE_RESULT_BOUNDED=YES' "${log}"
+          grep -qx 'ACCOUNT_IDENTITY_AMBIGUOUS=YES' "${log}"
+          grep -qx 'DRIVE_PROVIDER_READ_BUDGET_MAX=2' "${log}"
+          grep -qx 'RAW_FILENAME_OUTPUT=0' "${log}"
+          grep -qx 'RAW_FILE_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_OWNER_OUTPUT=0' "${log}"
+          grep -qx 'RAW_LINK_OUTPUT=0' "${log}"
+          grep -qx 'RAW_FILE_CONTENT_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BINDING_REF_OUTPUT=0' "${log}"
+          grep -qx 'RAW_ACTOR_REF_OUTPUT=0' "${log}"
+          grep -qx 'DRIVE_WRITE=0' "${log}"
+          grep -qx 'D1_MUTATION=0' "${log}"
+          grep -qx 'ENGINE_DEPLOY=0' "${log}"
+          grep -qx 'SECRET_MUTATION=0' "${log}"
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'OAUTH_CONNECT=0'
+          echo 'OAUTH_CALLBACK=0'
+          echo 'DRIVE_GRANT_SEED=0'
+          echo 'D1_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'DRIVE_WRITE=0'
+          echo 'WORKFLOW_INTERNAL_RERUN=0'

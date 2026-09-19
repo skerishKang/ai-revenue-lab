@@ -1,12 +1,11 @@
-"""#1961 — the Worker must tolerate the retired Poolside binding.
+"""Owner decision 2026-09-18 — Poolside binding re-registered metadata-only.
 
-The vestigial ``[[unsafe.bindings]] PADIEM_POOLSIDE_API_KEY`` Secrets Store
-binding was removed from wrangler.toml because the store item no longer
-exists and its authorization check (Cloudflare 10021) blocked every gated
-deploy. Poolside provider code stays registered (owner decision: the
-provider "code" is preserved), but it must degrade to an explicit
-not-ready readiness report — never a crash, never a silent fallback —
-and the Kilo route must be unaffected.
+The ``PADIEM_POOLSIDE_API_KEY`` Secrets Store binding is declared again in
+wrangler.toml as metadata only (binding + store_id + secret_name, no secret
+value); the old ``[[unsafe.bindings]]`` form stays prohibited. Poolside
+provider code stays registered, but with the key absent the Worker must
+still degrade to an explicit not-ready readiness report — never a crash,
+never a silent fallback — and the Kilo route must be unaffected.
 """
 
 from __future__ import annotations
@@ -41,7 +40,10 @@ def _provider(data: dict, provider_id: str) -> dict:
 def test_wrangler_toml_declares_no_unsafe_bindings():
     config = tomllib.loads(WRANGLER_TOML.read_text(encoding="utf-8"))
     assert "unsafe" not in config
-    assert POOLSIDE_CREDENTIAL_BINDING not in WRANGLER_TOML.read_text(encoding="utf-8")
+    text = WRANGLER_TOML.read_text(encoding="utf-8")
+    assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in text
+    assert 'secret_name = "PADIEM_POOLSIDE_API_KEY"' in text
+    assert "PADIEM_POOLSIDE_API_KEY =" not in text
 
 
 def test_startup_and_registration_succeed_without_poolside_binding(monkeypatch):

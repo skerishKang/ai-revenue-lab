@@ -6,6 +6,12 @@ import inspect
 from typing import Any
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
+from padiem_control_plane.tenants import (
+    CanonicalTenant,
+    CanonicalTenantState,
+    TenantMembership,
+    TenantMembershipState,
+)
 from padiem_control_plane.contracts import (
     CanonicalSubjectRef,
     IdentityLinkState,
@@ -24,6 +30,8 @@ _SESSION_KEYS_LEGACY = frozenset(
 _SESSION_KEYS_TENANT = _SESSION_KEYS_LEGACY | {"tenant_id"}
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TICKET_KEYS = frozenset({"connect_ticket", "connector_id", "expires_at"})
+_TENANT_KEYS = frozenset({"tenant_id", "state", "created_at"})
+_MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id", "state", "created_at"})
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
 
 
@@ -234,6 +242,115 @@ class CloudflareControlPlaneIdentityAuthority:
             await self._rpc("resolve_auth_session", {"session_id": session_id}, "session")
         )
         return self._session_from_wire(wire)
+
+    async def resolve_active_memberships(
+        self,
+        *,
+        canonical_subject_id: str,
+    ) -> tuple[str, ...]:
+        method = getattr(self._binding, "resolve_active_memberships", None)
+        if not callable(method):
+            raise IdentityBridgeError(
+                503,
+                "control_plane_identity_unavailable",
+                "Canonical tenant authority is unavailable.",
+            )
+        try:
+            result = _dict(
+                await _maybe_await(
+                    method({"canonical_subject_id": canonical_subject_id})
+                )
+            )
+        except Exception as exc:
+            raise IdentityBridgeError(
+                503,
+                "control_plane_identity_unavailable",
+                "Canonical tenant authority is unavailable.",
+            ) from exc
+        if result is None or set(result) != {"ok", "tenant_ids"} or result.get("ok") is not True:
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant authority returned invalid data.",
+            )
+        raw = result.get("tenant_ids")
+        if not isinstance(raw, list) or not all(isinstance(item, str) and item for item in raw):
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant authority returned invalid data.",
+            )
+        if len(set(raw)) != len(raw):
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant authority returned duplicate memberships.",
+            )
+        return tuple(raw)
+
+    async def create_tenant(self) -> str:
+        wire = _closed(
+            await self._rpc("create_tenant", {}, "tenant"),
+            _TENANT_KEYS,
+            "canonical tenant",
+        )
+        try:
+            tenant = CanonicalTenant(
+                tenant_id=wire["tenant_id"],
+                state=CanonicalTenantState(wire["state"]),
+                created_at=_time(wire["created_at"], "tenant created_at"),
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical tenant is invalid."
+            ) from exc
+        return tenant.tenant_id
+
+    async def assign_tenant_membership(
+        self,
+        *,
+        tenant_id: str,
+        canonical_subject_id: str,
+    ) -> None:
+        wire = _closed(
+            await self._rpc(
+                "assign_tenant_membership",
+                {
+                    "tenant_id": tenant_id,
+                    "canonical_subject_id": canonical_subject_id,
+                },
+                "membership",
+            ),
+            _MEMBERSHIP_KEYS,
+            "canonical tenant membership",
+        )
+        try:
+            membership = TenantMembership(
+                tenant_id=wire["tenant_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                state=TenantMembershipState(wire["state"]),
+                created_at=(
+                    _time(wire["created_at"], "membership created_at")
+                    if wire.get("created_at") is not None
+                    else None
+                ),
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant membership is invalid.",
+            ) from exc
+        if (
+            membership.tenant_id != tenant_id
+            or membership.canonical_subject_id != canonical_subject_id
+            or membership.state is not TenantMembershipState.ACTIVE
+        ):
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant membership does not match the request.",
+            )
 
     async def issue_google_connect_ticket(
         self,

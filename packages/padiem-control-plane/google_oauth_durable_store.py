@@ -145,6 +145,7 @@ def _rows(cursor: Any) -> list[Any]:
 
 
 def _rows_written(cursor: Any) -> int:
+    _rows(cursor)
     value = getattr(cursor, "rowsWritten", None)
     if isinstance(value, bool) or not isinstance(value, (int, float)) or int(value) != value or value < 0:
         raise RuntimeError("Durable Object SQL returned invalid rowsWritten")

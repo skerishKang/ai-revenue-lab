@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 
 from padiem_control_plane.product_tier_routes import (
@@ -10,6 +12,7 @@ from padiem_control_plane.product_tier_routes import (
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
+    PRO_HOLD_MODEL_ID as _CONTRACT_PRO_HOLD_MODEL_ID,
 )
 
 # #2099 STEP-2: the Plus/Pro/Max route IDs are no longer literals owned here.
@@ -29,14 +32,30 @@ def _contract_route_id(label: ProductTierLabel) -> str:
     return route.model_id
 
 
-DEFAULT_CHAT_PROFILE = "medium"
+DEFAULT_CHAT_PROFILE = "low"
 AUTO_B14_MODEL_ID = "b14/auto"
+
+TIER_ID_TO_LABEL: dict[str, ProductTierLabel] = {
+    "plus": ProductTierLabel.PLUS,
+    "pro": ProductTierLabel.PRO,
+    "max": ProductTierLabel.MAX,
+}
+TIER_ID_TO_PROFILE: dict[str, str] = {
+    "plus": "low",
+    "pro": "medium",
+    "max": "high",
+}
+
+_REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
+    "padiem_request_tier_id",
+    default=None,
+)
 
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
 LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)
-MEDIUM_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PRO)
+MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID
 MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
 
 # Kilo Gateway free lanes that are no longer offered upstream. Re-checked
@@ -75,19 +94,16 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
     MEDIUM_B14_MODEL_ID: PADIEM_PRO,
     HIGH_B14_MODEL_ID: PADIEM_MAX,
 }
-EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID})
+EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID})
 
-# Current source posture after bounded activation/benchmark evidence (#2099
-# STEP-2: all route identities below are derived from the shared contract):
+# Current source posture after owner decision #2601:
 #
-#   Padiem Plus -> Kilo-hosted Poolside Laguna S 2.1 free
-#   Padiem Pro  -> Kilo-hosted NVIDIA Nemotron 3 Ultra free (default, general
-#                  answers; remapped from the retired MiniMax M3 free lane in
-#                  #2094/#2096 after Kilo removed minimax/minimax-m3:free)
-#   Padiem Max  -> HOLD (Hy3 is inactive after HTTP 404; no replacement is
-#                  auto-promoted from volatile free availability)
+#   Padiem Plus -> direct Agnes 3.0 Flash (only executable tier)
+#   Padiem Pro  -> HOLD
+#   Padiem Max  -> HOLD
 #
-# `b14/auto` and provider-side `kilo-auto/free` remain disabled.
+# The historical Kilo lanes are not product fallbacks. `b14/auto` and
+# provider-side auto/fallback behavior remain disabled for product routing.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
 # Slash selectors are hidden/operator test controls. Normal UI can later expose
@@ -108,7 +124,7 @@ MODEL_ALIASES: dict[str, str] = {
 # capabilities.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
-    MEDIUM_B14_MODEL_ID: frozenset({"chat", "long_context"}),
+    MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),
     UNASSIGNED_B14_MODEL_ID: frozenset(),
@@ -145,6 +161,91 @@ def product_tier_name(model_id: str) -> str:
         raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.") from exc
 
 
+def resolve_tier_policy(
+    messages: list[dict[str, str]],
+    tier_id: str,
+    *,
+    require_executable: bool = True,
+) -> ResolvedModelPolicy:
+    """Resolve a browser-facing Plus/Pro/Max tier through the shared contract.
+
+    Browser callers send only the bounded tier id. Provider/model authority
+    remains server-side in the shared product-tier declaration.
+    """
+
+    if not isinstance(tier_id, str):
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    normalized = tier_id.strip().lower()
+    label = TIER_ID_TO_LABEL.get(normalized)
+    if label is None:
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+
+    try:
+        route = active_route_for(label)
+    except ProductTierRoutesError as exc:
+        raise ModelPolicyError(
+            "invalid_product_tier",
+            "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        ) from exc
+
+    if route is None or not route.model_id:
+        if require_executable:
+            raise ModelPolicyError(
+                "tier_unavailable",
+                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+            )
+        if label is ProductTierLabel.PRO:
+            model_id = MEDIUM_B14_MODEL_ID
+        elif label is ProductTierLabel.MAX:
+            model_id = MAX_HOLD_MODEL_ID
+        else:
+            model_id = ""
+    else:
+        model_id = route.model_id
+
+    return ResolvedModelPolicy(
+        model_id=model_id,
+        messages=[dict(message) for message in messages],
+        profile=TIER_ID_TO_PROFILE[normalized],
+    )
+
+
+def resolve_request_model_policy(
+    messages: list[dict[str, str]],
+    *,
+    require_executable: bool = True,
+) -> ResolvedModelPolicy:
+    """Resolve the request-scoped browser tier, then fall back to legacy policy."""
+
+    tier_id = _REQUEST_TIER_ID.get()
+    if tier_id is not None:
+        return resolve_tier_policy(
+            messages,
+            tier_id,
+            require_executable=require_executable,
+        )
+    return resolve_model_policy(messages, require_executable=require_executable)
+
+
+@contextmanager
+def request_tier_context(tier_id: str | None):
+    """Temporarily bind a validated browser tier for this async request task."""
+
+    if tier_id is None:
+        yield
+        return
+    if not isinstance(tier_id, str):
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    normalized = tier_id.strip().lower()
+    if normalized not in TIER_ID_TO_LABEL:
+        raise ModelPolicyError("unknown_product_tier", "지원하지 않는 AI 등급입니다.")
+    token = _REQUEST_TIER_ID.set(normalized)
+    try:
+        yield
+    finally:
+        _REQUEST_TIER_ID.reset(token)
+
+
 def resolve_model_policy(
     messages: list[dict[str, str]],
     *,
@@ -152,7 +253,7 @@ def resolve_model_policy(
 ) -> ResolvedModelPolicy:
     """Resolve ordinary B62 chat to a Padiem product tier.
 
-    Ordinary chat defaults to executable Padiem Pro. Hidden ``/plus``, ``/pro``
+    Ordinary chat defaults to executable Padiem Plus. Hidden ``/plus``, ``/pro``
     and ``/max`` selectors are owner/test controls. Callers that only need to
     recognize product identity may set ``require_executable=False``; every path
     that can reach B14 execution must retain the default fail-closed gate.

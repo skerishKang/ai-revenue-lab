@@ -104,6 +104,7 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         runtime_mode=binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
+        completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50",
         live_enabled=binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false",
         web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),

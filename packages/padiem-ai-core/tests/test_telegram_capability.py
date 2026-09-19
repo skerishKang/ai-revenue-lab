@@ -227,6 +227,9 @@ def test_get_bot_info_projects_bounded_identity() -> None:
     assert result["bot"]["username"] == "padiem_beta_bot"
     assert result["bot_token_present"] is False
     assert result["write_capability_granted"] is False
+    # The canary requires the credential-projection fact like every other
+    # connector envelope; absence fails closed as noncanonical.
+    assert result["raw_credentials_present"] is False
     call = port.calls[0]
     assert call["base_url"] == TELEGRAM_BASE_URL
     assert call["path"] == "/getMe"

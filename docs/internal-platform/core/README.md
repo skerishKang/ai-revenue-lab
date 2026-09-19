@@ -17,6 +17,8 @@ Use IP-CORE when a capability is generic AI execution semantics rather than one 
 
 Current capability families include execution, Evidence/grounding, streaming, Tool, Web/research foundations, retrieval/memory, context permissions, and orchestration contracts/runtimes.
 
+Per the #2409 Wave 0 boundary lock, IP-CORE is also the target owner of the platform-independent P01 wire contract, caller identity data model, credential-shape policy and fail-closed policy (contract only; concrete enforcement stays in IP-ENGINE). See `docs/architecture/P01_B62_SHARED_RUNTIME_BOUNDARY_LOCK_2409.md`.
+
 ## Boundary
 
 IP-CORE does not own:

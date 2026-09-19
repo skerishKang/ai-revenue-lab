@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import re
 from typing import Any, Callable
 
+from padiem_ai_core.connectors import GMAIL_READONLY_SCOPE
 from padiem_ai_core.drive_capability import DRIVE_READONLY_SCOPE
 
 from app.service import ServiceContractError
@@ -14,6 +15,11 @@ from app.service import ServiceContractError
 MAX_ACCESS_TOKEN_CHARS = 131_072
 MAX_ACCESS_LEASE_SECONDS = 7_200
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
+_REVIEWED_CONNECTOR_SCOPES: dict[str, tuple[str, ...]] = {
+    "gmail": (GMAIL_READONLY_SCOPE,),
+    "google-drive": (DRIVE_READONLY_SCOPE,),
+}
+
 _LEASE_KEYS = frozenset(
     {
         "access_token",
@@ -105,8 +111,9 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
     ) -> EngineGoogleOAuthAccessLease:
         binding_ref = _safe_ref(binding_ref, "binding_ref")
         connector_id = _safe_ref(connector_id, "connector_id")
-        if connector_id != "google-drive":
-            raise _unavailable("Only the reviewed Google Drive connector is accepted by this client.")
+        expected_scopes = _REVIEWED_CONNECTOR_SCOPES.get(connector_id)
+        if expected_scopes is None:
+            raise _unavailable("Only reviewed Google readonly connectors are accepted by this client.")
 
         method = getattr(self._binding, "issue_access_lease", None)
         if not callable(method):
@@ -143,7 +150,7 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
             raise _unavailable("Control Plane Google OAuth access lease does not match the requested binding.")
 
         scopes = lease.get("scopes")
-        if not isinstance(scopes, list) or scopes != [DRIVE_READONLY_SCOPE]:
+        if not isinstance(scopes, list) or scopes != list(expected_scopes):
             raise _unavailable("Control Plane Google OAuth access lease scope is invalid.")
 
         now = self._clock()
@@ -158,7 +165,7 @@ class CloudflareControlPlaneGoogleOAuthAccessLeaseClient:
             actor_ref=_safe_ref(lease.get("actor_ref"), "actor_ref"),
             account_ref=_safe_ref(lease.get("account_ref"), "account_ref"),
             workspace_ref=_safe_ref(lease.get("workspace_ref"), "workspace_ref"),
-            scopes=(DRIVE_READONLY_SCOPE,),
+            scopes=expected_scopes,
             expires_at=_expires_at(lease.get("expires_at"), now=now),
         )
 

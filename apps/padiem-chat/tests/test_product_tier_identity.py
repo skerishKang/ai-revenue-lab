@@ -43,7 +43,7 @@ async def test_identity_questions_answer_with_padiem_tier_without_provider_call(
     assert payload["answer"] == expected
     assert calls == 0
     serialized = json.dumps(payload, ensure_ascii=False).lower()
-    for hidden in ("kilo", "poolside", "laguna", "nvidia", "nemotron", "tencent", "hy3", "minimax"):
+    for hidden in ("kilo", "poolside", "laguna", "nvidia", "nemotron", "tencent", "hy3", "minimax", "sensenova", "b-ai", "b.ai", "qwen"):
         assert hidden not in serialized
 
 
@@ -103,7 +103,6 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         for alias, expected_model in (
             ("/plus", LOW_B14_MODEL_ID),
-            ("/pro", MEDIUM_B14_MODEL_ID),
         ):
             response = await client.post(
                 "/api/chat",
@@ -120,13 +119,23 @@ async def test_executable_tier_selectors_survive_browser_validation_then_strip_b
 
 
 @pytest.mark.asyncio
-async def test_held_max_rejects_ordinary_execution_before_b14_provider_call():
+@pytest.mark.parametrize(
+    ("alias", "expected_hold_model"),
+    [
+        ("/pro", MEDIUM_B14_MODEL_ID),
+        ("/max", HIGH_B14_MODEL_ID),
+    ],
+)
+async def test_held_tiers_reject_ordinary_execution_before_b14_provider_call(
+    alias: str,
+    expected_hold_model: str,
+):
     calls = 0
 
     async def handler(request: httpx.Request) -> httpx.Response:
         nonlocal calls
         calls += 1
-        raise AssertionError("held Max must fail before B14/provider")
+        raise AssertionError("held tier must fail before B14/provider")
 
     app = create_app(
         Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
@@ -135,14 +144,14 @@ async def test_held_max_rejects_ordinary_execution_before_b14_provider_call():
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         response = await client.post(
             "/api/chat",
-            json={"messages": [{"role": "user", "content": "/max 테스트 질문"}], "mode": "auto"},
+            json={"messages": [{"role": "user", "content": f"{alias} 테스트 질문"}], "mode": "auto"},
         )
 
     assert response.status_code == 422
     payload = response.json()
     assert payload["error"]["code"] == "tier_unavailable"
     assert calls == 0
-    assert HIGH_B14_MODEL_ID == "padiem-profile/max-hold"
+    assert expected_hold_model in {MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID}
 
 
 @pytest.mark.asyncio

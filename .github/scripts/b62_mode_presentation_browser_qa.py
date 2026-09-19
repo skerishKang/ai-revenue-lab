@@ -33,13 +33,13 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     pill = page.locator(".model-pill")
     await pill.wait_for(state="visible")
     await page.wait_for_function(
-        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Auto'"
+        "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
     )
 
     if await pill.get_attribute("role") != "button":
-        raise AssertionError(f"mode pill is not keyboard-operable at {name}")
+        raise AssertionError(f"tier pill is not keyboard-operable at {name}")
     if await pill.get_attribute("aria-haspopup") != "dialog":
-        raise AssertionError(f"mode pill does not advertise dialog at {name}")
+        raise AssertionError(f"tier pill does not advertise dialog at {name}")
 
     await pill.focus()
     await page.keyboard.press("Enter")
@@ -47,47 +47,57 @@ async def _exercise(page: Page, *, name: str) -> dict[str, Any]:
     await panel.wait_for(state="visible")
 
     options = panel.locator("[data-mode-value]")
-    if await options.count() != 4:
-        raise AssertionError(f"expected four product mode rows at {name}")
+    if await options.count() != 1:
+        raise AssertionError(f"expected exactly one product tier row at {name}")
 
-    auto = panel.locator('[data-mode-value="auto"]')
-    fast = panel.locator('[data-mode-value="fast"]')
-    balanced = panel.locator('[data-mode-value="balanced"]')
-    deep = panel.locator('[data-mode-value="deep"]')
-    if await auto.is_disabled():
-        raise AssertionError(f"Auto must be product-available at {name}")
-    if await auto.get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"Auto must remain selected at {name}")
-    for locator, mode in ((fast, "fast"), (balanced, "balanced"), (deep, "deep")):
-        if not await locator.is_disabled():
-            raise AssertionError(f"{mode} must remain preview-only until backend mapping is trusted at {name}")
+    plus = panel.locator('[data-mode-value="plus"]')
+    if await plus.is_disabled():
+        raise AssertionError(f"Plus must be selectable at {name}")
+    if await plus.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Plus must be the default selected tier at {name}")
+    if await panel.locator('[data-mode-value="pro"]').count() != 0:
+        raise AssertionError(f"Pro must remain browser-hidden at {name}")
+    if await panel.locator('[data-mode-value="max"]').count() != 0:
+        raise AssertionError(f"Max must remain browser-hidden at {name}")
 
     truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
-    if "실제 모델 연결 전까지 선택할 수 없습니다" not in truth:
-        raise AssertionError(f"truth boundary copy missing at {name}: {truth!r}")
+    if "모델·제공자 선택은 파디엠 서버가 관리" not in truth:
+        raise AssertionError(f"server-authority truth copy missing at {name}: {truth!r}")
 
-    auto_box = await auto.bounding_box()
-    if not auto_box or auto_box["height"] < 44:
-        raise AssertionError(f"Auto mode target too small at {name}: {auto_box}")
+    plus_box = await plus.bounding_box()
+    if not plus_box or plus_box["height"] < 44:
+        raise AssertionError(f"Plus tier target too small at {name}: {plus_box}")
+
+    await plus.click()
+    if not await panel.is_hidden():
+        raise AssertionError(f"tier selection must close panel at {name}")
+
+    await pill.focus()
+    await page.keyboard.press("Enter")
+    await panel.wait_for(state="visible")
+    plus = panel.locator('[data-mode-value="plus"]')
+    if await plus.get_attribute("aria-pressed") != "true":
+        raise AssertionError(f"Plus selection did not remain active at {name}")
 
     await page.keyboard.press("Escape")
     if not await panel.is_hidden():
-        raise AssertionError(f"Escape did not close mode panel at {name}")
+        raise AssertionError(f"Escape did not close tier panel at {name}")
     focused = await page.evaluate("document.activeElement === document.querySelector('.model-pill')")
     if not focused:
-        raise AssertionError(f"focus did not return to mode control at {name}")
+        raise AssertionError(f"focus did not return to tier control at {name}")
 
     await _no_horizontal_overflow(page, name)
     return {
-        "mode": "auto",
-        "fast": "preview_only",
-        "balanced": "preview_only",
-        "deep": "preview_only",
+        "default_tier": "plus",
+        "selected_tier": "plus",
+        "plus": "available",
+        "pro": "browser_hidden",
+        "max": "browser_hidden",
+        "server_authority_copy": True,
         "escape_focus_return": True,
         "horizontal_overflow": False,
         "status": "PASS",
     }
-
 
 async def main() -> None:
     report: dict[str, Any] = {"base_url": BASE_URL, "views": {}}
@@ -131,13 +141,19 @@ async def _english_probe() -> dict[str, Any]:
             await page.goto(f"{BASE_URL}/?theme=light&lang=en", wait_until="domcontentloaded", timeout=30_000)
             await page.locator("#messageInput").wait_for(state="visible")
             await page.wait_for_function(
-                "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Auto'"
+                "() => document.querySelector('.model-pill span:last-child')?.textContent === 'Padiem Plus'"
             )
             await page.locator(".model-pill").click()
-            truth = (await page.locator("[data-mode-truth]").inner_text()).strip()
-            if "cannot be selected until trusted backend mappings are active" not in truth:
-                raise AssertionError(f"English mode truth copy missing: {truth!r}")
-            return {"locale": "en", "status": "PASS"}
+            panel = page.locator("#modePresentationPanel")
+            await panel.wait_for(state="visible")
+            if await panel.locator("[data-mode-value]").count() != 1:
+                raise AssertionError("English tier panel must expose exactly Plus")
+            if await panel.locator('[data-mode-value="pro"]').count() != 0:
+                raise AssertionError("English tier panel must keep Pro browser-hidden")
+            truth = (await panel.locator("[data-mode-truth]").inner_text()).strip()
+            if "Provider and model routing stays server-managed" not in truth:
+                raise AssertionError(f"English tier truth copy missing: {truth!r}")
+            return {"locale": "en", "default_tier": "plus", "status": "PASS"}
         finally:
             await browser.close()
 

@@ -1,0 +1,248 @@
+name: B62 Identity Shadow D1 Readonly Diagnostic
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-identity-shadow-d1-readonly-diagnostic
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  D1_BINDING: PADIEM_CHAT_DB
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate bounded readonly diagnostic contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b62-identity-shadow-d1-readonly-diagnostic.yml").read_text(encoding="utf-8")
+          required = [
+              "sqlite_master",
+              "pragma_table_info",
+              "control_plane_identity_shadow",
+              "password_credentials",
+              "TEST_USER_EXISTS=",
+              "TEST_USER_SHADOW_EXISTS=",
+              "ROW_VALUE_OUTPUT=0",
+              "SESSION_VALUE_OUTPUT=0",
+              "PRODUCTION_MUTATION=0",
+          ]
+          for token in required:
+              if token not in workflow:
+                  raise SystemExit(f"missing readonly diagnostic invariant: {token}")
+
+          # This diagnostic may POST SQL to the D1 query endpoint, but the SQL itself
+          # is restricted to SELECT-only metadata/existence checks.
+          forbidden_sql = (
+              "INSERT " + "INTO",
+              "UP" + "DATE ",
+              "DE" + "LETE FROM",
+              "DR" + "OP TABLE",
+              "AL" + "TER TABLE",
+              "CREATE " + "TABLE",
+              "CREATE " + "INDEX",
+          )
+          query_region = workflow.split("Read live shadow schema and bounded test-account existence", 1)[-1]
+          upper = query_region.upper()
+          for token in forbidden_sql:
+              if token in upper:
+                  raise SystemExit(f"mutation SQL forbidden in readonly diagnostic: {token}")
+
+          print("B62_IDENTITY_SHADOW_DIAGNOSTIC_SOURCE=PASS")
+          print("D1_QUERY_MODE=READ_ONLY")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  production-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve live PADIEM_CHAT_DB binding without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b62-settings-shadow-diagnostic.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" \
+            -o "${settings}"
+
+          DB_ID="$(python - "${settings}" "${D1_BINDING}" <<'PY'
+          import json, re, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          bindings = payload.get("result", {}).get("bindings", []) if payload.get("success") is True else []
+          hits = [b for b in bindings if b.get("type") == "d1" and b.get("name") == sys.argv[2]]
+          if len(hits) != 1:
+              raise SystemExit("expected exactly one live PADIEM_CHAT_DB binding")
+          database_id = hits[0].get("id")
+          if not isinstance(database_id, str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}", database_id):
+              raise SystemExit("live PADIEM_CHAT_DB binding has invalid database id")
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_PADIEM_CHAT_DB_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - name: Read live shadow schema and bounded test-account existence
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+
+          schema_payload="${RUNNER_TEMP}/shadow-schema-query.json"
+          python - "${schema_payload}" <<'PY'
+          import json, sys
+          sql = """
+          SELECT
+            EXISTS(
+              SELECT 1 FROM sqlite_master
+              WHERE type='table' AND name='control_plane_identity_shadow'
+            ) AS table_exists,
+            (
+              SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')
+            ) AS column_count,
+            (
+              SELECT COUNT(*) FROM pragma_table_info('control_plane_identity_shadow')
+              WHERE name IN (
+                'product_user_id','canonical_subject_id','auth_session_id',
+                'session_revision','session_state','session_expires_at','observed_at'
+              )
+            ) AS expected_column_count,
+            EXISTS(
+              SELECT 1 FROM sqlite_master
+              WHERE type='index' AND name='idx_control_plane_identity_shadow_session'
+            ) AS session_index_exists;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+          schema_response="${RUNNER_TEMP}/shadow-schema-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${schema_payload}" -o "${schema_response}"
+
+          jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${schema_response}" >/dev/null
+
+          table_exists="$(jq -r '.result[0].results[0].table_exists' "${schema_response}")"
+          column_count="$(jq -r '.result[0].results[0].column_count' "${schema_response}")"
+          expected_count="$(jq -r '.result[0].results[0].expected_column_count' "${schema_response}")"
+          index_exists="$(jq -r '.result[0].results[0].session_index_exists' "${schema_response}")"
+
+          if [ "${table_exists}" = "1" ] && [ "${column_count}" = "7" ] && [ "${expected_count}" = "7" ] && [ "${index_exists}" = "1" ]; then
+            echo "B62_D1_MIGRATION_007_SCHEMA=EXACT"
+
+            account_payload="${RUNNER_TEMP}/shadow-account-exists-query.json"
+            python - "${account_payload}" <<'PY'
+          import json, sys
+          # Only boolean existence is returned. No user id, email, canonical subject,
+          # session id, tenant id, or row contents are selected.
+          sql = """
+          SELECT
+            EXISTS(
+              SELECT 1 FROM password_credentials
+              WHERE username='skerish1' COLLATE NOCASE
+            ) AS test_user_exists,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+            ) AS test_user_shadow_exists;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+            account_response="${RUNNER_TEMP}/shadow-account-exists-response.json"
+            curl -fsS -X POST "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              --data-binary "@${account_payload}" -o "${account_response}"
+            jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${account_response}" >/dev/null
+
+            test_user_exists="$(jq -r '.result[0].results[0].test_user_exists' "${account_response}")"
+            test_user_shadow_exists="$(jq -r '.result[0].results[0].test_user_shadow_exists' "${account_response}")"
+            case "${test_user_exists}" in 0|1) ;; *) exit 1;; esac
+            case "${test_user_shadow_exists}" in 0|1) ;; *) exit 1;; esac
+            [ "${test_user_exists}" = "1" ] && echo "TEST_USER_EXISTS=YES" || echo "TEST_USER_EXISTS=NO"
+            [ "${test_user_shadow_exists}" = "1" ] && echo "TEST_USER_SHADOW_EXISTS=YES" || echo "TEST_USER_SHADOW_EXISTS=NO"
+          elif [ "${table_exists}" = "0" ]; then
+            echo "B62_D1_MIGRATION_007_SCHEMA=MISSING"
+            echo "TEST_USER_EXISTS=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_EXISTS=IMPOSSIBLE_TABLE_MISSING"
+          else
+            echo "B62_D1_MIGRATION_007_SCHEMA=DRIFT"
+            echo "TEST_USER_EXISTS=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_EXISTS=UNKNOWN_SCHEMA_DRIFT"
+          fi
+
+          echo "ROW_VALUE_OUTPUT=0"
+          echo "SESSION_VALUE_OUTPUT=0"
+          echo "CANONICAL_ID_OUTPUT=0"
+          echo "TENANT_ID_OUTPUT=0"
+          echo "D1_QUERY_MODE=READ_ONLY"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Publish bounded diagnostic evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B62 identity shadow D1 readonly diagnostic"
+            echo
+            echo "- exact main: `${GITHUB_SHA}`"
+            echo "- row values emitted: no"
+            echo "- session/canonical/tenant identifiers emitted: no"
+            echo "- Production mutation: 0"
+          } >> "${GITHUB_STEP_SUMMARY}"

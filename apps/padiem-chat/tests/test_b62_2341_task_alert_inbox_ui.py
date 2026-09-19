@@ -65,7 +65,7 @@ def test_factory_reuses_existing_d1_authority():
 
 
 def test_mobile_and_theme_contracts_use_shared_tokens():
-    assert "@media (max-width: 760px)" in CSS
+    assert "@media (max-width: 920px)" in CSS
     assert "--claw-" not in CSS.split("/* #2341 task/alert inbox */", 1)[-1]
     assert "var(--" in CSS.split("/* #2341 task/alert inbox */", 1)[-1]
 

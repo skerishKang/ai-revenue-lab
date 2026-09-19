@@ -48,8 +48,37 @@ class CloudflareD1ConnectorGrantStore:
         self._binding = binding
 
     async def _all(self, sql: str, *params: Any) -> list[Mapping[str, Any]]:
-        rows = await _maybe_await(self._binding.prepare(sql).bind(*params).all())
-        return [dict(row) for row in rows] if rows else []
+        result = await _maybe_await(self._binding.prepare(sql).bind(*params).all())
+
+        # Cloudflare D1 all()/run() returns a D1Result object whose query rows
+        # live under ``results``. Python Workers may expose that collection as
+        # a JS proxy, in which case ``to_py()`` materializes the row list.
+        # Keep list/tuple compatibility for existing isolated test doubles.
+        if isinstance(result, Mapping):
+            rows: Any = result.get("results")
+        elif isinstance(result, (list, tuple)):
+            rows = result
+        else:
+            rows = getattr(result, "results", None)
+
+        to_py = getattr(rows, "to_py", None)
+        if callable(to_py):
+            rows = to_py()
+
+        if rows is None:
+            raise TypeError("D1 result is missing results")
+        if not isinstance(rows, (list, tuple)):
+            raise TypeError("D1 results must be a row sequence")
+
+        normalized: list[Mapping[str, Any]] = []
+        for row in rows:
+            row_to_py = getattr(row, "to_py", None)
+            if callable(row_to_py):
+                row = row_to_py()
+            if not isinstance(row, Mapping):
+                raise TypeError("D1 result row must be a mapping")
+            normalized.append(dict(row))
+        return normalized
 
     async def load_gmail_grants(self) -> dict[str, GmailGrant]:
         sql = (

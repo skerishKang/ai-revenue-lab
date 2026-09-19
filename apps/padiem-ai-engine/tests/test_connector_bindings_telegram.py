@@ -19,6 +19,7 @@ from padiem_ai_core.telegram_capability import (
     TELEGRAM_GET_BOT_INFO_TOOL_ID,
     TELEGRAM_GET_CHAT_INFO_TOOL_ID,
     TELEGRAM_READONLY_AUTH_SCOPE,
+    TELEGRAM_SEND_AUTH_SCOPE,
     TelegramCapability,
     TelegramContractError,
 )
@@ -35,7 +36,11 @@ from app.connector_bindings import (
     gmail_tool_binding,
     telegram_tool_binding,
 )
-from app.tool_projection import EngineToolBinding, EngineToolProjectionError
+from app.tool_projection import (
+    EngineToolBinding,
+    EngineToolProjectionError,
+    project_redacted_tool_output,
+)
 
 BINDING_REF = "bind:telegram_engine"
 ACTOR_REF = "actor_1"
@@ -243,5 +248,76 @@ def test_binding_authority_carries_readonly_scope_only() -> None:
     binding = telegram_tool_binding(grant=telegram_grant(), port=port)
     authority = binding.authorities[TELEGRAM_AGENT_ID]
     scopes = tuple(authority.authorization.granted_auth_scopes)
-    assert scopes == (TelegramCapability.READ,)
-    assert all(str(scope) != TELEGRAM_READONLY_AUTH_SCOPE + ".send" for scope in scopes)
+    # The runtime compares spec.auth_scope tokens ("telegram.readonly"), not the
+    # raw capability value ("read"); granting READ must project exactly the
+    # readonly scope and never the send scope.
+    assert scopes == (TELEGRAM_READONLY_AUTH_SCOPE,)
+    assert TELEGRAM_SEND_AUTH_SCOPE not in scopes
+
+
+def test_readonly_grant_executes_bot_info_tool_through_runtime() -> None:
+    # Canary blocker regression (#2712): the runtime compares spec.auth_scope
+    # tokens, so a READ grant must reach the trusted port instead of failing
+    # with tool_auth_scope_missing at the scope gate.
+    from padiem_ai_core.tool_runtime import ToolInvocation
+
+    port = FakeTelegramPort()
+    binding = telegram_tool_binding(grant=telegram_grant(), port=port)
+    authority = binding.authorities[TELEGRAM_AGENT_ID]
+    result = run(
+        binding.tool_runtime.execute(
+            ToolInvocation(tool_id=TELEGRAM_GET_BOT_INFO_TOOL_ID, arguments={}),
+            authority.compiled.runtime_profile,
+            authority.authorization,
+        )
+    )
+    assert result.tool_id == TELEGRAM_GET_BOT_INFO_TOOL_ID
+    assert result.output["result_status"] == "OK"
+    assert len(port.calls) == 1
+    assert port.calls[0]["path"] == "/getMe"
+    assert port.calls[0]["required_scopes"] == (TELEGRAM_READONLY_AUTH_SCOPE,)
+
+
+def test_real_getme_envelope_classifies_as_canary_canonical() -> None:
+    # Cross-layer contract (#2712): the production read canary classifies the
+    # EXACT Core envelope; the source round shipped them drifting (missing
+    # raw_credentials_present) and every layer's own tests stayed green.
+    import importlib.util
+    from pathlib import Path
+
+    from padiem_ai_core.tool_runtime import ToolInvocation
+
+    script = Path(__file__).resolve().parents[1] / "scripts" / "a15_telegram_read_production_canary.py"
+    spec = importlib.util.spec_from_file_location("a15_read_canary_contract", script)
+    assert spec is not None and spec.loader is not None
+    canary = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(canary)
+
+    port = FakeTelegramPort()
+    binding = telegram_tool_binding(grant=telegram_grant(), port=port)
+    authority = binding.authorities[TELEGRAM_AGENT_ID]
+    result = run(
+        binding.tool_runtime.execute(
+            ToolInvocation(tool_id=TELEGRAM_GET_BOT_INFO_TOOL_ID, arguments={}),
+            authority.compiled.runtime_profile,
+            authority.authorization,
+        )
+    )
+    # Same public projection the production route applies: secret-shaped keys
+    # such as bot_token_present come back as the canonical [redacted] marker,
+    # which the canary classifier must accept.
+    redacted, truncated = project_redacted_tool_output(result.output_copy())
+    payload = {
+        "ok": True,
+        "tool": {
+            "canonical_tool_id": canary.TOOL_ID,
+            "status": "completed",
+            "output": redacted,
+            "output_truncated": truncated,
+        },
+    }
+    bot_identity_present, truncated_fact = canary.classify_success(payload)
+    assert bot_identity_present is True
+    assert truncated_fact is False
+    assert redacted["bot"]["bot_token_present"] == "[redacted]"
+    assert redacted["raw_credentials_present"] == "[redacted]"

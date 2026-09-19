@@ -146,7 +146,9 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link {
   height: auto !important;
   min-height: 44px !important;
   display: flex !important;
-  place-items: initial !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-wrap: nowrap !important;
   gap: 10px !important;
   margin: 0 !important;
   padding: 0 12px !important;
@@ -158,7 +160,11 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link::befo
 }
 
 html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link .home-link-mark {
-  display: inline !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  line-height: 1 !important;
 }
 
 html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data-locale-key="home-link"] {
@@ -169,7 +175,8 @@ html[data-theme="padiem-glass"] body .app-shell .sidebar-bottom .home-link [data
   margin: 0 !important;
   overflow: visible !important;
   clip: auto !important;
-  white-space: normal !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
 }
 
 /* B62 #1737 — one reusable first-party destructive confirmation surface. */

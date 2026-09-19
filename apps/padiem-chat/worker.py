@@ -11,7 +11,10 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
-from app import httpx_compat as httpx
+# The Core B14StreamingClient owns a real httpx.AsyncClient.  Its injected
+# Service-Binding transport must use that same httpx Request/Response/stream
+# type family; app.httpx_compat is only for app-owned JS-fetch clients.
+import httpx
 from workers import Request, Response, WorkerEntrypoint
 
 from app.claw_p01_composition import build_claw_p01_adapter_with_diagnostic
@@ -202,12 +205,19 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
                 request=request,
             ) from exc
 
-        service_request = Request(
-            str(request.url),
-            method="POST",
-            headers={"Content-Type": "application/json"},
-            body=body_text,
-        )
+        try:
+            service_request = Request(
+                str(request.url),
+                method="POST",
+                headers={"Content-Type": "application/json"},
+                body=body_text,
+            )
+        except Exception as exc:
+            raise httpx.RequestError(
+                "Business 14 streaming request could not be constructed.",
+                request=request,
+            ) from exc
+
         try:
             service_response = await self.binding.fetch(service_request.js_object)
         except Exception as exc:
@@ -226,14 +236,307 @@ class CloudflareB14StreamingServiceTransport(httpx.AsyncBaseTransport):
                 request=request,
             ) from exc
 
-        headers: dict[str, str] = {}
-        if content_type is not None:
-            headers["content-type"] = str(content_type)
+        try:
+            headers: dict[str, str] = {}
+            if content_type is not None:
+                headers["content-type"] = str(content_type)
+
+            return httpx.Response(
+                status_code=status_code,
+                headers=headers,
+                stream=_CloudflareReadableByteStream(response_body),
+                request=request,
+            )
+        except Exception as exc:
+            raise httpx.ProtocolError(
+                "Business 14 Service Binding response could not be adapted.",
+                request=request,
+            ) from exc
+
+
+class _CloudflareExternalFetchByteStream(httpx.AsyncByteStream):
+    """Expose a JavaScript fetch Response body to real httpx incrementally."""
+
+    def __init__(
+        self,
+        body: Any,
+        *,
+        request: httpx.Request,
+        timeout_signal: Any | None,
+    ):
+        if body is None:
+            raise httpx.ProtocolError(
+                "Worker fetch response body is unavailable.",
+                request=request,
+            )
+        self._body = body
+        self._request = request
+        self._timeout_signal = timeout_signal
+        self._reader: Any | None = None
+        self._closed = False
+        self._finished = False
+
+    def _reader_or_create(self) -> Any:
+        if self._reader is None:
+            try:
+                self._reader = self._body.getReader()
+            except Exception as exc:
+                raise httpx.ReadError(
+                    "Worker fetch response body reader is unavailable.",
+                    request=self._request,
+                ) from exc
+        return self._reader
+
+    def _timed_out(self) -> bool:
+        if self._timeout_signal is None:
+            return False
+        try:
+            return bool(self._timeout_signal.aborted)
+        except Exception:
+            return False
+
+    async def __aiter__(self):
+        reader = self._reader_or_create()
+        try:
+            while True:
+                result = await reader.read()
+                if bool(getattr(result, "done", False)):
+                    self._finished = True
+                    return
+                chunk = _CloudflareReadableByteStream._to_bytes(
+                    getattr(result, "value", None)
+                )
+                if chunk:
+                    yield chunk
+        except httpx.HTTPError:
+            raise
+        except Exception as exc:
+            if self._timed_out():
+                raise httpx.ReadTimeout(
+                    "Worker fetch timed out while reading the response body.",
+                    request=self._request,
+                ) from exc
+            raise httpx.ReadError(
+                "Worker fetch response body read failed.",
+                request=self._request,
+            ) from exc
+
+    async def aclose(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        reader = self._reader
+        if reader is None:
+            return
+        try:
+            if not self._finished:
+                cancel = getattr(reader, "cancel", None)
+                if callable(cancel):
+                    await cancel()
+        except Exception:
+            pass
+        finally:
+            release_lock = getattr(reader, "releaseLock", None)
+            if callable(release_lock):
+                try:
+                    release_lock()
+                except Exception:
+                    pass
+
+
+class _CloudflareEmptyAsyncByteStream(httpx.AsyncByteStream):
+    async def __aiter__(self):
+        if False:
+            yield b""
+
+    async def aclose(self) -> None:
+        return None
+
+
+class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
+    """Real-httpx transport backed by Workers' JavaScript fetch API.
+
+    Core Firecrawl/Daum providers own a real httpx.AsyncClient, so this adapter
+    deliberately stays in the same real-httpx type family while replacing only
+    the unsupported socket-backed network boundary with Workers fetch.
+    """
+
+    def __init__(
+        self,
+        *,
+        fetch_impl: Any | None = None,
+        abort_signal_api: Any | None = None,
+    ):
+        if fetch_impl is None or abort_signal_api is None:
+            try:
+                from js import AbortSignal as js_abort_signal  # type: ignore
+                from js import fetch as js_fetch  # type: ignore
+            except ImportError as exc:
+                raise RuntimeError(
+                    "Worker external HTTP transport requires the Workers JS runtime."
+                ) from exc
+            fetch_impl = js_fetch if fetch_impl is None else fetch_impl
+            abort_signal_api = (
+                js_abort_signal if abort_signal_api is None else abort_signal_api
+            )
+        self._fetch = fetch_impl
+        self._abort_signal_api = abort_signal_api
+
+    @staticmethod
+    def _timeout_seconds(request: httpx.Request) -> float | None:
+        timeout = request.extensions.get("timeout")
+        if not isinstance(timeout, dict):
+            return None
+        # Core web providers put the full provider deadline in the read timeout.
+        # Treat it as one fetch/body deadline because Workers fetch does not
+        # expose separate connect/read socket phases.
+        raw = timeout.get("read")
+        if raw is None:
+            raw = timeout.get("connect")
+        try:
+            seconds = float(raw)
+        except (TypeError, ValueError):
+            return None
+        return seconds if seconds > 0 else None
+
+    def _timeout_signal(self, request: httpx.Request) -> Any | None:
+        seconds = self._timeout_seconds(request)
+        if seconds is None:
+            return None
+        milliseconds = max(1, int(round(seconds * 1000)))
+        try:
+            return self._abort_signal_api.timeout(milliseconds)
+        except Exception as exc:
+            raise httpx.RequestError(
+                "Worker fetch timeout signal is unavailable.",
+                request=request,
+            ) from exc
+
+    @staticmethod
+    async def _headers(
+        js_headers: Any,
+        *,
+        request: httpx.Request,
+    ) -> dict[str, str]:
+        try:
+            result: dict[str, str] = {}
+            entries = js_headers.entries()
+            while True:
+                entry = entries.next()
+                if hasattr(entry, "__await__"):
+                    entry = await entry
+                if bool(getattr(entry, "done", False)):
+                    break
+                pair = getattr(entry, "value", None)
+                if pair is None:
+                    continue
+                result[str(pair[0])] = str(pair[1])
+            return result
+        except Exception:
+            pass
+
+        try:
+            result = {}
+            for key in js_headers:
+                result[str(key)] = str(js_headers.get(key))
+            return result
+        except Exception as exc:
+            raise httpx.ProtocolError(
+                "Worker external fetch returned malformed response headers.",
+                request=request,
+            ) from exc
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        try:
+            body = bytes(await request.aread())
+            transport_managed = {
+                "host",
+                "content-length",
+                "transfer-encoding",
+                "connection",
+            }
+            headers = {
+                str(k): str(v)
+                for k, v in request.headers.items()
+                if str(k).lower() not in transport_managed
+            }
+        except Exception as exc:
+            raise httpx.RequestError(
+                "Worker fetch request could not be encoded.",
+                request=request,
+            ) from exc
+
+        init: dict[str, Any] = {
+            "method": request.method,
+            "headers": headers,
+            "redirect": "manual",
+        }
+        if body:
+            init["body"] = body
+
+        timeout_signal = self._timeout_signal(request)
+        if timeout_signal is not None:
+            init["signal"] = timeout_signal
+
+        try:
+            try:
+                from js import Object as _JsObject  # type: ignore
+                from pyodide.ffi import to_js as _to_js  # type: ignore
+            except (ImportError, ModuleNotFoundError):
+                js_init = init
+            else:
+                js_init = _to_js(
+                    init,
+                    dict_converter=_JsObject.fromEntries,
+                    create_pyproxies=False,
+                )
+            js_response = await self._fetch(str(request.url), js_init)
+        except Exception as exc:
+            timed_out = False
+            if timeout_signal is not None:
+                try:
+                    timed_out = bool(timeout_signal.aborted)
+                except Exception:
+                    timed_out = False
+            if timed_out:
+                raise httpx.ReadTimeout(
+                    "Worker fetch timed out before response headers.",
+                    request=request,
+                ) from exc
+            raise httpx.ConnectError(
+                "Worker external fetch is unavailable.",
+                request=request,
+            ) from exc
+
+        try:
+            status_code = int(js_response.status)
+            response_headers = await self._headers(
+                js_response.headers,
+                request=request,
+            )
+            response_body = getattr(js_response, "body", None)
+        except httpx.ProtocolError:
+            raise
+        except Exception as exc:
+            raise httpx.ProtocolError(
+                "Worker external fetch returned malformed response metadata.",
+                request=request,
+            ) from exc
+
+        stream: httpx.AsyncByteStream
+        if response_body is None:
+            stream = _CloudflareEmptyAsyncByteStream()
+        else:
+            stream = _CloudflareExternalFetchByteStream(
+                response_body,
+                request=request,
+                timeout_signal=timeout_signal,
+            )
 
         return httpx.Response(
             status_code=status_code,
-            headers=headers,
-            stream=_CloudflareReadableByteStream(response_body),
+            headers=response_headers,
+            stream=stream,
             request=request,
         )
 
@@ -281,7 +584,14 @@ class Default(WorkerEntrypoint):
                     if b14_binding is not None
                     else None
                 )
-                _worker_app = create_app(settings=settings, history_store=history_store, d1_binding=db_binding, r2_binding=r2_binding)
+                web_transport = CloudflareExternalHttpTransport()
+                _worker_app = create_app(
+                    settings=settings,
+                    history_store=history_store,
+                    d1_binding=db_binding,
+                    r2_binding=r2_binding,
+                    web_transport=web_transport,
+                )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
                 _worker_app.state.project_file_store = project_file_store

@@ -44,6 +44,7 @@ from app.tool_projection import (
     TOOL_EXECUTE_PATH,
     TOOL_RESUME_PATH,
     EngineToolBinding,
+    EngineToolProjectionError,
     TrustedToolAuthority,
 )
 
@@ -379,6 +380,30 @@ async def test_unregistered_tool_fails_closed(fx: Fixture):
     assert fx.total() == 0
 
 
+# #2527 regression: the A11 production smoke read a 400 tool_arguments_too_large
+# from a probe whose evidence was meant to come from trusted tool resolution. The
+# parse-time global argument ceiling is enforced by parse_tool_execution_request,
+# which runs before binding, Agent authority, and registry resolution inside
+# _prepare_invocation, so an unregistered canonical tool id behind an oversized
+# payload must still fail at the ceiling: 400 tool_arguments_too_large, never
+# 403 tool_not_registered, and with zero provider/handler calls.
+OVERSIZED_TOOL_ARGUMENTS = {"query": "a11-smoke-" + ("0" * 70_000)}
+
+
+async def test_oversized_arguments_unregistered_tool_fails_at_parse_ceiling(
+    fx: Fixture,
+):
+    response = await fx.service.execute_payload(
+        execute_payload("tool:acme:ghost@1", OVERSIZED_TOOL_ARGUMENTS)
+    )
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == "tool_arguments_too_large"
+    assert response.body["error"]["message"] == (
+        "Tool arguments exceed the bounded Core argument ceiling."
+    )
+    assert fx.total() == 0
+
+
 async def test_unbound_agent_fails_closed(fx: Fixture):
     response = await fx.service.execute_payload(
         execute_payload(agent_id="agent:acme:ghost@1")
@@ -392,6 +417,45 @@ async def test_unprovisioned_app_fails_closed(fx: Fixture):
     response = await fx.service.execute_payload(execute_payload(app_id=OTHER_APP))
     assert response.status_code == 503
     assert response.body["error"]["code"] == "tool_runtime_unavailable"
+    assert fx.total() == 0
+
+
+async def test_resolver_projection_error_preserves_bounded_code(fx: Fixture):
+    def invalid_binding(_app_id: str):
+        raise EngineToolProjectionError(
+            "invalid_tool_binding",
+            "Trusted tool binding is invalid.",
+            status_code=503,
+        )
+
+    service = ToolExecutionEngineService(tool_binding_resolver=invalid_binding)
+    response = await service.execute_payload(execute_payload())
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "invalid_tool_binding"
+    assert fx.total() == 0
+
+
+async def test_unexpected_resolver_failure_has_distinct_bounded_code(fx: Fixture):
+    def broken_binding(_app_id: str):
+        raise RuntimeError("private resolver detail must not cross the boundary")
+
+    service = ToolExecutionEngineService(tool_binding_resolver=broken_binding)
+    response = await service.execute_payload(execute_payload())
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "tool_binding_resolution_failed"
+    assert "private resolver detail" not in json.dumps(response.body)
+    assert fx.total() == 0
+
+
+async def test_missing_tool_runtime_dependency_has_distinct_bounded_code(fx: Fixture):
+    def missing_dependency(_app_id: str):
+        raise ImportError("private dependency import detail")
+
+    service = ToolExecutionEngineService(tool_binding_resolver=missing_dependency)
+    response = await service.execute_payload(execute_payload())
+    assert response.status_code == 503
+    assert response.body["error"]["code"] == "tool_runtime_dependency_unavailable"
+    assert "private dependency import detail" not in json.dumps(response.body)
     assert fx.total() == 0
 
 

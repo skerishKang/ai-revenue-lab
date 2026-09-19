@@ -151,7 +151,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         self.assertEqual([event.sequence for event in result.events], [1, 2, 3])
         self.assertEqual(transport.requests[0]["url"], "https://padiem-ai-engine.internal/internal/v1/orchestrate")
 
-    def test_outgoing_payload_pins_approved_free_model_only(self) -> None:
+    def test_outgoing_payload_pins_approved_plus_model_only(self) -> None:
         _, request = _build_request()
         transport = _ok_transport(_public_result(request))
 
@@ -165,7 +165,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         )
         self.assertEqual(payload["app_id"], P01_APP_ID)
         self.assertEqual(payload["agent"]["id"], P01_AGENT_ID)
-        self.assertEqual(payload["agent"]["model_policy"], {"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"})
+        self.assertEqual(payload["agent"]["model_policy"], {"model": "agnes-ai/agnes-3.0-flash"})
         self.assertNotIn("provider", json.dumps(payload).lower())
         self.assertNotIn("credential", payload["agent"])
         self.assertNotIn("api_key", json.dumps(payload).lower())
@@ -193,7 +193,7 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         bad_agent = replace(
             request.execution_request.agent,
             model_policy={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "b-ai/qwen3.8-flash",
                 "provider": "caller-provider",
             },
         )

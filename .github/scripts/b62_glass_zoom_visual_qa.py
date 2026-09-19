@@ -100,8 +100,8 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         )
 
     # Grow the current assistant answer deterministically. Conversation follow
-    # still tracks the newest tokens, but the Glass portrait must stay visually
-    # fixed because reading mode is keyed to explicit app conversation state.
+    # still tracks the newest tokens, while the Glass portrait may now perform
+    # the bounded answer-driven reveal requested for active reading.
     await page.evaluate(
         """
         () => {
@@ -139,8 +139,10 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         raise AssertionError(f"latest-answer growth was not followed at {name}: {followed}")
     if followed["latestBottom"] > followed["composerTop"] - 12:
         raise AssertionError(f"latest answer is covered by the fixed composer at {name}: {followed}")
-    if abs(float(followed["reveal"])) > 0.01:
-        raise AssertionError(f"Glass portrait reveal moved during active reading at {name}: {followed}")
+    if not 0.15 <= float(followed["reveal"]) <= 1.0:
+        raise AssertionError(
+            f"Glass answer-driven reveal must be visible and bounded during active reading at {name}: {followed}"
+        )
 
     # An intentional upward wheel is a user signal: auto-follow must pause.
     await page.wait_for_timeout(600)
@@ -190,12 +192,26 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     await page.evaluate(
         "window.scrollTo(0, Math.max(document.documentElement.scrollHeight, document.body.scrollHeight))"
     )
-    await page.wait_for_timeout(180)
-    resumed = await page.evaluate(
-        "window.__padiemConversationMotion.isFollowingLatest()"
-    )
-    if not resumed:
-        raise AssertionError(f"returning to conversation end did not resume follow at {name}")
+    try:
+        await page.wait_for_function(
+            "() => window.__padiemConversationMotion && window.__padiemConversationMotion.isFollowingLatest()",
+            timeout=2_500,
+            polling=50,
+        )
+    except Exception as exc:
+        resumed_state = await page.evaluate(
+            """
+            () => ({
+              following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
+              y: window.scrollY,
+              remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+                - (window.scrollY + window.innerHeight),
+            })
+            """
+        )
+        raise AssertionError(
+            f"returning to conversation end did not resume follow at {name}: {resumed_state}"
+        ) from exc
 
     await page.evaluate(
         """
@@ -221,8 +237,23 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     )
     if not resumed_state["following"] or resumed_state["remaining"] > 4:
         raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
-    if abs(float(resumed_state["reveal"])) > 0.01:
-        raise AssertionError(f"Glass portrait reveal resumed with scroll follow at {name}: {resumed_state}")
+    if not 0.15 <= float(resumed_state["reveal"]) <= 1.0:
+        raise AssertionError(
+            f"Glass answer-driven reveal must remain visible and bounded after follow resumes at {name}: {resumed_state}"
+        )
+
+    # After token activity stops, the portrait must settle back to the calm
+    # reading posture. Move the pointer out of the portrait zone first so this
+    # assertion isolates answer activity from the independent pointer driver.
+    await page.mouse.move(70, 80)
+    await page.wait_for_timeout(1900)
+    settled_reveal = await page.evaluate(
+        "() => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0"
+    )
+    if float(settled_reveal) > 0.03:
+        raise AssertionError(
+            f"Glass answer-driven reveal did not settle after inactivity at {name}: {settled_reveal}"
+        )
 
     return {
         "helper_loaded": True,
@@ -235,6 +266,7 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         "return_to_end_resumes": True,
         "glass_reveal_after_growth": followed["reveal"],
         "glass_reveal_after_resume": resumed_state["reveal"],
+        "glass_reveal_after_settle": settled_reveal,
         "sidebar_generic_recommendations_removed": True,
         "status": "PASS",
     }

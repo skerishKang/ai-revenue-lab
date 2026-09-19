@@ -1,0 +1,67 @@
+name: Cloudflare R2 Read-Only Auth Probe
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cloudflare-r2-readonly-auth-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Dedicated R2 credential authority established by #2377/#2388/#2394.
+      # Do not fall back to the shared Engine/Worker deployment credential.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.B62_R2_READONLY_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: 9be14bb7b8974e65d0afba647ab16932
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify credential presence without exposing value
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo 'R2_CREDENTIAL_PRESENT=NO'; exit 1; }
+          echo 'R2_CREDENTIAL_PRESENT=YES'
+          echo 'SECRET_VALUE_OUTPUT=0'
+
+      - name: Cloudflare whoami
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.130.0 whoami
+          echo 'R2_CREDENTIAL_VALID=YES'
+
+      - name: List R2 buckets read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.130.0 r2 bucket list
+          echo 'R2_BUCKET_LIST=PASS'
+
+      - name: Read padiem-media bucket info
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.130.0 r2 bucket info padiem-media
+          echo 'PADIEM_MEDIA_BUCKET_INFO=PASS'
+
+      - name: Mutation contract
+        if: always()
+        shell: bash
+        run: |
+          echo 'R2_MUTATION=NONE'
+          echo 'PRODUCTION_MUTATION=NONE'
+          echo 'SECRET_VALUE_OUTPUT=0'

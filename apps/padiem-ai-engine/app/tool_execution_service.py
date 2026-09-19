@@ -96,6 +96,12 @@ _TOOL_ERROR_STATUS: dict[str, int] = {
     "tool_timeout": 504,
     "tool_execution_failed": 500,
     "invalid_tool_output": 500,
+    "google_oauth_access_lease_unavailable": 503,
+    "google_drive_access_lease_mismatch": 503,
+    "google_drive_provider_unavailable": 503,
+    "google_drive_provider_credential_rejected": 503,
+    "google_drive_provider_boundary_failed": 503,
+    "google_drive_response_contract_mismatch": 502,
 }
 
 _TOOL_CANCEL_ALLOWED = frozenset({"app_id", "continuation_ref", "reason"})
@@ -182,15 +188,21 @@ class ToolExecutionEngineService:
             )
         try:
             binding = self._tool_binding_resolver(app_id)
-        except ServiceContractError:
-            # A resolver may surface a deployment-contract failure (e.g. a
-            # connector grant store outage as 503 connector_grants_unavailable).
-            # Let that distinct code/status reach the caller instead of being
-            # flattened into the generic tool_runtime_unavailable posture.
+        except (EngineToolProjectionError, ServiceContractError):
+            # A resolver may surface a deployment-contract failure or a bounded
+            # projection error from connector binding assembly. Preserve that
+            # reviewed code/status instead of flattening it into the generic
+            # tool_runtime_unavailable posture.
             raise
+        except ImportError as exc:
+            raise EngineToolProjectionError(
+                "tool_runtime_dependency_unavailable",
+                "The Engine Tool runtime production dependency is unavailable.",
+                status_code=503,
+            ) from exc
         except Exception as exc:
             raise EngineToolProjectionError(
-                "tool_runtime_unavailable",
+                "tool_binding_resolution_failed",
                 "The Engine Tool runtime binding resolver failed.",
                 status_code=503,
             ) from exc

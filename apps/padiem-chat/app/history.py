@@ -24,6 +24,10 @@ class HistoryForbidden(HistoryError):
     pass
 
 
+class HistoryConflict(HistoryError):
+    pass
+
+
 @dataclass(frozen=True, slots=True)
 class UserProfile:
     id: str
@@ -33,6 +37,15 @@ class UserProfile:
 
     def public_dict(self) -> dict[str, str]:
         return {"email": self.email, "name": self.display_name, "picture": self.picture_url}
+
+
+@dataclass(frozen=True, slots=True)
+class PasswordCredential:
+    user: UserProfile
+    username: str
+    password_hash: str
+    failed_attempts: int
+    locked_until: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +68,10 @@ class ProjectProfile:
 
 class HistoryStore(Protocol):
     async def upsert_google_user(self, subject: str, email: str, name: str, picture: str) -> UserProfile: ...
+    async def register_password_user(self, username: str, email: str, name: str, password_hash: str) -> UserProfile: ...
+    async def find_password_credential(self, identifier: str) -> PasswordCredential | None: ...
+    async def record_password_failure(self, user_id: str, failed_attempts: int, locked_until: str | None) -> None: ...
+    async def reset_password_failures(self, user_id: str) -> None: ...
     async def get_user(self, user_id: str) -> UserProfile | None: ...
     async def list_conversations(self, user_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def get_conversation(self, user_id: str, conversation_id: str) -> dict[str, Any] | None: ...
@@ -75,7 +92,13 @@ def _now_iso() -> str:
 
 
 def _user_id(subject: str) -> str:
+    # Compatibility invariant: existing Google users keep their exact IDs.
     digest = hashlib.sha256(("google:" + subject).encode("utf-8")).hexdigest()[:32]
+    return "usr_" + digest
+
+
+def _password_user_id(username: str) -> str:
+    digest = hashlib.sha256(("password:" + username.lower()).encode("utf-8")).hexdigest()[:32]
     return "usr_" + digest
 
 
@@ -260,11 +283,119 @@ class D1HistoryStore:
         )
         return UserProfile(uid, email, display, pic)
 
+    async def register_password_user(
+        self,
+        username: str,
+        email: str,
+        name: str,
+        password_hash: str,
+    ) -> UserProfile:
+        existing = await self._first(
+            "SELECT id FROM users WHERE lower(email)=lower(?) LIMIT 1",
+            email,
+        )
+        if existing is not None:
+            raise HistoryConflict("email already registered")
+        existing_username = await self._first(
+            "SELECT user_id FROM password_credentials WHERE username=? COLLATE NOCASE LIMIT 1",
+            username,
+        )
+        if existing_username is not None:
+            raise HistoryConflict("username already registered")
+
+        uid = _password_user_id(username)
+        now = _now_iso()
+        display = (name.strip() or username)[:160]
+        # The v1 users table has a historical google-only CHECK constraint.
+        # Keep this row as storage compatibility only; password_credentials is
+        # the product-local auth-method authority, while the Control Plane is
+        # explicitly bridged with auth_provider='password'.
+        compatibility_subject = "password:" + username
+        user_statement = self.db.prepare(
+            "INSERT INTO users (id, auth_provider, provider_subject, email, display_name, picture_url, created_at, updated_at) "
+            "VALUES (?, 'google', ?, ?, ?, '', ?, ?)"
+        ).bind(uid, compatibility_subject, email, display, now, now)
+        credential_statement = self.db.prepare(
+            "INSERT INTO password_credentials "
+            "(user_id, username, password_hash, failed_attempts, locked_until, created_at, updated_at) "
+            "VALUES (?, ?, ?, 0, NULL, ?, ?)"
+        ).bind(uid, username, password_hash, now, now)
+        batch = getattr(self.db, "batch", None)
+        if not callable(batch):
+            raise HistoryError("D1 batch API is required for password registration")
+        try:
+            await batch([user_statement, credential_statement])
+        except Exception as exc:
+            raise HistoryConflict("password account registration conflict") from exc
+        return UserProfile(uid, email, display, "")
+
+    async def find_password_credential(self, identifier: str) -> PasswordCredential | None:
+        if "@" in identifier:
+            row = await self._first(
+                "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
+                "c.failed_attempts, c.locked_until "
+                "FROM password_credentials c JOIN users u ON u.id=c.user_id "
+                "WHERE lower(u.email)=lower(?) LIMIT 1",
+                identifier,
+            )
+        else:
+            row = await self._first(
+                "SELECT u.id, u.email, u.display_name, u.picture_url, c.username, c.password_hash, "
+                "c.failed_attempts, c.locked_until "
+                "FROM password_credentials c JOIN users u ON u.id=c.user_id "
+                "WHERE c.username=? COLLATE NOCASE LIMIT 1",
+                identifier,
+            )
+        if row is None:
+            return None
+        return PasswordCredential(
+            user=UserProfile(
+                str(row.get("id", "")),
+                str(row.get("email", "")),
+                str(row.get("display_name", "")),
+                str(row.get("picture_url", "")),
+            ),
+            username=str(row.get("username", "")),
+            password_hash=str(row.get("password_hash", "")),
+            failed_attempts=max(0, int(row.get("failed_attempts", 0))),
+            locked_until=str(row.get("locked_until")) if row.get("locked_until") else None,
+        )
+
+    async def record_password_failure(
+        self,
+        user_id: str,
+        failed_attempts: int,
+        locked_until: str | None,
+    ) -> None:
+        await self._run(
+            "UPDATE password_credentials SET failed_attempts=?, locked_until=?, updated_at=? WHERE user_id=?",
+            failed_attempts,
+            locked_until,
+            _now_iso(),
+            user_id,
+        )
+
+    async def reset_password_failures(self, user_id: str) -> None:
+        await self._run(
+            "UPDATE password_credentials SET failed_attempts=0, locked_until=NULL, updated_at=? WHERE user_id=?",
+            _now_iso(),
+            user_id,
+        )
+
     async def get_user(self, user_id: str) -> UserProfile | None:
-        row = await self._first("SELECT id, email, display_name, picture_url FROM users WHERE id=? AND auth_provider='google'", user_id)
+        row = await self._first(
+            "SELECT id, email, display_name, picture_url FROM users "
+            "WHERE id=?",
+            user_id,
+        )
         if not row:
             return None
-        return UserProfile(str(row.get("id", "")), str(row.get("email", "")), str(row.get("display_name", "")), str(row.get("picture_url", "")))
+        return UserProfile(
+            str(row.get("id", "")),
+            str(row.get("email", "")),
+            str(row.get("display_name", "")),
+            str(row.get("picture_url", "")),
+        )
 
     async def list_conversations(self, user_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]:
         bounded = max(1, min(int(limit), MAX_RECENT_CONVERSATIONS))

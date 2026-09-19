@@ -30,10 +30,18 @@ def multimodal_content(url: str | None = None):
 
 @pytest.fixture(autouse=True)
 def _mock_openrouter_mode():
+    import os
+
+    old_agnes_key = os.environ.get("PADIEM_AGNES_API_KEY")
+    os.environ["PADIEM_AGNES_API_KEY"] = "sk-test-agnes-mm-0123456789"
     old_mode = runtime_config.provider_mode
     runtime_config.provider_mode = "mock"
     yield
     runtime_config.provider_mode = old_mode
+    if old_agnes_key is None:
+        os.environ.pop("PADIEM_AGNES_API_KEY", None)
+    else:
+        os.environ["PADIEM_AGNES_API_KEY"] = old_agnes_key
 
 
 @pytest.fixture()
@@ -68,7 +76,7 @@ def test_valid_multimodal_auto_route_uses_fixed_chain_head(
 
     # D14 (#2044): b14/auto no longer filters by image capability; the fixed
     # chain head answers and the validated multimodal array passes through.
-    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     captured = {}
 
@@ -87,7 +95,7 @@ def test_valid_multimodal_auto_route_uses_fixed_chain_head(
     response = post_image(client, business14={"required_capabilities": ["chat"]})
     assert response.status_code == 200
     body = response.json()
-    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert body["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
     assert body["business14"]["routing_policy"] == "fixed_chain_v1"
     outbound = captured["messages"]
     assert isinstance(outbound[0]["content"], list)
@@ -172,14 +180,14 @@ def test_auto_route_ignores_capability_filter_hook(client, monkeypatch):
     """D14 (#2044): the scorer capability filter is dead for b14/auto."""
     from app.pilot import router_core as rcore
 
-    monkeypatch.delenv("PADIEM_SENSENOVA_API_KEY", raising=False)
+    monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
     monkeypatch.delenv("PADIEM_POOLSIDE_API_KEY", raising=False)
     monkeypatch.setattr(rcore, "_filter_catalog", lambda **kwargs: [])
     response = post_image(client)
     assert response.status_code == 200
     body = response.json()
     assert body["business14"]["routing_policy"] == "fixed_chain_v1"
-    assert body["business14"]["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    assert body["business14"]["selected_model"] == "agnes-ai/agnes-3.0-flash"
 
 
 @pytest.mark.asyncio

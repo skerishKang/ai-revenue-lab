@@ -25,6 +25,23 @@
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
+  const authDialog = document.getElementById("authDialog");
+  const authDialogClose = document.getElementById("authDialogClose");
+  const googleLoginButton = document.getElementById("googleLoginButton");
+  const authDivider = document.getElementById("authDivider");
+  const passwordLoginForm = document.getElementById("passwordLoginForm");
+  const passwordLoginIdentifier = document.getElementById("passwordLoginIdentifier");
+  const passwordLoginPassword = document.getElementById("passwordLoginPassword");
+  const passwordLoginError = document.getElementById("passwordLoginError");
+  const passwordLoginSubmit = document.getElementById("passwordLoginSubmit");
+  const passwordRegisterSection = document.getElementById("passwordRegisterSection");
+  const passwordRegisterForm = document.getElementById("passwordRegisterForm");
+  const passwordRegisterUsername = document.getElementById("passwordRegisterUsername");
+  const passwordRegisterEmail = document.getElementById("passwordRegisterEmail");
+  const passwordRegisterName = document.getElementById("passwordRegisterName");
+  const passwordRegisterPassword = document.getElementById("passwordRegisterPassword");
+  const passwordRegisterError = document.getElementById("passwordRegisterError");
+  const passwordRegisterSubmit = document.getElementById("passwordRegisterSubmit");
   const accountName = document.getElementById("accountName");
   const accountContainer = document.querySelector(".sidebar-account");
   const historySection = document.getElementById("historySection");
@@ -138,6 +155,9 @@
     const state = shell.dataset.state;
     const workspace = document.getElementById("clawWorkspace");
     if (workspace) workspace.hidden = state !== "claw";
+    const modeBar = document.getElementById("clawManualForm");
+    if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
     const tasksNav = document.getElementById("tasksNavButton");
@@ -207,19 +227,6 @@
     const skillTitle = result.skill && result.skill.id !== "auto" && typeof result.skill.title === "string" ? result.skill.title : "";
     const runtimeLabel = result.runtime === "mock" ? uiT("mock-response") : uiT("ai-response");
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
-    if (result.runtime === "b14" && result.route && (result.route.model || result.route.provider)) {
-      const details = document.createElement("details");
-      details.className = "route-details";
-      const summary = document.createElement("summary");
-      summary.textContent = uiT("route-question");
-      const meta = document.createElement("p");
-      const pieces = [];
-      if (result.route.provider) pieces.push(uiT("provider-route", { provider: result.route.provider }));
-      if (result.route.model) pieces.push(uiT("model-label", { model: result.route.model }));
-      meta.textContent = pieces.join(" · ");
-      details.append(summary, meta);
-      content.appendChild(details);
-    }
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
   function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
@@ -812,6 +819,7 @@
     }
     loginButton.hidden = sessionState === "unavailable";
     loginButton.disabled = !ready;
+    syncAuthDialogMethods();
     loginButton.setAttribute("aria-disabled", ready ? "false" : "true");
 
     if (sessionState === "unavailable") {
@@ -852,6 +860,120 @@
     clearHistoryUI();
     clearProjectsUI();
   }
+  function authMethodEnabled(name) {
+    return Boolean(authState && authState.methods && authState.methods[name] === true);
+  }
+
+  function setAuthFormError(node, message = "") {
+    if (!node) return;
+    node.textContent = message;
+    node.hidden = !message;
+  }
+
+  function syncAuthDialogMethods() {
+    if (!authDialog) return;
+    const googleEnabled = authMethodEnabled("google");
+    const passwordEnabled = authMethodEnabled("password");
+    if (googleLoginButton) googleLoginButton.hidden = !googleEnabled;
+    if (authDivider) authDivider.hidden = !(googleEnabled && passwordEnabled);
+    if (passwordLoginForm) passwordLoginForm.hidden = !passwordEnabled;
+    if (passwordRegisterSection) passwordRegisterSection.hidden = !passwordEnabled;
+  }
+
+  function openAuthDialog() {
+    if (!authDialog) {
+      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+      return;
+    }
+    syncAuthDialogMethods();
+    setAuthFormError(passwordLoginError);
+    setAuthFormError(passwordRegisterError);
+    if (typeof authDialog.showModal === "function") {
+      authDialog.showModal();
+    } else {
+      authDialog.setAttribute("open", "");
+    }
+    if (authMethodEnabled("password") && passwordLoginIdentifier) passwordLoginIdentifier.focus();
+  }
+
+  function closeAuthDialog() {
+    if (!authDialog) return;
+    if (typeof authDialog.close === "function") authDialog.close();
+    else authDialog.removeAttribute("open");
+  }
+
+  async function passwordAuthRequest(path, payload) {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_) {}
+    if (!response.ok) {
+      const message = data && data.error && typeof data.error.message === "string"
+        ? data.error.message
+        : uiT("auth-error-generic");
+      const error = new Error(message);
+      error.code = data && data.error && typeof data.error.code === "string" ? data.error.code : "auth_error";
+      throw error;
+    }
+    return data;
+  }
+
+  async function submitPasswordLogin(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordLoginForm) return;
+    setAuthFormError(passwordLoginError);
+    passwordLoginSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/login", {
+        identifier: passwordLoginIdentifier.value,
+        password: passwordLoginPassword.value,
+      });
+      passwordLoginPassword.value = "";
+      closeAuthDialog();
+      await loadAuthStatus();
+    } catch (error) {
+      setAuthFormError(
+        passwordLoginError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordLoginSubmit.disabled = false;
+    }
+  }
+
+  async function submitPasswordRegister(event) {
+    event.preventDefault();
+    if (!authMethodEnabled("password") || !passwordRegisterForm) return;
+    setAuthFormError(passwordRegisterError);
+    passwordRegisterSubmit.disabled = true;
+    try {
+      await passwordAuthRequest("/api/auth/password/register", {
+        username: passwordRegisterUsername.value,
+        email: passwordRegisterEmail.value,
+        name: passwordRegisterName.value,
+        password: passwordRegisterPassword.value,
+      });
+      passwordRegisterPassword.value = "";
+      closeAuthDialog();
+      await loadAuthStatus();
+    } catch (error) {
+      setAuthFormError(
+        passwordRegisterError,
+        error instanceof Error ? error.message : uiT("auth-error-generic"),
+      );
+    } finally {
+      passwordRegisterSubmit.disabled = false;
+    }
+  }
+
   async function loadRecentConversations() {
     if (!authState.authenticated || !authState.history_ready) {
       clearHistoryUI();
@@ -1073,6 +1195,11 @@
     setNote(uiT("answer-cancelled-note"), "error");
   }
 
+  function selectedProductTier() {
+    const tier = window.PadiemTierSelection?.get?.();
+    return "plus";
+  }
+
   async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
     if (inFlight) return false;
     inFlight = true;
@@ -1085,7 +1212,7 @@
     activeRequestArticle = article;
     renderTyping(article);
     try {
-      const payload = { messages: outboundMessages, mode: "auto", skill };
+      const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1166,7 +1293,15 @@
       if (!sendButton.disabled) form.requestSubmit();
     }
   });
-  form.addEventListener("submit", (event) => { event.preventDefault(); submitPrompt(input.value); });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
+    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
+      clawManualForm.requestSubmit();
+      return;
+    }
+    submitPrompt(input.value);
+  });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
   attachmentButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
   documentStarterButton.addEventListener("click", () => { if (!inFlight) attachmentFileInput.click(); });
@@ -1198,7 +1333,7 @@
   loginButton.addEventListener("click", async () => {
     if (!authState.ready) return;
     if (!authState.authenticated) {
-      window.location.assign("/auth/google/start");
+      openAuthDialog();
       return;
     }
     try {
@@ -1209,6 +1344,20 @@
       await loadAuthStatus();
     }
   });
+  if (authDialogClose) authDialogClose.addEventListener("click", closeAuthDialog);
+  if (authDialog) {
+    authDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeAuthDialog();
+    });
+  }
+  if (googleLoginButton) {
+    googleLoginButton.addEventListener("click", () => {
+      if (authMethodEnabled("google")) window.location.assign("/auth/google/start");
+    });
+  }
+  if (passwordLoginForm) passwordLoginForm.addEventListener("submit", submitPasswordLogin);
+  if (passwordRegisterForm) passwordRegisterForm.addEventListener("submit", submitPasswordRegister);
   document.querySelectorAll("[data-prompt]").forEach((button) => button.addEventListener("click", () => {
     submitPrompt(button.dataset.prompt || "", button.dataset.skill || "auto");
     closeSidebar();
@@ -1232,6 +1381,7 @@
     if (projectsReady) renderProjects();
     renderProjectState();
     if (!selectedAttachment) setNote(idleNote());
+    syncComposerForClaw(shell.dataset.state === "claw");
     const activeInboxKind = document.getElementById("clawWorkspace")?.dataset.inboxKind;
     if (activeInboxKind === "tasks" || activeInboxKind === "alerts") loadClawInbox(activeInboxKind);
   });
@@ -1252,7 +1402,6 @@
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
   const clawSender = document.getElementById("clawSender");
-  const clawRequestText = document.getElementById("clawRequestText");
   const clawResultArea = document.getElementById("clawResultArea");
   const clawResultPreview = document.getElementById("clawResultPreview");
   const clawResultCard = document.getElementById("clawResultCard");
@@ -1264,6 +1413,8 @@
   const clawResultOpen = document.getElementById("clawResultOpen");
   const clawResultDocx = document.getElementById("clawResultDocx");
   const clawStatus = document.getElementById("clawStatus");
+  const clawRequestEcho = document.getElementById("clawRequestEcho");
+  const clawRequestEchoText = document.getElementById("clawRequestEchoText");
   const clawArtifactMeta = document.getElementById("clawArtifactMeta");
   const clawArtifactName = document.getElementById("clawArtifactName");
   const clawArtifactSize = document.getElementById("clawArtifactSize");
@@ -1272,7 +1423,7 @@
   const clawExecuteHint = document.getElementById("clawExecuteHint");
 
   let clawInFlight = false;
-  let clawLastAction = null;
+  let clawLastAction = clawAction?.value || "quote";
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -1287,6 +1438,7 @@
     "claw-error-invalid": "Please check your input and try again.",
     "claw-error-rate-limited": "Too many requests right now. Please try again shortly.",
     "claw-error-auth-needed": "Please sign in again to continue.",
+    "claw-error-auth-unavailable": "This feature isn't available because the workspace sign-in state can't be verified. Please check the workspace configuration.",
     "claw-error-storage": "Could not save the document. Please try again shortly.",
     "claw-error-generic": "Something went wrong. Please try again shortly.",
     "claw-memory-review-title": "Memory save proposal (approval required)",
@@ -1320,13 +1472,37 @@
     return clawFallbackCopy[key] || "Unable to update this Claw status. Please try again.";
   }
 
+  function localeOr(key, fallback) {
+    try {
+      if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") {
+        const value = window.__padiemLocale.text(key);
+        if (value && value !== key) return value;
+      }
+    } catch (_) {}
+    return fallback;
+  }
+
+  function syncComposerForClaw(isClaw) {
+    if (!input) return;
+    if (isClaw) {
+      input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
+      input.setAttribute("aria-describedby", "clawStatus");
+      input.setAttribute("maxlength", "4000");
+    } else {
+      input.placeholder = localeOr("input", "Ask anything");
+      input.removeAttribute("aria-describedby");
+      input.removeAttribute("aria-invalid");
+      input.setAttribute("maxlength", "8000");
+    }
+  }
+
   function setClawStatus(message, state, localeKey) {
     if (!clawStatus) return;
     if (!message) {
       clawStatus.hidden = true;
       clawStatus.textContent = "";
       clawStatus.removeAttribute("data-state");
-      if (clawRequestText) clawRequestText.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-invalid");
       return;
     }
     clawStatus.hidden = false;
@@ -1335,10 +1511,8 @@
     else clawStatus.removeAttribute("data-state");
     if (localeKey) clawStatus.dataset.localeKey = localeKey;
     else delete clawStatus.dataset.localeKey;
-    if (clawRequestText) {
-      if (state === "error") clawRequestText.setAttribute("aria-invalid", "true");
-      else clawRequestText.removeAttribute("aria-invalid");
-    }
+    if (state === "error") input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
   }
 
   function setClawAreaState(state) {
@@ -1409,7 +1583,8 @@
     if (code === "content_too_long" || code === "body_too_large" || status === 413) return clawT("claw-error-too-large");
     if (code === "invalid_channel" || code === "invalid_action" || code === "unsupported_media_type" || code === "invalid_sender_hint") return clawT("claw-error-invalid");
     if (code === "rate_limited" || status === 429) return clawT("claw-error-rate-limited");
-    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable" || code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
+    if (code === "workspace_scope_unavailable" || code === "live_identity_unavailable") return clawT("claw-error-auth-unavailable");
+    if (code === "auth_required" || status === 401) return clawT("claw-error-auth-needed");
     if (code === "workspace_storage_unavailable" || code === "artifact_storage_failed" || code === "artifact_generation_failed") return clawT("claw-error-storage");
     if (status === 503 || code === "engine_not_configured" || code === "live_abuse_gate_unavailable") return clawT("claw-error-generic");
     if (code === "engine_execution_failed" || status === 502) return clawT("claw-error-generic");
@@ -1573,7 +1748,7 @@
     if (clawManualForm) clawManualForm.hidden = false;
     if (clawResultArea) clawResultArea.hidden = false;
     setNavActive();
-    if (clawRequestText) clawRequestText.focus();
+    input.focus();
     closeSidebar();
     syncApprovedMemoryVisibility();
   }
@@ -1585,16 +1760,17 @@
     const kind = clawWorkspace?.dataset.inboxKind;
     if (kind === "tasks" || kind === "alerts") loadClawInbox(kind);
   });
-  if (clawWorkspace) {
-    clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((chip) => {
+  if (clawManualForm) {
+    const modeChips = clawManualForm.querySelectorAll(".claw-chip[data-claw-action]");
+    modeChips.forEach((chip) => {
       chip.addEventListener("click", () => {
         const action = chip.dataset.clawAction;
         if (clawAction && action) clawAction.value = action;
-        clawWorkspace.querySelectorAll(".claw-chip[data-claw-action]").forEach((other) => {
+        modeChips.forEach((other) => {
           other.setAttribute("aria-pressed", other === chip ? "true" : "false");
         });
         clawLastAction = action || null;
-        if (clawRequestText) clawRequestText.focus();
+        input.focus();
       });
     });
     // Keyboard: chips are buttons so Enter/Space already work; ensure roving focus stays visible.
@@ -1610,6 +1786,15 @@
       clawResultBadge.dataset.localeKey = executed ? "claw-result-badge-run" : "claw-result-badge";
       clawResultBadge.textContent = clawT(executed ? "claw-result-badge-run" : "claw-result-badge");
     }
+  }
+
+  // #2532 (R2): echo the submitted request as a user bubble in the shared
+  // conversation so manual Claw reads as one continuous Chat thread. This is
+  // the user's own message, never presented as an AI result.
+  function renderClawRequestEcho(text) {
+    if (!clawRequestEcho || !clawRequestEchoText) return;
+    clawRequestEchoText.textContent = text;
+    clawRequestEcho.hidden = false;
   }
 
   // Single artifact handlers: read current dataset at click time (no per-result listener leak).
@@ -1628,7 +1813,7 @@
     clawManualForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (clawInFlight) return;
-      const body = (clawRequestText?.value || "").trim();
+      const body = (input.value || "").trim();
       if (!body) {
         if (clawResultCard) clawResultCard.hidden = true;
         clearClawArtifact();
@@ -1639,7 +1824,7 @@
         if (clawResultHint) clawResultHint.hidden = false;
         setClawStatus(clawT("claw-error-empty"), "error");
         setClawAreaState("error");
-        if (clawRequestText) clawRequestText.focus();
+        input.focus();
         return;
       }
       if (body.length > 4000) {
@@ -1653,6 +1838,7 @@
       const actionText = clawAction?.options[clawAction.selectedIndex]?.textContent || actionValue;
       const senderText = (clawSender?.value || "").trim();
 
+      renderClawRequestEcho(body);
       setClawButtonsBusy(true);
       setClawStatus(clawT("claw-status-preview-running"), "running", "claw-status-preview-running");
       setClawAreaState("submitting");
@@ -1732,7 +1918,7 @@
   if (clawExecuteButton) {
     clawExecuteButton.addEventListener("click", async () => {
       if (clawInFlight) return;
-      const body = (clawRequestText?.value || "").trim();
+      const body = (input.value || "").trim();
       if (!body) {
         clearClawArtifact();
         if (clawResultCard) clawResultCard.hidden = true;
@@ -1742,7 +1928,7 @@
         }
         setClawStatus(clawT("claw-error-empty"), "error");
         setClawAreaState("error");
-        if (clawRequestText) clawRequestText.focus();
+        input.focus();
         return;
       }
       if (body.length > 4000) {
@@ -1754,6 +1940,7 @@
       const actionValue = clawAction?.value || "quote";
       const senderText = (clawSender?.value || "").trim();
 
+      renderClawRequestEcho(body);
       setClawButtonsBusy(true);
       setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
       setClawAreaState("submitting");
@@ -1768,7 +1955,13 @@
         const response = await fetch("/api/claw/manual-intake/execute", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ content: body, channel: channelValue, action: actionValue, sender_hint: senderText || null }),
+          body: JSON.stringify({
+            content: body,
+            channel: channelValue,
+            action: actionValue,
+            sender_hint: senderText || null,
+            tier: selectedProductTier(),
+          }),
         });
         const data = await response.json().catch(() => null);
         if (data && data.ok && data.result && typeof data.result.result_text === "string") {

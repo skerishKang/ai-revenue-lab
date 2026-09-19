@@ -54,6 +54,7 @@ class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
     timeout_seconds: float = 20.0
+    completed_timeout_seconds: float = 50.0
     live_enabled: bool = False
     web_provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
@@ -78,6 +79,7 @@ class Settings:
         runtime_mode: object = "mock",
         b14_base_url: object = None,
         timeout_seconds: object = 20.0,
+        completed_timeout_seconds: object = 50.0,
         live_enabled: object = False,
         web_provider: object = "off",
         firecrawl_api_key: object = None,
@@ -112,6 +114,13 @@ class Settings:
         if not 1 <= timeout <= 60:
             raise ConfigError("PADIEM_CHAT_TIMEOUT_SECONDS must be between 1 and 60")
 
+        try:
+            completed_timeout = float(completed_timeout_seconds)
+        except (TypeError, ValueError) as exc:
+            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be numeric") from exc
+        if not 1 <= completed_timeout <= 60:
+            raise ConfigError("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS must be between 1 and 60")
+
         live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
 
         web = str(web_provider or "off").strip().lower()
@@ -134,8 +143,8 @@ class Settings:
             raise ConfigError("PADIEM_CHAT_WEB_TIMEOUT_SECONDS must be between 1 and 30")
 
         auth = str(auth_mode or "off").strip().lower()
-        if auth not in {"off", "google"}:
-            raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off or google")
+        if auth not in {"off", "google", "password", "hybrid"}:
+            raise ConfigError("PADIEM_CHAT_AUTH_MODE must be off, google, password, or hybrid")
         raw_public = "" if public_base_url is None else str(public_base_url).strip()
         public = _normalize_base_url(raw_public, https_only=True, root_only=True) if raw_public else None
         client_id = str(google_client_id or "").strip() or None
@@ -147,15 +156,16 @@ class Settings:
             raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be an integer") from exc
         if not 300 <= max_age <= 30 * 24 * 3600:
             raise ConfigError("PADIEM_CHAT_SESSION_MAX_AGE_SECONDS must be between 300 and 2592000")
-        if auth == "google":
+        if auth != "off":
             if public is None:
-                raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL is required in google auth mode")
-            if client_id is None:
-                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_ID is required in google auth mode")
-            if client_secret is None:
-                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_SECRET is required in google auth mode")
+                raise ConfigError("PADIEM_CHAT_PUBLIC_BASE_URL is required when authentication is enabled")
             if secret is None or len(secret) < 32:
-                raise ConfigError("PADIEM_CHAT_SESSION_SECRET must be at least 32 characters in google auth mode")
+                raise ConfigError("PADIEM_CHAT_SESSION_SECRET must be at least 32 characters when authentication is enabled")
+        if auth in {"google", "hybrid"}:
+            if client_id is None:
+                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_ID is required when Google authentication is enabled")
+            if client_secret is None:
+                raise ConfigError("PADIEM_CHAT_GOOGLE_CLIENT_SECRET is required when Google authentication is enabled")
 
         raw_quota_salt = "" if quota_salt is None else str(quota_salt).strip()
         normalized_quota_salt = raw_quota_salt or None
@@ -188,6 +198,7 @@ class Settings:
             runtime_mode=mode,
             b14_base_url=base,
             timeout_seconds=timeout,
+            completed_timeout_seconds=completed_timeout,
             live_enabled=live,
             web_provider=web,
             firecrawl_api_key=firecrawl_key,
@@ -213,6 +224,7 @@ class Settings:
             runtime_mode=os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock"),
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
+            completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "50"),
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
             web_provider=os.getenv("PADIEM_CHAT_WEB_PROVIDER", "off"),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),

@@ -121,6 +121,85 @@ jobs:
           test -f python_modules/padiem_ai_core/b14_execution.py
           echo 'PADIEM_AI_ENGINE_CORE_VENDORED=PASS'
 
+      - name: Prove ToolRuntime Worker-native validation path
+        if: steps.engine-source.outputs.present == 'true'
+        working-directory: apps/padiem-ai-engine
+        run: |
+          set -euo pipefail
+          test -f python_modules/padiem_ai_core/tool_runtime.py
+          grep -q 'class _BoundedSchemaValidator' python_modules/padiem_ai_core/tool_runtime.py
+          jsonschema_path="$(find .venv .venv-workers python_modules -path '*/jsonschema/__init__.py' -print -quit 2>/dev/null || true)"
+          referencing_path="$(find .venv .venv-workers python_modules -path '*/referencing/__init__.py' -print -quit 2>/dev/null || true)"
+          rpds_path="$(find .venv .venv-workers python_modules -path '*/rpds/__init__.py' -print -quit 2>/dev/null || true)"
+          test -z "${jsonschema_path}"
+          test -z "${referencing_path}"
+          test -z "${rpds_path}"
+          echo 'PADIEM_AI_ENGINE_TOOL_RUNTIME_WORKER_NATIVE=PASS'
+      - name: Real Worker/Pyodide Drive external transport probe
+        if: steps.engine-source.outputs.present == 'true'
+        working-directory: apps/padiem-ai-engine
+        run: |
+          set -euo pipefail
+          cat > .runtime-drive-transport-probe.toml <<'EOF'
+          name = "padiem-ai-engine-drive-transport-probe"
+          main = "worker_runtime_drive_transport_probe.py"
+          compatibility_date = "2026-08-25"
+          compatibility_flags = ["python_workers"]
+          workers_dev = true
+          EOF
+
+          uv run python worker_runtime_drive_probe_origin.py --port 9101 > /tmp/engine-drive-origin.log 2>&1 &
+          ORIGIN_PID=$!
+          npx --yes wrangler@4.130.0 dev --config .runtime-drive-transport-probe.toml --port 8793 > /tmp/engine-drive-workerd.log 2>&1 &
+          WORKER_PID=$!
+
+          cleanup() {
+            kill "$WORKER_PID" "$ORIGIN_PID" 2>/dev/null || true
+            rm -f .runtime-drive-transport-probe.toml
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8793/ready >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/engine-drive-workerd.log
+            exit 1
+          fi
+
+          HTTP_CODE="$(curl -sS -o /tmp/engine-drive-result.json -w '%{http_code}' http://127.0.0.1:8793/probe)"
+          cat /tmp/engine-drive-result.json
+          if [ "$HTTP_CODE" != "200" ]; then
+            cat /tmp/engine-drive-workerd.log
+            exit 1
+          fi
+
+          uv run python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/engine-drive-result.json").read_text())
+          required = (
+              "real_httpx_transport_class",
+              "worker_fetch_get",
+              "incremental_body",
+              "timeout_enforced",
+              "host_gate",
+          )
+          failed = [name for name in required if data.get(name) is not True]
+          if failed:
+              raise SystemExit(
+                  f"Worker Drive transport runtime probe failed: {failed}; "
+                  f"error_type={data.get('error_type', 'NONE')}"
+              )
+          print("WORKER_DRIVE_EXTERNAL_TRANSPORT_PASS")
+          PY
+
       - name: Python Worker bundle dry-run
         if: steps.engine-source.outputs.present == 'true'
         working-directory: apps/padiem-ai-engine
