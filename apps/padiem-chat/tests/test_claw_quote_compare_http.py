@@ -348,6 +348,26 @@ def test_comparison_without_artifact_needs_no_storage_authority(client: TestClie
     assert client.post(COMPARE_ROUTE, json=_payload(SUPPLIER_A, SUPPLIER_B)).status_code == 200
 
 
+def test_no_artifact_field_writes_nothing_at_all() -> None:
+    """Pin the route's own claim: persistence is opt-in, not incidental."""
+
+    class _WriteOnceStore:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        async def put_generated_docx(self, **kwargs):
+            self.calls += 1
+            raise AssertionError("a comparison without artifact must not store anything")
+
+    store = _WriteOnceStore()
+    client = _signed_in_client(None)
+    client.app.state.workspace_document_store = store
+    resp = client.post(COMPARE_ROUTE, json=_payload(SUPPLIER_A, SUPPLIER_B))
+    assert resp.status_code == 200
+    assert "artifact" not in resp.json()
+    assert store.calls == 0
+
+
 @pytest.mark.parametrize(
     ("body", "code"),
     [

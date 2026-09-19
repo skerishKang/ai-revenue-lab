@@ -784,14 +784,18 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
     surface. Authority stays where it already is — the engine decides price,
     delivery and payment-terms ranking, and the negotiation target is bounded by
     another captured quote. Nothing here reaches a model, provider, quota
-    reservation, outbound connector or database:
+    reservation or outbound connector, and the comparison itself persists nothing:
 
     - no ``claw_p01_adapter`` / ``create_claw_run`` / Engine / B14 dispatch, and
       deliberately no usage-gate call because nothing is dispatched;
-    - the artifact block only reuses the existing generated-document store and
-      the existing ``GET /api/claw/manual-intake/artifact/{document_id}``
-      download path, so an artifact request needs the same canonical tenant
-      authority as the execute route and fails closed without it;
+    - storing the result is opt-in. With no ``artifact`` field the route writes
+      nothing at all; with ``artifact="docx"`` it writes through the existing
+      generated-document store -- the same D1 metadata plus private R2 bytes the
+      execute route already uses -- and the existing
+      ``GET /api/claw/manual-intake/artifact/{document_id}`` path serves it back.
+      That is the only persistence on this route: no new table, no migration and
+      no Claw Ops ledger write, and it needs the same canonical tenant authority
+      as the execute route, failing closed without it;
     - a value the caller did not capture stays ``null`` plus an engine
       ``unknown_fields`` entry; the flow never fills a price, date or term in.
 
