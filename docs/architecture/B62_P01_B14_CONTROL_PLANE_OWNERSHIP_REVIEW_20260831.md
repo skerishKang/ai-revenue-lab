@@ -140,7 +140,14 @@ Disposition: #1226 and #1227 (still relevant).
 
 ### 6. B62 model policy is currently in the correct direction
 
-Current B62 ordinary chat delegates to `b14/auto`; the legacy `/poolside` alias is a compatibility no-op and does not establish Provider authority in B62. Provider-neutral chat mode contract (`chat_modes.py`) now centralizes B62 mode presentation without claiming provider routing.
+As read on the 2026-08-31 refresh: B62 ordinary chat delegated to `b14/auto`; the legacy `/poolside` alias was a compatibility no-op that did not establish Provider authority in B62. Provider-neutral chat mode contract (`chat_modes.py`) centralizes B62 mode presentation without claiming provider routing.
+
+> **Correction (2026-09-20, #2817).** Two claims in the paragraph above are no longer true, and the original wording is kept only so this dated review still records what it reviewed.
+>
+> * Ordinary B62 chat does **not** delegate to `b14/auto`. It resolves the explicit Padiem Plus product route (`agnes-ai/agnes-3.0-flash`) derived from the shared declaration, and `b14/auto` is a non-executable identity with no capabilities on the B62 side.
+> * `/poolside` is **not** a compatibility no-op anymore. It was removed (#2814 / PR #2815) because Poolside Laguna is `HOLD_AS_DATA_ONLY` in the shared declaration, so a Poolside-labelled selector could only ever dispatch a different provider. Unknown selectors now fail closed as `unknown_model_alias`.
+>
+> What the finding endorsed has not changed: B62 stays provider-neutral and never owns Provider/model route authority — the later changes enforced exactly that.
 
 Preserve:
 

@@ -8,7 +8,7 @@ Read these first for current B14 work:
 
 1. [`B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md`](B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md) — current product/routing authority.
 2. [`../README.md`](../README.md) — current implementation and issue map overview.
-3. [`BUSINESS14_DECISION_LOG.md`](BUSINESS14_DECISION_LOG.md) — chronological decisions, including the 2026-09-08 Router Platform/Padiem-profile clarification.
+3. [`BUSINESS14_DECISION_LOG.md`](BUSINESS14_DECISION_LOG.md) — chronological decisions, including the 2026-09-08 Router Platform/Padiem-profile clarification and the 2026-09-20 Plus/Poolside route correction.
 4. [`BUSINESS14_LANGUAGE_POLICY.md`](BUSINESS14_LANGUAGE_POLICY.md) — Korean-first product language authority.
 5. Current source/tests — final truth for executable catalog, provider adapters, errors, and endpoint behavior.
 
@@ -26,9 +26,9 @@ CURRENT SOURCE + TESTS
 B14 = General AI Router Platform
 Padiem Routing Profile v1 = first product/customer-specific profile
 
-Plus = kilo/poolside-laguna-s-2.1-free
-Pro  = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
-Max  = HOLD
+Plus = agnes-ai/agnes-3.0-flash        (only executable product route)
+Pro  = HOLD / padiem-profile/pro-hold
+Max  = HOLD / padiem-profile/max-hold
 
 PADIEM_PROFILE_V1_AUTO_ROUTING = NO
 PADIEM_USER_VISIBLE_AUTO = NO
@@ -37,6 +37,8 @@ B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 ```
 
 The shared Padiem profile declaration and B14 execution authority are separate. Product code declares intent; B14 decides whether that route is currently executable.
+
+`poolside/laguna-s-2.1` is `HOLD_AS_DATA_ONLY` in that declaration — product data and `b14/auto` fixed-chain second-position evidence, not a Padiem tier route — and the historical `kilo/poolside-laguna-s-2.1-free` / `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` mapping is superseded, so no index in this folder may be read as reinstating it.
 
 ## Historical phase evidence
 
@@ -82,7 +84,7 @@ Do not erase historical decisions simply because the runtime evolved. Add a curr
 #2101 implicit b14/auto removal from Padiem-facing contracts
 #2102 Padiem Max route evidence/selection
 #2103 generic B14 BYOK/credential policy
-#2104 Padiem Pro Nemotron evidence
+#2104 Padiem Pro Nemotron evidence (closed; Pro is HOLD since #2601)
 #2107 future Padiem provider/model operator console
 #1955 B14 exact-SHA Production deployment gate
 ```
