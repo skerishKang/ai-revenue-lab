@@ -68,6 +68,76 @@ jobs:
           grep -Fq 'NETWORK_RETRY_COUNT=' .github/scripts/b14_agnes_production_smoke.py
           echo 'AGNES_SMOKE_SOURCE_CONTRACT=PASS'
 
+      - name: Pin canonical served-version reuse (#2804)
+        shell: bash
+        run: |
+          set -euo pipefail
+          wf=.github/workflows/b14-agnes-production-smoke.yml
+          grep -Fq 'from cloudflare_served_version import' "${wf}"
+          grep -Fq 'resolve_served_version_id(payload)' "${wf}"
+          grep -Fq 'CANONICAL_SERVED_VERSION_REUSED=YES' "${wf}"
+          grep -Fq 'HISTORICAL_DEPLOYMENT_ACCEPTED=NO' "${wf}"
+          # The canonical rule is imported, never reimplemented in this workflow.
+          # The resolver step's embedded Python is identified by its argv read and
+          # comment lines are dropped, so neither this pin's own text nor prose
+          # describing the canonical rule can satisfy or fail the check.
+          python3 - <<'PY'
+          import sys
+          from pathlib import Path
+
+          wf_lines = Path(
+              ".github/workflows/b14-agnes-production-smoke.yml"
+          ).read_text(encoding="utf-8").splitlines()
+
+          # The served-version step's embedded Python, bounded by its heredoc.
+          embedded_raw = ""
+          for idx, line in enumerate(wf_lines):
+              if "<<'PY'" not in line:
+                  continue
+              end = next(
+                  (i for i in range(idx + 1, len(wf_lines)) if wf_lines[i].strip() == "PY"),
+                  None,
+              )
+              if end is None:
+                  continue
+              block = "\n".join(wf_lines[idx + 1 : end])
+              # Skip this pin's own block: it quotes the resolver call and the
+              # forbidden shapes as strings, so it must never inspect itself.
+              if "CANONICAL_SERVED_VERSION_REUSE_CONTRACT" in block:
+                  continue
+              if "resolve_served_version_id(payload)" in block:
+                  embedded_raw = block
+                  break
+          if not embedded_raw:
+              print("CANONICAL_DELEGATION_MISSING=1")
+              sys.exit(1)
+
+          # Executable lines only: no grep text, no comment lines.
+          embedded_code = "\n".join(
+              line for line in embedded_raw.splitlines()
+              if "grep" not in line and not line.strip().startswith("#")
+          )
+
+          scan_loop = "for " + "deployment in deployments"
+          entry_index = "deployments" + "[0]"
+          reserialized = 'payload.get("result", {}).get("deployments"'
+          forbidden = (scan_loop, entry_index, reserialized)
+
+          hits = []
+          if any(t in embedded_code for t in forbidden):
+              hits.append("workflow_embedded_python")
+          if hits:
+              print("LOCAL_DEPLOYMENT_SCAN=1")
+              print("SCAN_LOCATION=" + ",".join(hits))
+              sys.exit(1)
+
+          if "resolve_served_version_id(payload)" not in embedded_raw:
+              print("CANONICAL_DELEGATION_MISSING=1")
+              sys.exit(1)
+          print("LOCAL_DEPLOYMENT_SCAN=0")
+          print("CANONICAL_SERVED_VERSION_REUSE_CONTRACT=PASS")
+          PY
+
   live-agnes-smoke:
     needs: source-contract
     if: >-
@@ -96,34 +166,55 @@ jobs:
           test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
           echo 'LIVE_EXACT_MAIN=PASS'
 
-      - name: GET-only B14 served-version guard
+      - name: GET-only B14 served-version guard (canonical resolver)
         shell: bash
         run: |
           set -euo pipefail
           echo "${EXPECTED_B14_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}$'
           deployments="${RUNNER_TEMP}/b14-deployments.json"
           curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/deployments"             -o "${deployments}"
+          # The active-served-version rules are NOT reimplemented here. The whole
+          # envelope is handed to the shared canonical resolver, which requires
+          # result.deployments[0] to be the active deployment carrying exactly
+          # one version at 100 percent with a safe version_id. Walking every
+          # deployment in history would let a superseded 100 percent deployment
+          # satisfy this guard, so that shape is refused by construction.
           python3 - "${deployments}" "${EXPECTED_B14_VERSION}" <<'PY'
           import json
           import sys
+          from pathlib import Path
 
-          path, expected = sys.argv[1:3]
-          with open(path, encoding="utf-8") as fh:
+          sys.path.insert(0, str(Path(".github/scripts").resolve()))
+
+          from cloudflare_served_version import (  # noqa: E402
+              ServedVersionReason,
+              ServedVersionResolutionError,
+              resolve_served_version_id,
+          )
+
+          payload_path, expected = sys.argv[1:3]
+          print(f"B14_EXPECTED_VERSION={expected}")
+          with open(payload_path, encoding="utf-8") as fh:
               payload = json.load(fh)
-          deployments = payload.get("result", {}).get("deployments", [])
-          found = False
-          for deployment in deployments:
-              for version in deployment.get("versions") or []:
-                  if version.get("version_id") == expected and version.get("percentage") == 100:
-                      found = True
-                      break
-              if found:
-                  break
-          if not found:
-              raise SystemExit("expected B14 version is not serving 100%")
+
+          try:
+              served = resolve_served_version_id(payload)
+          except ServedVersionResolutionError as exc:
+              print("CANONICAL_SERVED_VERSION_RESOLVED=NO")
+              print(f"CANONICAL_SERVED_VERSION_REASON={exc.reason}")
+              raise SystemExit(f"served-version guard failed closed: {exc.reason}")
+
+          if served != expected:
+              print("CANONICAL_SERVED_VERSION_RESOLVED=NO")
+              print(f"CANONICAL_SERVED_VERSION_REASON={ServedVersionReason.VERSION_ID}")
+              print("B14_SERVED_VERSION_MISMATCH=YES")
+              raise SystemExit("active served version does not match expected version")
+
+          print(f"CANONICAL_SERVED_VERSION_RESOLVED={served}")
+          print("CANONICAL_SERVED_VERSION_REUSED=YES")
+          print("HISTORICAL_DEPLOYMENT_ACCEPTED=NO")
           print("B14_EXPECTED_VERSION_AT_100=PASS")
           PY
-          echo "B14_EXPECTED_VERSION=${EXPECTED_B14_VERSION}"
           echo 'PRODUCTION_MUTATION=0'
 
       - name: Execute exactly one bounded Agnes live smoke request
