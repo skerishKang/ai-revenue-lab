@@ -63,6 +63,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# The scripts directory is not a package, so make the canonical resolver
+# importable whether this probe runs directly or is loaded through importlib in
+# a test.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from cloudflare_served_version import (  # noqa: E402
+    ServedVersionReason,
+    ServedVersionResolutionError,
+    resolve_served_version_id as _resolve_canonical_served_version_id,
+)
+
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 BOUNDED_TOKEN_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
 
@@ -125,36 +138,46 @@ def _is_uuid(value: object) -> bool:
     return isinstance(value, str) and bool(UUID_RE.match(value))
 
 
+# Canonical resolver failure codes, published under this probe's own wording and
+# prefixed with the caller's payload label. The deployments shape rules live in
+# cloudflare_served_version.py.
+_RESOLVER_REASONS = {
+    ServedVersionReason.ENVELOPE: "deployments response was not successful",
+    ServedVersionReason.RESULT_OBJECT: "deployments result is missing",
+    ServedVersionReason.DEPLOYMENT_RECORDS: "deployments returned no records",
+    ServedVersionReason.DEPLOYMENT_ENTRY: "expected exactly one served version",
+    ServedVersionReason.VERSION_COUNT: "expected exactly one served version",
+    ServedVersionReason.VERSION_ENTRY: "served version entry is malformed",
+    ServedVersionReason.TRAFFIC: "served version traffic share is not exactly 100",
+    ServedVersionReason.VERSION_ID: "served version id is missing or malformed",
+}
+
+
 def resolve_active_version(deployments_payload: object, label: str) -> str:
     """Extract the single 100%-traffic served version id, fail closed.
 
-    The Cloudflare deployments endpoint returns deployment history and
-    documents that the first entry is the latest deployment actively
-    serving traffic (same semantics as b62_served_version_secret_guard),
-    so later entries are previous deployments and are not ambiguity.
+    The canonical deployments envelope contract is shared through
+    cloudflare_served_version.py: the endpoint returns deployment history and
+    documents the first entry as the latest deployment actively serving traffic
+    (same semantics as b62_served_version_secret_guard), so later entries are
+    previous deployments and are not ambiguity.
+
+    This probe then applies its own stricter precondition on the resolved id:
+    both the pre- and post-content reads must name an exact lowercase version
+    UUID, which is narrower than the canonical safe-charset rule.
     """
-    if not isinstance(deployments_payload, dict):
-        raise LiveContentError(f"{label} deployments payload must be a JSON object")
-    if deployments_payload.get("success") is not True:
-        raise LiveContentError(f"{label} deployments response was not successful")
-    result = deployments_payload.get("result")
-    if not isinstance(result, dict):
-        raise LiveContentError(f"{label} deployments result is missing")
-    deployments = result.get("deployments")
-    if not isinstance(deployments, list) or len(deployments) == 0:
-        raise LiveContentError(f"{label} deployments returned no records")
-    versions = deployments[0].get("versions") if isinstance(deployments[0], dict) else None
-    if not isinstance(versions, list) or len(versions) != 1:
-        raise LiveContentError(f"{label} expected exactly one served version")
-    entry = versions[0]
-    if not isinstance(entry, dict):
-        raise LiveContentError(f"{label} served version entry is malformed")
-    if entry.get("percentage") != 100:
-        raise LiveContentError(f"{label} served version traffic share is not exactly 100")
-    version_id = entry.get("version_id")
+    try:
+        version_id = _resolve_canonical_served_version_id(deployments_payload)
+    except ServedVersionResolutionError as exc:
+        raise LiveContentError(
+            f"{label} "
+            + _RESOLVER_REASONS.get(
+                exc.reason, "deployments payload is not a canonical envelope"
+            )
+        ) from exc
     if not _is_uuid(version_id):
         raise LiveContentError(f"{label} served version id is missing or malformed")
-    return str(version_id)
+    return version_id
 
 
 def require_script_identity(version_detail_payload: object, label: str) -> dict[str, Any]:
