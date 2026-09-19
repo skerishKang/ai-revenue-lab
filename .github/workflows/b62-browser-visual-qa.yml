@@ -175,19 +175,20 @@ jobs:
           evidence = json.loads((root / 'capture-evidence.json').read_text())
           duration = float(metadata['format']['duration'])
           video = next(stream for stream in metadata['streams'] if stream.get('codec_name') == 'h264')
-          assert 15 <= duration <= 40
-          assert (video.get('width'), video.get('height')) == (1440, 900)
-          assert video.get('pix_fmt') == 'yuv420p'
-          assert evidence['login_performed'] is False
-          assert evidence['note_saved'] is False
-          assert evidence['ai_prompt_submitted'] is False
-          assert evidence['visible_email'] is False
-          assert evidence['selected_book'] == '일리아드'
-          assert evidence['final_screen'] == 'reader'
-          assert evidence['reader_title'] == '일리아드'
-          assert evidence['interaction_count'] >= 9
+          print(json.dumps({'duration': duration, 'video': video, 'evidence': evidence}, ensure_ascii=False))
+          assert 15 <= duration <= 40, f'duration={duration}'
+          assert (video.get('width'), video.get('height')) == (1440, 900), f'video={video}'
+          assert video.get('pix_fmt') == 'yuv420p', f'video={video}'
+          assert evidence['login_performed'] is False, evidence
+          assert evidence['note_saved'] is False, evidence
+          assert evidence['ai_prompt_submitted'] is False, evidence
+          assert evidence['visible_email'] is False, evidence
+          assert evidence['selected_book'] == '일리아드', evidence
+          assert evidence['final_screen'] == 'reader', evidence
+          assert evidence['reader_title'] == '일리아드', evidence
+          assert evidence['interaction_count'] >= 9, evidence
           required = {'open_iliad_reader', 'reader_next_page', 'memory_note_cancel', 'ai_prompt_draft_no_submit'}
-          assert required.issubset(set(evidence['interactions']))
+          assert required.issubset(set(evidence['interactions'])), evidence
           print('STORYMEMORY_PUBLIC_CAPTURE_CONTRACT=PASS')
           print(f"INTERACTION_COUNT={evidence['interaction_count']}")
           print(f"CONSOLE_ERROR_COUNT={evidence['console_error_count']}")
