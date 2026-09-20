@@ -32,17 +32,23 @@ Padiem has already selected the target routes for the current MVP.
 
 ```text
 Padiem Plus
-  provider = kilo
-  model = kilo/poolside-laguna-s-2.1-free
+  provider = agnes-ai
+  model = agnes-ai/agnes-3.0-flash
+  executable = YES (the only executable product route)
 
 Padiem Pro
-  provider = kilo
-  model = kilo/nvidia-nemotron-3-ultra-550b-a55b-free
+  model = padiem-profile/pro-hold
+  executable = NO (owner decision #2601)
 
 Padiem Max
   model = padiem-profile/max-hold
   executable = NO
+
+Declared data, not a product route
+  poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, b14/auto fixed-chain second position
 ```
+
+The earlier mapping `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` is superseded: no Padiem tier points at those Kilo free lanes, and Poolside Laguna's status in the shared declaration is product data plus gateway-side fixed-chain evidence — never a Padiem tier route and never a silent fallback.
 
 Current success criteria are therefore:
 
@@ -66,6 +72,8 @@ B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 They are not contradictory.
 
 Padiem v1 currently requests explicit routes, so user-visible Auto, omitted-model auto selection, and silent fallback are out of scope for that profile.
+
+The gateway's own `b14/auto` resolution (`app/pilot/routing_policy.py`, `fixed_chain_v1`) is an internal compatibility path, not a product selector. Poolside Laguna appearing as that chain's second position is precisely the data-only status the shared product declaration records for it; it does not authorize a user-visible Padiem Poolside route, and while Poolside is data-only Padiem Chat exposes no `/poolside` selector (removed in #2814).
 
 B14 itself may later support automatic provider/model choice, cost-aware routing, latency-aware routing, capability-aware routing, availability-aware routing, and bounded multi-provider fallback as generic Router Platform features.
 
@@ -119,7 +127,8 @@ For Padiem Profile v1:
 
 - user-facing plan labels are `Padiem Plus`, `Padiem Pro`, `Padiem Max`;
 - user-visible `Auto` is not part of the profile;
-- Plus/Pro use explicit routes from the shared declaration;
+- Plus uses the explicit route from the shared declaration and is currently the only executable product tier;
+- Pro and Max resolve to HOLD sentinels and fail closed before Provider dispatch;
 - Max remains HOLD until separately evidenced/approved;
 - product code must not substitute a different route because the chosen route failed;
 - product code must not synthesize `b14/auto` because a model field was omitted;
@@ -225,7 +234,7 @@ No issue/document/PR merge alone proves deployment.
 #2101 = remove implicit b14/auto defaults from Padiem-facing contracts
 #2102 = Padiem Max evidence/selection
 #2103 = generic B14 BYOK/credential policy + profile boundary
-#2104 = Padiem Pro Nemotron evidence backfill
+#2104 = Padiem Pro Nemotron evidence backfill (closed; Pro has been HOLD since #2601)
 #2107 = future Padiem provider/model admin console
 #1955 = exact-SHA B14 Production deploy gate
 ```
