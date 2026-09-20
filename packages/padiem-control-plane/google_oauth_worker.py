@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 from workers import DurableObject, Response, WorkerEntrypoint
@@ -26,6 +27,7 @@ _AUTHORITY_REF_FALLBACK = "control-plane.google-oauth.production.v1"
 _CONNECT_KEYS = frozenset({"connect_ticket"})
 _CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
 _ACCESS_LEASE_KEYS = frozenset({"binding_ref", "connector_id"})
+_WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 
 
 def _closed_payload(payload: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]:
@@ -128,6 +130,32 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def workspace_connector_state(self, payload: dict) -> dict:
+        """Return bounded, identity-free Google connector truth for one workspace.
+
+        Phase B-0 (#2830) read slice. The payload is closed to exactly
+        ``workspace_ref``. The response carries only connector_id / state /
+        usable / expires_present / ambiguous. No binding_ref, actor_ref,
+        account_ref, workspace_ref echo, scopes or sealed material is returned,
+        no refresh credential is unsealed and no access lease is issued.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CONNECTOR_STATE_KEYS,
+                "Google OAuth workspace connector-state RPC",
+            )
+            states = self._store.list_workspace_connector_state(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            return {
+                "ok": True,
+                "connectors": [state.to_bounded_dict() for state in states],
+            }
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -156,6 +184,9 @@ class Default(WorkerEntrypoint):
     async def issue_access_lease(self, payload: dict) -> dict:
         return await self._stub().issue_access_lease(payload)
 
+    async def workspace_connector_state(self, payload: dict) -> dict:
+        return await self._stub().workspace_connector_state(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -179,3 +210,18 @@ PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_MUTATION = False
 PRODUCTION_READY = False
+# Phase B-0 (#2830): workspace-scoped connector truth read RPC.
+# Private service-binding RPC only; never reachable through public fetch().
+WORKSPACE_CONNECTOR_STATE_RPC = True
+WORKSPACE_CONNECTOR_STATE_PUBLIC_ROUTE = False
+WORKSPACE_CONNECTOR_STATE_PAYLOAD_CLOSED = True
+WORKSPACE_CONNECTOR_STATE_LEAKS_BINDING_REF = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_ACTOR_REF = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_ACCOUNT_REF = False
+WORKSPACE_CONNECTOR_STATE_ECHOES_WORKSPACE_REF = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_SCOPES = False
+WORKSPACE_CONNECTOR_STATE_LEAKS_SEALED_CREDENTIAL = False
+WORKSPACE_CONNECTOR_STATE_UNSEALS_REFRESH_TOKEN = False
+WORKSPACE_CONNECTOR_STATE_ISSUES_ACCESS_LEASE = False
+WORKSPACE_CONNECTOR_STATE_WRITE_AUTHORITY = False
+WORKSPACE_CONNECTOR_STATE_DUPLICATE_POLICY = "ambiguous_fail_closed"
