@@ -194,6 +194,7 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
     if paused_before["following"]:
         raise AssertionError(f"user scroll-up did not pause auto-follow at {name}: {paused_before}")
 
+    resume_growth_started = await page.evaluate("performance.now()")
     await page.evaluate(
         """
         () => {
@@ -269,17 +270,32 @@ async def _assert_conversation_motion(page: Page, name: str) -> dict[str, Any]:
         }
         """
     )
-    await page.wait_for_timeout(220)
-    resumed_state = await page.evaluate(
-        """
-        () => ({
-          following: window.__padiemConversationMotion.isFollowingLatest(),
+    resume_growth_wait = await wait_state_settled(
+        page,
+        started_ms=resume_growth_started,
+        done_expr="""() => {
+          const motion = window.__padiemConversationMotion;
+          const remaining = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
+            - (window.scrollY + window.innerHeight);
+          return Boolean(motion && motion.isFollowingLatest()) && remaining <= 4;
+        }""",
+        timeout_ms=2_500,
+        read_expr="""() => ({
+          following: window.__padiemConversationMotion?.isFollowingLatest?.() || false,
           remaining: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)
             - (window.scrollY + window.innerHeight),
           reveal: Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glass-reveal')) || 0,
-        })
-        """
+        })""",
+        evidence_log=TIMING_EVIDENCE,
+        label=f"{name}-progressive-follow",
     )
+    resumed_state = resume_growth_wait["state"]
+    if not resume_growth_wait["done"]:
+        raise AssertionError(
+            f"progressive follow did not resume at {name}: {resumed_state} "
+            f"[condition-wait elapsed_ms={resume_growth_wait['elapsed_ms']:.0f}, "
+            f"fps={resume_growth_wait['fps']:.1f}]"
+        )
     if not resumed_state["following"] or resumed_state["remaining"] > 4:
         raise AssertionError(f"progressive follow did not resume at {name}: {resumed_state}")
     if not 0.15 <= float(resumed_state["reveal"]) <= 1.0:
