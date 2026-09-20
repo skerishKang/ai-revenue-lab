@@ -1,4 +1,4 @@
-"""#2830 Phase A backend-only connector status projection (B62 chat).
+"""#2830 Phase A / B-1C backend connector status projection (B62 chat).
 
 Two truths are published from strictly separate axes and are never merged:
 
@@ -7,20 +7,44 @@ Two truths are published from strictly separate axes and are never merged:
    network-free Core capability snapshots in ``packages/padiem-ai-core``
    (reused, never copied or reimplemented).
 2. WORKSPACE CONNECTED/AUTHORIZED TRUTH — whether a specific workspace is
-   actually connected. B62 currently has NO trusted per-user
-   workspace-state authority (no Engine grant D1 wiring, no Control Plane
-   OAuth storage access), so every row reports
-   ``workspace_state="unverified"`` with ``workspace_reason=
-   "no_trusted_b62_workspace_state_projection"``. The projection never
-   guesses ``connected`` and never guesses ``disconnected``.
+   actually connected.
+
+For the workspace axis this module is the *projection* only; it never becomes a
+workspace authority. It has exactly two sources:
+
+* **No trusted canonical session** (anonymous, or a signed-in session whose
+  canonical identity/workspace cannot be resolved). Every row reports
+  ``workspace_state="unverified"`` with a closed ``workspace_reason``. The
+  projection never guesses ``connected`` and never guesses ``not_connected``;
+  a row is only ever ``not_connected`` when a trusted authority said so
+  explicitly.
+* **Trusted canonical session** (B-1C). The signed B62 product session is
+  resolved through the existing Control Plane identity shadow to a canonical
+  ``auth_session_id``, and the existing B-1B private composition
+  (``compose_workspace_connector_truth``) yields bounded Gmail / Drive truth.
+  Only ``workspace_state`` and ``workspace_reason`` are updated from it — the
+  B-1B row is never published verbatim.
+
+The reviewed workspace-truth scope is exactly Gmail and Google Drive, mapped
+through an explicit closed table to the Core canonical connector ids. Telegram,
+Slack and Calendar keep ``unverified`` because no trusted workspace authority
+exists for them yet; their workspace state is never inferred.
+
+``workspace_state_authority`` is ``True`` only when canonical truth actually
+participated in this response, i.e. at least one reviewed row was updated from a
+trusted authority. It does **not** mean "every connector has workspace
+authority" — each row's own ``workspace_state`` is the final truth source.
 
 The response is a bounded projection: no secret, no raw account/provider
 identifier, no credential binding, no OAuth payload, no authorization URL,
-no provider/Core scope material, no SEND/WRITE tool identity. SEND/WRITE
-is simply not projected as authority anywhere.
+no provider/Core scope material, no SEND/WRITE tool identity. SEND/WRITE is
+simply not projected as authority anywhere. Reading connector truth never
+promotes to SEND/WRITE authority.
 
-Zero runtime reads: no provider call, no OAuth call, no session lookup,
-no D1 lookup, no workspace identity lookup.
+No provider call, no OAuth call, no D1 lookup and no workspace identity lookup
+happens on the anonymous path; the only private reads on the authenticated path
+are the two existing Control Plane Service Binding RPCs reached through the
+already-wired ``app.state`` authorities.
 """
 
 from __future__ import annotations
@@ -43,10 +67,48 @@ from padiem_ai_core.telegram_capability import (
     telegram_capability_snapshot,
 )
 
+from .auth_routes import current_user_id
+from .connector_workspace_truth import (
+    REVIEWED_WORKSPACE_TRUTH_CONNECTORS,
+    compose_workspace_connector_truth,
+)
+from .control_plane_identity import IdentityBridgeError
+
 PROJECTION_VERSION = "b62-connector-status-projection.v1"
 
 WORKSPACE_STATE_UNVERIFIED = "unverified"
+WORKSPACE_STATE_CONNECTED = "connected"
+WORKSPACE_STATE_NOT_CONNECTED = "not_connected"
+WORKSPACE_STATE_AMBIGUOUS = "ambiguous"
+
+# Closed reason vocabulary for the workspace axis. A reason is only ever emitted
+# when the state is ``unverified`` (the authority could not be trusted) or
+# ``ambiguous`` (the authority was trusted and said the state is ambiguous).
 WORKSPACE_REASON_NO_TRUSTED_AUTHORITY = "no_trusted_b62_workspace_state_projection"
+WORKSPACE_REASON_IDENTITY_NOT_LINKED = "canonical_identity_not_linked"
+WORKSPACE_REASON_NO_CANONICAL_WORKSPACE = "canonical_connector_workspace_not_resolved"
+WORKSPACE_REASON_TRUTH_UNAVAILABLE = "canonical_workspace_truth_unavailable"
+WORKSPACE_REASON_CONNECTOR_NOT_REPORTED = "canonical_workspace_connector_not_reported"
+WORKSPACE_REASON_AMBIGUOUS = "canonical_workspace_connector_ambiguous"
+
+# Explicit closed mapping. Reviewed B-1B internal connector id ->
+# (projection row name, public canonical connector id). This is a table, never a
+# string heuristic, so no connector can drift into the workspace axis by name
+# similarity. ``_require_reviewed_targets`` re-checks it against both the B-1B
+# reviewed scope and the Core canonical ids on every authenticated read.
+_WORKSPACE_TRUTH_TARGETS = {
+    "gmail": ("gmail", GMAIL_CONNECTOR_ID),
+    "google-drive": ("drive", DRIVE_CONNECTOR_ID),
+}
+
+# Trusted B-1B state -> published (workspace_state, workspace_reason). The B-1B
+# ``usable`` / ``expires_present`` / ``ambiguous`` fields are deliberately not
+# projected: the public row shape stays exactly what Phase A published.
+_B1B_STATE_TO_PUBLIC = {
+    "connected": (WORKSPACE_STATE_CONNECTED, None),
+    "not_connected": (WORKSPACE_STATE_NOT_CONNECTED, None),
+    "ambiguous": (WORKSPACE_STATE_AMBIGUOUS, WORKSPACE_REASON_AMBIGUOUS),
+}
 
 # Canonical connector identifiers come from Core unchanged.
 _CONNECTOR_IDS = {
@@ -145,9 +207,139 @@ _NO_STORE_HEADERS = {
     "X-Content-Type-Options": "nosniff",
 }
 
+# Governance pins asserted by the contract tests.
+NEW_WORKSPACE_AUTHORITY = False
+NEW_IDENTITY_AUTHORITY = False
+NEW_OAUTH_AUTHORITY = False
+CLIENT_WORKSPACE_ASSERTION = False
+IDENTITY_REF_PROJECTED = False
+TOKEN_OR_SECRET_PROJECTED = False
+SCOPE_PROJECTED = False
+READ_TRUTH_PROMOTES_TO_SEND_WRITE = False
+
+
+def _require_reviewed_targets() -> None:
+    """Fail closed if the closed mapping drifts from B-1B or Core."""
+
+    for internal_id, (row_name, public_id) in _WORKSPACE_TRUTH_TARGETS.items():
+        if internal_id not in REVIEWED_WORKSPACE_TRUTH_CONNECTORS:
+            raise RuntimeError(f"workspace truth target '{internal_id}' is not reviewed")
+        if row_name not in _CONNECTOR_IDS:
+            raise RuntimeError(f"workspace truth row '{row_name}' is not projected")
+        if _CONNECTOR_IDS[row_name] != public_id:
+            raise RuntimeError(f"workspace truth target '{internal_id}' connector id drifted")
+
+
+def _composed_overrides(connectors: Any) -> dict[str, tuple[str, str | None]] | None:
+    """Map a B-1B connector list onto published row overrides.
+
+    ``None`` means the composition envelope is malformed and must fail closed.
+    Rows outside the reviewed scope are ignored rather than published. The
+    reviewed-state vocabulary is enforced here as well, so a substituted
+    authority cannot introduce an unknown state.
+    """
+
+    if not isinstance(connectors, (tuple, list)):
+        return None
+    overrides: dict[str, tuple[str, str | None]] = {}
+    for row in connectors:
+        if not isinstance(row, dict):
+            return None
+        internal_id = row.get("connector_id")
+        if internal_id not in _WORKSPACE_TRUTH_TARGETS:
+            continue
+        published = _B1B_STATE_TO_PUBLIC.get(row.get("state"))
+        if published is None:
+            return None
+        row_name = _WORKSPACE_TRUTH_TARGETS[internal_id][0]
+        overrides[row_name] = published
+    return overrides
+
+
+async def _reviewed_workspace_truth(
+    request: Request,
+) -> tuple[dict[str, tuple[str, str | None]], str, bool]:
+    """Compose reviewed workspace truth for the signed-in B62 product user.
+
+    Returns ``(overrides, fallback_reason, authority)``:
+
+    * ``overrides`` — published ``(workspace_state, workspace_reason)`` per
+      reviewed row that a trusted authority spoke for;
+    * ``fallback_reason`` — the closed reason for reviewed rows without an
+      override;
+    * ``authority`` — ``True`` only when canonical truth actually participated.
+
+    This never raises. Every failure is mapped to a closed, bounded reason, so
+    an operational fault (missing binding, malformed RPC, unresolved session)
+    can never be projected as ``not_connected``. An anonymous request returns
+    the Phase-A reason with no overrides and makes no private call.
+    """
+
+    user_id = current_user_id(request)
+    if user_id is None:
+        return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+
+    try:
+        _require_reviewed_targets()
+    except RuntimeError:
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+
+    identity_authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    google_oauth_authority = getattr(request.app.state, "google_oauth_workspace_truth", None)
+    if identity_authority is None or shadow_store is None or google_oauth_authority is None:
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+
+    try:
+        shadow = await shadow_store.load_projection(user_id)
+    except Exception:  # noqa: BLE001 - a shadow read fault is never a workspace state
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+    if shadow is None:
+        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False
+    session_id = getattr(shadow, "auth_session_id", None)
+    if not isinstance(session_id, str) or not session_id:
+        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False
+
+    try:
+        result = await compose_workspace_connector_truth(
+            identity_authority=identity_authority,
+            google_oauth_authority=google_oauth_authority,
+            session_id=session_id,
+        )
+    except IdentityBridgeError:
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+    except Exception:  # noqa: BLE001 - never leak a driver error into a state
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+
+    if not isinstance(result, dict) or not isinstance(result.get("available"), bool):
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+    if result["available"] is False:
+        return {}, WORKSPACE_REASON_NO_CANONICAL_WORKSPACE, False
+
+    overrides = _composed_overrides(result.get("connectors"))
+    if overrides is None:
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+    return overrides, WORKSPACE_REASON_CONNECTOR_NOT_REPORTED, bool(overrides)
+
 
 async def connectors_status(request: Request) -> JSONResponse:
-    """Public read-only GET; response carries no user- or workspace-specific data."""
+    """Public read-only GET; adds canonical workspace truth when it is trusted.
 
-    del request
-    return JSONResponse(build_connector_status_projection(), headers=dict(_NO_STORE_HEADERS))
+    The platform support axis is always published unchanged. The workspace axis
+    is only updated from a trusted canonical session; otherwise the Phase-A
+    ``unverified`` rows are returned byte-for-byte.
+    """
+
+    document = build_connector_status_projection()
+    overrides, fallback_reason, authority = await _reviewed_workspace_truth(request)
+    if overrides or fallback_reason != WORKSPACE_REASON_NO_TRUSTED_AUTHORITY:
+        rows = {row["connector_id"]: row for row in document["connectors"]}
+        for row_name, public_id in _WORKSPACE_TRUTH_TARGETS.values():
+            row = rows.get(public_id)
+            if row is None:
+                continue
+            row["workspace_state"], row["workspace_reason"] = overrides.get(
+                row_name, (WORKSPACE_STATE_UNVERIFIED, fallback_reason)
+            )
+        document["workspace_state_authority"] = authority
+    return JSONResponse(document, headers=dict(_NO_STORE_HEADERS))

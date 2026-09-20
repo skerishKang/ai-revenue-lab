@@ -179,11 +179,20 @@ def test_builder_fails_closed_when_core_read_contract_disappears(monkeypatch):
         build_connector_status_projection()
 
 
-def test_handler_consumes_no_request_state():
+def test_handler_opens_no_direct_provider_or_oauth_io():
+    """B-1C: the handler may consume already-wired ``app.state`` authorities,
+    but it must never open its own network, provider or OAuth path.
+
+    The private reads are delegated to the reviewed B-1B composition helper; the
+    anonymous path is pinned separately in
+    ``test_b62_connector_status_authenticated.py``.
+    """
+
     source = inspect.getsource(connectors_status)
-    for needle in ("request.app", "session", "cookie", "store", "httpx", "fetch", "authorize", "scope"):
+    for needle in ("httpx", "urlopen", "aiohttp", "requests.", "authorize", "scope", "fetch("):
         assert needle not in source, needle
     assert "build_connector_status_projection" in source
+    assert "_reviewed_workspace_truth" in source
 
 
 @pytest.mark.asyncio
