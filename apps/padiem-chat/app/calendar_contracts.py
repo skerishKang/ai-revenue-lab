@@ -81,7 +81,7 @@ class CalendarSourceType(str, Enum):
     TASK = "task"
     ALERT = "alert"
     CLAW_RUN = "claw_run"
-    # AUTOMATION_RUN = "automation_run" (DEFERRED_PENDING_2833)
+    AUTOMATION_RUN = "automation_run"
 
 
 def _safe_identifier(name: str, value: str) -> str:
