@@ -115,6 +115,34 @@ class ClawAutomationPhaseATests(unittest.TestCase):
         self.assertEqual(len(store.list_runs("workspace_a")), 1)
         self.assertEqual(first.status, ClawScheduledRunStatus.COMPLETED)
 
+    def test_max_length_workspace_and_rule_ids_execute_with_bounded_derived_ids(self) -> None:
+        long_workspace = "w" * 128
+        long_rule = "r" * 128
+        store = InMemoryClawAutomationStore()
+        scheduler = FakeClawScheduler(store)
+        item = rule(long_rule, long_workspace)
+        store.save_rule(item)
+        first_time = datetime(2026, 9, 8, 9, 0, tzinfo=UTC)
+        run = scheduler.execute_rule_dry_run(item, first_time)
+        self.assertLessEqual(len(run.run_id), 128)
+        self.assertLessEqual(len(run.output.proposals[0].proposal_id), 128)
+        self.assertLessEqual(len(run.output.output_id), 128)
+        self.assertTrue(run.run_id.startswith("sched_run_"))
+        self.assertTrue(run.output.proposals[0].proposal_id.startswith("prop_"))
+        self.assertTrue(run.output.output_id.startswith("out_"))
+        self.assertIs(run, scheduler.execute_rule_dry_run(item, first_time))
+
+        different_rule = rule("q" * 128, long_workspace)
+        different_workspace = rule("s" * 128, "x" * 128)
+        store.save_rule(different_rule)
+        store.save_rule(different_workspace)
+        second = scheduler.execute_rule_dry_run(different_rule, first_time)
+        third = scheduler.execute_rule_dry_run(different_workspace, first_time)
+        fourth = scheduler.execute_rule_dry_run(item, datetime(2026, 9, 8, 9, 1, tzinfo=UTC))
+        self.assertNotEqual(run.run_id, second.run_id)
+        self.assertNotEqual(run.run_id, third.run_id)
+        self.assertNotEqual(run.run_id, fourth.run_id)
+
     def test_different_occurrence_is_accepted(self) -> None:
         store = InMemoryClawAutomationStore()
         scheduler = FakeClawScheduler(store)

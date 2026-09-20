@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, time, timedelta, timezone
 from enum import Enum
+import hashlib
 import re
 from typing import Any, Protocol, Sequence
 
@@ -448,6 +449,14 @@ def occurrence_key(workspace_id: str, rule_id: str, scheduled_time: datetime) ->
     return f"claw_occurrence_v1_{workspace}_{rule}_{stamp}"
 
 
+def _derived_occurrence_id(prefix: str, workspace_id: str, rule_id: str, scheduled_time: datetime) -> str:
+    """Create a bounded ID without dropping any logical-occurrence identity."""
+    digest = hashlib.sha256(
+        occurrence_key(workspace_id, rule_id, scheduled_time).encode("utf-8")
+    ).hexdigest()
+    return f"{prefix}_{digest}"
+
+
 class ClawAutomationStore(Protocol):
     def save_rule(self, rule: ClawAutomationRule) -> None: ...
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None: ...
@@ -637,10 +646,9 @@ class FakeClawScheduler:
         )
         if existing is not None:
             return existing
-        stamp = int(scheduled.timestamp())
-        run_id = f"sched_run_{rule.workspace_id}_{rule.rule_id}_{stamp}"
+        run_id = _derived_occurrence_id("sched_run", rule.workspace_id, rule.rule_id, scheduled)
         proposal = ClawNotificationProposal(
-            proposal_id=f"prop_{rule.workspace_id}_{rule.rule_id}_{stamp}",
+            proposal_id=_derived_occurrence_id("prop", rule.workspace_id, rule.rule_id, scheduled),
             workspace_id=rule.workspace_id,
             rule_id=rule.rule_id,
             channel=ClawNotificationChannel.WEB_ALERT_INBOX,
@@ -654,7 +662,7 @@ class FakeClawScheduler:
             created_at=scheduled,
         )
         output = ClawAutomationOutput(
-            output_id=f"out_{rule.workspace_id}_{rule.rule_id}_{stamp}",
+            output_id=_derived_occurrence_id("out", rule.workspace_id, rule.rule_id, scheduled),
             workspace_id=rule.workspace_id,
             output_type=rule.output_type,
             title=f"자동화 결과: {rule.name}",
