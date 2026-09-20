@@ -43,7 +43,7 @@ from .calendar_routes import (
     calendar_work_logs_create,
     calendar_work_logs_list,
 )
-from .calendar_store import CalendarStore, InMemoryCalendarStore
+from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
@@ -239,11 +239,18 @@ def create_app(
             _task_alert_store = None
     app.state.claw_task_alert_store = _task_alert_store
 
-    # #2834 Native Padiem Calendar: in-memory reference store by default in Phase A.
-    # An explicitly injected store wins; durable D1 store deferred pending migration governance.
-    app.state.calendar_store = (
-        calendar_store if calendar_store is not None else InMemoryCalendarStore()
-    )
+    # #2834 Native Padiem Calendar Phase B-2: durable D1 store.
+    # Fail-closed: if d1_binding is present but D1CalendarStore construction
+    # fails, raise rather than silently falling back to InMemoryCalendarStore.
+    # InMemory fallback is allowed only when d1_binding is absent.
+    # An explicitly injected calendar_store always wins.
+    if calendar_store is not None:
+        _calendar_store = calendar_store
+    elif d1_binding is not None:
+        _calendar_store = D1CalendarStore(d1_binding)
+    else:
+        _calendar_store = InMemoryCalendarStore()
+    app.state.calendar_store = _calendar_store
     # #2846 Read-only durable automation projection. The automation authority is
     # injected; Calendar never creates or owns a second automation store.
     app.state.claw_automation_store = claw_automation_store
