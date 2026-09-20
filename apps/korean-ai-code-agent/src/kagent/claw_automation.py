@@ -12,6 +12,8 @@ from enum import Enum
 import hashlib
 import json
 import re
+import sqlite3
+from pathlib import Path
 from typing import Any, Protocol, Sequence
 
 from .contracts import ContractError
@@ -470,6 +472,23 @@ def _derived_occurrence_id(prefix: str, workspace_id: str, rule_id: str, schedul
     return f"{prefix}_{digest}"
 
 
+def _iso(value: datetime) -> str:
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _parse_iso(value: str, field_name: str) -> datetime:
+    """Fail closed for malformed stored timestamps."""
+    if not isinstance(value, str) or not value:
+        raise ContractError(f"stored {field_name} is not a valid ISO datetime")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ContractError(f"stored {field_name} is not a valid ISO datetime") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ContractError(f"stored {field_name} must be timezone-aware")
+    return parsed.astimezone(timezone.utc)
+
+
 class ClawAutomationStore(Protocol):
     def save_rule(self, rule: ClawAutomationRule) -> None: ...
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None: ...
@@ -691,6 +710,357 @@ class FakeClawScheduler:
         return self.store.record_run(run)
 
 
+class SqliteClawAutomationStore:
+    """Durable automation store following the canonical SQLite pattern.
+
+    Mirrors the canonical ``SqliteSealedGoogleOAuthStore`` authority:
+    SQLite stdlib, JSON serialization, workspace-scoped rows,
+    ``ON CONFLICT`` upsert, ``PRAGMA foreign_keys = ON``,
+    ``BEGIN IMMEDIATE`` transaction safety, and fail-closed on invalid data.
+    """
+
+    def __init__(self, database_path: str | Path) -> None:
+        if isinstance(database_path, Path):
+            database_path = str(database_path)
+        if not isinstance(database_path, str) or not database_path.strip():
+            raise ContractError("database_path must be non-empty")
+        self._database_path = database_path.strip()
+        if self._database_path != ":memory:":
+            Path(self._database_path).parent.mkdir(parents=True, exist_ok=True)
+        self._db = sqlite3.connect(self._database_path, isolation_level=None, check_same_thread=False)
+        self._db.execute("PRAGMA foreign_keys = ON")
+        self._db.execute(
+            "CREATE TABLE IF NOT EXISTS claw_rules ("
+            "rule_id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL, name TEXT NOT NULL, "
+            "schedule_kind TEXT NOT NULL, schedule_expression TEXT NOT NULL, schedule_timezone TEXT NOT NULL, "
+            "target_source TEXT NOT NULL, output_type TEXT NOT NULL, "
+            "enabled INTEGER NOT NULL DEFAULT 1, "
+            "notification_channels TEXT NOT NULL DEFAULT '[]', "
+            "created_at TEXT NOT NULL, updated_at TEXT NOT NULL)"
+        )
+        self._db.execute(
+            "CREATE TABLE IF NOT EXISTS claw_runs ("
+            "run_id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL, rule_id TEXT NOT NULL, "
+            "status TEXT NOT NULL, scheduled_time TEXT NOT NULL, started_at TEXT NOT NULL, "
+            "completed_at TEXT, output TEXT, error_message TEXT)"
+        )
+        self._db.execute(
+            "CREATE TABLE IF NOT EXISTS claw_occurrences ("
+            "occurrence_key TEXT PRIMARY KEY, run_id TEXT NOT NULL, workspace_id TEXT NOT NULL)"
+        )
+        self._db.execute(
+            "CREATE TABLE IF NOT EXISTS claw_proposals ("
+            "proposal_id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL, rule_id TEXT NOT NULL, "
+            "channel TEXT NOT NULL, title TEXT NOT NULL, summary TEXT NOT NULL, "
+            "approval_required INTEGER NOT NULL DEFAULT 1, approval_reason TEXT NOT NULL DEFAULT '', "
+            "suggested_action TEXT NOT NULL DEFAULT '', approved_by TEXT, approved_at TEXT, "
+            "created_at TEXT NOT NULL)"
+        )
+
+    # --- rule persistence ---
+
+    def save_rule(self, rule: ClawAutomationRule) -> None:
+        payload = json.dumps(
+            {
+                "rule_id": rule.rule_id,
+                "workspace_id": rule.workspace_id,
+                "name": rule.name,
+                "schedule": {"kind": rule.schedule.kind.value, "expression": rule.schedule.expression, "timezone": rule.schedule.timezone},
+                "target_source": rule.target_source.value,
+                "output_type": rule.output_type.value,
+                "enabled": rule.enabled,
+                "notification_channels": [
+                    {"channel": c.channel.value, "enabled": c.enabled, "recipient_ref": c.recipient_ref}
+                    for c in rule.notification_channels
+                ],
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        try:
+            self._db.execute(
+                "INSERT INTO claw_rules(rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    rule.rule_id, rule.workspace_id, rule.name,
+                    rule.schedule.kind.value, rule.schedule.expression, rule.schedule.timezone,
+                    rule.target_source.value, rule.output_type.value,
+                    1 if rule.enabled else 0, payload,
+                    _iso(datetime.now(timezone.utc)), _iso(datetime.now(timezone.utc)),
+                ),
+            )
+        except sqlite3.IntegrityError:
+            existing = self._get_rule_row(rule.rule_id)
+            if existing is None or existing[1] != rule.workspace_id:
+                raise ContractError("rule_id is already owned by another workspace")
+            self._db.execute(
+                "UPDATE claw_rules SET name=?, schedule_kind=?, schedule_expression=?, schedule_timezone=?, target_source=?, output_type=?, enabled=?, notification_channels=?, updated_at=? WHERE rule_id=?",
+                (
+                    rule.name, rule.schedule.kind.value, rule.schedule.expression, rule.schedule.timezone,
+                    rule.target_source.value, rule.output_type.value,
+                    1 if rule.enabled else 0, payload,
+                    _iso(datetime.now(timezone.utc)), rule.rule_id,
+                ),
+            )
+
+    def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None:
+        row = self._get_rule_row(rule_id)
+        if row is None or row[1] != workspace_id:
+            return None
+        return self._rule_from_row(row)
+
+    def list_rules(self, workspace_id: str) -> list[ClawAutomationRule]:
+        rows = self._db.execute(
+            "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at FROM claw_rules WHERE workspace_id = ?",
+            (workspace_id,),
+        ).fetchall()
+        return [self._rule_from_row(row) for row in rows]
+
+    def update_rule(self, rule: ClawAutomationRule) -> None:
+        current = self._get_rule_row(rule.rule_id)
+        if current is None or current[1] != rule.workspace_id:
+            raise ContractError("rule does not belong to workspace")
+        self.save_rule(rule)
+
+    def set_rule_enabled(self, workspace_id: str, rule_id: str, enabled: bool) -> ClawAutomationRule:
+        if not isinstance(enabled, bool):
+            raise ContractError("enabled must be boolean")
+        rule = self.get_rule(rule_id, workspace_id)
+        if rule is None:
+            raise ContractError("rule does not belong to workspace")
+        updated = ClawAutomationRule(
+            rule_id=rule.rule_id, workspace_id=rule.workspace_id, name=rule.name,
+            schedule=rule.schedule, target_source=rule.target_source,
+            output_type=rule.output_type, enabled=enabled,
+            notification_channels=rule.notification_channels,
+        )
+        self.save_rule(updated)
+        return updated
+
+    # --- run persistence ---
+
+    def record_run(self, run: ClawScheduledRun) -> ClawScheduledRun:
+        existing_run = self._get_run_row(run.run_id)
+        if existing_run is not None and existing_run[1] != run.workspace_id:
+            raise ContractError("run_id is already owned by another workspace")
+        key = occurrence_key(run.workspace_id, run.rule_id, run.scheduled_time)
+        existing_id = self._get_occurrence_run_id(key, run.workspace_id)
+        if existing_id is not None:
+            return self.get_run(existing_id, run.workspace_id)  # type: ignore[return-value]
+        self._db.execute("BEGIN IMMEDIATE")
+        try:
+            self._db.execute(
+                "INSERT OR IGNORE INTO claw_runs(run_id, workspace_id, rule_id, status, scheduled_time, started_at, completed_at, output, error_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    run.run_id, run.workspace_id, run.rule_id, run.status.value,
+                    _iso(run.scheduled_time), _iso(run.started_at),
+                    _iso(run.completed_at) if run.completed_at else None,
+                    self._serialize_output(run.output), run.error_message,
+                ),
+            )
+            self._db.execute(
+                "INSERT OR IGNORE INTO claw_occurrences(occurrence_key, run_id, workspace_id) VALUES (?, ?, ?)",
+                (key, run.run_id, run.workspace_id),
+            )
+            if run.output and run.output.proposals:
+                for proposal in run.output.proposals:
+                    self._db.execute(
+                        "INSERT OR IGNORE INTO claw_proposals(proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (
+                            proposal.proposal_id, proposal.workspace_id, proposal.rule_id,
+                            proposal.channel.value, proposal.title, proposal.summary,
+                            1 if proposal.approval_gate.approval_required else 0,
+                            proposal.approval_gate.reason, proposal.approval_gate.suggested_action,
+                            proposal.approval_gate.approved_by,
+                            _iso(proposal.approval_gate.approved_at) if proposal.approval_gate.approved_at else None,
+                            _iso(proposal.created_at),
+                        ),
+                    )
+            self._db.execute("COMMIT")
+        except Exception:
+            self._db.execute("ROLLBACK")
+            raise
+        return run
+
+    def get_run(self, run_id: str, workspace_id: str) -> ClawScheduledRun | None:
+        row = self._get_run_row(run_id)
+        if row is None or row[1] != workspace_id:
+            return None
+        return self._run_from_row(row)
+
+    def get_run_for_occurrence(self, key: str, workspace_id: str) -> ClawScheduledRun | None:
+        run_id = self._get_occurrence_run_id(key, workspace_id)
+        return self.get_run(run_id, workspace_id) if run_id is not None else None
+
+    def list_runs(self, workspace_id: str) -> list[ClawScheduledRun]:
+        rows = self._db.execute(
+            "SELECT run_id, workspace_id, rule_id, status, scheduled_time, started_at, completed_at, output, error_message FROM claw_runs WHERE workspace_id = ?",
+            (workspace_id,),
+        ).fetchall()
+        return [self._run_from_row(row) for row in rows]
+
+    def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]:
+        rows = self._db.execute(
+            "SELECT proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at FROM claw_proposals WHERE workspace_id = ?",
+            (workspace_id,),
+        ).fetchall()
+        return [self._proposal_from_row(row) for row in rows]
+
+    # --- internal helpers ---
+
+    def _get_rule_row(self, rule_id: str) -> tuple | None:
+        row = self._db.execute(
+            "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at FROM claw_rules WHERE rule_id = ?",
+            (rule_id,),
+        ).fetchone()
+        return row
+
+    def _get_run_row(self, run_id: str) -> tuple | None:
+        row = self._db.execute(
+            "SELECT run_id, workspace_id, rule_id, status, scheduled_time, started_at, completed_at, output, error_message FROM claw_runs WHERE run_id = ?",
+            (run_id,),
+        ).fetchone()
+        return row
+
+    def _get_occurrence_run_id(self, occurrence_key: str, workspace_id: str) -> str | None:
+        row = self._db.execute(
+            "SELECT run_id FROM claw_occurrences WHERE occurrence_key = ? AND workspace_id = ?",
+            (occurrence_key, workspace_id),
+        ).fetchone()
+        return row[0] if row else None
+
+    @staticmethod
+    def _rule_from_row(row: tuple) -> ClawAutomationRule:
+        try:
+            payload = json.loads(row[9])
+            return ClawAutomationRule(
+                rule_id=row[0], workspace_id=row[1], name=row[2],
+                schedule=ClawScheduleExpression(
+                    kind=ClawScheduleKind(payload["schedule"]["kind"]),
+                    expression=payload["schedule"]["expression"],
+                    timezone=payload["schedule"]["timezone"],
+                ),
+                target_source=ClawAutomationTarget(payload["target_source"]),
+                output_type=ClawAutomationOutputType(payload["output_type"]),
+                enabled=bool(row[8]),
+                notification_channels=tuple(
+                    ClawNotificationPreference(
+                        channel=c["channel"], enabled=c["enabled"], recipient_ref=c.get("recipient_ref"),
+                    )
+                    for c in payload["notification_channels"]
+                ),
+            )
+        except Exception as exc:
+            raise ContractError("stored automation rule is corrupt") from exc
+
+    @staticmethod
+    def _run_from_row(row: tuple) -> ClawScheduledRun:
+        output = SqliteClawAutomationStore._deserialize_output(row[7]) if row[7] else None
+        try:
+            return ClawScheduledRun(
+                run_id=row[0], workspace_id=row[1], rule_id=row[2],
+                status=ClawScheduledRunStatus(row[3]),
+                scheduled_time=_parse_iso(row[4], "scheduled_time"),
+                started_at=_parse_iso(row[5], "started_at"),
+                completed_at=_parse_iso(row[6], "completed_at") if row[6] else None,
+                output=output, error_message=row[8],
+            )
+        except ContractError:
+            raise
+        except Exception as exc:
+            raise ContractError("stored scheduled run is corrupt") from exc
+
+    @staticmethod
+    def _proposal_from_row(row: tuple) -> ClawNotificationProposal:
+        try:
+            return ClawNotificationProposal(
+                proposal_id=row[0], workspace_id=row[1], rule_id=row[2],
+                channel=ClawNotificationChannel(row[3]),
+                title=row[4], summary=row[5],
+                approval_gate=ClawApprovalGate(
+                    approval_required=bool(row[6]), reason=row[7], suggested_action=row[8],
+                    approved_by=row[9],
+                    approved_at=_parse_iso(row[10], "approved_at") if row[10] else None,
+                ),
+                created_at=_parse_iso(row[11], "created_at"),
+            )
+        except ContractError:
+            raise
+        except Exception as exc:
+            raise ContractError("stored notification proposal is corrupt") from exc
+
+    @staticmethod
+    def _serialize_output(output: ClawAutomationOutput | None) -> str | None:
+        if output is None:
+            return None
+        return json.dumps(
+            {
+                "output_id": output.output_id,
+                "workspace_id": output.workspace_id,
+                "output_type": output.output_type.value,
+                "title": output.title,
+                "content": output.content,
+                "evidence_refs": list(output.evidence_refs),
+                "proposals": [
+                    {
+                        "proposal_id": p.proposal_id,
+                        "workspace_id": p.workspace_id,
+                        "rule_id": p.rule_id,
+                        "channel": p.channel.value,
+                        "title": p.title,
+                        "summary": p.summary,
+                        "approval_gate": {
+                            "approval_required": p.approval_gate.approval_required,
+                            "reason": p.approval_gate.reason,
+                            "suggested_action": p.approval_gate.suggested_action,
+                            "approved_by": p.approval_gate.approved_by,
+                            "approved_at": _iso(p.approval_gate.approved_at) if p.approval_gate.approved_at else None,
+                        },
+                        "created_at": _iso(p.created_at),
+                    }
+                    for p in output.proposals
+                ],
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+
+    @staticmethod
+    def _deserialize_output(raw: str) -> ClawAutomationOutput | None:
+        if not raw:
+            return None
+        try:
+            payload = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            raise ContractError("stored output record is corrupt")
+        try:
+            proposals = tuple(
+                ClawNotificationProposal(
+                    proposal_id=p["proposal_id"], workspace_id=p["workspace_id"], rule_id=p["rule_id"],
+                    channel=p["channel"], title=p["title"], summary=p["summary"],
+                    approval_gate=ClawApprovalGate(
+                        approval_required=p["approval_gate"]["approval_required"],
+                        reason=p["approval_gate"]["reason"],
+                        suggested_action=p["approval_gate"]["suggested_action"],
+                        approved_by=p["approval_gate"].get("approved_by"),
+                        approved_at=_parse_iso(p["approval_gate"]["approved_at"], "approved_at") if p["approval_gate"].get("approved_at") else None,
+                    ),
+                    created_at=_parse_iso(p["created_at"], "created_at"),
+                )
+                for p in payload.get("proposals", [])
+            )
+            return ClawAutomationOutput(
+                output_id=payload["output_id"], workspace_id=payload["workspace_id"],
+                output_type=payload["output_type"], title=payload["title"], content=payload["content"],
+                evidence_refs=tuple(payload.get("evidence_refs", [])),
+                proposals=proposals,
+            )
+        except ContractError:
+            raise
+        except Exception as exc:
+            raise ContractError("stored output record is corrupt") from exc
+
+
 __all__ = [
     "ClawScheduleKind",
     "ClawDaypart",
@@ -708,6 +1078,7 @@ __all__ = [
     "ClawAutomationStore",
     "InMemoryClawAutomationStore",
     "FakeClawScheduler",
+    "SqliteClawAutomationStore",
     "occurrence_key",
     "parse_cron_expression",
     "resolve_timezone",
