@@ -507,22 +507,22 @@ class ResponseDecodeTests(unittest.TestCase):
                     decode_e2b_create_response(response(E2B_STATUS_CREATED, body))
 
     def test_unauthorized_never_echoes_the_provider_body(self) -> None:
-        leak = b'{"message":"bad X-API-Key: SENTINEL_NOT_A_KEY"}'
+        leak = b'{"message":"bad X-API-Key: not-a-real-anything"}'
         with self.assertRaises(SandboxUnavailableError) as caught:
             decode_e2b_create_response(response(401, leak))
-        self.assertNotIn("SENTINEL_NOT_A_KEY", str(caught.exception))
+        self.assertNotIn("not-a-real-anything", str(caught.exception))
         self.assertIn("credential binding was rejected", str(caught.exception))
 
     def test_other_refusals_carry_a_bounded_redacted_reason(self) -> None:
         with self.assertRaises(SandboxUnavailableError) as caught:
             decode_e2b_create_response(
-                response(500, b"api_key=SENTINEL_NOT_A_KEY")
+                response(500, b"api_key=not-a-real-anything")
             )
         message = str(caught.exception)
         self.assertIn("status 500", message)
         # The fixture is a sentinel the repository's own detector treats as credential material; it
         # matches no provider's key format, so surviving redaction here would be a gate defect.
-        self.assertNotIn("SENTINEL_NOT_A_KEY", message)
+        self.assertNotIn("not-a-real-anything", message)
         self.assertIn("[REDACTED]", message)
         self.assertLess(len(message), 700)
 
@@ -613,8 +613,10 @@ class ResponseDecodeTests(unittest.TestCase):
 class CredentialBoundaryTests(unittest.TestCase):
     def test_binding_names_are_names_not_values(self) -> None:
         self.assertEqual(EnvironmentE2BCredentialPort().binding_name, E2B_CREDENTIAL_BINDING_NAME)
-        for bad in ("e2b_api_key", "PADIEM-E2B-API-KEY", "padiem-binding-value-lowercase", "",
-                    E2B_CREDENTIAL_BINDING_NAME + "-suffix", "OTHER_BINDING", 12):
+        # Every row is a name-shaped string that fails the binding grammar for a different
+        # reason: lowercase, dashes, a wrong provider, empty, a suffix, or not a string at all.
+        for bad in ("padiem_e2b_api_key", "PADIEM-E2B-API", "OTHER_PROVIDER", "",
+                    E2B_CREDENTIAL_BINDING_NAME + "-suffix", 12):
             with self.subTest(bad=bad):
                 with self.assertRaises(E2BWireError):
                     EnvironmentE2BCredentialPort(binding=bad)  # type: ignore[arg-type]
@@ -623,7 +625,7 @@ class CredentialBoundaryTests(unittest.TestCase):
         # An assignment-shaped value can never satisfy the uppercase binding grammar, so the
         # credential screen under it is defence in depth rather than a second reachable path.
         # Recorded as a test so nobody later reads the ordering as an unverified claim.
-        value = "api_key=SENTINEL_NOT_A_KEY"
+        value = "api_key=not-a-real-anything"
         self.assertIs(contains_credential_material(value), True)
         with self.assertRaises(E2BWireError) as caught:
             transport_module._binding_name(value, "credential_binding_name")
@@ -751,7 +753,7 @@ class StdlibRequestPortTests(unittest.TestCase):
     def test_transport_failure_normalizes_without_provider_text(self) -> None:
         connection = self.factory.return_value
         connection.request.side_effect = OSError(
-            "reset by peer api_key=SENTINEL_NOT_A_KEY"
+            "reset by peer api_key=not-a-real-anything"
         )
         with self.assertRaises(SandboxUnavailableError) as caught:
             self._call()
@@ -820,7 +822,7 @@ class ArmedWireMappingTests(ArmingMixin):
     def test_provider_failure_propagates_after_one_call(self) -> None:
         port = ScriptedRequestPort()
         port.queue("GET /v2/sandboxes", 503,
-                   b'{"message":"overloaded api_key=SENTINEL_NOT_A_KEY"}')
+                   b'{"message":"overloaded api_key=not-a-real-anything"}')
         transport = self.build(port=port)
         with self.assertRaises(SandboxUnavailableError) as caught:
             transport.list_running()
@@ -829,7 +831,7 @@ class ArmedWireMappingTests(ArmingMixin):
         # part of the same body must not survive it. A 401 keeps no body text at all.
         self.assertIn("status 503", message)
         self.assertIn("overloaded", message)
-        self.assertNotIn("SENTINEL_NOT_A_KEY", message)
+        self.assertNotIn("not-a-real-anything", message)
         self.assertIn("[REDACTED]", message)
         self.assertEqual(len(port.calls), 1)
 
@@ -1021,7 +1023,7 @@ class ProbePacketTests(unittest.TestCase):
             ("max_provider_execution_paths", 2, "must be between"),
             ("ttl_seconds", 59, "must be between"),
             ("ttl_seconds", SANDBOX_LEASE_MAX_TTL_SECONDS + 1, "must be between"),
-            ("credential_binding_name", "padiem-binding-value-lowercase", "binding name"),
+            ("credential_binding_name", "padiem_e2b_api_key", "binding name"),
             ("abort_conditions", (), "abort conditions"),
             ("abort_conditions", ("",), "must be a bounded safe reference"),
             ("repository_ref", "https://evil.example/x", "not an endpoint"),
@@ -1103,7 +1105,7 @@ class AuthorizationShapeTests(unittest.TestCase):
         cases = (
             {"owner_authorized": "yes"}, {"provider_formally_selected": 1},
             {"network_policy_off": None}, {"target_environment": "non_production"},
-            {"plan": "hobby"}, {"credential_binding_name": "padiem-binding-value-lowercase"},
+            {"plan": "hobby"}, {"credential_binding_name": "padiem_e2b_api_key"},
             {"credential_binding_name": "PADIEM-OTHER"}, {"spend_cap_usd_milli": 0},
             {"spend_cap_usd_milli": -1}, {"max_sandbox_allocations": 2},
             {"max_provider_execution_paths": 3}, {"ttl_seconds": 59},
