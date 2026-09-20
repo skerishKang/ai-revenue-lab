@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, time, timedelta, timezone
 from enum import Enum
 import hashlib
+import json
 import re
 from typing import Any, Protocol, Sequence
 
@@ -445,8 +446,20 @@ def occurrence_key(workspace_id: str, rule_id: str, scheduled_time: datetime) ->
     workspace = _safe_id(workspace_id, "workspace_id")
     rule = _safe_id(rule_id, "rule_id")
     scheduled = _aware_utc(scheduled_time, "scheduled_time")
-    stamp = scheduled.strftime("%Y%m%dT%H%M%SZ")
-    return f"claw_occurrence_v1_{workspace}_{rule}_{stamp}"
+    stamp = scheduled.isoformat(timespec="microseconds").replace("+00:00", "Z")
+    payload = json.dumps(
+        {
+            "v": 1,
+            "workspace_id": workspace,
+            "rule_id": rule,
+            "scheduled_at": stamp,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    )
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return f"claw_occurrence_v1_{digest}"
 
 
 def _derived_occurrence_id(prefix: str, workspace_id: str, rule_id: str, scheduled_time: datetime) -> str:

@@ -99,9 +99,70 @@ class ClawAutomationPhaseATests(unittest.TestCase):
         when = datetime(2026, 9, 8, 9, 0, tzinfo=UTC)
         first = occurrence_key("workspace_a", "same", when)
         second = occurrence_key("workspace_b", "same", when)
+        different_rule = occurrence_key("workspace_a", "other", when)
         third = occurrence_key("workspace_a", "same", datetime(2026, 9, 8, 9, 1, tzinfo=UTC))
         self.assertNotEqual(first, second)
+        self.assertNotEqual(first, different_rule)
         self.assertNotEqual(first, third)
+
+    def test_ambiguous_delimiter_pair_cannot_share_occurrence_or_run(self) -> None:
+        when = datetime(2026, 9, 8, 9, 0, tzinfo=UTC)
+        workspace_a, rule_a = "a_b", "c"
+        workspace_b, rule_b = "a", "b_c"
+        self.assertNotEqual(
+            (workspace_a, rule_a),
+            (workspace_b, rule_b),
+        )
+        self.assertNotEqual(
+            occurrence_key(workspace_a, rule_a, when),
+            occurrence_key(workspace_b, rule_b, when),
+        )
+
+        store = InMemoryClawAutomationStore()
+        scheduler = FakeClawScheduler(store)
+        item_a = rule(rule_a, workspace_a)
+        item_b = rule(rule_b, workspace_b)
+        store.save_rule(item_a)
+        store.save_rule(item_b)
+        run_a = scheduler.execute_rule_dry_run(item_a, when)
+        run_b = scheduler.execute_rule_dry_run(item_b, when)
+        self.assertEqual(run_a.workspace_id, workspace_a)
+        self.assertEqual(run_b.workspace_id, workspace_b)
+        self.assertIsNot(run_a, run_b)
+        self.assertNotEqual(run_a.run_id, run_b.run_id)
+        self.assertNotEqual(run_a.output.output_id, run_b.output.output_id)
+        self.assertNotEqual(
+            run_a.output.proposals[0].proposal_id,
+            run_b.output.proposals[0].proposal_id,
+        )
+        self.assertEqual(store.list_runs(workspace_a), [run_a])
+        self.assertEqual(store.list_runs(workspace_b), [run_b])
+
+    def test_each_occurrence_identity_axis_changes_all_derived_ids(self) -> None:
+        when = datetime(2026, 9, 8, 9, 0, tzinfo=UTC)
+        store = InMemoryClawAutomationStore()
+        scheduler = FakeClawScheduler(store)
+        base = rule("identity", "workspace_a")
+        changed_workspace = rule("identity_workspace", "workspace_b")
+        changed_rule = rule("other", "workspace_a")
+        for item in (base, changed_workspace, changed_rule):
+            store.save_rule(item)
+
+        runs = [
+            scheduler.execute_rule_dry_run(base, when),
+            scheduler.execute_rule_dry_run(changed_workspace, when),
+            scheduler.execute_rule_dry_run(changed_rule, when),
+            scheduler.execute_rule_dry_run(base, when.replace(minute=1)),
+        ]
+        derived = [
+            (
+                run.run_id,
+                run.output.proposals[0].proposal_id,
+                run.output.output_id,
+            )
+            for run in runs
+        ]
+        self.assertEqual(len(set(derived)), 4)
 
     def test_same_occurrence_retry_is_deduplicated(self) -> None:
         store = InMemoryClawAutomationStore()
