@@ -82,51 +82,71 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # This step runs with working-directory apps/korean-ai-platform, so the
+          # canonical resolver is addressed by absolute path instead of a cwd
+          # relative guess.
+          B14_SERVED_VERSION_SCRIPTS: ${{ github.workspace }}/.github/scripts
         run: |
           set -euo pipefail
           sleep 15
 
-          # (a) The deploy step must have emitted a Current Version ID, and
-          # wrangler deployments list must show that exact version serving 100%.
+          # (a) The deploy step must have emitted a Current Version ID, and the
+          # documented Cloudflare deployments endpoint must report that exact
+          # version as the one actively serving 100%.
+          #
+          # The served-version rules are NOT reimplemented here and they are NOT
+          # read from `wrangler deployments list`: that command emits a bare list
+          # whose entry order is not a documented served-version authority, and
+          # every superseded deployment still records percentage 100 in its own
+          # history, so scanning it lets a rolled-back version satisfy the gate.
+          # The whole REST envelope is handed to the shared canonical resolver,
+          # which requires result.deployments[0] -- the documented active
+          # deployment -- to carry exactly one version at 100% with a safe id.
           VERSION_ID="$(grep -oE 'Current Version ID:\s*[0-9a-fA-F-]+' /tmp/b14-deploy.log | tail -n 1 | awk '{print $NF}')"
           test -n "$VERSION_ID"
           echo "DEPLOY_CURRENT_VERSION_ID=${VERSION_ID}"
-          npx wrangler@4 deployments list --json > /tmp/b14-deployments.json
+          curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/deployments" \
+            -o /tmp/b14-deployments.json
           python3 - "$VERSION_ID" <<'PY'
           import json
           import os
           import sys
+          from pathlib import Path
+
+          sys.path.insert(0, str(Path(os.environ["B14_SERVED_VERSION_SCRIPTS"]).resolve()))
+
+          from cloudflare_served_version import (  # noqa: E402
+              ServedVersionReason,
+              ServedVersionResolutionError,
+              resolve_served_version_id,
+          )
 
           expected = sys.argv[1]
+          print(f"B14_EXPECTED_VERSION={expected}")
           path = os.environ.get("B14_DEPLOYMENTS_JSON", "/tmp/b14-deployments.json")
           with open(path, encoding="utf-8") as fh:
               payload = json.load(fh)
-          # wrangler deployments list --json returns a bare LIST of deployments;
-          # tolerate the {"deployments": [...]} object shape as well.
-          if isinstance(payload, list):
-              deployments = payload
-          else:
-              deployments = payload.get("deployments") or []
-          assert deployments, "deployments list returned no deployments"
-          # Real wrangler 4.129 shape (measured): bare list, oldest-first,
-          # each entry carries versions: [{version_id, percentage}]. Find the
-          # expected version wherever it lives instead of assuming entry
-          # order or key layout.
-          match = None
-          for entry in deployments:
-              if not isinstance(entry, dict):
-                  continue
-              for v in entry.get("versions") or []:
-                  if isinstance(v, dict) and v.get("version_id") == expected:
-                      match = v
-                      break
-              if match is not None:
-                  break
-          assert match is not None, (
-              f"deployed version {expected!r} not found in deployments list"
-          )
-          percentage = match.get("percentage")
-          assert percentage == 100, f"new version is serving {percentage!r}%, expected 100"
+
+          try:
+              served = resolve_served_version_id(payload)
+          except ServedVersionResolutionError as exc:
+              print("CANONICAL_SERVED_VERSION_RESOLVED=NO")
+              print(f"CANONICAL_SERVED_VERSION_REASON={exc.reason}")
+              raise SystemExit(f"served-version guard failed closed: {exc.reason}")
+
+          if served != expected:
+              print("CANONICAL_SERVED_VERSION_RESOLVED=NO")
+              print(f"CANONICAL_SERVED_VERSION_REASON={ServedVersionReason.VERSION_ID}")
+              print("B14_SERVED_VERSION_MISMATCH=YES")
+              raise SystemExit("active served version does not match deployed version")
+
+          print(f"CANONICAL_SERVED_VERSION_RESOLVED={served}")
+          print("CANONICAL_SERVED_VERSION_REUSED=YES")
+          print("HISTORICAL_DEPLOYMENT_ACCEPTED=NO")
+          print("WRANGLER_RAW_LIST_ACCEPTED=NO")
           print("POST_DEPLOY_VERSION_AT_100=PASS")
           PY
 

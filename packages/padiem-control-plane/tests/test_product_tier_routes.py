@@ -223,14 +223,17 @@ def _registry_executable_model_ids() -> dict[str, str]:
 
 def test_parity_with_b14_tier_registry_active_routes() -> None:
     registry = _registry_executable_model_ids()
-    assert sorted(registry) == [
-        "plus.agnes-3.0-flash.v1",
-    ]
-    executables = _executables()
-    assert (
-        registry["plus.agnes-3.0-flash.v1"]
-        == executables[ProductTierLabel.PLUS].model_id
-    )
+    contract = {
+        route.route_id: route.model_id
+        for tier in PRODUCT_TIER_ROUTES
+        for route in tier.routes
+        if route.status is ProductRouteStatus.EXECUTABLE
+    }
+    # The two files are compared against each other instead of against a hand-typed route
+    # id, so an owner tier switch keeps proving parity without this test needing to learn
+    # the new literal (#2800).
+    assert contract, "the shared declaration must expose at least one executable route"
+    assert registry == contract
 
 
 def test_parity_with_chat_model_policy_derivation() -> None:

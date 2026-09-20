@@ -113,9 +113,13 @@ MODEL_ALIASES: dict[str, str] = {
     "/plus": LOW_B14_MODEL_ID,
     "/pro": MEDIUM_B14_MODEL_ID,
     "/max": HIGH_B14_MODEL_ID,
-    # Temporary compatibility selectors from the earlier test lane.
+    # Temporary compatibility selector from the earlier test lane.
     "/kilo": MEDIUM_B14_MODEL_ID,
-    "/poolside": LOW_B14_MODEL_ID,
+    # There is deliberately no "/poolside" key. Poolside Laguna is HOLD_AS_DATA_ONLY in the
+    # canonical shared declaration, so an alias naming it could only ever dispatch a
+    # different provider under a Poolside label. Unknown provider aliases fail closed as
+    # unknown_model_alias, and Poolside becomes selectable only when an owner gives it an
+    # executable tier route in that declaration — not by inventing a hold identity here.
 }
 
 # Product capability claims remain conservative. Free/promotional status is not
