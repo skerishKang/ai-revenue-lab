@@ -615,7 +615,7 @@ class CredentialBoundaryTests(unittest.TestCase):
         self.assertEqual(EnvironmentE2BCredentialPort().binding_name, E2B_CREDENTIAL_BINDING_NAME)
         # Every row is a name-shaped string that fails the binding grammar for a different
         # reason: lowercase, dashes, a wrong provider, empty, a suffix, or not a string at all.
-        for bad in ("padiem_e2b_api_key", "PADIEM-E2B-API", "OTHER_PROVIDER", "",
+        for bad in ("lowercase_binding_name", "PADIEM-E2B-API", "OTHER_PROVIDER", "",
                     E2B_CREDENTIAL_BINDING_NAME + "-suffix", 12):
             with self.subTest(bad=bad):
                 with self.assertRaises(E2BWireError):
@@ -1023,7 +1023,7 @@ class ProbePacketTests(unittest.TestCase):
             ("max_provider_execution_paths", 2, "must be between"),
             ("ttl_seconds", 59, "must be between"),
             ("ttl_seconds", SANDBOX_LEASE_MAX_TTL_SECONDS + 1, "must be between"),
-            ("credential_binding_name", "padiem_e2b_api_key", "binding name"),
+            ("credential_binding_name", "lowercase_binding_name", "binding name"),
             ("abort_conditions", (), "abort conditions"),
             ("abort_conditions", ("",), "must be a bounded safe reference"),
             ("repository_ref", "https://evil.example/x", "not an endpoint"),
@@ -1105,7 +1105,7 @@ class AuthorizationShapeTests(unittest.TestCase):
         cases = (
             {"owner_authorized": "yes"}, {"provider_formally_selected": 1},
             {"network_policy_off": None}, {"target_environment": "non_production"},
-            {"plan": "hobby"}, {"credential_binding_name": "padiem_e2b_api_key"},
+            {"plan": "hobby"}, {"credential_binding_name": "lowercase_binding_name"},
             {"credential_binding_name": "PADIEM-OTHER"}, {"spend_cap_usd_milli": 0},
             {"spend_cap_usd_milli": -1}, {"max_sandbox_allocations": 2},
             {"max_provider_execution_paths": 3}, {"ttl_seconds": 59},
