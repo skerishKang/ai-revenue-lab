@@ -18,11 +18,14 @@ Coverage map (CENTRAL S3-A work order):
 * H  oversized child result -> fail closed
 * I  child crash -> bounded deterministic failure
 * J  Windows spawn/import behaviour
+* plus: every lifecycle/resource knob bounded above, and the public boundary
+  accepts no launcher hook at all.
 """
 
 from __future__ import annotations
 
 import ast
+import inspect
 import io
 import json
 import os
@@ -391,7 +394,7 @@ class HardTimeoutTests(unittest.TestCase):
     def test_real_hanging_child_is_killed_and_reported_as_timed_out(self) -> None:
         spawn, handles = _spawn_running(_hang_command())
         policy = isolation.ParserIsolationPolicy(
-            timeout_seconds=1.0, terminate_grace_seconds=3.0
+            timeout_seconds=1.0, terminate_grace_seconds=2.0
         )
         started = time.monotonic()
         with mock.patch.object(isolation, "_spawn_parser_child", spawn):
@@ -911,6 +914,163 @@ class PolicyTests(unittest.TestCase):
         self.assertGreater(contract.MAX_CHILD_ENVELOPE_BYTES, 2 * 1024 * 1024)
         self.assertGreater(contract.MAX_CHILD_OUTPUT_BYTES, 40_000)
         self.assertEqual(contract.MAX_CHILD_ERROR_BYTES, 8192)
+
+
+_SECONDS_CEILING_NAMES = (
+    ("timeout_seconds", "DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS"),
+    ("terminate_grace_seconds", "DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS"),
+    ("kill_grace_seconds", "DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS"),
+    ("drain_join_seconds", "DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS"),
+)
+
+_BYTES_CEILING_NAMES = (
+    ("max_envelope_bytes", "MAX_CHILD_ENVELOPE_BYTES"),
+    ("max_output_bytes", "MAX_CHILD_OUTPUT_BYTES"),
+    ("max_error_bytes", "MAX_CHILD_ERROR_BYTES"),
+)
+
+
+class LifecycleBoundTests(unittest.TestCase):
+    """PARSER_TIMEOUT_LIFECYCLE_BOUNDED / IPC_MEMORY_POLICY_WIDENABLE=NO.
+
+    Bounding the parse wait is not enough: a policy free to request a 600s
+    terminate grace has an effectively unbounded hard timeout while still
+    satisfying ``timeout_seconds <= 30``. Every knob is therefore checked against
+    its canonical ceiling, not merely against zero.
+    """
+
+    def test_canonical_grace_ceilings_exist_and_are_the_policy_defaults(self) -> None:
+        policy = isolation.DEFAULT_PARSER_ISOLATION_POLICY
+        for knob, constant_name in _SECONDS_CEILING_NAMES:
+            ceiling = getattr(isolation, constant_name)
+            with self.subTest(knob=knob):
+                self.assertEqual(getattr(policy, knob), ceiling)
+        self.assertEqual(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS, 30.0)
+        self.assertEqual(isolation.DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS, 2.0)
+        self.assertEqual(isolation.DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS, 2.0)
+        self.assertEqual(isolation.DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS, 2.0)
+
+    def test_above_max_seconds_knobs_are_rejected(self) -> None:
+        for knob, constant_name in _SECONDS_CEILING_NAMES:
+            ceiling = getattr(isolation, constant_name)
+            for value in (ceiling + 1e-6, ceiling * 2, ceiling + 60.0, 1e9, float("inf")):
+                with self.subTest(knob=knob, value=value), self.assertRaises(
+                    isolation.ParserIsolationError
+                ):
+                    isolation.ParserIsolationPolicy(**{knob: value})
+
+    def test_above_max_bytes_knobs_are_rejected(self) -> None:
+        for knob, constant_name in _BYTES_CEILING_NAMES:
+            ceiling = getattr(contract, constant_name)
+            for value in (ceiling + 1, ceiling * 2, 1 << 40):
+                with self.subTest(knob=knob, value=value), self.assertRaises(
+                    isolation.ParserIsolationError
+                ):
+                    isolation.ParserIsolationPolicy(**{knob: value})
+
+    def test_a_single_knob_above_its_ceiling_is_enough_to_be_refused(self) -> None:
+        # Proves the ceiling is per-knob, not a sum or a check on one field.
+        for knob, constant_name in _SECONDS_CEILING_NAMES:
+            with self.subTest(knob=knob), self.assertRaises(
+                isolation.ParserIsolationError
+            ):
+                isolation.ParserIsolationPolicy(**{knob: getattr(isolation, constant_name) + 0.5})
+        for knob, constant_name in _BYTES_CEILING_NAMES:
+            with self.subTest(knob=knob), self.assertRaises(
+                isolation.ParserIsolationError
+            ):
+                isolation.ParserIsolationPolicy(**{knob: getattr(contract, constant_name) + 1})
+
+    def test_ceiling_values_themselves_are_accepted(self) -> None:
+        policy = isolation.ParserIsolationPolicy(
+            **{
+                knob: getattr(isolation, constant_name)
+                for knob, constant_name in _SECONDS_CEILING_NAMES
+            }
+        )
+        self.assertEqual(policy.timeout_seconds, 30.0)
+        self.assertEqual(policy.terminate_grace_seconds, 2.0)
+        self.assertEqual(policy.kill_grace_seconds, 2.0)
+        self.assertEqual(policy.drain_join_seconds, 2.0)
+
+    def test_smaller_values_remain_permitted_for_fail_closed_exercise(self) -> None:
+        policy = isolation.ParserIsolationPolicy(
+            timeout_seconds=0.25,
+            terminate_grace_seconds=0.05,
+            kill_grace_seconds=0.05,
+            drain_join_seconds=0.05,
+            max_envelope_bytes=1024,
+            max_output_bytes=64,
+            max_error_bytes=64,
+        )
+        self.assertEqual(policy.max_output_bytes, 64)
+
+    def test_a_widened_policy_cannot_start_a_parser_at_all(self) -> None:
+        # The refusal happens at construction, so a caller cannot even build the
+        # widened policy that would make the hard timeout unbounded.
+        with self.assertRaises(isolation.ParserIsolationError):
+            isolation.ParserIsolationPolicy(terminate_grace_seconds=600.0)
+
+
+class FixedChildLaunchAuthorityTests(unittest.TestCase):
+    """PUBLIC_PROCESS_SPAWN_INJECTION=NO / FIXED_CHILD_LAUNCH_AUTHORITY=YES."""
+
+    def test_public_boundary_signature_has_no_launcher_hook(self) -> None:
+        parameters = inspect.signature(
+            isolation.extract_binary_document_isolated
+        ).parameters
+        self.assertEqual(set(parameters), {"name", "media_type", "payload", "policy"})
+        for forbidden in (
+            "spawn",
+            "spawn_child",
+            "launcher",
+            "executor",
+            "factory",
+            "argv",
+            "command",
+            "executable",
+        ):
+            self.assertNotIn(forbidden, parameters, forbidden)
+        for parameter in parameters.values():
+            self.assertEqual(
+                parameter.kind, inspect.Parameter.KEYWORD_ONLY, parameter.name
+            )
+
+    def test_passing_a_spawn_hook_is_a_type_error(self) -> None:
+        with self.assertRaises(TypeError):
+            isolation.extract_binary_document_isolated(
+                name="plan.docx",
+                media_type=DOCX_MEDIA,
+                payload=_minimal_docx(),
+                spawn=lambda argv, environment: None,
+            )
+
+    def test_module_exposes_no_spawn_injection_seam(self) -> None:
+        self.assertFalse(hasattr(isolation, "SpawnChild"))
+        for name in isolation.__all__:
+            if "spawn" in name.lower():
+                self.fail(f"unexpected public spawn seam: {name}")
+        # The private reviewed spawner is the only launcher the module defines,
+        # and the production path calls it directly rather than through a hook.
+        self.assertTrue(callable(isolation._spawn_parser_child))
+        source = Path(isolation.__file__).read_text(encoding="utf-8")
+        self.assertIn(
+            "process = _spawn_parser_child(argv, _child_environment())", source
+        )
+
+    def test_public_boundary_still_starts_the_reviewed_child(self) -> None:
+        # Runtime proof the fixed authority is intact: with no hook available,
+        # the real reviewed child is still what runs a valid document.
+        spy = _SpawnSpy()
+        with mock.patch.object(isolation, "_spawn_parser_child", spy):
+            result = isolation.extract_binary_document_isolated(
+                name="plan.docx", media_type=DOCX_MEDIA, payload=_minimal_docx()
+            )
+        self.assertEqual(result.outcome, isolation.ParserOutcome.COMPLETED)
+        self.assertEqual(spy.calls, 1)
+        self.assertEqual(
+            spy.argv[0], [sys.executable, "-P", "-m", contract.CHILD_MODULE_NAME]
+        )
 
 
 if __name__ == "__main__":

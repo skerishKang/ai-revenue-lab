@@ -36,6 +36,16 @@ hard timeout: none of them can preempt synchronous CPU work inside one process,
 so a hung parser keeps the interpreter busy no matter how small the budget is.
 This module therefore imports no ``asyncio`` and no executor.
 
+``PARSER_TIMEOUT_LIFECYCLE_BOUNDED=YES``. Bounding the parse wait alone would not
+be enough: a policy free to request a 600s terminate grace still has an
+effectively unbounded hard timeout. Every stage of the ladder therefore has a
+canonical ceiling (``DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS`` and the
+``*_GRACE_MAX_SECONDS`` / ``*_JOIN_MAX_SECONDS`` constants), and
+:class:`ParserIsolationPolicy` refuses any value outside ``0 < value <=
+ceiling``. The byte ceilings are bounded the same way
+(``IPC_MEMORY_POLICY_WIDENABLE=NO``): a policy may lower them for fail-closed
+exercise but can never accept a larger child result than Core already allows.
+
 ``timeout != cancellation`` (semantic reference:
 ``kagent.windows_local_executor``): ``timed_out`` is a distinct outcome from
 ``failed`` and from ``rejected``, a terminated child reports no exit code, and
@@ -80,7 +90,6 @@ import os
 import subprocess
 import sys
 import threading
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -104,6 +113,9 @@ from .document_parser_contract import (
 
 __all__ = [
     "DEFAULT_PARSER_ISOLATION_POLICY",
+    "DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS",
+    "DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS",
+    "DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS",
     "DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS",
     "DOCUMENT_PARSER_TIMEOUT_SECONDS",
     "PARSER_INPUT_REASON_CODE",
@@ -123,8 +135,37 @@ __all__ = [
 DOCUMENT_PARSER_TIMEOUT_SECONDS = 30.0
 DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS = 30.0
 
+#: Canonical grace/join ceilings. ``PARSER_TIMEOUT_LIFECYCLE_BOUNDED=YES`` only
+#: holds if *every* stage of the ladder is bounded, not just the parse wait:
+#: a policy free to request a 600s terminate grace has an effectively unbounded
+#: hard timeout while still passing a ``timeout_seconds <= 30`` check. The
+#: defaults on :class:`ParserIsolationPolicy` are these ceilings, so a caller can
+#: only ever narrow the lifecycle, never widen it.
+DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS = 2.0
+DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS = 2.0
+DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS = 2.0
+
 #: The action a timeout must take. A policy may not weaken this.
 PARSER_TIMEOUT_ACTION = "kill"
+
+#: Every bounded float knob and its inclusive ceiling. A policy value outside
+#: ``0 < value <= ceiling`` is refused at construction, so no caller can convert
+#: the bounded ladder into an unbounded wait.
+_BOUNDED_SECONDS_CEILINGS = (
+    ("timeout_seconds", DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS),
+    ("terminate_grace_seconds", DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS),
+    ("kill_grace_seconds", DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS),
+    ("drain_join_seconds", DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS),
+)
+
+#: Every bounded byte knob and its inclusive ceiling, derived from the existing
+#: Core document bounds. ``IPC_MEMORY_POLICY_WIDENABLE=NO``: a policy may lower
+#: these for fail-closed exercise but can never accept a larger child result.
+_BOUNDED_BYTES_CEILINGS = (
+    ("max_envelope_bytes", MAX_CHILD_ENVELOPE_BYTES),
+    ("max_output_bytes", MAX_CHILD_OUTPUT_BYTES),
+    ("max_error_bytes", MAX_CHILD_ERROR_BYTES),
+)
 
 #: The only caller environment values the child inherits. They are OS-standard
 #: process and user-profile locations, not caller input and not secrets:
@@ -172,16 +213,19 @@ class ParserIsolationPolicy:
     """Bounded parser-isolation policy, validated on construction."""
 
     timeout_seconds: float = DOCUMENT_PARSER_TIMEOUT_SECONDS
-    terminate_grace_seconds: float = 2.0
-    kill_grace_seconds: float = 2.0
-    drain_join_seconds: float = 2.0
+    terminate_grace_seconds: float = DOCUMENT_PARSER_TERMINATE_GRACE_MAX_SECONDS
+    kill_grace_seconds: float = DOCUMENT_PARSER_KILL_GRACE_MAX_SECONDS
+    drain_join_seconds: float = DOCUMENT_PARSER_DRAIN_JOIN_MAX_SECONDS
     timeout_action: str = PARSER_TIMEOUT_ACTION
     max_envelope_bytes: int = MAX_CHILD_ENVELOPE_BYTES
     max_output_bytes: int = MAX_CHILD_OUTPUT_BYTES
     max_error_bytes: int = MAX_CHILD_ERROR_BYTES
 
     def __post_init__(self) -> None:
-        for name in ("timeout_seconds", "terminate_grace_seconds", "kill_grace_seconds", "drain_join_seconds"):
+        # Positive-only validation is not enough: it would leave every knob
+        # unbounded in practice. Each value is checked against its canonical
+        # ceiling as well as its floor.
+        for name, ceiling in _BOUNDED_SECONDS_CEILINGS:
             value = getattr(self, name)
             if (
                 isinstance(value, bool)
@@ -190,19 +234,24 @@ class ParserIsolationPolicy:
                 or float(value) <= 0
             ):
                 raise ParserIsolationError(f"{name} must be a positive finite number")
-        if float(self.timeout_seconds) > DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS:
-            raise ParserIsolationError(
-                "timeout_seconds exceeds the bounded parser timeout ceiling "
-                f"({DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS:g})"
-            )
+            if float(value) > ceiling:
+                raise ParserIsolationError(
+                    f"{name} must be <= the canonical ceiling ({ceiling:g}s); "
+                    "a bounded timeout lifecycle cannot be widened by a policy"
+                )
+        for name, ceiling in _BOUNDED_BYTES_CEILINGS:
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise ParserIsolationError(f"{name} must be a positive integer")
+            if value > ceiling:
+                raise ParserIsolationError(
+                    f"{name} must be <= the canonical ceiling ({ceiling} bytes); "
+                    "the IPC memory policy cannot be widened by a policy"
+                )
         if self.timeout_action != PARSER_TIMEOUT_ACTION:
             raise ParserIsolationError(
                 f"timeout_action must be {PARSER_TIMEOUT_ACTION!r}; a timeout cannot be weakened"
             )
-        for name in ("max_envelope_bytes", "max_output_bytes", "max_error_bytes"):
-            value = getattr(self, name)
-            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-                raise ParserIsolationError(f"{name} must be a positive integer")
 
 
 DEFAULT_PARSER_ISOLATION_POLICY = ParserIsolationPolicy()
@@ -265,9 +314,6 @@ class _ChildProcess(Protocol):
     def terminate(self) -> None: ...
 
     def kill(self) -> None: ...
-
-
-SpawnChild = Callable[[list[str], dict[str, str]], _ChildProcess]
 
 
 @dataclass(slots=True)
@@ -403,7 +449,6 @@ def extract_binary_document_isolated(
     media_type: str,
     payload: bytes,
     policy: ParserIsolationPolicy = DEFAULT_PARSER_ISOLATION_POLICY,
-    spawn: SpawnChild | None = None,
 ) -> IsolatedParseResult:
     """Parse one admitted binary document in a dedicated, killable child process.
 
@@ -411,8 +456,12 @@ def extract_binary_document_isolated(
     reached for input the gate already admitted. It still fails closed on its
     own input bound and never starts a process it cannot bound.
 
-    ``spawn`` exists so the kill ladder can be exercised against a real process
-    under test control without giving production code a bypass switch.
+    ``FIXED_CHILD_LAUNCH_AUTHORITY=YES``: this function takes no launcher,
+    factory, executor or ``spawn`` hook. It always starts the one reviewed
+    module through :func:`_spawn_parser_child`, so no caller can substitute an
+    interpreter, an executable or a command line. The ladder is tested by
+    patching that private function, which keeps the seam private and the public
+    signature unable to widen process authority.
     """
 
     if not isinstance(policy, ParserIsolationPolicy):
@@ -438,9 +487,8 @@ def extract_binary_document_isolated(
     if argv is None:
         return _failed(reason_code=PARSER_ISOLATION_FAILURE_REASON_CODE)
 
-    spawn_child = spawn or _spawn_parser_child
     try:
-        process = spawn_child(argv, _child_environment())
+        process = _spawn_parser_child(argv, _child_environment())
     except (OSError, ValueError):
         # A process that could not start is a bounded failure, never an
         # exception carrying a host path into the caller's note.
