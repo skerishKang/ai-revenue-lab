@@ -218,5 +218,11 @@ async def test_a6_manifest_posture_stays_deferred() -> None:
         assert manifest.feature_state(feature_id) is EngineFeatureState.DEFERRED
 
 
-async def test_reference_consumers_are_the_pinned_pair() -> None:
-    assert a6.MULTIMODAL_REFERENCE_CONSUMERS == ("b62-padiem-chat", "b53-padiem-sidecar")
+async def test_reference_consumers_are_the_established_engine_pair() -> None:
+    canonical = ("b54-padiem-claw", "b62-padiem-chat")
+
+    assert a6.MULTIMODAL_REFERENCE_CONSUMERS == canonical
+    # Literal pin of the A5 canonical set: A6 may not widen or rename the
+    # Engine reference-consumer authority. No import coupling to the A5 module.
+    assert set(a6.MULTIMODAL_REFERENCE_CONSUMERS) == set(canonical)
+    assert "b53-padiem-sidecar" not in a6.MULTIMODAL_REFERENCE_CONSUMERS

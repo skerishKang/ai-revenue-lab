@@ -50,11 +50,12 @@ MULTIMODAL_DEPLOYMENT_TARGET = "Cloudflare Workers (padiem-ai-engine)"
 MULTIMODAL_MUTATION_SCOPE = "A6 source-only readiness harness; no Production authority"
 UNRESOLVED_FOR_LIVE_AUTHORITY = "UNRESOLVED_FOR_LIVE_AUTHORITY"
 
-# Reference consumer labels. ``b62-padiem-chat`` is an established Engine label;
-# ``b53-padiem-sidecar`` has no canonical Engine app identity in this repository
-# yet, so it is used here only as a parity label paired with a bounded synthetic
-# app_id. Neither is a claim that the corresponding Production app is registered.
-MULTIMODAL_REFERENCE_CONSUMERS = ("b62-padiem-chat", "b53-padiem-sidecar")
+# A6 reuses the established Engine reference-consumer labels, in the same order
+# the accepted A5 harness pins them: ``b54-padiem-claw`` and ``b62-padiem-chat``.
+# No new product or consumer identity is introduced here. The synthetic app IDs
+# derived from these labels stay source-only evidence identities and do not claim
+# Production app registration.
+MULTIMODAL_REFERENCE_CONSUMERS = ("b54-padiem-claw", "b62-padiem-chat")
 
 _A6_FEATURE_IDS = (
     "multimodal_completed_run",
