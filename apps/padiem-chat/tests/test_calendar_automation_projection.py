@@ -31,7 +31,7 @@ def _store_with_run(workspace_id: str, scheduled: datetime):
         workspace_id=workspace_id,
         name="Daily supplier quote check",
         schedule=ClawScheduleExpression(
-            kind=ClawScheduleKind.INTERVAL, expression="daily", timezone="UTC"
+            kind=ClawScheduleKind.INTERVAL, expression="86400s", timezone="UTC"
         ),
         target_source=ClawAutomationTarget.INBOX,
         output_type=ClawAutomationOutputType.REPORT,
