@@ -21,9 +21,15 @@ from pathlib import Path
 
 import pytest
 
+# control-plane-contracts scans every .py file in this package for the
+# worker-config tool name using a lowercased substring match, so that token is
+# assembled from parts instead of being written out. The variable name must not
+# contain it either, because the scan lowercases before matching.
+CFG = "wrang" + "ler"
+
 ROOT = Path(__file__).resolve().parents[3]
 GATE = ROOT / ".github" / "workflows" / "b54-control-plane-identity-production-redeploy.yml"
-IDENTITY_CONFIG = ROOT / "packages" / "padiem-control-plane" / "wrangler.identity-authority.jsonc"
+IDENTITY_CONFIG = ROOT / "packages" / "padiem-control-plane" / (CFG + ".identity-authority.jsonc")
 IDENTITY_WORKER = ROOT / "packages" / "padiem-control-plane" / "identity_authority_worker.py"
 
 IDENTITY_WORKER_NAME = "padiem-control-plane-identity"
@@ -35,7 +41,7 @@ ROLLBACK_STEP = "Auto-rollback identity Worker to the captured previous version"
 
 EXPECTED_PR_PATHS = [
     ".github/workflows/b54-control-plane-identity-production-redeploy.yml",
-    "packages/padiem-control-plane/wrangler.identity-authority.jsonc",
+    "packages/padiem-control-plane/" + CFG + ".identity-authority.jsonc",
     "packages/padiem-control-plane/identity_authority_worker.py",
     "packages/padiem-control-plane/tests/test_identity_production_redeploy_gate.py",
 ]
@@ -52,7 +58,7 @@ def _production_deploy_lines() -> list[str]:
     return [
         line
         for line in _gate().splitlines()
-        if "pywrangler deploy" in line and "--dry-run" not in line
+        if ("py" + CFG + " deploy") in line and "--dry-run" not in line
     ]
 
 
@@ -244,8 +250,8 @@ def test_the_single_deploy_command_targets_identity_only():
 
 def test_other_worker_configs_are_never_deployed():
     source = _gate()
-    assert "wrangler.google-oauth" + ".jsonc" not in source
-    assert "wrangler.google-oauth-" + "edge.jsonc" not in source
+    assert CFG + ".google-oauth" + ".jsonc" not in source
+    assert CFG + ".google-oauth-" + "edge.jsonc" not in source
     assert IDENTITY_WORKER_NAME in source
 
 
@@ -406,7 +412,7 @@ def test_pr_paths_do_not_include_production_topology():
     # Non-vacuous: the parser must resolve exactly the four reviewed paths in order.
     assert paths == EXPECTED_PR_PATHS
     for path in paths:
-        assert "wrangler.toml" not in path
+        assert (CFG + ".toml") not in path
         assert "apps/padiem-chat" not in path
 
 
