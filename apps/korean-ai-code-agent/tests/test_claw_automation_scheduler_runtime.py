@@ -999,6 +999,326 @@ class OccurrenceConcurrencyTests(unittest.TestCase):
         )
 
 
+class DeterministicRunIdRaceTests(unittest.TestCase):
+    """(26) Real runtime semantics: one occurrence, one deterministic run_id.
+
+    The pre-existing race tests use two arbitrary ids (``runA`` / ``runB``). The
+    actual runtime does NOT do that: ``FakeClawScheduler.execute_rule_dry_run``
+    derives ``run_id`` from ``occurrence_key(workspace_id, rule_id,
+    scheduled_time)``, so two concurrent contenders for the SAME logical
+    occurrence carry the SAME ``run_id``.
+
+    That distinction is security relevant. A loser that blindly deletes
+    ``run_id`` would delete the winner's canonical run, because both writers
+    name the same row. The loser must therefore delete nothing at all: under
+    claim-first ordering it never inserted a run row to begin with.
+    """
+
+    def setUp(self) -> None:
+        self._factory = SqliteStoreFactory()
+        self.addCleanup(self._factory.cleanup)
+
+    def _stale_precheck_once(self, store: SqliteClawAutomationStore):
+        """Force only the FIRST occurrence lookup to see a stale ``None``.
+
+        ``record_run`` uses ``_get_occurrence_run_id`` twice: once for its
+        untrustworthy pre-check and once to resolve the canonical winner after a
+        lost claim. Stubbing the whole method would corrupt the second call too,
+        so this stub is consumed after one invocation.
+        """
+
+        original = store._get_occurrence_run_id
+        state = {"used": False}
+
+        def stale(key, workspace_id):
+            if not state["used"]:
+                state["used"] = True
+                return None
+            return original(key, workspace_id)
+
+        store._get_occurrence_run_id = stale  # type: ignore[method-assign]
+        return original
+
+    def _canonical_run(self, store: SqliteClawAutomationStore) -> ClawScheduledRun:
+        """Mint the real derived run for the rule/instant under test."""
+
+        rule = make_rule("deterministic")
+        store.save_rule(rule)
+        scheduler = FakeClawScheduler(store)
+        return scheduler.execute_rule_dry_run(rule, WHEN, membership())
+
+    def test_same_run_id_loser_never_deletes_the_canonical_run(self) -> None:
+        """The winner's canonical row must survive the loser's write entirely."""
+
+        path = self._factory.db_path
+        SqliteClawAutomationStore(path)  # create schema
+        writer = SqliteClawAutomationStore(path)
+        winner = SqliteClawAutomationStore(path)
+
+        canonical = self._canonical_run(winner)
+        run_id = canonical.run_id
+        key = occurrence_key(WORKSPACE, "deterministic", WHEN)
+
+        # Force the loser's pre-check to observe the stale "no run yet" view,
+        # exactly as it would in a real interleaving before the winner commits.
+        original_precheck = self._stale_precheck_once(writer)
+
+        # Same occurrence AND same deterministic run_id as the canonical run.
+        contender = ClawScheduledRun(
+            run_id=run_id,
+            workspace_id=WORKSPACE,
+            rule_id="deterministic",
+            status=ClawScheduledRunStatus.COMPLETED,
+            scheduled_time=WHEN,
+            started_at=WHEN,
+            completed_at=WHEN,
+        )
+
+        returned = writer.record_run(contender)
+        writer._get_occurrence_run_id = original_precheck  # type: ignore[method-assign]
+
+        # The loser must adopt the winner, wherever the race resolved.
+        direct = sqlite3.connect(path)
+        runs = direct.execute("SELECT run_id FROM claw_runs").fetchall()
+        occurrences = direct.execute(
+            "SELECT occurrence_key, run_id FROM claw_occurrences"
+        ).fetchall()
+
+        self.assertEqual(
+            [r[0] for r in runs], [run_id], "the canonical run must not be deleted"
+        )
+        self.assertEqual(
+            direct.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0],
+            1,
+            "exactly one canonical run may exist for one occurrence",
+        )
+        self.assertEqual(
+            [(o[0], o[1]) for o in occurrences],
+            [(key, run_id)],
+            "the occurrence must still point at the canonical run",
+        )
+        # The canonical run row survived and is still readable.
+        self.assertIsNotNone(winner.get_run(run_id, WORKSPACE))
+        # Both callers resolve to the one canonical run.
+        self.assertEqual(returned.run_id, run_id)
+        # No dangling occurrence claim: the referenced run must exist.
+        self.assertEqual(
+            direct.execute(
+                "SELECT COUNT(*) FROM claw_occurrences o "
+                "LEFT JOIN claw_runs r ON r.run_id = o.run_id "
+                "WHERE r.run_id IS NULL"
+            ).fetchone()[0],
+            0,
+            "no occurrence may reference a missing run",
+        )
+
+    def test_same_run_id_loser_writes_no_run_and_no_proposal(self) -> None:
+        """A losing writer must leave DELETE=0 / INSERT_RUN=0 / INSERT_PROPOSAL=0."""
+
+        path = self._factory.db_path
+        SqliteClawAutomationStore(path)
+        winner = SqliteClawAutomationStore(path)
+        canonical = self._canonical_run(winner)
+
+        writer = SqliteClawAutomationStore(path)
+        before_runs = sqlite3.connect(path).execute(
+            "SELECT COUNT(*) FROM claw_runs"
+        ).fetchone()[0]
+        before_proposals = sqlite3.connect(path).execute(
+            "SELECT COUNT(*) FROM claw_proposals"
+        ).fetchone()[0]
+
+        # Make the claim fail deterministically, and record statement text so
+        # the loser's write scope can be inspected precisely. The loser is
+        # allowed exactly one INSERT (the occurrence claim attempt) and must
+        # never DELETE, never insert a run row and never insert a proposal.
+        statements: list[str] = []
+        original_execute = writer._db.execute
+
+        def recording(sql, *args):
+            if isinstance(sql, str):
+                statements.append(sql)
+            return original_execute(sql, *args)
+
+        _install_faulty_execute(writer, recording)
+        self._stale_precheck_once(writer)
+
+        contender = ClawScheduledRun(
+            run_id=canonical.run_id,
+            workspace_id=WORKSPACE,
+            rule_id="deterministic",
+            status=ClawScheduledRunStatus.COMPLETED,
+            scheduled_time=WHEN,
+            started_at=WHEN,
+            completed_at=WHEN,
+        )
+        writer.record_run(contender)
+
+        after_runs = sqlite3.connect(path).execute(
+            "SELECT COUNT(*) FROM claw_runs"
+        ).fetchone()[0]
+        after_proposals = sqlite3.connect(path).execute(
+            "SELECT COUNT(*) FROM claw_proposals"
+        ).fetchone()[0]
+
+        self.assertEqual(
+            [s for s in statements if s.strip().upper().startswith("DELETE")],
+            [],
+            "the loser must never issue a DELETE",
+        )
+        self.assertEqual(
+            [s for s in statements if "INTO claw_runs" in s],
+            [],
+            "the loser must never insert a run row",
+        )
+        self.assertEqual(
+            [s for s in statements if "INTO claw_proposals" in s],
+            [],
+            "the loser must never insert a proposal",
+        )
+        # Exactly one COMMIT: the transaction is closed exactly once.
+        self.assertEqual(
+            len([s for s in statements if s.strip().upper() == "COMMIT"]),
+            1,
+            "exactly one COMMIT must be issued",
+        )
+        self.assertEqual(
+            [s for s in statements if s.strip().upper() == "ROLLBACK"],
+            [],
+            "the loser path must not need a ROLLBACK",
+        )
+        self.assertEqual(after_runs, before_runs, "loser must not change the run count")
+        self.assertEqual(
+            after_proposals,
+            before_proposals,
+            "loser must not persist any proposal",
+        )
+        self.assertIsNotNone(winner.get_run(canonical.run_id, WORKSPACE))
+
+    def test_same_run_id_different_occurrence_fails_closed(self) -> None:
+        """Reusing one run_id for an unrelated occurrence must not alias rows."""
+
+        path = self._factory.db_path
+        SqliteClawAutomationStore(path)
+        store = SqliteClawAutomationStore(path)
+
+        canonical_rule = make_rule("alpha")
+        store.save_rule(canonical_rule)
+        scheduler = FakeClawScheduler(store)
+        canonical = scheduler.execute_rule_dry_run(canonical_rule, WHEN, membership())
+
+        # Same run_id, but a DIFFERENT logical occurrence (other rule + instant).
+        other_instant = WHEN + timedelta(days=1)
+        aliasing = ClawScheduledRun(
+            run_id=canonical.run_id,
+            workspace_id=WORKSPACE,
+            rule_id="beta",
+            status=ClawScheduledRunStatus.COMPLETED,
+            scheduled_time=other_instant,
+            started_at=other_instant,
+            completed_at=other_instant,
+        )
+
+        with self.assertRaises(ContractError):
+            store.record_run(aliasing)
+
+        direct = sqlite3.connect(path)
+        # The unrelated occurrence must never have been created.
+        other_key = occurrence_key(WORKSPACE, "beta", other_instant)
+        self.assertIsNone(
+            direct.execute(
+                "SELECT run_id FROM claw_occurrences WHERE occurrence_key = ?",
+                (other_key,),
+            ).fetchone(),
+            "RUN_ID_ALIASING must be impossible",
+        )
+        self.assertEqual(
+            direct.execute("SELECT COUNT(*) FROM claw_occurrences").fetchone()[0], 1
+        )
+        # The original canonical run is untouched.
+        self.assertIsNotNone(store.get_run(canonical.run_id, WORKSPACE))
+
+    def test_in_memory_store_enforces_the_same_aliasing_boundary(self) -> None:
+        """The contract must not differ by backend: in-memory fails closed too."""
+
+        store = InMemoryClawAutomationStore()
+        rule = make_rule("alpha")
+        store.save_rule(rule)
+        canonical = FakeClawScheduler(store).execute_rule_dry_run(rule, WHEN, membership())
+
+        other_instant = WHEN + timedelta(days=1)
+        aliasing = ClawScheduledRun(
+            run_id=canonical.run_id,
+            workspace_id=WORKSPACE,
+            rule_id="beta",
+            status=ClawScheduledRunStatus.COMPLETED,
+            scheduled_time=other_instant,
+            started_at=other_instant,
+            completed_at=other_instant,
+        )
+        with self.assertRaises(ContractError):
+            store.record_run(aliasing)
+
+        # Exactly one occurrence claim survives, and it points at the canonical run.
+        self.assertEqual(len(store._occurrences), 1)
+        self.assertEqual(list(store._occurrences.values()), [canonical.run_id])
+        self.assertEqual(list(store._runs), [canonical.run_id])
+
+    def test_one_occurrence_yields_exactly_one_canonical_run(self) -> None:
+        """ONE_OCCURRENCE_MAX_RUNS must be exactly 1, with no orphans either side."""
+
+        path = self._factory.db_path
+        SqliteClawAutomationStore(path)
+        winner = SqliteClawAutomationStore(path)
+        rule = make_rule("deterministic")
+        winner.save_rule(rule)
+        canonical = FakeClawScheduler(winner).execute_rule_dry_run(rule, WHEN, membership())
+
+        writer = SqliteClawAutomationStore(path)
+        self._stale_precheck_once(writer)
+        writer.record_run(
+            ClawScheduledRun(
+                run_id=canonical.run_id,
+                workspace_id=WORKSPACE,
+                rule_id="deterministic",
+                status=ClawScheduledRunStatus.COMPLETED,
+                scheduled_time=WHEN,
+                started_at=WHEN,
+                completed_at=WHEN,
+            )
+        )
+
+        direct = sqlite3.connect(path)
+        self.assertEqual(
+            direct.execute("SELECT COUNT(*) FROM claw_runs").fetchone()[0],
+            1,
+            "ONE_OCCURRENCE_MAX_RUNS must be 1",
+        )
+        self.assertEqual(
+            direct.execute("SELECT COUNT(*) FROM claw_occurrences").fetchone()[0], 1
+        )
+        # ORPHAN_RUNS = runs not referenced by any occurrence.
+        self.assertEqual(
+            direct.execute(
+                "SELECT COUNT(*) FROM claw_runs r "
+                "LEFT JOIN claw_occurrences o ON o.run_id = r.run_id "
+                "WHERE o.run_id IS NULL"
+            ).fetchone()[0],
+            0,
+            "ORPHAN_RUNS must be 0",
+        )
+        # ORPHAN_OCCURRENCES = occurrences not backed by a run.
+        self.assertEqual(
+            direct.execute(
+                "SELECT COUNT(*) FROM claw_occurrences o "
+                "LEFT JOIN claw_runs r ON r.run_id = o.run_id "
+                "WHERE r.run_id IS NULL"
+            ).fetchone()[0],
+            0,
+            "ORPHAN_OCCURRENCES must be 0",
+        )
+
+
 class StoreFailureInjectionTests(unittest.TestCase):
     """(21) A broken durable store must never yield a partial success receipt."""
 

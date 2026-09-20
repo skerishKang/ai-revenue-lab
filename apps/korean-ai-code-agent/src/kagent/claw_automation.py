@@ -553,6 +553,13 @@ class InMemoryClawAutomationStore:
         existing_id = self._occurrences.get(key)
         if existing_id is not None:
             return self._runs[existing_id]
+        # A run_id may only ever identify ONE logical occurrence. If this id
+        # is already stored, the two occurrences would alias the same run,
+        # so fail closed before claiming.
+        if run.run_id in self._runs:
+            raise ContractError(
+                "run_id is already stored for a different logical occurrence"
+            )
         # Claim the occurrence first so the canonical run is the claim holder,
         # mirroring the durable adapter's at-most-one-run guarantee.
         self._occurrences[key] = run.run_id
@@ -997,40 +1004,55 @@ class SqliteClawAutomationStore:
         key = occurrence_key(run.workspace_id, run.rule_id, run.scheduled_time)
         existing_id = self._get_occurrence_run_id(key, run.workspace_id)
         if existing_id is not None:
-            return self.get_run(existing_id, run.workspace_id)  # type: ignore[return-value]
+            # Fast path: the occurrence is already claimed. Adopt the
+            # canonical run; never write, and never delete anything.
+            canonical = self.get_run(existing_id, run.workspace_id)
+            if canonical is None:
+                raise ContractError("occurrence claim points at a missing run")
+            return canonical
         self._db.execute("BEGIN IMMEDIATE")
         try:
             # Claim the occurrence FIRST. The occurrence primary key is the
             # only dedup authority, so whichever writer wins the claim owns
-            # the canonical run for this logical occurrence. The pre-check
-            # above runs outside the transaction and cannot be trusted
-            # under concurrency.
+            # the canonical run for this logical occurrence.
             claim = self._db.execute(
                 "INSERT OR IGNORE INTO claw_occurrences(occurrence_key, run_id, workspace_id) VALUES (?, ?, ?)",
                 (key, run.run_id, run.workspace_id),
             )
             if claim.rowcount == 0:
-                # A concurrent writer already claimed this occurrence.
-                # Discard our would-be run and adopt the canonical one,
-                # so no orphaned run row can survive the race.
-                self._db.execute("DELETE FROM claw_runs WHERE run_id = ?", (run.run_id,))
-                self._db.execute("COMMIT")
+                # We lost the claim. Under claim-first ordering this writer
+                # never inserted a run row, so the loser path must perform
+                # NO DELETE. Deleting by run_id is unsafe: the runtime
+                # derives run_id from the occurrence identity, so both
+                # contenders name the SAME row and a delete would destroy
+                # the winner's canonical run.
                 winner_id = self._get_occurrence_run_id(key, run.workspace_id)
                 if winner_id is None:
                     raise ContractError("occurrence claim vanished during concurrent write")
                 canonical = self.get_run(winner_id, run.workspace_id)
                 if canonical is None:
                     raise ContractError("occurrence claim points at a missing run")
+                self._db.execute("COMMIT")
                 return canonical
-            self._db.execute(
-                "INSERT OR IGNORE INTO claw_runs(run_id, workspace_id, rule_id, status, scheduled_time, started_at, completed_at, output, error_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    run.run_id, run.workspace_id, run.rule_id, run.status.value,
-                    _iso(run.scheduled_time), _iso(run.started_at),
-                    _iso(run.completed_at) if run.completed_at else None,
-                    self._serialize_output(run.output), run.error_message,
-                ),
-            )
+            # We won the claim, so this run is the canonical one. A plain
+            # INSERT (not OR IGNORE) fails closed if the same run_id is
+            # already stored for a DIFFERENT logical occurrence, preventing
+            # the occurrence from aliasing an unrelated run. The driver
+            # error is translated so only a domain error escapes.
+            try:
+                self._db.execute(
+                    "INSERT INTO claw_runs(run_id, workspace_id, rule_id, status, scheduled_time, started_at, completed_at, output, error_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        run.run_id, run.workspace_id, run.rule_id, run.status.value,
+                        _iso(run.scheduled_time), _iso(run.started_at),
+                        _iso(run.completed_at) if run.completed_at else None,
+                        self._serialize_output(run.output), run.error_message,
+                    ),
+                )
+            except sqlite3.IntegrityError as exc:
+                raise ContractError(
+                    "run_id is already stored for a different logical occurrence"
+                ) from exc
             if run.output and run.output.proposals:
                 for proposal in run.output.proposals:
                     self._db.execute(
@@ -1047,6 +1069,9 @@ class SqliteClawAutomationStore:
                     )
             self._db.execute("COMMIT")
         except Exception:
+            # Exactly one ROLLBACK on the error path. The loser path above
+            # COMMITs before returning, so it never reaches here with a
+            # closed transaction.
             self._db.execute("ROLLBACK")
             raise
         return run
