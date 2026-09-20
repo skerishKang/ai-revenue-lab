@@ -6,6 +6,7 @@ Every test is deterministic, provider-free and network-free.
 
 from __future__ import annotations
 
+import random
 import unittest
 import zipfile
 
@@ -13,6 +14,7 @@ from io import BytesIO
 
 from kagent.file_intake_safety import (
     DEFAULT_POLICY,
+    MAX_SUPPORTED_ARCHIVE_DEPTH,
     DetectedFormat,
     FileIntakePolicy,
     FileIntakeSafetyError,
@@ -78,6 +80,17 @@ def mark_encrypted(payload: bytes) -> bytes:
     return bytes(data)
 
 
+def _set_first_central_dir_compress_size(payload: bytes, value: int) -> bytes:
+    """Patch the first central-directory record's compressed-size field."""
+
+    data = bytearray(payload)
+    index = data.find(b"PK\x01\x02")
+    if index == -1:
+        raise AssertionError("no central directory record to patch")
+    data[index + 20 : index + 24] = value.to_bytes(4, "little")
+    return bytes(data)
+
+
 def hwpx_bytes(*, mimetype: bytes = b"application/hwp+zip") -> bytes:
     return build_zip(
         [
@@ -85,6 +98,21 @@ def hwpx_bytes(*, mimetype: bytes = b"application/hwp+zip") -> bytes:
             ("Contents/section0.xml", b"<section><p>hello</p></section>"),
         ]
     )
+
+
+def incompressible(size: int) -> bytes:
+    """Deterministic random bytes: deflate cannot shrink them, ratio stays ~1."""
+
+    return random.Random(0x28_24).randbytes(size)
+
+
+def nested_chain(levels: int) -> bytes:
+    """A ZIP nested inside a ZIP, ``levels`` deep (levels==1 is a bare ZIP)."""
+
+    payload = build_zip([("leaf.txt", b"leaf")])
+    for _ in range(max(0, levels - 1)):
+        payload = build_zip([("inner.bin", payload)])
+    return payload
 
 
 class SignatureClassificationTests(unittest.TestCase):
@@ -173,15 +201,18 @@ class ArchiveSafetyTests(unittest.TestCase):
         self.assertEqual(result.reason_code, "archive_entry_count")
 
     def test_zip_with_excessive_total_uncompressed_bytes_is_denied(self) -> None:
-        members = [(f"big{index}.bin", b"\x00" * 900_000) for index in range(10)]
-        result = inspect_file("total.zip", build_zip(members))
+        # Incompressible so the per-entry ratio guard stays quiet; the raw bound
+        # is raised so the cumulative uncompressed bound is the limiter.
+        members = [(f"big{index}.bin", incompressible(700_000)) for index in range(4)]
+        policy = FileIntakePolicy(max_raw_bytes=4_000_000, max_archive_uncompressed_bytes=2_000_000)
+        result = inspect_file("total.zip", build_zip(members), policy=policy)
         self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
         self.assertEqual(result.reason_code, "archive_total_size")
 
     def test_zip_with_high_expansion_ratio_is_denied(self) -> None:
         # ~500 KB declared from a tiny compressed payload: classic zip bomb.
         payload = build_zip([("bomb.bin", b"\x00" * 500_000)])
-        result = inspect_file("bomb.zip", payload)
+        result = inspect_file("bomb.zip", payload, policy=FileIntakePolicy(max_archive_depth=1))
         self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
         self.assertEqual(result.reason_code, "archive_expansion_ratio")
 
@@ -191,11 +222,11 @@ class ArchiveSafetyTests(unittest.TestCase):
         self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
         self.assertEqual(result.reason_code, "archive_entry_size")
 
-    def test_nested_archive_is_denied_under_depth_policy(self) -> None:
+    def test_nested_archive_is_denied_by_default_policy(self) -> None:
         payload = build_zip([("inner.zip", build_zip([("a.txt", b"x")]))])
         result = inspect_file("outer.zip", payload)
         self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
-        self.assertEqual(result.reason_code, "nested_archive_not_allowed")
+        self.assertEqual(result.reason_code, "archive_depth_exceeded")
 
     def test_corrupt_zip_is_classified_corrupt(self) -> None:
         result = inspect_file("broken.zip", b"PK\x03\x04" + b"\x00" * 24)
@@ -319,10 +350,152 @@ class FilenameAndProjectionTests(unittest.TestCase):
                 "filename",
                 "archive_entry_count",
                 "archive_uncompressed_bytes",
+                "archive_depth_reached",
                 "encrypted",
                 "safe_to_parse",
             },
         )
+
+
+class NestedArchiveDepthTests(unittest.TestCase):
+    """B1: nesting must be real, content-driven and budget-shared."""
+
+    def test_nested_zip_disguised_as_bin_is_denied_by_default_policy(self) -> None:
+        # The payload is a ZIP but the entry is named inner.bin: filename-based
+        # detection would miss it entirely.
+        payload = build_zip([("inner.bin", build_zip([("a.txt", b"x")]))])
+        result = inspect_file("outer.zip", payload)
+        self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(result.reason_code, "archive_depth_exceeded")
+
+    def test_allowed_depth_matches_policy_exactly(self) -> None:
+        three_deep = nested_chain(3)
+        # depth budget 2 admits a two-level nest (top-level is depth 0).
+        allowed = inspect_file("n.zip", three_deep, policy=FileIntakePolicy(max_archive_depth=2))
+        denied = inspect_file("n.zip", three_deep, policy=FileIntakePolicy(max_archive_depth=1))
+        self.assertEqual(allowed.decision, IntakeDecision.SAFE_CANDIDATE)
+        self.assertEqual(allowed.archive_depth_reached, 2)
+        self.assertEqual(denied.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(denied.reason_code, "archive_depth_exceeded")
+
+    def test_three_level_chain_rejected_when_depth_is_zero(self) -> None:
+        for levels in (2, 3, 4):
+            with self.subTest(levels=levels):
+                result = inspect_file("chain.zip", nested_chain(levels))
+                self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
+                self.assertEqual(result.reason_code, "archive_depth_exceeded")
+
+    def test_nested_tree_shares_one_entry_budget(self) -> None:
+        # Each level holds 6 entries; with a budget of 10 nothing resets per
+        # level, so the shared count must trip.
+        inner = build_zip([(f"i{i}.txt", b"x") for i in range(6)])
+        outer = build_zip([("inner.bin", inner)] + [(f"o{i}.txt", b"x") for i in range(6)])
+        shared = inspect_file("s.zip", outer, policy=FileIntakePolicy(max_archive_entries=10, max_archive_depth=2))
+        self.assertEqual(shared.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(shared.reason_code, "archive_entry_count")
+        # With a budget above the whole tree it is admitted, proving the count
+        # above was genuinely cumulative rather than a single-level artefact.
+        roomy = inspect_file("s.zip", outer, policy=FileIntakePolicy(max_archive_entries=64, max_archive_depth=2))
+        self.assertEqual(roomy.decision, IntakeDecision.SAFE_CANDIDATE)
+        self.assertEqual(roomy.archive_entry_count, 13)
+
+    def test_nested_tree_shares_one_byte_budget(self) -> None:
+        inner = build_zip([("big.bin", incompressible(80_000))])
+        outer = build_zip([("inner.bin", inner), ("pad.bin", incompressible(80_000))])
+        denied = inspect_file(
+            "b.zip",
+            outer,
+            policy=FileIntakePolicy(
+                max_archive_uncompressed_bytes=120_000,
+                max_archive_depth=2,
+            ),
+        )
+        self.assertEqual(denied.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(denied.reason_code, "archive_total_size")
+
+    def test_high_expansion_nested_archive_is_rejected(self) -> None:
+        bomb = build_zip([("bomb.bin", b"\x00" * 400_000)])
+        outer = build_zip([("outer.bin", bomb), ("pad.bin", incompressible(100_000))])
+        result = inspect_file("n.zip", outer, policy=FileIntakePolicy(max_archive_depth=2))
+        self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(result.reason_code, "archive_expansion_ratio")
+
+
+class ExpansionRatioTests(unittest.TestCase):
+    """B2: the ratio denominator must be real compressed content."""
+
+    def test_ratio_uses_compressed_content_not_raw_payload(self) -> None:
+        # A tight bomb entry cannot be hidden by unrelated incompressible
+        # padding: the uncompressed budget stays the limiter and the per-entry
+        # ratio is evaluated against the entry's own compressed size.
+        bomb = build_zip([("bomb.bin", b"\x00" * 300_000)])
+        padding = incompressible(300_000)
+        outer = build_zip([("bomb.bin", bomb), ("pad.bin", padding)])
+        result = inspect_file(
+            "mixed.zip",
+            outer,
+            policy=FileIntakePolicy(max_archive_uncompressed_bytes=1_000_000, max_archive_depth=2),
+        )
+        self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
+        self.assertIn(result.reason_code, {"archive_expansion_ratio", "archive_entry_size"})
+
+    def test_mixed_padding_does_not_authorise_a_bomb_entry(self) -> None:
+        payload = build_zip(
+            [("pad.bin", incompressible(200_000)), ("bomb.bin", b"\x00" * 900_000)]
+        )
+        result = inspect_file("mixed2.zip", payload)
+        self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(result.reason_code, "archive_expansion_ratio")
+
+    def test_incompressible_archive_is_admitted(self) -> None:
+        # Ratio ~1: a legitimate archive of already-compressed bytes passes.
+        payload = build_zip([("a.bin", incompressible(200_000))])
+        result = inspect_file("real.zip", payload)
+        self.assertEqual(result.decision, IntakeDecision.SAFE_CANDIDATE)
+
+    def test_invalid_compressed_size_fails_closed(self) -> None:
+        payload = _set_first_central_dir_compress_size(build_zip([("a.txt", b"x" * 5000)]), 0)
+        result = inspect_file("odd.zip", payload)
+        self.assertEqual(result.decision, IntakeDecision.POLICY_DENIED)
+        self.assertEqual(result.reason_code, "archive_compressed_size_invalid")
+
+
+class PolicyValidationTests(unittest.TestCase):
+    """Invalid policy values must fail closed, not widen authority."""
+
+    def test_non_positive_bounds_are_rejected(self) -> None:
+        for field in (
+            "max_raw_bytes",
+            "max_archive_entries",
+            "max_archive_uncompressed_bytes",
+            "max_single_archive_entry_bytes",
+            "max_filename_bytes",
+        ):
+            with self.subTest(field=field):
+                with self.assertRaises(FileIntakeSafetyError):
+                    FileIntakePolicy(**{field: 0})
+                with self.assertRaises(FileIntakeSafetyError):
+                    FileIntakePolicy(**{field: -1})
+
+    def test_non_positive_ratio_is_rejected(self) -> None:
+        for value in (0, -1, float("nan"), float("inf")):
+            with self.subTest(value=value):
+                with self.assertRaises(FileIntakeSafetyError):
+                    FileIntakePolicy(max_expansion_ratio=value)
+
+    def test_depth_beyond_supported_maximum_is_rejected(self) -> None:
+        FileIntakePolicy(max_archive_depth=MAX_SUPPORTED_ARCHIVE_DEPTH)
+        with self.assertRaises(FileIntakeSafetyError):
+            FileIntakePolicy(max_archive_depth=MAX_SUPPORTED_ARCHIVE_DEPTH + 1)
+        with self.assertRaises(FileIntakeSafetyError):
+            FileIntakePolicy(max_archive_depth=-1)
+
+    def test_default_policy_is_no_nesting(self) -> None:
+        self.assertEqual(DEFAULT_POLICY.max_archive_depth, 0)
+
+    def test_valid_policy_is_accepted(self) -> None:
+        policy = FileIntakePolicy(max_archive_depth=2, max_expansion_ratio=50.0)
+        self.assertEqual(policy.max_archive_depth, 2)
 
     def test_repeated_input_is_deterministic(self) -> None:
         payload = hwpx_bytes()
