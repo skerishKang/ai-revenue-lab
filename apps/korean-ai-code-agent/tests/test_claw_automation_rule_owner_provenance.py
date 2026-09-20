@@ -118,18 +118,14 @@ class RuleOwnerProvenanceCreationTests(unittest.TestCase):
     def test_04_owner_ref_is_opaque_and_never_equated_to_principal_ref(self) -> None:
         # A principal_ref-shaped value is stored verbatim: no transform, no
         # hashing, no equality constraint against membership.principal_ref.
-        item = rule(owner_ref="principal:user")
-        self.assertEqual(item.owner_ref, "principal:user")
-        store = InMemoryClawAutomationStore()
-        store.save_rule(item)
-        runtime = ClawAutomationTickRuntime(store)
-        # A membership whose principal_ref differs from owner_ref still runs:
-        # the contract enforces no semantic equivalence between the two, and
-        # owner_ref presence neither adds nor removes tick authority.
-        receipt = runtime.tick(workspace_id="ws_owner", current_time=NOW, membership=membership())
-        self.assertEqual(len(receipt.created_run_ids), 1)
-        # A membership principal_ref is never read as, or into, owner_ref:
-        # distinct opaque values stay distinct with no normalization.
+        shaped = rule(owner_ref="principal:user")
+        self.assertEqual(shaped.owner_ref, "principal:user")
+
+        # Non-equivalence is proven by runtime behaviour, not by comparing two
+        # constants: the rule carries an opaque owner_ref while tick() receives a
+        # membership whose principal_ref is a different value. A contract that
+        # equated the two would schedule nothing for this principal.
+        item = rule(owner_ref=OWNER_REF)
         unrelated = TrustedWorkspaceMembershipProjection(
             membership_id="membership:other-principal",
             workspace_id="ws_owner",
@@ -140,6 +136,13 @@ class RuleOwnerProvenanceCreationTests(unittest.TestCase):
             expires_at=NOW + timedelta(hours=1),
         )
         self.assertNotEqual(item.owner_ref, unrelated.principal_ref)
+        store = InMemoryClawAutomationStore()
+        store.save_rule(item)
+        runtime = ClawAutomationTickRuntime(store)
+        receipt = runtime.tick(
+            workspace_id="ws_owner", current_time=NOW, membership=unrelated
+        )
+        self.assertEqual(len(receipt.created_run_ids), 1)
 
 
 class InMemoryOwnerProvenanceTests(unittest.TestCase):
