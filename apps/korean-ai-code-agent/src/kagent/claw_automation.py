@@ -316,6 +316,12 @@ class ClawAutomationRule:
     notification_channels: tuple[ClawNotificationPreference, ...] = field(
         default_factory=lambda: (ClawNotificationPreference(ClawNotificationChannel.WEB_ALERT_INBOX),)
     )
+    # #2833 B2A: optional opaque delivery-owner provenance. Deliberately NOT
+    # assumed to be a B62 usr_* product id, a canonical subject, or a membership
+    # principal_ref. It is bounded opaque text the trusted product composition
+    # may attach at rule creation; B54/KAgent never interprets its meaning, and
+    # it grants no authority of any kind. Absent on legacy rules (None).
+    owner_ref: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "rule_id", _safe_id(self.rule_id, "rule_id"))
@@ -340,6 +346,16 @@ class ClawAutomationRule:
             raise ContractError("enabled must be boolean")
         if not isinstance(self.notification_channels, tuple) or not all(isinstance(c, ClawNotificationPreference) for c in self.notification_channels):
             raise ContractError("notification_channels must be a tuple of ClawNotificationPreference")
+        if self.owner_ref is not None:
+            # Same bounded-opaque-ref shape as _safe_id, but never echoes the
+            # rejected value into the error text (no owner provenance leak).
+            owner = self.owner_ref
+            if not isinstance(owner, str):
+                raise ContractError("owner_ref must be a bounded opaque reference")
+            norm = owner.strip()
+            if not norm or not _SAFE_ID_RE.fullmatch(norm):
+                raise ContractError("owner_ref must be a bounded opaque reference")
+            object.__setattr__(self, "owner_ref", norm)
 
 
 @dataclass(frozen=True, slots=True)
@@ -515,6 +531,11 @@ class InMemoryClawAutomationStore:
         previous = self._rules.get(rule.rule_id)
         if previous is not None and previous.workspace_id != rule.workspace_id:
             raise ContractError("rule_id is already owned by another workspace")
+        # #2833 B2A: owner provenance is immutable after rule creation. A
+        # generic save/update may never transfer, drop, or mint an owner_ref;
+        # it must echo the previously persisted value exactly.
+        if previous is not None and previous.owner_ref != rule.owner_ref:
+            raise ContractError("rule owner provenance is immutable")
         self._rules[rule.rule_id] = rule
 
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None:
@@ -528,7 +549,9 @@ class InMemoryClawAutomationStore:
         current = self._rules.get(rule.rule_id)
         if current is None or current.workspace_id != rule.workspace_id:
             raise ContractError("rule does not belong to workspace")
-        self._rules[rule.rule_id] = rule
+        # Route through save_rule so the owner-provenance immutability guard
+        # also covers the generic update path.
+        self.save_rule(rule)
 
     def set_rule_enabled(self, workspace_id: str, rule_id: str, enabled: bool) -> ClawAutomationRule:
         if not isinstance(enabled, bool):
@@ -541,6 +564,7 @@ class InMemoryClawAutomationStore:
             schedule=rule.schedule, target_source=rule.target_source,
             output_type=rule.output_type, enabled=enabled,
             notification_channels=rule.notification_channels,
+            owner_ref=rule.owner_ref,
         )
         self._rules[rule_id] = updated
         return updated
@@ -918,8 +942,10 @@ class SqliteClawAutomationStore:
     # --- rule persistence ---
 
     def save_rule(self, rule: ClawAutomationRule) -> None:
-        payload = json.dumps(
-            {
+        # #2833 B2A: owner_ref rides inside the existing notification_channels
+        # JSON payload as an additive field — no new table, no new column. Legacy
+        # payloads without it simply persist the key's absence.
+        payload_document: dict[str, Any] = {
                 "rule_id": rule.rule_id,
                 "workspace_id": rule.workspace_id,
                 "name": rule.name,
@@ -931,7 +957,11 @@ class SqliteClawAutomationStore:
                     {"channel": c.channel.value, "enabled": c.enabled, "recipient_ref": c.recipient_ref}
                     for c in rule.notification_channels
                 ],
-            },
+        }
+        if rule.owner_ref is not None:
+            payload_document["owner_ref"] = rule.owner_ref
+        payload = json.dumps(
+            payload_document,
             sort_keys=True,
             separators=(",", ":"),
         ).encode("utf-8")
@@ -951,6 +981,15 @@ class SqliteClawAutomationStore:
             existing = self._get_rule_row(rule.rule_id)
             if existing is None or existing[1] != rule.workspace_id:
                 raise ContractError("rule_id is already owned by another workspace")
+            # Owner provenance is immutable after rule creation: a generic
+            # update may never transfer, drop, or mint an owner_ref. Fail
+            # closed before any row write when the value would change.
+            try:
+                existing_owner_ref = json.loads(existing[9]).get("owner_ref")
+            except Exception as exc:
+                raise ContractError("stored automation rule is corrupt") from exc
+            if existing_owner_ref != rule.owner_ref:
+                raise ContractError("rule owner provenance is immutable")
             self._db.execute(
                 "UPDATE claw_rules SET name=?, schedule_kind=?, schedule_expression=?, schedule_timezone=?, target_source=?, output_type=?, enabled=?, notification_channels=?, updated_at=? WHERE rule_id=?",
                 (
@@ -991,6 +1030,7 @@ class SqliteClawAutomationStore:
             schedule=rule.schedule, target_source=rule.target_source,
             output_type=rule.output_type, enabled=enabled,
             notification_channels=rule.notification_channels,
+            owner_ref=rule.owner_ref,
         )
         self.save_rule(updated)
         return updated
@@ -1143,6 +1183,8 @@ class SqliteClawAutomationStore:
                     )
                     for c in payload["notification_channels"]
                 ),
+                # Legacy payloads carry no owner_ref key; absence reads None.
+                owner_ref=payload.get("owner_ref"),
             )
         except Exception as exc:
             raise ContractError("stored automation rule is corrupt") from exc
