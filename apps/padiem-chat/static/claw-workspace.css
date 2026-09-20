@@ -20,6 +20,16 @@
  * (hidden conversation), while result / memory / approved-memory render inline. */
 .app-shell[data-state="claw"] .conversation {
   display: block;
+  /* The Claw result/forms live in this shared column while the composer is
+   * fixed. Own the long manual surface here instead of letting the column
+   * expand below the viewport and hide the composer clearance. */
+  min-height: 0;
+  /* Theme breathing margins can move this surface below the 66px topbar;
+   * reserve a stable 96px so the scroll viewport never extends behind the
+   * bottom edge or the fixed composer across tablet/mobile/desktop. */
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding-bottom: 280px;
 }
 .app-shell[data-state="claw"] .conversation .empty-state {

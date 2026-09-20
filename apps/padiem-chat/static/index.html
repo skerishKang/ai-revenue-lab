@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
+  <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
@@ -264,6 +265,32 @@
           <div class="claw-run-history-list" id="clawRunHistoryList" hidden></div>
           <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
         </section>
+        <section class="claw-quote-compare" id="clawQuoteCompare" aria-labelledby="clawQuoteCompareTitle" hidden>
+          <header class="claw-run-history-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-qc-kicker">PADIEM CLAW COMPARE</p>
+              <h2 class="claw-workspace-title" id="clawQuoteCompareTitle" data-locale-key="claw-qc-title">공급업체 견적 비교</h2>
+            </div>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-qc-tagline">2개 이상의 캡처된 견적을 추론 없이 비교합니다.</p>
+          <form class="claw-qc-form" id="clawQuoteCompareForm" data-locale-aria-label="claw-qc-form-aria" aria-label="공급업체 견적 비교 양식">
+            <div class="claw-qc-controls">
+              <label class="claw-qc-control"><span data-locale-key="claw-qc-mode">비교 기준</span><select id="clawQcMode"></select></label>
+              <label class="claw-qc-control"><span data-locale-key="claw-qc-currency">통화</span><select id="clawQcCurrency"></select></label>
+            </div>
+            <div class="claw-qc-suppliers" id="clawQcSuppliers" role="list" aria-label="공급업체 견적 목록"></div>
+            <div class="claw-qc-form-actions">
+              <button type="button" class="claw-qc-secondary" id="clawQcAddSupplier" data-locale-key="claw-qc-add">공급업체 추가</button>
+              <button type="submit" class="claw-qc-primary" id="clawQcCompareBtn" data-locale-key="claw-qc-btn-compare">견적 비교</button>
+              <button type="button" class="claw-qc-secondary" id="clawQcDocxBtn" data-locale-key="claw-qc-btn-docx" disabled aria-disabled="true">DOCX 저장</button>
+              <button type="button" class="claw-qc-secondary" id="clawQcDownloadBtn" data-locale-key="claw-qc-btn-download" disabled aria-disabled="true">문서 다운로드</button>
+            </div>
+            <p class="claw-qc-hint" data-locale-key="claw-qc-hint">모르는 항목은 비워 두세요. 리드타임 문구는 날짜로 변환하지 않습니다.</p>
+            <p class="claw-qc-auth-note" id="clawQcAuthNote" data-locale-key="claw-qc-auth-note" hidden>DOCX 저장은 로그인한 워크스페이스 계정이 필요합니다.</p>
+            <p class="claw-qc-status" id="clawQcStatus" role="status" aria-live="polite" hidden></p>
+          </form>
+          <div class="claw-qc-result" id="clawQcResult" hidden></div>
+        </section>
         <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
           <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
           <div class="claw-disabled-grid">
@@ -442,5 +469,6 @@
   <script src="./rich-response.js"></script>
   <script src="./outputs.js"></script>
   <script src="./conversation-export.js"></script>
+  <script src="./claw-quote-compare.js"></script>
 </body>
 </html>
