@@ -1621,11 +1621,13 @@ class _RecordingRunHistoryStore:
 
     async def record_claw_run(self, *, user_id, run_id, channel, action, title, status,
                               result_summary=None, artifact_document_id=None,
-                              artifact_filename=None, artifact_media_type=None) -> None:
+                              artifact_filename=None, artifact_media_type=None,
+                              conversation_id=None) -> None:
         self.rows[run_id] = {
             "user_id": user_id, "run_id": run_id, "channel": channel, "action": action,
             "title": title, "status": status, "result_summary": result_summary,
             "artifact_document_id": artifact_document_id,
+            "conversation_id": conversation_id,
         }
 
     async def list_recent_claw_runs(self, user_id: str, limit: int) -> list[dict]:
@@ -1800,18 +1802,18 @@ class _HistoryStatement:
         if self.sql.startswith("INSERT INTO claw_run_history"):
             cols = ("id", "user_id", "run_id", "channel", "action", "title", "status",
                     "created_at", "updated_at", "result_summary", "artifact_document_id",
-                    "artifact_filename", "artifact_media_type")
+                    "artifact_filename", "artifact_media_type", "conversation_id")
             self.db.rows.append(dict(zip(cols, self.values)))
             return {"results": []}
         if self.sql.startswith("UPDATE claw_run_history SET"):
             (channel, action, title, status, updated_at, summary, doc_id, fname, mtype,
-             run_id, user_id) = self.values
+             conversation_id, run_id, user_id) = self.values
             for row in self.db.rows:
                 if row["run_id"] == run_id and row["user_id"] == user_id:
                     row.update(channel=channel, action=action, title=title, status=status,
                                updated_at=updated_at, result_summary=summary,
                                artifact_document_id=doc_id, artifact_filename=fname,
-                               artifact_media_type=mtype)
+                               artifact_media_type=mtype, conversation_id=conversation_id)
             return {"results": []}
         if self.sql.startswith("SELECT run_id, channel"):
             user_id, limit = self.values
@@ -1895,3 +1897,63 @@ def test_run_history_migration_has_no_runtime_create_and_bounds_columns() -> Non
     assert "run_id TEXT NOT NULL UNIQUE" in migration
     for forbidden in ("raw_content", "prompt", "secret", "token", "cookie", "object_key"):
         assert forbidden not in migration.lower()
+
+
+# ── #2829 Phase B: D1-level persisted conversation linkage ─────────────────
+
+
+@pytest.mark.asyncio
+async def test_d1_record_claw_run_persists_conversation_id():
+    """D1 store persists the exact validated conversation_id (Phase B)."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_conv", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+        conversation_id="chat_" + "a1" * 16,
+    )
+    inserted = store.db.rows[0]
+    assert inserted["conversation_id"] == "chat_" + "a1" * 16
+    # The SQL must include conversation_id as a bound parameter, never inline.
+    insert_sql = next(s for s in store.db.prepared if "INSERT INTO claw_run_history" in s)
+    assert "conversation_id" in insert_sql
+    assert "chat_" not in insert_sql
+
+
+@pytest.mark.asyncio
+async def test_d1_record_claw_run_without_conversation_id_persists_null():
+    """Absent conversation_id persists NULL (legacy compatibility)."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+    )
+    inserted = store.db.rows[0]
+    assert inserted["conversation_id"] is None
+
+
+@pytest.mark.asyncio
+async def test_d1_list_recent_claw_runs_returns_conversation_id():
+    """list_recent_claw_runs returns persisted conversation_id in rows."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_conv", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+        conversation_id="chat_" + "a1" * 16,
+    )
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+    )
+    runs = await store.list_recent_claw_runs("usr_owner", limit=10)
+    by_run_id = {r["run_id"]: r for r in runs}
+    assert by_run_id["run_conv"]["session"] == {"conversation_id": "chat_" + "a1" * 16}
+    assert by_run_id["run_legacy"]["session"] is None
+    # No raw user_id or internal ids leak into public projection.
+    assert "user_id" not in by_run_id["run_conv"]
+    assert "conversation_id" not in by_run_id["run_conv"]

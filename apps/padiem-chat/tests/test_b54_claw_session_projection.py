@@ -35,6 +35,7 @@ RAW_USER_ID_CANDIDATE = "usr_" + "7" * 32
 
 # The exact Phase A persisted-run kwargs. Pinning this set proves the session
 # reference is carried/resolved WITHOUT silently widening the storage record.
+# Phase B adds conversation_id as a trailing optional parameter.
 RECORDED_RUN_KWARGS = {
     "user_id",
     "run_id",
@@ -46,6 +47,7 @@ RECORDED_RUN_KWARGS = {
     "artifact_document_id",
     "artifact_filename",
     "artifact_media_type",
+    "conversation_id",
 }
 
 
@@ -169,6 +171,7 @@ def test_execute_without_conversation_id_is_byte_identical_legacy() -> None:
     assert store.get_calls == []
     assert len(store.record_calls) == 1
     assert set(store.record_calls[0]) == RECORDED_RUN_KWARGS
+    assert store.record_calls[0]["conversation_id"] is None
     adapter.execute.assert_awaited_once()
 
 
@@ -196,10 +199,10 @@ def test_execute_owned_conversation_echoes_bounded_handle_and_stores_no_link() -
     result = resp.json()["result"]
     assert result["conversation_id"] == OWNED_CONVERSATION_ID
     assert store.get_calls == [(SIGNED_IN_USER_ID, OWNED_CONVERSATION_ID)]
-    # Phase A carries and resolves only — the persisted run record is unchanged.
+    # Phase B: the exact validated conversation_id is now persisted.
     assert len(store.record_calls) == 1
     assert set(store.record_calls[0]) == RECORDED_RUN_KWARGS
-    assert "conversation_id" not in store.record_calls[0]
+    assert store.record_calls[0]["conversation_id"] == OWNED_CONVERSATION_ID
     adapter.execute.assert_awaited_once()
 
 
@@ -391,17 +394,189 @@ def test_runs_history_legacy_rows_serialise_null_session() -> None:
     assert resp.json()["runs"][0]["session"] is None
 
 
-# ── storage non-regression: no migration ships in Phase A ────────────────────
+# ── storage non-regression: Phase A → Phase B migration boundary ─────────────
 
 
-def test_phase_a_adds_no_run_history_migration_and_no_new_select_column() -> None:
-    # Phase A persists nothing new: the D1 run-history SELECT keeps its exact
-    # legacy column list, and no migration file references the conversation.
+def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> None:
+    """Phase B adds exactly one migration that adds nullable conversation_id.
+
+    The migration is additive only: ALTER TABLE ... ADD COLUMN, no new table,
+    no foreign key, no destructive change, no rewrite of existing columns.
+    """
+    migrations_dir = Path(history_module.__file__).resolve().parents[1] / "migrations"
+    migration_files = sorted(migrations_dir.glob("*.sql"))
+    names = [p.name for p in migration_files]
+    assert "014_claw_run_history_conversation.sql" in names
+    # Exactly one migration references conversation_id + claw_run_history.
+    hits = [p.name for p in migration_files
+            if "conversation_id" in p.read_text(encoding="utf-8").lower()
+            and "claw_run_history" in p.read_text(encoding="utf-8").lower()]
+    assert hits == ["014_claw_run_history_conversation.sql"]
+    content = (migrations_dir / "014_claw_run_history_conversation.sql").read_text(encoding="utf-8").lower()
+    assert "alter table claw_run_history add column conversation_id text;" in content
+    assert "create table" not in content
+    assert "drop table" not in content
+    assert "foreign key" not in content
+    assert "references" not in content
+
+
+# ── #2829 Phase B: persisted run-to-conversation linkage ─────────────────────
+
+
+def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> None:
+    """Phase B adds exactly one migration that adds nullable conversation_id.
+
+    The migration is additive only: ALTER TABLE ... ADD COLUMN, no new table,
+    no foreign key, no destructive change, no rewrite of existing columns.
+    """
+    migrations_dir = Path(history_module.__file__).resolve().parents[1] / "migrations"
+    migration_files = sorted(migrations_dir.glob("*.sql"))
+    names = [p.name for p in migration_files]
+    assert "014_claw_run_history_conversation.sql" in names
+    # Exactly one migration references conversation_id + claw_run_history.
+    hits = [p.name for p in migration_files
+            if "conversation_id" in p.read_text(encoding="utf-8").lower()
+            and "claw_run_history" in p.read_text(encoding="utf-8").lower()]
+    assert hits == ["014_claw_run_history_conversation.sql"]
+    content = (migrations_dir / "014_claw_run_history_conversation.sql").read_text(encoding="utf-8").lower()
+    assert "alter table claw_run_history add column conversation_id text;" in content
+    assert "create table" not in content
+    assert "drop table" not in content
+    assert "foreign key" not in content
+    assert "references" not in content
+
+
+def test_phase_b_d1_select_includes_conversation_id() -> None:
+    """The D1 list query now selects the persisted conversation_id column."""
     source = Path(history_module.__file__).read_text(encoding="utf-8")
     select = source.split("SELECT run_id, channel", 1)[1].split("FROM claw_run_history", 1)[0]
-    assert "conversation_id" not in select
-    migrations = Path(history_module.__file__).resolve().parents[1] / "migrations"
-    hit = [p.name for p in migrations.glob("*.sql")
-           if "conversation_id" in p.read_text(encoding="utf-8").lower()
-           and "claw_run_history" in p.read_text(encoding="utf-8").lower()]
-    assert hit == []
+    assert "conversation_id" in select
+
+
+def test_phase_b_record_claw_run_accepts_optional_conversation_id() -> None:
+    """record_claw_run signature accepts conversation_id as trailing optional."""
+    import inspect
+    from app.history import HistoryStore
+    sig = inspect.signature(HistoryStore.record_claw_run)
+    params = list(sig.parameters.values())
+    conv_param = next((p for p in params if p.name == "conversation_id"), None)
+    assert conv_param is not None
+    assert conv_param.default is None
+    assert conv_param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
+
+
+def test_phase_b_execute_with_conversation_persists_exact_validated_id() -> None:
+    """Valid owned conversation_id is persisted to run history (Phase B)."""
+    store = _SessionHistoryStore()
+    adapter = _make_adapter()
+    with _signed_in_client(store) as client, _injected_adapter(client, adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH, json=_execute_payload(conversation_id=OWNED_CONVERSATION_ID)
+        )
+    assert resp.status_code == 200
+    result = resp.json()["result"]
+    assert result["conversation_id"] == OWNED_CONVERSATION_ID
+    assert store.get_calls == [(SIGNED_IN_USER_ID, OWNED_CONVERSATION_ID)]
+    assert len(store.record_calls) == 1
+    # Phase B: the exact validated conversation_id is now persisted.
+    assert store.record_calls[0]["conversation_id"] == OWNED_CONVERSATION_ID
+    adapter.execute.assert_awaited_once()
+
+
+def test_phase_b_execute_without_conversation_persists_null() -> None:
+    """Absent conversation_id keeps legacy behavior: NULL persistence."""
+    store = _SessionHistoryStore()
+    adapter = _make_adapter()
+    with _signed_in_client(store) as client, _injected_adapter(client, adapter):
+        resp = client.post(EXECUTE_ROUTE_PATH, json=_execute_payload())
+    assert resp.status_code == 200
+    result = resp.json()["result"]
+    assert "conversation_id" not in result
+    assert store.get_calls == []
+    assert len(store.record_calls) == 1
+    assert store.record_calls[0]["conversation_id"] is None
+    adapter.execute.assert_awaited_once()
+
+
+def test_phase_b_persisted_conversation_id_flows_to_run_history_projection() -> None:
+    """Persisted conversation_id is projected through the bounded session field."""
+    store = _SessionHistoryStore(rows={
+        "run_a": _run_row(user_id=SIGNED_IN_USER_ID, run_id="run_a",
+                          conversation_id=OWNED_CONVERSATION_ID),
+        "run_b": _run_row(user_id=SIGNED_IN_USER_ID, run_id="run_b"),
+    })
+    client = _signed_in_client(store)
+    resp = client.get(RUNS_HISTORY_ROUTE_PATH)
+    assert resp.status_code == 200
+    runs = {row["run_id"]: row for row in resp.json()["runs"]}
+    assert runs["run_a"]["session"] == {"conversation_id": OWNED_CONVERSATION_ID}
+    assert runs["run_b"]["session"] is None
+
+
+def test_phase_b_foreign_conversation_never_persisted() -> None:
+    """Foreign conversation fails closed before execution and persistence."""
+    store = _SessionHistoryStore()
+    adapter = _make_adapter()
+    with _signed_in_client(store) as client, _injected_adapter(client, adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH,
+            json=_execute_payload(conversation_id="chat_" + "b2" * 16),
+        )
+    assert resp.status_code == 404
+    assert resp.json()["error"]["code"] == "conversation_not_found"
+    assert store.record_calls == []
+    adapter.execute.assert_not_called()
+
+
+def test_phase_b_malformed_conversation_never_persisted() -> None:
+    """Malformed conversation_id fails closed before any persistence."""
+    store = _SessionHistoryStore()
+    adapter = _make_adapter()
+    with _signed_in_client(store) as client, _injected_adapter(client, adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH, json=_execute_payload(conversation_id=MALFORMED_CONVERSATION_ID)
+        )
+    assert resp.status_code == 400
+    assert resp.json()["error"]["code"] == "invalid_conversation_id"
+    assert store.record_calls == []
+    adapter.execute.assert_not_called()
+
+
+def test_phase_b_raw_request_value_never_reaches_persistence() -> None:
+    """The raw request body value is never persisted without validation."""
+    store = _SessionHistoryStore()
+    adapter = _make_adapter()
+    with _signed_in_client(store) as client, _injected_adapter(client, adapter):
+        resp = client.post(
+            EXECUTE_ROUTE_PATH, json=_execute_payload(conversation_id=RAW_USER_ID_CANDIDATE)
+        )
+    assert resp.status_code == 400
+    assert resp.json()["error"]["code"] == "invalid_conversation_id"
+    assert store.record_calls == []
+    adapter.execute.assert_not_called()
+    # The raw user id was never validated, never persisted, never executed.
+    assert store.get_calls == []
+
+
+def test_phase_b_deleted_conversation_does_not_fabricate_session() -> None:
+    """A deleted conversation leaves the persisted run row unchanged.
+
+    The run row keeps its historical conversation_id only if it was valid at
+    write time. A later delete does not rewrite history; the projection
+    simply shows the stored reference (or null if none was stored).
+    """
+    # Store a run row that was persisted with a conversation_id, then
+    # simulate the conversation being deleted by removing it from the store.
+    store = _SessionHistoryStore(rows={
+        "run_a": _run_row(user_id=SIGNED_IN_USER_ID, run_id="run_a",
+                          conversation_id=OWNED_CONVERSATION_ID),
+    })
+    # Delete the conversation from the store (simulating post-write deletion).
+    store.conversations.clear()
+    client = _signed_in_client(store)
+    resp = client.get(RUNS_HISTORY_ROUTE_PATH)
+    assert resp.status_code == 200
+    # The run row still projects its persisted conversation_id; the projection
+    # does not re-validate against the conversation table on read.
+    runs = {row["run_id"]: row for row in resp.json()["runs"]}
+    assert runs["run_a"]["session"] == {"conversation_id": OWNED_CONVERSATION_ID}
