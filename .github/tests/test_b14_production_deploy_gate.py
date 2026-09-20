@@ -86,7 +86,9 @@ def test_deploy_step_uses_canonical_pipeline() -> None:
 def test_post_deploy_verification_is_blocking() -> None:
     text = _workflow_text()
     assert "Current Version ID" in text
-    assert "deployments list" in text
+    # #2451: the served-version source is the documented REST deployments
+    # endpoint, not the undocumented wrangler bare list.
+    assert "/workers/scripts/ai-revenue-korean-ai-platform/deployments" in text
     assert "POST_DEPLOY_VERSION_AT_100=PASS" in text
     assert '"b14_service_bound":true' in text
     assert "ENGINE_B14_BOUND_SMOKE=PASS" in text
@@ -141,8 +143,11 @@ def test_retire_secret_job_is_separately_confirmed_and_idempotent() -> None:
     assert "RETIRE" not in deploy["if"]
 
 
+SCRIPTS_DIR = ROOT / ".github" / "scripts"
+
+
 def _embedded_version_check_script() -> str:
-    """Extract the python heredoc that validates deployments list output."""
+    """Extract the python heredoc that validates the deployments envelope."""
     text = _workflow_text()
     match = re.search(
         r"python3 - \"\$VERSION_ID\" <<'PY'\n(.*?)\n\s*PY\n",
@@ -161,14 +166,71 @@ def _run_version_check(tmp_path, payload, expected: str) -> subprocess.Completed
         [sys.executable, "-c", script, expected],
         capture_output=True,
         text=True,
-        env={**os.environ, "B14_DEPLOYMENTS_JSON": str(json_file)},
+        env={
+            **os.environ,
+            "B14_DEPLOYMENTS_JSON": str(json_file),
+            "B14_SERVED_VERSION_SCRIPTS": str(SCRIPTS_DIR),
+        },
     )
 
 
-def test_version_check_accepts_wrangler_list_shape(tmp_path) -> None:
-    # Regression (post-#1961 first dispatch): wrangler deployments list --json
-    # returns a bare LIST, oldest-first, and each entry carries
-    # versions: [{version_id, percentage}] - measured on wrangler 4.129.
+def _canonical_resolver():
+    """Import the shared canonical served-version primitive."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "cloudflare_served_version",
+        SCRIPTS_DIR / "cloudflare_served_version.py",
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _envelope(deployments) -> dict:
+    """A documented successful Cloudflare deployments envelope."""
+    return {"success": True, "errors": [], "messages": [], "result": {"deployments": deployments}}
+
+
+def _deployment(version_id: str, percentage: int, deployment_id: str = "d1") -> dict:
+    return {
+        "id": deployment_id,
+        "source": "wrangler",
+        "strategy": "percentage",
+        "versions": [{"version_id": version_id, "percentage": percentage}],
+        "created_on": "2026-09-06T09:13:00.000000Z",
+    }
+
+
+# ---------------------------------------------------------------------------
+# #2451 child: the post-deploy version check must answer "is the version I just
+# deployed the one serving traffic right now?" through the shared canonical
+# resolver -- never by scanning deployment history for the expected id.
+# ---------------------------------------------------------------------------
+
+
+def test_version_check_accepts_active_deployment_at_100(tmp_path) -> None:
+    """The documented active deployment (result.deployments[0]) at 100% passes."""
+    expected = "065fe361-9e94-4e56-8025-3b372cca3459"
+    result = _run_version_check(
+        tmp_path, _envelope([_deployment(expected, 100)]), expected
+    )
+    assert result.returncode == 0, result.stderr
+    assert "POST_DEPLOY_VERSION_AT_100=PASS" in result.stdout
+    assert "CANONICAL_SERVED_VERSION_REUSED=YES" in result.stdout
+    assert "HISTORICAL_DEPLOYMENT_ACCEPTED=NO" in result.stdout
+    assert f"CANONICAL_SERVED_VERSION_RESOLVED={expected}" in result.stdout
+
+
+def test_wrangler_raw_list_is_refused(tmp_path) -> None:
+    """Regression: the bare wrangler list is never coerced into the canonical shape.
+
+    The measured wrangler 4.129 shape is a bare, oldest-first list. Before this
+    child the gate scanned it and accepted the expected version wherever it
+    appeared -- including a superseded entry still recording percentage 100.
+    """
+    expected = "065fe361-9e94-4e56-8025-3b372cca3459"
     payload = [
         {
             "id": "7977047f-c42f-4ee2-9a8d-b8cfac39ef35",
@@ -183,70 +245,173 @@ def test_version_check_accepts_wrangler_list_shape(tmp_path) -> None:
             "id": "aabbccdd-0000-1111-2222-333344445555",
             "source": "wrangler",
             "strategy": "percentage",
-            "versions": [
-                {"version_id": "065fe361-9e94-4e56-8025-3b372cca3459", "percentage": 100}
-            ],
+            "versions": [{"version_id": expected, "percentage": 100}],
             "created_on": "2026-09-06T09:13:00.000000Z",
         },
     ]
-    result = _run_version_check(tmp_path, payload, "065fe361-9e94-4e56-8025-3b372cca3459")
-    assert result.returncode == 0, result.stderr
-    assert "POST_DEPLOY_VERSION_AT_100=PASS" in result.stdout
+    result = _run_version_check(tmp_path, payload, expected)
+    assert result.returncode != 0, "a raw wrangler list must never prove a served version"
+    assert "POST_DEPLOY_VERSION_AT_100=PASS" not in result.stdout
+    assert "CANONICAL_SERVED_VERSION_REASON=envelope" in result.stdout
+
+
+def test_deployments_object_without_success_envelope_is_refused(tmp_path) -> None:
+    """{"deployments": [...]} alone carries no served proof; fail closed."""
+    result = _run_version_check(
+        tmp_path, {"deployments": [_deployment("abc123", 100)]}, "abc123"
+    )
+    assert result.returncode != 0
+    assert "POST_DEPLOY_VERSION_AT_100=PASS" not in result.stdout
+    assert "CANONICAL_SERVED_VERSION_REASON=envelope" in result.stdout
+
+
+def test_list_shaped_result_is_refused(tmp_path) -> None:
+    result = _run_version_check(
+        tmp_path, {"success": True, "result": [_deployment("abc123", 100)]}, "abc123"
+    )
+    assert result.returncode != 0
+    assert "CANONICAL_SERVED_VERSION_REASON=result-object" in result.stdout
+
+
+def test_result_versions_shortcut_is_refused(tmp_path) -> None:
+    result = _run_version_check(
+        tmp_path,
+        {"success": True, "result": {"versions": [{"version_id": "abc123", "percentage": 100}]}},
+        "abc123",
+    )
+    assert result.returncode != 0
+    assert "CANONICAL_SERVED_VERSION_REASON=deployment-records" in result.stdout
+
+
+def test_expected_version_only_in_historical_deployment_fails(tmp_path) -> None:
+    """The core false-pass regression.
+
+    The deployed version sits at 100% in a *superseded* deployment while a newer
+    deployment serves something else. History holds the expected id, so an
+    "anywhere in history" scan passes -- the canonical resolver must not.
+    """
+    expected = "065fe361-9e94-4e56-8025-3b372cca3459"
+    payload = _envelope(
+        [
+            _deployment("11111111-2222-3333-4444-555555555555", 100, "active"),
+            _deployment(expected, 100, "superseded"),
+        ]
+    )
+    result = _run_version_check(tmp_path, payload, expected)
+    assert result.returncode != 0, "a historical occurrence must not satisfy the gate"
+    assert "POST_DEPLOY_VERSION_AT_100=PASS" not in result.stdout
+    assert "B14_SERVED_VERSION_MISMATCH=YES" in result.stdout
+
+
+def test_historical_deployment_at_100_never_satisfies_expected(tmp_path) -> None:
+    """Same shape, asserted from the resolver side: it returns the active id."""
+    expected = "065fe361-9e94-4e56-8025-3b372cca3459"
+    active = "11111111-2222-3333-4444-555555555555"
+    payload = _envelope(
+        [_deployment(active, 100, "active"), _deployment(expected, 100, "superseded")]
+    )
+    canonical = _canonical_resolver()
+    assert canonical.resolve_served_version_id(payload) == active
+    result = _run_version_check(tmp_path, payload, expected)
+    assert result.returncode != 0
+    assert f"CANONICAL_SERVED_VERSION_RESOLVED={active}" not in result.stdout
 
 
 def test_version_check_rejects_wrong_version(tmp_path) -> None:
-    payload = [
-        {
-            "id": "7977047f-c42f-4ee2-9a8d-b8cfac39ef35",
-            "source": "wrangler",
-            "strategy": "percentage",
-            "versions": [
-                {"version_id": "26a82829-ac8a-4f8d-8de6-1d413c18a7a1", "percentage": 100}
-            ],
-            "created_on": "2026-09-03T04:51:05.028663Z",
-        }
-    ]
-    result = _run_version_check(tmp_path, payload, "ffffffff-0000-0000-0000-000000000000")
+    result = _run_version_check(
+        tmp_path,
+        _envelope([_deployment("26a82829-ac8a-4f8d-8de6-1d413c18a7a1", 100)]),
+        "ffffffff-0000-0000-0000-000000000000",
+    )
     assert result.returncode != 0
-    assert "not found in deployments list" in result.stderr
+    assert "B14_SERVED_VERSION_MISMATCH=YES" in result.stdout
 
 
-def test_version_check_accepts_object_shape(tmp_path) -> None:
-    payload = {
-        "deployments": [
+def test_active_deployment_not_at_full_traffic_is_refused(tmp_path) -> None:
+    result = _run_version_check(tmp_path, _envelope([_deployment("abc123", 50)]), "abc123")
+    assert result.returncode != 0
+    assert "CANONICAL_SERVED_VERSION_REASON=traffic" in result.stdout
+
+
+def test_active_deployment_with_split_versions_is_refused(tmp_path) -> None:
+    deployment = _deployment("abc123", 100)
+    deployment["versions"] = [
+        {"version_id": "abc123", "percentage": 50},
+        {"version_id": "def456", "percentage": 50},
+    ]
+    result = _run_version_check(tmp_path, _envelope([deployment]), "abc123")
+    assert result.returncode != 0
+    assert "CANONICAL_SERVED_VERSION_REASON=version-count" in result.stdout
+
+
+def test_unsafe_version_id_is_refused(tmp_path) -> None:
+    result = _run_version_check(tmp_path, _envelope([_deployment("bad id;rm", 100)]), "bad id;rm")
+    assert result.returncode != 0
+    assert "CANONICAL_SERVED_VERSION_REASON=version-id" in result.stdout
+
+
+def test_empty_deployment_history_is_refused(tmp_path) -> None:
+    result = _run_version_check(tmp_path, _envelope([]), "abc123")
+    assert result.returncode != 0
+    assert "CANONICAL_SERVED_VERSION_REASON=deployment-records" in result.stdout
+
+
+def test_gate_decision_matches_the_canonical_resolver_matrix(tmp_path) -> None:
+    """Reuse, not reimplementation: the gate must agree with the primitive."""
+    canonical = _canonical_resolver()
+    matrix = [
+        (_envelope([_deployment("aaa", 100)]), "aaa", True),
+        (_envelope([_deployment("aaa", 100), _deployment("bbb", 100)]), "bbb", False),
+        (_envelope([_deployment("aaa", 100)]), "bbb", False),
+        (_envelope([_deployment("aaa", 50)]), "aaa", False),
+        ([_deployment("aaa", 100)], "aaa", False),
+        ({"deployments": [_deployment("aaa", 100)]}, "aaa", False),
+        (
             {
-                "id": "7977047f-c42f-4ee2-9a8d-b8cfac39ef35",
-                "versions": [
-                    {"version_id": "abc123", "percentage": 100}
-                ],
-            }
-        ]
-    }
-    result = _run_version_check(tmp_path, payload, "abc123")
-    assert result.returncode == 0, result.stderr
-    assert "POST_DEPLOY_VERSION_AT_100=PASS" in result.stdout
+                "success": True,
+                "result": {"versions": [{"version_id": "aaa", "percentage": 100}]},
+            },
+            "aaa",
+            False,
+        ),
+    ]
+    for payload, expected, should_pass in matrix:
+        try:
+            canonical_pass = canonical.resolve_served_version_id(payload) == expected
+        except canonical.ServedVersionResolutionError:
+            canonical_pass = False
+        result = _run_version_check(tmp_path, payload, expected)
+        assert (result.returncode == 0) == should_pass, (payload, expected)
+        assert (result.returncode == 0) == canonical_pass, (
+            "gate must not disagree with the canonical resolver",
+            payload,
+            expected,
+        )
 
 
-def test_version_check_still_fails_on_version_mismatch_or_partial_rollout(tmp_path) -> None:
-    mismatch = _run_version_check(
-        tmp_path,
-        [{
-            "id": "d1",
-            "versions": [{"version_id": "other", "percentage": 100}],
-        }],
-        "expected-id",
+def test_workflow_delegates_to_the_canonical_resolver() -> None:
+    script = _embedded_version_check_script()
+    assert "from cloudflare_served_version import" in script
+    assert "resolve_served_version_id(payload)" in script
+    assert "ServedVersionResolutionError" in script
+
+
+def test_no_history_scan_in_the_embedded_check() -> None:
+    """Every entry in the list used to be searched; now none may be."""
+    script = _embedded_version_check_script()
+    for forbidden in ("for entry in deployments", "for v in entry", "match is not None"):
+        assert forbidden not in script, f"history scan survived: {forbidden}"
+    assert "isinstance(payload, list)" not in script
+    assert 'payload.get("deployments")' not in script
+
+
+def test_post_deploy_step_reads_the_documented_rest_endpoint() -> None:
+    text = _workflow_text()
+    assert "/workers/scripts/ai-revenue-korean-ai-platform/deployments" in text
+    assert "wrangler@4 deployments list --json" not in text, (
+        "the undocumented wrangler bare-list must not be the served-version source"
     )
-    assert mismatch.returncode != 0
-
-    not_full = _run_version_check(
-        tmp_path,
-        [{
-            "id": "d2",
-            "versions": [{"version_id": "expected-id", "percentage": 50}],
-        }],
-        "expected-id",
-    )
-    assert not_full.returncode != 0
+    assert "B14_SERVED_VERSION_SCRIPTS" in text
 
 
 def test_deploy_sh_is_syntactically_valid() -> None:

@@ -6,6 +6,10 @@ from app.attachments import ImageAttachment
 from app.b14_client import B14Client
 from app.config import Settings
 from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -42,7 +46,11 @@ def test_mock_completed_answer_uses_plain_truthful_preview_copy():
         result = await B14Client(Settings(runtime_mode="mock")).complete(MESSAGES)
         answer = result["answer"]
 
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == "agnes-ai/agnes-3.0-flash"
+        assert (
+            DEFAULT_B14_MODEL_ID
+            == LOW_B14_MODEL_ID
+            == active_route_for(ProductTierLabel.PLUS).model_id
+        )
         assert result["request_id"] == "mock_b62"
         assert result["runtime"] == "mock"
         assert result["route"]["model"] == LOW_B14_MODEL_ID
