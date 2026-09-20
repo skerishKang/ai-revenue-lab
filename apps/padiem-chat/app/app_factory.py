@@ -34,6 +34,16 @@ from .claw_memory_routes import (
     claw_memory_list,
     claw_memory_reject,
 )
+from .calendar_routes import (
+    calendar_appointments_create,
+    calendar_appointments_list,
+    calendar_items,
+    calendar_today,
+    calendar_upcoming,
+    calendar_work_logs_create,
+    calendar_work_logs_list,
+)
+from .calendar_store import CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
@@ -109,6 +119,7 @@ def create_app(
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     claw_task_alert_store=None,
+    calendar_store: CalendarStore | None = None,
     telemetry_emitter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -148,6 +159,13 @@ def create_app(
         Route("/api/claw/memory/{memory_id}", claw_memory_detail, methods=["GET"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
+        Route("/api/calendar/today", calendar_today, methods=["GET"]),
+        Route("/api/calendar/upcoming", calendar_upcoming, methods=["GET"]),
+        Route("/api/calendar/items", calendar_items, methods=["GET"]),
+        Route("/api/calendar/work-logs", calendar_work_logs_list, methods=["GET"]),
+        Route("/api/calendar/work-logs", calendar_work_logs_create, methods=["POST"]),
+        Route("/api/calendar/appointments", calendar_appointments_list, methods=["GET"]),
+        Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -219,4 +237,10 @@ def create_app(
         except Exception:
             _task_alert_store = None
     app.state.claw_task_alert_store = _task_alert_store
+
+    # #2834 Native Padiem Calendar: in-memory reference store by default in Phase A.
+    # An explicitly injected store wins; durable D1 store deferred pending migration governance.
+    app.state.calendar_store = (
+        calendar_store if calendar_store is not None else InMemoryCalendarStore()
+    )
     return app
