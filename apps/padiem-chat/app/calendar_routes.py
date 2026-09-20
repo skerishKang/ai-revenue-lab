@@ -150,6 +150,7 @@ async def calendar_today(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
     history_store = getattr(request.app.state, "history_store", None)
+    automation_store = getattr(request.app.state, "claw_automation_store", None)
 
     try:
         projection = await build_today_projection(
@@ -158,6 +159,7 @@ async def calendar_today(request: Request) -> JSONResponse:
             calendar_store=store,
             task_alert_store=task_alert_store,
             history_store=history_store,
+            automation_store=automation_store,
             user_id=uid,
             limit=limit_val,
         )
@@ -265,6 +267,7 @@ async def calendar_items(request: Request) -> JSONResponse:
     workspace_id = await _resolve_memory_workspace(request, uid)
     task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
     history_store = getattr(request.app.state, "history_store", None)
+    automation_store = getattr(request.app.state, "claw_automation_store", None)
 
     try:
         projection = await build_range_projection(
