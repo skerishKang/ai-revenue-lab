@@ -43,7 +43,7 @@ from .calendar_routes import (
     calendar_work_logs_create,
     calendar_work_logs_list,
 )
-from .calendar_store import CalendarStore, InMemoryCalendarStore
+from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
@@ -238,9 +238,16 @@ def create_app(
             _task_alert_store = None
     app.state.claw_task_alert_store = _task_alert_store
 
-    # #2834 Native Padiem Calendar: in-memory reference store by default in Phase A.
-    # An explicitly injected store wins; durable D1 store deferred pending migration governance.
+    # #2834 Native Padiem Calendar Phase B-2: durable D1 store.
+    # An explicitly injected store wins; otherwise derive from d1_binding when present;
+    # fall back to in-memory store if d1_binding is absent.
+    _calendar_store = calendar_store
+    if _calendar_store is None and d1_binding is not None:
+        try:
+            _calendar_store = D1CalendarStore(d1_binding)
+        except Exception:
+            _calendar_store = None
     app.state.calendar_store = (
-        calendar_store if calendar_store is not None else InMemoryCalendarStore()
+        _calendar_store if _calendar_store is not None else InMemoryCalendarStore()
     )
     return app
