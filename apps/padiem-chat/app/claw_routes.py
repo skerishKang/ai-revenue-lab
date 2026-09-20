@@ -44,6 +44,19 @@ written by the execute path through the existing D1 ``PADIEM_CHAT_DB`` history
 authority; raw request content, provider secrets, session cookies, OAuth tokens,
 and object keys are never persisted. A history write/read failure fails closed
 with a stable public-safe 503 instead of silently claiming persistence.
+
+Canonical session projection (#2829): the execute route may carry an optional
+``conversation_id`` referencing the existing canonical conversation authority.
+It is validated by the conversation validator itself and resolved with the
+owner-scoped conversation lookup — no new session, account, or workspace
+authority. Missing/foreign references fail closed with the same non-disclosing
+``conversation_not_found`` projection the chat routes use, before any quota,
+tenant, or P01/Engine work. The resolved handle echoes on the execute result
+for UI session routing. Run-history rows gain a bounded ``session`` projection
+that carries a validated owner conversation reference only when the stored row
+supplies one; legacy rows (which persist no reference) project ``session: null``
+rather than a fabricated session. Persisting per-run linkage would require a
+separately justified storage migration and is deliberately NOT part of Phase A.
 """
 
 from __future__ import annotations
@@ -71,7 +84,12 @@ from .control_plane_identity_shadow import (
     resolve_refreshed_session,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
-from .history import MAX_CLAW_RUNS, MAX_RUN_RESULT_SUMMARY_CHARS
+from .history import (
+    MAX_CLAW_RUNS,
+    MAX_RUN_RESULT_SUMMARY_CHARS,
+    HistoryStore,
+    validate_conversation_id,
+)
 from .usage_gate import UsageGate
 from kagent.document_export import (
     DocumentExportError,
@@ -284,6 +302,47 @@ async def _resolve_canonical_tenant(request: Request) -> str | None:
     return tenant_id
 
 
+async def _resolve_intake_session_reference(
+    request: Request, data: dict[str, Any]
+) -> tuple[str | None, JSONResponse | None]:
+    """Resolve the optional canonical conversation/session reference (#2829).
+
+    The reference reuses the existing conversation authority itself: the same
+    ``validate_conversation_id`` shape validator and the same owner-scoped
+    ``get_conversation`` lookup the chat routes use — no new session, account,
+    or workspace authority. A non-owner or missing conversation is the same
+    non-disclosing ``conversation_not_found`` projection used elsewhere; the
+    caller stops before any quota decision, tenant resolution, or P01/Engine
+    dispatch. Carrying no reference keeps legacy execute behavior byte-for-byte
+    identical.
+    """
+    raw = data.get("conversation_id")
+    if raw is None:
+        return None, None
+    try:
+        candidate = validate_conversation_id(raw)
+    except ValueError:
+        return None, _error(400, "invalid_conversation_id", "대화 세션 참조 형식이 올바르지 않습니다.")
+    if candidate is None:
+        return None, None
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None, _error(401, "unauthorized", "세션 참조를 확인하려면 로그인이 필요합니다.")
+    store: HistoryStore | None = getattr(request.app.state, "history_store", None)
+    get_conversation = getattr(store, "get_conversation", None) if store is not None else None
+    if not callable(get_conversation):
+        return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
+    try:
+        conversation = get_conversation(uid, candidate)
+        if inspect.isawaitable(conversation):
+            conversation = await conversation
+    except Exception:
+        return None, _error(503, "conversation_authority_unavailable", "대화 세션 권한을 확인할 수 없습니다.")
+    if not isinstance(conversation, dict) or conversation.get("id") != candidate:
+        return None, _error(404, "conversation_not_found", "대화를 찾을 수 없습니다.")
+    return candidate, None
+
+
 async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
@@ -443,6 +502,14 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     except Exception as exc:
         return _error(400, "invalid_input", str(exc))
 
+    # Canonical session reference (#2829): resolved through the conversation
+    # authority itself, and it fails closed before quota, tenant, or dispatch.
+    session_conversation_id, session_error = await _resolve_intake_session_reference(
+        request, data
+    )
+    if session_error is not None:
+        return session_error
+
     # Artifact-producing actions require canonical tenant + storage authority
     # before quota consumption or any P01/Engine/B14 dispatch (#2583).
     artifact_tenant_id: str | None = None
@@ -599,6 +666,10 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     }
     if artifact_descriptor is not None:
         result["artifact"] = artifact_descriptor
+    if session_conversation_id is not None:
+        # Bounded canonical session handle for UI session routing only; a
+        # validated conversation id, never an internal storage row/user id.
+        result["conversation_id"] = session_conversation_id
 
     history_failure = await _record_claw_run_history(
         request,
