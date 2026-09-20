@@ -28,6 +28,7 @@ _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provi
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
+_CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TENANT_CREATE_KEYS = frozenset()
 _TENANT_GET_KEYS = frozenset({"tenant_id"})
@@ -80,6 +81,20 @@ def _safe_error(exc: ControlPlaneContractError) -> dict[str, Any]:
             "message": "Canonical identity request was rejected",
         },
     }
+
+
+def _connector_workspace_wire(context: Any | None) -> dict[str, Any]:
+    """§6 bounded status projection: present/absent, workspace_ref only.
+
+    ``actor_ref``, ``account_ref``, the canonical subject, the product, the
+    caller-asserted tenant and every credential stay inside this private
+    Control Plane Durable Object. This helper is never reachable from public
+    HTTP: the worker exposes no route at all.
+    """
+
+    if context is None:
+        return {"present": False}
+    return {"present": True, "workspace_ref": context.workspace_ref}
 
 
 class CanonicalIdentityDurableObject(DurableObject):
@@ -172,6 +187,34 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def resolve_connector_workspace(self, payload: dict) -> dict:
+        """Read-only connector workspace lookup for an active canonical session.
+
+        This is deliberately **not** a connect endpoint. The caller supplies
+        only the canonical session id; it can never supply or assert a
+        ``workspace_ref``, ``tenant_id``, ``subject_id`` or ``product_id``.
+        The Durable Object re-reads authoritative session truth, rejects
+        inactive or foreign sessions, and then performs a read-only existing
+        lookup that issues ``SELECT`` only.
+
+        Because ``resolve_existing`` never mints context, merely asking about
+        connector status cannot create a ``canonical_connector_context`` row.
+        ``present=False`` means the canonical connector context has not been
+        created yet; it does not mean the connector is disconnected, and no
+        B62 status projection is composed here.
+        """
+
+        try:
+            wire = _closed(payload, _CONNECTOR_WORKSPACE_KEYS, "connector workspace resolve RPC")
+            session = self._store.resolve_auth_session(session_id=wire["session_id"])
+            context = self._connector_context_store.resolve_existing(
+                auth_session=session,
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "workspace": _connector_workspace_wire(context)}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def create_tenant(self, payload: dict) -> dict:
         try:
             _closed(payload, _TENANT_CREATE_KEYS, "tenant-create RPC")
@@ -245,6 +288,9 @@ class Default(WorkerEntrypoint):
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         return await self._stub().issue_google_connect_ticket(payload)
 
+    async def resolve_connector_workspace(self, payload: dict) -> dict:
+        return await self._stub().resolve_connector_workspace(payload)
+
     async def create_tenant(self, payload: dict) -> dict:
         return await self._stub().create_tenant(payload)
 
@@ -272,6 +318,8 @@ PROVIDER_SUBJECT_PERSISTED = False
 PRODUCT_D1_SHADOW_AUTHORITATIVE = False
 CONNECT_TICKET_ISSUED_BY_CONTROL_PLANE = True
 CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY = False
+READ_ONLY_CONNECTOR_WORKSPACE_RPC = True
+READ_ONLY_WORKSPACE_RPC_CREATES_CONTEXT = False
 RAW_CONNECT_TICKET_PUBLIC = False
 GOOGLE_WRITE_SCOPE = False
 PUBLIC_FETCH = False
