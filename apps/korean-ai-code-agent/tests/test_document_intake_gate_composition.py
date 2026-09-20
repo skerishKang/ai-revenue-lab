@@ -438,6 +438,86 @@ class FlowCompositionTests(unittest.TestCase):
         self.assertIn(GATE_REJECTION_NOTE_PREFIX, ctx.exception.safe_message)
 
 
+class DraftGateRejectionPathLeakTests(unittest.TestCase):
+    """Flow-level regression: the composed draft path must not echo a path.
+
+    ``DraftFlowError.safe_message`` reaches stderr through the draft CLI, so a
+    gate-rejected routed document has to project the bounded gate note only.
+    This exercises the real composition (``_read_draft_input`` ->
+    ``intake_document`` -> ``inspect_file``) rather than inspecting a note from
+    ``intake_document`` directly.
+    """
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.repo = Path(self._tmp.name)
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def _path_representations(self, path: Path) -> set[str]:
+        """Every textual form of the same host path that must not be echoed."""
+
+        repo_str = str(self.repo)
+        path_str = str(path)
+        representations = {
+            path_str,
+            path_str.replace("\\", "/"),
+            str(path.parent),
+            str(path.parent).replace("\\", "/"),
+            repo_str,
+            repo_str.replace("\\", "/"),
+            path.name,
+        }
+        drive = path.drive  # "C:" on Windows, "" on POSIX
+        if drive:
+            representations.update({drive, drive + "\\", drive + "/"})
+        else:
+            # Windows-style rendering of the same POSIX absolute path.
+            representations.add(path_str.replace("/", "\\"))
+        return {value for value in representations if value}
+
+    def test_gate_rejection_safe_message_leaks_no_host_path(self) -> None:
+        cases = {
+            "spoofed.docx": PNG_BYTES + _LEAK_MARKER,
+            "spoofed.pdf": JPEG_BYTES + _LEAK_MARKER,
+            "nested/fake.hwpx": _build_zip([("a.txt", _LEAK_MARKER)]),
+            "nested/bomb.docx": _docx_with_bomb(),
+            "nested/locked.docx": _docx_encrypted(),
+        }
+        for name, payload in cases.items():
+            with self.subTest(name=name):
+                path = self.repo / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(payload)
+
+                with _CompositionSpy() as spy, self.assertRaises(
+                    DraftFlowError
+                ) as ctx:
+                    _read_draft_input(path)
+
+                error = ctx.exception
+                message = error.safe_message
+                self.assertEqual(error.code, "draft_input_invalid")
+                self.assertIn(GATE_REJECTION_NOTE_PREFIX, message)
+
+                # Nothing about the host location may reach the message.
+                for representation in self._path_representations(path):
+                    self.assertNotIn(representation, message, representation)
+
+                # Nor payload, exception or archive member detail.
+                self.assertNotIn(_LEAK_MARKER.decode(), message)
+                self.assertNotIn("Traceback", message)
+                self.assertNotIn("Exception", message)
+                self.assertNotIn("word/document.xml", message)
+                self.assertNotIn("bomb.bin", message)
+                self.assertLess(len(message), 120, message)
+
+                # The composed path really ran the gate and never the parser.
+                self.assertEqual(spy.count("inspect_file"), 1)
+                self.assertEqual(spy.count("extract_binary_document"), 0)
+
+
 class SafeProjectionTests(unittest.TestCase):
     """L: a gate rejection leaks no payload, host path or exception detail."""
 
