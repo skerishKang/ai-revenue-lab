@@ -8,6 +8,11 @@ workers, DNS, routes or custom domains.
 
 These tests read the workflow source only. They perform no Cloudflare call and no
 deployment.
+
+Dependency note: this module deliberately uses **Python stdlib only**. The
+Control Plane CI installs ``packages/padiem-control-plane[dev]``, which has no
+PyYAML, so the workflow structure is read with bounded line parsers instead of
+a YAML loader.
 """
 
 from __future__ import annotations
@@ -26,6 +31,15 @@ STATE_WORKER_NAME = "padiem-google-oauth-state"
 EDGE_WORKER_NAME = "padiem-google-oauth-edge"
 B62_WORKER_NAME = "padiem-chat"
 CONFIRMATION = "REDEPLOY_PADIEM_CONTROL_PLANE_IDENTITY_FROM_EXACT_MAIN"
+ROLLBACK_STEP = "Auto-rollback identity Worker to the captured previous version"
+
+EXPECTED_PR_PATHS = [
+    ".github/workflows/b54-control-plane-identity-production-redeploy.yml",
+    "packages/padiem-control-plane/wrangler.identity-authority.jsonc",
+    "packages/padiem-control-plane/identity_authority_worker.py",
+    "packages/padiem-control-plane/tests/test_identity_production_redeploy_gate.py",
+]
+EXPECTED_MODES = ["repository_preflight", "cloudflare_readonly", "redeploy_identity_worker"]
 
 
 def _gate() -> str:
@@ -40,6 +54,125 @@ def _production_deploy_lines() -> list[str]:
         for line in _gate().splitlines()
         if "pywrangler deploy" in line and "--dry-run" not in line
     ]
+
+
+# --------------------------------------------------------------------------
+# Bounded stdlib parsers (no PyYAML)
+# --------------------------------------------------------------------------
+
+
+def _block_bounds(start_marker: str) -> tuple[int, int]:
+    """Return ``(start, end)`` line bounds of a 2-space YAML key block."""
+
+    lines = _gate().splitlines()
+    start = None
+    for index, line in enumerate(lines):
+        if line == start_marker:
+            start = index
+            break
+    if start is None:
+        raise AssertionError(f"workflow is missing block {start_marker!r}")
+
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        line = lines[index]
+        if not line.strip():
+            continue
+        # A sibling key at 2 spaces ends the block, as does any top-level key.
+        if line.startswith("  ") and not line.startswith("   ") and line.rstrip().endswith(":"):
+            end = index
+            break
+        if not line.startswith(" ") and line.rstrip().endswith(":"):
+            end = index
+            break
+    return start, end
+
+
+def _pr_paths() -> list[str]:
+    """Ordered, quoted paths listed under the top-level ``pull_request:`` block."""
+
+    lines = _gate().splitlines()
+    start, end = _block_bounds("  pull_request:")
+    paths: list[str] = []
+    in_paths = False
+    for line in lines[start:end]:
+        stripped = line.strip()
+        if stripped == "paths:":
+            in_paths = True
+            continue
+        if not in_paths:
+            continue
+        if stripped.startswith("- "):
+            paths.append(stripped[2:].strip().strip('"').strip("'"))
+        else:
+            break
+    return paths
+
+
+def _dispatch_mode_options() -> list[str]:
+    """Ordered ``options:`` entries under ``workflow_dispatch`` -> ``inputs`` -> ``mode``."""
+
+    lines = _gate().splitlines()
+    start, _ = _block_bounds("  workflow_dispatch:")
+
+    mode_index = None
+    for index in range(start + 1, len(lines)):
+        if lines[index] == "      mode:":
+            mode_index = index
+            break
+    if mode_index is None:
+        raise AssertionError("workflow_dispatch has no mode input")
+
+    options_index = None
+    for index in range(mode_index + 1, len(lines)):
+        stripped = lines[index].strip()
+        if stripped == "options:":
+            options_index = index
+            break
+        # A sibling input key at 6 spaces means we left the mode block.
+        if (
+            lines[index].startswith("      ")
+            and not lines[index].startswith("       ")
+            and stripped.endswith(":")
+        ):
+            break
+    if options_index is None:
+        raise AssertionError("mode input has no options list")
+
+    options: list[str] = []
+    for line in lines[options_index + 1 :]:
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            options.append(stripped[2:].strip())
+        else:
+            break
+    return options
+
+
+def _rollback_section() -> str:
+    """The rollback step and everything after it (rollback is the last step)."""
+
+    source = _gate()
+    return source[source.index(ROLLBACK_STEP) :]
+
+
+def _api_base_lines() -> list[str]:
+    """Real worker script api base lines.
+
+    The embedded source-contract also mentions the api prefix when it defines its
+    own detector, so the match additionally requires the ``workers/scripts/``
+    path. That keeps the count at the one real definition.
+    """
+
+    return [
+        line
+        for line in _gate().splitlines()
+        if 'api="https://api.cloudflare' in line and "workers/scripts/" in line
+    ]
+
+
+def _post_lines() -> list[str]:
+    return [line for line in _gate().splitlines() if "-X POST" in line]
 
 
 # --------------------------------------------------------------------------
@@ -156,8 +289,10 @@ def test_identity_version_must_actually_change():
 def test_no_public_route_mutation():
     source = _gate()
     assert "/workers/" + "routes" not in source
-    for verb in ("POST", "PUT", "PATCH", "DELETE"):
+    for verb in ("PUT", "PATCH", "DELETE"):
         assert "-X " + verb not in source
+    # POST is permitted exactly once, and only as the identity rollback.
+    assert len(_post_lines()) == 1
 
 
 def test_no_dns_or_custom_domain_mutation():
@@ -253,19 +388,107 @@ def test_mutation_is_unavailable_on_pull_request():
     assert "inputs.mode == 'redeploy_identity_worker'" in guard
 
 
-def test_pr_paths_do_not_include_production_topology():
-    import yaml
+# --------------------------------------------------------------------------
+# B1. PR paths and dispatch modes via bounded parsers (no PyYAML)
+# --------------------------------------------------------------------------
 
-    document = yaml.safe_load(_gate())
-    paths = document[True]["pull_request"]["paths"]
+
+def test_no_pyyaml_is_imported_anywhere_in_this_module():
+    # Tokens are built by concatenation so this test cannot match its own source.
+    banned = ("import " + "yaml", "from " + "yaml", "yaml" + ".safe_load", "yaml" + ".")
+    own = Path(__file__).read_text(encoding="utf-8")
+    for token in banned:
+        assert token not in own, f"PyYAML is not an installed Control Plane dep: {token}"
+
+
+def test_pr_paths_do_not_include_production_topology():
+    paths = _pr_paths()
+    # Non-vacuous: the parser must resolve exactly the four reviewed paths in order.
+    assert paths == EXPECTED_PR_PATHS
     for path in paths:
         assert "wrangler.toml" not in path
         assert "apps/padiem-chat" not in path
 
 
+def test_dispatch_modes_are_the_reviewed_triple():
+    # Exact membership AND order, not merely token existence.
+    assert _dispatch_mode_options() == EXPECTED_MODES
+
+
 # --------------------------------------------------------------------------
-# 16. rollback bounded to the identity Worker
+# B2. rollback exactness
 # --------------------------------------------------------------------------
+
+
+def test_previous_identity_version_is_captured():
+    source = _gate()
+    assert "previous_identity_version" in source
+    assert "PREVIOUS_VERSION_CAPTURE=PASS" in source
+    assert (
+        "PREVIOUS_IDENTITY_VERSION: ${{ needs.cloudflare-readonly.outputs.previous_identity_version }}"
+        in source
+    )
+    assert 'echo "previous_identity_version=${active}" >> "${GITHUB_OUTPUT}"' in source
+
+
+def test_rollback_payload_uses_the_captured_previous_version():
+    section = _rollback_section()
+    # The captured version is the request body version_id, not just an echo.
+    assert r'\"version_id\": \"${PREVIOUS_IDENTITY_VERSION}\"' in section
+    assert "ROLLBACK_TARGET_VERSION=${PREVIOUS_IDENTITY_VERSION}" in section
+    assert 'test -n "${PREVIOUS_IDENTITY_VERSION}"' in section
+
+
+def test_rollback_posts_to_identity_deployments_endpoint_only():
+    api_lines = _api_base_lines()
+    assert len(api_lines) == 1
+    assert "${IDENTITY_WORKER}" in api_lines[0]
+    for banned in (
+        "${B62_WORKER}",
+        "${STATE_WORKER}",
+        "${EDGE_WORKER}",
+        B62_WORKER_NAME,
+        "padiem-google-oauth",
+    ):
+        assert banned not in api_lines[0], f"rollback api base must not reference {banned}"
+    post_lines = _post_lines()
+    assert len(post_lines) == 1
+    assert "${api}/deployments" in post_lines[0]
+
+
+def test_rollback_requests_full_100_percent_rollout():
+    section = _rollback_section()
+    assert r'\"percentage\": 100' in section
+    assert "ROLLBACK_PERCENTAGE=100" in section
+
+
+def test_rollback_readback_asserts_active_equals_previous_version():
+    section = _rollback_section()
+    assert 'test "${active}" = "${PREVIOUS_IDENTITY_VERSION}"' in section
+    assert "IDENTITY_ROLLBACK_ACTIVE_VERSION_MATCH=PASS" in section
+    assert "ROLLBACK_VERSION_EXACT=PASS" in section
+    # Bounded polling, not a single read of a possibly stale deployment.
+    assert "seq 1 12" in section
+
+
+def test_rollback_only_mutates_through_the_single_identity_post():
+    section = _rollback_section()
+    for verb in ("PUT", "PATCH", "DELETE"):
+        assert "-X " + verb not in section
+    assert section.count("-X POST") == 1
+
+
+def test_rollback_preserves_other_worker_versions():
+    section = _rollback_section()
+    assert "ROLLBACK_TARGET=IDENTITY_WORKER_ONLY" in section
+    for pair in (
+        'test "${state_after}" = "${STATE_BEFORE}"',
+        'test "${edge_after}" = "${EDGE_BEFORE}"',
+        'test "${b62_after}" = "${B62_BEFORE}"',
+    ):
+        assert pair in section
+    for token in ("OAUTH_STATE_ROLLBACK_EFFECT=0", "OAUTH_EDGE_ROLLBACK_EFFECT=0", "B62_ROLLBACK_EFFECT=0"):
+        assert token in section
 
 
 def test_rollback_is_bounded_to_the_identity_worker():
@@ -273,25 +496,17 @@ def test_rollback_is_bounded_to_the_identity_worker():
     assert "ROLLBACK_TARGET=IDENTITY_WORKER_ONLY" in source
     assert "PREVIOUS_VERSION_CAPTURE=PASS" in source
     assert "previous_identity_version" in source
-    rollback_lines = [line for line in source.splitlines() if "wrangler@4 rollback" in line]
-    assert len(rollback_lines) == 1
-    assert IDENTITY_WORKER_NAME in rollback_lines[0]
-    assert B62_WORKER_NAME not in rollback_lines[0]
-    assert "padiem-google-oauth" not in rollback_lines[0]
     assert 'if: ${{ failure()' in source
+    api_lines = _api_base_lines()
+    assert len(api_lines) == 1
+    assert "${IDENTITY_WORKER}" in api_lines[0]
+    assert B62_WORKER_NAME not in api_lines[0]
+    assert "padiem-google-oauth" not in api_lines[0]
 
 
 # --------------------------------------------------------------------------
-# Mode contract
+# Invariant tokens
 # --------------------------------------------------------------------------
-
-
-def test_dispatch_modes_are_the_reviewed_triple():
-    import yaml
-
-    document = yaml.safe_load(_gate())
-    options = document[True]["workflow_dispatch"]["inputs"]["mode"]["options"]
-    assert options == ["repository_preflight", "cloudflare_readonly", "redeploy_identity_worker"]
 
 
 @pytest.mark.parametrize(

@@ -95,6 +95,12 @@ jobs:
               'SECRET_VALUES_READBACK=0',
               'ROLLBACK_TARGET=IDENTITY_WORKER_ONLY',
               'PREVIOUS_VERSION_CAPTURE=PASS',
+              'ROLLBACK_TARGET_VERSION=${PREVIOUS_IDENTITY_VERSION}',
+              'IDENTITY_ROLLBACK_ACTIVE_VERSION_MATCH=PASS',
+              'ROLLBACK_VERSION_EXACT=PASS',
+              'OAUTH_STATE_ROLLBACK_EFFECT=0',
+              'OAUTH_EDGE_ROLLBACK_EFFECT=0',
+              'B62_ROLLBACK_EFFECT=0',
               'Reconfirm exact main immediately before the only mutation',
               'EXACT_CURRENT_MAIN=PASS',
               'resolve_connector_workspace',
@@ -107,7 +113,6 @@ jobs:
               'wrangler.google-oauth' + '.jsonc',
               'wrangler.google-oauth-' + 'edge.jsonc',
               '/workers/' + 'routes',
-              '-X ' + 'POST',
               '-X ' + 'PUT',
               '-X ' + 'PATCH',
               '-X ' + 'DELETE',
@@ -115,6 +120,39 @@ jobs:
           for token in forbidden:
               if token in gate:
                   raise SystemExit(f'Forbidden broad/topology mutation token: {token}')
+
+          # POST is no longer forbidden globally: the exact-version rollback needs
+          # one deployments POST. Its count and target are asserted instead.
+          # Every detector token below is built by concatenation so that this
+          # contract cannot satisfy itself with its own source text.
+          post_token = '-X ' + 'POST'
+          post_lines = [line for line in gate.splitlines() if post_token in line]
+          if len(post_lines) != 1:
+              raise SystemExit(f'Expected exactly one POST (identity rollback), got {len(post_lines)}')
+          if not post_lines[0].strip().startswith('curl'):
+              raise SystemExit('The single POST must be a curl call to the deployments endpoint')
+          if '${api}/deployments' not in post_lines[0]:
+              raise SystemExit('The single POST must target the worker deployments endpoint')
+
+          # The single script api base must resolve to the identity Worker only.
+          api_token = 'api="https://api.cloudflare' + '.com'
+          api_lines = [line for line in gate.splitlines() if api_token in line]
+          if len(api_lines) != 1:
+              raise SystemExit(f'Expected exactly one worker script api base, got {len(api_lines)}')
+          if '${IDENTITY_WORKER}' not in api_lines[0]:
+              raise SystemExit(f'Script api base must target the identity Worker only: {api_lines[0].strip()}')
+          for banned in ('${B62_WORKER}', '${STATE_WORKER}', '${EDGE_WORKER}', 'padiem-chat', 'padiem-google-oauth'):
+              if banned in api_lines[0]:
+                  raise SystemExit(f'Script api base must not reference {banned}')
+
+          # The rollback must send the captured version as the exact target.
+          for token in (
+              'test -n "${PREVIOUS_' + 'IDENTITY_VERSION}"',
+              r'\"version_id\": \"${PREVIOUS_IDENTITY_VERSION}\"' + r', \"percentage\": 100',
+              'test "${active}" = "${PREVIOUS_' + 'IDENTITY_VERSION}"',
+          ):
+              if token not in gate:
+                  raise SystemExit(f'Missing rollback exactness token: {token}')
 
           deploy_lines = [
               line for line in gate.splitlines()
@@ -482,18 +520,73 @@ jobs:
           echo "LOCAL_AGENT_INGRESS_CHANGED=NO"
           echo "IDENTITY_ONLY_REDEPLOY=PASS"
 
-      - name: Auto-rollback identity Worker only on post-deploy verification failure
-        if: ${{ failure() && needs.cloudflare-readonly.outputs.previous_identity_version != '' }}
+      - name: Auto-rollback identity Worker to the captured previous version
+        if: ${{ failure() }}
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          STATE_BEFORE: ${{ steps.before.outputs.state_version }}
+          EDGE_BEFORE: ${{ steps.before.outputs.edge_version }}
+          B62_BEFORE: ${{ steps.before.outputs.b62_version }}
         run: |
           set -euo pipefail
-          # Bounded to the identity Worker script name only. The target is written
-          # literally so the rollback scope cannot drift with an env value. No
-          # other Worker, no B62/OAuth deployment, no DNS, route or custom-domain
-          # mutation.
-          npx wrangler@4 rollback padiem-control-plane-identity --message "B1D identity redeploy auto-rollback ${TARGET_SHA}"
+          # Bounded to the identity Worker script only. The captured live prestate
+          # version is the rollback TARGET: it is sent as the request body
+          # version_id, not merely echoed. Reuses the canonical B62
+          # b62-production-code-deploy-gate rollback shape.
+          test -n "${PREVIOUS_IDENTITY_VERSION}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}"
+
+          precheck="${RUNNER_TEMP}/identity-rollback-precheck.json"
+          curl -fsS "${auth[@]}" "${api}/deployments" -o "${precheck}"
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${precheck}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${precheck}")"
+          if [ "${active}" = "${PREVIOUS_IDENTITY_VERSION}" ]; then
+            echo "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED"
+            echo "ROLLBACK_POST_ATTEMPTED=NO"
+            echo "ROLLBACK_EFFECT=NONE_VERIFIED"
+            exit 0
+          fi
+
+          curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
+            -d "{\"version_id\": \"${PREVIOUS_IDENTITY_VERSION}\", \"percentage\": 100}" \
+            -o "${RUNNER_TEMP}/identity-auto-rollback.json"
+          echo "ROLLBACK_POST_ATTEMPTED=YES"
+          echo "ROLLBACK_TARGET_VERSION=${PREVIOUS_IDENTITY_VERSION}"
+          echo "ROLLBACK_PERCENTAGE=100"
+
+          # Bounded polling readback: a 200 from the POST is not proof.
+          for attempt in $(seq 1 12); do
+            state="${RUNNER_TEMP}/identity-auto-rollback-state.json"
+            curl -fsS "${auth[@]}" "${api}/deployments" -o "${state}"
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${state}" >/dev/null
+            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${state}")"
+            if [ "${active}" = "${PREVIOUS_IDENTITY_VERSION}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${active}" = "${PREVIOUS_IDENTITY_VERSION}"
+          echo "IDENTITY_ROLLBACK_ACTIVE_VERSION_MATCH=PASS"
+          echo "ROLLBACK_VERSION_EXACT=PASS"
+
+          # No other Worker may be affected by an identity-only rollback.
+          current_version() {
+            worker="$1"
+            dep="${RUNNER_TEMP}/${worker}-rollback-after.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            jq -r '.result.deployments[0].versions[0].version_id // empty' "${dep}"
+          }
+          state_after="$(current_version "${STATE_WORKER}")"
+          edge_after="$(current_version "${EDGE_WORKER}")"
+          b62_after="$(current_version "${B62_WORKER}")"
+          test -n "${state_after}" && test -n "${edge_after}" && test -n "${b62_after}"
+          if [ -n "${STATE_BEFORE}" ]; then test "${state_after}" = "${STATE_BEFORE}"; fi
+          if [ -n "${EDGE_BEFORE}" ]; then test "${edge_after}" = "${EDGE_BEFORE}"; fi
+          if [ -n "${B62_BEFORE}" ]; then test "${b62_after}" = "${B62_BEFORE}"; fi
+          echo "OAUTH_STATE_ROLLBACK_EFFECT=0"
+          echo "OAUTH_EDGE_ROLLBACK_EFFECT=0"
+          echo "B62_ROLLBACK_EFFECT=0"
           echo "ROLLBACK_TARGET=IDENTITY_WORKER_ONLY"
-          echo "IDENTITY_ROLLBACK_PREVIOUS_VERSION=${PREVIOUS_IDENTITY_VERSION}"
