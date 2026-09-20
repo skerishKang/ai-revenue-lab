@@ -202,7 +202,7 @@ The platform remains responsible for provider/model registry and execution and m
 - multiple provider families and execution adapters;
 - route evidence, usage/cost observation, and operator controls.
 
-The current Padiem work is classified as the first concrete product/customer profile on that platform:
+The current Padiem work is classified as the first concrete product/customer profile on that platform. The mapping below is what was decided on this date; the Plus and Pro lines were superseded later and the current mapping is recorded in the 2026-09-20 entry at the end of this log:
 
 ```text
 Padiem Routing Profile v1
@@ -238,3 +238,26 @@ Historical Phase 0–3 and provider documents are preserved as development evide
 `docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md`
 
 Related authority: #2085, completed #2099, and follow-ups #2100–#2104, #2107, and #1955.
+
+## 2026-09-20 — Padiem Plus is Agnes 3.0 Flash; Poolside Laguna becomes data-only; Pro and Max stay HOLD
+
+Documentation issue #2817 found that the route block in the 2026-09-08 entry above, and the copies of it maintained in `apps/padiem-chat/README.md`, `apps/korean-ai-platform/README.md`, `apps/korean-ai-platform/docs/README.md` and `docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md`, were still being read as current product-route authority after the owner route swaps that followed; `docs/architecture/B62_P01_B14_CONTROL_PLANE_OWNERSHIP_REVIEW_20260831.md` carried the same drift as a current-state claim. This entry records the correction. The 2026-09-08 entry is preserved as that date's decision record — only its current-state reading is superseded.
+
+Current Padiem Routing Profile v1 mapping, taken from the shared declaration `packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py`:
+
+```text
+Padiem Plus = agnes-ai/agnes-3.0-flash     only executable product route
+Padiem Pro  = padiem-profile/pro-hold      HOLD (owner decision #2601)
+Padiem Max  = padiem-profile/max-hold      HOLD (#1397 evidence gate)
+
+poolside/laguna-s-2.1 = HOLD_AS_DATA_ONLY  product data + b14/auto fixed-chain second position
+```
+
+What changed since 2026-09-08 and is now stated consistently in current-state documents:
+
+* Padiem Plus moved onto the direct Agnes provider route. `kilo/poolside-laguna-s-2.1-free` and `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` no longer back a Padiem tier; whether either is a B14 route at all is decided by the current catalog, never by documentation.
+* Padiem Pro is disabled by owner decision #2601 while its provider route is replaced and re-verified. Pro is a HOLD identity, not an executable route, and its historical B.AI Qwen3.8-Flash and Kilo Nemotron entries remain declaration data only.
+* Poolside Laguna remains second-position evidence for the gateway-side `fixed_chain_v1`. Because it is not an executable product route, Padiem Chat removed the `/poolside` selector (#2814, PR #2815) instead of keeping an alias that displayed Poolside while dispatching another provider. That change created no Poolside tier route, no alias and no fallback.
+* The default product chat tier is Padiem Plus. AUTO product routing stays off; `b14/auto` remains a gateway-side compatibility resolution path and must not become a user-visible Padiem selector.
+
+Documentation rule this entry reasserts: current-state documents restate the shared declaration and the B14 catalog instead of carrying an independent copy of the mapping, and a dated entry in this log is never rewritten to match a later decision — the correction is a new dated entry that names what it supersedes.
