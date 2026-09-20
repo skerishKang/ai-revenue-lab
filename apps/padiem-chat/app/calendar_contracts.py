@@ -36,7 +36,7 @@ CALENDAR_WORK_LOG = True
 LONG_TERM_MEMORY = False
 MEMORY_AUTO_PROMOTION = False
 SERVER_LOCAL_TIMEZONE_INFERENCE = False
-AUTOMATION_PROJECTION = "DEFERRED_PENDING_2833"
+AUTOMATION_PROJECTION = "READ_ONLY_DURABLE_STORE"
 
 MAX_TITLE_CHARS = 200
 MAX_CONTENT_CHARS = 4_000
@@ -66,7 +66,7 @@ class CalendarItemType(str, Enum):
     TASK = "task"
     ALERT = "alert"
     CLAW_RUN = "claw_run"
-    # AUTOMATION_RUN = "automation_run" (DEFERRED_PENDING_2833)
+    AUTOMATION_RUN = "automation_run"
 
 
 class AppointmentType(str, Enum):
