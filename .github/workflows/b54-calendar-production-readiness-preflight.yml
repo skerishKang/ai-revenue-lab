@@ -1,0 +1,437 @@
+name: B54 Calendar Production Readiness Preflight
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b54-calendar-production-readiness-preflight.yml'
+      - 'apps/padiem-ai-engine/app/calendar_port_httpx.py'
+      - 'apps/padiem-ai-engine/app/connector_grants_d1.py'
+      - 'apps/padiem-ai-engine/app/connector_bindings.py'
+      - 'apps/padiem-ai-engine/worker_identity.py'
+      - 'packages/padiem-ai-core/padiem_ai_core/calendar_capability.py'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/b54-calendar-production-readiness-preflight.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA for Calendar Production readiness preflight'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_CALENDAR_PRODUCTION_READINESS_PREFLIGHT'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-calendar-production-readiness
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  EXPECTED_D1_ID: 6b77ad02-bc27-488f-bb97-6325f6750cba
+  CALENDAR_APP_ID: b54-padiem-claw-calendar
+  CALENDAR_AGENT_ID: agent:padiem:claw_calendar_reader@1
+  CALENDAR_CONNECTOR_ID: connector:google:calendar@1
+  GOOGLE_OAUTH_CLIENT_ID_BINDING: ENGINE_GOOGLE_OAUTH_CLIENT_ID
+  GOOGLE_OAUTH_CLIENT_SECRET_BINDING: ENGINE_GOOGLE_OAUTH_CLIENT_SECRET
+  GOOGLE_OAUTH_REFRESH_TOKEN_BINDING: ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN
+  CALENDAR_ALLOWLIST_BINDING: ENGINE_CALENDAR_ALLOWED_CALENDARS
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate Calendar readiness preflight contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          workflow = Path(".github/workflows/b54-calendar-production-readiness-preflight.yml").read_text(encoding="utf-8")
+          port = Path("apps/padiem-ai-engine/app/calendar_port_httpx.py").read_text(encoding="utf-8")
+          grants = Path("apps/padiem-ai-engine/app/connector_grants_d1.py").read_text(encoding="utf-8")
+          bindings = Path("apps/padiem-ai-engine/app/connector_bindings.py").read_text(encoding="utf-8")
+          worker = Path("apps/padiem-ai-engine/worker_identity.py").read_text(encoding="utf-8")
+          core = Path("packages/padiem-ai-core/padiem_ai_core/calendar_capability.py").read_text(encoding="utf-8")
+
+          required_workflow = (
+              "CALENDAR_OAUTH_SCOPE_STATUS=UNVERIFIED_WITHOUT_PROVIDER",
+              "SECRET_PRESENT != CALENDAR_SCOPE_GRANTED",
+              "GOOGLE_OAUTH_CLIENT_ID_SERVED_BINDING=",
+              "GOOGLE_OAUTH_CLIENT_SECRET_SERVED_BINDING=",
+              "GOOGLE_OAUTH_REFRESH_TOKEN_SERVED_BINDING=",
+              "CALENDAR_ALLOWLIST_SERVED_BINDING=",
+              "CALENDAR_RUNTIME_AUTHORITY=",
+              "CALENDAR_GRANT_TOTAL_ROWS=",
+              "CALENDAR_GRANT_ACTIVE_COUNT=",
+              "CALENDAR_GRANT_EXACT_IDENTITY=",
+              "CALENDAR_GRANT_CAPABILITIES=",
+              "CALENDAR_GRANT_BINDING_REF_PRESENT=",
+              "CALENDAR_GRANT_ACTOR_REF_PRESENT=",
+              "CALENDAR_GRANT_STATE=",
+              "RAW_CALENDAR_ID_OUTPUT=0",
+              "RAW_BINDING_REF_OUTPUT=0",
+              "RAW_ACTOR_REF_OUTPUT=0",
+              "ROW_VALUE_OUTPUT=AGGREGATES_ONLY",
+              "D1_QUERY_MODE=READ_ONLY",
+              "D1_MUTATION=0",
+              "CALENDAR_PROVIDER_CALLS=0",
+              "CALENDAR_WRITE=0",
+              "GOOGLE_OAUTH_MUTATION=0",
+              "PRODUCTION_MUTATION=0",
+          )
+          for marker in required_workflow:
+              if marker not in workflow:
+                  raise SystemExit(f"missing Calendar readiness invariant: {marker}")
+
+          required_source = (
+              (port, 'ENGINE_GOOGLE_OAUTH_CLIENT_ID = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"'),
+              (port, 'ENGINE_GOOGLE_OAUTH_CLIENT_SECRET = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"'),
+              (port, 'ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"'),
+              (port, 'ENGINE_CALENDAR_ALLOWED_CALENDARS = "ENGINE_CALENDAR_ALLOWED_CALENDARS"'),
+              (port, "GOOGLE_TOKEN_URL"),
+              (grants, "async def load_calendar_grants"),
+              (bindings, 'CALENDAR_REFERENCE_APP_ID = "b54-padiem-claw-calendar"'),
+              (bindings, 'CALENDAR_AGENT_ID = "agent:padiem:claw_calendar_reader@1"'),
+              (worker, "def _calendar_port_for_env"),
+              (worker, "async def _calendar_grants_for_env"),
+              (core, 'CALENDAR_CONNECTOR_ID = "connector:google:calendar@1"'),
+              (core, 'CALENDAR_READONLY_AUTH_SCOPE = "calendar.readonly"'),
+              (core, 'GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"'),
+              (core, "CALENDAR_WRITE_TOOLS_PRESENT = False"),
+              (core, "CALENDAR_PRODUCTION_WRITE_AUTHORITY_MINTED = False"),
+          )
+          for source, marker in required_source:
+              if marker not in source:
+                  raise SystemExit(f"Calendar shared source drifted: {marker}")
+
+          live_region = workflow.split("Read canonical Calendar grant aggregate", 1)[-1].upper()
+          forbidden_sql = (
+              "INSERT " + "INTO",
+              "UP" + "DATE ",
+              "DE" + "LETE FROM",
+              "RE" + "PLACE INTO",
+              "DR" + "OP TABLE",
+              "AL" + "TER TABLE",
+              "CREATE " + "TABLE",
+              "CREATE " + "INDEX",
+          )
+          for token in forbidden_sql:
+              if token in live_region:
+                  raise SystemExit(f"mutation SQL forbidden in Calendar readiness preflight: {token}")
+
+          print("B54_CALENDAR_READINESS_SOURCE_CONTRACT=PASS")
+          print("D1_QUERY_MODE=READ_ONLY")
+          print("D1_MUTATION=0")
+          print("CALENDAR_PROVIDER_CALLS=0")
+          print("CALENDAR_WRITE=0")
+          print("GOOGLE_OAUTH_MUTATION=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+  production-readonly:
+    needs: source-contract
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirmation == 'RUN_B54_CALENDAR_PRODUCTION_READINESS_PREFLIGHT')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact authorized revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "${expected}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${expected}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve actually served Engine version
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          deployments="${RUNNER_TEMP}/calendar-readiness-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          echo "::add-mask::${active_version}"
+          echo "ACTIVE_ENGINE_VERSION=${active_version}" >> "${GITHUB_ENV}"
+          echo "ENGINE_ACTIVE_VERSION_IDENTIFIED=PASS"
+          echo "ENGINE_VERSION_ID_OUTPUT=0"
+
+      - name: Read Calendar served binding NAME/TYPE only
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          detail="${RUNNER_TEMP}/calendar-readiness-version.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${ACTIVE_ENGINE_VERSION}" -o "${detail}"
+
+          python - "${detail}" "${ACTIVE_ENGINE_VERSION}" "${GOOGLE_OAUTH_CLIENT_ID_BINDING}" "${GOOGLE_OAUTH_CLIENT_SECRET_BINDING}" "${GOOGLE_OAUTH_REFRESH_TOKEN_BINDING}" "${CALENDAR_ALLOWLIST_BINDING}" <<'PY'
+          import json, re, sys
+
+          path, active_version, client_id_name, client_secret_name, refresh_name, allowlist_name = sys.argv[1:7]
+          payload = json.load(open(path, encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("served version detail request failed")
+          result = payload.get("result")
+          if not isinstance(result, dict) or result.get("id") != active_version:
+              raise SystemExit("served version identity mismatch")
+          resources = result.get("resources")
+          if not isinstance(resources, dict):
+              raise SystemExit("served version resources missing")
+          raw = resources.get("bindings")
+          if isinstance(raw, list):
+              entries = raw
+          elif isinstance(raw, dict):
+              entries = []
+              for name, value in raw.items():
+                  if not isinstance(value, dict):
+                      raise SystemExit("served binding metadata malformed")
+                  if isinstance(value.get("name"), str) and value["name"] != name:
+                      raise SystemExit("served binding key/name mismatch")
+                  entries.append({**value, "name": name})
+          else:
+              raise SystemExit("served binding collection malformed")
+          if any(not isinstance(item, dict) for item in entries):
+              raise SystemExit("served binding entry malformed")
+
+          def classify(name: str) -> str:
+              hits = [item for item in entries if item.get("name") == name]
+              if len(hits) > 1:
+                  raise SystemExit(f"duplicate served binding: {name}")
+              if not hits:
+                  return "ABSENT"
+              kind = hits[0].get("type")
+              if not isinstance(kind, str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,64}", kind):
+                  raise SystemExit(f"served binding type invalid: {name}")
+              return f"PRESENT:{kind}"
+
+          client_id = classify(client_id_name)
+          client_secret = classify(client_secret_name)
+          refresh_token = classify(refresh_name)
+          allowlist = classify(allowlist_name)
+
+          # Google OAuth secrets are shared with the already-live Gmail/Drive
+          # ports; the Calendar port adds no second OAuth stack and no new
+          # secret name. Only NAME/TYPE is ever emitted.
+          for label, value in (
+              ("client_id", client_id),
+              ("client_secret", client_secret),
+              ("refresh_token", refresh_token),
+          ):
+              if value not in ("ABSENT", "PRESENT:secret_text"):
+                  raise SystemExit(f"Google OAuth {label} binding type drifted")
+          if allowlist != "ABSENT" and not allowlist.startswith("PRESENT:"):
+              raise SystemExit("Calendar allowlist binding type drifted")
+
+          print(f"GOOGLE_OAUTH_CLIENT_ID_SERVED_BINDING={client_id}")
+          print(f"GOOGLE_OAUTH_CLIENT_SECRET_SERVED_BINDING={client_secret}")
+          print(f"GOOGLE_OAUTH_REFRESH_TOKEN_SERVED_BINDING={refresh_token}")
+          print(f"CALENDAR_ALLOWLIST_SERVED_BINDING={allowlist}")
+
+          # #2010 scope truth: a present refresh-token secret NEVER proves that
+          # calendar.readonly was granted. Scope can only be proven by a provider
+          # call, which this preflight deliberately does not make.
+          print("SECRET_PRESENT != CALENDAR_SCOPE_GRANTED")
+          print("CALENDAR_OAUTH_SCOPE_STATUS=UNVERIFIED_WITHOUT_PROVIDER")
+
+          secrets_present = all(
+              value == "PRESENT:secret_text" for value in (client_id, client_secret, refresh_token)
+          )
+          if secrets_present and allowlist != "ABSENT":
+              print("CALENDAR_RUNTIME_AUTHORITY=PRESENT_NAME_TYPE_ONLY")
+          else:
+              print("CALENDAR_RUNTIME_AUTHORITY=NEEDS_ALLOWLIST_CONFIGURATION")
+
+          print("RAW_CALENDAR_ID_OUTPUT=0")
+          print("RAW_BINDING_VALUE_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          print("GOOGLE_OAUTH_MUTATION=0")
+          PY
+
+      - name: Resolve served connector-grants D1 identity without output
+        shell: bash
+        run: |
+          set -euo pipefail
+          detail="${RUNNER_TEMP}/calendar-readiness-version.json"
+          DB_ID="$(python - "${detail}" "${ACTIVE_ENGINE_VERSION}" "${EXPECTED_D1_ID}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          result = payload.get("result") if payload.get("success") is True else None
+          if not isinstance(result, dict) or result.get("id") != sys.argv[2]:
+              raise SystemExit("served version identity mismatch")
+          resources = result.get("resources")
+          raw = resources.get("bindings") if isinstance(resources, dict) else None
+          if isinstance(raw, dict):
+              bindings = [{**value, "name": name} for name, value in raw.items() if isinstance(value, dict)]
+          elif isinstance(raw, list):
+              bindings = raw
+          else:
+              raise SystemExit("served binding collection malformed")
+          hits = [b for b in bindings if isinstance(b, dict) and b.get("name") == "ENGINE_CONNECTOR_GRANTS"]
+          if len(hits) != 1 or hits[0].get("type") != "d1":
+              raise SystemExit("served ENGINE_CONNECTOR_GRANTS binding missing or wrong type")
+          db_id = hits[0].get("id")
+          if db_id != sys.argv[3]:
+              raise SystemExit("served connector-grants D1 identity drifted")
+          print(db_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_ENGINE_CONNECTOR_GRANTS_D1_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+
+      - name: Read canonical Calendar grant aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          query_payload="${RUNNER_TEMP}/calendar-grant-readiness-query.json"
+
+          python - "${query_payload}" "${CALENDAR_APP_ID}" "${CALENDAR_AGENT_ID}" "${CALENDAR_CONNECTOR_ID}" <<'PY'
+          import json, sys
+          app_id, agent_id, connector_id = sys.argv[2:5]
+          sql = """
+          SELECT
+            COUNT(*) AS total_rows,
+            SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) AS active_count,
+            SUM(CASE WHEN active = 1 AND canonical_agent_id = ? THEN 1 ELSE 0 END) AS exact_identity_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND json_valid(granted_capabilities_json) = 1
+                   AND json_array_length(granted_capabilities_json) = 1
+                   AND json_extract(granted_capabilities_json, '$[0]') = 'read'
+                  THEN 1 ELSE 0 END) AS read_capability_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND binding_ref IS NOT NULL
+                   AND length(trim(binding_ref)) > 0
+                  THEN 1 ELSE 0 END) AS binding_ref_present_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND actor_ref IS NOT NULL
+                   AND length(trim(actor_ref)) > 0
+                  THEN 1 ELSE 0 END) AS actor_ref_present_count
+          FROM padiem_engine_connector_grants
+          WHERE app_id = ? AND connector_id = ?;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql, "params": [agent_id, app_id, connector_id]}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/calendar-grant-readiness-response.json"
+          curl -fsS -X POST "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"             --data-binary "@${query_payload}" -o "${response}"
+
+          python - "${response}" <<'PY'
+          import json, sys
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("Calendar grant D1 read-only query failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("Calendar grant D1 read-only envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("Calendar grant D1 aggregate row invalid")
+          row = rows[0]
+          values = {
+              "total_rows": int(row.get("total_rows") or 0),
+              "active_count": int(row.get("active_count") or 0),
+              "exact_identity_count": int(row.get("exact_identity_count") or 0),
+              "read_capability_count": int(row.get("read_capability_count") or 0),
+              "binding_ref_present_count": int(row.get("binding_ref_present_count") or 0),
+              "actor_ref_present_count": int(row.get("actor_ref_present_count") or 0),
+          }
+          print(f"CALENDAR_GRANT_TOTAL_ROWS={values['total_rows']}")
+          print(f"CALENDAR_GRANT_ACTIVE_COUNT={values['active_count']}")
+          print("CALENDAR_GRANT_EXACT_IDENTITY=YES" if values["exact_identity_count"] == 1 else "CALENDAR_GRANT_EXACT_IDENTITY=NO")
+          print('CALENDAR_GRANT_CAPABILITIES=["read"]' if values["read_capability_count"] == 1 else "CALENDAR_GRANT_CAPABILITIES=OTHER_OR_MISSING")
+          print("CALENDAR_GRANT_BINDING_REF_PRESENT=YES" if values["binding_ref_present_count"] == 1 else "CALENDAR_GRANT_BINDING_REF_PRESENT=NO")
+          print("CALENDAR_GRANT_ACTOR_REF_PRESENT=YES" if values["actor_ref_present_count"] == 1 else "CALENDAR_GRANT_ACTOR_REF_PRESENT=NO")
+
+          zero = all(value == 0 for value in values.values())
+          exact = values == {
+              "total_rows": 1,
+              "active_count": 1,
+              "exact_identity_count": 1,
+              "read_capability_count": 1,
+              "binding_ref_present_count": 1,
+              "actor_ref_present_count": 1,
+          }
+          if zero:
+              print("CALENDAR_GRANT_STATE=ABSENT_ZERO")
+          elif exact:
+              print("CALENDAR_GRANT_STATE=EXACT_ACTIVE_READ")
+          else:
+              print("CALENDAR_GRANT_STATE=NONCANONICAL")
+              raise SystemExit("Calendar grant state is noncanonical; stop before mutation")
+          PY
+
+          echo "RAW_BINDING_REF_OUTPUT=0"
+          echo "RAW_ACTOR_REF_OUTPUT=0"
+          echo "RAW_CALENDAR_ID_OUTPUT=0"
+          echo "ROW_VALUE_OUTPUT=AGGREGATES_ONLY"
+          echo "PROVIDER_CREDENTIAL_OUTPUT=0"
+          echo "D1_QUERY_MODE=READ_ONLY"
+          echo "D1_MUTATION=0"
+          echo "CALENDAR_GRANT_SEED=0"
+          echo "CALENDAR_PROVIDER_CALLS=0"
+          echo "CALENDAR_CREATE=0"
+          echo "CALENDAR_UPDATE=0"
+          echo "CALENDAR_DELETE=0"
+          echo "CALENDAR_RESPOND=0"
+          echo "CALENDAR_WRITE=0"
+          echo "GOOGLE_OAUTH_MUTATION=0"
+          echo "ENGINE_DEPLOY=0"
+          echo "SECRET_MUTATION=0"
+          echo "PRODUCTION_MUTATION=0"
+          echo "CALENDAR_PRODUCTION_READINESS_PREFLIGHT=PASS"
+
+      - name: Publish bounded readiness evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B54 Calendar Production readiness preflight"
+            echo
+            echo "- served Engine binding inspection: NAME/TYPE only"
+            echo "- D1 SQL mode: SELECT-only aggregate"
+            echo "- raw calendar ids / OAuth secrets / grant refs emitted: no"
+            echo "- calendar.readonly scope: UNVERIFIED_WITHOUT_PROVIDER (secret presence never proves scope grant)"
+            echo "- Calendar provider calls: 0"
+            echo "- Production mutation: 0"
+          } >> "${GITHUB_STEP_SUMMARY}"
