@@ -120,6 +120,7 @@ def create_app(
     approved_memory_store: ApprovedMemoryStore | None = None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
+    claw_automation_store=None,
     telemetry_emitter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -243,4 +244,7 @@ def create_app(
     app.state.calendar_store = (
         calendar_store if calendar_store is not None else InMemoryCalendarStore()
     )
+    # #2846 Read-only durable automation projection. The automation authority is
+    # injected; Calendar never creates or owns a second automation store.
+    app.state.claw_automation_store = claw_automation_store
     return app
