@@ -88,7 +88,7 @@ class FakeHistoryStore:
 
 
 class FakeTaskAlertStore:
-    """Minimal fake task/alert store simulating D1ClawTaskAlertStore."""
+    """Fake task/alert store simulating D1ClawTaskAlertStore visibility semantics."""
 
     def __init__(self) -> None:
         self.tasks: dict[str, list[Any]] = {}
@@ -100,9 +100,15 @@ class FakeTaskAlertStore:
         return list(self.tasks.get(workspace_id, []))[:limit]
 
     async def list_alerts(
-        self, workspace_id: str, member_id: str | None = None, limit: int = 256
+        self, workspace_id: str, *, member_id: str | None = None, limit: int = 256
     ) -> list[Any]:
-        return list(self.alerts.get(workspace_id, []))[:limit]
+        raw = list(self.alerts.get(workspace_id, []))
+        if member_id is not None:
+            raw = [
+                a for a in raw
+                if getattr(a, "is_visible_to", lambda m: True)(member_id)
+            ]
+        return raw[:limit]
 
 
 class MockTask:
@@ -113,12 +119,14 @@ class MockTask:
         status: str = "pending",
         due_date: date | None = None,
         created_at: datetime | None = None,
+        member_id: str = "",
     ) -> None:
         self.task_id = task_id
         self.title = title
         self.status = status
         self.due_date = due_date
         self.created_at = created_at or datetime(2026, 9, 20, 10, 0, 0, tzinfo=timezone.utc)
+        self.member_id = member_id
 
 
 class MockAlert:
@@ -129,12 +137,21 @@ class MockAlert:
         severity: str = "info",
         kind: str = "notice",
         created_at: datetime | None = None,
+        visible_to_members: tuple[str, ...] = (),
+        visible_to_all: bool = False,
     ) -> None:
         self.alert_id = alert_id
         self.title = title
         self.severity = severity
         self.kind = kind
         self.created_at = created_at or datetime(2026, 9, 20, 10, 0, 0, tzinfo=timezone.utc)
+        self.visible_to_members = visible_to_members
+        self.visible_to_all = visible_to_all
+
+    def is_visible_to(self, member_id: str) -> bool:
+        if self.visible_to_all:
+            return True
+        return member_id in self.visible_to_members
 
 
 # ==============================================================================
@@ -526,7 +543,12 @@ async def test_upcoming_projection_excludes_past_items() -> None:
     # Task due in future
     task_store = FakeTaskAlertStore()
     task_store.tasks["ws_up"] = [
-        MockTask("task_fut", "Future Task Deadline", due_date=date(2026, 9, 23))
+        MockTask(
+            "task_fut",
+            "Future Task Deadline",
+            due_date=date(2026, 9, 23),
+            member_id="usr_1",
+        )
     ]
 
     upcoming = await build_upcoming_projection(
@@ -534,6 +556,7 @@ async def test_upcoming_projection_excludes_past_items() -> None:
         tz_name="UTC",
         calendar_store=store,
         task_alert_store=task_store,
+        user_id="usr_1",
         now_utc=ref_now,
         limit=10,
     )
@@ -854,3 +877,260 @@ def test_http_calendar_today_and_upcoming_views(
     assert range_body["ok"] is True
     assert range_body["projection"]["view"] == "range"
     assert range_body["projection"]["total_count"] >= 2
+
+
+# ==============================================================================
+# 9. Corrective Pass Regressions for CENTRAL Review Blockers (#2841)
+# ==============================================================================
+
+@pytest.mark.asyncio
+async def test_blocker_1_task_alert_member_visibility_parity() -> None:
+    """Blocker 1: Tasks and alerts must adhere to existing inbox visibility semantics."""
+    calendar_store = InMemoryCalendarStore()
+    task_alert_store = FakeTaskAlertStore()
+    ws = "ws_collab"
+
+    # Tasks for Alice and Bob in the same workspace
+    t_alice = MockTask(
+        task_id="task_alice",
+        title="Alice Task",
+        due_date=date(2026, 9, 20),
+        member_id="usr_alice",
+    )
+    t_bob = MockTask(
+        task_id="task_bob",
+        title="Bob Task",
+        due_date=date(2026, 9, 20),
+        member_id="usr_bob",
+    )
+    task_alert_store.tasks[ws] = [t_alice, t_bob]
+
+    # Alerts: Alice private, Bob private, and Public
+    a_alice = MockAlert(
+        alert_id="alert_alice",
+        title="Alice Alert",
+        created_at=datetime(2026, 9, 20, 9, 0, 0, tzinfo=timezone.utc),
+        visible_to_members=("usr_alice",),
+        visible_to_all=False,
+    )
+    a_bob = MockAlert(
+        alert_id="alert_bob",
+        title="Bob Alert",
+        created_at=datetime(2026, 9, 20, 9, 0, 0, tzinfo=timezone.utc),
+        visible_to_members=("usr_bob",),
+        visible_to_all=False,
+    )
+    a_public = MockAlert(
+        alert_id="alert_pub",
+        title="Public Alert",
+        created_at=datetime(2026, 9, 20, 9, 0, 0, tzinfo=timezone.utc),
+        visible_to_members=(),
+        visible_to_all=True,
+    )
+    task_alert_store.alerts[ws] = [a_alice, a_bob, a_public]
+
+    # 1. Alice's projection
+    p_alice = await build_today_projection(
+        workspace_id=ws,
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        user_id="usr_alice",
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    alice_titles = [item["title"] for item in p_alice["items"]]
+    assert "Alice Task" in alice_titles
+    assert "Bob Task" not in alice_titles, "Cross-member task leak: Bob task visible to Alice!"
+    assert "Alice Alert" in alice_titles
+    assert "Bob Alert" not in alice_titles, "Cross-member alert leak: Bob alert visible to Alice!"
+    assert "Public Alert" in alice_titles
+
+    # 2. Bob's projection
+    p_bob = await build_today_projection(
+        workspace_id=ws,
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        user_id="usr_bob",
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    bob_titles = [item["title"] for item in p_bob["items"]]
+    assert "Bob Task" in bob_titles
+    assert "Alice Task" not in bob_titles, "Cross-member task leak: Alice task visible to Bob!"
+    assert "Bob Alert" in bob_titles
+    assert "Alice Alert" not in bob_titles, "Cross-member alert leak: Alice alert visible to Bob!"
+    assert "Public Alert" in bob_titles
+
+    # 3. Fail-closed on missing user_id: 0 tasks and 0 alerts projected
+    p_anon = await build_today_projection(
+        workspace_id=ws,
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        user_id=None,
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    anon_types = [item["item_type"] for item in p_anon["items"]]
+    assert "task" not in anon_types, "Anonymous caller must not receive tasks"
+    assert "alert" not in anon_types, "Anonymous caller must not receive alerts"
+
+    # 4. Same member visibility parity in upcoming projection
+    t_alice_future = MockTask(
+        task_id="task_alice_fut",
+        title="Alice Future Task",
+        due_date=date(2026, 9, 25),
+        member_id="usr_alice",
+    )
+    t_bob_future = MockTask(
+        task_id="task_bob_fut",
+        title="Bob Future Task",
+        due_date=date(2026, 9, 25),
+        member_id="usr_bob",
+    )
+    task_alert_store.tasks[ws].extend([t_alice_future, t_bob_future])
+
+    p_alice_up = await build_upcoming_projection(
+        workspace_id=ws,
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        user_id="usr_alice",
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    alice_up_titles = [item["title"] for item in p_alice_up["items"]]
+    assert "Alice Future Task" in alice_up_titles
+    assert "Bob Future Task" not in alice_up_titles, "Cross-member future task leak in upcoming!"
+
+
+@pytest.mark.asyncio
+async def test_blocker_2_claw_run_scope_fail_closed() -> None:
+    """Blocker 2: Claw runs must only be projected when workspace is provably owner-derived."""
+    calendar_store = InMemoryCalendarStore()
+    history_store = FakeHistoryStore()
+    history_store.claw_runs["usr_alice"] = [
+        {
+            "run_id": "run_alice_1",
+            "title": "Alice Intake Run",
+            "status": "success",
+            "result_summary": "Done",
+            "created_at": "2026-09-20T10:00:00Z",
+        }
+    ]
+
+    # Case A: Owner-derived fallback workspace (provable scope) -> run IS visible
+    p_owner_ws = await build_today_projection(
+        workspace_id="owner:usr_alice",
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        history_store=history_store,
+        user_id="usr_alice",
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    owner_titles = [item["title"] for item in p_owner_ws["items"]]
+    assert "Alice Intake Run" in owner_titles
+
+    # Case B: Canonical tenant workspace (unscoped linkage) -> run MUST BE OMITTED (fail-closed)
+    p_tenant_ws = await build_today_projection(
+        workspace_id="tenant_canonical_corp_123",
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        history_store=history_store,
+        user_id="usr_alice",
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    tenant_titles = [item["title"] for item in p_tenant_ws["items"]]
+    assert "Alice Intake Run" not in tenant_titles, "Unproven run was relabeled into canonical tenant!"
+
+    # Case C: Different user querying owner workspace -> never visible
+    p_other_user = await build_today_projection(
+        workspace_id="owner:usr_bob",
+        tz_name="UTC",
+        calendar_store=calendar_store,
+        history_store=history_store,
+        user_id="usr_bob",
+        now_utc=datetime(2026, 9, 20, 12, 0, 0, tzinfo=timezone.utc),
+    )
+    other_titles = [item["title"] for item in p_other_user["items"]]
+    assert "Alice Intake Run" not in other_titles
+
+
+@pytest.mark.asyncio
+async def test_blocker_3_timezone_item_date_parity() -> None:
+    """Blocker 3: Returned item.date must match the requested explicit timezone."""
+    calendar_store = InMemoryCalendarStore()
+    task_alert_store = FakeTaskAlertStore()
+    history_store = FakeHistoryStore()
+    ws = "owner:usr_alice"
+
+    # Instant: 2026-09-20T16:00:00Z
+    # In Asia/Seoul (UTC+9), this is 2026-09-21 01:00:00 KST -> date is 2026-09-21!
+    # In America/New_York (UTC-4), this is 2026-09-20 12:00:00 EDT -> date is 2026-09-20!
+    created_instant = datetime(2026, 9, 20, 16, 0, 0, tzinfo=timezone.utc)
+    created_str = "2026-09-20T16:00:00Z"
+
+    task_alert_store.alerts[ws] = [
+        MockAlert(
+            alert_id="alert_tz_test",
+            title="Late Evening Alert",
+            created_at=created_instant,
+            visible_to_all=True,
+        )
+    ]
+    history_store.claw_runs["usr_alice"] = [
+        {
+            "run_id": "run_tz_test",
+            "title": "Late Evening Claw Run",
+            "status": "success",
+            "result_summary": "OK",
+            "created_at": created_str,
+        }
+    ]
+
+    # 1. Query for Asia/Seoul on 2026-09-21 (when 2026-09-20T16:00:00Z occurred locally)
+    p_seoul = await build_today_projection(
+        workspace_id=ws,
+        tz_name="Asia/Seoul",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        history_store=history_store,
+        user_id="usr_alice",
+        now_utc=datetime(2026, 9, 20, 16, 30, 0, tzinfo=timezone.utc),
+    )
+    assert p_seoul["date"] == "2026-09-21"
+    for item in p_seoul["items"]:
+        assert item["date"] == "2026-09-21", (
+            f"Item date {item['date']} does not match projection date 2026-09-21 in Asia/Seoul! item={item}"
+        )
+
+    # 2. Query for America/New_York on 2026-09-20 (when 2026-09-20T16:00:00Z occurred locally)
+    p_ny = await build_today_projection(
+        workspace_id=ws,
+        tz_name="America/New_York",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        history_store=history_store,
+        user_id="usr_alice",
+        now_utc=datetime(2026, 9, 20, 16, 30, 0, tzinfo=timezone.utc),
+    )
+    assert p_ny["date"] == "2026-09-20"
+    for item in p_ny["items"]:
+        assert item["date"] == "2026-09-20", (
+            f"Item date {item['date']} does not match projection date 2026-09-20 in America/New_York! item={item}"
+        )
+
+    # 3. Midnight boundary test in Asia/Seoul
+    # Exactly 2026-09-20T15:00:00Z -> 2026-09-21 00:00:00 KST -> date 2026-09-21
+    # 2026-09-20T14:59:59Z -> 2026-09-20 23:59:59 KST -> date 2026-09-20
+    p_midnight = await build_range_projection(
+        workspace_id=ws,
+        start_date=date(2026, 9, 21),
+        end_date=date(2026, 9, 21),
+        tz_name="Asia/Seoul",
+        calendar_store=calendar_store,
+        task_alert_store=task_alert_store,
+        history_store=history_store,
+        user_id="usr_alice",
+    )
+    for item in p_midnight["items"]:
+        assert item["date"] == "2026-09-21"
+

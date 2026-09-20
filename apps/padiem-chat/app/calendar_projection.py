@@ -61,16 +61,23 @@ def project_work_log(log: CalendarWorkLog) -> CalendarItemProjection:
     )
 
 
-def project_appointment(apt: CalendarAppointment) -> CalendarItemProjection:
+def project_appointment(
+    apt: CalendarAppointment, *, tz: zoneinfo.ZoneInfo | None = None
+) -> CalendarItemProjection:
     """Project a native appointment into a canonical calendar item."""
     all_day = apt.appointment_type == AppointmentType.ALL_DAY
+    if apt.appointment_type == AppointmentType.TIMED and apt.start_at is not None and tz is not None:
+        item_date = apt.start_at.astimezone(tz).date().isoformat()
+    else:
+        item_date = apt.date.isoformat()
+
     return CalendarItemProjection(
         calendar_item_id=f"item_apt_{apt.appointment_id}",
         workspace_id=apt.workspace_id,
         item_type=CalendarItemType.APPOINTMENT.value,
         title=apt.title,
         summary=apt.description,
-        date=apt.date.isoformat(),
+        date=item_date,
         start_at=apt.start_at.isoformat() if apt.start_at else None,
         end_at=apt.end_at.isoformat() if apt.end_at else None,
         timezone=apt.timezone,
@@ -82,7 +89,9 @@ def project_appointment(apt: CalendarAppointment) -> CalendarItemProjection:
     )
 
 
-def project_task(task: Any, workspace_id: str) -> CalendarItemProjection:
+def project_task(
+    task: Any, workspace_id: str, *, tz: zoneinfo.ZoneInfo | None = None
+) -> CalendarItemProjection:
     """Project an existing Claw task into a canonical calendar item without duplication."""
     task_id = str(getattr(task, "task_id", task.get("task_id") if isinstance(task, dict) else ""))
     title = str(getattr(task, "title", task.get("title") if isinstance(task, dict) else ""))
@@ -95,11 +104,12 @@ def project_task(task: Any, workspace_id: str) -> CalendarItemProjection:
     if due_date is not None:
         item_date = due_date.isoformat() if hasattr(due_date, "isoformat") else str(due_date)
     elif created_at is not None:
-        item_date = (
-            created_at.date().isoformat()
-            if hasattr(created_at, "date")
-            else str(created_at)[:10]
-        )
+        if isinstance(created_at, datetime) and tz is not None:
+            item_date = created_at.astimezone(tz).date().isoformat()
+        elif hasattr(created_at, "date"):
+            item_date = created_at.date().isoformat()
+        else:
+            item_date = str(created_at)[:10]
     else:
         item_date = "1970-01-01"
 
@@ -127,7 +137,9 @@ def project_task(task: Any, workspace_id: str) -> CalendarItemProjection:
     )
 
 
-def project_alert(alert: Any, workspace_id: str) -> CalendarItemProjection:
+def project_alert(
+    alert: Any, workspace_id: str, *, tz: zoneinfo.ZoneInfo | None = None
+) -> CalendarItemProjection:
     """Project an existing Claw alert into a canonical calendar item without duplication."""
     alert_id = str(getattr(alert, "alert_id", alert.get("alert_id") if isinstance(alert, dict) else ""))
     title = str(getattr(alert, "title", alert.get("title") if isinstance(alert, dict) else ""))
@@ -135,18 +147,22 @@ def project_alert(alert: Any, workspace_id: str) -> CalendarItemProjection:
     severity = getattr(alert, "severity", alert.get("severity") if isinstance(alert, dict) else "")
     severity_val = severity.value if hasattr(severity, "value") else str(severity)
 
-    created_iso: str
-    item_date: str
     if created_at is not None:
-        created_iso = created_at.isoformat() if hasattr(created_at, "isoformat") else str(created_at)
-        item_date = (
-            created_at.date().isoformat()
-            if hasattr(created_at, "date")
-            else str(created_at)[:10]
-        )
+        if isinstance(created_at, str):
+            created_dt = parse_aware_datetime(created_at, "alert_created_at")
+        else:
+            created_dt = created_at
+        created_iso = created_dt.astimezone(timezone.utc).isoformat()
+        if tz is not None:
+            item_date = created_dt.astimezone(tz).date().isoformat()
+            tz_str = tz.key if hasattr(tz, "key") else str(tz)
+        else:
+            item_date = created_dt.date().isoformat()
+            tz_str = "UTC"
     else:
-        created_iso = "1970-01-01T00:00:00Z"
+        created_iso = "1970-01-01T00:00:00+00:00"
         item_date = "1970-01-01"
+        tz_str = tz.key if tz is not None and hasattr(tz, "key") else "UTC"
 
     return CalendarItemProjection(
         calendar_item_id=f"item_alert_{alert_id}",
@@ -157,7 +173,7 @@ def project_alert(alert: Any, workspace_id: str) -> CalendarItemProjection:
         date=item_date,
         start_at=created_iso,
         end_at=None,
-        timezone="UTC",
+        timezone=tz_str,
         all_day=False,
         source_type=CalendarSourceType.ALERT.value,
         source_ref=f"alert:{alert_id}",
@@ -166,7 +182,9 @@ def project_alert(alert: Any, workspace_id: str) -> CalendarItemProjection:
     )
 
 
-def project_claw_run(run: dict[str, Any], workspace_id: str) -> CalendarItemProjection:
+def project_claw_run(
+    run: dict[str, Any], workspace_id: str, *, tz: zoneinfo.ZoneInfo | None = None
+) -> CalendarItemProjection:
     """Project an existing Claw run history row into a canonical calendar item without duplication."""
     run_id = str(run.get("run_id", ""))
     title = str(run.get("title", ""))
@@ -175,7 +193,25 @@ def project_claw_run(run: dict[str, Any], workspace_id: str) -> CalendarItemProj
     summary = run.get("result_summary")
     status = run.get("status", "")
 
-    item_date = str(created_at_raw)[:10] if created_at_raw else "1970-01-01"
+    if created_at_raw:
+        try:
+            dt = parse_aware_datetime(created_at_raw, "claw_run_created_at")
+            start_at_iso = dt.astimezone(timezone.utc).isoformat()
+            if tz is not None:
+                item_date = dt.astimezone(tz).date().isoformat()
+                tz_str = tz.key if hasattr(tz, "key") else str(tz)
+            else:
+                item_date = dt.date().isoformat()
+                tz_str = "UTC"
+        except Exception:
+            start_at_iso = str(created_at_raw)
+            item_date = str(created_at_raw)[:10]
+            tz_str = "UTC"
+    else:
+        start_at_iso = "1970-01-01T00:00:00+00:00"
+        item_date = "1970-01-01"
+        tz_str = "UTC"
+
     clean_summary = f"[{status}] {summary}" if summary else f"Status: {status}"
 
     return CalendarItemProjection(
@@ -185,9 +221,9 @@ def project_claw_run(run: dict[str, Any], workspace_id: str) -> CalendarItemProj
         title=title,
         summary=clean_summary,
         date=item_date,
-        start_at=str(created_at_raw),
+        start_at=start_at_iso,
         end_at=None,
-        timezone="UTC",
+        timezone=tz_str,
         all_day=False,
         source_type=CalendarSourceType.CLAW_RUN.value,
         source_ref=f"claw_run:{run_id}",
@@ -249,24 +285,34 @@ async def build_range_projection(
         workspace_id, start_date=start_date, end_date=end_date, limit=bounded_limit
     )
     for apt in apts:
-        items.append(project_appointment(apt))
+        items.append(project_appointment(apt, tz=tz))
 
     # 3. Existing Tasks (read-only projection, no duplicate storage)
-    if task_alert_store is not None:
+    # Parity with claw_inbox_routes: only tasks owned by member_id/user_id are visible.
+    # If user_id is None, fail closed (0 tasks projected).
+    if task_alert_store is not None and user_id is not None:
         list_tasks = getattr(task_alert_store, "list_tasks", None)
         raw_tasks = await _safe_call(list_tasks, workspace_id, limit=bounded_limit)
         if raw_tasks:
             for t in raw_tasks:
-                due = getattr(t, "due_date", None)
-                if due is not None and start_date <= due <= end_date:
-                    items.append(project_task(t, workspace_id))
+                if getattr(t, "member_id", None) == user_id:
+                    due = getattr(t, "due_date", None)
+                    if due is not None and start_date <= due <= end_date:
+                        items.append(project_task(t, workspace_id, tz=tz))
 
     # 4. Existing Alerts (read-only projection, no duplicate storage)
-    if task_alert_store is not None:
+    # Parity with claw_inbox_routes: list_alerts(workspace_id, member_id=user_id)
+    # If user_id is None, fail closed (0 alerts projected).
+    if task_alert_store is not None and user_id is not None:
         list_alerts = getattr(task_alert_store, "list_alerts", None)
-        raw_alerts = await _safe_call(list_alerts, workspace_id, limit=bounded_limit)
+        raw_alerts = await _safe_call(
+            list_alerts, workspace_id, member_id=user_id, limit=bounded_limit
+        )
         if raw_alerts:
             for a in raw_alerts:
+                is_vis = getattr(a, "is_visible_to", None)
+                if callable(is_vis) and not is_vis(user_id):
+                    continue
                 c_at = getattr(a, "created_at", None)
                 if c_at is not None:
                     # Determine date in user's requested timezone
@@ -275,10 +321,19 @@ async def build_range_projection(
                     else:
                         a_date = c_at.date() if hasattr(c_at, "date") else None
                     if a_date and start_date <= a_date <= end_date:
-                        items.append(project_alert(a, workspace_id))
+                        items.append(project_alert(a, workspace_id, tz=tz))
 
     # 5. Existing Claw runs (read-only projection, no duplicate storage)
-    if history_store is not None and user_id is not None:
+    # UNKNOWN_WORKSPACE_RUN_RELABELED_AS_CURRENT = NO
+    # In HistoryStore, rows carry (user_id, run_id, ...) without workspace_id.
+    # Only when the current workspace is provably the owner-derived personal scope
+    # (workspace_id == f"owner:{user_id}") can user-scoped runs be projected.
+    # For canonical tenant workspaces, run->workspace linkage is absent, so fail closed (omit runs).
+    if (
+        history_store is not None
+        and user_id is not None
+        and workspace_id == f"owner:{user_id}"
+    ):
         list_runs = getattr(history_store, "list_recent_claw_runs", None)
         raw_runs = await _safe_call(list_runs, user_id, limit=bounded_limit)
         if raw_runs:
@@ -289,7 +344,7 @@ async def build_range_projection(
                         dt = parse_aware_datetime(c_str, "claw_run_created_at")
                         r_date = dt.astimezone(tz).date()
                         if start_date <= r_date <= end_date:
-                            items.append(project_claw_run(r, workspace_id))
+                            items.append(project_claw_run(r, workspace_id, tz=tz))
                     except Exception:
                         pass
 
@@ -398,18 +453,22 @@ async def build_upcoming_projection(
             # (or ending in future if end_at is present)
             event_cutoff = apt.end_at or apt.start_at
             if event_cutoff and event_cutoff >= ref_utc:
-                items.append(project_appointment(apt))
+                items.append(project_appointment(apt, tz=tz))
         else:
             # DATE_ONLY or ALL_DAY on or after current_date
             if apt.date >= current_date_in_tz:
-                items.append(project_appointment(apt))
+                items.append(project_appointment(apt, tz=tz))
 
     # 2. Existing Tasks with future due dates
-    if task_alert_store is not None:
+    # Parity with claw_inbox_routes: only tasks owned by member_id/user_id are visible.
+    # If user_id is None, fail closed (0 tasks projected).
+    if task_alert_store is not None and user_id is not None:
         list_tasks = getattr(task_alert_store, "list_tasks", None)
         raw_tasks = await _safe_call(list_tasks, workspace_id, limit=bounded_limit * 2)
         if raw_tasks:
             for t in raw_tasks:
+                if getattr(t, "member_id", None) != user_id:
+                    continue
                 due = getattr(t, "due_date", None)
                 status = getattr(t, "status", None)
                 status_val = status.value if hasattr(status, "value") else str(status)
@@ -417,7 +476,7 @@ async def build_upcoming_projection(
                 if status_val in {"completed", "cancelled"}:
                     continue
                 if due is not None and due >= current_date_in_tz:
-                    items.append(project_task(t, workspace_id))
+                    items.append(project_task(t, workspace_id, tz=tz))
 
     # Note: daily work logs, past alerts, and claw runs are historical records,
     # so they are NOT mixed into upcoming.
