@@ -553,8 +553,10 @@ class InMemoryClawAutomationStore:
         existing_id = self._occurrences.get(key)
         if existing_id is not None:
             return self._runs[existing_id]
-        self._runs[run.run_id] = run
+        # Claim the occurrence first so the canonical run is the claim holder,
+        # mirroring the durable adapter's at-most-one-run guarantee.
         self._occurrences[key] = run.run_id
+        self._runs[run.run_id] = run
         if run.output and run.output.proposals:
             for proposal in run.output.proposals:
                 self._proposals[proposal.proposal_id] = proposal
@@ -710,6 +712,155 @@ class FakeClawScheduler:
         return self.store.record_run(run)
 
 
+@dataclass(frozen=True, slots=True)
+class ClawAutomationTickReceipt:
+    """Bounded, non-secret evidence for exactly one processed tick.
+
+    This is deliberately NOT a user-facing execution report: it carries no
+    output body, no proposal text, no provider response, no recipient and no
+    credential material. It answers only "what did this tick observe and claim".
+    """
+
+    workspace_id: str
+    observed_at: datetime
+    due_count: int
+    created_run_ids: tuple[str, ...]
+    deduplicated_count: int
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "workspace_id", _safe_id(self.workspace_id, "workspace_id"))
+        object.__setattr__(self, "observed_at", _aware_utc(self.observed_at, "observed_at"))
+        for field_name in ("due_count", "deduplicated_count"):
+            value = getattr(self, field_name)
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ContractError(f"{field_name} must be a non-negative integer")
+        if not isinstance(self.created_run_ids, tuple):
+            raise ContractError("created_run_ids must be a tuple")
+        norm_ids = tuple(_safe_id(run_id, "created_run_id") for run_id in self.created_run_ids)
+        object.__setattr__(self, "created_run_ids", norm_ids)
+        if len(norm_ids) != len(set(norm_ids)):
+            raise ContractError("created_run_ids must not contain duplicates")
+        if self.due_count < len(norm_ids):
+            raise ContractError("due_count cannot be smaller than the created run count")
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "workspace_id": self.workspace_id,
+            "observed_at": _iso(self.observed_at),
+            "due_count": self.due_count,
+            "created_run_ids": list(self.created_run_ids),
+            "deduplicated_count": self.deduplicated_count,
+        }
+
+
+class ClawAutomationTickRuntime:
+    """Provider-neutral durable tick kernel for one explicit workspace.
+
+    One tick is one trusted scheduler trigger for exactly one workspace::
+
+        trigger -> explicit workspace -> authoritative membership projection
+                -> current UTC instant -> durable rules -> due occurrences
+                -> occurrence dedup -> bounded run materialization
+                -> durable persistence -> bounded tick receipt
+
+    Deliberate boundaries:
+
+    * No cloud cron registration, no Celery/APScheduler, no new provider.
+    * Membership is mandatory. There is no "background" mode that omits it.
+    * Occurrence identity is the pre-existing ``occurrence_key``; this class
+      introduces no second dedup authority and no second lock table.
+    * No external send: runs materialize as local proposals/reports only.
+    """
+
+    def __init__(self, store: ClawAutomationStore) -> None:
+        for required in ("list_rules", "get_run_for_occurrence", "record_run"):
+            if not callable(getattr(store, required, None)):
+                raise ContractError(f"tick runtime store must provide {required}()")
+        self.store = store
+        self.scheduler = FakeClawScheduler(store)
+
+    def tick(
+        self,
+        *,
+        workspace_id: str,
+        current_time: datetime,
+        membership: TrustedWorkspaceMembershipProjection,
+    ) -> ClawAutomationTickReceipt:
+        """Process one trusted trigger for one workspace and return a receipt."""
+
+        workspace = _safe_id(workspace_id, "workspace_id")
+        observed_at = _aware_utc(current_time, "current_time")
+        self._require_membership(membership, workspace, observed_at)
+        if not membership.valid_at(observed_at):
+            # An expired or not-yet-valid projection is not an error: the
+            # tick simply has no authority to materialize anything. It
+            # still returns a bounded receipt so the caller can observe
+            # that nothing ran, and no store write is attempted at all.
+            return ClawAutomationTickReceipt(
+                workspace_id=workspace,
+                observed_at=observed_at,
+                due_count=0,
+                created_run_ids=(),
+                deduplicated_count=0,
+            )
+
+        due = self.scheduler.due_occurrences(workspace, observed_at, membership)
+        created: list[str] = []
+        deduplicated = 0
+        for rule, scheduled in due:
+            key = occurrence_key(rule.workspace_id, rule.rule_id, scheduled)
+            already = self.store.get_run_for_occurrence(key, workspace)
+            run = self.scheduler.execute_rule_dry_run(rule, scheduled, membership)
+            if run.run_id in created:
+                continue
+            if already is not None:
+                deduplicated += 1
+                continue
+            created.append(run.run_id)
+
+        return ClawAutomationTickReceipt(
+            workspace_id=workspace,
+            observed_at=observed_at,
+            due_count=len(due),
+            created_run_ids=tuple(sorted(created)),
+            deduplicated_count=deduplicated,
+        )
+
+    @staticmethod
+    def _require_membership(
+        membership: TrustedWorkspaceMembershipProjection,
+        workspace_id: str,
+        observed_at: datetime,
+    ) -> None:
+        """Fail closed unless a well-formed projection covers this workspace.
+
+        A missing projection is never a reason to fall back to tenant scope.
+        A malformed or foreign projection is a hard contract violation and
+        raises; mere temporal inactivity is handled by the caller as a
+        zero-run tick, never as an implicit tenant-scoped fallback.
+        """
+
+        if not isinstance(membership, TrustedWorkspaceMembershipProjection):
+            raise ContractError(
+                "tick runtime requires a TrustedWorkspaceMembershipProjection; "
+                "anonymous or background execution is not permitted"
+            )
+        if membership.workspace_id != workspace_id:
+            raise ContractError("membership projection does not cover this workspace")
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "provider_neutral_tick_runtime": True,
+            "durable_tick_runtime": True,
+            "real_cloud_cron_registration": False,
+            "production_scheduler_activation": False,
+            "requires_explicit_workspace": True,
+            "requires_membership_projection": True,
+            "membership_may_be_omitted": False,
+            "provider_calls": False,
+            "external_send": False,
+        }
+
 class SqliteClawAutomationStore:
     """Durable automation store following the canonical SQLite pattern.
 
@@ -849,6 +1000,28 @@ class SqliteClawAutomationStore:
             return self.get_run(existing_id, run.workspace_id)  # type: ignore[return-value]
         self._db.execute("BEGIN IMMEDIATE")
         try:
+            # Claim the occurrence FIRST. The occurrence primary key is the
+            # only dedup authority, so whichever writer wins the claim owns
+            # the canonical run for this logical occurrence. The pre-check
+            # above runs outside the transaction and cannot be trusted
+            # under concurrency.
+            claim = self._db.execute(
+                "INSERT OR IGNORE INTO claw_occurrences(occurrence_key, run_id, workspace_id) VALUES (?, ?, ?)",
+                (key, run.run_id, run.workspace_id),
+            )
+            if claim.rowcount == 0:
+                # A concurrent writer already claimed this occurrence.
+                # Discard our would-be run and adopt the canonical one,
+                # so no orphaned run row can survive the race.
+                self._db.execute("DELETE FROM claw_runs WHERE run_id = ?", (run.run_id,))
+                self._db.execute("COMMIT")
+                winner_id = self._get_occurrence_run_id(key, run.workspace_id)
+                if winner_id is None:
+                    raise ContractError("occurrence claim vanished during concurrent write")
+                canonical = self.get_run(winner_id, run.workspace_id)
+                if canonical is None:
+                    raise ContractError("occurrence claim points at a missing run")
+                return canonical
             self._db.execute(
                 "INSERT OR IGNORE INTO claw_runs(run_id, workspace_id, rule_id, status, scheduled_time, started_at, completed_at, output, error_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
@@ -857,10 +1030,6 @@ class SqliteClawAutomationStore:
                     _iso(run.completed_at) if run.completed_at else None,
                     self._serialize_output(run.output), run.error_message,
                 ),
-            )
-            self._db.execute(
-                "INSERT OR IGNORE INTO claw_occurrences(occurrence_key, run_id, workspace_id) VALUES (?, ?, ?)",
-                (key, run.run_id, run.workspace_id),
             )
             if run.output and run.output.proposals:
                 for proposal in run.output.proposals:
@@ -1079,7 +1248,28 @@ __all__ = [
     "InMemoryClawAutomationStore",
     "FakeClawScheduler",
     "SqliteClawAutomationStore",
+    "ClawAutomationTickReceipt",
+    "ClawAutomationTickRuntime",
     "occurrence_key",
     "parse_cron_expression",
     "resolve_timezone",
 ]
+
+# --- #2833 durable provider-neutral tick runtime boundaries ---
+# The kernel exists and is durable, but nothing schedules it in the cloud and
+# no production trigger is wired yet. These flags are deliberately explicit
+# so no consumer can mistake the kernel for an activated scheduler.
+DURABLE_TICK_RUNTIME = True
+BACKGROUND_RUNTIME_KERNEL = True
+REAL_BACKGROUND_TRIGGER = False
+REAL_CLOUD_CRON_REGISTRATION = False
+PRODUCTION_SCHEDULER_ACTIVATION = False
+TICK_RUNTIME_REQUIRES_MEMBERSHIP = True
+TICK_RUNTIME_MEMBERSHIP_OPTIONAL = False
+TICK_RUNTIME_PERFORMS_PROVIDER_CALLS = False
+TICK_RUNTIME_REGISTERS_CLOUD_CRON = False
+EXTERNAL_SEND_ENABLED = False
+AUTO_SEND_ENABLED = False
+AUTO_ORDER_ENABLED = False
+AUTO_MEMORY_CONFIRM_ENABLED = False
+ONE_OCCURRENCE_MAX_CANONICAL_RUNS = 1
