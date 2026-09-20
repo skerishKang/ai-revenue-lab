@@ -83,7 +83,7 @@ class HistoryStore(Protocol):
     async def update_project(self, user_id: str, project_id: str, name: str, instructions: str) -> ProjectProfile | None: ...
     async def delete_project(self, user_id: str, project_id: str) -> bool: ...
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
-    async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None) -> None: ...
+    async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None, conversation_id: str | None = None) -> None: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS) -> list[dict[str, Any]]: ...
 
 
@@ -565,35 +565,60 @@ class D1HistoryStore:
         artifact_document_id: str | None = None,
         artifact_filename: str | None = None,
         artifact_media_type: str | None = None,
+        conversation_id: str | None = None,
     ) -> None:
+        # #2829 Phase B: defensive shape validation at the store boundary.
+        # Owner authority remains with the route-level get_conversation() lookup;
+        # this only prevents malformed values from reaching persistence.
+        if conversation_id is not None:
+            conversation_id = validate_conversation_id(conversation_id)
         summary = result_summary[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_summary else None
         now = _now_iso()
         existing = await self._first(
-            "SELECT id, created_at FROM claw_run_history WHERE run_id=? AND user_id=?",
+            "SELECT id, created_at, conversation_id FROM claw_run_history WHERE run_id=? AND user_id=?",
             run_id, user_id,
         )
         if existing is not None:
+            # #2829 Phase B: run→conversation linkage is immutable once set.
+            # existing NULL + new valid id  → backfill allowed
+            # existing id A + new id A      → no-op
+            # existing id A + new NULL      → preserve A
+            # existing id A + new id B      → fail closed (no transfer)
+            existing_ref = existing.get("conversation_id")
+            incoming_ref = conversation_id
+            if existing_ref is not None:
+                if incoming_ref is not None and incoming_ref != existing_ref:
+                    raise HistoryError(
+                        f"claw run {run_id} is already linked to conversation {existing_ref}; "
+                        "transfer to a different conversation is not allowed"
+                    )
+                persisted_ref = existing_ref
+            else:
+                persisted_ref = incoming_ref
             await self._run(
                 "UPDATE claw_run_history SET channel=?, action=?, title=?, status=?, updated_at=?, "
-                "result_summary=?, artifact_document_id=?, artifact_filename=?, artifact_media_type=? "
+                "result_summary=?, artifact_document_id=?, artifact_filename=?, artifact_media_type=?, "
+                "conversation_id=? "
                 "WHERE run_id=? AND user_id=?",
                 channel, action, title, status, now,
                 summary, artifact_document_id, artifact_filename, artifact_media_type,
+                persisted_ref,
                 run_id, user_id,
             )
             return
         await self._run(
-            "INSERT INTO claw_run_history (id, user_id, run_id, channel, action, title, status, created_at, updated_at, result_summary, artifact_document_id, artifact_filename, artifact_media_type) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO claw_run_history (id, user_id, run_id, channel, action, title, status, created_at, updated_at, result_summary, artifact_document_id, artifact_filename, artifact_media_type, conversation_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             _run_history_id(), user_id, run_id, channel, action, title, status, now, now,
             summary, artifact_document_id, artifact_filename, artifact_media_type,
+            conversation_id,
         )
 
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS) -> list[dict[str, Any]]:
         bounded = max(1, min(int(limit), MAX_CLAW_RUNS))
         rows = await self._all(
             "SELECT run_id, channel, action, title, status, created_at, updated_at, result_summary, "
-            "artifact_document_id, artifact_filename, artifact_media_type "
+            "artifact_document_id, artifact_filename, artifact_media_type, conversation_id "
             "FROM claw_run_history WHERE user_id=? ORDER BY created_at DESC LIMIT ?",
             user_id, bounded,
         )
