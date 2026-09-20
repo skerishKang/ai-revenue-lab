@@ -1,0 +1,499 @@
+name: B54 Control Plane Identity Production Redeploy
+
+# #2830 B-1D. Production `padiem-control-plane-identity` exists but its deployed
+# source predates B-1A, so the required `resolve_connector_workspace` RPC is not
+# deployed. This control redeploys that one private Worker from an exact current
+# main SHA under explicit authorization.
+#
+# It is a SOURCE REDEPLOY control only. It is NOT a B62 Service Binding
+# activation gate (that is b62-control-plane-identity-binding-gate.yml) and it is
+# NOT a first-time private worker activation (that is
+# b54-google-oauth-private-workers-production-activation.yml).
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-control-plane-identity-production-redeploy.yml"
+      - "packages/padiem-control-plane/wrangler.identity-authority.jsonc"
+      - "packages/padiem-control-plane/identity_authority_worker.py"
+      - "packages/padiem-control-plane/tests/test_identity_production_redeploy_gate.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Control Plane identity production redeploy mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - redeploy_identity_worker
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact Production mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-control-plane-identity-production-redeploy
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  IDENTITY_WORKER: padiem-control-plane-identity
+  IDENTITY_CONFIG: wrangler.identity-authority.jsonc
+  STATE_WORKER: padiem-google-oauth-state
+  EDGE_WORKER: padiem-google-oauth-edge
+  B62_WORKER: padiem-chat
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate identity-only Production redeploy contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          gate = Path('.github/workflows/b54-control-plane-identity-production-redeploy.yml').read_text(encoding='utf-8')
+          required = [
+              'environment: production',
+              'redeploy_identity_worker',
+              'repository_preflight',
+              'cloudflare_readonly',
+              'REDEPLOY_PADIEM_CONTROL_PLANE_IDENTITY_FROM_EXACT_MAIN',
+              'IDENTITY_WORKER_REDEPLOY=1',
+              'OAUTH_STATE_WORKER_REDEPLOY=0',
+              'OAUTH_EDGE_WORKER_REDEPLOY=0',
+              'B62_MUTATION=0',
+              'PUBLIC_TOPOLOGY_MUTATION=0',
+              'CUSTOM_DOMAIN_MUTATION=0',
+              'DNS_MUTATION=0',
+              'D1_MUTATION=0',
+              'B62_BINDING_MUTATION=0',
+              'LOCAL_AGENT_INGRESS_CHANGED=NO',
+              'SECRET_VALUES_OUTPUT=0',
+              'SECRET_VALUES_READBACK=0',
+              'ROLLBACK_TARGET=IDENTITY_WORKER_ONLY',
+              'PREVIOUS_VERSION_CAPTURE=PASS',
+              'Reconfirm exact main immediately before the only mutation',
+              'EXACT_CURRENT_MAIN=PASS',
+              'resolve_connector_workspace',
+          ]
+          for token in required:
+              if token not in gate:
+                  raise SystemExit(f'Missing identity-only invariant: {token}')
+
+          forbidden = [
+              'wrangler.google-oauth' + '.jsonc',
+              'wrangler.google-oauth-' + 'edge.jsonc',
+              '/workers/' + 'routes',
+              '-X ' + 'POST',
+              '-X ' + 'PUT',
+              '-X ' + 'PATCH',
+              '-X ' + 'DELETE',
+          ]
+          for token in forbidden:
+              if token in gate:
+                  raise SystemExit(f'Forbidden broad/topology mutation token: {token}')
+
+          deploy_lines = [
+              line for line in gate.splitlines()
+              if 'pywrangler deploy' in line and '--dry-run' not in line
+          ]
+          if len(deploy_lines) != 1:
+              raise SystemExit(f'Expected exactly one non-dry-run deploy command, got {len(deploy_lines)}')
+          if 'padiem-chat' in deploy_lines[0] or 'padiem-google-oauth' in deploy_lines[0]:
+              raise SystemExit('The single deploy command must target the identity Worker only')
+
+          # The B-1A RPC this redeploy exists to ship must be present in source.
+          worker = Path('packages/padiem-control-plane/identity_authority_worker.py').read_text(encoding='utf-8')
+          if 'resolve_connector_workspace' not in worker:
+              raise SystemExit('identity worker source lost resolve_connector_workspace')
+          for token in ('PUBLIC_FETCH = False', 'PRODUCTION_ROUTE_CONFIGURED = False'):
+              if token not in worker:
+                  raise SystemExit(f'identity worker lost contract: {token}')
+
+          # Private Worker ingress must stay private in the canonical config.
+          raw = Path('packages/padiem-control-plane/wrangler.identity-authority.jsonc').read_text(encoding='utf-8')
+          config = json.loads(re.sub(r'//.*', '', raw))
+          if config['name'] != 'padiem-control-plane-identity':
+              raise SystemExit('identity worker name drift')
+          if config['workers_dev'] is not False or config['preview_urls'] is not False:
+              raise SystemExit('identity worker public ingress drifted')
+          for key in ('routes', 'custom_domain', 'custom_domains'):
+              if key in config:
+                  raise SystemExit(f'identity worker declares {key}')
+          expected = {'CONTROL_PLANE_IDENTITY_LOOKUP_KEY', 'GOOGLE_CONNECT_TICKET_KEY'}
+          if set(config['secrets']['required']) != expected:
+              raise SystemExit('identity worker required secret names drifted')
+
+          print('IDENTITY_ONLY_SOURCE_CONTRACT=PASS')
+          print('RESOLVE_CONNECTOR_WORKSPACE_SOURCE_REQUIRED=PASS')
+          print('PRIVATE_INGRESS_CONTRACT=PASS')
+          print('PRODUCTION_MUTATION=0')
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Dry-run package exact identity Worker
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          secret_file="${RUNNER_TEMP}/identity-dry-run.env"
+          trap 'rm -f "${temp_config}" "${secret_file}"' EXIT
+          # CI-only synthetic material. No Production secret value is used here.
+          python - <<'PY' > "${secret_file}"
+          import base64
+          import os
+
+          def b64url(n: int) -> str:
+              return base64.urlsafe_b64encode(os.urandom(n)).decode().rstrip('=')
+
+          print('CONTROL_PLANE_IDENTITY_LOOKUP_KEY=' + b64url(32))
+          print('GOOGLE_CONNECT_TICKET_KEY=' + b64url(32))
+          PY
+          chmod 600 "${secret_file}"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(Path('wrangler.identity-authority.jsonc').read_text(encoding='utf-8'))
+          if config.get('name') != 'padiem-control-plane-identity':
+              raise SystemExit('identity worker name drift')
+          Path('wrangler.jsonc').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --dry-run --outdir "${RUNNER_TEMP}/identity-redeploy-dry-run"
+          rm -f "${temp_config}"
+          echo "IDENTITY_WORKER_PACKAGE_DRY_RUN=PASS"
+          echo "SECRET_VALUES_OUTPUT=0"
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      previous_identity_version: ${{ steps.audit.outputs.previous_identity_version }}
+    steps:
+      - name: Read-only Production identity Worker audit
+        id: audit
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          settings="${RUNNER_TEMP}/identity-settings.json"
+          deployments="${RUNNER_TEMP}/identity-deployments.json"
+          versions="${RUNNER_TEMP}/identity-versions.json"
+          subdomain="${RUNNER_TEMP}/identity-subdomain.json"
+          domains="${RUNNER_TEMP}/worker-domains.json"
+
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/deployments" -o "${deployments}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
+          # Private ingress: workers.dev disabled on the identity Worker.
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+
+          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
+          test -n "${active}" && test -n "${latest}"
+          test "${active}" = "${latest}"
+          echo "ACTIVE_VERSION=${active}"
+          echo "LATEST_VERSION=${latest}"
+          echo "ACTIVE_EQUALS_LATEST=PASS"
+          echo "previous_identity_version=${active}" >> "${GITHUB_OUTPUT}"
+          echo "PREVIOUS_VERSION_CAPTURE=PASS"
+
+          # No public custom domain may point at the identity Worker.
+          jq -e '.success == true and (.result | type == "array")' "${domains}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $identity)] | length == 0' "${domains}" >/dev/null
+          echo "PUBLIC_CUSTOM_DOMAIN=NO"
+
+          # Secret binding metadata only: name presence is verified, never a value.
+          jq -e '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY_LOOKUP_KEY") and any(.name == "GOOGLE_CONNECT_TICKET_KEY")' "${settings}" >/dev/null
+          echo "IDENTITY_SECRET_NAME_METADATA=PRESENT"
+          echo "SECRET_VALUES_READBACK=0"
+
+          # Bounded version snapshot of the workers this control must NOT touch.
+          bounded_version() {
+            worker="$1"
+            dep="${RUNNER_TEMP}/${worker}-dep-readonly.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            jq -r '.result.deployments[0].versions[0].version_id // empty' "${dep}"
+          }
+          echo "B62_WORKER_VERSION_SNAPSHOT=${B62_WORKER}@$(bounded_version "${B62_WORKER}")"
+          echo "OAUTH_STATE_WORKER_VERSION_SNAPSHOT=${STATE_WORKER}@$(bounded_version "${STATE_WORKER}")"
+          echo "OAUTH_EDGE_WORKER_VERSION_SNAPSHOT=${EDGE_WORKER}@$(bounded_version "${EDGE_WORKER}")"
+          echo "IDENTITY_WORKER_READONLY_AUDIT=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  redeploy-identity-worker:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'redeploy_identity_worker' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: production
+    env:
+      PREVIOUS_IDENTITY_VERSION: ${{ needs.cloudflare-readonly.outputs.previous_identity_version }}
+    steps:
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main and explicit authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          LOOKUP_KEY: ${{ secrets.CONTROL_PLANE_IDENTITY_LOOKUP_KEY }}
+          TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "${GITHUB_SHA}" = "${TARGET_SHA}"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test "${CONFIRMATION}" = "REDEPLOY_PADIEM_CONTROL_PLANE_IDENTITY_FROM_EXACT_MAIN"
+          test -n "${PREVIOUS_IDENTITY_VERSION}"
+          for name in LOOKUP_KEY TICKET_KEY; do
+            test -n "${!name}"
+          done
+          python - <<'PY'
+          import base64
+          import os
+
+          def require_key(name: str) -> None:
+              value = os.environ[name]
+              padding = '=' * (-len(value) % 4)
+              raw = base64.urlsafe_b64decode(value + padding)
+              if len(raw) != 32:
+                  raise SystemExit(f'{name} must decode to 32 bytes')
+
+          require_key('LOOKUP_KEY')
+          require_key('TICKET_KEY')
+          PY
+          echo "EXACT_CURRENT_MAIN=PASS"
+          echo "PRODUCTION_AUTHORIZATION=PASS"
+
+      - name: Snapshot exact Production topology and active versions
+        id: before
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          domains="${RUNNER_TEMP}/domains-before.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $identity)] | length == 0' "${domains}" >/dev/null
+
+          snapshot_worker() {
+            worker="$1"
+            prefix="$2"
+            private="$3"
+            sub="${RUNNER_TEMP}/${worker}-sub-before.json"
+            dep="${RUNNER_TEMP}/${worker}-dep-before.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${sub}"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            if [ "${private}" = "yes" ]; then
+              jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
+            fi
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
+            version="$(jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}")"
+            test -n "${version}"
+            echo "${prefix}_version=${version}" >> "${GITHUB_OUTPUT}"
+            echo "${prefix}_subdomain_snapshot=${worker}@$(jq -c '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${sub}")" >> "${GITHUB_OUTPUT}"
+          }
+
+          snapshot_worker "${IDENTITY_WORKER}" "identity" "yes"
+          snapshot_worker "${STATE_WORKER}" "state" "yes"
+          snapshot_worker "${EDGE_WORKER}" "edge" "yes"
+          snapshot_worker "${B62_WORKER}" "b62" "no"
+          echo "PREMUTATION_TOPOLOGY=PASS"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+
+      - name: Reconfirm exact main immediately before the only mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_MAIN_IMMEDIATE_RECHECK_PASSED=PASS"
+
+      - name: Redeploy only Control Plane identity Worker
+        id: deploy
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          LOOKUP_KEY: ${{ secrets.CONTROL_PLANE_IDENTITY_LOOKUP_KEY }}
+          TICKET_KEY: ${{ secrets.GOOGLE_CONNECT_TICKET_KEY }}
+        run: |
+          set -euo pipefail
+          secret_file="${RUNNER_TEMP}/identity-production-secrets.env"
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${secret_file}" "${temp_config}"' EXIT
+          printf 'CONTROL_PLANE_IDENTITY_LOOKUP_KEY=%s\nGOOGLE_CONNECT_TICKET_KEY=%s\n' "${LOOKUP_KEY}" "${TICKET_KEY}" > "${secret_file}"
+          chmod 600 "${secret_file}"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(Path('wrangler.identity-authority.jsonc').read_text(encoding='utf-8'))
+          if config.get('name') != 'padiem-control-plane-identity':
+              raise SystemExit('identity worker name drift')
+          Path('wrangler.jsonc').write_text(json.dumps(config, indent=2) + '\n', encoding='utf-8')
+          PY
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy --secrets-file "${secret_file}" --strict --tag "git-${TARGET_SHA}" --message "B1D identity resolve_connector_workspace ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "IDENTITY_WORKER_REDEPLOY=1"
+          echo "SECRET_VALUES_OUTPUT=0"
+
+      - name: Read back identity-only mutation and preserved topology
+        id: verify
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          IDENTITY_BEFORE: ${{ steps.before.outputs.identity_version }}
+          STATE_BEFORE: ${{ steps.before.outputs.state_version }}
+          EDGE_BEFORE: ${{ steps.before.outputs.edge_version }}
+          B62_BEFORE: ${{ steps.before.outputs.b62_version }}
+          IDENTITY_SUB_BEFORE: ${{ steps.before.outputs.identity_subdomain_snapshot }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" )
+
+          current_version() {
+            worker="$1"
+            dep="${RUNNER_TEMP}/${worker}-dep-after.json"
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
+            jq -r '.result.deployments[0].versions[0].version_id // .result.deployments[0].versions[0].version // empty' "${dep}"
+          }
+
+          IDENTITY_AFTER="$(current_version "${IDENTITY_WORKER}")"
+          STATE_AFTER="$(current_version "${STATE_WORKER}")"
+          EDGE_AFTER="$(current_version "${EDGE_WORKER}")"
+          B62_AFTER="$(current_version "${B62_WORKER}")"
+          test -n "${IDENTITY_AFTER}" && test -n "${STATE_AFTER}" && test -n "${EDGE_AFTER}" && test -n "${B62_AFTER}"
+
+          test "${IDENTITY_AFTER}" != "${IDENTITY_BEFORE}"
+          echo "IDENTITY_ACTIVE_VERSION_CHANGED=PASS"
+          test "${STATE_AFTER}" = "${STATE_BEFORE}"
+          test "${EDGE_AFTER}" = "${EDGE_BEFORE}"
+          test "${B62_AFTER}" = "${B62_BEFORE}"
+          echo "OAUTH_STATE_WORKER_REDEPLOY=0"
+          echo "OAUTH_EDGE_WORKER_REDEPLOY=0"
+          echo "B62_WORKER_REDEPLOY=0"
+
+          latest=""
+          for _ in $(seq 1 6); do
+            curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/versions?per_page=1&deployable=true" -o "${RUNNER_TEMP}/identity-versions-after.json"
+            latest="$(jq -r '.result.items[0].id // empty' "${RUNNER_TEMP}/identity-versions-after.json")"
+            if [ "${latest}" = "${IDENTITY_AFTER}" ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "${latest}" = "${IDENTITY_AFTER}"
+          echo "ACTIVE_EQUALS_LATEST=PASS"
+
+          sub_after="${RUNNER_TEMP}/identity-sub-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/subdomain" -o "${sub_after}"
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub_after}" >/dev/null
+          identity_sub_after="${IDENTITY_WORKER}@$(jq -c '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${sub_after}")"
+          test "${identity_sub_after}" = "${IDENTITY_SUB_BEFORE}"
+          echo "IDENTITY_PUBLIC_INGRESS_UNCHANGED=PASS"
+
+          domains="${RUNNER_TEMP}/domains-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          jq -e --arg identity "${IDENTITY_WORKER}" '[.result[] | select(.service == $identity)] | length == 0' "${domains}" >/dev/null
+
+          settings="${RUNNER_TEMP}/identity-settings-after.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${IDENTITY_WORKER}/settings" -o "${settings}"
+          jq -e '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY_LOOKUP_KEY") and any(.name == "GOOGLE_CONNECT_TICKET_KEY")' "${settings}" >/dev/null
+          echo "SECRET_VALUES_READBACK=0"
+
+          echo "RESOLVE_CONNECTOR_WORKSPACE_DEPLOY_EVIDENCE=worker_version:${IDENTITY_AFTER}"
+          echo "PUBLIC_TOPOLOGY_MUTATION=0"
+          echo "CUSTOM_DOMAIN_MUTATION=0"
+          echo "DNS_MUTATION=0"
+          echo "B62_MUTATION=0"
+          echo "D1_MUTATION=0"
+          echo "B62_BINDING_MUTATION=0"
+          echo "LOCAL_AGENT_INGRESS_CHANGED=NO"
+          echo "IDENTITY_ONLY_REDEPLOY=PASS"
+
+      - name: Auto-rollback identity Worker only on post-deploy verification failure
+        if: ${{ failure() && needs.cloudflare-readonly.outputs.previous_identity_version != '' }}
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # Bounded to the identity Worker script name only. The target is written
+          # literally so the rollback scope cannot drift with an env value. No
+          # other Worker, no B62/OAuth deployment, no DNS, route or custom-domain
+          # mutation.
+          npx wrangler@4 rollback padiem-control-plane-identity --message "B1D identity redeploy auto-rollback ${TARGET_SHA}"
+          echo "ROLLBACK_TARGET=IDENTITY_WORKER_ONLY"
+          echo "IDENTITY_ROLLBACK_PREVIOUS_VERSION=${PREVIOUS_IDENTITY_VERSION}"
