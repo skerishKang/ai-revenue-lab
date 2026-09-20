@@ -239,6 +239,33 @@ class E2BSandboxTransport(Protocol):
         ...
 
 
+# The seam's operations, closed. A failure message may name one of these and nothing else
+# that arrived from the provider side, so the only thing a transport can influence in that
+# text is which call was made — never what it said.
+E2B_TRANSPORT_OPERATIONS = ("create", "state", "kill", "list_running")
+
+# Interruption and shutdown are not provider answers. Rewriting one into a lease error would
+# turn a teardown into something a caller might retry.
+_TRANSPORT_CONTROL_FLOW = (KeyboardInterrupt, SystemExit, GeneratorExit)
+
+
+def _transport_failure(
+    operation: str, category: str
+) -> SandboxLeaseError | SandboxUnavailableError:
+    """The whole vocabulary of seam failure: two fixed sentences.
+
+    A real provider exception can carry credential fragments, token-bearing URLs, account or
+    project identifiers and response bodies. Nothing of the sort is interpolated here — both
+    arguments are adapter-owned literals, one drawn from ``E2B_TRANSPORT_OPERATIONS`` and one
+    from the two branches below.
+    """
+    if category == "unavailable":
+        return SandboxUnavailableError(
+            f"provider {operation} call did not run: the provider is unavailable"
+        )
+    return SandboxLeaseError(f"provider {operation} failed; no provider detail is projected")
+
+
 def _aware(value: object, field_name: str) -> datetime:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise E2BAdapterError(f"{field_name} must be timezone-aware")
@@ -667,21 +694,39 @@ class E2BCloudM1Adapter:
         return lease
 
     def _transport_call(self, operation: str, *args, **kwargs):
-        """Run one seam call, translating any provider-side failure.
+        """Run one seam call, and let a provider failure cross back as fixed text only.
 
-        A transport error must reach callers as a rejected lease operation. Left raw it
-        would break the port's uniform ``SandboxLeaseError`` shape, and mid-sweep it would
-        abort the pass with no report at all — hiding exactly the leases that were already
-        reclaimed, which is the failure mode #2803 closed for refusals.
+        Two rules. Translate: a transport error must reach callers as a rejected lease
+        operation, or the port's uniform shape breaks and a mid-sweep failure aborts the pass
+        with no report at all — hiding the leases already reclaimed, which is the failure mode
+        #2803 closed for refusals. Say nothing: see ``_transport_failure``.
+
+        The chain matters as much as the sentence. CPython attaches the exception *in flight*
+        as ``__context__`` when a raise executes, so raising inside the handler would keep the
+        provider's own object reachable from an error that looks sanitized, and ``from None``
+        only hides it — the reference survives and anything that walks ``__context__`` prints
+        it. So the raise happens after the handler has exited, and the chain is then cleared
+        where a bare re-raise will not re-attach it. What leaves has no cause and no context:
+        not the provider's exception, and not whatever the caller happened to be handling.
         """
+        if operation not in E2B_TRANSPORT_OPERATIONS:
+            raise E2BAdapterError("unknown E2B transport operation")
+        category = ""
         try:
             return getattr(self._transport, operation)(*args, **kwargs)
-        except (SandboxLeaseError, SandboxUnavailableError):
+        except _TRANSPORT_CONTROL_FLOW:
             raise
-        except Exception as exc:
-            raise SandboxLeaseError(
-                f"provider {operation} failed: {type(exc).__name__}: {exc}"
-            ) from exc
+        except SandboxUnavailableError:
+            category = "unavailable"
+        except BaseException:
+            category = "failed"
+        error = _transport_failure(operation, category)
+        try:
+            raise error
+        except BaseException as projected:
+            projected.__cause__ = None
+            projected.__context__ = None
+            raise
 
     def _kill_and_observe(self, lease_id: str) -> E2BTerminationEvidence:
         """Ask, then look. A returned acknowledgement is never an outcome."""
