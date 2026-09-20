@@ -630,19 +630,46 @@ class CloudflareDurableGoogleOAuthStore:
 
         This is the read primitive behind the future connector-status surface.
         It deliberately returns *only* :class:`GoogleOAuthWorkspaceConnectorState`
-        values. ``binding_ref``, ``actor_ref``, ``account_ref``, ``workspace_ref``,
-        ``scopes`` and ``sealed_refresh_token`` are selected from the durable row
-        solely to evaluate usability and are never projected back to the caller.
+        values. The query selects nothing but ``connector_id``, ``expires_at``
+        and ``revoked_at``; that is the minimum needed to evaluate usability and
+        expiry presence. Raw identity (``binding_ref``, ``actor_ref``,
+        ``account_ref``, ``workspace_ref``), ``scopes`` and
+        ``sealed_refresh_token`` are neither selected nor projected back to the
+        caller.
+
+        ``expires_present`` is derived from the **usable row set only**. An
+        expired or revoked row is not active truth, so it must not influence the
+        flag: otherwise a workspace whose single usable binding has no expiry
+        would report ``expires_present=True`` merely because some inactive row
+        carried one.
 
         ``workspace_ref`` is the durable row's own canonical workspace key; the
         query is always anchored to ``WHERE workspace_ref = ?`` so a caller can
         never observe another workspace's bindings.
 
+        ``connector_ids`` is an internal bounded narrowing filter, not a public
+        API surface. It must be a duplicate-free tuple drawn from the reviewed
+        Google readonly connector set, so one request can never emit the same
+        connector twice.
+
         No token is unsealed, no access lease is issued, and nothing is written.
         """
         workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
         now = _utc(now, "now")
-        reviewed = tuple(sorted(_REVIEWED_SCOPES)) if connector_ids is None else tuple(connector_ids)
+        if connector_ids is None:
+            reviewed = tuple(sorted(_REVIEWED_SCOPES))
+        else:
+            if not isinstance(connector_ids, tuple):
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "connector_ids filter must be a tuple of reviewed connector ids",
+                )
+            if len(set(connector_ids)) != len(connector_ids):
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_durable_record",
+                    "connector_ids filter must not repeat a connector id",
+                )
+            reviewed = tuple(connector_ids)
         if not reviewed:
             return ()
         for connector_id in reviewed:
@@ -661,31 +688,29 @@ class CloudflareDurableGoogleOAuthStore:
                 *reviewed,
             )
         )
-        usable_by_connector: dict[str, list[bool]] = {connector_id: [] for connector_id in reviewed}
+        # Per connector, track the expiry presence of *usable* rows only.
+        usable_expiry: dict[str, list[bool]] = {connector_id: [] for connector_id in reviewed}
         for row in rows:
             connector_id = _row_value(row, "connector_id")
-            if connector_id not in usable_by_connector:
+            if connector_id not in usable_expiry:
                 continue
             expires_text = _row_value(row, "expires_at")
             revoked_text = _row_value(row, "revoked_at")
             expires_at = _parse_iso(expires_text, "expires_at") if expires_text is not None else None
             revoked_at = _parse_iso(revoked_text, "revoked_at") if revoked_text is not None else None
-            usable = revoked_at is None and (expires_at is None or now < expires_at)
-            usable_by_connector[connector_id].append(usable)
+            if revoked_at is not None or (expires_at is not None and now >= expires_at):
+                # Inactive truth: never contributes to state or expires_present.
+                continue
+            usable_expiry[connector_id].append(expires_at is not None)
 
         states: list[GoogleOAuthWorkspaceConnectorState] = []
         for connector_id in reviewed:
-            verdicts = usable_by_connector[connector_id]
-            usable_count = sum(1 for verdict in verdicts if verdict)
+            verdicts = usable_expiry[connector_id]
             states.append(
                 workspace_connector_state(
                     connector_id=connector_id,
-                    usable_rows=usable_count,
-                    expires_present=any(
-                        _row_value(row, "expires_at") is not None
-                        for row in rows
-                        if _row_value(row, "connector_id") == connector_id and _row_value(row, "revoked_at") is None
-                    ),
+                    usable_rows=len(verdicts),
+                    expires_present=any(verdicts),
                 )
             )
         return tuple(states)
@@ -726,6 +751,8 @@ WORKSPACE_READ_ACCESS_LEASE_ISSUE = False
 WORKSPACE_READ_PUBLIC_ROUTE = False
 WORKSPACE_READ_WRITE_SCOPE = False
 WORKSPACE_READ_DUPLICATE_ACTIVE_POLICY = "ambiguous_fail_closed"
+WORKSPACE_READ_EXPIRES_PRESENT_SCOPE = "usable_rows_only"
+WORKSPACE_READ_DUPLICATE_CONNECTOR_FILTER = "rejected"
 WORKSPACE_READ_BINDING_REF_OUTPUT = False
 WORKSPACE_READ_ACTOR_ACCOUNT_REF_OUTPUT = False
 WORKSPACE_READ_WORKSPACE_REF_ECHO = False

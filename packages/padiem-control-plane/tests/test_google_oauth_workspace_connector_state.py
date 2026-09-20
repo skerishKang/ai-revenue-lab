@@ -224,6 +224,240 @@ def test_duplicate_rows_across_workspaces_do_not_cross_contaminate() -> None:
     assert _read(store, workspace_ref=WORKSPACE_B)["gmail"].state == "connected"
 
 
+# --------------------------------------------------------------------------
+# 6b. expires_present is derived from the USABLE row set only
+#
+# Regression for the CENTRAL source review finding on #2849: an expired or
+# revoked row is not active truth, so it must never influence the flag.
+# --------------------------------------------------------------------------
+
+
+def test_expires_present_case_a_usable_no_expiry_row_with_inactive_expiring_row() -> None:
+    """Case A: the sole usable row has no expiry; the other row is expired."""
+    store, _ = _store()
+    store.save_credential(_credential(binding_ref="binding.a.gmail.live", connector_id="gmail"))
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.stale",
+            connector_id="gmail",
+            expires_at=NOW + timedelta(seconds=30),
+        )
+    )
+
+    states = _read(store, now=NOW + timedelta(seconds=40))
+    assert states["gmail"].state == "connected"
+    assert states["gmail"].usable is True
+    # The inactive row's expiry must NOT leak into the bounded truth.
+    assert states["gmail"].expires_present is False
+
+
+def test_expires_present_case_b_usable_expiring_row_with_inactive_expiring_row() -> None:
+    """Case B: the sole usable row carries an expiry."""
+    store, _ = _store()
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.expiring",
+            connector_id="gmail",
+            expires_at=NOW + timedelta(days=30),
+        )
+    )
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.stale",
+            connector_id="gmail",
+            expires_at=NOW + timedelta(seconds=30),
+        )
+    )
+
+    states = _read(store, now=NOW + timedelta(seconds=40))
+    assert states["gmail"].state == "connected"
+    assert states["gmail"].expires_present is True
+
+
+def test_expires_present_case_c_ambiguous_uses_usable_rows_only() -> None:
+    """Case C: two usable rows, one with an expiry and one without."""
+    store, _ = _store()
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.with_expiry",
+            connector_id="gmail",
+            expires_at=NOW + timedelta(days=30),
+        )
+    )
+    store.save_credential(_credential(binding_ref="binding.a.gmail.no_expiry", connector_id="gmail"))
+
+    states = _read(store)
+    assert states["gmail"].state == "ambiguous"
+    assert states["gmail"].usable is False
+    assert states["gmail"].ambiguous is True
+    assert states["gmail"].expires_present is True
+
+
+def test_expires_present_is_false_when_no_usable_row_carries_an_expiry() -> None:
+    """Two usable rows, neither with an expiry => ambiguous but no expiry present."""
+    store, _ = _store()
+    store.save_credential(_credential(binding_ref="binding.a.gmail.one", connector_id="gmail"))
+    store.save_credential(_credential(binding_ref="binding.a.gmail.two", connector_id="gmail"))
+
+    states = _read(store)
+    assert states["gmail"].state == "ambiguous"
+    assert states["gmail"].expires_present is False
+
+
+def test_expires_present_is_false_when_no_row_is_usable() -> None:
+    """Expired and revoked rows alone must not report an expiry."""
+    store, _ = _store()
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.expired",
+            connector_id="gmail",
+            expires_at=NOW + timedelta(seconds=30),
+        )
+    )
+    revoked = _credential(
+        binding_ref="binding.a.gmail.revoked",
+        connector_id="gmail",
+        expires_at=NOW + timedelta(days=30),
+    )
+    store.save_credential(revoked)
+    store.revoke_credential(binding_ref=revoked.binding_ref, revoked_at=NOW + timedelta(seconds=5))
+
+    states = _read(store, now=NOW + timedelta(seconds=40))
+    assert states["gmail"].state == "not_connected"
+    assert states["gmail"].usable is False
+    assert states["gmail"].expires_present is False
+
+
+def test_expires_present_ignores_inactive_rows_for_the_other_connector_only() -> None:
+    """The flag is computed per connector from that connector's usable rows."""
+    store, _ = _store()
+    # gmail: usable row without expiry + inactive row with expiry.
+    store.save_credential(_credential(binding_ref="binding.a.gmail.live", connector_id="gmail"))
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.stale",
+            connector_id="gmail",
+            expires_at=NOW + timedelta(seconds=30),
+        )
+    )
+    # google-drive: usable row with expiry.
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.drive.live",
+            connector_id="google-drive",
+            expires_at=NOW + timedelta(days=30),
+        )
+    )
+
+    states = _read(store, now=NOW + timedelta(seconds=40))
+    assert states["gmail"].expires_present is False
+    assert states["google-drive"].expires_present is True
+
+
+def test_expires_present_flag_never_leaks_the_inactive_row_timestamp() -> None:
+    store, _ = _store()
+    store.save_credential(_credential(binding_ref="binding.a.gmail.live", connector_id="gmail"))
+    stale_expiry = NOW + timedelta(seconds=30)
+    store.save_credential(
+        _credential(
+            binding_ref="binding.a.gmail.stale",
+            connector_id="gmail",
+            expires_at=stale_expiry,
+        )
+    )
+
+    states = _read(store, now=NOW + timedelta(seconds=40))
+    rendered = json.dumps(
+        [state.to_bounded_dict() for state in states.values()],
+        sort_keys=True,
+    )
+    assert states["gmail"].expires_present is False
+    assert stale_expiry.isoformat() not in rendered
+    assert "2026-09-20T05:00:30" not in rendered
+
+
+# --------------------------------------------------------------------------
+# 6c. connector_ids narrowing filter is bounded (no duplicate output)
+# --------------------------------------------------------------------------
+
+
+def test_duplicate_connector_ids_filter_is_rejected() -> None:
+    store, _ = _store()
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.list_workspace_connector_state(
+            workspace_ref=WORKSPACE_A,
+            now=NOW,
+            connector_ids=("gmail", "gmail"),
+        )
+    assert exc.value.code == "invalid_google_oauth_durable_record"
+
+
+def test_duplicate_connector_filter_cannot_produce_duplicate_state_rows() -> None:
+    store, _ = _store()
+    store.save_credential(_credential(binding_ref="binding.a.gmail", connector_id="gmail"))
+
+    # A duplicate filter must fail closed rather than emit the connector twice.
+    with pytest.raises(ControlPlaneContractError):
+        store.list_workspace_connector_state(
+            workspace_ref=WORKSPACE_A,
+            now=NOW,
+            connector_ids=("gmail", "gmail", "google-drive"),
+        )
+
+    # The canonical path still returns each connector exactly once.
+    states = store.list_workspace_connector_state(workspace_ref=WORKSPACE_A, now=NOW)
+    ids = [state.connector_id for state in states]
+    assert ids == sorted(set(ids))
+    assert len(ids) == len(set(ids))
+
+    narrowed = store.list_workspace_connector_state(
+        workspace_ref=WORKSPACE_A,
+        now=NOW,
+        connector_ids=("gmail",),
+    )
+    assert [state.connector_id for state in narrowed] == ["gmail"]
+
+
+def test_non_tuple_connector_filter_is_rejected() -> None:
+    store, _ = _store()
+    for bad in (["gmail"], "gmail", {"gmail"}):
+        with pytest.raises(ControlPlaneContractError):
+            store.list_workspace_connector_state(
+                workspace_ref=WORKSPACE_A,
+                now=NOW,
+                connector_ids=bad,  # type: ignore[arg-type]
+            )
+
+
+# --------------------------------------------------------------------------
+# 6d. The read SELECT stays aligned with what the docstring claims
+# --------------------------------------------------------------------------
+
+
+def test_read_select_reads_only_the_fields_the_docstring_declares() -> None:
+    store, storage = _store()
+    storage.sql.statements.clear()
+
+    store.list_workspace_connector_state(workspace_ref=WORKSPACE_A, now=NOW)
+
+    selects = [text for text in storage.sql.statements if text.lstrip().upper().startswith("SELECT")]
+    assert len(selects) == 1
+    projection = selects[0].split("FROM")[0]
+    assert "connector_id" in projection
+    assert "expires_at" in projection
+    assert "revoked_at" in projection
+    # No secret or identity field may ever join the projection.
+    for forbidden in (
+        "sealed_refresh_token",
+        "actor_ref",
+        "account_ref",
+        "scopes_json",
+        "issued_at",
+        "binding_ref",
+    ):
+        assert forbidden not in projection
+
+
 def test_verdict_helper_maps_usable_row_counts_exactly() -> None:
     assert workspace_connector_state(connector_id="gmail", usable_rows=0, expires_present=False).state == "not_connected"
     assert workspace_connector_state(connector_id="gmail", usable_rows=1, expires_present=False).state == "connected"
@@ -389,6 +623,8 @@ def test_store_declares_workspace_read_truth_flags() -> None:
     assert durable.WORKSPACE_READ_PUBLIC_ROUTE is False
     assert durable.WORKSPACE_READ_WRITE_SCOPE is False
     assert durable.WORKSPACE_READ_DUPLICATE_ACTIVE_POLICY == "ambiguous_fail_closed"
+    assert durable.WORKSPACE_READ_EXPIRES_PRESENT_SCOPE == "usable_rows_only"
+    assert durable.WORKSPACE_READ_DUPLICATE_CONNECTOR_FILTER == "rejected"
     assert durable.WORKSPACE_READ_BINDING_REF_OUTPUT is False
     assert durable.WORKSPACE_READ_ACTOR_ACCOUNT_REF_OUTPUT is False
     assert durable.WORKSPACE_READ_WORKSPACE_REF_ECHO is False
