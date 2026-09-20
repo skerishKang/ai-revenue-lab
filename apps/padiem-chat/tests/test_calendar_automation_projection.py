@@ -15,31 +15,39 @@ from app.calendar_projection import build_range_projection, build_today_projecti
 from app.calendar_store import InMemoryCalendarStore
 from kagent.claw_automation import (
     ClawAutomationOutputType,
-    ClawAutomationRule,
-    ClawAutomationTarget,
-    ClawScheduleExpression,
-    ClawScheduleKind,
-    FakeClawScheduler,
+    ClawAutomationOutput,
+    ClawScheduledRun,
+    ClawScheduledRunStatus,
     InMemoryClawAutomationStore,
 )
 
 
+def _record_run(store, workspace_id: str, rule_id: str, scheduled: datetime):
+    run = ClawScheduledRun(
+        run_id=f"run_{rule_id}_{int(scheduled.timestamp())}",
+        workspace_id=workspace_id,
+        rule_id=rule_id,
+        status=ClawScheduledRunStatus.COMPLETED,
+        scheduled_time=scheduled,
+        started_at=scheduled,
+        completed_at=scheduled,
+        output=ClawAutomationOutput(
+            output_id=f"out_{rule_id}_{int(scheduled.timestamp())}",
+            workspace_id=workspace_id,
+            output_type=ClawAutomationOutputType.REPORT,
+            title="Sensitive automation output",
+            content="결과 보고서 (DRAFT) — must not be projected.",
+            evidence_refs=("credential://must-not-project",),
+        ),
+    )
+    store.record_run(run)
+    return run
+
+
 def _store_with_run(workspace_id: str, scheduled: datetime):
     store = InMemoryClawAutomationStore()
-    rule = ClawAutomationRule(
-        rule_id="rule_daily_quote",
-        workspace_id=workspace_id,
-        name="Daily supplier quote check",
-        schedule=ClawScheduleExpression(
-            kind=ClawScheduleKind.INTERVAL, expression="86400s", timezone="UTC"
-        ),
-        target_source=ClawAutomationTarget.INBOX,
-        output_type=ClawAutomationOutputType.REPORT,
-    )
-    store.save_rule(rule)
-    FakeClawScheduler(store).execute_rule_dry_run(rule, scheduled)
+    _record_run(store, workspace_id, "rule_daily_quote", scheduled)
     return store
-
 
 @pytest.mark.asyncio
 async def test_range_projects_durable_run_read_only_and_minimal():
@@ -93,21 +101,12 @@ async def test_missing_automation_store_fails_closed_to_zero_projection():
 @pytest.mark.asyncio
 async def test_automation_projection_respects_calendar_limit():
     store = InMemoryClawAutomationStore()
-    scheduler = FakeClawScheduler(store)
     for idx in range(4):
-        rule = ClawAutomationRule(
-            rule_id=f"rule_{idx}",
-            workspace_id="ws_alpha",
-            name=f"Rule {idx}",
-            schedule=ClawScheduleExpression(
-                kind=ClawScheduleKind.INTERVAL, expression="daily", timezone="UTC"
-            ),
-            target_source=ClawAutomationTarget.INBOX,
-            output_type=ClawAutomationOutputType.REPORT,
-        )
-        store.save_rule(rule)
-        scheduler.execute_rule_dry_run(
-            rule, datetime(2026, 9, 20, idx, 0, tzinfo=timezone.utc)
+        _record_run(
+            store,
+            "ws_alpha",
+            f"rule_{idx}",
+            datetime(2026, 9, 20, idx, 0, tzinfo=timezone.utc),
         )
     result = await build_range_projection(
         workspace_id="ws_alpha",
