@@ -713,9 +713,12 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 timeout=8_000,
             )
         elif turn == 1:
-            # Certify answer activity independently, then sample the shell at
-            # that exact moment. Keeping both predicates inside one wait hid
-            # whether a failure came from the answer pulse or shell assembly.
+            # Certify answer activity independently, then certify the shell on
+            # the frame where it has actually reached the unchanged assembled
+            # bounds while the pulse is still live. Since #2707 the shell
+            # settles slowly and time-driven, so the first answer>0 frame can
+            # legitimately land mid-recovery; sampling there raced the
+            # contract instead of testing it. Thresholds stay identical.
             await page.wait_for_function(
                 """() => {
                   const rootStyle = getComputedStyle(document.documentElement);
@@ -724,9 +727,36 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
                 }""",
                 timeout=5_000,
             )
-            answer_only_shell_live = await _glass_shell_snapshot(page)
+            settle_started = await page.evaluate("performance.now()")
+            answer_only_settle = await wait_state_settled(
+                page,
+                started_ms=settle_started,
+                done_expr="""() => {
+                  const rootStyle = getComputedStyle(document.documentElement);
+                  const answer = parseFloat(rootStyle.getPropertyValue('--glass-answer-reveal')) || 0;
+                  const progress = parseFloat(rootStyle.getPropertyValue('--glass-shell-progress')) || 0;
+                  const portal = document.querySelector('.glass-shell-portrait');
+                  const portalOpacity = portal ? (parseFloat(getComputedStyle(portal).opacity) || 0) : 0;
+                  return answer > 0 && progress >= 0.90 && portalOpacity >= 0.60;
+                }""",
+                read_expr=_GLASS_SHELL_EXPR,
+                timeout_ms=5_500,
+                evidence_log=TIMING_EVIDENCE,
+                label=f"glass-{variant}-answer-only-settle",
+            )
+            check_settle_window(
+                "Glass answer pulse must stay live until the resting shell reaches "
+                "its assembled bounds",
+                answer_only_settle,
+                lo_ms=0.0,
+                hi_ms=6_000.0,
+                evidence_log=TIMING_EVIDENCE,
+                label=f"glass-{variant}-answer-only-settle",
+            )
+            answer_only_shell_live = dict(answer_only_settle["state"])
             if (
-                answer_only_shell_live["progress"] < 0.90
+                answer_only_shell_live["answerDriver"] <= 0
+                or answer_only_shell_live["progress"] < 0.90
                 or answer_only_shell_live["portalOpacity"] < 0.60
             ):
                 raise AssertionError(
