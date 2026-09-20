@@ -221,6 +221,22 @@ def _project_from_row(row: dict[str, Any]) -> ProjectProfile:
     )
 
 
+def _run_history_session(row: dict[str, Any]) -> dict[str, str] | None:
+    """Project the bounded #2829 canonical session reference, when one exists.
+
+    Only the owner conversation id in the exact validated shape is exposed.
+    A missing, malformed, or storage-raw candidate projects ``None`` instead
+    of fabricating a session — legacy rows persist no reference at all.
+    """
+    try:
+        conversation_id = validate_conversation_id(row.get("conversation_id"))
+    except ValueError:
+        return None
+    if conversation_id is None:
+        return None
+    return {"conversation_id": conversation_id}
+
+
 def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
     document_id = row.get("artifact_document_id")
     artifact = None
@@ -240,6 +256,7 @@ def _run_history_public(row: dict[str, Any]) -> dict[str, Any]:
         "updated_at": str(row.get("updated_at", "")),
         "result_summary": str(row.get("result_summary")) if row.get("result_summary") is not None else None,
         "artifact": artifact,
+        "session": _run_history_session(row),
     }
 
 
