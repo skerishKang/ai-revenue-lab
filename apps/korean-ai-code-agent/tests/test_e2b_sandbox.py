@@ -212,6 +212,29 @@ class LaunchShapeTests(AdapterCase):
         self.assertEqual(len(set(E2B_PAYLOAD_KEYS)), len(E2B_PAYLOAD_KEYS))
 
 
+class PolicyDelegationTests(AdapterCase):
+    """The adapter defers to the canonical Cloud M1 policy, and can be tightened by it."""
+
+    def test_a_tightened_policy_ceiling_is_honoured_not_hardcoded_around(self):
+        # The probe packet needs exactly this: an operator-tightened TTL ceiling has to
+        # bind the adapter, instead of the adapter silently accepting the default 3600.
+        from kagent.sandbox_conformance import SandboxSecurityPolicy
+
+        tight = SandboxSecurityPolicy(max_ttl_seconds=300)
+        adapter = self.adapter(template="claw", policy=tight)
+        with self.assertRaises(ContractError) as caught:
+            adapter.launch_payload(request("run_p", ttl_seconds=900), content_ref="content-p")
+        self.assertIn("TTL", str(caught.exception))
+        accepted = adapter.launch_payload(request("run_p", ttl_seconds=300), content_ref="content-p")
+        self.assertEqual(accepted["timeout"], 300)
+
+    def test_a_non_cloud_request_is_refused_by_the_canonical_validator(self):
+        with self.assertRaises(ContractError):
+            self.adapter().launch_payload(
+                request("run_l", execution_mode=ExecutionMode.LOCAL), content_ref="content-l"
+            )
+
+
 class LifecycleTests(AdapterCase):
     def test_one_active_lease_per_run(self):
         adapter, first = self.launched()
@@ -227,14 +250,25 @@ class LifecycleTests(AdapterCase):
         self.assertIs(lease.network_policy, NetworkPolicy.OFF)
         self.assertIs(lease.execution_mode, ExecutionMode.CLOUD)
 
-    def test_renew_is_bounded_and_forward_only(self):
-        adapter, lease = self.launched()
-        renewed = adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=1_200)
-        self.assertEqual(renewed.expires_at, T0 + timedelta(seconds=1_200))
-        with self.assertRaises(SandboxLeaseError):
-            adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=600)
-        with self.assertRaises(SandboxLeaseError):
-            adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=SANDBOX_LEASE_MAX_TTL_SECONDS + 60)
+    def test_renewal_is_refused_because_the_seam_cannot_back_it(self):
+        # E2BSandboxTransport has no timeout update, so an extended expires_at would be a
+        # ledger-only claim: the provider still kills at the lifetime it agreed to. Refusing
+        # is the fail-closed shape; #2832 found this test previously asserting the opposite.
+        transport = ScriptedTransport()
+        adapter, lease = self.launched(transport)
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=1_200)
+        self.assertIn("lifetime the provider never accepted", str(caught.exception))
+        # neither the lease nor its lifetime moved, and the seam was not asked
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+        self.assertEqual(
+            adapter.get(lease.lease_id).expires_at, T0 + timedelta(seconds=900)
+        )
+        self.assertEqual(len(transport.payloads), 1)
+        # ownership is still checked first, so a foreign lease fails for the real reason
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.renew(lease.lease_id, run_id="run_intruder", ttl_seconds=1_200)
+        self.assertIn("different run", str(caught.exception))
 
     def test_release_and_cancel_end_the_lease_the_same_way(self):
         for verb in ("release", "cancel"):
@@ -272,6 +306,60 @@ class LifecycleTests(AdapterCase):
             adapter.get("e2b-sbx-9999")
         with self.assertRaises(SandboxLeaseError):
             adapter.release("e2b-sbx-9999", run_id="run_1")
+
+
+class LedgerIntegrityTests(AdapterCase):
+    """#2832 readiness findings: identity collision and transport-failure shapes."""
+
+    def test_a_reused_provider_sandbox_id_is_refused_not_recorded(self):
+        class ReusingTransport(ScriptedTransport):
+            def create(self, payload):
+                self.payloads.append(dict(payload))
+                return {"sandbox_id": "sbx-same", "state": "running"}
+
+        transport = ReusingTransport()
+        adapter = self.adapter(transport=transport)
+        first = adapter.allocate(request("run_a"), content_ref="content-a")
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.allocate(request("run_b"), content_ref="content-b")
+        self.assertIn("reused sandbox id", str(caught.exception))
+        # the original record survives intact, and the refused run holds nothing
+        self.assertEqual([entry.lease_id for entry in adapter.active_leases()], [first.lease_id])
+        self.assertIs(adapter.get("sbx-same").run_id, "run_a")
+        self.assertEqual(adapter._active_by_run.get("run_a"), "sbx-same")
+        self.assertNotIn("run_b", adapter._active_by_run)
+        self.assertEqual(len(transport.payloads), 2)
+
+    def test_a_transport_failure_is_reported_as_a_refused_lease_operation(self):
+        class FailingTransport(ScriptedTransport):
+            def state(self, sandbox_id):
+                raise ConnectionError("provider unreachable")
+
+        adapter, lease = self.launched(FailingTransport(), run_id="run_flaky")
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.cancel(lease.lease_id, run_id="run_flaky")
+        self.assertIn("provider state failed", str(caught.exception))
+        self.assertIn("ConnectionError", str(caught.exception))
+        # nothing is recorded as ended when the outcome could not be observed
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+        self.assertEqual([entry.lease_id for entry in adapter.active_leases()], [lease.lease_id])
+
+    def test_a_failing_provider_leaves_the_sweep_with_a_report_not_a_crash(self):
+        class FailingTransport(ScriptedTransport):
+            def state(self, sandbox_id):
+                raise ConnectionError("provider unreachable")
+
+        adapter = self.adapter(transport=FailingTransport())
+        for run in ("run_a", "run_b"):
+            adapter.allocate(request(run), content_ref="content-" + run)
+        report = reap_expired_leases(adapter, now=T0 + timedelta(seconds=901))
+        self.assertEqual(report.inventory_size, 2)
+        self.assertEqual(report.reclaimed_count, 0)
+        self.assertEqual(report.unresolved_count, 2)
+        self.assertFalse(report.fully_reclaimed)
+        for record in report.records:
+            self.assertIs(record.outcome, LeaseReclamationOutcome.RECONCILIATION_REQUIRED)
+            self.assertIn("provider state failed", record.reason)
 
 
 class TerminationObservationTests(AdapterCase):
@@ -448,7 +536,11 @@ class CanonicalPortReuseTests(AdapterCase):
                 self.assertNotIn(forbidden, source)
         # the canonical rules are imported and used, not copied
         self.assertIn("_safe_id", source)
-        self.assertIn("SandboxProviderConformanceGate", source)
+        # policy validation is delegated to the one canonical Cloud M1 entry point
+        self.assertIn("validate_lease_request_against_cloud_m1_policy", source)
+        for restated in ("SandboxProviderConformanceGate()", "NetworkPolicy.OFF"):
+            with self.subTest(restated=restated):
+                self.assertNotIn(restated, source)
 
 
 class EvidenceHonestyTests(AdapterCase):
