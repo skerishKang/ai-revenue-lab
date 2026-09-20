@@ -275,7 +275,14 @@ def _popen_keywords(path: Path) -> list[str]:
 
 
 def _hang_command() -> list[str]:
-    return [sys.executable, "-c", "import time; time.sleep(120)"]
+    """A real child that never reads stdin and never finishes in time.
+
+    The sleep is deliberately short: the enforced timeout is 1s, so this proves
+    the timeout is finite, while a *mutated* ladder that fails to kill the child
+    can only leave a short-lived orphan instead of a two-minute one.
+    """
+
+    return [sys.executable, "-c", "import time; time.sleep(30)"]
 
 
 class ValidDocumentIsolationTests(unittest.TestCase):
