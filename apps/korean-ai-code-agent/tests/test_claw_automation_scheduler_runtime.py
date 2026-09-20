@@ -473,22 +473,23 @@ class TickRuntimeContractTests(unittest.TestCase):
         except ContractError:
             self.skipTest("Asia/Seoul timezone data unavailable on this runner")
         store = SqliteClawAutomationStore(":memory:")
-        # 00:00 UTC == 09:00 KST.
+        # "0 0 * * *" in Asia/Seoul fires at 00:00 KST, which is 15:00 UTC the
+        # previous day (KST is UTC+9). WHEN is 09:00 UTC == 18:00 KST, so the
+        # rule is not due then.
         store.save_rule(make_rule("kst_morning", expression="0 0 * * *", schedule_timezone="Asia/Seoul"))
         runtime = ClawAutomationTickRuntime(store)
 
-        # At 09:00 UTC the local hour is 18, so the rule is not due.
-        not_local = runtime.tick(
+        not_due = runtime.tick(
             workspace_id=WORKSPACE, current_time=WHEN, membership=membership()
         )
-        self.assertEqual(not_local.due_count, 0)
+        self.assertEqual(not_due.due_count, 0)
 
-        # At 00:00 UTC it is.
-        midnight = datetime(2026, 9, 8, 0, 0, tzinfo=UTC)
+        # 2026-09-07 15:00 UTC == 2026-09-08 00:00 KST, so the rule IS due.
+        kst_midnight = datetime(2026, 9, 7, 15, 0, tzinfo=UTC)
         due = runtime.tick(
             workspace_id=WORKSPACE,
-            current_time=midnight,
-            membership=membership(at=midnight),
+            current_time=kst_midnight,
+            membership=membership(at=kst_midnight),
         )
         self.assertEqual(due.due_count, 1)
 
