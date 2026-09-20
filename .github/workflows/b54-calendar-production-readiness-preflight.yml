@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/b54-calendar-production-readiness-preflight.yml'
+      - '.github/tests/test_b54_calendar_production_readiness_preflight.py'
       - 'apps/padiem-ai-engine/app/calendar_port_httpx.py'
       - 'apps/padiem-ai-engine/app/connector_grants_d1.py'
       - 'apps/padiem-ai-engine/app/connector_bindings.py'
@@ -134,6 +135,11 @@ jobs:
                   raise SystemExit(f"mutation SQL forbidden in Calendar readiness preflight: {token}")
 
           print("B54_CALENDAR_READINESS_SOURCE_CONTRACT=PASS")
+          # #2010 activation control: merging this source must never trigger an
+          # automatic Production read. SOURCE MERGE -> CENTRAL post-merge verify
+          # -> explicit CENTRAL authority -> workflow_dispatch -> preflight.
+          print("PRODUCTION_READONLY_AUTO_ON_MAIN_PUSH=NO")
+          print("PRODUCTION_READONLY_DISPATCH_ONLY=YES")
           print("D1_QUERY_MODE=READ_ONLY")
           print("D1_MUTATION=0")
           print("CALENDAR_PROVIDER_CALLS=0")
@@ -145,8 +151,9 @@ jobs:
   production-readonly:
     needs: source-contract
     if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirmation == 'RUN_B54_CALENDAR_PRODUCTION_READINESS_PREFLIGHT')
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation ==
+        'RUN_B54_CALENDAR_PRODUCTION_READINESS_PREFLIGHT'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: production

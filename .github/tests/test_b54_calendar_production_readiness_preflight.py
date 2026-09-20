@@ -51,7 +51,11 @@ REQUIRED_INVARIANTS = (
     "GOOGLE_OAUTH_MUTATION=0",
     "CALENDAR_GRANT_SEED=0",
     "PRODUCTION_MUTATION=0",
+    "PRODUCTION_READONLY_AUTO_ON_MAIN_PUSH=NO",
+    "PRODUCTION_READONLY_DISPATCH_ONLY=YES",
 )
+
+TEST_FILE_TRIGGER_PATH = ".github/tests/test_b54_calendar_production_readiness_preflight.py"
 
 FORBIDDEN_MUTATION_SQL = (
     "INSERT INTO",
@@ -229,12 +233,48 @@ def test_pull_request_has_no_production_environment_access() -> None:
     """4. pull_request runs source-contract validation only."""
     job = live_job()
     condition = job["if"]
-    assert "github.event_name == 'push'" in condition
     assert "github.event_name == 'workflow_dispatch'" in condition
     assert "pull_request" not in condition
     assert job["environment"] == "production"
     # Confirmation phrase gates any dispatch.
     assert CONFIRMATION_PHRASE in workflow_text()
+
+
+def test_production_readonly_requires_explicit_dispatch_only() -> None:
+    """The production environment job must NEVER auto-run on main push.
+
+    Activation order: SOURCE MERGE -> CENTRAL post-merge verify -> explicit
+    CENTRAL authority -> workflow_dispatch -> Production readonly preflight.
+    A merge-triggered automatic Production read would skip the CENTRAL
+    post-merge live-read approval step, so push must never qualify.
+    """
+    job = live_job()
+    condition = job["if"]
+    assert "push" not in condition, "production-readonly must not be reachable by push"
+    assert "github.event_name == 'workflow_dispatch'" in condition
+    assert CONFIRMATION_PHRASE in condition
+    assert job["environment"] == "production"
+    assert "PRODUCTION_READONLY_AUTO_ON_MAIN_PUSH=NO" in workflow_text()
+    assert "PRODUCTION_READONLY_DISPATCH_ONLY=YES" in workflow_text()
+
+
+def test_top_level_push_trigger_is_source_contract_only() -> None:
+    """The top-level push trigger may remain for source-contract checks only."""
+    triggers = workflow_document()[True] if True in workflow_document() else workflow_document()["on"]
+    assert "push" in triggers
+    assert triggers["push"]["branches"] == ["main"]
+    # Only the workflow file itself is wired to push; the production job is
+    # still unreachable from push by its own condition.
+    assert ".github/workflows/b54-calendar-production-readiness-preflight.yml" in triggers["push"]["paths"]
+    assert "push" not in live_job()["if"]
+
+
+def test_test_file_is_pr_trigger_coupled() -> None:
+    """4. the new authority contract test must trigger this workflow."""
+    triggers = workflow_document()[True] if True in workflow_document() else workflow_document()["on"]
+    paths = triggers["pull_request"]["paths"]
+    assert TEST_FILE_TRIGGER_PATH in paths
+    assert ".github/workflows/b54-calendar-production-readiness-preflight.yml" in paths
 
 
 def test_source_contract_validates_shared_source() -> None:
