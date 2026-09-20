@@ -444,6 +444,64 @@ def test_app_factory_explicit_calendar_store_wins(d1_db: SqliteD1Binding) -> Non
     assert app.state.calendar_store is custom_store
 
 
+@pytest.mark.asyncio
+async def test_app_factory_fails_closed_on_d1_calendar_construction_failure() -> None:
+    """#2844 Fail-closed: when d1_binding is present but D1CalendarStore
+    construction fails, create_app must raise rather than silently falling back
+    to InMemoryCalendarStore.
+
+    This guards the production scenario where a live D1 authority exists but
+    the store constructor cannot bind (e.g. schema mismatch, permission error).
+    A silent InMemory fallback would make calendar writes non-durable while
+    the API still reports healthy.
+    """
+    from unittest.mock import patch
+
+    settings = Settings.from_values(
+        runtime_mode="mock",
+        live_enabled="false",
+        auth_mode="off",
+        session_secret=COOKIE_SECRET,
+    )
+
+    # Use a valid SqliteD1Binding but patch D1CalendarStore.__init__ to raise.
+    d1_db = SqliteD1Binding()
+    sql_script = MIGRATION_PATH.read_text(encoding="utf-8")
+    d1_db.conn.executescript(sql_script)
+
+    with patch(
+        "app.app_factory.D1CalendarStore.__init__",
+        side_effect=RuntimeError("D1 schema mismatch on calendar store"),
+    ):
+        with pytest.raises(
+            RuntimeError, match="D1 schema mismatch on calendar store"
+        ):
+            create_app(settings=settings, d1_binding=d1_db)
+
+    # After the failed construction, the factory did NOT set an InMemory fallback:
+    # verify by checking that the app was never created (the exception above
+    # prevented assignment to app.state). No InMemoryCalendarStore was created.
+
+
+def test_app_factory_in_memory_fallback_only_when_d1_absent() -> None:
+    """#2844 InMemory fallback is allowed only when d1_binding is None.
+    When d1_binding is present, construction success determines the result;
+    no silent fallback occurs.
+    """
+    settings = Settings.from_values(
+        runtime_mode="mock",
+        live_enabled="false",
+        auth_mode="off",
+        session_secret=COOKIE_SECRET,
+    )
+    app = create_app(settings=settings, d1_binding=None)
+    assert isinstance(app.state.calendar_store, InMemoryCalendarStore)
+
+    # Confirm D1 path is not taken when binding is absent
+    app2 = create_app(settings=settings, d1_binding=None)
+    assert isinstance(app2.state.calendar_store, InMemoryCalendarStore)
+
+
 # ==============================================================================
 # 6. End-to-End HTTP Route Integration with D1 Persistence
 # ==============================================================================
