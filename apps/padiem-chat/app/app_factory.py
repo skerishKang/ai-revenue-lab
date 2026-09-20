@@ -37,6 +37,7 @@ from .claw_memory_routes import (
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
+from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
 from .grounding import GroundedChatService
@@ -120,6 +121,7 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
+        Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
