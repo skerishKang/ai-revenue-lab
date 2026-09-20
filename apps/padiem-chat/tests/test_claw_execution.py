@@ -1879,8 +1879,11 @@ async def test_d1_run_history_projects_only_safe_fields():
     runs = await store.list_recent_claw_runs("usr_owner", limit=10)
     public = runs[0]
     assert set(public) == {"run_id", "channel", "action", "title", "status", "created_at",
-                           "updated_at", "result_summary", "artifact"}
+                           "updated_at", "result_summary", "artifact", "session"}
     assert "user_id" not in public
+    # #2829: persisted D1 rows carry no conversation reference, so the bounded
+    # session projection is null — no fabricated session, no linkage stored.
+    assert public["session"] is None
     assert public["artifact"]["document_id"] == "doc_1"
     # values are bound, never interpolated into SQL text
     assert all("usr_owner" not in sql for sql in store.db.prepared)
