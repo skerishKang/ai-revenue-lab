@@ -256,7 +256,7 @@ def project_automation_run(
     if not isinstance(updated, datetime) or updated.tzinfo is None or updated.utcoffset() is None:
         raise CalendarContractError("invalid_automation_run", "updated automation timestamp must be timezone-aware")
     return CalendarItemProjection(
-        calendar_item_id=f"item_automation_{run_id}",
+        calendar_item_id=f"automation_{run_id}",
         workspace_id=workspace_id,
         item_type=CalendarItemType.AUTOMATION_RUN.value,
         title=f"Claw automation · {rule_id}",
