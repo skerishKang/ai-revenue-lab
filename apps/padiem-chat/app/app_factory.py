@@ -23,6 +23,7 @@ from .claw_routes import (
     claw_manual_intake_artifact,
     claw_manual_intake_preview,
     claw_manual_intake_execute,
+    claw_manual_intake_quote_compare,
     claw_runs_history,
 )
 from .claw_telegram_routes import claw_telegram_ingest
@@ -131,6 +132,11 @@ def create_app(
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
+        Route(
+            "/api/claw/manual-intake/quote-compare",
+            claw_manual_intake_quote_compare,
+            methods=["POST"],
+        ),
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),

@@ -3,6 +3,8 @@
 Provides:
 - POST /api/claw/manual-intake/preview — deterministic preview (existing)
 - POST /api/claw/manual-intake/execute — real P01/Engine-backed execution (#2215)
+- POST /api/claw/manual-intake/quote-compare — deterministic supplier quote
+  comparison and draft-only negotiation (#2812)
 
 The preview route remains deterministic and never calls provider/P01.
 The execute route consumes a Worker-native P01 adapter composed from trusted
@@ -82,6 +84,12 @@ from kagent.manual_intake import (
     ManualIntakeChannel,
     ManualIntakeRequest,
     ManualIntakeRouter,
+)
+from kagent.ops_quote_compare_flow import (
+    COMPARISON_DOCUMENT_TYPE,
+    OpsQuoteCompareFlowError,
+    build_comparison_document,
+    compare_supplier_quotes,
 )
 from kagent.p01_adapter import (
     P01AdapterError,
@@ -761,3 +769,119 @@ def _build_execute_task(action: ManualIntakeAction, content: str) -> str:
         ManualIntakeAction.EXTRACT_CANDIDATES: f"다음 요청에서 후보 정보를 추출하세요.\n\n{content}",
     }
     return action_prompts.get(action, content)
+
+
+# ── #2812 deterministic supplier quote comparison + draft-only negotiation ───
+
+_QUOTE_COMPARE_ARTIFACT_FORMATS = frozenset({"docx"})
+
+
+async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
+    """Compare captured supplier quotes with the existing Claw Ops engine (#2812).
+
+    This route closes the product-wiring gap found in the Claw Ops audit: the
+    deterministic ``SupplierComparisonEngine`` already existed with no HTTP
+    surface. Authority stays where it already is — the engine decides price,
+    delivery and payment-terms ranking, and the negotiation target is bounded by
+    another captured quote. Nothing here reaches a model, provider, quota
+    reservation or outbound connector, and the comparison itself persists nothing:
+
+    - no ``claw_p01_adapter`` / ``create_claw_run`` / Engine / B14 dispatch, and
+      deliberately no usage-gate call because nothing is dispatched;
+    - storing the result is opt-in. With no ``artifact`` field the route writes
+      nothing at all; with ``artifact="docx"`` it writes through the existing
+      generated-document store -- the same D1 metadata plus private R2 bytes the
+      execute route already uses -- and the existing
+      ``GET /api/claw/manual-intake/artifact/{document_id}`` path serves it back.
+      That is the only persistence on this route: no new table, no migration and
+      no Claw Ops ledger write, and it needs the same canonical tenant authority
+      as the execute route, failing closed without it;
+    - a value the caller did not capture stays ``null`` plus an engine
+      ``unknown_fields`` entry; the flow never fills a price, date or term in.
+
+    Malformed, empty and over-bound input fails closed with the flow's own
+    bounded code vocabulary.
+    """
+    content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+
+    raw_body = await request.body()
+    if not raw_body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+
+    try:
+        data = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+
+    raw_artifact = data.get("artifact")
+    artifact_format: str | None = None
+    if raw_artifact not in (None, False, ""):
+        if not isinstance(raw_artifact, str) or raw_artifact.strip().lower() not in (
+            _QUOTE_COMPARE_ARTIFACT_FORMATS
+        ):
+            return _error(400, "invalid_artifact_format", "저장 가능한 비교 문서 형식은 DOCX 입니다.")
+        artifact_format = raw_artifact.strip().lower()
+
+    try:
+        outcome = compare_supplier_quotes(data)
+    except OpsQuoteCompareFlowError as exc:
+        return _error(400, exc.error_code, exc.public_message)
+    except ContractError:
+        return _error(400, "contract_violation", "견적 입력을 비교할 수 없습니다.")
+    except Exception:
+        return _error(500, "quote_compare_failed", "견적 비교에 실패했습니다.")
+
+    comparison = outcome.safe_dict()
+    projection = {"ok": True, "comparison": comparison}
+
+    if artifact_format is not None:
+        tenant_id = await _resolve_canonical_tenant(request)
+        if tenant_id is None:
+            return _error(503, "workspace_scope_unavailable", "문서 저장 권한을 확인할 수 없습니다.")
+        artifact_store: Any = getattr(request.app.state, "workspace_document_store", None)
+        if artifact_store is None:
+            return _error(503, "workspace_storage_unavailable", "문서 저장소가 설정되지 않았습니다.")
+        try:
+            document_text = build_comparison_document(outcome)
+            artifact = build_document_artifact(
+                document_type=COMPARISON_DOCUMENT_TYPE,
+                file_format=artifact_format,
+                title=outcome.document_title(),
+                metadata_fields=[
+                    ("비교 모드", comparison["mode"]),
+                    (
+                        "가중치",
+                        "가격 {price} / 납기 {delivery} / 결제조건 {cashflow}".format(
+                            **comparison["weights"]
+                        ),
+                    ),
+                    ("통화", comparison["currency"]),
+                    ("비교 공급업체 수", str(comparison["supplier_count"])),
+                    ("추천 공급업체", comparison["recommended_supplier_label"]),
+                    ("협상 초안", "작성됨 (DRAFT ONLY)" if comparison["negotiation"] else "미작성"),
+                ],
+                section_title="공급업체 견적 비교",
+                body_text=document_text,
+                items=outcome.document_table(),
+                total=outcome.document_total(),
+                markdown_fallback_text=document_text,
+            )
+            metadata = await artifact_store.put_generated_docx(
+                tenant_id=tenant_id,
+                filename=artifact.filename,
+                body=artifact.content_bytes(),
+            )
+            projection["artifact"] = metadata.public_projection()
+        except DocumentExportError:
+            return _error(500, "artifact_generation_failed", "문서 아티팩트 생성에 실패했습니다.")
+        except Exception:
+            return _error(500, "artifact_storage_failed", "문서 저장에 실패했습니다.")
+
+    return JSONResponse(projection, status_code=200, headers=_NO_STORE_HEADERS)
