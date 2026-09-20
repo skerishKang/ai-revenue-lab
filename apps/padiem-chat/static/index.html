@@ -264,6 +264,53 @@
           <div class="claw-run-history-list" id="clawRunHistoryList" hidden></div>
           <p class="claw-run-history-empty" id="clawRunHistoryEmpty" data-locale-key="claw-runs-empty" hidden>최근 실행 기록이 없습니다.</p>
         </section>
+        <section class="claw-quote-compare" id="clawQuoteCompare" aria-labelledby="clawQuoteCompareTitle" hidden>
+          <header class="claw-run-history-header">
+            <div class="claw-workspace-identity">
+              <p class="claw-workspace-kicker" data-locale-key="claw-compare-kicker">PADIEM CLAW</p>
+              <h2 class="claw-workspace-title" id="clawQuoteCompareTitle" data-locale-key="claw-compare-title">공급업체 견적 비교</h2>
+            </div>
+            <button type="button" class="claw-refresh-button" id="clawQuoteCompareClose" data-locale-aria-label="claw-compare-close-aria" aria-label="비교 패널 닫기">×</button>
+          </header>
+          <p class="claw-workspace-tagline" data-locale-key="claw-compare-tagline">업체별 견적 항목을 직접 입력하면 가격·납기·결제조건을 정해진 규칙으로만 계산합니다. 값이 비어 있으면 추측하지 않고 미확인으로 남깁니다.</p>
+          <p class="claw-workspace-help" data-locale-key="claw-compare-help">결과는 참고용이며, 협상 문구는 초안으로만 만들어집니다. 전송·발주·구매는 이 화면에서 수행되지 않습니다.</p>
+          <form class="claw-compare-form" id="clawQuoteCompareForm" data-locale-aria-label="claw-compare-form-aria" aria-label="공급업체 견적 입력">
+            <div class="claw-compare-global">
+              <label class="claw-field">
+                <span data-locale-key="claw-compare-mode-label">비교 기준</span>
+                <select id="clawQuoteMode">
+                  <option value="balanced" data-locale-key="claw-compare-mode-balanced">균형 (가격·납기·결제)</option>
+                  <option value="lowest_price" data-locale-key="claw-compare-mode-price">최저가</option>
+                  <option value="fastest_delivery" data-locale-key="claw-compare-mode-delivery">최단 납기</option>
+                  <option value="best_cashflow_fit" data-locale-key="claw-compare-mode-cashflow">현금흐름 유리</option>
+                </select>
+              </label>
+              <label class="claw-field">
+                <span data-locale-key="claw-compare-currency-label">통화</span>
+                <select id="clawQuoteCurrency">
+                  <option value="KRW">KRW</option>
+                  <option value="USD">USD</option>
+                  <option value="JPY">JPY</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </label>
+              <label class="claw-field claw-compare-docx-field">
+                <input type="checkbox" id="clawQuoteDocx" />
+                <span data-locale-key="claw-compare-docx">DOCX 만들기 (선택)</span>
+              </label>
+            </div>
+            <div class="claw-compare-rows" id="clawQuoteSupplierRows"></div>
+            <div class="claw-compare-controls">
+              <button type="button" class="claw-compare-secondary" id="clawQuoteAddSupplier" data-locale-key="claw-compare-add">공급업체 추가</button>
+              <button type="submit" class="claw-compare-primary" id="clawQuoteCompareSubmit" data-locale-key="claw-compare-submit">비교하기</button>
+            </div>
+          </form>
+          <div class="claw-compare-status" id="clawQuoteCompareStatus" role="status" aria-live="polite" aria-atomic="true">
+            <p id="clawQuoteCompareLoading" data-locale-key="claw-compare-loading" hidden>비교 중…</p>
+            <p class="claw-compare-error" id="clawQuoteCompareError" role="alert" hidden></p>
+          </div>
+          <div class="claw-compare-result" id="clawQuoteCompareResult" tabindex="-1" hidden></div>
+        </section>
         <details class="claw-disabled-controls" data-locale-aria-label="coming-features-aria" aria-label="준비 중인 기능">
           <summary class="claw-disabled-summary" data-locale-key="claw-disabled-summary">준비 중인 기능 5개</summary>
           <div class="claw-disabled-grid">
@@ -309,6 +356,7 @@
             <div class="claw-actions">
               <button type="submit" class="claw-generate-button" id="clawGenerateBtn" data-locale-key="claw-btn-generate">초안 만들기</button>
               <button type="button" class="claw-execute-button" id="clawExecuteButton" data-locale-key="claw-btn-execute">실제 실행</button>
+              <button type="button" class="claw-compare-button" id="clawCompareToggle" data-locale-key="claw-btn-compare" aria-expanded="false" aria-controls="clawQuoteCompare">견적 비교</button>
             </div>
           </div>
           <details class="claw-meta">

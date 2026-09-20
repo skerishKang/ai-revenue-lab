@@ -1045,3 +1045,222 @@
   .claw-run-card-artifact { align-items: stretch; flex-direction: column; }
   .claw-run-card-download { width: 100%; justify-content: center; }
 }
+
+/* #2831 supplier quote comparison: a captured-field table over the deterministic
+ * quote-compare route. Shared theme roles only — no Claw palette, no hardcoded
+ * colour, and every interactive control keeps the 44px touch floor. */
+.app-shell:not([data-state="claw"]) .claw-quote-compare {
+  display: none !important;
+}
+.claw-quote-compare[hidden] {
+  display: none;
+}
+.claw-quote-compare {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  color: var(--text);
+}
+.claw-compare-global {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.claw-compare-docx-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.claw-compare-docx-field input,
+.claw-compare-check input {
+  width: 24px;
+  height: 24px;
+}
+.claw-compare-rows {
+  display: grid;
+  gap: 12px;
+}
+.claw-compare-row {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.claw-compare-row-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.claw-compare-row-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.claw-compare-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 15px;
+}
+.claw-compare-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.claw-compare-primary,
+.claw-compare-secondary {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.claw-compare-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.claw-compare-secondary {
+  background: var(--card-bg);
+  color: var(--text);
+}
+.claw-compare-primary[disabled],
+.claw-compare-secondary[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.claw-compare-status {
+  margin: 0;
+}
+.claw-compare-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 15px;
+}
+.claw-compare-result {
+  display: grid;
+  gap: 10px;
+}
+.claw-compare-result[hidden] {
+  display: none;
+}
+.claw-compare-recommendation {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.claw-compare-basis,
+.claw-compare-note,
+.claw-compare-limit {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+.claw-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  color: var(--text);
+}
+.claw-compare-table caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 6px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.claw-compare-table th,
+.claw-compare-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.claw-compare-table th {
+  font-weight: 700;
+  color: var(--muted);
+}
+.claw-compare-axes,
+.claw-compare-facts {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+.claw-compare-axes li,
+.claw-compare-facts li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.claw-compare-fact-label {
+  color: var(--muted);
+}
+.claw-compare-fact-value {
+  color: var(--text);
+  font-weight: 600;
+}
+.claw-compare-negotiation {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+.claw-compare-negotiation-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.claw-compare-section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.claw-compare-draft-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.claw-compare-message {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  color: var(--text);
+}
+@media (max-width: 920px) {
+  .claw-compare-row-grid,
+  .claw-compare-global {
+    grid-template-columns: 1fr;
+  }
+  .claw-compare-controls > .claw-compare-primary,
+  .claw-compare-controls > .claw-compare-secondary {
+    width: 100%;
+  }
+}

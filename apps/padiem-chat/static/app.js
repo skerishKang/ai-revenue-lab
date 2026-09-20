@@ -1501,6 +1501,59 @@
     "claw-runs-error": "Could not load run history. Please try again.",
     "claw-runs-download": "Download document again",
     "claw-runs-status-completed": "Completed",
+    "claw-compare-table-caption": "Comparison result per supplier. The rank columns hold positions, and an empty capture is reported as unknown.",
+    "claw-cmp-advisory": "This result is an advisory projection computed from the captured fields only.",
+    "claw-cmp-axis-cashflow": "Best cash-flow fit",
+    "claw-cmp-axis-delivery": "Fastest delivery",
+    "claw-cmp-axis-price": "Lowest price",
+    "claw-cmp-basis": "Basis",
+    "claw-cmp-card-kind": "Supplier quote comparison",
+    "claw-cmp-card-summary": "Saved comparison document",
+    "claw-cmp-col-cashflow-rank": "Cash-flow rank",
+    "claw-cmp-col-delivery": "Delivery",
+    "claw-cmp-col-delivery-rank": "Delivery rank",
+    "claw-cmp-col-price-rank": "Price rank",
+    "claw-cmp-col-score": "Score",
+    "claw-cmp-col-supplier": "Supplier",
+    "claw-cmp-col-terms": "Payment terms",
+    "claw-cmp-col-total": "Total",
+    "claw-cmp-col-unknown": "Unknown fields",
+    "claw-cmp-current": "Current total",
+    "claw-cmp-delivery": "Promised delivery date",
+    "claw-cmp-due-days": "Due days",
+    "claw-cmp-error-count": "Check how many quotes were submitted for comparison.",
+    "claw-cmp-error-currency": "Use a three-letter currency code and keep the same currency for every supplier.",
+    "claw-cmp-error-date": "Enter the promised delivery date as a YYYY-MM-DD date.",
+    "claw-cmp-error-generic": "The comparison did not complete. Check the input and try again.",
+    "claw-cmp-error-min": "Enter at least two supplier quotes to compare.",
+    "claw-cmp-error-mode": "Re-check the selected comparison basis.",
+    "claw-cmp-error-offline": "The request did not reach the server. Try again shortly.",
+    "claw-cmp-error-price": "Check the amount fields. Unit price and total are entered as whole numbers.",
+    "claw-cmp-error-quantity": "Check the quantity field.",
+    "claw-cmp-error-scope": "A signed-in session is required to store the document.",
+    "claw-cmp-error-terms": "Check the payment terms fields.",
+    "claw-cmp-evidence": "Evidence reference (optional)",
+    "claw-cmp-item": "Item",
+    "claw-cmp-negotiation": "Negotiation draft",
+    "claw-cmp-negotiation-none": "A negotiation draft is produced only when a competing captured quote exists.",
+    "claw-cmp-negotiation-note": "This text is a draft. It is never sent automatically, and there is no send, order or purchase authority here.",
+    "claw-cmp-none": "None",
+    "claw-cmp-prepaid": "Prepaid",
+    "claw-cmp-prepaid-yes": "Prepaid",
+    "claw-cmp-quantity": "Quantity",
+    "claw-cmp-recommendation": "Recommended",
+    "claw-cmp-remove": "Remove this supplier",
+    "claw-cmp-row-title": "Supplier",
+    "claw-cmp-status-success": "The comparison is ready.",
+    "claw-cmp-supplier": "Supplier name",
+    "claw-cmp-target": "Target total",
+    "claw-cmp-target-supplier": "Target supplier",
+    "claw-cmp-terms": "Payment terms label",
+    "claw-cmp-total": "Total",
+    "claw-cmp-unit": "Unit price",
+    "claw-cmp-unknown": "Unknown",
+    "claw-cmp-unknown-none": "Every captured field was provided for each supplier.",
+    "claw-cmp-unknown-note": "Suppliers with unknown values:",
   };
 
   function clawT(key, variables = null) {
@@ -2773,5 +2826,547 @@
 
   if (clawRunHistoryRefresh) {
     clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
+  }
+
+  // ── #2831 supplier quote comparison surface ────────────────────────────────
+  // Presentation only. Every figure comes back from the deterministic
+  // quote-compare route; this surface never computes, fills in or estimates a
+  // price, date or payment term, and a field the user left empty is displayed
+  // as unknown. No request is issued on open, navigation or language change:
+  // the only entry point is the compare form's own submit, so the execute and
+  // run-history request journeys stay exactly what they were.
+  const clawCompareToggle = document.getElementById("clawCompareToggle");
+  const clawQuoteCompare = document.getElementById("clawQuoteCompare");
+  const clawQuoteCompareClose = document.getElementById("clawQuoteCompareClose");
+  const clawQuoteCompareForm = document.getElementById("clawQuoteCompareForm");
+  const clawQuoteSupplierRows = document.getElementById("clawQuoteSupplierRows");
+  const clawQuoteAddSupplier = document.getElementById("clawQuoteAddSupplier");
+  const clawQuoteModeSelect = document.getElementById("clawQuoteMode");
+  const clawQuoteCurrencySelect = document.getElementById("clawQuoteCurrency");
+  const clawQuoteDocxInput = document.getElementById("clawQuoteDocx");
+  const clawQuoteCompareLoading = document.getElementById("clawQuoteCompareLoading");
+  const clawQuoteCompareError = document.getElementById("clawQuoteCompareError");
+  const clawQuoteCompareResult = document.getElementById("clawQuoteCompareResult");
+  const clawQuoteCompareSubmit = document.getElementById("clawQuoteCompareSubmit");
+
+  const CLAW_COMPARE_MIN_SUPPLIERS = 2;
+  const CLAW_COMPARE_MAX_SUPPLIERS = 20;
+  let clawCompareInFlight = false;
+
+  function clawCompareText(key) {
+    return clawT(key);
+  }
+
+  function clawCompareLabelledField(parent, labelText, control) {
+    const wrap = document.createElement("label");
+    wrap.className = "claw-field";
+    const caption = document.createElement("span");
+    caption.textContent = labelText;
+    wrap.appendChild(caption);
+    wrap.appendChild(control);
+    parent.appendChild(wrap);
+    return wrap;
+  }
+
+  function clawCompareInput(className, inputType, maxLength) {
+    const el = document.createElement("input");
+    el.type = inputType;
+    el.className = className;
+    if (maxLength) el.maxLength = maxLength;
+    el.autocomplete = "off";
+    return el;
+  }
+
+  function clawCompareField(row, field, className, inputType, maxLength) {
+    const control = clawCompareInput(className, inputType, maxLength);
+    row.controls[field] = control;
+    return control;
+  }
+
+  function buildClawCompareRow(sequence) {
+    const row = document.createElement("div");
+    row.className = "claw-compare-row";
+    row.dataset.supplierSequence = String(sequence);
+    // Captured controls are held on the row itself: the payload is read from
+    // exactly these nodes, so a re-order or a removed row cannot make a value
+    // land under the wrong supplier.
+    row.controls = {};
+
+    const heading = document.createElement("p");
+    heading.className = "claw-compare-row-title";
+    heading.textContent = clawCompareText("claw-cmp-row-title") + " " + String(sequence);
+    row.titleNode = heading;
+    row.appendChild(heading);
+
+    const grid = document.createElement("div");
+    grid.className = "claw-compare-row-grid";
+    row.appendChild(grid);
+
+    const supplier = clawCompareField(row, "supplier_label", "claw-compare-supplier", "text", 200);
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-supplier"), supplier);
+
+    const item = clawCompareField(row, "item_label", "claw-compare-item", "text", 300);
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-item"), item);
+
+    const quantity = clawCompareField(row, "quantity", "claw-compare-quantity", "text", 40);
+    quantity.inputMode = "decimal";
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-quantity"), quantity);
+
+    const unitPrice = clawCompareField(row, "unit_price_minor", "claw-compare-unit", "text", 20);
+    unitPrice.inputMode = "numeric";
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-unit"), unitPrice);
+
+    const total = clawCompareField(row, "total_minor", "claw-compare-total", "text", 20);
+    total.inputMode = "numeric";
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-total"), total);
+
+    // A promised delivery date is captured as a date and never derived: the
+    // backend rejects lead-time text, so an empty date simply stays unknown.
+    const delivery = clawCompareField(row, "promised_delivery_date", "claw-compare-delivery", "date", 0);
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-delivery"), delivery);
+
+    const termsLabel = clawCompareField(row, "payment_terms_label", "claw-compare-terms", "text", 300);
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-terms"), termsLabel);
+
+    const dueDays = clawCompareField(row, "due_days", "claw-compare-due", "number", 0);
+    dueDays.min = "0";
+    dueDays.max = "3650";
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-due-days"), dueDays);
+
+    const evidence = clawCompareField(row, "evidence_ref", "claw-compare-evidence", "text", 256);
+    clawCompareLabelledField(grid, clawCompareText("claw-cmp-evidence"), evidence);
+
+    const prepaidWrap = document.createElement("label");
+    prepaidWrap.className = "claw-field claw-compare-check";
+    const prepaidBox = clawCompareField(row, "prepaid", "claw-compare-prepaid", "checkbox", 0);
+    const prepaidText = document.createElement("span");
+    prepaidText.textContent = clawCompareText("claw-cmp-prepaid");
+    prepaidWrap.appendChild(prepaidBox);
+    prepaidWrap.appendChild(prepaidText);
+    grid.appendChild(prepaidWrap);
+
+    if (sequence > CLAW_COMPARE_MIN_SUPPLIERS) {
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "claw-compare-secondary claw-compare-remove";
+      remove.textContent = clawCompareText("claw-cmp-remove");
+      remove.addEventListener("click", () => {
+        row.remove();
+        renumberClawCompareRows();
+      });
+      row.appendChild(remove);
+    }
+    return row;
+  }
+
+  function renumberClawCompareRows() {
+    if (!clawQuoteSupplierRows) return;
+    const rows = Array.from(clawQuoteSupplierRows.children);
+    rows.forEach((row, index) => {
+      const sequence = index + 1;
+      row.dataset.supplierSequence = String(sequence);
+      if (row.titleNode) row.titleNode.textContent = clawCompareText("claw-cmp-row-title") + " " + String(sequence);
+    });
+    if (clawQuoteAddSupplier) {
+      clawQuoteAddSupplier.disabled = rows.length >= CLAW_COMPARE_MAX_SUPPLIERS;
+      clawQuoteAddSupplier.setAttribute("aria-disabled", rows.length >= CLAW_COMPARE_MAX_SUPPLIERS ? "true" : "false");
+    }
+  }
+
+  function ensureClawCompareRows() {
+    if (!clawQuoteSupplierRows) return;
+    const existing = clawQuoteSupplierRows.children.length;
+    for (let index = existing; index < CLAW_COMPARE_MIN_SUPPLIERS; index += 1) {
+      clawQuoteSupplierRows.appendChild(buildClawCompareRow(index + 1));
+    }
+    renumberClawCompareRows();
+  }
+
+  function clawCompareFieldValue(row, field) {
+    const control = row.controls ? row.controls[field] : null;
+    if (!control) return null;
+    if (control.type === "checkbox") return control.checked === true;
+    if (typeof control.value !== "string") return null;
+    const trimmed = control.value.trim();
+    return trimmed ? trimmed : null;
+  }
+
+  function clawComparePaymentTerms(row) {
+    const label = clawCompareFieldValue(row, "payment_terms_label");
+    const dueRaw = clawCompareFieldValue(row, "due_days");
+    const prepaid = clawCompareFieldValue(row, "prepaid") === true;
+    if (!label && !dueRaw && !prepaid) return null;
+    const terms = {};
+    if (label) terms.label = label;
+    if (dueRaw && /^[0-9]{1,4}$/.test(dueRaw)) terms.due_days = Number(dueRaw);
+    if (prepaid) terms.prepaid = true;
+    return terms;
+  }
+
+  function collectClawComparePayload() {
+    const rows = clawQuoteSupplierRows ? Array.from(clawQuoteSupplierRows.children) : [];
+    const suppliers = [];
+    rows.forEach((row, index) => {
+      const label = clawCompareFieldValue(row, "supplier_label");
+      if (!label) return;
+      const entry = { supplier_id: "supplier_" + String(index + 1), supplier_label: label };
+      const item = clawCompareFieldValue(row, "item_label");
+      if (item) entry.item_label = item;
+      const quantity = clawCompareFieldValue(row, "quantity");
+      if (quantity) entry.quantity = quantity;
+      const unitPrice = clawCompareFieldValue(row, "unit_price_minor");
+      if (unitPrice) entry.unit_price_minor = unitPrice;
+      const total = clawCompareFieldValue(row, "total_minor");
+      if (total) entry.total_minor = total;
+      const delivery = clawCompareFieldValue(row, "promised_delivery_date");
+      if (delivery) entry.promised_delivery_date = delivery;
+      const terms = clawComparePaymentTerms(row);
+      if (terms) entry.payment_terms = terms;
+      const evidence = clawCompareFieldValue(row, "evidence_ref");
+      if (evidence) entry.evidence_ref = evidence;
+      // An unset select must not become an empty currency code the route can
+      // only reject: omit it and let the backend default apply.
+      if (typeof clawQuoteCurrencySelect?.value === "string" && /^[A-Z]{3}$/.test(clawQuoteCurrencySelect.value)) {
+        entry.currency = clawQuoteCurrencySelect.value;
+      }
+      suppliers.push(entry);
+    });
+    const payload = { suppliers };
+    if (clawQuoteModeSelect && typeof clawQuoteModeSelect.value === "string") {
+      payload.mode = clawQuoteModeSelect.value;
+    }
+    // The document is opt-in: unchecked sends no artifact field at all, so the
+    // route stores nothing and the canonical-tenant preflight is never reached.
+    if (clawQuoteDocxInput && clawQuoteDocxInput.checked === true) payload.artifact = "docx";
+    return payload;
+  }
+
+  function setClawCompareError(message) {
+    if (!clawQuoteCompareError) return;
+    if (!message) {
+      clawQuoteCompareError.hidden = true;
+      clawQuoteCompareError.textContent = "";
+      return;
+    }
+    clawQuoteCompareError.hidden = false;
+    clawQuoteCompareError.textContent = message;
+  }
+
+  function setClawCompareLoading(active) {
+    if (clawQuoteCompareLoading) clawQuoteCompareLoading.hidden = !active;
+    if (clawQuoteCompareSubmit) clawQuoteCompareSubmit.disabled = active === true;
+    if (clawQuoteAddSupplier) {
+      const block = active === true || clawQuoteSupplierRows.children.length >= CLAW_COMPARE_MAX_SUPPLIERS;
+      clawQuoteAddSupplier.disabled = block;
+      clawQuoteAddSupplier.setAttribute("aria-disabled", block ? "true" : "false");
+    }
+  }
+
+  // The route's closed code vocabulary projected into user-facing copy. An
+  // unrecognised code falls back to the generic message: the surface never
+  // guesses at a reason the backend did not return.
+  function clawCompareErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    if (code === "suppliers_required" || code === "too_many_suppliers") return clawCompareText("claw-cmp-error-count");
+    if (code === "supplier_price_missing" || code === "invalid_price"
+      || code === "supplier_total_must_be_positive" || code === "supplier_line_total_mismatch"
+      || code === "supplier_unit_price_underivable" || code === "fractional_line_total") {
+      return clawCompareText("claw-cmp-error-price");
+    }
+    if (code === "invalid_delivery_date") return clawCompareText("claw-cmp-error-date");
+    if (code === "invalid_quantity") return clawCompareText("claw-cmp-error-quantity");
+    if (code === "invalid_payment_terms") return clawCompareText("claw-cmp-error-terms");
+    if (code === "mixed_currency" || code === "invalid_currency") return clawCompareText("claw-cmp-error-currency");
+    if (code === "invalid_comparison_mode" || code === "invalid_comparison_weights") {
+      return clawCompareText("claw-cmp-error-mode");
+    }
+    if (code === "workspace_scope_unavailable") return clawCompareText("claw-cmp-error-scope");
+    return clawCompareText("claw-cmp-error-generic");
+  }
+
+  function clawCompareCellRow(row, text) {
+    const cell = document.createElement("td");
+    cell.textContent = text;
+    row.appendChild(cell);
+    return cell;
+  }
+
+  // null, undefined and a missing field all render as the declared unknown
+  // label. Nothing here substitutes a computed or typical value.
+  function clawCompareKnown(value, formatter) {
+    if (value === null || value === undefined || value === "") return clawCompareText("claw-cmp-unknown");
+    return formatter ? formatter(value) : String(value);
+  }
+
+  function formatClawCompareMoney(money) {
+    if (!money || typeof money.amount_minor !== "number") return clawCompareText("claw-cmp-unknown");
+    return money.amount_minor.toLocaleString("en-US") + " " + String(money.currency || "");
+  }
+
+  function clawCompareRowCell(row, tag) {
+    const cell = document.createElement(tag);
+    row.appendChild(cell);
+    return cell;
+  }
+
+  function buildClawCompareTable(suppliers) {
+    const table = document.createElement("table");
+    table.className = "claw-compare-table";
+    // A caption keeps the ranking table meaningful to a screen reader: the
+    // columns are ranks, not values, and that has to be stated once.
+    const caption = document.createElement("caption");
+    caption.textContent = clawCompareText("claw-compare-table-caption");
+    table.appendChild(caption);
+    const head = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    head.appendChild(headRow);
+    table.appendChild(head);
+    [
+      "claw-cmp-col-supplier", "claw-cmp-col-total", "claw-cmp-col-delivery", "claw-cmp-col-terms",
+      "claw-cmp-col-price-rank", "claw-cmp-col-delivery-rank", "claw-cmp-col-cashflow-rank",
+      "claw-cmp-col-score", "claw-cmp-col-unknown",
+    ].forEach((key) => {
+      const th = clawCompareRowCell(headRow, "th");
+      th.scope = "col";
+      th.textContent = clawCompareText(key);
+    });
+    const body = document.createElement("tbody");
+    table.appendChild(body);
+    suppliers.forEach((supplier) => {
+      const tr = document.createElement("tr");
+      body.appendChild(tr);
+      const terms = supplier.payment_terms_label || "";
+      const termsText = terms
+        ? terms + (typeof supplier.due_days === "number" ? " · " + String(supplier.due_days) : "")
+        : clawCompareText("claw-cmp-unknown");
+      clawCompareCellRow(tr, supplier.supplier_label || supplier.supplier_id);
+      clawCompareCellRow(tr, formatClawCompareMoney(supplier.total));
+      clawCompareCellRow(tr, clawCompareKnown(supplier.promised_delivery_date));
+      clawCompareCellRow(tr, supplier.prepaid === true ? clawCompareText("claw-cmp-prepaid-yes") : termsText);
+      clawCompareCellRow(tr, clawCompareKnown(supplier.price_rank));
+      clawCompareCellRow(tr, clawCompareKnown(supplier.delivery_rank));
+      clawCompareCellRow(tr, clawCompareKnown(supplier.cashflow_rank));
+      clawCompareCellRow(tr, clawCompareKnown(supplier.score_basis_points));
+      clawCompareCellRow(tr, Array.isArray(supplier.unknown_fields) && supplier.unknown_fields.length
+        ? supplier.unknown_fields.join(", ")
+        : clawCompareText("claw-cmp-none"));
+    });
+    return table;
+  }
+
+  function buildClawCompareNegotiation(negotiation) {
+    const block = document.createElement("div");
+    block.className = "claw-compare-negotiation";
+
+    const titleRow = document.createElement("div");
+    titleRow.className = "claw-compare-negotiation-head";
+    const title = document.createElement("h3");
+    title.className = "claw-compare-section-title";
+    title.textContent = clawCompareText("claw-cmp-negotiation");
+    // The draft marker is asserted by the surface, not taken from the payload:
+    // the route can only ever return a draft, and the label must not depend on
+    // a server field being present.
+    const badge = document.createElement("span");
+    badge.className = "claw-compare-draft-badge";
+    badge.textContent = "DRAFT";
+    titleRow.appendChild(title);
+    titleRow.appendChild(badge);
+    block.appendChild(titleRow);
+
+    const facts = document.createElement("ul");
+    facts.className = "claw-compare-facts";
+    const push = (key, value) => {
+      const li = document.createElement("li");
+      const name = document.createElement("span");
+      name.className = "claw-compare-fact-label";
+      name.textContent = clawCompareText(key);
+      const body = document.createElement("span");
+      body.className = "claw-compare-fact-value";
+      body.textContent = value;
+      li.appendChild(name);
+      li.appendChild(body);
+      facts.appendChild(li);
+    };
+    push("claw-cmp-target-supplier", negotiation.supplier_label || negotiation.supplier_id || "");
+    push("claw-cmp-current", formatClawCompareMoney(negotiation.current_total));
+    push("claw-cmp-target", formatClawCompareMoney(negotiation.target_total));
+    push("claw-cmp-basis", String(negotiation.basis || clawCompareText("claw-cmp-unknown")));
+    block.appendChild(facts);
+
+    const message = document.createElement("p");
+    message.className = "claw-compare-message";
+    message.textContent = String(negotiation.message || "");
+    block.appendChild(message);
+
+    const note = document.createElement("p");
+    note.className = "claw-compare-note";
+    note.textContent = clawCompareText("claw-cmp-negotiation-note");
+    block.appendChild(note);
+    return block;
+  }
+
+  function renderClawCompareResult(comparison) {
+    if (!clawQuoteCompareResult) return;
+    const fragment = document.createDocumentFragment();
+
+    const recommendation = document.createElement("p");
+    recommendation.className = "claw-compare-recommendation";
+    recommendation.textContent = clawCompareText("claw-cmp-recommendation") + ": "
+      + String(comparison.recommended_supplier_label || comparison.recommended_supplier_id || "");
+    fragment.appendChild(recommendation);
+
+    const basis = document.createElement("p");
+    basis.className = "claw-compare-basis";
+    basis.textContent = String((comparison.reason_codes || []).join(" · "));
+    fragment.appendChild(basis);
+
+    const suppliers = Array.isArray(comparison.suppliers) ? comparison.suppliers : [];
+    if (suppliers.length) fragment.appendChild(buildClawCompareTable(suppliers));
+
+    const axes = document.createElement("ul");
+    axes.className = "claw-compare-axes";
+    [
+      ["claw-cmp-axis-price", "price_rank"],
+      ["claw-cmp-axis-delivery", "delivery_rank"],
+      ["claw-cmp-axis-cashflow", "cashflow_rank"],
+    ].forEach(([key, rank]) => {
+      const winner = suppliers.find((item) => item && item[rank] === 1);
+      const li = document.createElement("li");
+      const name = document.createElement("span");
+      name.className = "claw-compare-fact-label";
+      name.textContent = clawCompareText(key);
+      const value = document.createElement("span");
+      value.className = "claw-compare-fact-value";
+      value.textContent = winner ? String(winner.supplier_label || winner.supplier_id) : clawCompareText("claw-cmp-unknown");
+      li.appendChild(name);
+      li.appendChild(value);
+      axes.appendChild(li);
+    });
+    fragment.appendChild(axes);
+
+    const missing = suppliers.filter((item) => Array.isArray(item.unknown_fields) && item.unknown_fields.length);
+    const unknown = document.createElement("p");
+    unknown.className = "claw-compare-note";
+    unknown.textContent = missing.length
+      ? clawCompareText("claw-cmp-unknown-note") + " "
+        + missing.map((item) => String(item.supplier_label || item.supplier_id)).join(", ")
+      : clawCompareText("claw-cmp-unknown-none");
+    fragment.appendChild(unknown);
+
+    if (comparison.negotiation) fragment.appendChild(buildClawCompareNegotiation(comparison.negotiation));
+    else {
+      const skipped = document.createElement("p");
+      skipped.className = "claw-compare-note";
+      skipped.textContent = clawCompareText("claw-cmp-negotiation-none");
+      fragment.appendChild(skipped);
+    }
+
+    const limit = document.createElement("p");
+    limit.className = "claw-compare-limit";
+    limit.textContent = clawCompareText("claw-cmp-advisory");
+    fragment.appendChild(limit);
+
+    clawQuoteCompareResult.replaceChildren(fragment);
+    clawQuoteCompareResult.hidden = false;
+  }
+
+  async function runClawQuoteCompare() {
+    if (clawCompareInFlight) return;
+    const payload = collectClawComparePayload();
+    const suppliers = payload.suppliers || [];
+    setClawCompareError("");
+    if (suppliers.length < CLAW_COMPARE_MIN_SUPPLIERS) {
+      setClawCompareError(clawCompareText("claw-cmp-error-min"));
+      return;
+    }
+    clawCompareInFlight = true;
+    setClawCompareLoading(true);
+    if (clawQuoteCompareResult) {
+      clawQuoteCompareResult.hidden = true;
+      clawQuoteCompareResult.replaceChildren();
+    }
+    // A previous run's document action must not survive into this result: the
+    // compare path only ever re-arms it through the existing artifact renderer.
+    if (clawResultCard) clawResultCard.hidden = true;
+    clearClawArtifact();
+    try {
+      const response = await fetch("/api/claw/manual-intake/quote-compare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || !data.comparison) {
+        const message = clawCompareErrorMessage(data, response);
+        setClawCompareError(message);
+        setClawStatus(message, "error");
+        return;
+      }
+      renderClawCompareResult(data.comparison);
+      const artifact = data.artifact && typeof data.artifact.document_id === "string" ? data.artifact : null;
+      if (artifact) {
+        revealClawCard(clawCompareText("claw-cmp-card-kind"), false);
+        if (clawResultPreview) {
+          clawResultPreview.textContent = clawCompareText("claw-cmp-card-summary") + ": "
+            + String(data.comparison.recommended_supplier_label || data.comparison.recommended_supplier_id || "");
+        }
+        renderClawArtifactMeta(artifact);
+      }
+      setClawStatus(clawCompareText("claw-cmp-status-success"), "success");
+      if (clawQuoteCompareResult) clawQuoteCompareResult.focus?.();
+    } catch {
+      const message = clawCompareText("claw-cmp-error-offline");
+      setClawCompareError(message);
+      setClawStatus(message, "error");
+    } finally {
+      setClawCompareLoading(false);
+      clawCompareInFlight = false;
+    }
+  }
+
+  function openClawQuoteCompare() {
+    if (!clawQuoteCompare) return;
+    ensureClawCompareRows();
+    clawQuoteCompare.hidden = false;
+    if (clawCompareToggle) clawCompareToggle.setAttribute("aria-expanded", "true");
+    const first = clawQuoteSupplierRows && clawQuoteSupplierRows.children.length
+      ? clawQuoteSupplierRows.children[0].controls?.supplier_label
+      : null;
+    if (first) first.focus?.();
+  }
+
+  function closeClawQuoteCompare() {
+    if (!clawQuoteCompare) return;
+    clawQuoteCompare.hidden = true;
+    if (clawCompareToggle) {
+      clawCompareToggle.setAttribute("aria-expanded", "false");
+      clawCompareToggle.focus?.();
+    }
+  }
+
+  if (clawCompareToggle) {
+    clawCompareToggle.addEventListener("click", () => {
+      if (clawQuoteCompare && clawQuoteCompare.hidden === false) closeClawQuoteCompare();
+      else openClawQuoteCompare();
+    });
+  }
+  if (clawQuoteCompareClose) {
+    clawQuoteCompareClose.addEventListener("click", () => closeClawQuoteCompare());
+  }
+  if (clawQuoteAddSupplier) {
+    clawQuoteAddSupplier.addEventListener("click", () => {
+      if (!clawQuoteSupplierRows) return;
+      if (clawQuoteSupplierRows.children.length >= CLAW_COMPARE_MAX_SUPPLIERS) return;
+      const row = buildClawCompareRow(clawQuoteSupplierRows.children.length + 1);
+      clawQuoteSupplierRows.appendChild(row);
+      renumberClawCompareRows();
+      row.controls?.supplier_label?.focus?.();
+    });
+  }
+  if (clawQuoteCompareForm) {
+    clawQuoteCompareForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      void runClawQuoteCompare();
+    });
   }
 })();
