@@ -248,6 +248,105 @@ async def test_connected_marked_ambiguous_is_rejected():
 
 
 # --------------------------------------------------------------------------
+# 5b. B-0 canonical state semantics are enforced exactly
+#
+#     usable    == (state == "connected")
+#     ambiguous == (state == "ambiguous")
+#
+# The three reviewed states are total and mutually exclusive, so both derived
+# flags are fully determined by ``state``. A row that disagrees with either
+# equivalence is malformed OAuth RPC and must fail closed.
+# --------------------------------------------------------------------------
+
+
+def _row(
+    connector_id: str,
+    state: str,
+    usable: bool,
+    ambiguous: bool,
+    *,
+    expires_present: bool = False,
+) -> dict[str, Any]:
+    return {
+        "connector_id": connector_id,
+        "state": state,
+        "usable": usable,
+        "expires_present": expires_present,
+        "ambiguous": ambiguous,
+    }
+
+
+async def _read_single_row(row: dict[str, Any]):
+    return await CloudflareGoogleOAuthWorkspaceTruth(_OAuthBinding([row])).workspace_connector_state(
+        workspace_ref=WORKSPACE_REF
+    )
+
+
+async def test_connected_with_usable_false_is_rejected():
+    """CASE_A: state=connected must carry usable=True."""
+    with pytest.raises(IdentityBridgeError):
+        await _read_single_row(_row("gmail", "connected", False, False, expires_present=True))
+
+
+async def test_not_connected_with_usable_true_is_rejected():
+    """CASE_B: state=not_connected must carry usable=False."""
+    with pytest.raises(IdentityBridgeError):
+        await _read_single_row(_row("google-drive", "not_connected", True, False))
+
+
+async def test_ambiguous_with_ambiguous_flag_false_is_rejected():
+    """CASE_C: state=ambiguous must carry ambiguous=True."""
+    with pytest.raises(IdentityBridgeError):
+        await _read_single_row(_row("gmail", "ambiguous", False, False, expires_present=True))
+
+
+_CANONICAL_ROWS = frozenset(
+    {
+        ("connected", True, False),
+        ("not_connected", False, False),
+        ("ambiguous", False, True),
+    }
+)
+
+_FLAG_COMBINATIONS = (
+    (True, False),
+    (False, False),
+    (False, True),
+    (True, True),
+)
+
+
+@pytest.mark.parametrize("state", ["connected", "not_connected", "ambiguous"])
+@pytest.mark.parametrize("usable,ambiguous", _FLAG_COMBINATIONS)
+async def test_canonical_state_equivalence_is_total(state, usable, ambiguous):
+    """Every state/flag combination is either exactly canonical or rejected."""
+
+    row = _row("gmail", state, usable, ambiguous, expires_present=True)
+    if (state, usable, ambiguous) in _CANONICAL_ROWS:
+        rows = await _read_single_row(row)
+        assert rows[0]["state"] == state
+        assert rows[0]["usable"] is usable
+        assert rows[0]["ambiguous"] is ambiguous
+    else:
+        with pytest.raises(IdentityBridgeError):
+            await _read_single_row(row)
+
+
+async def test_valid_canonical_rows_are_all_preserved():
+    """The three canonical rows still compose unchanged after the fix."""
+
+    canonical = [
+        _row("gmail", "connected", True, False, expires_present=True),
+        _row("google-drive", "not_connected", False, False),
+        _row("gmail", "ambiguous", False, True, expires_present=True),
+    ]
+    rows = await CloudflareGoogleOAuthWorkspaceTruth(
+        _OAuthBinding(canonical)
+    ).workspace_connector_state(workspace_ref=WORKSPACE_REF)
+    assert [dict(r) for r in rows] == canonical
+
+
+# --------------------------------------------------------------------------
 # 6-8. no raw material leaks
 # --------------------------------------------------------------------------
 

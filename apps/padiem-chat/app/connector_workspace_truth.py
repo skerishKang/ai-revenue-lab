@@ -92,9 +92,16 @@ def _invalid() -> IdentityBridgeError:
 def _bounded_connector(value: Any) -> dict[str, Any]:
     """Validate one B-0 state row and rebuild it from the reviewed keys only.
 
-    ``ambiguous`` is never promoted to ``connected``: an ambiguous row must
-    carry ``ambiguous=True`` and ``usable=False``, and a ``connected`` row must
-    carry ``ambiguous=False``. Any other combination is malformed.
+    The B-0 canonical semantics are enforced as two exact equivalences:
+
+        ``usable == (state == "connected")``
+        ``ambiguous == (state == "ambiguous")``
+
+    so the three reviewed states are total and mutually exclusive, and
+    ``ambiguous`` is never promoted to ``connected``. Any other combination —
+    including ``connected`` with ``usable=False``, ``not_connected`` with
+    ``usable=True``, or ``ambiguous`` with ``ambiguous=False`` — is malformed
+    and fails closed.
     """
 
     row = _as_dict(value)
@@ -119,10 +126,20 @@ def _bounded_connector(value: Any) -> dict[str, Any]:
     # Scope lock: only the reviewed Google connectors carry workspace truth.
     if connector_id not in REVIEWED_WORKSPACE_TRUTH_CONNECTORS:
         raise _invalid()
-    # Ambiguity never upgrades to connected, and connected is never ambiguous.
-    if ambiguous and (state != "ambiguous" or usable is not False):
+    # B-0 canonical state semantics. The three reviewed states are total and
+    # mutually exclusive, so both derived flags are fully determined by
+    # ``state``. A row that disagrees with either equivalence is malformed and
+    # fails closed:
+    #
+    #   connected      -> usable=True,  ambiguous=False
+    #   not_connected  -> usable=False, ambiguous=False
+    #   ambiguous      -> usable=False, ambiguous=True
+    #
+    # This also keeps ambiguity from ever being promoted to connected, because
+    # ``ambiguous=True`` is only consistent with ``state="ambiguous"``.
+    if usable != (state == "connected"):
         raise _invalid()
-    if state == "connected" and ambiguous:
+    if ambiguous != (state == "ambiguous"):
         raise _invalid()
 
     return {
