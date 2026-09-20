@@ -1,10 +1,11 @@
-"""Calendar worker composition tests (#2358).
+"""Calendar worker composition tests (#2358, converged by #2010).
 
 Proves the Engine composition root wires the Calendar port + grants into
 ``build_tool_binding_resolver`` alongside the existing Gmail/Drive/Telegram/
-Slack wiring, reuses the single existing Google OAuth authority (no second
-OAuth stack, no new secret name), and stays READ-only. Network-free:
-source-level assertions plus recording fakes.
+Slack wiring and that the canonical Calendar Production path uses the Control
+Plane short-lived access lease (``CONTROL_PLANE_GOOGLE_OAUTH``), never an
+Engine-owned Google long-lived credential. Network-free: source-level
+assertions plus recording fakes.
 """
 
 from __future__ import annotations
@@ -101,27 +102,38 @@ def _restore(saved: dict) -> None:
 def test_worker_composes_calendar_port_and_grants() -> None:
     assert "_calendar_port_for_env" in WORKER_SRC
     assert "_calendar_grants_for_env" in WORKER_SRC
-    assert "HttpxGoogleCalendarReadPort" in WORKER_SRC
+    assert "ControlPlaneLeaseGoogleCalendarReadPort" in WORKER_SRC
     assert "parse_calendar_ids" in WORKER_SRC
     assert "load_calendar_grants" in WORKER_SRC
 
 
-def test_worker_calendar_reuses_the_existing_google_oauth_authority() -> None:
+def test_worker_calendar_uses_the_control_plane_access_lease_authority() -> None:
+    """#2010 convergence: canonical Calendar = CP lease, not Engine secrets."""
+
     start = WORKER_SRC.index("def _calendar_port_for_env")
     end = WORKER_SRC.index("async def _calendar_grants_for_env")
     calendar_src = WORKER_SRC[start:end]
-    # Same existing Gmail/Drive secret names — no second OAuth stack.
-    assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV" in calendar_src
-    assert "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV" in calendar_src
-    assert "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV" in calendar_src
-    # No new OAuth/Calendar secret name is invented by this promotion.
-    for forbidden in (
-        "CALENDAR_CLIENT_SECRET",
-        "CALENDAR_REFRESH_TOKEN",
-        "CALENDAR_ACCESS_TOKEN",
-        "CALENDAR_OAUTH",
-    ):
-        assert forbidden not in WORKER_SRC
+
+    assert "CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME" in calendar_src
+    assert "CloudflareControlPlaneGoogleOAuthAccessLeaseClient" in calendar_src
+    assert "ControlPlaneLeaseGoogleCalendarReadPort" in calendar_src
+    assert "calendar_worker_transport" in calendar_src
+    # No Engine-owned Google long-lived credential may back the canonical path.
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID" not in calendar_src
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET" not in calendar_src
+    assert "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN" not in calendar_src
+    assert "HttpxGoogleCalendarReadPort" not in calendar_src
+    # The legacy direct-secret port must not be exported by the canonical
+    # composition root at all.
+    assert "HttpxGoogleCalendarReadPort" not in WORKER_SRC
+    assert "from app.calendar_port_httpx import" not in WORKER_SRC
+
+
+def test_worker_calendar_uses_the_control_plane_service_binding_name() -> None:
+    assert 'CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"' in WORKER_SRC
+    assert "CALENDAR_CP_LEASE_CANONICAL" in (
+        APP_ROOT / "app" / "calendar_port_cp_lease.py"
+    ).read_text(encoding="utf-8")
 
 
 def test_worker_calendar_allowlist_is_server_derived() -> None:
@@ -147,41 +159,48 @@ def test_resolver_gathers_five_connector_grant_sets() -> None:
 def test_calendar_port_fail_closed_on_missing_authorities() -> None:
     identity, saved = _import_worker_identity()
     try:
-        base = types.SimpleNamespace(
-            ENGINE_GOOGLE_OAUTH_CLIENT_ID="client-id",
-            ENGINE_GOOGLE_OAUTH_CLIENT_SECRET="client-secret",
-            ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN="refresh-token",
-            ENGINE_CALENDAR_ALLOWED_CALENDARS="primary",
-        )
-        assert identity._calendar_port_for_env(base) is not None
+        class FakeBinding:
+            async def issue_access_lease(self, payload):
+                raise AssertionError("no lease call expected in composition resolution")
 
-        missing_oauth = types.SimpleNamespace(
+        configured = types.SimpleNamespace(
+            CONTROL_PLANE_GOOGLE_OAUTH=FakeBinding(),
             ENGINE_CALENDAR_ALLOWED_CALENDARS="primary",
         )
-        assert identity._calendar_port_for_env(missing_oauth) is None
+        assert identity._calendar_port_for_env(configured) is not None
+
+        missing_cp_binding = types.SimpleNamespace(
+            ENGINE_CALENDAR_ALLOWED_CALENDARS="primary",
+        )
+        assert identity._calendar_port_for_env(missing_cp_binding) is None
 
         missing_allowlist = types.SimpleNamespace(
-            ENGINE_GOOGLE_OAUTH_CLIENT_ID="client-id",
-            ENGINE_GOOGLE_OAUTH_CLIENT_SECRET="client-secret",
-            ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN="refresh-token",
+            CONTROL_PLANE_GOOGLE_OAUTH=FakeBinding(),
         )
         assert identity._calendar_port_for_env(missing_allowlist) is None
 
         empty_allowlist = types.SimpleNamespace(
-            ENGINE_GOOGLE_OAUTH_CLIENT_ID="client-id",
-            ENGINE_GOOGLE_OAUTH_CLIENT_SECRET="client-secret",
-            ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN="refresh-token",
+            CONTROL_PLANE_GOOGLE_OAUTH=FakeBinding(),
             ENGINE_CALENDAR_ALLOWED_CALENDARS="  ",
         )
         assert identity._calendar_port_for_env(empty_allowlist) is None
 
         malformed_allowlist = types.SimpleNamespace(
-            ENGINE_GOOGLE_OAUTH_CLIENT_ID="client-id",
-            ENGINE_GOOGLE_OAUTH_CLIENT_SECRET="client-secret",
-            ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN="refresh-token",
+            CONTROL_PLANE_GOOGLE_OAUTH=FakeBinding(),
             ENGINE_CALENDAR_ALLOWED_CALENDARS="bad/id",
         )
         assert identity._calendar_port_for_env(malformed_allowlist) is None
+
+        # Engine-owned Google long-lived credentials can never stand in for the
+        # canonical CP lease authority (CALENDAR_ENGINE_DIRECT_REFRESH_*
+        # PRODUCTION_FALLBACK=NO).
+        legacy_only = types.SimpleNamespace(
+            ENGINE_GOOGLE_OAUTH_CLIENT_ID="client-id",
+            ENGINE_GOOGLE_OAUTH_CLIENT_SECRET="client-secret",
+            ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN="refresh-token",
+            ENGINE_CALENDAR_ALLOWED_CALENDARS="primary",
+        )
+        assert identity._calendar_port_for_env(legacy_only) is None
     finally:
         _restore(saved)
 
@@ -220,12 +239,20 @@ def test_caller_payload_cannot_mint_calendar_write_or_binding_ref() -> None:
 
 
 def test_no_secret_value_in_calendar_port_source() -> None:
-    src = (APP_ROOT / "app" / "calendar_port_httpx.py").read_text(encoding="utf-8")
-    assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID" in src
-    assert "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET" in src
-    assert "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN" in src
-    assert "ENGINE_CALENDAR_ALLOWED_CALENDARS" in src
+    """The canonical port declares no credential of its own."""
+
+    src = (APP_ROOT / "app" / "calendar_port_cp_lease.py").read_text(encoding="utf-8")
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID" not in src
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET" not in src
+    assert "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN" not in src
+    assert "oauth2.googleapis.com" not in src
     # Only secret NAMES appear; no token-shaped or client-shaped literal.
     assert "ya29." not in src
     assert "apps.googleusercontent.com" not in src
     assert "1//" not in src
+
+    # The legacy direct-secret port remains as test/legacy compatibility source
+    # but is never selected by canonical composition.
+    legacy = (APP_ROOT / "app" / "calendar_port_httpx.py").read_text(encoding="utf-8")
+    assert "ENGINE_GOOGLE_OAUTH_CLIENT_ID" in legacy
+    assert "ENGINE_CALENDAR_ALLOWED_CALENDARS" in legacy

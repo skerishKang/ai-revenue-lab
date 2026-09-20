@@ -18,6 +18,7 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
     DurableGoogleOAuthAuthorizationState,
@@ -45,6 +46,9 @@ _KEY_SECRET_RE = re.compile(r"^[A-Za-z0-9_-]{43}$")
 _REVIEWED_SCOPES = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    # #2010: the OAuth ingress requests exactly the Calendar readonly scope for
+    # the google-calendar connector and nothing else.
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
 _AUTH_SESSION_SENTINEL = "sealed-session-identity"
 

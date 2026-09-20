@@ -37,9 +37,7 @@ env:
   CALENDAR_APP_ID: b54-padiem-claw-calendar
   CALENDAR_AGENT_ID: agent:padiem:claw_calendar_reader@1
   CALENDAR_CONNECTOR_ID: connector:google:calendar@1
-  GOOGLE_OAUTH_CLIENT_ID_BINDING: ENGINE_GOOGLE_OAUTH_CLIENT_ID
-  GOOGLE_OAUTH_CLIENT_SECRET_BINDING: ENGINE_GOOGLE_OAUTH_CLIENT_SECRET
-  GOOGLE_OAUTH_REFRESH_TOKEN_BINDING: ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN
+  CONTROL_PLANE_GOOGLE_OAUTH_BINDING: CONTROL_PLANE_GOOGLE_OAUTH
   CALENDAR_ALLOWLIST_BINDING: ENGINE_CALENDAR_ALLOWED_CALENDARS
 
 jobs:
@@ -63,6 +61,8 @@ jobs:
 
           workflow = Path(".github/workflows/b54-calendar-production-readiness-preflight.yml").read_text(encoding="utf-8")
           port = Path("apps/padiem-ai-engine/app/calendar_port_httpx.py").read_text(encoding="utf-8")
+          lease_port = Path("apps/padiem-ai-engine/app/calendar_port_cp_lease.py").read_text(encoding="utf-8")
+          engine_lease = Path("apps/padiem-ai-engine/app/google_oauth_access_lease.py").read_text(encoding="utf-8")
           grants = Path("apps/padiem-ai-engine/app/connector_grants_d1.py").read_text(encoding="utf-8")
           bindings = Path("apps/padiem-ai-engine/app/connector_bindings.py").read_text(encoding="utf-8")
           worker = Path("apps/padiem-ai-engine/worker_identity.py").read_text(encoding="utf-8")
@@ -71,9 +71,7 @@ jobs:
           required_workflow = (
               "CALENDAR_OAUTH_SCOPE_STATUS=UNVERIFIED_WITHOUT_PROVIDER",
               "SECRET_PRESENT != CALENDAR_SCOPE_GRANTED",
-              "GOOGLE_OAUTH_CLIENT_ID_SERVED_BINDING=",
-              "GOOGLE_OAUTH_CLIENT_SECRET_SERVED_BINDING=",
-              "GOOGLE_OAUTH_REFRESH_TOKEN_SERVED_BINDING=",
+              "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING=",
               "CALENDAR_ALLOWLIST_SERVED_BINDING=",
               "CALENDAR_RUNTIME_AUTHORITY=",
               "CALENDAR_GRANT_TOTAL_ROWS=",
@@ -99,11 +97,19 @@ jobs:
                   raise SystemExit(f"missing Calendar readiness invariant: {marker}")
 
           required_source = (
-              (port, 'ENGINE_GOOGLE_OAUTH_CLIENT_ID = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"'),
-              (port, 'ENGINE_GOOGLE_OAUTH_CLIENT_SECRET = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"'),
-              (port, 'ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"'),
-              (port, 'ENGINE_CALENDAR_ALLOWED_CALENDARS = "ENGINE_CALENDAR_ALLOWED_CALENDARS"'),
-              (port, "GOOGLE_TOKEN_URL"),
+              # #2010 convergence: the canonical Calendar READ path is the
+              # Control Plane short-lived access lease, not an Engine-owned
+              # Google long-lived credential. The three ENGINE_GOOGLE_OAUTH_*
+              # direct bindings are deliberately NOT readiness requirements.
+              (lease_port, 'CALENDAR_CP_CONNECTOR_ID = "google-calendar"'),
+              (lease_port, "CALENDAR_CP_LEASE_CANONICAL = True"),
+              (lease_port, "CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK = False"),
+              (lease_port, "MAX_PROVIDER_ATTEMPTS = 2"),
+              (lease_port, "GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE"),
+              (engine_lease, '"google-calendar": (GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE,)'),
+              (worker, 'CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"'),
+              (worker, "ControlPlaneLeaseGoogleCalendarReadPort"),
+              (worker, 'ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV = "ENGINE_CALENDAR_ALLOWED_CALENDARS"'),
               (grants, "async def load_calendar_grants"),
               (bindings, 'CALENDAR_REFERENCE_APP_ID = "b54-padiem-claw-calendar"'),
               (bindings, 'CALENDAR_AGENT_ID = "agent:padiem:claw_calendar_reader@1"'),
@@ -118,6 +124,29 @@ jobs:
           for source, marker in required_source:
               if marker not in source:
                   raise SystemExit(f"Calendar shared source drifted: {marker}")
+
+          # The canonical Calendar Worker composition must carry no Engine-owned
+          # Google long-lived credential fallback.
+          calendar_block = worker.split("def _calendar_port_for_env", 1)[1].split(
+              "async def _calendar_grants_for_env", 1
+          )[0]
+          for forbidden in (
+              "ENGINE_GOOGLE_OAUTH_CLIENT_ID",
+              "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET",
+              "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN",
+              "HttpxGoogleCalendarReadPort",
+          ):
+              if forbidden in calendar_block:
+                  raise SystemExit(
+                      "canonical Calendar composition drifted to a direct Engine credential: "
+                      + forbidden
+                  )
+          # The legacy direct-secret port may remain as compatibility source but
+          # must never be imported by the canonical composition root.
+          if "from app.calendar_port_httpx import" in worker:
+              raise SystemExit("legacy direct-secret Calendar port is still imported by the Worker")
+          if "ENGINE_CALENDAR_ALLOWED_CALENDARS" not in port:
+              raise SystemExit("Calendar allowlist authority drifted")
 
           live_region = workflow.split("Read canonical Calendar grant aggregate", 1)[-1].upper()
           forbidden_sql = (
@@ -205,10 +234,10 @@ jobs:
           detail="${RUNNER_TEMP}/calendar-readiness-version.json"
           curl -fsS "${auth[@]}" "${base}/versions/${ACTIVE_ENGINE_VERSION}" -o "${detail}"
 
-          python - "${detail}" "${ACTIVE_ENGINE_VERSION}" "${GOOGLE_OAUTH_CLIENT_ID_BINDING}" "${GOOGLE_OAUTH_CLIENT_SECRET_BINDING}" "${GOOGLE_OAUTH_REFRESH_TOKEN_BINDING}" "${CALENDAR_ALLOWLIST_BINDING}" <<'PY'
+          python - "${detail}" "${ACTIVE_ENGINE_VERSION}" "${CONTROL_PLANE_GOOGLE_OAUTH_BINDING}" "${CALENDAR_ALLOWLIST_BINDING}" <<'PY'
           import json, re, sys
 
-          path, active_version, client_id_name, client_secret_name, refresh_name, allowlist_name = sys.argv[1:7]
+          path, active_version, cp_oauth_name, allowlist_name = sys.argv[1:5]
           payload = json.load(open(path, encoding="utf-8"))
           if payload.get("success") is not True:
               raise SystemExit("served version detail request failed")
@@ -245,39 +274,30 @@ jobs:
                   raise SystemExit(f"served binding type invalid: {name}")
               return f"PRESENT:{kind}"
 
-          client_id = classify(client_id_name)
-          client_secret = classify(client_secret_name)
-          refresh_token = classify(refresh_name)
+          cp_oauth = classify(cp_oauth_name)
           allowlist = classify(allowlist_name)
 
-          # Google OAuth secrets are shared with the already-live Gmail/Drive
-          # ports; the Calendar port adds no second OAuth stack and no new
-          # secret name. Only NAME/TYPE is ever emitted.
-          for label, value in (
-              ("client_id", client_id),
-              ("client_secret", client_secret),
-              ("refresh_token", refresh_token),
-          ):
-              if value not in ("ABSENT", "PRESENT:secret_text"):
-                  raise SystemExit(f"Google OAuth {label} binding type drifted")
+          # #2010: the canonical Calendar READ authority is the private Control
+          # Plane Google OAuth Service Binding. That binding owns the long-lived
+          # Google refresh credential and issues short-lived access leases to
+          # the Engine. The three ENGINE_GOOGLE_OAUTH_* direct secret bindings
+          # are deliberately NOT readiness requirements any more.
+          if cp_oauth not in ("ABSENT", "PRESENT:service"):
+              raise SystemExit("Control Plane Google OAuth binding type drifted")
           if allowlist != "ABSENT" and not allowlist.startswith("PRESENT:"):
               raise SystemExit("Calendar allowlist binding type drifted")
 
-          print(f"GOOGLE_OAUTH_CLIENT_ID_SERVED_BINDING={client_id}")
-          print(f"GOOGLE_OAUTH_CLIENT_SECRET_SERVED_BINDING={client_secret}")
-          print(f"GOOGLE_OAUTH_REFRESH_TOKEN_SERVED_BINDING={refresh_token}")
+          print(f"CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING={cp_oauth}")
           print(f"CALENDAR_ALLOWLIST_SERVED_BINDING={allowlist}")
 
-          # #2010 scope truth: a present refresh-token secret NEVER proves that
-          # calendar.readonly was granted. Scope can only be proven by a provider
-          # call, which this preflight deliberately does not make.
+          # #2010 scope truth: a present Service Binding NEVER proves that a
+          # durable google-calendar credential exists or that calendar.readonly
+          # was granted. Scope can only be proven by a provider call, which this
+          # preflight deliberately does not make.
           print("SECRET_PRESENT != CALENDAR_SCOPE_GRANTED")
           print("CALENDAR_OAUTH_SCOPE_STATUS=UNVERIFIED_WITHOUT_PROVIDER")
 
-          secrets_present = all(
-              value == "PRESENT:secret_text" for value in (client_id, client_secret, refresh_token)
-          )
-          if secrets_present and allowlist != "ABSENT":
+          if cp_oauth == "PRESENT:service" and allowlist != "ABSENT":
               print("CALENDAR_RUNTIME_AUTHORITY=PRESENT_NAME_TYPE_ONLY")
           else:
               print("CALENDAR_RUNTIME_AUTHORITY=NEEDS_ALLOWLIST_CONFIGURATION")
