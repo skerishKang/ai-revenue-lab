@@ -22,6 +22,7 @@ from __future__ import annotations
 import ast
 import dataclasses
 import json
+import re
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -96,7 +97,7 @@ MODULE = ROOT / "src" / "kagent" / "e2b_provider_transport.py"
 T0 = datetime(2026, 9, 20, 10, 0, tzinfo=timezone.utc)
 REVISION = "abcdef1234567890abcdef1234567890abcdef12"
 #: A fixture with the shape of a key. It is not, and never was, a real credential.
-CREDENTIAL = b"e2b-test-fixture-value-000000"
+CREDENTIAL = b"e2b-fixture-not-a-key-value"
 
 GATE_FLAGS = (
     "E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED",
@@ -506,22 +507,22 @@ class ResponseDecodeTests(unittest.TestCase):
                     decode_e2b_create_response(response(E2B_STATUS_CREATED, body))
 
     def test_unauthorized_never_echoes_the_provider_body(self) -> None:
-        leak = b'{"message":"bad X-API-Key: fixture-binding-abcdef0123456789"}'
+        leak = b'{"message":"bad X-API-Key: SENTINEL_NOT_A_KEY"}'
         with self.assertRaises(SandboxUnavailableError) as caught:
             decode_e2b_create_response(response(401, leak))
-        self.assertNotIn("fixture-binding-abcdef0123456789", str(caught.exception))
+        self.assertNotIn("SENTINEL_NOT_A_KEY", str(caught.exception))
         self.assertIn("credential binding was rejected", str(caught.exception))
 
     def test_other_refusals_carry_a_bounded_redacted_reason(self) -> None:
         with self.assertRaises(SandboxUnavailableError) as caught:
             decode_e2b_create_response(
-                response(500, b"api_key=fixture-binding-abcdef0123456789")
+                response(500, b"api_key=SENTINEL_NOT_A_KEY")
             )
         message = str(caught.exception)
         self.assertIn("status 500", message)
         # The fixture is a sentinel the repository's own detector treats as credential material; it
         # matches no provider's key format, so surviving redaction here would be a gate defect.
-        self.assertNotIn("fixture-binding-abcdef0123456789", message)
+        self.assertNotIn("SENTINEL_NOT_A_KEY", message)
         self.assertIn("[REDACTED]", message)
         self.assertLess(len(message), 700)
 
@@ -612,7 +613,7 @@ class ResponseDecodeTests(unittest.TestCase):
 class CredentialBoundaryTests(unittest.TestCase):
     def test_binding_names_are_names_not_values(self) -> None:
         self.assertEqual(EnvironmentE2BCredentialPort().binding_name, E2B_CREDENTIAL_BINDING_NAME)
-        for bad in ("e2b_api_key", "PADIEM-E2B-API-KEY", "padiem-binding-value-0123456789ab", "",
+        for bad in ("e2b_api_key", "PADIEM-E2B-API-KEY", "padiem-binding-value-lowercase", "",
                     E2B_CREDENTIAL_BINDING_NAME + "-suffix", "OTHER_BINDING", 12):
             with self.subTest(bad=bad):
                 with self.assertRaises(E2BWireError):
@@ -622,7 +623,7 @@ class CredentialBoundaryTests(unittest.TestCase):
         # An assignment-shaped value can never satisfy the uppercase binding grammar, so the
         # credential screen under it is defence in depth rather than a second reachable path.
         # Recorded as a test so nobody later reads the ordering as an unverified claim.
-        value = "api_key=fixture-binding-abcdef0123456789"
+        value = "api_key=SENTINEL_NOT_A_KEY"
         self.assertIs(contains_credential_material(value), True)
         with self.assertRaises(E2BWireError) as caught:
             transport_module._binding_name(value, "credential_binding_name")
@@ -750,7 +751,7 @@ class StdlibRequestPortTests(unittest.TestCase):
     def test_transport_failure_normalizes_without_provider_text(self) -> None:
         connection = self.factory.return_value
         connection.request.side_effect = OSError(
-            "reset by peer api_key=fixture-binding-abcdef0123456789"
+            "reset by peer api_key=SENTINEL_NOT_A_KEY"
         )
         with self.assertRaises(SandboxUnavailableError) as caught:
             self._call()
@@ -819,7 +820,7 @@ class ArmedWireMappingTests(ArmingMixin):
     def test_provider_failure_propagates_after_one_call(self) -> None:
         port = ScriptedRequestPort()
         port.queue("GET /v2/sandboxes", 503,
-                   b'{"message":"overloaded api_key=fixture-binding-abcdef0123456789"}')
+                   b'{"message":"overloaded api_key=SENTINEL_NOT_A_KEY"}')
         transport = self.build(port=port)
         with self.assertRaises(SandboxUnavailableError) as caught:
             transport.list_running()
@@ -828,7 +829,7 @@ class ArmedWireMappingTests(ArmingMixin):
         # part of the same body must not survive it. A 401 keeps no body text at all.
         self.assertIn("status 503", message)
         self.assertIn("overloaded", message)
-        self.assertNotIn("fixture-binding-abcdef0123456789", message)
+        self.assertNotIn("SENTINEL_NOT_A_KEY", message)
         self.assertIn("[REDACTED]", message)
         self.assertEqual(len(port.calls), 1)
 
@@ -1020,7 +1021,7 @@ class ProbePacketTests(unittest.TestCase):
             ("max_provider_execution_paths", 2, "must be between"),
             ("ttl_seconds", 59, "must be between"),
             ("ttl_seconds", SANDBOX_LEASE_MAX_TTL_SECONDS + 1, "must be between"),
-            ("credential_binding_name", "padiem-binding-value-0123456789ab", "binding name"),
+            ("credential_binding_name", "padiem-binding-value-lowercase", "binding name"),
             ("abort_conditions", (), "abort conditions"),
             ("abort_conditions", ("",), "must be a bounded safe reference"),
             ("repository_ref", "https://evil.example/x", "not an endpoint"),
@@ -1102,7 +1103,7 @@ class AuthorizationShapeTests(unittest.TestCase):
         cases = (
             {"owner_authorized": "yes"}, {"provider_formally_selected": 1},
             {"network_policy_off": None}, {"target_environment": "non_production"},
-            {"plan": "hobby"}, {"credential_binding_name": "padiem-binding-value-0123456789ab"},
+            {"plan": "hobby"}, {"credential_binding_name": "padiem-binding-value-lowercase"},
             {"credential_binding_name": "PADIEM-OTHER"}, {"spend_cap_usd_milli": 0},
             {"spend_cap_usd_milli": -1}, {"max_sandbox_allocations": 2},
             {"max_provider_execution_paths": 3}, {"ttl_seconds": 59},
@@ -1180,6 +1181,62 @@ class NoSecondAuthorityTests(unittest.TestCase):
             with self.subTest(fragment=forbidden):
                 self.assertNotIn(forbidden, self.SOURCE)
         self.assertIn('E2B_API_HOST = "api.e2b.app"', self.SOURCE)
+
+
+class FixtureHygieneTests(unittest.TestCase):
+    """Synthetic fixtures must not imitate real credentials.
+
+    GitGuardian gates merge on exactly this. Two rules are cheap enough to enforce in-repo: no
+    literal may carry a provider's key format, and no literal may look like an opaque token by
+    ending in a long digit run -- which is what the earlier `...-000000` / `...-0123456789ab`
+    fixtures did, and what the sentinel spellings below avoid.
+    """
+
+    PROVIDER_KEY_SHAPES = (
+        r"(?:sk|ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{10,}",
+        r"\bsk-[A-Za-z0-9]{12,}",
+        r"glpat-[A-Za-z0-9_-]{10,}",
+        r"xox[baprs]-[A-Za-z0-9-]{10,}",
+        r"(?:AKIA|ASIA)[0-9A-Z]{12,}",
+        r"ya29\.[A-Za-z0-9_-]{10,}",
+        r"SG\.[A-Za-z0-9_-]{10,}",
+        r"eyJ[A-Za-z0-9_-]{10,}",
+        r"(?i)bearer\s+[A-Za-z0-9_.+-]{16,}",
+    )
+    TOKEN_LIKE_DIGIT_RUN = re.compile(r"[0-9]{6,}")
+    # The canonical exact-commit fixture is 40 hex characters by contract; it is a revision, not a
+    # credential, and is the only digit-heavy literal these rules allow.
+    DECLARED_EXCEPTIONS = frozenset({REVISION})
+
+    def _literals(self) -> set[str]:
+        found: set[str] = set()
+        for path in (MODULE, Path(__file__)):
+            for node in ast.walk(ast.parse(Path(path).read_text(encoding="utf-8"))):
+                if isinstance(node, ast.Constant) and isinstance(node.value, (str, bytes)):
+                    value = node.value
+                    found.add(value.decode("utf-8", errors="replace")
+                              if isinstance(value, bytes) else value)
+        return found
+
+    def test_no_fixture_imitates_a_provider_key_format(self) -> None:
+        for literal in self._literals():
+            for shape in self.PROVIDER_KEY_SHAPES:
+                with self.subTest(shape=shape[:24], literal=literal[:40]):
+                    self.assertIsNone(re.search(shape, literal))
+
+    def test_token_like_literals_are_declared(self) -> None:
+        offenders = sorted(
+            literal
+            for literal in self._literals()
+            if len(literal) >= 16
+            and self.TOKEN_LIKE_DIGIT_RUN.search(literal)
+            and " " not in literal
+            and literal not in self.DECLARED_EXCEPTIONS
+        )
+        self.assertEqual(
+            offenders, [],
+            "credential-shaped fixtures must not imitate real keys; use a word sentinel",
+        )
 
 
 class ModulePurityTests(unittest.TestCase):
