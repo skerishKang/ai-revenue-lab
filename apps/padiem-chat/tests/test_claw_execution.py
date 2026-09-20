@@ -1789,11 +1789,12 @@ class _HistoryStatement:
         return self
 
     async def first(self):
-        if self.sql.startswith("SELECT id, created_at FROM claw_run_history"):
+        if self.sql.startswith("SELECT id, created_at, conversation_id FROM claw_run_history"):
             run_id, user_id = self.values
             for row in self.db.rows:
                 if row["run_id"] == run_id and row["user_id"] == user_id:
-                    return {"id": row["id"], "created_at": row["created_at"]}
+                    return {"id": row["id"], "created_at": row["created_at"],
+                            "conversation_id": row.get("conversation_id")}
             return None
         return None
 
@@ -1817,9 +1818,15 @@ class _HistoryStatement:
             return {"results": []}
         if self.sql.startswith("SELECT run_id, channel"):
             user_id, limit = self.values
+            # Honour the statement projection exactly: a column the SELECT does
+            # not ask for must not be visible to the projection layer, so a
+            # missing conversation_id in the D1 read is observable (#2829 M2).
+            selected = [c.strip() for c in
+                        self.sql.split("SELECT ", 1)[1].split("FROM ", 1)[0]
+                        .replace("\n", " ").split(",")]
             rows = [r for r in self.db.rows if r["user_id"] == user_id]
             rows.sort(key=lambda r: r["created_at"], reverse=True)
-            return {"results": rows[:limit]}
+            return {"results": [{c: r.get(c) for c in selected} for r in rows[:limit]]}
         return {"results": []}
 
 
@@ -1957,3 +1964,97 @@ async def test_d1_list_recent_claw_runs_returns_conversation_id():
     # No raw user_id or internal ids leak into public projection.
     assert "user_id" not in by_run_id["run_conv"]
     assert "conversation_id" not in by_run_id["run_conv"]
+
+
+def _record_linked_run(store, *, run_id: str, conversation_id: str | None,
+                       status: str = "completed") -> None:
+    """Insert (first call) or update (later calls) one owner run row."""
+    return store.record_claw_run(
+        user_id="usr_owner", run_id=run_id, channel="kakao",
+        action="quote_draft", title="T", status=status,
+        conversation_id=conversation_id,
+    )
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_preserved_on_null_update():
+    """existing link A + update None → A is preserved, never erased."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a)
+    assert store.db.rows[0]["conversation_id"] == conv_a
+
+    await _record_linked_run(store, run_id="run_link", conversation_id=None, status="failed")
+    assert store.db.rows[0]["conversation_id"] == conv_a
+    # the rest of the row still updates — only the linkage is immutable
+    assert store.db.rows[0]["status"] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_preserved_on_same_link_update():
+    """existing link A + update A → PASS, A preserved."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a)
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a, status="failed")
+    assert store.db.rows[0]["conversation_id"] == conv_a
+    assert store.db.rows[0]["status"] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_transfer_fails_closed():
+    """existing link A + update B → fail closed: transfer rejected, A preserved."""
+    from app.history import D1HistoryStore, HistoryError
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+    conv_b = "chat_" + "b2" * 16
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a)
+
+    with pytest.raises(HistoryError, match="transfer"):
+        await _record_linked_run(store, run_id="run_link", conversation_id=conv_b)
+    assert store.db.rows[0]["conversation_id"] == conv_a
+    assert store.db.rows[0]["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_backfill_from_null():
+    """A legacy run with NULL conversation_id can be backfilled once."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+
+    # Insert legacy row without conversation_id
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+    )
+    assert store.db.rows[0]["conversation_id"] is None
+
+    # Backfill with valid conversation_id
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+        conversation_id=conv_a,
+    )
+    assert store.db.rows[0]["conversation_id"] == conv_a
+
+
+@pytest.mark.asyncio
+async def test_d1_store_rejects_malformed_conversation_id():
+    """Store-level shape validation rejects malformed conversation_id."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    with pytest.raises(ValueError, match="conversation_id"):
+        await store.record_claw_run(
+            user_id="usr_owner", run_id="run_bad", channel="kakao",
+            action="quote_draft", title="T", status="completed",
+            conversation_id="not-a-conversation-id",
+        )
+    assert len(store.db.rows) == 0

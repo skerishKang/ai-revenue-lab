@@ -423,29 +423,6 @@ def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> 
 # ── #2829 Phase B: persisted run-to-conversation linkage ─────────────────────
 
 
-def test_phase_b_adds_exactly_one_additive_nullable_conversation_migration() -> None:
-    """Phase B adds exactly one migration that adds nullable conversation_id.
-
-    The migration is additive only: ALTER TABLE ... ADD COLUMN, no new table,
-    no foreign key, no destructive change, no rewrite of existing columns.
-    """
-    migrations_dir = Path(history_module.__file__).resolve().parents[1] / "migrations"
-    migration_files = sorted(migrations_dir.glob("*.sql"))
-    names = [p.name for p in migration_files]
-    assert "014_claw_run_history_conversation.sql" in names
-    # Exactly one migration references conversation_id + claw_run_history.
-    hits = [p.name for p in migration_files
-            if "conversation_id" in p.read_text(encoding="utf-8").lower()
-            and "claw_run_history" in p.read_text(encoding="utf-8").lower()]
-    assert hits == ["014_claw_run_history_conversation.sql"]
-    content = (migrations_dir / "014_claw_run_history_conversation.sql").read_text(encoding="utf-8").lower()
-    assert "alter table claw_run_history add column conversation_id text;" in content
-    assert "create table" not in content
-    assert "drop table" not in content
-    assert "foreign key" not in content
-    assert "references" not in content
-
-
 def test_phase_b_d1_select_includes_conversation_id() -> None:
     """The D1 list query now selects the persisted conversation_id column."""
     source = Path(history_module.__file__).read_text(encoding="utf-8")

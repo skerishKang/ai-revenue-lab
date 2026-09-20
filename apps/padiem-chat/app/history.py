@@ -567,13 +567,34 @@ class D1HistoryStore:
         artifact_media_type: str | None = None,
         conversation_id: str | None = None,
     ) -> None:
+        # #2829 Phase B: defensive shape validation at the store boundary.
+        # Owner authority remains with the route-level get_conversation() lookup;
+        # this only prevents malformed values from reaching persistence.
+        if conversation_id is not None:
+            conversation_id = validate_conversation_id(conversation_id)
         summary = result_summary[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_summary else None
         now = _now_iso()
         existing = await self._first(
-            "SELECT id, created_at FROM claw_run_history WHERE run_id=? AND user_id=?",
+            "SELECT id, created_at, conversation_id FROM claw_run_history WHERE run_id=? AND user_id=?",
             run_id, user_id,
         )
         if existing is not None:
+            # #2829 Phase B: run→conversation linkage is immutable once set.
+            # existing NULL + new valid id  → backfill allowed
+            # existing id A + new id A      → no-op
+            # existing id A + new NULL      → preserve A
+            # existing id A + new id B      → fail closed (no transfer)
+            existing_ref = existing.get("conversation_id")
+            incoming_ref = conversation_id
+            if existing_ref is not None:
+                if incoming_ref is not None and incoming_ref != existing_ref:
+                    raise HistoryError(
+                        f"claw run {run_id} is already linked to conversation {existing_ref}; "
+                        "transfer to a different conversation is not allowed"
+                    )
+                persisted_ref = existing_ref
+            else:
+                persisted_ref = incoming_ref
             await self._run(
                 "UPDATE claw_run_history SET channel=?, action=?, title=?, status=?, updated_at=?, "
                 "result_summary=?, artifact_document_id=?, artifact_filename=?, artifact_media_type=?, "
@@ -581,7 +602,7 @@ class D1HistoryStore:
                 "WHERE run_id=? AND user_id=?",
                 channel, action, title, status, now,
                 summary, artifact_document_id, artifact_filename, artifact_media_type,
-                conversation_id,
+                persisted_ref,
                 run_id, user_id,
             )
             return
