@@ -236,8 +236,13 @@ def project_automation_run(
     run: Any, workspace_id: str, *, tz: zoneinfo.ZoneInfo
 ) -> CalendarItemProjection:
     """Project a durable Claw automation run without exposing output/proposal payloads."""
+    run_workspace_id = str(getattr(run, "workspace_id", ""))
+    if run_workspace_id != workspace_id:
+        raise CalendarContractError("automation_workspace_mismatch", "automation run workspace mismatch")
     run_id = str(getattr(run, "run_id", ""))
     rule_id = str(getattr(run, "rule_id", ""))
+    _safe_identifier("automation_run_id", run_id)
+    _safe_identifier("automation_rule_id", rule_id)
     status = getattr(run, "status", "")
     status_val = status.value if hasattr(status, "value") else str(status)
     scheduled = getattr(run, "scheduled_time", None)
@@ -248,6 +253,8 @@ def project_automation_run(
     tz_key = tz.key if hasattr(tz, "key") else str(tz)
     completed = getattr(run, "completed_at", None)
     updated = completed if isinstance(completed, datetime) else getattr(run, "started_at", scheduled_utc)
+    if not isinstance(updated, datetime) or updated.tzinfo is None or updated.utcoffset() is None:
+        raise CalendarContractError("invalid_automation_run", "updated automation timestamp must be timezone-aware")
     return CalendarItemProjection(
         calendar_item_id=f"item_automation_{run_id}",
         workspace_id=workspace_id,
@@ -389,7 +396,7 @@ async def build_range_projection(
         list_automation_runs = getattr(automation_store, "list_runs", None)
         raw_automation_runs = await _safe_call(list_automation_runs, workspace_id)
         if raw_automation_runs:
-            for run in raw_automation_runs[:bounded_limit]:
+            for run in raw_automation_runs:
                 try:
                     scheduled = getattr(run, "scheduled_time", None)
                     if not isinstance(scheduled, datetime):
