@@ -37,6 +37,7 @@ from app.calendar_store import (
     D1CalendarStore,
     D1_CALENDAR_STORE_READY,
     DOMAIN_CONTRACT_READY,
+    DURABLE_STORE_DEFERRED,
     DURABLE_STORE_READY,
     InMemoryCalendarStore,
     STORE_PROTOCOL_READY,
@@ -125,6 +126,13 @@ def test_phase_b2_constants() -> None:
     assert STORE_PROTOCOL_READY is True
     assert DURABLE_STORE_READY is True
     assert D1_CALENDAR_STORE_READY is True
+
+
+def test_readiness_consistency_phase_b2() -> None:
+    """#2844 metadata consistency: Phase B-2 D1 store is implemented and not deferred."""
+    assert DURABLE_STORE_READY is True
+    assert D1_CALENDAR_STORE_READY is True
+    assert DURABLE_STORE_DEFERRED is False
 
 
 def test_d1_store_requires_db_binding() -> None:

@@ -1,18 +1,16 @@
-"""#2834 Phase A Native Padiem Calendar store protocol and in-memory reference store.
+"""#2834 Native Padiem Calendar store: protocol, in-memory reference, and durable D1.
 
-Persistence decision for Phase A:
+Phase B-2 state (as of #2844):
 - DOMAIN_CONTRACT = YES
 - STORE_PROTOCOL = YES
 - REFERENCE_IN_MEMORY_STORE = YES
-- DURABLE_STORE = DEFERRED_WITH_REASON
+- DURABLE_STORE = IMPLEMENTED (migration 013_padiem_calendar.sql)
+- D1_CALENDAR_STORE = IMPLEMENTED
 
-Reason for deferral:
-Padiem Chat D1 migrations (008 through 012) require dedicated migration activation
-scripts, GitHub Actions migration gate workflows, and explicit deployment authority.
-In Phase A, introducing an unverified/unreviewed D1 schema migration would expand scope
-and bypass migration governance. Therefore, Phase A defines the canonical store protocol
-and provides an in-memory reference implementation enforcing strict workspace isolation,
-while deferring durable D1 persistence with explicit recorded reason.
+Behavior:
+- in-memory reference store remains available when no D1 binding exists
+- durable D1 Calendar store is implemented (D1CalendarStore)
+- when D1 binding exists, construction failure fails closed (no silent InMemory fallback)
 """
 
 from __future__ import annotations
@@ -35,9 +33,9 @@ from .workspace_storage import WorkspaceStorageError, _row_to_dict
 DOMAIN_CONTRACT_READY = True
 STORE_PROTOCOL_READY = True
 REFERENCE_IN_MEMORY_STORE_READY = True
-DURABLE_STORE_DEFERRED = True
+DURABLE_STORE_DEFERRED = False
 DURABLE_STORE_DEFERRED_REASON = (
-    "unclear_migration_governance_and_pipeline_gate_scope_containment"
+    "resolved_in_phase_b2: D1CalendarStore implemented with migration 013"
 )
 DURABLE_STORE_READY = True
 D1_CALENDAR_STORE_READY = True

@@ -617,10 +617,10 @@ def test_persistence_decision_constants() -> None:
     assert DOMAIN_CONTRACT_READY is True
     assert STORE_PROTOCOL_READY is True
     assert REFERENCE_IN_MEMORY_STORE_READY is True
-    assert DURABLE_STORE_DEFERRED is True
+    assert DURABLE_STORE_DEFERRED is False
     assert (
         DURABLE_STORE_DEFERRED_REASON
-        == "unclear_migration_governance_and_pipeline_gate_scope_containment"
+        == "resolved_in_phase_b2: D1CalendarStore implemented with migration 013"
     )
 
 
