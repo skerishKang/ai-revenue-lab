@@ -430,6 +430,7 @@ async def build_today_projection(
     calendar_store: CalendarStore,
     task_alert_store: Any | None = None,
     history_store: Any | None = None,
+    automation_store: Any | None = None,
     user_id: str | None = None,
     now_utc: datetime | None = None,
     limit: int = 100,
