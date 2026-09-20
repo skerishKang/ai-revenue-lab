@@ -446,7 +446,7 @@ def test_existing_task_alert_and_claw_run_projection() -> None:
     assert s_run["date"] == "2026-09-20"
 
     # Automation projection is explicitly deferred
-    assert AUTOMATION_PROJECTION == "DEFERRED_PENDING_2833"
+    assert AUTOMATION_PROJECTION == "READ_ONLY_DURABLE_STORE"
 
 
 # ==============================================================================
