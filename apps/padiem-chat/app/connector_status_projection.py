@@ -18,12 +18,17 @@ workspace authority. It has exactly two sources:
   projection never guesses ``connected`` and never guesses ``not_connected``;
   a row is only ever ``not_connected`` when a trusted authority said so
   explicitly.
-* **Trusted canonical session** (B-1C). The signed B62 product session is
-  resolved through the existing Control Plane identity shadow to a canonical
-  ``auth_session_id``, and the existing B-1B private composition
-  (``compose_workspace_connector_truth``) yields bounded Gmail / Drive truth.
-  Only ``workspace_state`` and ``workspace_reason`` are updated from it — the
-  B-1B row is never published verbatim.
+* **Trusted canonical session** (B-1C). B62 **product authentication is proven
+  first** (``auth_ready`` + a live product profile), and only then is the signed
+  B62 product session resolved through the existing Control Plane identity
+  shadow to a canonical ``auth_session_id``; the existing B-1B private
+  composition (``compose_workspace_connector_truth``) yields bounded
+  Gmail / Drive truth. Only ``workspace_state`` and ``workspace_reason`` are
+  updated from it — the B-1B row is never published verbatim.
+
+A signed cookie is never sufficient on its own. ``COOKIE_UID_PRESENT !=
+PRODUCT_USER_AUTHENTICATED``: a stale or deleted product user degrades to the
+anonymous Phase-A projection and reaches no canonical private authority at all.
 
 The reviewed workspace-truth scope is exactly Gmail and Google Drive, mapped
 through an explicit closed table to the Core canonical connector ids. Telegram,
@@ -67,7 +72,7 @@ from padiem_ai_core.telegram_capability import (
     telegram_capability_snapshot,
 )
 
-from .auth_routes import current_user_id
+from .auth_routes import auth_ready, current_user_id
 from .connector_workspace_truth import (
     REVIEWED_WORKSPACE_TRUTH_CONNECTORS,
     compose_workspace_connector_truth,
@@ -211,11 +216,19 @@ _NO_STORE_HEADERS = {
 NEW_WORKSPACE_AUTHORITY = False
 NEW_IDENTITY_AUTHORITY = False
 NEW_OAUTH_AUTHORITY = False
+NEW_AUTHENTICATION_AUTHORITY = False
 CLIENT_WORKSPACE_ASSERTION = False
 IDENTITY_REF_PROJECTED = False
 TOKEN_OR_SECRET_PROJECTED = False
 SCOPE_PROJECTED = False
 READ_TRUTH_PROMOTES_TO_SEND_WRITE = False
+# B62 product authentication boundary. The canonical shadow is reached only
+# after the local product session is proven against the product authority.
+AUTH_READY_REQUIRED = True
+PRODUCT_PROFILE_REQUIRED = True
+SIGNED_COOKIE_ALONE_AUTHORIZES = False
+SHADOW_PRESENCE_AUTHENTICATES_USER = False
+CANONICAL_SESSION_REPLACES_PRODUCT_AUTH = False
 
 
 def _require_reviewed_targets() -> None:
@@ -271,14 +284,46 @@ async def _reviewed_workspace_truth(
 
     This never raises. Every failure is mapped to a closed, bounded reason, so
     an operational fault (missing binding, malformed RPC, unresolved session)
-    can never be projected as ``not_connected``. An anonymous request returns
-    the Phase-A reason with no overrides and makes no private call.
+    can never be projected as ``not_connected``.
+
+    B62 **product authentication is proven first**, using the same product
+    authority the rest of the app uses — ``auth_ready`` plus a live product
+    profile from the history store — before any canonical private authority is
+    reached. A signed cookie is only a *candidate* identity:
+
+        COOKIE_UID_PRESENT != PRODUCT_USER_AUTHENTICATED
+
+    The canonical identity shadow is not a product authentication authority
+    (``SHADOW_PRESENCE_AUTHENTICATES_USER=NO``) and a canonical auth session is
+    not a substitute for the local B62 product session
+    (``CANONICAL_SESSION_REPLACES_PRODUCT_AUTH=NO``). When product auth is not
+    ready, absent, or cannot be evaluated, no private call is made at all.
     """
 
-    user_id = current_user_id(request)
-    if user_id is None:
+    # 1. Prove B62 product authentication before reaching any canonical private
+    #    authority. A stale or deleted product user must never be able to read
+    #    canonical workspace truth through the shadow.
+    try:
+        if not auth_ready(request):
+            # auth_mode="off", or no product history store: not authenticated.
+            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+        user_id = current_user_id(request)
+        if user_id is None:
+            # No valid signed product cookie.
+            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+        history_store = getattr(request.app.state, "history_store", None)
+        if history_store is None:
+            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+        profile = await history_store.get_user(user_id)
+    except Exception:  # noqa: BLE001 - product authentication could not be evaluated
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+    if profile is None:
+        # The cookie decodes to a uid that no longer has a product user. That is
+        # the B62 "expired / not authenticated" state, so degrade exactly to the
+        # anonymous Phase-A projection instead of reaching the canonical shadow.
         return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
 
+    # 2. Only now may the canonical private authorities be reached.
     try:
         _require_reviewed_targets()
     except RuntimeError:

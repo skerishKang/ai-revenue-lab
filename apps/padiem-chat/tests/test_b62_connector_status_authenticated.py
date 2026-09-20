@@ -197,10 +197,46 @@ class _BoomShadowStore:
         raise RuntimeError("shadow backend exploded")
 
 
-def _settings() -> Settings:
+# Sentinel meaning "build the default fake", so an explicit ``None`` can still be
+# passed to model a missing product user.
+_SENTINEL_PROFILE = object()
+
+
+class _Profile:
+    """Minimal B62 product user profile (existence is what matters here)."""
+
+    def __init__(self, user_id: str = USER_ID) -> None:
+        self.user_id = user_id
+
+    def public_dict(self) -> dict[str, Any]:
+        return {"user_id": self.user_id}
+
+
+class _HistoryStore:
+    """Fake B62 product history store; the product authentication authority."""
+
+    def __init__(self, *, profile: Any = _SENTINEL_PROFILE) -> None:
+        self.profile = _Profile() if profile is _SENTINEL_PROFILE else profile
+        self.calls: list[str] = []
+
+    async def get_user(self, user_id: str) -> Any:
+        self.calls.append(user_id)
+        return self.profile
+
+
+class _BoomHistoryStore:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    async def get_user(self, user_id: str) -> Any:
+        self.calls.append(user_id)
+        raise RuntimeError("history backend exploded")
+
+
+def _settings(*, auth_mode: str = "google") -> Settings:
     return Settings.from_values(
         runtime_mode="mock",
-        auth_mode="google",
+        auth_mode=auth_mode,
         public_base_url=BASE_URL,
         google_client_id="connector-status-b1c.apps.googleusercontent.com",
         google_client_secret="unit-test-only-google-secret",
@@ -214,9 +250,12 @@ def _app(
     identity_binding: Any = None,
     oauth_binding: Any = None,
     shadow_store: Any = None,
+    history_store: Any = _SENTINEL_PROFILE,
+    auth_mode: str = "google",
 ):
-    settings = _settings()
-    app = create_app(settings)
+    settings = _settings(auth_mode=auth_mode)
+    store = _HistoryStore() if history_store is _SENTINEL_PROFILE else history_store
+    app = create_app(settings, history_store=store)
     app.state.control_plane_identity_authority = (
         CloudflareControlPlaneIdentityAuthority(identity_binding)
         if identity_binding is not None
@@ -243,6 +282,8 @@ def _wired(
     linked: bool = True,
     shadow_store=None,
     error=None,
+    history_store=_SENTINEL_PROFILE,
+    auth_mode: str = "google",
 ):
     """Return (settings, app, identity_binding, oauth_binding, shadow_store)."""
 
@@ -253,6 +294,8 @@ def _wired(
         identity_binding=identity_binding,
         oauth_binding=oauth_binding,
         shadow_store=store,
+        history_store=history_store,
+        auth_mode=auth_mode,
     )
     return settings, app, identity_binding, oauth_binding, store
 
@@ -664,6 +707,123 @@ async def test_20b_valid_canonical_rows_still_compose_after_the_equivalence_chec
     assert rows[GMAIL_ID]["workspace_state"] == WORKSPACE_STATE_CONNECTED
     assert rows[DRIVE_ID]["workspace_state"] == WORKSPACE_STATE_AMBIGUOUS
     assert document["workspace_state_authority"] is True
+
+
+# --------------------------------------------------------------------------
+# 21-27. B62 product authentication boundary
+#
+#     COOKIE_UID_PRESENT != PRODUCT_USER_AUTHENTICATED
+#
+# Canonical workspace truth may only be projected after the local B62 product
+# session is proven against the product authority. The canonical identity shadow
+# is NOT a product authentication authority, and a canonical auth session is not
+# a substitute for the product session.
+# --------------------------------------------------------------------------
+
+
+async def test_21_auth_mode_off_never_reaches_a_private_authority():
+    settings, app, identity_binding, oauth_binding, store = _wired(auth_mode="off")
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+    assert response.status_code == 200
+    assert response.json() == build_connector_status_projection()
+    assert identity_binding.calls == []
+    assert oauth_binding.calls == []
+    assert store.calls == []
+
+
+async def test_22_missing_product_user_degrades_to_the_anonymous_projection():
+    history = _HistoryStore(profile=None)
+    settings, app, identity_binding, oauth_binding, store = _wired(history_store=history)
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+    assert response.status_code == 200
+    # Exactly the Phase-A projection: a stale cookie is not authenticated.
+    assert response.json() == build_connector_status_projection()
+    assert history.calls == [USER_ID]
+    assert identity_binding.calls == []
+    assert oauth_binding.calls == []
+    assert store.calls == []
+
+
+async def test_23_product_auth_lookup_failure_is_unavailable_not_a_state():
+    history = _BoomHistoryStore()
+    settings, app, identity_binding, oauth_binding, store = _wired(history_store=history)
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+    assert response.status_code == 200
+    document = response.json()
+    assert document["workspace_state_authority"] is False
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+    assert identity_binding.calls == []
+    assert oauth_binding.calls == []
+    assert store.calls == []
+
+
+async def test_24_valid_product_profile_still_composes_canonical_truth():
+    history = _HistoryStore()
+    settings, app, identity_binding, oauth_binding, store = _wired(
+        [GMAIL_CONNECTED, DRIVE_CONNECTED], history_store=history
+    )
+    async with _client(settings, app) as client:
+        document = (await client.get(STATUS_PATH)).json()
+    assert history.calls == [USER_ID]
+    assert _rows(document)[GMAIL_ID]["workspace_state"] == WORKSPACE_STATE_CONNECTED
+    assert _rows(document)[DRIVE_ID]["workspace_state"] == WORKSPACE_STATE_CONNECTED
+    assert document["workspace_state_authority"] is True
+
+
+async def test_25_stale_user_cookie_cannot_produce_any_connection_state():
+    """A deleted product user must never surface a guessed connector state."""
+
+    history = _HistoryStore(profile=None)
+    settings, app, identity_binding, oauth_binding, store = _wired(
+        [GMAIL_CONNECTED, DRIVE_CONNECTED], history_store=history
+    )
+    async with _client(settings, app) as client:
+        document = (await client.get(STATUS_PATH)).json()
+    rows = _rows(document)
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        assert rows[connector_id]["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert rows[connector_id]["workspace_state"] != WORKSPACE_STATE_CONNECTED
+        assert rows[connector_id]["workspace_state"] != WORKSPACE_STATE_NOT_CONNECTED
+        assert rows[connector_id]["workspace_state"] != WORKSPACE_STATE_AMBIGUOUS
+        assert rows[connector_id]["workspace_reason"] == WORKSPACE_REASON_NO_TRUSTED_AUTHORITY
+    assert document["workspace_state_authority"] is False
+    assert identity_binding.calls == []
+    assert oauth_binding.calls == []
+    assert store.calls == []
+
+
+async def test_26_shadow_presence_alone_does_not_authenticate_the_product_user():
+    """A linked canonical shadow with no product profile stays anonymous."""
+
+    history = _HistoryStore(profile=None)
+    shadow = _ShadowStore(linked=True)
+    settings, app, identity_binding, oauth_binding, store = _wired(
+        [GMAIL_CONNECTED], history_store=history, shadow_store=shadow
+    )
+    async with _client(settings, app) as client:
+        document = (await client.get(STATUS_PATH)).json()
+    assert document["workspace_state_authority"] is False
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        assert _rows(document)[connector_id]["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+    # The canonical shadow was never even read.
+    assert shadow.calls == []
+    assert identity_binding.calls == []
+    assert oauth_binding.calls == []
+
+
+def test_27_product_authentication_boundary_pins_hold():
+    assert projection_module.AUTH_READY_REQUIRED is True
+    assert projection_module.PRODUCT_PROFILE_REQUIRED is True
+    assert projection_module.SIGNED_COOKIE_ALONE_AUTHORIZES is False
+    assert projection_module.SHADOW_PRESENCE_AUTHENTICATES_USER is False
+    assert projection_module.CANONICAL_SESSION_REPLACES_PRODUCT_AUTH is False
+    assert projection_module.NEW_AUTHENTICATION_AUTHORITY is False
 
 
 # --------------------------------------------------------------------------
