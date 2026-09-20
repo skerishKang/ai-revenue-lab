@@ -21,6 +21,7 @@ from app.claw_p01_composition import build_claw_p01_adapter_with_diagnostic
 from app.config import ConfigError
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
+from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
@@ -32,6 +33,7 @@ from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
+    GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
     WORKSPACE_R2_BINDING_NAME,
     apply_live_deadman_switch,
@@ -554,6 +556,7 @@ class Default(WorkerEntrypoint):
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
                 identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
+                google_oauth_binding = binding_value(self.env, GOOGLE_OAUTH_SERVICE_BINDING_NAME)
                 # Private Claw workspace bytes (#2266). Resolved from trusted
                 # Worker bindings only; absent until #2259/#2246 activation, in
                 # which case WorkspaceDocumentStore stays None (fail closed).
@@ -566,6 +569,11 @@ class Default(WorkerEntrypoint):
                 identity_authority = (
                     CloudflareControlPlaneIdentityAuthority(identity_binding)
                     if identity_binding is not None
+                    else None
+                )
+                google_oauth_workspace_truth = (
+                    CloudflareGoogleOAuthWorkspaceTruth(google_oauth_binding)
+                    if google_oauth_binding is not None
                     else None
                 )
                 base_usage_store = D1UsageCounterStore(db_binding) if db_binding is not None else None
@@ -610,6 +618,8 @@ class Default(WorkerEntrypoint):
                 )
                 _worker_app.state.b14_service_bound = b14_binding is not None
                 _worker_app.state.identity_authority_service_bound = identity_binding is not None
+                _worker_app.state.google_oauth_workspace_truth = google_oauth_workspace_truth
+                _worker_app.state.google_oauth_service_bound = google_oauth_binding is not None
                 _worker_app.state.claw_p01_adapter, _worker_app.state.claw_p01_composition_diagnostic = (
                     build_claw_p01_adapter_with_diagnostic(
                         self.env,

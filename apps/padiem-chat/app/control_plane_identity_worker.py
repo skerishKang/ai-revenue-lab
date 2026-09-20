@@ -30,6 +30,8 @@ _SESSION_KEYS_LEGACY = frozenset(
 _SESSION_KEYS_TENANT = _SESSION_KEYS_LEGACY | {"tenant_id"}
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _TICKET_KEYS = frozenset({"connect_ticket", "connector_id", "expires_at"})
+_CONNECTOR_WORKSPACE_KEYS_ABSENT = frozenset({"present"})
+_CONNECTOR_WORKSPACE_KEYS_PRESENT = frozenset({"present", "workspace_ref"})
 _TENANT_KEYS = frozenset({"tenant_id", "state", "created_at"})
 _MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id", "state", "created_at"})
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
@@ -242,6 +244,47 @@ class CloudflareControlPlaneIdentityAuthority:
             await self._rpc("resolve_auth_session", {"session_id": session_id}, "session")
         )
         return self._session_from_wire(wire)
+
+    async def resolve_connector_workspace(self, *, session_id: str) -> str | None:
+        """#2830 B-1A read: canonical workspace_ref for one existing session.
+
+        Payload is closed to ``session_id`` and no workspace may be asserted by
+        the caller. ``None`` means the session is valid but no canonical
+        connector workspace has been minted yet; that is an absence, not a
+        connector state, and it carries no B62 status projection.
+        """
+
+        if not isinstance(session_id, str) or not session_id:
+            raise IdentityBridgeError(
+                401, "canonical_auth_session_not_found", "Canonical session is unavailable."
+            )
+        # ``_rpc`` already validates the ok/error envelope and returns the
+        # unwrapped ``workspace`` payload, or raises on any malformed shape.
+        workspace = await self._rpc(
+            "resolve_connector_workspace", {"session_id": session_id}, "workspace"
+        )
+        present = workspace.get("present")
+        if not isinstance(present, bool):
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        if present is False:
+            # workspace_ref is absent by contract when present=False.
+            if set(workspace) != _CONNECTOR_WORKSPACE_KEYS_ABSENT:
+                raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+            return None
+        if set(workspace) != _CONNECTOR_WORKSPACE_KEYS_PRESENT:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        workspace_ref = workspace.get("workspace_ref")
+        if not isinstance(workspace_ref, str) or not workspace_ref:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        return workspace_ref
 
     async def resolve_active_memberships(
         self,
