@@ -90,6 +90,17 @@ def test_result_projection_is_text_only_and_mobile_focus_tokens_exist() -> None:
     assert ".app-shell:not([data-state=\"claw\"]) .claw-quote-compare" in CSS
 
 
+def test_claw_conversation_owns_bounded_vertical_scroll_without_changing_chat() -> None:
+    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+    claw_block = workspace.split('.app-shell[data-state="claw"] .conversation {', 1)[1].split("}", 1)[0]
+    assert "max-height: calc(100vh - 96px)" in claw_block
+    assert "overflow-y: auto" in claw_block
+    assert "min-height: 0" in claw_block
+    assert "overscroll-behavior-y: contain" in claw_block
+    # The generic Chat conversation remains governed by its existing rules.
+    assert '.app-shell[data-state="chat"] .conversation' not in claw_block
+
+
 def test_new_locale_keys_exist_in_both_languages() -> None:
     keys = set(re.findall(r'"(claw-qc-[^"]+)"\s*:', MODULE))
     assert keys
