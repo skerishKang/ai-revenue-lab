@@ -7,8 +7,8 @@ Canonical calendar item projections:
   DUPLICATE_TASK_STORAGE = NO
   DUPLICATE_ALERT_STORAGE = NO
   DUPLICATE_CLAW_RUN_STORAGE = NO
-- Automation run projection is deferred pending #2833:
-  AUTOMATION_PROJECTION = DEFERRED_PENDING_2833
+- Durable automation runs are projected read-only from the existing automation store:
+  DUPLICATE_AUTOMATION_STORAGE = NO
 - Today projection: calculates today's items according to explicit workspace/user timezone.
   SERVER_LOCAL_TIMEZONE_INFERENCE = NO
 - Upcoming projection: returns future appointments and deadlines in stable ascending order.
@@ -232,6 +232,40 @@ def project_claw_run(
     )
 
 
+def project_automation_run(
+    run: Any, workspace_id: str, *, tz: zoneinfo.ZoneInfo
+) -> CalendarItemProjection:
+    """Project a durable Claw automation run without exposing output/proposal payloads."""
+    run_id = str(getattr(run, "run_id", ""))
+    rule_id = str(getattr(run, "rule_id", ""))
+    status = getattr(run, "status", "")
+    status_val = status.value if hasattr(status, "value") else str(status)
+    scheduled = getattr(run, "scheduled_time", None)
+    if not isinstance(scheduled, datetime) or scheduled.tzinfo is None or scheduled.utcoffset() is None:
+        raise CalendarContractError("invalid_automation_run", "scheduled_time must be timezone-aware")
+    scheduled_utc = scheduled.astimezone(timezone.utc)
+    local_date = scheduled_utc.astimezone(tz).date().isoformat()
+    tz_key = tz.key if hasattr(tz, "key") else str(tz)
+    completed = getattr(run, "completed_at", None)
+    updated = completed if isinstance(completed, datetime) else getattr(run, "started_at", scheduled_utc)
+    return CalendarItemProjection(
+        calendar_item_id=f"item_automation_{run_id}",
+        workspace_id=workspace_id,
+        item_type=CalendarItemType.AUTOMATION_RUN.value,
+        title=f"Claw automation · {rule_id}",
+        summary=f"Status: {status_val}",
+        date=local_date,
+        start_at=scheduled_utc.isoformat(),
+        end_at=None,
+        timezone=tz_key,
+        all_day=False,
+        source_type=CalendarSourceType.AUTOMATION_RUN.value,
+        source_ref=f"automation_run:{run_id}",
+        created_at=scheduled_utc.isoformat(),
+        updated_at=updated.astimezone(timezone.utc).isoformat(),
+    )
+
+
 async def _safe_call(fn: Any, *args: Any, **kwargs: Any) -> Any:
     """Invoke function whether sync or async, failing safely on error."""
     if not callable(fn):
@@ -254,6 +288,7 @@ async def build_range_projection(
     calendar_store: CalendarStore,
     task_alert_store: Any | None = None,
     history_store: Any | None = None,
+    automation_store: Any | None = None,
     user_id: str | None = None,
     limit: int = 100,
 ) -> dict[str, Any]:
@@ -348,6 +383,23 @@ async def build_range_projection(
                     except Exception:
                         pass
 
+
+    # 6. Durable automation runs (read-only; store already enforces workspace isolation).
+    if automation_store is not None:
+        list_automation_runs = getattr(automation_store, "list_runs", None)
+        raw_automation_runs = await _safe_call(list_automation_runs, workspace_id)
+        if raw_automation_runs:
+            for run in raw_automation_runs[:bounded_limit]:
+                try:
+                    scheduled = getattr(run, "scheduled_time", None)
+                    if not isinstance(scheduled, datetime):
+                        continue
+                    run_date = scheduled.astimezone(tz).date()
+                    if start_date <= run_date <= end_date:
+                        items.append(project_automation_run(run, workspace_id, tz=tz))
+                except Exception:
+                    continue
+
     # Deterministic sorting: date ascending, all_day events first, start_at ascending, tie-breaker id
     items.sort(
         key=lambda x: (
@@ -405,6 +457,7 @@ async def build_today_projection(
         calendar_store=calendar_store,
         task_alert_store=task_alert_store,
         history_store=history_store,
+        automation_store=automation_store,
         user_id=user_id,
         limit=limit,
     )
