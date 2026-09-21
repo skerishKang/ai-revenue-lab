@@ -13,10 +13,12 @@ import pytest
 
 from google_oauth_durable_store import (
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
     DurableGoogleOAuthCredential,
     GoogleOAuthWorkspaceConnectorState,
+    _REVIEWED_SCOPES,
     workspace_connector_state,
 )
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -734,6 +736,10 @@ class _Stub:
         self.calls.append(("workspace_connector_state", payload))
         return {"ok": True, "routed": True}
 
+    async def workspace_calendar_connector_state(self, payload):
+        self.calls.append(("workspace_calendar_connector_state", payload))
+        return {"ok": True, "routed": True}
+
 
 class _Namespace:
     def __init__(self, stub: _Stub) -> None:
@@ -910,3 +916,337 @@ def test_worker_config_still_declares_no_public_route() -> None:
     assert config["workers_dev"] is False
     assert config["preview_urls"] is False
     assert "routes" not in config and "route" not in config
+
+
+# ---------------------------------------------------------------------------
+# #2010 Calendar existing-credential presence read (narrow private surface)
+# ---------------------------------------------------------------------------
+
+CALENDAR_CONNECTOR_ID = "google-calendar"
+CALENDAR_RPC_KEYS = frozenset({"workspace_ref"})
+
+
+def _calendar_credential(*, binding_ref, workspace_ref=WORKSPACE_A, expires_at=None):
+    return DurableGoogleOAuthCredential(
+        binding_ref=binding_ref,
+        connector_id=CALENDAR_CONNECTOR_ID,
+        actor_ref=f"actor.{binding_ref}",
+        account_ref=f"account.{binding_ref}",
+        workspace_ref=workspace_ref,
+        scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        sealed_refresh_token=SEALED_REFRESH,
+        issued_at=NOW,
+        expires_at=expires_at,
+    )
+
+
+def _calendar_rpc(durable_object, payload):
+    return asyncio.run(durable_object.workspace_calendar_connector_state(payload))
+
+
+def _calendar_read(store, *, workspace_ref=WORKSPACE_A, now=NOW):
+    states = store.list_workspace_connector_state(
+        workspace_ref=workspace_ref,
+        now=now,
+        connector_ids=(CALENDAR_CONNECTOR_ID,),
+    )
+    return {state.connector_id: state for state in states}
+
+
+def test_A_calendar_reviewed_connector_accepts_the_narrowed_read() -> None:
+    store, _ = _store()
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar"))
+
+    states = _calendar_read(store)
+
+    assert set(states) == {CALENDAR_CONNECTOR_ID}
+    assert states[CALENDAR_CONNECTOR_ID].state == "connected"
+    assert CALENDAR_CONNECTOR_ID in _REVIEWED_SCOPES
+    assert _REVIEWED_SCOPES[CALENDAR_CONNECTOR_ID] == (GOOGLE_CALENDAR_READONLY_SCOPE,)
+
+
+def test_B_default_workspace_scope_is_unchanged() -> None:
+    import google_oauth_durable_store as durable_module
+
+    store, _ = _store()
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar"))
+
+    default = _read(store)
+
+    assert set(default) == {"gmail", "google-drive"}
+    assert durable_module.WORKSPACE_READ_CONNECTOR_SCOPE == ("gmail", "google-drive")
+
+
+def test_C_default_projection_excludes_calendar_while_the_narrow_read_includes_it() -> None:
+    storage, durable_object = _durable_object()
+    CloudflareDurableGoogleOAuthStore(storage).save_credential(
+        _calendar_credential(binding_ref="binding.a.calendar")
+    )
+
+    default = asyncio.run(
+        durable_object.workspace_connector_state({"workspace_ref": WORKSPACE_A})
+    )
+    narrow = _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
+
+    assert {item["connector_id"] for item in default["connectors"]} == {
+        "gmail",
+        "google-drive",
+    }
+    assert [item["connector_id"] for item in narrow["connectors"]] == [CALENDAR_CONNECTOR_ID]
+    assert narrow["connectors"][0]["state"] == "connected"
+
+
+def test_D_no_usable_calendar_row_reports_not_connected() -> None:
+    storage, durable_object = _durable_object()
+    assert _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})["connectors"][0][
+        "state"
+    ] == "not_connected"
+
+    empty = _calendar_read(_store()[0])
+    assert empty[CALENDAR_CONNECTOR_ID].state == "not_connected"
+    assert empty[CALENDAR_CONNECTOR_ID].usable is False
+
+
+def test_E_one_usable_calendar_row_reports_connected() -> None:
+    store, _ = _store()
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.one"))
+
+    states = _calendar_read(store)
+
+    assert states[CALENDAR_CONNECTOR_ID].state == "connected"
+    assert states[CALENDAR_CONNECTOR_ID].usable is True
+    assert states[CALENDAR_CONNECTOR_ID].ambiguous is False
+
+
+def test_F_duplicate_usable_calendar_rows_report_ambiguous() -> None:
+    store, _ = _store()
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.one"))
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.two"))
+
+    states = _calendar_read(store)
+
+    assert states[CALENDAR_CONNECTOR_ID].state == "ambiguous"
+    assert states[CALENDAR_CONNECTOR_ID].usable is False
+    assert states[CALENDAR_CONNECTOR_ID].ambiguous is True
+
+
+def test_G_expired_calendar_row_is_ignored() -> None:
+    store, _ = _store()
+    store.save_credential(
+        _calendar_credential(
+            binding_ref="binding.a.calendar.expired",
+            expires_at=NOW + timedelta(seconds=30),
+        )
+    )
+
+    states = _calendar_read(store, now=NOW + timedelta(seconds=40))
+
+    assert states[CALENDAR_CONNECTOR_ID].state == "not_connected"
+    assert states[CALENDAR_CONNECTOR_ID].expires_present is False
+
+
+def test_H_revoked_calendar_row_is_ignored() -> None:
+    store, _ = _store()
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.revoked"))
+    store.revoke_credential(
+        binding_ref="binding.a.calendar.revoked",
+        revoked_at=NOW + timedelta(seconds=10),
+    )
+
+    states = _calendar_read(store, now=NOW + timedelta(seconds=20))
+
+    assert states[CALENDAR_CONNECTOR_ID].state == "not_connected"
+    assert states[CALENDAR_CONNECTOR_ID].usable is False
+
+
+def test_I_another_workspace_calendar_row_is_not_disclosed() -> None:
+    storage, durable_object = _durable_object()
+    CloudflareDurableGoogleOAuthStore(storage).save_credential(
+        _calendar_credential(binding_ref="binding.b.calendar", workspace_ref=WORKSPACE_B)
+    )
+
+    result = _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
+
+    assert result["ok"] is True
+    assert result["connectors"][0]["state"] == "not_connected"
+    rendered = json.dumps(result, sort_keys=True)
+    assert "binding.b.calendar" not in rendered
+    assert WORKSPACE_B not in rendered
+
+
+def test_J_to_N_calendar_response_never_exports_identity_scopes_or_sealed_material() -> None:
+    storage, durable_object = _durable_object()
+    CloudflareDurableGoogleOAuthStore(storage).save_credential(
+        _calendar_credential(binding_ref="binding.a.calendar.leak")
+    )
+
+    rendered = json.dumps(
+        _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A}), sort_keys=True
+    )
+
+    for forbidden in (
+        "binding.a.calendar.leak",
+        "binding_ref",
+        "actor_ref",
+        "account_ref",
+        "workspace_ref",
+        "scopes",
+        "sealed",
+        "refresh_token",
+        "access_token",
+        "googleapis.com",
+        WORKSPACE_A,
+        SEALED_REFRESH,
+    ):
+        assert forbidden not in rendered, f"Calendar presence read leaked: {forbidden}"
+    assert set(_calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})["connectors"][0]) == {
+        "connector_id",
+        "state",
+        "usable",
+        "expires_present",
+        "ambiguous",
+    }
+
+
+def test_O_P_calendar_presence_read_never_unseals_or_issues_a_lease(monkeypatch) -> None:
+    storage, durable_object = _durable_object()
+    CloudflareDurableGoogleOAuthStore(storage).save_credential(
+        _calendar_credential(binding_ref="binding.a.calendar")
+    )
+    lease_calls: list[tuple[str, str]] = []
+    unseal_calls: list[object] = []
+
+    async def _forbidden_issue(self, *, binding_ref, connector_id):
+        lease_calls.append((binding_ref, connector_id))
+        raise AssertionError("calendar presence read must never issue an access lease")
+
+    async def _forbidden_unseal(self, *, envelope, context):
+        unseal_calls.append(envelope)
+        raise AssertionError("calendar presence read must never unseal the refresh credential")
+
+    monkeypatch.setattr(worker.GoogleOAuthAccessLeaseRuntime, "issue", _forbidden_issue)
+    monkeypatch.setattr(worker.GoogleOAuthWebCryptoSealer, "unseal_text", _forbidden_unseal)
+
+    result = _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
+
+    assert result["ok"] is True
+    assert result["connectors"][0]["state"] == "connected"
+    assert lease_calls == []
+    assert unseal_calls == []
+
+
+def test_Q_calendar_presence_read_performs_no_write() -> None:
+    storage, durable_object = _durable_object()
+    CloudflareDurableGoogleOAuthStore(storage).save_credential(
+        _calendar_credential(binding_ref="binding.a.calendar")
+    )
+    storage.sql.statements.clear()
+
+    assert _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})["ok"] is True
+
+    writes = [
+        text
+        for text in storage.sql.statements
+        if not text.lstrip().upper().startswith("SELECT")
+    ]
+    assert writes == []
+
+
+def test_R_public_surface_is_unchanged_for_the_calendar_read() -> None:
+    _, durable_object = _durable_object()
+    assert asyncio.run(durable_object.fetch(object())).status == 404
+
+    stub = _Stub()
+    namespace = _Namespace(stub)
+    entrypoint = worker.Default(_Env(namespace=namespace))
+    assert asyncio.run(entrypoint.fetch(object())).status == 404
+    assert asyncio.run(
+        entrypoint.workspace_calendar_connector_state({"workspace_ref": WORKSPACE_A})
+    ) is not None
+    assert namespace.names == [AUTHORITY_REF]
+    assert stub.calls == [("workspace_calendar_connector_state", {"workspace_ref": WORKSPACE_A})]
+
+
+def test_calendar_rpc_payload_is_closed_to_workspace_ref_only() -> None:
+    _, durable_object = _durable_object()
+
+    for denied in (
+        {},
+        {"workspace": WORKSPACE_A},
+        {"workspace_ref": WORKSPACE_A, "connector_id": CALENDAR_CONNECTOR_ID},
+        {"workspace_ref": WORKSPACE_A, "scopes": [GOOGLE_CALENDAR_READONLY_SCOPE]},
+        {"workspace_ref": WORKSPACE_A, "binding_ref": "binding.a.calendar"},
+        {"workspace_ref": WORKSPACE_A, "actor_ref": "actor.self"},
+        {"workspace_ref": WORKSPACE_A, "account_ref": "account.self"},
+        "workspace.a",
+    ):
+        result = _calendar_rpc(durable_object, denied)
+        assert result["ok"] is False, f"payload accepted: {denied!r}"
+    assert _calendar_rpc(durable_object, {"workspace_ref": "workspace;drop"})["ok"] is False
+    assert CALENDAR_RPC_KEYS == frozenset({"workspace_ref"})
+
+
+def test_calendar_read_applies_the_reviewed_connector_narrowing(monkeypatch) -> None:
+    """Non-vacuity: the narrowing filter must actually reach the durable store."""
+
+    captured: list[dict] = []
+    original = CloudflareDurableGoogleOAuthStore.list_workspace_connector_state
+
+    def _recording(self, **kwargs):
+        captured.append(dict(kwargs))
+        return original(self, **kwargs)
+
+    monkeypatch.setattr(
+        CloudflareDurableGoogleOAuthStore, "list_workspace_connector_state", _recording
+    )
+    _, durable_object = _durable_object()
+    _calendar_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
+
+    assert len(captured) == 1
+    assert captured[0]["connector_ids"] == (CALENDAR_CONNECTOR_ID,)
+    assert captured[0]["workspace_ref"] == WORKSPACE_A
+
+    source = _WORKER_PATH.read_text(encoding="utf-8")
+    method = source.partition("async def workspace_calendar_connector_state")[2].partition(
+        "async def fetch"
+    )[0]
+    assert "connector_ids=(WORKSPACE_CALENDAR_CONNECTOR_ID,)" in method
+    assert 'payload["connector_id"]' not in method
+    assert 'payload["scopes"]' not in method
+    assert 'payload["binding_ref"]' not in method
+
+
+def test_calendar_tri_state_invariants_hold() -> None:
+    store, _ = _store()
+    assert _calendar_read(store)[CALENDAR_CONNECTOR_ID].state == "not_connected"
+    assert _calendar_read(store)[CALENDAR_CONNECTOR_ID].usable is False
+
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.one"))
+    connected = _calendar_read(store)[CALENDAR_CONNECTOR_ID]
+    assert connected.state == "connected" and connected.usable is True
+    assert not (connected.state == "connected" and connected.usable is False)
+    assert not (connected.state == "not_connected" and connected.usable is True)
+
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.two"))
+    ambiguous = _calendar_read(store)[CALENDAR_CONNECTOR_ID]
+    assert ambiguous.state == "ambiguous" and ambiguous.ambiguous is True
+    assert not (ambiguous.state == "ambiguous" and ambiguous.ambiguous is False)
+
+
+def test_calendar_presence_read_declares_its_truth_flags() -> None:
+    import google_oauth_durable_store as durable_module
+
+    assert worker.CALENDAR_CREDENTIAL_PRESENCE_READ_RPC is True
+    assert worker.CALENDAR_CREDENTIAL_PRESENCE_READ_CONNECTOR == CALENDAR_CONNECTOR_ID
+    assert worker.CALENDAR_CREDENTIAL_PRESENCE_READ_PAYLOAD_CLOSED is True
+    assert worker.CALENDAR_CREDENTIAL_PRESENCE_READ_PUBLIC_ROUTE is False
+    assert worker.CALENDAR_CREDENTIAL_PRESENCE_READ_CONNECTOR_FIXED_IN_CODE is True
+    assert worker.CALENDAR_CREDENTIAL_EXISTENCE_READ is True
+    assert worker.CALENDAR_REF_OUTPUT is False
+    assert worker.CALENDAR_TOKEN_OUTPUT is False
+    assert worker.CALENDAR_CREDENTIAL_READ_UNSEALS_REFRESH_TOKEN is False
+    assert worker.CALENDAR_CREDENTIAL_READ_ISSUES_ACCESS_LEASE is False
+    assert worker.CALENDAR_CREDENTIAL_READ_WRITE_AUTHORITY is False
+    assert worker.DEFAULT_WORKSPACE_STATUS_INCLUDES_CALENDAR is False
+    assert worker.B62_PUBLIC_CALENDAR_TRUTH_WIDENED is False
+    assert durable_module.WORKSPACE_READ_CONNECTOR_SCOPE == ("gmail", "google-drive")
