@@ -12,6 +12,7 @@ transport caller identity stay inside the Engine.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 from padiem_ai_core.orchestration import OrchestrationResult
@@ -79,6 +80,51 @@ def project_agent_continuation_result(
             "approval_delta_applied": bool(approval_delta_applied),
             "capability_required": list(definition.required_capabilities),
         },
+        "audit_event": {
+            "trace_id": trace_id,
+            "event_count": len(public_events),
+            "terminal_kind": public_events[-1].get("kind") if public_events else None,
+        },
+    }
+
+
+def project_agent_cancellation_result(
+    *,
+    record: ContinuationRecord,
+    committed: ContinuationRecord,
+    events: Sequence[Any],
+    reason: str,
+) -> dict[str, Any]:
+    """Return the bounded continuation block for a cancelled continuation.
+
+    No owner identity is projected here: the cancel path has no trusted execution
+    selection, so the Engine has no trusted source for a subject on this route.
+    Recording that gap is deliberate (S13-4 Phase 2 decision) — the alternative
+    would be to invent one or to add a runtime lookup to the cancel path.
+    """
+
+    if not isinstance(record, ContinuationRecord):
+        raise TypeError("record must be ContinuationRecord")
+    if not isinstance(committed, ContinuationRecord):
+        raise TypeError("committed must be ContinuationRecord")
+    if not isinstance(reason, str) or not reason:
+        raise TypeError("reason must be a non-empty string")
+
+    public_events = [event.to_public_dict() for event in events]
+    task_id = record.pause.run_id or (
+        public_events[0].get("run_id") if public_events else None
+    )
+    trace_id = record.pause.trace_id or (
+        public_events[0].get("trace_id") if public_events else None
+    )
+
+    return {
+        "continuation_contract_version": ENGINE_AGENT_CONTINUATION_CONTRACT_VERSION,
+        "continuation_id": record.continuation_ref,
+        "task_id": task_id,
+        "current_state": record.state,
+        "terminal_state": committed.state,
+        "cancel_reason": committed.cancel_reason or reason,
         "audit_event": {
             "trace_id": trace_id,
             "event_count": len(public_events),
