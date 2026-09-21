@@ -90,6 +90,10 @@ from app.authority_diagnostic import (
     AUTHORITY_DIAGNOSTIC_PATH,
     diagnostic_response,
 )
+from app.calendar_credential_presence import (
+    CALENDAR_CREDENTIAL_PRESENCE_PATH,
+    calendar_presence_response,
+)
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -786,6 +790,8 @@ class Default(legacy_worker.Default):
         path = urlparse(str(request.url)).path
         if path == AUTHORITY_DIAGNOSTIC_PATH:
             return self._fetch_authority_diagnostic(request)
+        if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
+            return await self._fetch_calendar_credential_presence(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
@@ -811,6 +817,31 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         status, body = diagnostic_response(self.env, method, headers)
+        return legacy_worker._json_response(
+            ServiceResponse(status_code=status, body=body)
+        )
+
+    async def _fetch_calendar_credential_presence(self, request: Any) -> Any:
+        """Private read-only Calendar credential-presence surface (#2010).
+
+        Same operator-token gate as the authority diagnostic, and the same
+        closed-projection discipline: the caller supplies only a server-trusted
+        workspace reference, the connector is fixed in code, and the answer is
+        the bounded four-fact presence projection. No storage resolver, no
+        caller-registry path, no access lease and no token unseal are involved.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+
+        raw = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                raw = str(text).encode("utf-8")
+            except Exception:
+                raw = b""
+
+        status, body = await calendar_presence_response(self.env, method, headers, raw)
         return legacy_worker._json_response(
             ServiceResponse(status_code=status, body=body)
         )
