@@ -335,8 +335,25 @@ def drive_worker_transport() -> httpx.AsyncBaseTransport | None:
     )
 
 
+def calendar_worker_transport() -> httpx.AsyncBaseTransport | None:
+    """Return the Worker-native bounded Calendar GET transport in Pyodide.
+
+    Calendar uses the same official ``www.googleapis.com`` host as Drive. CPython
+    tests keep the ordinary httpx transport so MockTransport injection and
+    network-free composition tests remain valid.
+    """
+    import sys
+
+    if sys.platform != "emscripten":
+        return None
+    return CloudflareExternalHttpTransport(
+        allowed_hosts=frozenset({"www.googleapis.com"}),
+    )
+
+
 __all__ = [
     "CloudflareExternalHttpTransport",
+    "calendar_worker_transport",
     "drive_worker_transport",
     "gmail_worker_transport",
 ]

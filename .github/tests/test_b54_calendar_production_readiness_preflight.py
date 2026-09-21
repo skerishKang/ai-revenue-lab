@@ -133,9 +133,7 @@ def test_reads_binding_name_and_type_only() -> None:
     # Binding names are injected from the workflow env block (Telegram pattern),
     # so the live job references them by env placeholder, never by inline value.
     for placeholder in (
-        "${GOOGLE_OAUTH_CLIENT_ID_BINDING}",
-        "${GOOGLE_OAUTH_CLIENT_SECRET_BINDING}",
-        "${GOOGLE_OAUTH_REFRESH_TOKEN_BINDING}",
+        "${CONTROL_PLANE_GOOGLE_OAUTH_BINDING}",
         "${CALENDAR_ALLOWLIST_BINDING}",
     ):
         assert placeholder in text
@@ -144,6 +142,54 @@ def test_reads_binding_name_and_type_only() -> None:
     assert 'return f"PRESENT:{kind}"' in text
     assert "SECRET_VALUE_OUTPUT=0" in text
     assert "add-mask::" in text
+
+
+def test_preflight_no_longer_requires_direct_engine_oauth_secret_bindings() -> None:
+    """P. #2010: the canonical authority is the CP Service Binding.
+
+    The production readiness observation must NOT require the three
+    Engine-owned Google long-lived credential bindings any more; the Control
+    Plane owns the refresh credential and issues short-lived access leases.
+    """
+    text = workflow_text()
+    job = live_job_text()
+    for forbidden in (
+        "ENGINE_GOOGLE_OAUTH_CLIENT_ID",
+        "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET",
+        "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN",
+    ):
+        assert forbidden not in job, f"direct Engine OAuth binding still required: {forbidden}"
+    for env_key in (
+        "GOOGLE_OAUTH_CLIENT_ID_BINDING:",
+        "GOOGLE_OAUTH_CLIENT_SECRET_BINDING:",
+        "GOOGLE_OAUTH_REFRESH_TOKEN_BINDING:",
+    ):
+        assert env_key not in text
+    for placeholder in (
+        "${GOOGLE_OAUTH_CLIENT_ID_BINDING}",
+        "${GOOGLE_OAUTH_CLIENT_SECRET_BINDING}",
+        "${GOOGLE_OAUTH_REFRESH_TOKEN_BINDING}",
+    ):
+        assert placeholder not in text
+    assert "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING=" in job
+    assert '("ABSENT", "PRESENT:service")' in job
+    assert workflow_document()["env"]["CONTROL_PLANE_GOOGLE_OAUTH_BINDING"] == (
+        "CONTROL_PLANE_GOOGLE_OAUTH"
+    )
+
+
+def test_control_plane_service_binding_presence_does_not_claim_calendar_scope() -> None:
+    """A present Service Binding never proves the calendar scope grant."""
+
+    text = live_job_text()
+    assert "SECRET_PRESENT != CALENDAR_SCOPE_GRANTED" in text
+    assert "CALENDAR_OAUTH_SCOPE_STATUS=UNVERIFIED_WITHOUT_PROVIDER" in text
+    assert "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING=" in text
+    assert "CALENDAR_RUNTIME_AUTHORITY=PRESENT_NAME_TYPE_ONLY" in text
+    # The Engine-owned Google long-lived credential names must not reappear in
+    # the readiness authority calculation.
+    assert "GOOGLE_OAUTH_CLIENT_ID_SERVED_BINDING" not in text
+    assert "secrets_present" not in text
 
 
 def test_d1_is_select_only() -> None:
@@ -160,9 +206,7 @@ def test_canonical_calendar_identity_pinned() -> None:
     assert env["CALENDAR_APP_ID"] == APP_ID
     assert env["CALENDAR_AGENT_ID"] == AGENT_ID
     assert env["CALENDAR_CONNECTOR_ID"] == CONNECTOR_ID
-    assert env["GOOGLE_OAUTH_CLIENT_ID_BINDING"] == "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
-    assert env["GOOGLE_OAUTH_CLIENT_SECRET_BINDING"] == "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
-    assert env["GOOGLE_OAUTH_REFRESH_TOKEN_BINDING"] == "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
+    assert env["CONTROL_PLANE_GOOGLE_OAUTH_BINDING"] == "CONTROL_PLANE_GOOGLE_OAUTH"
     assert env["CALENDAR_ALLOWLIST_BINDING"] == "ENGINE_CALENDAR_ALLOWED_CALENDARS"
 
 
@@ -287,8 +331,24 @@ def test_source_contract_validates_shared_source() -> None:
         'CALENDAR_REFERENCE_APP_ID = "b54-padiem-claw-calendar"',
         'CALENDAR_AGENT_ID = "agent:padiem:claw_calendar_reader@1"',
         "def _calendar_port_for_env",
+        # #2010 canonical convergence markers
+        'CALENDAR_CP_CONNECTOR_ID = "google-calendar"',
+        "CALENDAR_CP_LEASE_CANONICAL = True",
+        "CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK = False",
+        "MAX_PROVIDER_ATTEMPTS = 2",
+        "ControlPlaneLeaseGoogleCalendarReadPort",
+        'CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"',
     ):
         assert marker in text
+
+
+def test_source_contract_forbids_direct_engine_calendar_credentials() -> None:
+    """The source-contract job itself rejects an Engine-credential fallback."""
+
+    text = source_contract_text()
+    assert "canonical Calendar composition drifted to a direct Engine credential" in text
+    assert "calendar_block" in text
+    assert "from app.calendar_port_httpx import" in text
 
 
 def test_source_contract_forbids_mutation_sql() -> None:

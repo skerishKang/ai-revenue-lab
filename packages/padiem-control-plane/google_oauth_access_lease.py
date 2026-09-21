@@ -11,6 +11,7 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 
 from google_oauth_durable_store import (
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     CloudflareDurableGoogleOAuthStore,
 )
@@ -32,6 +33,9 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    # #2010 Calendar READ joins the same CP-owned long-lived refresh authority
+    # with exactly one readonly provider scope. No Calendar write/full scope.
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
 
 

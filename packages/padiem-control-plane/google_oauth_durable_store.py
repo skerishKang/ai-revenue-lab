@@ -17,10 +17,21 @@ MAX_CONNECT_TICKET_RESIDUAL_LIFETIME_SECONDS = 330
 
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
-_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
+# #2010: the Control Plane owns the long-lived Google refresh credential and
+# issues short-lived read leases. Calendar joins the same reviewed OAuth
+# authority with exactly one readonly scope.
+GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
+# Internal OAuth-reviewed authority set. It is deliberately WIDER than the
+# public/default workspace-status projection: a connector may be a reviewed
+# OAuth authority without being part of the authorized #2830 B-0 surface.
+_OAUTH_REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
+# Backwards-compatible module-level map used by the Control Plane modules.
+_REVIEWED_SCOPES = _OAUTH_REVIEWED_SCOPES
+OAUTH_REVIEWED_CONNECTORS = tuple(sorted(_REVIEWED_SCOPES))
 
 _TICKET_SCHEMA = """
 CREATE TABLE IF NOT EXISTS google_oauth_connect_ticket_use (
@@ -657,7 +668,11 @@ class CloudflareDurableGoogleOAuthStore:
         workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
         now = _utc(now, "now")
         if connector_ids is None:
-            reviewed = tuple(sorted(_REVIEWED_SCOPES))
+            # #2830 non-widening rule: the default surface stays exactly the
+            # authorized B-0 set (gmail + google-drive). Adding google-calendar
+            # as a reviewed OAuth authority above must never widen this
+            # public/default projection.
+            reviewed = tuple(WORKSPACE_READ_CONNECTOR_SCOPE)
         else:
             if not isinstance(connector_ids, tuple):
                 raise ControlPlaneContractError(
@@ -745,7 +760,13 @@ PRODUCTION_MUTATION = False
 # Bounded projection only; raw identity and sealed material never leave the row.
 WORKSPACE_KEYED_CONNECTOR_READ = True
 WORKSPACE_READ_REQUIRES_EXACT_WORKSPACE_REF = True
+# Authorized #2830 Phase B-0 surface (Gmail + Drive only). #2010 Calendar is a
+# reviewed OAuth authority in OAUTH_REVIEWED_CONNECTORS, but it is NOT part of
+# this default workspace-status projection.
 WORKSPACE_READ_CONNECTOR_SCOPE = ("gmail", "google-drive")
+# #2830_WORKSPACE_STATUS_SURFACE_WIDENED=NO
+CALENDAR_OAUTH_REVIEWED_CONNECTOR = "google-calendar"
+OAUTH_REVIEWED_CONNECTORS_INCLUDE_CALENDAR = "google-calendar" in OAUTH_REVIEWED_CONNECTORS
 WORKSPACE_READ_TOKEN_UNSEAL = False
 WORKSPACE_READ_ACCESS_LEASE_ISSUE = False
 WORKSPACE_READ_PUBLIC_ROUTE = False
