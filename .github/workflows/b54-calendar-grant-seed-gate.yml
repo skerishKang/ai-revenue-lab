@@ -109,10 +109,15 @@ jobs:
           printf '%s\n' "${out}" | grep -Fq 'ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1'
           printf '%s\n' "${out}" | grep -Fq "binding_ref=excluded.binding_ref, actor_ref=excluded.actor_ref"
           printf '%s\n' "${out}" | grep -Fq 'granted_capabilities_json=excluded.granted_capabilities_json'
-          if printf '%s\n' "${out}" | grep -Eq "(create|update|delete|respond|write|full)"; then
+          # READ-only scope proof: the capability column must be exactly
+          # ["read"]. Column names such as created_at/updated_at legitimately
+          # contain the substrings create/update, so the check matches only the
+          # capability tokens themselves.
+          if printf '%s\n' "${out}" | grep -Eq '\["read",|calendar\.write|create_event|update_event|delete_event|cancel_event|respond_to_event|attendee_mutation|reminder_mutation|conference_mutation'; then
             echo 'CALENDAR_SEED_SQL_SCOPE=FAIL'
             exit 1
           fi
+          printf '%s\n' "${out}" | grep -Fq "'[]', '[\"read\"]', 1,"
           echo 'CALENDAR_SEED_SQL_CONTRACT=PASS'
           echo 'CALENDAR_SEED_SQL_SCOPE=READ_ONLY'
           echo 'CALENDAR_GRANT_SEED_EXECUTED=0'

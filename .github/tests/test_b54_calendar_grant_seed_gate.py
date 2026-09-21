@@ -307,6 +307,15 @@ def test_source_contract_proves_the_canonical_read_only_sql_without_executing() 
     assert "D1_MUTATION=0" in text
 
 
+def test_scope_proof_matches_capability_tokens_not_column_names() -> None:
+    """The scope proof must not flag created_at/updated_at/DO UPDATE substrings."""
+
+    text = workflow_text()
+    assert '(create|update|delete|respond|write|full)' not in text
+    assert '\["read",|calendar\.write|create_event' in text
+    assert "CALENDAR_SEED_SQL_SCOPE=FAIL" in text
+
+
 def test_source_contract_job_runs_this_contract() -> None:
     text = workflow_text()
     assert (
