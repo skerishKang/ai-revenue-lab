@@ -42,8 +42,9 @@ def _clean_isolate_override():
 
 def test_default_and_empty_override_are_the_declared_truth() -> None:
     declared = current_capability_manifest()
-    assert declared.capability_state("agent_skill_runtime") is CapabilityState.DEFERRED
+    assert declared.capability_state("agent_skill_runtime") is CapabilityState.AVAILABLE
     assert declared.capability_state("completed_execution") is CapabilityState.AVAILABLE
+    assert declared.capability_state("memory_rag") is CapabilityState.DEFERRED
     assert declared.capability_state("provider_selection") is CapabilityState.UNAVAILABLE
     assert current_posture_overrides() is None
 
@@ -57,18 +58,18 @@ def test_default_and_empty_override_are_the_declared_truth() -> None:
 def test_preview_override_raises_only_the_named_capability() -> None:
     before = current_capability_manifest()
     after = current_capability_manifest(
-        {"agent_skill_runtime": CapabilityState.AVAILABLE}
+        {"memory_rag": CapabilityState.AVAILABLE}
     )
 
-    assert after.capability_state("agent_skill_runtime") is CapabilityState.AVAILABLE
+    assert after.capability_state("memory_rag") is CapabilityState.AVAILABLE
     changed = [
         item.id
         for item in after.capabilities
         if after.capability_state(item.id) is not before.capability_state(item.id)
     ]
-    assert changed == ["agent_skill_runtime"]
+    assert changed == ["memory_rag"]
     assert (
-        after.require_capability("agent_skill_runtime").state
+        after.require_capability("memory_rag").state
         is CapabilityState.AVAILABLE
     )
 
@@ -77,11 +78,11 @@ def test_out_of_scope_and_malformed_overrides_are_ignored() -> None:
     declared = current_capability_manifest()
     rejected = (
         {"not_a_declared_capability": CapabilityState.AVAILABLE},
-        {"agent_skill_runtime": "available"},
-        {"agent_skill_runtime": None},
+        {"memory_rag": "available"},
+        {"memory_rag": None},
         {"provider_selection": CapabilityState.AVAILABLE},  # UNAVAILABLE cannot widen
         {"completed_execution": CapabilityState.DEFERRED},  # AVAILABLE cannot lower
-        {"agent_skill_runtime": CapabilityState.UNAVAILABLE},  # nor can DEFERRED lower
+        {"memory_rag": CapabilityState.UNAVAILABLE},  # nor can DEFERRED lower
     )
     for overrides in rejected:
         assert (
@@ -90,29 +91,29 @@ def test_out_of_scope_and_malformed_overrides_are_ignored() -> None:
         )
         assert (
             current_capability_manifest(overrides).capability_state(
-                "agent_skill_runtime"
+                "memory_rag"
             )
             is CapabilityState.DEFERRED
         )
 
 
 def test_isolate_override_applies_and_clears() -> None:
-    set_posture_overrides({"agent_skill_runtime": CapabilityState.AVAILABLE})
+    set_posture_overrides({"memory_rag": CapabilityState.AVAILABLE})
     assert current_posture_overrides() == {
-        "agent_skill_runtime": CapabilityState.AVAILABLE
+        "memory_rag": CapabilityState.AVAILABLE
     }
     assert (
-        current_capability_manifest().capability_state("agent_skill_runtime")
+        current_capability_manifest().capability_state("memory_rag")
         is CapabilityState.AVAILABLE
     )
     # An explicit argument still wins over the installed isolate default.
     assert (
-        current_capability_manifest({}).capability_state("agent_skill_runtime")
+        current_capability_manifest({}).capability_state("memory_rag")
         is CapabilityState.DEFERRED
     )
     # The require entrypoint sees the isolate default.
     assert (
-        require_compatible_capability("agent_skill_runtime").state
+        require_compatible_capability("memory_rag").state
         is CapabilityState.AVAILABLE
     )
 
@@ -120,8 +121,12 @@ def test_isolate_override_applies_and_clears() -> None:
     set_posture_overrides("not a mapping")  # type: ignore[arg-type]
     assert current_posture_overrides() is None
     assert (
-        current_capability_manifest().capability_state("agent_skill_runtime")
+        current_capability_manifest().capability_state("memory_rag")
         is CapabilityState.DEFERRED
+    )
+    assert (
+        current_capability_manifest().capability_state("agent_skill_runtime")
+        is CapabilityState.AVAILABLE
     )
     assert (
         require_compatible_capability.__name__ == "require_compatible_capability"

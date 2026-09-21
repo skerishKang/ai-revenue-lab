@@ -198,10 +198,17 @@ def test_capability_override_is_isolate_scoped(identity_worker: Any) -> None:
         is CapabilityState.AVAILABLE
     )
 
+    # An installed isolate override on a deferred capability is cleared by unmarked isolate
+    set_posture_overrides({"memory_rag": CapabilityState.AVAILABLE})
+    assert current_capability_manifest().capability_state("memory_rag") is CapabilityState.AVAILABLE
     _run(identity_worker._engine_services_for_env({}))
     assert (
-        current_capability_manifest().capability_state("agent_skill_runtime")
+        current_capability_manifest().capability_state("memory_rag")
         is CapabilityState.DEFERRED
+    )
+    assert (
+        current_capability_manifest().capability_state("agent_skill_runtime")
+        is CapabilityState.AVAILABLE
     )
 
 
@@ -213,7 +220,7 @@ def test_production_capability_states_are_untouched(identity_worker: Any) -> Non
     assert after == before
     assert (
         current_capability_manifest().capability_state("agent_skill_runtime")
-        is CapabilityState.DEFERRED
+        is CapabilityState.AVAILABLE
     )
 
 

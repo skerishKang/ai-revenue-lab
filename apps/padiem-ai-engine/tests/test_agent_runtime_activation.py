@@ -196,7 +196,7 @@ def test_manifest_activation_is_explicit_and_skill_stays_deferred() -> None:
     from app.capability_manifest import CapabilityState, current_capability_manifest
     from app.contract_manifest import EngineFeatureState, current_engine_contract_manifest
 
-    assert current_capability_manifest().capability_state("agent_skill_runtime") is CapabilityState.DEFERRED
+    assert current_capability_manifest().capability_state("agent_skill_runtime") is CapabilityState.AVAILABLE
     manifest = current_engine_contract_manifest()
     assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.AVAILABLE
     assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED

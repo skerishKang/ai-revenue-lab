@@ -539,9 +539,16 @@ def current_capability_manifest(
                     b14_provider_authority="preserved",
                 ),
             ),
+            # A5 (Stage 11-C / Stage 12, #2786): activated on current main.
+            # Production composition wires the bound resolver (_tool_binding_resolver_for_env,
+            # AuthenticatedFirstPartyApprovalDecisionVerifier, _continuation_store_for_env).
+            # Live wire pilot evidence: preview wire pilot run 35638452853 executed synthetic
+            # agent task with 200 OK, execution_state=completed, tool=a5-agent-probe.tool,
+            # provider_calls=0, user_data=0, followed by clean teardown and untouched production.
+            # AGENT_SKILL_RUNTIME_ACTIVATION_EVIDENCE=preview-wire-pilot-35638452853
             CapabilityDeclaration(
                 id="agent_skill_runtime",
-                state=CapabilityState.DEFERRED,
+                state=CapabilityState.AVAILABLE,
                 routes=(
                     AGENT_SKILL_RUN_PATH,
                     AGENT_SKILL_RESUME_PATH,
