@@ -177,6 +177,7 @@ class MultimodalExecutionRuntime(ExecutionRuntime):
                 _safe_message_for_b14(exc.code),
                 metadata=metadata,
                 retryable=exc.retryable,
+                upstream_status_code=exc.upstream_status_code,
             ) from None
         except Exception:
             metadata = self._metadata(  # type: ignore[arg-type]
