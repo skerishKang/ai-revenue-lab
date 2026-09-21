@@ -20,6 +20,16 @@ Steps:
 
 Output:
   A12_STREAM_REPLAY_SMOKE=PASS|FAIL|SKIPPED_UPSTREAM
+
+Classification rule (provider-independent gate):
+  PASS               every stage ran and every invariant held.
+  SKIPPED_UPSTREAM   the provider leg hit an external 5xx that the Engine
+                     preserved as error.metadata.upstream_status_code. The
+                     mandatory, provider-independent stages (S0 health /
+                     manifest, S3 conflict) still ran and still had to pass.
+  FAIL               anything else: an Engine 5xx without an upstream status,
+                     an auth/contract failure, an idempotency invariant, or a
+                     D1 row-state mismatch. An Engine failure is never a skip.
 """
 
 from __future__ import annotations
@@ -46,6 +56,14 @@ TRACE_ID = f"a12-smoke-{GITHUB_RUN_ID}"
 REQUEST_TIMEOUT_SECONDS = 90
 
 _failures: list[str] = []
+_skips: list[str] = []
+
+# A provider 5xx that the Engine preserved as an upstream status is an external
+# fact, not an Engine defect, so the gate records it as SKIPPED_UPSTREAM. Every
+# other failure stays a hard FAIL: an Engine 5xx without an upstream status, an
+# auth/contract failure, an idempotency invariant, or a D1 row-state mismatch.
+UPSTREAM_STATUS_FIELD = "upstream_status_code"
+UPSTREAM_FAILURE_RANGE = range(500, 600)
 
 
 def _fail(step: str, message: str, raw: Any = None) -> None:
@@ -53,6 +71,37 @@ def _fail(step: str, message: str, raw: Any = None) -> None:
     print(f"[{step}] FAIL: {message}", file=sys.stderr)
     if raw is not None:
         print(f"[{step}] RAW: {raw}", file=sys.stderr)
+
+
+def _upstream_status_code(line: Any) -> int | None:
+    """Return the Engine-preserved upstream provider status when it is a 5xx."""
+    if not isinstance(line, dict):
+        return None
+    error = line.get("error")
+    if not isinstance(error, dict):
+        return None
+    metadata = error.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get(UPSTREAM_STATUS_FIELD)
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    return value if value in UPSTREAM_FAILURE_RANGE else None
+
+
+def _classify_upstream_skip(step: str, status: int, lines: list[dict[str, Any]]) -> bool:
+    """Record an external-provider skip. Never used for an Engine-side failure."""
+    if status < 500:
+        return False
+    codes = [
+        code for code in (_upstream_status_code(line) for line in lines) if code is not None
+    ]
+    if not codes:
+        return False
+    reason = f"{step}: upstream provider returned {codes[0]} (HTTP {status})"
+    _skips.append(reason)
+    print(f"[{step}] SKIPPED_UPSTREAM: {reason}", file=sys.stderr)
+    return True
 
 
 def _require_env() -> bool:
@@ -179,6 +228,8 @@ def s0_health() -> bool:
 def s1_first_stream_run(payload: dict[str, Any]) -> tuple[bool, str | None]:
     status, lines, raw = _request_stream(path=STREAM_PATH, body=payload)
     if status != 200:
+        if _classify_upstream_skip("S1", status, lines):
+            return False, None
         _fail("S1", f"stream status {status} != 200", raw)
         return False, None
     if not lines:
@@ -221,6 +272,8 @@ def s1_first_stream_run(payload: dict[str, Any]) -> tuple[bool, str | None]:
 def s2_replay_stream_run(payload: dict[str, Any], s1_answer: str | None) -> bool:
     status, lines, raw = _request_stream(path=STREAM_PATH, body=payload)
     if status != 200:
+        if _classify_upstream_skip("S2", status, lines):
+            return False
         _fail("S2", f"replay stream status {status} != 200", raw)
         return False
 
@@ -326,6 +379,10 @@ def s4_d1_row_state() -> bool:
     return True
 
 
+def _record_verdict(verdict: str, extra: str = "") -> None:
+    print(f"A12_STREAM_REPLAY_SMOKE={verdict}{extra}")
+
+
 def main() -> int:
     if not _require_env():
         return 1
@@ -335,20 +392,44 @@ def main() -> int:
         return 1
 
     payload = _stream_payload()
-    ok, s1_answer = s1_first_stream_run(payload)
-    if not ok or _failures:
+    executed, s1_answer = s1_first_stream_run(payload)
+    if _failures or (not executed and not _skips):
         print("A12_STREAM_REPLAY_SMOKE=FAIL (S1)", file=sys.stderr)
         return 1
 
-    s2_replay_stream_run(payload, s1_answer)
+    if executed:
+        s2_replay_stream_run(payload, s1_answer)
+        if _failures:
+            print("A12_STREAM_REPLAY_SMOKE=FAIL (S2)", file=sys.stderr)
+            return 1
+
+    # Mandatory, provider-independent stages run even when the provider leg was
+    # skipped: the Engine contract and the D1 row state are what this gate is
+    # about. S4 is only meaningful for a run that actually executed, so a skipped
+    # run records it as not applicable instead of claiming it passed.
     s3_conflict_blocks_before_execution(payload)
-    s4_d1_row_state()
+    if executed:
+        s4_d1_row_state()
+    else:
+        print(
+            "[S4] D1 row-state check NOT_APPLICABLE: no execution happened this "
+            "run (provider leg skipped)"
+        )
 
     if _failures:
         print(f"A12_STREAM_REPLAY_SMOKE=FAIL ({len(_failures)} failures) — see raw output above", file=sys.stderr)
         return 1
 
-    print("A12_STREAM_REPLAY_SMOKE=PASS EXACT_1_REPLAY_EVENT=PASS REPLAYED_FLAG=PASS CONFLICT_409=PASS")
+    if _skips:
+        _record_verdict(
+            "SKIPPED_UPSTREAM",
+            f" MANDATORY_STAGES=S0,S3 A12_SKIP_REASON={_skips[0]}",
+        )
+        return 0
+
+    _record_verdict(
+        "PASS", " EXACT_1_REPLAY_EVENT=PASS REPLAYED_FLAG=PASS CONFLICT_409=PASS"
+    )
     return 0
 
 
