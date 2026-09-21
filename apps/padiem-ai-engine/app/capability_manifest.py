@@ -27,8 +27,9 @@ truth (including fail-closed behavior) independently.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 
 from .agent_skill_service import (
@@ -364,8 +365,58 @@ def _row(**overrides: object) -> CapabilityScopeRow:
     return CapabilityScopeRow(**base)
 
 
-def current_capability_manifest() -> CapabilityManifest:
-    return CapabilityManifest(
+# A non-production pilot lane may raise a *deferred* capability to AVAILABLE for
+# that isolate alone. An override can never widen an UNAVAILABLE capability, never
+# lower an AVAILABLE one, and never names an id this manifest does not declare;
+# a malformed override is ignored, so an invalid request degrades to the declared
+# truth instead of opening a route.
+_POSTURE_OVERRIDES: Mapping[str, CapabilityState] | None = None
+
+
+def set_posture_overrides(overrides: Mapping[str, CapabilityState] | None) -> None:
+    """Install (or clear) the isolate-scoped posture override for a pilot lane.
+
+    Never raises: a malformed argument clears the override rather than leaving a
+    partial one installed.
+    """
+    global _POSTURE_OVERRIDES
+    if isinstance(overrides, Mapping) and overrides:
+        _POSTURE_OVERRIDES = dict(overrides)
+    else:
+        _POSTURE_OVERRIDES = None
+
+
+def current_posture_overrides() -> Mapping[str, CapabilityState] | None:
+    """Return the installed isolate override, or ``None`` when unset."""
+    return _POSTURE_OVERRIDES
+
+
+def _apply_posture_overrides(
+    capabilities: tuple[CapabilityDeclaration, ...],
+    overrides: Mapping[str, CapabilityState] | None,
+) -> tuple[CapabilityDeclaration, ...]:
+    """Raise declared DEFERRED capabilities to AVAILABLE; ignore everything else."""
+    if not isinstance(overrides, Mapping) or not overrides:
+        return capabilities
+    declared_ids = {item.id for item in capabilities}
+    applied: list[CapabilityDeclaration] = []
+    for item in capabilities:
+        candidate = overrides.get(item.id) if item.id in declared_ids else None
+        if (
+            isinstance(candidate, CapabilityState)
+            and candidate is CapabilityState.AVAILABLE
+            and item.state is CapabilityState.DEFERRED
+        ):
+            applied.append(replace(item, state=candidate))
+        else:
+            applied.append(item)
+    return tuple(applied)
+
+
+def current_capability_manifest(
+    posture_overrides: Mapping[str, CapabilityState] | None = None,
+) -> CapabilityManifest:
+    manifest = CapabilityManifest(
         family=CAPABILITY_FAMILY,
         major=CAPABILITY_MAJOR,
         version=CAPABILITY_VERSION,
@@ -536,6 +587,15 @@ def current_capability_manifest() -> CapabilityManifest:
                 scope=_row(),
             ),
         ),
+    )
+    effective = _POSTURE_OVERRIDES if posture_overrides is None else posture_overrides
+    if not effective:
+        return manifest
+    return CapabilityManifest(
+        family=manifest.family,
+        major=manifest.major,
+        version=manifest.version,
+        capabilities=_apply_posture_overrides(manifest.capabilities, effective),
     )
 
 
