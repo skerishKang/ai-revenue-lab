@@ -431,12 +431,20 @@ jobs:
           set -euo pipefail
           # Reachable only when the reviewed PUT was confirmed successful
           # (steps.push.outcome == 'success') and a downstream readback or
-          # served-version verification then failed. A failed or unconfirmed PUT
-          # is never blindly deleted.
+          # served-version verification then failed. An unconfirmed PUT is never
+          # blindly deleted, and the rollback is only reported as restored when
+          # the DELETE API result and the post-delete ABSENT state are verified.
           echo 'ROLLBACK_ON_PUSH_FAILURE=NO'
           echo 'ROLLBACK_REQUIRES_CONFIRMED_PUSH_SUCCESS=YES'
           echo 'ROLLBACK_MARKER_REQUIRED=YES'
           echo 'DOWNSTREAM_FAILURE_CAN_REACH_ROLLBACK=YES'
+          echo 'ROLLBACK_DELETE_FAILURE_NOT_IGNORED=YES'
+          echo 'ROLLBACK_API_SUCCESS_REQUIRED=YES'
+          echo 'ROLLBACK_POST_STATE_ABSENT_REQUIRED=YES'
+          echo 'MARKER_REMOVED_ONLY_AFTER_VERIFIED_ABSENT=YES'
+          echo 'ROLLBACK_TRUTH_NOT_OVERCLAIMED=YES'
+          echo 'ROLLBACK_POST_STATE_MAX_ATTEMPTS=5'
+          echo 'ROLLBACK_POST_STATE_SLEEP_SECONDS=2'
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
           marker="${RUNNER_TEMP}/calendar-pushed-${CALENDAR_ALLOWLIST_BINDING}"
@@ -444,14 +452,98 @@ jobs:
             echo 'ROLLBACK_ATTEMPTED=NO'
             echo 'ROLLBACK_REASON=NO_CONFIRMED_SUCCESSFUL_PUT'
             echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+            echo 'ROLLBACK_VERIFIED=NO'
+            echo 'PRE_PROVISION_ABSENT_RESTORED=UNPROVEN'
             exit 0
           fi
-          curl -sS -X DELETE "${auth[@]}" "${base}/secrets/${CALENDAR_ALLOWLIST_BINDING}" \
-            -o "${RUNNER_TEMP}/calendar-rollback-response.json" >/dev/null 2>&1 || true
-          rm -f "${marker}"
+
+          response="${RUNNER_TEMP}/calendar-rollback-response.json"
+          set +e
+          status="$(curl -sS -X DELETE "${auth[@]}" "${base}/secrets/${CALENDAR_ALLOWLIST_BINDING}" -o "${response}" -w '%{http_code}')"
+          curl_status=$?
+          set -e
+          if [ "${curl_status}" -ne 0 ] || [ "${status}" -lt 200 ] || [ "${status}" -ge 300 ]; then
+            echo 'ROLLBACK_ATTEMPTED=YES'
+            echo 'ROLLBACK_DELETE_API_SUCCESS=NO'
+            echo 'ROLLBACK_DELETE_TRANSPORT_FAILURE=YES'
+            echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
+            echo 'ROLLBACK_VERIFIED=NO'
+            echo 'PRE_PROVISION_ABSENT_RESTORED=UNPROVEN'
+            echo 'MARKER_REMOVED=NO'
+            echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+            echo 'ROLLBACK_SECRET_VALUE_OUTPUT=0'
+            echo 'RAW_CALENDAR_ID_OUTPUT=0'
+            exit 1
+          fi
+          if ! jq -e '.success == true' "${response}" >/dev/null; then
+            echo 'ROLLBACK_ATTEMPTED=YES'
+            echo 'ROLLBACK_DELETE_API_SUCCESS=NO'
+            echo 'CLOUDFLARE_API_SUCCESS=FAIL'
+            echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
+            echo 'ROLLBACK_VERIFIED=NO'
+            echo 'PRE_PROVISION_ABSENT_RESTORED=UNPROVEN'
+            echo 'MARKER_REMOVED=NO'
+            echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+            echo 'ROLLBACK_SECRET_VALUE_OUTPUT=0'
+            echo 'RAW_CALENDAR_ID_OUTPUT=0'
+            exit 1
+          fi
+          rm -f "${response}"
           echo 'ROLLBACK_ATTEMPTED=YES'
+          echo 'ROLLBACK_DELETE_API_SUCCESS=YES'
+
+          post_state="UNVERIFIED"
+          for _ in $(seq 1 5); do
+            settings="${RUNNER_TEMP}/calendar-rollback-settings.json"
+            if ! curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"; then
+              sleep 2
+              continue
+            fi
+            post_state="$(python - "${settings}" <<'PY'
+          import json, os, sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("sett" "ings")
+          bindings = payload.get("result", {}).get("bindings")
+          if not isinstance(bindings, list):
+              raise SystemExit("bind" "ings")
+          name = os.environ["CALENDAR_ALLOWLIST_BINDING"]
+          hits = [b for b in bindings if isinstance(b, dict) and b.get("name") == name]
+          if len(hits) > 1:
+              raise SystemExit("dup" "licate")
+          print("ABSENT" if not hits else "PRESENT")
+          PY
+            )" || post_state="UNVERIFIED"
+            rm -f "${settings}"
+            if [ "${post_state}" = "ABSENT" ]; then
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "${post_state}" != "ABSENT" ]; then
+            echo 'ROLLBACK_POST_STATE=PRESENT_OR_UNVERIFIED'
+            echo 'ROLLBACK_VERIFIED=NO'
+            echo 'PRE_PROVISION_ABSENT_RESTORED=UNPROVEN'
+            echo 'MARKER_REMOVED=NO'
+            echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+            echo 'ROLLBACK_SECRET_VALUE_OUTPUT=0'
+            echo 'RAW_CALENDAR_ID_OUTPUT=0'
+            exit 1
+          fi
+
+          # Only after both the DELETE API success and the ABSENT post-state are
+          # verified is the confirmed-PUT marker removed and the restore claimed.
+          rm -f "${marker}"
+          echo 'ROLLBACK_POST_STATE=ABSENT'
+          echo 'MARKER_REMOVED=YES'
+          echo 'ROLLBACK_VERIFIED=YES'
+          echo 'PRE_PROVISION_ABSENT_RESTORED=YES'
           echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
           echo 'ROLLBACK_SECRET_VALUE_OUTPUT=0'
+          echo 'RAW_CALENDAR_ID_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
 
       - name: Record immutable execution locks
         if: always()
@@ -480,9 +572,12 @@ jobs:
           echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
           # Confirmed PUT + downstream verification failure -> roll back to the
           # pre-provision ABSENT state. There is no separate version-activation
-          # authority that leaves the provisioned secret in place.
-          echo 'VERSION_ACTIVATION=ROLLBACK_TO_PRE_PROVISION_ABSENT_ON_DOWNSTREAM_FAILURE'
+          # authority that leaves the provisioned secret in place, and the
+          # restore is only claimed after the verified DELETE + ABSENT readback
+          # (see the rollback step's ROLLBACK_VERIFIED / PRE_PROVISION_ABSENT_RESTORED markers).
+          echo 'VERSION_ACTIVATION=ROLLBACK_TO_PRE_PROVISION_ABSENT_WHEN_VERIFIED'
           echo 'ROLLBACK_ON_DOWNSTREAM_VERIFICATION_FAILURE=YES'
+          echo 'ROLLBACK_OUTCOME_VERIFIED_BEFORE_CLAIM=YES'
 
       - name: Publish bounded provision evidence
         if: always()
