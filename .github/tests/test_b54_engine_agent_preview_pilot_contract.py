@@ -188,11 +188,25 @@ def test_workflow_has_secret_readiness_wait_and_retry_loop() -> None:
     assert "AUTH_READY=" in text
     assert "sleep" in text
     assert "401" in text
+    assert "404" in text
+    assert "502" in text
+    assert "503" in text
     assert "Timed out waiting for secret propagation" in text
     # Verify teardown in always() remains intact
     pilot_text = _job_text(_workflow(), "preview-pilot")
     assert "if: always()" in pilot_text
     assert "PREVIEW_PILOT_TEARDOWN=PASS" in pilot_text
+
+
+def test_ephemeral_registry_secret_targets_preview_worker() -> None:
+    """The ephemeral caller registry secret injection and deletion must explicitly target preview worker."""
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert 'npx wrangler secret put PADIEM_ENGINE_CALLER_REGISTRY_V1 --name "${PREVIEW_WORKER}"' in text
+    assert 'npx wrangler secret delete PADIEM_ENGINE_CALLER_REGISTRY_V1 --name "${PREVIEW_WORKER}"' in text
+    assert 'npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL --name "${PREVIEW_CALLER_WORKER}"' in text
+    assert 'npx wrangler secret put PILOT_RUNNER_SECRET --name "${PREVIEW_CALLER_WORKER}"' in text
+
+
 
 
 
