@@ -50,6 +50,37 @@ def provision_job_text() -> str:
     return marker + tail
 
 
+ROLLBACK_STEP_NAME = "Roll back a confirmed Calendar allowlist PUT after downstream failure"
+PUSH_STEP_NAME = "Push the Calendar Engine allowlist secret"
+
+
+def step_by_name(name: str) -> dict:
+    for step in provision_job()["steps"]:
+        if step.get("name") == name:
+            return step
+    raise AssertionError(f"step not found: {name}")
+
+
+def rollback_step_run() -> str:
+    """The rollback step's own shell block (region-scoped assertions).
+
+    Assertions about the rollback behavior must be scoped to this region: the
+    push step contains the same Cloudflare success-envelope literal, so a
+    whole-job text search would let the push step satisfy a rollback check that
+    was silently removed.
+    """
+
+    script = step_by_name(ROLLBACK_STEP_NAME).get("run")
+    assert isinstance(script, str) and script.strip(), "rollback step has no run block"
+    return script
+
+
+def push_step_run() -> str:
+    script = step_by_name(PUSH_STEP_NAME).get("run")
+    assert isinstance(script, str) and script.strip(), "push step has no run block"
+    return script
+
+
 def test_workflow_parses_and_default_dispatch_is_preflight() -> None:
     document = workflow_document()
     triggers = document.get("on", document.get(True))
@@ -290,52 +321,97 @@ def test_rollback_is_bounded_to_confirmed_successful_put_only() -> None:
 
 
 def test_rollback_delete_failure_is_never_swallowed() -> None:
-    """A failed DELETE must fail closed instead of being ignored."""
+    """A failed DELETE must fail closed instead of being ignored.
+
+    Every assertion here is scoped to the rollback step's own run block so the
+    push step's identical success-envelope literal cannot satisfy it.
+    """
 
     text = provision_job_text()
-    assert "ROLLBACK_DELETE_FAILURE_NOT_IGNORED=YES" in text
-    assert "ROLLBACK_API_SUCCESS_REQUIRED=YES" in text
-    assert "ROLLBACK_DELETE_API_SUCCESS=NO" in text
-    assert "ROLLBACK_DELETE_TRANSPORT_FAILURE=YES" in text
-    assert "CLOUDFLARE_ERROR_BODY_OUTPUT=0" in text
+    rollback = rollback_step_run()
+    assert "ROLLBACK_DELETE_FAILURE_NOT_IGNORED=YES" in rollback
+    assert "ROLLBACK_API_SUCCESS_REQUIRED=YES" in rollback
+    assert "ROLLBACK_DELETE_API_SUCCESS=NO" in rollback
+    assert "ROLLBACK_DELETE_TRANSPORT_FAILURE=YES" in rollback
+    assert "CLOUDFLARE_ERROR_BODY_OUTPUT=0" in rollback
     # The DELETE result must be captured and inspected, never discarded.
-    assert "curl_status=$?" in text
+    assert "curl_status=$?" in rollback
     delete_line = [
-        line for line in text.splitlines() if "-X DELETE" in line and "secrets/" in line
+        line for line in rollback.splitlines() if "-X DELETE" in line and "secrets/" in line
     ]
     assert len(delete_line) == 1
     assert "|| true" not in delete_line[0]
     assert "-w '%{http_code}'" in delete_line[0]
-    assert 'if ! jq -e \'.success == true\' "${response}" >/dev/null; then' in text
+    success_check = "if ! jq -e '.success == true' \"${response}\" >/dev/null; then"
+    assert success_check in rollback
+    # Non-vacuity: the rollback-only markers must not exist in the push step, so
+    # a removal of the rollback check cannot be masked by the push step text.
+    assert "ROLLBACK_VERIFIED=YES" not in push_step_run()
+    assert "PRE_PROVISION_ABSENT_RESTORED=YES" not in push_step_run()
+    assert "ROLLBACK_DELETE_API_SUCCESS=YES" not in push_step_run()
+    # Ordering inside the rollback region only.
+    capture = rollback.index("curl_status=$?")
+    check = rollback.index(success_check)
+    api_success = rollback.index("ROLLBACK_DELETE_API_SUCCESS=YES")
+    assert capture < check < api_success
+    assert success_check in text  # still present in the job (push + rollback)
+    assert text.count(success_check) == 2
+
+
+def test_rollback_region_is_independently_verified_in_yaml_terms() -> None:
+    """All rollback evidence literals live inside the rollback step itself."""
+
+    rollback = rollback_step_run()
+    for marker in (
+        "-X DELETE",
+        "-w '%{http_code}'",
+        "curl_status=$?",
+        "if ! jq -e '.success == true' \"${response}\" >/dev/null; then",
+        "ROLLBACK_DELETE_API_SUCCESS=YES",
+        "ROLLBACK_VERIFIED=YES",
+        "PRE_PROVISION_ABSENT_RESTORED=YES",
+    ):
+        assert marker in rollback, f"missing in rollback region: {marker}"
+    # The reverse direction: these rollback outcomes must not leak into the push
+    # step, which is what made the old whole-job assertion vacuous.
+    push = push_step_run()
+    for marker in (
+        "ROLLBACK_DELETE_API_SUCCESS=YES",
+        "ROLLBACK_VERIFIED=YES",
+        "PRE_PROVISION_ABSENT_RESTORED=YES",
+        "ROLLBACK_POST_STATE=ABSENT",
+        "curl_status=$?",
+    ):
+        assert marker not in push, f"rollback outcome leaked into push step: {marker}"
 
 
 def test_rollback_verifies_post_delete_absent_state() -> None:
-    text = provision_job_text()
-    assert "ROLLBACK_POST_STATE_ABSENT_REQUIRED=YES" in text
-    assert "ROLLBACK_POST_STATE_MAX_ATTEMPTS=5" in text
-    assert "ROLLBACK_POST_STATE_SLEEP_SECONDS=2" in text
-    assert "for _ in $(seq 1 5); do" in text
-    assert 'echo \'ROLLBACK_POST_STATE=PRESENT_OR_UNVERIFIED\'' in text
-    assert 'echo \'ROLLBACK_POST_STATE=ABSENT\'' in text
+    rollback = rollback_step_run()
+    assert "ROLLBACK_POST_STATE_ABSENT_REQUIRED=YES" in rollback
+    assert "ROLLBACK_POST_STATE_MAX_ATTEMPTS=5" in rollback
+    assert "ROLLBACK_POST_STATE_SLEEP_SECONDS=2" in rollback
+    assert "for _ in $(seq 1 5); do" in rollback
+    assert "echo 'ROLLBACK_POST_STATE=PRESENT_OR_UNVERIFIED'" in rollback
+    assert "echo 'ROLLBACK_POST_STATE=ABSENT'" in rollback
     # The post-delete read proves NAME-only absence of the Calendar allowlist.
-    assert 'name = os.environ["CALENDAR_ALLOWLIST_BINDING"]' in text
-    assert 'print("ABSENT" if not hits else "PRESENT")' in text
+    assert 'name = os.environ["CALENDAR_ALLOWLIST_BINDING"]' in rollback
+    assert 'print("ABSENT" if not hits else "PRESENT")' in rollback
 
 
 def test_marker_is_removed_only_after_verified_absent() -> None:
-    text = provision_job_text()
-    assert "MARKER_REMOVED_ONLY_AFTER_VERIFIED_ABSENT=YES" in text
-    post_state_gate = text.index('if [ "${post_state}" != "ABSENT" ]; then')
-    marker_removal = text.index('rm -f "${marker}"')
-    verified = text.index("echo 'ROLLBACK_VERIFIED=YES'")
-    restored = text.index("echo 'PRE_PROVISION_ABSENT_RESTORED=YES'")
+    rollback = rollback_step_run()
+    assert "MARKER_REMOVED_ONLY_AFTER_VERIFIED_ABSENT=YES" in rollback
+    post_state_gate = rollback.index('if [ "${post_state}" != "ABSENT" ]; then')
+    marker_removal = rollback.index('rm -f "${marker}"')
+    verified = rollback.index("echo 'ROLLBACK_VERIFIED=YES'")
+    restored = rollback.index("echo 'PRE_PROVISION_ABSENT_RESTORED=YES'")
     # Verified ABSENT gate -> marker removal -> verified/restored claims.
     assert post_state_gate < marker_removal < verified < restored
     # Every unverified path keeps the marker in place.
-    assert "MARKER_REMOVED=NO" in text
-    unverified_branch = text.partition(
+    assert "MARKER_REMOVED=NO" in rollback
+    unverified_branch = rollback.partition(
         "echo 'ROLLBACK_POST_STATE=PRESENT_OR_UNVERIFIED'"
-    )[2].partition("\n          fi")[0]
+    )[2].partition("\nfi")[0]
     assert "exit 1" in unverified_branch
     assert 'rm -f "${marker}"' not in unverified_branch
 
@@ -344,10 +420,11 @@ def test_rollback_truth_is_not_overclaimed() -> None:
     """PRE_PROVISION_ABSENT_RESTORED may only be claimed after verification."""
 
     text = provision_job_text()
-    assert "ROLLBACK_TRUTH_NOT_OVERCLAIMED=YES" in text
+    rollback = rollback_step_run()
+    assert "ROLLBACK_TRUTH_NOT_OVERCLAIMED=YES" in rollback
     assert "ROLLBACK_OUTCOME_VERIFIED_BEFORE_CLAIM=YES" in text
-    restored = text.index("echo 'PRE_PROVISION_ABSENT_RESTORED=YES'")
-    verified = text.index("echo 'ROLLBACK_VERIFIED=YES'")
+    restored = rollback.index("echo 'PRE_PROVISION_ABSENT_RESTORED=YES'")
+    verified = rollback.index("echo 'ROLLBACK_VERIFIED=YES'")
     assert verified < restored
     # The unproven marker must appear on every fail-closed path, and never
     # together with a restored claim in the same branch.
