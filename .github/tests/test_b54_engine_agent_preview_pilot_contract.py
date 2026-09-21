@@ -89,10 +89,12 @@ def test_no_step_deploys_production_worker() -> None:
     for command in _run_commands(_workflow()):
         for line in command.splitlines():
             stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
             if "pywrangler deploy" in stripped or "wrangler deploy" in stripped:
                 # Must be scoped to preview environment or the caller app dir
                 is_preview_env = "--env preview" in stripped
-                is_caller_deploy = stripped == "npx wrangler deploy"
+                is_caller_deploy = stripped.startswith("npx wrangler deploy")
                 assert is_preview_env or is_caller_deploy, f"Unscoped deploy: {stripped}"
                 # The production worker name must NEVER be the target
                 assert PRODUCTION_WORKER not in stripped or is_preview_env, stripped
@@ -158,3 +160,21 @@ def test_production_block_is_unchanged() -> None:
         "services",
         "d1_databases",
     }
+
+
+def test_workflow_has_no_subdomain_api_dependency() -> None:
+    """The workflow must not call Cloudflare API /workers/subdomain endpoint."""
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "/workers/subdomain" not in text
+    assert "workers/subdomain" not in text
+
+
+def test_caller_url_capture_and_validation() -> None:
+    """The workflow must capture caller URL and perform strict URL validation."""
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "CALLER_BASE_URL" in text
+    assert "https://${PREVIEW_CALLER_WORKER}." in text
+    assert "grep -Eq '^https://[a-zA-Z0-9.-]+\\.workers\\.dev$'" in text
+    assert "/run-pilot" in text
+
+
