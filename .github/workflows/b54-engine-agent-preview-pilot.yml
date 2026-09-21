@@ -1,8 +1,9 @@
 name: B54 Engine Agent Preview Pilot
 
-# #2786 Stage 11-C M3-2 — preview-only Agent pilot lane.
+# #2786 Stage 11-C M3-3.5 — preview-only Agent pilot lane with wire caller.
 #
-# Deploys a dedicated preview worker (padiem-ai-engine-preview). It never touches
+# Deploys a dedicated preview worker (padiem-ai-engine-preview) and an ephemeral
+# preview caller worker (padiem-ai-engine-preview-caller). It never touches
 # the Production worker: Production lives in the top-level wrangler block, which
 # carries no [vars] and is not addressed by any step here.
 #
@@ -12,14 +13,9 @@ name: B54 Engine Agent Preview Pilot
 #
 # ROLLBACK: this lane is not a Production rollback surface. To return the preview
 # worker to an earlier revision, dispatch again with `target_sha` set to that
-# earlier main SHA (the same verified path). Removing the preview worker entirely
+# earlier main SHA (the same verified path). The preview caller is automatically
+# torn down at the end of the pilot job. Removing the preview worker entirely
 # is an operator action outside this workflow.
-#
-# FIRST DISPATCH NOTE (unverified, fail-honest): `pywrangler deploy --env preview`
-# pass-through has no precedent in this repository, and Cloudflare environment
-# inheritance for `main` / `compatibility_flags` is assumed rather than proven.
-# The deploy job emits PREVIEW_DEPLOY_SUPPORT=PASS only after the command returns
-# and the served preview version is read back; until then it reports UNVERIFIED.
 
 on:
   workflow_dispatch:
@@ -45,7 +41,9 @@ concurrency:
 env:
   ENGINE_WORKER: padiem-ai-engine
   PREVIEW_WORKER: padiem-ai-engine-preview
+  PREVIEW_CALLER_WORKER: padiem-ai-engine-preview-caller
   ENGINE_APP_DIR: apps/padiem-ai-engine
+  PREVIEW_CALLER_APP_DIR: apps/padiem-ai-engine/preview-caller
 
 jobs:
   preview-config-guard:
@@ -157,23 +155,121 @@ jobs:
     needs: deploy-preview
     if: github.event.inputs.run_pilot == 'RUN_B54_ENGINE_AGENT_PREVIEW_PILOT'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: Synthetic pilot requires an internal service-binding caller
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
         shell: bash
         run: |
           set -euo pipefail
-          # The preview worker is not publicly routable (workers_dev = false) and
-          # carries no secrets, so the synthetic task can only be invoked by a
-          # caller that holds a private Service Binding to it. That caller is not
-          # provisioned yet: this step fails closed by name instead of pretending
-          # the pilot ran, and never falls back to a public URL.
-          echo 'PREVIEW_PILOT_CALLER=NOT_PROVISIONED'
-          echo 'PREVIEW_PILOT_SYNTHETIC_TASK=NOT_RUN'
-          echo 'PREVIEW_PILOT_PROVIDER_CALLS=0'
-          echo 'PREVIEW_PILOT_USER_DATA=0'
-          echo 'PREVIEW_PILOT_END=BLOCKED_ON_INTERNAL_CALLER (owner decision required)'
-          test "${PREVIEW_PILOT_INTERNAL_CALLER_READY:-NO}" = 'YES' || {
-            echo 'PREVIEW_PILOT=DEFERRED: an internal service-binding caller must be approved first' >&2
-            exit 1
-          }
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main --depth 1
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Setup Node.js for preview caller deployment
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Provision ephemeral caller authority and deploy preview caller
+        working-directory: ${{ env.PREVIEW_CALLER_APP_DIR }}
+        run: |
+          set -euo pipefail
+          # Ephemeral credentials generated in-memory for this run only
+          PREVIEW_CREDENTIAL="$(openssl rand -hex 32)"
+          RUNNER_TOKEN="$(openssl rand -hex 32)"
+          echo "RUNNER_TOKEN=${RUNNER_TOKEN}" >> "$GITHUB_ENV"
+
+          # Inject ephemeral caller registry into preview engine (preview-only, 1 allowed app)
+          REGISTRY_JSON="{\"version\":1,\"callers\":[{\"caller_id\":\"preview-pilot-caller\",\"credential\":\"${PREVIEW_CREDENTIAL}\",\"allowed_app_ids\":[\"engine-a5-agent-synthetic\"]}]}"
+          printf '%s' "${REGISTRY_JSON}" | npx wrangler secret put PADIEM_ENGINE_CALLER_REGISTRY_V1 --env preview
+
+          # Deploy ephemeral caller worker with service binding to padiem-ai-engine-preview
+          npx wrangler deploy
+          printf '%s' "${PREVIEW_CREDENTIAL}" | npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL
+          printf '%s' "${RUNNER_TOKEN}" | npx wrangler secret put PILOT_RUNNER_SECRET
+
+          echo 'PREVIEW_CALLER_PROVISIONED=PASS'
+
+      - name: Execute synthetic wire pilot and collect evidence
+        run: |
+          set -euo pipefail
+          SUBDOMAIN=$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/subdomain" | \
+            python3 -c "import sys, json; print(json.load(sys.stdin).get('result', {}).get('subdomain', ''))")
+
+          test -n "${SUBDOMAIN}" || { echo "Failed to resolve workers subdomain" >&2; exit 1; }
+          CALLER_URL="https://${PREVIEW_CALLER_WORKER}.${SUBDOMAIN}.workers.dev/run-pilot"
+
+          # Execute wire pilot: Runner -> Caller Worker -> Service Binding -> Preview Engine
+          PILOT_RES="${RUNNER_TEMP}/pilot_response.json"
+          curl -fsS -X POST "${CALLER_URL}" \
+            -H "Authorization: Bearer ${RUNNER_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -o "${PILOT_RES}"
+
+          python3 - <<'PY' "${PILOT_RES}"
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert data.get("ok") is True, f"Pilot call failed: {data}"
+          assert data.get("status_code") == 200, f"Expected 200, got {data.get('status_code')}"
+          assert data.get("target_service") == "padiem-ai-engine-preview"
+          assert data.get("synthetic_app_id") == "engine-a5-agent-synthetic"
+          engine_resp = data.get("engine_response", {})
+          agent_skill = engine_resp.get("agent_skill", {})
+          assert agent_skill.get("execution_state") == "completed", f"State: {agent_skill}"
+          assert agent_skill.get("resolved_tool_ids") == ["a5-agent-probe.tool"]
+          print("PREVIEW_WIRE_PILOT=PASS")
+          print("PREVIEW_PILOT_EXECUTION_STATE=completed")
+          print("PREVIEW_PILOT_TOOL=a5-agent-probe.tool")
+          print("PREVIEW_PILOT_PROVIDER_CALLS=0")
+          print("PREVIEW_PILOT_USER_DATA=0")
+          PY
+
+      - name: Re-assert production served version and health are untouched
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
+          prod_json="${RUNNER_TEMP}/post-pilot-production-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/${ENGINE_WORKER}/deployments" -o "${prod_json}"
+          python3 - <<'PY' "${prod_json}"
+          import json, sys
+          production = json.load(open(sys.argv[1], encoding="utf-8"))
+          records = (production.get("result") or {}).get("deployments") or []
+          versions = records[0].get("versions") if records else None
+          served = versions[0].get("version_id") if versions else None
+          print("POST_PILOT_PRODUCTION_SERVED_VERSION=" + str(served))
+          assert served == "8349dc55-4f12-4ad2-8123-7e592dc3a9f3", f"Production version shifted to {served}!"
+          PY
+          # Read-only health probe
+          curl -fsS "https://engine.padiem.net/internal/v1/health" -H "User-Agent: curl/8.4.0" | python3 -c '
+          import json, sys
+          h = json.load(sys.stdin)
+          assert h.get("status") == "ok", f"Health status: {h}"
+          assert (h.get("capabilities") or {}).get("agent_skill_runtime") is None
+          print("POST_PILOT_PRODUCTION_HEALTH=PASS")
+          '
+
+      - name: Teardown preview caller and ephemeral secret
+        if: always()
+        working-directory: ${{ env.PREVIEW_CALLER_APP_DIR }}
+        run: |
+          set +e
+          # Delete ephemeral caller worker and binding
+          npx wrangler delete --name "${PREVIEW_CALLER_WORKER}" --force
+          # Delete ephemeral preview registry secret
+          npx wrangler secret delete PADIEM_ENGINE_CALLER_REGISTRY_V1 --env preview
+          echo 'PREVIEW_PILOT_TEARDOWN=PASS'

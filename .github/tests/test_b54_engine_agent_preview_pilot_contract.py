@@ -1,6 +1,6 @@
-"""Contract tests for the B54 Engine Agent Preview Pilot lane (#2786 Stage 11-C M3-2).
+"""Contract tests for the B54 Engine Agent Preview Pilot lane (#2786 Stage 11-C M3-3.5).
 
-These tests read the workflow and the preview environment declaration only. They
+These tests read the workflow, caller, and preview environment declarations only. They
 never dispatch, deploy, or contact Cloudflare: the point is that a merged file can
 not deploy anything by itself, and that the preview environment stays isolated
 from Production.
@@ -16,9 +16,11 @@ import yaml
 REPO = Path(__file__).resolve().parents[2]
 WORKFLOW_PATH = REPO / ".github" / "workflows" / "b54-engine-agent-preview-pilot.yml"
 WRANGLER_PATH = REPO / "apps" / "padiem-ai-engine" / "wrangler.toml"
+CALLER_WRANGLER_PATH = REPO / "apps" / "padiem-ai-engine" / "preview-caller" / "wrangler.toml"
 PRODUCTION_GATE_PATH = REPO / ".github" / "workflows" / "b54-engine-production-deploy-gate.yml"
 
 PREVIEW_WORKER = "padiem-ai-engine-preview"
+PREVIEW_CALLER_WORKER = "padiem-ai-engine-preview-caller"
 PRODUCTION_WORKER = "padiem-ai-engine"
 
 
@@ -33,6 +35,10 @@ def _triggers(workflow: dict) -> dict:
 
 def _wrangler() -> dict:
     return tomllib.loads(WRANGLER_PATH.read_text(encoding="utf-8"))
+
+
+def _caller_wrangler() -> dict:
+    return tomllib.loads(CALLER_WRANGLER_PATH.read_text(encoding="utf-8"))
 
 
 def _job_text(workflow: dict, job: str) -> str:
@@ -54,9 +60,16 @@ def test_deploy_job_requires_the_exact_confirmation_phrase() -> None:
     assert WORKFLOW_PATH.read_text(encoding="utf-8").count("DEPLOY_B54_ENGINE_AGENT_PREVIEW") >= 2
 
 
+def test_pilot_job_requires_the_exact_run_pilot_phrase() -> None:
+    workflow = _workflow()
+    pilot = workflow["jobs"]["preview-pilot"]
+    assert pilot["if"] == "github.event.inputs.run_pilot == 'RUN_B54_ENGINE_AGENT_PREVIEW_PILOT'"
+    assert WORKFLOW_PATH.read_text(encoding="utf-8").count("RUN_B54_ENGINE_AGENT_PREVIEW_PILOT") >= 2
+
+
 def test_every_mutating_job_asserts_the_exact_target_sha() -> None:
     workflow = _workflow()
-    for job in ("preview-config-guard", "deploy-preview"):
+    for job in ("preview-config-guard", "deploy-preview", "preview-pilot"):
         text = _job_text(workflow, job)
         assert "PREMUTATION_EXACT_MAIN_SHA" in text
         assert "origin/main" in text
@@ -72,22 +85,54 @@ def _run_commands(workflow: dict) -> list[str]:
     return commands
 
 
-def test_no_step_deploys_outside_the_preview_environment() -> None:
+def test_no_step_deploys_production_worker() -> None:
     for command in _run_commands(_workflow()):
         for line in command.splitlines():
-            if "pywrangler deploy" in line or " wrangler deploy" in line:
-                assert "--env preview" in line, line
+            stripped = line.strip()
+            if "pywrangler deploy" in stripped or "wrangler deploy" in stripped:
+                # Must be scoped to preview environment or the caller app dir
+                is_preview_env = "--env preview" in stripped
+                is_caller_deploy = stripped == "npx wrangler deploy"
+                assert is_preview_env or is_caller_deploy, f"Unscoped deploy: {stripped}"
+                # The production worker name must NEVER be the target
+                assert PRODUCTION_WORKER not in stripped or is_preview_env, stripped
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
     assert PRODUCTION_GATE_PATH.name not in text
-    assert "padiem-ai-engine-preview" in text
+    assert PREVIEW_WORKER in text
+    assert PREVIEW_CALLER_WORKER in text
 
 
-def test_pilot_job_fails_closed_without_an_internal_caller() -> None:
-    text = _job_text(_workflow(), "preview-pilot")
-    assert "PREVIEW_PILOT_CALLER=NOT_PROVISIONED" in text
-    assert "PREVIEW_PILOT=DEFERRED" in text
-    assert text.count("exit 1") >= 1
-    assert "workers_dev" in WORKFLOW_PATH.read_text(encoding="utf-8")
+def test_caller_wrangler_isolation() -> None:
+    caller = _caller_wrangler()
+    assert caller["name"] == PREVIEW_CALLER_WORKER
+    assert caller["main"] == "worker.mjs"
+    assert caller["workers_dev"] is True
+
+    # Service binding target is fixed strictly to preview
+    services = caller.get("services", [])
+    assert len(services) == 1
+    assert services[0]["binding"] == "PREVIEW_ENGINE"
+    assert services[0]["service"] == PREVIEW_WORKER
+    assert services[0]["service"] != PRODUCTION_WORKER
+
+    # Forbidden resources
+    for forbidden in ("d1_databases", "kv_namespaces", "r2_buckets", "vars_secret"):
+        assert forbidden not in caller
+
+    # Production worker must not be referenced anywhere in caller configuration
+    raw_caller = CALLER_WRANGLER_PATH.read_text(encoding="utf-8")
+    assert f'service = "{PRODUCTION_WORKER}"' not in raw_caller
+    assert PRODUCTION_WORKER not in caller.get("vars", {})
+
+
+def test_pilot_workflow_has_teardown() -> None:
+    workflow = _workflow()
+    pilot_text = _job_text(workflow, "preview-pilot")
+    assert "Teardown preview caller and ephemeral secret" in pilot_text
+    assert "npx wrangler delete" in pilot_text
+    assert "PREVIEW_PILOT_TEARDOWN=PASS" in pilot_text
+    # Teardown must run even if previous steps fail
+    assert "if: always()" in pilot_text
 
 
 def test_preview_environment_is_isolated() -> None:
