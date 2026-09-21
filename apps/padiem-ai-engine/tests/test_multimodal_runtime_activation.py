@@ -179,6 +179,32 @@ async def test_trusted_attachment_reaches_runtime_with_server_minted_data_url() 
     assert a6._SYNTHETIC_SUBJECT_ID not in serialized
 
 
+async def test_synthetic_valid_attachment_fixture_does_not_expire_with_wall_clock() -> None:
+    """A6_SYNTHETIC_VALID_FIXTURE_WALL_CLOCK_DEPENDENT=NO.
+
+    The synthetic valid attachment is valid because it carries no expiry, not
+    because the suite happens to run inside a fixed window: the store returns
+    the contract's no-expiry value and the real route keeps accepting it.
+    """
+
+    fixture = a6._fixture(APP_ID)
+    record, data = await fixture.store.fetch_image(
+        attachment_ref=a6._VALID_REF,
+        app_id=APP_ID,
+        tenant_id=a6._SYNTHETIC_TENANT_ID,
+        subject_id=a6._SYNTHETIC_SUBJECT_ID,
+    )
+
+    assert record.expires_at is None
+    assert record.created_at is not None
+    assert data == a6._SYNTHETIC_PNG
+
+    response = await a6._run_execute(fixture, a6.valid_payload(APP_ID))
+    assert isinstance(response, ServiceResponse)
+    assert response.status_code == 200
+    assert response.body["ok"] is True
+
+
 async def test_public_evidence_is_bounded_and_safe() -> None:
     evidence = await a6.evaluate_multimodal_readiness(
         current_main="c" * 40
