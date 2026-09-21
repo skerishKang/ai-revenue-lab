@@ -23,7 +23,7 @@ Two separations are load-bearing, and both are tested rather than asserted in pr
   authorization, the binding and the request port, and opens nothing. The first byte leaves the
   process only inside ``E2BHttpRequestPort.request``, and only after the gate is checked.
 * **A binding name is not a credential.** This module accepts and emits binding *names*
-  (``PADIEM_E2B_API_KEY``) and never a value. A value arrives at call time from an injected
+  (``PADIEM_E2B_SANDBOX_TOKEN``) and never a value. A value arrives at call time from an injected
   credential port as ``bytes``, goes straight to the request port, and is never stored, projected,
   formatted or logged on any path here.
 
@@ -89,7 +89,7 @@ E2B_API_PORT = 443
 #: Header NAME. No constant, literal or field here could hold its value.
 E2B_CREDENTIAL_HEADER_NAME = "X-API-Key"
 #: Platform secret binding NAME only, following the repo's binding convention.
-E2B_CREDENTIAL_BINDING_NAME = "PADIEM_E2B_API_KEY"
+E2B_CREDENTIAL_BINDING_NAME = "PADIEM_E2B_SANDBOX_TOKEN"
 #: The only environment name this module may look at. No prefix scan, no dump.
 E2B_CREDENTIAL_ENV_NAMES = (E2B_CREDENTIAL_BINDING_NAME,)
 

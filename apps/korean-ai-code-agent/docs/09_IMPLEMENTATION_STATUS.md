@@ -1,6 +1,6 @@
 # Padiem Claw — Implementation Status
 
-Last reconciled: 2026-09-03 KST
+Last reconciled: 2026-09-21 KST
 
 ## Canonical state
 
@@ -12,10 +12,15 @@ CANONICAL_SOURCE = apps/korean-ai-code-agent/**
 REPOSITORY_IMPLEMENTATION = MERGED
 INTEGRATION_PR = #1585
 INTEGRATION_MERGE_SHA = 18e9e7a6472ce1b0296bb52d87c2be0aad2764e9
-HOLISTIC_KAGENT = 546 TESTS GREEN (Ubuntu + Windows)
+HOLISTIC_KAGENT = 1769 TESTS GREEN (current reconciled baseline)
 P01_DEPLOYMENT_BOUNDARY = GREEN
 GITGUARDIAN = GREEN
 ```
+
+This reconciliation updates the documented test-count baseline and records the
+E2B credential binding rename to the sandbox-token binding. No Production,
+secret, or external-provider state
+is implied by this documentation update.
 
 GitHub merged source is authoritative over older planning language in this documentation pack. Where an older document describes a contract as future or proposed, consult current source, tests, `INTEGRATION_READINESS.md`, and this status page before treating that wording as current implementation state.
 
