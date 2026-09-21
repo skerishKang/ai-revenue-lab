@@ -380,6 +380,20 @@ class CalendarReadProductionCanaryWorkflowContractTests(unittest.TestCase):
         self.assertIn("python .github/tests/test_b54_calendar_read_production_canary.py", text)
         self.assertIn("CALENDAR_CANARY_READ_ONLY_CONTRACT=PASS", text)
 
+    def test_contract_dependencies_are_installed_before_this_contract_runs(self) -> None:
+        """This test imports PyYAML, so the job must install it first."""
+
+        text = workflow_text()
+        install = "python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7'"
+        self.assertIn(install, text)
+        self.assertLess(
+            text.index(install),
+            text.index("python .github/tests/test_b54_calendar_read_production_canary.py"),
+        )
+        self.assertIn("CALENDAR_CANARY_CONTRACT_DEPS=INSTALLED", text)
+        source = pathlib.Path(__file__).read_text(encoding="utf-8")
+        self.assertIn("import yaml", source)
+
 
 if __name__ == "__main__":
     unittest.main()

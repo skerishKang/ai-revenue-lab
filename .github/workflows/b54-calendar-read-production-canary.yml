@@ -50,6 +50,15 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install contract test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The canary contract test parses this workflow's structure, so PyYAML
+          # must be present before the test runs.
+          python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7'
+          echo 'CALENDAR_CANARY_CONTRACT_DEPS=INSTALLED'
+
       - name: Run bounded canary contract tests
         shell: bash
         run: |
