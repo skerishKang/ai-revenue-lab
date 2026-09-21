@@ -60,7 +60,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install contract test dependencies
-        run: python -m pip install --quiet pyyaml
+        run: python -m pip install --quiet pyyaml pytest
 
       - name: Validate A6 read-only attestation source contract
         shell: bash
@@ -218,6 +218,20 @@ jobs:
           print("A6_LIVE_JOB_REQUIRES_CONFIRMATION_PHRASE=YES")
           print("A6_LIVE_JOB_ENVIRONMENT_PRODUCTION=YES")
           PY
+
+      - name: Run A6 read-only attestation contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This is the only CI host for these tests: the deploy-gate contract
+          # workflow names its files explicitly, so a new test module never runs
+          # unless a workflow is pointed at it.
+          python -m pytest -q .github/tests/test_b54_engine_a6_readonly_attestation.py
+          echo "A6_CONTRACT_TESTS_EXECUTED=YES"
+          echo "SECOND_SERVED_VERSION_RESOLVER=NO"
+          echo "LIVE_CLOUDFLARE_GET=0"
+          echo "LIVE_D1_READ=0"
+          echo "PRODUCTION_MUTATION=0"
 
   served-a6-readonly:
     needs: source-contract

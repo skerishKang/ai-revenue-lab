@@ -210,6 +210,40 @@ def test_live_schema_read_handles_both_wrangler_payload_shapes() -> None:
     assert "A6_D1_SCHEMA_STATE=ABSENT" in empty_out
 
 
+def _pytest_hosts(test_file: str) -> set[str]:
+    """Workflows whose pytest command actually names this test file.
+
+    Repo contract-test workflows list files explicitly, so a module nothing
+    points at is never executed in CI — the filename check is exact, and the
+    substring prefilter only skips files that cannot be hosts.
+    """
+    hosts = set()
+    for path in (ROOT / ".github/workflows").glob("*.y*ml"):
+        text = path.read_text(encoding="utf-8")
+        if test_file not in text or "pytest" not in text:
+            continue
+        spec = yaml.safe_load(text) or {}
+        for job in (spec.get("jobs") or {}).values():
+            for step in (job or {}).get("steps", []):
+                run = step.get("run", "") if isinstance(step, dict) else ""
+                if "pytest" in run and test_file in run:
+                    hosts.add(path.name)
+    return hosts
+
+
+def test_slice_test_modules_have_a_real_ci_host() -> None:
+    a6 = _pytest_hosts("test_b54_engine_a6_readonly_attestation.py")
+    assert a6 == {"b54-engine-a6-readonly-attestation.yml"}, a6
+    assert WORKFLOW.relative_to(ROOT).as_posix() in _triggers()["pull_request"]["paths"]
+    assert (ROOT / ".github/tests" / "test_b54_engine_a6_readonly_attestation.py").relative_to(
+        ROOT
+    ).as_posix() in _triggers()["pull_request"]["paths"]
+    # The extended guard module keeps its pre-existing host.
+    assert "b54-engine-deploy-gate-contract-tests.yml" in _pytest_hosts(
+        "test_b54_engine_served_version_guard.py"
+    )
+
+
 def test_workflow_parses_with_expected_job_set() -> None:
     doc = _doc()
     assert set(doc["jobs"]) == {"source-contract", LIVE_JOB}
