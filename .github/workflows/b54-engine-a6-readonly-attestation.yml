@@ -1,0 +1,361 @@
+name: B54 Engine A6 Runtime Read-only Attestation
+
+# #1971 A6-S2B — mutation-free read-only evidence for the A6 durable byte
+# stores. This attests readiness evidence only; it is NOT activation.
+#
+# Deliberately has NO `push` trigger, unlike the Drive attestation it mirrors:
+# an A6 Production read may only happen on an explicitly owner-dispatched run
+# that carries the exact confirmation phrase. A pull request runs the source
+# contract alone and can never reach Cloudflare or D1.
+#
+# It reuses the canonical served-version resolver
+# (.github/scripts/b54_engine_served_version_guard.py) through the existing
+# deployments GET -> resolve-active -> version-detail GET -> verify chain. No
+# second resolver is introduced and the settings plane is never accepted as
+# served-version proof.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-a6-readonly-attestation.yml"
+      - ".github/scripts/b54_engine_served_version_guard.py"
+      - ".github/tests/test_b54_engine_a6_readonly_attestation.py"
+      - ".github/tests/test_b54_engine_served_version_guard.py"
+      - "apps/padiem-ai-engine/wrangler.toml"
+      - "apps/padiem-ai-engine/migrations/**"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to attest against'
+        required: true
+      confirmation:
+        description: 'Type ATTEST_B54_ENGINE_A6_READONLY to authorize the live read'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-a6-readonly-attestation-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  ENGINE_D1_DATABASE: padiem-engine
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install contract test dependencies
+        run: python -m pip install --quiet pyyaml
+
+      - name: Validate A6 read-only attestation source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re
+          import yaml
+          from pathlib import Path
+
+          config = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
+          for binding in ("ENGINE_IMAGE_STORE", "ENGINE_DOCUMENT_STORE"):
+              expected = (
+                  '[[d1_databases]]\n'
+                  f'binding = "{binding}"\n'
+                  'database_name = "padiem-engine"'
+              )
+              if expected not in config:
+                  raise SystemExit(f"canonical Engine A6 D1 binding missing or drifted: {binding}")
+
+          workflow = Path(
+              ".github/workflows/b54-engine-a6-readonly-attestation.yml"
+          ).read_text(encoding="utf-8")
+          required = (
+              # canonical resolver reuse, never a second resolver
+              "b54_engine_served_version_guard.py resolve-active",
+              "${base}/deployments",
+              "${base}/versions/${active_version}",
+              "--require-a6-runtime-bindings",
+              "ENGINE_IMAGE_STORE_SERVED_BINDING=PRESENT:d1",
+              "ENGINE_DOCUMENT_STORE_SERVED_BINDING=PRESENT:d1",
+              "A6_STORAGE_BINDINGS_VALIDATED=YES",
+              # schema-name-only D1 observation
+              "SELECT name FROM sqlite_master WHERE type IN ('table','index')",
+              "padiem_engine_attachment_images",
+              "padiem_engine_document_bytes",
+              "idx_padiem_engine_document_bytes_expires_at",
+              "idx_padiem_engine_document_bytes_scope",
+              "DOCUMENT_SCHEMA_STATE=",
+              "A6_D1_SCHEMA_STATE=PRESENT",
+              # fail-honest: absence is evidence, never a silent pass
+              "A6_D1_SCHEMA_STATE=ABSENT",
+              "MIGRATION_0006_PRODUCTION_APPLIED=UNKNOWN_UNPROVEN_AT_SOURCE",
+              # bounded output and inertness
+              "RAW_DATABASE_ID_OUTPUT=0",
+              "RAW_VERSION_DETAIL_OUTPUT=0",
+              "SECRET_VALUE_OUTPUT=0",
+              "ROW_VALUE_OUTPUT=0",
+              "DOCUMENT_CONTENT_OUTPUT=0",
+              "REAL_USER_DATA=0",
+              "D1_MUTATION=0",
+              "MIGRATION_APPLY=0",
+              "ENGINE_DEPLOY=0",
+              "BINDING_MUTATION=0",
+              "MANIFEST_FLIP=0",
+              "READINESS_NOT_ACTIVATION=YES",
+              "PRODUCTION_MUTATION=0",
+          )
+          for marker in required:
+              if marker not in workflow:
+                  raise SystemExit(f"missing A6 read-only attestation marker: {marker}")
+
+          # Scope the scan to the SQL the live job actually sends, not to this
+          # file's own text: the forbidden vocabulary has to be named here to be
+          # forbidden, and the scan pattern itself would otherwise match the
+          # literal below.
+          spec = yaml.safe_load(workflow)
+          live_steps = spec["jobs"]["served-a6-readonly"]["steps"]
+          command_pattern = "--command " + chr(34) + "([^" + chr(34) + "]*)" + chr(34)
+          commands = [
+              found
+              for step in live_steps
+              for found in re.findall(command_pattern, step.get("run", ""))
+          ]
+          if commands != [
+              "SELECT name FROM sqlite_master WHERE type IN ('table','index')"
+          ]:
+              raise SystemExit(f"unexpected remote D1 commands: {commands}")
+          joined = " ".join(commands).lower()
+          for forbidden in (
+              "select *",
+              "content",
+              "text",
+              "blob",
+              "hex(",
+              "length(",
+              "limit",
+              "offset",
+              "insert",
+              "update",
+              "delete",
+              "drop",
+              "alter",
+              "create",
+              "pragma",
+          ):
+              if forbidden in joined:
+                  raise SystemExit(f"A6 D1 read must be schema-name-only: {forbidden}")
+
+          # Mutation-shaped commands are forbidden in the code that actually
+          # runs against Production. Scanning this file's whole text would match
+          # the vocabulary listed below, so the scan is scoped to the live job.
+          live_runs = "\n".join(
+              step.get("run", "") for step in spec["jobs"]["served-a6-readonly"]["steps"]
+          )
+          for shape in ("--file=", "migrations apply", "wrangler deploy", "pywrangler deploy",
+                        "secret put", "d1 create", "d1 delete", "[[d1_databases]]",
+                        "wrangler versions", "--rollback-version-id"):
+              if shape in live_runs:
+                  raise SystemExit(f"A6 live attestation must not contain: {shape}")
+
+          print("B54_ENGINE_A6_READONLY_SOURCE_CONTRACT=PASS")
+          print("SECOND_SERVED_VERSION_RESOLVER=NO")
+          print("SETTINGS_PLANE_ONLY_ACCEPTANCE=NO")
+          print("A6_PRODUCTION_READ_AUTO_ON_MAIN_PUSH=NO")
+          print("A6_PRODUCTION_READ_DISPATCH_ONLY=YES")
+          print("LIVE_CLOUDFLARE_GET=0")
+          print("LIVE_D1_READ=0")
+          print("MIGRATION_0006_PRODUCTION_APPLIED=UNKNOWN_UNPROVEN_AT_SOURCE")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Prove the attestation cannot run on a push event
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import yaml
+
+          from pathlib import Path
+
+          data = yaml.safe_load(
+              Path(".github/workflows/b54-engine-a6-readonly-attestation.yml").read_text(encoding="utf-8")
+          )
+          triggers = data.get("on", data.get(True))
+          if "push" in triggers:
+              raise SystemExit("A6 read-only attestation must never trigger on push")
+          if set(triggers) != {"pull_request", "workflow_dispatch"}:
+              raise SystemExit(f"unexpected A6 attestation triggers: {sorted(triggers)}")
+
+          live = data["jobs"]["served-a6-readonly"]
+          condition = live["if"]
+          for required in (
+              "github.event_name == 'workflow_dispatch'",
+              "ATTEST_B54_ENGINE_A6_READONLY",
+          ):
+              if required not in condition:
+                  raise SystemExit(f"live A6 read gate missing {required}")
+          if live.get("environment") != "production":
+              raise SystemExit("live A6 read job must run in the production environment")
+          if live.get("needs") != "source-contract":
+              raise SystemExit("live A6 read job must depend on the source contract")
+
+          print("A6_PRODUCTION_READ_DISPATCH_ONLY=YES")
+          print("A6_LIVE_JOB_REQUIRES_CONFIRMATION_PHRASE=YES")
+          print("A6_LIVE_JOB_ENVIRONMENT_PRODUCTION=YES")
+          PY
+
+  served-a6-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.confirmation == 'ATTEST_B54_ENGINE_A6_READONLY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact current main before any live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo "A6_READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve served Engine version and attest A6 storage bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+
+          deployments="${RUNNER_TEMP}/engine-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          printf '%s\n' "${resolve_out}"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+
+          version_detail="${RUNNER_TEMP}/engine-version-detail.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" \
+            --require-a6-runtime-bindings)"
+          printf '%s\n' "${verify_out}"
+
+          printf '%s\n' "${verify_out}" | grep -Fx 'ENGINE_IMAGE_STORE_SERVED_BINDING=PRESENT:d1'
+          printf '%s\n' "${verify_out}" | grep -Fx 'ENGINE_DOCUMENT_STORE_SERVED_BINDING=PRESENT:d1'
+          printf '%s\n' "${verify_out}" | grep -Fx 'A6_STORAGE_BINDINGS_VALIDATED=YES'
+
+          # The rollback anchor for any future A6 deployment is this freshly
+          # observed served version, never a version copied out of an issue.
+          echo "ROLLBACK_ANCHOR_VERSION_ID=${active_version}"
+          echo "ROLLBACK_ANCHOR_SOURCE=FRESH_SERVED_VERSION"
+          echo "BINDING_NAME_TYPE_ONLY=YES"
+          echo "RAW_DATABASE_ID_OUTPUT=0"
+          echo "RAW_VERSION_DETAIL_OUTPUT=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+          echo "MIGRATION_APPLY=0"
+          echo "D1_MUTATION=0"
+          echo "ENGINE_DEPLOY=0"
+          echo "BINDING_MUTATION=0"
+          echo "MANIFEST_FLIP=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Observe A6 durable schema objects by name only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          # Read-only schema observation. The database is addressed by its
+          # canonical name and only its object names are selected, so neither a
+          # database identifier nor any row value is ever embedded or printed.
+          schema=/tmp/engine-a6-schema.json
+          npx --yes wrangler@4 d1 execute "${ENGINE_D1_DATABASE}" --remote --json \
+            --command "SELECT name FROM sqlite_master WHERE type IN ('table','index')" > "${schema}"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          # Default keeps CI behaviour identical; the override exists only so the
+          # fail-honest branch below is executable by a network-free contract
+          # test with a synthetic payload.
+          rows = json.loads(
+              Path(os.environ.get("A6_SCHEMA_JSON", "/tmp/engine-a6-schema.json")).read_text(
+                  encoding="utf-8"
+              )
+          )
+          results = rows[0]["results"] if isinstance(rows, list) and rows and "results" in rows[0] else rows
+          names = {str(r.get("name")) for r in results}
+
+          image = "padiem_engine_attachment_images" in names
+          document_table = "padiem_engine_document_bytes" in names
+          indexes = all(
+              name in names
+              for name in (
+                  "idx_padiem_engine_document_bytes_expires_at",
+                  "idx_padiem_engine_document_bytes_scope",
+              )
+          )
+
+          print(f"A6_IMAGE_TABLE_PRESENT={'YES' if image else 'NO'}")
+          print(f"A6_DOCUMENT_TABLE_PRESENT={'YES' if document_table else 'NO'}")
+          print(f"A6_DOCUMENT_INDEXES_PRESENT={'YES' if indexes else 'NO'}")
+          # Honest state, reported before any verdict: migration 0006 has a
+          # provision path now, but this attestation must not assume it ran.
+          print(f"IMAGE_SCHEMA_STATE={'PRESENT' if image else 'ABSENT'}")
+          print(f"DOCUMENT_SCHEMA_STATE={'PRESENT' if document_table and indexes else 'ABSENT'}")
+          print("SCHEMA_OBJECT_NAMES_ONLY=YES")
+          print("ROW_VALUE_OUTPUT=0")
+          print("DOCUMENT_CONTENT_OUTPUT=0")
+          print("REAL_USER_DATA=0")
+
+          if not image:
+              print("A6_D1_SCHEMA_STATE=ABSENT")
+              print("A6_IMAGE_STORE_SCHEMA_MISSING=YES")
+              raise SystemExit("A6 image attachment schema absent on served D1: fail closed")
+          if not document_table or not indexes:
+              print("A6_D1_SCHEMA_STATE=ABSENT")
+              print("MIGRATION_0006_PRODUCTION_APPLIED=NO")
+              raise SystemExit(
+                  "A6 durable document schema absent on served D1: migration 0006 "
+                  "has no production apply yet; fail closed rather than report success"
+              )
+          print("A6_D1_SCHEMA_STATE=PRESENT")
+          print("A6_STORAGE_SCHEMA_VALIDATED=YES")
+          PY
+          echo "READINESS_NOT_ACTIVATION=YES"
+          echo "MANIFEST_FLIP=0"
+          echo "DOCUMENT_PATH=ATTESTED_PRESENT"
+          echo "D1_MUTATION=0"
+          echo "MIGRATION_APPLY=0"
+          echo "PRODUCTION_MUTATION=0"
