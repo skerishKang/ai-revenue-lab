@@ -31,8 +31,13 @@ from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
 import worker as legacy_worker
+from app.agent_preview_authority import (
+    build_preview_agent_lane,
+    preview_capability_overrides,
+)
 from app.agent_skill_service import AgentSkillEngineService
 from app.agent_skill_authority import build_agent_skill_binding_resolver
+from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
@@ -592,7 +597,38 @@ def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
         return None
 
 
+def _agent_skill_service_for_env(
+    env: Any,
+    *,
+    runtime_factory: Any,
+    binding_resolver: Any = None,
+    idempotency_adapter: Any | None = None,
+    approval_decision_verifier: Any | None = None,
+    continuation_store: Any | None = None,
+) -> AgentSkillEngineService:
+    """Compose the Agent/Skill service: preview lane, or the passed authority.
+
+    An explicitly marked non-production isolate gets the synthetic preview lane.
+    Every other isolate -- Production included -- gets exactly the authority this
+    composition already passed in (the real bound resolver, its verifier and its
+    continuation store), so an unmarked deployment is byte-for-byte unchanged.
+    """
+    preview = build_preview_agent_lane(env)
+    if preview is not None:
+        return preview.service
+    return AgentSkillEngineService(
+        runtime_factory=runtime_factory,
+        binding_resolver=binding_resolver,
+        idempotency_adapter=idempotency_adapter,
+        approval_decision_verifier=approval_decision_verifier,
+        continuation_store=continuation_store,
+    )
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    # Preview-lane posture only. Every other isolate clears the override, so the
+    # declared capability truth is untouched outside a marked pilot isolate.
+    set_posture_overrides(preview_capability_overrides(env))
     scope_authority = _scope_authority_for_env(env)
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
@@ -654,7 +690,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 tool_binding_resolver=await _tool_binding_resolver_for_env(env)
             ),
             # Agent authority reuses the trusted Tool binding; Skill authority remains deferred.
-            agent_skill=AgentSkillEngineService(
+            agent_skill=_agent_skill_service_for_env(
+                env,
                 runtime_factory=unavailable,
                 binding_resolver=None,
             ),
@@ -761,8 +798,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         idempotency_replay=IdempotencyReplayEngineService(
             idempotency_adapter=idempotency_adapter,
         ),
-        agent_skill=AgentSkillEngineService(
+        agent_skill=_agent_skill_service_for_env(
+            env,
             runtime_factory=runtime_factory,
+            # Trusted registry/session/entitlement and continuation authority for
+            # Production; an explicitly marked non-production pilot isolate
+            # substitutes the synthetic preview lane instead.
             binding_resolver=build_agent_skill_binding_resolver(
                 tool_binding_resolver,
                 getattr(tool_binding_resolver, "subject_for_app", None),

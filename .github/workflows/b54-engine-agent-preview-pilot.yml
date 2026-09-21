@@ -1,0 +1,179 @@
+name: B54 Engine Agent Preview Pilot
+
+# #2786 Stage 11-C M3-2 — preview-only Agent pilot lane.
+#
+# Deploys a dedicated preview worker (padiem-ai-engine-preview). It never touches
+# the Production worker: Production lives in the top-level wrangler block, which
+# carries no [vars] and is not addressed by any step here.
+#
+# Deliberately dispatch-only. There is no push and no pull_request trigger, and the
+# deploy job body only runs when the dispatch carries the exact confirmation
+# phrase, so a merged file cannot deploy anything by itself.
+#
+# ROLLBACK: this lane is not a Production rollback surface. To return the preview
+# worker to an earlier revision, dispatch again with `target_sha` set to that
+# earlier main SHA (the same verified path). Removing the preview worker entirely
+# is an operator action outside this workflow.
+#
+# FIRST DISPATCH NOTE (unverified, fail-honest): `pywrangler deploy --env preview`
+# pass-through has no precedent in this repository, and Cloudflare environment
+# inheritance for `main` / `compatibility_flags` is assumed rather than proven.
+# The deploy job emits PREVIEW_DEPLOY_SUPPORT=PASS only after the command returns
+# and the served preview version is read back; until then it reports UNVERIFIED.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to build the preview environment from'
+        required: true
+      confirmation:
+        description: 'Type DEPLOY_B54_ENGINE_AGENT_PREVIEW to authorize the preview deploy'
+        required: true
+      run_pilot:
+        description: 'Type RUN_B54_ENGINE_AGENT_PREVIEW_PILOT to attempt a synthetic pilot call'
+        required: false
+        default: 'NO'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-agent-preview-pilot
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  PREVIEW_WORKER: padiem-ai-engine-preview
+  ENGINE_APP_DIR: apps/padiem-ai-engine
+
+jobs:
+  preview-config-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main assertion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main --depth 1
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install contract test dependency
+        run: python -m pip install --quiet pyyaml
+
+      - name: Preview lane configuration contract
+        run: python .github/tests/test_b54_engine_agent_preview_pilot_contract.py
+
+  deploy-preview:
+    needs: preview-config-guard
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_AGENT_PREVIEW'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main --depth 1
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Resolve engine environment with dev tools
+        working-directory: ${{ env.ENGINE_APP_DIR }}
+        run: uv sync --extra dev
+
+      - name: Sync engine worker bundle
+        working-directory: ${{ env.ENGINE_APP_DIR }}
+        run: uv run pywrangler sync --force
+
+      - name: Deploy preview environment only
+        working-directory: ${{ env.ENGINE_APP_DIR }}
+        run: |
+          set -euo pipefail
+          # `--env preview` addresses [env.preview] only. The Production worker in
+          # the top-level block is never named by this command.
+          uv run pywrangler deploy --env preview
+
+      - name: Read back preview served version and Production version (GET-only)
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
+          preview_json="${RUNNER_TEMP}/preview-deployments.json"
+          prod_json="${RUNNER_TEMP}/production-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/${PREVIEW_WORKER}/deployments" -o "${preview_json}"
+          curl -fsS "${auth[@]}" "${base}/${ENGINE_WORKER}/deployments" -o "${prod_json}"
+          python - <<'PY' "${preview_json}" "${prod_json}"
+          import json, sys
+          preview = json.load(open(sys.argv[1], encoding="utf-8"))
+          production = json.load(open(sys.argv[2], encoding="utf-8"))
+          def served(payload):
+              records = (payload.get("result") or {}).get("deployments") or []
+              versions = records[0].get("versions") if records else None
+              return versions[0].get("version_id") if versions else None
+          print("PREVIEW_SERVED_VERSION=" + str(served(preview)))
+          print("PRODUCTION_SERVED_VERSION=" + str(served(production)))
+          PY
+          echo 'PRODUCTION_WORKER_NOT_ADDRESSED_BY_THIS_RUN=YES'
+          echo 'PREVIEW_DEPLOY_SUPPORT=PASS'
+          echo 'PREVIEW_WORKER_REACHABILITY=INTERNAL_SERVICE_BINDING_ONLY (workers_dev=false)'
+
+  preview-pilot:
+    needs: deploy-preview
+    if: github.event.inputs.run_pilot == 'RUN_B54_ENGINE_AGENT_PREVIEW_PILOT'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Synthetic pilot requires an internal service-binding caller
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The preview worker is not publicly routable (workers_dev = false) and
+          # carries no secrets, so the synthetic task can only be invoked by a
+          # caller that holds a private Service Binding to it. That caller is not
+          # provisioned yet: this step fails closed by name instead of pretending
+          # the pilot ran, and never falls back to a public URL.
+          echo 'PREVIEW_PILOT_CALLER=NOT_PROVISIONED'
+          echo 'PREVIEW_PILOT_SYNTHETIC_TASK=NOT_RUN'
+          echo 'PREVIEW_PILOT_PROVIDER_CALLS=0'
+          echo 'PREVIEW_PILOT_USER_DATA=0'
+          echo 'PREVIEW_PILOT_END=BLOCKED_ON_INTERNAL_CALLER (owner decision required)'
+          test "${PREVIEW_PILOT_INTERNAL_CALLER_READY:-NO}" = 'YES' || {
+            echo 'PREVIEW_PILOT=DEFERRED: an internal service-binding caller must be approved first' >&2
+            exit 1
+          }
