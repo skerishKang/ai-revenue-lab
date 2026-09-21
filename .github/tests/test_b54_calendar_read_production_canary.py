@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 import pathlib
+import re
 import unittest
 
 import yaml
@@ -374,6 +375,16 @@ class CalendarReadProductionCanaryWorkflowContractTests(unittest.TestCase):
         self.assertIn("apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py", paths)
         self.assertIn(".github/tests/test_b54_calendar_read_production_canary.py", paths)
         self.assertIn(".github/workflows/b54-calendar-read-production-canary.yml", paths)
+
+    def test_pinned_source_assertions_match_the_referenced_files(self) -> None:
+        """Every grep -Fq pin in the workflow must exist in the file it names."""
+
+        pairs = re.findall(r"grep -Fq '([^']+)' (\S+)", workflow_text())
+        self.assertGreaterEqual(len(pairs), 10)
+        for pattern, relative in pairs:
+            target = ROOT / relative
+            self.assertTrue(target.is_file(), relative)
+            self.assertIn(pattern, target.read_text(encoding="utf-8"), pattern)
 
     def test_source_contract_job_runs_this_contract(self) -> None:
         text = workflow_text()

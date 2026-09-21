@@ -69,7 +69,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'for attempt in range(2):' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
+          grep -Fq 'MAX_PROVIDER_ATTEMPTS = 2' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
+          grep -Fq 'for attempt in range(MAX_PROVIDER_ATTEMPTS):' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
           grep -Fq 'if status == 401 and attempt == 0:' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
           grep -Fq 'CALENDAR_CP_CONNECTOR_ID = "google-calendar"' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
           grep -Fq 'PROVIDER_READ_BUDGET_MAX = 2' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
