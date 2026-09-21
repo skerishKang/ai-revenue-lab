@@ -28,9 +28,9 @@ from padiem_ai_core.document_normalization import (
     BINARY_DOCUMENT_MEDIA,
     TEXT_DOCUMENT_MEDIA,
     NormalizedDocument,
-    extract_binary_document,
     normalize_text_document,
 )
+from padiem_ai_core.document_parser_boundary import parse_binary_document_via_authority
 
 from app.document_reference import (
     DOC_REFERENCE_PATTERN,
@@ -289,7 +289,9 @@ def normalize_resolved_document(
 
     Semantic dispatch is the Core allow-lists only: text/* and JSON go through
     ``normalize_text_document`` after a private UTF-8 decode; PDF/DOCX/PPTX/
-    XLSX go through ``extract_binary_document``. A failed decode raises — it
+    XLSX go through the shared Core parser-authority boundary (#2824 S3-B),
+    which fails closed before the Core parser whenever the runtime has no
+    reviewed isolated parser authority. A failed decode raises — it
     never produces a degraded document. Callers must have completed the
     fail-closed resolve (scope + integrity) before handing bytes over.
     """
@@ -316,7 +318,11 @@ def normalize_resolved_document(
             ) from exc
         return normalize_text_document(name=meta.name, media_type=meta.media_type, text=text)
     if meta.media_type in BINARY_DOCUMENT_MEDIA:
-        return extract_binary_document(name=meta.name, media_type=meta.media_type, payload=raw)
+        return parse_binary_document_via_authority(
+            name=meta.name,
+            media_type=meta.media_type,
+            payload=raw,
+        )
     raise DocumentResolutionError(
         "unsupported_media_type",
         "Document media type is not supported for normalization.",
