@@ -406,8 +406,13 @@ jobs:
             echo 'CALENDAR_RUNTIME_AUTHORITY=PROVISIONED'
             echo 'CALENDAR_ACTIVE_VERSION_OWNS_AUTHORITY=PASS'
           else
-            echo 'CALENDAR_RUNTIME_AUTHORITY=PROVISIONED_PENDING_VERSION_ACTIVATION'
+            # The allowlist was PUT but the served active version does not own it
+            # yet. This dispatch must not report success, and the confirmed PUT is
+            # rolled back to the pre-provision ABSENT state below.
+            echo 'CALENDAR_RUNTIME_AUTHORITY=NOT_PROVISIONED_DOWNSTREAM_VERIFICATION_FAILED'
             echo 'CALENDAR_ACTIVE_VERSION_OWNS_AUTHORITY=FAIL'
+            echo 'CALENDAR_PROVISION_DOWNSTREAM_VERIFICATION=FAIL'
+            echo 'ROLLBACK_ON_DOWNSTREAM_VERIFICATION_FAILURE=YES'
             echo 'ENGINE_VERSION_ID_OUTPUT=0'
             echo 'RAW_CALENDAR_ID_OUTPUT=0'
             echo 'RAW_BINDING_VALUE_OUTPUT=0'
@@ -419,11 +424,19 @@ jobs:
           echo 'RAW_BINDING_VALUE_OUTPUT=0'
           echo 'SECRET_VALUE_OUTPUT=0'
 
-      - name: Roll back a failed Calendar allowlist provision
-        if: ${{ failure() && steps.push.outcome == 'failure' }}
+      - name: Roll back a confirmed Calendar allowlist PUT after downstream failure
+        if: ${{ failure() && steps.push.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
+          # Reachable only when the reviewed PUT was confirmed successful
+          # (steps.push.outcome == 'success') and a downstream readback or
+          # served-version verification then failed. A failed or unconfirmed PUT
+          # is never blindly deleted.
+          echo 'ROLLBACK_ON_PUSH_FAILURE=NO'
+          echo 'ROLLBACK_REQUIRES_CONFIRMED_PUSH_SUCCESS=YES'
+          echo 'ROLLBACK_MARKER_REQUIRED=YES'
+          echo 'DOWNSTREAM_FAILURE_CAN_REACH_ROLLBACK=YES'
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
           base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
           marker="${RUNNER_TEMP}/calendar-pushed-${CALENDAR_ALLOWLIST_BINDING}"
@@ -465,7 +478,11 @@ jobs:
           echo 'ENGINE_CODE_DEPLOY=0'
           echo 'ENGINE_DEPLOY=0'
           echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
-          echo 'VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED'
+          # Confirmed PUT + downstream verification failure -> roll back to the
+          # pre-provision ABSENT state. There is no separate version-activation
+          # authority that leaves the provisioned secret in place.
+          echo 'VERSION_ACTIVATION=ROLLBACK_TO_PRE_PROVISION_ABSENT_ON_DOWNSTREAM_FAILURE'
+          echo 'ROLLBACK_ON_DOWNSTREAM_VERIFICATION_FAILURE=YES'
 
       - name: Publish bounded provision evidence
         if: always()

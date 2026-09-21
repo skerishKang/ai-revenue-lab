@@ -240,24 +240,53 @@ def test_served_version_check_uses_bounded_convergence_poll() -> None:
     assert "CALENDAR_ACTIVE_VERSION_OWNS_AUTHORITY=PASS" in text
 
 
-def test_pending_version_activation_is_not_reported_as_success() -> None:
+def test_downstream_failure_is_not_reported_as_success() -> None:
     text = provision_job_text()
-    pending = "CALENDAR_RUNTIME_AUTHORITY=PROVISIONED_PENDING_VERSION_ACTIVATION"
-    assert pending in text
-    tail = text.partition(pending)[2]
+    marker = "CALENDAR_RUNTIME_AUTHORITY=NOT_PROVISIONED_DOWNSTREAM_VERIFICATION_FAILED"
+    assert marker in text
+    tail = text.partition(marker)[2]
     assert "CALENDAR_ACTIVE_VERSION_OWNS_AUTHORITY=FAIL" in tail
     assert "exit 1" in tail
+    # The rolled-back state must never be reported as a provisioned authority.
+    assert "CALENDAR_RUNTIME_AUTHORITY=PROVISIONED_PENDING_VERSION_ACTIVATION" not in text
+
+
+def test_rollback_runs_only_after_a_confirmed_successful_put() -> None:
+    """Confirmed PUT + downstream failure -> rollback; failed PUT -> no DELETE."""
+
+    text = provision_job_text()
+    assert "if: ${{ failure() && steps.push.outcome == 'success' }}" in text
+    # The failed-push condition must never authorize a rollback DELETE.
+    assert "steps.push.outcome == 'failure'" not in text
+    assert "ROLLBACK_REQUIRES_CONFIRMED_PUSH_SUCCESS=YES" in text
+    assert "ROLLBACK_ON_PUSH_FAILURE=NO" in text
+    assert "ROLLBACK_MARKER_REQUIRED=YES" in text
+    assert "DOWNSTREAM_FAILURE_CAN_REACH_ROLLBACK=YES" in text
+
+
+def test_rollback_gate_is_reachable_after_the_push_step() -> None:
+    text = provision_job_text()
+    rollback = text.index("Roll back a confirmed Calendar allowlist PUT after downstream failure")
+    push = text.index("Push the Calendar Engine allowlist secret")
+    readback = text.index("Read back Calendar binding NAME/TYPE only")
+    # The rollback step follows the push and the downstream verification steps it
+    # must be able to react to.
+    assert push < readback < rollback
+    gate = text[rollback: rollback + 400]
+    assert "if: ${{ failure() && steps.push.outcome == 'success' }}" in gate
 
 
 def test_rollback_is_bounded_to_confirmed_successful_put_only() -> None:
     text = provision_job_text()
-    assert "steps.push.outcome == 'failure'" in text
+    assert "steps.push.outcome == 'success'" in text
     assert 'touch "${RUNNER_TEMP}/calendar-pushed-${CALENDAR_ALLOWLIST_BINDING}"' in text
     assert 'marker="${RUNNER_TEMP}/calendar-pushed-${CALENDAR_ALLOWLIST_BINDING}"' in text
     assert 'if [ ! -f "${marker}" ]; then' in text
     assert "ROLLBACK_REASON=NO_CONFIRMED_SUCCESSFUL_PUT" in text
     assert "ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY" in text
-    assert "VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED" in text
+    assert "VERSION_ACTIVATION=ROLLBACK_TO_PRE_PROVISION_ABSENT_ON_DOWNSTREAM_FAILURE" in text
+    assert "VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED" not in text
+    assert "ROLLBACK_ON_DOWNSTREAM_VERIFICATION_FAILURE=YES" in text
 
 
 def test_locks_are_recorded() -> None:
