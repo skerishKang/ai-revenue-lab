@@ -1,10 +1,11 @@
-# Agent Continuation Contract (Phase 1 — Resume)
+# Agent Continuation Contract (Phase 1 — Resume · Phase 2 — Cancel · Phase 3 — Lifecycle Events)
 
 ```
-Issue      #2786 (E9 A5-Agent) — Stage 13, S13-4 Phase 1
-Scope      additive projection of the execution *lifecycle* contract on resume responses
+Issue      #2786 (E9 A5-Agent) — Stage 13, S13-4 Phase 1/2/3
+Scope      additive projection of the execution *lifecycle* contract on continuation responses
 Source     apps/padiem-ai-engine/app/agent_skill_continuation_projection.py
 Version    padiem.engine.agent-continuation/1.0
+Lifecycle  padiem.engine.agent-continuation-lifecycle/1.0  (Phase 3, internal-only)
 ```
 
 ## 1. Purpose
@@ -30,6 +31,8 @@ Resume responses carry a **top-level sibling key**, so the two contracts keep se
     "current_state": "active",
     "resume_target_state": "completed",
     "resume_authority": { "approval_delta_applied": true, "capability_required": ["…"] },
+    "lifecycle_contract_version": "padiem.engine.agent-continuation-lifecycle/1.0",
+    "lifecycle_events": [ { "kind": "resume_requested", "sequence": 1, … }, { "kind": "resumed", "sequence": 2, "terminal": true, … } ],
     "audit_event": { "trace_id": "agtr_…", "event_count": 6, "terminal_kind": "run_completed" }
   }
 }
@@ -56,6 +59,8 @@ A cancel response keeps its existing shape and gains the same sibling key:
     "current_state": "active",
     "terminal_state": "cancelled",
     "cancel_reason": "user_cancelled",
+    "lifecycle_contract_version": "padiem.engine.agent-continuation-lifecycle/1.0",
+    "lifecycle_events": [ { "kind": "cancel_requested", "sequence": 1, … }, { "kind": "cancelled", "sequence": 2, "terminal": true, … } ],
     "audit_event": { "trace_id": "agtr_…", "event_count": 1, "terminal_kind": "run_cancelled" }
   }
 }
@@ -140,24 +145,100 @@ COVERED — cancel
   unknown continuation → 409 invalid_continuation · expired continuation → 409 continuation_expired
   foreign application → 409 invalid_continuation · unsupported fields → 400
   trusted trace identity required · provider-free
+COVERED — lifecycle events (Phase 3, tests/test_agent_lifecycle_events.py)
+  ordering: lifecycle-local sequence, independent of the core sequence that resets to 1 on the cancel path
+  a repeat transition emits no duplicate lifecycle event · the projection itself is deterministic
+  pause → resume response projects the `resumed` lifecycle event · resume and cancel streams are disjoint
+  exactly one terminal lifecycle event per transition
+  response backward compatibility: pause/resume/cancel/error shapes and continuation block key sets
+  no authority material in the lifecycle stream · audit_event unchanged and consistent with the run events
+  expiry observed lazily and idempotently (no sweep, no second terminal state)
 DEFERRED
-  T13 concurrent cancel race (to be judged after this phase)
+  T13 concurrent cancel race — MERGED (#2891)
+  consumer wiring · durable lifecycle history
 ```
 
-## 8. Non-goals
+## 8. Lifecycle events (Phase 3)
+
+Phase 3 adds a continuation **lifecycle** stream next to the untouched run event plane. The two planes stay separate
+on purpose: `events` keeps carrying the frozen core run events (20 kinds; existing consumers such as
+`apps/korean-ai-code-agent/src/kagent/p01_adapter.py` are unchanged), while `lifecycle_events` carries the
+continuation transitions.
+
+```json
+"continuation": {
+  "lifecycle_contract_version": "padiem.engine.agent-continuation-lifecycle/1.0",
+  "lifecycle_events": [
+    {
+      "event_id": "lce_…",           // deterministic: sha256(continuation_id|kind|sequence)[:12]
+      "continuation_id": "cont_ref_…",
+      "task_id": "orch_run_…",
+      "trace_id": "agtr_…",
+      "sequence": 1,                  // lifecycle-local, 1-based
+      "kind": "cancel_requested",
+      "terminal": false,
+      "timestamp_iso": "…",           // taken from the run event that evidences the transition
+      "derived_from": "store_transition",
+      "source_event_id": null
+    },
+    {
+      "sequence": 2,
+      "kind": "cancelled",
+      "terminal": true,
+      "derived_from": "run_events",
+      "source_event_id": "evt_…"
+    }
+  ]
+}
+```
+
+```text
+transitions
+  resume   resume_requested -> resumed
+  cancel   cancel_requested -> cancelled
+  expired  expiration_observed                    (lazy, read-observed only)
+
+derived_from
+  store_transition   the transition the coordinator performed (claim / claim_cancel)
+  run_events         backed by a core run event (run_resumed / run_cancelled)
+  store_record       the persisted record state, when no run event is available
+  read_observation   the expiry was observed by a read (no sweep, no timer)
+
+ordering
+  each lifecycle event carries its own 1-based `sequence`; the core event sequence restarts at 1 on the cancel
+  path, so `sequence` — not `timestamp_iso` — establishes order. A request/state pair may share one timestamp
+  because both are derived from the same transition.
+
+exposure
+  INTERNAL ONLY. No compatibility guarantee, not an external API promise, no SDK contract. It is published so
+  the contract can be observed and tested; treat every field as subject to change.
+```
+
+Expiry stays lazy by decision: nothing sweeps continuations in the background, so `expiration_observed` is projected
+only when a read observes the expiry (`_get` / `release` / `release_cancel`). A background sweeper, and attaching a
+lifecycle event to the expiry 409 (where the failed read leaves no trusted record to name), are both out of scope
+for this phase.
+
+## 9. Non-goals
 
 ```text
 no continuation_id exposure on run responses (Phase 1 decision; the paused-run 202 keeps returning the
   continuation reference it already returned before this contract existed)
 no owner identity on cancel responses (Phase 2 decision: no trusted source on that route)
+no audit_event expansion (Phase 3 decision: deferred to the durable-audit stage — `actor` has no trusted source
+  on the cancel route, and the other candidates duplicate the lifecycle stream)
+no durable lifecycle history, no event store (deferred to consumer adoption; the D1 continuation adapter exists
+  but stays unwired)
+no lifecycle events on error responses (an expired read has no trusted record to name)
 no consumer wiring, no Claw/Chat surface
 no durable continuation history, no new storage, no migration
 no preview wire, no production deployment
 ```
 
-## 9. Rollback
+## 10. Rollback
 
 Additive projection plus a response-assembly hook: reverting the change restores the previous response shape. The
 continuation store, its CAS semantics, the resume flow and the authorization rules are untouched, so no data
-migration or core rollback is involved. Production rollback continues to use the deploy gate with an explicit
-`rollback_version_id`.
+migration or core rollback is involved. The Phase 3 lifecycle stream is additive in the same way: removing the
+projection removes the two keys and leaves every other block byte-identical. Production rollback continues to use
+the deploy gate with an explicit `rollback_version_id`.
