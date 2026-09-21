@@ -13,8 +13,11 @@ from padiem_ai_core.document_normalization import (
     MAX_XLSX_ROWS,
     MAX_XLSX_SHEETS,
     DocumentNormalizationError,
-    extract_binary_document,
     validate_document_identity,
+)
+from padiem_ai_core.document_parser_boundary import (
+    DOCUMENT_PARSER_ISOLATION_UNAVAILABLE,
+    parse_binary_document_via_authority,
 )
 
 from .documents import DocumentAttachment
@@ -50,6 +53,7 @@ _BINARY_ERROR_MESSAGES = {
     "xlsx_cell_limit": "XLSX의 값이 너무 많습니다.",
     "xlsx_empty": "XLSX에서 읽을 값을 찾지 못했습니다.",
     "document_dependency_unavailable": "문서 처리 기능을 사용할 수 없습니다.",
+    DOCUMENT_PARSER_ISOLATION_UNAVAILABLE: "현재 실행 환경에서는 격리된 문서 파서를 사용할 수 없어 문서를 처리할 수 없습니다.",
 }
 _OOXML_CODES = {
     "ooxml_archive_size",
@@ -114,7 +118,7 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
         raise _translate_binary_error(exc, item.get("media_type")) from exc
     payload = _decode_payload(item.get("base64"))
     try:
-        document = extract_binary_document(
+        document = parse_binary_document_via_authority(
             name=item.get("name"),
             media_type=item.get("media_type"),
             payload=payload,
