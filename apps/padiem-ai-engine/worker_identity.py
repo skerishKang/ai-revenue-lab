@@ -44,7 +44,11 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
-from app.cloudflare_external_transport import drive_worker_transport, gmail_worker_transport
+from app.cloudflare_external_transport import (
+    calendar_worker_transport,
+    drive_worker_transport,
+    gmail_worker_transport,
+)
 from app.connector_bindings import (
     build_tool_binding_resolver,
     CalendarGrant,
@@ -56,8 +60,8 @@ from app.connector_bindings import (
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
-from app.calendar_port_httpx import (
-    HttpxGoogleCalendarReadPort,
+from app.calendar_port_cp_lease import (
+    ControlPlaneLeaseGoogleCalendarReadPort,
     parse_calendar_ids,
 )
 from app.gmail_port_cp_lease import ControlPlaneLeaseGmailReadPort
@@ -112,9 +116,10 @@ from app.auth_session_scope_authority import (
 from app.trusted_document_resolver import DurableDocumentStoragePort, TrustedDocumentResolver
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
-ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
-ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
-ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
+# #2010: the canonical Calendar Production composition no longer reads
+# Engine-owned Google long-lived credentials. The shared Google OAuth authority
+# is the Control Plane Service Binding below
+# (CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO).
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
@@ -508,32 +513,39 @@ async def _slack_grants_for_env(env: Any) -> dict[str, SlackGrant]:
         ) from None
 
 
-def _calendar_port_for_env(env: Any) -> HttpxGoogleCalendarReadPort | None:
-    """Resolve the promoted Google Calendar read port (#2358).
+def _calendar_port_for_env(env: Any) -> ControlPlaneLeaseGoogleCalendarReadPort | None:
+    """Resolve canonical Google Calendar READ via the private CP OAuth authority.
 
-    Reuses the existing Google OAuth secrets (same names as Gmail) — no
-    second OAuth stack is introduced — and requires a non-empty
-    server-derived calendar allowlist. Missing or malformed authorities fail
-    closed by returning ``None``; there is no caller-side override and no
-    write path exists in the port.
+    #2010 convergence: the canonical Production Calendar path is the same
+    short-lived Control Plane access-lease architecture already used by Gmail
+    and Drive. There is deliberately NO Production fallback to Engine-owned
+    Google client-secret or refresh-token values
+    (``CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO``); the legacy
+    direct-secret port (``calendar_port_httpx.py``) is no longer imported or
+    selected by this canonical composition root.
+
+    The server-derived calendar allowlist stays a separate authority: a missing
+    or malformed ``ENGINE_CALENDAR_ALLOWED_CALENDARS`` keeps Calendar
+    unavailable rather than widening credential or calendar scope.
     """
-    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
-    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
-    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
+        return None
     allowed_raw = legacy_worker._binding_value(env, ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV)
-    if not client_id or not client_secret or not refresh_token or not allowed_raw:
+    if not allowed_raw:
         return None
     try:
         allowed_calendar_ids = parse_calendar_ids(str(allowed_raw))
         if not allowed_calendar_ids:
             return None
-        return HttpxGoogleCalendarReadPort(
-            client_id=client_id,
-            client_secret=client_secret,
-            refresh_token=refresh_token,
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseGoogleCalendarReadPort(
+            lease_client=lease_client,
             allowed_calendar_ids=allowed_calendar_ids,
+            allowlist_configured=True,
+            transport=calendar_worker_transport(),
         )
-    except Exception:
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 

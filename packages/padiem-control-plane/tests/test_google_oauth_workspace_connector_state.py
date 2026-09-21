@@ -587,8 +587,38 @@ def test_unreviewed_connector_filter_is_rejected() -> None:
         store.list_workspace_connector_state(
             workspace_ref=WORKSPACE_A,
             now=NOW,
-            connector_ids=("gmail", "google-calendar"),
+            connector_ids=("gmail", "google-slides"),
         )
+
+
+def test_reviewed_calendar_connector_does_not_widen_default_workspace_surface() -> None:
+    """#2010 / #2830 non-widening rule.
+
+    ``google-calendar`` is a reviewed OAuth authority (the CP access-lease
+    layer accepts it), but the public/default workspace-status projection must
+    stay exactly the authorized B-0 set: gmail + google-drive.
+    """
+    store, _ = _store()
+    import google_oauth_durable_store as durable
+
+    assert "google-calendar" in durable.OAUTH_REVIEWED_CONNECTORS
+    assert "google-calendar" in durable._REVIEWED_SCOPES
+    assert durable.WORKSPACE_READ_CONNECTOR_SCOPE == ("gmail", "google-drive")
+
+    # The default projection still emits only the B-0 pair, even though the
+    # reviewed OAuth authority set is wider.
+    states = store.list_workspace_connector_state(workspace_ref=WORKSPACE_A, now=NOW)
+    assert {state.connector_id for state in states} == {"gmail", "google-drive"}
+
+    # The reviewed Calendar connector is explicitly filterable (it is a real
+    # reviewed authority) and never duplicates a state row.
+    filtered = store.list_workspace_connector_state(
+        workspace_ref=WORKSPACE_A,
+        now=NOW,
+        connector_ids=("google-calendar",),
+    )
+    assert [state.connector_id for state in filtered] == ["google-calendar"]
+    assert filtered[0].state == "not_connected"
 
 
 def test_workspace_read_performs_no_write() -> None:

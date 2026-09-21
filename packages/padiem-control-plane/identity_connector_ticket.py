@@ -10,6 +10,7 @@ from typing import Any, Callable
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.connector_connect_ticket import (
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     ConnectorConnectTicketAuthority,
 )
@@ -23,6 +24,7 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_CONNECTORS: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
 
 
