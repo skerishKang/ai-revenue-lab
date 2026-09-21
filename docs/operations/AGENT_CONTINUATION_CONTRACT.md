@@ -40,7 +40,35 @@ agent_skill   = execution capability contract
 continuation  = execution lifecycle contract
 ```
 
-## 3. Field sources
+## 3. Cancel responses (Phase 2)
+
+A cancel response keeps its existing shape and gains the same sibling key:
+
+```json
+{
+  "ok": true,
+  "status": "cancelled",
+  "events": [ "…unchanged…" ],
+  "continuation": {
+    "continuation_contract_version": "padiem.engine.agent-continuation/1.0",
+    "continuation_id": "cont_ref_…",
+    "task_id": "bridge_run_…",
+    "current_state": "active",
+    "terminal_state": "cancelled",
+    "cancel_reason": "user_cancelled",
+    "audit_event": { "trace_id": "agtr_…", "event_count": 1, "terminal_kind": "run_cancelled" }
+  }
+}
+```
+
+```text
+NO owner identity on cancel: the cancel path has no trusted execution selection, so the Engine has no
+  trusted subject source on this route. That gap is recorded rather than filled with an invented identity
+  or a new runtime lookup (Phase 2 decision: OWNER_IDENTITY_ON_CANCEL=DEFERRED, NO_TRUSTED_SOURCE).
+NO claim tokens, cancel fingerprints, request fingerprints or authority material.
+```
+
+## 4. Field sources
 
 | Field | Source (trusted) |
 |---|---|
@@ -52,6 +80,14 @@ continuation  = execution lifecycle contract
 | `resume_target_state` | state reached by the resumed run (`execution_state`, else run status) |
 | `resume_authority` | summary only: whether the verified approval delta was applied, plus the trusted capability requirement |
 | `audit_event` | in-response evidence (`trace_id`, event count, terminal kind) |
+
+Cancel-specific:
+
+| Field | Source (trusted) |
+|---|---|
+| `current_state` | `record.state` before the cancellation claim |
+| `terminal_state` | the persisted state after `commit_cancel` (`cancelled`) |
+| `cancel_reason` | the persisted cancel reason (falls back to the parsed request reason) |
 
 ## 4. What never crosses
 
@@ -85,28 +121,35 @@ authority widening or missing approval authorization      -> 403 (unchanged mapp
 ## 7. Test coverage in this phase
 
 ```text
-COVERED
+COVERED — resume
   projection contract fields and their trusted sources
   owner derived from the binding, never from request input
   task contract unaffected (backward compatibility)
-  authority summary exposes no authority material
-  approval-delta flag reflects the caller assertion
-  projection rejects non-core inputs
-  provider-free (runtime call count 0)
-  coordinator guards before Core resume: store unavailable, unknown continuation,
-    missing app_id, malformed decision, decision/continuation mismatch, cancel unsupported fields
-
-DEFERRED (tracked, not asserted here)
-  happy-path resume, completed-task resume, duplicate resume, invalid transition
-  — these need a genuine Core approval pause; they are the first tests to add when a
-    paused-run fixture lands
+  authority summary exposes no authority material · approval-delta flag · foreign-input rejection
+  provider-free · coordinator guards before Core resume (store unavailable, unknown continuation,
+  malformed decision, decision/continuation mismatch)
+COVERED — paused-run lifecycle (shared fixture: a genuine Core approval pause)
+  pause response carries a continuation reference and a paused approval block
+  resume happy path publishes the continuation contract
+  resume without the trusted approval delta → 409 continuation_authority_mismatch
+  duplicate resume → 409 continuation_consumed
+  resume after cancel → 409 continuation_cancelled
+COVERED — cancel
+  contract fields · owner omitted · no authority material · response backward compatibility
+  cancel happy path (active → cancelling → cancelled) · already cancelled → 409
+  unknown continuation → 409 invalid_continuation · expired continuation → 409 continuation_expired
+  foreign application → 409 invalid_continuation · unsupported fields → 400
+  trusted trace identity required · provider-free
+DEFERRED
+  T13 concurrent cancel race (to be judged after this phase)
 ```
 
 ## 8. Non-goals
 
 ```text
-no continuation_id exposure on run responses (Phase 1 decision)
-no cancel contract (Phase 2)
+no continuation_id exposure on run responses (Phase 1 decision; the paused-run 202 keeps returning the
+  continuation reference it already returned before this contract existed)
+no owner identity on cancel responses (Phase 2 decision: no trusted source on that route)
 no consumer wiring, no Claw/Chat surface
 no durable continuation history, no new storage, no migration
 no preview wire, no production deployment

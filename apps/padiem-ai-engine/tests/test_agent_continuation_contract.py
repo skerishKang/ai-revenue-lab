@@ -50,6 +50,16 @@ from app.agent_skill_service import AgentSkillEngineService
 from app.orchestration_continuation import ContinuationRecord
 from app.tool_projection import EngineToolBinding, TrustedToolAuthority
 
+import sys
+from pathlib import Path
+
+TESTS_DIR = Path(__file__).resolve().parent
+if str(TESTS_DIR) not in sys.path:
+    sys.path.insert(0, str(TESTS_DIR))
+
+from agent_pause_fixture import SUBJECT_ID as PAUSED_SUBJECT_ID  # noqa: E402
+from agent_pause_fixture import PausedRunFixture  # noqa: E402
+
 APP_ID = "s13cont"
 SUBJECT_ID = "actor:s13-cont"
 OTHER_SUBJECT_ID = "actor:s13-other"
@@ -499,3 +509,69 @@ def test_cancel_rejects_unsupported_fields() -> None:
 
     assert response.status_code == 400
     assert response.body["error"]["code"] == "invalid_request"
+
+
+# --- paused-run lifecycle (S13-4 Phase 2 fixture) -------------------------
+
+
+def _pause_run(fixture: PausedRunFixture) -> tuple[str, str]:
+    response = _run(fixture.service.run_payload(fixture.run_payload()))
+    assert response.status_code == 202, response.body
+    ref = response.body["continuation_ref"]
+    pause_id = response.body["agent_skill"]["approval_pause"]["continuation_id"]
+    return ref, pause_id
+
+
+def test_paused_run_publishes_a_continuation_reference() -> None:
+    fixture = PausedRunFixture()
+
+    response = _run(fixture.service.run_payload(fixture.run_payload()))
+
+    assert response.status_code == 202
+    assert response.body["continuation_ref"].startswith("cont_")
+    pause = response.body["agent_skill"]["approval_pause"]
+    assert pause["status"] == "paused"
+    assert pause["requirement"] == "user_confirmation"
+    assert "continuation_id" in pause
+
+
+def test_resume_happy_path_publishes_the_continuation_contract() -> None:
+    fixture = PausedRunFixture()
+    ref, pause_id = _pause_run(fixture)
+    fixture.pre_confirmed = True
+
+    response = _run(fixture.service.resume_payload(fixture.resume_payload(ref, pause_id)))
+
+    assert response.status_code == 200, response.body
+    block = response.body["continuation"]
+    assert block["continuation_id"] == ref
+    assert block["owner_identity"] == {"subject_id": PAUSED_SUBJECT_ID}
+    assert block["current_state"] == "active"
+    assert block["resume_target_state"] == "completed"
+    assert block["resume_authority"]["approval_delta_applied"] is True
+    assert response.body["agent_skill"]["task_id"] == block["task_id"]
+
+
+def test_resume_without_the_trusted_delta_is_refused() -> None:
+    fixture = PausedRunFixture()
+    ref, pause_id = _pause_run(fixture)
+    fixture.pre_confirmed = False
+
+    response = _run(fixture.service.resume_payload(fixture.resume_payload(ref, pause_id)))
+
+    assert response.status_code == 409
+    assert response.body["error"]["code"] == "continuation_authority_mismatch"
+    assert "continuation" not in response.body
+
+
+def test_duplicate_resume_is_refused() -> None:
+    fixture = PausedRunFixture()
+    ref, pause_id = _pause_run(fixture)
+    fixture.pre_confirmed = True
+    first = _run(fixture.service.resume_payload(fixture.resume_payload(ref, pause_id)))
+    assert first.status_code == 200
+
+    second = _run(fixture.service.resume_payload(fixture.resume_payload(ref, pause_id)))
+
+    assert second.status_code == 409
+    assert second.body["error"]["code"] == "continuation_consumed"
