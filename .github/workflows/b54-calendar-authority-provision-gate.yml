@@ -1,0 +1,484 @@
+name: B54 Calendar Authority Provision Gate
+
+# Owner-authorized Production provision of the single Calendar Engine runtime
+# authority: ENGINE_CALENDAR_ALLOWED_CALENDARS (#2010).
+#
+# This gate provisions the server-derived calendar allowlist ONLY. It never
+# touches Google OAuth credentials: the long-lived Google refresh credential
+# owner remains the Control Plane (CONTROL_PLANE_GOOGLE_OAUTH Service Binding
+# plus the Control Plane private access-lease RPC). No Engine-owned Google
+# secret is created, read back, or modified here.
+#
+# The gate never calls Google or the Calendar provider, never writes D1, never
+# deploys Worker code, and never emits the allowlist value. The value lives
+# only in the repository/environment secret B54_CALENDAR_ALLOWED_CALENDARS and
+# is pushed to the Engine Worker through the same Cloudflare secrets API the
+# repository already uses for the reviewed Telegram authority.
+#
+# The default dispatch mode is repository_preflight: it runs only the source
+# contract, so an accidental dispatch mutates nothing.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/b54-calendar-authority-provision-gate.yml'
+      - '.github/tests/test_b54_calendar_authority_provision_gate.py'
+      - 'apps/padiem-ai-engine/app/calendar_port_cp_lease.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'repository_preflight | provision_calendar_allowlist'
+        required: true
+        default: 'repository_preflight'
+      target_sha:
+        description: 'Exact current main SHA authorized for provisioning (required for provision mode)'
+        required: false
+      confirmation:
+        description: 'Type CONFIRM_PROVISION_CALENDAR_ALLOWLIST to authorize exactly one provision run'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-calendar-authority-provision
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  CALENDAR_ALLOWLIST_BINDING: ENGINE_CALENDAR_ALLOWED_CALENDARS
+  # Engine-side type of the provisioned allowlist setting. The allowlist holds
+  # calendar identifiers, so it is provisioned as bounded secret text.
+  CALENDAR_ALLOWLIST_BINDING_TYPE: secret_text
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.target_sha || github.sha) || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install contract test dependencies
+        run: python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7' 'pytest>=8,<10'
+
+      - name: Run Calendar authority provision gate contract tests
+        run: python -m pytest -q .github/tests/test_b54_calendar_authority_provision_gate.py
+
+      - name: Record source-only evidence
+        shell: bash
+        run: |
+          echo 'B54_CALENDAR_AUTHORITY_PROVISION_SOURCE_CONTRACT=PASS'
+          echo 'CALENDAR_ALLOWLIST_MUTATION=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'D1_MUTATION=0'
+          echo 'CALENDAR_PROVIDER_CALLS=0'
+          echo 'GOOGLE_OAUTH_MUTATION=0'
+          echo 'OAUTH_CONNECT=0'
+          echo 'ENGINE_CODE_DEPLOY=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+  provision-authority:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.mode == 'provision_calendar_allowlist' &&
+      github.event.inputs.confirmation == 'CONFIRM_PROVISION_CALENDAR_ALLOWLIST'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CALENDAR_ALLOWLIST_SOURCE: ${{ secrets.B54_CALENDAR_ALLOWED_CALENDARS }}
+    steps:
+      - name: Checkout exact authorized revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.inputs.target_sha }}"
+          test -n "${expected}"
+          test "$(git rev-parse HEAD)" = "${expected}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${expected}"
+          echo 'PROVISION_EXACT_MAIN_SHA=PASS'
+          echo 'RAW_TARGET_SHA_OUTPUT=0'
+
+      - name: Set up Python for the canonical allowlist grammar
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the canonical allowlist grammar dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet 'httpx>=0.27,<1' -e packages/padiem-ai-core
+          echo 'CALENDAR_GRAMMAR_DEPENDENCY=INSTALLED'
+
+      - name: Require owner-supplied allowlist and bound its shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test -n "${CALENDAR_ALLOWLIST_SOURCE}"
+          python - <<'PY'
+          import os
+          import sys
+
+          # Reuse the Engine's reviewed allowlist grammar. No second grammar
+          # authority is invented here: parse_calendar_ids() enforces the id
+          # charset, the MAX_CALENDARS bound, and canonical de-duplication.
+          sys.path.insert(0, os.path.join("apps", "padiem-ai-engine"))
+          from app.calendar_port_cp_lease import parse_calendar_ids
+
+          raw = os.environ["CALENDAR_ALLOWLIST_SOURCE"]
+          if raw != raw.strip():
+              raise SystemExit("CALENDAR_ALLOWLIST_SHAPE=FAIL")
+
+          parsed = parse_calendar_ids(raw)
+          if not parsed:
+              raise SystemExit("CALENDAR_ALLOWLIST_EMPTY=FAIL")
+          print("CALENDAR_ALLOWLIST_NONEMPTY=YES")
+          print(f"CALENDAR_ALLOWLIST_ENTRY_COUNT_BOUNDED=YES:{len(parsed)}")
+          print("CALENDAR_ALLOWLIST_MAX_ENTRIES_BOUND=PASS")
+
+          # Non-vacuity: prove the reused grammar actually rejects an invalid id
+          # while consuming the real value. Nothing but counts is emitted.
+          try:
+              parse_calendar_ids(raw + ",bad/id")
+          except ValueError:
+              print("CALENDAR_ALLOWLIST_INVALID_ID_REJECT=YES")
+          else:
+              raise SystemExit("CALENDAR_ALLOWLIST_INVALID_ID_REJECT=NO")
+
+          tokens = [token.strip() for token in raw.split(",") if token.strip()]
+          collapsed = len(tokens) != len(parsed)
+          print(f"CALENDAR_ALLOWLIST_DUPLICATE_COLLAPSED={'YES' if collapsed else 'NOT_PRESENT'}")
+          print("RAW_CALENDAR_ID_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
+
+      - name: Snapshot the pre-mutation deployment anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          anchor="${RUNNER_TEMP}/calendar-provision-pre-anchor.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${anchor}"
+          python - "${anchor}" <<'PY'
+          import json, sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("CALENDAR_PRE_ANCHOR=FAIL")
+          deployments = payload.get("result", {}).get("deployments")
+          if not isinstance(deployments, list) or not deployments:
+              raise SystemExit("CALENDAR_PRE_ANCHOR_DEPLOYMENTS=FAIL")
+          versions = deployments[0].get("versions")
+          if not isinstance(versions, list) or len(versions) != 1:
+              raise SystemExit("CALENDAR_PRE_ANCHOR_VERSION_SHAPE=FAIL")
+          print("CALENDAR_PRE_MUTATION_ANCHOR=RECORDED")
+          print("ENGINE_VERSION_ID_OUTPUT=0")
+          PY
+
+      - name: Require create-only Calendar target state immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          settings="${RUNNER_TEMP}/calendar-authority-pre-settings.json"
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"
+          python - "${settings}" <<'PY'
+          import json, os, sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("CALENDAR_PREMUTATION_SETTINGS=FAIL")
+          bindings = payload.get("result", {}).get("bindings")
+          if not isinstance(bindings, list):
+              raise SystemExit("CALENDAR_PREMUTATION_BINDINGS=FAIL")
+
+          name = os.environ["CALENDAR_ALLOWLIST_BINDING"]
+          hits = [b for b in bindings if isinstance(b, dict) and b.get("name") == name]
+          if len(hits) > 1:
+              raise SystemExit("duplicate Calendar target binding")
+          if not hits:
+              state = "ABSENT"
+          else:
+              kind = hits[0].get("type")
+              if not isinstance(kind, str):
+                  raise SystemExit("Calendar target binding type invalid")
+              state = f"PRESENT:{kind}"
+          print(f"CALENDAR_ALLOWLIST_PREMUTATION_BINDING={state}")
+          if state != "ABSENT":
+              # Create-only: never overwrite an existing Production allowlist.
+              print("CALENDAR_PROVISION_MODE=CREATE_ONLY_REFUSE_EXISTING")
+              raise SystemExit(1)
+          print("CALENDAR_PREMUTATION_TARGET_ABSENT=PASS")
+          print("CALENDAR_PROVISION_MODE=CREATE_ONLY")
+          print("SECRET_VALUES_READBACK=0")
+          print("RAW_CALENDAR_ID_OUTPUT=0")
+          PY
+
+      - name: Push the Calendar Engine allowlist secret
+        id: push
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          payload="${RUNNER_TEMP}/calendar-allowlist-payload.json"
+          python - "${payload}" <<'PY'
+          import json, os, sys
+
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(
+                  {
+                      "name": os.environ["CALENDAR_ALLOWLIST_BINDING"],
+                      "type": os.environ["CALENDAR_ALLOWLIST_BINDING_TYPE"],
+                      "text": os.environ["CALENDAR_ALLOWLIST_SOURCE"],
+                  },
+                  handle,
+                  separators=(",", ":"),
+              )
+          print("CALENDAR_ALLOWLIST_PAYLOAD=BOUNDED")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
+
+          response="${RUNNER_TEMP}/calendar-push-response.json"
+          status="$(curl -sS -X PUT "${auth[@]}" -H "Content-Type: application/json" --data-binary "@${payload}" "${base}/secrets" -o "${response}" -w '%{http_code}')"
+          rm -f "${payload}"
+          if [ "${status}" -lt 200 ] || [ "${status}" -ge 300 ]; then
+            echo 'CALENDAR_ALLOWLIST_PUT=FAIL'
+            echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
+            echo 'SECRET_VALUE_EMITTED=0'
+            echo 'RAW_CALENDAR_ID_OUTPUT=0'
+            exit 1
+          fi
+          if ! jq -e '.success == true' "${response}" >/dev/null; then
+            echo 'CALENDAR_ALLOWLIST_PUT=FAIL'
+            echo 'CLOUDFLARE_API_SUCCESS=FAIL'
+            echo 'CLOUDFLARE_ERROR_BODY_OUTPUT=0'
+            echo 'SECRET_VALUE_EMITTED=0'
+            echo 'RAW_CALENDAR_ID_OUTPUT=0'
+            exit 1
+          fi
+          touch "${RUNNER_TEMP}/calendar-pushed-${CALENDAR_ALLOWLIST_BINDING}"
+          echo 'CALENDAR_ALLOWLIST_PUT=PASS'
+          echo 'SECRET_VALUE_EMITTED=0'
+          echo 'RAW_CALENDAR_ID_OUTPUT=0'
+          echo 'RAW_BINDING_VALUE_OUTPUT=0'
+          echo 'GOOGLE_OAUTH_MUTATION=0'
+          echo 'D1_MUTATION=0'
+
+      - name: Read back Calendar binding NAME/TYPE only
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          settings="${RUNNER_TEMP}/calendar-authority-settings.json"
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"
+          python - "${settings}" <<'PY'
+          import json, os, sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("CALENDAR_AUTHORITY_SETTINGS=FAIL")
+          bindings = payload.get("result", {}).get("bindings")
+          if not isinstance(bindings, list):
+              raise SystemExit("CALENDAR_AUTHORITY_SETTINGS_BINDINGS=FAIL")
+
+          name = os.environ["CALENDAR_ALLOWLIST_BINDING"]
+          expected_type = os.environ["CALENDAR_ALLOWLIST_BINDING_TYPE"]
+          hits = [b for b in bindings if isinstance(b, dict) and b.get("name") == name]
+          if not hits:
+              state = "ABSENT"
+          elif len(hits) != 1:
+              raise SystemExit("duplicate served binding entry")
+          elif hits[0].get("type") != expected_type:
+              raise SystemExit("served binding type invalid")
+          else:
+              state = f"PRESENT:{expected_type}"
+
+          print(f"CALENDAR_ALLOWLIST_SERVED_BINDING={state}")
+          if state == f"PRESENT:{expected_type}":
+              print("CALENDAR_AUTHORITY_SETTINGS_READBACK=PASS")
+          else:
+              print("CALENDAR_AUTHORITY_SETTINGS_READBACK=FAIL")
+              raise SystemExit(1)
+          print("SECRET_VALUES_READBACK=0")
+          print("RAW_CALENDAR_ID_OUTPUT=0")
+          print("RAW_BINDING_VALUE_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          # Scope truth is unchanged by an allowlist provision: a present
+          # Calendar allowlist still never proves the calendar.readonly grant.
+          print("SECRET_PRESENT != CALENDAR_SCOPE_GRANTED")
+          print("CALENDAR_OAUTH_SCOPE_STATUS=UNVERIFIED_WITHOUT_PROVIDER")
+          PY
+
+      - name: Confirm served active Engine version owns the Calendar allowlist binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          verified=no
+          for _ in $(seq 1 30); do
+            deployments="${RUNNER_TEMP}/calendar-authority-after-deployments.json"
+            if ! curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"; then
+              sleep 2
+              continue
+            fi
+            if ! resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}" 2>/dev/null)"; then
+              sleep 2
+              continue
+            fi
+            active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+            if [ -z "${active_version}" ]; then
+              sleep 2
+              continue
+            fi
+            echo "::add-mask::${active_version}"
+            detail="${RUNNER_TEMP}/calendar-authority-version.json"
+            if ! curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${detail}"; then
+              sleep 2
+              continue
+            fi
+            if python - "${detail}" "${active_version}" <<'PY'
+          import json, os, sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          active_version = sys.argv[2]
+          result = payload.get("result") if payload.get("success") is True else None
+          if not isinstance(result, dict) or result.get("id") != active_version:
+              raise SystemExit(1)
+          resources = result.get("resources")
+          raw = resources.get("bindings") if isinstance(resources, dict) else None
+          if isinstance(raw, dict):
+              bindings = [
+                  {**value, "name": name}
+                  for name, value in raw.items()
+                  if isinstance(value, dict)
+              ]
+          elif isinstance(raw, list):
+              bindings = raw
+          else:
+              raise SystemExit(1)
+
+          name = os.environ["CALENDAR_ALLOWLIST_BINDING"]
+          expected_type = os.environ["CALENDAR_ALLOWLIST_BINDING_TYPE"]
+          hits = [b for b in bindings if isinstance(b, dict) and b.get("name") == name]
+          if len(hits) != 1 or hits[0].get("type") != expected_type:
+              raise SystemExit(2)
+          PY
+            then
+              verified=yes
+              break
+            fi
+            sleep 2
+          done
+
+          echo 'CALENDAR_SERVED_VERSION_CONVERGENCE_MAX_ATTEMPTS=30'
+          echo 'CALENDAR_SERVED_VERSION_CONVERGENCE_SLEEP_SECONDS=2'
+          if [ "${verified}" = yes ]; then
+            echo 'CALENDAR_ACTIVE_VERSION_ALLOWLIST_BINDING=PRESENT:secret_text'
+            echo 'CALENDAR_RUNTIME_AUTHORITY=PROVISIONED'
+            echo 'CALENDAR_ACTIVE_VERSION_OWNS_AUTHORITY=PASS'
+          else
+            echo 'CALENDAR_RUNTIME_AUTHORITY=PROVISIONED_PENDING_VERSION_ACTIVATION'
+            echo 'CALENDAR_ACTIVE_VERSION_OWNS_AUTHORITY=FAIL'
+            echo 'ENGINE_VERSION_ID_OUTPUT=0'
+            echo 'RAW_CALENDAR_ID_OUTPUT=0'
+            echo 'RAW_BINDING_VALUE_OUTPUT=0'
+            echo 'SECRET_VALUE_OUTPUT=0'
+            exit 1
+          fi
+          echo 'ENGINE_VERSION_ID_OUTPUT=0'
+          echo 'RAW_CALENDAR_ID_OUTPUT=0'
+          echo 'RAW_BINDING_VALUE_OUTPUT=0'
+          echo 'SECRET_VALUE_OUTPUT=0'
+
+      - name: Roll back a failed Calendar allowlist provision
+        if: ${{ failure() && steps.push.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          marker="${RUNNER_TEMP}/calendar-pushed-${CALENDAR_ALLOWLIST_BINDING}"
+          if [ ! -f "${marker}" ]; then
+            echo 'ROLLBACK_ATTEMPTED=NO'
+            echo 'ROLLBACK_REASON=NO_CONFIRMED_SUCCESSFUL_PUT'
+            echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+            exit 0
+          fi
+          curl -sS -X DELETE "${auth[@]}" "${base}/secrets/${CALENDAR_ALLOWLIST_BINDING}" \
+            -o "${RUNNER_TEMP}/calendar-rollback-response.json" >/dev/null 2>&1 || true
+          rm -f "${marker}"
+          echo 'ROLLBACK_ATTEMPTED=YES'
+          echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+          echo 'ROLLBACK_SECRET_VALUE_OUTPUT=0'
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'PRODUCTION_MUTATION=SCOPED_CALENDAR_ALLOWLIST_SECRET'
+          echo 'WORKFLOW_INTERNAL_RERUN=0'
+          echo 'CREATE_ONLY=YES'
+          echo 'OVERWRITE_EXISTING=NO'
+          echo 'SECRET_VALUE_EMITTED=0'
+          echo 'SECRET_VALUES_READBACK=0'
+          echo 'RAW_CALENDAR_ID_OUTPUT=0'
+          echo 'RAW_BINDING_VALUE_OUTPUT=0'
+          echo 'ALLOWLIST_PRODUCTION_MUTATION=SCOPED_CALENDAR_ALLOWLIST_ONLY'
+          echo 'CALENDAR_PROVIDER_CALLS=0'
+          echo 'GOOGLE_PROVIDER_CALLS=0'
+          echo 'OAUTH_CONNECT=0'
+          echo 'OAUTH_RECONSENT=0'
+          echo 'GOOGLE_OAUTH_MUTATION=0'
+          echo 'CONTROL_PLANE_GOOGLE_OAUTH_LONG_LIVED_CREDENTIAL_OWNER=CONTROL_PLANE'
+          echo 'ENGINE_DIRECT_GOOGLE_CREDENTIAL_PROVISIONED=0'
+          echo 'D1_MUTATION=0'
+          echo 'CALENDAR_GRANT_SEED=0'
+          echo 'ENGINE_CODE_DEPLOY=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'ROLLBACK_SCOPE=CONFIRMED_PARTIAL_PUT_ONLY'
+          echo 'VERSION_ACTIVATION=SEPARATE_AUTHORITY_IF_CONVERGENCE_EXHAUSTED'
+
+      - name: Publish bounded provision evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B54 Calendar authority provision gate"
+            echo
+            echo "- mutation scope: the single Engine setting ENGINE_CALENDAR_ALLOWED_CALENDARS"
+            echo "- create-only: an existing allowlist binding is never overwritten"
+            echo "- binding inspection: NAME/TYPE only; the allowlist value is never read back"
+            echo "- Google OAuth credential provisioning: 0 (Control Plane owns the long-lived credential)"
+            echo "- Google provider calls: 0 | D1 writes: 0 | Worker code deploy: 0"
+            echo "- rollback scope: confirmed successful partial PUT only"
+            echo "- calendar.readonly scope remains UNVERIFIED_WITHOUT_PROVIDER"
+          } >> "${GITHUB_STEP_SUMMARY}"
