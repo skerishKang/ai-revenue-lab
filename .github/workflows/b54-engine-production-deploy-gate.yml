@@ -302,8 +302,16 @@ jobs:
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
-          grep -q 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log
-          grep 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log | tail -1
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
 
   rollback-production-engine:
     if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'

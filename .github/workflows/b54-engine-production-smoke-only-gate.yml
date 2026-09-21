@@ -165,8 +165,16 @@ jobs:
         run: |
           set -euo pipefail
           python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
-          grep -q 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log
-          grep 'A12_STREAM_REPLAY_SMOKE=PASS' /tmp/a12_smoke.log | tail -1
+          # Same contract as the deploy gate: an external provider 5xx is a
+          # recorded SKIPPED_UPSTREAM, never a pass, and FAIL stays a hard
+          # failure. The mandatory Engine-side stages still had to hold.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
 
       - name: Record smoke-only gate outcome (no mutation performed)
         if: always()
