@@ -178,3 +178,21 @@ def test_caller_url_capture_and_validation() -> None:
     assert "/run-pilot" in text
 
 
+def test_workflow_has_secret_readiness_wait_and_retry_loop() -> None:
+    """The workflow must wait for secret propagation with bounded retry loop and timeout."""
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "AUTH_CHECK_URL" in text
+    assert "auth-check" in text
+    assert "MAX_ATTEMPTS=" in text
+    assert "INTERVAL_SEC=" in text
+    assert "AUTH_READY=" in text
+    assert "sleep" in text
+    assert "401" in text
+    assert "Timed out waiting for secret propagation" in text
+    # Verify teardown in always() remains intact
+    pilot_text = _job_text(_workflow(), "preview-pilot")
+    assert "if: always()" in pilot_text
+    assert "PREVIEW_PILOT_TEARDOWN=PASS" in pilot_text
+
+
+

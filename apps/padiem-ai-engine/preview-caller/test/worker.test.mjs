@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   handleCaller,
   PREVIEW_PILOT_PATH,
+  AUTH_CHECK_PATH,
   ENGINE_SKILL_RUN_URL,
   PREVIEW_PILOT_APP_ID,
   SYNTHETIC_TASK_PAYLOAD,
@@ -156,3 +157,46 @@ test("7. wrangler.toml isolation guarantees", () => {
   assert.equal(content.includes("B14_SERVICE"), false);
   assert.equal(content.includes("CONTROL_PLANE"), false);
 });
+
+test("8. GET /auth-check with valid token and engine credential returns 200 authenticated", async () => {
+  const { env } = fakeEnv();
+  const req = new Request(`https://caller.example${AUTH_CHECK_PATH}`, {
+    method: "GET",
+    headers: { authorization: `Bearer ${PILOT_RUNNER_SECRET}` },
+  });
+  const res = await handleCaller(req, env);
+  assert.equal(res.status, 200);
+  const data = await res.json();
+  assert.equal(data.ok, true);
+  assert.equal(data.status, "authenticated");
+});
+
+test("9. GET /auth-check with missing or invalid token fails with 401", async () => {
+  const { env } = fakeEnv();
+  // No auth header
+  const reqNoAuth = new Request(`https://caller.example${AUTH_CHECK_PATH}`, { method: "GET" });
+  const resNoAuth = await handleCaller(reqNoAuth, env);
+  assert.equal(resNoAuth.status, 401);
+
+  // Wrong token
+  const reqWrong = new Request(`https://caller.example${AUTH_CHECK_PATH}`, {
+    method: "GET",
+    headers: { authorization: "Bearer wrong-token" },
+  });
+  const resWrong = await handleCaller(reqWrong, env);
+  assert.equal(resWrong.status, 401);
+});
+
+test("10. GET /auth-check with missing PREVIEW_ENGINE_CREDENTIAL fails with 503", async () => {
+  const { env } = fakeEnv();
+  delete env.PREVIEW_ENGINE_CREDENTIAL;
+  const req = new Request(`https://caller.example${AUTH_CHECK_PATH}`, {
+    method: "GET",
+    headers: { authorization: `Bearer ${PILOT_RUNNER_SECRET}` },
+  });
+  const res = await handleCaller(req, env);
+  assert.equal(res.status, 503);
+  const data = await res.json();
+  assert.equal(data.error.code, "caller_credential_unavailable");
+});
+
