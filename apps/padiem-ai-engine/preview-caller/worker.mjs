@@ -36,6 +36,7 @@ export const SYNTHETIC_TASK_PAYLOAD = Object.freeze({
 });
 
 export const PREVIEW_PILOT_PATH = "/run-pilot";
+export const AUTH_CHECK_PATH = "/auth-check";
 export const ENGINE_SKILL_RUN_URL = "https://padiem-ai-engine-preview/internal/v1/agent-skill/run";
 
 const CALLER_ID_HEADER = "x-padiem-engine-caller";
@@ -73,6 +74,37 @@ export async function handleCaller(request, env) {
       ok: true,
       service: "padiem-ai-engine-preview-caller",
       status: "ready",
+    });
+  }
+
+  // Auth readiness check endpoint for secret propagation verification
+  if (url.pathname === AUTH_CHECK_PATH && (request.method === "GET" || request.method === "POST")) {
+    const authHeader = request.headers.get("authorization") || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+    const runnerSecret = env?.PILOT_RUNNER_SECRET;
+    const engineCredential = env?.PREVIEW_ENGINE_CREDENTIAL;
+
+    if (!runnerSecret || !token || !constantTimeEqual(token, runnerSecret)) {
+      return jsonResponse(401, {
+        ok: false,
+        error: { code: "unauthorized", message: "Invalid or missing runner bearer token." },
+      });
+    }
+
+    if (!engineCredential) {
+      return jsonResponse(503, {
+        ok: false,
+        error: {
+          code: "caller_credential_unavailable",
+          message: "PREVIEW_ENGINE_CREDENTIAL secret is not available.",
+        },
+      });
+    }
+
+    return jsonResponse(200, {
+      ok: true,
+      service: "padiem-ai-engine-preview-caller",
+      status: "authenticated",
     });
   }
 

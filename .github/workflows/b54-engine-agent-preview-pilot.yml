@@ -224,6 +224,10 @@ jobs:
           printf '%s' "${PREVIEW_CREDENTIAL}" | npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL
           printf '%s' "${RUNNER_TOKEN}" | npx wrangler secret put PILOT_RUNNER_SECRET
 
+          # Initial secret propagation grace wait
+          echo "Waiting 5 seconds for initial secret distribution..."
+          sleep 5
+
           echo 'PREVIEW_CALLER_PROVISIONED=PASS'
 
       - name: Execute synthetic wire pilot and collect evidence
@@ -242,14 +246,68 @@ jobs:
           }
 
           CALLER_URL="${CALLER_BASE_URL%/}/run-pilot"
+          AUTH_CHECK_URL="${CALLER_BASE_URL%/}/auth-check"
           echo "PREVIEW_CALLER_URL=${CALLER_URL}"
+          echo "PREVIEW_AUTH_CHECK_URL=${AUTH_CHECK_URL}"
+
+          # Poll caller auth readiness to handle asynchronous Cloudflare secret propagation
+          echo "Polling caller auth readiness for secret propagation..."
+          MAX_ATTEMPTS=12
+          INTERVAL_SEC=5
+          AUTH_READY=0
+
+          for i in $(seq 1 "${MAX_ATTEMPTS}"); do
+            echo "Checking caller auth readiness (attempt ${i}/${MAX_ATTEMPTS})..."
+            HTTP_CODE=$(curl -s -o "${RUNNER_TEMP}/auth_check.json" -w "%{http_code}" -X GET "${AUTH_CHECK_URL}" \
+              -H "Authorization: Bearer ${RUNNER_TOKEN}" || true)
+
+            if [ "${HTTP_CODE}" = "200" ]; then
+              echo "Caller auth readiness confirmed (HTTP 200) on attempt ${i}."
+              AUTH_READY=1
+              break
+            elif [ "${HTTP_CODE}" = "401" ] || [ "${HTTP_CODE}" = "503" ]; then
+              echo "Secret not yet propagated to edge (HTTP ${HTTP_CODE}). Waiting ${INTERVAL_SEC}s..."
+              sleep "${INTERVAL_SEC}"
+            else
+              echo "Unexpected HTTP status ${HTTP_CODE} during auth readiness check:" >&2
+              cat "${RUNNER_TEMP}/auth_check.json" >&2 || true
+              exit 1
+            fi
+          done
+
+          if [ "${AUTH_READY}" -ne 1 ]; then
+            echo "Timed out waiting for secret propagation after $((MAX_ATTEMPTS * INTERVAL_SEC)) seconds" >&2
+            exit 1
+          fi
 
           # Execute wire pilot: Runner -> Caller Worker -> Service Binding -> Preview Engine
           PILOT_RES="${RUNNER_TEMP}/pilot_response.json"
-          curl -fsS -X POST "${CALLER_URL}" \
-            -H "Authorization: Bearer ${RUNNER_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -o "${PILOT_RES}"
+          POST_SUCCESS=0
+          POST_MAX_ATTEMPTS=6
+
+          for j in $(seq 1 "${POST_MAX_ATTEMPTS}"); do
+            echo "Executing synthetic wire pilot POST (attempt ${j}/${POST_MAX_ATTEMPTS})..."
+            POST_CODE=$(curl -s -o "${PILOT_RES}" -w "%{http_code}" -X POST "${CALLER_URL}" \
+              -H "Authorization: Bearer ${RUNNER_TOKEN}" \
+              -H "Content-Type: application/json" || true)
+
+            if [ "${POST_CODE}" = "200" ]; then
+              POST_SUCCESS=1
+              break
+            elif [ "${POST_CODE}" = "401" ]; then
+              echo "Wire POST received 401 (edge isolate catchup). Retrying in ${INTERVAL_SEC}s..."
+              sleep "${INTERVAL_SEC}"
+            else
+              echo "Wire POST failed with HTTP ${POST_CODE}:" >&2
+              cat "${PILOT_RES}" >&2 || true
+              exit 1
+            fi
+          done
+
+          if [ "${POST_SUCCESS}" -ne 1 ]; then
+            echo "Wire POST failed after ${POST_MAX_ATTEMPTS} attempts" >&2
+            exit 1
+          fi
 
           python3 - <<'PY' "${PILOT_RES}"
           import json, sys
