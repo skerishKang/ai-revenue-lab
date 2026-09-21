@@ -1,6 +1,7 @@
-"""#2013/#2824-S2: gated binary-document intake for the review and draft flows.
+"""#2013/#2824-S2/#2824-S3A: gated binary-document intake for review and draft.
 
-Composition order — the gate always runs before any Core parser:
+Composition order — the gate always runs before any parser, and since #2824-S3A
+the parser runs in its own killable child process:
 
 .. code-block:: text
 
@@ -8,7 +9,19 @@ Composition order — the gate always runs before any Core parser:
     -> inspect_file()                  (common pre-parser safety gate, #2824)
     -> admission decision
     -> supported document routing
-    -> padiem_ai_core extract_binary_document()
+    -> isolated parser boundary        (kagent-local child process, #2824-S3A)
+    -> padiem_ai_core extract_binary_document()   (inside the child)
+
+The isolated boundary applies a hard, killable parser timeout: the Core parser
+runs in a dedicated process and a document that hangs is terminated and killed
+rather than left holding this interpreter. A timeout is reported through its own
+bounded note and is never presented as a successful, failed or cancelled parse.
+
+Scope honesty: this boundary is the **local kagent route only**
+(``TIMEOUT_OWNER=KAGENT_LOCAL_PROCESS_ISOLATION``). The B62 Chat and Engine
+Worker routes call Core directly and stay unbounded, so #2824 remains open with
+``PARSER_TIMEOUT_BOUNDED=PARTIAL``. Nothing here is a hard timeout for a Worker
+route — a Worker cannot start the child process this boundary depends on.
 
 ``kagent.file_intake_safety.inspect_file`` is the single admission authority and
 `:mod:`kagent.document_intake` stays the routing layer. No Core parser call can
@@ -45,11 +58,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from padiem_ai_core.document_normalization import (
-    DocumentNormalizationError,
-    extract_binary_document,
+from .document_parser_isolation import (
+    PARSER_INPUT_REASON_CODE,
+    PARSER_ISOLATION_FAILURE_REASON_CODE,
+    PARSER_TIMEOUT_REASON_CODE,
+    IsolatedParseResult,
+    ParserOutcome,
+    extract_binary_document_isolated,
 )
-
 from .file_intake_safety import DetectedFormat, FileIntakeResult, inspect_file
 
 PDF_MEDIA_TYPE = "application/pdf"
@@ -88,6 +104,15 @@ GATE_REJECTION_NOTE_PREFIX = "file_intake_rejected:"
 ROUTE_MISMATCH_NOTE_PREFIX = f"{GATE_REJECTION_NOTE_PREFIX}content_mismatch:"
 DOCX_SIGNATURE_MISSING_NOTE = f"{GATE_REJECTION_NOTE_PREFIX}document_signature_missing"
 
+# Bounded isolated-parser notes. Both carry a fixed enumeration value only, so
+# a timeout or an isolation failure can never echo a payload, a host path, child
+# stderr or a traceback. A timeout keeps its own note because it is not a
+# failure and not a cancellation.
+PARSER_TIMEOUT_NOTE = f"문서 변환 시간 초과 — {PARSER_TIMEOUT_REASON_CODE}"
+PARSER_ISOLATION_FAILURE_NOTE = (
+    f"문서 변환 실패 — {PARSER_ISOLATION_FAILURE_REASON_CODE}"
+)
+
 
 @dataclass(frozen=True, slots=True)
 class IntakeResult:
@@ -103,8 +128,7 @@ class IntakeResult:
     note: str | None = None
 
 
-def _rejection_note(exc: DocumentNormalizationError) -> str:
-    code = exc.code
+def _rejection_note(code: str) -> str:
     if code == "pdf_empty_text":
         return f"PDF 텍스트 추출 불가(OCR 미지원) — {code}"
     if code == "document_dependency_unavailable":
@@ -169,19 +193,39 @@ def intake_document(name: str, data: bytes) -> IntakeResult | None:
         # An admitted ZIP container without the OOXML signature is not a DOCX.
         return IntakeResult(note=DOCX_SIGNATURE_MISSING_NOTE)
 
-    try:
-        document = extract_binary_document(
-            name=name, media_type=_MEDIA_BY_SUFFIX[suffix], payload=data
-        )
-    except DocumentNormalizationError as exc:
-        return IntakeResult(note=_rejection_note(exc))
-    return IntakeResult(text=document.text)
+    isolated = extract_binary_document_isolated(
+        name=name, media_type=_MEDIA_BY_SUFFIX[suffix], payload=data
+    )
+    return _isolated_result(isolated)
+
+
+def _isolated_result(isolated: IsolatedParseResult) -> IntakeResult:
+    """Project one bounded isolation result onto the caller's note vocabulary.
+
+    ``REJECTED`` keeps Core's own bounded reason code, so an existing document
+    rejection note is unchanged. ``TIMED_OUT`` keeps its own note: a timeout is
+    neither a failure nor a cancellation. Anything the boundary could not make
+    trustworthy falls through to the failure note, so a malformed or oversized
+    child result can never be projected as a parse.
+    """
+
+    if isolated.outcome is ParserOutcome.COMPLETED and isolated.text is not None:
+        return IntakeResult(text=isolated.text)
+    if isolated.outcome is ParserOutcome.REJECTED:
+        return IntakeResult(note=_rejection_note(isolated.reason_code))
+    if isolated.outcome is ParserOutcome.TIMED_OUT:
+        return IntakeResult(note=PARSER_TIMEOUT_NOTE)
+    if isolated.reason_code == PARSER_INPUT_REASON_CODE:
+        return IntakeResult(note=_rejection_note(PARSER_INPUT_REASON_CODE))
+    return IntakeResult(note=PARSER_ISOLATION_FAILURE_NOTE)
 
 
 __all__ = [
     "DOCX_SIGNATURE_MISSING_NOTE",
     "GATE_REJECTION_NOTE_PREFIX",
     "LEGACY_HWP_NOTE",
+    "PARSER_ISOLATION_FAILURE_NOTE",
+    "PARSER_TIMEOUT_NOTE",
     "ROUTE_MISMATCH_NOTE_PREFIX",
     "IntakeResult",
     "intake_document",

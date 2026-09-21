@@ -1,13 +1,16 @@
-"""#2824-S2: the common pre-parser gate is composed ahead of the Core parser.
+"""#2824-S2/#2824-S3A: the gate is composed ahead of the isolated parser boundary.
 
 These tests are non-vacuous: they do not assert that the string ``inspect_file``
 appears in the module. They spy on the two composition points and prove the
 order and the admission counts:
 
-* ``kagent.document_intake.inspect_file``             (the #2824 gate)
-* ``kagent.document_intake.extract_binary_document``  (the Core parser)
+* ``kagent.document_intake.inspect_file``                        (the #2824 gate)
+* ``kagent.document_intake.extract_binary_document_isolated``    (the parser)
 
-A file the gate denies must leave the Core parser call count at 0.
+#2824-S3A moved the Core parser into a child process, so the second composition
+point is now the isolated boundary. A file the gate denies must leave the
+boundary call count at 0, which is strictly stronger than the previous "the
+Core parser was not called" claim: no child process is started at all.
 """
 
 from __future__ import annotations
@@ -202,19 +205,19 @@ class _CompositionSpy:
         import kagent.document_intake as module
 
         real_gate = module.inspect_file
-        real_parser = module.extract_binary_document
+        real_parser = module.extract_binary_document_isolated
 
         def gate(name, data, *args, **kwargs):
             self.calls.append("inspect_file")
             return real_gate(name, data, *args, **kwargs)
 
         def parser(**kwargs):
-            self.calls.append("extract_binary_document")
+            self.calls.append("extract_binary_document_isolated")
             return real_parser(**kwargs)
 
         self._patches = [
             mock.patch.object(module, "inspect_file", gate),
-            mock.patch.object(module, "extract_binary_document", parser),
+            mock.patch.object(module, "extract_binary_document_isolated", parser),
         ]
         for patch in self._patches:
             patch.start()
@@ -238,9 +241,9 @@ class OrderAndAdmissionTests(unittest.TestCase):
         with _CompositionSpy() as spy:
             result = intake_document("plan.pdf", _minimal_pdf())
         self.assertEqual(
-            spy.calls, ["inspect_file", "extract_binary_document"]
+            spy.calls, ["inspect_file", "extract_binary_document_isolated"]
         )
-        self.assertEqual(spy.count("extract_binary_document"), 1)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 1)
         self.assertEqual(result.text, "Hello Padiem Document")
         self.assertIsNone(result.note)
 
@@ -258,7 +261,7 @@ class OrderAndAdmissionTests(unittest.TestCase):
             with self.subTest(payload=label):
                 with _CompositionSpy() as spy:
                     result = intake_document("report.pdf", payload)
-                self.assertEqual(spy.count("extract_binary_document"), 0)
+                self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
                 self.assertEqual(spy.count("inspect_file"), 1)
                 self.assertIsNone(result.text)
                 self.assertTrue(
@@ -271,7 +274,7 @@ class OrderAndAdmissionTests(unittest.TestCase):
         with _CompositionSpy() as spy:
             result = intake_document("note.hwpx", _minimal_hwpx("견적서", "합계 1,000원"))
         self.assertEqual(
-            spy.calls, ["inspect_file", "extract_binary_document"]
+            spy.calls, ["inspect_file", "extract_binary_document_isolated"]
         )
         self.assertEqual(result.text, "견적서\n합계 1,000원")
         self.assertIsNone(result.note)
@@ -293,7 +296,7 @@ class OrderAndAdmissionTests(unittest.TestCase):
             with self.subTest(payload=label):
                 with _CompositionSpy() as spy:
                     result = intake_document("fake.hwpx", payload)
-                self.assertEqual(spy.count("extract_binary_document"), 0)
+                self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
                 self.assertEqual(spy.count("inspect_file"), 1)
                 self.assertIsNone(result.text)
                 self.assertTrue(
@@ -303,13 +306,13 @@ class OrderAndAdmissionTests(unittest.TestCase):
     def test_admitted_zip_without_ooxml_signature_never_reaches_the_parser(self) -> None:
         with _CompositionSpy() as spy:
             result = intake_document("report.docx", _build_zip([("a.txt", b"x")]))
-        self.assertEqual(spy.count("extract_binary_document"), 0)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
         self.assertEqual(result.note, DOCX_SIGNATURE_MISSING_NOTE)
 
     def test_docx_named_hwpx_content_is_a_content_mismatch(self) -> None:
         with _CompositionSpy() as spy:
             result = intake_document("report.docx", _minimal_hwpx("견적서"))
-        self.assertEqual(spy.count("extract_binary_document"), 0)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
         self.assertTrue(
             result.note.startswith(ROUTE_MISMATCH_NOTE_PREFIX), result.note
         )
@@ -318,7 +321,7 @@ class OrderAndAdmissionTests(unittest.TestCase):
         with _CompositionSpy() as spy:
             result = intake_document("plan.docx", _minimal_docx())
         self.assertEqual(
-            spy.calls, ["inspect_file", "extract_binary_document"]
+            spy.calls, ["inspect_file", "extract_binary_document_isolated"]
         )
         self.assertEqual(result.text, "Hello Docx Document")
 
@@ -329,7 +332,7 @@ class ArchivePolicyBeforeParserTests(unittest.TestCase):
     def _assert_denied(self, name: str, payload: bytes, code: str) -> None:
         with _CompositionSpy() as spy:
             result = intake_document(name, payload)
-        self.assertEqual(spy.count("extract_binary_document"), 0, code)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 0, code)
         self.assertEqual(spy.count("inspect_file"), 1)
         self.assertIsNone(result.text)
         self.assertIn(code, result.note)
@@ -360,7 +363,7 @@ class LegacyAndTextFallbackTests(unittest.TestCase):
         with _CompositionSpy() as spy:
             result = intake_document("note.hwp", OLE_HWP_BYTES)
         self.assertEqual(spy.count("inspect_file"), 1)
-        self.assertEqual(spy.count("extract_binary_document"), 0)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
         self.assertIsNone(result.text)
         self.assertEqual(result.note, LEGACY_HWP_NOTE)
 
@@ -375,7 +378,7 @@ class LegacyAndTextFallbackTests(unittest.TestCase):
                 with _CompositionSpy() as spy:
                     result = intake_document(name, payload)
                 self.assertIsNone(result)
-                self.assertEqual(spy.count("extract_binary_document"), 0)
+                self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
 
 
 class FlowCompositionTests(unittest.TestCase):
@@ -420,7 +423,7 @@ class FlowCompositionTests(unittest.TestCase):
         # The gate ran for every file at the boundary; Core ran only for the
         # document the gate admitted.
         self.assertEqual(spy.count("inspect_file"), 3)
-        self.assertEqual(spy.count("extract_binary_document"), 1)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 1)
 
     def test_draft_flow_binary_route_goes_through_common_gate(self) -> None:
         valid = self._write("plan.docx", _minimal_docx("Hello Draft Docx"))
@@ -428,12 +431,12 @@ class FlowCompositionTests(unittest.TestCase):
             text = _read_draft_input(valid)
         self.assertEqual(text, "Hello Draft Docx")
         self.assertEqual(spy.count("inspect_file"), 1)
-        self.assertEqual(spy.count("extract_binary_document"), 1)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 1)
 
         spoofed = self._write("spoofed.docx", PNG_BYTES)
         with _CompositionSpy() as spy, self.assertRaises(DraftFlowError) as ctx:
             _read_draft_input(spoofed)
-        self.assertEqual(spy.count("extract_binary_document"), 0)
+        self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
         self.assertEqual(ctx.exception.code, "draft_input_invalid")
         self.assertIn(GATE_REJECTION_NOTE_PREFIX, ctx.exception.safe_message)
 
@@ -515,7 +518,7 @@ class DraftGateRejectionPathLeakTests(unittest.TestCase):
 
                 # The composed path really ran the gate and never the parser.
                 self.assertEqual(spy.count("inspect_file"), 1)
-                self.assertEqual(spy.count("extract_binary_document"), 0)
+                self.assertEqual(spy.count("extract_binary_document_isolated"), 0)
 
 
 class SafeProjectionTests(unittest.TestCase):
