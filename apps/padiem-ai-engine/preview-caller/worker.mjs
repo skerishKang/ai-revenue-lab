@@ -37,7 +37,7 @@ export const SYNTHETIC_TASK_PAYLOAD = Object.freeze({
 
 export const PREVIEW_PILOT_PATH = "/run-pilot";
 export const AUTH_CHECK_PATH = "/auth-check";
-export const ENGINE_SKILL_RUN_URL = "https://padiem-ai-engine-preview/internal/v1/agent-skill/run";
+export const ENGINE_SKILL_RUN_URL = "https://padiem-ai-engine-preview.internal/internal/v1/agent-skill/run";
 
 const CALLER_ID_HEADER = "x-padiem-engine-caller";
 const CALLER_CREDENTIAL_HEADER = "x-padiem-engine-credential";

@@ -196,7 +196,7 @@ jobs:
 
           # Inject ephemeral caller registry into preview engine (preview-only, 1 allowed app)
           REGISTRY_JSON="{\"version\":1,\"callers\":[{\"caller_id\":\"preview-pilot-caller\",\"credential\":\"${PREVIEW_CREDENTIAL}\",\"allowed_app_ids\":[\"engine-a5-agent-synthetic\"]}]}"
-          printf '%s' "${REGISTRY_JSON}" | npx wrangler secret put PADIEM_ENGINE_CALLER_REGISTRY_V1 --env preview
+          printf '%s' "${REGISTRY_JSON}" | npx wrangler secret put PADIEM_ENGINE_CALLER_REGISTRY_V1 --name "${PREVIEW_WORKER}"
 
           # Deploy ephemeral caller worker with service binding to padiem-ai-engine-preview
           npx wrangler deploy 2>&1 | tee deploy.log
@@ -221,8 +221,8 @@ jobs:
           echo "CALLER_BASE_URL=${CALLER_BASE_URL}" >> "$GITHUB_ENV"
           echo "RESOLVED_CALLER_BASE_URL=${CALLER_BASE_URL}"
 
-          printf '%s' "${PREVIEW_CREDENTIAL}" | npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL
-          printf '%s' "${RUNNER_TOKEN}" | npx wrangler secret put PILOT_RUNNER_SECRET
+          printf '%s' "${PREVIEW_CREDENTIAL}" | npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL --name "${PREVIEW_CALLER_WORKER}"
+          printf '%s' "${RUNNER_TOKEN}" | npx wrangler secret put PILOT_RUNNER_SECRET --name "${PREVIEW_CALLER_WORKER}"
 
           # Initial secret propagation grace wait
           echo "Waiting 5 seconds for initial secret distribution..."
@@ -294,8 +294,8 @@ jobs:
             if [ "${POST_CODE}" = "200" ]; then
               POST_SUCCESS=1
               break
-            elif [ "${POST_CODE}" = "401" ]; then
-              echo "Wire POST received 401 (edge isolate catchup). Retrying in ${INTERVAL_SEC}s..."
+            elif [ "${POST_CODE}" = "401" ] || [ "${POST_CODE}" = "404" ] || [ "${POST_CODE}" = "502" ] || [ "${POST_CODE}" = "503" ]; then
+              echo "Wire POST received ${POST_CODE} (edge/secret propagation catchup). Retrying in ${INTERVAL_SEC}s..."
               sleep "${INTERVAL_SEC}"
             else
               echo "Wire POST failed with HTTP ${POST_CODE}:" >&2
@@ -306,6 +306,7 @@ jobs:
 
           if [ "${POST_SUCCESS}" -ne 1 ]; then
             echo "Wire POST failed after ${POST_MAX_ATTEMPTS} attempts" >&2
+            cat "${PILOT_RES}" >&2 || true
             exit 1
           fi
 
@@ -360,5 +361,5 @@ jobs:
           # Delete ephemeral caller worker and binding
           npx wrangler delete --name "${PREVIEW_CALLER_WORKER}" --force
           # Delete ephemeral preview registry secret
-          npx wrangler secret delete PADIEM_ENGINE_CALLER_REGISTRY_V1 --env preview
+          npx wrangler secret delete PADIEM_ENGINE_CALLER_REGISTRY_V1 --name "${PREVIEW_WORKER}"
           echo 'PREVIEW_PILOT_TEARDOWN=PASS'
