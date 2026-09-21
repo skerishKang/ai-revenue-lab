@@ -263,6 +263,10 @@ def test_rpc_failure_is_bounded_and_not_retried() -> None:
         {"ok": True, "connectors": [_entry(usable=False)]},
         {"ok": True, "connectors": [_entry(state="not_connected", usable=True)]},
         {"ok": True, "connectors": [_entry(state="ambiguous", usable=False, ambiguous=False)]},
+        # canonical invariant, both directions (CENTRAL #2010 tri-state hardening)
+        {"ok": True, "connectors": [_entry(ambiguous=True)]},
+        {"ok": True, "connectors": [_entry(state="not_connected", usable=False, ambiguous=True)]},
+        {"ok": True, "connectors": [_entry(state="ambiguous", usable=True, ambiguous=True)]},
         {"ok": True, "connectors": [{**_entry(), "binding_ref": "bind.x"}]},
         "not-an-envelope",
     ],
@@ -273,6 +277,59 @@ def test_noncanonical_rpc_results_fail_closed(result: object) -> None:
 
     assert status == 502
     assert body["error"]["code"] == "calendar_presence_noncanonical"
+
+
+@pytest.mark.parametrize(
+    "entry",
+    [
+        _entry(ambiguous=True),
+        _entry(state="not_connected", usable=False, ambiguous=True),
+        _entry(state="ambiguous", usable=True, ambiguous=True),
+    ],
+    ids=["connected_ambiguous", "not_connected_ambiguous", "ambiguous_usable"],
+)
+def test_noncanonical_flag_combinations_fail_closed_with_502(entry: dict) -> None:
+    """The three flag combinations CENTRAL flagged must fail closed at the surface."""
+
+    binding = FakeBinding(_rpc(entry))
+    status, body = _call(Env(binding), json.dumps({"workspace_ref": WORKSPACE_REF}).encode())
+
+    assert status == 502
+    assert body["error"]["code"] == "calendar_presence_noncanonical"
+
+
+@pytest.mark.parametrize(
+    ("state", "usable", "ambiguous", "canonical"),
+    [
+        # usable == (state == "connected") and ambiguous == (state == "ambiguous")
+        ("connected", True, False, True),
+        ("not_connected", False, False, True),
+        ("ambiguous", False, True, True),
+        ("connected", False, False, False),
+        ("connected", True, True, False),
+        ("not_connected", True, False, False),
+        ("not_connected", False, True, False),
+        ("ambiguous", True, True, False),
+        ("ambiguous", True, False, False),
+        ("ambiguous", False, False, False),
+    ],
+)
+def test_tri_state_invariant_is_enforced_in_both_directions(
+    state: str, usable: bool, ambiguous: bool, canonical: bool
+) -> None:
+    """Both directions of the authoritative Control Plane invariant are pinned."""
+
+    payload = _rpc(_entry(state=state, usable=usable, ambiguous=ambiguous))
+
+    if canonical:
+        projected = project_presence(payload)
+        assert projected["CALENDAR_CREDENTIAL_PRESENCE_STATE"] == state
+        assert projected["CALENDAR_CREDENTIAL_USABLE"] == ("YES" if usable else "NO")
+        assert projected["CALENDAR_CREDENTIAL_AMBIGUOUS"] == ("YES" if ambiguous else "NO")
+        return
+
+    with pytest.raises(ValueError):
+        project_presence(payload)
 
 
 def test_response_uses_only_post() -> None:

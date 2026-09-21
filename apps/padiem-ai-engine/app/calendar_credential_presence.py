@@ -164,13 +164,20 @@ def project_presence(rpc_result: Any) -> dict[str, Any]:
         if not isinstance(value, bool):
             raise ValueError("presence flags must be boolean")
 
-    # Fail closed on the same tri-state invariants the public projection uses.
-    if state == "connected" and usable is not True:
-        raise ValueError("connected presence must be usable")
-    if state == "not_connected" and usable is not False:
-        raise ValueError("not_connected presence must not be usable")
-    if state == "ambiguous" and ambiguous is not True:
-        raise ValueError("ambiguous presence must report ambiguity")
+    # Fail closed on the authoritative Control Plane invariant that
+    # ``GoogleOAuthWorkspaceConnectorState`` enforces in both directions:
+    # ``usable`` is the derived property ``state == "connected"`` and
+    # ``ambiguous`` holds if and only if the state is ambiguous. Checking only the
+    # forward direction would accept a response that sets a flag inconsistently
+    # (for example connected + ambiguous=True), so both directions are required.
+    expected_usable = state == "connected"
+    expected_ambiguous = state == "ambiguous"
+    if usable is not expected_usable:
+        raise ValueError("presence usable flag violates the canonical tri-state invariant")
+    if ambiguous is not expected_ambiguous:
+        raise ValueError(
+            "presence ambiguous flag violates the canonical tri-state invariant"
+        )
 
     return {
         "CALENDAR_CREDENTIAL_PRESENCE_STATE": state,
