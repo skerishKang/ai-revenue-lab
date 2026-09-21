@@ -27,7 +27,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from padiem_ai_core.b14_execution import B14RouteMetadata
@@ -209,7 +209,10 @@ class SyntheticImageByteStore:
             media_type=_MEDIA_TYPE,
             byte_size=len(_SYNTHETIC_PNG),
             created_at=_MINTED_AT,
-            expires_at=_MINTED_AT + timedelta(hours=1),
+            # Source-only readiness fixture: no expiry, so this valid case can
+            # never rot with the wall clock. None is the accepted no-expiry
+            # value on both StoredImageRecord and TrustedImageAttachment.
+            expires_at=None,
         )
         return record, _SYNTHETIC_PNG
 
