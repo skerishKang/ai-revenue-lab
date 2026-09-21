@@ -72,7 +72,7 @@ def _runtime_error_response(exc: ExecutionRuntimeError) -> ServiceResponse:
         exc.safe_message,
         status_code=_status_for_runtime_error(exc),
         retryable=exc.retryable,
-        metadata=exc.metadata.to_public_dict(),
+        metadata=exc.error_metadata(),
     )
 
 

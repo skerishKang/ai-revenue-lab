@@ -295,7 +295,13 @@ class EngineService:
                 status_code=422,
             )
         except ExecutionRuntimeError as exc:
-            return _service_error(exc.code, exc.safe_message, status_code=_status_for_runtime_error(exc), retryable=exc.retryable, metadata=exc.metadata.to_public_dict())
+            return _service_error(
+                exc.code,
+                exc.safe_message,
+                status_code=_status_for_runtime_error(exc),
+                retryable=exc.retryable,
+                metadata=exc.error_metadata(),
+            )
         except Exception:
             return _service_error("engine_internal_error", "Padiem AI Engine execution failed.", status_code=500)
 

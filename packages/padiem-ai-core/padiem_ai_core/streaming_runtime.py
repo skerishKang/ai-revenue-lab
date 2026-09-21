@@ -157,6 +157,7 @@ class StreamingExecutionRuntime:
         route: B14RouteMetadata | None = None,
         usage: UsageMetadata | None = None,
         chunk_model: str | None = None,
+        upstream_status_code: int | None = None,
     ) -> ExecutionRuntimeError:
         status = (
             RunStatus.TIMEOUT
@@ -177,6 +178,7 @@ class StreamingExecutionRuntime:
                 error_class=error_class,
             ),
             retryable=retryable,
+            upstream_status_code=upstream_status_code,
         )
 
     async def _stream_b14_request(
@@ -340,6 +342,7 @@ class StreamingExecutionRuntime:
                 route=last_route,
                 usage=last_usage,
                 chunk_model=last_model,
+                upstream_status_code=exc.upstream_status_code,
             ) from None
         except Exception:
             raise self._runtime_error(
