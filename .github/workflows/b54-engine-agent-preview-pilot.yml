@@ -42,8 +42,10 @@ env:
   ENGINE_WORKER: padiem-ai-engine
   PREVIEW_WORKER: padiem-ai-engine-preview
   PREVIEW_CALLER_WORKER: padiem-ai-engine-preview-caller
+  CLOUDFLARE_WORKERS_SUBDOMAIN: charliekant
   ENGINE_APP_DIR: apps/padiem-ai-engine
   PREVIEW_CALLER_APP_DIR: apps/padiem-ai-engine/preview-caller
+
 
 jobs:
   preview-config-guard:
@@ -197,7 +199,28 @@ jobs:
           printf '%s' "${REGISTRY_JSON}" | npx wrangler secret put PADIEM_ENGINE_CALLER_REGISTRY_V1 --env preview
 
           # Deploy ephemeral caller worker with service binding to padiem-ai-engine-preview
-          npx wrangler deploy
+          npx wrangler deploy 2>&1 | tee deploy.log
+
+          # Extract caller URL from deploy log or fall back to deterministic URL
+          CALLER_BASE_URL="$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -n 1 | tr -d '\r' || true)"
+          if [ -z "${CALLER_BASE_URL}" ]; then
+            echo "Notice: could not parse URL from deploy output, using deterministic URL"
+            CALLER_BASE_URL="https://${PREVIEW_CALLER_WORKER}.${CLOUDFLARE_WORKERS_SUBDOMAIN:-charliekant}.workers.dev"
+          fi
+
+          # URL validation
+          echo "${CALLER_BASE_URL}" | grep -Eq '^https://[a-zA-Z0-9.-]+\.workers\.dev$' || {
+            echo "Invalid caller URL format: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+          echo "${CALLER_BASE_URL}" | grep -q "^https://${PREVIEW_CALLER_WORKER}\." || {
+            echo "Caller URL worker mismatch: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+
+          echo "CALLER_BASE_URL=${CALLER_BASE_URL}" >> "$GITHUB_ENV"
+          echo "RESOLVED_CALLER_BASE_URL=${CALLER_BASE_URL}"
+
           printf '%s' "${PREVIEW_CREDENTIAL}" | npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL
           printf '%s' "${RUNNER_TOKEN}" | npx wrangler secret put PILOT_RUNNER_SECRET
 
@@ -206,12 +229,20 @@ jobs:
       - name: Execute synthetic wire pilot and collect evidence
         run: |
           set -euo pipefail
-          SUBDOMAIN=$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/subdomain" | \
-            python3 -c "import sys, json; print(json.load(sys.stdin).get('result', {}).get('subdomain', ''))")
+          test -n "${CALLER_BASE_URL:-}" || { echo "CALLER_BASE_URL is not set" >&2; exit 1; }
 
-          test -n "${SUBDOMAIN}" || { echo "Failed to resolve workers subdomain" >&2; exit 1; }
-          CALLER_URL="https://${PREVIEW_CALLER_WORKER}.${SUBDOMAIN}.workers.dev/run-pilot"
+          # URL validation
+          echo "${CALLER_BASE_URL}" | grep -Eq '^https://[a-zA-Z0-9.-]+\.workers\.dev$' || {
+            echo "Invalid CALLER_BASE_URL format: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+          echo "${CALLER_BASE_URL}" | grep -q "^https://${PREVIEW_CALLER_WORKER}\." || {
+            echo "CALLER_BASE_URL worker mismatch: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+
+          CALLER_URL="${CALLER_BASE_URL%/}/run-pilot"
+          echo "PREVIEW_CALLER_URL=${CALLER_URL}"
 
           # Execute wire pilot: Runner -> Caller Worker -> Service Binding -> Preview Engine
           PILOT_RES="${RUNNER_TEMP}/pilot_response.json"
