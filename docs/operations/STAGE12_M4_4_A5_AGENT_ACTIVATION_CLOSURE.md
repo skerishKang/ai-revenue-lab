@@ -85,20 +85,27 @@ DECISION=KEEP_AS_INTERNAL_VALIDATION_LANE
 WORKER=padiem-ai-engine-preview   (6 deployments, first 2026-09-21T17:36:53Z)
 ```
 
-Retained under these documented conditions:
+Retained under these documented conditions (as built — the full model is
+`docs/operations/PREVIEW_AGENT_PILOT_LANE.md`):
 
 ```text
 PREVIEW_ROLE=INTERNAL_ONLY
-PUBLIC_ACCESS=NONE            (workers_dev = false; no route, no public URL)
-PRODUCTION_BINDING=NONE       (no services, no D1, no KV/R2, no environment inheritance of Production bindings)
-SECRET=ABSENT                 (no secret created or referenced; the lane builds synthetic, in-memory authority)
-CALLER=NOT_PROVISIONED        (the synthetic pilot call is still fail-closed with PREVIEW_PILOT_CALLER=NOT_PROVISIONED)
+ENGINE_LANE_PUBLIC_ACCESS=NONE       (padiem-ai-engine-preview: workers_dev = false, no route, no public URL)
+ENGINE_LANE_PRODUCTION_BINDING=NONE  (no services, no D1, no KV/R2, no Production binding inherited)
+ENGINE_LANE_STANDING_SECRET: none    (the preview engine lane holds no standing secret)
+PILOT_CALLER=EPHEMERAL               (a dedicated caller worker exists only during a pilot dispatch)
+PILOT_CALLER_PUBLIC_ACCESS=WORKERS_DEV_DURING_RUN  (the caller worker is workers.dev-routable while the run lasts)
+PILOT_REGISTRY_SECRET=EPHEMERAL      (a caller-registry entry is injected into the preview worker for the run
+                                      and deleted by the teardown step)
+PILOT_TEARDOWN=AUTOMATIC             (final workflow step `Teardown preview caller and ephemeral secret`, if: always)
 ```
 
-Rationale: the lane costs nothing at rest, keeps a production-separated surface for future agent-runtime
-validation, and removes the risk of an improvised lane being built later. Retiring it (Option C) remains
-available at any time and would require a separate, explicitly authorized Cloudflare mutation. The "remove
-temporary caller/secret" option was already satisfied: no such surface exists.
+Rationale: the standing lane costs nothing at rest, keeps a production-separated surface for future agent-runtime
+validation, and removes the risk of an improvised lane being built later. The pilot path that exercised it (Stage
+11-C M3-3.5: #2879, with follow-ups #2880–#2882) provisions an **ephemeral** caller worker and an ephemeral caller
+registry entry for the duration of one dispatch, then deletes both; the standalone engine lane itself keeps no
+caller, no secret and no public route. Retiring the lane (Option C) remains available at any time and would require
+a separate, explicitly authorized Cloudflare mutation.
 
 ## 9. Known follow-ups
 
