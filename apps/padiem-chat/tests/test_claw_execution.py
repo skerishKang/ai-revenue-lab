@@ -1789,12 +1789,13 @@ class _HistoryStatement:
         return self
 
     async def first(self):
-        if self.sql.startswith("SELECT id, created_at, conversation_id FROM claw_run_history"):
+        if self.sql.startswith("SELECT id, created_at, conversation_id, workspace_id FROM claw_run_history"):
             run_id, user_id = self.values
             for row in self.db.rows:
                 if row["run_id"] == run_id and row["user_id"] == user_id:
                     return {"id": row["id"], "created_at": row["created_at"],
-                            "conversation_id": row.get("conversation_id")}
+                            "conversation_id": row.get("conversation_id"),
+                            "workspace_id": row.get("workspace_id")}
             return None
         return None
 
@@ -1803,18 +1804,20 @@ class _HistoryStatement:
         if self.sql.startswith("INSERT INTO claw_run_history"):
             cols = ("id", "user_id", "run_id", "channel", "action", "title", "status",
                     "created_at", "updated_at", "result_summary", "artifact_document_id",
-                    "artifact_filename", "artifact_media_type", "conversation_id")
+                    "artifact_filename", "artifact_media_type", "conversation_id",
+                    "workspace_id")
             self.db.rows.append(dict(zip(cols, self.values)))
             return {"results": []}
         if self.sql.startswith("UPDATE claw_run_history SET"):
             (channel, action, title, status, updated_at, summary, doc_id, fname, mtype,
-             conversation_id, run_id, user_id) = self.values
+             conversation_id, workspace_id, run_id, user_id) = self.values
             for row in self.db.rows:
                 if row["run_id"] == run_id and row["user_id"] == user_id:
                     row.update(channel=channel, action=action, title=title, status=status,
                                updated_at=updated_at, result_summary=summary,
                                artifact_document_id=doc_id, artifact_filename=fname,
-                               artifact_media_type=mtype, conversation_id=conversation_id)
+                               artifact_media_type=mtype, conversation_id=conversation_id,
+                               workspace_id=workspace_id)
             return {"results": []}
         if self.sql.startswith("SELECT run_id, channel"):
             user_id, limit = self.values
