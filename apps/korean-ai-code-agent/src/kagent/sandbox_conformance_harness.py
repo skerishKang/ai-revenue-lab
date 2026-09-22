@@ -200,11 +200,11 @@ class SandboxProviderConformanceHarness:
     ) -> SandboxProviderConformanceReport:
         """Runs the complete suite of Cloud M1 conformance controls against candidate capabilities.
 
-        ``applied_limits`` is optional: when a provider reports the numbers it
-        actually applied, they are checked against the policy ceiling here instead of
-        being accepted through its four ``*_limit_enforced`` booleans. A provider
-        that reports nothing still fails on those booleans, so passing this in adds
-        an exercised check without ever weakening the declared one.
+        ``applied_limits`` carries the numbers a provider says it actually enforced.
+        They are required: omitting them fails acceptance through
+        ``resource_limits_reported`` rather than falling back on the four
+        ``*_limit_enforced`` booleans, because a claim that limits exist is not
+        evidence that any particular limit was applied.
         """
         assessment = self.gate.assess(capabilities)
         results: list[SandboxProviderConformanceResult] = []
@@ -253,7 +253,19 @@ class SandboxProviderConformanceHarness:
                     )
                 )
 
-        if applied_limits is not None:
+        if applied_limits is None:
+            # Acceptance requires the numbers, not the claim. Reporting nothing at
+            # all used to leave this case uncreated, so four ``*_limit_enforced``
+            # booleans alone could produce an overall-conforming report.
+            results.append(
+                SandboxProviderConformanceResult(
+                    case_id="case_resource_limits_reported",
+                    control_name="resource_limits_reported",
+                    status=ConformanceStatus.FAILED,
+                    message="provider reported no CPU/memory/disk/process limit values",
+                )
+            )
+        else:
             try:
                 self.policy.require_within_bounds(applied_limits)
             except ContractError as exc:
@@ -485,10 +497,24 @@ class SandboxProviderConformanceHarness:
         # 6. TTL reclamation is exercised, not declared (#2803).
         return self.evaluate_reclamation(provider, request)
 
-    def evaluate_artifact_manifest(self, manifest: SandboxArtifactManifest) -> bool:
-        """Verifies artifact counts, bounds, and terminal sanitization."""
+    def evaluate_artifact_manifest(
+        self,
+        manifest: SandboxArtifactManifest,
+        *,
+        raw_terminal_output: str | None = None,
+    ) -> bool:
+        """Verifies artifact counts, bounds, and proven terminal sanitization.
+
+        ``raw_terminal_output`` is the byte-for-byte text the manifest's sanitized
+        count was derived from, and it is required: a run that produced no output at
+        all passes ``""`` and is still checked. Passing ``None`` means no evidence was
+        offered, which fails closed — otherwise ``terminal_output_sanitized=True``
+        would be a self-asserted boolean the acceptance path awards a pass for.
+        """
+        if raw_terminal_output is None:
+            return False
         try:
-            manifest.validate_against(self.policy)
+            manifest.require_sanitized_output(raw_terminal_output, self.policy)
             return True
         except ContractError:
             return False

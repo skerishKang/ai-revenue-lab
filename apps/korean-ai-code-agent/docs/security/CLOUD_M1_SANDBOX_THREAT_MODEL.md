@@ -162,11 +162,11 @@ accepting it.
 | exact immutable revision | `contracts.exact_commit_revision` applied inside `SandboxLeaseRequest` for CLOUD, re-checked by the gate | a mutable ref never reaches `allocate()` |
 | TTL bound | `contracts` 60..3600 and `policy.max_ttl_seconds` at the seam | a longer TTL is refused before allocation |
 | privileged / host mounts / runtime socket / provider metadata / host secrets / workspace reuse / mutable revision | `SandboxSecurityPolicy.__post_init__` refuses a policy that enables any of them | constructing such a policy raises |
-| CPU / RAM / disk / process ceiling | `SandboxSecurityPolicy.max_cpu_cores` … `max_process_count`, `require_within_bounds(SandboxAppliedLimits)`, harness case `resource_limits_within_policy` | a provider's *reported* numbers are checked, not its four `*_limit_enforced` booleans |
+| CPU / RAM / disk / process ceiling | `SandboxSecurityPolicy.max_cpu_cores` … `max_process_count`, `require_within_bounds(SandboxAppliedLimits)`, harness cases `resource_limits_within_policy` and `resource_limits_reported` | a provider's *reported* numbers are checked against the ceiling, and reporting none fails acceptance rather than falling back on the four `*_limit_enforced` booleans |
 | artifact export allowlist | `SandboxSecurityPolicy.allowed_artifact_kinds`, enforced in `SandboxArtifactManifest.validate_against` | an unlisted kind is refused even at in-policy size and count |
 | artifact size / count | `SandboxArtifactManifest.validate_against` | per-artifact, total, and count bounds |
 | terminal output bound | `sanitize_terminal_output` against `policy.max_terminal_output_bytes` | oversize output is refused, never truncated |
-| terminal output sanitized | `sanitize_terminal_output` + `SandboxArtifactManifest.require_sanitized_output` | the boolean claim is re-derived from the raw bytes and must match |
+| terminal output sanitized | `sanitize_terminal_output` + `SandboxArtifactManifest.require_sanitized_output`, reached from `SandboxProviderConformanceHarness.evaluate_artifact_manifest` | the harness requires the raw text and re-derives the claimed byte count; without it, or on a mismatch, the manifest fails — a self-asserted `terminal_output_sanitized=True` is not evidence |
 | one active lease per run, cancellation, TTL reclamation, no terminal resurrection | `SandboxProviderConformanceHarness.evaluate_lease_lifecycle` / `evaluate_cancellation` / `evaluate_reclamation` | each is exercised against a provider through the port, not read off a declared flag |
 | run ↔ lease correlation | `VerifiedDiffEvidence`, `SandboxArtifactManifest` carry `run_id` + `lease_id` | projection cannot be built without both |
 

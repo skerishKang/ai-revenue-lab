@@ -34,6 +34,11 @@ from kagent.sandbox_conformance_harness import (
 
 _DIGEST = hashlib.sha256(b"cloud-m1-policy-enforcement").hexdigest()
 
+# Carries a CSI colour sequence, an OSC title and a stray control byte, so the
+# sanitized form is strictly shorter than the raw form and a proof that only
+# re-derives correctly can tell them apart.
+_RAW_TERMINAL = "build \x1b[31mFAILED\x1b[0m\rlink \x1b]0;title\x07done\nnext\ttab"
+
 
 def _manifest(artifacts: tuple[SandboxArtifactRef, ...], *, output_bytes: int = 0) -> SandboxArtifactManifest:
     return SandboxArtifactManifest(
@@ -123,13 +128,37 @@ class AppliedLimitsTests(unittest.TestCase):
         limits_case = next(r for r in refused.results if r.case_id == "case_resource_limits_within_policy")
         self.assertFalse(limits_case.passed)
 
-    def test_reporting_nothing_still_produces_no_extra_pass(self):
+    def test_no_limit_values_cannot_reach_acceptance(self):
+        """CENTRAL blocker 1: four true booleans alone must not conform.
+
+        Before this check the case was simply not created when a provider reported no
+        numbers, so a fully-declared candidate still reached overall_conforming.
+        """
         harness = SandboxProviderConformanceHarness()
         report = harness.evaluate_capabilities(_conforming_capabilities())
-        self.assertNotIn(
-            "case_resource_limits_within_policy",
-            {result.case_id for result in report.results},
+        self.assertFalse(report.overall_conforming)
+        self.assertIn("resource_limits_reported", report.failed_controls)
+        case = next(r for r in report.results if r.case_id == "case_resource_limits_reported")
+        self.assertFalse(case.passed)
+        self.assertIn("no CPU/memory/disk/process limit values", case.message)
+
+    def test_limits_are_scored_before_any_boolean_shortcut(self):
+        """Within ceiling passes, exceeding fails, absent fails — one axis, three outcomes."""
+        harness = SandboxProviderConformanceHarness()
+        caps = _conforming_capabilities()
+        self.assertTrue(
+            harness.evaluate_capabilities(
+                caps,
+                applied_limits=SandboxAppliedLimits(cpu_cores=1, memory_mb=512, disk_mb=512, process_count=16),
+            ).overall_conforming
         )
+        self.assertFalse(
+            harness.evaluate_capabilities(
+                caps,
+                applied_limits=SandboxAppliedLimits(cpu_cores=64, memory_mb=512, disk_mb=512, process_count=16),
+            ).overall_conforming
+        )
+        self.assertFalse(harness.evaluate_capabilities(caps).overall_conforming)
 
 
 class ArtifactExportAllowlistTests(unittest.TestCase):
@@ -211,6 +240,59 @@ class TerminalOutputSanitizationTests(unittest.TestCase):
             with self.subTest(limit=bad):
                 with self.assertRaises(ContractError):
                     sanitize_terminal_output("plain text", limit=bad)  # type: ignore[arg-type]
+
+
+class HarnessSanitizationProofTests(unittest.TestCase):
+    """CENTRAL blocker 2: the acceptance path must not award a pass to a self-asserted flag."""
+
+    def _manifest_for(self, raw: str, limit: int = 4096) -> SandboxArtifactManifest:
+        sanitized = sanitize_terminal_output(raw, limit=limit)
+        return _manifest((_artifact("artifact_1", "diff"),), output_bytes=len(sanitized.encode("utf-8")))
+
+    def test_proven_sanitized_output_is_accepted(self):
+        harness = SandboxProviderConformanceHarness()
+        manifest = self._manifest_for(_RAW_TERMINAL)
+        self.assertTrue(harness.evaluate_artifact_manifest(manifest, raw_terminal_output=_RAW_TERMINAL))
+
+    def test_self_asserted_boolean_alone_fails_closed(self):
+        harness = SandboxProviderConformanceHarness()
+        manifest = self._manifest_for(_RAW_TERMINAL)
+        self.assertFalse(harness.evaluate_artifact_manifest(manifest))
+
+    def test_a_run_with_no_output_still_has_to_offer_evidence(self):
+        harness = SandboxProviderConformanceHarness()
+        empty = _manifest((_artifact("artifact_1", "diff"),), output_bytes=0)
+        self.assertTrue(harness.evaluate_artifact_manifest(empty, raw_terminal_output=""))
+        self.assertFalse(harness.evaluate_artifact_manifest(empty))
+
+    def test_mismatched_sanitized_length_is_refused(self):
+        harness = SandboxProviderConformanceHarness()
+        manifest = self._manifest_for(_RAW_TERMINAL)
+        inflated = _manifest(
+            (_artifact("artifact_1", "diff"),),
+            output_bytes=manifest.terminal_output_bytes + 1,
+        )
+        self.assertFalse(harness.evaluate_artifact_manifest(inflated, raw_terminal_output=_RAW_TERMINAL))
+
+    def test_the_proof_measures_sanitized_bytes_not_raw_bytes(self):
+        """The raw form is longer here, so a shallow check would accept the wrong number."""
+        harness = SandboxProviderConformanceHarness()
+        raw_length_manifest = _manifest(
+            (_artifact("artifact_1", "diff"),),
+            output_bytes=len(_RAW_TERMINAL.encode("utf-8")),
+        )
+        self.assertNotEqual(len(_RAW_TERMINAL.encode("utf-8")), self._manifest_for(_RAW_TERMINAL).terminal_output_bytes)
+        self.assertFalse(
+            harness.evaluate_artifact_manifest(raw_length_manifest, raw_terminal_output=_RAW_TERMINAL)
+        )
+
+    def test_oversize_output_fails_through_the_harness(self):
+        policy = SandboxSecurityPolicy(max_terminal_output_bytes=1024)
+        harness = SandboxProviderConformanceHarness(policy)
+        oversized = _manifest((_artifact("artifact_1", "diff"),), output_bytes=2048)
+        self.assertFalse(
+            harness.evaluate_artifact_manifest(oversized, raw_terminal_output="y" * 2048)
+        )
 
 
 class ProviderNeutralityTests(unittest.TestCase):
