@@ -30,12 +30,15 @@ from .sandbox import (
 )
 from .sandbox_conformance import (
     IsolationPrimitive,
+    SandboxAppliedLimits,
     SandboxArtifactManifest,
     SandboxArtifactRef,
     SandboxProviderAssessment,
     SandboxProviderCapabilities,
     SandboxProviderConformanceGate,
     SandboxSecurityPolicy,
+    RESOURCE_LIMITS_REPORTED_CONTROL,
+    RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
     VerifiedDiffEvidence,
     REAL_SANDBOX_PROVIDER_SELECTED,
     REAL_SANDBOX_PROVIDER_CALLS,
@@ -136,11 +139,19 @@ class SandboxProviderConformanceReport:
 def validate_provider_capabilities_against_cloud_m1_policy(
     capabilities: SandboxProviderCapabilities,
     *,
+    applied_limits: SandboxAppliedLimits | None = None,
     policy: SandboxSecurityPolicy | None = None,
 ) -> SandboxProviderAssessment:
-    """Validates capabilities using the canonical Cloud M1 conformance gate."""
+    """Canonical acceptance entry point; delegates the decision to the gate.
+
+    ``applied_limits`` is required in substance: omitting it (or passing no numbers
+    through any path) fails closed inside ``require_accepted``, so this helper can
+    never accept a candidate on declarations alone. It raises the same
+    ``ContractError`` as every other Cloud M1 refusal rather than a distinct error
+    shape for the limits case.
+    """
     gate = SandboxProviderConformanceGate(policy=policy)
-    return gate.require_accepted(capabilities)
+    return gate.require_accepted(capabilities, applied_limits=applied_limits)
 
 
 def validate_lease_request_against_cloud_m1_policy(
@@ -194,9 +205,18 @@ class SandboxProviderConformanceHarness:
     def evaluate_capabilities(
         self,
         capabilities: SandboxProviderCapabilities,
+        *,
+        applied_limits: SandboxAppliedLimits | None = None,
     ) -> SandboxProviderConformanceReport:
-        """Runs the complete suite of Cloud M1 conformance controls against candidate capabilities."""
-        assessment = self.gate.assess(capabilities)
+        """Runs the complete suite of Cloud M1 conformance controls against candidate capabilities.
+
+        ``applied_limits`` carries the numbers a provider says it actually enforced.
+        They are required: omitting them fails acceptance through
+        ``resource_limits_reported`` rather than falling back on the four
+        ``*_limit_enforced`` booleans, because a claim that limits exist is not
+        evidence that any particular limit was applied.
+        """
+        assessment = self.gate.assess(capabilities, applied_limits=applied_limits)
         results: list[SandboxProviderConformanceResult] = []
 
         # Evaluate isolation primitive
@@ -243,7 +263,44 @@ class SandboxProviderConformanceHarness:
                     )
                 )
 
-        overall = assessment.accepted_for_cloud_m1 and all(r.passed for r in results)
+        if applied_limits is None:
+            # Acceptance requires the numbers, not the claim. The gate has already
+            # recorded this in missing_controls; the case below mirrors that single
+            # decision so the report has one meaning per entry point, not two rules.
+            results.append(
+                SandboxProviderConformanceResult(
+                    case_id=f"case_{RESOURCE_LIMITS_REPORTED_CONTROL}",
+                    control_name=RESOURCE_LIMITS_REPORTED_CONTROL,
+                    status=ConformanceStatus.FAILED,
+                    message="provider reported no CPU/memory/disk/process limit values",
+                )
+            )
+        else:
+            try:
+                self.policy.require_within_bounds(applied_limits)
+            except ContractError as exc:
+                results.append(
+                    SandboxProviderConformanceResult(
+                        case_id=f"case_{RESOURCE_LIMITS_WITHIN_POLICY_CONTROL}",
+                        control_name=RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
+                        status=ConformanceStatus.FAILED,
+                        message=str(exc),
+                    )
+                )
+            else:
+                results.append(
+                    SandboxProviderConformanceResult(
+                        case_id=f"case_{RESOURCE_LIMITS_WITHIN_POLICY_CONTROL}",
+                        control_name=RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
+                        status=ConformanceStatus.PASSED,
+                        message="Reported limits are within the Cloud M1 policy ceiling",
+                    )
+                )
+
+        # One authority decides acceptance. Recomputing it from the per-case results
+        # here would leave two rules that can drift; the case list is evidence detail
+        # and test_gate_and_harness_acceptance_cannot_diverge pins that they agree.
+        overall = assessment.accepted_for_cloud_m1
         return SandboxProviderConformanceReport(
             provider_id=capabilities.provider_id,
             isolation_primitive=capabilities.isolation_primitive,
@@ -453,10 +510,24 @@ class SandboxProviderConformanceHarness:
         # 6. TTL reclamation is exercised, not declared (#2803).
         return self.evaluate_reclamation(provider, request)
 
-    def evaluate_artifact_manifest(self, manifest: SandboxArtifactManifest) -> bool:
-        """Verifies artifact counts, bounds, and terminal sanitization."""
+    def evaluate_artifact_manifest(
+        self,
+        manifest: SandboxArtifactManifest,
+        *,
+        raw_terminal_output: str | None = None,
+    ) -> bool:
+        """Verifies artifact counts, bounds, and proven terminal sanitization.
+
+        ``raw_terminal_output`` is the byte-for-byte text the manifest's sanitized
+        count was derived from, and it is required: a run that produced no output at
+        all passes ``""`` and is still checked. Passing ``None`` means no evidence was
+        offered, which fails closed — otherwise ``terminal_output_sanitized=True``
+        would be a self-asserted boolean the acceptance path awards a pass for.
+        """
+        if raw_terminal_output is None:
+            return False
         try:
-            manifest.validate_against(self.policy)
+            manifest.require_sanitized_output(raw_terminal_output, self.policy)
             return True
         except ContractError:
             return False
@@ -464,6 +535,7 @@ class SandboxProviderConformanceHarness:
 
 __all__ = [
     "ConformanceStatus",
+    "SandboxAppliedLimits",
     "SandboxProviderConformanceCase",
     "SandboxProviderConformanceResult",
     "SandboxProviderConformanceReport",
