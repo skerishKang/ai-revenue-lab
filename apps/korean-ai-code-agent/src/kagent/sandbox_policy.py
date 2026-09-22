@@ -29,6 +29,11 @@ from .sandbox_conformance import (
     SandboxProviderCapabilities,
     SandboxProviderConformanceGate,
     SandboxSecurityPolicy,
+    SANDBOX_MAX_CPU_CORES,
+    SANDBOX_MAX_MEMORY_MB,
+    SANDBOX_MAX_DISK_MB,
+    SANDBOX_MAX_PROCESS_COUNT,
+    SANDBOX_ALLOWED_ARTIFACT_KINDS,
     VerifiedDiffEvidence,
     REAL_SANDBOX_PROVIDER_SELECTED,
     REAL_SANDBOX_PROVIDER_CALLS,
@@ -126,10 +131,13 @@ class SandboxNetworkPolicy(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class SandboxResourceLimits:
-    max_cpu_cores: int = 4
-    max_memory_mb: int = 8192
-    max_disk_mb: int = 10240
-    max_process_count: int = 256
+    # Defaults are the canonical Cloud M1 ceiling, not a second copy of it: the
+    # policy the conformance gate validates against owns these numbers
+    # (sandbox_conformance.SandboxSecurityPolicy), so the two cannot drift apart.
+    max_cpu_cores: int = SANDBOX_MAX_CPU_CORES
+    max_memory_mb: int = SANDBOX_MAX_MEMORY_MB
+    max_disk_mb: int = SANDBOX_MAX_DISK_MB
+    max_process_count: int = SANDBOX_MAX_PROCESS_COUNT
     max_ttl_seconds: int = 3600
 
     def __post_init__(self) -> None:
@@ -422,7 +430,7 @@ class SandboxArtifactPolicy:
     max_artifact_count: int = 100
     max_terminal_output_bytes: int = 2 * 1024 * 1024
     terminal_output_sanitized: bool = True
-    allowed_artifact_kinds: tuple[str, ...] = ("diff", "test_report", "junit_xml", "log")
+    allowed_artifact_kinds: tuple[str, ...] = SANDBOX_ALLOWED_ARTIFACT_KINDS
 
     def __post_init__(self) -> None:
         if isinstance(self.max_artifact_bytes, bool) or not isinstance(self.max_artifact_bytes, int) or not 1024 <= self.max_artifact_bytes <= 100 * 1024 * 1024:
