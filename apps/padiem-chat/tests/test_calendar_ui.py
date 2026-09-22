@@ -150,6 +150,27 @@ def test_calendar_js_has_no_storage_no_artifact_dependency_and_frozen_export() -
     assert 'typeof document === "undefined"' in source
 
 
+def test_calendar_js_renders_source_type_as_plain_text_only() -> None:
+    source = CALENDAR_JS_PATH.read_text(encoding="utf-8")
+    # source_type is a public bounded field and must be rendered; the internal
+    # reference field is never read and never rendered.
+    assert "sourceTypeText" in source
+    assert '"calendar-item-source"' in source
+    assert re.search(
+        r'const sourceText = sourceTypeText\(item\);\s*if \(sourceText\) head\.append\(el\("span", "calendar-item-source", sourceText\)\);',
+        source,
+    )
+    assert "source_ref" not in source
+    assert "sourceRef" not in source
+    # Missing or malformed source_type must not break the row: the chip is only
+    # appended when the guard holds, and the row itself has no throwing branch.
+    assert "if (sourceText) head.append(" in source
+    assert 'return typeof item.source_type === "string" ? item.source_type.trim() : "";' in source
+    # No markup sink can interpret a hostile source_type value.
+    for sink in ("innerHTML", "insertAdjacentHTML", "outerHTML", "DOMParser", "document.write", "eval("):
+        assert sink not in source
+
+
 def test_locale_js_defines_calendar_keys_for_ko_and_en() -> None:
     source = LOCALE_PATH.read_text(encoding="utf-8")
     for key in CALENDAR_LOCALE_KEYS:
@@ -198,6 +219,13 @@ def test_calendar_ui_pure_helpers_behave_as_contracted() -> None:
       unknownNumber: ui.isKnownItemType(6),
       typeKeyKnown: ui.itemTypeKey("claw_run"),
       typeKeyUnknown: ui.itemTypeKey("mystery"),
+      sourceKnown: ui.sourceTypeText({{ source_type: "native_work_log" }}),
+      sourcePadded: ui.sourceTypeText({{ source_type: "  claw_run  " }}),
+      sourceMarkupShaped: ui.sourceTypeText({{ source_type: "<img src=x onerror=alert(1)>" }}),
+      sourceMissing: ui.sourceTypeText({{}}),
+      sourceNumeric: ui.sourceTypeText({{ source_type: 5 }}),
+      sourceNullItem: ui.sourceTypeText(null),
+      sourceIsFunction: typeof ui.sourceTypeText,
       knownTypesLength: ui.KNOWN_ITEM_TYPES.length,
       whenTimed: ui.formatWhen({{ date: "2026-09-22", start_at: "2026-09-22T01:00:00+00:00", end_at: "2026-09-22T02:00:00+00:00", timezone: "Europe/Berlin", all_day: false }}),
       whenNoZone: ui.formatWhen({{ date: "2026-09-22", start_at: "2026-09-22T01:00:00+00:00", end_at: null, timezone: null, all_day: false }}),
@@ -224,6 +252,14 @@ def test_calendar_ui_pure_helpers_behave_as_contracted() -> None:
     assert data["unknownNumber"] is False
     assert data["typeKeyKnown"] == "calendar-item-claw-run"
     assert data["typeKeyUnknown"] == "calendar-item-unknown"
+    assert data["sourceIsFunction"] == "function"
+    assert data["sourceKnown"] == "native_work_log"
+    assert data["sourcePadded"] == "claw_run"
+    # A hostile value stays a plain string (data), never parsed as markup.
+    assert data["sourceMarkupShaped"] == "<img src=x onerror=alert(1)>"
+    assert data["sourceMissing"] == ""
+    assert data["sourceNumeric"] == ""
+    assert data["sourceNullItem"] == ""
     assert data["knownTypesLength"] == 6
     # Timed items show the server date plus server-timezone clock times.
     assert data["whenTimed"].startswith("2026-09-22 ")

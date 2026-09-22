@@ -80,6 +80,13 @@
     return isKnownItemType(itemType) ? ITEM_TYPE_KEYS[itemType] : "calendar-item-unknown";
   }
 
+  // Public bounded field only: the server source_type is shown as plain text.
+  // The internal reference field is never read or rendered.
+  function sourceTypeText(item) {
+    if (!item || typeof item !== "object") return "";
+    return typeof item.source_type === "string" ? item.source_type.trim() : "";
+  }
+
   function browserTimezone() {
     try {
       const resolved = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -130,6 +137,7 @@
     buildQuery,
     isKnownItemType,
     itemTypeKey,
+    sourceTypeText,
     formatWhen,
     browserTimezone,
   });
@@ -182,6 +190,8 @@
 
       const head = el("div", "calendar-item-head");
       head.append(el("span", "calendar-item-type", text(itemTypeKey(item.item_type))));
+      const sourceText = sourceTypeText(item);
+      if (sourceText) head.append(el("span", "calendar-item-source", sourceText));
 
       const titleText = typeof item.title === "string" ? item.title.trim() : "";
       row.append(head, el("h3", "calendar-item-title", titleText || text("calendar-item-untitled")));
