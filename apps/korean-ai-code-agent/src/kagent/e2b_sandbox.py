@@ -41,15 +41,14 @@ from .contracts import (
     SANDBOX_LEASE_MAX_TTL_SECONDS,
     SANDBOX_LEASE_MIN_TTL_SECONDS,
     ContractError,
-    ExecutionMode,
-    NetworkPolicy,
     SandboxLease,
     SandboxLeaseRequest,
     SandboxLeaseState,
     _safe_id,
 )
-from .sandbox import SandboxLeaseError
-from .sandbox_conformance import IsolationPrimitive, SandboxProviderConformanceGate
+from .sandbox import SandboxLeaseError, SandboxUnavailableError
+from .sandbox_conformance import IsolationPrimitive, SandboxSecurityPolicy
+from .sandbox_conformance_harness import validate_lease_request_against_cloud_m1_policy
 from .sandbox_provider_probe import SandboxProviderCandidate
 
 
@@ -240,6 +239,33 @@ class E2BSandboxTransport(Protocol):
         ...
 
 
+# The seam's operations, closed. A failure message may name one of these and nothing else
+# that arrived from the provider side, so the only thing a transport can influence in that
+# text is which call was made — never what it said.
+E2B_TRANSPORT_OPERATIONS = ("create", "state", "kill", "list_running")
+
+# Interruption and shutdown are not provider answers. Rewriting one into a lease error would
+# turn a teardown into something a caller might retry.
+_TRANSPORT_CONTROL_FLOW = (KeyboardInterrupt, SystemExit, GeneratorExit)
+
+
+def _transport_failure(
+    operation: str, category: str
+) -> SandboxLeaseError | SandboxUnavailableError:
+    """The whole vocabulary of seam failure: two fixed sentences.
+
+    A real provider exception can carry credential fragments, token-bearing URLs, account or
+    project identifiers and response bodies. Nothing of the sort is interpolated here — both
+    arguments are adapter-owned literals, one drawn from ``E2B_TRANSPORT_OPERATIONS`` and one
+    from the two branches below.
+    """
+    if category == "unavailable":
+        return SandboxUnavailableError(
+            f"provider {operation} call did not run: the provider is unavailable"
+        )
+    return SandboxLeaseError(f"provider {operation} failed; no provider detail is projected")
+
+
 def _aware(value: object, field_name: str) -> datetime:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise E2BAdapterError(f"{field_name} must be timezone-aware")
@@ -367,6 +393,7 @@ def build_e2b_launch_payload(
     template: str,
     content_ref: str,
     now: datetime,
+    policy: SandboxSecurityPolicy | None = None,
 ) -> dict[str, Any]:
     """Build the provider request body for one Cloud M1 launch.
 
@@ -381,18 +408,18 @@ def build_e2b_launch_payload(
     Live cloning is not in this child, and an adapter that quietly fetched over the network
     would break the deny-all claim it is making.
     """
-    gate = SandboxProviderConformanceGate()
-    gate.validate_lease_request(request)
-    if request.execution_mode is not ExecutionMode.CLOUD:
-        raise E2BAdapterError("E2B launch requires cloud execution mode")
-    if request.network_policy is not NetworkPolicy.OFF:
-        raise E2BAdapterError("E2B launch requires the canonical off network policy")
+    # One Cloud M1 entry point, not a partial re-implementation of it: the canonical
+    # validator already refuses a non-CLOUD mode, a non-off network policy, an
+    # out-of-ceiling TTL and a mutable revision, and it takes the policy an operator
+    # tightens for a probe. Restating those rules here would let provider and
+    # repository policy drift apart.
+    validate_lease_request_against_cloud_m1_policy(request, policy=policy)
 
     observed = _aware(now, "now")
     payload = {
         "template": _provider_id(template, "template"),
-        # The gate above already refused anything outside the canonical TTL contract;
-        # this is the value leaving the process, checked once more where it is written.
+        # The canonical validator above already refused anything outside policy; this is
+        # the value leaving the process, checked once more where it is actually written.
         "timeout": request.ttl_seconds,
         # E2B's kill-on-timeout default is documented; the request says it anyway, so a
         # future provider default change cannot silently become this lane's policy.
@@ -452,6 +479,7 @@ class E2BCloudM1Adapter:
         *,
         template: str,
         clock: Callable[[], datetime],
+        policy: SandboxSecurityPolicy | None = None,
     ) -> None:
         if transport is None:
             raise E2BAdapterError("an E2B transport must be supplied")
@@ -459,6 +487,7 @@ class E2BCloudM1Adapter:
             raise E2BAdapterError("a clock must be supplied; this adapter never reads one")
         self._transport = transport
         self._template = _provider_id(template, "template")
+        self._policy = policy
         self._clock = clock
         self._leases: dict[str, SandboxLease] = {}
         self._active_by_run: dict[str, str] = {}
@@ -480,9 +509,21 @@ class E2BCloudM1Adapter:
             template=self._template,
             content_ref=content_ref,
             now=self._now(),
+            policy=self._policy,
         )
-        response = self._transport.create(payload)
+        response = self._transport_call("create", payload)
         sandbox_id = _provider_id(response.get("sandbox_id"), "sandbox_id")
+        if sandbox_id in self._leases:
+            # Two runs cannot share one reservation, and a reused id would silently
+            # rewrite the existing record: the earlier run's lease would vanish from the
+            # ledger while its sandbox kept running, and both run slots would point at one
+            # id. Killing the sandbox instead is not safer — it would destroy whichever
+            # lease genuinely holds that id. The launch is refused and the existing
+            # records stay intact for an operator to reconcile.
+            raise SandboxLeaseError(
+                f"provider reused sandbox id {sandbox_id}; launch refused, "
+                "existing lease records left intact for reconciliation"
+            )
         now = self._now()
         lease = SandboxLease(
             lease_id=sandbox_id,
@@ -508,20 +549,24 @@ class E2BCloudM1Adapter:
         return lease
 
     def renew(self, lease_id: str, *, run_id: str, ttl_seconds: int) -> SandboxLease:
+        """Refused, on purpose, until the seam can carry a provider-side timeout change.
+
+        ``E2BSandboxTransport`` has no timeout-update operation, so writing a later
+        ``expires_at`` would only move the ledger: the provider would still kill the sandbox
+        at the lifetime it agreed to at launch, and the reservation would read as live past
+        that point. An extension nobody honoured is the same class of overclaim as a kill
+        acknowledgement presented as termination, so renewal is refused rather than faked.
+        Enabling it belongs with a seam change that sends the update and observes the result.
+        """
         lease = self.get(lease_id)
         if lease.run_id != run_id:
             raise SandboxLeaseError("lease belongs to a different run")
         if lease.state is not SandboxLeaseState.RESERVED:
             raise SandboxLeaseError(f"lease is not active: {lease.state.value}")
-        try:
-            # No local TTL bound here: the lease contract's own forward-only rule and
-            # lifetime ceiling refuse an out-of-contract renewal, and restating the
-            # numbers would only give them a second, drift-prone copy.
-            renewed = lease.with_expiry(self._now() + timedelta(seconds=ttl_seconds))
-        except ContractError as exc:
-            raise SandboxLeaseError(f"lease cannot be renewed: {exc}") from exc
-        self._leases[lease_id] = renewed
-        return renewed
+        raise SandboxLeaseError(
+            "E2B lease renewal is unavailable: the transport seam has no timeout update, "
+            "so extending expires_at would claim a lifetime the provider never accepted"
+        )
 
     def release(self, lease_id: str, *, run_id: str) -> SandboxLease:
         return self._terminate(
@@ -544,7 +589,11 @@ class E2BCloudM1Adapter:
         )
 
     def active_leases(self) -> tuple[SandboxLease, ...]:
-        """Recorded reservations only; observing a lapse is not reclaiming one."""
+        """Recorded reservations only; observing a lapse is not reclaiming one.
+
+        Read from the ledger, so it cannot raise a provider error mid-listing; a sweep that
+        needs live provider truth learns it per lease, through the translated seam.
+        """
         return tuple(
             lease
             for lease in self._leases.values()
@@ -587,7 +636,11 @@ class E2BCloudM1Adapter:
         """The request shape on its own, without a transport call. This is what the
         prototype exists to pin down."""
         return build_e2b_launch_payload(
-            request, template=self._template, content_ref=content_ref, now=self._now()
+            request,
+            template=self._template,
+            content_ref=content_ref,
+            now=self._now(),
+            policy=self._policy,
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -640,10 +693,45 @@ class E2BCloudM1Adapter:
             raise SandboxLeaseError(f"lease is not active: {lease.state.value}")
         return lease
 
+    def _transport_call(self, operation: str, *args, **kwargs):
+        """Run one seam call, and let a provider failure cross back as fixed text only.
+
+        Two rules. Translate: a transport error must reach callers as a rejected lease
+        operation, or the port's uniform shape breaks and a mid-sweep failure aborts the pass
+        with no report at all — hiding the leases already reclaimed, which is the failure mode
+        #2803 closed for refusals. Say nothing: see ``_transport_failure``.
+
+        The chain matters as much as the sentence. CPython attaches the exception *in flight*
+        as ``__context__`` when a raise executes, so raising inside the handler would keep the
+        provider's own object reachable from an error that looks sanitized, and ``from None``
+        only hides it — the reference survives and anything that walks ``__context__`` prints
+        it. So the raise happens after the handler has exited, and the chain is then cleared
+        where a bare re-raise will not re-attach it. What leaves has no cause and no context:
+        not the provider's exception, and not whatever the caller happened to be handling.
+        """
+        if operation not in E2B_TRANSPORT_OPERATIONS:
+            raise E2BAdapterError("unknown E2B transport operation")
+        category = ""
+        try:
+            return getattr(self._transport, operation)(*args, **kwargs)
+        except _TRANSPORT_CONTROL_FLOW:
+            raise
+        except SandboxUnavailableError:
+            category = "unavailable"
+        except BaseException:
+            category = "failed"
+        error = _transport_failure(operation, category)
+        try:
+            raise error
+        except BaseException as projected:
+            projected.__cause__ = None
+            projected.__context__ = None
+            raise
+
     def _kill_and_observe(self, lease_id: str) -> E2BTerminationEvidence:
         """Ask, then look. A returned acknowledgement is never an outcome."""
-        acknowledged = bool(self._transport.kill(lease_id))
-        state = self._transport.state(lease_id)
+        acknowledged = bool(self._transport_call("kill", lease_id))
+        state = self._transport_call("state", lease_id)
         raw_state = state.get("state") if isinstance(state, Mapping) else None
         running = state.get("running") if isinstance(state, Mapping) else None
         observed = raw_state if isinstance(raw_state, str) else ""

@@ -14,6 +14,9 @@ tests exist to pin four properties.
    that the existing conformance harness and the existing bounded sweep evaluate it.
 4. The prototype is not a selection: provider-native claims stay documented-or-unverified
    and adapter-enforced controls are labelled ADAPTER_BORNE.
+5. A provider failure may say anything it likes. What crosses this boundary is a fixed
+   sentence with no provider text, no provider exception type, and no cause chain
+   leading back to one.
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ import ast
 from datetime import datetime, timedelta, timezone
 from inspect import signature
 from pathlib import Path
+import traceback
 import unittest
 
 from kagent.contracts import (
@@ -46,6 +50,8 @@ from kagent.e2b_sandbox import (
     E2B_CONTROL_PROVENANCE,
     E2B_NEVER_ACCEPTED_KEYS,
     E2B_PAYLOAD_KEYS,
+    E2B_TRANSPORT_OPERATIONS,
+    E2BSandboxTransport,
     E2BCloudM1Adapter,
     E2BAdapterError,
     E2BTerminationEvidence,
@@ -108,6 +114,53 @@ class ScriptedTransport:
 
 
 _UNSET = object()
+
+# A real SDK exception body, in the shapes that actually carry secrets: a credential
+# fragment, a token-bearing URL, account and org identifiers, and a response body. Every
+# projection test below asserts none of these reach a caller.
+TOXIC_DETAIL = (
+    "HTTPSConnectionPool(host='api.provider.example', port=443): Max retries exceeded "
+    "with url: /internal?token=SECRET_MARKER_DO_NOT_LEAK "
+    "(Account: account_raw_12345, Org: org_987654321) "
+    "Response: {'status': 502, 'body': 'SECRET_MARKER_DO_NOT_LEAK'}"
+)
+LEAK_MARKERS = (
+    "SECRET_MARKER_DO_NOT_LEAK",
+    "provider.example",
+    "account_raw_12345",
+    "org_987654321",
+    "502",
+    "ConnectionError",
+)
+
+
+class ToxicTransport(ScriptedTransport):
+    """A provider whose every failure message is a leak attempt."""
+
+    def __init__(self, *, on: str, error: BaseException | None = None):
+        super().__init__()
+        self.on = on
+        self.error = error if error is not None else ConnectionError(TOXIC_DETAIL)
+        self.calls: list[str] = []
+
+    def _fail(self, operation: str):
+        self.calls.append(operation)
+        raise self.error
+
+    def create(self, payload):
+        if self.on == "create":
+            self._fail("create")
+        return super().create(payload)
+
+    def state(self, sandbox_id):
+        if self.on == "state":
+            self._fail("state")
+        return super().state(sandbox_id)
+
+    def kill(self, sandbox_id):
+        if self.on == "kill":
+            self._fail("kill")
+        return super().kill(sandbox_id)
 
 
 class AdapterCase(unittest.TestCase):
@@ -212,6 +265,29 @@ class LaunchShapeTests(AdapterCase):
         self.assertEqual(len(set(E2B_PAYLOAD_KEYS)), len(E2B_PAYLOAD_KEYS))
 
 
+class PolicyDelegationTests(AdapterCase):
+    """The adapter defers to the canonical Cloud M1 policy, and can be tightened by it."""
+
+    def test_a_tightened_policy_ceiling_is_honoured_not_hardcoded_around(self):
+        # The probe packet needs exactly this: an operator-tightened TTL ceiling has to
+        # bind the adapter, instead of the adapter silently accepting the default 3600.
+        from kagent.sandbox_conformance import SandboxSecurityPolicy
+
+        tight = SandboxSecurityPolicy(max_ttl_seconds=300)
+        adapter = self.adapter(template="claw", policy=tight)
+        with self.assertRaises(ContractError) as caught:
+            adapter.launch_payload(request("run_p", ttl_seconds=900), content_ref="content-p")
+        self.assertIn("TTL", str(caught.exception))
+        accepted = adapter.launch_payload(request("run_p", ttl_seconds=300), content_ref="content-p")
+        self.assertEqual(accepted["timeout"], 300)
+
+    def test_a_non_cloud_request_is_refused_by_the_canonical_validator(self):
+        with self.assertRaises(ContractError):
+            self.adapter().launch_payload(
+                request("run_l", execution_mode=ExecutionMode.LOCAL), content_ref="content-l"
+            )
+
+
 class LifecycleTests(AdapterCase):
     def test_one_active_lease_per_run(self):
         adapter, first = self.launched()
@@ -227,14 +303,25 @@ class LifecycleTests(AdapterCase):
         self.assertIs(lease.network_policy, NetworkPolicy.OFF)
         self.assertIs(lease.execution_mode, ExecutionMode.CLOUD)
 
-    def test_renew_is_bounded_and_forward_only(self):
-        adapter, lease = self.launched()
-        renewed = adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=1_200)
-        self.assertEqual(renewed.expires_at, T0 + timedelta(seconds=1_200))
-        with self.assertRaises(SandboxLeaseError):
-            adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=600)
-        with self.assertRaises(SandboxLeaseError):
-            adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=SANDBOX_LEASE_MAX_TTL_SECONDS + 60)
+    def test_renewal_is_refused_because_the_seam_cannot_back_it(self):
+        # E2BSandboxTransport has no timeout update, so an extended expires_at would be a
+        # ledger-only claim: the provider still kills at the lifetime it agreed to. Refusing
+        # is the fail-closed shape; #2832 found this test previously asserting the opposite.
+        transport = ScriptedTransport()
+        adapter, lease = self.launched(transport)
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.renew(lease.lease_id, run_id="run_1", ttl_seconds=1_200)
+        self.assertIn("lifetime the provider never accepted", str(caught.exception))
+        # neither the lease nor its lifetime moved, and the seam was not asked
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+        self.assertEqual(
+            adapter.get(lease.lease_id).expires_at, T0 + timedelta(seconds=900)
+        )
+        self.assertEqual(len(transport.payloads), 1)
+        # ownership is still checked first, so a foreign lease fails for the real reason
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.renew(lease.lease_id, run_id="run_intruder", ttl_seconds=1_200)
+        self.assertIn("different run", str(caught.exception))
 
     def test_release_and_cancel_end_the_lease_the_same_way(self):
         for verb in ("release", "cancel"):
@@ -272,6 +359,222 @@ class LifecycleTests(AdapterCase):
             adapter.get("e2b-sbx-9999")
         with self.assertRaises(SandboxLeaseError):
             adapter.release("e2b-sbx-9999", run_id="run_1")
+
+
+class LedgerIntegrityTests(AdapterCase):
+    """#2832 readiness findings: identity collision and transport-failure shapes."""
+
+    def test_a_reused_provider_sandbox_id_is_refused_not_recorded(self):
+        class ReusingTransport(ScriptedTransport):
+            def create(self, payload):
+                self.payloads.append(dict(payload))
+                return {"sandbox_id": "sbx-same", "state": "running"}
+
+        transport = ReusingTransport()
+        adapter = self.adapter(transport=transport)
+        first = adapter.allocate(request("run_a"), content_ref="content-a")
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.allocate(request("run_b"), content_ref="content-b")
+        self.assertIn("reused sandbox id", str(caught.exception))
+        # the original record survives intact, and the refused run holds nothing
+        self.assertEqual([entry.lease_id for entry in adapter.active_leases()], [first.lease_id])
+        self.assertIs(adapter.get("sbx-same").run_id, "run_a")
+        self.assertEqual(adapter._active_by_run.get("run_a"), "sbx-same")
+        self.assertNotIn("run_b", adapter._active_by_run)
+        self.assertEqual(len(transport.payloads), 2)
+
+    def test_a_transport_failure_is_reported_as_a_refused_lease_operation(self):
+        adapter, lease = self.launched(ToxicTransport(on="state"), run_id="run_flaky")
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.cancel(lease.lease_id, run_id="run_flaky")
+        self.assertIn("provider state failed", str(caught.exception))
+        # nothing is recorded as ended when the outcome could not be observed
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+        self.assertEqual([entry.lease_id for entry in adapter.active_leases()], [lease.lease_id])
+
+    def test_a_failing_provider_leaves_the_sweep_with_a_report_not_a_crash(self):
+        adapter = self.adapter(transport=ToxicTransport(on="state"))
+        for run in ("run_a", "run_b"):
+            adapter.allocate(request(run), content_ref="content-" + run)
+        report = reap_expired_leases(adapter, now=T0 + timedelta(seconds=901))
+        self.assertEqual(report.inventory_size, 2)
+        self.assertEqual(report.reclaimed_count, 0)
+        self.assertEqual(report.unresolved_count, 2)
+        self.assertFalse(report.fully_reclaimed)
+        for record in report.records:
+            self.assertIs(record.outcome, LeaseReclamationOutcome.RECONCILIATION_REQUIRED)
+            self.assertIn("provider state failed", record.reason)
+
+
+class ProviderErrorProjectionTests(AdapterCase):
+    """D5: a provider may say anything in its own exception. What crosses here may not.
+
+    The failure is not only a leaked string. ``str(exc)``, ``repr(exc)``, ``exc.args``, the
+    exception's type name and its cause chain all project provider-controlled material, and
+    a cause chain is how a sanitizer that looks clean still ends up in an incident report.
+    """
+
+    def assert_projects_nothing(self, text):
+        for marker in LEAK_MARKERS:
+            with self.subTest(marker=marker):
+                self.assertNotIn(marker, text)
+
+    def test_a_failing_launch_projects_one_fixed_sentence(self):
+        adapter = self.adapter(ToxicTransport(on="create"))
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.allocate(request("run_leak_create"), content_ref="content-leak")
+        self.assertEqual(
+            "provider create failed; no provider detail is projected", str(caught.exception)
+        )
+        self.assert_projects_nothing(str(caught.exception))
+        self.assert_projects_nothing(repr(caught.exception))
+
+    def test_a_failing_observation_projects_nothing_and_keeps_the_lease(self):
+        adapter, lease = self.launched(ToxicTransport(on="state"), run_id="run_leak_state")
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.cancel(lease.lease_id, run_id="run_leak_state")
+        error = caught.exception
+        self.assertEqual("provider state failed; no provider detail is projected", str(error))
+        self.assert_projects_nothing(str(error))
+        self.assert_projects_nothing(repr(error))
+        self.assertIsNone(error.__cause__)
+        self.assertIsNone(error.__context__)
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def test_a_failing_kill_request_projects_nothing(self):
+        transport = ToxicTransport(on="kill")
+        adapter, lease = self.launched(transport, run_id="run_leak_kill")
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.release(lease.lease_id, run_id="run_leak_kill")
+        self.assertEqual(
+            "provider kill failed; no provider detail is projected", str(caught.exception)
+        )
+        self.assert_projects_nothing(str(caught.exception))
+        self.assert_projects_nothing(repr(caught.exception))
+        self.assertEqual(["kill"], transport.calls)
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def chain(self, error):
+        """Every exception a serializer could reach from this one, cause then context."""
+        nodes = []
+        node = error
+        while node is not None and node not in nodes:
+            nodes.append(node)
+            node = node.__cause__ if node.__cause__ is not None else node.__context__
+        return nodes
+
+    def test_a_rendered_traceback_and_a_chain_walk_carry_no_provider_detail(self):
+        transport = ToxicTransport(on="state")
+        adapter, lease = self.launched(transport, run_id="run_leak_trace")
+        try:
+            adapter.cancel(lease.lease_id, run_id="run_leak_trace")
+        except SandboxLeaseError as error:
+            rendered = "".join(
+                traceback.format_exception(type(error), error, error.__traceback__)
+            )
+            # non-vacuous: this really is a rendered multi-frame traceback
+            self.assertIn("provider state failed", rendered)
+            self.assertGreater(rendered.count("\n"), 2)
+            self.assert_projects_nothing(rendered)
+            nodes = self.chain(error)
+            self.assertEqual([type(error)], [type(node) for node in nodes])
+            self.assertNotIn(transport.error, nodes)
+            for node in nodes:
+                self.assert_projects_nothing(str(node))
+                self.assert_projects_nothing(repr(node))
+        else:
+            self.fail("the seam failure did not refuse the lease operation")
+
+    def test_a_failure_while_another_error_is_in_flight_still_carries_no_context(self):
+        # The in-flight exception is attached at raise time, so neither raising outside the
+        # handler nor `from None` is enough on its own: the first still chains whatever the
+        # caller was handling, and the second only suppresses the display of a reference that
+        # survives. This pins the unconditional form of the invariant.
+        adapter, lease = self.launched(ToxicTransport(on="state"), run_id="run_leak_nested")
+        try:
+            raise ContractError("an unrelated failure the caller is handling")
+        except ContractError:
+            with self.assertRaises(SandboxLeaseError) as caught:
+                adapter.cancel(lease.lease_id, run_id="run_leak_nested")
+        error = caught.exception
+        self.assertIsNone(error.__context__)
+        self.assertIsNone(error.__cause__)
+        self.assert_projects_nothing(
+            "".join(traceback.format_exception(type(error), error, error.__traceback__))
+        )
+
+    def test_a_reconciliation_reason_recorded_by_a_sweep_carries_no_provider_detail(self):
+        adapter = self.adapter(ToxicTransport(on="state"))
+        for run in ("run_leak_a", "run_leak_b"):
+            adapter.allocate(request(run), content_ref="content-leak")
+        report = reap_expired_leases(adapter, now=T0 + timedelta(seconds=901))
+        self.assertEqual(2, report.unresolved_count)
+        for record in report.records:
+            self.assert_projects_nothing(record.reason or "")
+        self.assert_projects_nothing(repr(report))
+
+    def test_a_provider_error_in_the_ports_own_vocabulary_is_still_sanitized(self):
+        # A live transport knows these classes. Passing one through untouched because of what
+        # it *is* would be the whole leak, since its message is written by whoever raised it.
+        adapter, lease = self.launched(
+            ToxicTransport(on="state", error=SandboxLeaseError(TOXIC_DETAIL)),
+            run_id="run_leak_vocabulary",
+        )
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.cancel(lease.lease_id, run_id="run_leak_vocabulary")
+        self.assertEqual(
+            "provider state failed; no provider detail is projected", str(caught.exception)
+        )
+        self.assertIsNone(caught.exception.__cause__)
+
+    def test_an_unavailable_provider_stays_a_distinct_failure_but_says_nothing(self):
+        adapter = self.adapter(ToxicTransport(on="create", error=SandboxUnavailableError(TOXIC_DETAIL)))
+        with self.assertRaises(SandboxUnavailableError) as caught:
+            adapter.allocate(request("run_leak_unavailable"), content_ref="content-leak")
+        self.assertEqual(
+            "provider create call did not run: the provider is unavailable", str(caught.exception)
+        )
+        self.assert_projects_nothing(str(caught.exception))
+
+    def test_an_interruption_is_not_rewritten_into_a_retryable_lease_error(self):
+        adapter, lease = self.launched(
+            ToxicTransport(on="kill", error=KeyboardInterrupt(TOXIC_DETAIL)),
+            run_id="run_leak_interrupt",
+        )
+        # Documented carve-out: control signals are not provider answers, and converting one
+        # would turn a shutdown into something a caller might retry. The lease stays held.
+        with self.assertRaises(KeyboardInterrupt):
+            adapter.release(lease.lease_id, run_id="run_leak_interrupt")
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+
+    def test_the_operation_named_in_a_failure_is_drawn_from_the_closed_seam(self):
+        transport = ToxicTransport(on="state")
+        adapter = self.adapter(transport)
+        with self.assertRaises(E2BAdapterError) as caught:
+            adapter._transport_call("delete https://provider.example", "e2b-sbx-0001")
+        self.assert_projects_nothing(str(caught.exception))
+        self.assertEqual([], transport.calls)
+
+    def test_the_closed_operation_set_is_the_seam_itself(self):
+        seam = {
+            name
+            for name in dir(E2BSandboxTransport)
+            if not name.startswith("_") and callable(getattr(E2BSandboxTransport, name))
+        }
+        self.assertEqual(seam, set(E2B_TRANSPORT_OPERATIONS))
+
+    def test_a_provider_response_that_is_not_an_identifier_provides_no_detail(self):
+        class UrlBearingTransport(ScriptedTransport):
+            def create(self, payload):
+                self.payloads.append(dict(payload))
+                self.counter += 1
+                return {"sandbox_id": "https://api.provider.example/sbx?token=SECRET_MARKER_DO_NOT_LEAK"}
+
+        adapter = self.adapter(UrlBearingTransport())
+        with self.assertRaises(E2BAdapterError) as caught:
+            adapter.allocate(request("run_leak_response"), content_ref="content-leak")
+        self.assert_projects_nothing(str(caught.exception))
+        self.assertIn("sandbox_id", str(caught.exception))
 
 
 class TerminationObservationTests(AdapterCase):
@@ -448,7 +751,11 @@ class CanonicalPortReuseTests(AdapterCase):
                 self.assertNotIn(forbidden, source)
         # the canonical rules are imported and used, not copied
         self.assertIn("_safe_id", source)
-        self.assertIn("SandboxProviderConformanceGate", source)
+        # policy validation is delegated to the one canonical Cloud M1 entry point
+        self.assertIn("validate_lease_request_against_cloud_m1_policy", source)
+        for restated in ("SandboxProviderConformanceGate()", "NetworkPolicy.OFF"):
+            with self.subTest(restated=restated):
+                self.assertNotIn(restated, source)
 
 
 class EvidenceHonestyTests(AdapterCase):
