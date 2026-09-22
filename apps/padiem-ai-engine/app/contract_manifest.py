@@ -214,7 +214,7 @@ def current_engine_contract_manifest() -> EngineContractManifest:
             # TOOL_RUNTIME_ACTIVATION_EVIDENCE=drive-35389368273,gmail-35403110197,telegram-35420061464
             EngineFeatureContract("tool_runtime_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("skill_runtime_projection", EngineFeatureState.DEFERRED),
-            EngineFeatureContract("agent_runtime_projection", EngineFeatureState.DEFERRED),
+            EngineFeatureContract("agent_runtime_projection", EngineFeatureState.AVAILABLE),
             EngineFeatureContract("memory_rag_projection", EngineFeatureState.DEFERRED),
             # E5C (#2728): the admission route is source-complete. It remains
             # DEFERRED until the separately gated Production image-store and

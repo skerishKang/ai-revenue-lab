@@ -28,6 +28,10 @@ _CONNECT_KEYS = frozenset({"connect_ticket"})
 _CALLBACK_KEYS = frozenset({"state_ref", "authorization_code", "provider_error"})
 _ACCESS_LEASE_KEYS = frozenset({"binding_ref", "connector_id"})
 _WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
+# #2010: the Calendar credential-presence read accepts exactly the same closed
+# payload. The connector itself is fixed in code, never supplied by the caller.
+_WORKSPACE_CALENDAR_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
+WORKSPACE_CALENDAR_CONNECTOR_ID = "google-calendar"
 
 
 def _closed_payload(payload: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]:
@@ -156,6 +160,41 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def workspace_calendar_connector_state(self, payload: dict) -> dict:
+        """Return bounded, identity-free Calendar credential presence (#2010).
+
+        Pre-connect observation authority: before any Calendar OAuth connect is
+        approved, this read answers exactly one question per workspace - does an
+        existing reviewed ``google-calendar`` durable credential exist - without
+        mutating anything.
+
+        The payload is closed to exactly ``workspace_ref``. The connector is
+        fixed in code to the reviewed ``google-calendar`` OAuth authority, so a
+        caller can never select a connector, scope, binding_ref, actor_ref,
+        account_ref or provider identifier. The response reuses the existing
+        bounded workspace-state projection: connector_id / state / usable /
+        expires_present / ambiguous only. No binding_ref, actor_ref, account_ref,
+        workspace_ref echo, scopes or sealed material is returned, no refresh
+        credential is unsealed and no access lease is issued.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CALENDAR_CONNECTOR_STATE_KEYS,
+                "Google OAuth Calendar connector-presence RPC",
+            )
+            states = self._store.list_workspace_connector_state(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+                connector_ids=(WORKSPACE_CALENDAR_CONNECTOR_ID,),
+            )
+            return {
+                "ok": True,
+                "connectors": [state.to_bounded_dict() for state in states],
+            }
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -186,6 +225,9 @@ class Default(WorkerEntrypoint):
 
     async def workspace_connector_state(self, payload: dict) -> dict:
         return await self._stub().workspace_connector_state(payload)
+
+    async def workspace_calendar_connector_state(self, payload: dict) -> dict:
+        return await self._stub().workspace_calendar_connector_state(payload)
 
     async def fetch(self, request):
         del request
@@ -225,3 +267,19 @@ WORKSPACE_CONNECTOR_STATE_UNSEALS_REFRESH_TOKEN = False
 WORKSPACE_CONNECTOR_STATE_ISSUES_ACCESS_LEASE = False
 WORKSPACE_CONNECTOR_STATE_WRITE_AUTHORITY = False
 WORKSPACE_CONNECTOR_STATE_DUPLICATE_POLICY = "ambiguous_fail_closed"
+# #2010 Calendar existing-credential presence read (source-only slice).
+# Same private authority and same bounded projection; the connector is fixed to
+# google-calendar and neither refs nor tokens are ever exported.
+CALENDAR_CREDENTIAL_PRESENCE_READ_RPC = True
+CALENDAR_CREDENTIAL_PRESENCE_READ_CONNECTOR = "google-calendar"
+CALENDAR_CREDENTIAL_PRESENCE_READ_PAYLOAD_CLOSED = True
+CALENDAR_CREDENTIAL_PRESENCE_READ_PUBLIC_ROUTE = False
+CALENDAR_CREDENTIAL_PRESENCE_READ_CONNECTOR_FIXED_IN_CODE = True
+CALENDAR_CREDENTIAL_EXISTENCE_READ = True
+CALENDAR_REF_OUTPUT = False
+CALENDAR_TOKEN_OUTPUT = False
+CALENDAR_CREDENTIAL_READ_UNSEALS_REFRESH_TOKEN = False
+CALENDAR_CREDENTIAL_READ_ISSUES_ACCESS_LEASE = False
+CALENDAR_CREDENTIAL_READ_WRITE_AUTHORITY = False
+DEFAULT_WORKSPACE_STATUS_INCLUDES_CALENDAR = False
+B62_PUBLIC_CALENDAR_TRUTH_WIDENED = False

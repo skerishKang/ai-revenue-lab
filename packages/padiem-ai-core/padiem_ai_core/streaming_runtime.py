@@ -154,6 +154,7 @@ class StreamingExecutionRuntime:
         safe_message: str,
         error_class: ErrorClass,
         retryable: bool = False,
+        upstream_status_code: int | None = None,
         route: B14RouteMetadata | None = None,
         usage: UsageMetadata | None = None,
         chunk_model: str | None = None,
@@ -177,6 +178,7 @@ class StreamingExecutionRuntime:
                 error_class=error_class,
             ),
             retryable=retryable,
+            upstream_status_code=upstream_status_code,
         )
 
     async def _stream_b14_request(
@@ -337,6 +339,7 @@ class StreamingExecutionRuntime:
                 safe_message=_safe_message_for_b14(exc.code),
                 error_class=_error_class_for_b14(exc.code),
                 retryable=exc.retryable,
+                upstream_status_code=exc.upstream_status_code,
                 route=last_route,
                 usage=last_usage,
                 chunk_model=last_model,

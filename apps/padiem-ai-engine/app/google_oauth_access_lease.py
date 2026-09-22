@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import re
 from typing import Any, Callable
 
+from padiem_ai_core.calendar_capability import GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE
 from padiem_ai_core.connectors import GMAIL_READONLY_SCOPE
 from padiem_ai_core.drive_capability import DRIVE_READONLY_SCOPE
 
@@ -18,6 +19,9 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_CONNECTOR_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (DRIVE_READONLY_SCOPE,),
+    # #2010 Calendar READ uses the Control Plane short-lived lease with exactly
+    # the readonly Calendar provider scope. No write/full scope is accepted.
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_OAUTH_SCOPE,),
 }
 
 _LEASE_KEYS = frozenset(

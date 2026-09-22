@@ -8,19 +8,37 @@ B62_APP = ROOT / "apps" / "padiem-chat" / "app"
 B62_PROJECT = ROOT / "apps" / "padiem-chat" / "pyproject.toml"
 CORE_PROJECT = ROOT / "packages" / "padiem-ai-core" / "pyproject.toml"
 CORE_DOCUMENTS = ROOT / "packages" / "padiem-ai-core" / "padiem_ai_core" / "document_normalization.py"
+CORE_PARSER_BOUNDARY = (
+    ROOT / "packages" / "padiem-ai-core" / "padiem_ai_core" / "document_parser_boundary.py"
+)
 
 
 def test_b62_binary_document_adapter_does_not_own_parser_dependencies() -> None:
     source = (B62_APP / "binary_documents.py").read_text(encoding="utf-8")
     assert "padiem_ai_core.document_normalization" in source
-    assert "extract_binary_document" in source
+    assert "padiem_ai_core.document_parser_boundary" in source
     assert "validate_document_identity" in source
+    # #2824 S3-B: the Chat adapter no longer calls the Core parser itself. The
+    # shared parser-authority boundary decides whether the Core parser may run
+    # at all, so the adapter cannot bypass the fail-closed gate.
+    assert "parse_binary_document_via_authority" in source
+    assert "extract_binary_document" not in source
     assert "from pypdf" not in source
     assert "import pypdf" not in source
     assert "from openpyxl" not in source
     assert "import openpyxl" not in source
     assert "ZipFile" not in source
     assert "ElementTree" not in source
+
+
+def test_core_parser_authority_boundary_owns_the_fail_closed_decision() -> None:
+    source = CORE_PARSER_BOUNDARY.read_text(encoding="utf-8")
+    # the one reviewed boundary owns the sole Worker-side Core parser call ...
+    assert "extract_binary_document" in source
+    # ... and the bounded, deterministic unavailable code ...
+    assert "document_parser_isolation_unavailable" in source
+    # ... decided from the server-derived runtime, never from caller input.
+    assert "sys.platform" in source
 
 
 def test_b62_ooxml_module_is_only_a_core_compatibility_shim() -> None:

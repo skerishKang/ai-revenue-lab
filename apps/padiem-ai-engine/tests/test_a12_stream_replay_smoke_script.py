@@ -106,4 +106,5 @@ def test_b54_deploy_gate_workflow_contains_a12_smoke_step() -> None:
     content = workflow_path.read_text(encoding="utf-8")
 
     assert "a12_stream_replay_production_smoke.py" in content
-    assert "A12_STREAM_REPLAY_SMOKE=PASS" in content
+    assert "A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)" in content
+    assert "A12_REPLAY_EVIDENCE=" in content
