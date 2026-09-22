@@ -16,10 +16,12 @@ What this module is, precisely
 
 Authority model
 ---------------
-``AUTHORITY_INHERITANCE=NO``. A Skill's effective authority is exactly what
-its own manifest declares. Callers may request a **subset** of that authority
-at invocation time; ambient caller authority is never copied onto a Skill, and
-a Skill never widens because of who called it. Composition unions component
+``AUTHORITY_INHERITANCE=NO`` and ``SILENT_AUTHORITY_ESCALATION=NO``. A Skill's
+effective authority is exactly what its own manifest declares. The invocation
+request must ask for that authority **exactly**: a narrower request fails
+closed (no silent escalation onto the Skill) and a wider request fails closed
+(undeclared authority). Ambient caller authority is never copied onto a Skill,
+and a Skill never widens because of who called it. Composition unions component
 authorities for planning, but each member invocation is still bounded by the
 member's own manifest (``composition authority widening = rejected``).
 
@@ -247,8 +249,10 @@ ACCEPTANCE: dict[str, str] = {
     "UNDECLARED_PROVIDER_AUTHORITY_REJECTED": "YES",
     "UNDECLARED_SANDBOX_AUTHORITY_REJECTED": "YES",
     "FILESYSTEM_SCOPE_WIDENING_REJECTED": "YES",
+    "SILENT_AUTHORITY_ESCALATION": "NO",
     "AUTHORITY_INHERITANCE": "NO",
     "COMPOSITION_AUTHORITY_WIDENING": "NO",
+    "READONLY_PROVIDER_SIDE_EFFECT_NONE": "YES",
     "ARBITRARY_SHELL_FROM_SKILL_ID": "NO",
     "SAFE_PROJECTION": "PASS",
     "PARSER_IMPLEMENTATION": "0",
@@ -597,8 +601,9 @@ def build_claw_skill_registry(
 class SkillInvocationRequest:
     """Caller-side invocation request.
 
-    Fields are **requests for a subset** of manifest authority. They never
-    grant authority; ambient caller state is not read here.
+    Fields must equal the manifest's required authority exactly. They never
+    grant authority; ambient caller state is not read here. A narrower or
+    wider request fails closed at authorization time.
     """
 
     skill_id: str
@@ -632,8 +637,9 @@ class SkillInvocationRequest:
 class SkillInvocationGrant:
     """Effective authority for one authorized invocation.
 
-    Every field is copied from the resolved manifest, never from the request
-    and never from a caller-supplied authority object.
+    After a successful ``authorize_invocation``, requested authority equals
+    required manifest authority exactly. Fields are copied from the resolved
+    manifest, never from a caller-supplied ambient authority object.
     """
 
     skill_id: str
@@ -690,9 +696,20 @@ def authorize_invocation(
 ) -> SkillInvocationGrant:
     """Authorize one invocation against the manifest; fail closed.
 
-    Rejects unknown skills, MIME mismatches and any requested authority the
-    manifest does not declare. The returned grant is rebuilt solely from the
-    manifest so caller authority can never be inherited.
+    Manifest ``*_required`` / ``filesystem_scope`` fields are the authority the
+    Skill needs. The request must ask for exactly that authority:
+
+    * authority the manifest does not declare but the request wants → fail;
+    * authority the manifest requires but the request does not want → fail
+      (no silent authority escalation).
+
+    On success ``REQUESTED_AUTHORITY == REQUIRED_MANIFEST_AUTHORITY`` and the
+    grant is rebuilt solely from the manifest, so ambient caller authority is
+    never inherited.
+
+    ``provider_required`` is independent of ``side_effect_class``: a read-only
+    provider Skill may declare ``provider_required=True`` with
+    ``side_effect_class=NONE``.
     """
 
     if not isinstance(registry, SkillRegistrySnapshot):
@@ -707,26 +724,40 @@ def authorize_invocation(
             "unauthorized_network_request",
             "Skill manifest does not declare network authority",
         )
+    if manifest.network_required and not request.wants_network:
+        raise _fail(
+            "missing_network_authority_request",
+            "Skill manifest requires network authority that the request did not request",
+        )
     if request.wants_provider and not manifest.provider_required:
         raise _fail(
             "unauthorized_provider_request",
             "Skill manifest does not declare provider authority",
+        )
+    if manifest.provider_required and not request.wants_provider:
+        raise _fail(
+            "missing_provider_authority_request",
+            "Skill manifest requires provider authority that the request did not request",
         )
     if request.wants_sandbox and not manifest.sandbox_required:
         raise _fail(
             "unauthorized_sandbox_request",
             "Skill manifest does not declare sandbox authority",
         )
+    if manifest.sandbox_required and not request.wants_sandbox:
+        raise _fail(
+            "missing_sandbox_authority_request",
+            "Skill manifest requires sandbox authority that the request did not request",
+        )
     if _FILESYSTEM_ORDER[request.wants_filesystem_scope] > _FILESYSTEM_ORDER[manifest.filesystem_scope]:
         raise _fail(
             "unauthorized_filesystem_request",
             "requested filesystem scope exceeds the Skill manifest",
         )
-    if request.wants_provider and manifest.side_effect_class is SideEffectClass.NONE:
-        # Provider authority is never implied by a side-effect-free manifest.
+    if _FILESYSTEM_ORDER[request.wants_filesystem_scope] < _FILESYSTEM_ORDER[manifest.filesystem_scope]:
         raise _fail(
-            "unauthorized_provider_request",
-            "Skill manifest does not declare provider authority",
+            "missing_filesystem_authority_request",
+            "Skill manifest requires a filesystem scope that the request did not request",
         )
 
     return SkillInvocationGrant.from_manifest(manifest)

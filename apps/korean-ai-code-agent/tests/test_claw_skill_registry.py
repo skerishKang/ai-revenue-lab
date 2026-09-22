@@ -50,6 +50,25 @@ HWP_MIME = "application/x-ole-storage"
 ANY_MIME = "application/octet-stream"
 
 
+def request(
+    *,
+    skill_id: str = "skill:claw:pdf-reader@1",
+    actual_input_mime: str = PDF_MIME,
+    wants_network: bool = False,
+    wants_provider: bool = False,
+    wants_sandbox: bool = False,
+    wants_filesystem_scope: FilesystemScope = FilesystemScope.NONE,
+) -> SkillInvocationRequest:
+    return SkillInvocationRequest(
+        skill_id=skill_id,
+        actual_input_mime=actual_input_mime,
+        wants_network=wants_network,
+        wants_provider=wants_provider,
+        wants_sandbox=wants_sandbox,
+        wants_filesystem_scope=wants_filesystem_scope,
+    )
+
+
 def manifest(
     *,
     skill_id: str = "skill:claw:pdf-reader@1",
@@ -132,8 +151,10 @@ class ManifestContractTests(unittest.TestCase):
                 "UNDECLARED_PROVIDER_AUTHORITY_REJECTED": "YES",
                 "UNDECLARED_SANDBOX_AUTHORITY_REJECTED": "YES",
                 "FILESYSTEM_SCOPE_WIDENING_REJECTED": "YES",
+                "SILENT_AUTHORITY_ESCALATION": "NO",
                 "AUTHORITY_INHERITANCE": "NO",
                 "COMPOSITION_AUTHORITY_WIDENING": "NO",
+                "READONLY_PROVIDER_SIDE_EFFECT_NONE": "YES",
                 "ARBITRARY_SHELL_FROM_SKILL_ID": "NO",
                 "SAFE_PROJECTION": "PASS",
                 "PARSER_IMPLEMENTATION": "0",
@@ -197,6 +218,7 @@ class ManifestContractTests(unittest.TestCase):
                     skill_id="skill:claw:pdf-reader@1",
                     actual_input_mime=PDF_MIME,
                     wants_network=True,
+                    wants_filesystem_scope=FilesystemScope.SCOPED_READ,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_network_request")
@@ -208,6 +230,7 @@ class ManifestContractTests(unittest.TestCase):
                     network_required=True,
                     provider_required=False,
                     side_effect_class=SideEffectClass.NONE,
+                    filesystem_scope=FilesystemScope.NONE,
                 )
             ]
         )
@@ -219,6 +242,7 @@ class ManifestContractTests(unittest.TestCase):
                     actual_input_mime=PDF_MIME,
                     wants_network=True,
                     wants_provider=True,
+                    wants_filesystem_scope=FilesystemScope.NONE,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_provider_request")
@@ -231,6 +255,7 @@ class ManifestContractTests(unittest.TestCase):
                     skill_id="skill:claw:pdf-reader@1",
                     actual_input_mime=PDF_MIME,
                     wants_sandbox=True,
+                    wants_filesystem_scope=FilesystemScope.SCOPED_READ,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_sandbox_request")
@@ -247,14 +272,54 @@ class ManifestContractTests(unittest.TestCase):
             )
         self.assertEqual(ctx.exception.code, "unauthorized_filesystem_request")
 
+        # SILENT_AUTHORITY_ESCALATION = NO (narrower request fails closed)
+        with self.assertRaises(SkillRegistryContractError) as ctx:
+            authorize_invocation(
+                registry,
+                SkillInvocationRequest(
+                    skill_id="skill:claw:pdf-reader@1",
+                    actual_input_mime=PDF_MIME,
+                    wants_filesystem_scope=FilesystemScope.NONE,
+                ),
+            )
+        self.assertEqual(ctx.exception.code, "missing_filesystem_authority_request")
+
+        # READONLY_PROVIDER_SIDE_EFFECT_NONE = YES
+        ro_registry = build_claw_skill_registry(
+            [
+                manifest(
+                    skill_id="skill:claw:pdf-ocr-ro@1",
+                    capability_id=CAPABILITY_PDF_OCR,
+                    network_required=True,
+                    provider_required=True,
+                    side_effect_class=SideEffectClass.NONE,
+                    approval_required=False,
+                    filesystem_scope=FilesystemScope.NONE,
+                )
+            ]
+        )
+        ro_grant = authorize_invocation(
+            ro_registry,
+            SkillInvocationRequest(
+                skill_id="skill:claw:pdf-ocr-ro@1",
+                actual_input_mime=PDF_MIME,
+                wants_network=True,
+                wants_provider=True,
+                wants_filesystem_scope=FilesystemScope.NONE,
+            ),
+        )
+        self.assertTrue(ro_grant.provider_required)
+        self.assertIs(ro_grant.side_effect_class, SideEffectClass.NONE)
+
         # COMPOSITION_AUTHORITY_WIDENING
         wide = build_claw_skill_registry(
             [
-                manifest(),
+                manifest(filesystem_scope=FilesystemScope.NONE),
                 manifest(
                     skill_id="skill:claw:ocr-worker@1",
                     capability_id=CAPABILITY_PDF_OCR,
                     network_required=True,
+                    filesystem_scope=FilesystemScope.NONE,
                 ),
             ]
         )
@@ -271,6 +336,7 @@ class ManifestContractTests(unittest.TestCase):
                     skill_id="skill:claw:pdf-reader@1",
                     actual_input_mime=PDF_MIME,
                     wants_network=True,
+                    wants_filesystem_scope=FilesystemScope.NONE,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_network_request")
@@ -441,15 +507,13 @@ class MimeCompatibilityTests(unittest.TestCase):
 
 class AuthorityTests(unittest.TestCase):
     def test_unauthorized_network_request_rejected(self) -> None:
-        registry = build_claw_skill_registry([manifest(network_required=False)])
+        registry = build_claw_skill_registry(
+            [manifest(network_required=False, filesystem_scope=FilesystemScope.NONE)]
+        )
         with self.assertRaises(SkillRegistryContractError) as ctx:
             authorize_invocation(
                 registry,
-                SkillInvocationRequest(
-                    skill_id="skill:claw:pdf-reader@1",
-                    actual_input_mime=PDF_MIME,
-                    wants_network=True,
-                ),
+                request(wants_network=True, wants_filesystem_scope=FilesystemScope.NONE),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_network_request")
 
@@ -460,34 +524,35 @@ class AuthorityTests(unittest.TestCase):
                     network_required=True,
                     provider_required=False,
                     side_effect_class=SideEffectClass.NONE,
+                    filesystem_scope=FilesystemScope.NONE,
                 )
             ]
         )
         with self.assertRaises(SkillRegistryContractError) as ctx:
             authorize_invocation(
                 registry,
-                SkillInvocationRequest(
-                    skill_id="skill:claw:pdf-reader@1",
-                    actual_input_mime=PDF_MIME,
+                request(
                     wants_network=True,
                     wants_provider=True,
+                    wants_filesystem_scope=FilesystemScope.NONE,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_provider_request")
 
     def test_unknown_skill_invocation_fails_closed(self) -> None:
-        registry = build_claw_skill_registry([manifest()])
+        registry = build_claw_skill_registry(
+            [manifest(filesystem_scope=FilesystemScope.NONE)]
+        )
         with self.assertRaises(SkillRegistryContractError) as ctx:
             authorize_invocation(
                 registry,
-                SkillInvocationRequest(
-                    skill_id="skill:claw:ghost@1",
-                    actual_input_mime=PDF_MIME,
-                ),
+                request(skill_id="skill:claw:ghost@1"),
             )
         self.assertEqual(ctx.exception.code, "unknown_skill")
 
-    def test_grant_is_manifest_bound_not_request_bound(self) -> None:
+    def test_narrower_request_than_manifest_fails_closed(self) -> None:
+        """A request below required manifest authority must not be escalated."""
+
         registry = build_claw_skill_registry(
             [
                 manifest(
@@ -496,18 +561,40 @@ class AuthorityTests(unittest.TestCase):
                 )
             ]
         )
-        grant = authorize_invocation(
-            registry,
-            SkillInvocationRequest(
-                skill_id="skill:claw:pdf-reader@1",
-                actual_input_mime=PDF_MIME,
-                wants_network=True,
-                wants_filesystem_scope=FilesystemScope.NONE,
-            ),
+        # network required but not requested
+        with self.assertRaises(SkillRegistryContractError) as ctx:
+            authorize_invocation(
+                registry,
+                request(wants_network=False, wants_filesystem_scope=FilesystemScope.SCOPED_READ),
+            )
+        self.assertEqual(ctx.exception.code, "missing_network_authority_request")
+
+        # filesystem required but not requested
+        with self.assertRaises(SkillRegistryContractError) as ctx:
+            authorize_invocation(
+                registry,
+                request(wants_network=True, wants_filesystem_scope=FilesystemScope.NONE),
+            )
+        self.assertEqual(ctx.exception.code, "missing_filesystem_authority_request")
+
+    def test_matching_request_grant_equals_required_manifest_authority(self) -> None:
+        registry = build_claw_skill_registry(
+            [
+                manifest(
+                    network_required=True,
+                    filesystem_scope=FilesystemScope.SCOPED_READ,
+                )
+            ]
         )
-        # Grant mirrors the manifest even when the request asked for less.
-        self.assertTrue(grant.network_required)
-        self.assertEqual(grant.filesystem_scope, FilesystemScope.SCOPED_READ)
+        matched = request(
+            wants_network=True,
+            wants_filesystem_scope=FilesystemScope.SCOPED_READ,
+        )
+        grant = authorize_invocation(registry, matched)
+        self.assertEqual(grant.network_required, matched.wants_network)
+        self.assertEqual(grant.provider_required, matched.wants_provider)
+        self.assertEqual(grant.sandbox_required, matched.wants_sandbox)
+        self.assertEqual(grant.filesystem_scope, matched.wants_filesystem_scope)
         self.assertFalse(hasattr(grant, "caller_authority"))
 
     def test_filesystem_scope_widening_rejected(self) -> None:
@@ -517,26 +604,139 @@ class AuthorityTests(unittest.TestCase):
         with self.assertRaises(SkillRegistryContractError) as ctx:
             authorize_invocation(
                 registry,
-                SkillInvocationRequest(
-                    skill_id="skill:claw:pdf-reader@1",
-                    actual_input_mime=PDF_MIME,
-                    wants_filesystem_scope=FilesystemScope.SCOPED_WRITE,
-                ),
+                request(wants_filesystem_scope=FilesystemScope.SCOPED_WRITE),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_filesystem_request")
 
     def test_sandbox_request_without_declaration_rejected(self) -> None:
-        registry = build_claw_skill_registry([manifest(sandbox_required=False)])
+        registry = build_claw_skill_registry(
+            [manifest(sandbox_required=False, filesystem_scope=FilesystemScope.NONE)]
+        )
         with self.assertRaises(SkillRegistryContractError) as ctx:
             authorize_invocation(
                 registry,
-                SkillInvocationRequest(
-                    skill_id="skill:claw:pdf-reader@1",
-                    actual_input_mime=PDF_MIME,
-                    wants_sandbox=True,
-                ),
+                request(wants_sandbox=True, wants_filesystem_scope=FilesystemScope.NONE),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_sandbox_request")
+
+    def test_readonly_provider_skill_is_authorizable(self) -> None:
+        """provider_required + side_effect NONE is a valid read-only Skill."""
+
+        readonly_provider = manifest(
+            skill_id="skill:claw:pdf-ocr-ro@1",
+            capability_id=CAPABILITY_PDF_OCR,
+            network_required=True,
+            provider_required=True,
+            side_effect_class=SideEffectClass.NONE,
+            approval_required=False,
+            filesystem_scope=FilesystemScope.NONE,
+        )
+        registry = build_claw_skill_registry([readonly_provider])
+        grant = authorize_invocation(
+            registry,
+            request(
+                skill_id="skill:claw:pdf-ocr-ro@1",
+                wants_network=True,
+                wants_provider=True,
+                wants_filesystem_scope=FilesystemScope.NONE,
+            ),
+        )
+        self.assertTrue(grant.provider_required)
+        self.assertIs(grant.side_effect_class, SideEffectClass.NONE)
+        self.assertFalse(grant.approval_required)
+
+    def test_provider_without_network_manifest_fails_construction(self) -> None:
+        with self.assertRaises(SkillRegistryContractError) as ctx:
+            manifest(network_required=False, provider_required=True)
+        self.assertEqual(ctx.exception.code, "invalid_capability_manifest")
+
+    def test_authority_truth_table(self) -> None:
+        """Required truth table for request vs manifest authority."""
+
+        def auth(entry: SkillManifest, req: SkillInvocationRequest) -> str:
+            registry = build_claw_skill_registry([entry])
+            try:
+                authorize_invocation(registry, req)
+            except SkillRegistryContractError as exc:
+                return f"FAIL:{exc.code}"
+            return "PASS"
+
+        # NETWORK
+        net = manifest(network_required=True, filesystem_scope=FilesystemScope.NONE)
+        self.assertEqual(
+            auth(net, request(wants_network=False, wants_filesystem_scope=FilesystemScope.NONE)),
+            "FAIL:missing_network_authority_request",
+        )
+        self.assertEqual(
+            auth(net, request(wants_network=True, wants_filesystem_scope=FilesystemScope.NONE)),
+            "PASS",
+        )
+        offline = manifest(network_required=False, filesystem_scope=FilesystemScope.NONE)
+        self.assertEqual(
+            auth(offline, request(wants_network=True, wants_filesystem_scope=FilesystemScope.NONE)),
+            "FAIL:unauthorized_network_request",
+        )
+
+        # PROVIDER
+        prov = manifest(
+            network_required=True,
+            provider_required=True,
+            side_effect_class=SideEffectClass.NONE,
+            filesystem_scope=FilesystemScope.NONE,
+        )
+        self.assertEqual(
+            auth(
+                prov,
+                request(
+                    wants_network=True,
+                    wants_provider=False,
+                    wants_filesystem_scope=FilesystemScope.NONE,
+                ),
+            ),
+            "FAIL:missing_provider_authority_request",
+        )
+        self.assertEqual(
+            auth(
+                prov,
+                request(
+                    wants_network=True,
+                    wants_provider=True,
+                    wants_filesystem_scope=FilesystemScope.NONE,
+                ),
+            ),
+            "PASS",
+        )
+
+        # SANDBOX
+        box = manifest(sandbox_required=True, filesystem_scope=FilesystemScope.NONE)
+        self.assertEqual(
+            auth(box, request(wants_sandbox=False, wants_filesystem_scope=FilesystemScope.NONE)),
+            "FAIL:missing_sandbox_authority_request",
+        )
+        self.assertEqual(
+            auth(box, request(wants_sandbox=True, wants_filesystem_scope=FilesystemScope.NONE)),
+            "PASS",
+        )
+        unboxed = manifest(sandbox_required=False, filesystem_scope=FilesystemScope.NONE)
+        self.assertEqual(
+            auth(unboxed, request(wants_sandbox=True, wants_filesystem_scope=FilesystemScope.NONE)),
+            "FAIL:unauthorized_sandbox_request",
+        )
+
+        # FILESYSTEM
+        fs_read = manifest(filesystem_scope=FilesystemScope.SCOPED_READ)
+        self.assertEqual(
+            auth(fs_read, request(wants_filesystem_scope=FilesystemScope.NONE)),
+            "FAIL:missing_filesystem_authority_request",
+        )
+        self.assertEqual(
+            auth(fs_read, request(wants_filesystem_scope=FilesystemScope.SCOPED_READ)),
+            "PASS",
+        )
+        self.assertEqual(
+            auth(fs_read, request(wants_filesystem_scope=FilesystemScope.SCOPED_WRITE)),
+            "FAIL:unauthorized_filesystem_request",
+        )
 
 
 class CompositionTests(unittest.TestCase):
@@ -570,11 +770,12 @@ class CompositionTests(unittest.TestCase):
     def test_composition_authority_widening_rejected_for_member(self) -> None:
         """A wide composition must not widen a narrow member's authority."""
 
-        narrow = manifest(network_required=False)
+        narrow = manifest(network_required=False, filesystem_scope=FilesystemScope.NONE)
         wide = manifest(
             skill_id="skill:claw:ocr-worker@1",
             capability_id=CAPABILITY_PDF_OCR,
             network_required=True,
+            filesystem_scope=FilesystemScope.NONE,
         )
         registry = build_claw_skill_registry([narrow, wide])
         composition = compose_skills(
@@ -592,6 +793,7 @@ class CompositionTests(unittest.TestCase):
                     skill_id="skill:claw:pdf-reader@1",
                     actual_input_mime=PDF_MIME,
                     wants_network=True,
+                    wants_filesystem_scope=FilesystemScope.NONE,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_network_request")
@@ -604,9 +806,11 @@ class CompositionTests(unittest.TestCase):
                 skill_id="skill:claw:ocr-worker@1",
                 actual_input_mime=PDF_MIME,
                 wants_network=True,
+                wants_filesystem_scope=FilesystemScope.NONE,
             ),
         )
         self.assertTrue(grant.network_required)
+        self.assertEqual(grant.filesystem_scope, FilesystemScope.NONE)
 
     def test_composition_rejects_non_member_invocation(self) -> None:
         registry = build_claw_skill_registry(
@@ -702,6 +906,7 @@ class SafeProjectionTests(unittest.TestCase):
             SkillInvocationRequest(
                 skill_id="skill:claw:pdf-reader@1",
                 actual_input_mime=PDF_MIME,
+                wants_filesystem_scope=FilesystemScope.SCOPED_READ,
             ),
         )
         projected = grant.to_public_dict()
@@ -835,9 +1040,35 @@ class FullCatalogueSmokeTests(unittest.TestCase):
                     skill_id="skill:claw:pdf-read@1",
                     actual_input_mime=PDF_MIME,
                     wants_network=True,
+                    wants_filesystem_scope=FilesystemScope.SCOPED_READ,
                 ),
             )
         self.assertEqual(ctx.exception.code, "unauthorized_network_request")
+
+        # Read-only provider Skill (side_effect NONE) authorizes when requested exactly.
+        ro = manifest(
+            skill_id="skill:claw:pdf-ocr-ro@1",
+            capability_id=CAPABILITY_PDF_OCR,
+            input_mime=(PDF_MIME,),
+            network_required=True,
+            provider_required=True,
+            side_effect_class=SideEffectClass.NONE,
+            approval_required=False,
+            filesystem_scope=FilesystemScope.NONE,
+        )
+        ro_registry = build_claw_skill_registry([ro])
+        ro_grant = authorize_invocation(
+            ro_registry,
+            SkillInvocationRequest(
+                skill_id="skill:claw:pdf-ocr-ro@1",
+                actual_input_mime=PDF_MIME,
+                wants_network=True,
+                wants_provider=True,
+                wants_filesystem_scope=FilesystemScope.NONE,
+            ),
+        )
+        self.assertTrue(ro_grant.provider_required)
+        self.assertIs(ro_grant.side_effect_class, SideEffectClass.NONE)
 
 
 if __name__ == "__main__":
