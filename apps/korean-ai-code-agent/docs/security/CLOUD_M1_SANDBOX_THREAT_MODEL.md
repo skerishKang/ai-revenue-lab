@@ -150,6 +150,40 @@ preview ports                    = PRIVATE BY DEFAULT
 
 A client, task, repository, model output, or provider adapter cannot relax these defaults.
 
+### 4.1 Where each control is enforced
+
+A control that only appears in this list is a request, not a guarantee. Each row names the
+code that actually refuses a violation, so a reviewer can check the claim instead of
+accepting it.
+
+| Control | Enforcement point | How it is proven |
+| --- | --- | --- |
+| network default OFF | `contracts.SandboxLeaseRequest`, `SandboxSecurityPolicy.__post_init__`, `SandboxProviderConformanceGate.validate_lease_request`, `preparation.CloudWorkspacePreparer.prepare` | refused at construction, at the policy, and at the allocation seam |
+| exact immutable revision | `contracts.exact_commit_revision` applied inside `SandboxLeaseRequest` for CLOUD, re-checked by the gate | a mutable ref never reaches `allocate()` |
+| TTL bound | `contracts` 60..3600 and `policy.max_ttl_seconds` at the seam | a longer TTL is refused before allocation |
+| privileged / host mounts / runtime socket / provider metadata / host secrets / workspace reuse / mutable revision | `SandboxSecurityPolicy.__post_init__` refuses a policy that enables any of them | constructing such a policy raises |
+| CPU / RAM / disk / process ceiling | `SandboxSecurityPolicy.max_cpu_cores` … `max_process_count`, `require_within_bounds(SandboxAppliedLimits)`, harness case `resource_limits_within_policy` | a provider's *reported* numbers are checked, not its four `*_limit_enforced` booleans |
+| artifact export allowlist | `SandboxSecurityPolicy.allowed_artifact_kinds`, enforced in `SandboxArtifactManifest.validate_against` | an unlisted kind is refused even at in-policy size and count |
+| artifact size / count | `SandboxArtifactManifest.validate_against` | per-artifact, total, and count bounds |
+| terminal output bound | `sanitize_terminal_output` against `policy.max_terminal_output_bytes` | oversize output is refused, never truncated |
+| terminal output sanitized | `sanitize_terminal_output` + `SandboxArtifactManifest.require_sanitized_output` | the boolean claim is re-derived from the raw bytes and must match |
+| one active lease per run, cancellation, TTL reclamation, no terminal resurrection | `SandboxProviderConformanceHarness.evaluate_lease_lifecycle` / `evaluate_cancellation` / `evaluate_reclamation` | each is exercised against a provider through the port, not read off a declared flag |
+| run ↔ lease correlation | `VerifiedDiffEvidence`, `SandboxArtifactManifest` carry `run_id` + `lease_id` | projection cannot be built without both |
+
+### 4.2 Not yet enforced by any code path
+
+Stated so that a green conformance report is not read as a production claim:
+
+- nothing schedules `reap_expired_leases`; reclamation exists as an operation and a
+  conformance exercise, not as a running driver (`sandbox_reclamation.py`).
+- `TeardownVerification.process_tree_killed` has no producer, so "child processes are
+  killed at teardown" is a required provider property that B54 cannot yet observe.
+- `CloudWorkspacePathPolicy` decides per-path authority only inside artifact collection;
+  it is not applied to a lease allocation.
+- No real provider has ever been evaluated by this harness, and the probe and teardown
+  configuration constants remain false. Selecting a provider is #1405 phase C, gated on a
+  separate decision record.
+
 ## 5. Provider capability manifest
 
 A candidate provider is represented only by provider-neutral capability facts in `kagent.sandbox_conformance.SandboxProviderCapabilities`.
@@ -264,10 +298,16 @@ A provider-specific credential or endpoint must remain in trusted deployment con
 ```text
 THREAT_MODEL = DEFINED
 SERVER_POLICY = EXPLICIT
-PROVIDER_CONFORMANCE_HARNESS = IMPLEMENTED_BY_THIS_SLICE
-VERIFIED_DIFF_CONTRACT = IMPLEMENTED_BY_THIS_SLICE
+RESOURCE_CEILING_EXPRESSED_IN_POLICY = YES        (#1405 A; was declared only on an unconsumed model)
+ARTIFACT_EXPORT_ALLOWLIST_ENFORCED = YES         (#1405 A)
+TERMINAL_OUTPUT_SANITIZER_EXISTS = YES           (#1405 A; replaces a bare boolean claim)
+POLICY_CEILING_CHECKED_AT_ALLOCATION_SEAM = YES  (#1405 A; refusals never reach a provider)
+PROVIDER_CONFORMANCE_HARNESS = IMPLEMENTED
+VERIFIED_DIFF_CONTRACT = IMPLEMENTED
+CONTROLS_NOT_YET_ENFORCED = SEE_SECTION_4_2
 REAL_PROVIDER_SELECTED = NO
 REAL_PROVIDER_CALLS = 0
 PRODUCTION_SANDBOX_CLAIM = NO
 PRODUCTION_MUTATION = 0
+CLOUD_M1_ACCEPTED = NO   # acceptance is a review verdict, not a test outcome
 ```

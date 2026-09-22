@@ -163,7 +163,13 @@ class SandboxConformanceTests(unittest.TestCase):
             lease_id="lease_1",
             artifacts=(
                 SandboxArtifactRef("artifact_1", "diff", 512, "a" * 64),
-                SandboxArtifactRef("artifact_2", "test", 1024, "b" * 64),
+                # Kind was "test", which is not one of the Cloud M1 export types the
+                # server authorizes; #1405 added allowlist enforcement, so this
+                # fixture now uses the canonical "test_report" kind. This test's
+                # subject is size/count/output bounds, not kind acceptance, and
+                # refusal of an unlisted kind is asserted separately in
+                # test_cloud_m1_policy_enforcement.py.
+                SandboxArtifactRef("artifact_2", "test_report", 1024, "b" * 64),
             ),
             terminal_output_bytes=1024,
             terminal_output_sanitized=True,

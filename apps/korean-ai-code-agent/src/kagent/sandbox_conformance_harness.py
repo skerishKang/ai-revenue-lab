@@ -30,6 +30,7 @@ from .sandbox import (
 )
 from .sandbox_conformance import (
     IsolationPrimitive,
+    SandboxAppliedLimits,
     SandboxArtifactManifest,
     SandboxArtifactRef,
     SandboxProviderAssessment,
@@ -194,8 +195,17 @@ class SandboxProviderConformanceHarness:
     def evaluate_capabilities(
         self,
         capabilities: SandboxProviderCapabilities,
+        *,
+        applied_limits: SandboxAppliedLimits | None = None,
     ) -> SandboxProviderConformanceReport:
-        """Runs the complete suite of Cloud M1 conformance controls against candidate capabilities."""
+        """Runs the complete suite of Cloud M1 conformance controls against candidate capabilities.
+
+        ``applied_limits`` is optional: when a provider reports the numbers it
+        actually applied, they are checked against the policy ceiling here instead of
+        being accepted through its four ``*_limit_enforced`` booleans. A provider
+        that reports nothing still fails on those booleans, so passing this in adds
+        an exercised check without ever weakening the declared one.
+        """
         assessment = self.gate.assess(capabilities)
         results: list[SandboxProviderConformanceResult] = []
 
@@ -240,6 +250,28 @@ class SandboxProviderConformanceHarness:
                         control_name=control,
                         status=ConformanceStatus.FAILED,
                         message=f"Control {control} is missing or false",
+                    )
+                )
+
+        if applied_limits is not None:
+            try:
+                self.policy.require_within_bounds(applied_limits)
+            except ContractError as exc:
+                results.append(
+                    SandboxProviderConformanceResult(
+                        case_id="case_resource_limits_within_policy",
+                        control_name="resource_limits_within_policy",
+                        status=ConformanceStatus.FAILED,
+                        message=str(exc),
+                    )
+                )
+            else:
+                results.append(
+                    SandboxProviderConformanceResult(
+                        case_id="case_resource_limits_within_policy",
+                        control_name="resource_limits_within_policy",
+                        status=ConformanceStatus.PASSED,
+                        message="Reported limits are within the Cloud M1 policy ceiling",
                     )
                 )
 
@@ -464,6 +496,7 @@ class SandboxProviderConformanceHarness:
 
 __all__ = [
     "ConformanceStatus",
+    "SandboxAppliedLimits",
     "SandboxProviderConformanceCase",
     "SandboxProviderConformanceResult",
     "SandboxProviderConformanceReport",
