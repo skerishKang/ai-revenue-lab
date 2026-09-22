@@ -16,7 +16,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from .contracts import ContractError
+from .contracts import ContractError, exact_commit_revision
+from .contracts import _CONTROL_RE as _CANONICAL_CONTROL_RE
 from .core import redact_secrets
 from .workspace_visibility import TrustedWorkspaceMembershipProjection
 
@@ -304,6 +305,112 @@ class ClawApprovalGate:
             object.__setattr__(self, "approved_at", _aware_utc(self.approved_at, "approved_at"))
 
 
+# #2833 S2F1: version tag for the canonical scheduled execution-intent material.
+EXECUTION_INTENT_VERSION = "claw-automation-execution-intent.v1"
+
+
+@dataclass(frozen=True, slots=True)
+class ClawAutomationExecutionIntent:
+    """Immutable execution material a scheduled rule owns (#2833 S2F1).
+
+    A scheduled rule could not reach canonical execution because the real input
+    object requires a non-empty ``task`` and a ``repository_ref``, and neither can
+    be derived from any rule field: ``name`` is a display label used in titles, and
+    ``target_source`` / ``output_type`` are closed enums. Reading them as an
+    instruction would be inference, so this contract carries the three values
+    explicitly instead.
+
+    This is data only. It dispatches nothing, calls nothing, grants no authority,
+    and resolves no owner: a later slice decides how it is consumed.
+    """
+
+    task: str
+    repository_ref: str
+    exact_revision: str
+
+    def __post_init__(self) -> None:
+        task = _bounded_text(self.task, "task", limit=12_000)
+        if redact_secrets(task) != task:
+            raise ContractError("task must not contain credential material")
+        repository = _bounded_text(self.repository_ref, "repository_ref", limit=1_024)
+        # The rule-name precedent: credential material is refused at construction,
+        # so persisting and projecting the repository ref needs no second mask.
+        if redact_secrets(repository) != repository:
+            raise ContractError("repository_ref must not contain credential material")
+        # This module's own _CONTROL_RE starts at \x01, so NUL slips past it, while
+        # the canonical input object that will consume this material refuses NUL.
+        # Refusing the canonical set here keeps a rule from storing text that could
+        # never be handed to execution — reuse of that predicate, not a new one.
+        for name, value in (("task", task), ("repository_ref", repository)):
+            if _CANONICAL_CONTROL_RE.search(value):
+                raise ContractError(f"{name} contains forbidden control characters")
+        # Reuse the contract layer's single exact-commit predicate. No second
+        # revision regex may exist for this boundary.
+        revision = exact_commit_revision(self.exact_revision, "exact_revision")
+        object.__setattr__(self, "task", task)
+        object.__setattr__(self, "repository_ref", repository)
+        object.__setattr__(self, "exact_revision", revision)
+
+    @property
+    def task_sha256(self) -> str:
+        return hashlib.sha256(self.task.encode("utf-8")).hexdigest()
+
+    @property
+    def material_document(self) -> dict[str, str]:
+        """The exact byte sequence the digest is computed over."""
+
+        return {
+            "version": EXECUTION_INTENT_VERSION,
+            "task": self.task,
+            "repository_ref": self.repository_ref,
+            "exact_revision": self.exact_revision,
+        }
+
+    @property
+    def intent_sha256(self) -> str:
+        canonical = json.dumps(self.material_document, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    def safe_dict(self) -> dict[str, Any]:
+        """Projection for logs and receipts: identity without the task body."""
+
+        return {
+            "version": EXECUTION_INTENT_VERSION,
+            "repository_ref": self.repository_ref,
+            "exact_revision": self.exact_revision,
+            "task_sha256": self.task_sha256,
+            "intent_sha256": self.intent_sha256,
+            "raw_task_in_projection": False,
+        }
+
+
+def _execution_intent_document(intent: ClawAutomationExecutionIntent | None) -> dict[str, str] | None:
+    """Persistence form of the intent. Absence is stored as absence, not as ``null``."""
+
+    if intent is None:
+        return None
+    return {
+        "version": EXECUTION_INTENT_VERSION,
+        "task": intent.task,
+        "repository_ref": intent.repository_ref,
+        "exact_revision": intent.exact_revision,
+    }
+
+
+def _execution_intent_from_document(document: Any) -> ClawAutomationExecutionIntent | None:
+    """Legacy rule payloads carry no such key; absence reads None, not an error."""
+
+    if document is None:
+        return None
+    if not isinstance(document, dict):
+        raise ContractError("stored automation rule is corrupt")
+    return ClawAutomationExecutionIntent(
+        task=document["task"],
+        repository_ref=document["repository_ref"],
+        exact_revision=document["exact_revision"],
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class ClawAutomationRule:
     rule_id: str
@@ -322,6 +429,9 @@ class ClawAutomationRule:
     # may attach at rule creation; B54/KAgent never interprets its meaning, and
     # it grants no authority of any kind. Absent on legacy rules (None).
     owner_ref: str | None = None
+    # #2833 S2F1: added last and optional, so every existing positional
+    # construction of the earlier fields keeps working. Legacy rules carry None.
+    execution_intent: ClawAutomationExecutionIntent | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "rule_id", _safe_id(self.rule_id, "rule_id"))
@@ -356,6 +466,10 @@ class ClawAutomationRule:
             if not norm or not _SAFE_ID_RE.fullmatch(norm):
                 raise ContractError("owner_ref must be a bounded opaque reference")
             object.__setattr__(self, "owner_ref", norm)
+        if self.execution_intent is not None and not isinstance(
+            self.execution_intent, ClawAutomationExecutionIntent
+        ):
+            raise ContractError("execution_intent must be a ClawAutomationExecutionIntent")
 
 
 @dataclass(frozen=True, slots=True)
@@ -536,6 +650,12 @@ class InMemoryClawAutomationStore:
         # it must echo the previously persisted value exactly.
         if previous is not None and previous.owner_ref != rule.owner_ref:
             raise ContractError("rule owner provenance is immutable")
+        # #2833 S2F1: execution material is immutable after creation as well. A
+        # legacy rule must not be promoted to an execution-capable one through a
+        # generic save/update, and an existing intent must not be swapped or
+        # dropped — that would silently change what a scheduled occurrence runs.
+        if previous is not None and previous.execution_intent != rule.execution_intent:
+            raise ContractError("rule execution intent is immutable")
         self._rules[rule.rule_id] = rule
 
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None:
@@ -565,6 +685,7 @@ class InMemoryClawAutomationStore:
             output_type=rule.output_type, enabled=enabled,
             notification_channels=rule.notification_channels,
             owner_ref=rule.owner_ref,
+            execution_intent=rule.execution_intent,
         )
         self._rules[rule_id] = updated
         return updated
@@ -960,6 +1081,11 @@ class SqliteClawAutomationStore:
         }
         if rule.owner_ref is not None:
             payload_document["owner_ref"] = rule.owner_ref
+        # #2833 S2F1: additive inside the same document — no new table, column or
+        # migration. Absent for legacy and intent-free rules.
+        intent_document = _execution_intent_document(rule.execution_intent)
+        if intent_document is not None:
+            payload_document["execution_intent"] = intent_document
         payload = json.dumps(
             payload_document,
             sort_keys=True,
@@ -985,11 +1111,17 @@ class SqliteClawAutomationStore:
             # update may never transfer, drop, or mint an owner_ref. Fail
             # closed before any row write when the value would change.
             try:
-                existing_owner_ref = json.loads(existing[9]).get("owner_ref")
+                existing_payload = json.loads(existing[9])
             except Exception as exc:
                 raise ContractError("stored automation rule is corrupt") from exc
-            if existing_owner_ref != rule.owner_ref:
+            if existing_payload.get("owner_ref") != rule.owner_ref:
                 raise ContractError("rule owner provenance is immutable")
+            # Execution material is immutable here too, checked before any write so
+            # a generic update can never promote a legacy rule or swap its task.
+            if existing_payload.get("execution_intent") != _execution_intent_document(
+                rule.execution_intent
+            ):
+                raise ContractError("rule execution intent is immutable")
             self._db.execute(
                 "UPDATE claw_rules SET name=?, schedule_kind=?, schedule_expression=?, schedule_timezone=?, target_source=?, output_type=?, enabled=?, notification_channels=?, updated_at=? WHERE rule_id=?",
                 (
@@ -1031,6 +1163,7 @@ class SqliteClawAutomationStore:
             output_type=rule.output_type, enabled=enabled,
             notification_channels=rule.notification_channels,
             owner_ref=rule.owner_ref,
+            execution_intent=rule.execution_intent,
         )
         self.save_rule(updated)
         return updated
@@ -1185,6 +1318,9 @@ class SqliteClawAutomationStore:
                 ),
                 # Legacy payloads carry no owner_ref key; absence reads None.
                 owner_ref=payload.get("owner_ref"),
+                # Same for S2F1 execution material: no key means no intent, and a
+                # legacy rule stays exactly as legacy as it was.
+                execution_intent=_execution_intent_from_document(payload.get("execution_intent")),
             )
         except Exception as exc:
             raise ContractError("stored automation rule is corrupt") from exc
