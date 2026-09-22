@@ -130,9 +130,9 @@ class ExecutionIntentContractTests(unittest.TestCase):
 
     def test_credential_material_fails_closed_in_either_field(self):
         for kwargs in (
-            {"task": "token=ghp_16C7e4YNym5ZnqD1sPnRz3gT4mEoqr3xKL7"},
+            {"task": "run token=supersecretvalue"},
             {"task": "run password=hunter22here"},
-            {"repository_ref": "org/repo?key=AKIAIOSFODNN7EXAMPLE"},
+            {"repository_ref": "org/repo?key=AKIAEXAMPLECREDENTIAL1750"},
         ):
             with self.subTest(**{k: v[:18] for k, v in kwargs.items()}):
                 with self.assertRaises(ContractError):
