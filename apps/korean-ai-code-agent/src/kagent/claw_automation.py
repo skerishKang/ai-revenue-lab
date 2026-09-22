@@ -1595,13 +1595,14 @@ class SqliteClawAutomationStore:
         try:
             update_cursor = self._db.execute(
                 "UPDATE claw_runs SET status=?, completed_at=?, output=?, error_message=? "
-                "WHERE run_id=? AND (output IS NULL OR output=?)",
+                "WHERE run_id=? AND status=? AND (output IS NULL OR output=?)",
                 (
                     projected.value,
                     _iso(completed) if completed is not None else None,
                     serialized_output,
                     bounded_error,
                     bounded_run_id,
+                    stored.status.value,
                     serialized_output,
                 ),
             )
