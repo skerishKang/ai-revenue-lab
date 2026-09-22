@@ -16,7 +16,9 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from .contracts import ContractError, exact_commit_revision
+from .contracts import ContractError, ExecutionMode, exact_commit_revision
+from .contracts import ClawTaskIntent
+from .runs import ClawRun, ClawRunStatus
 from .contracts import _CONTROL_RE as _CANONICAL_CONTROL_RE
 from .core import redact_secrets
 from .workspace_visibility import TrustedWorkspaceMembershipProjection
@@ -618,6 +620,146 @@ def _parse_iso(value: str, field_name: str) -> datetime:
         raise ContractError(f"stored {field_name} must be timezone-aware")
     return parsed.astimezone(timezone.utc)
 
+# ---------------------------------------------------------------------------
+# #2833 S2F2: same-run-id lifecycle bridge between a scheduled occurrence and
+# the canonical ClawRun state machine.
+#
+# ClawRun is the canonical lifecycle state machine. The scheduled row is a
+# projection of it, never a second state machine. This section introduces no
+# second run id, no second dedup authority, and no durable canonical-run
+# persistence claim (the in-memory run store is not an authority).
+# ---------------------------------------------------------------------------
+
+_TERMINAL_PROJECTION_STATUSES = frozenset(
+    {
+        ClawScheduledRunStatus.COMPLETED,
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    }
+)
+_CANONICAL_TO_PROJECTION_STATUS: dict[ClawRunStatus, ClawScheduledRunStatus] = {
+    ClawRunStatus.QUEUED: ClawScheduledRunStatus.PENDING,
+    ClawRunStatus.PREPARING: ClawScheduledRunStatus.RUNNING,
+    ClawRunStatus.RUNNING: ClawScheduledRunStatus.RUNNING,
+    ClawRunStatus.WAITING_APPROVAL: ClawScheduledRunStatus.RUNNING,
+    ClawRunStatus.COMPLETED: ClawScheduledRunStatus.COMPLETED,
+    ClawRunStatus.FAILED: ClawScheduledRunStatus.FAILED,
+    ClawRunStatus.CANCELLED: ClawScheduledRunStatus.CANCELLED,
+}
+_MAX_ERROR_MESSAGE = 1_024
+
+
+def project_canonical_status(status: ClawRunStatus) -> ClawScheduledRunStatus:
+    """Project one canonical ClawRun status onto the scheduled vocabulary.
+
+    Non-terminal canonical states project to RUNNING, except QUEUED which projects
+    to PENDING: the occurrence is claimed but execution has not started. No new
+    scheduled status is invented for PREPARING or WAITING_APPROVAL.
+    """
+
+    if not isinstance(status, ClawRunStatus):
+        try:
+            status = ClawRunStatus(status)
+        except (TypeError, ValueError) as exc:
+            raise ContractError(f"invalid canonical run status: {status}") from exc
+    return _CANONICAL_TO_PROJECTION_STATUS[status]
+
+
+def canonical_task_intent_for_occurrence(
+    rule: ClawAutomationRule, scheduled_time: datetime
+) -> ClawTaskIntent:
+    """Build the canonical task intent for one scheduled occurrence.
+
+    Execution material comes only from the rule's S2F1 execution intent: ``name``,
+    ``target_source`` and ``output_type`` are display labels and closed enums and are
+    never reinterpreted as an instruction. ``task_id`` is derived deterministically
+    from the occurrence identity and is not a dedup authority. Legacy rules without
+    an execution intent fail closed.
+    """
+
+    if rule.execution_intent is None:
+        raise ContractError("canonical scheduling requires an execution intent")
+    scheduled = _aware_utc(scheduled_time, "scheduled_time")
+    return ClawTaskIntent(
+        task_id=_derived_occurrence_id("task", rule.workspace_id, rule.rule_id, scheduled),
+        task=rule.execution_intent.task,
+        repository_ref=rule.execution_intent.repository_ref,
+        execution_mode=ExecutionMode.CLOUD,
+        requested_revision=rule.execution_intent.exact_revision,
+        source_surface="automation",
+    )
+
+
+def canonical_claw_run_for_occurrence(
+    rule: ClawAutomationRule, scheduled_time: datetime
+) -> tuple[ClawRun, ClawTaskIntent]:
+    """Create the canonical run for one occurrence, reusing the same run id.
+
+    ``SAME_RUN_ID_REUSED``: the canonical run id IS the occurrence-derived
+    ``sched_run_<digest>`` the scheduled projection already uses, so one logical
+    occurrence owns exactly one id. This builds the lifecycle container only: it
+    dispatches nothing, calls no P01 helper, resolves no owner, and writes
+    nothing to History/Task/Alert stores.
+    """
+
+    scheduled = _aware_utc(scheduled_time, "scheduled_time")
+    run_id = _derived_occurrence_id("sched_run", rule.workspace_id, rule.rule_id, scheduled)
+    intent = canonical_task_intent_for_occurrence(rule, scheduled)
+    return ClawRun.create(run_id, intent), intent
+
+
+def _projection_update_material(
+    *,
+    run_id: str,
+    workspace_id: str,
+    rule_id: str,
+    scheduled_time: datetime,
+    status: ClawScheduledRunStatus,
+    completed_at: datetime | None,
+    error_message: str | None,
+) -> tuple[str, str, str, datetime, ClawScheduledRunStatus, datetime | None, str | None]:
+    """Validate one bounded projection update before either store touches data.
+
+    ``completed_at`` is only legal for a terminal projection status and an
+    ``error_message`` only for a failed one; both fail closed otherwise. Text is
+    bounded to 1_024 characters and run through the existing redaction helper, so
+    no credential material can reach the projection.
+    """
+
+    bounded_run_id = _safe_id(run_id, "run_id")
+    bounded_workspace = _safe_id(workspace_id, "workspace_id")
+    bounded_rule = _safe_id(rule_id, "rule_id")
+    scheduled = _aware_utc(scheduled_time, "scheduled_time")
+    if not isinstance(status, ClawScheduledRunStatus):
+        try:
+            status = ClawScheduledRunStatus(status)
+        except (TypeError, ValueError) as exc:
+            raise ContractError(f"invalid projection status: {status}") from exc
+    if status in _TERMINAL_PROJECTION_STATUSES:
+        completed = _aware_utc(completed_at, "completed_at") if completed_at is not None else None
+    else:
+        if completed_at is not None:
+            raise ContractError("completed_at is only allowed for a terminal projection status")
+        completed = None
+    bounded_error: str | None = None
+    if error_message is not None:
+        if status is not ClawScheduledRunStatus.FAILED:
+            raise ContractError("error_message is only allowed for a failed projection")
+        redacted = redact_secrets(
+            _bounded_text(error_message, "error_message", limit=_MAX_ERROR_MESSAGE)
+        )
+        bounded_error = _bounded_text(redacted, "error_message", limit=_MAX_ERROR_MESSAGE)
+    return (
+        bounded_run_id,
+        bounded_workspace,
+        bounded_rule,
+        scheduled,
+        status,
+        completed,
+        bounded_error,
+    )
+
+
 
 class ClawAutomationStore(Protocol):
     def save_rule(self, rule: ClawAutomationRule) -> None: ...
@@ -629,6 +771,17 @@ class ClawAutomationStore(Protocol):
     def get_run(self, run_id: str, workspace_id: str) -> ClawScheduledRun | None: ...
     def get_run_for_occurrence(self, key: str, workspace_id: str) -> ClawScheduledRun | None: ...
     def list_runs(self, workspace_id: str) -> list[ClawScheduledRun]: ...
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+    ) -> ClawScheduledRun: ...
     def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]: ...
 
 
@@ -727,6 +880,58 @@ class InMemoryClawAutomationStore:
 
     def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]:
         return [proposal for proposal in self._proposals.values() if proposal.workspace_id == workspace_id]
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+    ) -> ClawScheduledRun:
+        """Update an existing projection row. Fail-closed: never claims or inserts."""
+
+        (
+            bounded_run_id,
+            bounded_workspace,
+            bounded_rule,
+            scheduled,
+            projected,
+            completed,
+            bounded_error,
+        ) = _projection_update_material(
+            run_id=run_id,
+            workspace_id=workspace_id,
+            rule_id=rule_id,
+            scheduled_time=scheduled_time,
+            status=status,
+            completed_at=completed_at,
+            error_message=error_message,
+        )
+        existing = self._runs.get(bounded_run_id)
+        if existing is None or existing.workspace_id != bounded_workspace:
+            raise ContractError("projection update requires an existing scheduled run")
+        if existing.rule_id != bounded_rule or existing.scheduled_time != scheduled:
+            raise ContractError("projection update cannot change the scheduled occurrence identity")
+        key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
+        if self._occurrences.get(key) != bounded_run_id:
+            raise ContractError("projection update must match the existing occurrence claim")
+        updated = ClawScheduledRun(
+            run_id=existing.run_id,
+            workspace_id=existing.workspace_id,
+            rule_id=existing.rule_id,
+            status=projected,
+            scheduled_time=existing.scheduled_time,
+            started_at=existing.started_at,
+            completed_at=completed,
+            output=existing.output,
+            error_message=bounded_error,
+        )
+        self._runs[bounded_run_id] = updated
+        return updated
+
 
 
 class FakeClawScheduler:
@@ -1272,6 +1477,64 @@ class SqliteClawAutomationStore:
             (workspace_id,),
         ).fetchall()
         return [self._proposal_from_row(row) for row in rows]
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+    ) -> ClawScheduledRun:
+        """Update an existing projection row in place. Fail-closed: never inserts.
+
+        The row must already exist, its immutable occurrence identity must match,
+        and the existing occurrence claim must point at this same run id. A second
+        run row or a fresh claim is impossible through this path.
+        """
+
+        (
+            bounded_run_id,
+            bounded_workspace,
+            bounded_rule,
+            scheduled,
+            projected,
+            completed,
+            bounded_error,
+        ) = _projection_update_material(
+            run_id=run_id,
+            workspace_id=workspace_id,
+            rule_id=rule_id,
+            scheduled_time=scheduled_time,
+            status=status,
+            completed_at=completed_at,
+            error_message=error_message,
+        )
+        row = self._get_run_row(bounded_run_id)
+        if row is None or row[1] != bounded_workspace:
+            raise ContractError("projection update requires an existing scheduled run")
+        stored = self._run_from_row(row)
+        if stored.rule_id != bounded_rule or stored.scheduled_time != scheduled:
+            raise ContractError("projection update cannot change the scheduled occurrence identity")
+        key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
+        if self._get_occurrence_run_id(key, bounded_workspace) != bounded_run_id:
+            raise ContractError("projection update must match the existing occurrence claim")
+        self._db.execute(
+            "UPDATE claw_runs SET status=?, completed_at=?, error_message=? WHERE run_id=?",
+            (
+                projected.value,
+                _iso(completed) if completed is not None else None,
+                bounded_error,
+                bounded_run_id,
+            ),
+        )
+        updated = self.get_run(bounded_run_id, bounded_workspace)
+        if updated is None:
+            raise ContractError("projection update lost its scheduled run")
+        return updated
+
 
     # --- internal helpers ---
 
