@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import os
+import sqlite3
 import tempfile
 import unittest
 
@@ -377,6 +378,51 @@ class TerminalOutputAttachTests(StoreMatrixMixin, unittest.TestCase):
 
 
 class DurableOutputAttachTests(unittest.TestCase):
+    def test_concurrent_terminal_status_change_cannot_be_resurrected(self) -> None:
+        output = automation_output()
+
+        class RacingSqliteStore(SqliteClawAutomationStore):
+            inject_terminal_race = False
+
+            def _serialize_output(self, candidate):
+                if self.inject_terminal_race:
+                    self.inject_terminal_race = False
+                    with sqlite3.connect(self._database_path, isolation_level=None) as rival:
+                        rival.execute(
+                            "UPDATE claw_runs SET status=?, completed_at=?, error_message=? WHERE run_id=?",
+                            (
+                                ClawScheduledRunStatus.FAILED.value,
+                                DONE.isoformat().replace("+00:00", "Z"),
+                                "concurrent failure",
+                                RUN_ID,
+                            ),
+                        )
+                return SqliteClawAutomationStore._serialize_output(candidate)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "automation-output-race.db")
+            store = RacingSqliteStore(path)
+            try:
+                store.record_run(scheduled_run())
+                store.inject_terminal_race = True
+                with self.assertRaises(ContractError):
+                    store.update_run_projection(
+                        run_id=RUN_ID,
+                        workspace_id=WORKSPACE,
+                        rule_id=RULE_ID,
+                        scheduled_time=NOW,
+                        status=ClawScheduledRunStatus.COMPLETED,
+                        completed_at=DONE,
+                        output=output,
+                    )
+                stored = store.get_run(RUN_ID, WORKSPACE)
+                self.assertIsNotNone(stored)
+                self.assertEqual(stored.status, ClawScheduledRunStatus.FAILED)
+                self.assertIsNone(stored.output)
+                self.assertEqual(store.list_proposals(WORKSPACE), [])
+            finally:
+                store._db.close()
+
     def test_sqlite_reopen_preserves_attached_output(self) -> None:
         output = automation_output()
         with tempfile.TemporaryDirectory() as tmp:
