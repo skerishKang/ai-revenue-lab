@@ -14,8 +14,11 @@ import tempfile
 import unittest
 
 from kagent.claw_automation import (
+    ClawApprovalGate,
     ClawAutomationOutput,
     ClawAutomationOutputType,
+    ClawNotificationChannel,
+    ClawNotificationProposal,
     ClawScheduledRun,
     ClawScheduledRunStatus,
     InMemoryClawAutomationStore,
@@ -68,6 +71,27 @@ def automation_output(
         output_type=ClawAutomationOutputType.REPORT,
         title=title,
         content=content,
+    )
+
+
+def notification_proposal(
+    *,
+    workspace_id: str = WORKSPACE,
+    rule_id: str = RULE_ID,
+) -> ClawNotificationProposal:
+    return ClawNotificationProposal(
+        proposal_id="proposal_a",
+        workspace_id=workspace_id,
+        rule_id=rule_id,
+        channel=ClawNotificationChannel.WEB_ALERT_INBOX,
+        title="Proposal",
+        summary="bounded proposal",
+        approval_gate=ClawApprovalGate(
+            approval_required=False,
+            reason="",
+            suggested_action="",
+        ),
+        created_at=NOW,
     )
 
 
@@ -175,6 +199,58 @@ class TerminalOutputAttachTests(StoreMatrixMixin, unittest.TestCase):
 
     def test_foreign_workspace_output_is_rejected(self) -> None:
         output = automation_output(workspace_id=OTHER_WORKSPACE)
+        for label, store in self.stores():
+            with self.subTest(store=label):
+                store.record_run(scheduled_run())
+                with self.assertRaises(ContractError):
+                    store.update_run_projection(
+                        run_id=RUN_ID,
+                        workspace_id=WORKSPACE,
+                        rule_id=RULE_ID,
+                        scheduled_time=NOW,
+                        status=ClawScheduledRunStatus.COMPLETED,
+                        completed_at=DONE,
+                        output=output,
+                    )
+                stored = store.get_run(RUN_ID, WORKSPACE)
+                self.assertEqual(stored.status, ClawScheduledRunStatus.PENDING)
+                self.assertIsNone(stored.output)
+
+    def test_malformed_proposal_payload_is_rejected_before_mutation(self) -> None:
+        output = ClawAutomationOutput(
+            output_id="output_bad_proposal",
+            workspace_id=WORKSPACE,
+            output_type=ClawAutomationOutputType.REPORT,
+            title="Automation report",
+            content="bounded result",
+            proposals=("not-a-proposal",),  # type: ignore[arg-type]
+        )
+        for label, store in self.stores():
+            with self.subTest(store=label):
+                store.record_run(scheduled_run())
+                with self.assertRaises(ContractError):
+                    store.update_run_projection(
+                        run_id=RUN_ID,
+                        workspace_id=WORKSPACE,
+                        rule_id=RULE_ID,
+                        scheduled_time=NOW,
+                        status=ClawScheduledRunStatus.COMPLETED,
+                        completed_at=DONE,
+                        output=output,
+                    )
+                stored = store.get_run(RUN_ID, WORKSPACE)
+                self.assertEqual(stored.status, ClawScheduledRunStatus.PENDING)
+                self.assertIsNone(stored.output)
+
+    def test_foreign_proposal_scope_is_rejected_before_mutation(self) -> None:
+        output = ClawAutomationOutput(
+            output_id="output_foreign_proposal",
+            workspace_id=WORKSPACE,
+            output_type=ClawAutomationOutputType.REPORT,
+            title="Automation report",
+            content="bounded result",
+            proposals=(notification_proposal(workspace_id=OTHER_WORKSPACE),),
+        )
         for label, store in self.stores():
             with self.subTest(store=label):
                 store.record_run(scheduled_run())
