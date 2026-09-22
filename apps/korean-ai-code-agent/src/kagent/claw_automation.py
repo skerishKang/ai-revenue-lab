@@ -766,6 +766,7 @@ def _projection_update_material(
 def _projection_output_for_update(
     *,
     workspace_id: str,
+    rule_id: str,
     status: ClawScheduledRunStatus,
     output: ClawAutomationOutput | None,
     existing_status: ClawScheduledRunStatus,
@@ -789,10 +790,15 @@ def _projection_output_for_update(
         raise ContractError("projection output may only be attached to COMPLETED")
     if output.workspace_id != workspace_id:
         raise ContractError("projection output workspace does not match the scheduled run")
-    if output.proposals:
-        raise ContractError(
-            "terminal output attachment does not create notification proposals"
-        )
+    if not isinstance(output.proposals, tuple) or not all(
+        isinstance(proposal, ClawNotificationProposal) for proposal in output.proposals
+    ):
+        raise ContractError("projection output proposals must be trusted notification proposals")
+    if any(
+        proposal.workspace_id != workspace_id or proposal.rule_id != rule_id
+        for proposal in output.proposals
+    ):
+        raise ContractError("projection output proposal scope does not match the scheduled run")
     if existing_status in {
         ClawScheduledRunStatus.FAILED,
         ClawScheduledRunStatus.CANCELLED,
@@ -963,6 +969,7 @@ class InMemoryClawAutomationStore:
             raise ContractError("projection update must match the existing occurrence claim")
         persisted_output = _projection_output_for_update(
             workspace_id=bounded_workspace,
+            rule_id=bounded_rule,
             status=projected,
             output=output,
             existing_status=existing.status,
@@ -980,6 +987,9 @@ class InMemoryClawAutomationStore:
             error_message=bounded_error,
         )
         self._runs[bounded_run_id] = updated
+        if output is not None and existing.output is None and output.proposals:
+            for proposal in output.proposals:
+                self._proposals[proposal.proposal_id] = proposal
         return updated
 
 
@@ -1574,6 +1584,7 @@ class SqliteClawAutomationStore:
             raise ContractError("projection update must match the existing occurrence claim")
         persisted_output = _projection_output_for_update(
             workspace_id=bounded_workspace,
+            rule_id=bounded_rule,
             status=projected,
             output=output,
             existing_status=stored.status,
@@ -1596,6 +1607,20 @@ class SqliteClawAutomationStore:
             )
             if update_cursor.rowcount != 1:
                 raise ContractError("projection output changed concurrently")
+            if output is not None and stored.output is None and output.proposals:
+                for proposal in output.proposals:
+                    self._db.execute(
+                        "INSERT OR IGNORE INTO claw_proposals(proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (
+                            proposal.proposal_id, proposal.workspace_id, proposal.rule_id,
+                            proposal.channel.value, proposal.title, proposal.summary,
+                            1 if proposal.approval_gate.approval_required else 0,
+                            proposal.approval_gate.reason, proposal.approval_gate.suggested_action,
+                            proposal.approval_gate.approved_by,
+                            _iso(proposal.approval_gate.approved_at) if proposal.approval_gate.approved_at else None,
+                            _iso(proposal.created_at),
+                        ),
+                    )
             self._db.execute("COMMIT")
         except Exception:
             self._db.execute("ROLLBACK")
