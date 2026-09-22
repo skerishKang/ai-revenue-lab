@@ -501,6 +501,16 @@ def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> N
         readonly.index("cloudflare_served_version_lineage.py")
         < readonly.index('echo "ACTIVE_VERSION=${active}"')
     )
+    # #2898 blocker fix: the readonly job runs a checked-in script, and a job
+    # workspace is not shared between jobs, so the job must check out the exact
+    # dispatch source read-only before invoking it.
+    assert "actions/checkout@v4" in readonly
+    assert "ref: ${{ inputs.target_sha }}" in readonly
+    assert "persist-credentials: false" in readonly
+    assert (
+        readonly.index("actions/checkout@v4")
+        < readonly.index("cloudflare_served_version_lineage.py")
+    )
     assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly
     assert "PRODUCTION_MUTATION=0" in readonly
     # The publication must not turn the read-only surface into a mutation or a
@@ -528,6 +538,15 @@ def test_case_18_active_version_publication_keeps_deploy_and_rollback_gates() ->
         "inputs.mode == 'rollback_production_code' }}" in deploy
     )
     assert _readonly_job_block().count('echo "ACTIVE_VERSION=${active}"') == 1
+
+
+def test_case_19_lineage_primitive_path_retriggers_the_gate() -> None:
+    # #2898: the canonical lineage primitive is a shared authority consumed by this
+    # gate, so a change to it must retrigger this gate's natural PR CI.
+    deploy = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    trigger_paths = deploy.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+    assert ".github/scripts/cloudflare_served_version_lineage.py" in trigger_paths
+    assert ".github/tests/test_cloudflare_served_version_lineage.py" in trigger_paths
 
 
 def test_deploy_prereq_cli_exit_codes() -> None:

@@ -7,6 +7,8 @@ on:
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/scripts/b62_binding_state_guard.py"
       - ".github/scripts/b62_served_version_secret_guard.py"
+      - ".github/scripts/cloudflare_served_version_lineage.py"
+      - ".github/tests/test_cloudflare_served_version_lineage.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
       - ".github/tests/test_b62_binding_state_guard.py"
@@ -171,6 +173,21 @@ jobs:
           assert readonly_job.index("cloudflare_served_version_lineage.py") < readonly_job.index('echo "ACTIVE_VERSION=${active}"')
           assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly_job
 
+          # #2898 blocker fix: the readonly job runs the checked-in canonical lineage
+          # primitive, and a job workspace is not shared between jobs, so the job must
+          # check out the exact dispatch source read-only, before it invokes it.
+          assert "actions/checkout@v4" in readonly_job
+          assert "ref: ${{ inputs.target_sha }}" in readonly_job
+          assert "persist-credentials: false" in readonly_job
+          assert readonly_job.index("actions/checkout@v4") < readonly_job.index(
+              "cloudflare_served_version_lineage.py"
+          )
+
+          # The canonical lineage primitive is a shared authority: a change to it must
+          # retrigger this consumer gate's natural PR CI.
+          trigger_paths = workflow.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+          assert ".github/scripts/cloudflare_served_version_lineage.py" in trigger_paths
+
           assert "unsupported live binding type" in generator
           assert "SECRET_VALUES_READ=0" in generator
           assert "SECRET_VALUES_EMITTED=0" in generator
@@ -230,6 +247,16 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      # #2898: this job invokes the checked-in canonical lineage primitive, and a job
+      # workspace is not shared between jobs, so it must check out the exact dispatch
+      # source itself. Read-only: no credential persistence, no write permission.
+      - name: Checkout exact dispatch source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Read-only deployed state audit
         id: audit
         shell: bash
