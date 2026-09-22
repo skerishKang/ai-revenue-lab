@@ -1591,34 +1591,40 @@ class SqliteClawAutomationStore:
             existing_output=stored.output,
         )
         serialized_output = self._serialize_output(persisted_output)
-        update_cursor = self._db.execute(
-            "UPDATE claw_runs SET status=?, completed_at=?, output=?, error_message=? "
-            "WHERE run_id=? AND (output IS NULL OR output=?)",
-            (
-                projected.value,
-                _iso(completed) if completed is not None else None,
-                serialized_output,
-                bounded_error,
-                bounded_run_id,
-                serialized_output,
-            ),
-        )
-        if update_cursor.rowcount != 1:
-            raise ContractError("projection output changed concurrently")
-        if output is not None and stored.output is None and output.proposals:
-            for proposal in output.proposals:
-                self._db.execute(
-                    "INSERT OR IGNORE INTO claw_proposals(proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (
-                        proposal.proposal_id, proposal.workspace_id, proposal.rule_id,
-                        proposal.channel.value, proposal.title, proposal.summary,
-                        1 if proposal.approval_gate.approval_required else 0,
-                        proposal.approval_gate.reason, proposal.approval_gate.suggested_action,
-                        proposal.approval_gate.approved_by,
-                        _iso(proposal.approval_gate.approved_at) if proposal.approval_gate.approved_at else None,
-                        _iso(proposal.created_at),
-                    ),
-                )
+        self._db.execute("BEGIN IMMEDIATE")
+        try:
+            update_cursor = self._db.execute(
+                "UPDATE claw_runs SET status=?, completed_at=?, output=?, error_message=? "
+                "WHERE run_id=? AND (output IS NULL OR output=?)",
+                (
+                    projected.value,
+                    _iso(completed) if completed is not None else None,
+                    serialized_output,
+                    bounded_error,
+                    bounded_run_id,
+                    serialized_output,
+                ),
+            )
+            if update_cursor.rowcount != 1:
+                raise ContractError("projection output changed concurrently")
+            if output is not None and stored.output is None and output.proposals:
+                for proposal in output.proposals:
+                    self._db.execute(
+                        "INSERT OR IGNORE INTO claw_proposals(proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (
+                            proposal.proposal_id, proposal.workspace_id, proposal.rule_id,
+                            proposal.channel.value, proposal.title, proposal.summary,
+                            1 if proposal.approval_gate.approval_required else 0,
+                            proposal.approval_gate.reason, proposal.approval_gate.suggested_action,
+                            proposal.approval_gate.approved_by,
+                            _iso(proposal.approval_gate.approved_at) if proposal.approval_gate.approved_at else None,
+                            _iso(proposal.created_at),
+                        ),
+                    )
+            self._db.execute("COMMIT")
+        except Exception:
+            self._db.execute("ROLLBACK")
+            raise
         updated = self.get_run(bounded_run_id, bounded_workspace)
         if updated is None:
             raise ContractError("projection update lost its scheduled run")
