@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 import inspect
+import re
 from typing import Any
 import zoneinfo
 
@@ -229,7 +230,37 @@ def project_claw_run(
         source_ref=f"claw_run:{run_id}",
         created_at=str(created_at_raw),
         updated_at=str(updated_at_raw),
+        artifact=_project_claw_run_artifact(run),
     )
+
+
+_DOCUMENT_ID_PATTERN = re.compile(r"^doc_[A-Za-z0-9]{32}$")
+_ARTIFACT_KEYS = ("document_id", "filename", "media_type")
+
+
+def _project_claw_run_artifact(run: dict[str, Any]) -> dict[str, str] | None:
+    """Pass through the bounded HistoryStore artifact reference, fail closed.
+
+    Reuses the canonical document_id grammar from claw_routes.claw_manual_intake_artifact
+    (HISTORY_STORE_ARTIFACT_AUTHORITY=REUSE, NEW_DOCUMENT_ID_GRAMMAR=NO).
+    Projects only {document_id, filename, media_type}; never credentials, tokens,
+    storage keys, filesystem paths, provider identifiers, or D1 row ids.
+    Any malformed or missing artifact yields None while the run itself still projects.
+    """
+    artifact = run.get("artifact")
+    if not isinstance(artifact, dict) or not artifact:
+        return None
+    out: dict[str, str] = {}
+    for key in _ARTIFACT_KEYS:
+        value = artifact.get(key)
+        if not isinstance(value, str) or not value:
+            return None
+        out[key] = value
+    if not _DOCUMENT_ID_PATTERN.match(out["document_id"]):
+        return None
+    if set(artifact) != set(_ARTIFACT_KEYS):
+        return None
+    return out
 
 
 def project_automation_run(

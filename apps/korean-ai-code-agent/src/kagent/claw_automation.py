@@ -16,7 +16,10 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
-from .contracts import ContractError
+from .contracts import ContractError, ExecutionMode, exact_commit_revision
+from .contracts import ClawTaskIntent
+from .runs import ClawRun, ClawRunStatus
+from .contracts import _CONTROL_RE as _CANONICAL_CONTROL_RE
 from .core import redact_secrets
 from .workspace_visibility import TrustedWorkspaceMembershipProjection
 
@@ -304,6 +307,112 @@ class ClawApprovalGate:
             object.__setattr__(self, "approved_at", _aware_utc(self.approved_at, "approved_at"))
 
 
+# #2833 S2F1: version tag for the canonical scheduled execution-intent material.
+EXECUTION_INTENT_VERSION = "claw-automation-execution-intent.v1"
+
+
+@dataclass(frozen=True, slots=True)
+class ClawAutomationExecutionIntent:
+    """Immutable execution material a scheduled rule owns (#2833 S2F1).
+
+    A scheduled rule could not reach canonical execution because the real input
+    object requires a non-empty ``task`` and a ``repository_ref``, and neither can
+    be derived from any rule field: ``name`` is a display label used in titles, and
+    ``target_source`` / ``output_type`` are closed enums. Reading them as an
+    instruction would be inference, so this contract carries the three values
+    explicitly instead.
+
+    This is data only. It dispatches nothing, calls nothing, grants no authority,
+    and resolves no owner: a later slice decides how it is consumed.
+    """
+
+    task: str
+    repository_ref: str
+    exact_revision: str
+
+    def __post_init__(self) -> None:
+        task = _bounded_text(self.task, "task", limit=12_000)
+        if redact_secrets(task) != task:
+            raise ContractError("task must not contain credential material")
+        repository = _bounded_text(self.repository_ref, "repository_ref", limit=1_024)
+        # The rule-name precedent: credential material is refused at construction,
+        # so persisting and projecting the repository ref needs no second mask.
+        if redact_secrets(repository) != repository:
+            raise ContractError("repository_ref must not contain credential material")
+        # This module's own _CONTROL_RE starts at \x01, so NUL slips past it, while
+        # the canonical input object that will consume this material refuses NUL.
+        # Refusing the canonical set here keeps a rule from storing text that could
+        # never be handed to execution — reuse of that predicate, not a new one.
+        for name, value in (("task", task), ("repository_ref", repository)):
+            if _CANONICAL_CONTROL_RE.search(value):
+                raise ContractError(f"{name} contains forbidden control characters")
+        # Reuse the contract layer's single exact-commit predicate. No second
+        # revision regex may exist for this boundary.
+        revision = exact_commit_revision(self.exact_revision, "exact_revision")
+        object.__setattr__(self, "task", task)
+        object.__setattr__(self, "repository_ref", repository)
+        object.__setattr__(self, "exact_revision", revision)
+
+    @property
+    def task_sha256(self) -> str:
+        return hashlib.sha256(self.task.encode("utf-8")).hexdigest()
+
+    @property
+    def material_document(self) -> dict[str, str]:
+        """The exact byte sequence the digest is computed over."""
+
+        return {
+            "version": EXECUTION_INTENT_VERSION,
+            "task": self.task,
+            "repository_ref": self.repository_ref,
+            "exact_revision": self.exact_revision,
+        }
+
+    @property
+    def intent_sha256(self) -> str:
+        canonical = json.dumps(self.material_document, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+    def safe_dict(self) -> dict[str, Any]:
+        """Projection for logs and receipts: identity without the task body."""
+
+        return {
+            "version": EXECUTION_INTENT_VERSION,
+            "repository_ref": self.repository_ref,
+            "exact_revision": self.exact_revision,
+            "task_sha256": self.task_sha256,
+            "intent_sha256": self.intent_sha256,
+            "raw_task_in_projection": False,
+        }
+
+
+def _execution_intent_document(intent: ClawAutomationExecutionIntent | None) -> dict[str, str] | None:
+    """Persistence form of the intent. Absence is stored as absence, not as ``null``."""
+
+    if intent is None:
+        return None
+    return {
+        "version": EXECUTION_INTENT_VERSION,
+        "task": intent.task,
+        "repository_ref": intent.repository_ref,
+        "exact_revision": intent.exact_revision,
+    }
+
+
+def _execution_intent_from_document(document: Any) -> ClawAutomationExecutionIntent | None:
+    """Legacy rule payloads carry no such key; absence reads None, not an error."""
+
+    if document is None:
+        return None
+    if not isinstance(document, dict):
+        raise ContractError("stored automation rule is corrupt")
+    return ClawAutomationExecutionIntent(
+        task=document["task"],
+        repository_ref=document["repository_ref"],
+        exact_revision=document["exact_revision"],
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class ClawAutomationRule:
     rule_id: str
@@ -316,6 +425,15 @@ class ClawAutomationRule:
     notification_channels: tuple[ClawNotificationPreference, ...] = field(
         default_factory=lambda: (ClawNotificationPreference(ClawNotificationChannel.WEB_ALERT_INBOX),)
     )
+    # #2833 B2A: optional opaque delivery-owner provenance. Deliberately NOT
+    # assumed to be a B62 usr_* product id, a canonical subject, or a membership
+    # principal_ref. It is bounded opaque text the trusted product composition
+    # may attach at rule creation; B54/KAgent never interprets its meaning, and
+    # it grants no authority of any kind. Absent on legacy rules (None).
+    owner_ref: str | None = None
+    # #2833 S2F1: added last and optional, so every existing positional
+    # construction of the earlier fields keeps working. Legacy rules carry None.
+    execution_intent: ClawAutomationExecutionIntent | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "rule_id", _safe_id(self.rule_id, "rule_id"))
@@ -340,6 +458,20 @@ class ClawAutomationRule:
             raise ContractError("enabled must be boolean")
         if not isinstance(self.notification_channels, tuple) or not all(isinstance(c, ClawNotificationPreference) for c in self.notification_channels):
             raise ContractError("notification_channels must be a tuple of ClawNotificationPreference")
+        if self.owner_ref is not None:
+            # Same bounded-opaque-ref shape as _safe_id, but never echoes the
+            # rejected value into the error text (no owner provenance leak).
+            owner = self.owner_ref
+            if not isinstance(owner, str):
+                raise ContractError("owner_ref must be a bounded opaque reference")
+            norm = owner.strip()
+            if not norm or not _SAFE_ID_RE.fullmatch(norm):
+                raise ContractError("owner_ref must be a bounded opaque reference")
+            object.__setattr__(self, "owner_ref", norm)
+        if self.execution_intent is not None and not isinstance(
+            self.execution_intent, ClawAutomationExecutionIntent
+        ):
+            raise ContractError("execution_intent must be a ClawAutomationExecutionIntent")
 
 
 @dataclass(frozen=True, slots=True)
@@ -488,6 +620,193 @@ def _parse_iso(value: str, field_name: str) -> datetime:
         raise ContractError(f"stored {field_name} must be timezone-aware")
     return parsed.astimezone(timezone.utc)
 
+# ---------------------------------------------------------------------------
+# #2833 S2F2: same-run-id lifecycle bridge between a scheduled occurrence and
+# the canonical ClawRun state machine.
+#
+# ClawRun is the canonical lifecycle state machine. The scheduled row is a
+# projection of it, never a second state machine. This section introduces no
+# second run id, no second dedup authority, and no durable canonical-run
+# persistence claim (the in-memory run store is not an authority).
+# ---------------------------------------------------------------------------
+
+_TERMINAL_PROJECTION_STATUSES = frozenset(
+    {
+        ClawScheduledRunStatus.COMPLETED,
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    }
+)
+_CANONICAL_TO_PROJECTION_STATUS: dict[ClawRunStatus, ClawScheduledRunStatus] = {
+    ClawRunStatus.QUEUED: ClawScheduledRunStatus.PENDING,
+    ClawRunStatus.PREPARING: ClawScheduledRunStatus.RUNNING,
+    ClawRunStatus.RUNNING: ClawScheduledRunStatus.RUNNING,
+    ClawRunStatus.WAITING_APPROVAL: ClawScheduledRunStatus.RUNNING,
+    ClawRunStatus.COMPLETED: ClawScheduledRunStatus.COMPLETED,
+    ClawRunStatus.FAILED: ClawScheduledRunStatus.FAILED,
+    ClawRunStatus.CANCELLED: ClawScheduledRunStatus.CANCELLED,
+}
+_MAX_ERROR_MESSAGE = 1_024
+
+
+def project_canonical_status(status: ClawRunStatus) -> ClawScheduledRunStatus:
+    """Project one canonical ClawRun status onto the scheduled vocabulary.
+
+    Non-terminal canonical states project to RUNNING, except QUEUED which projects
+    to PENDING: the occurrence is claimed but execution has not started. No new
+    scheduled status is invented for PREPARING or WAITING_APPROVAL.
+    """
+
+    if not isinstance(status, ClawRunStatus):
+        try:
+            status = ClawRunStatus(status)
+        except (TypeError, ValueError) as exc:
+            raise ContractError(f"invalid canonical run status: {status}") from exc
+    return _CANONICAL_TO_PROJECTION_STATUS[status]
+
+
+def canonical_task_intent_for_occurrence(
+    rule: ClawAutomationRule, scheduled_time: datetime
+) -> ClawTaskIntent:
+    """Build the canonical task intent for one scheduled occurrence.
+
+    Execution material comes only from the rule's S2F1 execution intent: ``name``,
+    ``target_source`` and ``output_type`` are display labels and closed enums and are
+    never reinterpreted as an instruction. ``task_id`` is derived deterministically
+    from the occurrence identity and is not a dedup authority. Legacy rules without
+    an execution intent fail closed.
+    """
+
+    if rule.execution_intent is None:
+        raise ContractError("canonical scheduling requires an execution intent")
+    scheduled = _aware_utc(scheduled_time, "scheduled_time")
+    return ClawTaskIntent(
+        task_id=_derived_occurrence_id("task", rule.workspace_id, rule.rule_id, scheduled),
+        task=rule.execution_intent.task,
+        repository_ref=rule.execution_intent.repository_ref,
+        execution_mode=ExecutionMode.CLOUD,
+        requested_revision=rule.execution_intent.exact_revision,
+        source_surface="automation",
+    )
+
+
+def canonical_claw_run_for_occurrence(
+    rule: ClawAutomationRule, scheduled_time: datetime
+) -> tuple[ClawRun, ClawTaskIntent]:
+    """Create the canonical run for one occurrence, reusing the same run id.
+
+    ``SAME_RUN_ID_REUSED``: the canonical run id IS the occurrence-derived
+    ``sched_run_<digest>`` the scheduled projection already uses, so one logical
+    occurrence owns exactly one id. This builds the lifecycle container only: it
+    dispatches nothing, calls no P01 helper, resolves no owner, and writes
+    nothing to History/Task/Alert stores.
+    """
+
+    scheduled = _aware_utc(scheduled_time, "scheduled_time")
+    run_id = _derived_occurrence_id("sched_run", rule.workspace_id, rule.rule_id, scheduled)
+    intent = canonical_task_intent_for_occurrence(rule, scheduled)
+    return ClawRun.create(run_id, intent), intent
+
+
+def _projection_update_material(
+    *,
+    run_id: str,
+    workspace_id: str,
+    rule_id: str,
+    scheduled_time: datetime,
+    status: ClawScheduledRunStatus,
+    completed_at: datetime | None,
+    error_message: str | None,
+) -> tuple[str, str, str, datetime, ClawScheduledRunStatus, datetime | None, str | None]:
+    """Validate one bounded projection update before either store touches data.
+
+    ``completed_at`` is only legal for a terminal projection status and an
+    ``error_message`` only for a failed one; both fail closed otherwise. Text is
+    bounded to 1_024 characters and run through the existing redaction helper, so
+    no credential material can reach the projection.
+    """
+
+    bounded_run_id = _safe_id(run_id, "run_id")
+    bounded_workspace = _safe_id(workspace_id, "workspace_id")
+    bounded_rule = _safe_id(rule_id, "rule_id")
+    scheduled = _aware_utc(scheduled_time, "scheduled_time")
+    if not isinstance(status, ClawScheduledRunStatus):
+        try:
+            status = ClawScheduledRunStatus(status)
+        except (TypeError, ValueError) as exc:
+            raise ContractError(f"invalid projection status: {status}") from exc
+    if status in _TERMINAL_PROJECTION_STATUSES:
+        if completed_at is None:
+            raise ContractError("completed_at is required for a terminal projection status")
+        completed = _aware_utc(completed_at, "completed_at")
+    else:
+        if completed_at is not None:
+            raise ContractError("completed_at is only allowed for a terminal projection status")
+        completed = None
+    bounded_error: str | None = None
+    if error_message is not None:
+        if status is not ClawScheduledRunStatus.FAILED:
+            raise ContractError("error_message is only allowed for a failed projection")
+        redacted = redact_secrets(
+            _bounded_text(error_message, "error_message", limit=_MAX_ERROR_MESSAGE)
+        )
+        bounded_error = _bounded_text(redacted, "error_message", limit=_MAX_ERROR_MESSAGE)
+    return (
+        bounded_run_id,
+        bounded_workspace,
+        bounded_rule,
+        scheduled,
+        status,
+        completed,
+        bounded_error,
+    )
+
+
+
+def _projection_output_for_update(
+    *,
+    workspace_id: str,
+    rule_id: str,
+    status: ClawScheduledRunStatus,
+    output: ClawAutomationOutput | None,
+    existing_status: ClawScheduledRunStatus,
+    existing_output: ClawAutomationOutput | None,
+) -> ClawAutomationOutput | None:
+    """Validate an optional output attachment for an existing projection row.
+
+    S2F4A is deliberately existing-row only: ``record_run`` remains the sole
+    occurrence-claim authority. Legacy status-only updates pass ``output=None``
+    and preserve the stored output byte-for-byte. A real output may be attached
+    only to a COMPLETED projection, must belong to the same workspace, may never
+    resurrect FAILED/CANCELLED rows, and becomes immutable once present. Repeating
+    the exact same output is an idempotent retry.
+    """
+
+    if output is None:
+        return existing_output
+    if not isinstance(output, ClawAutomationOutput):
+        raise ContractError("projection output must be a ClawAutomationOutput")
+    if status is not ClawScheduledRunStatus.COMPLETED:
+        raise ContractError("projection output may only be attached to COMPLETED")
+    if output.workspace_id != workspace_id:
+        raise ContractError("projection output workspace does not match the scheduled run")
+    if not isinstance(output.proposals, tuple) or not all(
+        isinstance(proposal, ClawNotificationProposal) for proposal in output.proposals
+    ):
+        raise ContractError("projection output proposals must be trusted notification proposals")
+    if any(
+        proposal.workspace_id != workspace_id or proposal.rule_id != rule_id
+        for proposal in output.proposals
+    ):
+        raise ContractError("projection output proposal scope does not match the scheduled run")
+    if existing_status in {
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    }:
+        raise ContractError("terminal failed/cancelled projection cannot attach output")
+    if existing_output is not None and existing_output != output:
+        raise ContractError("projection output is immutable once attached")
+    return output
 
 class ClawAutomationStore(Protocol):
     def save_rule(self, rule: ClawAutomationRule) -> None: ...
@@ -499,6 +818,18 @@ class ClawAutomationStore(Protocol):
     def get_run(self, run_id: str, workspace_id: str) -> ClawScheduledRun | None: ...
     def get_run_for_occurrence(self, key: str, workspace_id: str) -> ClawScheduledRun | None: ...
     def list_runs(self, workspace_id: str) -> list[ClawScheduledRun]: ...
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
+    ) -> ClawScheduledRun: ...
     def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]: ...
 
 
@@ -515,6 +846,17 @@ class InMemoryClawAutomationStore:
         previous = self._rules.get(rule.rule_id)
         if previous is not None and previous.workspace_id != rule.workspace_id:
             raise ContractError("rule_id is already owned by another workspace")
+        # #2833 B2A: owner provenance is immutable after rule creation. A
+        # generic save/update may never transfer, drop, or mint an owner_ref;
+        # it must echo the previously persisted value exactly.
+        if previous is not None and previous.owner_ref != rule.owner_ref:
+            raise ContractError("rule owner provenance is immutable")
+        # #2833 S2F1: execution material is immutable after creation as well. A
+        # legacy rule must not be promoted to an execution-capable one through a
+        # generic save/update, and an existing intent must not be swapped or
+        # dropped — that would silently change what a scheduled occurrence runs.
+        if previous is not None and previous.execution_intent != rule.execution_intent:
+            raise ContractError("rule execution intent is immutable")
         self._rules[rule.rule_id] = rule
 
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None:
@@ -528,7 +870,9 @@ class InMemoryClawAutomationStore:
         current = self._rules.get(rule.rule_id)
         if current is None or current.workspace_id != rule.workspace_id:
             raise ContractError("rule does not belong to workspace")
-        self._rules[rule.rule_id] = rule
+        # Route through save_rule so the owner-provenance immutability guard
+        # also covers the generic update path.
+        self.save_rule(rule)
 
     def set_rule_enabled(self, workspace_id: str, rule_id: str, enabled: bool) -> ClawAutomationRule:
         if not isinstance(enabled, bool):
@@ -541,6 +885,8 @@ class InMemoryClawAutomationStore:
             schedule=rule.schedule, target_source=rule.target_source,
             output_type=rule.output_type, enabled=enabled,
             notification_channels=rule.notification_channels,
+            owner_ref=rule.owner_ref,
+            execution_intent=rule.execution_intent,
         )
         self._rules[rule_id] = updated
         return updated
@@ -582,6 +928,70 @@ class InMemoryClawAutomationStore:
 
     def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]:
         return [proposal for proposal in self._proposals.values() if proposal.workspace_id == workspace_id]
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
+    ) -> ClawScheduledRun:
+        """Update an existing projection row. Fail-closed: never claims or inserts."""
+
+        (
+            bounded_run_id,
+            bounded_workspace,
+            bounded_rule,
+            scheduled,
+            projected,
+            completed,
+            bounded_error,
+        ) = _projection_update_material(
+            run_id=run_id,
+            workspace_id=workspace_id,
+            rule_id=rule_id,
+            scheduled_time=scheduled_time,
+            status=status,
+            completed_at=completed_at,
+            error_message=error_message,
+        )
+        existing = self._runs.get(bounded_run_id)
+        if existing is None or existing.workspace_id != bounded_workspace:
+            raise ContractError("projection update requires an existing scheduled run")
+        if existing.rule_id != bounded_rule or existing.scheduled_time != scheduled:
+            raise ContractError("projection update cannot change the scheduled occurrence identity")
+        key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
+        if self._occurrences.get(key) != bounded_run_id:
+            raise ContractError("projection update must match the existing occurrence claim")
+        persisted_output = _projection_output_for_update(
+            workspace_id=bounded_workspace,
+            rule_id=bounded_rule,
+            status=projected,
+            output=output,
+            existing_status=existing.status,
+            existing_output=existing.output,
+        )
+        updated = ClawScheduledRun(
+            run_id=existing.run_id,
+            workspace_id=existing.workspace_id,
+            rule_id=existing.rule_id,
+            status=projected,
+            scheduled_time=existing.scheduled_time,
+            started_at=existing.started_at,
+            completed_at=completed,
+            output=persisted_output,
+            error_message=bounded_error,
+        )
+        self._runs[bounded_run_id] = updated
+        if output is not None and existing.output is None and output.proposals:
+            for proposal in output.proposals:
+                self._proposals[proposal.proposal_id] = proposal
+        return updated
+
 
 
 class FakeClawScheduler:
@@ -918,8 +1328,10 @@ class SqliteClawAutomationStore:
     # --- rule persistence ---
 
     def save_rule(self, rule: ClawAutomationRule) -> None:
-        payload = json.dumps(
-            {
+        # #2833 B2A: owner_ref rides inside the existing notification_channels
+        # JSON payload as an additive field — no new table, no new column. Legacy
+        # payloads without it simply persist the key's absence.
+        payload_document: dict[str, Any] = {
                 "rule_id": rule.rule_id,
                 "workspace_id": rule.workspace_id,
                 "name": rule.name,
@@ -931,7 +1343,16 @@ class SqliteClawAutomationStore:
                     {"channel": c.channel.value, "enabled": c.enabled, "recipient_ref": c.recipient_ref}
                     for c in rule.notification_channels
                 ],
-            },
+        }
+        if rule.owner_ref is not None:
+            payload_document["owner_ref"] = rule.owner_ref
+        # #2833 S2F1: additive inside the same document — no new table, column or
+        # migration. Absent for legacy and intent-free rules.
+        intent_document = _execution_intent_document(rule.execution_intent)
+        if intent_document is not None:
+            payload_document["execution_intent"] = intent_document
+        payload = json.dumps(
+            payload_document,
             sort_keys=True,
             separators=(",", ":"),
         ).encode("utf-8")
@@ -951,6 +1372,21 @@ class SqliteClawAutomationStore:
             existing = self._get_rule_row(rule.rule_id)
             if existing is None or existing[1] != rule.workspace_id:
                 raise ContractError("rule_id is already owned by another workspace")
+            # Owner provenance is immutable after rule creation: a generic
+            # update may never transfer, drop, or mint an owner_ref. Fail
+            # closed before any row write when the value would change.
+            try:
+                existing_payload = json.loads(existing[9])
+            except Exception as exc:
+                raise ContractError("stored automation rule is corrupt") from exc
+            if existing_payload.get("owner_ref") != rule.owner_ref:
+                raise ContractError("rule owner provenance is immutable")
+            # Execution material is immutable here too, checked before any write so
+            # a generic update can never promote a legacy rule or swap its task.
+            if existing_payload.get("execution_intent") != _execution_intent_document(
+                rule.execution_intent
+            ):
+                raise ContractError("rule execution intent is immutable")
             self._db.execute(
                 "UPDATE claw_rules SET name=?, schedule_kind=?, schedule_expression=?, schedule_timezone=?, target_source=?, output_type=?, enabled=?, notification_channels=?, updated_at=? WHERE rule_id=?",
                 (
@@ -991,6 +1427,8 @@ class SqliteClawAutomationStore:
             schedule=rule.schedule, target_source=rule.target_source,
             output_type=rule.output_type, enabled=enabled,
             notification_channels=rule.notification_channels,
+            owner_ref=rule.owner_ref,
+            execution_intent=rule.execution_intent,
         )
         self.save_rule(updated)
         return updated
@@ -1099,6 +1537,100 @@ class SqliteClawAutomationStore:
             (workspace_id,),
         ).fetchall()
         return [self._proposal_from_row(row) for row in rows]
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
+    ) -> ClawScheduledRun:
+        """Update an existing projection row in place. Fail-closed: never inserts.
+
+        The row must already exist, its immutable occurrence identity must match,
+        and the existing occurrence claim must point at this same run id. A second
+        run row or a fresh claim is impossible through this path.
+        """
+
+        (
+            bounded_run_id,
+            bounded_workspace,
+            bounded_rule,
+            scheduled,
+            projected,
+            completed,
+            bounded_error,
+        ) = _projection_update_material(
+            run_id=run_id,
+            workspace_id=workspace_id,
+            rule_id=rule_id,
+            scheduled_time=scheduled_time,
+            status=status,
+            completed_at=completed_at,
+            error_message=error_message,
+        )
+        row = self._get_run_row(bounded_run_id)
+        if row is None or row[1] != bounded_workspace:
+            raise ContractError("projection update requires an existing scheduled run")
+        stored = self._run_from_row(row)
+        if stored.rule_id != bounded_rule or stored.scheduled_time != scheduled:
+            raise ContractError("projection update cannot change the scheduled occurrence identity")
+        key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
+        if self._get_occurrence_run_id(key, bounded_workspace) != bounded_run_id:
+            raise ContractError("projection update must match the existing occurrence claim")
+        persisted_output = _projection_output_for_update(
+            workspace_id=bounded_workspace,
+            rule_id=bounded_rule,
+            status=projected,
+            output=output,
+            existing_status=stored.status,
+            existing_output=stored.output,
+        )
+        serialized_output = self._serialize_output(persisted_output)
+        self._db.execute("BEGIN IMMEDIATE")
+        try:
+            update_cursor = self._db.execute(
+                "UPDATE claw_runs SET status=?, completed_at=?, output=?, error_message=? "
+                "WHERE run_id=? AND status=? AND (output IS NULL OR output=?)",
+                (
+                    projected.value,
+                    _iso(completed) if completed is not None else None,
+                    serialized_output,
+                    bounded_error,
+                    bounded_run_id,
+                    stored.status.value,
+                    serialized_output,
+                ),
+            )
+            if update_cursor.rowcount != 1:
+                raise ContractError("projection output changed concurrently")
+            if output is not None and stored.output is None and output.proposals:
+                for proposal in output.proposals:
+                    self._db.execute(
+                        "INSERT OR IGNORE INTO claw_proposals(proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (
+                            proposal.proposal_id, proposal.workspace_id, proposal.rule_id,
+                            proposal.channel.value, proposal.title, proposal.summary,
+                            1 if proposal.approval_gate.approval_required else 0,
+                            proposal.approval_gate.reason, proposal.approval_gate.suggested_action,
+                            proposal.approval_gate.approved_by,
+                            _iso(proposal.approval_gate.approved_at) if proposal.approval_gate.approved_at else None,
+                            _iso(proposal.created_at),
+                        ),
+                    )
+            self._db.execute("COMMIT")
+        except Exception:
+            self._db.execute("ROLLBACK")
+            raise
+        updated = self.get_run(bounded_run_id, bounded_workspace)
+        if updated is None:
+            raise ContractError("projection update lost its scheduled run")
+        return updated
+
 
     # --- internal helpers ---
 
@@ -1143,6 +1675,11 @@ class SqliteClawAutomationStore:
                     )
                     for c in payload["notification_channels"]
                 ),
+                # Legacy payloads carry no owner_ref key; absence reads None.
+                owner_ref=payload.get("owner_ref"),
+                # Same for S2F1 execution material: no key means no intent, and a
+                # legacy rule stays exactly as legacy as it was.
+                execution_intent=_execution_intent_from_document(payload.get("execution_intent")),
             )
         except Exception as exc:
             raise ContractError("stored automation rule is corrupt") from exc

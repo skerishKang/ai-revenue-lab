@@ -13,6 +13,7 @@ from kagent.contracts import (
 )
 from kagent.preparation import CloudWorkspacePreparer, WorkspacePolicy
 from kagent.runs import ClawRun, RunStateError
+from kagent.sandbox_conformance import SandboxSecurityPolicy
 from kagent.sandbox import (
     DeterministicFakeSandboxProvider,
     SandboxUnavailableError,
@@ -70,15 +71,48 @@ class CloudWorkspacePreparationTests(unittest.TestCase):
         policy = WorkspacePolicy(
             resource_class=ResourceClass.SMALL,
             ttl_seconds=120,
-            network_policy=NetworkPolicy.RESTRICTED,
+            network_policy=NetworkPolicy.OFF,
             writable_workspace=False,
         )
         run = self.cloud_run("run_policy")
         lease = CloudWorkspacePreparer(provider, policy=policy).prepare(run)
         self.assertEqual(lease.resource_class, ResourceClass.SMALL)
-        self.assertEqual(lease.network_policy, NetworkPolicy.RESTRICTED)
+        self.assertEqual(lease.network_policy, NetworkPolicy.OFF)
         self.assertFalse(lease.writable_workspace)
         self.assertEqual((lease.expires_at - lease.created_at).total_seconds(), 120)
+
+    def test_widened_network_policy_is_refused_before_any_allocation(self):
+        """#1405: sizing that relaxes deny-by-default must not reach a provider.
+
+        This replaces an assertion that a RESTRICTED WorkspacePolicy propagated to
+        the lease. The Cloud M1 policy says the network default cannot be relaxed by
+        anyone, including the server-owned sizing, and the conformance gate already
+        refused such a request — so the seam and the gate disagreed, and the seam
+        was the looser one.
+        """
+        now = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
+        provider = DeterministicFakeSandboxProvider(clock=lambda: now)
+        preparer = CloudWorkspacePreparer(
+            provider,
+            policy=WorkspacePolicy(network_policy=NetworkPolicy.RESTRICTED),
+        )
+        run = self.cloud_run("run_widened_network")
+        with self.assertRaisesRegex(ContractError, "deny-by-default"):
+            preparer.prepare(run)
+        self.assertEqual(provider.active_leases(), ())
+
+    def test_ttl_above_the_security_policy_is_refused_before_any_allocation(self):
+        now = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)
+        provider = DeterministicFakeSandboxProvider(clock=lambda: now)
+        preparer = CloudWorkspacePreparer(
+            provider,
+            policy=WorkspacePolicy(ttl_seconds=2400),
+            security_policy=SandboxSecurityPolicy(max_ttl_seconds=1800),
+        )
+        run = self.cloud_run("run_long_ttl")
+        with self.assertRaisesRegex(ContractError, "TTL"):
+            preparer.prepare(run)
+        self.assertEqual(provider.active_leases(), ())
 
     def test_reprepare_after_run_advances_is_rejected(self):
         now = datetime(2026, 9, 2, 10, 0, tzinfo=timezone.utc)

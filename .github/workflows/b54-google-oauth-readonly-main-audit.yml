@@ -70,6 +70,49 @@ jobs:
           for marker in forbidden:
               if marker in text:
                   raise SystemExit(f"mutation-capable command forbidden in audit workflow: {marker}")
+
+          # #2903: the two Zone-scoped read-only lookups must use the already-existing
+          # dedicated B54 OAuth routes credential. The generic token must not be
+          # widened and must keep serving every account/worker-scoped API.
+          audit = text.split("\n  cloudflare-readonly:", 1)[1]
+          assert "OAUTH_ROUTES_API_TOKEN" in audit, "dedicated routes credential not defined"
+          assert "secrets.B54_OAUTH_ROUTES_CF_API_TOKEN" in audit, "dedicated routes secret not referenced"
+          assert 'route_auth=( -H "Authorization: Bearer ${OAUTH_ROUTES_API_TOKEN}"' in audit
+          assert audit.count('test -n "${OAUTH_ROUTES_API_TOKEN}"') == 1
+          audit_lines = audit.splitlines()
+          zone_auth, route_auth_owners, worker_auth = [], [], []
+          for index, line in enumerate(audit_lines):
+              stripped = line.strip()
+              if "curl " not in stripped or "[@]}" not in stripped:
+                  continue
+              if "route_auth[@]" in stripped:
+                  owner = "route_auth"
+              elif "auth[@]" in stripped:
+                  owner = "auth"
+              else:
+                  continue
+              target = audit_lines[index + 1].strip() if index + 1 < len(audit_lines) else ""
+              if "/workers/routes" in target:
+                  route_auth_owners.append(owner)
+              elif "/zones" in target:
+                  zone_auth.append(owner)
+              elif "/workers/" in target:
+                  worker_auth.append(owner)
+          assert zone_auth and set(zone_auth) == {"route_auth"}, f"zone lookup auth: {zone_auth}"
+          assert route_auth_owners and set(route_auth_owners) == {"route_auth"}, f"worker routes lookup auth: {route_auth_owners}"
+          assert worker_auth and set(worker_auth) == {"auth"}, f"worker/account API auth: {worker_auth}"
+          # The dedicated-token path opens only after the absent-domain branch, so an
+          # absent Custom Domain makes zero dedicated-token calls.
+          assert audit.index('if [ "${domain_state}" = "absent" ]') < audit.index('"${route_auth[@]}"')
+          print("DEDICATED_ROUTES_SECRET_REFERENCED=YES")
+          print("OAUTH_ROUTES_API_TOKEN_DEFINED=YES")
+          print("GENERIC_AUTH_PRESERVED_FOR_WORKER_ACCOUNT_APIS=YES")
+          print("ZONE_LOOKUP_USES_ROUTE_AUTH=YES")
+          print("ZONE_LOOKUP_USES_GENERIC_AUTH=NO")
+          print("WORKER_ROUTES_LOOKUP_USES_ROUTE_AUTH=YES")
+          print("WORKER_ROUTES_LOOKUP_USES_GENERIC_AUTH=NO")
+          print("SHARED_TOKEN_SCOPE_WIDENING=NO")
+          print("ABSENT_DOMAIN_ROUTE_CALLS=0")
           print("READONLY_WORKFLOW_SOURCE_CONTRACT=PASS")
           print("PRODUCTION_MUTATION=0")
           PY
@@ -97,6 +140,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # #2903: the two Zone-scoped read-only lookups use the already-existing
+          # dedicated B54 OAuth routes credential. The generic token is NOT widened.
+          OAUTH_ROUTES_API_TOKEN: ${{ secrets.B54_OAUTH_ROUTES_CF_API_TOKEN }}
         run: |
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN}"
@@ -139,16 +185,21 @@ jobs:
             echo "PUBLIC_DNS=NXDOMAIN_OR_UNRESOLVED"
             echo "WORKER_ROUTE_AUDIT=NOT_REQUIRED_UNRESOLVED_HOST"
           else
+            # #2903: Zone-scope reads need the dedicated OAuth routes credential.
+            # This branch is only reachable once the OAuth Custom Domain exists, so
+            # an absent domain never makes the dedicated token mandatory.
+            test -n "${OAUTH_ROUTES_API_TOKEN}"
+            route_auth=( -H "Authorization: Bearer ${OAUTH_ROUTES_API_TOKEN}" -H "Content-Type: application/json" )
             dns_state="resolved_expected_custom_domain"
             zones="${RUNNER_TEMP}/zones.json"
-            curl -fsS "${auth[@]}" \
+            curl -fsS "${route_auth[@]}" \
               "https://api.cloudflare.com/client/v4/zones?name=${ZONE_NAME}&account.id=${CLOUDFLARE_ACCOUNT_ID}" \
               -o "${zones}"
             jq -e '.success == true and (.result | length) == 1' "${zones}" >/dev/null
             zone_id="$(jq -r '.result[0].id' "${zones}")"
             test -n "${zone_id}" && test "${zone_id}" != "null"
             routes="${RUNNER_TEMP}/routes.json"
-            curl -fsS "${auth[@]}" \
+            curl -fsS "${route_auth[@]}" \
               "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
               -o "${routes}"
             jq -e '.success == true and (.result | type == "array")' "${routes}" >/dev/null

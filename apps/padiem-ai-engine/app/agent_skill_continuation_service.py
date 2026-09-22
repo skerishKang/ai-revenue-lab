@@ -25,6 +25,10 @@ from app.agent_skill_continuation import (
     assert_resume_identity,
     issue_fingerprint,
 )
+from app.agent_skill_continuation_projection import (
+    project_agent_cancellation_result,
+    project_agent_continuation_result,
+)
 from app.agent_skill_projection import project_agent_skill_result
 from app.agent_skill_wire import (
     AGENT_SKILL_CANCEL_PATH,
@@ -400,6 +404,16 @@ class AgentSkillContinuationCoordinator:
                 claim_token=claim_token,
             )
             projection = project_agent_skill_result(result, selection=wire.selection)
+            # #2786 S13-4 Phase 1: response assembly hook only. The verified
+            # approval delta has been applied by Core at this point, so the
+            # continuation block records that fact; no flow, state machine,
+            # authorization or store behaviour is touched here.
+            continuation = project_agent_continuation_result(
+                result,
+                selection=wire.selection,
+                record=record,
+                approval_delta_applied=True,
+            )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except (TypeError, ValueError):
@@ -408,7 +422,10 @@ class AgentSkillContinuationCoordinator:
                 "Agent/Skill resume returned an invalid public projection.",
                 status_code=500,
             )
-        return ServiceResponse(status_code=200, body={"ok": True, "agent_skill": projection})
+        return ServiceResponse(
+            status_code=200,
+            body={"ok": True, "agent_skill": projection, "continuation": continuation},
+        )
 
     async def cancel_payload(self, payload: Any) -> ServiceResponse:
         if not isinstance(payload, Mapping):
@@ -464,6 +481,14 @@ class AgentSkillContinuationCoordinator:
                     "Continuation cancellation did not persist.",
                     status_code=503,
                 )
+            # #2786 S13-4 Phase 2: response assembly hook only. The cancel flow
+            # above is untouched; the block records what it already established.
+            continuation = project_agent_cancellation_result(
+                record=record,
+                committed=committed,
+                events=events,
+                reason=reason,
+            )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except OrchestrationError as exc:
@@ -476,5 +501,6 @@ class AgentSkillContinuationCoordinator:
                 "ok": True,
                 "status": "cancelled",
                 "events": [event.to_public_dict() for event in events],
+                "continuation": continuation,
             },
         )
