@@ -387,7 +387,8 @@ class DurableOutputAttachTests(unittest.TestCase):
             def _serialize_output(self, candidate):
                 if self.inject_terminal_race:
                     self.inject_terminal_race = False
-                    with sqlite3.connect(self._database_path, isolation_level=None) as rival:
+                    rival = sqlite3.connect(self._database_path, isolation_level=None)
+                    try:
                         rival.execute(
                             "UPDATE claw_runs SET status=?, completed_at=?, error_message=? WHERE run_id=?",
                             (
@@ -397,6 +398,8 @@ class DurableOutputAttachTests(unittest.TestCase):
                                 RUN_ID,
                             ),
                         )
+                    finally:
+                        rival.close()
                 return SqliteClawAutomationStore._serialize_output(candidate)
 
         with tempfile.TemporaryDirectory() as tmp:
