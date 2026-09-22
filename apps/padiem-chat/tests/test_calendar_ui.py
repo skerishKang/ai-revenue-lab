@@ -167,6 +167,19 @@ def test_calendar_css_gates_the_view_on_calendar_state_only() -> None:
     assert '#calendarNavButton[aria-current="page"]' in css
 
 
+def test_calendar_css_reclaims_sidebar_space_for_the_new_entry() -> None:
+    css = CALENDAR_CSS_PATH.read_text(encoding="utf-8")
+    # The nav entry adds one sidebar row; the css must compensate so the
+    # recent list sections stay clickable (B62 browser QA regression guard).
+    assert ".sidebar {" in css
+    assert "gap: 12px" in css
+    assert "padding-top: 14px" in css
+    assert 'html[data-theme="padiem-glass"] .sidebar {' in css
+    assert ".side-nav {" in css
+    assert "gap: 3px" in css
+    assert "min-height: 40px" in css
+
+
 def test_calendar_ui_pure_helpers_behave_as_contracted() -> None:
     script = f"""
     global.window = {{}};

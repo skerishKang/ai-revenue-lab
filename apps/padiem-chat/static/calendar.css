@@ -30,6 +30,31 @@
   display: none !important;
 }
 
+/* ── Sidebar space budget ───────────────────────────────────────────────
+ * The calendar entry adds one sidebar row (~48px). The sidebar is a fixed,
+ * viewport-height flex column whose only shrinkable children are the
+ * recent list sections, so an uncompensated extra row squeezes those lists
+ * below a clickable height (observed by the B62 saved-outputs / project
+ * delete / conversation delete browser QA: list-item clicks became
+ * unreachable). Reclaim at least the added row from neutral spacing. */
+.sidebar {
+  gap: 12px;
+  padding-top: 14px;
+  padding-bottom: 12px;
+}
+
+html[data-theme="padiem-glass"] .sidebar {
+  padding-bottom: 12px;
+}
+
+.side-nav {
+  gap: 3px;
+}
+
+#calendarNavButton {
+  min-height: 40px;
+}
+
 /* ── Header ──────────────────────────────────────────────────────────── */
 
 .calendar-view-header {
