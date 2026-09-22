@@ -276,6 +276,26 @@ class ProjectionUpdateTests(BridgeTestBase):
                     self.assertEqual(updated.status, status)
                     self.assertEqual(updated.completed_at, terminal_at)
 
+    def test_terminal_update_requires_an_explicit_completed_at(self) -> None:
+        for label, store in self.each_store():
+            for status in (
+                ClawScheduledRunStatus.COMPLETED,
+                ClawScheduledRunStatus.FAILED,
+                ClawScheduledRunStatus.CANCELLED,
+            ):
+                with self.subTest(store=label, status=status):
+                    store.record_run(projection_row())
+                    with self.assertRaises(ContractError) as raised:
+                        store.update_run_projection(
+                            run_id=derived_run_id(),
+                            workspace_id=WORKSPACE,
+                            rule_id=RULE_ID,
+                            scheduled_time=SCHED,
+                            status=status,
+                            completed_at=None,
+                        )
+                    self.assertIn("completed_at is required", str(raised.exception))
+
     def test_failed_update_redacts_and_bounds_error_message(self) -> None:
         credential_laden = "boom: token=sk-liv…6789"
         store = InMemoryClawAutomationStore()

@@ -736,7 +736,9 @@ def _projection_update_material(
         except (TypeError, ValueError) as exc:
             raise ContractError(f"invalid projection status: {status}") from exc
     if status in _TERMINAL_PROJECTION_STATUSES:
-        completed = _aware_utc(completed_at, "completed_at") if completed_at is not None else None
+        if completed_at is None:
+            raise ContractError("completed_at is required for a terminal projection status")
+        completed = _aware_utc(completed_at, "completed_at")
     else:
         if completed_at is not None:
             raise ContractError("completed_at is only allowed for a terminal projection status")
