@@ -577,6 +577,63 @@ class ProviderErrorProjectionTests(AdapterCase):
         self.assertIn("sandbox_id", str(caught.exception))
 
 
+class MalformedProviderStateTests(AdapterCase):
+    class MalformedAfterKillTransport(ScriptedTransport):
+        def __init__(self, *, malformed_ids=()):
+            super().__init__()
+            self.malformed_ids = set(malformed_ids)
+
+        def state(self, sandbox_id):
+            if sandbox_id in self.killed and sandbox_id in self.malformed_ids:
+                return {
+                    "state": "paused?token=SECRET_MARKER_DO_NOT_LEAK",
+                    "running": False,
+                }
+            return super().state(sandbox_id)
+
+    def test_malformed_terminal_projection_reuses_the_lease_error_vocabulary(self):
+        transport = self.MalformedAfterKillTransport(malformed_ids={"e2b-sbx-0001"})
+        adapter, lease = self.launched(transport, run_id="run_malformed")
+
+        with self.assertRaises(SandboxLeaseError) as caught:
+            adapter.release(lease.lease_id, run_id="run_malformed")
+
+        error = caught.exception
+        self.assertEqual(
+            "provider state response could not be projected safely; reconciliation required",
+            str(error),
+        )
+        self.assertNotIn("SECRET_MARKER_DO_NOT_LEAK", str(error))
+        self.assertNotIn("paused?", str(error))
+        self.assertIsNone(error.__cause__)
+        self.assertIsNone(error.__context__)
+        self.assertIs(adapter.get(lease.lease_id).state, SandboxLeaseState.RESERVED)
+        self.assertEqual([item.lease_id for item in adapter.active_leases()], [lease.lease_id])
+
+    def test_reaper_preserves_prior_reclamation_when_later_response_is_malformed(self):
+        transport = self.MalformedAfterKillTransport(malformed_ids={"e2b-sbx-0002"})
+        adapter = self.adapter(transport=transport)
+        first = adapter.allocate(request("run_first"), content_ref="content-first")
+        second = adapter.allocate(request("run_second"), content_ref="content-second")
+
+        report = reap_expired_leases(adapter, now=T0 + timedelta(seconds=901))
+
+        self.assertEqual(report.inventory_size, 2)
+        self.assertEqual(report.reclaimed_count, 1)
+        self.assertEqual(report.unresolved_count, 1)
+        self.assertFalse(report.fully_reclaimed)
+        self.assertEqual(
+            [(record.lease_id, record.outcome) for record in report.records],
+            [
+                (first.lease_id, LeaseReclamationOutcome.RECLAIMED),
+                (second.lease_id, LeaseReclamationOutcome.RECONCILIATION_REQUIRED),
+            ],
+        )
+        self.assertIn("could not be projected safely", report.records[1].reason)
+        self.assertNotIn("SECRET_MARKER_DO_NOT_LEAK", report.records[1].reason)
+        self.assertEqual([item.lease_id for item in adapter.active_leases()], [second.lease_id])
+
+
 class TerminationObservationTests(AdapterCase):
     def test_kill_acknowledgement_alone_does_not_end_a_lease(self):
         transport = ScriptedTransport(reports_running_after_kill=True)
