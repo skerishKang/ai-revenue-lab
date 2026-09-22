@@ -10,6 +10,7 @@ from typing import Any, Callable
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.connector_connect_ticket import (
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
     ConnectorConnectTicketAuthority,
 )
@@ -23,6 +24,7 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_CONNECTORS: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
 
 
@@ -217,6 +219,67 @@ class CanonicalConnectorContextStore:
                 "connector context requires an active canonical auth session",
             )
 
+    def _read_context_row(self, subject_id: str) -> dict[str, Any]:
+        rows = _rows(
+            self._sql.exec(
+                "SELECT actor_ref, account_ref, workspace_ref, created_at "
+                "FROM canonical_connector_context WHERE product_id=? AND subject_id=?",
+                ALLOWED_PRODUCT_ID,
+                subject_id,
+            )
+        )
+        if len(rows) > 1:
+            raise ControlPlaneContractError(
+                "connector_context_storage_error",
+                "canonical connector context is ambiguous",
+            )
+        return rows[0] if rows else {}
+
+    def _context_from_row(self, subject_id: str, row: dict[str, Any]) -> CanonicalConnectorContext:
+        try:
+            return CanonicalConnectorContext(
+                product_id=ALLOWED_PRODUCT_ID,
+                subject_id=subject_id,
+                actor_ref=row["actor_ref"],
+                account_ref=row["account_ref"],
+                workspace_ref=row["workspace_ref"],
+                created_at=_parse_iso(row["created_at"], "created_at"),
+            )
+        except ControlPlaneContractError:
+            raise
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ControlPlaneContractError(
+                "connector_context_storage_error",
+                "canonical connector context row is invalid",
+            ) from exc
+
+    def resolve_existing(
+        self,
+        *,
+        auth_session: AuthSessionSnapshot,
+        now: datetime,
+    ) -> CanonicalConnectorContext | None:
+        """Read an already-minted connector context without ever creating one.
+
+        Reading connector status must not be able to mint canonical connector
+        context. Unlike :meth:`resolve_or_create`, this read-only primitive never
+        opens a write transaction and never emits ``INSERT``, ``UPDATE`` or
+        ``DELETE``: it issues exactly one ``SELECT`` and fails closed when the
+        stored row is ambiguous or corrupted.
+
+        ``None`` means the canonical connector context has not been created yet.
+        It does not mean the connector is disconnected, and it carries no B62
+        status projection.
+        """
+
+        observed_at = _utc(now, "now")
+        self._validate_session(auth_session, now=observed_at)
+        subject_id = auth_session.subject.subject_id
+        row = self._read_context_row(subject_id)
+        if not row:
+            return None
+        return self._context_from_row(subject_id, row)
+
     def resolve_or_create(
         self,
         *,
@@ -227,28 +290,10 @@ class CanonicalConnectorContextStore:
         self._validate_session(auth_session, now=observed_at)
         subject_id = auth_session.subject.subject_id
 
-        def operation() -> tuple[str, str, str, str]:
-            rows = _rows(
-                self._sql.exec(
-                    "SELECT actor_ref, account_ref, workspace_ref, created_at "
-                    "FROM canonical_connector_context WHERE product_id=? AND subject_id=?",
-                    ALLOWED_PRODUCT_ID,
-                    subject_id,
-                )
-            )
-            if len(rows) > 1:
-                raise ControlPlaneContractError(
-                    "connector_context_storage_error",
-                    "canonical connector context is ambiguous",
-                )
-            if rows:
-                row = rows[0]
-                return (
-                    str(row["actor_ref"]),
-                    str(row["account_ref"]),
-                    str(row["workspace_ref"]),
-                    str(row["created_at"]),
-                )
+        def operation() -> dict[str, Any]:
+            row = self._read_context_row(subject_id)
+            if row:
+                return row
 
             actor_ref = self._new_ref("actor_")
             account_ref = self._new_ref("account_")
@@ -265,17 +310,15 @@ class CanonicalConnectorContextStore:
                 workspace_ref,
                 created_at,
             )
-            return actor_ref, account_ref, workspace_ref, created_at
+            return {
+                "actor_ref": actor_ref,
+                "account_ref": account_ref,
+                "workspace_ref": workspace_ref,
+                "created_at": created_at,
+            }
 
-        actor_ref, account_ref, workspace_ref, created_at = self._storage.transactionSync(operation)
-        return CanonicalConnectorContext(
-            product_id=ALLOWED_PRODUCT_ID,
-            subject_id=subject_id,
-            actor_ref=actor_ref,
-            account_ref=account_ref,
-            workspace_ref=workspace_ref,
-            created_at=_parse_iso(created_at, "created_at"),
-        )
+        row = self._storage.transactionSync(operation)
+        return self._context_from_row(subject_id, row)
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -283,6 +326,8 @@ class CanonicalConnectorContextStore:
             "sqlite_durable_object": True,
             "server_owned_actor_account_workspace": True,
             "client_supplied_actor_account_workspace": False,
+            "read_only_existing_lookup": True,
+            "read_only_lookup_creates_context": False,
         }
 
 
@@ -379,3 +424,5 @@ CLIENT_ASSERTED_ACTOR_ACCOUNT_WORKSPACE = False
 CONNECT_TICKET_ISSUER_PRIVATE = True
 RAW_CONNECT_TICKET_PUBLIC = False
 GOOGLE_WRITE_SCOPE = False
+READ_ONLY_CONNECTOR_CONTEXT_LOOKUP = True
+READ_ONLY_LOOKUP_CREATES_CONTEXT = False

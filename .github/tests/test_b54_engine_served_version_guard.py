@@ -34,6 +34,10 @@ GRANTS = "ENGINE_CONNECTOR_GRANTS"
 OAUTH = "CONTROL_PLANE_GOOGLE_OAUTH"
 GRANTS_DB = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 OAUTH_SERVICE = "padiem-google-oauth-state"
+IMAGE = "ENGINE_IMAGE_STORE"
+DOCUMENT = "ENGINE_DOCUMENT_STORE"
+A6_DB = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+WRONG_DB = "00000000-dead-beef-0000-000000000000"
 
 
 def _load_helper():
@@ -84,6 +88,7 @@ def _verify(
     active: str = "ver-active",
     expect_overlay: bool = False,
     require_drive_runtime: bool = False,
+    require_a6_runtime: bool = False,
 ) -> tuple[int, str]:
     args: list[str]
     def build(p: str) -> list[str]:
@@ -92,6 +97,8 @@ def _verify(
             args.append("--expect-overlay")
         if require_drive_runtime:
             args.append("--require-drive-runtime-bindings")
+        if require_a6_runtime:
+            args.append("--require-a6-runtime-bindings")
         return args
     return _invoke(helper, build, payload)
 
@@ -310,6 +317,224 @@ def test_verify_rejects_drive_runtime_identity_drift() -> None:
         assert code == 1
         assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
         assert "wrong-db" not in out and "wrong-service" not in out
+
+
+def _a6_runtime_bindings() -> list[dict[str, object]]:
+    return [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(IMAGE, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+    ]
+
+
+def test_verify_requires_a6_runtime_bindings_when_requested() -> None:
+    helper = _load_helper()
+    code, out = _verify(
+        helper,
+        _version_detail(_a6_runtime_bindings()),
+        require_a6_runtime=True,
+    )
+    assert code == 0
+    assert "ENGINE_IMAGE_STORE_SERVED_BINDING=PRESENT:d1" in out
+    assert "ENGINE_DOCUMENT_STORE_SERVED_BINDING=PRESENT:d1" in out
+    assert "A6_STORAGE_BINDINGS_VALIDATED=YES" in out
+    assert SENTINEL not in out
+
+
+def test_verify_rejects_missing_a6_runtime_bindings() -> None:
+    helper = _load_helper()
+    for bindings in (
+        [_binding(V1, "secret_text", text=SENTINEL)],
+        [_binding(V1, "secret_text", text=SENTINEL), _binding(IMAGE, "d1", id=A6_DB)],
+        [_binding(V1, "secret_text", text=SENTINEL), _binding(DOCUMENT, "d1", id=A6_DB)],
+    ):
+        code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+        assert code == 1
+        assert "required served binding is missing" in out
+        assert SENTINEL not in out
+
+
+def test_verify_rejects_a6_binding_type_drift() -> None:
+    helper = _load_helper()
+    for wrong_type in ("plain_text", "kv_namespace", "r2_bucket", "service", ""):
+        bindings = [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1", id=A6_DB),
+            _binding(DOCUMENT, wrong_type, id=A6_DB),
+        ]
+        code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+        assert code == 1, wrong_type
+        assert "binding type is not d1" in out
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out
+
+
+def test_verify_rejects_a6_canonical_database_identity_drift() -> None:
+    helper = _load_helper()
+    for bindings in (
+        [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1", id=WRONG_DB),
+            _binding(DOCUMENT, "d1", id=A6_DB),
+        ],
+        [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1", id=A6_DB),
+            _binding(DOCUMENT, "d1", id=WRONG_DB),
+        ],
+        [
+            _binding(V1, "secret_text"),
+            _binding(IMAGE, "d1"),
+            _binding(DOCUMENT, "d1", id=A6_DB),
+        ],
+    ):
+        code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+        assert code == 1
+        assert "database identity drift" in out
+        # The offending identifier is compared, never echoed.
+        assert WRONG_DB not in out
+        assert A6_DB not in out
+
+
+def test_verify_rejects_duplicate_a6_binding_names() -> None:
+    helper = _load_helper()
+    bindings = [
+        _binding(V1, "secret_text"),
+        _binding(IMAGE, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+    ]
+    code, out = _verify(helper, _version_detail(bindings), require_a6_runtime=True)
+    assert code == 1
+    assert f"duplicate binding name on served version: {DOCUMENT}" in out
+
+
+def test_a6_guard_never_emits_the_canonical_database_identifier() -> None:
+    """On every bounded output path, not just the happy path.
+
+    A leak is most likely in the text written for an operator, so the drift and
+    missing-binding branches are swept as well as the passing one.
+    """
+    helper = _load_helper()
+    payloads = (
+        (_version_detail(_a6_runtime_bindings()), 0),
+        (
+            _version_detail(
+                [
+                    _binding(V1, "secret_text"),
+                    _binding(IMAGE, "d1", id=WRONG_DB),
+                    _binding(DOCUMENT, "d1", id=A6_DB),
+                ]
+            ),
+            1,
+        ),
+        (
+            _version_detail([_binding(V1, "secret_text"), _binding(IMAGE, "d1", id=A6_DB)]),
+            1,
+        ),
+        (
+            _version_detail(
+                [
+                    _binding(V1, "secret_text"),
+                    _binding(IMAGE, "plain_text", id=A6_DB),
+                    _binding(DOCUMENT, "d1", id=A6_DB),
+                ]
+            ),
+            1,
+        ),
+    )
+    for payload, expected_code in payloads:
+        code, out = _verify(helper, payload, require_a6_runtime=True)
+        assert code == expected_code, out
+        assert A6_DB not in out, out
+        assert WRONG_DB not in out, out
+        assert "6b77ad02" not in out, out
+
+
+def test_a6_and_drive_contracts_share_one_canonical_database_identity() -> None:
+    """Two reviewed D1 expectations on the same provisioned database.
+
+    The Drive constant is intentionally not reused by A6 so the frozen Drive
+    contract cannot be moved by A6 work; this pins that the two values have not
+    silently diverged.
+    """
+    helper = _load_helper()
+    assert helper.A6_ENGINE_DATABASE_ID == helper.CONNECTOR_GRANTS_DATABASE_ID
+    assert helper.A6_D1_BINDING_TYPE == helper.CONNECTOR_GRANTS_BINDING_TYPE == "d1"
+
+
+def test_a6_flag_does_not_widen_or_weaken_the_drive_contract() -> None:
+    """Each flag validates exactly its own bindings and nothing else.
+
+    The payloads are intentionally discriminating: the drive-only run carries no
+    A6 stores and the A6-only run carries no Drive bindings, so an implied or
+    defaulted widening has to fail the run instead of quietly passing on
+    bindings that happen to be present.
+    """
+    helper = _load_helper()
+    drive_bindings = [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(GRANTS, "d1", id=GRANTS_DB),
+        _binding(OAUTH, "service", service=OAUTH_SERVICE),
+    ]
+    a6_bindings = [
+        _binding(V1, "secret_text", text=SENTINEL),
+        _binding(IMAGE, "d1", id=A6_DB),
+        _binding(DOCUMENT, "d1", id=A6_DB),
+    ]
+
+    drive_only = _verify(
+        helper, _version_detail(drive_bindings), require_drive_runtime=True
+    )
+    assert drive_only[0] == 0, drive_only[1]
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in drive_only[1]
+    assert "A6_STORAGE_BINDINGS_VALIDATED" not in drive_only[1]
+
+    a6_only = _verify(helper, _version_detail(a6_bindings), require_a6_runtime=True)
+    assert a6_only[0] == 0, a6_only[1]
+    assert "A6_STORAGE_BINDINGS_VALIDATED=YES" in a6_only[1]
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED" not in a6_only[1]
+
+    # Requesting neither leaves the original contract untouched, on both shapes.
+    for bindings in (drive_bindings, a6_bindings, [_binding(V1, "secret_text")]):
+        plain = _verify(helper, _version_detail(bindings))
+        assert plain[0] == 0, plain[1]
+        assert "A6_STORAGE_BINDINGS_VALIDATED" not in plain[1]
+        assert "DRIVE_RUNTIME_BINDINGS_VALIDATED" not in plain[1]
+
+
+def test_runtime_binding_flags_are_opt_in_for_in_process_callers_too() -> None:
+    """Pin the function-level defaults, not just the CLI flags.
+
+    The workflows always pass the flags explicitly, so a flipped signature
+    default is invisible through the CLI and would silently widen every future
+    in-process caller of the canonical guard.
+    """
+    import inspect
+
+    helper = _load_helper()
+    params = inspect.signature(helper.verify_served).parameters
+    assert params["require_drive_runtime_bindings"].default is False
+    assert params["require_a6_runtime_bindings"].default is False
+
+    states = helper.verify_served(
+        _version_detail(
+            [
+                _binding(V1, "secret_text"),
+                _binding(IMAGE, "d1", id=A6_DB),
+                _binding(DOCUMENT, "d1", id=A6_DB),
+            ]
+        ),
+        "ver-active",
+        False,
+    )
+    assert "A6_STORAGE_BINDINGS_VALIDATED" not in states
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED" not in states
+    assert "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING" not in states
+    assert set(states) == {
+        "ENGINE_V1_SERVED_BINDING",
+        "ENGINE_OVERLAY_SERVED_BINDING",
+        "B54_ENGINE_OVERLAY_EXPECTED",
+    }
 
 
 def test_verify_passes_name_keyed_binding_map_variant() -> None:

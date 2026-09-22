@@ -1,0 +1,11 @@
+name = "padiem-ai-engine-preview-caller"
+main = "worker.mjs"
+compatibility_date = "2026-08-27"
+workers_dev = true
+
+[vars]
+PREVIEW_ENGINE_CALLER_ID = "preview-pilot-caller"
+
+[[services]]
+binding = "PREVIEW_ENGINE"
+service = "padiem-ai-engine-preview"

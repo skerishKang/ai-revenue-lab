@@ -34,9 +34,20 @@ from .claw_memory_routes import (
     claw_memory_list,
     claw_memory_reject,
 )
+from .calendar_routes import (
+    calendar_appointments_create,
+    calendar_appointments_list,
+    calendar_items,
+    calendar_today,
+    calendar_upcoming,
+    calendar_work_logs_create,
+    calendar_work_logs_list,
+)
+from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .config import Settings
+from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .conversation_routes import api_conversation_detail, api_conversations
 from .grounding import GroundedChatService
@@ -108,6 +119,8 @@ def create_app(
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     claw_task_alert_store=None,
+    calendar_store: CalendarStore | None = None,
+    claw_automation_store=None,
     telemetry_emitter=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
@@ -120,6 +133,7 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
+        Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
@@ -146,6 +160,13 @@ def create_app(
         Route("/api/claw/memory/{memory_id}", claw_memory_detail, methods=["GET"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
+        Route("/api/calendar/today", calendar_today, methods=["GET"]),
+        Route("/api/calendar/upcoming", calendar_upcoming, methods=["GET"]),
+        Route("/api/calendar/items", calendar_items, methods=["GET"]),
+        Route("/api/calendar/work-logs", calendar_work_logs_list, methods=["GET"]),
+        Route("/api/calendar/work-logs", calendar_work_logs_create, methods=["POST"]),
+        Route("/api/calendar/appointments", calendar_appointments_list, methods=["GET"]),
+        Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
@@ -217,4 +238,20 @@ def create_app(
         except Exception:
             _task_alert_store = None
     app.state.claw_task_alert_store = _task_alert_store
+
+    # #2834 Native Padiem Calendar Phase B-2: durable D1 store.
+    # Fail-closed: if d1_binding is present but D1CalendarStore construction
+    # fails, raise rather than silently falling back to InMemoryCalendarStore.
+    # InMemory fallback is allowed only when d1_binding is absent.
+    # An explicitly injected calendar_store always wins.
+    if calendar_store is not None:
+        _calendar_store = calendar_store
+    elif d1_binding is not None:
+        _calendar_store = D1CalendarStore(d1_binding)
+    else:
+        _calendar_store = InMemoryCalendarStore()
+    app.state.calendar_store = _calendar_store
+    # #2846 Read-only durable automation projection. The automation authority is
+    # injected; Calendar never creates or owns a second automation store.
+    app.state.claw_automation_store = claw_automation_store
     return app

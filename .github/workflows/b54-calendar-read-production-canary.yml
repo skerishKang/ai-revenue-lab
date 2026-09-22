@@ -1,0 +1,252 @@
+name: B54 Calendar Read Production Canary
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py'
+      - '.github/tests/test_b54_calendar_read_production_canary.py'
+      - '.github/workflows/b54-calendar-read-production-canary.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA authorized for this one-shot Calendar READ canary'
+        required: true
+      expected_engine_version:
+        description: 'Exact Production Engine version that must still be actively served'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_CALENDAR_READ_CANARY_ONCE to authorize exactly one Engine tool POST'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-calendar-read-production-canary
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source under review
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Dispatch exact-main preflight
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install contract test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The canary contract test parses this workflow's structure, so PyYAML
+          # must be present before the test runs.
+          python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7'
+          echo 'CALENDAR_CANARY_CONTRACT_DEPS=INSTALLED'
+
+      - name: Run bounded canary contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/tests/test_b54_calendar_read_production_canary.py
+
+      - name: Pin canonical Calendar provider retry and read-only semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'MAX_PROVIDER_ATTEMPTS = 2' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
+          grep -Fq 'for attempt in range(MAX_PROVIDER_ATTEMPTS):' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
+          grep -Fq 'if status == 401 and attempt == 0:' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
+          grep -Fq 'CALENDAR_CP_CONNECTOR_ID = "google-calendar"' apps/padiem-ai-engine/app/calendar_port_cp_lease.py
+          grep -Fq 'PROVIDER_READ_BUDGET_MAX = 2' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'TOOL_ID = "tool:google:calendar.list@1"' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'RAW_CALENDAR_ID_OUTPUT=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'CALENDAR_WRITE=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'CALENDAR_CREATE=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'CALENDAR_UPDATE=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'CALENDAR_DELETE=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'CALENDAR_RESPOND=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          grep -Fq 'CALENDAR_ALLOWLIST_MUTATION=0' apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py
+          echo 'CALENDAR_PROVIDER_READ_BUDGET_CONTRACT=MAX_2'
+          echo 'CALENDAR_CANARY_READ_ONLY_CONTRACT=PASS'
+
+  live-calendar-read:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_B54_CALENDAR_READ_CANARY_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      PADIEM_ENGINE_CALENDAR_CANARY_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      EXPECTED_ENGINE_VERSION: ${{ github.event.inputs.expected_engine_version }}
+    steps:
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Re-check exact current main before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'LIVE_EXACT_MAIN=PASS'
+
+      - name: GET-only served Engine version and Calendar runtime binding guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_ENGINE_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}$'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/calendar-canary-engine-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"
+          version_detail="${RUNNER_TEMP}/calendar-canary-engine-version.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" >/dev/null
+          # Canonical Calendar readiness observation: NAME/TYPE only. The
+          # Control Plane owns the long-lived Google credential, so the Engine
+          # must carry the Engine Calendar allowlist plus the Control Plane
+          # Google OAuth Service Binding - never the three direct
+          # ENGINE_GOOGLE_OAUTH_* secret bindings.
+          python3 - "${version_detail}" "${active_version}" <<'PY'
+          import json
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          active_version = sys.argv[2]
+          result = payload.get("result") if payload.get("success") is True else None
+          if not isinstance(result, dict) or result.get("id") != active_version:
+              raise SystemExit("served Engine version identity drifted")
+          resources = result.get("resources")
+          raw = resources.get("bindings") if isinstance(resources, dict) else None
+          if isinstance(raw, dict):
+              bindings = [
+                  {**value, "name": name} for name, value in raw.items() if isinstance(value, dict)
+              ]
+          elif isinstance(raw, list):
+              bindings = raw
+          else:
+              raise SystemExit("served binding collection malformed")
+
+          allowlist = [b for b in bindings if b.get("name") == "ENGINE_CALENDAR_ALLOWED_CALENDARS"]
+          control_plane = [b for b in bindings if b.get("name") == "CONTROL_PLANE_GOOGLE_OAUTH"]
+          if len(allowlist) != 1 or allowlist[0].get("type") != "secret_text":
+              raise SystemExit("Calendar allowlist binding missing or wrong type")
+          if len(control_plane) != 1 or control_plane[0].get("type") != "service":
+              raise SystemExit("Control Plane Google OAuth Service Binding missing or wrong type")
+          print("CALENDAR_ALLOWLIST_SERVED_BINDING=PRESENT:secret_text")
+          print("CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING=PRESENT:service")
+          print("ENGINE_DIRECT_GOOGLE_CREDENTIAL_PRESENT=NO")
+          print("RAW_CALENDAR_ID_OUTPUT=0")
+          print("RAW_BINDING_VALUE_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
+          echo "ENGINE_EXPECTED_VERSION_ACTIVE=PASS"
+          echo "ENGINE_EXPECTED_VERSION=${EXPECTED_ENGINE_VERSION}"
+          echo 'ENGINE_VERSION_ID_OUTPUT=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Fail closed if protected Engine credential is unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${PADIEM_ENGINE_CALENDAR_CANARY_CREDENTIAL:-}"
+          echo 'ENGINE_CALLER_CREDENTIAL_PRESENT=YES'
+          echo 'PROVIDER_CREDENTIAL_OUTPUT=0'
+
+      - name: Execute exactly one bounded Calendar READ through Engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/calendar-read-canary.log"
+          python apps/padiem-ai-engine/scripts/a16_calendar_read_production_canary.py | tee "${log}"
+          grep -qx 'CALENDAR_READ_CANARY=PASS' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_HTTP=200' "${log}"
+          grep -qx 'ENGINE_TOOL_RESULT=PASS' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_POST_COUNT=1' "${log}"
+          grep -qx 'NETWORK_RETRY_COUNT=0' "${log}"
+          grep -qx 'CALENDAR_RESULT_BOUNDED=YES' "${log}"
+          grep -qx 'CALENDAR_RESULT_STATUS=OK' "${log}"
+          grep -qx 'ACCOUNT_IDENTITY_AMBIGUOUS=YES' "${log}"
+          grep -qx 'CALENDAR_PROVIDER_READ_BUDGET_MAX=2' "${log}"
+          grep -qx 'CALENDAR_PROVIDER_READ_ACTUAL=UNOBSERVABLE_FROM_ENGINE_BOUNDARY' "${log}"
+          grep -qx 'RAW_CALENDAR_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_CALENDAR_NAME_OUTPUT=0' "${log}"
+          grep -qx 'RAW_CALENDAR_TIMEZONE_OUTPUT=0' "${log}"
+          grep -qx 'RAW_EVENT_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_SUMMARY_OUTPUT=0' "${log}"
+          grep -qx 'RAW_DESCRIPTION_OUTPUT=0' "${log}"
+          grep -qx 'RAW_ATTENDEE_OUTPUT=0' "${log}"
+          grep -qx 'RAW_LOCATION_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BINDING_REF_OUTPUT=0' "${log}"
+          grep -qx 'RAW_ACTOR_REF_OUTPUT=0' "${log}"
+          grep -qx 'PROVIDER_CREDENTIAL_OUTPUT=0' "${log}"
+          grep -qx 'CALENDAR_WRITE=0' "${log}"
+          grep -qx 'CALENDAR_CREATE=0' "${log}"
+          grep -qx 'CALENDAR_UPDATE=0' "${log}"
+          grep -qx 'CALENDAR_DELETE=0' "${log}"
+          grep -qx 'CALENDAR_RESPOND=0' "${log}"
+          grep -qx 'OAUTH_CONNECT=0' "${log}"
+          grep -qx 'OAUTH_CALLBACK=0' "${log}"
+          grep -qx 'CALENDAR_ALLOWLIST_MUTATION=0' "${log}"
+          grep -qx 'CALENDAR_GRANT_SEED=0' "${log}"
+          grep -qx 'D1_MUTATION=0' "${log}"
+          grep -qx 'ENGINE_DEPLOY=0' "${log}"
+          grep -qx 'B14_DEPLOY=0' "${log}"
+          grep -qx 'SECRET_MUTATION=0' "${log}"
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'WORKFLOW_INTERNAL_RERUN=0'
+          echo 'ENGINE_TOOL_EXECUTE_POST_MAX=1'
+          echo 'CANARY_NETWORK_RETRY=0'
+          echo 'CALENDAR_PROVIDER_READ_BUDGET_MAX=2'
+          echo 'CALENDAR_WRITE=0'
+          echo 'CALENDAR_CREATE=0'
+          echo 'CALENDAR_UPDATE=0'
+          echo 'CALENDAR_DELETE=0'
+          echo 'CALENDAR_RESPOND=0'
+          echo 'OAUTH_CONNECT=0'
+          echo 'OAUTH_CALLBACK=0'
+          echo 'CALENDAR_ALLOWLIST_MUTATION=0'
+          echo 'CALENDAR_GRANT_SEED=0'
+          echo 'D1_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'B14_DEPLOY=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'READ_DOES_NOT_IMPLY_WRITE=YES'

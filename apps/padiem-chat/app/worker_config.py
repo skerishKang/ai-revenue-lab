@@ -33,6 +33,11 @@ D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
+# #2830 B-1B private Google OAuth workspace-truth Service Binding. Resolved from
+# trusted Worker bindings only and never from request input. No entry exists in
+# apps/padiem-chat/wrangler.toml yet: a separate activation slice owns that, so
+# until then this resolves to None and every composition path fails closed.
+GOOGLE_OAUTH_SERVICE_BINDING_NAME = "GOOGLE_OAUTH_STATE_SERVICE"
 
 # Worker-native P01/Engine configuration surface (#2229). Owned by B62 deployment
 # composition and read only from trusted Worker bindings — never from os.environ

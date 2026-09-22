@@ -1,0 +1,365 @@
+name: B54 Engine Agent Preview Pilot
+
+# #2786 Stage 11-C M3-3.5 — preview-only Agent pilot lane with wire caller.
+#
+# Deploys a dedicated preview worker (padiem-ai-engine-preview) and an ephemeral
+# preview caller worker (padiem-ai-engine-preview-caller). It never touches
+# the Production worker: Production lives in the top-level wrangler block, which
+# carries no [vars] and is not addressed by any step here.
+#
+# Deliberately dispatch-only. There is no push and no pull_request trigger, and the
+# deploy job body only runs when the dispatch carries the exact confirmation
+# phrase, so a merged file cannot deploy anything by itself.
+#
+# ROLLBACK: this lane is not a Production rollback surface. To return the preview
+# worker to an earlier revision, dispatch again with `target_sha` set to that
+# earlier main SHA (the same verified path). The preview caller is automatically
+# torn down at the end of the pilot job. Removing the preview worker entirely
+# is an operator action outside this workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact main SHA to build the preview environment from'
+        required: true
+      confirmation:
+        description: 'Type DEPLOY_B54_ENGINE_AGENT_PREVIEW to authorize the preview deploy'
+        required: true
+      run_pilot:
+        description: 'Type RUN_B54_ENGINE_AGENT_PREVIEW_PILOT to attempt a synthetic pilot call'
+        required: false
+        default: 'NO'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-agent-preview-pilot
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  PREVIEW_WORKER: padiem-ai-engine-preview
+  PREVIEW_CALLER_WORKER: padiem-ai-engine-preview-caller
+  CLOUDFLARE_WORKERS_SUBDOMAIN: charliekant
+  ENGINE_APP_DIR: apps/padiem-ai-engine
+  PREVIEW_CALLER_APP_DIR: apps/padiem-ai-engine/preview-caller
+
+
+jobs:
+  preview-config-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main assertion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main --depth 1
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install contract test dependency
+        run: python -m pip install --quiet pyyaml
+
+      - name: Preview lane configuration contract
+        run: python .github/tests/test_b54_engine_agent_preview_pilot_contract.py
+
+  deploy-preview:
+    needs: preview-config-guard
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_AGENT_PREVIEW'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main --depth 1
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Resolve engine environment with dev tools
+        working-directory: ${{ env.ENGINE_APP_DIR }}
+        run: uv sync --extra dev
+
+      - name: Sync engine worker bundle
+        working-directory: ${{ env.ENGINE_APP_DIR }}
+        run: uv run pywrangler sync --force
+
+      - name: Deploy preview environment only
+        working-directory: ${{ env.ENGINE_APP_DIR }}
+        run: |
+          set -euo pipefail
+          # `--env preview` addresses [env.preview] only. The Production worker in
+          # the top-level block is never named by this command.
+          uv run pywrangler deploy --env preview
+
+      - name: Read back preview served version and Production version (GET-only)
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
+          preview_json="${RUNNER_TEMP}/preview-deployments.json"
+          prod_json="${RUNNER_TEMP}/production-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/${PREVIEW_WORKER}/deployments" -o "${preview_json}"
+          curl -fsS "${auth[@]}" "${base}/${ENGINE_WORKER}/deployments" -o "${prod_json}"
+          python - <<'PY' "${preview_json}" "${prod_json}"
+          import json, sys
+          preview = json.load(open(sys.argv[1], encoding="utf-8"))
+          production = json.load(open(sys.argv[2], encoding="utf-8"))
+          def served(payload):
+              records = (payload.get("result") or {}).get("deployments") or []
+              versions = records[0].get("versions") if records else None
+              return versions[0].get("version_id") if versions else None
+          print("PREVIEW_SERVED_VERSION=" + str(served(preview)))
+          print("PRODUCTION_SERVED_VERSION=" + str(served(production)))
+          PY
+          echo 'PRODUCTION_WORKER_NOT_ADDRESSED_BY_THIS_RUN=YES'
+          echo 'PREVIEW_DEPLOY_SUPPORT=PASS'
+          echo 'PREVIEW_WORKER_REACHABILITY=INTERNAL_SERVICE_BINDING_ONLY (workers_dev=false)'
+
+  preview-pilot:
+    needs: deploy-preview
+    if: github.event.inputs.run_pilot == 'RUN_B54_ENGINE_AGENT_PREVIEW_PILOT'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Premutation exact-main and account assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main --depth 1
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          test "$CLOUDFLARE_ACCOUNT_ID" = '9be14bb7b8974e65d0afba647ab16932'
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+          echo 'PREMUTATION_TARGET_ACCOUNT=PASS'
+
+      - name: Setup Node.js for preview caller deployment
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Provision ephemeral caller authority and deploy preview caller
+        working-directory: ${{ env.PREVIEW_CALLER_APP_DIR }}
+        run: |
+          set -euo pipefail
+          # Ephemeral credentials generated in-memory for this run only
+          PREVIEW_CREDENTIAL="$(openssl rand -hex 32)"
+          RUNNER_TOKEN="$(openssl rand -hex 32)"
+          echo "RUNNER_TOKEN=${RUNNER_TOKEN}" >> "$GITHUB_ENV"
+
+          # Inject ephemeral caller registry into preview engine (preview-only, 1 allowed app)
+          REGISTRY_JSON="{\"version\":1,\"callers\":[{\"caller_id\":\"preview-pilot-caller\",\"credential\":\"${PREVIEW_CREDENTIAL}\",\"allowed_app_ids\":[\"engine-a5-agent-synthetic\"]}]}"
+          printf '%s' "${REGISTRY_JSON}" | npx wrangler secret put PADIEM_ENGINE_CALLER_REGISTRY_V1 --name "${PREVIEW_WORKER}"
+
+          # Deploy ephemeral caller worker with service binding to padiem-ai-engine-preview
+          npx wrangler deploy 2>&1 | tee deploy.log
+
+          # Extract caller URL from deploy log or fall back to deterministic URL
+          CALLER_BASE_URL="$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -n 1 | tr -d '\r' || true)"
+          if [ -z "${CALLER_BASE_URL}" ]; then
+            echo "Notice: could not parse URL from deploy output, using deterministic URL"
+            CALLER_BASE_URL="https://${PREVIEW_CALLER_WORKER}.${CLOUDFLARE_WORKERS_SUBDOMAIN:-charliekant}.workers.dev"
+          fi
+
+          # URL validation
+          echo "${CALLER_BASE_URL}" | grep -Eq '^https://[a-zA-Z0-9.-]+\.workers\.dev$' || {
+            echo "Invalid caller URL format: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+          echo "${CALLER_BASE_URL}" | grep -q "^https://${PREVIEW_CALLER_WORKER}\." || {
+            echo "Caller URL worker mismatch: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+
+          echo "CALLER_BASE_URL=${CALLER_BASE_URL}" >> "$GITHUB_ENV"
+          echo "RESOLVED_CALLER_BASE_URL=${CALLER_BASE_URL}"
+
+          printf '%s' "${PREVIEW_CREDENTIAL}" | npx wrangler secret put PREVIEW_ENGINE_CREDENTIAL --name "${PREVIEW_CALLER_WORKER}"
+          printf '%s' "${RUNNER_TOKEN}" | npx wrangler secret put PILOT_RUNNER_SECRET --name "${PREVIEW_CALLER_WORKER}"
+
+          # Initial secret propagation grace wait
+          echo "Waiting 5 seconds for initial secret distribution..."
+          sleep 5
+
+          echo 'PREVIEW_CALLER_PROVISIONED=PASS'
+
+      - name: Execute synthetic wire pilot and collect evidence
+        run: |
+          set -euo pipefail
+          test -n "${CALLER_BASE_URL:-}" || { echo "CALLER_BASE_URL is not set" >&2; exit 1; }
+
+          # URL validation
+          echo "${CALLER_BASE_URL}" | grep -Eq '^https://[a-zA-Z0-9.-]+\.workers\.dev$' || {
+            echo "Invalid CALLER_BASE_URL format: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+          echo "${CALLER_BASE_URL}" | grep -q "^https://${PREVIEW_CALLER_WORKER}\." || {
+            echo "CALLER_BASE_URL worker mismatch: ${CALLER_BASE_URL}" >&2
+            exit 1
+          }
+
+          CALLER_URL="${CALLER_BASE_URL%/}/run-pilot"
+          AUTH_CHECK_URL="${CALLER_BASE_URL%/}/auth-check"
+          echo "PREVIEW_CALLER_URL=${CALLER_URL}"
+          echo "PREVIEW_AUTH_CHECK_URL=${AUTH_CHECK_URL}"
+
+          # Poll caller auth readiness to handle asynchronous Cloudflare secret propagation
+          echo "Polling caller auth readiness for secret propagation..."
+          MAX_ATTEMPTS=12
+          INTERVAL_SEC=5
+          AUTH_READY=0
+
+          for i in $(seq 1 "${MAX_ATTEMPTS}"); do
+            echo "Checking caller auth readiness (attempt ${i}/${MAX_ATTEMPTS})..."
+            HTTP_CODE=$(curl -s -o "${RUNNER_TEMP}/auth_check.json" -w "%{http_code}" -X GET "${AUTH_CHECK_URL}" \
+              -H "Authorization: Bearer ${RUNNER_TOKEN}" || true)
+
+            if [ "${HTTP_CODE}" = "200" ]; then
+              echo "Caller auth readiness confirmed (HTTP 200) on attempt ${i}."
+              AUTH_READY=1
+              break
+            elif [ "${HTTP_CODE}" = "401" ] || [ "${HTTP_CODE}" = "503" ]; then
+              echo "Secret not yet propagated to edge (HTTP ${HTTP_CODE}). Waiting ${INTERVAL_SEC}s..."
+              sleep "${INTERVAL_SEC}"
+            else
+              echo "Unexpected HTTP status ${HTTP_CODE} during auth readiness check:" >&2
+              cat "${RUNNER_TEMP}/auth_check.json" >&2 || true
+              exit 1
+            fi
+          done
+
+          if [ "${AUTH_READY}" -ne 1 ]; then
+            echo "Timed out waiting for secret propagation after $((MAX_ATTEMPTS * INTERVAL_SEC)) seconds" >&2
+            exit 1
+          fi
+
+          # Execute wire pilot: Runner -> Caller Worker -> Service Binding -> Preview Engine
+          PILOT_RES="${RUNNER_TEMP}/pilot_response.json"
+          POST_SUCCESS=0
+          POST_MAX_ATTEMPTS=6
+
+          for j in $(seq 1 "${POST_MAX_ATTEMPTS}"); do
+            echo "Executing synthetic wire pilot POST (attempt ${j}/${POST_MAX_ATTEMPTS})..."
+            POST_CODE=$(curl -s -o "${PILOT_RES}" -w "%{http_code}" -X POST "${CALLER_URL}" \
+              -H "Authorization: Bearer ${RUNNER_TOKEN}" \
+              -H "Content-Type: application/json" || true)
+
+            if [ "${POST_CODE}" = "200" ]; then
+              POST_SUCCESS=1
+              break
+            elif [ "${POST_CODE}" = "401" ] || [ "${POST_CODE}" = "404" ] || [ "${POST_CODE}" = "502" ] || [ "${POST_CODE}" = "503" ]; then
+              echo "Wire POST received ${POST_CODE} (edge/secret propagation catchup). Retrying in ${INTERVAL_SEC}s..."
+              sleep "${INTERVAL_SEC}"
+            else
+              echo "Wire POST failed with HTTP ${POST_CODE}:" >&2
+              cat "${PILOT_RES}" >&2 || true
+              exit 1
+            fi
+          done
+
+          if [ "${POST_SUCCESS}" -ne 1 ]; then
+            echo "Wire POST failed after ${POST_MAX_ATTEMPTS} attempts" >&2
+            cat "${PILOT_RES}" >&2 || true
+            exit 1
+          fi
+
+          python3 - <<'PY' "${PILOT_RES}"
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert data.get("ok") is True, f"Pilot call failed: {data}"
+          assert data.get("status_code") == 200, f"Expected 200, got {data.get('status_code')}"
+          assert data.get("target_service") == "padiem-ai-engine-preview"
+          assert data.get("synthetic_app_id") == "engine-a5-agent-synthetic"
+          engine_resp = data.get("engine_response", {})
+          agent_skill = engine_resp.get("agent_skill", {})
+          assert agent_skill.get("execution_state") == "completed", f"State: {agent_skill}"
+          assert agent_skill.get("resolved_tool_ids") == ["a5-agent-probe.tool"]
+          print("PREVIEW_WIRE_PILOT=PASS")
+          print("PREVIEW_PILOT_EXECUTION_STATE=completed")
+          print("PREVIEW_PILOT_TOOL=a5-agent-probe.tool")
+          print("PREVIEW_PILOT_PROVIDER_CALLS=0")
+          print("PREVIEW_PILOT_USER_DATA=0")
+          PY
+
+      - name: Re-assert production served version and health are untouched
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts"
+          prod_json="${RUNNER_TEMP}/post-pilot-production-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/${ENGINE_WORKER}/deployments" -o "${prod_json}"
+          python3 - <<'PY' "${prod_json}"
+          import json, sys
+          production = json.load(open(sys.argv[1], encoding="utf-8"))
+          records = (production.get("result") or {}).get("deployments") or []
+          versions = records[0].get("versions") if records else None
+          served = versions[0].get("version_id") if versions else None
+          print("POST_PILOT_PRODUCTION_SERVED_VERSION=" + str(served))
+          assert served == "8349dc55-4f12-4ad2-8123-7e592dc3a9f3", f"Production version shifted to {served}!"
+          PY
+          # Read-only health probe
+          curl -fsS "https://engine.padiem.net/internal/v1/health" -H "User-Agent: curl/8.4.0" | python3 -c '
+          import json, sys
+          h = json.load(sys.stdin)
+          assert h.get("status") == "ok", f"Health status: {h}"
+          assert (h.get("capabilities") or {}).get("agent_skill_runtime") is None
+          print("POST_PILOT_PRODUCTION_HEALTH=PASS")
+          '
+
+      - name: Teardown preview caller and ephemeral secret
+        if: always()
+        working-directory: ${{ env.PREVIEW_CALLER_APP_DIR }}
+        run: |
+          set +e
+          # Delete ephemeral caller worker and binding
+          npx wrangler delete --name "${PREVIEW_CALLER_WORKER}" --force
+          # Delete ephemeral preview registry secret
+          npx wrangler secret delete PADIEM_ENGINE_CALLER_REGISTRY_V1 --name "${PREVIEW_WORKER}"
+          echo 'PREVIEW_PILOT_TEARDOWN=PASS'

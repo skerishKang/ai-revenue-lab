@@ -1,13 +1,13 @@
 """Connector grant seed/revoke/list script for Engine D1 references only.
 
-Supports the reviewed Gmail READ grant plus Google Drive and Telegram READ
-capability grants. Credential material is never accepted as an argument and
-never read here.
+Supports the reviewed Gmail READ grant plus Google Drive, Telegram and Google
+Calendar READ capability grants. Credential material is never accepted as an
+argument and never read here.
 
 All connector seeding is fail-closed: the caller must provide trusted
 ``binding_ref`` and ``actor_ref`` values produced by the connector's
 server-side authority flow. Gmail accepts only the reviewed readonly scope;
-Drive and Telegram accept only the reviewed ``read`` capability. No
+Drive, Telegram and Calendar accept only the reviewed ``read`` capability. No
 mutation/write capability can be seeded and no synthetic/default refs are
 accepted.
 
@@ -33,6 +33,8 @@ if __package__ in (None, ""):
         sys.path.insert(0, str(_ENGINE_ROOT))
 
 from app.connector_bindings import (
+    CALENDAR_AGENT_ID,
+    CALENDAR_REFERENCE_APP_ID,
     DRIVE_AGENT_ID,
     DRIVE_REFERENCE_APP_ID,
     GMAIL_CONNECTOR_ID,
@@ -41,6 +43,7 @@ from app.connector_bindings import (
     TELEGRAM_AGENT_ID,
     TELEGRAM_REFERENCE_APP_ID,
 )
+from padiem_ai_core.calendar_capability import CALENDAR_CONNECTOR_ID, CalendarCapability
 from padiem_ai_core.drive_capability import DRIVE_CONNECTOR_ID, DriveCapability
 from padiem_ai_core.telegram_capability import TELEGRAM_CONNECTOR_ID, TelegramCapability
 
@@ -54,6 +57,7 @@ _PROVIDER_GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly
 _ALLOWED_GMAIL_SCOPES = (_CORE_GMAIL_READONLY_SCOPE, _PROVIDER_GMAIL_READONLY_SCOPE)
 _ALLOWED_DRIVE_CAPABILITIES = (DriveCapability.READ.value,)
 _ALLOWED_TELEGRAM_CAPABILITIES = (TelegramCapability.READ.value,)
+_ALLOWED_CALENDAR_CAPABILITIES = (CalendarCapability.READ.value,)
 
 
 def _now_iso() -> str:
@@ -64,16 +68,24 @@ _CONNECTOR_IDS = {
     "gmail": GMAIL_CONNECTOR_ID,
     "drive": DRIVE_CONNECTOR_ID,
     "telegram": TELEGRAM_CONNECTOR_ID,
+    "calendar": CALENDAR_CONNECTOR_ID,
 }
 _APP_IDS = {
     "gmail": GMAIL_REFERENCE_APP_ID,
     "drive": DRIVE_REFERENCE_APP_ID,
     "telegram": TELEGRAM_REFERENCE_APP_ID,
+    "calendar": CALENDAR_REFERENCE_APP_ID,
 }
 _AGENT_IDS = {
     "gmail": GMAIL_MAIL_READER_AGENT_ID,
     "drive": DRIVE_AGENT_ID,
     "telegram": TELEGRAM_AGENT_ID,
+    "calendar": CALENDAR_AGENT_ID,
+}
+_DEFAULT_READ_CAPABILITIES = {
+    "drive": [DriveCapability.READ.value],
+    "telegram": [TelegramCapability.READ.value],
+    "calendar": [CalendarCapability.READ.value],
 }
 
 
@@ -141,6 +153,14 @@ def validate_args(args: argparse.Namespace) -> list[str]:
             errors.append("scopes are not accepted for Drive grants; use --capabilities read")
         if tuple(args.capabilities) != _ALLOWED_DRIVE_CAPABILITIES:
             errors.append("Drive capabilities must be exactly ('read',); mutation/write is forbidden")
+    elif args.connector == "calendar":
+        if args.scopes:
+            errors.append("scopes are not accepted for Calendar grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_CALENDAR_CAPABILITIES:
+            errors.append(
+                "Calendar capabilities must be exactly ('read',); "
+                "create/update/delete/respond/write is forbidden"
+            )
     else:
         if args.scopes:
             errors.append("scopes are not accepted for Telegram grants; use --capabilities read")
@@ -232,7 +252,7 @@ def run_d1(sql: str) -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--action", choices=("seed", "revoke", "list"), required=True)
-    parser.add_argument("--connector", choices=("gmail", "drive", "telegram"), default="gmail")
+    parser.add_argument("--connector", choices=("gmail", "drive", "telegram", "calendar"), default="gmail")
     parser.add_argument("--app-id", default=None)
     parser.add_argument("--agent-id", default=None)
     parser.add_argument("--binding-ref", default=None)
@@ -246,13 +266,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.scopes is None:
         args.scopes = [_PROVIDER_GMAIL_READONLY_SCOPE] if args.connector == "gmail" else []
     if args.capabilities is None:
-        args.capabilities = (
-            [DriveCapability.READ.value]
-            if args.connector == "drive"
-            else [TelegramCapability.READ.value]
-            if args.connector == "telegram"
-            else []
-        )
+        args.capabilities = list(_DEFAULT_READ_CAPABILITIES.get(args.connector, []))
 
     # List is read-only and does not require a connection-specific binding ref.
     if args.action == "list":

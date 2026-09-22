@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import os
 from io import BytesIO
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
@@ -26,6 +27,7 @@ from padiem_ai_core.document_normalization import (
     MAX_PDF_PAGES,
     BINARY_DOCUMENT_MEDIA,
     DocumentNormalizationError,
+    _safe_ooxml_member,
     extract_binary_document,
     extract_docx_text,
     extract_hwpx_text,
@@ -43,10 +45,26 @@ HWPX_MIME = "application/hwp+zip"
 
 
 def _zip_bytes(entries: dict[str, bytes]) -> bytes:
+    """Build an in-memory ZIP whose member names survive verbatim.
+
+    ``ZipInfo.__init__`` rewrites ``os.sep`` to ``/``, so on Windows a member
+    named ``a\\b.xml`` was silently stored as ``a/b.xml``. The unsafe-path guard
+    that rejects a backslash member was therefore never actually exercised on
+    Windows, and the adversarial fixture was quietly not adversarial there.
+    Assigning the name *after* construction keeps the raw member name on every
+    platform, which is what the guard has to be tested against.
+    """
+
     output = BytesIO()
     with ZipFile(output, "w", compression=ZIP_DEFLATED) as archive:
         for name, payload in entries.items():
-            archive.writestr(name, payload)
+            member = ZipInfo(name)
+            member.filename = name
+            # ``writestr(str, ...)`` sets this from the archive default; passing
+            # a ZipInfo does not, so it is set here to keep the compression
+            # behaviour of every existing fixture exactly as it was.
+            member.compress_type = ZIP_DEFLATED
+            archive.writestr(member, payload)
     return output.getvalue()
 
 
@@ -369,10 +387,46 @@ def test_ooxml_malformed_missing_dtd_encryption_and_paths_fail_closed() -> None:
         extract_docx_text(encrypted)
     assert locked.value.code == "ooxml_encrypted"
 
-    for unsafe in ("../evil.xml", "/absolute.xml", "C:/drive.xml", "a\\b.xml", "a//b.xml"):
+    for unsafe in ("../evil.xml", "/absolute.xml", "C:/drive.xml", "a//b.xml"):
         payload = _zip_bytes({unsafe: b"x", "word/document.xml": _docx_xml("safe")})
         with pytest.raises(DocumentNormalizationError) as path_error:
             extract_docx_text(payload)
+        assert path_error.value.code == "ooxml_unsafe_path"
+
+
+def test_ooxml_backslash_member_guard_is_actually_executed() -> None:
+    """The backslash branch of the unsafe-path guard must really run.
+
+    ``zipfile`` normalizes ``os.sep`` to ``/`` on **read** as well as write:
+    ``ZipFile._RealGetContents`` builds ``ZipInfo(name)`` from the on-disk name,
+    so on Windows a backslash member can never reach the guard through an archive
+    at all. Previously this case sat inside the archive loop above, where it
+    silently stopped being adversarial on Windows: the document was admitted
+    because the fixture had been rewritten, not because the guard was bypassed.
+
+    So the guard is asserted directly — which executes it on every platform —
+    and the archive-level behaviour is asserted per platform instead of
+    disappearing from coverage. No Core parser source changes for this.
+    """
+
+    assert _safe_ooxml_member("a" + chr(92) + "b.xml") is False
+    # Positive control: the assertion above is about the backslash, not about
+    # the helper rejecting everything.
+    assert _safe_ooxml_member("a/b.xml") is True
+
+    archive = _zip_bytes({"a\\b.xml": b"x", "word/document.xml": _docx_xml("safe")})
+    with ZipFile(BytesIO(archive)) as opened:
+        stored = opened.namelist()[0]
+
+    if os.sep == "\\":
+        # The member is written with a real backslash, and the stdlib reader is
+        # what neutralises it before the guard can see it.
+        assert stored == "a/b.xml"
+        assert extract_docx_text(archive) == "safe"
+    else:
+        assert stored == "a\\b.xml"
+        with pytest.raises(DocumentNormalizationError) as path_error:
+            extract_docx_text(archive)
         assert path_error.value.code == "ooxml_unsafe_path"
 
 

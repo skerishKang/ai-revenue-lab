@@ -1621,11 +1621,13 @@ class _RecordingRunHistoryStore:
 
     async def record_claw_run(self, *, user_id, run_id, channel, action, title, status,
                               result_summary=None, artifact_document_id=None,
-                              artifact_filename=None, artifact_media_type=None) -> None:
+                              artifact_filename=None, artifact_media_type=None,
+                              conversation_id=None) -> None:
         self.rows[run_id] = {
             "user_id": user_id, "run_id": run_id, "channel": channel, "action": action,
             "title": title, "status": status, "result_summary": result_summary,
             "artifact_document_id": artifact_document_id,
+            "conversation_id": conversation_id,
         }
 
     async def list_recent_claw_runs(self, user_id: str, limit: int) -> list[dict]:
@@ -1787,11 +1789,13 @@ class _HistoryStatement:
         return self
 
     async def first(self):
-        if self.sql.startswith("SELECT id, created_at FROM claw_run_history"):
+        if self.sql.startswith("SELECT id, created_at, conversation_id, workspace_id FROM claw_run_history"):
             run_id, user_id = self.values
             for row in self.db.rows:
                 if row["run_id"] == run_id and row["user_id"] == user_id:
-                    return {"id": row["id"], "created_at": row["created_at"]}
+                    return {"id": row["id"], "created_at": row["created_at"],
+                            "conversation_id": row.get("conversation_id"),
+                            "workspace_id": row.get("workspace_id")}
             return None
         return None
 
@@ -1800,24 +1804,32 @@ class _HistoryStatement:
         if self.sql.startswith("INSERT INTO claw_run_history"):
             cols = ("id", "user_id", "run_id", "channel", "action", "title", "status",
                     "created_at", "updated_at", "result_summary", "artifact_document_id",
-                    "artifact_filename", "artifact_media_type")
+                    "artifact_filename", "artifact_media_type", "conversation_id",
+                    "workspace_id")
             self.db.rows.append(dict(zip(cols, self.values)))
             return {"results": []}
         if self.sql.startswith("UPDATE claw_run_history SET"):
             (channel, action, title, status, updated_at, summary, doc_id, fname, mtype,
-             run_id, user_id) = self.values
+             conversation_id, workspace_id, run_id, user_id) = self.values
             for row in self.db.rows:
                 if row["run_id"] == run_id and row["user_id"] == user_id:
                     row.update(channel=channel, action=action, title=title, status=status,
                                updated_at=updated_at, result_summary=summary,
                                artifact_document_id=doc_id, artifact_filename=fname,
-                               artifact_media_type=mtype)
+                               artifact_media_type=mtype, conversation_id=conversation_id,
+                               workspace_id=workspace_id)
             return {"results": []}
         if self.sql.startswith("SELECT run_id, channel"):
             user_id, limit = self.values
+            # Honour the statement projection exactly: a column the SELECT does
+            # not ask for must not be visible to the projection layer, so a
+            # missing conversation_id in the D1 read is observable (#2829 M2).
+            selected = [c.strip() for c in
+                        self.sql.split("SELECT ", 1)[1].split("FROM ", 1)[0]
+                        .replace("\n", " ").split(",")]
             rows = [r for r in self.db.rows if r["user_id"] == user_id]
             rows.sort(key=lambda r: r["created_at"], reverse=True)
-            return {"results": rows[:limit]}
+            return {"results": [{c: r.get(c) for c in selected} for r in rows[:limit]]}
         return {"results": []}
 
 
@@ -1879,8 +1891,11 @@ async def test_d1_run_history_projects_only_safe_fields():
     runs = await store.list_recent_claw_runs("usr_owner", limit=10)
     public = runs[0]
     assert set(public) == {"run_id", "channel", "action", "title", "status", "created_at",
-                           "updated_at", "result_summary", "artifact"}
+                           "updated_at", "result_summary", "artifact", "session"}
     assert "user_id" not in public
+    # #2829: persisted D1 rows carry no conversation reference, so the bounded
+    # session projection is null — no fabricated session, no linkage stored.
+    assert public["session"] is None
     assert public["artifact"]["document_id"] == "doc_1"
     # values are bound, never interpolated into SQL text
     assert all("usr_owner" not in sql for sql in store.db.prepared)
@@ -1892,3 +1907,157 @@ def test_run_history_migration_has_no_runtime_create_and_bounds_columns() -> Non
     assert "run_id TEXT NOT NULL UNIQUE" in migration
     for forbidden in ("raw_content", "prompt", "secret", "token", "cookie", "object_key"):
         assert forbidden not in migration.lower()
+
+
+# ── #2829 Phase B: D1-level persisted conversation linkage ─────────────────
+
+
+@pytest.mark.asyncio
+async def test_d1_record_claw_run_persists_conversation_id():
+    """D1 store persists the exact validated conversation_id (Phase B)."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_conv", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+        conversation_id="chat_" + "a1" * 16,
+    )
+    inserted = store.db.rows[0]
+    assert inserted["conversation_id"] == "chat_" + "a1" * 16
+    # The SQL must include conversation_id as a bound parameter, never inline.
+    insert_sql = next(s for s in store.db.prepared if "INSERT INTO claw_run_history" in s)
+    assert "conversation_id" in insert_sql
+    assert "chat_" not in insert_sql
+
+
+@pytest.mark.asyncio
+async def test_d1_record_claw_run_without_conversation_id_persists_null():
+    """Absent conversation_id persists NULL (legacy compatibility)."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+    )
+    inserted = store.db.rows[0]
+    assert inserted["conversation_id"] is None
+
+
+@pytest.mark.asyncio
+async def test_d1_list_recent_claw_runs_returns_conversation_id():
+    """list_recent_claw_runs returns persisted conversation_id in rows."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_conv", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+        conversation_id="chat_" + "a1" * 16,
+    )
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+    )
+    runs = await store.list_recent_claw_runs("usr_owner", limit=10)
+    by_run_id = {r["run_id"]: r for r in runs}
+    assert by_run_id["run_conv"]["session"] == {"conversation_id": "chat_" + "a1" * 16}
+    assert by_run_id["run_legacy"]["session"] is None
+    # No raw user_id or internal ids leak into public projection.
+    assert "user_id" not in by_run_id["run_conv"]
+    assert "conversation_id" not in by_run_id["run_conv"]
+
+
+def _record_linked_run(store, *, run_id: str, conversation_id: str | None,
+                       status: str = "completed") -> None:
+    """Insert (first call) or update (later calls) one owner run row."""
+    return store.record_claw_run(
+        user_id="usr_owner", run_id=run_id, channel="kakao",
+        action="quote_draft", title="T", status=status,
+        conversation_id=conversation_id,
+    )
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_preserved_on_null_update():
+    """existing link A + update None → A is preserved, never erased."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a)
+    assert store.db.rows[0]["conversation_id"] == conv_a
+
+    await _record_linked_run(store, run_id="run_link", conversation_id=None, status="failed")
+    assert store.db.rows[0]["conversation_id"] == conv_a
+    # the rest of the row still updates — only the linkage is immutable
+    assert store.db.rows[0]["status"] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_preserved_on_same_link_update():
+    """existing link A + update A → PASS, A preserved."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a)
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a, status="failed")
+    assert store.db.rows[0]["conversation_id"] == conv_a
+    assert store.db.rows[0]["status"] == "failed"
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_transfer_fails_closed():
+    """existing link A + update B → fail closed: transfer rejected, A preserved."""
+    from app.history import D1HistoryStore, HistoryError
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+    conv_b = "chat_" + "b2" * 16
+    await _record_linked_run(store, run_id="run_link", conversation_id=conv_a)
+
+    with pytest.raises(HistoryError, match="transfer"):
+        await _record_linked_run(store, run_id="run_link", conversation_id=conv_b)
+    assert store.db.rows[0]["conversation_id"] == conv_a
+    assert store.db.rows[0]["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_d1_run_conversation_link_backfill_from_null():
+    """A legacy run with NULL conversation_id can be backfilled once."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    conv_a = "chat_" + "a1" * 16
+
+    # Insert legacy row without conversation_id
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+    )
+    assert store.db.rows[0]["conversation_id"] is None
+
+    # Backfill with valid conversation_id
+    await store.record_claw_run(
+        user_id="usr_owner", run_id="run_legacy", channel="kakao",
+        action="quote_draft", title="T", status="completed",
+        conversation_id=conv_a,
+    )
+    assert store.db.rows[0]["conversation_id"] == conv_a
+
+
+@pytest.mark.asyncio
+async def test_d1_store_rejects_malformed_conversation_id():
+    """Store-level shape validation rejects malformed conversation_id."""
+    from app.history import D1HistoryStore
+
+    store = D1HistoryStore(_HistoryD1())
+    with pytest.raises(ValueError, match="conversation_id"):
+        await store.record_claw_run(
+            user_id="usr_owner", run_id="run_bad", channel="kakao",
+            action="quote_draft", title="T", status="completed",
+            conversation_id="not-a-conversation-id",
+        )
+    assert len(store.db.rows) == 0

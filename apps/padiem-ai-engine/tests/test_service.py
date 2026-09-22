@@ -243,6 +243,32 @@ async def test_core_errors_use_only_safe_public_contract(error, status) -> None:
 
 
 @pytest.mark.asyncio
+async def test_execute_route_preserves_b14_status_inside_error_metadata() -> None:
+    error = ExecutionRuntimeError(
+        "upstream_server_error",
+        "safe core message",
+        retryable=True,
+        upstream_status_code=503,
+        metadata=RunMetadata(
+            trace_id="trace-1",
+            app_id="lovebud",
+            agent_id="relationship-coach",
+            status=RunStatus.FAILED,
+            error_class=ErrorClass.INTERNAL_ERROR,
+        ),
+    )
+    runtime = FakeRuntime(error=error)
+    service = EngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)
+
+    response = await service.execute_payload(valid_payload())
+
+    assert response.status_code == 502
+    body = response.body["error"]
+    assert set(body.keys()) == {"code", "message", "retryable", "metadata"}
+    assert body["metadata"]["upstream_status_code"] == 503
+
+
+@pytest.mark.asyncio
 async def test_unexpected_private_exception_is_redacted() -> None:
     runtime = FakeRuntime(error=RuntimeError("PRIVATE_PROVIDER_SECRET"))
     service = EngineService(runtime_factory=lambda app_id: runtime, b14_service_bound=True)

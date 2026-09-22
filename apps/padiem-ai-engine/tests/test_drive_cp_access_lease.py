@@ -141,7 +141,7 @@ def test_private_client_rejects_unreviewed_connector_without_rpc_call() -> None:
     binding = FakeServiceBinding()
     client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding, clock=lambda: NOW)
     with pytest.raises(ServiceContractError):
-        run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="google-calendar"))
+        run(client.issue_access_lease(binding_ref=BINDING_REF, connector_id="google-slides"))
     assert binding.calls == []
 
 

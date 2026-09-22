@@ -264,6 +264,17 @@ class ExecutionResult:
         }
 
 
+def _normalize_upstream_status_code(value: Any) -> int | None:
+    # A malformed status may never replace the failure it describes: this is
+    # reached from an ``except`` path, so raising here would mask the original
+    # B14 error. Anything that is not an in-range HTTP status degrades to None.
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    if not 100 <= value <= 599:
+        return None
+    return value
+
+
 class ExecutionRuntimeError(RuntimeError):
     def __init__(
         self,
@@ -272,12 +283,16 @@ class ExecutionRuntimeError(RuntimeError):
         *,
         metadata: RunMetadata,
         retryable: bool = False,
+        upstream_status_code: int | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = _safe_identifier("error code", code)
         self.safe_message = safe_message
         self.metadata = metadata
         self.retryable = bool(retryable)
+        self.upstream_status_code = _normalize_upstream_status_code(
+            upstream_status_code
+        )
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -412,6 +427,7 @@ class ExecutionRuntime:
                 _safe_message_for_b14(exc.code),
                 metadata=metadata,
                 retryable=exc.retryable,
+                upstream_status_code=exc.upstream_status_code,
             ) from None
         except Exception:
             metadata = self._metadata(

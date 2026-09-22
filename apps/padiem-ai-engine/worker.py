@@ -23,12 +23,17 @@ from padiem_ai_core import (
 from padiem_ai_core.grounding_runtime import GroundedResearchRuntime
 from padiem_ai_core.web_runtime import WebRuntimeConfig, create_web_provider
 
+from app.agent_preview_authority import (
+    build_preview_agent_lane,
+    preview_capability_overrides,
+)
 from app.agent_skill_service import (
     AGENT_SKILL_CANCEL_PATH,
     AGENT_SKILL_RESUME_PATH,
     AGENT_SKILL_RUN_PATH,
     AgentSkillEngineService,
 )
+from app.capability_manifest import set_posture_overrides
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -229,7 +234,33 @@ def _memory_service_for_env(env: Any) -> MemoryRetrievalEngineService:
     return MemoryRetrievalEngineService(bindings={}, write_bindings={})
 
 
+def _agent_skill_service_for_env(
+    env: Any,
+    *,
+    runtime_factory: Any,
+    idempotency_adapter: Any | None = None,
+) -> AgentSkillEngineService:
+    """Compose the Agent/Skill service: preview lane, or the fail-closed default.
+
+    An explicitly marked non-production isolate gets the synthetic preview lane.
+    Every other isolate -- Production included -- gets exactly the resolver-less
+    composition this Engine has always used, so an unmarked deployment can never
+    reach the synthetic authority.
+    """
+    preview = build_preview_agent_lane(env)
+    if preview is not None:
+        return preview.service
+    return AgentSkillEngineService(
+        runtime_factory=runtime_factory,
+        binding_resolver=None,
+        idempotency_adapter=idempotency_adapter,
+    )
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    # Preview-lane posture only. Every other isolate clears the override, so the
+    # declared manifest truth is untouched outside an explicitly marked pilot.
+    set_posture_overrides(preview_capability_overrides(env))
     binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
     if binding is None:
         unavailable_factory = lambda app_id: (_ for _ in ()).throw(  # noqa: E731
@@ -256,9 +287,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             memory=_memory_service_for_env(env),
             # Agent/Skill source routes remain production-unactivated. Without
             # trusted resolver/store/verifier they fail closed.
-            agent_skill=AgentSkillEngineService(
+            agent_skill=_agent_skill_service_for_env(
+                env,
                 runtime_factory=unavailable_factory,
-                binding_resolver=None,
             ),
             # ACT-2 route admission: the Tool routes are wired, but this
             # composition carries an explicitly unconfigured resolver (no
@@ -314,11 +345,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             b14_service_bound=True,
         ),
         memory=_memory_service_for_env(env),
-        agent_skill=AgentSkillEngineService(
+        agent_skill=_agent_skill_service_for_env(
+            env,
             runtime_factory=runtime_factory,
             # Trusted registry/session/entitlement and continuation authority
-            # remain later Production gates (#1751/#1753).
-            binding_resolver=None,
+            # remain later Production gates (#1751/#1753); only an explicitly
+            # marked non-production pilot isolate composes the synthetic lane.
             idempotency_adapter=idempotency_adapter,
         ),
         # #1964 source slice: replay composes only the same trusted durable

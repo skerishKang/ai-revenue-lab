@@ -113,7 +113,6 @@ def test_future_core_projection_features_are_truthfully_deferred() -> None:
         "approval_continuation",
         "execution_idempotency_replay_streaming",
         "skill_runtime_projection",
-        "agent_runtime_projection",
         "memory_rag_projection",
         "attachment_admission",
         # #2764: routed source truth only; never AVAILABLE in this revision.
@@ -135,7 +134,7 @@ def test_agent_skill_routes_are_declared_but_runtime_features_stay_deferred() ->
         AGENT_SKILL_CANCEL_PATH,
     ):
         assert ("POST", path) in endpoints
-    assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.DEFERRED
+    assert manifest.feature_state("agent_runtime_projection") is EngineFeatureState.AVAILABLE
     assert manifest.feature_state("skill_runtime_projection") is EngineFeatureState.DEFERRED
     assert manifest.feature_state("approval_continuation") is EngineFeatureState.DEFERRED
 
@@ -194,7 +193,6 @@ def test_client_cannot_require_deferred_or_unavailable_feature() -> None:
     for feature_id in (
         "approval_continuation",
         "memory_rag_projection",
-        "agent_runtime_projection",
         "skill_runtime_projection",
         "attachment_admission",
         "multimodal_completed_run",

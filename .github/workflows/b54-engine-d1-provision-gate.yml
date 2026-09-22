@@ -2,10 +2,12 @@ name: B54 Engine D1 Provision Gate
 
 # WO-8 PR-A (#1621 / #1753 E9 A9) — provisions the Cloudflare D1 database
 # `padiem-engine` and applies the idempotency/continuation/grants/attachment/
-# Drive-capability migrations. Dispatch-only by contract: an ordinary pull
+# Drive-capability/document-bytes migrations. Dispatch-only by contract: an ordinary pull
 # request can never trigger it. This workflow does NOT edit wrangler.toml and
-# does NOT deploy the worker. #2152 added 0004; #2222 adds 0005 so the Drive
-# grant loader's capability column exists before Drive ACT-2 grant seeding.
+# does NOT deploy the worker. #2152 added 0004; #2222 added 0005 so the Drive
+# grant loader's capability column exists before Drive ACT-2 grant seeding;
+# #1971 A6-S2A adds 0006 so the Engine-owned durable document byte store exists
+# before any A6 document-admission production read or activation.
 
 on:
   workflow_dispatch:
@@ -78,13 +80,14 @@ jobs:
           echo "D1_DATABASE_ID=$DB_ID"
           echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
 
-      - name: Apply migrations 0001 + 0002 + 0003 + 0004 + 0005 to remote
+      - name: Apply migrations 0001 + 0002 + 0003 + 0004 + 0005 + 0006 to remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          # 0001-0004 are CREATE TABLE IF NOT EXISTS and replay-safe.
+          # 0001-0004 and 0006 are CREATE TABLE / CREATE INDEX IF NOT EXISTS and
+          # replay-safe.
           # SQLite ALTER TABLE ADD COLUMN has no portable IF NOT EXISTS form,
           # so 0005 is guarded by authoritative remote schema readback. This
           # preserves the provision gate's existing re-run/idempotency contract.
@@ -113,7 +116,12 @@ jobs:
               --file=apps/padiem-ai-engine/migrations/0005_engine_connector_drive_capabilities.sql
             echo 'D1_MIGRATION_0005=APPLIED'
           fi
-          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005'
+          # 0006 (#2741 / #1971 A6-S2A) is the Engine-owned durable document byte
+          # store. Replay-safe IF NOT EXISTS DDL, applied last so the canonical
+          # migration order stays 0001..0006.
+          npx --yes wrangler@4 d1 execute padiem-engine --remote \
+            --file=apps/padiem-ai-engine/migrations/0006_engine_document_bytes.sql
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005,0006'
 
       - name: Assert schema tables and Drive capability column exist
         env:
@@ -122,7 +130,7 @@ jobs:
         run: |
           set -euo pipefail
           npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
-            --command "SELECT name FROM sqlite_master WHERE type='table'" > /tmp/d1-tables.json
+            --command "SELECT name FROM sqlite_master WHERE type IN ('table','index')" > /tmp/d1-tables.json
           python3 - <<'PY'
           import json
           rows = json.load(open('/tmp/d1-tables.json'))
@@ -136,6 +144,16 @@ jobs:
           ):
               assert required in names, f'missing table: {required} (have {sorted(names)})'
           print('D1_TABLES_ASSERT=PASS')
+          # A6 durable document bytes: the table plus both readback indexes the
+          # 0006 migration declares. Schema object names only; no rows, no
+          # document content, no database identifier is read or emitted.
+          for required in (
+              'padiem_engine_document_bytes',
+              'idx_padiem_engine_document_bytes_expires_at',
+              'idx_padiem_engine_document_bytes_scope',
+          ):
+              assert required in names, f'missing document bytes schema object: {required}'
+          print('D1_DOCUMENT_BYTES_TABLE_ASSERT=PASS')
           PY
           npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
             --command "PRAGMA table_info(padiem_engine_connector_grants)" > /tmp/d1-grant-columns.json
@@ -152,7 +170,8 @@ jobs:
         run: |
           echo 'D1_PROVISION=PASS'
           echo "D1_DATABASE_ID=$DB_ID"
-          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005'
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005,0006'
           echo 'D1_DRIVE_CAPABILITY_COLUMN_ASSERT=PASS'
+          echo 'D1_DOCUMENT_BYTES_TABLE_ASSERT=PASS'
           echo 'WORKER_DEPLOYED=0'
           echo 'WRANGLER_TOML_MODIFIED=0'
