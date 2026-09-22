@@ -143,14 +143,17 @@ class BridgeTestBase(unittest.TestCase):
     """Provides both store backends without a third-party fixture library."""
 
     def stores(self):
-        """Yield (label, store) for the in-memory and durable backends."""
+        """Yield (label, store) for the in-memory and durable backends.
+
+        The durable store's directory is cleaned up at test teardown (addCleanup),
+        not while the store is still in use: on POSIX an early rmdir would break the
+        open SQLite handle.
+        """
 
         yield "inmemory", InMemoryClawAutomationStore()
         factory = SqliteFactory()
-        try:
-            yield "sqlite", factory()
-        finally:
-            factory.cleanup()
+        self.addCleanup(factory.cleanup)
+        yield "sqlite", factory()
 
     def each_store(self):
         return list(self.stores())
