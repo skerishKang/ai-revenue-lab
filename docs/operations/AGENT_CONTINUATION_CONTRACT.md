@@ -219,6 +219,33 @@ only when a read observes the expiry (`_get` / `release` / `release_cancel`). A 
 lifecycle event to the expiry 409 (where the failed read leaves no trusted record to name), are both out of scope
 for this phase.
 
+### 8.1 Orchestrate route mirror (S13-5 Phase 1)
+
+The Engine exposes the same continuation in two places: the AGENT-SKILL route and the ORCHESTRATE route. S13-4
+Phase 3 published the lifecycle plane on the AGENT-SKILL route only. S13-5 Phase 1 mirrors it additively on the
+ORCHESTRATE route so both routes speak one lifecycle contract.
+
+```text
+source of truth     the Engine continuation record is unchanged; the mirror adds no state, no store, no history
+reuse               the orchestrate route calls the same S13-4 projection
+                    (app/agent_skill_continuation_projection.project_agent_lifecycle_events). No event kind, ordering
+                    rule, id derivation or timestamp source is re-implemented on the second route
+shape               an additive top-level sibling key `continuation` on the two responses that perform a real
+                    transition:
+                      resume 200   { ok, orchestration, continuation }
+                      cancel 200   { ok, status, events, continuation }
+                    `continuation` carries exactly: continuation_id, lifecycle_contract_version, lifecycle_events
+absent when          no continuation record backed the response (a plain orchestrate run, and every error response).
+                    The mirror never invents an event, an id, a timestamp or a state
+not mirrored         owner_identity and resume_authority: the orchestrate route has no trusted agent-skill selection,
+                    so neither is projected (the cancel-route precedent: record the gap rather than invent one)
+ordering / kinds    identical to §8 — resume: resume_requested -> resumed; cancel: cancel_requested -> cancelled,
+                    exactly one terminal event per transition
+```
+
+Rollback is the same as §10: removing the mirror removes the one sibling key and leaves every other block
+byte-identical.
+
 ## 9. Non-goals
 
 ```text
@@ -230,7 +257,8 @@ no audit_event expansion (Phase 3 decision: deferred to the durable-audit stage 
 no durable lifecycle history, no event store (deferred to consumer adoption; the D1 continuation adapter exists
   but stays unwired)
 no lifecycle events on error responses (an expired read has no trusted record to name)
-no consumer wiring, no Claw/Chat surface
+no Consumer/Claw/Chat surface (S13-5 Phase 1 mirrors the lifecycle onto the second Engine route only; the chat
+  product state, its D1 tables and the kagent consumer are untouched)
 no durable continuation history, no new storage, no migration
 no preview wire, no production deployment
 ```
