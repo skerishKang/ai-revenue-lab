@@ -17,6 +17,7 @@ from kagent.sandbox_conformance import (
     REAL_SANDBOX_PROVIDER_CALLS,
     REAL_SANDBOX_PROVIDER_SELECTED,
     IsolationPrimitive,
+    SandboxAppliedLimits,
     SandboxArtifactManifest,
     SandboxArtifactRef,
     SandboxProviderCapabilities,
@@ -24,6 +25,12 @@ from kagent.sandbox_conformance import (
     SandboxSecurityPolicy,
     VerifiedDiffEvidence,
 )
+
+# Cloud M1 acceptance now requires numeric limit evidence as well as the declared
+# booleans (#1405). Tests about something other than the numbers supply these so
+# their original subject stays in focus; the limits contract itself is pinned in
+# test_cloud_m1_policy_enforcement.py.
+_WITHIN_CEILING = SandboxAppliedLimits(cpu_cores=2, memory_mb=4096, disk_mb=5120, process_count=128)
 
 
 class SandboxConformanceTests(unittest.TestCase):
@@ -62,10 +69,20 @@ class SandboxConformanceTests(unittest.TestCase):
         return SandboxProviderCapabilities(**values)
 
     def test_fully_declared_candidate_passes_provider_neutral_gate(self):
-        assessment = SandboxProviderConformanceGate().require_accepted(self.capabilities())
+        gate = SandboxProviderConformanceGate()
+        assessment = gate.require_accepted(self.capabilities(), applied_limits=_WITHIN_CEILING)
         self.assertTrue(assessment.accepted_for_cloud_m1)
         self.assertEqual(assessment.missing_controls, ())
         self.assertEqual(assessment.policy_version, "claw-cloud-m1-sandbox.v1")
+        # Declarations alone are no longer acceptance: the same candidate without
+        # numeric limit evidence is refused by the same gate.
+        self.assertFalse(gate.assess(self.capabilities()).accepted_for_cloud_m1)
+        self.assertEqual(
+            gate.assess(self.capabilities()).missing_controls,
+            ("resource_limits_reported",),
+        )
+        with self.assertRaisesRegex(ContractError, "resource_limits_reported"):
+            gate.require_accepted(self.capabilities())
 
     def test_each_false_security_control_is_visible_and_rejects_candidate(self):
         capabilities = self.capabilities(
@@ -73,7 +90,9 @@ class SandboxConformanceTests(unittest.TestCase):
             provider_metadata_blocked=False,
             cancellation_kills_workload=False,
         )
-        assessment = SandboxProviderConformanceGate().assess(capabilities)
+        # Limits are supplied so this exact-tuple assertion keeps testing the three
+        # declared security controls it names, rather than the limits rule.
+        assessment = SandboxProviderConformanceGate().assess(capabilities, applied_limits=_WITHIN_CEILING)
         self.assertFalse(assessment.accepted_for_cloud_m1)
         self.assertEqual(
             assessment.missing_controls,
@@ -84,7 +103,7 @@ class SandboxConformanceTests(unittest.TestCase):
             ),
         )
         with self.assertRaisesRegex(ContractError, "runtime_socket_hidden"):
-            SandboxProviderConformanceGate().require_accepted(capabilities)
+            SandboxProviderConformanceGate().require_accepted(capabilities, applied_limits=_WITHIN_CEILING)
 
     def test_unknown_isolation_primitive_fails_even_if_booleans_claim_true(self):
         assessment = SandboxProviderConformanceGate().assess(
@@ -163,7 +182,13 @@ class SandboxConformanceTests(unittest.TestCase):
             lease_id="lease_1",
             artifacts=(
                 SandboxArtifactRef("artifact_1", "diff", 512, "a" * 64),
-                SandboxArtifactRef("artifact_2", "test", 1024, "b" * 64),
+                # Kind was "test", which is not one of the Cloud M1 export types the
+                # server authorizes; #1405 added allowlist enforcement, so this
+                # fixture now uses the canonical "test_report" kind. This test's
+                # subject is size/count/output bounds, not kind acceptance, and
+                # refusal of an unlisted kind is asserted separately in
+                # test_cloud_m1_policy_enforcement.py.
+                SandboxArtifactRef("artifact_2", "test_report", 1024, "b" * 64),
             ),
             terminal_output_bytes=1024,
             terminal_output_sanitized=True,

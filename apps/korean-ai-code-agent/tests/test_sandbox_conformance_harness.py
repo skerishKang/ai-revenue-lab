@@ -17,6 +17,7 @@ from kagent.sandbox import (
 )
 from kagent.sandbox_conformance import (
     IsolationPrimitive,
+    SandboxAppliedLimits,
     SandboxArtifactManifest,
     SandboxArtifactRef,
     SandboxProviderCapabilities,
@@ -31,6 +32,12 @@ from kagent.sandbox_conformance_harness import (
     validate_provider_capabilities_against_cloud_m1_policy,
     validate_verified_diff_evidence,
 )
+
+
+# #1405 blocker 1: acceptance now needs reported limit values, not just the four
+# *_limit_enforced booleans. Tests that are about something other than the numbers
+# supply these so their original contrast stays intact.
+_WITHIN_CEILING = SandboxAppliedLimits(cpu_cores=2, memory_mb=4096, disk_mb=5120, process_count=128)
 
 
 class SandboxConformanceHarnessTests(unittest.TestCase):
@@ -71,7 +78,7 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
     def test_harness_accepts_fully_conforming_candidate(self):
         harness = SandboxProviderConformanceHarness()
         caps = self.valid_capabilities()
-        report = harness.evaluate_capabilities(caps)
+        report = harness.evaluate_capabilities(caps, applied_limits=_WITHIN_CEILING)
         self.assertTrue(report.overall_conforming)
         self.assertEqual(report.failed_controls, ())
         self.assertEqual(report.isolation_primitive, IsolationPrimitive.MICROVM)
@@ -178,6 +185,9 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
 
     def test_artifact_manifest_evaluation(self):
         harness = SandboxProviderConformanceHarness()
+        # No control sequences, so the sanitized form is byte-identical and the
+        # claimed length below is the number the proof recomputes.
+        raw_output = "unit test terminal output\n"
         valid_manifest = SandboxArtifactManifest(
             run_id="run_art_1",
             lease_id="lease_art_1",
@@ -185,10 +195,14 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
                 SandboxArtifactRef("art_1", "diff", 1024, "a" * 64),
                 SandboxArtifactRef("art_2", "test_report", 2048, "b" * 64),
             ),
-            terminal_output_bytes=4096,
+            terminal_output_bytes=len(raw_output.encode("utf-8")),
             terminal_output_sanitized=True,
         )
-        self.assertTrue(harness.evaluate_artifact_manifest(valid_manifest))
+        self.assertTrue(
+            harness.evaluate_artifact_manifest(valid_manifest, raw_terminal_output=raw_output)
+        )
+        # #1405 blocker 2: the sanitized flag alone is no longer a pass.
+        self.assertFalse(harness.evaluate_artifact_manifest(valid_manifest))
 
         unsanitized_manifest = SandboxArtifactManifest(
             run_id="run_art_2",
@@ -197,7 +211,9 @@ class SandboxConformanceHarnessTests(unittest.TestCase):
             terminal_output_bytes=1024,
             terminal_output_sanitized=False,
         )
-        self.assertFalse(harness.evaluate_artifact_manifest(unsanitized_manifest))
+        self.assertFalse(
+            harness.evaluate_artifact_manifest(unsanitized_manifest, raw_terminal_output=raw_output)
+        )
 
     def test_validate_verified_diff_evidence(self):
         evidence = VerifiedDiffEvidence(
@@ -322,8 +338,11 @@ class CancellationConformanceTests(unittest.TestCase):
                 if name not in {"provider_id", "isolation_primitive"}
             },
         )
-        # Every control is claimed true, so the boolean report conforms…
-        self.assertTrue(harness.evaluate_capabilities(declared).overall_conforming)
+        # Every control is claimed true and the reported limits sit inside the
+        # ceiling, so the paper report conforms…
+        self.assertTrue(
+            harness.evaluate_capabilities(declared, applied_limits=_WITHIN_CEILING).overall_conforming
+        )
         # …which is exactly why the lifecycle has to call cancel() itself.
         self.assertFalse(
             harness.evaluate_lease_lifecycle(self.fake(NoCancelProvider), self.request())
@@ -463,8 +482,11 @@ class ReclamationConformanceTests(unittest.TestCase):
                 if name not in {"provider_id", "isolation_primitive"}
             },
         )
-        # ``ttl_enforced`` is claimed true, so the boolean report conforms…
-        self.assertTrue(harness.evaluate_capabilities(declared).overall_conforming)
+        # ``ttl_enforced`` is claimed true and the reported limits are within the
+        # ceiling, so the paper report conforms…
+        self.assertTrue(
+            harness.evaluate_capabilities(declared, applied_limits=_WITHIN_CEILING).overall_conforming
+        )
         # …while a provider that cannot reclaim a lapsed lease fails the lifecycle.
         self.assertFalse(
             harness.evaluate_lease_lifecycle(self.fake(NoReclaimProvider), self.request())

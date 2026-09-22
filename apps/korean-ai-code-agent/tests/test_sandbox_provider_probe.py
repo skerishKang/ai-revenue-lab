@@ -236,8 +236,11 @@ class CloudM1ProviderLiveProbeResultTests(unittest.TestCase):
         self.assertTrue(reviewed.eligible_for_acceptance(NOW))
         pack = reviewed.promote_to_v1(NOW)
         assessment = pack.assess()
-        self.assertTrue(assessment.accepted_for_cloud_m1)
-        self.assertEqual(assessment.missing_controls, ())
+        # Promotion through the v2/v1 evidence gates still works; what it produces is
+        # declaration evidence. Cloud M1 acceptance additionally needs numeric limit
+        # evidence, which an evidence pack does not carry (#1405).
+        self.assertFalse(assessment.accepted_for_cloud_m1)
+        self.assertEqual(assessment.missing_controls, ("resource_limits_reported",))
 
     def test_unproven_unsupported_and_stale_live_observations_remain_blockers(self):
         profile = build_candidate_launch_profile(SandboxProviderCandidate.E2B)
