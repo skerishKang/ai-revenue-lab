@@ -763,6 +763,41 @@ def _projection_update_material(
 
 
 
+def _projection_output_for_update(
+    *,
+    workspace_id: str,
+    status: ClawScheduledRunStatus,
+    output: ClawAutomationOutput | None,
+    existing_status: ClawScheduledRunStatus,
+    existing_output: ClawAutomationOutput | None,
+) -> ClawAutomationOutput | None:
+    """Validate an optional output attachment for an existing projection row.
+
+    S2F4A is deliberately existing-row only: ``record_run`` remains the sole
+    occurrence-claim authority. Legacy status-only updates pass ``output=None``
+    and preserve the stored output byte-for-byte. A real output may be attached
+    only to a COMPLETED projection, must belong to the same workspace, may never
+    resurrect FAILED/CANCELLED rows, and becomes immutable once present. Repeating
+    the exact same output is an idempotent retry.
+    """
+
+    if output is None:
+        return existing_output
+    if not isinstance(output, ClawAutomationOutput):
+        raise ContractError("projection output must be a ClawAutomationOutput")
+    if status is not ClawScheduledRunStatus.COMPLETED:
+        raise ContractError("projection output may only be attached to COMPLETED")
+    if output.workspace_id != workspace_id:
+        raise ContractError("projection output workspace does not match the scheduled run")
+    if existing_status in {
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    }:
+        raise ContractError("terminal failed/cancelled projection cannot attach output")
+    if existing_output is not None and existing_output != output:
+        raise ContractError("projection output is immutable once attached")
+    return output
+
 class ClawAutomationStore(Protocol):
     def save_rule(self, rule: ClawAutomationRule) -> None: ...
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None: ...
@@ -783,6 +818,7 @@ class ClawAutomationStore(Protocol):
         status: ClawScheduledRunStatus,
         completed_at: datetime | None = None,
         error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
     ) -> ClawScheduledRun: ...
     def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]: ...
 
@@ -892,6 +928,7 @@ class InMemoryClawAutomationStore:
         status: ClawScheduledRunStatus,
         completed_at: datetime | None = None,
         error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
     ) -> ClawScheduledRun:
         """Update an existing projection row. Fail-closed: never claims or inserts."""
 
@@ -920,6 +957,13 @@ class InMemoryClawAutomationStore:
         key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
         if self._occurrences.get(key) != bounded_run_id:
             raise ContractError("projection update must match the existing occurrence claim")
+        persisted_output = _projection_output_for_update(
+            workspace_id=bounded_workspace,
+            status=projected,
+            output=output,
+            existing_status=existing.status,
+            existing_output=existing.output,
+        )
         updated = ClawScheduledRun(
             run_id=existing.run_id,
             workspace_id=existing.workspace_id,
@@ -928,10 +972,13 @@ class InMemoryClawAutomationStore:
             scheduled_time=existing.scheduled_time,
             started_at=existing.started_at,
             completed_at=completed,
-            output=existing.output,
+            output=persisted_output,
             error_message=bounded_error,
         )
         self._runs[bounded_run_id] = updated
+        if output is not None and existing.output is None and output.proposals:
+            for proposal in output.proposals:
+                self._proposals[proposal.proposal_id] = proposal
         return updated
 
 
@@ -1489,6 +1536,7 @@ class SqliteClawAutomationStore:
         status: ClawScheduledRunStatus,
         completed_at: datetime | None = None,
         error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
     ) -> ClawScheduledRun:
         """Update an existing projection row in place. Fail-closed: never inserts.
 
@@ -1523,15 +1571,42 @@ class SqliteClawAutomationStore:
         key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
         if self._get_occurrence_run_id(key, bounded_workspace) != bounded_run_id:
             raise ContractError("projection update must match the existing occurrence claim")
-        self._db.execute(
-            "UPDATE claw_runs SET status=?, completed_at=?, error_message=? WHERE run_id=?",
+        persisted_output = _projection_output_for_update(
+            workspace_id=bounded_workspace,
+            status=projected,
+            output=output,
+            existing_status=stored.status,
+            existing_output=stored.output,
+        )
+        serialized_output = self._serialize_output(persisted_output)
+        update_cursor = self._db.execute(
+            "UPDATE claw_runs SET status=?, completed_at=?, output=?, error_message=? "
+            "WHERE run_id=? AND (output IS NULL OR output=?)",
             (
                 projected.value,
                 _iso(completed) if completed is not None else None,
+                serialized_output,
                 bounded_error,
                 bounded_run_id,
+                serialized_output,
             ),
         )
+        if update_cursor.rowcount != 1:
+            raise ContractError("projection output changed concurrently")
+        if output is not None and stored.output is None and output.proposals:
+            for proposal in output.proposals:
+                self._db.execute(
+                    "INSERT OR IGNORE INTO claw_proposals(proposal_id, workspace_id, rule_id, channel, title, summary, approval_required, approval_reason, suggested_action, approved_by, approved_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        proposal.proposal_id, proposal.workspace_id, proposal.rule_id,
+                        proposal.channel.value, proposal.title, proposal.summary,
+                        1 if proposal.approval_gate.approval_required else 0,
+                        proposal.approval_gate.reason, proposal.approval_gate.suggested_action,
+                        proposal.approval_gate.approved_by,
+                        _iso(proposal.approval_gate.approved_at) if proposal.approval_gate.approved_at else None,
+                        _iso(proposal.created_at),
+                    ),
+                )
         updated = self.get_run(bounded_run_id, bounded_workspace)
         if updated is None:
             raise ContractError("projection update lost its scheduled run")
