@@ -162,7 +162,7 @@ accepting it.
 | exact immutable revision | `contracts.exact_commit_revision` applied inside `SandboxLeaseRequest` for CLOUD, re-checked by the gate | a mutable ref never reaches `allocate()` |
 | TTL bound | `contracts` 60..3600 and `policy.max_ttl_seconds` at the seam | a longer TTL is refused before allocation |
 | privileged / host mounts / runtime socket / provider metadata / host secrets / workspace reuse / mutable revision | `SandboxSecurityPolicy.__post_init__` refuses a policy that enables any of them | constructing such a policy raises |
-| CPU / RAM / disk / process ceiling | `SandboxSecurityPolicy.max_cpu_cores` … `max_process_count`, `require_within_bounds(SandboxAppliedLimits)`, harness cases `resource_limits_within_policy` and `resource_limits_reported` | a provider's *reported* numbers are checked against the ceiling, and reporting none fails acceptance rather than falling back on the four `*_limit_enforced` booleans |
+| CPU / RAM / disk / process ceiling | `SandboxSecurityPolicy.max_cpu_cores` … `max_process_count`, `require_within_bounds(SandboxAppliedLimits)`, and the acceptance rule in `SandboxProviderConformanceGate.assess` / `require_accepted` | a provider's *reported* numbers are checked against the ceiling, and reporting none is a missing control (`resource_limits_reported`), so declarations alone cannot be accepted. The gate owns this decision: the conformance harness and the evidence-pack path report against it rather than keeping a second rule |
 | artifact export allowlist | `SandboxSecurityPolicy.allowed_artifact_kinds`, enforced in `SandboxArtifactManifest.validate_against` | an unlisted kind is refused even at in-policy size and count |
 | artifact size / count | `SandboxArtifactManifest.validate_against` | per-artifact, total, and count bounds |
 | terminal output bound | `sanitize_terminal_output` against `policy.max_terminal_output_bytes` | oversize output is refused, never truncated |
@@ -302,6 +302,9 @@ RESOURCE_CEILING_EXPRESSED_IN_POLICY = YES        (#1405 A; was declared only on
 ARTIFACT_EXPORT_ALLOWLIST_ENFORCED = YES         (#1405 A)
 TERMINAL_OUTPUT_SANITIZER_EXISTS = YES           (#1405 A; replaces a bare boolean claim)
 POLICY_CEILING_CHECKED_AT_ALLOCATION_SEAM = YES  (#1405 A; refusals never reach a provider)
+ACCEPTANCE_AUTHORITY = SINGLE               (the gate; harness and evidence packs report against it)
+BOOLEANS_TRUE_ONLY_CAN_ACCEPT = NO          (numeric limit evidence is a required control)
+EVIDENCE_PACK_ALONE_IS_NOT_ACCEPTANCE = YES (a complete boolean pack has no limit values)
 PROVIDER_CONFORMANCE_HARNESS = IMPLEMENTED
 VERIFIED_DIFF_CONTRACT = IMPLEMENTED
 CONTROLS_NOT_YET_ENFORCED = SEE_SECTION_4_2

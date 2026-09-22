@@ -37,6 +37,12 @@ SANDBOX_MAX_PROCESS_COUNT = 256
 # Server-owned artifact export allowlist (threat model §7).
 SANDBOX_ALLOWED_ARTIFACT_KINDS = ("diff", "test_report", "junit_xml", "log")
 
+# Canonical acceptance control names for numeric limit evidence. Both the gate and
+# the conformance harness use these so an acceptance verdict can only have one
+# meaning across every entry point.
+RESOURCE_LIMITS_REPORTED_CONTROL = "resource_limits_reported"
+RESOURCE_LIMITS_WITHIN_POLICY_CONTROL = "resource_limits_within_policy"
+
 # Terminal escape sequences. The ESC introducer also falls inside the control
 # range below, so an unterminated sequence can never survive as a live escape;
 # what can remain is its payload as inert text ("ESC ] 0 ; t" leaves "0;t"). The
@@ -277,7 +283,19 @@ class SandboxProviderConformanceGate:
     def __init__(self, policy: SandboxSecurityPolicy | None = None) -> None:
         self.policy = policy or SandboxSecurityPolicy()
 
-    def assess(self, capabilities: SandboxProviderCapabilities) -> SandboxProviderAssessment:
+    def assess(
+        self,
+        capabilities: SandboxProviderCapabilities,
+        *,
+        applied_limits: SandboxAppliedLimits | None = None,
+    ) -> SandboxProviderAssessment:
+        """Canonical Cloud M1 acceptance decision for one candidate provider.
+
+        Numeric limit evidence is part of this decision, not an optional extra:
+        a candidate that claims all four ``*_limit_enforced`` booleans but reports no
+        numbers is not accepted. This is the single authority — the conformance
+        harness and the evidence packs report against it rather than deciding twice.
+        """
         if not isinstance(capabilities, SandboxProviderCapabilities):
             raise ContractError("capabilities must be SandboxProviderCapabilities")
         missing = [
@@ -287,6 +305,13 @@ class SandboxProviderConformanceGate:
         ]
         if capabilities.isolation_primitive is IsolationPrimitive.UNKNOWN:
             missing.append("known_isolation_primitive")
+        if applied_limits is None:
+            missing.append(RESOURCE_LIMITS_REPORTED_CONTROL)
+        else:
+            try:
+                self.policy.require_within_bounds(applied_limits)
+            except ContractError:
+                missing.append(RESOURCE_LIMITS_WITHIN_POLICY_CONTROL)
         return SandboxProviderAssessment(
             provider_id=capabilities.provider_id,
             isolation_primitive=capabilities.isolation_primitive,
@@ -294,8 +319,13 @@ class SandboxProviderConformanceGate:
             missing_controls=tuple(missing),
         )
 
-    def require_accepted(self, capabilities: SandboxProviderCapabilities) -> SandboxProviderAssessment:
-        assessment = self.assess(capabilities)
+    def require_accepted(
+        self,
+        capabilities: SandboxProviderCapabilities,
+        *,
+        applied_limits: SandboxAppliedLimits | None = None,
+    ) -> SandboxProviderAssessment:
+        assessment = self.assess(capabilities, applied_limits=applied_limits)
         if not assessment.accepted_for_cloud_m1:
             raise ContractError(
                 "sandbox provider fails Cloud M1 controls: " + ", ".join(assessment.missing_controls)

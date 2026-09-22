@@ -19,17 +19,21 @@ from kagent.sandbox_conformance import (
     PRODUCTION_SANDBOX_CLAIM,
     REAL_SANDBOX_PROVIDER_CALLS,
     REAL_SANDBOX_PROVIDER_SELECTED,
+    RESOURCE_LIMITS_REPORTED_CONTROL,
+    RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
     SANDBOX_ALLOWED_ARTIFACT_KINDS,
     SandboxAppliedLimits,
     SandboxArtifactManifest,
     SandboxArtifactRef,
     SandboxProviderCapabilities,
+    SandboxProviderConformanceGate,
     SandboxSecurityPolicy,
     sanitize_terminal_output,
 )
 from kagent.sandbox_conformance_harness import (
     IsolationPrimitive,
     SandboxProviderConformanceHarness,
+    validate_provider_capabilities_against_cloud_m1_policy,
 )
 
 _DIGEST = hashlib.sha256(b"cloud-m1-policy-enforcement").hexdigest()
@@ -61,12 +65,10 @@ def _conforming_capabilities(**overrides: object) -> SandboxProviderCapabilities
         if field.name not in {"provider_id", "isolation_primitive"}
     }
     values: dict[str, object] = {name: True for name in fields}
+    values["provider_id"] = "conformance-fake"
+    values["isolation_primitive"] = IsolationPrimitive.MICROVM
     values.update(overrides)
-    return SandboxProviderCapabilities(
-        provider_id="conformance-fake",
-        isolation_primitive=IsolationPrimitive.MICROVM,
-        **values,  # type: ignore[arg-type]
-    )
+    return SandboxProviderCapabilities(**values)  # type: ignore[arg-type]
 
 
 class SandboxResourceCeilingTests(unittest.TestCase):
@@ -293,6 +295,73 @@ class HarnessSanitizationProofTests(unittest.TestCase):
         self.assertFalse(
             harness.evaluate_artifact_manifest(oversized, raw_terminal_output="y" * 2048)
         )
+
+
+class CanonicalAcceptanceAuthorityTests(unittest.TestCase):
+    """One acceptance rule, everywhere acceptance can be asked for."""
+
+    WITHIN = SandboxAppliedLimits(cpu_cores=2, memory_mb=4096, disk_mb=5120, process_count=128)
+    ABOVE = SandboxAppliedLimits(cpu_cores=8, memory_mb=4096, disk_mb=5120, process_count=128)
+
+    def test_gate_refuses_boolean_declarations_alone(self):
+        assessment = SandboxProviderConformanceGate().assess(_conforming_capabilities())
+        self.assertFalse(assessment.accepted_for_cloud_m1)
+        self.assertEqual(assessment.missing_controls, (RESOURCE_LIMITS_REPORTED_CONTROL,))
+
+    def test_gate_accepts_only_when_limits_are_within_the_ceiling(self):
+        assessment = SandboxProviderConformanceGate().assess(
+            _conforming_capabilities(), applied_limits=self.WITHIN
+        )
+        self.assertTrue(assessment.accepted_for_cloud_m1)
+        self.assertEqual(assessment.missing_controls, ())
+
+    def test_gate_refuses_limits_above_the_ceiling_by_named_control(self):
+        assessment = SandboxProviderConformanceGate().assess(
+            _conforming_capabilities(), applied_limits=self.ABOVE
+        )
+        self.assertFalse(assessment.accepted_for_cloud_m1)
+        self.assertEqual(assessment.missing_controls, (RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,))
+        with self.assertRaisesRegex(ContractError, RESOURCE_LIMITS_WITHIN_POLICY_CONTROL):
+            SandboxProviderConformanceGate().require_accepted(
+                _conforming_capabilities(), applied_limits=self.ABOVE
+            )
+
+    def test_helper_fails_closed_without_limit_evidence(self):
+        with self.assertRaisesRegex(ContractError, RESOURCE_LIMITS_REPORTED_CONTROL):
+            validate_provider_capabilities_against_cloud_m1_policy(_conforming_capabilities())
+
+    def test_helper_accepts_with_valid_limit_evidence(self):
+        assessment = validate_provider_capabilities_against_cloud_m1_policy(
+            _conforming_capabilities(), applied_limits=self.WITHIN
+        )
+        self.assertTrue(assessment.accepted_for_cloud_m1)
+
+    def test_gate_and_harness_acceptance_cannot_diverge(self):
+        """Gate verdict, harness verdict and per-case detail must always agree.
+
+        The harness stopped recomputing acceptance from its own case list, so this
+        is what keeps the two from drifting apart later: for every combination, the
+        gate's decision, the report's decision and the case results are identical.
+        """
+        gate = SandboxProviderConformanceGate()
+        harness = SandboxProviderConformanceHarness()
+        capability_variants = {
+            "declared": _conforming_capabilities(),
+            "unsafe_control": _conforming_capabilities(provider_metadata_blocked=False),
+            "unknown_primitive": _conforming_capabilities(
+                isolation_primitive=IsolationPrimitive.UNKNOWN
+            ),
+        }
+        for label, capabilities in capability_variants.items():
+            for limits_label, limits in (("absent", None), ("within", self.WITHIN), ("above", self.ABOVE)):
+                with self.subTest(capabilities=label, limits=limits_label):
+                    gate_verdict = gate.assess(capabilities, applied_limits=limits).accepted_for_cloud_m1
+                    report = harness.evaluate_capabilities(capabilities, applied_limits=limits)
+                    self.assertEqual(report.overall_conforming, gate_verdict)
+                    self.assertEqual(all(result.passed for result in report.results), gate_verdict)
+                    for control in gate.assess(capabilities, applied_limits=limits).missing_controls:
+                        if control.startswith("resource_limits_"):
+                            self.assertIn(control, report.failed_controls)
 
 
 class ProviderNeutralityTests(unittest.TestCase):

@@ -37,6 +37,8 @@ from .sandbox_conformance import (
     SandboxProviderCapabilities,
     SandboxProviderConformanceGate,
     SandboxSecurityPolicy,
+    RESOURCE_LIMITS_REPORTED_CONTROL,
+    RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
     VerifiedDiffEvidence,
     REAL_SANDBOX_PROVIDER_SELECTED,
     REAL_SANDBOX_PROVIDER_CALLS,
@@ -137,11 +139,19 @@ class SandboxProviderConformanceReport:
 def validate_provider_capabilities_against_cloud_m1_policy(
     capabilities: SandboxProviderCapabilities,
     *,
+    applied_limits: SandboxAppliedLimits | None = None,
     policy: SandboxSecurityPolicy | None = None,
 ) -> SandboxProviderAssessment:
-    """Validates capabilities using the canonical Cloud M1 conformance gate."""
+    """Canonical acceptance entry point; delegates the decision to the gate.
+
+    ``applied_limits`` is required in substance: omitting it (or passing no numbers
+    through any path) fails closed inside ``require_accepted``, so this helper can
+    never accept a candidate on declarations alone. It raises the same
+    ``ContractError`` as every other Cloud M1 refusal rather than a distinct error
+    shape for the limits case.
+    """
     gate = SandboxProviderConformanceGate(policy=policy)
-    return gate.require_accepted(capabilities)
+    return gate.require_accepted(capabilities, applied_limits=applied_limits)
 
 
 def validate_lease_request_against_cloud_m1_policy(
@@ -206,7 +216,7 @@ class SandboxProviderConformanceHarness:
         ``*_limit_enforced`` booleans, because a claim that limits exist is not
         evidence that any particular limit was applied.
         """
-        assessment = self.gate.assess(capabilities)
+        assessment = self.gate.assess(capabilities, applied_limits=applied_limits)
         results: list[SandboxProviderConformanceResult] = []
 
         # Evaluate isolation primitive
@@ -254,13 +264,13 @@ class SandboxProviderConformanceHarness:
                 )
 
         if applied_limits is None:
-            # Acceptance requires the numbers, not the claim. Reporting nothing at
-            # all used to leave this case uncreated, so four ``*_limit_enforced``
-            # booleans alone could produce an overall-conforming report.
+            # Acceptance requires the numbers, not the claim. The gate has already
+            # recorded this in missing_controls; the case below mirrors that single
+            # decision so the report has one meaning per entry point, not two rules.
             results.append(
                 SandboxProviderConformanceResult(
-                    case_id="case_resource_limits_reported",
-                    control_name="resource_limits_reported",
+                    case_id=f"case_{RESOURCE_LIMITS_REPORTED_CONTROL}",
+                    control_name=RESOURCE_LIMITS_REPORTED_CONTROL,
                     status=ConformanceStatus.FAILED,
                     message="provider reported no CPU/memory/disk/process limit values",
                 )
@@ -271,8 +281,8 @@ class SandboxProviderConformanceHarness:
             except ContractError as exc:
                 results.append(
                     SandboxProviderConformanceResult(
-                        case_id="case_resource_limits_within_policy",
-                        control_name="resource_limits_within_policy",
+                        case_id=f"case_{RESOURCE_LIMITS_WITHIN_POLICY_CONTROL}",
+                        control_name=RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
                         status=ConformanceStatus.FAILED,
                         message=str(exc),
                     )
@@ -280,14 +290,17 @@ class SandboxProviderConformanceHarness:
             else:
                 results.append(
                     SandboxProviderConformanceResult(
-                        case_id="case_resource_limits_within_policy",
-                        control_name="resource_limits_within_policy",
+                        case_id=f"case_{RESOURCE_LIMITS_WITHIN_POLICY_CONTROL}",
+                        control_name=RESOURCE_LIMITS_WITHIN_POLICY_CONTROL,
                         status=ConformanceStatus.PASSED,
                         message="Reported limits are within the Cloud M1 policy ceiling",
                     )
                 )
 
-        overall = assessment.accepted_for_cloud_m1 and all(r.passed for r in results)
+        # One authority decides acceptance. Recomputing it from the per-case results
+        # here would leave two rules that can drift; the case list is evidence detail
+        # and test_gate_and_harness_acceptance_cannot_diverge pins that they agree.
+        overall = assessment.accepted_for_cloud_m1
         return SandboxProviderConformanceReport(
             provider_id=capabilities.provider_id,
             isolation_primitive=capabilities.isolation_primitive,
