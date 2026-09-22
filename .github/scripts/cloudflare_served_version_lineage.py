@@ -31,6 +31,13 @@ It consumes **only** ids the canonical resolver has already accepted
 (``resolve_served_version_id`` / the guard lanes that call it), and it reuses the
 canonical ``is_safe_version_id`` contract instead of restating the id charset.
 
+This module defines no second input shape either: the CLI accepts a **bare
+canonical version-id string** only (``--active-version <id> --latest-version <id>``).
+It deliberately does not parse JSON objects, and it does not accept ``id`` /
+``value`` aliases -- those are not the canonical resolver's output contract, and
+admitting them would create a shadow input-shape adapter. A caller holding a
+JSON object must extract the id itself and pass the bare value.
+
 Rules, fail-closed with no positional guessing:
 
 ```text
@@ -194,32 +201,12 @@ def evaluate_latest_equals_active(
     return LineageDecision(FAIL, LineageReason.DIFFERENT, active_version_id, latest_version_id)
 
 
-def _extract_version_id(payload: Any) -> object:
-    """Accept a bare id, or a resolved-id object, without resolving envelopes."""
-
-    if isinstance(payload, str):
-        return payload
-    if isinstance(payload, dict):
-        for key in ("version_id", "id", "value"):
-            if key in payload:
-                return payload[key]
-    return payload
-
-
-def _coerce_argument(raw: str) -> object:
-    """Accept a bare id or a JSON object carrying an already-resolved id."""
-
-    text = raw.strip()
-    if text.startswith("{"):
-        try:
-            return _extract_version_id(json.loads(text))
-        except json.JSONDecodeError:
-            return raw
-    return raw
-
-
 def main(argv: list[str] | None = None) -> int:
-    """CLI. Exit 0 only on PASS; FAIL and FAIL_CLOSED exit non-zero."""
+    """CLI. Exit 0 only on PASS; FAIL and FAIL_CLOSED exit non-zero.
+
+    Input is a bare canonical version-id string. A JSON object (or any other
+    non-bare shape) is unsafe by the canonical charset rule and fails closed.
+    """
 
     parser = argparse.ArgumentParser(
         description="Independent latest==active served-version lineage precondition."
@@ -235,8 +222,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     decision = evaluate_latest_equals_active(
-        _coerce_argument(args.active_version),
-        _coerce_argument(args.latest_version),
+        args.active_version,
+        args.latest_version,
     )
     if args.format == "json":
         print(json.dumps(decision.safe_dict(), sort_keys=True))

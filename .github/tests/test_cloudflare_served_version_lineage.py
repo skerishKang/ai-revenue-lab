@@ -245,13 +245,40 @@ def test_cli_exit_codes_and_markers(capsys) -> None:
     assert payload["outcome"] == lineage.PASS
 
 
-def test_cli_accepts_resolved_id_objects(capsys) -> None:
-    assert lineage.main(
-        [
-            "--active-version",
-            json.dumps({"version_id": ACTIVE}),
-            "--latest-version",
-            json.dumps({"version_id": ACTIVE}),
-        ]
-    ) == 0
-    assert f"{lineage.LINEAGE_MARKER}=PASS" in capsys.readouterr().out
+def test_cli_refuses_json_object_aliases(capsys) -> None:
+    """A JSON object is not a canonical id: it must fail closed, never PASS.
+
+    Alias shapes (``version_id`` / ``id`` / ``value``) are not the canonical
+    resolver's output contract, so admitting them would create a shadow
+    input-shape adapter. Each must be FAIL_CLOSED with exit code 2 on either side.
+    """
+
+    for raw in (
+        json.dumps({"version_id": ACTIVE}),
+        json.dumps({"id": ACTIVE}),
+        json.dumps({"value": ACTIVE}),
+    ):
+        for args in (
+            ["--active-version", raw, "--latest-version", ACTIVE],
+            ["--active-version", ACTIVE, "--latest-version", raw],
+        ):
+            exit_code = lineage.main(args)
+            out = capsys.readouterr().out
+            assert exit_code == 2, (raw, args)
+            assert "SERVED_VERSION_LINEAGE_OUTCOME=FAIL_CLOSED" in out
+            assert f"{lineage.LINEAGE_MARKER}=PASS" not in out
+        assert lineage.evaluate_latest_equals_active(raw, raw).fail_closed is True
+
+
+def test_cli_has_no_input_shape_aliasing() -> None:
+    """The CLI admits bare canonical ids only; no object/alias adapter exists."""
+
+    source = (SCRIPTS / "cloudflare_served_version_lineage.py").read_text(encoding="utf-8")
+    for forbidden in (
+        "_extract_version_id",
+        "_coerce_argument",
+        "json.loads",
+        '"value"',
+        '"id"',
+    ):
+        assert forbidden not in source, forbidden
