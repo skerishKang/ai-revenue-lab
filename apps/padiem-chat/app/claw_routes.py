@@ -680,6 +680,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         status=outcome.projection.status.value,
         result_text=outcome.answer,
         artifact=artifact_descriptor,
+        conversation_id=session_conversation_id,
     )
     if history_failure is not None:
         return history_failure
@@ -759,14 +760,21 @@ async def _record_claw_run_history(
     status: str,
     result_text: str | None,
     artifact: dict[str, Any] | None,
+    conversation_id: str | None = None,
 ) -> JSONResponse | None:
-    """Persist a bounded owner-scoped run history row (#2317).
+    """Persist a bounded owner-scoped run history row (#2317, #2829).
 
     Fail-closed: a store that advertises ``record_claw_run`` but raises is a
     storage failure and returns a stable public-safe 503 so the caller never
     sees a success that silently dropped history. A store that does not
     implement the capability (a presence-only auth stub) is a no-op, and an
     anonymous run has no owner to record against, so both return ``None``.
+
+    #2829 Phase B: the optional ``conversation_id`` is the already-validated
+    canonical conversation handle from ``_resolve_intake_session_reference``.
+    It is persisted only when the caller carried a reference that passed the
+    existing canonical conversation authority; otherwise ``None`` keeps legacy
+    rows at ``session: null``. No new session authority is created.
     """
     uid = current_user_id(request) if auth_ready(request) else None
     if uid is None:
@@ -788,6 +796,7 @@ async def _record_claw_run_history(
             artifact_document_id=artifact.get("document_id") if artifact else None,
             artifact_filename=artifact.get("filename") if artifact else None,
             artifact_media_type=artifact.get("media_type") if artifact else None,
+            conversation_id=conversation_id,
         )
         if inspect.isawaitable(outcome_record):
             await outcome_record

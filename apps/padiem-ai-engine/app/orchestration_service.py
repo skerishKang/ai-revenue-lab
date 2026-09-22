@@ -7,7 +7,7 @@ resumption, and cancellation over the internal Engine transport.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncIterator, Callable, Mapping
+from collections.abc import AsyncIterator, Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import inspect
@@ -69,6 +69,13 @@ from app.orchestration_continuation import (
     InMemoryContinuationStore,
 )
 
+# S13-5 Phase 1: the orchestrate route mirrors the AGENT-SKILL continuation
+# lifecycle plane by reusing the S13-4 projection rather than re-deriving it.
+from app.agent_skill_continuation_projection import (
+    ENGINE_AGENT_LIFECYCLE_CONTRACT_VERSION,
+    project_agent_lifecycle_events,
+)
+
 # Compatibility surface: the wire contract moved to app.orchestration_wire
 # in #1792 R2B-2; these re-exports preserve every existing import site.
 from app.orchestration_wire import (  # noqa: E402
@@ -111,6 +118,51 @@ from app.orchestration_wire import (  # noqa: E402
 def _server_generated_trace_id() -> str:
     """Return a bounded opaque trace ID for a new logical orchestration run."""
     return f"tr_{secrets.token_urlsafe(24)}"
+
+
+def _orchestration_lifecycle_block(
+    *,
+    record: ContinuationRecord | None,
+    transition: str,
+    events: Sequence[Any],
+) -> dict[str, Any] | None:
+    """S13-5 Phase 1: additive continuation lifecycle block for the orchestrate route.
+
+    The AGENT-SKILL route publishes the continuation lifecycle plane from
+    ``app.agent_skill_continuation_projection``.  The orchestrate route names the
+    same facts here by reusing that projection, so both routes speak one lifecycle
+    contract.  Nothing is re-derived: the event kinds, their ordering and their
+    ids all come from the shared projection.
+
+    ``task_id``/``trace_id`` follow the rule documented on
+    ``project_agent_continuation_result``: the paused run identity when the record
+    carries it, otherwise the first public run event.  When there is no continuation
+    record there is no lifecycle to name, so the caller must omit the block entirely
+    -- the Engine never invents events, ids, timestamps or state.
+    """
+
+    if record is None:
+        return None
+    public_events = [event.to_public_dict() for event in events]
+    task_id = record.pause.run_id or (
+        public_events[0].get("run_id") if public_events else None
+    )
+    trace_id = record.pause.trace_id or (
+        public_events[0].get("trace_id") if public_events else None
+    )
+    return {
+        "continuation_id": record.continuation_ref,
+        # S13-5 Phase 1: internal consumption only.  The additive sibling key is
+        # the whole compatibility surface; see docs/operations/AGENT_CONTINUATION_CONTRACT.md.
+        "lifecycle_contract_version": ENGINE_AGENT_LIFECYCLE_CONTRACT_VERSION,
+        "lifecycle_events": project_agent_lifecycle_events(
+            continuation_id=record.continuation_ref,
+            transition=transition,
+            task_id=task_id,
+            trace_id=trace_id,
+            events=events,
+        ),
+    }
 
 
 def _execution_request_with_trace(request: ExecutionRequest, trace_id: str) -> ExecutionRequest:
@@ -980,13 +1032,21 @@ class OrchestrationEngineService:
             )
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
-        return ServiceResponse(
-            status_code=200,
-            body={
-                "ok": True,
-                "orchestration": orchestration_body,
-            },
+        body: dict[str, Any] = {
+            "ok": True,
+            "orchestration": orchestration_body,
+        }
+        # S13-5 Phase 1: additive lifecycle mirror.  The sibling key is added only
+        # when a real continuation record backed this resume; every pre-existing key
+        # and shape above stays untouched.
+        lifecycle_block = _orchestration_lifecycle_block(
+            record=record,
+            transition="resume",
+            events=result.events,
         )
+        if lifecycle_block is not None:
+            body["continuation"] = lifecycle_block
+        return ServiceResponse(status_code=200, body=body)
 
     async def cancel_payload(self, payload: Any) -> ServiceResponse:
         """Cancel only a server-issued continuation."""
@@ -1119,14 +1179,21 @@ class OrchestrationEngineService:
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
 
-        return ServiceResponse(
-            status_code=200,
-            body={
-                "ok": True,
-                "status": "cancelled",
-                "events": [e.to_public_dict() for e in events],
-            },
+        body: dict[str, Any] = {
+            "ok": True,
+            "status": "cancelled",
+            "events": [e.to_public_dict() for e in events],
+        }
+        # S13-5 Phase 1: additive lifecycle mirror for the cancel transition.  The
+        # pre-existing keys and shapes are unchanged.
+        lifecycle_block = _orchestration_lifecycle_block(
+            record=record,
+            transition="cancel",
+            events=events,
         )
+        if lifecycle_block is not None:
+            body["continuation"] = lifecycle_block
+        return ServiceResponse(status_code=200, body=body)
 
     async def prepare_stream(
         self,

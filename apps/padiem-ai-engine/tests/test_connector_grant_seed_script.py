@@ -1,9 +1,10 @@
-"""Connector grant seed script contract tests (#2222).
+"""Connector grant seed script contract tests (#2222, #2010).
 
 Covers the reviewed READ connector grant paths:
 - Gmail readonly scope grant with trusted binding/actor refs;
 - Google Drive READ capability grant with trusted binding/actor refs;
-- Telegram Bot READ capability grant with trusted binding/actor refs.
+- Telegram Bot READ capability grant with trusted binding/actor refs;
+- Google Calendar READ capability grant with trusted binding/actor refs.
 
 All tests are network-free. Invalid authority input must fail before any D1
 call; credential-bearing arguments are never accepted.
@@ -311,6 +312,213 @@ def test_telegram_send_capability_fails_before_d1(
     )
     assert rc == 2
     assert calls == []
+
+
+# --- Calendar READ-only grant path ------------------------------------------
+
+_CALENDAR_BINDING = "bind:google-calendar-owner-1"
+_CALENDAR_ACTOR = "actor:owner-1"
+
+
+@pytest.mark.parametrize(
+    ("option", "value"),
+    [
+        ("--client-secret", "do-not-print"),
+        ("--refresh-token", "do-not-print"),
+        ("--access-token", "do-not-print"),
+        ("--client-id", "do-not-print"),
+    ],
+)
+def test_calendar_credential_argument_is_rejected(
+    option: str, value: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    with pytest.raises(SystemExit) as exc:
+        _MODULE.main([
+            "--action", "seed", "--connector", "calendar", option, value,
+        ])
+    assert exc.value.code == 2
+
+
+def test_calendar_seed_dry_run_emits_canonical_read_only_capability(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-21T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "calendar",
+        "--binding-ref", _CALENDAR_BINDING,
+        "--actor-ref", _CALENDAR_ACTOR,
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "'b54-padiem-claw-calendar', 'agent:padiem:claw_calendar_reader@1', "
+        "'connector:google:calendar@1', 'bind:google-calendar-owner-1', "
+        "'actor:owner-1', '[]', '[\"read\"]', 1, "
+        "'2026-09-21T00:00:00+00:00', '2026-09-21T00:00:00+00:00'"
+    ) in out
+    # Capability column is exactly ["read"]: no other capability token is emitted.
+    assert "'[]', '[\"read\"]', 1," in out
+    assert "'[\"read\"," not in out
+    assert "calendar.write" not in out
+
+
+def test_calendar_capability_defaults_to_read_without_an_explicit_flag(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "calendar",
+        "--binding-ref", _CALENDAR_BINDING,
+        "--actor-ref", _CALENDAR_ACTOR,
+        "--capabilities", "read",
+    ])
+    assert rc == 0
+    assert "'[]', '[\"read\"]', 1," in capsys.readouterr().out
+
+
+def test_calendar_revoke_targets_calendar_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-21T00:00:00+00:00")
+    rc = _MODULE.main(["--action", "revoke", "--connector", "calendar"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "WHERE app_id='b54-padiem-claw-calendar' "
+        "AND connector_id='connector:google:calendar@1';"
+    ) in out
+
+
+def test_calendar_missing_binding_and_actor_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "calendar", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_missing_actor_only_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+@pytest.mark.parametrize(
+    "capability",
+    [
+        "calendar.write",
+        "create",
+        "update",
+        "delete",
+        "respond",
+        "full",
+        "mutation",
+        "unknown",
+        # canonical CalendarCapability mutation values
+        "create_event",
+        "update_event",
+        "delete_event",
+        "cancel_event",
+        "respond_to_event",
+        "attendee_mutation",
+        "reminder_mutation",
+        "conference_mutation",
+    ],
+)
+def test_calendar_write_capability_fails_before_d1(
+    capability: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--capabilities", capability, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_extra_capability_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--capabilities", "read", "write", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_scope_argument_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--scopes", "https://www.googleapis.com/auth/calendar.readonly",
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_wrong_app_or_agent_refs_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "calendar",
+            "--app-id", "b54-padiem-claw",
+            "--agent-id", "agent:padiem:claw_mail_reader@1",
+            "--binding-ref", _CALENDAR_BINDING, "--actor-ref", _CALENDAR_ACTOR,
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_calendar_has_no_synthetic_or_default_ref_authority() -> None:
+    """Trusted refs stay explicit inputs: no default/synthetic ref exists."""
+
+    for name in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert not hasattr(_MODULE, name)
+    source = _SCRIPT_PATH.read_text(encoding="utf-8")
+    for forbidden in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert forbidden not in source
+    assert _MODULE._CONNECTOR_IDS["calendar"] == "connector:google:calendar@1"
+    assert _MODULE._APP_IDS["calendar"] == "b54-padiem-claw-calendar"
+    assert _MODULE._AGENT_IDS["calendar"] == "agent:padiem:claw_calendar_reader@1"
+    assert _MODULE._ALLOWED_CALENDAR_CAPABILITIES == ("read",)
+
+
+# --- shared credential-argument safety --------------------------------------
 
 
 def test_credential_argument_is_rejected() -> None:

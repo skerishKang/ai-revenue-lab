@@ -63,3 +63,18 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 binding = "ENGINE_DOCUMENT_STORE"
 database_name = "padiem-engine"
 database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
+# #2786 Stage 11-C M3-2: preview-only Agent pilot lane.
+#
+# A dedicated worker with NO services, NO D1 and NO secrets. The production block
+# above is untouched: it carries no [vars] section at all, so the marker pair
+# below exists only inside this environment and can never leak into Production.
+# workers_dev stays false: the preview worker is reachable only by an internal /
+# service-binding caller, never from the public internet.
+[env.preview]
+name = "padiem-ai-engine-preview"
+workers_dev = false
+
+[env.preview.vars]
+ENGINE_DEPLOY_ENV = "preview"
+ENGINE_AGENT_PREVIEW_ENABLED = "ENABLE_PREVIEW_AGENT_PILOT"

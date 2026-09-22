@@ -192,6 +192,19 @@ def _status_for_runtime_error(exc: ExecutionRuntimeError) -> int:
     return 502
 
 
+def _runtime_error_metadata(exc: ExecutionRuntimeError) -> dict[str, Any]:
+    """Project Core runtime-error metadata plus B14's own HTTP status.
+
+    The response status is Engine-derived from the error code, so it is never
+    evidence of what B14 returned; the original number rides inside
+    ``error.metadata`` to keep both observable without widening the four-key
+    error body shape.
+    """
+    metadata = exc.metadata.to_public_dict()
+    metadata["upstream_status_code"] = exc.upstream_status_code
+    return metadata
+
+
 class EngineService:
     """Pure-Python internal request handler over a runtime factory."""
 
@@ -295,7 +308,7 @@ class EngineService:
                 status_code=422,
             )
         except ExecutionRuntimeError as exc:
-            return _service_error(exc.code, exc.safe_message, status_code=_status_for_runtime_error(exc), retryable=exc.retryable, metadata=exc.metadata.to_public_dict())
+            return _service_error(exc.code, exc.safe_message, status_code=_status_for_runtime_error(exc), retryable=exc.retryable, metadata=_runtime_error_metadata(exc))
         except Exception:
             return _service_error("engine_internal_error", "Padiem AI Engine execution failed.", status_code=500)
 

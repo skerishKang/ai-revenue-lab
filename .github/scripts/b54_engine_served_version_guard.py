@@ -58,6 +58,18 @@ CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE = "service"
 CONTROL_PLANE_GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
 
+# A6 (#1971 A6-S2B): the two durable byte stores the multimodal and document
+# routes compose. Every reviewed Engine D1 binding resolves to the single
+# provisioned `padiem-engine` database, so this is the same canonical id the
+# Drive contract above asserts. It is deliberately a separate constant so the
+# Drive guard keeps its own frozen contract, and a test pins that the two
+# expectations have not silently diverged. The value is used for internal
+# comparison only and is never emitted.
+A6_ENGINE_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+A6_D1_BINDING_TYPE = "d1"
+ENGINE_IMAGE_STORE_BINDING_NAME = "ENGINE_IMAGE_STORE"
+ENGINE_DOCUMENT_STORE_BINDING_NAME = "ENGINE_DOCUMENT_STORE"
+
 # Canonical resolver failure codes published under this guard's established
 # wording. The rules live in ``cloudflare_served_version.py``; only the text is
 # local, because deploy-gate regressions assert these phrases on this output.
@@ -231,11 +243,39 @@ def _verify_drive_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
     }
 
 
+def _verify_a6_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require the non-secret D1 stores that back the A6 durable byte paths.
+
+    Same fail-closed semantics as the Drive verifier: exact single binding,
+    exact type, exact canonical database identity. Only binding name/type is
+    inspected and only a bounded ``PRESENT:d1`` marker is returned, so no
+    binding value, token, database identifier or version detail is read or
+    emitted.
+    """
+    states: dict[str, str] = {}
+    for binding_name in (
+        ENGINE_IMAGE_STORE_BINDING_NAME,
+        ENGINE_DOCUMENT_STORE_BINDING_NAME,
+    ):
+        binding = _single_binding(bindings, binding_name)
+        if binding.get("type") != A6_D1_BINDING_TYPE:
+            raise ServedVersionGuardError(
+                f"served {binding_name} binding type is not d1"
+            )
+        if binding.get("id") != A6_ENGINE_DATABASE_ID:
+            raise ServedVersionGuardError(
+                f"served {binding_name} binding database identity drift"
+            )
+        states[f"{binding_name}_SERVED_BINDING"] = "PRESENT:d1"
+    return states
+
+
 def verify_served(
     payload: object,
     active_version: str,
     expect_overlay: bool,
     require_drive_runtime_bindings: bool = False,
+    require_a6_runtime_bindings: bool = False,
 ) -> dict[str, str]:
     """Return NAME -> state for the registry and overlay secrets on the version.
 
@@ -269,6 +309,9 @@ def verify_served(
     if require_drive_runtime_bindings:
         states.update(_verify_drive_runtime_bindings(bindings))
         states["DRIVE_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    if require_a6_runtime_bindings:
+        states.update(_verify_a6_runtime_bindings(bindings))
+        states["A6_STORAGE_BINDINGS_VALIDATED"] = "YES"
     return states
 
 
@@ -289,6 +332,7 @@ def _run_verify(args: argparse.Namespace) -> int:
         args.active_version,
         args.expect_overlay,
         args.require_drive_runtime_bindings,
+        args.require_a6_runtime_bindings,
     )
     print("B54_ENGINE_SERVED_VERSION_GUARD=PASS")
     print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
@@ -299,6 +343,9 @@ def _run_verify(args: argparse.Namespace) -> int:
         "ENGINE_CONNECTOR_GRANTS_SERVED_BINDING",
         "CONTROL_PLANE_GOOGLE_OAUTH_SERVED_BINDING",
         "DRIVE_RUNTIME_BINDINGS_VALIDATED",
+        "ENGINE_IMAGE_STORE_SERVED_BINDING",
+        "ENGINE_DOCUMENT_STORE_SERVED_BINDING",
+        "A6_STORAGE_BINDINGS_VALIDATED",
     ):
         if key not in states:
             continue
@@ -356,6 +403,11 @@ def main(argv: list[str] | None = None) -> int:
         "--require-drive-runtime-bindings",
         action="store_true",
         help="require the reviewed D1 and Google OAuth service bindings",
+    )
+    verify.add_argument(
+        "--require-a6-runtime-bindings",
+        action="store_true",
+        help="require the reviewed A6 image and document D1 store bindings",
     )
     verify.set_defaults(handler=_run_verify)
 

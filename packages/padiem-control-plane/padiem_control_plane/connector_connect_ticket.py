@@ -32,11 +32,15 @@ MAX_CLOCK_SKEW_SECONDS = 30
 MAX_CANONICAL_SUBJECT_ID_CHARS = 256
 GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
 GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
+# #2010 Calendar READ: same CP-owned Google OAuth authority, exactly one
+# readonly provider scope. Never a Calendar write/full scope.
+GOOGLE_CALENDAR_READONLY_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,255}$")
 _REVIEWED_SCOPES: dict[str, tuple[str, ...]] = {
     "gmail": (GMAIL_READONLY_SCOPE,),
     "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    "google-calendar": (GOOGLE_CALENDAR_READONLY_SCOPE,),
 }
 _REQUIRED_WIRE_KEYS = frozenset(
     {

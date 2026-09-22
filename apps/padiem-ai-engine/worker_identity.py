@@ -31,8 +31,13 @@ from padiem_ai_core.web_runtime import create_web_provider
 from workers import Request
 
 import worker as legacy_worker
+from app.agent_preview_authority import (
+    build_preview_agent_lane,
+    preview_capability_overrides,
+)
 from app.agent_skill_service import AgentSkillEngineService
 from app.agent_skill_authority import build_agent_skill_binding_resolver
+from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
@@ -44,7 +49,11 @@ from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
 )
-from app.cloudflare_external_transport import drive_worker_transport, gmail_worker_transport
+from app.cloudflare_external_transport import (
+    calendar_worker_transport,
+    drive_worker_transport,
+    gmail_worker_transport,
+)
 from app.connector_bindings import (
     build_tool_binding_resolver,
     CalendarGrant,
@@ -56,8 +65,8 @@ from app.connector_bindings import (
 )
 from app.connector_grants_d1 import CloudflareD1ConnectorGrantStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
-from app.calendar_port_httpx import (
-    HttpxGoogleCalendarReadPort,
+from app.calendar_port_cp_lease import (
+    ControlPlaneLeaseGoogleCalendarReadPort,
     parse_calendar_ids,
 )
 from app.gmail_port_cp_lease import ControlPlaneLeaseGmailReadPort
@@ -86,6 +95,10 @@ from app.authority_diagnostic import (
     AUTHORITY_DIAGNOSTIC_PATH,
     diagnostic_response,
 )
+from app.calendar_credential_presence import (
+    CALENDAR_CREDENTIAL_PRESENCE_PATH,
+    calendar_presence_response,
+)
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -112,9 +125,10 @@ from app.auth_session_scope_authority import (
 from app.trusted_document_resolver import DurableDocumentStoragePort, TrustedDocumentResolver
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
-ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_ID"
-ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV = "ENGINE_GOOGLE_OAUTH_CLIENT_SECRET"
-ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV = "ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN"
+# #2010: the canonical Calendar Production composition no longer reads
+# Engine-owned Google long-lived credentials. The shared Google OAuth authority
+# is the Control Plane Service Binding below
+# (CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO).
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
@@ -508,32 +522,39 @@ async def _slack_grants_for_env(env: Any) -> dict[str, SlackGrant]:
         ) from None
 
 
-def _calendar_port_for_env(env: Any) -> HttpxGoogleCalendarReadPort | None:
-    """Resolve the promoted Google Calendar read port (#2358).
+def _calendar_port_for_env(env: Any) -> ControlPlaneLeaseGoogleCalendarReadPort | None:
+    """Resolve canonical Google Calendar READ via the private CP OAuth authority.
 
-    Reuses the existing Google OAuth secrets (same names as Gmail) — no
-    second OAuth stack is introduced — and requires a non-empty
-    server-derived calendar allowlist. Missing or malformed authorities fail
-    closed by returning ``None``; there is no caller-side override and no
-    write path exists in the port.
+    #2010 convergence: the canonical Production Calendar path is the same
+    short-lived Control Plane access-lease architecture already used by Gmail
+    and Drive. There is deliberately NO Production fallback to Engine-owned
+    Google client-secret or refresh-token values
+    (``CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO``); the legacy
+    direct-secret port (``calendar_port_httpx.py``) is no longer imported or
+    selected by this canonical composition root.
+
+    The server-derived calendar allowlist stays a separate authority: a missing
+    or malformed ``ENGINE_CALENDAR_ALLOWED_CALENDARS`` keeps Calendar
+    unavailable rather than widening credential or calendar scope.
     """
-    client_id = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_ID_ENV)
-    client_secret = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_CLIENT_SECRET_ENV)
-    refresh_token = legacy_worker._binding_value(env, ENGINE_GOOGLE_OAUTH_REFRESH_TOKEN_ENV)
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None:
+        return None
     allowed_raw = legacy_worker._binding_value(env, ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV)
-    if not client_id or not client_secret or not refresh_token or not allowed_raw:
+    if not allowed_raw:
         return None
     try:
         allowed_calendar_ids = parse_calendar_ids(str(allowed_raw))
         if not allowed_calendar_ids:
             return None
-        return HttpxGoogleCalendarReadPort(
-            client_id=client_id,
-            client_secret=client_secret,
-            refresh_token=refresh_token,
+        lease_client = CloudflareControlPlaneGoogleOAuthAccessLeaseClient(binding)
+        return ControlPlaneLeaseGoogleCalendarReadPort(
+            lease_client=lease_client,
             allowed_calendar_ids=allowed_calendar_ids,
+            allowlist_configured=True,
+            transport=calendar_worker_transport(),
         )
-    except Exception:
+    except (RuntimeError, TypeError, ValueError):
         return None
 
 
@@ -576,7 +597,38 @@ def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
         return None
 
 
+def _agent_skill_service_for_env(
+    env: Any,
+    *,
+    runtime_factory: Any,
+    binding_resolver: Any = None,
+    idempotency_adapter: Any | None = None,
+    approval_decision_verifier: Any | None = None,
+    continuation_store: Any | None = None,
+) -> AgentSkillEngineService:
+    """Compose the Agent/Skill service: preview lane, or the passed authority.
+
+    An explicitly marked non-production isolate gets the synthetic preview lane.
+    Every other isolate -- Production included -- gets exactly the authority this
+    composition already passed in (the real bound resolver, its verifier and its
+    continuation store), so an unmarked deployment is byte-for-byte unchanged.
+    """
+    preview = build_preview_agent_lane(env)
+    if preview is not None:
+        return preview.service
+    return AgentSkillEngineService(
+        runtime_factory=runtime_factory,
+        binding_resolver=binding_resolver,
+        idempotency_adapter=idempotency_adapter,
+        approval_decision_verifier=approval_decision_verifier,
+        continuation_store=continuation_store,
+    )
+
+
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    # Preview-lane posture only. Every other isolate clears the override, so the
+    # declared capability truth is untouched outside a marked pilot isolate.
+    set_posture_overrides(preview_capability_overrides(env))
     scope_authority = _scope_authority_for_env(env)
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
@@ -638,7 +690,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 tool_binding_resolver=await _tool_binding_resolver_for_env(env)
             ),
             # Agent authority reuses the trusted Tool binding; Skill authority remains deferred.
-            agent_skill=AgentSkillEngineService(
+            agent_skill=_agent_skill_service_for_env(
+                env,
                 runtime_factory=unavailable,
                 binding_resolver=None,
             ),
@@ -745,8 +798,12 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         idempotency_replay=IdempotencyReplayEngineService(
             idempotency_adapter=idempotency_adapter,
         ),
-        agent_skill=AgentSkillEngineService(
+        agent_skill=_agent_skill_service_for_env(
+            env,
             runtime_factory=runtime_factory,
+            # Trusted registry/session/entitlement and continuation authority for
+            # Production; an explicitly marked non-production pilot isolate
+            # substitutes the synthetic preview lane instead.
             binding_resolver=build_agent_skill_binding_resolver(
                 tool_binding_resolver,
                 getattr(tool_binding_resolver, "subject_for_app", None),
@@ -774,6 +831,8 @@ class Default(legacy_worker.Default):
         path = urlparse(str(request.url)).path
         if path == AUTHORITY_DIAGNOSTIC_PATH:
             return self._fetch_authority_diagnostic(request)
+        if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
+            return await self._fetch_calendar_credential_presence(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
@@ -799,6 +858,31 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         status, body = diagnostic_response(self.env, method, headers)
+        return legacy_worker._json_response(
+            ServiceResponse(status_code=status, body=body)
+        )
+
+    async def _fetch_calendar_credential_presence(self, request: Any) -> Any:
+        """Private read-only Calendar credential-presence surface (#2010).
+
+        Same operator-token gate as the authority diagnostic, and the same
+        closed-projection discipline: the caller supplies only a server-trusted
+        workspace reference, the connector is fixed in code, and the answer is
+        the bounded four-fact presence projection. No storage resolver, no
+        caller-registry path, no access lease and no token unseal are involved.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+
+        raw = b""
+        if method.upper() == "POST":
+            try:
+                text = await request.text()
+                raw = str(text).encode("utf-8")
+            except Exception:
+                raw = b""
+
+        status, body = await calendar_presence_response(self.env, method, headers, raw)
         return legacy_worker._json_response(
             ServiceResponse(status_code=status, body=body)
         )

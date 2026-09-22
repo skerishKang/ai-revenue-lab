@@ -245,6 +245,25 @@ def test_b14_errors_are_normalized_and_private_detail_is_redacted() -> None:
     assert "PRIVATE-UPSTREAM-DETAIL" not in json.dumps(info.value.to_public_dict())
 
 
+def test_b14_upstream_http_status_survives_the_multimodal_conversion() -> None:
+    executor = FakeExecutor(
+        error=B14ExecutionError(
+            "upstream_server_error",
+            "PRIVATE-B14-SERVER-DETAIL",
+            upstream_status_code=503,
+            retryable=True,
+        )
+    )
+    runtime = MultimodalExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(runtime.run(request()))
+
+    assert info.value.code == "upstream_server_error"
+    assert info.value.upstream_status_code == 503
+    assert "PRIVATE-B14-SERVER-DETAIL" not in json.dumps(info.value.to_public_dict())
+
+
 STREAM_ROUTE = B14RouteMetadata(
     selected_provider="provider-x",
     selected_model="selected-x",

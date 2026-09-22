@@ -27,6 +27,7 @@ from app.service import (
     MAX_REQUEST_BODY_BYTES,
     ServiceContractError,
     ServiceResponse,
+    _runtime_error_metadata,
     _service_error,
     _status_for_runtime_error,
     build_execution_request,
@@ -72,7 +73,7 @@ def _runtime_error_response(exc: ExecutionRuntimeError) -> ServiceResponse:
         exc.safe_message,
         status_code=_status_for_runtime_error(exc),
         retryable=exc.retryable,
-        metadata=exc.metadata.to_public_dict(),
+        metadata=_runtime_error_metadata(exc),
     )
 
 

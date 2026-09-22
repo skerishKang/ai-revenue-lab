@@ -314,6 +314,64 @@ def test_b14_errors_map_to_stable_shared_error_classes(
     assert "PRIVATE-UPSTREAM-DETAIL" not in public
 
 
+@pytest.mark.parametrize("status_code", [502, 503, 504])
+def test_b14_upstream_http_status_survives_the_non_stream_conversion(
+    status_code: int,
+) -> None:
+    executor = FakeExecutor(
+        error=B14ExecutionError(
+            "upstream_server_error",
+            "PRIVATE-B14-SERVER-DETAIL",
+            upstream_status_code=status_code,
+            retryable=True,
+        )
+    )
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(runtime.run(request()))
+
+    assert info.value.code == "upstream_server_error"
+    assert info.value.retryable is True
+    assert info.value.upstream_status_code == status_code
+    assert "PRIVATE-B14-SERVER-DETAIL" not in json.dumps(info.value.to_public_dict())
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (502, 502),
+        (200, 200),
+        (100, 100),
+        (599, 599),
+        (None, None),
+        (True, None),
+        (99, None),
+        (600, None),
+        ("502", None),
+        (502.0, None),
+    ],
+)
+def test_upstream_status_code_normalization_degrades_and_never_raises(
+    value: object, expected: int | None
+) -> None:
+    # Conversion happens inside an ``except`` block: rejecting a malformed
+    # status there would replace the real B14 failure with a ValueError.
+    error = ExecutionRuntimeError(
+        "upstream_server_error",
+        "safe message",
+        metadata=padiem_ai_core.RunMetadata(
+            trace_id="trace-1",
+            app_id="test-app",
+            agent_id="general-agent",
+            status=RunStatus.FAILED,
+        ),
+        upstream_status_code=value,  # type: ignore[arg-type]
+    )
+
+    assert error.upstream_status_code == expected
+
+
 def test_unexpected_executor_exception_is_redacted_and_not_retried() -> None:
     class BrokenExecutor:
         def __init__(self):

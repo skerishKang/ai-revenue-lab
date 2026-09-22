@@ -278,12 +278,15 @@ def test_capability_states_match_routed_truth() -> None:
         # tool binding resolver and accepted bounded Production READ canaries
         # (Drive #2644 / Gmail #2657 / Telegram #2712) prove live execution.
         "tool_runtime",
+        # A5 activated (#2786): Stage 11-C preview wire pilot evidence (run 35638452853)
+        # proved synthetic agent task completion over Cloudflare edge with zero provider
+        # calls and zero user data; Production composition composes the real bound resolver.
+        "agent_skill_runtime",
     ):
         assert state_of[capability_id] is CapabilityState.AVAILABLE
     for capability_id in (
         "continuation/approval",
         "memory_rag",
-        "agent_skill_runtime",
         "file_document_multimodal",
         "tenant_entitlement_usage_admission",
         # E9 A1: reverted to DEFERRED per owner decision D2 (WO-7) — wrangler.toml
@@ -316,6 +319,12 @@ def test_tool_runtime_manifest_truth_tracks_composition_and_evidence() -> None:
         source = (APP_ROOT / relative).read_text(encoding="utf-8")
         assert "injects no tool binding resolver" not in source, relative
         assert "TOOL_RUNTIME_ACTIVATION_EVIDENCE=" in source, relative
+
+
+def test_agent_skill_runtime_manifest_truth_tracks_composition_and_evidence() -> None:
+    """A5 (Stage 11-C / Stage 12, #2786): `agent_skill_runtime` activation evidence is recorded."""
+    source = (APP_ROOT / "app/capability_manifest.py").read_text(encoding="utf-8")
+    assert "AGENT_SKILL_RUNTIME_ACTIVATION_EVIDENCE=" in source
 
 
 def test_manifest_routes_match_route_constants() -> None:
