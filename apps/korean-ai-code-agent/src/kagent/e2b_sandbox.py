@@ -743,14 +743,35 @@ class E2BCloudM1Adapter:
                 f"provider reports a paused sandbox for {lease_id}; Cloud M1 forbids pause/resume"
             )
         terminal_observed = normalized in E2B_TERMINAL_PROVIDER_STATES and running is False
-        evidence = E2BTerminationEvidence(
-            sandbox_id=lease_id,
-            reservation_terminated=terminal_observed,
-            terminal_state_observed=terminal_observed,
-            provider_terminal_state=normalized or "unobserved",
-            observed_at=self._now(),
-            kill_acknowledged=acknowledged,
-        )
+        observed_at = self._now()
+        projection_failed = False
+        try:
+            evidence = E2BTerminationEvidence(
+                sandbox_id=lease_id,
+                reservation_terminated=terminal_observed,
+                terminal_state_observed=terminal_observed,
+                provider_terminal_state=normalized or "unobserved",
+                observed_at=observed_at,
+                kill_acknowledged=acknowledged,
+            )
+        except E2BAdapterError:
+            # A provider response can be syntactically valid at the transport seam yet
+            # still violate the adapter's bounded projection contract. That is a refused
+            # lease operation, not a new error vocabulary: the canonical reaper catches
+            # SandboxLeaseError and preserves every record already produced in the pass.
+            projection_failed = True
+        if projection_failed:
+            error = SandboxLeaseError(
+                "provider state response could not be projected safely; reconciliation required"
+            )
+            try:
+                raise error
+            except SandboxLeaseError as projected:
+                # Match _transport_call(): no rejected provider response or unrelated
+                # in-flight exception may remain reachable through the exception chain.
+                projected.__cause__ = None
+                projected.__context__ = None
+                raise
         self._evidence[lease_id] = evidence
         return evidence
 
