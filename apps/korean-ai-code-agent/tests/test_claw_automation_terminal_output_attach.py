@@ -243,18 +243,50 @@ class TerminalOutputAttachTests(StoreMatrixMixin, unittest.TestCase):
                 self.assertIsNone(stored.output)
 
     def test_foreign_proposal_scope_is_rejected_before_mutation(self) -> None:
+        foreign_proposals = (
+            notification_proposal(workspace_id=OTHER_WORKSPACE),
+            notification_proposal(rule_id="other_rule"),
+        )
+        for proposal in foreign_proposals:
+            output = ClawAutomationOutput(
+                output_id="output_foreign_proposal",
+                workspace_id=WORKSPACE,
+                output_type=ClawAutomationOutputType.REPORT,
+                title="Automation report",
+                content="bounded result",
+                proposals=(proposal,),
+            )
+            for label, store in self.stores():
+                with self.subTest(store=label, proposal=proposal):
+                    store.record_run(scheduled_run())
+                    with self.assertRaises(ContractError):
+                        store.update_run_projection(
+                            run_id=RUN_ID,
+                            workspace_id=WORKSPACE,
+                            rule_id=RULE_ID,
+                            scheduled_time=NOW,
+                            status=ClawScheduledRunStatus.COMPLETED,
+                            completed_at=DONE,
+                            output=output,
+                        )
+                    stored = store.get_run(RUN_ID, WORKSPACE)
+                    self.assertEqual(stored.status, ClawScheduledRunStatus.PENDING)
+                    self.assertIsNone(stored.output)
+
+    def test_valid_proposal_is_persisted_once_with_output_retry(self) -> None:
+        proposal = notification_proposal()
         output = ClawAutomationOutput(
-            output_id="output_foreign_proposal",
+            output_id="output_with_proposal",
             workspace_id=WORKSPACE,
             output_type=ClawAutomationOutputType.REPORT,
             title="Automation report",
             content="bounded result",
-            proposals=(notification_proposal(workspace_id=OTHER_WORKSPACE),),
+            proposals=(proposal,),
         )
         for label, store in self.stores():
             with self.subTest(store=label):
                 store.record_run(scheduled_run())
-                with self.assertRaises(ContractError):
+                for _ in range(2):
                     store.update_run_projection(
                         run_id=RUN_ID,
                         workspace_id=WORKSPACE,
@@ -264,9 +296,8 @@ class TerminalOutputAttachTests(StoreMatrixMixin, unittest.TestCase):
                         completed_at=DONE,
                         output=output,
                     )
-                stored = store.get_run(RUN_ID, WORKSPACE)
-                self.assertEqual(stored.status, ClawScheduledRunStatus.PENDING)
-                self.assertIsNone(stored.output)
+                self.assertEqual(store.list_proposals(WORKSPACE), [proposal])
+                self.assertEqual(len(store.list_runs(WORKSPACE)), 1)
 
     def test_failed_and_cancelled_rows_cannot_resurrect_with_output(self) -> None:
         output = automation_output()
