@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
+  <link rel="stylesheet" href="./calendar.css" />
   <style>[hidden] { display: none !important; }</style>
 </head>
 <body>
@@ -41,6 +42,7 @@
         <button class="side-item" id="projectsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▦</span><span data-locale-key="projects">프로젝트</span><span class="mini-badge" id="projectsBadge">확인 중</span></button>
         <button class="side-item" id="outputsNavButton" type="button" disabled aria-disabled="true" hidden><span class="side-icon" aria-hidden="true">▤</span><span data-locale-key="saved">저장한 답변</span><span class="mini-badge" id="outputsBadge">로그인 후</span></button>
         <button class="side-item" id="clawNavButton" type="button"><span class="side-icon" aria-hidden="true">◆</span><span data-locale-key="nav-claw">Claw</span></button>
+        <button class="side-item" id="calendarNavButton" type="button" aria-current="false"><span class="side-icon" aria-hidden="true">▨</span><span data-locale-key="nav-calendar">캘린더</span></button>
         <button class="side-item" id="connectorsNavButton" type="button" aria-haspopup="dialog" aria-controls="connectorsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">Connectors</span></button>
         <button class="side-item" id="skillsNavButton" type="button" disabled aria-disabled="true" aria-haspopup="dialog" aria-controls="skillsDialog" aria-expanded="false"><span class="side-icon" aria-hidden="true">✦</span><span data-locale-key="nav-skills">Skills</span></button>
       </nav>
@@ -200,6 +202,29 @@
           <p class="claw-inbox-empty" id="clawInboxEmpty" data-locale-key="claw-inbox-empty-tasks" hidden>최근 작업이 없습니다.</p>
           <div class="claw-inbox-list" id="clawInboxList" role="list"></div>
         </section>
+      </section>
+      <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
+        <header class="calendar-view-header">
+          <div>
+            <p class="calendar-view-kicker" data-locale-key="calendar-kicker">PADIEM CALENDAR</p>
+            <h2 class="calendar-view-title" id="calendarViewTitle" data-locale-key="calendar-title">캘린더</h2>
+          </div>
+          <button type="button" class="calendar-refresh-button" id="calendarRefresh" data-locale-aria-label="calendar-refresh-aria" aria-label="목록 새로고침">↻</button>
+        </header>
+        <p class="calendar-view-help" data-locale-key="calendar-help">오늘과 다가오는 일정을 읽기 전용으로 보여줍니다. 이 화면에서는 일정을 만들거나 수정하지 않습니다.</p>
+        <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
+          <button type="button" class="calendar-tab" id="calendarTodayTab" role="tab" data-calendar-tab="today" aria-selected="true" aria-controls="calendarPanel" data-locale-key="calendar-today">오늘</button>
+          <button type="button" class="calendar-tab" id="calendarUpcomingTab" role="tab" data-calendar-tab="upcoming" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-upcoming">예정</button>
+        </div>
+        <div class="calendar-panel" id="calendarPanel" role="tabpanel" aria-labelledby="calendarTodayTab">
+          <p class="calendar-loading" id="calendarLoading" role="status" aria-live="polite" data-locale-key="calendar-loading" hidden>불러오는 중…</p>
+          <div class="calendar-error" id="calendarErrorBox" role="alert" hidden>
+            <p class="calendar-error-copy" id="calendarError" data-locale-key="calendar-error">캘린더를 불러오지 못했습니다.</p>
+            <button type="button" class="calendar-retry-button" id="calendarRetry" data-locale-key="retry">다시 시도</button>
+          </div>
+          <p class="calendar-empty" id="calendarEmpty" hidden></p>
+          <div class="calendar-list" id="calendarList" role="list" hidden></div>
+        </div>
       </section>
       <section class="conversation" aria-live="polite">
         <div class="empty-state" id="emptyState">
@@ -462,6 +487,7 @@
   <script src="./chat-transport.js"></script>
   <script src="./conversation-state.js"></script>
   <script src="./message-lifecycle.js"></script>
+  <script src="./calendar.js"></script>
   <script src="./app.js"></script>
   <script src="./product-capabilities.js"></script>
   <script src="./a11y.js"></script>

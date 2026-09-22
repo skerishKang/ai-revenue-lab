@@ -456,6 +456,7 @@ class CalendarItemProjection:
     source_ref: str
     created_at: str
     updated_at: str
+    artifact: dict[str, str] | None = None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -473,4 +474,5 @@ class CalendarItemProjection:
             "source_ref": self.source_ref,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "artifact": self.artifact,
         }
