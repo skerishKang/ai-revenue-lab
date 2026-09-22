@@ -278,6 +278,7 @@ async def calendar_items(request: Request) -> JSONResponse:
             calendar_store=store,
             task_alert_store=task_alert_store,
             history_store=history_store,
+            automation_store=automation_store,
             user_id=uid,
             limit=limit_val,
         )
