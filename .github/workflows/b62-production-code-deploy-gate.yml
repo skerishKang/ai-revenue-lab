@@ -157,11 +157,18 @@ jobs:
           assert ".result.deployments[0].versions[0].version_id" in readonly_job
           assert "versions | length) == 1" in readonly_job
           assert ".versions[0].percentage == 100" in readonly_job
-          assert 'test "${latest}" = "${active}"' in readonly_job
+          # #2898: the latest==active equality authority is the canonical lineage
+          # primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION itself and
+          # fails closed by exit code, so the workflow must not restate the
+          # comparison (INLINE_LATEST_ACTIVE_TEST=0) nor manufacture the PASS marker
+          # (SELF_ASSERTED_PASS_MARKER=0), and the primitive must run before the
+          # ACTIVE_VERSION publication it evidences.
+          assert 'test "${latest}" = "${active}"' not in readonly_job
+          assert "cloudflare_served_version_lineage.py" in readonly_job
+          assert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly_job
           assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly_job
           assert 'echo "ACTIVE_VERSION=${active}"' in readonly_job
-          assert readonly_job.index('test "${latest}" = "${active}"') < readonly_job.index('echo "ACTIVE_VERSION=${active}"')
-          assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in readonly_job
+          assert readonly_job.index("cloudflare_served_version_lineage.py") < readonly_job.index('echo "ACTIVE_VERSION=${active}"')
           assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly_job
 
           assert "unsupported live binding type" in generator
@@ -246,10 +253,15 @@ jobs:
           versions="${RUNNER_TEMP}/b62-versions-readonly.json"
           curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
           latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
-          test "${latest}" = "${active}"
+          # #2451 item 7 / child #2898: the latest==active equality authority is the
+          # canonical lineage primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION
+          # itself and fails closed (non-zero exit) on a mismatch, a missing id or an
+          # unsafe id, so this workflow must not restate the comparison or the marker.
+          python3 .github/scripts/cloudflare_served_version_lineage.py \
+            --active-version "${active}" \
+            --latest-version "${latest}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
           echo "ACTIVE_VERSION=${active}"
-          echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
 
           jq -e --arg name "${IDENTITY_BINDING}" --arg service "${IDENTITY_WORKER}" \
             '[.result.bindings[] | select(.name == $name)] as $b |

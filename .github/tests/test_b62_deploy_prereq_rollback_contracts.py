@@ -481,22 +481,26 @@ def _readonly_job_block() -> str:
 
 
 def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> None:
-    # #2458: the active served-version id must be published to the job log as
-    # bounded non-secret evidence, sourced from the canonical extraction, only
-    # after the latest==active assertion, while the existing GITHUB_OUTPUT
-    # consumer and the read-only GET-only surface stay intact.
+    # #2458 / #2898: the active served-version id must be published to the job log as
+    # bounded non-secret evidence, sourced from the canonical extraction, while the
+    # latest==active equality authority is the canonical lineage primitive (which
+    # publishes its own marker and fails closed by exit code), and the existing
+    # GITHUB_OUTPUT consumer and the read-only GET-only surface stay intact.
     readonly = _readonly_job_block()
     assert ".result.deployments[0].versions[0].version_id" in readonly
     assert "versions | length) == 1" in readonly
     assert ".versions[0].percentage == 100" in readonly
-    assert 'test "${latest}" = "${active}"' in readonly
+    # INLINE_LATEST_ACTIVE_TEST=0 / SELF_ASSERTED_PASS_MARKER=0
+    assert 'test "${latest}" = "${active}"' not in readonly
+    assert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly
+    # CANONICAL_LINEAGE_PRIMITIVE_INVOKED=YES
+    assert "cloudflare_served_version_lineage.py" in readonly
     assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly
     assert 'echo "ACTIVE_VERSION=${active}"' in readonly
     assert (
-        readonly.index('test "${latest}" = "${active}"')
+        readonly.index("cloudflare_served_version_lineage.py")
         < readonly.index('echo "ACTIVE_VERSION=${active}"')
     )
-    assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in readonly
     assert "B62_CODE_DEPLOY_READONLY=PASS" in readonly
     assert "PRODUCTION_MUTATION=0" in readonly
     # The publication must not turn the read-only surface into a mutation or a
