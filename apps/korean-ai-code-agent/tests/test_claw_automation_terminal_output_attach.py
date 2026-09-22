@@ -382,23 +382,29 @@ class DurableOutputAttachTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "automation-output.db")
             store = SqliteClawAutomationStore(path)
-            store.record_run(scheduled_run())
-            store.update_run_projection(
-                run_id=RUN_ID,
-                workspace_id=WORKSPACE,
-                rule_id=RULE_ID,
-                scheduled_time=NOW,
-                status=ClawScheduledRunStatus.COMPLETED,
-                completed_at=DONE,
-                output=output,
-            )
+            reopened = None
+            try:
+                store.record_run(scheduled_run())
+                store.update_run_projection(
+                    run_id=RUN_ID,
+                    workspace_id=WORKSPACE,
+                    rule_id=RULE_ID,
+                    scheduled_time=NOW,
+                    status=ClawScheduledRunStatus.COMPLETED,
+                    completed_at=DONE,
+                    output=output,
+                )
 
-            reopened = SqliteClawAutomationStore(path)
-            stored = reopened.get_run(RUN_ID, WORKSPACE)
-            self.assertIsNotNone(stored)
-            self.assertEqual(stored.status, ClawScheduledRunStatus.COMPLETED)
-            self.assertEqual(stored.completed_at, DONE)
-            self.assertEqual(stored.output, output)
+                reopened = SqliteClawAutomationStore(path)
+                stored = reopened.get_run(RUN_ID, WORKSPACE)
+                self.assertIsNotNone(stored)
+                self.assertEqual(stored.status, ClawScheduledRunStatus.COMPLETED)
+                self.assertEqual(stored.completed_at, DONE)
+                self.assertEqual(stored.output, output)
+            finally:
+                if reopened is not None:
+                    reopened._db.close()
+                store._db.close()
 
 
 if __name__ == "__main__":
