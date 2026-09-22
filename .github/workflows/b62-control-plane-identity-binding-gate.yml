@@ -142,8 +142,11 @@ jobs:
           assert ".result.deployments[0].versions[0].percentage == 100" not in readonly_job
           assert "(.result.deployments[0].versions | length) == 1" not in readonly_job
           assert "actions/checkout@v4" in readonly_job
-          assert "ref: ${{ github.event.pull_request.head.sha }}" in readonly_job
-          assert "ref: ${{ inputs.target_sha }}" in readonly_job
+          # NOTE: never put a literal GitHub expression token inside a run script:
+          # GitHub substitutes it, so the assertion would compare against the resolved
+          # value. Assert the expression's inner text instead.
+          assert "github.event.pull_request.head.sha" in readonly_job
+          assert "inputs.target_sha" in readonly_job
           assert "persist-credentials: false" in readonly_job
           assert readonly_job.index("actions/checkout@v4") < readonly_job.index(
               "resolve_served_version_id"
