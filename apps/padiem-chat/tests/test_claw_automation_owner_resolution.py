@@ -119,9 +119,13 @@ class OwnerAuthority:
 class EchoingOwnerAuthority(OwnerAuthority):
     """Adversarial authority that echoes the opaque owner token as an identity."""
 
+    def __init__(self, token: str) -> None:
+        super().__init__()
+        self._token = token
+
     def resolve_automation_owner(self, *, owner_ref, workspace_id, now):
         self.calls.append((owner_ref, workspace_id))
-        return owner_projection(owner_ref=owner_ref, product_user_id=owner_ref)
+        return owner_projection(owner_ref=owner_ref, product_user_id=self._token)
 
 
 def resolver(*, owner_authority=None, session=None, record=..., raises=None):
@@ -324,10 +328,32 @@ async def test_shadow_pointer_mismatch_fails_closed() -> None:
 # --- fail-closed: input shapes ---------------------------------------------
 
 
-@pytest.mark.parametrize("bad", ["user_123", "", "usr_", "usr_ bad", 123, None])
+@pytest.mark.parametrize("bad", ["user_abc", "", 123, None, "x" * 81, "usr_" + "a" * 77])
 def test_invalid_product_user_id_is_refused(bad) -> None:
     with pytest.raises(ValueError):
         owner_projection(product_user_id=bad)
+
+
+@pytest.mark.parametrize(
+    "valid",
+    [
+        PRODUCT_USER,                 # usr_ + 32 hex (the historical generator shape)
+        "usr_abc",                    # short non-hex ids stay valid
+        "usr_google_user_01",         # provider-style id with underscores
+        "usr_" + "a" * 76,            # exactly the 80 character boundary
+    ],
+)
+def test_product_user_id_reuses_the_canonical_b62_contract(valid) -> None:
+    # The new module must not introduce a tighter or looser grammar than the existing
+    # B62 contract (TrustedProductAuthEvidence / auth.py session read: usr_ + <= 80).
+    assert owner_projection(product_user_id=valid).product_user_id == valid
+    assert len(valid) <= 80
+
+
+def test_product_user_id_boundary_is_exactly_eighty() -> None:
+    assert len("usr_" + "a" * 76) == 80
+    with pytest.raises(ValueError):
+        owner_projection(product_user_id="usr_" + "a" * 77)  # 81 characters
 
 
 @pytest.mark.parametrize("bad", ["", "member id", "member\n1", 42, None, "x" * 200])
@@ -373,17 +399,48 @@ def test_resolved_owner_revalidates_shapes() -> None:
 
 
 async def test_m1_owner_ref_as_product_user_id_is_caught() -> None:
-    """M1: an authority that echoes owner_ref as the product user id must be refused."""
+    """M1: an authority that echoes owner_ref as the product user id must be refused.
 
-    with pytest.raises((ValueError, IdentityBridgeError)) as raised:
-        await resolver(owner_authority=EchoingOwnerAuthority()).resolve_owner(
-            owner_ref=OWNER, workspace_id=WORKSPACE, now=NOW
+    Covers both an opaque-shaped token and a token that *looks* like a product user id:
+    the token's shape never grants identity, and the shadow/session chain still has to
+    vouch for the id the authority issued.
+    """
+
+    for token in (OWNER, "usr_looks_like_a_user"):
+        with pytest.raises((ValueError, IdentityBridgeError)) as raised:
+            await resolver(owner_authority=EchoingOwnerAuthority(token)).resolve_owner(
+                owner_ref=token, workspace_id=WORKSPACE, now=NOW
+            )
+        if isinstance(raised.value, IdentityBridgeError):
+            assert raised.value.code in {
+                "automation_owner_authority_unavailable",
+                "control_plane_identity_not_linked",
+            }
+        else:
+            assert "product_user_id" in str(raised.value)
+
+
+async def test_owner_ref_shape_grants_no_identity() -> None:
+    """OWNER_REF_SHAPE_GRANTS_IDENTITY=NO, even for a usr_-shaped token."""
+
+    looks_like_user = "usr_looks_like_a_user"
+
+    # 1. Nothing is resolved from the token alone: the shadow/session chain rejects the
+    #    echoed id because no canonical identity is linked for it.
+    with pytest.raises(IdentityBridgeError) as raised:
+        await resolver(owner_authority=EchoingOwnerAuthority(looks_like_user)).resolve_owner(
+            owner_ref=looks_like_user, workspace_id=WORKSPACE, now=NOW
         )
-    # Fail-closed either at projection construction or as an unusable authority.
-    if isinstance(raised.value, IdentityBridgeError):
-        assert raised.value.code == "automation_owner_authority_unavailable"
-    else:
-        assert "product_user_id" in str(raised.value)
+    assert raised.value.code == "control_plane_identity_not_linked"
+
+    # 2. The same token resolves only through the identity the authority issued, and the
+    #    resolved product user id is the authority's, never the token.
+    resolved = await resolver(
+        owner_authority=OwnerAuthority(owner_projection(owner_ref=looks_like_user))
+    ).resolve_owner(owner_ref=looks_like_user, workspace_id=WORKSPACE, now=NOW)
+    assert resolved.owner_ref == looks_like_user
+    assert resolved.product_user_id == PRODUCT_USER
+    assert resolved.product_user_id != looks_like_user
 
 
 async def test_m2_removing_canonical_session_refresh_is_caught() -> None:

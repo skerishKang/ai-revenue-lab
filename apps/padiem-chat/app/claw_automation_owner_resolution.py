@@ -53,7 +53,7 @@ __all__ = [
     "TrustedAutomationOwnerProjection",
 ]
 
-_PRODUCT_USER_RE = re.compile(r"^usr_[0-9a-f]{32}$")
+_MAX_PRODUCT_USER_ID = 80
 _MAX_OPAQUE_TOKEN = 256
 _MAX_AUTHORITY_LIFETIME = timedelta(hours=24)
 _CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
@@ -70,10 +70,19 @@ def _opaque_token(name: str, value: object) -> str:
 
 
 def _product_user_id(value: object) -> str:
-    """Validate a canonical product user id, matching the shadow/link contract."""
+    """Validate a B62 product user id with the existing canonical contract.
 
-    if not isinstance(value, str) or not _PRODUCT_USER_RE.fullmatch(value):
-        raise ValueError("product_user_id is invalid")
+    Deliberately identical to ``TrustedProductAuthEvidence.__post_init__`` and to the
+    ``auth.py`` session user-id read contract: a ``usr_`` prefix plus a bounded length.
+    No new identifier grammar is introduced here.
+    """
+
+    if (
+        not isinstance(value, str)
+        or not value.startswith("usr_")
+        or len(value) > _MAX_PRODUCT_USER_ID
+    ):
+        raise ValueError("product_user_id must be a bounded B62 user identifier")
     return value
 
 
