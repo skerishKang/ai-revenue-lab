@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
+      - ".github/scripts/cloudflare_served_version.py"
+      - ".github/tests/test_cloudflare_served_version.py"
       - "apps/padiem-chat/app/control_plane_identity_worker.py"
       - "apps/padiem-chat/app/connector_ticket_routes.py"
       - "apps/padiem-chat/worker.py"
@@ -127,6 +129,28 @@ jobs:
           assert "LATEST_VERSION_PROPAGATION_RETRY=OK" in gate
           assert '"${latest}" = "${active}"' in gate
           assert ".result.items[0].id // empty" in gate
+
+          # #2451 item 4 / child #2900: the served active-version resolution authority
+          # in the readonly job is the canonical resolver primitive, not inline jq, and
+          # the job checks out the exact source read-only for both trigger events.
+          readonly_job = gate.split("\n  cloudflare-readonly:", 1)[1].split(
+              "\n  activate-identity-binding:", 1
+          )[0]
+          assert "cloudflare_served_version" in readonly_job
+          assert "resolve_served_version_id" in readonly_job
+          assert ".result.deployments[0].versions[0].version_id" not in readonly_job
+          assert ".result.deployments[0].versions[0].percentage == 100" not in readonly_job
+          assert "(.result.deployments[0].versions | length) == 1" not in readonly_job
+          assert "actions/checkout@v4" in readonly_job
+          assert "ref: ${{ github.event.pull_request.head.sha }}" in readonly_job
+          assert "ref: ${{ inputs.target_sha }}" in readonly_job
+          assert "persist-credentials: false" in readonly_job
+          assert readonly_job.index("actions/checkout@v4") < readonly_job.index(
+              "resolve_served_version_id"
+          )
+          resolver_paths = gate.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+          assert ".github/scripts/cloudflare_served_version.py" in resolver_paths
+          assert ".github/tests/test_cloudflare_served_version.py" in resolver_paths
           print("B62_IDENTITY_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")
           print("SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
@@ -147,6 +171,25 @@ jobs:
       active_version: ${{ steps.audit.outputs.active_version }}
       latest_version: ${{ steps.audit.outputs.latest_version }}
     steps:
+      # #2451 item 4 / child #2900: this job runs the checked-in canonical resolver,
+      # and a job workspace is not shared between jobs, so it checks out the exact
+      # source for both trigger events. Read-only: no credential persistence.
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Read-only Production Worker and identity authority audit
         id: audit
         shell: bash
@@ -176,15 +219,38 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           echo "B62_BINDINGS_SHAPE_OBSERVATION"
           jq -c '.result.bindings | map({name, type, has_version_id: has("version_id"), version_id_type: (.version_id | type)})' "${settings}"
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
           jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
           jq -e '.success == true' "${subdomain}" >/dev/null
           jq -e '.success == true and (.result.bindings | type == "array")' "${identity_settings}" >/dev/null
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${identity_subdomain}" >/dev/null
 
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          # #2451 item 4 / child #2900: the served active-version resolution authority
+          # is the canonical resolver primitive. It owns the envelope -> result ->
+          # deployments[0] -> exactly one version -> 100% -> safe version_id rules and
+          # fails closed with a closed reason code, so this workflow neither restates
+          # that shape logic nor extracts the id positionally.
+          active="$(python - "${deployments}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, ".github/scripts")
+          from cloudflare_served_version import (
+              ServedVersionResolutionError,
+              resolve_served_version_id,
+          )
+
+          payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          try:
+              print(resolve_served_version_id(payload))
+          except ServedVersionResolutionError as exc:
+              print(f"B62_SERVED_VERSION_RESOLUTION=FAIL:{exc.reason}", file=sys.stderr)
+              raise SystemExit(1)
+          PY
+          )"
+          echo "B62_SERVED_VERSION_RESOLVER=PASS"
+
           latest="$(jq -r '.result.items[0].id' "${versions}")"
-          test -n "${active}" && test "${active}" != "null"
           test -n "${latest}" && test "${latest}" != "null"
           test "${active}" = "${latest}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
