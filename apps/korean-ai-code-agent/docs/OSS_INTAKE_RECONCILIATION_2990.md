@@ -119,7 +119,7 @@ OPTIONAL_DEPENDENCY_GAPS=DEFERRED_TRANSITIVE_AUDIT (cryptography, PyCryptodome, 
 NATIVE_BINARY_GAPS=OPTIONAL_EXTRA_WHEELS_ONLY; CORE_WHEEL_IS_PURE_PYTHON (pypdf-6.19.0-py3-none-any.whl, sha256 recorded)
 SUBPROCESS_POSTURE=PRESENT_CONDITIONAL_JBIG2DEC (argv list, no shell, PATH-resolved binary, fail-closed DependencyError when binary absent)
 ENVIRONMENT_CREDENTIAL_POSTURE=CREDENTIAL_READS_ABSENT; CREDENTIAL_ENV_PROPAGATION=PRESENT_CONDITIONAL_JBIG2DEC (os.environ.copy() forwarded wholesale to the jbig2dec child)
-NEXT_BOUNDED_DECISION=DECIDE_JBIG2DEC_SUBPROCESS_AUTHORITY_IN_PADIEM_WORKER (disable or bound child-env propagation) — verify with #3026
+NEXT_BOUNDED_DECISION=DECIDE_JBIG2DEC_SUBPROCESS_AUTHORITY_IN_PADIEM_WORKER (disable or bound child-env propagation) — child issue not yet assigned
 ```
 
 Load-bearing facts behind the restrictions:
@@ -161,7 +161,7 @@ OPTIONAL_DEPENDENCY_GAPS=None required (REQUIRED_RUNTIME_DEPENDENCIES=0); option
 NATIVE_BINARY_GAPS=8_C_EXTENSION_TARGETS (PIL._imaging, _imagingft, _imagingcms, _webp, _avif, _imagingtk, _imagingmath, _imagingmorph); 90 WHEEL_DIGESTS_RECORDED but not independently attested
 SUBPROCESS_POSTURE=FORMAT_OR_API_GATED (gs only on the .eps default decode path; djpeg/ppmtogif/ppmquant opt-in or dead-by-default; Image.show()/ImageGrab explicit-API only; shell=True count 0, os.system count 1)
 ENVIRONMENT_CREDENTIAL_POSTURE=CREDENTIAL_READS=NONE_FOUND; ENVIRONMENT_READS limited to PILLOW_* tuning at import, WINDIR/XDG_* font discovery, DISPLAY/WAYLAND_DISPLAY for ImageGrab
-NEXT_BOUNDED_DECISION=ESTABLISH_NATIVE_WHEEL_PROVENANCE_FOR_THE_SELECTED_PLATFORM_WHEEL (or elect a source build) — verify with #3027
+NEXT_BOUNDED_DECISION=ESTABLISH_NATIVE_WHEEL_PROVENANCE_FOR_THE_SELECTED_PLATFORM_WHEEL (or elect a source build) — child issue not yet assigned
 ```
 
 Additional Pillow facts that gate later decisions:
@@ -237,8 +237,8 @@ promoted to PASS.
 ## Next bounded decisions
 
 ```text
-NEXT_CHILD_PYPDF_JBIG2DEC_SUBPROCESS_AUTHORITY=#3026
-NEXT_CHILD_PILLOW_NATIVE_WHEEL_PROVENANCE=#3027
+NEXT_CHILD_PYPDF_JBIG2DEC_SUBPROCESS_AUTHORITY=UNASSIGNED
+NEXT_CHILD_PILLOW_NATIVE_WHEEL_PROVENANCE=UNASSIGNED
 ```
 
 These are the two decisions that actually sit in front of PDF and Image Skill

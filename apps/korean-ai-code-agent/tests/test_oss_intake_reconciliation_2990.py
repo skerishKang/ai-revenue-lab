@@ -143,6 +143,18 @@ class ReconciliationDocumentTests(unittest.TestCase):
         ):
             self.assertEqual(acceptance.get(key), expected, key)
 
+    def test_future_child_numbers_are_not_preallocated(self) -> None:
+        self.assertNotIn("#3026", self.doc)
+        self.assertNotIn("#3027", self.doc)
+        self.assertIn(
+            "NEXT_CHILD_PYPDF_JBIG2DEC_SUBPROCESS_AUTHORITY=UNASSIGNED",
+            self.doc,
+        )
+        self.assertIn(
+            "NEXT_CHILD_PILLOW_NATIVE_WHEEL_PROVENANCE=UNASSIGNED",
+            self.doc,
+        )
+
     def test_no_secret_material_in_document(self) -> None:
         lowered = self.doc.lower()
         for token in ("password=", "api_key=", "private key", "bearer "):
