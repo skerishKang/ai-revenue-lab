@@ -2190,9 +2190,9 @@
 
   async function applyImmediateApprovalDecision(result) {
     if (!result || typeof result.run_id !== "string") return;
-    if (typeof result.conversation_id === "string" && result.conversation_id) {
-      conversationState.setConversationId(result.conversation_id);
-    }
+    // Session authority was already adopted from the canonical execute response.
+    // Approval continuation may return the same handle for presentation, but the
+    // browser must not introduce a second conversation-id adoption path.
     const status = typeof result.status === "string" ? result.status : "";
     if (status === "waiting_approval" && result.approval_required === true) {
       if (clawResultPreview) clawResultPreview.textContent = clawT("claw-approval-required");
