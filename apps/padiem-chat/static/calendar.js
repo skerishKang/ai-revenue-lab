@@ -1,7 +1,8 @@
-/* #2834 A4/A5 — Padiem Calendar surface (Today / Upcoming + native record/appointment create).
+/* #2834 A4/A5/A6 — Padiem Calendar surface (Today / Day / Week / Month / Upcoming).
  *
  * Contract:
- * - Read path uses only the two existing calendar endpoints (GET today, GET upcoming).
+ * - Read path uses only the three existing calendar endpoints (GET today, GET upcoming,
+ *   and the canonical bounded range projection for Day/Week/Month).
  * - Exactly two write paths exist, both pre-registered native authorities:
  *   POST /api/calendar/work-logs (A4) and POST /api/calendar/appointments (A5).
  *   No other endpoint is ever written, and no other write verb is ever used.
@@ -22,6 +23,8 @@
 
   const TODAY_ROUTE = "/api/calendar/today";
   const UPCOMING_ROUTE = "/api/calendar/upcoming";
+  const ITEMS_ROUTE = "/api/calendar/items";
+  const RANGE_TABS = Object.freeze(["day", "week", "month"]);
   const KNOWN_ITEM_TYPES = Object.freeze([
     "work_log",
     "appointment",
@@ -40,6 +43,9 @@
   });
   const EMPTY_KEYS = Object.freeze({
     today: "calendar-empty-today",
+    day: "calendar-empty-day",
+    week: "calendar-empty-week",
+    month: "calendar-empty-month",
     upcoming: "calendar-empty-upcoming",
   });
   // The single existing native work-log authority. No second write endpoint and
@@ -84,6 +90,9 @@
     "calendar-item-unknown": "Other",
     "calendar-item-untitled": "Untitled",
     "calendar-empty-today": "Nothing scheduled for today.",
+    "calendar-empty-day": "Nothing scheduled for this day.",
+    "calendar-empty-week": "Nothing scheduled for this week.",
+    "calendar-empty-month": "Nothing scheduled for this month.",
     "calendar-empty-upcoming": "Nothing upcoming.",
     "calendar-all-day": "All day",
     "calendar-record-created": "Work record saved.",
@@ -119,12 +128,81 @@
     return `?timezone=${encodeURIComponent(String(timezone == null ? "" : timezone))}`;
   }
 
+  function isRangeTab(tab) {
+    return RANGE_TABS.includes(tab);
+  }
+
+  function parseCalendarDate(value) {
+    if (typeof value !== "string" || !DATE_ONLY_PATTERN.test(value)) return null;
+    const parts = value.split("-").map(Number);
+    const parsed = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    if (Number.isNaN(parsed.getTime())) return null;
+    if (
+      parsed.getUTCFullYear() !== parts[0] ||
+      parsed.getUTCMonth() !== parts[1] - 1 ||
+      parsed.getUTCDate() !== parts[2]
+    ) return null;
+    return parsed;
+  }
+
+  function formatCalendarDate(value) {
+    return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, "0")}-${String(value.getUTCDate()).padStart(2, "0")}`;
+  }
+
+  function shiftCalendarDate(value, days) {
+    const parsed = parseCalendarDate(value);
+    if (!parsed || !Number.isInteger(days)) return "";
+    parsed.setUTCDate(parsed.getUTCDate() + days);
+    return formatCalendarDate(parsed);
+  }
+
+  function shiftCalendarMonth(value, months) {
+    const parsed = parseCalendarDate(value);
+    if (!parsed || !Number.isInteger(months)) return "";
+    const day = parsed.getUTCDate();
+    const target = new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth() + months, 1));
+    const lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+    target.setUTCDate(Math.min(day, lastDay));
+    return formatCalendarDate(target);
+  }
+
+  function rangeForView(view, anchorDate) {
+    const anchor = parseCalendarDate(anchorDate);
+    if (!anchor || !isRangeTab(view)) return null;
+    if (view === "day") return { start_date: anchorDate, end_date: anchorDate };
+    if (view === "week") {
+      const mondayOffset = (anchor.getUTCDay() + 6) % 7;
+      const start = shiftCalendarDate(anchorDate, -mondayOffset);
+      return { start_date: start, end_date: shiftCalendarDate(start, 6) };
+    }
+    const start = `${anchor.getUTCFullYear()}-${String(anchor.getUTCMonth() + 1).padStart(2, "0")}-01`;
+    const end = new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth() + 1, 0));
+    return { start_date: start, end_date: formatCalendarDate(end) };
+  }
+
+  function buildItemsQuery(startDate, endDate, timezone) {
+    return `?timezone=${encodeURIComponent(String(timezone == null ? "" : timezone))}&start_date=${encodeURIComponent(String(startDate == null ? "" : startDate))}&end_date=${encodeURIComponent(String(endDate == null ? "" : endDate))}`;
+  }
+
+  function shiftRangeAnchor(view, anchorDate, direction) {
+    if (!Number.isInteger(direction) || !isRangeTab(view)) return "";
+    if (view === "month") return shiftCalendarMonth(anchorDate, direction);
+    return shiftCalendarDate(anchorDate, view === "week" ? direction * 7 : direction);
+  }
+
   function isKnownItemType(itemType) {
     return typeof itemType === "string" && KNOWN_ITEM_TYPES.includes(itemType);
   }
 
   function itemTypeKey(itemType) {
     return isKnownItemType(itemType) ? ITEM_TYPE_KEYS[itemType] : "calendar-item-unknown";
+  }
+
+  function isRenderableItem(item) {
+    return !!item && typeof item === "object" && !Array.isArray(item)
+      && isKnownItemType(item.item_type)
+      && typeof item.title === "string" && !!item.title.trim()
+      && typeof item.date === "string" && !!parseCalendarDate(item.date);
   }
 
   // Public bounded field only: the server source_type is shown as plain text.
@@ -412,6 +490,8 @@
   const api = Object.freeze({
     TODAY_ROUTE,
     UPCOMING_ROUTE,
+    ITEMS_ROUTE,
+    RANGE_TABS,
     WORK_LOG_ROUTE,
     APPOINTMENT_ROUTE,
     APPOINTMENT_TYPES,
@@ -423,8 +503,13 @@
     RECORD_STATUS_VALUES,
     routeFor,
     buildQuery,
+    isRangeTab,
+    rangeForView,
+    buildItemsQuery,
+    shiftRangeAnchor,
     isKnownItemType,
     itemTypeKey,
+    isRenderableItem,
     sourceTypeText,
     formatWhen,
     browserTimezone,
@@ -455,7 +540,15 @@
     const view = document.getElementById("calendarView");
     const tabs = document.getElementById("calendarTabs");
     const todayTab = document.getElementById("calendarTodayTab");
+    const dayTab = document.getElementById("calendarDayTab");
+    const weekTab = document.getElementById("calendarWeekTab");
+    const monthTab = document.getElementById("calendarMonthTab");
     const upcomingTab = document.getElementById("calendarUpcomingTab");
+    const rangeNavigation = document.getElementById("calendarRangeNavigation");
+    const rangeLabel = document.getElementById("calendarRangeLabel");
+    const previousRange = document.getElementById("calendarPreviousRange");
+    const nextRange = document.getElementById("calendarNextRange");
+    const rangeToday = document.getElementById("calendarRangeToday");
     const panel = document.getElementById("calendarPanel");
     const loading = document.getElementById("calendarLoading");
     const errorBox = document.getElementById("calendarErrorBox");
@@ -486,6 +579,7 @@
     if (!shell || !navButton || !view || !list) return;
 
     let currentTab = "today";
+    let rangeAnchorDate = "";
     let requestToken = 0;
     let wasActive = false;
     let lastItems = null;
@@ -527,8 +621,46 @@
 
     function renderItems(items) {
       list.replaceChildren();
-      items.forEach((item) => list.append(buildRow(item)));
+      const boundedItems = items.filter(isRenderableItem);
+      if (boundedItems.length === 0) {
+        setStatus("empty");
+        return;
+      }
+      if (currentTab !== "month") {
+        boundedItems.forEach((item) => list.append(buildRow(item)));
+        setStatus("ready");
+        return;
+      }
+
+      const groups = new Map();
+      boundedItems.forEach((item) => {
+        const itemDate = item.date;
+        if (!groups.has(itemDate)) groups.set(itemDate, []);
+        groups.get(itemDate).push(item);
+      });
+      groups.forEach((groupItems, date) => {
+        const group = el("section", "calendar-date-group");
+        group.setAttribute("role", "group");
+        group.append(el("h3", "calendar-date-group-title", date));
+        groupItems.forEach((item) => group.append(buildRow(item)));
+        list.append(group);
+      });
       setStatus("ready");
+    }
+
+    function updateRangeNavigation(timezone) {
+      const active = isRangeTab(currentTab);
+      if (rangeNavigation) rangeNavigation.hidden = !active;
+      if (!active) return;
+      const range = rangeForView(currentTab, rangeAnchorDate);
+      if (rangeLabel) {
+        rangeLabel.textContent = range
+          ? range.start_date === range.end_date
+            ? range.start_date
+            : `${range.start_date} - ${range.end_date}`
+          : "";
+      }
+      if (rangeToday) rangeToday.disabled = !localDateInZone(timezone);
     }
 
     function showError() {
@@ -710,6 +842,41 @@
         showError();
         return;
       }
+      if (isRangeTab(currentTab)) {
+        const range = rangeForView(currentTab, rangeAnchorDate);
+        if (!range) {
+          showError();
+          return;
+        }
+        updateRangeNavigation(timezone);
+        setStatus("loading");
+        try {
+          const response = await fetch(`${ITEMS_ROUTE}${buildItemsQuery(range.start_date, range.end_date, timezone)}`, {
+            cache: "no-store",
+            credentials: "same-origin",
+            headers: { Accept: "application/json" },
+          });
+          const data = await response.json().catch(() => null);
+          if (token !== requestToken) return;
+          const projection = data && data.ok === true ? data.projection : null;
+          const items = projection && Array.isArray(projection.items) ? projection.items : null;
+          if (!response.ok || !items) {
+            showError();
+            return;
+          }
+          lastItems = items;
+          if (items.length === 0) {
+            list.replaceChildren();
+            setStatus("empty");
+            return;
+          }
+          renderItems(items);
+        } catch (_) {
+          if (token !== requestToken) return;
+          showError();
+        }
+        return;
+      }
       setStatus("loading");
       try {
         const response = await fetch(`${routeFor(currentTab)}${buildQuery(timezone)}`, {
@@ -739,13 +906,31 @@
     }
 
     function selectTab(tab) {
-      if (tab !== "today" && tab !== "upcoming") return;
+      if (tab !== "today" && tab !== "upcoming" && !isRangeTab(tab)) return;
       currentTab = tab;
       if (todayTab) todayTab.setAttribute("aria-selected", String(tab === "today"));
+      if (dayTab) dayTab.setAttribute("aria-selected", String(tab === "day"));
+      if (weekTab) weekTab.setAttribute("aria-selected", String(tab === "week"));
+      if (monthTab) monthTab.setAttribute("aria-selected", String(tab === "month"));
       if (upcomingTab) upcomingTab.setAttribute("aria-selected", String(tab === "upcoming"));
       if (panel) {
-        panel.setAttribute("aria-labelledby", tab === "today" ? "calendarTodayTab" : "calendarUpcomingTab");
+        const labels = {
+          today: "calendarTodayTab",
+          day: "calendarDayTab",
+          week: "calendarWeekTab",
+          month: "calendarMonthTab",
+          upcoming: "calendarUpcomingTab",
+        };
+        panel.setAttribute("aria-labelledby", labels[tab]);
       }
+      updateRangeNavigation(browserTimezone());
+      load();
+    }
+
+    function resetRangeToToday() {
+      const today = localDateInZone(browserTimezone());
+      if (!today) return;
+      rangeAnchorDate = today;
       load();
     }
 
@@ -767,6 +952,8 @@
         ensureRecordDate();
         ensureAppointmentDate();
         applyAppointmentType();
+        if (!rangeAnchorDate) rangeAnchorDate = localDateInZone(browserTimezone());
+        updateRangeNavigation(browserTimezone());
       }
       if (active && !wasActive) load();
       wasActive = active;
@@ -785,6 +972,15 @@
         if (button) selectTab(button.dataset.calendarTab);
       });
     }
+    if (previousRange) previousRange.addEventListener("click", () => {
+      rangeAnchorDate = shiftRangeAnchor(currentTab, rangeAnchorDate, -1);
+      load();
+    });
+    if (nextRange) nextRange.addEventListener("click", () => {
+      rangeAnchorDate = shiftRangeAnchor(currentTab, rangeAnchorDate, 1);
+      load();
+    });
+    if (rangeToday) rangeToday.addEventListener("click", resetRangeToToday);
     if (refresh) refresh.addEventListener("click", () => load());
     if (retry) retry.addEventListener("click", () => load());
     if (recordForm) recordForm.addEventListener("submit", submitRecord);

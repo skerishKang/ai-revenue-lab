@@ -128,6 +128,41 @@ html[data-theme="padiem-glass"] .sidebar {
   opacity: 1;
 }
 
+.calendar-range-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+}
+
+.calendar-range-button,
+.calendar-range-label {
+  border: 1px solid var(--line, #e3e3e9);
+  background: var(--card-bg, #fafafa);
+  color: inherit;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.calendar-range-label {
+  min-width: 190px;
+  text-align: center;
+  cursor: default;
+}
+
+.calendar-range-button:hover {
+  border-color: var(--accent-strong, #2f6f99);
+}
+
+.calendar-range-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 /* ── Panel states (loading / error / empty / ready) ──────────────────── */
 
 .calendar-panel {
@@ -394,5 +429,19 @@ html[data-theme="padiem-glass"] #calendarNavButton[aria-current="page"] {
 @media (max-width: 720px) {
   .calendar-view {
     padding: 20px 16px 32px;
+  }
+
+  .calendar-tabs {
+    overflow-x: auto;
+  }
+
+  .calendar-tab {
+    flex: 0 0 auto;
+    padding-inline: 10px;
+  }
+
+  .calendar-range-label {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 }

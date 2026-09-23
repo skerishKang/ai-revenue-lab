@@ -313,10 +313,10 @@ def test_port_repr_and_diagnostics_never_render_body_ref_or_locator() -> None:
     asyncio.run(scenario())
 
 
-# --- source-only boundary -----------------------------------------------------------
+# --- composition wiring boundary (#2954) --------------------------------------------
 
 
-def test_durable_port_is_not_wired_into_production_composition() -> None:
+def test_durable_port_wiring_boundary() -> None:
     adapter_source = (APP_ROOT / "app" / "evidence_storage_d1.py").read_text(encoding="utf-8")
     assert "CREATE TABLE" not in adapter_source.upper()
     for name in ("engine_composition.py", "document_context_service.py"):
@@ -324,5 +324,5 @@ def test_durable_port_is_not_wired_into_production_composition() -> None:
         assert "evidence_storage_d1" not in source
         assert "CloudflareD1EvidenceStoragePort" not in source
     identity_source = (APP_ROOT / "worker_identity.py").read_text(encoding="utf-8")
-    assert "evidence_storage_d1" not in identity_source
-    assert "CloudflareD1EvidenceStoragePort" not in identity_source
+    assert "evidence_storage_d1" in identity_source
+    assert "CloudflareD1EvidenceStoragePort" in identity_source
