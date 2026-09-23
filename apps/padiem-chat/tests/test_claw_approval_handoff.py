@@ -30,7 +30,12 @@ from unittest.mock import AsyncMock, MagicMock
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
-from app.history import D1HistoryStore, HistoryConflict, HistoryError
+from app.history import (
+    D1HistoryStore,
+    HistoryConflict,
+    HistoryError,
+    _handoff_trusted_request_json,
+)
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from padiem_control_plane import (
@@ -302,6 +307,88 @@ async def test_trusted_request_is_reconstructable_without_browser_authority() ->
     assert loaded["trusted_request"]["session_id"] == "run_test123"
     assert loaded["trusted_request"]["trace_id"] == "claw_trace_test"
     assert loaded["trusted_request"]["messages"][0]["content"] == "테스트 견적 요청."
+
+
+async def test_real_p01_frozen_agent_snapshot_is_deeply_json_safe_and_durable() -> None:
+    from collections.abc import Mapping
+    from types import MappingProxyType
+
+    from kagent.contracts import ClawTaskIntent, ExecutionMode
+    from kagent.p01_adapter import P01RequestFactory, _trusted_p01_request_snapshot
+    from kagent.runs import ClawRun
+
+    run_id = "run_real_p01_handoff_json"
+    run = ClawRun.create(
+        run_id,
+        ClawTaskIntent(
+            task_id="task_real_p01_handoff_json",
+            task="실제 frozen AgentProfile 승인 handoff 직렬화를 검증해줘",
+            repository_ref="skerishKang/ai-revenue-lab",
+            execution_mode=ExecutionMode.LOCAL,
+        ),
+    )
+    bundle = P01RequestFactory().build(run)
+
+    # Prove the fixture is the real frozen Core identity that triggered #2973.
+    self_agent = bundle.execution_request.agent
+    assert isinstance(self_agent.model_policy, MappingProxyType)
+    assert isinstance(self_agent.context_policy, MappingProxyType)
+    assert isinstance(self_agent.output_contract, MappingProxyType)
+
+    trusted = _trusted_p01_request_snapshot(bundle)
+    assert isinstance(trusted, dict)
+    assert set(trusted) == {
+        "app_id",
+        "agent",
+        "messages",
+        "session_id",
+        "additional_system_context",
+        "trace_id",
+        "execution_context",
+    }
+    assert isinstance(trusted["agent"], dict)
+    assert not isinstance(trusted["agent"]["model_policy"], MappingProxyType)
+
+    def assert_json_containers(value: object) -> None:
+        assert not isinstance(value, MappingProxyType)
+        if isinstance(value, Mapping):
+            for key, item in value.items():
+                assert isinstance(key, str)
+                assert_json_containers(item)
+        elif isinstance(value, list):
+            for item in value:
+                assert_json_containers(item)
+        else:
+            assert value is None or isinstance(value, (str, bool, int, float))
+
+    assert_json_containers(trusted)
+
+    encoded_1, fingerprint_1 = _handoff_trusted_request_json(trusted)
+    encoded_2, fingerprint_2 = _handoff_trusted_request_json(trusted)
+    assert encoded_1 == encoded_2
+    assert fingerprint_1 == fingerprint_2
+
+    store = _store()
+    await store.record_claw_approval_handoff(
+        SIGNED_IN_USER_ID,
+        run_id,
+        ENGINE_REF,
+        PAUSE_ID,
+        FUTURE_EXPIRES,
+        trusted,
+        workspace_id=WORKSPACE_A,
+    )
+    loaded = await store.load_claw_approval_handoff(
+        SIGNED_IN_USER_ID,
+        run_id,
+        workspace_id=WORKSPACE_A,
+    )
+    assert loaded is not None
+    assert loaded["trusted_request"] == trusted
+    _encoded_loaded, fingerprint_loaded = _handoff_trusted_request_json(
+        loaded["trusted_request"]
+    )
+    assert fingerprint_loaded == fingerprint_1
 
 
 async def test_browser_authority_keys_rejected_at_store_boundary() -> None:
