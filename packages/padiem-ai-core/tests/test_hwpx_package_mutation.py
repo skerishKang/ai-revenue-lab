@@ -717,7 +717,7 @@ class TestMutationAuthority:
     def test_raw_member_assembler_is_not_public_api(self) -> None:
         """The mutator may reuse one internal writer without exposing a raw ZIP API."""
 
-        from padiem_ai_core import hwpx_package_serializer as serializer
+        import padiem_ai_core.hwpx_package_serializer as serializer
 
         assert not hasattr(serializer, "assemble_hwpx_package_members")
         assert "_assemble_hwpx_package_members" not in serializer.__all__
