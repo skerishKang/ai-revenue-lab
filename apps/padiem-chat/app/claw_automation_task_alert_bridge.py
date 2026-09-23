@@ -75,12 +75,15 @@ from .claw_automation_projection_bridge import (
     project_scheduled_run_output,
 )
 
-# Statuses that are not terminal at all: an occurrence that has not finished may
-# never be projected, so it is refused instead of being silently ignored.
-_NON_TERMINAL_STATUSES = frozenset(
+# Fail closed on status evolution: only statuses explicitly classified as
+# terminal may cross this composition boundary. If the enum gains a new status,
+# it is rejected until this allow-list and its contract test are deliberately
+# updated.
+_TERMINAL_STATUSES = frozenset(
     {
-        ClawScheduledRunStatus.PENDING,
-        ClawScheduledRunStatus.RUNNING,
+        ClawScheduledRunStatus.COMPLETED,
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
     }
 )
 
@@ -141,7 +144,7 @@ def _require_store(store: object) -> None:
 
 
 def _require_terminal(scheduled_run: ClawScheduledRun) -> None:
-    if scheduled_run.status in _NON_TERMINAL_STATUSES:
+    if scheduled_run.status not in _TERMINAL_STATUSES:
         raise ScheduledTaskAlertProjectionError(
             "only an already-terminal scheduled run can reach Task/Alert projection"
         )
