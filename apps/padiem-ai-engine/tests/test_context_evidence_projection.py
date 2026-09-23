@@ -62,11 +62,17 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # Re-pinned again at #2824-S3A, which changed the OOXML unsafe-path fixture only
 # (PR #2861). Core *source* pins below are deliberately unchanged: that slice
 # added no Core process authority.
+# Re-pinned a third time at #2966 (PR #2969), which factors the Core HWPX
+# archive-and-XML walk so a structured decoder and the flat reader share one
+# parse. That is a Core *source* change to document_normalization.py, so its pin
+# and its fixture pin move; document_semantics.py is untouched and stays pinned
+# at the E5B-S1 digest. No Core process, network or filesystem authority was
+# added by that slice.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "8adced481c112814aa2a7391f2d949fb0c4077a9ff7261490af4cc846957a854",
+    CORE_PACKAGE / "document_normalization.py": "24bb448887ce5c0855bbabfdc3bc53597d3ffff242bdc2844b8426b9d3d5e660",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "b72f452eee4c74afc41fecb4cf8ce3ea418ba382fb7500a49ffdbaf42a69ce67",
+    CORE_TESTS / "test_document_normalization.py": "ba88eb112d5855751ba4316013daef60095e574ed8bb13441c479ad0cc70da5e",
 }
 
 REF = "doc_s3doc0000000000b"
