@@ -195,9 +195,11 @@ class PypdfSourceAuditBehaviorTests(unittest.TestCase):
         self.assertEqual(self.findings.required_runtime_deps_on_py311, ())
         self.assertIn("required runtime (py>=3.11): NONE", self.doc)
 
-    def test_optional_crypto_extras_do_not_expand_process_authority(self) -> None:
-        self.assertIn("WITH_PURE_PYTHON_FALLBACK", self.doc)
-        self.assertIn("do not change network/shell/process authority", self.doc)
+    def test_optional_dependency_authority_stays_deferred_to_own_audits(self) -> None:
+        self.assertIn("OPTIONAL_DEPENDENCY_AUTHORITY=DEFERRED_TRANSITIVE_AUDIT", self.doc)
+        self.assertIn("optional dependency internals not established here", self.doc)
+        self.assertIn("Pillow 12.3.0 is tracked separately by #2931", self.doc)
+        self.assertIn("PURE_PYTHON_FALLBACK_AVAILABLE=YES", self.doc)
         self.assertIn('crypto     = cryptography>3.0', self.doc)
 
 
