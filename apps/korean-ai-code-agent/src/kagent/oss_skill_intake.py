@@ -155,6 +155,7 @@ class CredentialEnvironmentAudit:
         return (
             self.status is AuditStatus.REVIEWED
             and self.environment_reads_declared
+            and self.credential_reads_declared
             and not self.reads_credentials
             and not self.hidden
         )
