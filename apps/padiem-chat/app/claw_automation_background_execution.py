@@ -320,8 +320,11 @@ def _require_precomputed_receipt(
     """Admit a precomputed trigger receipt only if it provably matches (#2995).
 
     The receipt must be the exact type the trusted boundary returns and must
-    describe this exact trigger -- source, workspace and observation instant --
-    so a caller cannot hand in another trigger's claims or a foreign instant.
+    describe this exact trigger -- source, correlation, workspace and observation
+    instant -- so a caller cannot hand in another trigger's claims, another
+    delivery's receipt or a foreign instant. Because supplying the receipt skips
+    the boundary call, the trigger's trusted membership must also still cover the
+    same observed instant before any claimed row can be consumed.
     The receipt class itself already validates ids, counts and duplicate-free
     run ids. Skipping the boundary never skips the tick that produced the rows:
     those rows can only exist because that boundary run claimed them, and the
@@ -336,6 +339,10 @@ def _require_precomputed_receipt(
         raise BackgroundExecutionCompositionError(
             "precomputed trigger receipt does not match the trigger source"
         )
+    if receipt.correlation_id != trigger.correlation_id:
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt does not match the trigger correlation"
+        )
     if receipt.workspace_id != trigger.workspace_id:
         raise BackgroundExecutionCompositionError(
             "precomputed trigger receipt does not cover the trigger workspace"
@@ -343,6 +350,10 @@ def _require_precomputed_receipt(
     if receipt.observed_at != trigger.observed_at:
         raise BackgroundExecutionCompositionError(
             "precomputed trigger receipt does not match the trigger instant"
+        )
+    if not trigger.membership.valid_at(trigger.observed_at):
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt requires membership active at the trigger instant"
         )
     return receipt
 
