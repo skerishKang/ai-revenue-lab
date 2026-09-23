@@ -13,6 +13,7 @@ uses, so any drift between the two homes is a failure here.
 
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 import inspect
 import json
@@ -499,18 +500,43 @@ async def test_record_run_distinct_occurrence_distinct_run(
 
 
 @pytest.mark.asyncio
-async def test_concurrent_record_run_same_occurrence_single_row(
-    d1_store: D1ClawAutomationStore,
-) -> None:
-    await d1_store.save_rule(make_rule())
+async def test_concurrent_record_run_same_occurrence_single_row() -> None:
+    class YieldingBatchBinding(SqliteD1Binding):
+        """Force both contenders past their pre-read before either batch mutates."""
+
+        def __init__(self) -> None:
+            super().__init__()
+            self.batch_arrivals = 0
+
+        async def batch(
+            self, statements: list["SqliteD1Statement"]
+        ) -> list[SimpleNamespace]:
+            self.batch_arrivals += 1
+            # record_run performs its existing-row / occurrence pre-reads before
+            # entering batch(). Yield here so a second task reaches the same point
+            # against the same empty occurrence state. The two atomic batches then
+            # race on the single occurrence_key primary-key authority.
+            await asyncio.sleep(0)
+            return await super().batch(statements)
+
+    binding = YieldingBatchBinding()
+    binding.conn.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    store = D1ClawAutomationStore(binding)
+    await store.save_rule(make_rule())
+    binding.batch_arrivals = 0
+
     run = scheduled_run()
-    # Two back-to-back claims for the same logical occurrence: only one canonical
-    # claw_runs row may ever exist (the PK wins, the loser adopts).
-    one = await d1_store.record_run(run)
-    two = await d1_store.record_run(run)
-    assert one.run_id == two.run_id
-    rows = await d1_store.list_runs(WORKSPACE)
-    assert len(rows) == 1
+    one, two = await asyncio.gather(store.record_run(run), store.record_run(run))
+
+    # Both tasks reached the mutation boundary from the same pre-mutation state,
+    # yet only one canonical run exists and the loser adopts its run id.
+    assert binding.batch_arrivals == 2
+    assert one.run_id == two.run_id == run.run_id
+    rows = await store.list_runs(WORKSPACE)
+    assert [row.run_id for row in rows] == [run.run_id]
+    assert await store.get_run_for_occurrence(
+        occurrence_key(WORKSPACE, RULE_ID, NOW), WORKSPACE
+    ) == rows[0]
 
 
 @pytest.mark.asyncio
