@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import asyncio
 import sqlite3
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -33,13 +34,15 @@ _CHAT = _HERE.parent.parent
 _REPO = _CHAT.parent.parent
 _KAGENT_SRC = _REPO / "apps" / "korean-ai-code-agent" / "src"
 
-import kagent  # noqa: E402
-import kagent.claw_automation as ca  # noqa: E402
+# Prefer the kernel SOURCE tree when it is present, because a stale installed
+# copy would silently exercise a different authority than the one under test.
+# This is a PREFERENCE, never an assertion: CI legitimately resolves kagent from
+# an installed distribution, and a hard assert there would fail collection for
+# every unrelated job too (observed on run 35900029867).
+if (_KAGENT_SRC / "kagent" / "__init__.py").exists():
+    sys.path.insert(0, str(_KAGENT_SRC))
 
-# Pin the kernel to the SOURCE tree: a stale site-packages copy would silently
-# exercise a different authority than the one under test.
-assert str(_KAGENT_SRC) in kagent.__file__, "kagent must resolve to the source tree"
-assert str(_KAGENT_SRC) in ca.__file__, "claw_automation must resolve to the source tree"
+import kagent  # noqa: E402
 
 from kagent.claw_automation import (  # noqa: E402
     ClawAutomationOutputType,
