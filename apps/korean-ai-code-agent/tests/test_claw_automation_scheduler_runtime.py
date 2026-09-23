@@ -17,8 +17,12 @@ Design boundaries pinned here:
   authority.
 * Schedule evaluation reuses the pre-existing ``FakeClawScheduler`` candidate
   and dry-run semantics rather than duplicating cron/interval/daypart math.
-* A tick materialises only bounded, non-sending results (WEB_ALERT_INBOX /
-  draft / report / task proposals). No provider call, no outbound message.
+* A tick CLAIMS a PENDING occurrence and writes no terminal material at all
+  (``output=None``, ``completed_at=None``, zero proposals). The bounded
+  WEB_ALERT_INBOX / draft / report / task-proposal contract belongs to the
+  explicit reference path (``FakeClawScheduler.execute_rule_dry_run``), which
+  only callers asking for fake/demo materialization invoke. Neither path makes
+  a provider call or sends an outbound message.
 
 The durable backend is a real SQLite adapter. In-memory runs are not accepted
 as durability proof anywhere in this module.
@@ -553,15 +557,34 @@ class TickRuntimeContractTests(unittest.TestCase):
         }
         self.assertEqual(len(keys), 2)
 
-    # --- (17) bounded output/proposal ---
+    # --- (17) a tick claims PENDING: no fabricated terminal output/proposal ---
 
-    def test_output_and_proposal_are_bounded_and_inbox_scoped(self) -> None:
+    def test_tick_claims_pending_and_writes_no_output_and_no_proposal(self) -> None:
+        """The durable tick path must not fabricate a DRAFT/report or a proposal.
+
+        A claimed occurrence is PENDING and terminal-free: no output body, no
+        proposal row, no completion instant. The bounded WEB_ALERT_INBOX /
+        approval-gated proposal contract still holds for the explicit reference
+        path, which only callers that ask for fake materialization use.
+        """
+
         store = SqliteClawAutomationStore(":memory:")
         store.save_rule(make_rule("bounded"))
         runtime = ClawAutomationTickRuntime(store)
         runtime.tick(workspace_id=WORKSPACE, current_time=WHEN, membership=membership())
 
         run = store.list_runs(WORKSPACE)[0]
+        self.assertEqual(run.status, ClawScheduledRunStatus.PENDING)
+        self.assertIsNone(run.output)
+        self.assertIsNone(run.completed_at)
+        self.assertEqual(store.list_proposals(WORKSPACE), [])
+
+    def test_reference_scheduler_output_is_still_bounded_and_inbox_scoped(self) -> None:
+        store = SqliteClawAutomationStore(":memory:")
+        item = make_rule("bounded_ref")
+        store.save_rule(item)
+        run = FakeClawScheduler(store).execute_rule_dry_run(item, WHEN, membership())
+
         self.assertIsNotNone(run.output)
         output = run.output
         self.assertEqual(output.workspace_id, WORKSPACE)
@@ -569,7 +592,7 @@ class TickRuntimeContractTests(unittest.TestCase):
         self.assertEqual(len(output.proposals), 1)
         proposal = output.proposals[0]
         self.assertEqual(proposal.workspace_id, WORKSPACE)
-        self.assertEqual(proposal.rule_id, "bounded")
+        self.assertEqual(proposal.rule_id, "bounded_ref")
         self.assertEqual(proposal.channel.value, "web_alert_inbox")
         self.assertTrue(proposal.approval_gate.approval_required)
         safe = proposal.safe_dict()
@@ -577,15 +600,24 @@ class TickRuntimeContractTests(unittest.TestCase):
         self.assertFalse(safe["auto_order"])
         self.assertFalse(safe["auto_memory_confirm"])
 
-    def test_proposal_is_persisted_to_the_durable_store(self) -> None:
+    def test_reference_proposal_is_persisted_to_the_durable_store(self) -> None:
         store = SqliteClawAutomationStore(":memory:")
-        store.save_rule(make_rule("prop_persist"))
-        runtime = ClawAutomationTickRuntime(store)
-        runtime.tick(workspace_id=WORKSPACE, current_time=WHEN, membership=membership())
+        item = make_rule("prop_persist")
+        store.save_rule(item)
+        FakeClawScheduler(store).execute_rule_dry_run(item, WHEN, membership())
         proposals = store.list_proposals(WORKSPACE)
         self.assertEqual(len(proposals), 1)
         self.assertEqual(proposals[0].rule_id, "prop_persist")
         self.assertTrue(proposals[0].approval_gate.approval_required)
+
+    def test_durable_tick_persists_zero_proposals(self) -> None:
+        store = SqliteClawAutomationStore(":memory:")
+        store.save_rule(make_rule("tick_no_proposal"))
+        receipt = ClawAutomationTickRuntime(store).tick(
+            workspace_id=WORKSPACE, current_time=WHEN, membership=membership()
+        )
+        self.assertEqual(len(receipt.created_run_ids), 1)
+        self.assertEqual(store.list_proposals(WORKSPACE), [])
 
     # --- (18) auto-send = 0 / (19) provider calls = 0 ---
 
@@ -615,8 +647,16 @@ class TickRuntimeContractTests(unittest.TestCase):
             workspace_id=WORKSPACE, current_time=WHEN, membership=membership()
         )
         self.assertTrue(receipt.created_run_ids)
-        run = store.list_runs(WORKSPACE)[0]
-        for proposal in run.output.proposals:
+        # The claimed occurrence carries no fabricated terminal material, so this
+        # path can write no proposal at all.
+        self.assertEqual(store.list_proposals(WORKSPACE), [])
+        # The proposal contract itself is unchanged on the explicit reference
+        # path, which is where proposals actually come from.
+        reference = FakeClawScheduler(store)
+        reference_run = reference.execute_rule_dry_run(
+            make_rule("no_side_effects_ref"), WHEN, membership()
+        )
+        for proposal in reference_run.output.proposals:
             safe = proposal.safe_dict()
             self.assertFalse(safe["auto_send"])
             self.assertFalse(safe["auto_order"])
