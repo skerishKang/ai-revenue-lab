@@ -1500,6 +1500,7 @@
     "claw-runs-empty": "No recent runs.",
     "claw-runs-error": "Could not load run history. Please try again.",
     "claw-runs-download": "Download document again",
+    "claw-runs-open-session": "Open session",
     "claw-runs-status-completed": "Completed",
   };
 
@@ -2254,6 +2255,20 @@
     const channelValue = clawChannel?.value || "other";
     const actionValue = clawAction?.value || "quote";
     const senderText = (clawSender?.value || "").trim();
+    // Canonical conversation reuse (#2916): forward only the exact handle this
+    // page already owns. The browser never mints one; with no active
+    // conversation the field is omitted and legacy payload bytes are kept.
+    const activeConversationId = conversationState.getConversationId();
+    const executePayload = {
+      content: body,
+      channel: channelValue,
+      action: actionValue,
+      sender_hint: senderText || null,
+      tier: selectedProductTier(),
+    };
+    if (typeof activeConversationId === "string" && activeConversationId) {
+      executePayload.conversation_id = activeConversationId;
+    }
 
     clearClawRecovery();
     renderClawRequestEcho(body);
@@ -2273,17 +2288,16 @@
       const response = await fetch("/api/claw/manual-intake/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          content: body,
-          channel: channelValue,
-          action: actionValue,
-          sender_hint: senderText || null,
-          tier: selectedProductTier(),
-        }),
+        body: JSON.stringify(executePayload),
       });
       const data = await response.json().catch(() => null);
       if (data && data.ok && data.result && typeof data.result.result_text === "string") {
         const result = data.result;
+        // Server-echoed canonical handle only (#2916): reuse it as the single
+        // session authority; never build a second id here.
+        if (typeof result.conversation_id === "string" && result.conversation_id) {
+          conversationState.setConversationId(result.conversation_id);
+        }
         const safeText = String(result.result_text);
         revealClawCard(result.title, true);
         if (clawResultPreview) clawResultPreview.textContent = safeText;
@@ -2699,6 +2713,25 @@
 
     card.append(head, meta, summary);
 
+    // Canonical session reopen (#2916): the action exists only when the server
+    // projected a validated session handle. Created before the artifact block
+    // (run-card static slice) and appended after it, so document action and
+    // session action stay separate single-purpose controls that both reuse
+    // existing owners instead of minting new authority.
+    const sessionConversationId = run.session && typeof run.session.conversation_id === "string" && run.session.conversation_id
+      ? run.session.conversation_id
+      : null;
+    let sessionBtn = null;
+    if (sessionConversationId) {
+      sessionBtn = document.createElement("button");
+      sessionBtn.type = "button";
+      sessionBtn.className = "claw-run-card-download claw-run-card-session";
+      sessionBtn.textContent = clawT("claw-runs-open-session");
+      sessionBtn.addEventListener("click", () => {
+        openSavedConversation(sessionConversationId);
+      });
+    }
+
     const artifact = run.artifact && typeof run.artifact.document_id === "string" ? run.artifact : null;
     if (artifact) {
       const artifactRow = document.createElement("div");
@@ -2717,6 +2750,7 @@
       artifactRow.append(filename, downloadBtn);
       card.appendChild(artifactRow);
     }
+    if (sessionBtn) card.appendChild(sessionBtn);
     return card;
   }
 

@@ -332,8 +332,12 @@ function texts(root) { return walk(root).map((el) => String(el.textContent || ""
   if (!checks.LOCALE_SWITCH_BACK_CANNOT_RESTORE_A_CLAIM) fail("LOCALE_SWITCH_BACK_CANNOT_RESTORE_A_CLAIM: " + tagline());
 
   // No run-history string the harness can resolve claims an open capability.
+  // #2916 ships exactly one session-open action: claw-runs-open-session may
+  // name it; document open/preview claims stay forbidden for every key.
+  const SESSION_OPEN_KEY = "claw-runs-open-session";
   const offendingKeys = Object.keys(COPY.ko)
     .filter((key) => key.indexOf("claw-runs-") === 0)
+    .filter((key) => key !== SESSION_OPEN_KEY)
     .filter((key) => openClaim(COPY.ko[key]) || openClaim(COPY.en[key]));
   checks.NO_RUN_HISTORY_KEY_CLAIMS_OPENING = offendingKeys.length === 0;
   if (!checks.NO_RUN_HISTORY_KEY_CLAIMS_OPENING) fail("NO_RUN_HISTORY_KEY_CLAIMS_OPENING: " + JSON.stringify(offendingKeys));
