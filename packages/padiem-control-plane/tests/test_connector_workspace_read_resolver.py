@@ -144,7 +144,7 @@ class _FakeNamespace:
 
 class _FakeEnv:
     def __init__(self, stub) -> None:
-        self.CONTROL_PLANE_ALLOWED_PRODUCT = PRODUCT_ID
+        self.CONTROL_PLANE_ALLOWED_PRODUCTS = "b62,b54-padiem-claw"
         self.CONTROL_PLANE_IDENTITY = _FakeNamespace(stub)
 
 
@@ -784,7 +784,7 @@ def _seed_identity_and_session(storage, *, subject_id: str = "sub_1", expires_af
     durable = _worker_mod.CloudflareCanonicalIdentityAuthorityStore(
         storage,
         lookup_key=LOOKUP_KEY_BYTES,
-        allowed_product_id=PRODUCT_ID,
+        allowed_product_ids=frozenset({PRODUCT_ID}),
     )
     durable._sql.exec(
         "INSERT INTO canonical_identity_subject "

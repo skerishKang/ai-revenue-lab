@@ -171,7 +171,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
         storage: Any,
         *,
         lookup_key: bytes,
-        allowed_product_id: str,
+        allowed_product_ids: frozenset[str],
         random_hex: Callable[[int], str] | None = None,
     ) -> None:
         sql = getattr(storage, "sql", None)
@@ -180,10 +180,14 @@ class CloudflareCanonicalIdentityAuthorityStore:
             raise ValueError("SQLite Durable Object storage is required")
         if not isinstance(lookup_key, bytes) or len(lookup_key) != 32:
             raise ValueError("lookup_key must be exactly 32 bytes")
+        if not isinstance(allowed_product_ids, frozenset) or not allowed_product_ids:
+            raise ValueError("allowed_product_ids must be a non-empty frozenset")
         self._storage = storage
         self._sql = sql
         self._lookup_key = lookup_key
-        self._allowed_product_id = _safe_product_id(allowed_product_id)
+        self._allowed_product_ids: frozenset[str] = frozenset(
+            _safe_product_id(p) for p in allowed_product_ids
+        )
         self._random_hex = random_hex or secrets.token_hex
         self._initialize()
 
@@ -279,7 +283,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
 
     def _require_product(self, product_id: Any) -> str:
         product = _safe_product_id(product_id)
-        if product != self._allowed_product_id:
+        if product not in self._allowed_product_ids:
             raise ControlPlaneContractError(
                 "identity_authority_product_mismatch",
                 "caller product is not authorized by this identity authority",
@@ -688,7 +692,7 @@ class CloudflareCanonicalIdentityAuthorityStore:
             "provider_subject_persisted": False,
             "provider_subject_hmac_fingerprint_only": True,
             "product_shadow_authoritative": False,
-            "allowed_product_id": self._allowed_product_id,
+            "allowed_product_ids": sorted(self._allowed_product_ids),
             "public_http": False,
             "canonical_tenant_producer": True,
             "tenant_membership_authority": True,
