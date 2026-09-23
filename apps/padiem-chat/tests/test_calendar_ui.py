@@ -1,10 +1,19 @@
-"""#2834 A3 — Native Calendar Today/Upcoming read-only UI contract tests.
+"""#2834 A3/A4 — Native Calendar Today/Upcoming UI contract tests.
+
+The A3 slice shipped a read-only surface. A4 wires the already-registered native
+work-log write authority into the same surface, so the contract is now:
+
+* the READ path is still exactly the two GET endpoints with an explicit timezone;
+* there is exactly ONE write, POST /api/calendar/work-logs, and no other
+  method or endpoint is ever used (see test_calendar_ui_work_log_create.py);
+* the surface keeps textContent-only rendering, no client-side item synthesis
+  and no owner/workspace construction.
 
 Source-contract coverage (no browser required):
 - index.html entry points: nav button, calendar view section, css/script wiring.
-- calendar.js read-only semantics: two GET endpoints with explicit timezone,
+- calendar.js semantics: two GET read endpoints with explicit timezone,
   loading/empty/error/ready separation, retry, textContent-only rendering,
-  no writes, no client-side item synthesis.
+  no client-side item synthesis, one bounded write path.
 - locale.js ko/en keys for the calendar surface.
 - calendar.css state gating.
 - node -e behavioral checks for the exported pure helpers.
@@ -90,9 +99,14 @@ def test_calendar_js_targets_both_existing_endpoints_with_explicit_timezone() ->
     assert "Asia/Seoul" not in source
     assert "credentials: \"same-origin\"" in source
     assert 'cache: "no-store"' in source
-    # Read-only: no request method option is set anywhere (defaults to GET only).
-    assert "method:" not in source
-    assert not re.search(r"\b(POST|PUT|PATCH|DELETE)\b", source)
+    # The READ path sets no request method at all (it defaults to GET).
+    read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
+    assert "method:" not in read_block
+    assert 'fetch(`${routeFor(currentTab)}${buildQuery(timezone)}`' in read_block
+    # #2834 A4: exactly one write method exists in the whole module, and it is the
+    # native work-log POST. No PUT/PATCH/DELETE is ever used.
+    assert source.count('method: "POST"') == 1
+    assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
 
 
 def test_calendar_js_separates_loading_empty_error_ready_and_retry() -> None:

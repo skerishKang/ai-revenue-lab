@@ -211,7 +211,29 @@
           </div>
           <button type="button" class="calendar-refresh-button" id="calendarRefresh" data-locale-aria-label="calendar-refresh-aria" aria-label="목록 새로고침">↻</button>
         </header>
-        <p class="calendar-view-help" data-locale-key="calendar-help">오늘과 다가오는 일정을 읽기 전용으로 보여줍니다. 이 화면에서는 일정을 만들거나 수정하지 않습니다.</p>
+        <p class="calendar-view-help" data-locale-key="calendar-help">오늘 예정된 항목과 다가오는 항목을 보여줍니다. 업무 기록은 직접 남길 수 있고, 일정(예약) 생성·수정은 아직 지원하지 않습니다.</p>
+        <details class="calendar-record" id="calendarRecord">
+          <summary class="calendar-record-summary" data-locale-key="calendar-record-summary">업무 기록 추가</summary>
+          <p class="calendar-record-hint" data-locale-key="calendar-record-hint">오늘 한 일을 간단히 남깁니다. AI 장기 기억으로 자동 저장되지 않습니다.</p>
+          <form class="calendar-record-form" id="calendarRecordForm" novalidate>
+            <label class="calendar-record-field" for="calendarRecordDate">
+              <span data-locale-key="calendar-record-date">날짜</span>
+              <input type="date" id="calendarRecordDate" name="date" required />
+            </label>
+            <label class="calendar-record-field" for="calendarRecordTitle">
+              <span data-locale-key="calendar-record-title-label">제목</span>
+              <input type="text" id="calendarRecordTitle" name="title" maxlength="200" autocomplete="off" required data-locale-placeholder="calendar-record-title-placeholder" placeholder="예) A사와 납기 협의함" />
+            </label>
+            <label class="calendar-record-field" for="calendarRecordContent">
+              <span data-locale-key="calendar-record-content-label">메모 (선택)</span>
+              <textarea id="calendarRecordContent" name="content" rows="3" maxlength="4000"></textarea>
+            </label>
+            <div class="calendar-record-actions">
+              <button type="submit" class="calendar-record-submit" id="calendarRecordSubmit" data-locale-key="calendar-record-submit">기록 저장</button>
+            </div>
+          </form>
+          <p class="calendar-record-status" id="calendarRecordStatus" role="status" aria-live="polite" hidden></p>
+        </details>
         <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
           <button type="button" class="calendar-tab" id="calendarTodayTab" role="tab" data-calendar-tab="today" aria-selected="true" aria-controls="calendarPanel" data-locale-key="calendar-today">오늘</button>
           <button type="button" class="calendar-tab" id="calendarUpcomingTab" role="tab" data-calendar-tab="upcoming" aria-selected="false" aria-controls="calendarPanel" data-locale-key="calendar-upcoming">예정</button>
