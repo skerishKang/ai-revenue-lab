@@ -298,7 +298,7 @@ def _pause(pause_id: str) -> ApprovalPause:
         requirement=ApprovalRequirement.USER_CONFIRMATION,
         step_index=1,
         created_at=NOW,
-        expires_at=FUTURE_EXPIRES_AT,
+        expires_at=NOW + timedelta(hours=1),
         trace_id=TRACE_ID,
         plan_id="plan_test123",
         approval_scope=("workspace_write",),
