@@ -179,6 +179,14 @@ _P01_CONTRACT_ERROR_CODES = frozenset(
         "p01_result_correlation_mismatch",
         "unsupported_result_field",
         "unsupported_result_approval_pause",
+        # #2946 Engine approval-pause wire fail-closed codes.
+        "missing_continuation_ref",
+        "malformed_continuation_ref",
+        "continuation_without_pause",
+        "pause_without_lifecycle_evidence",
+        "unknown_extra_authority_fields",
+        "correlation_mismatch",
+        "invalid_engine_result",
     }
 )
 _P01_DOWNSTREAM_ERROR_CODES = frozenset(
@@ -596,6 +604,64 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             headers=_NO_STORE_HEADERS,
         )
     _clear_reservation()
+
+    # #2946: bounded WAITING_APPROVAL projection. The Engine-issued
+    # continuation_ref is opaque and is echoed only as that identity; no
+    # terminal success claim, no fabricated answer, no approval decision, and
+    # no resume/cancel side effect on this route.
+    if outcome.projection.status.value == "waiting_approval":
+        waiting_ref = getattr(outcome, "continuation_ref", None)
+        if not isinstance(waiting_ref, str) or not waiting_ref:
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "engine_execution_failed",
+                        "message": "Engine 실행이 완료되지 않았습니다.",
+                        "detail": P01_FAILURE_DETAIL_CONTRACT,
+                    },
+                },
+                status_code=502,
+                headers=_NO_STORE_HEADERS,
+            )
+        waiting_title = (
+            f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
+        )
+        waiting_result: dict[str, Any] = {
+            "request_id": run.run_id,
+            "channel": channel.value,
+            "action": action.value,
+            "title": waiting_title,
+            "result_text": None,
+            "status": "waiting_approval",
+            "approval_required": True,
+            "continuation_ref": waiting_ref,
+            "p01_run_id": outcome.p01_run_id,
+            "p01_event_count": outcome.p01_event_count,
+            "direct_kakao_send": False,
+            "direct_sms_send": False,
+            "connector_required": False,
+        }
+        if session_conversation_id is not None:
+            waiting_result["conversation_id"] = session_conversation_id
+        history_failure = await _record_claw_run_history(
+            request,
+            run_id=run.run_id,
+            channel=channel.value,
+            action=action.value,
+            title=waiting_title,
+            status="waiting_approval",
+            result_text=None,
+            artifact=None,
+            conversation_id=session_conversation_id,
+        )
+        if history_failure is not None:
+            return history_failure
+        return JSONResponse(
+            {"ok": True, "result": waiting_result},
+            status_code=200,
+            headers=_NO_STORE_HEADERS,
+        )
 
     if outcome.projection.status.value != "completed" or not outcome.answer:
         return JSONResponse(
