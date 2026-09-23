@@ -238,6 +238,21 @@ def test_already_seeded_pre_state_skips_mutation() -> None:
     assert "D1_MUTATION=0" in skip_tail
 
 
+def test_exact_active_read_requires_empty_scopes_and_exact_trusted_refs() -> None:
+    text = live_job_text()
+    assert "json_array_length(granted_scopes_json) = 0" in text
+    assert "AS empty_scopes_count" in text
+    assert "binding_ref = ?" in text
+    assert "actor_ref = ?" in text
+    assert "AS exact_binding_ref_count" in text
+    assert "AS exact_actor_ref_count" in text
+    assert text.count(
+        '"params": [agent_id, binding_ref, actor_ref, app_id, connector_id]'
+    ) == 2
+    assert "binding_ref_present_count" not in text
+    assert "actor_ref_present_count" not in text
+
+
 def test_execute_step_reviews_canonical_read_only_sql_before_d1() -> None:
     text = live_job_text()
     exec_block = text.partition("Execute exactly one")[2]
@@ -265,6 +280,9 @@ def test_post_seed_attestation_requires_exact_active_read() -> None:
     assert "SLACK_GRANT_STATE=NONCANONICAL" in attest_block
     assert "post-seed Slack grant state is noncanonical" in attest_block
     assert "SLACK_GRANT_ATTESTED=1" in attest_block
+    assert 'SLACK_GRANT_SCOPES=[]' in attest_block
+    assert "SLACK_GRANT_BINDING_REF_MATCH=YES" in attest_block
+    assert "SLACK_GRANT_ACTOR_REF_MATCH=YES" in attest_block
     assert "ROW_VALUE_OUTPUT=AGGREGATES_ONLY" in attest_block
     assert "D1_QUERY_MODE=READ_ONLY" in attest_block
     assert "SLACK_READ_AUTHORITY_STATUS=UNVERIFIED_WITHOUT_PROVIDER" in attest_block

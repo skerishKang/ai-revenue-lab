@@ -270,8 +270,10 @@ jobs:
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           query_payload="${RUNNER_TEMP}/slack-seed-presql.json"
           python - "${query_payload}" "${SLACK_APP_ID}" "${SLACK_AGENT_ID}" "${SLACK_CONNECTOR_ID}" <<'PY'
-          import json, sys
+          import json, os, sys
           app_id, agent_id, connector_id = sys.argv[2:5]
+          binding_ref = os.environ["SLACK_BINDING_REF_SOURCE"]
+          actor_ref = os.environ["SLACK_ACTOR_REF_SOURCE"]
           sql = """
           SELECT
             COUNT(*) AS total_rows,
@@ -285,19 +287,28 @@ jobs:
                   THEN 1 ELSE 0 END) AS read_capability_count,
             SUM(CASE
                   WHEN active = 1
-                   AND binding_ref IS NOT NULL
-                   AND length(trim(binding_ref)) > 0
-                  THEN 1 ELSE 0 END) AS binding_ref_present_count,
+                   AND json_valid(granted_scopes_json) = 1
+                   AND json_array_length(granted_scopes_json) = 0
+                  THEN 1 ELSE 0 END) AS empty_scopes_count,
             SUM(CASE
                   WHEN active = 1
-                   AND actor_ref IS NOT NULL
-                   AND length(trim(actor_ref)) > 0
-                  THEN 1 ELSE 0 END) AS actor_ref_present_count
+                   AND binding_ref = ?
+                  THEN 1 ELSE 0 END) AS exact_binding_ref_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND actor_ref = ?
+                  THEN 1 ELSE 0 END) AS exact_actor_ref_count
           FROM padiem_engine_connector_grants
           WHERE app_id = ? AND connector_id = ?;
           """
           with open(sys.argv[1], "w", encoding="utf-8") as handle:
-              json.dump({"sql": sql, "params": [agent_id, app_id, connector_id]}, handle)
+              json.dump(
+                  {
+                      "sql": sql,
+                      "params": [agent_id, binding_ref, actor_ref, app_id, connector_id],
+                  },
+                  handle,
+              )
           PY
 
           response="${RUNNER_TEMP}/slack-seed-pre-response.json"
@@ -322,12 +333,13 @@ jobs:
               int(row.get("active_count") or 0),
               int(row.get("exact_identity_count") or 0),
               int(row.get("read_capability_count") or 0),
-              int(row.get("binding_ref_present_count") or 0),
-              int(row.get("actor_ref_present_count") or 0),
+              int(row.get("empty_scopes_count") or 0),
+              int(row.get("exact_binding_ref_count") or 0),
+              int(row.get("exact_actor_ref_count") or 0),
           )
           if all(value == 0 for value in values):
               print("ABSENT_ZERO")
-          elif values == (1, 1, 1, 1, 1, 1):
+          elif values == (1, 1, 1, 1, 1, 1, 1):
               print("EXACT_ACTIVE_READ")
           else:
               print("NONCANONICAL")
@@ -432,8 +444,10 @@ jobs:
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           query_payload="${RUNNER_TEMP}/slack-seed-postsql.json"
           python - "${query_payload}" "${SLACK_APP_ID}" "${SLACK_AGENT_ID}" "${SLACK_CONNECTOR_ID}" <<'PY'
-          import json, sys
+          import json, os, sys
           app_id, agent_id, connector_id = sys.argv[2:5]
+          binding_ref = os.environ["SLACK_BINDING_REF_SOURCE"]
+          actor_ref = os.environ["SLACK_ACTOR_REF_SOURCE"]
           sql = """
           SELECT
             COUNT(*) AS total_rows,
@@ -447,19 +461,28 @@ jobs:
                   THEN 1 ELSE 0 END) AS read_capability_count,
             SUM(CASE
                   WHEN active = 1
-                   AND binding_ref IS NOT NULL
-                   AND length(trim(binding_ref)) > 0
-                  THEN 1 ELSE 0 END) AS binding_ref_present_count,
+                   AND json_valid(granted_scopes_json) = 1
+                   AND json_array_length(granted_scopes_json) = 0
+                  THEN 1 ELSE 0 END) AS empty_scopes_count,
             SUM(CASE
                   WHEN active = 1
-                   AND actor_ref IS NOT NULL
-                   AND length(trim(actor_ref)) > 0
-                  THEN 1 ELSE 0 END) AS actor_ref_present_count
+                   AND binding_ref = ?
+                  THEN 1 ELSE 0 END) AS exact_binding_ref_count,
+            SUM(CASE
+                  WHEN active = 1
+                   AND actor_ref = ?
+                  THEN 1 ELSE 0 END) AS exact_actor_ref_count
           FROM padiem_engine_connector_grants
           WHERE app_id = ? AND connector_id = ?;
           """
           with open(sys.argv[1], "w", encoding="utf-8") as handle:
-              json.dump({"sql": sql, "params": [agent_id, app_id, connector_id]}, handle)
+              json.dump(
+                  {
+                      "sql": sql,
+                      "params": [agent_id, binding_ref, actor_ref, app_id, connector_id],
+                  },
+                  handle,
+              )
           PY
 
           response="${RUNNER_TEMP}/slack-seed-post-response.json"
@@ -484,22 +507,25 @@ jobs:
               "active_count": int(row.get("active_count") or 0),
               "exact_identity_count": int(row.get("exact_identity_count") or 0),
               "read_capability_count": int(row.get("read_capability_count") or 0),
-              "binding_ref_present_count": int(row.get("binding_ref_present_count") or 0),
-              "actor_ref_present_count": int(row.get("actor_ref_present_count") or 0),
+              "empty_scopes_count": int(row.get("empty_scopes_count") or 0),
+              "exact_binding_ref_count": int(row.get("exact_binding_ref_count") or 0),
+              "exact_actor_ref_count": int(row.get("exact_actor_ref_count") or 0),
           }
           print(f"SLACK_GRANT_TOTAL_ROWS={values['total_rows']}")
           print(f"SLACK_GRANT_ACTIVE_COUNT={values['active_count']}")
           print("SLACK_GRANT_EXACT_IDENTITY=YES" if values["exact_identity_count"] == 1 else "SLACK_GRANT_EXACT_IDENTITY=NO")
           print('SLACK_GRANT_CAPABILITIES=["read"]' if values["read_capability_count"] == 1 else "SLACK_GRANT_CAPABILITIES=OTHER_OR_MISSING")
-          print("SLACK_GRANT_BINDING_REF_PRESENT=YES" if values["binding_ref_present_count"] == 1 else "SLACK_GRANT_BINDING_REF_PRESENT=NO")
-          print("SLACK_GRANT_ACTOR_REF_PRESENT=YES" if values["actor_ref_present_count"] == 1 else "SLACK_GRANT_ACTOR_REF_PRESENT=NO")
+          print("SLACK_GRANT_SCOPES=[]" if values["empty_scopes_count"] == 1 else "SLACK_GRANT_SCOPES=NONEMPTY_OR_INVALID")
+          print("SLACK_GRANT_BINDING_REF_MATCH=YES" if values["exact_binding_ref_count"] == 1 else "SLACK_GRANT_BINDING_REF_MATCH=NO")
+          print("SLACK_GRANT_ACTOR_REF_MATCH=YES" if values["exact_actor_ref_count"] == 1 else "SLACK_GRANT_ACTOR_REF_MATCH=NO")
           if values != {
               "total_rows": 1,
               "active_count": 1,
               "exact_identity_count": 1,
               "read_capability_count": 1,
-              "binding_ref_present_count": 1,
-              "actor_ref_present_count": 1,
+              "empty_scopes_count": 1,
+              "exact_binding_ref_count": 1,
+              "exact_actor_ref_count": 1,
           }:
               print("SLACK_GRANT_STATE=NONCANONICAL")
               raise SystemExit("post-seed Slack grant state is noncanonical")
