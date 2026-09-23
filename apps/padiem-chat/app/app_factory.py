@@ -20,6 +20,7 @@ from .auth_routes import (
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
 from .claw_routes import (
+    claw_approval_decision,
     claw_manual_intake_artifact,
     claw_manual_intake_preview,
     claw_manual_intake_execute,
@@ -122,6 +123,7 @@ def create_app(
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
     telemetry_emitter=None,
+    claw_p01_continuation_client=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -154,6 +156,7 @@ def create_app(
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
+        Route("/api/claw/approvals/decision", claw_approval_decision, methods=["POST"]),
         Route("/api/claw/memory/approve", claw_memory_approve, methods=["POST"]),
         Route("/api/claw/memory/reject", claw_memory_reject, methods=["POST"]),
         Route("/api/claw/memory", claw_memory_list, methods=["GET"]),
@@ -210,6 +213,10 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # #2961 owner approval decision lane: the same composed Engine client, used
+    # only to submit a server-derived decision to the canonical resume route.
+    # None keeps the decision route fail-closed before any Engine transport.
+    app.state.claw_p01_continuation_client = claw_p01_continuation_client
     # Bounded non-secret composition diagnostic (#2413). Set by the Worker
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.
