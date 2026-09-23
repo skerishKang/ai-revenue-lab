@@ -221,6 +221,28 @@ async def test_expired_handoff_is_unusable() -> None:
     assert await store.load_claw_approval_handoff(SIGNED_IN_USER_ID, "run_handoff_1") is None
 
 
+async def test_naive_pause_expiry_is_rejected_fail_closed() -> None:
+    store = _store()
+    with pytest.raises(HistoryError):
+        await _record(store, pause_expires_at="2099-01-01T00:00:00")
+    assert store.db.handoff_rows == []
+
+
+async def test_tampered_trusted_request_fingerprint_is_non_disclosing() -> None:
+    store = _store()
+    await _record(store)
+    assert len(store.db.handoff_rows) == 1
+    store.db.handoff_rows[0]["trusted_request_json"] = json.dumps(
+        _trusted(messages=[{"role": "user", "content": "tampered"}]),
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    assert await store.load_claw_approval_handoff(
+        SIGNED_IN_USER_ID, "run_handoff_1", workspace_id=WORKSPACE_A
+    ) is None
+
+
 async def test_trusted_request_is_reconstructable_without_browser_authority() -> None:
     store = _store()
     trusted = _trusted()
