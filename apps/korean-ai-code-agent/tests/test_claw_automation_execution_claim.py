@@ -9,13 +9,18 @@ NETWORK_FREE: no scheduler, no provider call, no external send, no Production
 mutation. Every claim is measured against the real in-memory and real SQLite
 store, and the SQLite statement stream is captured so "one bounded conditional
 update" is read off the wire rather than asserted from prose.
+
+Runner boundary: this suite is executed by ``python -m unittest discover -s tests``
+in CI with no pytest installed, so it imports nothing beyond the standard library
+and ``kagent``.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timezone
-
-import pytest
+import os
+import tempfile
+import unittest
 
 from kagent.claw_automation import (
     ClawAutomationExecutionIntent,
@@ -102,11 +107,13 @@ def drop_occurrence_claim(store, row: ClawScheduledRun) -> None:
     store._db.execute("DELETE FROM claw_occurrences WHERE occurrence_key = ?", (key,))
 
 
-def table_names(store) -> list[str]:
-    rows = store._db.execute(
-        "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name"
-    ).fetchall()
-    return [row[0] for row in rows]
+def claim(store, row: ClawScheduledRun):
+    return store.claim_execution(
+        run_id=row.run_id,
+        workspace_id=row.workspace_id,
+        rule_id=row.rule_id,
+        scheduled_time=row.scheduled_time,
+    )
 
 
 class RecordingConnection:
@@ -144,233 +151,337 @@ class RecordingConnection:
         return getattr(self._inner, name)
 
 
-@pytest.fixture(params=["memory", "sqlite"])
-def store(request, tmp_path):
-    if request.param == "memory":
-        return InMemoryClawAutomationStore()
-    return SqliteClawAutomationStore(str(tmp_path / "execution_claim.db"))
+class SqliteFileFactory:
+    """Per-call temp-file SQLite store, so durability is a real file.
+
+    Each call allocates a NEW isolated file: a subTest matrix re-seeds the same
+    derived ``run_id`` with a different status, so sharing one file would let the
+    first seed win and mask the transition under test. ``reopen()`` re-opens the
+    most recently created file so durability stays observable.
+    """
+
+    def __init__(self) -> None:
+        self._dir = tempfile.mkdtemp()
+        self._counter = 0
+        self._paths: list[str] = []
+        self.db_path: str | None = None
+
+    def __call__(self) -> SqliteClawAutomationStore:
+        self._counter += 1
+        path = os.path.join(self._dir, f"execution_claim_{self._counter}.db")
+        self._paths.append(path)
+        self.db_path = path
+        return SqliteClawAutomationStore(path)
+
+    def reopen(self) -> SqliteClawAutomationStore:
+        assert self.db_path is not None
+        return SqliteClawAutomationStore(self.db_path)
+
+    def cleanup(self) -> None:
+        # Windows keeps the file locked while a handle is open, so cleanup is
+        # best-effort exactly like the pre-existing scheduler-runtime suite.
+        for path in self._paths:
+            try:
+                os.remove(path)
+            except OSError:  # pragma: no cover - best effort temp cleanup
+                pass
 
 
-def claim(store, row: ClawScheduledRun):
-    return store.claim_execution(
-        run_id=row.run_id,
-        workspace_id=row.workspace_id,
-        rule_id=row.rule_id,
-        scheduled_time=row.scheduled_time,
-    )
+def table_names(store) -> list[str]:
+    rows = store._db.execute(
+        "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name"
+    ).fetchall()
+    return [row[0] for row in rows]
 
 
 # --- exactly one PENDING -> RUNNING transition ------------------------------
 
 
-def test_pending_row_is_claimed_as_running_with_unchanged_identity(store):
-    rule, row = seed(store)
+class ClaimTransitionTests(unittest.TestCase):
+    """Both real stores: exactly one caller observes RUNNING, identity unchanged."""
 
-    claimed = claim(store, row)
+    def setUp(self) -> None:
+        self._factory = SqliteFileFactory()
+        self.addCleanup(self._factory.cleanup)
 
-    assert claimed is not None
-    assert claimed.run_id == row.run_id
-    assert claimed.workspace_id == row.workspace_id
-    assert claimed.rule_id == rule.rule_id
-    assert claimed.status is ClawScheduledRunStatus.RUNNING
-    assert claimed.scheduled_time == row.scheduled_time
-    assert claimed.started_at == row.started_at
-    assert claimed.completed_at is None
-    assert claimed.output is None
+    def _stores(self):
+        yield ("memory", lambda: InMemoryClawAutomationStore())
+        yield ("sqlite", self._factory)
 
+    def test_pending_row_is_claimed_as_running_with_unchanged_identity(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                rule, row = seed(store)
 
-def test_second_claim_is_not_claimed(store):
-    _, row = seed(store)
+                claimed = claim(store, row)
 
-    first = claim(store, row)
-    second = claim(store, row)
+                self.assertIsNotNone(claimed)
+                self.assertEqual(claimed.run_id, row.run_id)
+                self.assertEqual(claimed.workspace_id, row.workspace_id)
+                self.assertEqual(claimed.rule_id, rule.rule_id)
+                self.assertIs(claimed.status, ClawScheduledRunStatus.RUNNING)
+                self.assertEqual(claimed.scheduled_time, row.scheduled_time)
+                self.assertEqual(claimed.started_at, row.started_at)
+                self.assertIsNone(claimed.completed_at)
+                self.assertIsNone(claimed.output)
 
-    assert first is not None
-    assert second is None
-    assert store.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.RUNNING
+    def test_second_claim_is_not_claimed(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
 
+                first = claim(store, row)
+                second = claim(store, row)
 
-@pytest.mark.parametrize(
-    "status",
-    [
-        ClawScheduledRunStatus.RUNNING,
-        ClawScheduledRunStatus.COMPLETED,
-        ClawScheduledRunStatus.FAILED,
-        ClawScheduledRunStatus.CANCELLED,
-    ],
-)
-def test_non_pending_row_is_never_claimed(store, status):
-    rule = make_rule()
-    row = run_for(rule=rule, status=status)
-    store.save_rule(rule)
-    store.record_run(row)
+                self.assertIsNotNone(first)
+                self.assertIsNone(second)
+                self.assertIs(
+                    store.get_run(row.run_id, WORKSPACE).status,
+                    ClawScheduledRunStatus.RUNNING,
+                )
 
-    assert claim(store, row) is None
-    assert store.get_run(row.run_id, WORKSPACE).status is status
+    def test_non_pending_row_is_never_claimed(self) -> None:
+        for label, make_store in self._stores():
+            for status in (
+                ClawScheduledRunStatus.RUNNING,
+                ClawScheduledRunStatus.COMPLETED,
+                ClawScheduledRunStatus.FAILED,
+                ClawScheduledRunStatus.CANCELLED,
+            ):
+                with self.subTest(store=label, status=status.value):
+                    store = make_store()
+                    rule = make_rule()
+                    row = run_for(rule=rule, status=status)
+                    store.save_rule(rule)
+                    store.record_run(row)
 
+                    self.assertIsNone(claim(store, row))
+                    self.assertIs(store.get_run(row.run_id, WORKSPACE).status, status)
 
-def test_claim_never_inserts_a_row_or_a_second_identity(store):
-    rule, row = seed(store)
-    before = [item.run_id for item in store.list_runs(WORKSPACE)]
+    def test_claim_never_inserts_a_row_or_a_second_identity(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
+                before = [item.run_id for item in store.list_runs(WORKSPACE)]
 
-    claim(store, row)
+                claim(store, row)
 
-    after = [item.run_id for item in store.list_runs(WORKSPACE)]
-    assert after == before == [row.run_id]
+                after = [item.run_id for item in store.list_runs(WORKSPACE)]
+                self.assertEqual(after, before)
+                self.assertEqual(after, [row.run_id])
 
+    def test_claim_does_not_mutate_started_at_or_scheduled_time(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
 
-def test_claim_does_not_mutate_started_at_or_scheduled_time(store):
-    rule, row = seed(store)
+                claim(store, row)
+                stored = store.get_run(row.run_id, WORKSPACE)
 
-    claim(store, row)
-    stored = store.get_run(row.run_id, WORKSPACE)
-
-    assert stored.started_at == row.started_at
-    assert stored.scheduled_time == row.scheduled_time
+                self.assertEqual(stored.started_at, row.started_at)
+                self.assertEqual(stored.scheduled_time, row.scheduled_time)
 
 
 # --- fail-closed refusals ---------------------------------------------------
 
 
-def test_missing_row_fails_closed(store):
-    rule = make_rule()
-    store.save_rule(rule)
-    row = run_for(rule=rule)
+class ClaimFailClosedTests(unittest.TestCase):
+    """An authority violation is never silently reinterpreted as NOT_CLAIMED."""
 
-    with pytest.raises(ContractError):
-        claim(store, row)
+    def setUp(self) -> None:
+        self._factory = SqliteFileFactory()
+        self.addCleanup(self._factory.cleanup)
 
+    def _stores(self):
+        yield ("memory", lambda: InMemoryClawAutomationStore())
+        yield ("sqlite", self._factory)
 
-def test_foreign_workspace_fails_closed(store):
-    rule, row = seed(store)
+    def test_missing_row_fails_closed(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                rule = make_rule()
+                store.save_rule(rule)
+                row = run_for(rule=rule)
 
-    with pytest.raises(ContractError):
-        store.claim_execution(
-            run_id=row.run_id,
-            workspace_id=FOREIGN_WORKSPACE,
-            rule_id=row.rule_id,
-            scheduled_time=row.scheduled_time,
-        )
-    assert store.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.PENDING
+                with self.assertRaises(ContractError):
+                    claim(store, row)
 
+    def test_foreign_workspace_fails_closed(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
 
-def test_rule_identity_mismatch_fails_closed(store):
-    _, row = seed(store)
+                with self.assertRaises(ContractError):
+                    store.claim_execution(
+                        run_id=row.run_id,
+                        workspace_id=FOREIGN_WORKSPACE,
+                        rule_id=row.rule_id,
+                        scheduled_time=row.scheduled_time,
+                    )
+                self.assertIs(
+                    store.get_run(row.run_id, WORKSPACE).status,
+                    ClawScheduledRunStatus.PENDING,
+                )
 
-    with pytest.raises(ContractError):
-        store.claim_execution(
-            run_id=row.run_id,
-            workspace_id=WORKSPACE,
-            rule_id="rule_other",
-            scheduled_time=row.scheduled_time,
-        )
-    assert store.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.PENDING
+    def test_rule_identity_mismatch_fails_closed(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
 
+                with self.assertRaises(ContractError):
+                    store.claim_execution(
+                        run_id=row.run_id,
+                        workspace_id=WORKSPACE,
+                        rule_id="rule_other",
+                        scheduled_time=row.scheduled_time,
+                    )
+                self.assertIs(
+                    store.get_run(row.run_id, WORKSPACE).status,
+                    ClawScheduledRunStatus.PENDING,
+                )
 
-def test_scheduled_time_mismatch_fails_closed(store):
-    _, row = seed(store)
+    def test_scheduled_time_mismatch_fails_closed(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
 
-    with pytest.raises(ContractError):
-        store.claim_execution(
-            run_id=row.run_id,
-            workspace_id=WORKSPACE,
-            rule_id=row.rule_id,
-            scheduled_time=datetime(2026, 9, 24, 9, 0, tzinfo=timezone.utc),
-        )
-    assert store.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.PENDING
+                with self.assertRaises(ContractError):
+                    store.claim_execution(
+                        run_id=row.run_id,
+                        workspace_id=WORKSPACE,
+                        rule_id=row.rule_id,
+                        scheduled_time=datetime(2026, 9, 24, 9, 0, tzinfo=timezone.utc),
+                    )
+                self.assertIs(
+                    store.get_run(row.run_id, WORKSPACE).status,
+                    ClawScheduledRunStatus.PENDING,
+                )
 
+    def test_row_without_its_occurrence_claim_fails_closed(self) -> None:
+        for label, make_store in self._stores():
+            with self.subTest(store=label):
+                store = make_store()
+                _, row = seed(store)
+                drop_occurrence_claim(store, row)
 
-def test_row_without_its_occurrence_claim_fails_closed(store):
-    rule, row = seed(store)
-    drop_occurrence_claim(store, row)
-
-    with pytest.raises(ContractError):
-        claim(store, row)
-    assert store.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.PENDING
+                with self.assertRaises(ContractError):
+                    claim(store, row)
+                self.assertIs(
+                    store.get_run(row.run_id, WORKSPACE).status,
+                    ClawScheduledRunStatus.PENDING,
+                )
 
 
 # --- durable semantics ------------------------------------------------------
 
 
-def test_sqlite_claim_is_durable_across_reopen(tmp_path):
-    path = str(tmp_path / "durable_claim.db")
-    store = SqliteClawAutomationStore(path)
-    _, row = seed(store)
+class SqliteClaimDurabilityTests(unittest.TestCase):
+    """Durability and the on-the-wire shape of the durable decision."""
 
-    assert claim(store, row) is not None
+    def setUp(self) -> None:
+        self._factory = SqliteFileFactory()
+        self.addCleanup(self._factory.cleanup)
 
-    reopened = SqliteClawAutomationStore(path)
-    assert reopened.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.RUNNING
-    assert claim(reopened, row) is None
+    def test_sqlite_claim_is_durable_across_reopen(self) -> None:
+        store = self._factory()
+        _, row = seed(store)
 
+        self.assertIsNotNone(claim(store, row))
 
-def test_sqlite_claim_statement_carries_the_pending_guard(tmp_path):
-    store = SqliteClawAutomationStore(str(tmp_path / "guard.db"))
-    _, row = seed(store)
-    proxy = RecordingConnection(store._db)
-    store._db = proxy
-
-    assert claim(store, row) is not None
-
-    updates = [
-        statement
-        for statement in proxy.statements
-        if statement.startswith("UPDATE claw_runs SET status=")
-    ]
-    assert len(updates) == 1
-    assert updates[0].endswith("WHERE run_id=? AND status=? AND completed_at IS NULL")
-    assert [s.split()[0].upper() for s in proxy.statements].count("COMMIT") == 1
-
-
-def test_concurrent_second_claimant_loses_without_deleting_the_winner(tmp_path):
-    store = SqliteClawAutomationStore(str(tmp_path / "race.db"))
-    rule, row = seed(store)
-    inner = store._db
-
-    def competing_winner():
-        inner.execute(
-            "UPDATE claw_runs SET status=? WHERE run_id=?",
-            (ClawScheduledRunStatus.RUNNING.value, row.run_id),
+        reopened = self._factory.reopen()
+        self.assertIs(
+            reopened.get_run(row.run_id, WORKSPACE).status,
+            ClawScheduledRunStatus.RUNNING,
         )
+        self.assertIsNone(claim(reopened, row))
 
-    proxy = RecordingConnection(
-        inner, on_statement=competing_winner, match="UPDATE claw_runs SET status="
-    )
-    store._db = proxy
+    def test_sqlite_claim_statement_carries_the_pending_guard(self) -> None:
+        store = self._factory()
+        _, row = seed(store)
+        proxy = RecordingConnection(store._db)
+        store._db = proxy
 
-    assert claim(store, row) is None
+        self.assertIsNotNone(claim(store, row))
 
-    keywords = [statement.split()[0].upper() for statement in proxy.statements]
-    assert "DELETE" not in keywords
-    assert keywords.count("COMMIT") == 1
-    assert keywords.count("ROLLBACK") == 0
-    assert store.get_run(row.run_id, WORKSPACE).status is ClawScheduledRunStatus.RUNNING
-    assert len(store.list_runs(WORKSPACE)) == 1
+        updates = [
+            statement
+            for statement in proxy.statements
+            if statement.startswith("UPDATE claw_runs SET status=")
+        ]
+        self.assertEqual(len(updates), 1)
+        self.assertTrue(
+            updates[0].endswith("WHERE run_id=? AND status=? AND completed_at IS NULL"),
+            updates[0],
+        )
+        keywords = [statement.split()[0].upper() for statement in proxy.statements]
+        self.assertEqual(keywords.count("COMMIT"), 1)
 
+    def test_concurrent_second_claimant_loses_without_deleting_the_winner(self) -> None:
+        store = self._factory()
+        _, row = seed(store)
+        inner = store._db
 
-def test_claim_introduces_no_new_table(tmp_path):
-    store = SqliteClawAutomationStore(str(tmp_path / "schema.db"))
-    _, row = seed(store)
-    before = table_names(store)
+        def competing_winner() -> None:
+            inner.execute(
+                "UPDATE claw_runs SET status=? WHERE run_id=?",
+                (ClawScheduledRunStatus.RUNNING.value, row.run_id),
+            )
 
-    assert claim(store, row) is not None
+        proxy = RecordingConnection(
+            inner, on_statement=competing_winner, match="UPDATE claw_runs SET status="
+        )
+        store._db = proxy
 
-    assert table_names(store) == before
-    assert "claw_runs" in before
+        self.assertIsNone(claim(store, row))
+
+        keywords = [statement.split()[0].upper() for statement in proxy.statements]
+        self.assertNotIn("DELETE", keywords)
+        self.assertEqual(keywords.count("COMMIT"), 1)
+        self.assertEqual(keywords.count("ROLLBACK"), 0)
+        self.assertIs(
+            store.get_run(row.run_id, WORKSPACE).status,
+            ClawScheduledRunStatus.RUNNING,
+        )
+        self.assertEqual(len(store.list_runs(WORKSPACE)), 1)
+
+    def test_claim_introduces_no_new_table(self) -> None:
+        store = self._factory()
+        _, row = seed(store)
+        before = table_names(store)
+
+        self.assertIsNotNone(claim(store, row))
+
+        self.assertEqual(table_names(store), before)
+        self.assertIn("claw_runs", before)
 
 
 # --- no second authority in source -----------------------------------------
 
 
-def test_module_declares_no_second_execution_authority():
-    from kagent import claw_automation as module
+class ExecutionClaimSourceAuthorityTests(unittest.TestCase):
+    """The module declares reuse explicitly and adds no second authority."""
 
-    assert module.EXECUTION_CLAIM_AUTHORITY_REUSED is True
-    assert module.EXECUTION_CLAIM_NEW_LOCK_TABLE is False
-    assert module.EXECUTION_CLAIM_NEW_CLAIM_TOKEN is False
-    assert module.EXECUTION_CLAIM_SECOND_DEDUP_AUTHORITY is False
-    assert module.EXECUTION_CLAIM_SECOND_RUN_ID is False
-    assert module.EXECUTION_CLAIM_REDISPATCHES_RUNNING is False
-    assert module.EXECUTION_CLAIM_REDISPATCHES_TERMINAL is False
-    assert module.EXECUTION_CLAIM_PERFORMS_PROVIDER_CALLS is False
-    assert module.EXECUTION_CLAIM_ACTIVATES_PRODUCTION_SCHEDULER is False
+    def test_module_declares_no_second_execution_authority(self) -> None:
+        from kagent import claw_automation as module
+
+        self.assertIs(module.EXECUTION_CLAIM_AUTHORITY_REUSED, True)
+        self.assertIs(module.EXECUTION_CLAIM_NEW_LOCK_TABLE, False)
+        self.assertIs(module.EXECUTION_CLAIM_NEW_CLAIM_TOKEN, False)
+        self.assertIs(module.EXECUTION_CLAIM_SECOND_DEDUP_AUTHORITY, False)
+        self.assertIs(module.EXECUTION_CLAIM_SECOND_RUN_ID, False)
+        self.assertIs(module.EXECUTION_CLAIM_REDISPATCHES_RUNNING, False)
+        self.assertIs(module.EXECUTION_CLAIM_REDISPATCHES_TERMINAL, False)
+        self.assertIs(module.EXECUTION_CLAIM_PERFORMS_PROVIDER_CALLS, False)
+        self.assertIs(module.EXECUTION_CLAIM_ACTIVATES_PRODUCTION_SCHEDULER, False)
+
+
+if __name__ == "__main__":
+    unittest.main()
