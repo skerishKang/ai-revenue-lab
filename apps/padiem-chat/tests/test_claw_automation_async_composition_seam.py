@@ -293,6 +293,57 @@ async def test_precomputed_receipt_mismatch_fails_closed(d1_store):
         )
     assert adapter.calls == []
 
+    foreign_correlation = ClawAutomationTrigger(
+        trigger_id=trigger_receipt.trigger_id,
+        correlation_id="corr:other_delivery",
+        workspace_id=WORKSPACE,
+        observed_at=NOW,
+        membership=authority.resolve_workspace_membership(
+            workspace_id=WORKSPACE, now=NOW
+        ),
+    )
+    with pytest.raises(BackgroundExecutionCompositionError):
+        await compose_background_execution(
+            trigger=foreign_correlation,
+            boundary=boundary,
+            store=d1_store,
+            adapter=adapter,
+            owner_resolver=resolver(),
+            history_store=RecordingHistoryStore(),
+            task_alert_store=RecordingTaskAlertStore(),
+            completed_at=NOW,
+            trigger_receipt=trigger_receipt,
+        )
+    assert adapter.calls == []
+
+    inactive_membership = ClawAutomationTrigger(
+        trigger_id=trigger_receipt.trigger_id,
+        correlation_id=trigger_receipt.correlation_id,
+        workspace_id=WORKSPACE,
+        observed_at=NOW,
+        membership=membership(
+            at=NOW,
+            issued_offset_hours=-3,
+            expires_offset_hours=-2,
+        ),
+    )
+    with pytest.raises(BackgroundExecutionCompositionError):
+        await compose_background_execution(
+            trigger=inactive_membership,
+            boundary=boundary,
+            store=d1_store,
+            adapter=adapter,
+            owner_resolver=resolver(),
+            history_store=RecordingHistoryStore(),
+            task_alert_store=RecordingTaskAlertStore(),
+            completed_at=NOW,
+            trigger_receipt=trigger_receipt,
+        )
+    assert adapter.calls == []
+
+    rows = await d1_store.list_runs(WORKSPACE)
+    assert [row.status for row in rows] == [ClawScheduledRunStatus.PENDING]
+
 
 async def test_retry_of_the_same_invocation_executes_exactly_once(d1_store):
     await d1_store.save_rule(make_rule())
