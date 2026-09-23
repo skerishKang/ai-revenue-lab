@@ -419,6 +419,19 @@ class CompetingClaimantStore:
         return getattr(self._inner, name)
 
 
+class ProjectionFailingStore:
+    """Delegate every authority except the terminal projection write."""
+
+    def __init__(self, inner) -> None:
+        self._inner = inner
+
+    def update_run_projection(self, **kwargs):
+        raise RuntimeError("projection authority failed")
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
 class Harness:
     """One real store + real tick + real boundary, plus deterministic doubles."""
 
@@ -862,6 +875,23 @@ async def test_p01_failure_terminalizes_only_through_existing_bridge():
     assert stored.error_message == terminal_bridge_module._FAILED_MESSAGE
     assert harness.task_alert.writes == 0
     assert [call["status"] for call in harness.history.record_calls] == ["failed"]
+
+
+async def test_projection_authority_failure_propagates_instead_of_becoming_dispatch_failure():
+    harness = Harness()
+    harness.store.save_rule(make_rule())
+    failing_store = ProjectionFailingStore(harness.store)
+
+    with pytest.raises(RuntimeError, match="projection authority failed"):
+        await harness.compose(make_trigger(), store=failing_store)
+
+    expected = run_id_for()
+    assert [run.run_id for run in harness.adapter.calls] == [expected]
+    assert harness.store.get_run(expected, WORKSPACE).status is (
+        ClawScheduledRunStatus.RUNNING
+    )
+    assert harness.history.record_calls == []
+    assert harness.task_alert.writes == 0
 
 
 async def test_failed_run_produces_no_task_alert_creation():

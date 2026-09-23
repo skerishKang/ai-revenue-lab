@@ -615,19 +615,23 @@ async def compose_background_execution(
                 clock=clock,
             )
         except Exception:
-            # The existing terminal bridge has already terminalized this row. Do
-            # not re-terminalize, do not re-dispatch, and do not report success.
-            dispatch_failed.append(run.run_id)
+            # Absorb a P01 execution exception only after the existing terminal
+            # bridge has durably moved the row to a terminal state. A projection
+            # or other authority failure can leave the row RUNNING (or otherwise
+            # non-terminal); that error must propagate unchanged rather than be
+            # mislabeled as a dispatch failure.
             current = store.get_run(run.run_id, workspace_id)
-            if current is not None and current.status in _TERMINAL_STATUSES:
-                terminal.append(run.run_id)
-                await _project_terminal_run(
-                    rule=rule,
-                    scheduled_run=current,
-                    owner=owner,
-                    history_store=history_store,
-                    task_alert_store=task_alert_store,
-                )
+            if current is None or current.status not in _TERMINAL_STATUSES:
+                raise
+            dispatch_failed.append(run.run_id)
+            terminal.append(run.run_id)
+            await _project_terminal_run(
+                rule=rule,
+                scheduled_run=current,
+                owner=owner,
+                history_store=history_store,
+                task_alert_store=task_alert_store,
+            )
             continue
 
         terminal.append(run.run_id)
