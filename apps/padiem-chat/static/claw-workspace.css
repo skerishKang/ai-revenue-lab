@@ -621,6 +621,64 @@
   border-color: var(--line);
 }
 
+/* ── #3003 approval-required owner decision surface ─────────────── */
+.claw-approval-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.claw-approval-actions[hidden] {
+  display: none;
+}
+.claw-approval-copy {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.claw-approval-button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.claw-approval-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.claw-approval-approve {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+.claw-approval-deny {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+}
+.claw-approval-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.claw-approval-status {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.claw-approval-status[data-state="error"] {
+  color: var(--danger);
+}
+.claw-run-approval-actions {
+  margin-top: 4px;
+}
+
 /* ── Approved memory review ──────────────────────────────────── */
 .claw-memory-review {
   display: grid;
