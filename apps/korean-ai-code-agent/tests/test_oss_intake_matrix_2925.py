@@ -266,11 +266,12 @@ def pypdf_record() -> OSSIntakeRecord:
         ),
         test_ref="https://github.com/py-pdf/pypdf/tree/main/tests",
         adversarial_ref="https://github.com/py-pdf/pypdf/issues",
-        decision=OSSDecision.ACCEPTED,
+        decision=OSSDecision.REJECTED,
         decision_reason=(
-            "BSD-3-Clause package pinned at 6.19.0; static intake review found no network, "
-            "shell, subprocess, or credential reads"
+            "metadata and license intake passed, but source-level network, shell, subprocess, "
+            "and credential behavior audit is deferred to #2827"
         ),
+        audits_reviewed=False,
     )
 
 
@@ -328,11 +329,12 @@ def pillow_record() -> OSSIntakeRecord:
         ),
         test_ref="https://github.com/python-pillow/Pillow/tree/main/Tests",
         adversarial_ref="https://github.com/python-pillow/Pillow/issues",
-        decision=OSSDecision.ACCEPTED,
+        decision=OSSDecision.REJECTED,
         decision_reason=(
-            "MIT-CMU package pinned at 12.3.0 with no required runtime dependencies; "
-            "static intake review found no network, shell, subprocess, or credential reads"
+            "metadata and license intake passed, but source-level network, shell, subprocess, "
+            "and credential behavior audit is deferred to #2828"
         ),
+        audits_reviewed=False,
     )
 
 
@@ -381,8 +383,9 @@ def matrix_records() -> dict[str, OSSIntakeRecord]:
     return {record.candidate_id: record for record in records}
 
 
-ACCEPTED_IDS = {"candidate:pypdf", "candidate:pillow"}
-DEFERRED_IDS = {
+ACCEPTED_IDS: set[str] = set()
+SOURCE_AUDIT_DEFERRED_IDS = {"candidate:pypdf", "candidate:pillow"}
+DEFERRED_IDS = SOURCE_AUDIT_DEFERRED_IDS | {
     "candidate:pyhwpx",
     "candidate:pyhwp",
     "candidate:pymupdf",
@@ -419,26 +422,40 @@ class OSSIntakeMatrixTests(unittest.TestCase):
                 self.assertTrue(record.adversarial_evidence)
                 self.assertFalse(record.policy_failures() and candidate_id in ACCEPTED_IDS)
 
-    def test_accepted_candidates_pass_gate_without_runtime_registration(self) -> None:
-        for candidate_id in sorted(ACCEPTED_IDS):
+    def test_metadata_only_review_grants_no_adoption_eligibility(self) -> None:
+        self.assertEqual(ACCEPTED_IDS, set())
+        for candidate_id, receipt in self.receipts.items():
             with self.subTest(candidate_id=candidate_id):
-                receipt = self.receipts[candidate_id]
-                self.assertEqual(receipt.decision, OSSDecision.ACCEPTED)
-                self.assertEqual(receipt.decision_code, "accepted_pinned_candidate")
-                self.assertTrue(receipt.adoption_allowed)
+                self.assertFalse(receipt.adoption_allowed)
                 self.assertFalse(receipt.runtime_skill_registered)
                 self.assertFalse(receipt.auto_runtime_registration)
-                receipt.assert_adoptable()
+                with self.assertRaises(ContractError):
+                    receipt.assert_adoptable()
 
     def test_deferred_candidates_fail_closed_and_cannot_be_adopted(self) -> None:
         for candidate_id in sorted(DEFERRED_IDS):
             with self.subTest(candidate_id=candidate_id):
                 receipt = self.receipts[candidate_id]
                 self.assertEqual(receipt.decision, OSSDecision.REJECTED)
-                self.assertEqual(receipt.decision_code, "explicit_rejection")
                 self.assertFalse(receipt.adoption_allowed)
                 with self.assertRaises(ContractError):
                     receipt.assert_adoptable()
+
+    def test_metadata_only_pypdf_and_pillow_require_source_behavior_audit(self) -> None:
+        for candidate_id in sorted(SOURCE_AUDIT_DEFERRED_IDS):
+            with self.subTest(candidate_id=candidate_id):
+                record = self.records[candidate_id]
+                self.assertIn("network_behavior_review_required", record.policy_failures())
+                self.assertIn("shell_behavior_review_required", record.policy_failures())
+                self.assertIn("subprocess_behavior_review_required", record.policy_failures())
+                self.assertIn(
+                    "credential_or_environment_read_review_required",
+                    record.policy_failures(),
+                )
+                self.assertEqual(
+                    self.receipts[candidate_id].decision_code,
+                    "network_behavior_review_required",
+                )
 
     def test_placeholder_candidates_fail_closed_on_unknown_license_status(self) -> None:
         for candidate_id in sorted(REJECTED_IDS):
