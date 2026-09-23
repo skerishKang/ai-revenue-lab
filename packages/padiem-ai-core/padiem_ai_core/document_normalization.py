@@ -25,6 +25,7 @@ MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
 MAX_PDF_PAGES = 80
 MAX_OOXML_ENTRIES = 256
+MAX_OOXML_MEMBER_NAME_CHARS = 255
 MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
 MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
 MAX_XLSX_SHEETS = 20
@@ -227,6 +228,28 @@ def _safe_ooxml_member(name: str) -> bool:
     return all(part not in {"", ".", ".."} for part in parts)
 
 
+def validate_ooxml_member_name(name: object) -> str:
+    """Judge one archive member name with the single path-safety predicate.
+
+    The archive gate already applies this predicate to every member it walks.
+    Exposing it lets the package writer apply the same predicate to every member
+    it emits, so Core can never write an archive its own gate would refuse, and
+    a caller-supplied name never becomes an archive path.
+    """
+
+    if not isinstance(name, str) or not name or len(name) > MAX_OOXML_MEMBER_NAME_CHARS:
+        raise DocumentNormalizationError(
+            "ooxml_unsafe_path",
+            "OOXML archive contains an unsafe member path.",
+        )
+    if not _safe_ooxml_member(name):
+        raise DocumentNormalizationError(
+            "ooxml_unsafe_path",
+            "OOXML archive contains an unsafe member path.",
+        )
+    return name
+
+
 def validate_ooxml_archive(payload: bytes) -> None:
     if not isinstance(payload, (bytes, bytearray)) or not payload or len(payload) > MAX_BINARY_DOCUMENT_BYTES:
         raise DocumentNormalizationError("ooxml_archive_size", "OOXML archive size is out of bounds.")
@@ -340,6 +363,13 @@ def _hwpx_section_index(name: str) -> int | None:
         return None
     digits = path.stem.removeprefix("section")
     return int(digits) if digits.isdigit() else None
+
+
+# Public name for the single HWPX section-member naming rule. A
+# package-preserving mutator locates a section part with the reader's own
+# predicate instead of restating the rule, so the two can never disagree about
+# which member a section index refers to.
+hwpx_section_index = _hwpx_section_index
 
 
 # The serializer-owned HWPX shape is a section holding paragraphs that hold a
@@ -474,6 +504,50 @@ def extract_hwpx_text(payload: bytes) -> str:
     if not text:
         raise DocumentNormalizationError("hwpx_empty", "HWPX contains no readable text.")
     return text
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxPackageMember:
+    """One raw archive member of an already admitted HWPX package.
+
+    ``payload`` is the member's decompressed bytes exactly as the archive holds
+    them, kept out of ``repr`` so a package's content never leaks through a
+    log or an error. The name is the archive's own member name: it is never
+    supplied by a caller and is never projected back to one.
+    """
+
+    name: str
+    payload: bytes = field(repr=False)
+
+
+def read_hwpx_package_members(payload: bytes) -> tuple[HwpxPackageMember, ...]:
+    """Read every member of an admitted HWPX package, in archive order.
+
+    This is the raw-member accessor of Core's single HWPX archive authority.
+    It runs the same :func:`validate_ooxml_archive` gate every other HWPX read
+    runs — so path traversal, entry count, per-entry and total size, encryption
+    and DTD policy are decided in exactly one place — and then returns each
+    member's decompressed bytes without parsing any XML and without
+    interpreting any member's content.
+
+    It exists for one purpose: a package-preserving mutator has to copy the
+    members it does not understand byte-for-byte rather than project them
+    through a model that would silently drop their shape. Reading by
+    ``ZipInfo`` (not by name) keeps duplicate names distinguishable, so the
+    caller can preserve an archive's member sequence exactly.
+    """
+
+    validate_ooxml_archive(payload)
+    members: list[HwpxPackageMember] = []
+    try:
+        with ZipFile(BytesIO(bytes(payload))) as archive:
+            for info in archive.infolist():
+                members.append(HwpxPackageMember(name=info.filename, payload=archive.read(info)))
+    except DocumentNormalizationError:
+        raise
+    except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
+        raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+    return tuple(members)
 
 
 def _extract_pdf_text(payload: bytes) -> str:

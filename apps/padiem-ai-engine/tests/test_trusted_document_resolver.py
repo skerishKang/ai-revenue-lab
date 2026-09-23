@@ -49,8 +49,14 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # and its fixture pin move; document_semantics.py is untouched and stays pinned
 # at the E5B-S1 digest. No Core process, network or filesystem authority was
 # added by that slice.
+# Re-pinned a fourth time at #2979, which adds the Core package-preserving
+# mutation authority. That slice exposes a raw-member accessor and the gate's
+# own member-name predicate from document_normalization.py, so its pin moves;
+# the other three pins are unchanged. It adds no Core process, network or
+# filesystem authority: every archive walk still runs through the one gate, and
+# the mutator owns no archive or XML primitive of its own.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "24bb448887ce5c0855bbabfdc3bc53597d3ffff242bdc2844b8426b9d3d5e660",
+    CORE_PACKAGE / "document_normalization.py": "a281cdcbfef1dcdabd9c5ee1e80e206f0919199a32bf1b36ce771a531d1ac3f2",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "ba88eb112d5855751ba4316013daef60095e574ed8bb13441c479ad0cc70da5e",
