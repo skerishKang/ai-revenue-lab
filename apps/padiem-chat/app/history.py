@@ -177,8 +177,8 @@ def _parse_handoff_expiry(value: object) -> datetime | None:
         parsed = datetime.fromisoformat(text)
     except ValueError:
         return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
     return parsed.astimezone(timezone.utc)
 
 
@@ -833,6 +833,13 @@ class D1HistoryStore:
         except (TypeError, ValueError):
             return None
         if not isinstance(trusted, dict):
+            return None
+        try:
+            _encoded, recomputed_fingerprint = _handoff_trusted_request_json(trusted)
+        except HistoryError:
+            return None
+        stored_fingerprint = str(row.get("trusted_request_fingerprint") or "")
+        if not stored_fingerprint or recomputed_fingerprint != stored_fingerprint:
             return None
         conversation_id = row.get("conversation_id")
         return {
