@@ -1,9 +1,13 @@
-/* #2834 A4 — Padiem Calendar surface (Today / Upcoming + native work-record create).
+/* #2834 A4/A5 — Padiem Calendar surface (Today / Upcoming + native record/appointment create).
  *
  * Contract:
  * - Read path uses only the two existing calendar endpoints (GET today, GET upcoming).
- * - One write path exists: POST /api/calendar/work-logs, the already-registered
- *   native work-log authority. No other endpoint is ever written.
+ * - Exactly two write paths exist, both pre-registered native authorities:
+ *   POST /api/calendar/work-logs (A4) and POST /api/calendar/appointments (A5).
+ *   No other endpoint is ever written, and no other write verb is ever used.
+ * - A timed appointment always carries an explicit IANA time zone plus an
+ *   offset-bearing ISO-8601 start; no browser/server time zone is ever inferred,
+ *   and a naive datetime is never produced.
  * - The client never sends owner/workspace fields; the server derives scope from
  *   the authenticated session (a caller-supplied scope is rejected server-side).
  * - The client validates only what it must to avoid an obviously invalid request.
@@ -55,6 +59,18 @@
   ]);
   // Server date grammar (calendar_contracts.parse_date): YYYY-MM-DD only.
   const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+  const TIME_OF_DAY_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  // The single existing native appointment authority (#2834 A5).
+  const APPOINTMENT_ROUTE = "/api/calendar/appointments";
+  const APPOINTMENT_TYPES = Object.freeze(["date_only", "all_day", "timed"]);
+  // Contract bound (calendar_contracts.MAX_REMINDER_MINUTES).
+  const MAX_REMINDER_MINUTES = 40320;
+  const APPOINTMENT_STATUS_KEYS = Object.freeze({
+    created: "calendar-appointment-created",
+    invalid: "calendar-appointment-invalid",
+    unauthorized: "calendar-appointment-unauthorized",
+    unavailable: "calendar-appointment-unavailable",
+  });
 
   // English fallback copy. Korean copy lives in locale.js; this only keeps the
   // surface readable if the locale authority is unavailable.
@@ -74,6 +90,10 @@
     "calendar-record-invalid": "Check the date and title.",
     "calendar-record-unauthorized": "Please sign in and try again.",
     "calendar-record-unavailable": "Could not save the work record. Please try again shortly.",
+    "calendar-appointment-created": "Appointment saved.",
+    "calendar-appointment-invalid": "Check the appointment details.",
+    "calendar-appointment-unauthorized": "Please sign in and try again.",
+    "calendar-appointment-unavailable": "Could not save the appointment. Please try again shortly.",
   });
 
   function text(key, variables) {
@@ -208,10 +228,132 @@
     return { status: "unavailable", item: null };
   }
 
+  // Minutes east of UTC for a zone at one instant, or null when the zone cannot
+  // be resolved. Explicit accessor only: nothing is inferred from the host.
+  function zoneOffsetMinutes(timezone, utcMillis) {
+    if (typeof timezone !== "string" || !timezone) return null;
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: timezone,
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }).formatToParts(new Date(utcMillis));
+      const values = {};
+      parts.forEach((part) => { values[part.type] = part.value; });
+      if (!values.year || !values.month || !values.day) return null;
+      const asUtc = Date.UTC(
+        Number(values.year),
+        Number(values.month) - 1,
+        Number(values.day),
+        Number(values.hour) % 24,
+        Number(values.minute),
+        Number(values.second)
+      );
+      if (Number.isNaN(asUtc)) return null;
+      return Math.round((asUtc - utcMillis) / 60000);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function formatUtcOffset(minutes) {
+    const sign = minutes < 0 ? "-" : "+";
+    const total = Math.abs(minutes);
+    const hours = String(Math.floor(total / 60)).padStart(2, "0");
+    const mins = String(total % 60).padStart(2, "0");
+    return `${sign}${hours}:${mins}`;
+  }
+
+  // Wall-clock date+time in an EXPLICIT zone -> offset-bearing ISO-8601. Returns
+  // "" for an unknown zone or a malformed value, so a naive datetime can never be
+  // produced and the caller fails closed instead of guessing.
+  function zonedLocalToIso(date, time, timezone) {
+    if (typeof date !== "string" || !DATE_ONLY_PATTERN.test(date)) return "";
+    if (typeof time !== "string" || !TIME_OF_DAY_PATTERN.test(time)) return "";
+    const dateParts = date.split("-").map(Number);
+    const timeParts = time.split(":").map(Number);
+    const utcGuess = Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], 0);
+    if (Number.isNaN(utcGuess)) return "";
+    let offset = zoneOffsetMinutes(timezone, utcGuess);
+    if (offset === null) return "";
+    // Second pass resolves zones whose offset differs at the guessed instant
+    // (DST boundaries). The zone itself is still the explicit one supplied.
+    const refined = zoneOffsetMinutes(timezone, utcGuess - offset * 60000);
+    if (refined !== null) offset = refined;
+    return `${date}T${time}:00${formatUtcOffset(offset)}`;
+  }
+
+  // Bounded appointment payload. date_only/all_day carry only the date and never a
+  // synthetic time; timed carries the explicit zone plus an offset-bearing start
+  // and optional end, and no date (the server derives it in that zone, so a
+  // date_mismatch is impossible). No scope key can be produced here.
+  function buildAppointmentRequest(input) {
+    const raw = input && typeof input === "object" ? input : {};
+    const type = typeof raw.appointment_type === "string" ? raw.appointment_type.trim() : "";
+    const title = typeof raw.title === "string" ? raw.title.trim() : "";
+    const description = typeof raw.description === "string" ? raw.description.trim() : "";
+    if (!APPOINTMENT_TYPES.includes(type)) return { ok: false, reason: "invalid_type" };
+    if (!title) return { ok: false, reason: "title_required" };
+
+    const payload = { appointment_type: type, title: title };
+    if (description) payload.description = description;
+
+    if (type === "timed") {
+      const timezone = typeof raw.timezone === "string" ? raw.timezone.trim() : "";
+      if (!timezone) return { ok: false, reason: "timezone_required" };
+      const startAt = zonedLocalToIso(raw.date, raw.start_time, timezone);
+      if (!startAt) return { ok: false, reason: "invalid_start" };
+      payload.timezone = timezone;
+      payload.start_at = startAt;
+      if (typeof raw.end_time === "string" && raw.end_time.trim()) {
+        const endAt = zonedLocalToIso(raw.date, raw.end_time, timezone);
+        if (!endAt) return { ok: false, reason: "invalid_end" };
+        payload.end_at = endAt;
+      }
+    } else {
+      const date = typeof raw.date === "string" ? raw.date.trim() : "";
+      if (!DATE_ONLY_PATTERN.test(date)) return { ok: false, reason: "invalid_date" };
+      payload.date = date;
+    }
+
+    const reminder = raw.reminder_minutes;
+    if (reminder !== undefined && reminder !== null && reminder !== "") {
+      const parsed = Number(reminder);
+      if (!Number.isInteger(parsed) || parsed < 0 || parsed > MAX_REMINDER_MINUTES) {
+        return { ok: false, reason: "invalid_reminder" };
+      }
+      payload.reminder_minutes = parsed;
+    }
+    return { ok: true, payload: payload };
+  }
+
+  // Same bounded UI states as the work-record path: a 201 without a usable
+  // appointment object is a failure, never a saved appointment.
+  function interpretAppointmentResponse(status, payload) {
+    if (status === 201) {
+      const saved = payload && typeof payload === "object" && payload.ok === true
+        ? payload.appointment
+        : null;
+      if (saved && typeof saved === "object") return { status: "created", item: saved };
+      return { status: "unavailable", item: null };
+    }
+    if (status === 401) return { status: "unauthorized", item: null };
+    if (status === 400) return { status: "invalid", item: null };
+    return { status: "unavailable", item: null };
+  }
+
   const api = Object.freeze({
     TODAY_ROUTE,
     UPCOMING_ROUTE,
     WORK_LOG_ROUTE,
+    APPOINTMENT_ROUTE,
+    APPOINTMENT_TYPES,
+    APPOINTMENT_STATUS_KEYS,
     KNOWN_ITEM_TYPES,
     ITEM_TYPE_KEYS,
     EMPTY_KEYS,
@@ -227,6 +369,11 @@
     localDateInZone,
     buildWorkLogRequest,
     interpretWorkLogResponse,
+    zoneOffsetMinutes,
+    formatUtcOffset,
+    zonedLocalToIso,
+    buildAppointmentRequest,
+    interpretAppointmentResponse,
   });
   if (typeof window !== "undefined") window.PadiemCalendarUI = api;
   if (typeof document === "undefined") return;
@@ -258,6 +405,20 @@
     const recordContent = document.getElementById("calendarRecordContent");
     const recordSubmit = document.getElementById("calendarRecordSubmit");
     const recordStatus = document.getElementById("calendarRecordStatus");
+    const appointmentForm = document.getElementById("calendarAppointmentForm");
+    const appointmentType = document.getElementById("calendarAppointmentType");
+    const appointmentTitle = document.getElementById("calendarAppointmentTitle");
+    const appointmentDate = document.getElementById("calendarAppointmentDate");
+    const appointmentTimezone = document.getElementById("calendarAppointmentTimeZone");
+    const appointmentStart = document.getElementById("calendarAppointmentStart");
+    const appointmentEnd = document.getElementById("calendarAppointmentEnd");
+    const appointmentReminder = document.getElementById("calendarAppointmentReminder");
+    const appointmentDescription = document.getElementById("calendarAppointmentDescription");
+    const appointmentSubmit = document.getElementById("calendarAppointmentSubmit");
+    const appointmentStatus = document.getElementById("calendarAppointmentStatus");
+    const appointmentTimezoneField = document.getElementById("calendarAppointmentTimeZoneField");
+    const appointmentStartField = document.getElementById("calendarAppointmentStartField");
+    const appointmentEndField = document.getElementById("calendarAppointmentEndField");
     if (!shell || !navButton || !view || !list) return;
 
     let currentTab = "today";
@@ -265,6 +426,7 @@
     let wasActive = false;
     let lastItems = null;
     let lastRecordStatus = null;
+    let lastAppointmentStatus = null;
 
     function setStatus(status) {
       if (loading) loading.hidden = status !== "loading";
@@ -384,6 +546,96 @@
       }
     }
 
+    function showAppointmentStatus(kind) {
+      lastAppointmentStatus = kind;
+      if (!appointmentStatus) return;
+      const key = APPOINTMENT_STATUS_KEYS[kind];
+      if (!key) {
+        appointmentStatus.hidden = true;
+        appointmentStatus.textContent = "";
+        delete appointmentStatus.dataset.appointmentStatus;
+        return;
+      }
+      appointmentStatus.textContent = text(key);
+      appointmentStatus.dataset.appointmentStatus = kind;
+      appointmentStatus.hidden = false;
+    }
+
+    function setAppointmentBusy(busy) {
+      const isBusy = busy === true;
+      if (appointmentSubmit) appointmentSubmit.disabled = isBusy;
+      if (appointmentForm) appointmentForm.setAttribute("aria-busy", isBusy ? "true" : "false");
+    }
+
+    // Only the timed type carries a time zone / start / end. The other two send a
+    // date alone, so those inputs are hidden; the zone field is pre-filled with
+    // the browser zone as an explicit, editable default and is never inferred at
+    // submit time.
+    function applyAppointmentType() {
+      const timed = !!appointmentType && appointmentType.value === "timed";
+      [appointmentTimezoneField, appointmentStartField, appointmentEndField].forEach((field) => {
+        if (field) field.hidden = !timed;
+      });
+      if (appointmentTimezone && !appointmentTimezone.value) {
+        appointmentTimezone.value = browserTimezone();
+      }
+    }
+
+    // Same rule as the work-record form: an unresolved browser zone leaves the
+    // field empty so the user chooses the date rather than the client guessing.
+    function ensureAppointmentDate() {
+      if (!appointmentDate || appointmentDate.value) return;
+      const today = localDateInZone(browserTimezone());
+      if (today) appointmentDate.value = today;
+    }
+
+    async function submitAppointment(event) {
+      if (event && typeof event.preventDefault === "function") event.preventDefault();
+      if (!appointmentForm || !appointmentType || !appointmentTitle) return;
+      showAppointmentStatus(null);
+      const built = buildAppointmentRequest({
+        appointment_type: appointmentType.value,
+        title: appointmentTitle.value,
+        date: appointmentDate ? appointmentDate.value : "",
+        timezone: appointmentTimezone ? appointmentTimezone.value : "",
+        start_time: appointmentStart ? appointmentStart.value : "",
+        end_time: appointmentEnd ? appointmentEnd.value : "",
+        reminder_minutes: appointmentReminder ? appointmentReminder.value : "",
+        description: appointmentDescription ? appointmentDescription.value : "",
+      });
+      if (built.ok !== true) {
+        showAppointmentStatus("invalid");
+        return;
+      }
+      setAppointmentBusy(true);
+      try {
+        const response = await fetch(APPOINTMENT_ROUTE, {
+          method: "POST",
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(built.payload),
+        });
+        const data = await response.json().catch(() => null);
+        const outcome = interpretAppointmentResponse(response.status, data);
+        showAppointmentStatus(outcome.status);
+        if (outcome.status === "created") {
+          appointmentTitle.value = "";
+          if (appointmentDescription) appointmentDescription.value = "";
+          if (appointmentStart) appointmentStart.value = "";
+          if (appointmentEnd) appointmentEnd.value = "";
+          if (appointmentDate) appointmentDate.value = localDateInZone(browserTimezone());
+          ensureAppointmentDate();
+          applyAppointmentType();
+          await load();
+        }
+      } catch (_) {
+        showAppointmentStatus("unavailable");
+      } finally {
+        setAppointmentBusy(false);
+      }
+    }
+
     async function load() {
       const timezone = browserTimezone();
       requestToken += 1;
@@ -449,6 +701,8 @@
         const chatNav = document.getElementById("newChatButton");
         if (chatNav) chatNav.setAttribute("aria-current", "false");
         ensureRecordDate();
+        ensureAppointmentDate();
+        applyAppointmentType();
       }
       if (active && !wasActive) load();
       wasActive = active;
@@ -470,10 +724,13 @@
     if (refresh) refresh.addEventListener("click", () => load());
     if (retry) retry.addEventListener("click", () => load());
     if (recordForm) recordForm.addEventListener("submit", submitRecord);
+    if (appointmentType) appointmentType.addEventListener("change", applyAppointmentType);
+    if (appointmentForm) appointmentForm.addEventListener("submit", submitAppointment);
     window.addEventListener("padiem:localechange", () => {
       if (empty && !empty.hidden) empty.textContent = text(EMPTY_KEYS[currentTab]);
       if (lastItems && lastItems.length) renderItems(lastItems);
       if (lastRecordStatus) showRecordStatus(lastRecordStatus);
+      if (lastAppointmentStatus) showAppointmentStatus(lastAppointmentStatus);
     });
 
     const observer = typeof MutationObserver === "function" ? new MutationObserver(syncVisibility) : null;
