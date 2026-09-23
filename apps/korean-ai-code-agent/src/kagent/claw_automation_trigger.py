@@ -200,8 +200,15 @@ class ClawAutomationTriggerBoundary:
             raise ContractError("trigger boundary requires a ClawAutomationTickRuntime")
         self._runtime = runtime
 
-    def handle(self, trigger: ClawAutomationTrigger) -> ClawAutomationTriggerReceipt:
-        """Process one trusted trigger for one workspace and return a receipt."""
+    def _validated(
+        self, trigger: object
+    ) -> TrustedWorkspaceMembershipProjection:
+        """Shared trigger/membership validation for BOTH dispatch shapes.
+
+        ``handle()`` and ``ahandle()`` refuse exactly the same inputs before any
+        scheduling work can happen (#2995), so the async persistence seam can
+        never become a weaker entrance to the same tick authority.
+        """
 
         if not isinstance(trigger, ClawAutomationTrigger):
             raise ContractError("trigger boundary accepts a ClawAutomationTrigger only")
@@ -213,11 +220,38 @@ class ClawAutomationTriggerBoundary:
         if membership.workspace_id != trigger.workspace_id:
             # A projection for another workspace is not a tenant-wide grant.
             raise ContractError("membership projection does not cover the trigger workspace")
+        return membership
+
+    def handle(self, trigger: ClawAutomationTrigger) -> ClawAutomationTriggerReceipt:
+        """Process one trusted trigger for one workspace and return a receipt."""
+
+        membership = self._validated(trigger)
         # Exactly the observed instant is evaluated: no backfill, no catch-up.
         tick = self._runtime.tick(
             workspace_id=trigger.workspace_id,
             current_time=trigger.observed_at,
             membership=membership,
+        )
+        return ClawAutomationTriggerReceipt.from_tick_receipt(trigger=trigger, tick=tick)
+
+    async def ahandle(
+        self, trigger: ClawAutomationTrigger
+    ) -> ClawAutomationTriggerReceipt:
+        """Process one trusted trigger through the SAME boundary, awaited (#2995).
+
+        Identical validation, identical receipt type and identical tick
+        authority as ``handle`` -- only the persistence application is awaited
+        (``ClawAutomationTickRuntime.atick``), so a D1-shaped async store is
+        served with no synchronous wrapper and no blocked event loop. One
+        scheduling algorithm, two persistence shapes; this seam registers no
+        cron trigger and activates no Production scheduler.
+        """
+
+        self._validated(trigger)
+        tick = await self._runtime.atick(
+            workspace_id=trigger.workspace_id,
+            current_time=trigger.observed_at,
+            membership=trigger.membership,
         )
         return ClawAutomationTriggerReceipt.from_tick_receipt(trigger=trigger, tick=tick)
 
@@ -229,6 +263,7 @@ class ClawAutomationTriggerBoundary:
             "requires_trusted_membership": True,
             "membership_may_be_omitted": False,
             "reuses_tick_runtime": True,
+            "async_persistence_seam": True,
             "new_scheduler_algorithm": False,
             "new_dedup_authority": False,
             "catch_up_policy": "none",

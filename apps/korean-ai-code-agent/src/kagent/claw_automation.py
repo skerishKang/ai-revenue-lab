@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, time, timedelta, timezone
 from enum import Enum
 import hashlib
+import inspect
 import json
 import re
 import sqlite3
@@ -1083,6 +1084,21 @@ class InMemoryClawAutomationStore:
 
 
 
+async def _store_call(value: Any) -> Any:
+    """Resolve ONE store result whether it answers synchronously or awaitably.
+
+    The durable SQLite reference and in-memory stores answer synchronously,
+    while the D1-backed Worker store can only answer through awaited
+    statements. Resolving both here keeps ONE store contract for the sync and
+    async persistence applications of the tick algorithm (#2995). It never
+    wraps a coroutine in ``asyncio.run`` and never blocks the event loop.
+    """
+
+    if inspect.isawaitable(value):
+        return await value
+    return value
+
+
 class FakeClawScheduler:
     """Deterministic reference scheduler with no provider or dispatch side effects."""
 
@@ -1109,6 +1125,39 @@ class FakeClawScheduler:
             return None
         return datetime.fromtimestamp(timestamp, timezone.utc)
 
+    @staticmethod
+    def snapshot_due_candidates(
+        rules: Sequence[ClawAutomationRule],
+        current_time: datetime,
+    ) -> list[tuple[ClawAutomationRule, datetime, str]]:
+        """Pure, deterministic due-candidate selection over an in-memory snapshot.
+
+        This is the ONE schedule-math step shared by every persistence shape
+        (#2995): the synchronous ``due_occurrences`` / ``tick`` path and the
+        awaited ``ClawAutomationTickRuntime.atick`` application both derive
+        their candidates exclusively from here, so no second scheduler
+        algorithm can drift beside it. It reads no store, claims nothing and
+        mints no run id: ``occurrence_key`` remains the pre-existing dedup
+        identity, and persistence stays with the caller's store shape.
+        """
+
+        current_utc = _aware_utc(current_time, "current_time")
+        candidates: list[tuple[ClawAutomationRule, datetime, str]] = []
+        for rule in rules:
+            if not rule.enabled:
+                continue
+            scheduled = FakeClawScheduler._candidate(rule, current_utc)
+            if scheduled is None:
+                continue
+            candidates.append(
+                (
+                    rule,
+                    scheduled,
+                    occurrence_key(rule.workspace_id, rule.rule_id, scheduled),
+                )
+            )
+        return candidates
+
     def due_occurrences(
         self,
         workspace_id: str,
@@ -1123,13 +1172,9 @@ class FakeClawScheduler:
             if not membership.valid_at(current_utc):
                 return []
         due: list[tuple[ClawAutomationRule, datetime]] = []
-        for rule in self.store.list_rules(workspace_id):
-            if not rule.enabled:
-                continue
-            scheduled = self._candidate(rule, current_time)
-            if scheduled is None:
-                continue
-            key = occurrence_key(rule.workspace_id, rule.rule_id, scheduled)
+        for rule, scheduled, key in self.snapshot_due_candidates(
+            self.store.list_rules(workspace_id), current_utc
+        ):
             if self.store.get_run_for_occurrence(key, workspace_id) is None:
                 due.append((rule, scheduled))
         return due
@@ -1341,6 +1386,106 @@ class ClawAutomationTickRuntime:
             deduplicated_count=deduplicated,
         )
 
+    async def atick(
+        self,
+        *,
+        workspace_id: str,
+        current_time: datetime,
+        membership: TrustedWorkspaceMembershipProjection,
+    ) -> ClawAutomationTickReceipt:
+        """Async persistence application of the SAME tick algorithm (#2995).
+
+        The schedule math (``FakeClawScheduler.snapshot_due_candidates``), the
+        dedup identity (``occurrence_key``), the PENDING claim construction
+        (``_build_pending_claim``) and the receipt contract are the exact
+        objects ``tick()`` uses -- only the persistence application awaits, so
+        a D1-shaped async store is served with no synchronous wrapper and no
+        blocked event loop. Differential contract tests pin that ``tick()`` and
+        ``atick()`` produce identical receipts and rows for identical store
+        state: one scheduling/dedup/run-id authority, two persistence shapes.
+        """
+
+        workspace = _safe_id(workspace_id, "workspace_id")
+        observed_at = _aware_utc(current_time, "current_time")
+        self._require_membership(membership, workspace, observed_at)
+        if not membership.valid_at(observed_at):
+            # Same zero-run semantics as tick(): an inactive projection is not
+            # an error, and no store write is attempted at all.
+            return ClawAutomationTickReceipt(
+                workspace_id=workspace,
+                observed_at=observed_at,
+                due_count=0,
+                created_run_ids=(),
+                deduplicated_count=0,
+            )
+
+        rules = await _store_call(self.store.list_rules(workspace))
+        due: list[tuple[ClawAutomationRule, datetime, str]] = []
+        for rule, scheduled, key in FakeClawScheduler.snapshot_due_candidates(
+            rules, observed_at
+        ):
+            if await _store_call(self.store.get_run_for_occurrence(key, workspace)) is None:
+                due.append((rule, scheduled, key))
+        created: list[str] = []
+        deduplicated = 0
+        for rule, scheduled, key in due:
+            already = await _store_call(
+                self.store.get_run_for_occurrence(key, workspace)
+            )
+            run = await _store_call(
+                self.store.record_run(
+                    self._build_pending_claim(rule, scheduled, membership)
+                )
+            )
+            if run.run_id in created:
+                continue
+            if already is not None:
+                deduplicated += 1
+                continue
+            created.append(run.run_id)
+
+        return ClawAutomationTickReceipt(
+            workspace_id=workspace,
+            observed_at=observed_at,
+            due_count=len(due),
+            created_run_ids=tuple(sorted(created)),
+            deduplicated_count=deduplicated,
+        )
+
+    def _build_pending_claim(
+        self,
+        rule: ClawAutomationRule,
+        scheduled: datetime,
+        membership: TrustedWorkspaceMembershipProjection,
+    ) -> ClawScheduledRun:
+        """Pure pre-I/O construction of the canonical PENDING claim row (#2995).
+
+        The guards and row shape are exactly what ``_claim_pending_occurrence``
+        has always written; factoring them out lets the async persistence
+        application (``atick``) record the identical claim through an awaited
+        store without a second claim or run-id authority. No store write
+        happens here.
+        """
+
+        if not rule.enabled:
+            raise ContractError("disabled automation rule cannot execute")
+        if membership.workspace_id != rule.workspace_id:
+            raise ContractError("membership workspace does not match rule workspace")
+        if not membership.valid_at(scheduled):
+            raise ContractError("expired or not-yet-valid workspace membership")
+        return ClawScheduledRun(
+            run_id=_derived_occurrence_id(
+                "sched_run", rule.workspace_id, rule.rule_id, scheduled
+            ),
+            workspace_id=rule.workspace_id,
+            rule_id=rule.rule_id,
+            status=ClawScheduledRunStatus.PENDING,
+            scheduled_time=scheduled,
+            started_at=scheduled,
+            completed_at=None,
+            output=None,
+        )
+
     def _claim_pending_occurrence(
         self,
         rule: ClawAutomationRule,
@@ -1375,24 +1520,7 @@ class ClawAutomationTickRuntime:
         write, and they add no new authority.
         """
 
-        if not rule.enabled:
-            raise ContractError("disabled automation rule cannot execute")
-        if membership.workspace_id != rule.workspace_id:
-            raise ContractError("membership workspace does not match rule workspace")
-        if not membership.valid_at(scheduled):
-            raise ContractError("expired or not-yet-valid workspace membership")
-        claimed = ClawScheduledRun(
-            run_id=_derived_occurrence_id(
-                "sched_run", rule.workspace_id, rule.rule_id, scheduled
-            ),
-            workspace_id=rule.workspace_id,
-            rule_id=rule.rule_id,
-            status=ClawScheduledRunStatus.PENDING,
-            scheduled_time=scheduled,
-            started_at=scheduled,
-            completed_at=None,
-            output=None,
-        )
+        claimed = self._build_pending_claim(rule, scheduled, membership)
         return self.store.record_run(claimed)
 
     @staticmethod
@@ -2081,6 +2209,9 @@ TICK_RUNTIME_REQUIRES_MEMBERSHIP = True
 TICK_RUNTIME_MEMBERSHIP_OPTIONAL = False
 TICK_RUNTIME_PERFORMS_PROVIDER_CALLS = False
 TICK_RUNTIME_REGISTERS_CLOUD_CRON = False
+# #2995: the awaited persistence twin (``atick``) exists in source; it reuses
+# the same schedule math / occurrence_key / claim and activates nothing.
+TICK_RUNTIME_ASYNC_PERSISTENCE_SEAM = True
 EXTERNAL_SEND_ENABLED = False
 AUTO_SEND_ENABLED = False
 AUTO_ORDER_ENABLED = False

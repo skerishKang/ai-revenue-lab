@@ -91,6 +91,7 @@ from kagent.claw_automation import (
 from kagent.claw_automation_trigger import (
     ClawAutomationTrigger,
     ClawAutomationTriggerBoundary,
+    ClawAutomationTriggerReceipt,
 )
 from kagent.contracts import SandboxLease
 from kagent.workspace_visibility import TrustedWorkspaceMembershipProjection
@@ -226,6 +227,10 @@ class BackgroundExecutionReceipt:
     # reported as a successful terminal row; this field is the truthful bucket for
     # it. It stays bounded to ids and counts like every other field.
     dispatch_failed_run_ids: tuple[str, ...]
+    # #2995: True when the trigger receipt was precomputed by the SAME trusted
+    # boundary (``ahandle``) and the boundary was therefore NOT re-run here.
+    # Pure provenance evidence; it grants nothing and changes no accounting.
+    trigger_receipt_precomputed: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "workspace_id", _safe_id(self.workspace_id, "workspace_id"))
@@ -269,6 +274,7 @@ class BackgroundExecutionReceipt:
             "running_unresolved_run_ids": list(self.running_unresolved_run_ids),
             "failed_before_dispatch_run_ids": list(self.failed_before_dispatch_run_ids),
             "dispatch_failed_run_ids": list(self.dispatch_failed_run_ids),
+            "trigger_receipt_precomputed": self.trigger_receipt_precomputed,
             # Side-effect locks for this slice. They are constants, not claims: the
             # composition has no path that could raise them.
             "provider_calls": 0,
@@ -306,6 +312,50 @@ def _require_boundary(boundary: object) -> ClawAutomationTriggerBoundary:
             "no scheduler authority is created here"
         )
     return boundary
+
+
+def _require_precomputed_receipt(
+    receipt: object, trigger: ClawAutomationTrigger
+) -> ClawAutomationTriggerReceipt:
+    """Admit a precomputed trigger receipt only if it provably matches (#2995).
+
+    The receipt must be the exact type the trusted boundary returns and must
+    describe this exact trigger -- source, correlation, workspace and observation
+    instant -- so a caller cannot hand in another trigger's claims, another
+    delivery's receipt or a foreign instant. Because supplying the receipt skips
+    the boundary call, the trigger's trusted membership must also still cover the
+    same observed instant before any claimed row can be consumed.
+    The receipt class itself already validates ids, counts and duplicate-free
+    run ids. Skipping the boundary never skips the tick that produced the rows:
+    those rows can only exist because that boundary run claimed them, and the
+    execution claim below keeps re-execution impossible either way.
+    """
+
+    if not isinstance(receipt, ClawAutomationTriggerReceipt):
+        raise BackgroundExecutionCompositionError(
+            "a precomputed trigger receipt must be a ClawAutomationTriggerReceipt"
+        )
+    if receipt.trigger_id != trigger.trigger_id:
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt does not match the trigger source"
+        )
+    if receipt.correlation_id != trigger.correlation_id:
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt does not match the trigger correlation"
+        )
+    if receipt.workspace_id != trigger.workspace_id:
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt does not cover the trigger workspace"
+        )
+    if receipt.observed_at != trigger.observed_at:
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt does not match the trigger instant"
+        )
+    if not trigger.membership.valid_at(trigger.observed_at):
+        raise BackgroundExecutionCompositionError(
+            "precomputed trigger receipt requires membership active at the trigger instant"
+        )
+    return receipt
 
 
 def _bounded_recovery_bound(value: object) -> int:
@@ -509,6 +559,7 @@ async def compose_background_execution(
     product_tier: Any | None = None,
     completed_at: datetime | None = None,
     clock: Callable[[], datetime] | None = None,
+    trigger_receipt: ClawAutomationTriggerReceipt | None = None,
 ) -> BackgroundExecutionReceipt:
     """Execute one trusted trigger through the existing chain, safely.
 
@@ -530,6 +581,14 @@ async def compose_background_execution(
     ``lease`` is pass-through only. This composition never mints a sandbox lease,
     and when no already-authorized lease exists the existing P01 adapter keeps its
     own fail-closed rule.
+
+    ``trigger_receipt`` (#2995) accepts a receipt the SAME trusted boundary has
+    already produced (``ahandle`` on the async persistence seam). It must match
+    this exact trigger's source, workspace and observation instant, and when it
+    is supplied the boundary is NOT re-run -- the rows exist only because that
+    receipt's tick claimed them, so an async discovery pass can compose
+    execution without claiming occurrences twice. With ``None`` (the default)
+    the behaviour is byte-identical to before.
     """
 
     checked_trigger = _require_trigger(trigger)
@@ -549,8 +608,17 @@ async def compose_background_execution(
         )
 
     # 1. Existing trusted boundary -> existing durable tick -> existing dedup.
-    tick = checked_boundary.handle(checked_trigger)
-    newly_claimed = tuple(tick.created_run_ids)
+    #    #2995: a receipt precomputed by the SAME boundary (``ahandle``) may be
+    #    supplied instead; it is validated against this exact trigger and the
+    #    trigger is then NOT re-run, so async discovery and execution compose
+    #    without a second claim of the same occurrences.
+    if trigger_receipt is None:
+        tick_receipt = checked_boundary.handle(checked_trigger)
+    else:
+        tick_receipt = _require_precomputed_receipt(
+            trigger_receipt, checked_trigger
+        )
+    newly_claimed = tuple(tick_receipt.created_run_ids)
     candidates = await _rows_for_ids(
         store=store, run_ids=newly_claimed, workspace_id=workspace_id
     )
@@ -681,4 +749,5 @@ async def compose_background_execution(
         running_unresolved_run_ids=tuple(running_unresolved),
         failed_before_dispatch_run_ids=tuple(failed_before_dispatch),
         dispatch_failed_run_ids=tuple(dispatch_failed),
+        trigger_receipt_precomputed=trigger_receipt is not None,
     )
