@@ -27,8 +27,8 @@ Three separations are load-bearing, and each one is tested rather than asserted 
 * **Construction is not resolution.** ``EnvironmentE2BCredentialPort.resolve`` is the only path to
   a credential value, and building the port does not call it. A composed object performs zero
   credential reads, zero provider requests and zero sandbox allocations; the composed clock is not
-  called either. The single local side effect is the stdlib TLS trust store the pinned-origin port
-  loads for its SSL context — a local read, never a provider request and never a credential read.
+  called either. The pinned-origin port also defers loading the stdlib TLS trust store until
+  `request()`, so constructing the composition performs no local trust-store I/O either.
 * **The endpoint and the binding are source-owned.** This module takes no base URL, host, port,
   path, environment-variable name, binding name or credential value, and its parameter surface is
   pinned as data (``E2B_COMPOSITION_PARAMETERS``) so a review can diff it instead of trusting prose.
