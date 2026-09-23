@@ -269,9 +269,42 @@
     return `${sign}${hours}:${mins}`;
   }
 
+  // The wall clock ("YYYY-MM-DD HH:MM") that one instant reads as in an explicit
+  // zone, or null when the zone cannot be resolved. Used to verify that a
+  // converted instant really is the clock time the user typed.
+  function zoneWallClock(timezone, utcMillis) {
+    if (typeof timezone !== "string" || !timezone) return null;
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: timezone,
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).formatToParts(new Date(utcMillis));
+      const values = {};
+      parts.forEach((part) => { values[part.type] = part.value; });
+      if (!values.year || !values.month || !values.day) return null;
+      const hour = Number(values.hour) % 24;
+      if (Number.isNaN(hour)) return null;
+      return `${values.year}-${values.month}-${values.day} ${String(hour).padStart(2, "0")}:${values.minute}`;
+    } catch (_) {
+      return null;
+    }
+  }
+
   // Wall-clock date+time in an EXPLICIT zone -> offset-bearing ISO-8601. Returns
-  // "" for an unknown zone or a malformed value, so a naive datetime can never be
-  // produced and the caller fails closed instead of guessing.
+  // "" for an unknown zone, a malformed value, or a wall clock that the zone
+  // SKIPS (the DST spring-forward gap), so a naive datetime can never be produced
+  // and the caller fails closed rather than sending some other instant.
+  //
+  // Because the result is only accepted when it round-trips, the instant that is
+  // sent always reads back as exactly the clock time the user typed in that zone.
+  // A fall-back wall clock that exists twice resolves deterministically to the
+  // EARLIER instant (the pre-transition offset side); both candidates read back as
+  // the same wall clock, so the entered time is never silently drifted.
   function zonedLocalToIso(date, time, timezone) {
     if (typeof date !== "string" || !DATE_ONLY_PATTERN.test(date)) return "";
     if (typeof time !== "string" || !TIME_OF_DAY_PATTERN.test(time)) return "";
@@ -279,12 +312,29 @@
     const timeParts = time.split(":").map(Number);
     const utcGuess = Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], 0);
     if (Number.isNaN(utcGuess)) return "";
-    let offset = zoneOffsetMinutes(timezone, utcGuess);
+    const guessOffset = zoneOffsetMinutes(timezone, utcGuess);
+    if (guessOffset === null) return "";
+    // Sample the offsets in effect around the instant the naive guess points at,
+    // so both sides of a nearby transition are considered.
+    const base = utcGuess - guessOffset * 60000;
+    const offsets = [];
+    [-7200000, 0, 7200000].forEach((shift) => {
+      const candidateOffset = zoneOffsetMinutes(timezone, base + shift);
+      if (candidateOffset !== null && offsets.indexOf(candidateOffset) < 0) {
+        offsets.push(candidateOffset);
+      }
+    });
+    const wanted = `${date} ${time}`;
+    const candidates = [];
+    offsets.forEach((candidateOffset) => {
+      const instant = utcGuess - candidateOffset * 60000;
+      if (zoneWallClock(timezone, instant) === wanted) candidates.push(instant);
+    });
+    // No candidate round-trips: the zone skips this wall clock entirely.
+    if (candidates.length === 0) return "";
+    const instant = Math.min.apply(null, candidates);
+    const offset = zoneOffsetMinutes(timezone, instant);
     if (offset === null) return "";
-    // Second pass resolves zones whose offset differs at the guessed instant
-    // (DST boundaries). The zone itself is still the explicit one supplied.
-    const refined = zoneOffsetMinutes(timezone, utcGuess - offset * 60000);
-    if (refined !== null) offset = refined;
     return `${date}T${time}:00${formatUtcOffset(offset)}`;
   }
 
@@ -332,14 +382,26 @@
     return { ok: true, payload: payload };
   }
 
+  // "Usable" means the canonical projection's own stable fields are all present:
+  // the bounded identity, the appointment item type, a real title and a server
+  // date. A 201 that does not carry them (including an empty object) is a
+  // failure, never a saved appointment.
+  function isUsableProjectedAppointment(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    if (typeof value.calendar_item_id !== "string" || !value.calendar_item_id.trim()) return false;
+    if (value.item_type !== "appointment") return false;
+    if (typeof value.title !== "string" || !value.title.trim()) return false;
+    return typeof value.date === "string" && DATE_ONLY_PATTERN.test(value.date);
+  }
+
   // Same bounded UI states as the work-record path: a 201 without a usable
-  // appointment object is a failure, never a saved appointment.
+  // appointment projection is a failure, never a saved appointment.
   function interpretAppointmentResponse(status, payload) {
     if (status === 201) {
       const saved = payload && typeof payload === "object" && payload.ok === true
         ? payload.appointment
         : null;
-      if (saved && typeof saved === "object") return { status: "created", item: saved };
+      if (isUsableProjectedAppointment(saved)) return { status: "created", item: saved };
       return { status: "unavailable", item: null };
     }
     if (status === 401) return { status: "unauthorized", item: null };
@@ -370,8 +432,10 @@
     buildWorkLogRequest,
     interpretWorkLogResponse,
     zoneOffsetMinutes,
+    zoneWallClock,
     formatUtcOffset,
     zonedLocalToIso,
+    isUsableProjectedAppointment,
     buildAppointmentRequest,
     interpretAppointmentResponse,
   });

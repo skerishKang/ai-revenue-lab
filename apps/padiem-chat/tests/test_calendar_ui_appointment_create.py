@@ -460,14 +460,28 @@ async function fetchImpl(url, opts) {
   if (u.startsWith("/api/calendar/appointments") && method === "POST") {
     lastBody = opts.body ? JSON.parse(opts.body) : null;
     if (mode === "created") {
+      // The REAL canonical projection shape (project_appointment().safe_dict()):
+      // the four stable fields must be present or the client must not report a
+      // saved appointment. The date is the one the server derives in the stated
+      // zone, which for timed bodies is the local date of start_at.
       return json(201, {
         ok: true,
         appointment: {
           calendar_item_id: "item_apt_x",
-          appointment_id: "appointment_abc",
+          workspace_id: "ws_test",
           item_type: "appointment",
-          appointment_type: lastBody.appointment_type,
           title: lastBody.title,
+          summary: lastBody.description || null,
+          date: lastBody.date || String(lastBody.start_at).slice(0, 10),
+          start_at: lastBody.start_at || null,
+          end_at: lastBody.end_at || null,
+          timezone: lastBody.timezone || null,
+          all_day: lastBody.appointment_type === "all_day",
+          source_type: "native_appointment",
+          source_ref: "appointment:appointment_abc",
+          created_at: "2026-09-23T00:00:00+00:00",
+          updated_at: "2026-09-23T00:00:00+00:00",
+          artifact: null,
         },
       });
     }
@@ -475,6 +489,8 @@ async function fetchImpl(url, opts) {
     if (mode === "invalid") return json(400, { ok: false, error: { code: "invalid_timezone" } });
     if (mode === "malformed") return json(201, { ok: true });
     if (mode === "malformed_item") return json(201, { ok: true, appointment: "not-an-object" });
+    if (mode === "empty_item") return json(201, { ok: true, appointment: {} });
+    if (mode === "wrong_type_item") return json(201, { ok: true, appointment: { calendar_item_id: "item_log_a", item_type: "work_log", title: "x", date: "2026-09-23" } });
     if (mode === "not_ok") return json(201, { ok: false, appointment: { appointment_id: "x" } });
     if (mode === "network") throw new Error("boom");
     return json(500, { ok: false, error: { code: "appointment_creation_failed" } });
@@ -761,6 +777,31 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
     async () => { dateField.value = ""; },
     "calendar-appointment-invalid"
   );
+  // The DST spring-forward gap: New York jumps 02:00 -> 03:00 on 2026-03-08, so
+  // 02:30 does not exist there. It must be refused BEFORE any request, never
+  // converted into some other real instant.
+  await rejectedWithoutRequest(
+    "NONEXISTENT_DST_WALL_CLOCK_IS_REJECTED_WITHOUT_A_REQUEST",
+    async () => {
+      await changeType("timed");
+      title.value = "DST 갭";
+      dateField.value = "2026-03-08";
+      zoneField.value = "America/New_York";
+      startField.value = "02:30";
+      endField.value = "";
+    },
+    "calendar-appointment-invalid"
+  );
+  // ...while the very next minute that DOES exist still submits normally.
+  before = requests.length;
+  mode = "created";
+  startField.value = "03:00";
+  await submit();
+  await tick();
+  body = JSON.parse(postOf(before).body);
+  checks.DST_TIME_AFTER_THE_JUMP_STILL_SUBMITS =
+    body.timezone === "America/New_York" && body.start_at === "2026-03-08T03:00:00-04:00";
+  if (!checks.DST_TIME_AFTER_THE_JUMP_STILL_SUBMITS) fail("DST_AFTER_JUMP " + JSON.stringify(body));
 
   // 8) Every failure branch maps to a bounded message, never a saved state.
   async function failureCase(nextMode, expectedText) {
@@ -780,6 +821,8 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
   await failureCase("server_error", "calendar-appointment-unavailable");
   await failureCase("malformed", "calendar-appointment-unavailable");
   await failureCase("malformed_item", "calendar-appointment-unavailable");
+  await failureCase("empty_item", "calendar-appointment-unavailable");
+  await failureCase("wrong_type_item", "calendar-appointment-unavailable");
   await failureCase("not_ok", "calendar-appointment-unavailable");
   await failureCase("network", "calendar-appointment-unavailable");
 
@@ -866,11 +909,15 @@ _HARNESS_CHECKS = (
     "BLANK_TITLE_IS_REJECTED_WITHOUT_A_REQUEST",
     "MALFORMED_DATE_IS_REJECTED_WITHOUT_A_REQUEST",
     "MISSING_DATE_IS_REJECTED_WITHOUT_A_REQUEST",
+    "NONEXISTENT_DST_WALL_CLOCK_IS_REJECTED_WITHOUT_A_REQUEST",
+    "DST_TIME_AFTER_THE_JUMP_STILL_SUBMITS",
     "FAILURE_UNAUTHORIZED",
     "FAILURE_INVALID",
     "FAILURE_SERVER_ERROR",
     "FAILURE_MALFORMED",
     "FAILURE_MALFORMED_ITEM",
+    "FAILURE_EMPTY_ITEM",
+    "FAILURE_WRONG_TYPE_ITEM",
     "FAILURE_NOT_OK",
     "FAILURE_NETWORK",
     "NO_UNKNOWN_ROUTE_AND_NO_OTHER_METHOD",
@@ -926,17 +973,39 @@ def test_appointment_helpers_build_the_contract_payload_or_fail_closed() -> None
       kolkata: ui.zonedLocalToIso("2026-09-23", "10:00", "Asia/Kolkata"),
       utc: ui.zonedLocalToIso("2026-09-23", "10:00", "UTC"),
       newYork: ui.zonedLocalToIso("2026-01-15", "09:00", "America/New_York"),
-      dstMidnight: ui.zonedLocalToIso("2026-03-08", "03:00", "America/New_York"),
       badZoneIso: ui.zonedLocalToIso("2026-09-23", "10:00", "Not/AZone"),
       emptyZoneIso: ui.zonedLocalToIso("2026-09-23", "10:00", ""),
       badDateIso: ui.zonedLocalToIso("2026/09/23", "10:00", "Asia/Seoul"),
       badTimeIso: ui.zonedLocalToIso("2026-09-23", "25:99", "Asia/Seoul"),
       emptyTimeIso: ui.zonedLocalToIso("2026-09-23", "", "Asia/Seoul"),
+      dstAfterJump: ui.zonedLocalToIso("2026-03-08", "03:00", "America/New_York"),
+      dstAfterJumpLate: ui.zonedLocalToIso("2026-03-08", "03:30", "America/New_York"),
+      dstAfterJumpBerlin: ui.zonedLocalToIso("2026-03-29", "03:30", "Europe/Berlin"),
+      dstGapNy: ui.zonedLocalToIso("2026-03-08", "02:30", "America/New_York"),
+      dstGapNyEdge: ui.zonedLocalToIso("2026-03-08", "02:00", "America/New_York"),
+      dstGapNyLast: ui.zonedLocalToIso("2026-03-08", "02:59", "America/New_York"),
+      dstGapBerlin: ui.zonedLocalToIso("2026-03-29", "02:30", "Europe/Berlin"),
+      dstGapBuilder: ui.buildAppointmentRequest({{ appointment_type: "timed", title: "x", date: "2026-03-08", timezone: "America/New_York", start_time: "02:30" }}),
+      dstFoldNy: ui.zonedLocalToIso("2026-11-01", "01:30", "America/New_York"),
+      dstFoldBerlin: ui.zonedLocalToIso("2026-10-25", "02:30", "Europe/Berlin"),
+      rtSeoul: ui.zoneWallClock("Asia/Seoul", Date.parse("2026-09-23T10:00:00+09:00")),
+      rtAfterJump: ui.zoneWallClock("America/New_York", Date.parse("2026-03-08T03:00:00-04:00")),
+      rtFoldNy: ui.zoneWallClock("America/New_York", Date.parse("2026-11-01T01:30:00-04:00")),
+      rtGapWouldBe: ui.zoneWallClock("America/New_York", Date.parse("2026-03-08T02:30:00-04:00")),
+      rtBadZone: ui.zoneWallClock("Not/AZone", Date.parse("2026-09-23T10:00:00Z")),
+      rtEmptyZone: ui.zoneWallClock("", Date.parse("2026-09-23T10:00:00Z")),
       offsetSeoul: ui.formatUtcOffset(540),
       offsetNegative: ui.formatUtcOffset(-300),
       offsetHalf: ui.formatUtcOffset(330),
-      created: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ appointment_id: "a" }} }}),
+      created: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ calendar_item_id: "item_apt_a", item_type: "appointment", title: "x", date: "2026-09-23" }} }}),
       createdEmptyItem: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{}} }}),
+      createdNullItem: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: null }}),
+      createdArrayItem: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: [] }}),
+      createdNoDate: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ calendar_item_id: "item_apt_a", item_type: "appointment", title: "x" }} }}),
+      createdWrongType: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ calendar_item_id: "item_log_a", item_type: "work_log", title: "x", date: "2026-09-23" }} }}),
+      createdEmptyTitle: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ calendar_item_id: "item_apt_a", item_type: "appointment", title: "   ", date: "2026-09-23" }} }}),
+      createdEmptyId: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ calendar_item_id: "  ", item_type: "appointment", title: "x", date: "2026-09-23" }} }}),
+      createdBadDate: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: {{ calendar_item_id: "item_apt_a", item_type: "appointment", title: "x", date: "2026/09/23" }} }}),
       createdNoItem: ui.interpretAppointmentResponse(201, {{ ok: true }}),
       createdNotOk: ui.interpretAppointmentResponse(201, {{ ok: false, appointment: {{ appointment_id: "a" }} }}),
       createdStringItem: ui.interpretAppointmentResponse(201, {{ ok: true, appointment: "x" }}),
@@ -1005,9 +1074,39 @@ def test_appointment_helpers_build_the_contract_payload_or_fail_closed() -> None
     assert data["kolkata"] == "2026-09-23T10:00:00+05:30"
     assert data["utc"] == "2026-09-23T10:00:00+00:00"
     assert data["newYork"] == "2026-01-15T09:00:00-05:00"
-    # 2026-03-08 03:00 does not exist in New York (spring forward); the value is
-    # still offset-bearing, i.e. never naive, whichever side is resolved.
-    assert OFFSET_SUFFIX.search(data["dstMidnight"]), data["dstMidnight"]
+
+    # Spring-forward DST GAP: New York jumps 02:00 -> 03:00 on 2026-03-08, so the
+    # whole 02:00-02:59 wall clock does not exist and must fail closed. (03:00 and
+    # later DO exist, after the jump.)
+    assert data["dstGapNy"] == ""
+    assert data["dstGapNyEdge"] == ""
+    assert data["dstGapNyLast"] == ""
+    assert data["dstGapBerlin"] == ""   # Berlin jumps 02:00 -> 03:00 on 2026-03-29
+    assert data["dstGapBuilder"] == {"ok": False, "reason": "invalid_start"}
+    # Times that exist immediately after the jump still convert, in the new offset.
+    assert data["dstAfterJump"] == "2026-03-08T03:00:00-04:00"
+    assert data["dstAfterJumpLate"] == "2026-03-08T03:30:00-04:00"
+    assert data["dstAfterJumpBerlin"] == "2026-03-29T03:30:00+02:00"
+
+    # Fall-back AMBIGUOUS times exist twice; the policy is deterministic and never
+    # drifts the entered wall clock:
+    #   - New York 2026-11-01 01:30 is both 05:30Z (EDT, earlier) and 06:30Z (EST);
+    #     the earlier instant wins -> -04:00.
+    #   - Berlin 2026-10-25 02:30 is both 00:30Z (CEST, earlier) and 01:30Z (CET);
+    #     the earlier instant wins -> +02:00.
+    assert data["dstFoldNy"] == "2026-11-01T01:30:00-04:00"
+    assert data["dstFoldBerlin"] == "2026-10-25T02:30:00+02:00"
+
+    # Round-trip law: every value this client emits reads back in its own stated
+    # zone as exactly the wall clock the user typed. `rtGapWouldBe` shows why the
+    # gap must be refused: the shifted instant would read back as a DIFFERENT time.
+    assert data["rtSeoul"] == "2026-09-23 10:00"
+    assert data["rtAfterJump"] == "2026-03-08 03:00"
+    assert data["rtFoldNy"] == "2026-11-01 01:30"
+    assert data["rtGapWouldBe"] == "2026-03-08 01:30"   # NOT "02:30" -> drift
+    assert data["rtBadZone"] is None
+    assert data["rtEmptyZone"] is None
+
     assert data["badZoneIso"] == ""
     assert data["emptyZoneIso"] == ""
     assert data["badDateIso"] == ""
@@ -1018,12 +1117,26 @@ def test_appointment_helpers_build_the_contract_payload_or_fail_closed() -> None
     assert data["offsetNegative"] == "-05:00"
     assert data["offsetHalf"] == "+05:30"
 
-    # a 201 without a usable appointment object is never treated as saved.
+    # a 201 without a USABLE appointment projection is never treated as saved.
+    # So the four stable fields the canonical projection always returns are all
+    # required: calendar_item_id, item_type == "appointment", title, date.
     assert data["created"]["status"] == "created"
-    assert data["createdEmptyItem"]["status"] == "created"
-    assert data["createdNoItem"]["status"] == "unavailable"
-    assert data["createdNotOk"]["status"] == "unavailable"
-    assert data["createdStringItem"]["status"] == "unavailable"
+    assert data["created"]["item"]["calendar_item_id"] == "item_apt_a"
+    for name in (
+        "createdEmptyItem",
+        "createdNullItem",
+        "createdArrayItem",
+        "createdNoDate",
+        "createdWrongType",
+        "createdEmptyTitle",
+        "createdEmptyId",
+        "createdBadDate",
+        "createdNoItem",
+        "createdNotOk",
+        "createdStringItem",
+    ):
+        assert data[name]["status"] == "unavailable", name
+        assert data[name]["item"] is None, name
     assert data["nullBody"]["status"] == "unavailable"
     assert data["unauthorized"]["status"] == "unauthorized"
     assert data["invalid"]["status"] == "invalid"
@@ -1055,6 +1168,10 @@ def _client_payloads() -> dict:
       timedDst: ok(ui.buildAppointmentRequest({{ appointment_type: "timed", title: "베를린 콜", date: "2026-07-01", timezone: "Europe/Berlin", start_time: "12:00" }})),
       naive: {{ appointment_type: "timed", title: "회의", timezone: "Asia/Seoul", start_at: "2026-09-23T10:00:00" }},
       noZone: {{ appointment_type: "timed", title: "회의", start_at: "2026-09-23T10:00:00+09:00" }},
+      gap: ui.zonedLocalToIso("2026-03-08", "02:30", "America/New_York"),
+      gapDrift: {{ appointment_type: "timed", title: "DST 갭", timezone: "America/New_York", start_at: "2026-03-08T02:30:00-04:00" }},
+      foldBuilt: ui.buildAppointmentRequest({{ appointment_type: "timed", title: "DST 폴드", date: "2026-11-01", timezone: "America/New_York", start_time: "01:30" }}).payload,
+      gapWallClockOfDrift: ui.zoneWallClock("America/New_York", Date.parse("2026-03-08T02:30:00-04:00")),
     }}));
     """
     completed = subprocess.run(
@@ -1137,6 +1254,43 @@ def test_contract_rejects_the_shapes_this_client_never_builds() -> None:
     assert set(payloads["noZone"]) == {"appointment_type", "title", "start_at"}
 
 
+def test_nonexistent_dst_wall_clock_is_never_built_and_would_be_drifted() -> None:
+    payloads = _client_payloads()
+    # New York jumps 02:00 -> 03:00 on 2026-03-08, so 02:30 does not exist there.
+    # The client refuses it outright, before any request.
+    assert payloads["gap"] == ""
+    with pytest.raises(CalendarContractError) as gap:
+        _create(
+            {
+                "appointment_type": "timed",
+                "title": "DST 갭",
+                "timezone": "America/New_York",
+                "start_at": payloads["gap"],
+            }
+        )
+    assert gap.value.code == "invalid_start_at"
+    # Why refusal matters: the shifted-value shape the old converter produced is
+    # timezone-aware, so the server ACCEPTS it — but its wall clock in the stated
+    # zone is 01:30, not the 02:30 the user typed. Accepting it would have sent a
+    # silently different instant.
+    drifted = _create(payloads["gapDrift"])
+    assert drifted.timezone == "America/New_York"
+    assert payloads["gapWallClockOfDrift"] == "2026-03-08 01:30"
+    # The ambiguous fall-back value the client DOES build stays inside the zone's
+    # real wall clock and the server derives the same date in that zone.
+    folded = _create(
+        {
+            "appointment_type": "timed",
+            "title": "DST 폴드",
+            "timezone": "America/New_York",
+            "start_at": payloads["foldBuilt"]["start_at"],
+        }
+    )
+    assert folded.timezone == "America/New_York"
+    assert folded.start_at.isoformat() == "2026-11-01T05:30:00+00:00"
+    assert folded.date == date(2026, 11, 1)
+
+
 def test_this_slice_adds_no_external_calendar_or_memory_authority() -> None:
     assert EXTERNAL_CALENDAR_REQUIRED is False
     assert MEMORY_AUTO_PROMOTION is False
@@ -1177,5 +1331,6 @@ if __name__ == "__main__":
     test_appointment_helpers_build_the_contract_payload_or_fail_closed()
     test_client_payloads_are_accepted_by_the_existing_contract()
     test_contract_rejects_the_shapes_this_client_never_builds()
+    test_nonexistent_dst_wall_clock_is_never_built_and_would_be_drifted()
     test_this_slice_adds_no_external_calendar_or_memory_authority()
     print("B54_PADIEM_CALENDAR_APPOINTMENT_CREATE_UI_TESTS=PASS")
