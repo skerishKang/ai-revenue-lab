@@ -440,7 +440,9 @@ class StdlibE2BHttpRequestPort:
     def __init__(self, *, tls_context: ssl.SSLContext | None = None) -> None:
         if tls_context is not None and not isinstance(tls_context, ssl.SSLContext):
             raise E2BWireError("tls_context must be an ssl.SSLContext or omitted")
-        self._context = tls_context or ssl.create_default_context()
+        # Keep construction completely inert. The OS trust store is loaded lazily only after the
+        # live gate and credential boundary have permitted an actual request attempt.
+        self._context = tls_context
 
     def request(
         self,
@@ -466,13 +468,19 @@ class StdlibE2BHttpRequestPort:
             timeout_seconds, "timeout_seconds", minimum=1, maximum=120
         )
 
+        # Loading the default TLS trust store can touch local files. Defer that local I/O
+        # until request(), never during composition/port construction.
+        context = self._context
+        if context is None:
+            context = ssl.create_default_context()
+
         connection: http.client.HTTPSConnection | None = None
         try:
             connection = http.client.HTTPSConnection(
                 E2B_API_HOST,
                 port=E2B_API_PORT,
                 timeout=timeout,
-                context=self._context,
+                context=context,
             )
             connection.request(
                 method,
