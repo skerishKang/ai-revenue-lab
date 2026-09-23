@@ -79,7 +79,7 @@ class PageStore:
     """A synchronous store exposing ONLY the bounded page read.
 
     Used to prove Layer B in isolation: the discovery boundary must not require
-    any capability beyond ``list_due_workspace_page`` from the page source, and
+    any capability beyond ``list_candidate_workspace_page`` from the page source, and
     the trigger step is served by a separate synchronous store.
     """
 
@@ -87,7 +87,7 @@ class PageStore:
         self._pages = pages
         self.calls: list[tuple[int, str | None]] = []
 
-    def list_due_workspace_page(
+    def list_candidate_workspace_page(
         self, *, page_size: int, after_workspace_id: str | None = None
     ) -> list[str]:
         self.calls.append((page_size, after_workspace_id))
@@ -292,15 +292,15 @@ def _sync_boundary(store: Any) -> ClawAutomationTriggerBoundary:
 def test_due_workspace_page_is_bounded_by_page_size(d1_store: D1ClawAutomationStore) -> None:
     for index in range(5):
         _run(d1_store.save_rule(_rule(f"ws_{index:02d}", f"r_{index}")))
-    page = _run(d1_store.list_due_workspace_page(page_size=2))
+    page = _run(d1_store.list_candidate_workspace_page(page_size=2))
     assert len(page) == 2
 
 
 def test_due_workspace_page_ordering_is_deterministic(d1_store: D1ClawAutomationStore) -> None:
     for name in ("ws_c", "ws_a", "ws_b"):
         _run(d1_store.save_rule(_rule(name, f"r_{name}")))
-    first = _run(d1_store.list_due_workspace_page(page_size=10))
-    second = _run(d1_store.list_due_workspace_page(page_size=10))
+    first = _run(d1_store.list_candidate_workspace_page(page_size=10))
+    second = _run(d1_store.list_candidate_workspace_page(page_size=10))
     assert first == second == ["ws_a", "ws_b", "ws_c"]
 
 
@@ -312,7 +312,7 @@ def test_due_workspace_page_cursor_advances_without_gaps(
     collected: list[str] = []
     cursor: str | None = None
     while True:
-        page = _run(d1_store.list_due_workspace_page(page_size=2, after_workspace_id=cursor))
+        page = _run(d1_store.list_candidate_workspace_page(page_size=2, after_workspace_id=cursor))
         if not page:
             break
         collected.extend(page)
@@ -323,26 +323,26 @@ def test_due_workspace_page_cursor_advances_without_gaps(
 def test_disabled_only_workspace_is_not_discovered(d1_store: D1ClawAutomationStore) -> None:
     _run(d1_store.save_rule(_rule("ws_enabled", "r1", enabled=True)))
     _run(d1_store.save_rule(_rule("ws_disabled", "r2", enabled=False)))
-    page = _run(d1_store.list_due_workspace_page(page_size=50))
+    page = _run(d1_store.list_candidate_workspace_page(page_size=50))
     assert page == ["ws_enabled"]
 
 
 def test_page_size_bounds_are_enforced(d1_store: D1ClawAutomationStore) -> None:
     with pytest.raises(ContractError):
-        _run(d1_store.list_due_workspace_page(page_size=0))
+        _run(d1_store.list_candidate_workspace_page(page_size=0))
     with pytest.raises(ContractError):
         _run(
-            d1_store.list_due_workspace_page(
-                page_size=store_mod._MAX_DUE_WORKSPACE_PAGE_SIZE + 1
+            d1_store.list_candidate_workspace_page(
+                page_size=store_mod._MAX_CANDIDATE_WORKSPACE_PAGE_SIZE + 1
             )
         )
     with pytest.raises(ContractError):
-        _run(d1_store.list_due_workspace_page(page_size=True))  # type: ignore[arg-type]
+        _run(d1_store.list_candidate_workspace_page(page_size=True))  # type: ignore[arg-type]
 
 
 def test_page_returns_identifiers_only(d1_store: D1ClawAutomationStore) -> None:
     _run(d1_store.save_rule(_rule("ws_one", "r1")))
-    page = _run(d1_store.list_due_workspace_page(page_size=10))
+    page = _run(d1_store.list_candidate_workspace_page(page_size=10))
     assert page == ["ws_one"]
     assert all(isinstance(item, str) for item in page)
 
@@ -359,7 +359,7 @@ def test_workspace_scoped_lists_still_refuse_cross_tenant_reads(
 def test_d1_page_has_no_workspace_argument_beyond_the_cursor() -> None:
     import inspect as _inspect
 
-    signature = _inspect.signature(D1ClawAutomationStore.list_due_workspace_page)
+    signature = _inspect.signature(D1ClawAutomationStore.list_candidate_workspace_page)
     assert set(signature.parameters) == {"self", "page_size", "after_workspace_id"}
 
 
@@ -415,6 +415,45 @@ def test_discovery_max_workspaces_truncates_instead_of_widening(sync_store: Any)
     assert receipt.examined_count == 3
     assert receipt.truncated is True
     assert len(receipt.discovered_workspaces) == 3
+    assert receipt.authorized_workspaces == ("ws_00", "ws_01", "ws_02")
+    assert len(receipt.claimed_run_ids) == 3
+    assert receipt.next_cursor is not None
+    assert receipt.next_cursor.after_workspace_id == "ws_02"
+
+
+def test_continuation_cursor_prevents_tail_starvation(sync_store: Any) -> None:
+    for index in range(5):
+        sync_store.save_rule(_rule(f"ws_{index:02d}", f"r_{index}"))
+    authority = StaticMembershipAuthority({f"ws_{i:02d}": f"prin_{i}" for i in range(5)})
+    page_store = PageStore([
+        ["ws_00", "ws_01", "ws_02", "ws_03", "ws_04"],
+        ["ws_03", "ws_04"],
+        [],
+    ])
+    engine = _discovery(page_store, authority, _sync_boundary(sync_store))
+
+    first = _run(engine.discover_and_trigger(now=NOW, page_size=5, max_workspaces=3))
+    assert first.discovered_workspaces == ("ws_00", "ws_01", "ws_02")
+    assert first.authorized_workspaces == ("ws_00", "ws_01", "ws_02")
+    assert len(first.claimed_run_ids) == 3
+    assert first.next_cursor is not None
+    assert first.next_cursor.after_workspace_id == "ws_02"
+
+    second = _run(
+        engine.discover_and_trigger(
+            now=NOW,
+            page_size=5,
+            max_workspaces=3,
+            continuation=first.next_cursor,
+        )
+    )
+    assert second.discovered_workspaces == ("ws_03", "ws_04")
+    assert second.authorized_workspaces == ("ws_03", "ws_04")
+    assert len(second.claimed_run_ids) == 2
+    assert second.truncated is False
+    assert second.next_cursor is None
+    assert {r.rule_id for r in sync_store.list_runs("ws_03")} == {"r_3"}
+    assert {r.rule_id for r in sync_store.list_runs("ws_04")} == {"r_4"}
 
 
 def test_discovery_pages_until_exhausted(sync_store: Any) -> None:
@@ -650,6 +689,8 @@ def test_discovery_takes_no_caller_workspace_argument() -> None:
     assert "workspace_id" not in signature.parameters
     assert "tenant" not in signature.parameters
     assert "owner_ref" not in signature.parameters
+    assert "after_workspace_id" not in signature.parameters
+    assert "continuation" in signature.parameters
 
 
 def test_discovery_receipt_safe_dict_pins_refusals(sync_store: Any) -> None:
@@ -670,6 +711,7 @@ def test_discovery_receipt_safe_dict_pins_refusals(sync_store: Any) -> None:
     assert payload["provider_calls"] == 0
     assert payload["external_sends"] == 0
     assert payload["production_mutation"] == 0
+    assert payload["continuation_available"] is False
     # No rule body, run output or proposal text leaks into the receipt.
     assert "rule " not in repr(payload)
 

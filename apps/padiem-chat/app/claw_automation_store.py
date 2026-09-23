@@ -111,7 +111,7 @@ ONE_OCCURRENCE_MAX_CANONICAL_RUNS = 1
 # ``CALLER_LIST_ALL_WORKSPACES`` stays False because no caller supplies a
 # workspace and no unbounded/arbitrary window is reachable -- the only new read
 # is a bounded, cursor-ordered page used by the internal discovery boundary.
-_MAX_DUE_WORKSPACE_PAGE_SIZE = 200
+_MAX_CANDIDATE_WORKSPACE_PAGE_SIZE = 200
 SERVER_OWNED_DUE_WORKSPACE_DISCOVERY_READ = True
 CALLER_SUPPLIED_WORKSPACE_FILTER = False
 
@@ -207,12 +207,12 @@ _SELECT_PROPOSALS_FOR_WORKSPACE = (
 # execution right and no scheduler claim. Whatever consumes it must still
 # revalidate canonical membership before any execution (see
 # ``claw_automation_due_workspace_discovery``).
-_SELECT_DUE_WORKSPACES_AFTER = (
+_SELECT_CANDIDATE_WORKSPACES_AFTER = (
     "SELECT DISTINCT workspace_id FROM claw_rules "
     "WHERE enabled = 1 AND workspace_id > ? "
     "ORDER BY workspace_id ASC LIMIT ?"
 )
-_SELECT_DUE_WORKSPACES_FROM_START = (
+_SELECT_CANDIDATE_WORKSPACES_FROM_START = (
     "SELECT DISTINCT workspace_id FROM claw_rules "
     "WHERE enabled = 1 "
     "ORDER BY workspace_id ASC LIMIT ?"
@@ -598,16 +598,16 @@ class D1ClawAutomationStore(ClawAutomationStore):
     # Deliberately NOT a product list surface. The method takes no caller
     # workspace, returns identifiers only, and is bounded by an explicit page
     # size. It exists so an internal scheduler-side discovery pass can page
-    # through the workspaces that currently own executable work without ever
+    # through candidate workspaces that currently own at least one enabled rule without ever
     # handing a caller a tenant-wide enumeration.
 
-    async def list_due_workspace_page(
+    async def list_candidate_workspace_page(
         self,
         *,
         page_size: int,
         after_workspace_id: str | None = None,
     ) -> list[str]:
-        """Return ONE bounded, deterministic page of candidate workspaces.
+        """Return ONE bounded, deterministic page of enabled-rule candidate workspaces.
 
         ``page_size`` is mandatory and bounded by the caller's own scheduler
         constant; ``after_workspace_id`` is a monotonic cursor from a previous
@@ -622,17 +622,17 @@ class D1ClawAutomationStore(ClawAutomationStore):
 
         if isinstance(page_size, bool) or not isinstance(page_size, int):
             raise ContractError("page_size must be an integer")
-        if page_size <= 0 or page_size > _MAX_DUE_WORKSPACE_PAGE_SIZE:
+        if page_size <= 0 or page_size > _MAX_CANDIDATE_WORKSPACE_PAGE_SIZE:
             raise ContractError(
-                f"page_size must be between 1 and {_MAX_DUE_WORKSPACE_PAGE_SIZE}"
+                f"page_size must be between 1 and {_MAX_CANDIDATE_WORKSPACE_PAGE_SIZE}"
             )
         if after_workspace_id is None:
-            rows = await self._all(_SELECT_DUE_WORKSPACES_FROM_START, page_size)
+            rows = await self._all(_SELECT_CANDIDATE_WORKSPACES_FROM_START, page_size)
         else:
             if not isinstance(after_workspace_id, str) or not after_workspace_id:
                 raise ContractError("after_workspace_id cursor must be bounded text")
             rows = await self._all(
-                _SELECT_DUE_WORKSPACES_AFTER, after_workspace_id, page_size
+                _SELECT_CANDIDATE_WORKSPACES_AFTER, after_workspace_id, page_size
             )
         ordered: list[str] = []
         for row in rows:

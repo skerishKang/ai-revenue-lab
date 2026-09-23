@@ -9,7 +9,7 @@ COMPOSITION BOUNDARY ONLY. Everything this module needs already exists:
 * ``ClawAutomationOwnerResolver`` owns the opaque-owner -> trusted-owner chain.
 
 The one thing that did NOT exist on main was a **server-owned** way to learn
-which workspaces currently have executable automation work without handing a
+which workspaces currently have enabled automation candidates without handing a
 product caller a tenant-wide enumeration. A real Worker ``scheduled()`` handler
 cannot be truthful until that boundary exists, because a cron tick arrives with
 no caller and therefore with no workspace id.
@@ -20,7 +20,7 @@ Canonical path added here:
 server-side discovery pass (no caller, no workspace input)
         |
         v  existing D1 store: ONE bounded, cursor-ordered page    (#2983 read)
-           of workspaces that currently own an ENABLED rule
+           of candidate workspaces that currently own an ENABLED rule
         |
         v  canonical membership authority is consulted per workspace
            (injected; a workspace whose membership cannot be proven is skipped)
@@ -57,7 +57,7 @@ Deliberately refused here:
 
 * synthetic membership (a workspace id alone is never treated as a member);
 * a caller-supplied workspace scan window or tenant filter;
-* executing disabled rules (the store read already filters to ``enabled = 1``);
+* executing disabled rules (the candidate read filters to ``enabled = 1``);
 * treating a discovery failure as an execution success.
 
 Why the trigger step needs a SYNCHRONOUS store, stated honestly. The existing
@@ -100,6 +100,7 @@ from kagent.workspace_visibility import TrustedWorkspaceMembershipProjection
 __all__ = [
     "SERVER_OWNED_DUE_WORKSPACE_DISCOVERY",
     "DueWorkspaceDiscoveryError",
+    "DueWorkspaceDiscoveryCursor",
     "DueWorkspaceDiscoveryReceipt",
     "ClawAutomationDueWorkspaceDiscovery",
 ]
@@ -124,7 +125,8 @@ PRODUCTION_MUTATION = False
 PROVIDER_CALLS = 0
 EXTERNAL_SEND = 0
 DISABLED_RULE_DISCOVERY = 0
-FUTURE_RULE_DISCOVERY = 0
+FUTURE_RULE_EXECUTION = 0
+CANDIDATE_DISCOVERY_MAY_INCLUDE_NOT_YET_DUE_RULES = True
 
 # One pass can never examine more workspaces than this, regardless of how many
 # exist. The bound is a module constant so no caller can widen it.
@@ -137,10 +139,10 @@ class DueWorkspaceDiscoveryError(RuntimeError):
     """Raised when the discovery boundary is misconfigured or refuses a pass."""
 
 
-class _DueWorkspacePageStore(Protocol):
+class _CandidateWorkspacePageStore(Protocol):
     """The ONE store capability this boundary needs: a bounded workspace page."""
 
-    def list_due_workspace_page(
+    def list_candidate_workspace_page(
         self,
         *,
         page_size: int,
@@ -165,6 +167,24 @@ class MembershipAuthority(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
+class DueWorkspaceDiscoveryCursor:
+    """Opaque server-side continuation for the next bounded discovery pass.
+
+    This is pagination state only. It grants no workspace membership, tenant
+    scope, schedule authority or execution authority. Product callers are not
+    given a raw workspace scan parameter; a continuation can only advance the
+    deterministic candidate ordering.
+    """
+
+    after_workspace_id: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.after_workspace_id, str) or not self.after_workspace_id:
+            raise DueWorkspaceDiscoveryError("continuation cursor must contain bounded text")
+        _safe_id(self.after_workspace_id, "workspace_id")
+
+
+@dataclass(frozen=True, slots=True)
 class DueWorkspaceDiscoveryReceipt:
     """Bounded, non-secret evidence for ONE server-owned discovery pass.
 
@@ -183,6 +203,7 @@ class DueWorkspaceDiscoveryReceipt:
     page_size: int
     pages_read: int
     truncated: bool
+    next_cursor: DueWorkspaceDiscoveryCursor | None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -195,6 +216,7 @@ class DueWorkspaceDiscoveryReceipt:
             "page_size": self.page_size,
             "pages_read": self.pages_read,
             "truncated": self.truncated,
+            "continuation_available": self.next_cursor is not None,
             # Refusals are pinned here so no consumer can misread this receipt
             # as a caller-visible enumeration or as a scheduler activation.
             "caller_supplied_workspace": False,
@@ -261,11 +283,11 @@ class ClawAutomationDueWorkspaceDiscovery:
     def __init__(
         self,
         *,
-        store: _DueWorkspacePageStore,
+        store: _CandidateWorkspacePageStore,
         membership_authority: MembershipAuthority | None,
         trigger_boundary: ClawAutomationTriggerBoundary,
     ) -> None:
-        for required in ("list_due_workspace_page",):
+        for required in ("list_candidate_workspace_page",):
             if not callable(getattr(store, required, None)):
                 raise DueWorkspaceDiscoveryError(
                     f"discovery store must provide {required}()"
@@ -286,14 +308,18 @@ class ClawAutomationDueWorkspaceDiscovery:
         page_size: int = _MAX_DISCOVERY_PAGE_SIZE,
         max_workspaces: int = _MAX_WORKSPACES_PER_PASS,
         trigger_id: str = "srv_due_discovery",
+        continuation: DueWorkspaceDiscoveryCursor | None = None,
     ) -> DueWorkspaceDiscoveryReceipt:
         """Run ONE bounded, server-owned discovery pass.
 
         ``now`` is the single observation instant handed to every workspace's
         trigger, so the pass evaluates exactly one instant and performs no
-        catch-up. ``page_size`` and ``max_workspaces`` are explicit bounds; the
-        pass stops as soon as ``max_workspaces`` has been examined and reports
-        ``truncated=True`` rather than silently widening the scan.
+        catch-up. ``page_size`` and ``max_workspaces`` are explicit bounds.
+        When the pass reaches ``max_workspaces``, every workspace counted as
+        examined has already completed membership revalidation and trigger
+        delegation. The receipt returns a server-side continuation cursor so a
+        later bounded pass can resume strictly after the last processed
+        workspace instead of starving the deterministic tail.
 
         A workspace whose canonical membership cannot be proven is skipped and
         recorded in ``skipped_workspaces`` -- it is never executed and never
@@ -316,13 +342,15 @@ class ClawAutomationDueWorkspaceDiscovery:
         receipts: list[ClawAutomationTriggerReceipt] = []
         claimed: list[str] = []
         seen: set[str] = set()
-        cursor: str | None = None
+        cursor: str | None = (
+            continuation.after_workspace_id if continuation is not None else None
+        )
         pages = 0
         truncated = False
 
         while True:
             page = await _call(
-                self._store.list_due_workspace_page(
+                self._store.list_candidate_workspace_page(
                     page_size=bounded_page,
                     after_workspace_id=cursor,
                 )
@@ -341,14 +369,14 @@ class ClawAutomationDueWorkspaceDiscovery:
                     truncated = True
                     break
                 discovered.append(workspace)
-                if len(discovered) >= bounded_max:
-                    truncated = True
-                    break
                 membership = await self._resolve_membership(workspace, observed_at)
                 if membership is None:
                     # Cannot prove membership: skip. No execution, no
                     # terminalization, no synthetic grant.
                     skipped.append(workspace)
+                    if len(discovered) >= bounded_max:
+                        truncated = True
+                        break
                     continue
                 authorized.append(workspace)
                 receipt = self._trigger_boundary.handle(
@@ -364,6 +392,9 @@ class ClawAutomationDueWorkspaceDiscovery:
                 for run_id in receipt.created_run_ids:
                     if run_id not in claimed:
                         claimed.append(run_id)
+                if len(discovered) >= bounded_max:
+                    truncated = True
+                    break
             if truncated or not advanced:
                 break
             cursor = discovered[-1] if discovered else None
@@ -380,6 +411,11 @@ class ClawAutomationDueWorkspaceDiscovery:
             page_size=bounded_page,
             pages_read=pages,
             truncated=truncated,
+            next_cursor=(
+                DueWorkspaceDiscoveryCursor(discovered[-1])
+                if truncated and discovered
+                else None
+            ),
         )
 
     # --- internals ----------------------------------------------------------
