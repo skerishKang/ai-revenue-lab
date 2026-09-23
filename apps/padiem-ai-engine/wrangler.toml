@@ -64,6 +64,16 @@ binding = "ENGINE_DOCUMENT_STORE"
 database_name = "padiem-engine"
 database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 
+# #2954 ([E9][A6-Document]): canonical Engine evidence retention for
+# DocumentContextEngineService. Same provisioned database as the other Engine D1
+# bindings. Schema 0007 (0007_engine_evidence.sql) is applied by the D1
+# provision gate; app code never creates or mutates it. This declares the
+# repo-owned binding only - it does not provision, migrate or activate storage.
+[[d1_databases]]
+binding = "ENGINE_EVIDENCE_STORE"
+database_name = "padiem-engine"
+database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+
 # #2786 Stage 11-C M3-2: preview-only Agent pilot lane.
 #
 # A dedicated worker with NO services, NO D1 and NO secrets. The production block
