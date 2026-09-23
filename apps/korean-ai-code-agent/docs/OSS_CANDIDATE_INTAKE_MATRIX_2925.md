@@ -30,7 +30,7 @@ RUNTIME_ADOPTION=0
 The canonical #2823 gate emits `ACCEPTED` or `REJECTED` only. This matrix adds a review-level
 outcome on top of the gate receipt:
 
-- `ACCEPTED` — gate receipt `accepted_pinned_candidate`; adoption-eligible but not adopted.
+- `ACCEPTED` — reserved for a candidate whose metadata/license **and source behavior audit** satisfy the gate. None reach this state in this metadata-level slice.
 - `DEFERRED` — gate receipt `explicit_rejection`; review complete, re-evaluable when a named
   condition (license election, worker authority, environment pin) is resolved.
 - `REJECTED` — gate receipt fails closed on policy (for example unknown license status);
@@ -44,9 +44,9 @@ outcome on top of the gate receipt:
 | pyhwp | HWP | repository | `83239f0d3bdf438b2c9f7dcff455a6e841154a39` | AGPL-3.0-or-later | explicit_rejection | DEFERRED |
 | hwp5 (PyPI) | HWP | package | `0.1.0` | claimed MIT, unverifiable | commercial_use_not_allowed_or_unknown | REJECTED |
 | hwpx (PyPI) | HWPX | package | `1.1.1` | claimed MIT, unverifiable | commercial_use_not_allowed_or_unknown | REJECTED |
-| pypdf | PDF | package | `6.19.0` | BSD-3-Clause | accepted_pinned_candidate | ACCEPTED |
+| pypdf | PDF | package | `6.19.0` | BSD-3-Clause | network_behavior_review_required | DEFERRED |
 | pymupdf | PDF | package | `1.28.2` | AGPL-3.0-only (dual Artifex) | explicit_rejection | DEFERRED |
-| pillow | image | package | `12.3.0` | MIT-CMU | accepted_pinned_candidate | ACCEPTED |
+| pillow | image | package | `12.3.0` | MIT-CMU | network_behavior_review_required | DEFERRED |
 | pytesseract | OCR | package | `0.3.13` | Apache-2.0 | explicit_rejection | DEFERRED |
 
 Fixture records live in `tests/test_oss_intake_matrix_2925.py` and are evaluated through the
@@ -153,17 +153,17 @@ license=BSD-3-Clause (https://github.com/py-pdf/pypdf/blob/main/LICENSE; https:/
 commercial_use=ALLOWED
 redistribution=ALLOWED
 transitive_dependencies=REVIEWED: no required runtime dependency on Python >= 3.11; typing_extensions below 3.11; cryptography/PyCryptodome are optional crypto extras not adopted
-network_behavior=REVIEWED, none declared
-filesystem_behavior=REVIEWED, bounded document read/write
-shell_behavior=REVIEWED, none declared
-subprocess_behavior=REVIEWED, none declared
-credential_environment_reads=REVIEWED, no credential or environment reads
+network_behavior=UNKNOWN pending source-level behavior audit
+filesystem_behavior=UNKNOWN pending source-level behavior audit
+shell_behavior=UNKNOWN pending source-level behavior audit
+subprocess_behavior=UNKNOWN pending source-level behavior audit
+credential_environment_reads=UNKNOWN pending source-level behavior audit
 update_strategy=reviewed_updates
 pinning_strategy=immutable
 test_evidence=https://github.com/py-pdf/pypdf/tree/main/tests
 adversarial_evidence=https://github.com/py-pdf/pypdf/issues
 known_limitations=optional crypto extras not adopted; embedded JavaScript and external URI behavior must be re-verified at Skill implementation (#2827)
-decision=ACCEPTED (gate accepted_pinned_candidate): intake-eligible only; runtime adoption remains 0
+decision=DEFERRED (gate network_behavior_review_required): metadata/license intake is acceptable, but source behavior audit is required before adoption eligibility
 ```
 
 ### pymupdf (PDF)
@@ -201,17 +201,17 @@ license=MIT-CMU (https://github.com/python-pillow/Pillow/blob/main/LICENSE; http
 commercial_use=ALLOWED
 redistribution=ALLOWED
 transitive_dependencies=REVIEWED: no required runtime dependencies (only optional docs/tests/fpx extras)
-network_behavior=REVIEWED, none declared
-filesystem_behavior=REVIEWED, bounded image read/write
-shell_behavior=REVIEWED, none declared
-subprocess_behavior=REVIEWED, none declared
-credential_environment_reads=REVIEWED, no credential or environment reads
+network_behavior=UNKNOWN pending source-level behavior audit
+filesystem_behavior=UNKNOWN pending source-level behavior audit
+shell_behavior=UNKNOWN pending source-level behavior audit
+subprocess_behavior=UNKNOWN pending source-level behavior audit
+credential_environment_reads=UNKNOWN pending source-level behavior audit
 update_strategy=reviewed_updates
 pinning_strategy=immutable
 test_evidence=https://github.com/python-pillow/Pillow/tree/main/Tests
 adversarial_evidence=https://github.com/python-pillow/Pillow/issues
 known_limitations=C extension wheel provenance must be reviewed at adoption; accepted raster formats remain bounded by the Skill contract (#2828)
-decision=ACCEPTED (gate accepted_pinned_candidate): intake-eligible only; runtime adoption remains 0
+decision=DEFERRED (gate network_behavior_review_required): metadata/license intake is acceptable, but source behavior audit is required before adoption eligibility
 ```
 
 ### pytesseract (OCR)
@@ -243,9 +243,9 @@ decision=DEFERRED (gate REJECTED): wrapper pin alone is insufficient; environmen
 ```text
 HWP_HWPX_NATIVE_LIBRARY=NO_TRUSTED_CANDIDATE (only placeholder PyPI packages found)
 HWP_HWPX_HANCOM_AUTOMATION=DEFERRED_TO_SEPARATE_WORKER_AUTHORITY (#2826)
-PDF_NATIVE_EXTRACTION=PYPDF_ACCEPTED
+PDF_NATIVE_EXTRACTION=PYPDF_DEFERRED_SOURCE_AUDIT
 PDF_HIGH_PERFORMANCE_BINARY=PYMUPDF_DEFERRED_LICENSE_ELECTION
-IMAGE_DETERMINISTIC=PILLOW_ACCEPTED
+IMAGE_DETERMINISTIC=PILLOW_DEFERRED_SOURCE_AUDIT
 OCR_ENGINE_PIN=PYTECTERACT_DEFERRED_ENVIRONMENT_PIN
 ```
 
