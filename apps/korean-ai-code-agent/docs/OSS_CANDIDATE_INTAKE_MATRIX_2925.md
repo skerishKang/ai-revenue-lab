@@ -52,6 +52,22 @@ outcome on top of the gate receipt:
 Fixture records live in `tests/test_oss_intake_matrix_2925.py` and are evaluated through the
 canonical `OSSIntakeGate`; the gate module itself is not modified by this change.
 
+## Source-audit reconciliation (#2990)
+
+The two candidates this summary marks as source-audit-deferred have since completed that
+audit. The reconciled admissibility/provenance posture — including the remaining
+`NATIVE_WHEEL_PROVENANCE_PENDING` and `jbig2dec` subprocess gaps, and the next bounded
+decisions — is recorded in `OSS_INTAKE_RECONCILIATION_2990.md`.
+
+Reconciliation did **not** change any row, decision, or gate receipt in this file: both
+candidates remain `DEFERRED` and no candidate is upgraded. Disposition authority stays with
+CENTRAL per #2823.
+
+- pypdf 6.19.0 — `SOURCE_AUDIT_PASS_WITH_RESTRICTIONS`
+  (`PYPDF_6_19_0_SOURCE_BEHAVIOR_AUDIT_2930.md`, #2930)
+- Pillow 12.3.0 — `SOURCE_AUDIT_PASS_WITH_RESTRICTIONS`
+  (`PILLOW_12_3_0_SOURCE_AUDIT_2931.md`, #2931)
+
 ## Candidate records
 
 ### pyhwpx (HWP/HWPX via Hancom desktop automation)
