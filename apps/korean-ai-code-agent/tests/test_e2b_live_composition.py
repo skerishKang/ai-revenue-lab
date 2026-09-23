@@ -200,6 +200,16 @@ class ConstructionIsInertTests(unittest.TestCase):
             build_e2b_live_composition()
         self.assertEqual(resolve_spy.calls, 0)
 
+    def test_construction_does_not_load_the_tls_trust_store(self) -> None:
+        with mock.patch.object(
+            transport_module.ssl, "create_default_context",
+            side_effect=AssertionError("TLS trust store loaded during construction"),
+        ) as create_context:
+            composition = build_e2b_live_composition()
+        create_context.assert_not_called()
+        self.assertIs(composition.request_port._context, None)
+
+
     def test_construction_performs_no_sandbox_allocation(self) -> None:
         allocate_spy = ExplodingFunctionSpy("a sandbox was allocated during construction")
         with mock.patch.object(E2BCloudM1Adapter, "allocate", allocate_spy):
