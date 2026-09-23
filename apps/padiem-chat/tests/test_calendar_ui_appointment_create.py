@@ -553,6 +553,15 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
       sandbox.window.PadiemCalendarUI.browserTimezone()
     );
   if (!checks.DATE_DEFAULT_IS_EXPLICIT_ZONE_TODAY) fail("DATE_DEFAULT " + dateField.value);
+  // The zone input is pre-filled with the browser's own zone as an explicit,
+  // editable default. Checked here, before any case below writes to the field,
+  // so the assertion never depends on which zone the host machine is in.
+  checks.TIME_ZONE_FIELD_IS_PRE_FILLED_WITH_THE_BROWSER_ZONE =
+    typeof zoneField.value === "string" && zoneField.value.length > 0 &&
+    zoneField.value === sandbox.window.PadiemCalendarUI.browserTimezone();
+  if (!checks.TIME_ZONE_FIELD_IS_PRE_FILLED_WITH_THE_BROWSER_ZONE) {
+    fail("ZONE_PREFILL " + JSON.stringify({ value: zoneField.value, browser: sandbox.window.PadiemCalendarUI.browserTimezone() }));
+  }
 
   // 2) date_only: the date alone is sent, and no time field is visible.
   await changeType("date_only");
@@ -617,10 +626,6 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
   checks.TIMED_REVEALS_TIME_FIELDS =
     zoneWrapper.hidden === false && startWrapper.hidden === false && endWrapper.hidden === false;
   if (!checks.TIMED_REVEALS_TIME_FIELDS) fail("TIMED_HIDDEN");
-  checks.TIMED_ZONE_FIELD_DEFAULTS_TO_THE_BROWSER_ZONE =
-    typeof zoneField.value === "string" && zoneField.value.length > 0 &&
-    zoneField.value === sandbox.window.PadiemCalendarUI.browserTimezone();
-  if (!checks.TIMED_ZONE_FIELD_DEFAULTS_TO_THE_BROWSER_ZONE) fail("ZONE_DEFAULT " + zoneField.value);
 
   before = requests.length;
   title.value = "A사 계약 미팅";
@@ -687,6 +692,29 @@ vm.runInContext(CALENDAR_JS, sandbox, { filename: "calendar.js" });
   checks.ZONE_COMES_FROM_THE_FIELD_NOT_THE_BROWSER =
     body.timezone === "Europe/Berlin" && body.start_at === "2026-07-01T12:00:00+02:00";
   if (!checks.ZONE_COMES_FROM_THE_FIELD_NOT_THE_BROWSER) fail("BERLIN " + JSON.stringify(body));
+
+  // 6b) The explicitly typed zone wins even when it is NOT the browser's zone.
+  // The comparison zone is picked from the host's own zone, so this holds on any
+  // CI runner (whose zone is UTC) and on any developer machine alike.
+  const browserZone = sandbox.window.PadiemCalendarUI.browserTimezone();
+  const otherZone = browserZone === "Asia/Seoul" ? "America/New_York" : "Asia/Seoul";
+  const otherOffset = otherZone === "Asia/Seoul" ? "+09:00" : "-05:00";
+  before = requests.length;
+  title.value = "다른 시간대 확인";
+  dateField.value = "2026-01-15";
+  zoneField.value = otherZone;
+  startField.value = "09:00";
+  endField.value = "";
+  await submit();
+  await tick();
+  body = JSON.parse(postOf(before).body);
+  checks.EXPLICIT_ZONE_WINS_OVER_THE_BROWSER_DEFAULT =
+    otherZone !== browserZone &&
+    body.timezone === otherZone &&
+    body.start_at === "2026-01-15T09:00:00" + otherOffset;
+  if (!checks.EXPLICIT_ZONE_WINS_OVER_THE_BROWSER_DEFAULT) {
+    fail("ZONE_WINS " + JSON.stringify({ body: body, browser: browserZone, other: otherZone }));
+  }
 
   // 7) Pre-request rejections: nothing is sent and nothing claims success.
   async function rejectedWithoutRequest(name, setup, expectedText) {
@@ -824,12 +852,13 @@ _HARNESS_CHECKS = (
     "ALL_DAY_HIDES_TIME_FIELDS",
     "ALL_DAY_BODY_HAS_NO_FAKE_TIME",
     "TIMED_REVEALS_TIME_FIELDS",
-    "TIMED_ZONE_FIELD_DEFAULTS_TO_THE_BROWSER_ZONE",
+    "TIME_ZONE_FIELD_IS_PRE_FILLED_WITH_THE_BROWSER_ZONE",
     "TIMED_BODY_IS_EXPLICIT_AND_OFFSET_BEARING",
     "TIMED_START_AND_END_ALWAYS_CARRY_AN_OFFSET",
     "SUCCESS_CONFIRMATION_IS_TEXT_AND_TITLE_CLEARS",
     "TIMED_WITHOUT_END_IS_ACCEPTED",
     "ZONE_COMES_FROM_THE_FIELD_NOT_THE_BROWSER",
+    "EXPLICIT_ZONE_WINS_OVER_THE_BROWSER_DEFAULT",
     "TIMED_MISSING_TIMEZONE_IS_REJECTED_WITHOUT_A_REQUEST",
     "TIMED_INVALID_TIMEZONE_IS_REJECTED_WITHOUT_A_REQUEST",
     "TIMED_MISSING_START_IS_REJECTED_WITHOUT_A_REQUEST",
