@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import os
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
@@ -33,8 +34,14 @@ from padiem_ai_core.document_normalization import (
     extract_hwpx_text,
     extract_pptx_text,
     normalize_text_document,
+    parse_hwpx_sections,
     validate_document_identity,
     validate_ooxml_archive,
+)
+import padiem_ai_core.document_normalization as document_normalization
+from padiem_ai_core.hwpx_package_serializer import (
+    HwpxPackageSection,
+    deserialize_hwpx_package,
 )
 
 PDF_MIME = "application/pdf"
@@ -365,6 +372,140 @@ def test_hwpx_encrypted_archive_fails_closed_and_legacy_hwp_stays_unsupported() 
     with pytest.raises(DocumentNormalizationError) as extension:
         extract_binary_document(name="notes.txt", media_type=HWPX_MIME, payload=b"PK\x03\x04")
     assert extension.value.code == "media_extension_mismatch"
+
+
+# --------------------------------------------------------------------------- #
+# #2966: parse_hwpx_sections is now the single HWPX archive-and-XML read
+# authority. These cases pin the facts it reports, the flat projection it feeds,
+# and the fact that the flat path no longer walks an archive of its own.
+# --------------------------------------------------------------------------- #
+
+_HWPX_NS = (
+    'xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+    'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph"'
+)
+
+
+def _hwpx_raw_section(body: str) -> bytes:
+    return f'<?xml version="1.0" encoding="UTF-8"?><hs:sec {_HWPX_NS}>{body}</hs:sec>'.encode()
+
+
+def _hwpx_para(text: str) -> str:
+    return f"<hp:p><hp:runs><hp:t>{text}</hp:t></hp:runs></hp:p>"
+
+
+def _hwpx_payload(*section_bodies: bytes) -> bytes:
+    entries = {"mimetype": b"application/hwp+zip"}
+    entries.update(
+        {f"Contents/section{index}.xml": body for index, body in enumerate(section_bodies, start=1)}
+    )
+    return _zip_bytes(entries)
+
+
+def test_parse_hwpx_sections_reports_shape_the_flat_text_flattens() -> None:
+    table = (
+        _hwpx_para("intro")
+        + "<hp:p><hp:tbl><hp:tr><hp:tc>"
+        + _hwpx_para("cell-a")
+        + "</hp:tc></hp:tr></hp:tbl></hp:p>"
+    )
+    payload = _hwpx_payload(_hwpx_raw_section(table))
+    (section,) = parse_hwpx_sections(payload)
+    assert [(item.text, item.text_nodes, item.holds_nested_paragraph) for item in section.paragraphs] == [
+        ("intro", 1, False),
+        ("cell-a", 1, True),
+        ("cell-a", 1, False),
+    ]
+    assert section.root_tag.endswith("}sec")
+    assert section.unsupported_nodes == 3
+    assert section.has_carriage_return is False
+
+
+def test_parse_hwpx_sections_orders_by_section_number_not_member_name() -> None:
+    sequential = _hwpx_payload(
+        _hwpx_section_xml("one"),
+        _hwpx_section_xml("two"),
+        _hwpx_section_xml("three"),
+    )
+    entries = {
+        "mimetype": b"application/hwp+zip",
+        "Contents/section1.xml": _hwpx_section_xml("one"),
+        "Contents/section10.xml": _hwpx_section_xml("ten"),
+        "Contents/section2.xml": _hwpx_section_xml("two"),
+    }
+    assert [section.index for section in parse_hwpx_sections(_zip_bytes(entries))] == [1, 2, 10]
+    assert [section.index for section in parse_hwpx_sections(sequential)] == [1, 2, 3]
+
+
+def test_parse_hwpx_sections_flags_a_carriage_return_the_parser_would_erase() -> None:
+    with_return = _hwpx_payload(_hwpx_raw_section(_hwpx_para("일\r\n이")))
+    without_return = _hwpx_payload(_hwpx_raw_section(_hwpx_para("일\n이")))
+    assert parse_hwpx_sections(with_return)[0].has_carriage_return is True
+    assert parse_hwpx_sections(without_return)[0].has_carriage_return is False
+    # Both still flatten: the flat authority never promised byte-exact control
+    # characters, and its behaviour must not move.
+    assert extract_hwpx_text(with_return) == extract_hwpx_text(without_return) == "일\n이"
+
+
+def test_flat_hwpx_text_projection_is_pinned_after_the_factoring() -> None:
+    cases: list[tuple[bytes, str]] = [
+        (_hwpx_payload(_hwpx_section_xml("alone")), "alone"),
+        (_hwpx_payload(_hwpx_section_xml("a", "b")), "a\nb"),
+        (_hwpx_payload(_hwpx_section_xml("", "b")), "b"),
+        (_hwpx_payload(_hwpx_section_xml("  a  ", "  b  ")), "a  \n  b"),
+        (_hwpx_payload(_hwpx_section_xml(), _hwpx_section_xml("본문")), "본문"),
+        (_hwpx_payload(_hwpx_raw_section("<hp:p><hp:runs><hp:t>앞</hp:t></hp:runs>"
+                                         "<hp:runs><hp:t>뒤</hp:t></hp:runs></hp:p>")), "앞뒤"),
+        (_hwpx_payload(_hwpx_raw_section("<hp:p/>" + _hwpx_para("본문"))), "본문"),
+        (_hwpx_payload(_hwpx_raw_section('<hp:p><hp:runs><hp:img href="rId1"/></hp:runs></hp:p>'
+                                         + _hwpx_para("본문"))), "본문"),
+        (_hwpx_payload(_hwpx_raw_section("<hp:p><hp:sub>" + _hwpx_para("a") + _hwpx_para("b")
+                                         + "</hp:sub>tail</hp:p>")), "a\nb"),
+        (_hwpx_payload(_hwpx_raw_section(_hwpx_para("일\r\n이") + _hwpx_para("둘"))), "일\n이" + "\n" + "둘"),
+    ]
+    for payload, expected in cases:
+        assert extract_hwpx_text(payload) == expected
+
+    # A paragraph that carries text directly instead of through hp:t has always
+    # produced nothing, and the factoring keeps it that way.
+    direct_text = _hwpx_payload(
+        _hwpx_raw_section("<hp:p><hp:sub><hp:p>a</hp:p><hp:p>b</hp:p></hp:sub>tail</hp:p>")
+    )
+    with pytest.raises(DocumentNormalizationError) as unreadable:
+        extract_hwpx_text(direct_text)
+    assert unreadable.value.code == "hwpx_empty"
+
+
+def test_extract_hwpx_text_keeps_no_archive_or_xml_walk_of_its_own() -> None:
+    source = inspect.getsource(document_normalization)
+    flat_path = source.split("def extract_hwpx_text")[1].split("\ndef ")[0]
+    for forbidden in ("ZipFile(", "namelist(", "_parse_xml(", "validate_ooxml_archive(", "archive.read("):
+        assert forbidden not in flat_path, forbidden
+    assert "parse_hwpx_sections(" in flat_path
+
+
+def test_both_hwpx_projections_route_through_the_same_single_parse_path(monkeypatch: pytest.MonkeyPatch) -> None:
+    import padiem_ai_core.hwpx_package_serializer as serializer_module
+
+    payload = _hwpx_payload(_hwpx_section_xml("단일 경로"), _hwpx_section_xml("둘째"))
+    calls: list[bytes] = []
+    real = document_normalization.parse_hwpx_sections
+
+    def counting(parsed_payload: bytes):
+        calls.append(parsed_payload)
+        return real(parsed_payload)
+
+    monkeypatch.setattr(document_normalization, "parse_hwpx_sections", counting)
+    monkeypatch.setattr(serializer_module, "parse_hwpx_sections", counting)
+
+    assert document_normalization.extract_hwpx_text(payload) == "단일 경로" + "\n" + "둘째"
+    assert len(calls) == 1
+    assert deserialize_hwpx_package(payload).sections == (
+        HwpxPackageSection(paragraphs=("단일 경로",)),
+        HwpxPackageSection(paragraphs=("둘째",)),
+    )
+    assert len(calls) == 2
+    assert calls == [payload, payload]
 
 
 def test_ooxml_malformed_missing_dtd_encryption_and_paths_fail_closed() -> None:

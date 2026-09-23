@@ -122,6 +122,7 @@ from app.auth_session_scope_authority import (
     AuthSessionScopeAuthority,
     CloudflareControlPlaneAuthSessionClient,
 )
+from app.evidence_storage_d1 import CloudflareD1EvidenceStoragePort
 from app.trusted_document_resolver import DurableDocumentStoragePort, TrustedDocumentResolver
 
 ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
@@ -131,6 +132,7 @@ ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
 # (CALENDAR_ENGINE_DIRECT_REFRESH_PRODUCTION_FALLBACK=NO).
 ENGINE_CONNECTOR_GRANTS_BINDING = "ENGINE_CONNECTOR_GRANTS"
 ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
+ENGINE_EVIDENCE_STORE_BINDING = "ENGINE_EVIDENCE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 # Telegram promotion (#2353): the bot token is a Worker secret; the paired-chat
@@ -225,6 +227,24 @@ def _document_authorities_for_env(
     except (TypeError, ValueError):
         return None, None
     return store, resolver
+
+
+def _evidence_storage_for_env(env: Any) -> CloudflareD1EvidenceStoragePort | None:
+    """Resolve the deployment-owned durable evidence storage port (#2954).
+
+    The ``ENGINE_EVIDENCE_STORE`` D1 binding and the ``0007_engine_evidence``
+    schema are provisioned by the deployment owner; app code never creates or
+    mutates schema. A missing or unusable binding yields ``None`` so the
+    document context route keeps failing closed with 503
+    ``evidence_storage_unavailable`` instead of retaining evidence in memory.
+    """
+    binding = legacy_worker._binding_value(env, ENGINE_EVIDENCE_STORE_BINDING)
+    if binding is None:
+        return None
+    try:
+        return CloudflareD1EvidenceStoragePort(binding)
+    except (TypeError, ValueError):
+        return None
 
 
 def _research_service_for_env(
@@ -633,6 +653,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
     document_byte_store, document_resolver = _document_authorities_for_env(env)
+    evidence_storage = _evidence_storage_for_env(env)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
             RuntimeError("unreachable without B14 service binding")
@@ -668,13 +689,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 image_byte_store=image_byte_store,
                 scope_authority=scope_authority,
             ),
-            # #2764 durable document lineage: the context service consumes the
-            # composed resolver and the admission service the same scoped
-            # store; both fail closed on every missing authority. Evidence
-            # retention stays separately gated (document_projection DEFERRED).
+            # #2764/#2954 durable document lineage: the context service consumes the
+            # composed resolver, the admission service the same scoped store,
+            # and context retains durable evidence via CloudflareD1EvidenceStoragePort.
+            # All fail closed on every missing authority.
             documents=DocumentContextEngineService(
                 scope_authority=scope_authority,
                 document_resolver=document_resolver,
+                evidence_storage=evidence_storage,
             ),
             document_admission=DocumentAdmissionEngineService(
                 document_byte_store=document_byte_store,
@@ -772,13 +794,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             image_byte_store=image_byte_store,
             scope_authority=scope_authority,
         ),
-        # #2764 durable document lineage: the context service consumes the
+        # #2764/#2954 durable document lineage: the context service consumes the
         # composed resolver and the admission service the same scoped store;
-        # both fail closed on every missing authority. Evidence retention
-        # stays separately gated (document_projection DEFERRED).
+        # both fail closed on every missing authority. Evidence retention is
+        # wired via the deployment-owned ENGINE_EVIDENCE_STORE (#2954).
         documents=DocumentContextEngineService(
             scope_authority=scope_authority,
             document_resolver=document_resolver,
+            evidence_storage=evidence_storage,
         ),
         document_admission=DocumentAdmissionEngineService(
             document_byte_store=document_byte_store,

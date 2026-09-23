@@ -84,6 +84,7 @@ from .control_plane_identity_shadow import (
     resolve_refreshed_session,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .claw_memory_routes import _resolve_memory_workspace
 from .history import (
     MAX_CLAW_RUNS,
     MAX_RUN_RESULT_SUMMARY_CHARS,
@@ -119,6 +120,12 @@ from kagent.p01_adapter import (
     P01_FAILURE_DETAIL_TRANSPORT,
     P01_FAILURE_DETAIL_UNKNOWN,
     P01_FAILURE_DETAILS,
+)
+from kagent.p01_approval_continuation import (
+    OWNER_APPROVAL_DECISIONS,
+    P01ApprovalContinuationService,
+    build_first_party_decision_submission,
+    reconstruct_trusted_resume_request,
 )
 from kagent.p01_run_flow import create_claw_run
 from .worker_config import P01_COMPOSITION_DIAGNOSTICS
@@ -171,6 +178,17 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
     )
 
 
+def _error_with_detail(
+    status_code: int, code: str, message: str, detail: str
+) -> JSONResponse:
+    """One bounded failure response carrying only a closed-set safe detail code."""
+    return JSONResponse(
+        {"ok": False, "error": {"code": code, "message": message, "detail": detail}},
+        status_code=status_code,
+        headers=_NO_STORE_HEADERS,
+    )
+
+
 _P01_CONTRACT_ERROR_CODES = frozenset(
     {
         "invalid_p01_result",
@@ -179,6 +197,14 @@ _P01_CONTRACT_ERROR_CODES = frozenset(
         "p01_result_correlation_mismatch",
         "unsupported_result_field",
         "unsupported_result_approval_pause",
+        # #2946 Engine approval-pause wire fail-closed codes.
+        "missing_continuation_ref",
+        "malformed_continuation_ref",
+        "continuation_without_pause",
+        "pause_without_lifecycle_evidence",
+        "unknown_extra_authority_fields",
+        "correlation_mismatch",
+        "invalid_engine_result",
     }
 )
 _P01_DOWNSTREAM_ERROR_CODES = frozenset(
@@ -597,6 +623,79 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         )
     _clear_reservation()
 
+    # #2946: bounded WAITING_APPROVAL projection. The Engine-issued
+    # continuation_ref is opaque and is echoed only as that identity; no
+    # terminal success claim, no fabricated answer, no approval decision, and
+    # no resume/cancel side effect on this route.
+    if outcome.projection.status.value == "waiting_approval":
+        waiting_ref = getattr(outcome, "continuation_ref", None)
+        if not isinstance(waiting_ref, str) or not waiting_ref:
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "engine_execution_failed",
+                        "message": "Engine 실행이 완료되지 않았습니다.",
+                        "detail": P01_FAILURE_DETAIL_CONTRACT,
+                    },
+                },
+                status_code=502,
+                headers=_NO_STORE_HEADERS,
+            )
+        waiting_title = (
+            f"[{channel.value.upper()}] {action.value}: {sender_hint or '미지정'}"
+        )
+        waiting_result: dict[str, Any] = {
+            "request_id": run.run_id,
+            "channel": channel.value,
+            "action": action.value,
+            "title": waiting_title,
+            "result_text": None,
+            "status": "waiting_approval",
+            "approval_required": True,
+            "continuation_ref": waiting_ref,
+            "p01_run_id": outcome.p01_run_id,
+            "p01_event_count": outcome.p01_event_count,
+            "direct_kakao_send": False,
+            "direct_sms_send": False,
+            "connector_required": False,
+        }
+        if session_conversation_id is not None:
+            waiting_result["conversation_id"] = session_conversation_id
+        history_failure = await _record_claw_run_history(
+            request,
+            run_id=run.run_id,
+            channel=channel.value,
+            action=action.value,
+            title=waiting_title,
+            status="waiting_approval",
+            result_text=None,
+            artifact=None,
+            conversation_id=session_conversation_id,
+        )
+        if history_failure is not None:
+            return history_failure
+        # #2956: one owner-scoped durable approval handoff after canonical
+        # history success. Server-derived owner/workspace only; the browser
+        # never supplies resume authority fields.
+        handoff_failure = await _record_claw_approval_handoff(
+            request,
+            run_id=run.run_id,
+            continuation_ref=waiting_ref,
+            pause_id=getattr(outcome, "pause_id", None),
+            pause_expires_at=getattr(outcome, "pause_expires_at", None),
+            trusted_request=getattr(outcome, "trusted_request", None),
+            conversation_id=session_conversation_id,
+            p01_run_id=getattr(outcome, "p01_run_id", None),
+        )
+        if handoff_failure is not None:
+            return handoff_failure
+        return JSONResponse(
+            {"ok": True, "result": waiting_result},
+            status_code=200,
+            headers=_NO_STORE_HEADERS,
+        )
+
     if outcome.projection.status.value != "completed" or not outcome.answer:
         return JSONResponse(
             {
@@ -803,6 +902,269 @@ async def _record_claw_run_history(
     except Exception:
         return _error(503, "run_history_write_failed", "실행 이력 저장에 실패했습니다.")
     return None
+
+
+async def _record_claw_approval_handoff(
+    request: Request,
+    *,
+    run_id: str,
+    continuation_ref: str,
+    pause_id: Any,
+    pause_expires_at: Any,
+    trusted_request: Any,
+    conversation_id: str | None = None,
+    p01_run_id: Any = None,
+) -> JSONResponse | None:
+    """Persist one owner-scoped approval handoff after WAITING history success (#2956).
+
+    Fail-closed: a store that advertises ``record_claw_approval_handoff`` but
+    raises is a storage failure and returns a stable public-safe 503. A store
+    that does not implement the capability (a presence-only auth stub) is a
+    no-op, and an anonymous run has no owner to record against, so both return
+    ``None``. Missing pause identity or an incomplete trusted request fails
+    closed before any write so a half-formed handoff never reaches storage.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None
+    history_store = getattr(request.app.state, "history_store", None)
+    record = getattr(history_store, "record_claw_approval_handoff", None)
+    if record is None:
+        return None
+    if (
+        not isinstance(continuation_ref, str)
+        or not continuation_ref
+        or not isinstance(pause_id, str)
+        or not pause_id
+        or not isinstance(pause_expires_at, str)
+        or not pause_expires_at
+        or not isinstance(trusted_request, dict)
+        or not trusted_request
+    ):
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행이 완료되지 않았습니다.",
+                    "detail": P01_FAILURE_DETAIL_CONTRACT,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
+    workspace_id: str | None = None
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "approval_handoff_write_failed", "승인 인계 저장에 실패했습니다.")
+    try:
+        outcome_record = record(
+            user_id=uid,
+            run_id=run_id,
+            continuation_ref=continuation_ref,
+            pause_id=pause_id,
+            pause_expires_at=pause_expires_at,
+            trusted_request=trusted_request,
+            workspace_id=workspace_id,
+            conversation_id=conversation_id,
+            **({"p01_run_id": p01_run_id} if isinstance(p01_run_id, str) and p01_run_id else {}),
+        )
+        if inspect.isawaitable(outcome_record):
+            await outcome_record
+    except Exception:
+        return _error(503, "approval_handoff_write_failed", "승인 인계 저장에 실패했습니다.")
+    return None
+
+
+MAX_APPROVAL_DECISION_BODY_BYTES = 8 * 1024  # 8 KiB: two bounded fields only
+_APPROVAL_DECISION_BODY_KEYS = frozenset({"run_id", "decision"})
+_APPROVAL_NOT_AVAILABLE_MESSAGE = "승인 요청을 확인할 수 없습니다."
+
+
+async def claw_approval_decision(request: Request) -> JSONResponse:
+    """Consume one authenticated owner approve/deny through the canonical lane (#2961).
+
+    The caller supplies exactly ``run_id`` + ``decision``. Owner and workspace
+    are server-derived from the existing B54/B62 session authority, the trusted
+    P01 request comes only from the #2956 durable handoff, and the Engine stays
+    the only approval verifier and continuation authority. A foreign, expired,
+    consumed, or malformed handoff is one bounded non-disclosing result, and no
+    Engine call is attempted until the stored context reconstructs cleanly.
+    """
+    content_type = (request.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+    if content_type != "application/json":
+        return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+
+    raw_body = await request.body()
+    if not raw_body:
+        return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
+    if len(raw_body) > MAX_APPROVAL_DECISION_BODY_BYTES:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
+    try:
+        data = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return _error(400, "invalid_json", "유효한 JSON 형식이 아닙니다.")
+    if not isinstance(data, dict):
+        return _error(400, "invalid_payload", "요청 데이터는 객체여야 합니다.")
+    # Caller authority is exactly two fields. Anything else — a continuation_ref,
+    # pause/app/session/trace/workspace/model/tool value, or a decision-evidence
+    # field — is refused rather than merged, so it can never become authority.
+    if set(data) - _APPROVAL_DECISION_BODY_KEYS:
+        return _error(
+            400,
+            "unexpected_approval_authority_field",
+            "승인 요청에 허용되지 않는 필드가 있습니다.",
+        )
+    run_id = data.get("run_id")
+    if not isinstance(run_id, str) or not run_id.strip() or len(run_id.strip()) > 128:
+        return _error(400, "invalid_run_id", "run_id가 올바르지 않습니다.")
+    run_id = run_id.strip()
+    decision = data.get("decision")
+    if not isinstance(decision, str) or decision not in OWNER_APPROVAL_DECISIONS:
+        return _error(422, "invalid_approval_decision", "승인 결정이 올바르지 않습니다.")
+
+    history_store = getattr(request.app.state, "history_store", None)
+    load = getattr(history_store, "load_claw_approval_handoff", None)
+    if load is None:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    try:
+        handoff = load(user_id=uid, run_id=run_id, workspace_id=workspace_id)
+        if inspect.isawaitable(handoff):
+            handoff = await handoff
+    except Exception:
+        return _error(503, "approval_handoff_unavailable", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+    if not isinstance(handoff, dict):
+        return _error(404, "approval_not_available", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
+    try:
+        trusted = reconstruct_trusted_resume_request(
+            trusted_request=handoff.get("trusted_request"),
+            run_id=run_id,
+            p01_run_id=handoff.get("p01_run_id"),
+        )
+        submission = build_first_party_decision_submission(
+            pause_id=handoff.get("pause_id"),
+            decision=decision,
+            owner_id=uid,
+        )
+    except P01AdapterError:
+        return _error(
+            409,
+            "approval_handoff_unusable",
+            "승인 컨텍스트를 안전하게 복원할 수 없습니다.",
+        )
+
+    continuation_client = getattr(request.app.state, "claw_p01_continuation_client", None)
+    if continuation_client is None:
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_not_configured",
+                    "message": "Engine 클라이언트가 설정되지 않았습니다.",
+                    "detail": _safe_composition_diagnostic(request),
+                },
+            },
+            status_code=503,
+            headers=_NO_STORE_HEADERS,
+        )
+
+    try:
+        outcome = await P01ApprovalContinuationService(continuation_client).decide(
+            run_id=run_id,
+            continuation_ref=str(handoff.get("continuation_ref") or ""),
+            request=trusted,
+            submission=submission,
+        )
+    except P01AdapterError as exc:
+        if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
+            # The Engine rejected this submission without consuming the stored
+            # continuation: the handoff stays active and the run keeps waiting.
+            return _error(
+                409,
+                "approval_decision_rejected",
+                "승인 결정을 처리하지 못했습니다. 다시 시도해 주세요.",
+            )
+        return _error_with_detail(
+            502,
+            "engine_execution_failed",
+            "Engine 승인 처리에 실패했습니다.",
+            _safe_engine_failure_detail(exc),
+        )
+    except Exception:
+        return _error(502, "engine_execution_failed", "Engine 승인 처리에 실패했습니다.")
+
+    # Every path below has proven Engine consumption (commit) or canonical
+    # denial, so the decided handoff becomes unusable only now.
+    consume = getattr(history_store, "consume_claw_approval_handoff", None)
+    if consume is not None:
+        try:
+            consumed = consume(user_id=uid, run_id=run_id, workspace_id=workspace_id)
+            if inspect.isawaitable(consumed):
+                consumed = await consumed
+        except Exception:
+            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+        if consumed is not True:
+            return _error(503, "approval_handoff_unavailable", "승인 상태를 저장하지 못했습니다.")
+
+    status = outcome.projection.status.value
+    if outcome.next_continuation_ref is not None:
+        handoff_failure = await _record_claw_approval_handoff(
+            request,
+            run_id=run_id,
+            continuation_ref=outcome.next_continuation_ref,
+            pause_id=outcome.next_pause_id,
+            pause_expires_at=outcome.next_pause_expires_at,
+            trusted_request=(
+                dict(outcome.next_trusted_request)
+                if outcome.next_trusted_request is not None
+                else None
+            ),
+            conversation_id=handoff.get("conversation_id"),
+            p01_run_id=outcome.next_p01_run_id,
+        )
+        if handoff_failure is not None:
+            return handoff_failure
+
+    result_text = outcome.answer
+    if result_text is None and status == "cancelled":
+        result_text = "승인이 거절되었습니다."
+    update = getattr(history_store, "update_claw_run_status", None)
+    if update is not None:
+        try:
+            updated = update(
+                user_id=uid,
+                run_id=run_id,
+                status=status,
+                result_summary=result_text,
+            )
+            if inspect.isawaitable(updated):
+                updated = await updated
+        except Exception:
+            return _error(503, "run_history_write_failed", "실행 이력 저장에 실패했습니다.")
+        if updated is False:
+            return _error(404, "approval_not_available", _APPROVAL_NOT_AVAILABLE_MESSAGE)
+
+    result: dict[str, Any] = {
+        "run_id": run_id,
+        "status": status,
+        "approval_required": status == "waiting_approval",
+        "result_text": result_text,
+    }
+    if outcome.next_continuation_ref is not None:
+        result["continuation_ref"] = outcome.next_continuation_ref
+    conversation_id = handoff.get("conversation_id")
+    if isinstance(conversation_id, str) and conversation_id:
+        result["conversation_id"] = conversation_id
+    return JSONResponse({"ok": True, "result": result}, status_code=200, headers=_NO_STORE_HEADERS)
 
 
 async def claw_runs_history(request: Request) -> JSONResponse:

@@ -184,8 +184,8 @@ def test_binding_alias_exact_and_store_import_polarity_composed_in_identity_only
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
     assert 'binding = "ENGINE_DOCUMENT_STORE"' in wrangler
     assert (
-        wrangler.count('database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"') == 5
-    ), "all five Engine D1 aliases share the one provisioned database"
+        wrangler.count('database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"') == 6
+    ), "all six Engine D1 aliases share the one provisioned database"
     # #2764: the canonical composition moved INTO the identity worker; the
     # legacy worker stays unwidened. Only worker_identity may reference the
     # durable document store, and app-layer modules still never hard-code the

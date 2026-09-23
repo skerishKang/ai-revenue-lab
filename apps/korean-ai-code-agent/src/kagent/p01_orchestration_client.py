@@ -38,6 +38,11 @@ from .p01_adapter import (
     P01_FAILURE_DETAIL_DOWNSTREAM,
     P01_FAILURE_DETAIL_TRANSPORT,
 )
+from .p01_approval_pause_transport import (
+    EngineApprovalPauseWireError,
+    P01PausedWireResult,
+    split_engine_approval_pause_wire,
+)
 
 
 def _padiem_executable_route_ids() -> frozenset[str]:
@@ -138,7 +143,9 @@ class P01EngineOrchestrationClient:
             )
         self._client = client
 
-    async def run(self, request: OrchestrationRequest) -> OrchestrationResult:
+    async def run(
+        self, request: OrchestrationRequest
+    ) -> OrchestrationResult | P01PausedWireResult:
         payload = self._build_payload(request)
         try:
             raw = await self._client.orchestrate(payload)
@@ -152,7 +159,19 @@ class P01EngineOrchestrationClient:
                 failure_detail=_engine_failure_detail(exc.code),
             ) from exc
         try:
-            result = orchestration_result_from_public(raw)
+            # #2946: Engine approval-pause keys are projected out here so the
+            # generic Core public parser can reconstruct the result unchanged.
+            # The parser itself stays fail-closed and is never weakened.
+            core_payload, approval_pause_wire = split_engine_approval_pause_wire(raw)
+        except EngineApprovalPauseWireError as exc:
+            raise P01AdapterError(
+                exc.code,
+                "P01 orchestration result carries an unusable Engine approval-pause wire.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+            ) from exc
+        try:
+            result = orchestration_result_from_public(core_payload)
         except OrchestrationError as exc:
             # A wire response was received, so execution was dispatched.
             raise P01AdapterError(
@@ -162,6 +181,8 @@ class P01EngineOrchestrationClient:
                 failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             ) from exc
         self._validate_correlation(request, result)
+        if approval_pause_wire is not None:
+            return P01PausedWireResult(result=result, wire=approval_pause_wire)
         return result
 
     def _build_payload(self, request: OrchestrationRequest) -> dict[str, Any]:

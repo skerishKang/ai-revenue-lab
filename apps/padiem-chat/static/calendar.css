@@ -1,9 +1,10 @@
-/* #2834 A3 — Padiem Calendar read-only surface (Today / Upcoming).
+/* #2834 A3/A4 — Padiem Calendar surface (Today / Upcoming + work-record form).
  *
  * State gating mirrors claw-workspace.css: the calendar view is owned by
  * .app-shell[data-state="calendar"] and is hidden everywhere else. The shared
- * conversation column and the bottom composer are hidden in this read-only
- * surface, while the sidebar stays available for navigation.
+ * conversation column and the bottom composer are hidden in this surface,
+ * while the sidebar stays available for navigation. The single write control is
+ * the native work-record form.
  */
 
 .calendar-view {
@@ -125,6 +126,41 @@ html[data-theme="padiem-glass"] .sidebar {
   color: var(--accent-strong, #2f6f99);
   font-weight: 700;
   opacity: 1;
+}
+
+.calendar-range-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+}
+
+.calendar-range-button,
+.calendar-range-label {
+  border: 1px solid var(--line, #e3e3e9);
+  background: var(--card-bg, #fafafa);
+  color: inherit;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.calendar-range-label {
+  min-width: 190px;
+  text-align: center;
+  cursor: default;
+}
+
+.calendar-range-button:hover {
+  border-color: var(--accent-strong, #2f6f99);
+}
+
+.calendar-range-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 /* ── Panel states (loading / error / empty / ready) ──────────────────── */
@@ -255,6 +291,115 @@ html[data-theme="padiem-glass"] .sidebar {
   overflow-wrap: anywhere;
 }
 
+/* ── Work-record form (#2834 A4 native work-log create) ──────────────── */
+
+.calendar-record {
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 12px;
+  background: var(--card-bg, #fafafa);
+  padding: 10px 14px;
+}
+
+.calendar-record-summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-strong, #2f6f99);
+}
+
+.calendar-record-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.calendar-record-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.calendar-record-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.calendar-record-field:nth-of-type(3) {
+  flex-basis: 100%;
+}
+
+/* The class rule above sets display, so [hidden] must win explicitly: the
+   time-zone / start / end fields are hidden for date-only and all-day. */
+.calendar-record-field[hidden] {
+  display: none;
+}
+
+.calendar-appointment-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.calendar-record-field input,
+.calendar-record-field textarea {
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 10px;
+  background: var(--paper, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calendar-record-field textarea {
+  resize: vertical;
+}
+
+.calendar-record-actions {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.calendar-record-submit {
+  border: 1px solid var(--accent-strong, #2f6f99);
+  background: rgba(121, 188, 231, .18);
+  color: var(--accent-strong, #2f6f99);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.calendar-record-submit[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.calendar-record-status {
+  margin: 10px 0 0;
+  font-size: 12px;
+}
+
+.calendar-record-status[data-record-status="created"] {
+  color: var(--accent-strong, #2f6f99);
+}
+
+.calendar-record-status[data-record-status="invalid"],
+.calendar-record-status[data-record-status="unauthorized"],
+.calendar-record-status[data-record-status="unavailable"] {
+  color: #d66c6c;
+}
+
 /* ── Sidebar entry ───────────────────────────────────────────────────── */
 
 #calendarNavButton {
@@ -284,5 +429,19 @@ html[data-theme="padiem-glass"] #calendarNavButton[aria-current="page"] {
 @media (max-width: 720px) {
   .calendar-view {
     padding: 20px 16px 32px;
+  }
+
+  .calendar-tabs {
+    overflow-x: auto;
+  }
+
+  .calendar-tab {
+    flex: 0 0 auto;
+    padding-inline: 10px;
+  }
+
+  .calendar-range-label {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 }

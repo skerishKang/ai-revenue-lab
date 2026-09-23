@@ -122,7 +122,7 @@ class IdentityRuntime:
         self.storage = _FakeDurableStorage()
         ctx = types.SimpleNamespace(storage=self.storage)
         self.env = types.SimpleNamespace(
-            CONTROL_PLANE_ALLOWED_PRODUCT="b62",
+            CONTROL_PLANE_ALLOWED_PRODUCTS="b62,b54-padiem-claw",
             CONTROL_PLANE_IDENTITY_LOOKUP_KEY=self.lookup_key_b64,
             GOOGLE_CONNECT_TICKET_KEY=self.ticket_key_b64,
         )

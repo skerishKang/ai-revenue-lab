@@ -16,6 +16,7 @@ from padiem_ai_core import (
     OrchestrationRequest,
     OrchestrationResult,
 )
+from padiem_ai_core.logical_execution_identity import agent_identity_payload
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
@@ -28,6 +29,10 @@ from .contracts import (
     RunProjection,
     SandboxLease,
     SandboxLeaseState,
+)
+from .p01_approval_pause_transport import (
+    EngineApprovalPauseWire,
+    P01PausedWireResult,
 )
 from .runs import ClawRun, RunStateError
 from .security import redact_secrets
@@ -96,7 +101,9 @@ class P01ProjectionError(P01AdapterError):
 
 
 class P01OrchestrationPort(Protocol):
-    async def run(self, request: OrchestrationRequest) -> OrchestrationResult: ...
+    async def run(
+        self, request: OrchestrationRequest
+    ) -> OrchestrationResult | P01PausedWireResult: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,13 +119,24 @@ class ClawOrchestrationOutcome:
     answer: str | None
     p01_run_id: str | None
     p01_event_count: int
+    # #2946: Engine-issued opaque continuation reference when the run is
+    # WAITING_APPROVAL; never minted, parsed, or stored by B54.
+    continuation_ref: str | None = None
+    # #2956: Engine-issued pause identity + server-derived trusted P01 request
+    # snapshot for one owner-scoped durable handoff. None outside WAITING.
+    pause_id: str | None = None
+    pause_expires_at: str | None = None
+    trusted_request: dict[str, object] | None = None
 
     def safe_dict(self) -> dict[str, object]:
+        # pause_id / pause_expires_at / trusted_request stay server-side only;
+        # the browser never receives resume authority or the trusted request.
         return {
             "projection": self.projection.safe_dict(),
             "answer": redact_secrets(self.answer) if self.answer is not None else None,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
+            "continuation_ref": self.continuation_ref,
         }
 
 
@@ -127,6 +145,31 @@ def _trace_id_for(run: ClawRun) -> str:
         return run.intent.trace_id
     digest = hashlib.sha256(run.run_id.encode("utf-8")).hexdigest()[:24]
     return f"claw_{digest}"
+
+
+def _trusted_p01_request_snapshot(bundle: P01RequestBundle) -> dict[str, object]:
+    """Server-derived trusted P01 request shape for one durable handoff (#2956).
+
+    Mirrors the Engine ``execution_request_identity_payload`` closed shape so a
+    later canonical Engine resume can reconstruct the original execution without
+    the browser re-supplying authority fields. No credentials, tool arguments,
+    provider tokens, or hidden reasoning are included.
+    """
+    execution_request = bundle.execution_request
+    context = bundle.context
+    return {
+        "app_id": bundle.orchestration_request.app_id,
+        "agent": agent_identity_payload(execution_request),
+        "messages": [dict(message) for message in execution_request.messages],
+        "session_id": execution_request.session_id,
+        "additional_system_context": execution_request.additional_system_context,
+        "trace_id": execution_request.trace_id,
+        "execution_context": {
+            "trace_id": context.trace_id,
+            "idempotency_key": context.idempotency_key,
+            "timeout_seconds": context.timeout_seconds,
+        },
+    }
 
 
 def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> AgentProfile:
@@ -492,7 +535,12 @@ class P01CoreOrchestrationAdapter:
                 trace_id=bundle.context.trace_id,
                 app_id=bundle.orchestration_request.app_id,
             )
-            result = await self._runner.run(bundle.orchestration_request)
+            port_result = await self._runner.run(bundle.orchestration_request)
+            approval_pause_wire: EngineApprovalPauseWire | None = None
+            if isinstance(port_result, P01PausedWireResult):
+                approval_pause_wire = port_result.wire
+                port_result = port_result.result
+            result = port_result
             if not isinstance(result, OrchestrationResult):
                 raise P01AdapterError(
                     "invalid_p01_result",
@@ -509,17 +557,65 @@ class P01CoreOrchestrationAdapter:
                     "P01 result ended without terminal or approval-paused lifecycle evidence.",
                     dispatch_class=P01DispatchClass.DISPATCHED,
                 )
+            if run.status is ClawRunStatus.WAITING_APPROVAL:
+                if approval_pause_wire is None or not approval_pause_wire.continuation_ref:
+                    # A paused Claw run without the Engine-issued continuation
+                    # identity cannot be resumed truthfully; fail closed (#2946).
+                    raise P01AdapterError(
+                        "missing_continuation_ref",
+                        "P01 approval pause arrived without an Engine-issued continuation reference.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                pause_id = approval_pause_wire.approval_pause.get("continuation_id")
+                pause_expires_at = approval_pause_wire.approval_pause.get("expires_at")
+                if not isinstance(pause_id, str) or not pause_id:
+                    # #2956: a pause without its Engine-issued identity cannot
+                    # form a durable owner-scoped handoff; fail closed.
+                    raise P01AdapterError(
+                        "missing_pause_id",
+                        "P01 approval pause arrived without an Engine-issued pause identity.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                if not isinstance(pause_expires_at, str) or not pause_expires_at:
+                    raise P01AdapterError(
+                        "missing_pause_expires_at",
+                        "P01 approval pause arrived without an Engine-issued expiry.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+            elif approval_pause_wire is not None:
+                raise P01AdapterError(
+                    "continuation_without_pause",
+                    "P01 returned Engine continuation identity without WAITING_APPROVAL lifecycle state.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
+                    failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                )
 
             answer = (
                 redact_secrets(result.execution_result.answer)
                 if run.status is ClawRunStatus.COMPLETED
                 else None
             )
+            if run.status is ClawRunStatus.WAITING_APPROVAL:
+                assert approval_pause_wire is not None
+                return ClawOrchestrationOutcome(
+                    projection=run.projection(),
+                    answer=answer,
+                    p01_run_id=projector.p01_run_id,
+                    p01_event_count=projector.event_count,
+                    continuation_ref=approval_pause_wire.continuation_ref,
+                    pause_id=str(approval_pause_wire.approval_pause.get("continuation_id")),
+                    pause_expires_at=str(approval_pause_wire.approval_pause.get("expires_at")),
+                    trusted_request=_trusted_p01_request_snapshot(bundle),
+                )
             return ClawOrchestrationOutcome(
                 projection=run.projection(),
                 answer=answer,
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
+                continuation_ref=None,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)

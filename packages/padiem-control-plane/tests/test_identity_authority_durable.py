@@ -85,12 +85,12 @@ class TokenSource:
         return f"{self.count:0{bytes_count * 2}x}"[-bytes_count * 2 :]
 
 
-def fixture():
+def fixture(*, allowed_product_ids: frozenset[str] = frozenset({"b62"})):
     storage = FakeStorage()
     store = CloudflareCanonicalIdentityAuthorityStore(
         storage,
         lookup_key=LOOKUP_KEY_BYTES,
-        allowed_product_id="b62",
+        allowed_product_ids=allowed_product_ids,
         random_hex=TokenSource(),
     )
     return store, storage
@@ -195,6 +195,142 @@ def test_unreviewed_product_and_provider_fail_closed_before_authority_mutation()
         )
     assert provider_exc.value.code == "unsupported_identity_provider"
     assert storage.count("canonical_identity_subject") == 0
+
+
+def test_b54_product_link_and_session_succeed_in_multi_product_store():
+    """B54 is now an allowed product; its link and session must succeed."""
+    store, storage = fixture(allowed_product_ids=frozenset({"b62", "b54-padiem-claw"}))
+    result = store.resolve_or_create_product_link(
+        product_id="b54-padiem-claw",
+        product_user_id="usr_b54_1",
+        auth_provider="password",
+        provider_subject="b54-owner-subject",
+        now=NOW,
+    )
+    assert result.product_id == "b54-padiem-claw"
+    assert result.product_user_id == "usr_b54_1"
+    assert result.state is IdentityLinkState.ACTIVE
+
+    subject = CanonicalSubjectRef(SubjectType.USER, result.canonical_subject_id)
+    session = store.establish_auth_session(
+        product_id="b54-padiem-claw",
+        subject=subject,
+        authenticated_at=NOW - timedelta(minutes=1),
+        not_after=NOW + timedelta(hours=1),
+        now=NOW,
+    )
+    assert session.product_id == "b54-padiem-claw"
+    assert session.subject == subject
+    assert session.state is AuthSessionState.ACTIVE
+
+    resolved = store.resolve_auth_session(session_id=session.session_id)
+    assert resolved == session
+
+
+def test_third_product_still_rejected_in_multi_product_store():
+    """b99 must be rejected even when two products are allowed."""
+    store, _ = fixture(allowed_product_ids=frozenset({"b62", "b54-padiem-claw"}))
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.resolve_or_create_product_link(
+            product_id="b99",
+            product_user_id="usr_1",
+            auth_provider="google",
+            provider_subject=PROVIDER_SUBJECT,
+            now=NOW,
+        )
+    assert exc.value.code == "identity_authority_product_mismatch"
+
+
+def test_safe_dict_reflects_allowed_product_ids_as_sorted_list():
+    store, _ = fixture(allowed_product_ids=frozenset({"b62", "b54-padiem-claw"}))
+    d = store.safe_dict()
+    assert "allowed_product_ids" in d
+    assert isinstance(d["allowed_product_ids"], list)
+    assert sorted(d["allowed_product_ids"]) == d["allowed_product_ids"]
+    assert "b62" in d["allowed_product_ids"]
+    assert "b54-padiem-claw" in d["allowed_product_ids"]
+
+
+def test_b54_session_cannot_be_established_when_store_is_b62_only():
+    """A b62-only store must reject b54 session establishment."""
+    store, _ = fixture(allowed_product_ids=frozenset({"b62"}))
+    result = store.resolve_or_create_product_link(
+        product_id="b62",
+        product_user_id="usr_1",
+        auth_provider="google",
+        provider_subject=PROVIDER_SUBJECT,
+        now=NOW,
+    )
+    subject = CanonicalSubjectRef(SubjectType.USER, result.canonical_subject_id)
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.establish_auth_session(
+            product_id="b54-padiem-claw",
+            subject=subject,
+            authenticated_at=NOW - timedelta(minutes=1),
+            not_after=NOW + timedelta(hours=1),
+            now=NOW,
+        )
+    assert exc.value.code == "identity_authority_product_mismatch"
+
+
+def test_b62_and_b54_sessions_are_isolated_in_multi_product_store():
+    """B62 link/session and B54 link/session must be independent; cross-product session
+    establishment for a subject linked under the other product is rejected."""
+    store, _ = fixture(allowed_product_ids=frozenset({"b62", "b54-padiem-claw"}))
+
+    # Create a B62 link and session.
+    b62_link = store.resolve_or_create_product_link(
+        product_id="b62",
+        product_user_id="usr_b62",
+        auth_provider="google",
+        provider_subject=PROVIDER_SUBJECT,
+        now=NOW,
+    )
+    b62_subject = CanonicalSubjectRef(SubjectType.USER, b62_link.canonical_subject_id)
+    b62_session = store.establish_auth_session(
+        product_id="b62",
+        subject=b62_subject,
+        authenticated_at=NOW - timedelta(minutes=1),
+        not_after=NOW + timedelta(hours=1),
+        now=NOW,
+    )
+    assert b62_session.product_id == "b62"
+
+    # Create a B54 link and session for a different user.
+    b54_link = store.resolve_or_create_product_link(
+        product_id="b54-padiem-claw",
+        product_user_id="usr_b54",
+        auth_provider="password",
+        provider_subject="b54-pw-subject",
+        now=NOW,
+    )
+    b54_subject = CanonicalSubjectRef(SubjectType.USER, b54_link.canonical_subject_id)
+    b54_session = store.establish_auth_session(
+        product_id="b54-padiem-claw",
+        subject=b54_subject,
+        authenticated_at=NOW - timedelta(minutes=1),
+        not_after=NOW + timedelta(hours=1),
+        now=NOW,
+    )
+    assert b54_session.product_id == "b54-padiem-claw"
+
+    # Both sessions resolve independently; they have different session IDs.
+    assert b62_session.session_id != b54_session.session_id
+    assert store.resolve_auth_session(session_id=b62_session.session_id).product_id == "b62"
+    assert store.resolve_auth_session(session_id=b54_session.session_id).product_id == "b54-padiem-claw"
+
+    # Attempting to establish a B62 session for the B54-linked subject is rejected.
+    # B62 is in the allowlist (product check passes) but the B54 subject has no B62
+    # product link → identity_authority_link_missing (fail-closed, no cross-product leakage).
+    with pytest.raises(ControlPlaneContractError) as exc:
+        store.establish_auth_session(
+            product_id="b62",
+            subject=b54_subject,
+            authenticated_at=NOW - timedelta(minutes=1),
+            not_after=NOW + timedelta(hours=1),
+            now=NOW,
+        )
+    assert exc.value.code in {"identity_authority_product_mismatch", "identity_authority_link_missing"}
 
 
 def test_linked_canonical_subject_can_establish_and_resolve_bounded_active_session():

@@ -6,6 +6,8 @@ import json
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse, Response
 
+from padiem_control_plane.b54_identity_bridge import B54BridgedIdentitySession
+
 from .auth import (
     AuthError,
     OAUTH_STATE_COOKIE,
@@ -18,9 +20,13 @@ from .auth import (
     session_cookie_kwargs,
     verify_oauth_state,
 )
+from .b54_canonical_session import (
+    B54ServerAuthenticatedOwner,
+    b54_canonical_session_producer,
+)
 from .config import Settings
 from .control_plane_identity import TrustedProductAuthEvidence, bridge_trusted_product_auth
-from .history import HistoryConflict, HistoryStore
+from .history import HistoryConflict, HistoryStore, PasswordCredential
 from .password_auth import (
     PasswordAuthError,
     hash_password,
@@ -174,6 +180,37 @@ async def _write_identity_shadow_after_login(
         # authority. Shared-authority consumers independently fail closed if the
         # projection/current canonical session cannot later be resolved.
         return
+
+
+async def establish_b54_canonical_session_after_login(
+    request: Request, credential: PasswordCredential
+) -> B54BridgedIdentitySession | None:
+    """Establish the canonical B54 session behind a verified password login.
+
+    This is the production callsite of the B54 canonical-session chain.  Its only
+    input is the credential row the server read to authenticate the login, so no
+    request content can name a user, provider subject, tenant, product, or session.
+
+    The result is the canonical B54 authority a B54-scoped operation resolves its
+    Engine session from; it is returned to server code, never projected to the
+    browser.  It is attempted only when the private Control Plane identity binding
+    is actually present, and a B54 failure never turns a completed B62 password
+    login into an error: B54 is a separate product scope that independently fails
+    closed for any consumer that requires it.
+    """
+
+    if getattr(request.app.state, "control_plane_identity_authority", None) is None:
+        return None
+    producer = b54_canonical_session_producer(
+        app_state=request.app.state,
+        session_max_age_seconds=request.app.state.settings.session_max_age_seconds,
+    )
+    try:
+        return await producer.establish(
+            B54ServerAuthenticatedOwner.from_password_credential(credential)
+        )
+    except Exception:
+        return None
 
 
 async def google_callback(request: Request) -> Response:
@@ -405,6 +442,11 @@ async def password_login(request: Request) -> JSONResponse:
         expires_at=expires_at,
         ensure_personal_tenant=True,
     )
+    # Establishing the session is the product outcome: it lands in the single
+    # canonical Control Plane session store for the B54 product scope, where a
+    # B54-scoped consumer resolves it. #2963 Step 3 is that consumer and remains a
+    # separately authorized gate, so nothing here projects it to the browser.
+    await establish_b54_canonical_session_after_login(request, credential)
     return _session_response(settings, credential.user)
 
 

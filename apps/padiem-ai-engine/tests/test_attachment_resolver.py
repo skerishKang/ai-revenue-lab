@@ -643,7 +643,7 @@ def test_resolver_is_wired_only_through_the_trusted_authority_seam() -> None:
 
     wrangler = (APP_ROOT / "wrangler.toml").read_text(encoding="utf-8")
     assert 'binding = "ENGINE_IMAGE_STORE"' in wrangler
-    assert wrangler.count('database_id = "') == 5
+    assert wrangler.count('database_id = "') == 6
 
     store_source = (APP_ROOT / "app" / "attachment_byte_store.py").read_text(encoding="utf-8")
     assert "CREATE TABLE" not in store_source.upper()

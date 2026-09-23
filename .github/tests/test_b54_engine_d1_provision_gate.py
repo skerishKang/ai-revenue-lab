@@ -5,9 +5,9 @@ Proves statically that the gate:
   2. requires the exact confirmation phrase and production environment;
   3. carries exact-SHA + account premutation assertions, fail-closed;
   4. is idempotent for database creation and migration replay;
-  5. applies migrations 0001-0006 in order, with 0005 schema-readback guarded;
-  6. asserts the required tables, the durable document-bytes schema objects and
-     the Drive capability column before PASS;
+  5. applies migrations 0001-0007 in order, with 0005 schema-readback guarded;
+  6. asserts the required tables, the durable document-bytes schema objects, the
+     evidence retention schema objects and the Drive capability column before PASS;
   7. never deploys the worker.
 """
 
@@ -21,6 +21,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "b54-engine-d1-provision-gate.yml"
 WRANGLER = ROOT / "apps" / "padiem-ai-engine" / "wrangler.toml"
+MANIFEST = ROOT / "apps" / "padiem-ai-engine" / "app" / "contract_manifest.py"
 
 
 def _workflow_text() -> str:
@@ -70,7 +71,7 @@ def test_create_step_is_idempotent() -> None:
     assert "database_id'" not in text.replace('"database_id"', "")
 
 
-def test_migrations_0001_through_0006_are_applied_in_order() -> None:
+def test_migrations_0001_through_0007_are_applied_in_order() -> None:
     text = _workflow_text()
     paths = [
         "migrations/0001_engine_idempotency.sql",
@@ -79,10 +80,11 @@ def test_migrations_0001_through_0006_are_applied_in_order() -> None:
         "migrations/0004_engine_attachment_images.sql",
         "migrations/0005_engine_connector_drive_capabilities.sql",
         "migrations/0006_engine_document_bytes.sql",
+        "migrations/0007_engine_evidence.sql",
     ]
     positions = [text.index(path) for path in paths]
     assert positions == sorted(positions)
-    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005,0006" in text
+    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007" in text
     assert "migrations apply" not in text
     assert "[[d1_databases]]" not in text
 
@@ -90,12 +92,8 @@ def test_migrations_0001_through_0006_are_applied_in_order() -> None:
 def test_migration_0006_is_applied_exactly_once_and_is_not_renamed() -> None:
     text = _workflow_text()
     path = "migrations/0006_engine_document_bytes.sql"
-    # A second apply line would double-provision; zero would leave A6 documents
-    # permanently without a provision path, which is the defect #1971 A6-S2A
-    # closes.
     assert text.count(path) == 1
     assert text.index("migrations/0005_engine_connector_drive_capabilities.sql") < text.index(path)
-    # The migration itself must be the canonical source, unmodified by this gate.
     migration = (ROOT / "apps/padiem-ai-engine/migrations/0006_engine_document_bytes.sql").read_text(
         encoding="utf-8"
     )
@@ -105,12 +103,7 @@ def test_migration_0006_is_applied_exactly_once_and_is_not_renamed() -> None:
 
 
 def test_migration_0006_apply_is_unconditional_not_schema_guarded() -> None:
-    """0006 must replay directly, unlike 0005's readback guard.
-
-    Asserted by locating the apply line outside the 0005 `if/fi` block: a
-    guarded or conditional 0006 would silently skip provisioning the document
-    table on some runs, which is exactly the failure this slice exists to end.
-    """
+    """0006 must replay directly, unlike 0005's readback guard."""
     text = _workflow_text()
     apply_line = "--file=apps/padiem-ai-engine/migrations/0006_engine_document_bytes.sql"
     assert text.count(apply_line) == 1
@@ -125,6 +118,37 @@ def test_migration_0006_apply_is_unconditional_not_schema_guarded() -> None:
     assert "PRAGMA" not in between, "0006 needs no schema readback to decide apply"
 
 
+def test_migration_0007_is_applied_exactly_once_after_0006_and_is_not_renamed() -> None:
+    text = _workflow_text()
+    path = "migrations/0007_engine_evidence.sql"
+    assert text.count(path) == 1
+    assert text.index("migrations/0006_engine_document_bytes.sql") < text.index(path)
+    # The migration itself must be the canonical source, unmodified by this gate.
+    migration = (ROOT / "apps/padiem-ai-engine/migrations/0007_engine_evidence.sql").read_text(
+        encoding="utf-8"
+    )
+    assert "CREATE TABLE IF NOT EXISTS padiem_engine_evidence" in migration
+    assert "CREATE INDEX IF NOT EXISTS idx_padiem_engine_evidence_created_at" in migration
+    assert "ALTER TABLE" not in migration
+    assert re.search(r"^\s*(DROP|DELETE|UPDATE|INSERT)\b", migration, re.M) is None
+
+
+def test_migration_0007_apply_is_unconditional_not_schema_guarded() -> None:
+    """0007 must replay directly, unlike 0005's readback guard."""
+    text = _workflow_text()
+    apply_line = "--file=apps/padiem-ai-engine/migrations/0007_engine_evidence.sql"
+    assert text.count(apply_line) == 1
+
+    guard_open = text.index("if python3 - <<'PY'")
+    guard_close = text.index("fi\n", guard_open)
+    apply_at = text.index(apply_line)
+    assert apply_at > guard_close, "0007 must apply after the 0005 guard closes"
+
+    between = text[guard_close:apply_at]
+    assert re.search(r"^\s*if\b", between, re.M) is None, "0007 apply must be unconditional"
+    assert "PRAGMA" not in between, "0007 needs no schema readback to decide apply"
+
+
 def test_migration_0005_is_remote_schema_guarded_and_replay_safe() -> None:
     text = _workflow_text()
     before = "PRAGMA table_info(padiem_engine_connector_grants)"
@@ -136,23 +160,30 @@ def test_migration_0005_is_remote_schema_guarded_and_replay_safe() -> None:
     assert "sys.exit(0 if 'granted_capabilities_json' in columns else 1)" in text
 
 
-def test_schema_assertion_covers_tables_document_bytes_and_drive_column() -> None:
+def test_schema_assertion_covers_tables_document_bytes_evidence_and_drive_column() -> None:
     text = _workflow_text()
     for table in (
-        "padiem_engine_idempotency",
-        "padiem_engine_continuations",
-        "padiem_engine_connector_grants",
-        "padiem_engine_attachment_images",
+        "'padiem_engine_idempotency'",
+        "'padiem_engine_continuations'",
+        "'padiem_engine_connector_grants'",
+        "'padiem_engine_attachment_images'",
     ):
         assert table in text
     # A6 durable document store: table plus both declared indexes are asserted.
     for document_object in (
-        "padiem_engine_document_bytes",
-        "idx_padiem_engine_document_bytes_expires_at",
-        "idx_padiem_engine_document_bytes_scope",
+        "'padiem_engine_document_bytes'",
+        "'idx_padiem_engine_document_bytes_expires_at'",
+        "'idx_padiem_engine_document_bytes_scope'",
     ):
         assert document_object in text, document_object
     assert "D1_DOCUMENT_BYTES_TABLE_ASSERT=PASS" in text
+    # A6 durable evidence retention: table plus created_at index are asserted.
+    for evidence_object in (
+        "'padiem_engine_evidence'",
+        "'idx_padiem_engine_evidence_created_at'",
+    ):
+        assert evidence_object in text, evidence_object
+    assert "D1_EVIDENCE_TABLE_ASSERT=PASS" in text
     assert "PRAGMA table_info(padiem_engine_connector_grants)" in text
     assert "granted_capabilities_json" in text
     assert "D1_TABLES_ASSERT=PASS" in text
@@ -191,21 +222,42 @@ def test_engine_document_store_binding_targets_canonical_database() -> None:
     assert 'database_name = "padiem-engine"' in image_head[: image_head.find("[[")]
 
 
+def test_engine_evidence_store_binding_targets_canonical_database() -> None:
+    """The provision gate is only meaningful while wrangler still routes
+    ENGINE_EVIDENCE_STORE at the same provisioned `padiem-engine` database."""
+    config = WRANGLER.read_text(encoding="utf-8")
+    block = config[config.index('binding = "ENGINE_EVIDENCE_STORE"'):]
+    head = block[: block.find("[[")]
+    assert 'database_name = "padiem-engine"' in head
+    assert 'database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"' in head
+
+
+def test_manifest_document_features_remain_deferred() -> None:
+    """Static contract: document features remain truthfully DEFERRED
+    in the Engine contract manifest until live production activation is complete."""
+    manifest_text = MANIFEST.read_text(encoding="utf-8")
+    assert 'EngineFeatureContract("document_admission", EngineFeatureState.DEFERRED)' in manifest_text
+    assert 'EngineFeatureContract("document_projection", EngineFeatureState.DEFERRED)' in manifest_text
+
+
 def test_final_evidence_markers_present() -> None:
     text = _workflow_text()
     assert "D1_PROVISION=PASS" in text
     assert "D1_DATABASE_ID=" in text
-    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005,0006" in text
+    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007" in text
     assert "D1_DRIVE_CAPABILITY_COLUMN_ASSERT=PASS" in text
     assert "D1_DOCUMENT_BYTES_TABLE_ASSERT=PASS" in text
+    assert "D1_EVIDENCE_TABLE_ASSERT=PASS" in text
     assert "WORKER_DEPLOYED=0" in text
     # Both the apply step and the final evidence step must carry the full list:
     # a stale marker in either place would misreport what was provisioned.
-    assert text.count("D1_MIGRATIONS=0001,0002,0003,0004,0005,0006") == 2
-    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005'" not in text
+    assert text.count("D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007") == 2
+    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005,0006'" not in text
+    assert "D1_MIGRATIONS=0001,0002,0003,0004,0005,0006\n" not in text
 
 
 def test_workflow_never_deploys_worker() -> None:
     text = _workflow_text()
     for forbidden in ("pywrangler deploy", "wrangler@4 deploy", "d1_migrations", "[[d1_databases]]"):
         assert forbidden not in text, f"provision gate must not contain: {forbidden}"
+
