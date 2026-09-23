@@ -864,6 +864,113 @@ class HwpxEditReceiptContractTests(unittest.TestCase):
             operation.section_index = 1  # type: ignore[misc]
 
 
+class HwpxEditAuthorityOrderTests(unittest.TestCase):
+    """The common gate and the canonical-source proof decide before the request.
+
+    CENTRAL exact-head review found the published order ("common gate always
+    first") did not match the executed order: an empty or malformed operation
+    request returned before the common intake authority saw the source. These
+    tests pin the corrected order so it cannot regress.
+    """
+
+    def test_common_gate_is_the_first_authority_call(self) -> None:
+        order: list[str] = []
+        real_gate = hwpx_skill.inspect_file
+        real_decode = hwpx_skill.deserialize_hwpx_package
+
+        def gate(*args: object, **kwargs: object) -> object:
+            order.append("inspect_file")
+            return real_gate(*args, **kwargs)  # type: ignore[arg-type]
+
+        def decode(*args: object, **kwargs: object) -> object:
+            order.append("deserialize_hwpx_package")
+            return real_decode(*args, **kwargs)  # type: ignore[arg-type]
+
+        with mock.patch("kagent.hwpx_skill.inspect_file", side_effect=gate), mock.patch(
+            "kagent.hwpx_skill.deserialize_hwpx_package", side_effect=decode
+        ):
+            result = hwpx_edit("doc.hwpx", _payload(("본문",)), ())
+
+        self.assertEqual(order, ["inspect_file", "deserialize_hwpx_package"])
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_OPERATIONS_INVALID)
+
+    def test_empty_operations_do_not_pre_empt_the_common_gate(self) -> None:
+        """A gate-refused source plus empty operations must report the gate."""
+
+        payload = _png_bytes()
+        with mock.patch("kagent.hwpx_skill.inspect_file", wraps=inspect_file) as gate, mock.patch(
+            "kagent.hwpx_skill.deserialize_hwpx_package", wraps=deserialize_hwpx_package
+        ) as decode:
+            result = hwpx_edit("doc.hwpx", payload, ())
+
+        # The gate ran; the decoder never did, because the gate refused first.
+        self.assertGreaterEqual(gate.call_count, 1)
+        self.assertEqual(decode.call_count, 0)
+        self.assertEqual(result.receipt.status, STATUS_REFUSED)
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_GATE_REJECTED)
+        self.assertNotEqual(result.receipt.reason_code, REASON_EDIT_OPERATIONS_INVALID)
+        self.assertIsNone(result.artifact)
+
+    def test_common_gate_precedes_the_operation_count_bound(self) -> None:
+        operations = tuple(
+            _replace(0, 0, f"수정{index}") for index in range(MAX_EDIT_OPERATIONS + 1)
+        )
+        result = hwpx_edit("doc.hwpx", _png_bytes(), operations)
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_GATE_REJECTED)
+        self.assertNotEqual(result.receipt.reason_code, REASON_EDIT_OPERATIONS_LIMIT)
+
+    def test_common_gate_precedes_the_operation_shape_check(self) -> None:
+        for operations in ((_replace(True, 0, "수정"),), (_replace(0, -1, "수정"),)):
+            result = hwpx_edit("doc.hwpx", _png_bytes(), operations)
+            self.assertEqual(result.receipt.reason_code, REASON_EDIT_GATE_REJECTED)
+            self.assertNotEqual(result.receipt.reason_code, REASON_EDIT_OPERATION_SHAPE)
+            self.assertNotEqual(result.receipt.reason_code, REASON_EDIT_INDEX_NEGATIVE)
+
+    def test_common_gate_precedes_a_non_tuple_request(self) -> None:
+        result = hwpx_edit("doc.hwpx", _png_bytes(), [_replace(0, 0, "수정")])
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_GATE_REJECTED)
+
+    def test_source_decoder_precedes_operation_validation(self) -> None:
+        """A gate-admitted but undecodable source outranks an empty request."""
+
+        result = hwpx_edit("t.hwpx", _table_source(), ())
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_DECODER_REJECTED)
+        self.assertEqual(result.receipt.note, "hwpx_unsupported_structure")
+
+    def test_canonical_source_gate_precedes_operation_validation(self) -> None:
+        """A readable but non-byte-stable source outranks an empty request."""
+
+        result = hwpx_edit("e.hwpx", _extra_member_source(), ())
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_NOT_CANONICAL)
+        self.assertNotEqual(result.receipt.reason_code, REASON_EDIT_OPERATIONS_INVALID)
+
+    def test_valid_source_reaches_operation_validation_after_the_source_gates(self) -> None:
+        """With a valid source the source gates run, then operations are judged."""
+
+        payload = _payload(("본문",))
+        with mock.patch(
+            "kagent.hwpx_skill.deserialize_hwpx_package", wraps=deserialize_hwpx_package
+        ) as decode, mock.patch(
+            "kagent.hwpx_skill.serialize_hwpx_package", wraps=serialize_hwpx_package
+        ) as encode:
+            result = hwpx_edit("doc.hwpx", payload, ())
+
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_OPERATIONS_INVALID)
+        # One structured decode and one canonical-source serialization happened
+        # before the request container was judged.
+        self.assertEqual(decode.call_count, 1)
+        self.assertEqual(encode.call_count, 1)
+
+    def test_target_validation_still_follows_the_container_checks(self) -> None:
+        """A request that is both malformed and out of range reports the container."""
+
+        payload = _payload(("본문",))
+        result = hwpx_edit("doc.hwpx", payload, ())
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_OPERATIONS_INVALID)
+        result = hwpx_edit("doc.hwpx", payload, (_replace(0, 9, "수정"),))
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_PARAGRAPH_OUT_OF_RANGE)
+
+
 class HwpxEditRegressionTests(unittest.TestCase):
     def test_create_surface_still_works(self) -> None:
         """#2962: the create foundation is untouched by this child."""

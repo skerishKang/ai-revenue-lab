@@ -1250,13 +1250,19 @@ def hwpx_edit(
         -> inspect_file()                     (common gate must admit HWPX_CANDIDATE)
         -> deserialize_hwpx_package()         (the single structured decoder)
         -> source is proven canonical-lossless (serialize(source) == input bytes)
-        -> bounded targets validated against the decoded model
+        -> the request container, count bound, index types and addresses judged
         -> replacements applied to the model
         -> serialize_hwpx_package()           (the single byte producer)
         -> inspect_file() / hwpx_validate() / hwpx_read() on the output
         -> deserialize_hwpx_package() on the output
         -> structured equality with the intended edited model
         -> bounded edit receipt + in-memory artifact
+
+    The ordering is part of the contract, not an implementation detail: the
+    common file-intake authority and the canonical-source proof decide first,
+    and the request's own shape is judged only after the source has been
+    admitted. A malformed or empty operation request therefore cannot return
+    ahead of the gate that inspects the source bytes.
 
     The source-fidelity gate is what keeps this foundation honest: a package
     whose decoded model does not serialize back into the exact input bytes is
@@ -1277,27 +1283,10 @@ def hwpx_edit(
     package or host authority.
     """
 
-    if not isinstance(operations, tuple) or not operations:
-        return _edit_refusal(
-            REASON_EDIT_OPERATIONS_INVALID,
-            note=None,
-            validation_status=VALIDATION_STATUS_EDIT_NOT_RUN,
-        )
-    if len(operations) > MAX_EDIT_OPERATIONS:
-        return _edit_refusal(
-            REASON_EDIT_OPERATIONS_LIMIT,
-            note=None,
-            validation_status=VALIDATION_STATUS_EDIT_NOT_RUN,
-        )
-
-    shape_refusal = _operation_shape_refusal(operations)
-    if shape_refusal is not None:
-        return _edit_refusal(
-            shape_refusal,
-            note=None,
-            validation_status=VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED,
-        )
-
+    # The common intake gate is the first decision authority: the source is
+    # admitted (or refused) before any request-shaped validation is judged, so
+    # a malformed or empty operation request can never return ahead of the
+    # archive/path/expansion gate.
     gate = inspect_file(filename, payload)
     refusal = _gate_refusal(gate)
     if refusal is not None:
@@ -1329,6 +1318,31 @@ def hwpx_edit(
             REASON_EDIT_SOURCE_NOT_CANONICAL,
             note=None,
             validation_status=VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL,
+        )
+
+    # Only now is the request itself judged. The source authorities above have
+    # already admitted the package, so the container shape, the count bound,
+    # the index types and the addresses are validated against a source that is
+    # known to be a canonical, decodable, byte-stable HWPX package.
+    if not isinstance(operations, tuple) or not operations:
+        return _edit_refusal(
+            REASON_EDIT_OPERATIONS_INVALID,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_NOT_RUN,
+        )
+    if len(operations) > MAX_EDIT_OPERATIONS:
+        return _edit_refusal(
+            REASON_EDIT_OPERATIONS_LIMIT,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_NOT_RUN,
+        )
+
+    shape_refusal = _operation_shape_refusal(operations)
+    if shape_refusal is not None:
+        return _edit_refusal(
+            shape_refusal,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED,
         )
 
     target_refusal = _operation_target_refusal(operations, source)
