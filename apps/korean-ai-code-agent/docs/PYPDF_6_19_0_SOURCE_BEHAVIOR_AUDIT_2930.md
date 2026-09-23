@@ -197,7 +197,14 @@ Environment:
 
 ```text
 ENVIRONMENT_READS=PRESENT_CONDITIONAL (child-env copy + PATH lookup on JBIG2 path); no named env vars
+CREDENTIAL_ENV_PROPAGATION=PRESENT_CONDITIONAL_JBIG2DEC (entire host environment inherited by external child)
 ```
+
+Because `os.environ.copy()` is passed wholesale to `jbig2dec`, any secrets
+already present in the host process environment are also inherited by that
+external child process. pypdf does not inspect or select those credential
+names, but the propagation itself is a security-relevant authority expansion
+and must be treated separately from named credential reads.
 
 Credentials:
 
@@ -213,7 +220,8 @@ Credentials:
   credential verification against any store.
 
 ```text
-CREDENTIAL_READS=ABSENT
+CREDENTIAL_READS=ABSENT_IN_PYPDF_PACKAGE_SOURCE
+CREDENTIAL_ENV_PROPAGATION=PRESENT_CONDITIONAL_JBIG2DEC
 CONFIG_DISCOVERY=ABSENT  (no user/system config file discovery; PATH executable lookup only)
 ```
 
@@ -359,9 +367,11 @@ Restrictions (must travel with the finding):
 
 1. `SUBPROCESS_BEHAVIOR=PRESENT_CONDITIONAL_JBIG2DEC` — any later adoption
    review must decide whether the `jbig2dec` PATH lookup/subprocess is
-   permitted in the PADIEM worker environment or must be disabled
-   (binary absent → library raises `DependencyError`, which is the safe
-   default).
+   permitted in the PADIEM worker environment or must be disabled. The current
+   upstream path forwards `os.environ.copy()` to the child, so host secrets
+   may be inherited by that external process; any permitted integration must
+   explicitly eliminate or bound that propagation. Binary absent → library
+   raises `DependencyError`, which is the safe default.
 2. CWD debug helper `mark_location` and opt-in `debug_path` writers exist in
    the shipped package; callers must not invoke them in production paths.
 3. #2824 file intake gate remains fully mandatory (section 10).
