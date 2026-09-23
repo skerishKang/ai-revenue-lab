@@ -371,9 +371,13 @@ class AuthorityContractTests(unittest.TestCase):
         source = MODULE_PATH.read_text(encoding="utf-8")
         for forbidden in (
             "import zipfile",
+            "ZipFile",
+            "writestr",
+            "BytesIO",
             "xml.etree",
             "extract_hwpx_text(",
-            "from padiem_ai_core",
+            "extract_binary_document",
+            "from padiem_ai_core.document_normalization",
             "subprocess",
             "import socket",
             "urllib",
@@ -385,6 +389,29 @@ class AuthorityContractTests(unittest.TestCase):
             self.assertNotIn(forbidden, source, forbidden)
         self.assertIn("inspect_file", source)
         self.assertIn("intake_document", source)
+
+    def test_facade_reaches_core_only_through_the_canonical_serializer(self) -> None:
+        """#2962: the facade's whole Core surface is an allow-list, not a ban.
+
+        ``serialize_hwpx_package`` is the accepted single HWPX byte authority
+        and ``DocumentNormalizationError`` is its bounded failure type. Any
+        other Core import — in particular the parser-layer normalizer that
+        holds ``extract_hwpx_text`` — fails this test, so create cannot grow a
+        second byte, XML or parser authority by accident.
+        """
+
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        imported_core_modules = {
+            line.split()[1] for line in source.splitlines() if line.startswith("from padiem_ai_core")
+        }
+        self.assertEqual(
+            imported_core_modules,
+            {
+                "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_package_serializer",
+            },
+        )
+        self.assertIn("serialize_hwpx_package(", source)
 
     def test_capability_ids_are_existing_reserved_ids(self) -> None:
         self.assertIn(CAPABILITY_FILE_INSPECT, RESERVED_CAPABILITY_IDS)
@@ -415,19 +442,24 @@ class AuthorityContractTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_later_2825_capabilities_are_explicitly_not_claimed(self) -> None:
+        # #2962 built the bounded create foundation, so create is no longer an
+        # unclaimed capability — it is a foundation-only claim and still never
+        # a full create claim. Every later capability stays unclaimed.
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE_FOUNDATION"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), "FOUNDATION_ONLY")
+        self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), {"PASS", "YES"})
         for key in (
-            "HWPX_CREATE",
             "HWPX_EDIT",
             "HWPX_TEMPLATE_FILL",
             "TABLE_INSERT",
             "IMAGE_INSERT",
         ):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
-            self.assertNotIn(key, {"PASS", "YES"})
+            self.assertNotIn(hwpx_skill.ACCEPTANCE.get(key), {"PASS", "YES"})
 
-    def test_no_create_edit_surface_exists(self) -> None:
+    def test_only_create_exists_and_edit_surfaces_do_not(self) -> None:
+        self.assertTrue(callable(getattr(hwpx_skill, "hwpx_create", None)))
         for attribute in (
-            "hwpx_create",
             "hwpx_edit",
             "hwpx_template_fill",
             "hwpx_insert_table",
