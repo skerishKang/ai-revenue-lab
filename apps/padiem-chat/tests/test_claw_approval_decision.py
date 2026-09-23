@@ -62,8 +62,9 @@ CONTINUATION_REF = "cont_EngineOpaqueRef_01"
 NEXT_CONTINUATION_REF = "cont_EngineOpaqueRef_02"
 PAUSE_ID = "pause_fake001"
 NEXT_PAUSE_ID = "pause_fake002"
-FUTURE_EXPIRES = "2099-01-01T00:00:00+00:00"
 NOW = datetime(2026, 9, 23, 12, 0, tzinfo=timezone.utc)
+FUTURE_EXPIRES_AT = datetime(2099, 1, 1, tzinfo=timezone.utc)
+FUTURE_EXPIRES = FUTURE_EXPIRES_AT.isoformat()
 AGENT_ID = "b54-padiem-claw"
 APP_ID = "b54-padiem-claw"
 MODEL_ID = "agnes-ai/agnes-3.0-flash"
@@ -364,7 +365,7 @@ def _identity_store() -> MagicMock:
         auth_session_id="session_test123",
         session_revision=1,
         session_state="active",
-        session_expires_at=NOW + timedelta(hours=1),
+        session_expires_at=FUTURE_EXPIRES_AT,
         observed_at=NOW,
     )
     store = MagicMock()
@@ -378,7 +379,7 @@ def _authority() -> MagicMock:
         product_id=PADIEM_CHAT_PRODUCT_ID,
         subject=CanonicalSubjectRef(SubjectType.USER, "subject_test"),
         issued_at=NOW - timedelta(hours=1),
-        expires_at=NOW + timedelta(hours=1),
+        expires_at=FUTURE_EXPIRES_AT,
         state=AuthSessionState.ACTIVE,
         revision=1,
         tenant_id=WORKSPACE,
