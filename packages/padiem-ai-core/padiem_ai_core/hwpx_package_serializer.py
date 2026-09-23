@@ -1,12 +1,18 @@
-"""Single bounded HWPX package serializer authority for Padiem AI Core.
+"""Single bounded HWPX package content authority for Padiem AI Core.
 
 This module is the only place in Core that assembles ``application/hwp+zip``
 package bytes. Callers supply a small structured in-memory content model of
 section paragraphs only: never raw XML, ZIP member names, or archive paths.
 Output is deterministic memory-only bytes that must re-enter the existing
 common file-intake gate and the existing Core HWPX reader for round-trip
-validation. This module never reads or parses HWPX archives, never touches
-the host filesystem, and never opens a network or provider surface.
+validation.
+
+Reading bytes back into the model goes through :func:`deserialize_hwpx_package`,
+which reuses Core's single HWPX archive-and-XML reader and adds no parsing of
+its own: it only judges whether what that reader found fits this writable
+subset. This module therefore never walks an archive, never parses XML, never
+reads or writes the host filesystem, and never opens a network or provider
+surface.
 """
 
 from __future__ import annotations
@@ -19,6 +25,7 @@ from .document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     MAX_DOCUMENT_CHARS,
     MAX_OOXML_ENTRIES,
+    parse_hwpx_sections,
 )
 from .document_semantics import (
     MAX_DOCUMENT_SEGMENTS,
@@ -34,6 +41,7 @@ MAX_HWPX_PACKAGE_TEXT_CHARS = MAX_DOCUMENT_CHARS
 
 _SECTION_NAMESPACE = "http://www.hancom.co.kr/hwpml/2011/section"
 _PARAGRAPH_NAMESPACE = "http://www.hancom.co.kr/hwpml/2011/paragraph"
+_SECTION_ROOT_TAG = f"{{{_SECTION_NAMESPACE}}}sec"
 _FIXED_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 _XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>'
 
@@ -70,6 +78,75 @@ def serialize_hwpx_package(content: HwpxPackageContent) -> bytes:
             "Serialized HWPX package exceeds the output size limit.",
         )
     return payload
+
+
+def deserialize_hwpx_package(payload: bytes) -> HwpxPackageContent:
+    """Recover the structured content model from HWPX bytes, or refuse.
+
+    The inverse of :func:`serialize_hwpx_package` over the subset this authority
+    owns. Parsing happens once, in Core's single HWPX archive-and-XML reader;
+    this function only decides whether what it found can be put back into the
+    editable model without losing anything, and then re-runs the writer's own
+    bounds so a returned model is always one this module could serialize again.
+
+    A package outside the supported subset fails closed instead of being
+    projected into a model that would silently drop shape on the next write.
+    That covers tables, images, shapes and any other element anywhere in the
+    part, paragraphs that hold other paragraphs, paragraphs whose text came
+    from more than one run or from none, a section root this writer would never
+    emit, repeated section numbers, and a part carrying a carriage return, whose
+    text an XML parser has already rewritten into a line feed.
+    """
+
+    sections: list[HwpxPackageSection] = []
+    previous_index = 0
+    for parsed in parse_hwpx_sections(payload):
+        if parsed.root_tag != _SECTION_ROOT_TAG:
+            raise DocumentNormalizationError(
+                "hwpx_unsupported_section_root",
+                "HWPX section part root is not the section element this decoder supports.",
+            )
+        if parsed.index <= previous_index:
+            raise DocumentNormalizationError(
+                "hwpx_unsupported_section_order",
+                "HWPX section parts are repeated or not in ascending order.",
+            )
+        previous_index = parsed.index
+        if parsed.has_carriage_return:
+            raise DocumentNormalizationError(
+                "hwpx_unsupported_control_character",
+                "HWPX part contains a carriage return that XML parsing cannot preserve.",
+            )
+        if parsed.unsupported_nodes:
+            raise DocumentNormalizationError(
+                "hwpx_unsupported_structure",
+                "HWPX contains a structure the editable model cannot represent.",
+            )
+        paragraphs: list[str] = []
+        for paragraph in parsed.paragraphs:
+            if paragraph.holds_nested_paragraph:
+                raise DocumentNormalizationError(
+                    "hwpx_unsupported_structure",
+                    "HWPX contains a paragraph structure the editable model cannot represent.",
+                )
+            if paragraph.text_nodes != 1:
+                raise DocumentNormalizationError(
+                    "hwpx_unsupported_run_semantics",
+                    "HWPX paragraph text does not come from exactly one run text node.",
+                )
+            if "\r" in paragraph.text:
+                # A character reference can survive parsing as a carriage return
+                # where a literal one was rewritten to a line feed; neither shape
+                # can be written and read back unchanged.
+                raise DocumentNormalizationError(
+                    "hwpx_unsupported_control_character",
+                    "HWPX paragraph contains a carriage return this model cannot round-trip.",
+                )
+            paragraphs.append(paragraph.text)
+        sections.append(HwpxPackageSection(paragraphs=tuple(paragraphs)))
+    content = HwpxPackageContent(sections=tuple(sections))
+    _validate_content(content)
+    return content
 
 
 def _validate_content(content: HwpxPackageContent) -> None:
@@ -198,5 +275,6 @@ __all__ = [
     "MAX_HWPX_SECTIONS",
     "HwpxPackageContent",
     "HwpxPackageSection",
+    "deserialize_hwpx_package",
     "serialize_hwpx_package",
 ]

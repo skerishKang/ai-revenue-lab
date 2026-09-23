@@ -342,8 +342,63 @@ def _hwpx_section_index(name: str) -> int | None:
     return int(digits) if digits.isdigit() else None
 
 
-def extract_hwpx_text(payload: bytes) -> str:
+# The serializer-owned HWPX shape is a section holding paragraphs that hold a
+# run holding one text node. Any other element in the part is structure this
+# Core subset cannot represent, wherever it sits in the tree.
+_HWPX_CANONICAL_LOCAL_NAMES = frozenset({"p", "runs", "t"})
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxParsedParagraph:
+    """One parsed paragraph element and the structural facts about it.
+
+    ``text`` is the same value the flat authority has always produced: every
+    text node under the paragraph joined in document order. ``text_nodes`` and
+    ``holds_nested_paragraph`` say how much shape that join hid, so a caller
+    that needs lossless structure can refuse instead of trusting a flattened
+    string.
+    """
+
+    text: str
+    text_nodes: int
+    holds_nested_paragraph: bool
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxParsedSection:
+    """One located section part, in numeric section order.
+
+    ``index`` is the ``Contents/section<N>.xml`` number and ``root_tag`` the
+    parsed element's namespace-qualified tag. ``unsupported_nodes`` counts the
+    elements in the part that fall outside the section/paragraph/run/text shape
+    this Core subset owns — over the whole part, so a table or image is visible
+    wherever it sits, not only when it hides inside a paragraph.
+    ``has_carriage_return`` says whether the raw part held a ``0x0D`` byte: an
+    XML parser normalizes that to a newline, so a paragraph's exact text cannot
+    be recovered from the parsed tree alone and must be judged from the part it
+    came from.
+    """
+
+    index: int
+    root_tag: str
+    unsupported_nodes: int
+    has_carriage_return: bool
+    paragraphs: tuple[HwpxParsedParagraph, ...]
+
+
+def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
+    """Parse an HWPX package once and return per-section paragraph facts.
+
+    This is the single HWPX archive-and-XML read authority in Core. It runs the
+    existing OOXML archive gate, the existing ZIP member walk and the existing
+    XML parser, and adds no policy of its own: every projection over the result
+    — the flat text of :func:`extract_hwpx_text` and the structured model of
+    ``deserialize_hwpx_package`` — is derived from here, so the two can never
+    disagree about what a package contains.
+    """
+
     validate_ooxml_archive(payload)
+    sections: list[HwpxParsedSection] = []
     try:
         with ZipFile(BytesIO(payload)) as archive:
             names = archive.namelist()
@@ -357,26 +412,64 @@ def extract_hwpx_text(payload: bytes) -> str:
             located = [(index, name) for name in names if (index := _hwpx_section_index(name)) is not None]
             if not located:
                 raise DocumentNormalizationError("hwpx_missing_part", "HWPX is missing Contents/section<N>.xml parts.")
-            sections: list[str] = []
-            for _, section_name in sorted(located):
-                root = _parse_xml(archive.read(section_name))
-                paragraphs: list[str] = []
-                for paragraph in root.iter():
+            for index, section_name in sorted(located):
+                part = archive.read(section_name)
+                root = _parse_xml(part)
+                nodes = list(root.iter())
+                paragraphs: list[HwpxParsedParagraph] = []
+                for paragraph in nodes:
                     if _local_name(paragraph) != "p":
                         continue
-                    if any(node is not paragraph and _local_name(node) == "p" for node in paragraph.iter()):
-                        continue
-                    pieces = [node.text or "" for node in paragraph.iter() if _local_name(node) == "t"]
-                    value = "".join(pieces)
-                    if value:
-                        _append_bounded(paragraphs, value)
-                section = "\n".join(paragraphs).strip()
-                if section:
-                    _append_bounded(sections, section)
+                    descendants = list(paragraph.iter())
+                    text_nodes = [node for node in descendants if _local_name(node) == "t"]
+                    paragraphs.append(
+                        HwpxParsedParagraph(
+                            text="".join(node.text or "" for node in text_nodes),
+                            text_nodes=len(text_nodes),
+                            holds_nested_paragraph=any(
+                                node is not paragraph and _local_name(node) == "p" for node in descendants
+                            ),
+                        )
+                    )
+                sections.append(
+                    HwpxParsedSection(
+                        index=index,
+                        root_tag=root.tag,
+                        unsupported_nodes=sum(
+                            1
+                            for node in nodes
+                            if node is not root and _local_name(node) not in _HWPX_CANONICAL_LOCAL_NAMES
+                        ),
+                        has_carriage_return=13 in part,
+                        paragraphs=tuple(paragraphs),
+                    )
+                )
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+    return tuple(sections)
+
+
+def extract_hwpx_text(payload: bytes) -> str:
+    """Flatten an HWPX package to text, unchanged from its pre-factoring shape.
+
+    Nested paragraph holders stay skipped, paragraphs and empty sections are
+    dropped, and the same character budget applies, so every accepted fixture
+    keeps producing byte-identical text while the walk itself now lives in
+    :func:`parse_hwpx_sections`.
+    """
+
+    sections: list[str] = []
+    for parsed in parse_hwpx_sections(payload):
+        paragraphs: list[str] = []
+        for paragraph in parsed.paragraphs:
+            if paragraph.holds_nested_paragraph:
+                continue
+            _append_bounded(paragraphs, paragraph.text)
+        section = "\n".join(paragraphs).strip()
+        if section:
+            _append_bounded(sections, section)
     text = "\n".join(sections).strip()
     if not text:
         raise DocumentNormalizationError("hwpx_empty", "HWPX contains no readable text.")
