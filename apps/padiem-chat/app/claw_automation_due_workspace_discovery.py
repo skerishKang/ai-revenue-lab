@@ -80,6 +80,17 @@ workspaces. Bridging an async store to the synchronous tick is explicitly NOT
 this slice's job: doing it here would mean inventing a scheduler-side execution
 authority, which this foundation refuses. This limitation is pinned by tests so
 no consumer can mistake discovery for a working async tick.
+
+What #2995 adds -- and nothing more. ``aadiscover_and_trigger`` runs the exact
+same bounded pass and delegates each authorized workspace through
+``ClawAutomationTriggerBoundary.ahandle()`` -> ``ClawAutomationTickRuntime.atick()``,
+which awaits the very same schedule math, ``occurrence_key`` dedup and PENDING
+claim the synchronous tick uses, against an async D1-shaped store. It does NOT
+bridge an async store into the synchronous tick: the SYNCHRONOUS store contract
+above remains the truth for ``handle()``, and for the sync slice, bridging an
+async store to that tick is still not something this slice may do. One discovery
+algorithm, two dispatch shapes -- no handler registration, no cron and no
+Production activation comes from either path.
 """
 
 from __future__ import annotations
@@ -310,6 +321,62 @@ class ClawAutomationDueWorkspaceDiscovery:
         trigger_id: str = "srv_due_discovery",
         continuation: DueWorkspaceDiscoveryCursor | None = None,
     ) -> DueWorkspaceDiscoveryReceipt:
+        """Run ONE bounded pass with the EXISTING synchronous dispatch (#2987).
+
+        Delegates every authorized workspace to the synchronous
+        ``ClawAutomationTriggerBoundary.handle()`` exactly as before; see
+        ``aadiscover_and_trigger`` for the awaited persistence twin.
+        """
+
+        return await self._run_pass(
+            now=now,
+            page_size=page_size,
+            max_workspaces=max_workspaces,
+            trigger_id=trigger_id,
+            continuation=continuation,
+            async_dispatch=False,
+        )
+
+    async def aadiscover_and_trigger(
+        self,
+        *,
+        now: datetime,
+        page_size: int = _MAX_DISCOVERY_PAGE_SIZE,
+        max_workspaces: int = _MAX_WORKSPACES_PER_PASS,
+        trigger_id: str = "srv_due_discovery",
+        continuation: DueWorkspaceDiscoveryCursor | None = None,
+    ) -> DueWorkspaceDiscoveryReceipt:
+        """Run the SAME bounded pass with awaited trigger dispatch (#2995).
+
+        Byte-identical bounds, ordering, membership revalidation, continuation
+        contract and receipt as ``discover_and_trigger``; the only difference is
+        that each authorized workspace is delegated through
+        ``ClawAutomationTriggerBoundary.ahandle()`` -> ``atick()``, so a
+        D1-shaped async store is served end to end without blocking the event
+        loop. One discovery algorithm, one tick authority, two persistence
+        shapes -- and still no handler registration, no cron and no Production
+        activation.
+        """
+
+        return await self._run_pass(
+            now=now,
+            page_size=page_size,
+            max_workspaces=max_workspaces,
+            trigger_id=trigger_id,
+            continuation=continuation,
+            async_dispatch=True,
+        )
+
+    async def _run_pass(
+        self,
+        *,
+        now: datetime,
+        page_size: int = _MAX_DISCOVERY_PAGE_SIZE,
+        max_workspaces: int = _MAX_WORKSPACES_PER_PASS,
+        trigger_id: str = "srv_due_discovery",
+        continuation: DueWorkspaceDiscoveryCursor | None = None,
+        async_dispatch: bool = False,
+    ) -> DueWorkspaceDiscoveryReceipt:
         """Run ONE bounded, server-owned discovery pass.
 
         ``now`` is the single observation instant handed to every workspace's
@@ -379,15 +446,19 @@ class ClawAutomationDueWorkspaceDiscovery:
                         break
                     continue
                 authorized.append(workspace)
-                receipt = self._trigger_boundary.handle(
-                    ClawAutomationTrigger(
-                        trigger_id=bounded_trigger_id,
-                        correlation_id=self._correlation(workspace),
-                        workspace_id=workspace,
-                        observed_at=observed_at,
-                        membership=membership,
-                    )
+                trigger = ClawAutomationTrigger(
+                    trigger_id=bounded_trigger_id,
+                    correlation_id=self._correlation(workspace),
+                    workspace_id=workspace,
+                    observed_at=observed_at,
+                    membership=membership,
                 )
+                if async_dispatch:
+                    # #2995 async persistence seam: identical validation and
+                    # tick authority, awaited store application only.
+                    receipt = await self._trigger_boundary.ahandle(trigger)
+                else:
+                    receipt = self._trigger_boundary.handle(trigger)
                 receipts.append(receipt)
                 for run_id in receipt.created_run_ids:
                     if run_id not in claimed:
