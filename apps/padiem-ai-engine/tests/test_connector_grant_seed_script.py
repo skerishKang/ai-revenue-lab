@@ -1,10 +1,11 @@
-"""Connector grant seed script contract tests (#2222, #2010).
+"""Connector grant seed script contract tests (#2222, #2010, #2980).
 
 Covers the reviewed READ connector grant paths:
 - Gmail readonly scope grant with trusted binding/actor refs;
 - Google Drive READ capability grant with trusted binding/actor refs;
 - Telegram Bot READ capability grant with trusted binding/actor refs;
-- Google Calendar READ capability grant with trusted binding/actor refs.
+- Google Calendar READ capability grant with trusted binding/actor refs;
+- shared Slack READ capability grant with trusted binding/actor refs.
 
 All tests are network-free. Invalid authority input must fail before any D1
 call; credential-bearing arguments are never accepted.
@@ -516,6 +517,237 @@ def test_calendar_has_no_synthetic_or_default_ref_authority() -> None:
     assert _MODULE._APP_IDS["calendar"] == "b54-padiem-claw-calendar"
     assert _MODULE._AGENT_IDS["calendar"] == "agent:padiem:claw_calendar_reader@1"
     assert _MODULE._ALLOWED_CALENDAR_CAPABILITIES == ("read",)
+
+
+# --- shared Slack READ-only grant path (#2980) -------------------------------
+
+_SLACK_BINDING = "bind:slack-workspace-owner-1"
+_SLACK_ACTOR = "actor:owner-1"
+
+
+def test_slack_seed_dry_run_emits_canonical_read_only_capability(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-23T00:00:00+00:00")
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "slack",
+        "--binding-ref", _SLACK_BINDING,
+        "--actor-ref", _SLACK_ACTOR,
+        "--capabilities", "read",
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "'b54-padiem-claw-slack', 'agent:padiem:claw_slack_reader@1', "
+        "'connector:slack:workspace@1', 'bind:slack-workspace-owner-1', "
+        "'actor:owner-1', '[]', '[\"read\"]', 1, "
+        "'2026-09-23T00:00:00+00:00', '2026-09-23T00:00:00+00:00'"
+    ) in out
+    # Capability column is exactly ["read"]: no other capability token is emitted.
+    assert "'[]', '[\"read\"]', 1," in out
+    assert "'[\"read\"," not in out
+    assert "post_message" not in out
+    assert "reply_thread" not in out
+    assert "update_message" not in out
+    assert "upload_file" not in out
+    assert "slack.write" not in out
+
+
+def test_slack_capability_defaults_to_read_without_an_explicit_flag(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed",
+        "--connector", "slack",
+        "--binding-ref", _SLACK_BINDING,
+        "--actor-ref", _SLACK_ACTOR,
+    ])
+    assert rc == 0
+    assert "'[]', '[\"read\"]', 1," in capsys.readouterr().out
+
+
+def test_slack_revoke_targets_slack_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    monkeypatch.setattr(_MODULE, "_now_iso", lambda: "2026-09-23T00:00:00+00:00")
+    rc = _MODULE.main(["--action", "revoke", "--connector", "slack"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert (
+        "WHERE app_id='b54-padiem-claw-slack' "
+        "AND connector_id='connector:slack:workspace@1';"
+    ) in out
+
+
+def test_slack_missing_binding_and_actor_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        ["--action", "seed", "--connector", "slack", "--execute"],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_missing_actor_only_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+@pytest.mark.parametrize(
+    "capability",
+    [
+        "slack.write",
+        "slack.send",
+        "send",
+        "write",
+        "full",
+        "mutation",
+        "unknown",
+        # canonical SlackCapability outbound write values
+        "post_message",
+        "reply_thread",
+        "update_message",
+        "upload_file",
+    ],
+)
+def test_slack_write_capability_fails_before_d1(
+    capability: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--capabilities", capability, "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_extra_capability_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--capabilities", "read", "post_message", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_scope_argument_fails_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--scopes", "slack.readonly", "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_rejection_is_slack_specific_not_borrowed(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Slack must own its own rejection branch and diagnostics.
+
+    Without this, the Slack branch could be deleted and the shared Telegram
+    fall-through would still reject the same inputs, so the Slack-specific
+    authority boundary would stop being observable.
+    """
+
+    monkeypatch.setattr(_MODULE.subprocess, "run", _forbid_subprocess)
+    rc = _MODULE.main([
+        "--action", "seed", "--connector", "slack",
+        "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+        "--capabilities", "post_message",
+        "--scopes", "slack.readonly",
+    ])
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "Slack capabilities must be exactly ('read',)" in err
+    assert "post_message/reply_thread/update_message/upload_file/send/write is forbidden" in err
+    assert "scopes are not accepted for Slack grants" in err
+    assert "Telegram" not in err
+
+
+def test_slack_wrong_app_or_agent_refs_fail_before_d1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rc, calls = _run_with_d1_probe(
+        [
+            "--action", "seed", "--connector", "slack",
+            "--app-id", "b54-padiem-claw-calendar",
+            "--agent-id", "agent:padiem:claw_calendar_reader@1",
+            "--binding-ref", _SLACK_BINDING, "--actor-ref", _SLACK_ACTOR,
+            "--execute",
+        ],
+        monkeypatch,
+    )
+    assert rc == 2
+    assert calls == []
+
+
+def test_slack_identity_reuses_the_promoted_canonical_authorities() -> None:
+    """The Slack seed mapping must not invent a second Slack identity."""
+
+    from app.connector_bindings import (
+        SLACK_AGENT_ID,
+        SLACK_CONNECTOR_ID,
+        SLACK_REFERENCE_APP_ID,
+    )
+
+    assert _MODULE._CONNECTOR_IDS["slack"] == SLACK_CONNECTOR_ID
+    assert _MODULE._APP_IDS["slack"] == SLACK_REFERENCE_APP_ID
+    assert _MODULE._AGENT_IDS["slack"] == SLACK_AGENT_ID
+    assert SLACK_CONNECTOR_ID == "connector:slack:workspace@1"
+    assert SLACK_REFERENCE_APP_ID == "b54-padiem-claw-slack"
+    assert SLACK_AGENT_ID == "agent:padiem:claw_slack_reader@1"
+    assert _MODULE._ALLOWED_SLACK_CAPABILITIES == ("read",)
+    assert _MODULE._DEFAULT_READ_CAPABILITIES["slack"] == ["read"]
+
+
+def test_slack_grant_reuses_the_single_existing_grant_store() -> None:
+    """One grant table, one upsert authority: no second Slack grant store."""
+
+    source = _SCRIPT_PATH.read_text(encoding="utf-8")
+    assert "padiem_engine_connector_grants" in source
+    assert source.count("INSERT INTO padiem_engine_connector_grants") == 1
+    assert "ON CONFLICT(app_id, connector_id) DO UPDATE SET active=1" in source
+
+
+def test_slack_has_no_synthetic_or_default_ref_authority() -> None:
+    """Trusted refs stay explicit inputs: no default/synthetic ref exists."""
+
+    for name in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert not hasattr(_MODULE, name)
+    source = _SCRIPT_PATH.read_text(encoding="utf-8")
+    for forbidden in ("DEFAULT_BINDING_REF", "DEFAULT_ACTOR_REF", "SYNTHETIC_REF"):
+        assert forbidden not in source
 
 
 # --- shared credential-argument safety --------------------------------------
