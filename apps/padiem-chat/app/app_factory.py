@@ -47,6 +47,7 @@ from .calendar_routes import (
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
 from .claw_task_alert_store import D1ClawTaskAlertStore
+from .claw_automation_store import D1ClawAutomationStore
 from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
@@ -258,7 +259,16 @@ def create_app(
     else:
         _calendar_store = InMemoryCalendarStore()
     app.state.calendar_store = _calendar_store
-    # #2846 Read-only durable automation projection. The automation authority is
-    # injected; Calendar never creates or owns a second automation store.
-    app.state.claw_automation_store = claw_automation_store
+    # #2983 Native Claw automation durable store (B62 worker persistence seam).
+    # Reuses the existing PADIEM_CHAT_DB D1 binding; migration 018 owns the schema
+    # and this adapter creates no tables at runtime. An explicitly injected store
+    # wins (network-free tests); otherwise derive from the D1 binding when present.
+    # None keeps the routes fail-closed.
+    _claw_automation_store = claw_automation_store
+    if _claw_automation_store is None and d1_binding is not None:
+        try:
+            _claw_automation_store = D1ClawAutomationStore(d1_binding)
+        except Exception:
+            _claw_automation_store = None
+    app.state.claw_automation_store = _claw_automation_store
     return app

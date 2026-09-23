@@ -15,6 +15,7 @@ import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
+import inspect
 import json
 from typing import Callable, Protocol, Any
 
@@ -40,6 +41,15 @@ class ScheduledOutcomeProjectionError(RuntimeError):
 
 
 class ScheduledOutcomeStore(Protocol):
+    """The existing scheduled-row surface this projection consumes.
+
+    A method may answer synchronously (the durable SQLite reference store and the
+    in-memory store) or through an awaitable (a D1-backed Worker store, where the
+    binding is only reachable through awaited statements). The awaitable path
+    resolves either shape with ``_await_projection`` instead of forcing a
+    synchronous adapter over an async binding, so this stays ONE store contract.
+    """
+
     def get_run(self, run_id: str, workspace_id: str) -> ClawScheduledRun | None: ...
 
     def update_run_projection(
@@ -95,12 +105,25 @@ def _output_id(*, workspace_id: str, rule_id: str, run_id: str) -> str:
     return f"scheduled_output_{digest}"
 
 
-def _require_existing_row(
+async def _resolve(value: Any) -> Any:
+    """Resolve one store result whether the store is sync or awaitable.
+
+    The durable reference stores answer synchronously, while a D1-backed Worker
+    store can only answer through awaited statements. Resolving both here keeps
+    ONE store contract and lets either implementation be injected. It never
+    synchronously drives a coroutine and never blocks the event loop.
+    """
+
+    return await value if inspect.isawaitable(value) else value
+
+
+def _validate_existing_row(
     *,
-    store: ScheduledOutcomeStore,
+    current: ClawScheduledRun | None,
     plan: CanonicalScheduledExecutionPlan,
 ) -> ClawScheduledRun:
-    current = store.get_run(plan.run.run_id, plan.rule.workspace_id)
+    """Shared fail-closed identity check for an already-read scheduled row."""
+
     if current is None:
         raise ScheduledOutcomeProjectionError(
             "terminal projection requires an existing scheduled run"
@@ -114,6 +137,39 @@ def _require_existing_row(
             "stored scheduled row identity does not match the canonical occurrence"
         )
     return current
+
+
+def _require_existing_row(
+    *,
+    store: ScheduledOutcomeStore,
+    plan: CanonicalScheduledExecutionPlan,
+) -> ClawScheduledRun:
+    """Read and validate the existing scheduled row for the synchronous path.
+
+    The synchronous entry point can only serve a synchronous store. An awaitable
+    store answers through a coroutine this function cannot drive, so it fails
+    closed and points the caller to the async entry point instead of faking a
+    synchronous result.
+    """
+
+    current = store.get_run(plan.run.run_id, plan.rule.workspace_id)
+    if inspect.isawaitable(current):
+        raise ScheduledOutcomeProjectionError(
+            "project_p01_outcome_to_scheduled_run is the synchronous entry point; "
+            "an awaitable store requires project_p01_outcome_to_scheduled_run_async"
+        )
+    return _validate_existing_row(current=current, plan=plan)
+
+
+async def _read_existing_row(
+    *,
+    store: ScheduledOutcomeStore,
+    plan: CanonicalScheduledExecutionPlan,
+) -> ClawScheduledRun:
+    """Awaitable-tolerant read, for a D1-backed store."""
+
+    current = await _resolve(store.get_run(plan.run.run_id, plan.rule.workspace_id))
+    return _validate_existing_row(current=current, plan=plan)
 
 
 def _require_outcome_run(
@@ -194,6 +250,63 @@ def _same_terminal_result(
     return None
 
 
+@dataclass(frozen=True, slots=True)
+class _TerminalDecision:
+    """Pure terminal decision: the status, error and output a projection needs.
+
+    Data only. It performs no store access, so the synchronous and awaitable
+    entry points below share ONE decision and cannot drift on what an outcome
+    means.
+    """
+
+    status: ClawScheduledRunStatus
+    error_message: str | None
+    output: ClawAutomationOutput | None
+
+
+def _decide_terminal_projection(
+    *,
+    rule: ClawAutomationRule,
+    plan: CanonicalScheduledExecutionPlan,
+    outcome: ClawOrchestrationOutcome,
+    projection: RunProjection,
+) -> _TerminalDecision:
+    """Pure: which terminal projection an already-validated outcome requires."""
+
+    if projection.status is ClawRunStatus.COMPLETED:
+        try:
+            output = _bounded_output(rule=rule, plan=plan, outcome=outcome)
+        except (ContractError, ScheduledOutcomeProjectionError):
+            return _TerminalDecision(
+                ClawScheduledRunStatus.FAILED, _UNSAFE_COMPLETED_MESSAGE, None
+            )
+        return _TerminalDecision(ClawScheduledRunStatus.COMPLETED, None, output)
+    if projection.status is ClawRunStatus.FAILED:
+        return _TerminalDecision(ClawScheduledRunStatus.FAILED, _FAILED_MESSAGE, None)
+    if projection.status is ClawRunStatus.CANCELLED:
+        return _TerminalDecision(ClawScheduledRunStatus.CANCELLED, None, None)
+    raise ScheduledOutcomeProjectionError(
+        "P01 outcome is not a terminal lifecycle result"
+    )
+
+
+async def _await_projection(
+    projection: ScheduledOutcomeProjection,
+) -> ScheduledOutcomeProjection:
+    """Resolve a projection whose stored row may be an un-awaited store coroutine.
+
+    ``_project_status`` is the ONE write call site for both the synchronous and
+    the Worker-D1 (awaitable) stores, so it returns the stored row directly for a
+    synchronous store and the store coroutine for an awaitable store. The sync
+    entry point uses the row as-is; an async caller awaits here first.
+    """
+
+    row = projection.scheduled_run
+    if inspect.isawaitable(row):
+        row = await row
+    return ScheduledOutcomeProjection(row, projection.outcome, projection.output)
+
+
 def _project_status(
     *,
     store: ScheduledOutcomeStore,
@@ -205,6 +318,16 @@ def _project_status(
     outcome: ClawOrchestrationOutcome | None = None,
     output: ClawAutomationOutput | None = None,
 ) -> ScheduledOutcomeProjection:
+    """The single terminal-projection write call site for this module.
+
+    The idempotent-retry short circuit returns the existing terminal row with NO
+    write. Otherwise it calls ``store.update_run_projection`` — the only such
+    literal in this module, so the synchronous and Worker-D1 stores can never
+    drift on what a terminal projection writes. For a synchronous store the call
+    returns the row; for an awaitable store it returns the coroutine the caller
+    must await (see ``_await_projection``).
+    """
+
     existing = _same_terminal_result(current=current, status=status, output=output)
     if existing is not None:
         return ScheduledOutcomeProjection(existing.scheduled_run, outcome, existing.output)
@@ -230,58 +353,66 @@ def project_p01_outcome_to_scheduled_run(
     completed_at: datetime | None = None,
     clock: Callable[[], datetime] | None = None,
 ) -> ScheduledOutcomeProjection:
-    """Project one already-correlated P01 terminal outcome to the same row."""
+    """Project one already-correlated P01 terminal outcome to the same row.
+
+    Synchronous entry point for the durable SQLite and in-memory reference
+    stores. An awaitable Worker-D1 store must use
+    ``project_p01_outcome_to_scheduled_run_async``: this function cannot await,
+    and it will not fake a synchronous result.
+    """
 
     plan = plan_canonical_scheduled_execution(rule, scheduled_run)
     projection = _require_outcome_run(outcome=outcome, plan=plan)
     current = _require_existing_row(store=store, plan=plan)
-    terminal_at = _completion_time(completed_at, clock)
+    decision = _decide_terminal_projection(
+        rule=rule, plan=plan, outcome=outcome, projection=projection
+    )
+    return _project_status(
+        store=store,
+        plan=plan,
+        current=current,
+        status=decision.status,
+        completed_at=_completion_time(completed_at, clock),
+        error_message=decision.error_message,
+        outcome=outcome,
+        output=decision.output,
+    )
 
-    if projection.status is ClawRunStatus.COMPLETED:
-        try:
-            output = _bounded_output(rule=rule, plan=plan, outcome=outcome)
-        except (ContractError, ScheduledOutcomeProjectionError) as exc:
-            return _project_status(
-                store=store,
-                plan=plan,
-                current=current,
-                status=ClawScheduledRunStatus.FAILED,
-                completed_at=terminal_at,
-                error_message=_UNSAFE_COMPLETED_MESSAGE,
-                outcome=outcome,
-            )
-        return _project_status(
-            store=store,
-            plan=plan,
-            current=current,
-            status=ClawScheduledRunStatus.COMPLETED,
-            completed_at=terminal_at,
-            outcome=outcome,
-            output=output,
-        )
 
-    if projection.status is ClawRunStatus.FAILED:
-        return _project_status(
+async def project_p01_outcome_to_scheduled_run_async(
+    *,
+    rule: ClawAutomationRule,
+    scheduled_run: ClawScheduledRun,
+    outcome: ClawOrchestrationOutcome,
+    store: ScheduledOutcomeStore,
+    completed_at: datetime | None = None,
+    clock: Callable[[], datetime] | None = None,
+) -> ScheduledOutcomeProjection:
+    """Awaitable twin of ``project_p01_outcome_to_scheduled_run``.
+
+    Same decision, same fail-closed order, same idempotent-retry short circuit;
+    the store access is awaited and the ONE ``_project_status`` write call site is
+    shared. A D1-backed Worker store needs this path, and a synchronous store is
+    served by it unchanged.
+    """
+
+    plan = plan_canonical_scheduled_execution(rule, scheduled_run)
+    projection = _require_outcome_run(outcome=outcome, plan=plan)
+    current = await _read_existing_row(store=store, plan=plan)
+    decision = _decide_terminal_projection(
+        rule=rule, plan=plan, outcome=outcome, projection=projection
+    )
+    return await _await_projection(
+        _project_status(
             store=store,
             plan=plan,
             current=current,
-            status=ClawScheduledRunStatus.FAILED,
-            completed_at=terminal_at,
-            error_message=_FAILED_MESSAGE,
+            status=decision.status,
+            completed_at=_completion_time(completed_at, clock),
+            error_message=decision.error_message,
             outcome=outcome,
+            output=decision.output,
         )
-    if projection.status is ClawRunStatus.CANCELLED:
-        return _project_status(
-            store=store,
-            plan=plan,
-            current=current,
-            status=ClawScheduledRunStatus.CANCELLED,
-            completed_at=terminal_at,
-            error_message=None,
-            outcome=outcome,
-        )
-    raise ScheduledOutcomeProjectionError(
-        "P01 outcome is not a terminal lifecycle result"
     )
 
 
@@ -299,7 +430,7 @@ async def execute_and_project_scheduled_occurrence(
     """Execute through S2F4B, then project the result through S2F4A."""
 
     plan = plan_canonical_scheduled_execution(rule, scheduled_run)
-    current = _require_existing_row(store=store, plan=plan)
+    current = await _read_existing_row(store=store, plan=plan)
     if current.status in {
         ClawScheduledRunStatus.COMPLETED,
         ClawScheduledRunStatus.FAILED,
@@ -317,27 +448,31 @@ async def execute_and_project_scheduled_occurrence(
             product_tier=product_tier,
         )
     except asyncio.CancelledError:
-        _project_status(
-            store=store,
-            plan=plan,
-            current=current,
-            status=ClawScheduledRunStatus.CANCELLED,
-            completed_at=_completion_time(completed_at, clock),
-            outcome=None,
+        await _await_projection(
+            _project_status(
+                store=store,
+                plan=plan,
+                current=current,
+                status=ClawScheduledRunStatus.CANCELLED,
+                completed_at=_completion_time(completed_at, clock),
+                outcome=None,
+            )
         )
         raise
     except Exception:
-        _project_status(
-            store=store,
-            plan=plan,
-            current=current,
-            status=ClawScheduledRunStatus.FAILED,
-            completed_at=_completion_time(completed_at, clock),
-            error_message=_FAILED_MESSAGE,
-            outcome=None,
+        await _await_projection(
+            _project_status(
+                store=store,
+                plan=plan,
+                current=current,
+                status=ClawScheduledRunStatus.FAILED,
+                completed_at=_completion_time(completed_at, clock),
+                error_message=_FAILED_MESSAGE,
+                outcome=None,
+            )
         )
         raise
-    return project_p01_outcome_to_scheduled_run(
+    return await project_p01_outcome_to_scheduled_run_async(
         rule=rule,
         scheduled_run=scheduled_run,
         outcome=outcome,
@@ -352,4 +487,5 @@ __all__ = [
     "ScheduledOutcomeProjectionError",
     "execute_and_project_scheduled_occurrence",
     "project_p01_outcome_to_scheduled_run",
+    "project_p01_outcome_to_scheduled_run_async",
 ]

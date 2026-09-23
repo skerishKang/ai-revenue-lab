@@ -73,6 +73,7 @@ Invariants pinned here:
 
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Callable, Protocol
@@ -153,6 +154,13 @@ class BackgroundExecutionStore(Protocol):
     Every method here already belongs to ``ClawAutomationStore``; this Protocol
     only names the subset the composition needs, so a store that cannot serve it
     fails closed early instead of halfway through a trigger.
+
+    ONE port, two durable homes. A method may answer synchronously (the durable
+    SQLite reference store and the in-memory store) or through an awaitable (a
+    D1-backed Worker store, where the binding is only reachable through awaited
+    statements). This composition resolves either shape with ``_call`` instead of
+    forcing a synchronous adapter over an async binding, so neither store has to
+    lie about its runtime and no second port is introduced.
     """
 
     def list_runs(self, workspace_id: str) -> list[ClawScheduledRun]: ...
@@ -310,7 +318,20 @@ def _bounded_recovery_bound(value: object) -> int:
     return value
 
 
-def _rows_for_ids(
+async def _call(value: Any) -> Any:
+    """Resolve one store result whether the store is sync or awaitable.
+
+    The durable reference stores answer synchronously, while a D1-backed Worker
+    store can only answer through awaited statements. Resolving both here — the
+    same tolerance ``claw_inbox_routes`` already applies to its store — keeps ONE
+    store contract and lets either implementation be injected. It never wraps a
+    coroutine in ``asyncio.run`` and never blocks the event loop.
+    """
+
+    return await value if inspect.isawaitable(value) else value
+
+
+async def _rows_for_ids(
     *,
     store: BackgroundExecutionStore,
     run_ids: tuple[str, ...],
@@ -325,7 +346,7 @@ def _rows_for_ids(
 
     rows: list[ClawScheduledRun] = []
     for run_id in run_ids:
-        row = store.get_run(run_id, workspace_id)
+        row = await _call(store.get_run(run_id, workspace_id))
         if row is None or row.workspace_id != workspace_id:
             raise BackgroundExecutionCompositionError(
                 "the trusted tick claimed a run the automation store cannot resolve"
@@ -334,7 +355,7 @@ def _rows_for_ids(
     return rows
 
 
-def _recoverable_pending_rows(
+async def _recoverable_pending_rows(
     *,
     store: BackgroundExecutionStore,
     workspace_id: str,
@@ -363,14 +384,14 @@ def _recoverable_pending_rows(
     """
 
     candidates: list[ClawScheduledRun] = []
-    for run in store.list_runs(workspace_id):
+    for run in await _call(store.list_runs(workspace_id)):
         if run.status is not ClawScheduledRunStatus.PENDING:
             continue
         if run.workspace_id != workspace_id or run.run_id in exclude:
             continue
         if run.scheduled_time > observed_at:
             continue
-        rule = store.get_rule(run.rule_id, workspace_id)
+        rule = await _call(store.get_rule(run.rule_id, workspace_id))
         if rule is None:
             continue
         if rule.workspace_id != workspace_id or rule.rule_id != run.rule_id:
@@ -389,7 +410,7 @@ def _recoverable_pending_rows(
     return candidates[:bound]
 
 
-def _current_enabled_rule(
+async def _current_enabled_rule(
     *,
     store: BackgroundExecutionStore,
     run: ClawScheduledRun,
@@ -397,7 +418,7 @@ def _current_enabled_rule(
 ) -> ClawAutomationRule | None:
     """Re-read the rule immediately before dispatch, or refuse the candidate."""
 
-    rule = store.get_rule(run.rule_id, workspace_id)
+    rule = await _call(store.get_rule(run.rule_id, workspace_id))
     if rule is None:
         return None
     if rule.workspace_id != workspace_id or rule.rule_id != run.rule_id:
@@ -530,12 +551,12 @@ async def compose_background_execution(
     # 1. Existing trusted boundary -> existing durable tick -> existing dedup.
     tick = checked_boundary.handle(checked_trigger)
     newly_claimed = tuple(tick.created_run_ids)
-    candidates = _rows_for_ids(
+    candidates = await _rows_for_ids(
         store=store, run_ids=newly_claimed, workspace_id=workspace_id
     )
 
     # 2. Bounded recovery of PENDING rows stranded by an interrupted trigger.
-    recovered = _recoverable_pending_rows(
+    recovered = await _recoverable_pending_rows(
         store=store,
         workspace_id=workspace_id,
         observed_at=observed_at,
@@ -552,7 +573,9 @@ async def compose_background_execution(
     dispatch_failed: list[str] = []
 
     for run in (*candidates, *recovered):
-        rule = _current_enabled_rule(store=store, run=run, workspace_id=workspace_id)
+        rule = await _current_enabled_rule(
+            store=store, run=run, workspace_id=workspace_id
+        )
         if rule is None:
             # Filtered out by the scan, or the rule stopped being executable
             # between the scan and now. It is not a failure: nothing was claimed.
@@ -568,11 +591,13 @@ async def compose_background_execution(
             continue
 
         try:
-            claimed = store.claim_execution(
-                run_id=run.run_id,
-                workspace_id=workspace_id,
-                rule_id=run.rule_id,
-                scheduled_time=run.scheduled_time,
+            claimed = await _call(
+                store.claim_execution(
+                    run_id=run.run_id,
+                    workspace_id=workspace_id,
+                    rule_id=run.rule_id,
+                    scheduled_time=run.scheduled_time,
+                )
             )
         except ContractError:
             failed_before_dispatch.append(run.run_id)
@@ -581,7 +606,7 @@ async def compose_background_execution(
         if claimed is None:
             # NOT_CLAIMED: another caller owns this row, or it is already beyond
             # PENDING. Classify from the row itself, never by dispatching again.
-            current = store.get_run(run.run_id, workspace_id)
+            current = await _call(store.get_run(run.run_id, workspace_id))
             if current is None:
                 failed_before_dispatch.append(run.run_id)
                 continue
@@ -620,7 +645,7 @@ async def compose_background_execution(
             # or other authority failure can leave the row RUNNING (or otherwise
             # non-terminal); that error must propagate unchanged rather than be
             # mislabeled as a dispatch failure.
-            current = store.get_run(run.run_id, workspace_id)
+            current = await _call(store.get_run(run.run_id, workspace_id))
             if current is None or current.status not in _TERMINAL_STATUSES:
                 raise
             dispatch_failed.append(run.run_id)
