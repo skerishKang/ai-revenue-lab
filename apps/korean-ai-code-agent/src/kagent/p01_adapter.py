@@ -29,6 +29,10 @@ from .contracts import (
     SandboxLease,
     SandboxLeaseState,
 )
+from .p01_approval_pause_transport import (
+    EngineApprovalPauseWire,
+    P01PausedWireResult,
+)
 from .runs import ClawRun, RunStateError
 from .security import redact_secrets
 
@@ -96,7 +100,9 @@ class P01ProjectionError(P01AdapterError):
 
 
 class P01OrchestrationPort(Protocol):
-    async def run(self, request: OrchestrationRequest) -> OrchestrationResult: ...
+    async def run(
+        self, request: OrchestrationRequest
+    ) -> OrchestrationResult | P01PausedWireResult: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,6 +118,9 @@ class ClawOrchestrationOutcome:
     answer: str | None
     p01_run_id: str | None
     p01_event_count: int
+    # #2946: Engine-issued opaque continuation reference when the run is
+    # WAITING_APPROVAL; never minted, parsed, or stored by B54.
+    continuation_ref: str | None = None
 
     def safe_dict(self) -> dict[str, object]:
         return {
@@ -119,6 +128,7 @@ class ClawOrchestrationOutcome:
             "answer": redact_secrets(self.answer) if self.answer is not None else None,
             "p01_run_id": self.p01_run_id,
             "p01_event_count": self.p01_event_count,
+            "continuation_ref": self.continuation_ref,
         }
 
 
@@ -492,7 +502,12 @@ class P01CoreOrchestrationAdapter:
                 trace_id=bundle.context.trace_id,
                 app_id=bundle.orchestration_request.app_id,
             )
-            result = await self._runner.run(bundle.orchestration_request)
+            port_result = await self._runner.run(bundle.orchestration_request)
+            approval_pause_wire: EngineApprovalPauseWire | None = None
+            if isinstance(port_result, P01PausedWireResult):
+                approval_pause_wire = port_result.wire
+                port_result = port_result.result
+            result = port_result
             if not isinstance(result, OrchestrationResult):
                 raise P01AdapterError(
                     "invalid_p01_result",
@@ -509,6 +524,23 @@ class P01CoreOrchestrationAdapter:
                     "P01 result ended without terminal or approval-paused lifecycle evidence.",
                     dispatch_class=P01DispatchClass.DISPATCHED,
                 )
+            if run.status is ClawRunStatus.WAITING_APPROVAL:
+                if approval_pause_wire is None or not approval_pause_wire.continuation_ref:
+                    # A paused Claw run without the Engine-issued continuation
+                    # identity cannot be resumed truthfully; fail closed (#2946).
+                    raise P01AdapterError(
+                        "missing_continuation_ref",
+                        "P01 approval pause arrived without an Engine-issued continuation reference.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+            elif approval_pause_wire is not None:
+                raise P01AdapterError(
+                    "continuation_without_pause",
+                    "P01 returned Engine continuation identity without WAITING_APPROVAL lifecycle state.",
+                    dispatch_class=P01DispatchClass.DISPATCHED,
+                    failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                )
 
             answer = (
                 redact_secrets(result.execution_result.answer)
@@ -520,6 +552,11 @@ class P01CoreOrchestrationAdapter:
                 answer=answer,
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
+                continuation_ref=(
+                    approval_pause_wire.continuation_ref
+                    if approval_pause_wire is not None
+                    else None
+                ),
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)

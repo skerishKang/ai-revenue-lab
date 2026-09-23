@@ -58,6 +58,7 @@ def _make_outcome(answer: str = "test result", status_value: str = "completed") 
     outcome.answer = answer
     outcome.p01_run_id = "p01_run_test123"
     outcome.p01_event_count = 2
+    outcome.continuation_ref = None
     return outcome
 
 
@@ -731,6 +732,48 @@ def test_missing_engine_configuration_fails_closed(client: TestClient) -> None:
     data = resp.json()
     assert data["ok"] is False
     assert data["error"]["code"] == "engine_not_configured"
+
+
+def test_waiting_approval_outcome_projects_opaque_continuation_without_answer(
+    client: TestClient,
+) -> None:
+    """#2946: Engine pause → WAITING_APPROVAL bounded 200, no terminal claim."""
+    adapter = _make_adapter()
+    waiting = _make_outcome(answer=None, status_value="waiting_approval")
+    waiting.answer = None
+    waiting.continuation_ref = "cont_EngineOpaqueRef_01"
+    adapter.execute = AsyncMock(return_value=waiting)
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
+        )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["ok"] is True
+    result = data["result"]
+    assert result["status"] == "waiting_approval"
+    assert result["approval_required"] is True
+    assert result["result_text"] is None
+    assert result["continuation_ref"] == "cont_EngineOpaqueRef_01"
+    assert "completed" != result["status"]
+
+
+def test_waiting_approval_without_continuation_ref_fails_closed(client: TestClient) -> None:
+    adapter = _make_adapter()
+    waiting = _make_outcome(answer=None, status_value="waiting_approval")
+    waiting.answer = None
+    waiting.continuation_ref = None
+    adapter.execute = AsyncMock(return_value=waiting)
+    with _injected_adapter(client, adapter):
+        resp = client.post(
+            "/api/claw/manual-intake/execute",
+            json={"content": "테스트", "channel": "kakao", "action": "reply"},
+        )
+    assert resp.status_code == 502
+    data = resp.json()
+    assert data["error"]["code"] == "engine_execution_failed"
+    assert data["error"]["detail"] == "p01_contract_failure"
 
 
 def test_engine_failure_projects_safe_error(client: TestClient) -> None:
