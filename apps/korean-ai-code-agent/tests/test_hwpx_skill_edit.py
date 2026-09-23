@@ -656,10 +656,14 @@ class HwpxEditAuthorityTests(unittest.TestCase):
         imported_core_modules = {
             line.split()[1] for line in source.splitlines() if line.startswith("from padiem_ai_core")
         }
+        # #2989 added the accepted #2979 package-preserving mutation authority,
+        # which the template_fill facade composes. It joins the allow-list; no
+        # other Core module may.
         self.assertEqual(
             imported_core_modules,
             {
                 "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_package_mutation",
                 "padiem_ai_core.hwpx_package_serializer",
             },
         )
@@ -710,8 +714,13 @@ class HwpxEditAuthorityTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_edit_never_claims_a_wider_capability(self) -> None:
+        # #2989 claims HWPX_TEMPLATE_FILL as a foundation, so it is no longer
+        # unclaimed. It is still never a full capability claim, which the
+        # template-fill test module pins; every other later capability stays
+        # unclaimed from edit's point of view.
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "FOUNDATION_ONLY")
+        self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), {"PASS", "YES"})
         for key in (
-            "HWPX_TEMPLATE_FILL",
             "PARAGRAPH_INSERT",
             "PARAGRAPH_DELETE",
             "SECTION_INSERT",

@@ -404,10 +404,14 @@ class AuthorityContractTests(unittest.TestCase):
         imported_core_modules = {
             line.split()[1] for line in source.splitlines() if line.startswith("from padiem_ai_core")
         }
+        # #2989 added the single package-preserving mutation authority, which
+        # the template_fill facade composes. It is the accepted #2979 Core
+        # mutator, so it joins the allow-list; no other Core module may.
         self.assertEqual(
             imported_core_modules,
             {
                 "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_package_mutation",
                 "padiem_ai_core.hwpx_package_serializer",
             },
         )
@@ -442,31 +446,35 @@ class AuthorityContractTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_later_2825_capabilities_are_explicitly_not_claimed(self) -> None:
-        # #2962 built the bounded create foundation and #2972 the bounded
-        # paragraph-replacement edit foundation, so neither create nor edit is
-        # an unclaimed capability — each is a foundation-only claim and still
-        # never a full capability claim. Every later capability stays unclaimed.
+        # #2962 built the bounded create foundation, #2972 the bounded
+        # paragraph-replacement edit foundation and #2989 the bounded
+        # template-fill foundation, so none of them is an unclaimed capability
+        # — each is a foundation-only claim and still never a full capability
+        # claim. Every later capability stays unclaimed.
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), "FOUNDATION_ONLY")
         self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), {"PASS", "YES"})
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), "FOUNDATION_ONLY")
         self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), {"PASS", "YES"})
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_FOUNDATION"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "FOUNDATION_ONLY")
+        self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), {"PASS", "YES"})
         for key in (
-            "HWPX_TEMPLATE_FILL",
             "TABLE_INSERT",
             "IMAGE_INSERT",
         ):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
             self.assertNotIn(hwpx_skill.ACCEPTANCE.get(key), {"PASS", "YES"})
 
-    def test_create_and_edit_exist_and_later_surfaces_do_not(self) -> None:
-        # #2972 added the bounded hwpx_edit facade, so edit is no longer an
-        # absent surface. Template fill and table/image insertion still are.
+    def test_create_edit_and_template_fill_exist_and_later_surfaces_do_not(self) -> None:
+        # #2972 added the bounded hwpx_edit facade and #2989 the bounded
+        # hwpx_template_fill facade, so neither is an absent surface. Table and
+        # image insertion still are.
         self.assertTrue(callable(getattr(hwpx_skill, "hwpx_create", None)))
         self.assertTrue(callable(getattr(hwpx_skill, "hwpx_edit", None)))
+        self.assertTrue(callable(getattr(hwpx_skill, "hwpx_template_fill", None)))
         for attribute in (
-            "hwpx_template_fill",
             "hwpx_insert_table",
             "hwpx_insert_image",
         ):
