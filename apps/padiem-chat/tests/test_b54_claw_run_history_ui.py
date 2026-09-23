@@ -18,6 +18,9 @@ recording fetch. The harness proves actual behavior:
 - ARTIFACT_REDOWNLOAD_REUSES_BOUNDED_ROUTE=PASS
 - RUN_HISTORY_HIDDEN_IN_INBOX_VIEW=PASS
 - SENSITIVE_FIELD_DOM_PROJECTION=0
+- RUN_HISTORY_WAITING_APPROVAL_UI=PASS
+- APPROVAL_DECISION_BODY_BOUNDED=PASS
+- APPROVAL_TERMINAL_REFRESH=PASS
 
 The slice is presentation-only: no run/history truth is minted in the browser,
 and no new route, store, schema, or provider call is introduced.
@@ -177,6 +180,44 @@ def test_theme_roles_inherit_shared_tokens() -> None:
     assert '.app-shell:not([data-state="claw"]) .claw-run-history,' in css
 
 
+def test_waiting_approval_ui_reuses_existing_owner_decision_endpoint() -> None:
+    app = _app_source()
+    assert 'fetch("/api/claw/approvals/decision"' in app
+    assert 'body: JSON.stringify({ run_id: runId, decision })' in app
+    assert 'result.status === "waiting_approval"' in app
+    assert 'run.status === "waiting_approval"' in app
+    # Browser never submits the opaque continuation/pause authority.
+    decision_block = app.split('fetch("/api/claw/approvals/decision"', 1)[1].split("});", 1)[0]
+    for forbidden in ("continuation_ref", "pause_id", "workspace_id", "user_id", "tenant_id", "approval_scope"):
+        assert forbidden not in decision_block
+
+
+def test_approval_copy_and_controls_are_accessible_and_locale_driven() -> None:
+    html = INDEX_HTML.read_text(encoding="utf-8")
+    app = _app_source()
+    locale = LOCALE_JS.read_text(encoding="utf-8")
+    css = WORKSPACE_CSS.read_text(encoding="utf-8")
+    assert 'id="clawApprovalActions"' in html
+    assert 'role="group"' in html
+    assert 'data-locale-aria-label="claw-approval-actions-aria"' in html
+    for key in (
+        "claw-approval-actions-aria",
+        "claw-approval-required",
+        "claw-approval-approve",
+        "claw-approval-deny",
+        "claw-approval-processing",
+        "claw-approval-error",
+        "claw-approval-not-available",
+        "claw-runs-status-waiting_approval",
+    ):
+        assert locale.count(f'"{key}"') >= 2, key
+        assert f'"{key}"' in app, key
+    assert ".claw-approval-button" in css
+    assert "min-height: 44px" in css
+    assert "var(--accent)" in css
+    assert "--claw-approval" not in css
+
+
 # ── behavioral proof via Node harness executing real app.js ─────────────────
 
 _HARNESS = r"""
@@ -226,7 +267,7 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "projectFilesPanel","projectFileInput","projectFilesList","projectFilesEmpty","clawNavButton","clawWorkspace",
   "clawManualForm","clawChannel","clawAction","clawSender","clawResultArea","clawResultPreview",
   "clawResultCard","clawResultEmpty","clawResultKind","clawGenerateBtn","clawExecuteButton","clawResultBadge",
-  "clawResultDocx","clawStatus","clawArtifactMeta","clawArtifactName","clawArtifactSize",
+  "clawResultDocx","clawApprovalActions","clawStatus","clawArtifactMeta","clawArtifactName","clawArtifactSize",
   "clawResultSuccessNote","clawResultHint","clawExecuteHint","clawApprovedMemory","clawApprovedRefresh",
   "clawApprovedLoading","clawApprovedError","clawApprovedList","clawApprovedEmpty","clawMemoryReview",
   "tasksNavButton","alertsNavButton","clawInbox","clawInboxTitle","clawInboxLoading","clawInboxError",
@@ -279,6 +320,17 @@ async function fetchImpl(url, opts) {
     if (runsStatus !== 200) return jsonResponse(runsStatus, { ok: false, error: { code: "run_history_read_failed" } });
     return jsonResponse(200, { ok: true, runs: runState.runs });
   }
+  if (u === "/api/claw/approvals/decision") {
+    const body = opts.body ? JSON.parse(opts.body) : {};
+    runState = { runs: [
+      { run_id: body.run_id, channel: "email", action: "reply_draft", title: "[EMAIL] reply_draft", status: "completed",
+        created_at: "2026-09-24T01:00:00Z", result_summary: body.decision === "deny" ? "승인이 거절되었습니다." : "승인 후 완료", artifact: null },
+    ] };
+    return jsonResponse(200, { ok: true, result: {
+      run_id: body.run_id, status: body.decision === "deny" ? "cancelled" : "completed",
+      approval_required: false, result_text: body.decision === "deny" ? "승인이 거절되었습니다." : "승인 후 완료"
+    } });
+  }
   if (u.startsWith("/api/claw/manual-intake/artifact/")) {
     return { ok: true, status: 200, json: async () => ({}), blob: async () => ({ size: 3, type: "application/octet-stream" }) };
   }
@@ -299,6 +351,14 @@ const sandbox = {
     "claw-runs-error": "실행 기록을 불러오지 못했습니다. 다시 시도해 주세요.",
     "claw-runs-empty": "최근 실행 기록이 없습니다.",
     "claw-runs-status-completed": "완료",
+    "claw-runs-status-waiting_approval": "승인 필요",
+    "claw-approval-actions-aria": "승인 결정",
+    "claw-approval-required": "이 실행은 사용자의 승인을 기다리고 있습니다.",
+    "claw-approval-approve": "승인",
+    "claw-approval-deny": "거절",
+    "claw-approval-processing": "승인 결정을 처리하고 있습니다…",
+    "claw-approval-error": "승인 결정을 처리하지 못했습니다. 자동으로 다시 시도하지 않았습니다.",
+    "claw-approval-not-available": "이 승인 요청은 더 이상 사용할 수 없습니다.",
     "claw-error-auth-needed": "다시 로그인해 주세요.",
   }[k] || k) },
   PadiemChatLifecycle: { states: { IDLE: "idle", STREAMING: "streaming", COMPLETED: "completed", FAILED: "failed", CANCELLED: "cancelled", TIMED_OUT: "timed_out" }, set() {} },
@@ -422,6 +482,35 @@ function collectText(root) {
   checks.RUN_WITHOUT_ARTIFACT_HAS_NO_DOWNLOAD = findButton(byId.clawRunHistoryList, "문서 다시 받기") === null;
   if (!checks.RUN_WITHOUT_ARTIFACT_HAS_NO_DOWNLOAD) fail("RUN_WITHOUT_ARTIFACT_HAS_NO_DOWNLOAD");
 
+  // 12) A server-projected waiting_approval row gets owner decision controls.
+  runState = { runs: [
+    { run_id: "run_wait", channel: "email", action: "reply_draft", title: "[EMAIL] reply_draft", status: "waiting_approval",
+      created_at: "2026-09-24T01:00:00Z", result_summary: "", artifact: null },
+  ] };
+  byId.clawRunHistoryRefresh.click();
+  await tick(50);
+  const approve = findButton(byId.clawRunHistoryList, "승인");
+  const deny = findButton(byId.clawRunHistoryList, "거절");
+  checks.RUN_HISTORY_WAITING_APPROVAL_UI = !!approve && !!deny && collectText(byId.clawRunHistoryList).indexOf("승인 필요") >= 0;
+  if (!checks.RUN_HISTORY_WAITING_APPROVAL_UI) fail("RUN_HISTORY_WAITING_APPROVAL_UI");
+
+  // 13) Explicit click sends exactly run_id + decision and then refreshes canonical history.
+  approve.click();
+  await tick(80);
+  const approvalRequests = requests.filter((r) => r.url === "/api/claw/approvals/decision");
+  const approvalBody = approvalRequests[0] && approvalRequests[0].body;
+  checks.APPROVAL_DECISION_BODY_BOUNDED =
+    approvalRequests.length === 1
+    && approvalRequests[0].method === "POST"
+    && JSON.stringify(Object.keys(approvalBody || {}).sort()) === JSON.stringify(["decision", "run_id"])
+    && approvalBody.run_id === "run_wait"
+    && approvalBody.decision === "approve";
+  if (!checks.APPROVAL_DECISION_BODY_BOUNDED) fail("APPROVAL_DECISION_BODY_BOUNDED");
+  checks.APPROVAL_TERMINAL_REFRESH =
+    findButton(byId.clawRunHistoryList, "승인") === null
+    && collectText(byId.clawRunHistoryList).indexOf("승인 후 완료") >= 0;
+  if (!checks.APPROVAL_TERMINAL_REFRESH) fail("APPROVAL_TERMINAL_REFRESH");
+
   console.log(JSON.stringify({ ok: true, requests, checks }));
   process.exit(0);
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); process.exit(0); });
@@ -467,6 +556,9 @@ def test_behavioral_run_history_journey() -> None:
         "RUN_HISTORY_EMPTY_STATE",
         "RUN_HISTORY_ERROR_RETRY",
         "RUN_WITHOUT_ARTIFACT_HAS_NO_DOWNLOAD",
+        "RUN_HISTORY_WAITING_APPROVAL_UI",
+        "APPROVAL_DECISION_BODY_BOUNDED",
+        "APPROVAL_TERMINAL_REFRESH",
     ):
         assert checks.get(name) is True, name
     assert checks.get("SENSITIVE_FIELD_DOM_PROJECTION") == 1
@@ -484,10 +576,13 @@ def test_behavioral_requests_stay_within_existing_authority() -> None:
         "/api/claw/memory",
         "/api/claw/inbox/tasks",
         "/api/claw/manual-intake/artifact/" + "doc_" + "a" * 32,
+        "/api/claw/approvals/decision",
     }
     assert urls <= allowed, urls - allowed
-    # Presentation never POSTs: nothing in this slice mutates server state.
-    assert all(request["method"] == "GET" for request in payload["requests"])
+    # The only POST is the pre-existing owner-scoped approval endpoint, and its
+    # body is proven above to contain exactly run_id + decision.
+    posts = [request for request in payload["requests"] if request["method"] == "POST"]
+    assert all(request["url"] == "/api/claw/approvals/decision" for request in posts)
 
 
 if __name__ == "__main__":
@@ -500,6 +595,8 @@ if __name__ == "__main__":
     test_locale_keys_are_declared_for_both_languages()
     test_runtime_copy_stays_locale_driven()
     test_theme_roles_inherit_shared_tokens()
+    test_waiting_approval_ui_reuses_existing_owner_decision_endpoint()
+    test_approval_copy_and_controls_are_accessible_and_locale_driven()
     test_behavioral_harness_passes()
     test_behavioral_run_history_journey()
     test_behavioral_requests_stay_within_existing_authority()

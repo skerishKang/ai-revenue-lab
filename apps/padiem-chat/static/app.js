@@ -1428,6 +1428,7 @@
   const clawExecuteButton = document.getElementById("clawExecuteButton");
   const clawResultBadge = document.getElementById("clawResultBadge");
   const clawResultDocx = document.getElementById("clawResultDocx");
+  const clawApprovalActions = document.getElementById("clawApprovalActions");
   const clawStatus = document.getElementById("clawStatus");
   const clawRetryBox = document.getElementById("clawRetryBox");
   const clawRetryCopy = document.getElementById("clawRetryCopy");
@@ -1453,6 +1454,7 @@
   let clawWaitTimer = null;
   let clawWaitRevealed = false;
   let clawWaitAnnouncedStage = 0;
+  let clawApprovalInFlight = false;
 
   const clawFallbackCopy = {
     "claw-result-badge": "Preview",
@@ -1502,6 +1504,14 @@
     "claw-runs-download": "Download document again",
     "claw-runs-open-session": "Open session",
     "claw-runs-status-completed": "Completed",
+    "claw-runs-status-waiting_approval": "Approval required",
+    "claw-approval-actions-aria": "Approval decision",
+    "claw-approval-required": "This run is waiting for your approval.",
+    "claw-approval-approve": "Approve",
+    "claw-approval-deny": "Deny",
+    "claw-approval-processing": "Processing your decision...",
+    "claw-approval-error": "The approval decision could not be processed. Nothing was retried automatically.",
+    "claw-approval-not-available": "This approval request is no longer available.",
   };
 
   function clawT(key, variables = null) {
@@ -2094,6 +2104,113 @@
     }
   }
 
+  function approvalDecisionErrorMessage(data, response) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const status = response ? response.status : 0;
+    if (code === "unauthorized" || status === 401) return clawT("claw-error-auth-needed");
+    if (code === "approval_not_available" || status === 404) return clawT("claw-approval-not-available");
+    return clawT("claw-approval-error");
+  }
+
+  function setApprovalControlsBusy(container, busy) {
+    if (!container) return;
+    Array.from(container.children || []).forEach((child) => {
+      if (String(child.tagName || "").toUpperCase() === "BUTTON") {
+        child.disabled = busy;
+        child.setAttribute("aria-disabled", String(busy));
+      }
+    });
+  }
+
+  function renderClawApprovalControls(container, runId, onResolved) {
+    if (!container || typeof runId !== "string" || !runId) return;
+    container.replaceChildren();
+    container.hidden = false;
+
+    const copy = document.createElement("p");
+    copy.className = "claw-approval-copy";
+    copy.textContent = clawT("claw-approval-required");
+
+    const status = document.createElement("p");
+    status.className = "claw-approval-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.hidden = true;
+
+    const approve = document.createElement("button");
+    approve.type = "button";
+    approve.className = "claw-approval-button claw-approval-approve";
+    approve.textContent = clawT("claw-approval-approve");
+
+    const deny = document.createElement("button");
+    deny.type = "button";
+    deny.className = "claw-approval-button claw-approval-deny";
+    deny.textContent = clawT("claw-approval-deny");
+
+    async function decide(decision) {
+      if (clawApprovalInFlight) return;
+      clawApprovalInFlight = true;
+      setApprovalControlsBusy(container, true);
+      status.hidden = false;
+      status.dataset.state = "pending";
+      status.textContent = clawT("claw-approval-processing");
+      try {
+        const response = await fetch("/api/claw/approvals/decision", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ run_id: runId, decision }),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data || data.ok !== true || !data.result || typeof data.result.run_id !== "string") {
+          throw new Error(approvalDecisionErrorMessage(data, response));
+        }
+        status.hidden = true;
+        status.removeAttribute("data-state");
+        if (typeof onResolved === "function") await onResolved(data.result);
+      } catch (error) {
+        status.hidden = false;
+        status.dataset.state = "error";
+        status.textContent = error instanceof Error ? error.message : clawT("claw-approval-error");
+      } finally {
+        clawApprovalInFlight = false;
+        setApprovalControlsBusy(container, false);
+      }
+    }
+
+    approve.addEventListener("click", () => decide("approve"));
+    deny.addEventListener("click", () => decide("deny"));
+    container.append(copy, approve, deny, status);
+  }
+
+  function clearImmediateApprovalControls() {
+    if (!clawApprovalActions) return;
+    clawApprovalActions.replaceChildren();
+    clawApprovalActions.hidden = true;
+  }
+
+  async function applyImmediateApprovalDecision(result) {
+    if (!result || typeof result.run_id !== "string") return;
+    if (typeof result.conversation_id === "string" && result.conversation_id) {
+      conversationState.setConversationId(result.conversation_id);
+    }
+    const status = typeof result.status === "string" ? result.status : "";
+    if (status === "waiting_approval" && result.approval_required === true) {
+      if (clawResultPreview) clawResultPreview.textContent = clawT("claw-approval-required");
+      renderClawApprovalControls(clawApprovalActions, result.run_id, applyImmediateApprovalDecision);
+      setClawStatus(clawT("claw-approval-required"), "waiting_approval");
+      setClawAreaState("waiting_approval");
+    } else {
+      clearImmediateApprovalControls();
+      const resultText = typeof result.result_text === "string" && result.result_text
+        ? result.result_text
+        : clawRunStatusLabel(status);
+      if (clawResultPreview) clawResultPreview.textContent = resultText;
+      setClawStatus(resultText, status || "success");
+      setClawAreaState(status || "success");
+    }
+    await loadClawRunHistory();
+  }
+
   // #2532 (R2): echo the submitted request as a user bubble in the shared
   // conversation so manual Claw reads as one continuous Chat thread. This is
   // the user's own message, never presented as an AI result.
@@ -2278,6 +2395,7 @@
     setClawStatus(clawT("claw-status-execute-running"), "running", "claw-status-execute-running");
     setClawAreaState("submitting");
     if (clawResultCard) clawResultCard.hidden = true;
+    clearImmediateApprovalControls();
     clearClawArtifact();
     if (clawResultEmpty) {
       clawResultEmpty.hidden = false;
@@ -2291,13 +2409,32 @@
         body: JSON.stringify(executePayload),
       });
       const data = await response.json().catch(() => null);
-      if (data && data.ok && data.result && typeof data.result.result_text === "string") {
+      if (data && data.ok && data.result) {
         const result = data.result;
         // Server-echoed canonical handle only (#2916): reuse it as the single
         // session authority; never build a second id here.
         if (typeof result.conversation_id === "string" && result.conversation_id) {
           conversationState.setConversationId(result.conversation_id);
         }
+        if (
+          result.status === "waiting_approval"
+          && result.approval_required === true
+          && typeof result.request_id === "string"
+          && result.request_id
+        ) {
+          revealClawCard(result.title, true);
+          clearClawArtifact();
+          if (clawResultPreview) clawResultPreview.textContent = clawT("claw-approval-required");
+          renderClawApprovalControls(clawApprovalActions, result.request_id, applyImmediateApprovalDecision);
+          setClawStatus(clawT("claw-approval-required"), "waiting_approval");
+          setClawAreaState("waiting_approval");
+          if (clawResultPreview) clawResultPreview.focus?.();
+          return;
+        }
+        if (typeof result.result_text !== "string") {
+          throw new Error(clawT("claw-error-generic"));
+        }
+        clearImmediateApprovalControls();
         const safeText = String(result.result_text);
         revealClawCard(result.title, true);
         if (clawResultPreview) clawResultPreview.textContent = safeText;
@@ -2751,6 +2888,16 @@
       card.appendChild(artifactRow);
     }
     if (sessionBtn) card.appendChild(sessionBtn);
+    if (run.status === "waiting_approval" && typeof run.run_id === "string" && run.run_id) {
+      const approvalActions = document.createElement("div");
+      approvalActions.className = "claw-approval-actions claw-run-approval-actions";
+      approvalActions.setAttribute("role", "group");
+      approvalActions.setAttribute("aria-label", clawT("claw-approval-actions-aria"));
+      renderClawApprovalControls(approvalActions, run.run_id, async () => {
+        await loadClawRunHistory();
+      });
+      card.appendChild(approvalActions);
+    }
     return card;
   }
 
