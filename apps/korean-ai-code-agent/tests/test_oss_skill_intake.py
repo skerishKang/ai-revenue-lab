@@ -153,6 +153,19 @@ class OSSIntakeContractTests(unittest.TestCase):
                     credential_environment_reads=CredentialEnvironmentAudit(
                         AuditStatus.REVIEWED,
                         True,
+                        False,
+                        False,
+                        False,
+                        REVIEW_EVIDENCE,
+                    )
+                )
+            )
+        with self.assertRaises(ContractError):
+            OSSIntakeGate().evaluate(
+                accepted_record(
+                    credential_environment_reads=CredentialEnvironmentAudit(
+                        AuditStatus.REVIEWED,
+                        True,
                         True,
                         True,
                         False,
